@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/electrikmilk/args-parser"
@@ -27,12 +28,14 @@ func generateShortcut() {
 		WFWorkflowHasShortcutInputVariables:  hasShortcutInputVariables,
 		WFWorkflowMinimumClientVersion:       900,
 		WFWorkflowMinimumClientVersionString: "900",
-		WFWorkflowTypes:                      definedWorkflowTypes,
 		WFQuickActionSurfaces:                definedQuickActions,
 		WFWorkflowNoInputBehavior:            noInput,
 	}
 
 	waitFor(
+		func() {
+			shortcut.WFWorkflowTypes = generateWorkflowTypes(definedWorkflowTypes)
+		},
 		func() {
 			shortcut.WFWorkflowInputContentItemClasses = generateInputContentItems()
 		},
@@ -1201,12 +1204,12 @@ func generateInputContentItems() (inputContentItems []string) {
 		for _, input := range contentItems {
 			inputContentItems = append(inputContentItems, input)
 		}
-		return
+	} else {
+		for _, input := range inputs {
+			inputContentItems = append(inputContentItems, input)
+		}
 	}
-
-	for _, input := range inputs {
-		inputContentItems = append(inputContentItems, input)
-	}
+	sort.Strings(inputContentItems)
 	return
 }
 
@@ -1217,6 +1220,12 @@ func generateOutputContentItems() (outputContentItems []string) {
 	for _, output := range outputs {
 		outputContentItems = append(outputContentItems, output)
 	}
-
 	return
+}
+
+func generateWorkflowTypes(types []string) []string {
+	if len(types) == 0 {
+		return []string{"Watch", "WFWorkflowTypeShowInSearch"}
+	}
+	return types
 }

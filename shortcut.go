@@ -14,19 +14,19 @@ type ShortcutIcon struct {
 }
 
 type Shortcut struct {
-	WFWorkflowIcon                       ShortcutIcon     `plist:",omitempty"`
-	WFWorkflowActions                    []ShortcutAction `plist:",omitempty"`
-	WFQuickActionSurfaces                []string         `plist:",omitempty"`
-	WFWorkflowInputContentItemClasses    []string         `plist:",omitempty"`
-	WFWorkflowClientVersion              string           `plist:",omitempty"`
-	WFWorkflowMinimumClientVersion       int              `plist:",omitempty"`
-	WFWorkflowMinimumClientVersionString string           `plist:",omitempty"`
-	WFWorkflowImportQuestions            interface{}      `plist:",omitempty"`
-	WFWorkflowTypes                      []string         `plist:",omitempty"`
-	WFWorkflowOutputContentItemClasses   []string         `plist:",omitempty"`
-	WFWorkflowHasShortcutInputVariables  bool             `plist:",omitempty"`
-	WFWorkflowHasOutputFallback          bool             `plist:",omitempty"`
-	WFWorkflowNoInputBehavior            map[string]any   `plist:",omitempty"`
+	WFWorkflowIcon                       ShortcutIcon
+	WFWorkflowActions                    []ShortcutAction
+	WFQuickActionSurfaces                []string
+	WFWorkflowInputContentItemClasses    []string
+	WFWorkflowClientVersion              string
+	WFWorkflowMinimumClientVersion       int
+	WFWorkflowMinimumClientVersionString string
+	WFWorkflowImportQuestions            []WFQuestion
+	WFWorkflowTypes                      []string
+	WFWorkflowOutputContentItemClasses   []string
+	WFWorkflowHasShortcutInputVariables  bool
+	WFWorkflowHasOutputFallback          bool
+	WFWorkflowNoInputBehavior            map[string]any
 }
 
 var shortcut Shortcut
@@ -241,26 +241,27 @@ var altColors = map[string]int{
 /* Inputs */
 
 var contentItems = map[string]string{
-	"app":         "WFAppStoreAppContentItem",
-	"article":     "WFArticleContentItem",
-	"contact":     "WFContactContentItem",
-	"date":        "WFDateContentItem",
-	"email":       "WFEmailAddressContentItem",
-	"folder":      "WFFolderContentItem",
-	"file":        "WFGenericFileContentItem",
-	"image":       "WFImageContentItem",
-	"itunes":      "WFiTunesProductContentItem",
-	"location":    "WFLocationContentItem",
-	"maplink":     "WFDCMapsLinkContentItem",
-	"media":       "WFAVAssetContentItem",
-	"pdf":         "WFPDFContentItem",
-	"phonenumber": "WFPhoneNumberContentItem",
-	"richtext":    "WFRichTextContentItem",
-	"webpage":     "WFSafariWebPageContentItem",
-	"text":        "WFStringContentItem",
-	"dictionary":  "WFDictionaryContentItem",
-	"number":      "WFNumberContentItem",
-	"url":         "WFURLContentItem",
+	"installedapp": "WFAppContentItem",
+	"app":          "WFAppStoreAppContentItem",
+	"article":      "WFArticleContentItem",
+	"contact":      "WFContactContentItem",
+	"date":         "WFDateContentItem",
+	"email":        "WFEmailAddressContentItem",
+	"folder":       "WFFolderContentItem",
+	"file":         "WFGenericFileContentItem",
+	"image":        "WFImageContentItem",
+	"itunes":       "WFiTunesProductContentItem",
+	"location":     "WFLocationContentItem",
+	"maplink":      "WFDCMapsLinkContentItem",
+	"media":        "WFAVAssetContentItem",
+	"pdf":          "WFPDFContentItem",
+	"phonenumber":  "WFPhoneNumberContentItem",
+	"richtext":     "WFRichTextContentItem",
+	"webpage":      "WFSafariWebPageContentItem",
+	"text":         "WFStringContentItem",
+	"dictionary":   "WFDictionaryContentItem",
+	"number":       "WFNumberContentItem",
+	"url":          "WFURLContentItem",
 }
 
 var revContentItems map[string]string
