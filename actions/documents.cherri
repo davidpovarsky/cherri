@@ -62,7 +62,7 @@ action 'openin' openFile(&variable file: 'WFInput', bool ?askWhenRun: 'WFOpenInA
 action getParentDirectory(&variable input: 'WFInput')
 
 // [Doc]: [Files & Folders] File: Insert a `#ref` to a file.
-action 'file' file(&variable file: 'WFFile'): variable
+action file(&variable file: 'WFFile'): variable
 
 enum fileDetail {
     'File Size',
