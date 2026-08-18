@@ -156,6 +156,10 @@ func ansi(message string, typeOf ...outputType) string {
 }
 
 func exit(message string) {
+	if embeddedCompilerMode {
+		panic(embeddedCompilerPanic{message: message})
+	}
+
 	fmt.Println(ansi("\nError: "+message+"\n", red))
 	if args.Using("debug") {
 		panicDebug(nil)
