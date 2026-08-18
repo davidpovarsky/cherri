@@ -6,17 +6,10 @@ name: Build & Test
 on:
   push:
     branches: [ "main" ]
-    paths-ignore:
-      - "ios/**"
-      - ".github/workflows/ios-build.yml"
-  pull_request:
-    branches: [ "main" ]
-    paths-ignore:
-      - "ios/**"
-      - ".github/workflows/ios-build.yml"
+  workflow_dispatch:
 
 concurrency:
-  group: build-test-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: build-test-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
