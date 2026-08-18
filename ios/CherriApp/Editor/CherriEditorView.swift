@@ -16,7 +16,7 @@ struct CherriEditorView: View {
             text: $text,
             position: $editPosition,
             messages: $messages,
-            language: .swift(),
+            language: .cherri(),
             layout: CodeEditor.LayoutConfiguration(showMinimap: false, wrapText: true)
         )
         .environment(
