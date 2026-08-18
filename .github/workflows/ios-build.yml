@@ -1,0 +1,70 @@
+name: iOS Build
+
+on:
+  push:
+    branches:
+      - main
+      - "agent/**"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ios-build:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.24.x"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test existing Cherri compiler
+        run: |
+          go test -run TestCherriNoSign -v ./...
+          go test -run TestDecomp -v ./...
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build preview-shortcut bundle
+        working-directory: ios/WebPreview
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Build CherriCore XCFramework
+        run: bash ios/scripts/build_cherri_core.sh
+
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Resolve Swift packages
+        working-directory: ios
+        run: xcodebuild -project Cherri.xcodeproj -scheme Cherri -resolvePackageDependencies
+
+      - name: Build iOS Simulator app
+        working-directory: ios
+        run: |
+          xcodebuild \
+            -project Cherri.xcodeproj \
+            -scheme Cherri \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
