@@ -18,6 +18,60 @@ struct CompiledShortcut: Sendable {
     let signedShortcut: Data?
 }
 
+struct CherriActionParameter: Decodable, Hashable, Sendable {
+    let name: String
+    let type: String
+    let optional: Bool?
+    let infinite: Bool?
+    let reference: Bool?
+    let literal: Bool?
+    let `enum`: String?
+    let enumValues: [String]?
+    let `default`: String?
+
+    var displayType: String {
+        let base = (`enum`?.isEmpty == false ? `enum` : nil) ?? type
+        return (reference == true ? "&" : "") + base
+    }
+
+    var signature: String {
+        var result = displayType
+        if infinite == true { result += "..." }
+        result += " "
+        if optional == true { result += "?" }
+        result += name
+        if let defaultValue = `default`, !defaultValue.isEmpty {
+            result += " = \(defaultValue)"
+        }
+        return result
+    }
+}
+
+struct CherriActionInfo: Decodable, Identifiable, Hashable, Sendable {
+    var id: String { name }
+
+    let name: String
+    let title: String?
+    let description: String?
+    let category: String?
+    let subcategory: String?
+    let parameters: [CherriActionParameter]?
+    let outputType: String?
+    let macOnly: Bool?
+    let nonMacOnly: Bool?
+    let minVersion: Double?
+    let maxVersion: Double?
+
+    var signature: String {
+        let arguments = (parameters ?? []).map(\.signature).joined(separator: ", ")
+        var value = "\(name)(\(arguments))"
+        if let outputType, !outputType.isEmpty {
+            value += ": \(outputType)"
+        }
+        return value
+    }
+}
+
 private struct CompilerBridgeResponse: Decodable {
     let ok: Bool
     let name: String?
@@ -27,6 +81,12 @@ private struct CompilerBridgeResponse: Decodable {
     let error: String?
     let line: Int?
     let column: Int?
+}
+
+private struct ActionCatalogBridgeResponse: Decodable {
+    let ok: Bool
+    let actions: [CherriActionInfo]?
+    let error: String?
 }
 
 enum CherriCompiler {
@@ -39,6 +99,12 @@ enum CherriCompiler {
     static func decompile(plist: Data, name: String) async throws -> String {
         try await Task.detached(priority: .userInitiated) {
             try callDecompileBridge(plist: plist, name: name)
+        }.value
+    }
+
+    static func actionCatalog() async throws -> [CherriActionInfo] {
+        try await Task.detached(priority: .utility) {
+            try callActionCatalogBridge()
         }.value
     }
 
@@ -84,6 +150,24 @@ enum CherriCompiler {
             throw CompilationDiagnostic(message: "Decompiler response did not contain Cherri source.", line: 1, column: 1)
         }
         return source
+    }
+
+    private static func callActionCatalogBridge() throws -> [CherriActionInfo] {
+        guard let resultPointer = CherriActionCatalog() else {
+            throw CompilationDiagnostic(message: "Cherri action catalog returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        let response = try JSONDecoder().decode(ActionCatalogBridgeResponse.self, from: responseData)
+        guard response.ok else {
+            throw CompilationDiagnostic(
+                message: response.error ?? "Unable to load Cherri actions.",
+                line: 1,
+                column: 1
+            )
+        }
+        return response.actions ?? []
     }
 
     private static func decodeBridgeResponse(_ resultPointer: UnsafeMutablePointer<CChar>?) throws -> CompilerBridgeResponse {
