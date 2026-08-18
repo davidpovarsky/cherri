@@ -50,6 +50,32 @@ final class CherriCoreIntegrationTests: XCTestCase {
         XCTAssertFalse(showAction.signature.isEmpty)
     }
 
+    func testEveryCatalogActionEmptyCallReturnsWithoutCrashingBridge() async throws {
+        _ = try await CherriCompiler.compile(
+            source: "show(\"Initialize catalog\")\n",
+            name: "Action Catalog Probe"
+        )
+
+        let actions = try await CherriCompiler.actionCatalog()
+        XCTAssertGreaterThanOrEqual(actions.count, 70)
+
+        for action in actions {
+            do {
+                _ = try await CherriCompiler.compile(
+                    source: "\(action.name)()\n",
+                    name: "Probe \(action.name)"
+                )
+            } catch is CompilationDiagnostic {
+                // Missing required arguments are expected for many actions. The
+                // important invariant is that the in-process Go bridge returns a
+                // diagnostic instead of terminating the iOS process.
+                continue
+            } catch {
+                XCTFail("Unexpected bridge error for \(action.name): \(error)")
+            }
+        }
+    }
+
     private func propertyList(_ data: Data) throws -> [String: Any] {
         let object = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)
         return try XCTUnwrap(object as? [String: Any])

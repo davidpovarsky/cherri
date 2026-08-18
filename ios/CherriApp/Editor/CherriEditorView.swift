@@ -146,7 +146,14 @@ struct CherriEditorView: View {
         let insertionRange = paletteInsertionRange
         pendingPaletteAction = nil
         paletteInsertionRange = nil
-        insert(action: action, replacing: insertionRange)
+
+        // Wait until the sheet has fully left the hierarchy before changing the
+        // CodeEditor binding. This avoids updating its underlying UITextView while
+        // UIKit is still completing the presentation transition.
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(300))
+            insert(action: action, replacing: insertionRange)
+        }
     }
 
     private func insert(action: CherriActionInfo, replacing requestedRange: NSRange?) {
@@ -161,27 +168,13 @@ struct CherriEditorView: View {
             range = NSRange(location: source.length, length: 0)
         }
 
+        // Deliberately update only the text binding. CodeEditorView owns its UIKit
+        // selection lifecycle on iOS; programmatically replacing CodeEditor.Position
+        // immediately after a text mutation can hand UITextView a range from the old
+        // storage and crash the host process. The existing selection remains valid
+        // because insertion only grows the document.
         let insertion = "\(action.name)()"
-        let updatedText = source.replacingCharacters(in: range, with: insertion)
-        let updatedLength = (updatedText as NSString).length
-
-        let nameLength = (action.name as NSString).length
-        let hasParameters = !(action.parameters ?? []).isEmpty
-        let desiredCursor = range.location + nameLength + (hasParameters ? 1 : 2)
-        let cursor = min(max(desiredCursor, 0), updatedLength)
-        let scrollPosition = editPosition.verticalScrollPosition
-
-        text = updatedText
-
-        // CodeEditorView applies text and selection in the same SwiftUI update. On iOS,
-        // defer the selection by one main-runloop turn so UITextView has the new text
-        // before receiving the new selectedRange.
-        DispatchQueue.main.async {
-            editPosition = CodeEditor.Position(
-                selections: [NSRange(location: cursor, length: 0)],
-                verticalScrollPosition: scrollPosition
-            )
-        }
+        text = source.replacingCharacters(in: range, with: insertion)
     }
 
     private func refreshDiagnostic() {
