@@ -56,12 +56,12 @@ Because the current compiler uses package-level mutable state, the mobile bridge
 
 ## Building without a Mac
 
-The repository's **iOS Build** GitHub Actions workflow is the reference build environment. It runs on a GitHub-hosted macOS runner and performs:
+The repository's **iOS Build** GitHub Actions workflow is the reference build environment. Development branches under `agent/**` and `main` are built once per push, with stale iOS runs cancelled automatically. The workflow performs:
 
 1. Existing Cherri Go tests.
 2. `preview-shortcut` web bundle build.
-3. Cherri Go C archive builds for iPhone arm64 and iOS Simulator arm64.
-4. XCFramework creation.
+3. Cherri Go C archive builds for iPhone arm64 and iOS Simulator arm64 + x86_64.
+4. Universal Simulator archive and XCFramework creation.
 5. XcodeGen project generation.
 6. Swift Package resolution.
 7. Unsigned iOS Simulator app build with `xcodebuild`.
