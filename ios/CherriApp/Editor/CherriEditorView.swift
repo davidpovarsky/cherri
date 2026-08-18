@@ -42,7 +42,7 @@ struct CherriEditorView: View {
                     category: .error,
                     length: 1,
                     summary: "Error",
-                    description: NSAttributedString(string: diagnostic.message)
+                    description: AttributedString(diagnostic.message)
                 )
             )
         )
