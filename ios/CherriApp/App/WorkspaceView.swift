@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 private enum WorkspacePane: String, CaseIterable, Identifiable {
     case code = "Code"
@@ -19,8 +20,10 @@ struct WorkspaceView: View {
     @State private var diagnostic: CompilationDiagnostic?
     @State private var isCompiling = false
     @State private var isSigning = false
+    @State private var isImporting = false
     @State private var signedURL: URL?
     @State private var showSigningConfirmation = false
+    @State private var showShortcutImporter = false
 
     var body: some View {
         NavigationStack {
@@ -62,14 +65,14 @@ struct WorkspaceView: View {
                     } label: {
                         Label("Build", systemImage: "hammer.fill")
                     }
-                    .disabled(isCompiling || isSigning)
+                    .disabled(isBusy)
 
                     Button {
                         showSigningConfirmation = true
                     } label: {
                         Label("Sign", systemImage: "checkmark.seal.fill")
                     }
-                    .disabled(isCompiling || isSigning)
+                    .disabled(isBusy)
 
                     if let signedURL {
                         ShareLink(item: signedURL) {
@@ -78,6 +81,13 @@ struct WorkspaceView: View {
                     }
 
                     Menu {
+                        Button {
+                            showShortcutImporter = true
+                        } label: {
+                            Label("Import Shortcut Plist", systemImage: "square.and.arrow.down")
+                        }
+
+                        Divider()
                         Toggle("Live Preview", isOn: $livePreview)
                     } label: {
                         Label("Options", systemImage: "ellipsis.circle")
@@ -93,12 +103,29 @@ struct WorkspaceView: View {
         } message: {
             Text("Signing sends the generated Shortcut plist to Cherri's existing HubSign service. Editing, Build, and live Preview stay on this device.")
         }
+        .fileImporter(
+            isPresented: $showShortcutImporter,
+            allowedContentTypes: [.data],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else { return }
+                Task { await importShortcutPlist(from: url) }
+            case .failure(let error):
+                diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
+            }
+        }
         .task(id: document.text) {
-            guard livePreview else { return }
+            guard livePreview, !isImporting else { return }
             try? await Task.sleep(for: .milliseconds(650))
             guard !Task.isCancelled else { return }
             await build(signed: false, liveBuild: true)
         }
+    }
+
+    private var isBusy: Bool {
+        isCompiling || isSigning || isImporting
     }
 
     private var editorPane: some View {
@@ -125,7 +152,11 @@ struct WorkspaceView: View {
     @ViewBuilder
     private var statusBar: some View {
         HStack(spacing: 8) {
-            if isSigning {
+            if isImporting {
+                ProgressView()
+                    .controlSize(.small)
+                Text("Decompiling Shortcut…")
+            } else if isSigning {
                 ProgressView()
                     .controlSize(.small)
                 Text("Signing Shortcut…")
@@ -207,6 +238,35 @@ struct WorkspaceView: View {
                 column: 1
             )
             signedURL = nil
+        }
+    }
+
+    @MainActor
+    private func importShortcutPlist(from url: URL) async {
+        isImporting = true
+        defer { isImporting = false }
+
+        let accessed = url.startAccessingSecurityScopedResource()
+        defer {
+            if accessed {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let name = url.deletingPathExtension().lastPathComponent
+            let source = try await CherriCompiler.decompile(plist: data, name: name)
+
+            document.text = source
+            compiled = nil
+            diagnostic = nil
+            signedURL = nil
+            selectedPane = .code
+        } catch let compilerError as CompilationDiagnostic {
+            diagnostic = compilerError
+        } catch {
+            diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
         }
     }
 
