@@ -15,6 +15,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"maps"
+	"sort"
 	"strings"
 	"sync"
 	"unsafe"
@@ -34,7 +36,41 @@ type mobileCompileResponse struct {
 	Column       int    `json:"column,omitempty"`
 }
 
+type mobileActionParameter struct {
+	Name       string   `json:"name"`
+	Type       string   `json:"type"`
+	Optional   bool     `json:"optional,omitempty"`
+	Infinite   bool     `json:"infinite,omitempty"`
+	Reference  bool     `json:"reference,omitempty"`
+	Literal    bool     `json:"literal,omitempty"`
+	Enum       string   `json:"enum,omitempty"`
+	EnumValues []string `json:"enumValues,omitempty"`
+	Default    string   `json:"default,omitempty"`
+}
+
+type mobileActionInfo struct {
+	Name        string                  `json:"name"`
+	Title       string                  `json:"title,omitempty"`
+	Description string                  `json:"description,omitempty"`
+	Category    string                  `json:"category,omitempty"`
+	Subcategory string                  `json:"subcategory,omitempty"`
+	Parameters  []mobileActionParameter `json:"parameters,omitempty"`
+	OutputType  string                  `json:"outputType,omitempty"`
+	MacOnly     bool                    `json:"macOnly,omitempty"`
+	NonMacOnly  bool                    `json:"nonMacOnly,omitempty"`
+	MinVersion  float64                 `json:"minVersion,omitempty"`
+	MaxVersion  float64                 `json:"maxVersion,omitempty"`
+}
+
+type mobileActionCatalogResponse struct {
+	OK      bool               `json:"ok"`
+	Actions []mobileActionInfo `json:"actions,omitempty"`
+	Error   string             `json:"error,omitempty"`
+}
+
 var mobileCompileMu sync.Mutex
+var mobileBaseActions map[string]*actionDefinition
+var mobileBaseEnumerations map[string][]string
 
 // CherriCompile compiles Cherri source in-process and returns a JSON response.
 // The plist payload is base64 encoded so the C ABI only has to pass one string.
@@ -65,6 +101,23 @@ func CherriDecompilePlist(plistBase64 *C.char, requestedName *C.char) *C.char {
 		return encodeMobileResponse(mobileCompileResponse{OK: false, Error: "Invalid base64 Shortcut data."})
 	}
 	return encodeMobileResponse(decompileForMobile(plistBytes, C.GoString(requestedName)))
+}
+
+// CherriActionCatalog returns the action definitions currently available to the
+// compiler. This includes Cherri's Go built-ins and actions brought into the
+// current source through its normal include/action-definition machinery.
+//
+//export CherriActionCatalog
+func CherriActionCatalog() *C.char {
+	mobileCompileMu.Lock()
+	defer mobileCompileMu.Unlock()
+
+	catalog := currentMobileActionCatalog()
+	encoded, err := json.Marshal(mobileActionCatalogResponse{OK: true, Actions: catalog})
+	if err != nil {
+		encoded, _ = json.Marshal(mobileActionCatalogResponse{OK: false, Error: err.Error()})
+	}
+	return C.CString(string(encoded))
 }
 
 func encodeMobileResponse(response mobileCompileResponse) *C.char {
@@ -107,6 +160,8 @@ func compileForMobile(source string, requestedName string, sign bool) (response 
 		}
 	}()
 
+	resetMobileLanguageState()
+	resetMobileDecompileState()
 	name := normalizedMobileName(requestedName)
 
 	filePath = ""
@@ -169,6 +224,7 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 		}
 	}()
 
+	resetMobileLanguageState()
 	resetMobileDecompileState()
 	name := normalizedMobileName(requestedName)
 	basename = strings.ReplaceAll(name, " ", "_")
@@ -200,6 +256,82 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 		Name:   name,
 		Source: code.String(),
 	}
+}
+
+func currentMobileActionCatalog() []mobileActionInfo {
+	names := make([]string, 0, len(actions))
+	for name := range actions {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	catalog := make([]mobileActionInfo, 0, len(names))
+	for _, name := range names {
+		definition := actions[name]
+		if definition == nil {
+			continue
+		}
+
+		parameters := make([]mobileActionParameter, 0, len(definition.parameters))
+		for _, parameter := range definition.parameters {
+			item := mobileActionParameter{
+				Name:      parameter.name,
+				Type:      string(parameter.validType),
+				Optional:  parameter.optional || parameter.defaultValue != nil,
+				Infinite:  parameter.infinite,
+				Reference: parameter.ref,
+				Literal:   parameter.literal,
+				Enum:      parameter.enum,
+			}
+			if parameter.enum != "" {
+				item.EnumValues = append([]string(nil), enumerations[parameter.enum]...)
+			}
+			if parameter.defaultValue != nil {
+				item.Default = fmt.Sprint(parameter.defaultValue)
+			}
+			parameters = append(parameters, item)
+		}
+
+		catalog = append(catalog, mobileActionInfo{
+			Name:        name,
+			Title:       definition.doc.title,
+			Description: definition.doc.description,
+			Category:    definition.doc.category,
+			Subcategory: definition.doc.subcategory,
+			Parameters:  parameters,
+			OutputType:  string(definition.outputType),
+			MacOnly:     definition.macOnly,
+			NonMacOnly:  definition.nonMacOnly,
+			MinVersion:  definition.minVersion,
+			MaxVersion:  definition.maxVersion,
+		})
+	}
+	return catalog
+}
+
+func ensureMobileBaseLanguageState() {
+	if mobileBaseActions == nil {
+		mobileBaseActions = maps.Clone(actions)
+	}
+	if mobileBaseEnumerations == nil {
+		mobileBaseEnumerations = maps.Clone(enumerations)
+	}
+}
+
+// Cherri's CLI normally exits after one compilation. The iOS host compiles on
+// every edit, so definitions introduced by one document must not leak into the
+// next compilation and make includes/custom actions appear duplicated.
+func resetMobileLanguageState() {
+	ensureMobileBaseLanguageState()
+	actions = maps.Clone(mobileBaseActions)
+	enumerations = maps.Clone(mobileBaseEnumerations)
+	included = []string{}
+	includes = []include{}
+	includedBasicStandardActions = false
+	includedFile = false
+	functions = nil
+	usingFunctions = false
+	hasShortcutInputVariables = false
 }
 
 func normalizedMobileName(requestedName string) string {
