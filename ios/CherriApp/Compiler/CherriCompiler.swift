@@ -67,7 +67,7 @@ enum CherriCompiler {
             throw CompilationDiagnostic(message: "Compiler response did not contain plist data.", line: 1, column: 1)
         }
 
-        let signedData = response.signedBase64.flatMap(Data.init(base64Encoded:))
+        let signedData = response.signedBase64.flatMap { Data(base64Encoded: $0) }
         return CompiledShortcut(
             name: response.name ?? name,
             plist: plist,
