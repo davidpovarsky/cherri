@@ -24,12 +24,13 @@ import (
 )
 
 type mobileCompileResponse struct {
-	OK          bool   `json:"ok"`
-	Name        string `json:"name,omitempty"`
-	PlistBase64 string `json:"plistBase64,omitempty"`
-	Error       string `json:"error,omitempty"`
-	Line        int    `json:"line,omitempty"`
-	Column      int    `json:"column,omitempty"`
+	OK           bool   `json:"ok"`
+	Name         string `json:"name,omitempty"`
+	PlistBase64  string `json:"plistBase64,omitempty"`
+	SignedBase64 string `json:"signedBase64,omitempty"`
+	Error        string `json:"error,omitempty"`
+	Line         int    `json:"line,omitempty"`
+	Column       int    `json:"column,omitempty"`
 }
 
 var mobileCompileMu sync.Mutex
@@ -39,7 +40,19 @@ var mobileCompileMu sync.Mutex
 //
 //export CherriCompile
 func CherriCompile(source *C.char, requestedName *C.char) *C.char {
-	response := compileForMobile(C.GoString(source), C.GoString(requestedName))
+	return encodeMobileResponse(compileForMobile(C.GoString(source), C.GoString(requestedName), false))
+}
+
+// CherriCompileSigned compiles Cherri source and signs it with Cherri's existing
+// HubSign integration. This performs a network request and should only be called
+// after an explicit user action.
+//
+//export CherriCompileSigned
+func CherriCompileSigned(source *C.char, requestedName *C.char) *C.char {
+	return encodeMobileResponse(compileForMobile(C.GoString(source), C.GoString(requestedName), true))
+}
+
+func encodeMobileResponse(response mobileCompileResponse) *C.char {
 	encoded, err := json.Marshal(response)
 	if err != nil {
 		encoded = []byte(`{"ok":false,"error":"unable to encode compiler response"}`)
@@ -47,14 +60,14 @@ func CherriCompile(source *C.char, requestedName *C.char) *C.char {
 	return C.CString(string(encoded))
 }
 
-// CherriFree releases strings returned by CherriCompile.
+// CherriFree releases strings returned by CherriCompile and CherriCompileSigned.
 //
 //export CherriFree
 func CherriFree(pointer *C.char) {
 	C.free(unsafe.Pointer(pointer))
 }
 
-func compileForMobile(source string, requestedName string) (response mobileCompileResponse) {
+func compileForMobile(source string, requestedName string, sign bool) (response mobileCompileResponse) {
 	mobileCompileMu.Lock()
 	defer mobileCompileMu.Unlock()
 
@@ -101,11 +114,25 @@ func compileForMobile(source string, requestedName string) (response mobileCompi
 		panic(err)
 	}
 
-	return mobileCompileResponse{
+	response = mobileCompileResponse{
 		OK:          true,
 		Name:        workflowName,
 		PlistBase64: base64.StdEncoding.EncodeToString(plistBytes),
 	}
+
+	if sign {
+		service := hubSign()
+		signedShortcut := requestSignedShortcut(&service)
+		if len(signedShortcut) == 0 {
+			panic(embeddedCompilerPanic{message: "Signing service returned no Shortcut data."})
+		}
+		if !looksLikeSignedShortcut(signedShortcut) {
+			panic(embeddedCompilerPanic{message: "Signing server response does not look like a Shortcut file."})
+		}
+		response.SignedBase64 = base64.StdEncoding.EncodeToString(signedShortcut)
+	}
+
+	return response
 }
 
 func embeddedErrorMessage(recovered any) string {
