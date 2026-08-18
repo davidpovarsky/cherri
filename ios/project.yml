@@ -61,11 +61,28 @@ targets:
         product: LanguageSupport
       - framework: Vendor/CherriCore.xcframework
 
+  CherriTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: CherriTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.cherrilang.CherriTests
+        SWIFT_VERSION: "5.0"
+    dependencies:
+      - target: Cherri
+
 schemes:
   Cherri:
     build:
       targets:
         Cherri: all
+        CherriTests: [test]
+    test:
+      targets:
+        - CherriTests
     run:
       config: Debug
     archive:
