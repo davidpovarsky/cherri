@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ios-build-${{ github.workflow }}-${{ github.ref }}
+  group: ios-build-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -70,22 +70,31 @@ jobs:
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath .build/simulator \
             CODE_SIGNING_ALLOWED=NO \
-            build > xcodebuild.log 2>&1
+            build > xcodebuild-simulator.log 2>&1
           status=$?
           set -e
 
           if [ "$status" -ne 0 ]; then
             echo "::group::Relevant Xcode errors"
-            grep -nE 'error:|fatal error:|Undefined symbols|duplicate symbol|ld: |clang: error:|SwiftCompile|BUILD FAILED' xcodebuild.log | tail -n 250 || true
+            grep -nE 'error:|fatal error:|Undefined symbols|duplicate symbol|ld: |clang: error:|SwiftCompile|BUILD FAILED' xcodebuild-simulator.log | tail -n 250 || true
             echo "::endgroup::"
             echo "::group::Xcode log tail"
-            tail -n 100 xcodebuild.log
+            tail -n 100 xcodebuild-simulator.log
             echo "::endgroup::"
             exit "$status"
           fi
 
-          tail -n 60 xcodebuild.log
+          tail -n 60 xcodebuild-simulator.log
+
+      - name: Upload Simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cherri-Simulator-app
+          path: ios/.build/simulator/Build/Products/Debug-iphonesimulator/Cherri.app
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Run CherriCore in iOS Simulator
         working-directory: ios
@@ -106,6 +115,7 @@ jobs:
             -scheme Cherri \
             -configuration Debug \
             -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -derivedDataPath .build/tests \
             CODE_SIGNING_ALLOWED=NO \
             test > xcodetest.log 2>&1
           status=$?
@@ -122,3 +132,50 @@ jobs:
           fi
 
           grep -nE 'Test Case|TEST SUCCEEDED' xcodetest.log | tail -n 120 || tail -n 80 xcodetest.log
+
+      - name: Build unsigned iPhone app
+        working-directory: ios
+        run: |
+          set +e
+          xcodebuild \
+            -project Cherri.xcodeproj \
+            -scheme Cherri \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath .build/device \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY='' \
+            build > xcodebuild-device.log 2>&1
+          status=$?
+          set -e
+
+          if [ "$status" -ne 0 ]; then
+            echo "::group::Relevant device build errors"
+            grep -nE 'error:|fatal error:|Undefined symbols|duplicate symbol|ld: |clang: error:|SwiftCompile|BUILD FAILED' xcodebuild-device.log | tail -n 250 || true
+            echo "::endgroup::"
+            echo "::group::Device build log tail"
+            tail -n 100 xcodebuild-device.log
+            echo "::endgroup::"
+            exit "$status"
+          fi
+
+          APP_PATH=".build/device/Build/Products/Release-iphoneos/Cherri.app"
+          test -d "$APP_PATH"
+          rm -rf .build/ipa
+          mkdir -p .build/ipa/Payload
+          cp -R "$APP_PATH" .build/ipa/Payload/Cherri.app
+          (
+            cd .build/ipa
+            /usr/bin/zip -qry Cherri-unsigned.ipa Payload
+          )
+          ls -lh .build/ipa/Cherri-unsigned.ipa
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cherri-unsigned-IPA
+          path: ios/.build/ipa/Cherri-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
