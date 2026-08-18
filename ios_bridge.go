@@ -28,6 +28,7 @@ type mobileCompileResponse struct {
 	Name         string `json:"name,omitempty"`
 	PlistBase64  string `json:"plistBase64,omitempty"`
 	SignedBase64 string `json:"signedBase64,omitempty"`
+	Source       string `json:"source,omitempty"`
 	Error        string `json:"error,omitempty"`
 	Line         int    `json:"line,omitempty"`
 	Column       int    `json:"column,omitempty"`
@@ -52,6 +53,20 @@ func CherriCompileSigned(source *C.char, requestedName *C.char) *C.char {
 	return encodeMobileResponse(compileForMobile(C.GoString(source), C.GoString(requestedName), true))
 }
 
+// CherriDecompilePlist decompiles Shortcut plist data using Cherri's existing
+// decompiler. The plist is base64 encoded only to keep the exported C ABI small
+// and safe for arbitrary binary input.
+//
+//export CherriDecompilePlist
+func CherriDecompilePlist(plistBase64 *C.char, requestedName *C.char) *C.char {
+	encoded := C.GoString(plistBase64)
+	plistBytes, err := base64.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		return encodeMobileResponse(mobileCompileResponse{OK: false, Error: "Invalid base64 Shortcut data."})
+	}
+	return encodeMobileResponse(decompileForMobile(plistBytes, C.GoString(requestedName)))
+}
+
 func encodeMobileResponse(response mobileCompileResponse) *C.char {
 	encoded, err := json.Marshal(response)
 	if err != nil {
@@ -60,7 +75,7 @@ func encodeMobileResponse(response mobileCompileResponse) *C.char {
 	return C.CString(string(encoded))
 }
 
-// CherriFree releases strings returned by CherriCompile and CherriCompileSigned.
+// CherriFree releases strings returned by the mobile bridge.
 //
 //export CherriFree
 func CherriFree(pointer *C.char) {
@@ -92,10 +107,7 @@ func compileForMobile(source string, requestedName string, sign bool) (response 
 		}
 	}()
 
-	name := strings.TrimSpace(requestedName)
-	if name == "" {
-		name = "Shortcut"
-	}
+	name := normalizedMobileName(requestedName)
 
 	filePath = ""
 	filename = name + ".cherri"
@@ -135,6 +147,69 @@ func compileForMobile(source string, requestedName string, sign bool) (response 
 	return response
 }
 
+func decompileForMobile(plistBytes []byte, requestedName string) (response mobileCompileResponse) {
+	mobileCompileMu.Lock()
+	defer mobileCompileMu.Unlock()
+
+	embeddedCompilerMode = true
+	previousArgs := args.Args
+	args.Args = map[string]string{"no-ansi": ""}
+
+	defer func() {
+		embeddedCompilerMode = false
+		args.Args = previousArgs
+		if recovered := recover(); recovered != nil {
+			response = mobileCompileResponse{
+				OK:     false,
+				Error:  embeddedErrorMessage(recovered),
+				Line:   max(lineIdx+1, 1),
+				Column: max(lineCharIdx+1, 1),
+			}
+			resetEmbeddedFailureState()
+		}
+	}()
+
+	resetMobileDecompileState()
+	name := normalizedMobileName(requestedName)
+	basename = strings.ReplaceAll(name, " ", "_")
+	workflowName = name
+	filename = name + ".shortcut"
+	filePath = ""
+	relativePath = ""
+	inputPath = ""
+	outputPath = ""
+
+	if _, err := plist.Unmarshal(plistBytes, &shortcut); err != nil {
+		panic(embeddedCompilerPanic{message: "Unable to read Shortcut plist: " + err.Error()})
+	}
+
+	loadBasicStandardActions()
+	resetParse()
+	firstChar()
+
+	mapVariables()
+	mapSplitActions()
+	mapIdentifiers()
+	mapControlFlowOutputs()
+	defineName()
+	decompileIcon()
+	decompileActions()
+
+	return mobileCompileResponse{
+		OK:     true,
+		Name:   name,
+		Source: code.String(),
+	}
+}
+
+func normalizedMobileName(requestedName string) string {
+	name := strings.TrimSpace(requestedName)
+	if name == "" {
+		return "Shortcut"
+	}
+	return name
+}
+
 func embeddedErrorMessage(recovered any) string {
 	switch value := recovered.(type) {
 	case embeddedCompilerPanic:
@@ -146,24 +221,35 @@ func embeddedErrorMessage(recovered any) string {
 	}
 }
 
-// A failed parse exits before initParse's normal cleanup. Restore the cursor and
-// per-compilation collections so the next edit can compile in the same process.
-func resetEmbeddedFailureState() {
-	contents = ""
-	originalContents = ""
-	char = -1
-	idx = -1
-	lineIdx = 0
-	lineCharIdx = -1
-	tokens = []token{}
-	chars = []rune{}
-	lines = []string{}
-	controlFlowGroups = map[int]controlFlowGroup{}
+func resetMobileDecompileState() {
+	code.Reset()
+	actionIndex = 0
+	tabLevel = 0
 	groupingIdx = 0
+	currentVariableValue = ""
+	varUUIDs = nil
+	constUUIDs = nil
+	identifierMap = nil
 	variables = map[string]varValue{}
 	questions = map[string]*question{}
 	menus = map[string][]varValue{}
 	uuids = map[string]string{}
+	controlFlowGroups = map[int]controlFlowGroup{}
 	includes = []include{}
 	definitions = map[string]any{}
+	contents = ""
+	originalContents = ""
+	chars = []rune{}
+	lines = []string{}
+	char = -1
+	idx = -1
+	lineIdx = 0
+	lineCharIdx = -1
+}
+
+// A failed parse exits before initParse's normal cleanup. Restore the cursor and
+// per-compilation collections so the next edit can compile in the same process.
+func resetEmbeddedFailureState() {
+	resetMobileDecompileState()
+	tokens = []token{}
 }
