@@ -19,7 +19,7 @@ permissions:
 jobs:
   ios-build:
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 35
 
     steps:
       - name: Checkout
@@ -86,3 +86,39 @@ jobs:
           fi
 
           tail -n 60 xcodebuild.log
+
+      - name: Run CherriCore in iOS Simulator
+        working-directory: ios
+        run: |
+          SIMULATOR_UDID="$(xcrun simctl list devices available -j | python3 -c 'import json,sys; data=json.load(sys.stdin); devices=[d for group in data["devices"].values() for d in group if d.get("isAvailable", True) and d.get("name", "").startswith("iPhone")]; print(devices[0]["udid"] if devices else "")')"
+          if [ -z "$SIMULATOR_UDID" ]; then
+            echo "No available iPhone Simulator was found." >&2
+            xcrun simctl list devices available
+            exit 1
+          fi
+
+          xcrun simctl boot "$SIMULATOR_UDID" >/dev/null 2>&1 || true
+          xcrun simctl bootstatus "$SIMULATOR_UDID" -b
+
+          set +e
+          xcodebuild \
+            -project Cherri.xcodeproj \
+            -scheme Cherri \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            CODE_SIGNING_ALLOWED=NO \
+            test > xcodetest.log 2>&1
+          status=$?
+          set -e
+
+          if [ "$status" -ne 0 ]; then
+            echo "::group::Relevant iOS test failures"
+            grep -nE 'error:|failed|XCTAssert|Test Case|TEST FAILED|Undefined symbols|ld: ' xcodetest.log | tail -n 300 || true
+            echo "::endgroup::"
+            echo "::group::iOS test log tail"
+            tail -n 120 xcodetest.log
+            echo "::endgroup::"
+            exit "$status"
+          fi
+
+          grep -nE 'Test Case|TEST SUCCEEDED' xcodetest.log | tail -n 120 || tail -n 80 xcodetest.log
