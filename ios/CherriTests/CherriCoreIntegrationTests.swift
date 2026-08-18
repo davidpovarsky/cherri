@@ -48,6 +48,79 @@ final class CherriCoreIntegrationTests: XCTestCase {
         let actions = try await CherriCompiler.actionCatalog()
         let showAction = try XCTUnwrap(actions.first(where: { $0.name == "show" }))
         XCTAssertFalse(showAction.signature.isEmpty)
+        XCTAssertEqual(showAction.shortcutIdentifier, "is.workflow.actions.showresult")
+    }
+
+    func testPaletteSnippetSuppliesRequiredArguments() async throws {
+        _ = try await CherriCompiler.compile(
+            source: "show(\"Initialize catalog\")\n",
+            name: "Snippet Test"
+        )
+        let actions = try await CherriCompiler.actionCatalog()
+
+        let alert = try XCTUnwrap(actions.first(where: { $0.name == "alert" }))
+        XCTAssertEqual(alert.insertionSnippet, "alert(Ask)")
+        _ = try await CherriCompiler.compile(source: alert.insertionSnippet + "\n", name: "Alert Snippet")
+
+        let pdf = try XCTUnwrap(actions.first(where: { $0.name == "getPDFText" }))
+        XCTAssertTrue(pdf.insertionSnippet.contains("Ask"))
+        _ = try await CherriCompiler.compile(source: pdf.insertionSnippet + "\n", name: "PDF Snippet")
+    }
+
+    func testVisualMetadataDecompileRoundTrip() async throws {
+        let source = """
+        #define from sharesheet, search, quickactions
+        #define quickactions finder, services
+
+        show("Metadata")
+        """
+
+        let original = try await CherriCompiler.compile(source: source, name: "Metadata")
+        let decompiled = try await CherriCompiler.decompile(plist: original.plist, name: "Metadata")
+        XCTAssertTrue(decompiled.contains("#define from"))
+        XCTAssertTrue(decompiled.contains("sharesheet"))
+        XCTAssertTrue(decompiled.contains("quickactions"))
+        XCTAssertTrue(decompiled.contains("#define quickactions finder, services"))
+
+        let rebuilt = try await CherriCompiler.compile(source: decompiled, name: "Metadata")
+        let plist = try propertyList(rebuilt.plist)
+        let workflowTypes = Set((plist["WFWorkflowTypes"] as? [String]) ?? [])
+        let quickActions = Set((plist["WFQuickActionSurfaces"] as? [String]) ?? [])
+        XCTAssertTrue(workflowTypes.contains("ActionExtension"))
+        XCTAssertTrue(workflowTypes.contains("WFWorkflowTypeShowInSearch"))
+        XCTAssertTrue(workflowTypes.contains("QuickActions"))
+        XCTAssertEqual(quickActions, Set(["Finder", "Services"]))
+    }
+
+    func testShortcutPlistEditorAppliesPreviewEdits() throws {
+        let shortcut: [String: Any] = [
+            "WFWorkflowTypes": [],
+            "WFQuickActionSurfaces": [],
+            "WFWorkflowActions": [[
+                "WFWorkflowActionIdentifier": "is.workflow.actions.test",
+                "WFWorkflowActionParameters": ["Enabled": false, "Title": "Old"]
+            ]]
+        ]
+        var data = try PropertyListSerialization.data(fromPropertyList: shortcut, format: .xml, options: 0)
+        data = try ShortcutPlistEditor.applying(.workflowType(value: "ActionExtension", enabled: true), to: data)
+        data = try ShortcutPlistEditor.applying(.quickActionSurface(value: "Finder", enabled: true), to: data)
+        data = try ShortcutPlistEditor.applying(
+            .actionParameter(actionIndex: 0, key: "Enabled", value: .bool(true)),
+            to: data
+        )
+        data = try ShortcutPlistEditor.applying(
+            .actionParameter(actionIndex: 0, key: "Title", value: .string("New")),
+            to: data
+        )
+
+        let edited = try propertyList(data)
+        XCTAssertTrue(((edited["WFWorkflowTypes"] as? [String]) ?? []).contains("ActionExtension"))
+        XCTAssertTrue(((edited["WFWorkflowTypes"] as? [String]) ?? []).contains("QuickActions"))
+        XCTAssertEqual(edited["WFQuickActionSurfaces"] as? [String], ["Finder"])
+        let actions = try XCTUnwrap(edited["WFWorkflowActions"] as? [[String: Any]])
+        let parameters = try XCTUnwrap(actions.first?["WFWorkflowActionParameters"] as? [String: Any])
+        XCTAssertEqual(parameters["Enabled"] as? Bool, true)
+        XCTAssertEqual(parameters["Title"] as? String, "New")
     }
 
     func testEveryCatalogActionEmptyCallReturnsWithoutCrashingBridge() async throws {

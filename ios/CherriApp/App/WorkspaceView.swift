@@ -22,6 +22,9 @@ struct WorkspaceView: View {
     @State private var isCompiling = false
     @State private var isSigning = false
     @State private var isImporting = false
+    @State private var isApplyingPreviewEdit = false
+    @State private var previewEditGeneration = 0
+    @State private var sourceBeforePreviewEdits: String?
     @State private var signedURL: URL?
     @State private var showSigningConfirmation = false
     @State private var showShortcutImporter = false
@@ -85,6 +88,14 @@ struct WorkspaceView: View {
                         Label("Import Shortcut Plist", systemImage: "square.and.arrow.down")
                     }
 
+                    if sourceBeforePreviewEdits != nil {
+                        Button {
+                            restoreSourceBeforePreviewEdits()
+                        } label: {
+                            Label("Restore Source Before Visual Edits", systemImage: "arrow.uturn.backward")
+                        }
+                    }
+
                     Divider()
                     Toggle("Live Preview", isOn: $livePreview)
                 } label: {
@@ -114,7 +125,7 @@ struct WorkspaceView: View {
             }
         }
         .task(id: document.text) {
-            guard livePreview, !isImporting else { return }
+            guard livePreview, !isImporting, !isApplyingPreviewEdit else { return }
             try? await Task.sleep(for: .milliseconds(650))
             guard !Task.isCancelled else { return }
             await build(signed: false, liveBuild: true)
@@ -122,7 +133,7 @@ struct WorkspaceView: View {
     }
 
     private var isBusy: Bool {
-        isCompiling || isSigning || isImporting
+        isCompiling || isSigning || isImporting || isApplyingPreviewEdit
     }
 
     private var editorPane: some View {
@@ -136,7 +147,12 @@ struct WorkspaceView: View {
     private var previewPane: some View {
         ShortcutPreviewView(
             plist: compiled?.plist,
-            name: compiled?.name ?? fileDisplayName
+            name: compiled?.name ?? fileDisplayName,
+            onEdit: { edit in
+                Task { @MainActor in
+                    handlePreviewEdit(edit)
+                }
+            }
         )
         .overlay {
             if compiled == nil && diagnostic == nil && !isCompiling {
@@ -153,7 +169,11 @@ struct WorkspaceView: View {
     @ViewBuilder
     private var statusBar: some View {
         HStack(spacing: 8) {
-            if isImporting {
+            if isApplyingPreviewEdit {
+                ProgressView()
+                    .controlSize(.small)
+                Text("Syncing visual edit to Cherri…")
+            } else if isImporting {
                 ProgressView()
                     .controlSize(.small)
                 Text("Decompiling Shortcut…")
@@ -173,7 +193,7 @@ struct WorkspaceView: View {
             } else if compiled != nil {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
-                Text("Compiled · \(actionCatalog.count) actions")
+                Text("Compiled · \(actionCatalog.count) actions · Preview editable")
             } else {
                 Text("Ready")
             }
@@ -251,6 +271,73 @@ struct WorkspaceView: View {
     }
 
     @MainActor
+    private func handlePreviewEdit(_ edit: ShortcutPreviewEdit) {
+        guard let current = compiled else { return }
+
+        do {
+            let editedPlist = try ShortcutPlistEditor.applying(edit, to: current.plist)
+            if sourceBeforePreviewEdits == nil {
+                sourceBeforePreviewEdits = document.text
+            }
+
+            previewEditGeneration += 1
+            let generation = previewEditGeneration
+            let name = current.name
+
+            // Update the visible preview immediately. Decompile and recompile in
+            // the background to canonicalize the corresponding Cherri source.
+            compiled = CompiledShortcut(name: name, plist: editedPlist, signedShortcut: nil)
+            signedURL = nil
+
+            Task { @MainActor in
+                await syncPreviewEditToSource(plist: editedPlist, name: name, generation: generation)
+            }
+        } catch {
+            diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
+        }
+    }
+
+    @MainActor
+    private func syncPreviewEditToSource(plist: Data, name: String, generation: Int) async {
+        isApplyingPreviewEdit = true
+        defer {
+            if generation == previewEditGeneration {
+                isApplyingPreviewEdit = false
+            }
+        }
+
+        do {
+            let source = try await CherriCompiler.decompile(plist: plist, name: name)
+            let rebuilt = try await CherriCompiler.compile(source: source, name: name)
+            guard generation == previewEditGeneration else { return }
+
+            document.text = source
+            compiled = rebuilt
+            diagnostic = nil
+            signedURL = nil
+            await refreshActionCatalog()
+        } catch let compilerError as CompilationDiagnostic {
+            guard generation == previewEditGeneration else { return }
+            diagnostic = compilerError
+        } catch {
+            guard generation == previewEditGeneration else { return }
+            diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
+        }
+    }
+
+    @MainActor
+    private func restoreSourceBeforePreviewEdits() {
+        guard let source = sourceBeforePreviewEdits else { return }
+        previewEditGeneration += 1
+        isApplyingPreviewEdit = false
+        sourceBeforePreviewEdits = nil
+        document.text = source
+        compiled = nil
+        diagnostic = nil
+        signedURL = nil
+    }
+
+    @MainActor
     private func importShortcutPlist(from url: URL) async {
         isImporting = true
         defer { isImporting = false }
@@ -271,6 +358,7 @@ struct WorkspaceView: View {
             compiled = nil
             diagnostic = nil
             signedURL = nil
+            sourceBeforePreviewEdits = nil
             selectedPane = .code
             await refreshActionCatalog()
         } catch let compilerError as CompilationDiagnostic {

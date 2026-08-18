@@ -173,8 +173,7 @@ struct CherriEditorView: View {
         // immediately after a text mutation can hand UITextView a range from the old
         // storage and crash the host process. The existing selection remains valid
         // because insertion only grows the document.
-        let insertion = "\(action.name)()"
-        text = source.replacingCharacters(in: range, with: insertion)
+        text = source.replacingCharacters(in: range, with: action.insertionSnippet)
     }
 
     private func refreshDiagnostic() {

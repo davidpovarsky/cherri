@@ -12,6 +12,16 @@
       touch-action: manipulation;
       cursor: pointer;
     }
+    #shortcut-preview .cherri-editable-value {
+      cursor: text;
+      border-radius: 0.35rem;
+      transition: box-shadow 120ms ease, background-color 120ms ease;
+    }
+    #shortcut-preview .cherri-editable-value:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.35);
+      background: rgba(0, 122, 255, 0.08);
+    }
   </style>
 </head>
 <body>

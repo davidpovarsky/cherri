@@ -32,6 +32,13 @@ struct ActionPaletteView: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(2)
 
+                        if action.insertionSnippet != "\(action.name)()" {
+                            Text("Insert: \(action.insertionSnippet)")
+                                .font(.system(.caption2, design: .monospaced))
+                                .foregroundStyle(.blue)
+                                .lineLimit(2)
+                        }
+
                         if let description = action.description, !description.isEmpty {
                             Text(description)
                                 .font(.caption)

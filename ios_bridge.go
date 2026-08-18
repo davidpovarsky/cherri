@@ -38,6 +38,7 @@ type mobileCompileResponse struct {
 
 type mobileActionParameter struct {
 	Name       string   `json:"name"`
+	Key        string   `json:"key,omitempty"`
 	Type       string   `json:"type"`
 	Optional   bool     `json:"optional,omitempty"`
 	Infinite   bool     `json:"infinite,omitempty"`
@@ -49,17 +50,18 @@ type mobileActionParameter struct {
 }
 
 type mobileActionInfo struct {
-	Name        string                  `json:"name"`
-	Title       string                  `json:"title,omitempty"`
-	Description string                  `json:"description,omitempty"`
-	Category    string                  `json:"category,omitempty"`
-	Subcategory string                  `json:"subcategory,omitempty"`
-	Parameters  []mobileActionParameter `json:"parameters,omitempty"`
-	OutputType  string                  `json:"outputType,omitempty"`
-	MacOnly     bool                    `json:"macOnly,omitempty"`
-	NonMacOnly  bool                    `json:"nonMacOnly,omitempty"`
-	MinVersion  float64                 `json:"minVersion,omitempty"`
-	MaxVersion  float64                 `json:"maxVersion,omitempty"`
+	Name               string                  `json:"name"`
+	ShortcutIdentifier string                  `json:"shortcutIdentifier,omitempty"`
+	Title              string                  `json:"title,omitempty"`
+	Description        string                  `json:"description,omitempty"`
+	Category           string                  `json:"category,omitempty"`
+	Subcategory        string                  `json:"subcategory,omitempty"`
+	Parameters         []mobileActionParameter `json:"parameters,omitempty"`
+	OutputType         string                  `json:"outputType,omitempty"`
+	MacOnly            bool                    `json:"macOnly,omitempty"`
+	NonMacOnly         bool                    `json:"nonMacOnly,omitempty"`
+	MinVersion         float64                 `json:"minVersion,omitempty"`
+	MaxVersion         float64                 `json:"maxVersion,omitempty"`
 }
 
 type mobileActionCatalogResponse struct {
@@ -249,6 +251,7 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 	mapControlFlowOutputs()
 	defineName()
 	decompileIcon()
+	decompileMobileWorkflowMetadata()
 	decompileActions()
 
 	return mobileCompileResponse{
@@ -256,6 +259,50 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 		Name:   name,
 		Source: code.String(),
 	}
+}
+
+// The upstream decompiler currently emits name/icon/action source but not the
+// Shortcut Details workflow/quick-action switches. The iOS visual editor edits
+// those exact plist fields, so preserve them as the existing Cherri definitions
+// documented for the same settings.
+func decompileMobileWorkflowMetadata() {
+	workflowOrder := []string{"menubar", "quickactions", "sharesheet", "notifications", "sleepmode", "watch", "onscreen", "search", "spotlight"}
+	quickActionOrder := []string{"finder", "services"}
+
+	from := mobileDefinitionValues(shortcut.WFWorkflowTypes, workflowTypes, workflowOrder)
+	quick := mobileDefinitionValues(shortcut.WFQuickActionSurfaces, quickActions, quickActionOrder)
+
+	wroteDefinition := false
+	if len(from) != 0 {
+		newCodeLine(fmt.Sprintf("#define from %s\n", strings.Join(from, ", ")))
+		wroteDefinition = true
+	}
+	if len(quick) != 0 {
+		newCodeLine(fmt.Sprintf("#define quickactions %s\n", strings.Join(quick, ", ")))
+		wroteDefinition = true
+	}
+	if wroteDefinition {
+		newCodeLine("\n")
+	}
+}
+
+func mobileDefinitionValues(selected []string, definitions map[string]string, order []string) []string {
+	selectedSet := make(map[string]struct{}, len(selected))
+	for _, value := range selected {
+		selectedSet[value] = struct{}{}
+	}
+
+	values := make([]string, 0, len(selected))
+	for _, cherriValue := range order {
+		shortcutValue, found := definitions[cherriValue]
+		if !found {
+			continue
+		}
+		if _, selected := selectedSet[shortcutValue]; selected {
+			values = append(values, cherriValue)
+		}
+	}
+	return values
 }
 
 func currentMobileActionCatalog() []mobileActionInfo {
@@ -276,6 +323,7 @@ func currentMobileActionCatalog() []mobileActionInfo {
 		for _, parameter := range definition.parameters {
 			item := mobileActionParameter{
 				Name:      parameter.name,
+				Key:       parameter.key,
 				Type:      string(parameter.validType),
 				Optional:  parameter.optional || parameter.defaultValue != nil,
 				Infinite:  parameter.infinite,
@@ -293,20 +341,37 @@ func currentMobileActionCatalog() []mobileActionInfo {
 		}
 
 		catalog = append(catalog, mobileActionInfo{
-			Name:        name,
-			Title:       definition.doc.title,
-			Description: definition.doc.description,
-			Category:    definition.doc.category,
-			Subcategory: definition.doc.subcategory,
-			Parameters:  parameters,
-			OutputType:  string(definition.outputType),
-			MacOnly:     definition.macOnly,
-			NonMacOnly:  definition.nonMacOnly,
-			MinVersion:  definition.minVersion,
-			MaxVersion:  definition.maxVersion,
+			Name:               name,
+			ShortcutIdentifier: mobileShortcutIdentifier(name, definition),
+			Title:              definition.doc.title,
+			Description:        definition.doc.description,
+			Category:           definition.doc.category,
+			Subcategory:        definition.doc.subcategory,
+			Parameters:         parameters,
+			OutputType:         string(definition.outputType),
+			MacOnly:            definition.macOnly,
+			NonMacOnly:         definition.nonMacOnly,
+			MinVersion:         definition.minVersion,
+			MaxVersion:         definition.maxVersion,
 		})
 	}
 	return catalog
+}
+
+func mobileShortcutIdentifier(name string, definition *actionDefinition) string {
+	if definition.overrideIdentifier != "" {
+		return definition.overrideIdentifier
+	}
+
+	base := "is.workflow.actions"
+	if definition.appIdentifier != "" {
+		base = definition.appIdentifier
+	}
+	identifier := definition.identifier
+	if identifier == "" {
+		identifier = strings.ToLower(name)
+	}
+	return fmt.Sprintf("%s.%s", base, identifier)
 }
 
 func ensureMobileBaseLanguageState() {
@@ -320,7 +385,7 @@ func ensureMobileBaseLanguageState() {
 
 // Cherri's CLI normally exits after one compilation. The iOS host compiles on
 // every edit, so definitions introduced by one document must not leak into the
-// next compilation and make includes/custom actions appear duplicated.
+// next compilation and make includes/custom actions or Shortcut metadata persist.
 func resetMobileLanguageState() {
 	ensureMobileBaseLanguageState()
 	actions = maps.Clone(mobileBaseActions)
@@ -332,6 +397,16 @@ func resetMobileLanguageState() {
 	functions = nil
 	usingFunctions = false
 	hasShortcutInputVariables = false
+	inputs = []string{}
+	outputs = []string{}
+	definedWorkflowTypes = []string{}
+	definedQuickActions = []string{}
+	noInput = nil
+	iconColor = 3031607807
+	iconGlyph = 61440
+	iosVersion = 26.4
+	clientVersion = versions["26.4"]
+	shortcut = Shortcut{}
 }
 
 func normalizedMobileName(requestedName string) string {

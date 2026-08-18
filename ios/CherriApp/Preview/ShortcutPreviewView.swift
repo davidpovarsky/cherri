@@ -5,13 +5,17 @@ import WebKit
 struct ShortcutPreviewView: UIViewRepresentable {
     let plist: Data?
     let name: String
+    let onEdit: (ShortcutPreviewEdit) -> Void
 
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
     }
 
     func makeUIView(context: Context) -> WKWebView {
-        let webView = WKWebView(frame: .zero)
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController.add(context.coordinator, name: Coordinator.editMessageName)
+
+        let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         webView.isOpaque = false
         webView.backgroundColor = .clear
@@ -38,7 +42,13 @@ struct ShortcutPreviewView: UIViewRepresentable {
         context.coordinator.renderIfReady(in: webView)
     }
 
-    final class Coordinator: NSObject, WKNavigationDelegate {
+    static func dismantleUIView(_ uiView: WKWebView, coordinator: Coordinator) {
+        uiView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.editMessageName)
+    }
+
+    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
+        static let editMessageName = "cherriPreviewEdit"
+
         var parent: ShortcutPreviewView
         private var isReady = false
         private var lastPayloadKey: String?
@@ -72,6 +82,51 @@ struct ShortcutPreviewView: UIViewRepresentable {
             isReady = false
             lastPayloadKey = nil
             webView.reload()
+        }
+
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            guard message.name == Self.editMessageName,
+                  let payload = message.body as? [String: Any],
+                  let kind = payload["kind"] as? String else {
+                return
+            }
+
+            switch kind {
+            case "workflowType":
+                guard let value = payload["value"] as? String,
+                      let enabled = Self.boolValue(payload["enabled"]) else { return }
+                parent.onEdit(.workflowType(value: value, enabled: enabled))
+
+            case "quickActionSurface":
+                guard let value = payload["value"] as? String,
+                      let enabled = Self.boolValue(payload["enabled"]) else { return }
+                parent.onEdit(.quickActionSurface(value: value, enabled: enabled))
+
+            case "actionParameter":
+                guard let index = (payload["actionIndex"] as? NSNumber)?.intValue,
+                      let key = payload["key"] as? String,
+                      let valueType = payload["valueType"] as? String else { return }
+
+                let value: ShortcutPreviewValue?
+                switch valueType {
+                case "string":
+                    value = (payload["value"] as? String).map(ShortcutPreviewValue.string)
+                case "integer":
+                    value = (payload["value"] as? NSNumber).map { .integer($0.intValue) }
+                case "real":
+                    value = (payload["value"] as? NSNumber).map { .real($0.doubleValue) }
+                case "bool":
+                    value = Self.boolValue(payload["value"]).map(ShortcutPreviewValue.bool)
+                default:
+                    value = nil
+                }
+
+                guard let value else { return }
+                parent.onEdit(.actionParameter(actionIndex: index, key: key, value: value))
+
+            default:
+                break
+            }
         }
 
         func renderIfReady(in webView: WKWebView) {
@@ -128,6 +183,13 @@ struct ShortcutPreviewView: UIViewRepresentable {
             </html>
             """
             webView.loadHTMLString(html, baseURL: nil)
+        }
+
+        private static func boolValue(_ value: Any?) -> Bool? {
+            if let bool = value as? Bool {
+                return bool
+            }
+            return (value as? NSNumber)?.boolValue
         }
 
         private static func javaScriptString(_ value: String) -> String {

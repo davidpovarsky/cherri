@@ -20,6 +20,7 @@ struct CompiledShortcut: Sendable {
 
 struct CherriActionParameter: Decodable, Hashable, Sendable {
     let name: String
+    let key: String?
     let type: String
     let optional: Bool?
     let infinite: Bool?
@@ -45,12 +46,17 @@ struct CherriActionParameter: Decodable, Hashable, Sendable {
         }
         return result
     }
+
+    var isRequired: Bool {
+        optional != true
+    }
 }
 
 struct CherriActionInfo: Decodable, Identifiable, Hashable, Sendable {
     var id: String { name }
 
     let name: String
+    let shortcutIdentifier: String?
     let title: String?
     let description: String?
     let category: String?
@@ -69,6 +75,23 @@ struct CherriActionInfo: Decodable, Identifiable, Hashable, Sendable {
             value += ": \(outputType)"
         }
         return value
+    }
+
+    // Cherri's Ask global is a valid “Ask Each Time” value for any action
+    // parameter. Supplying it for required arguments gives the palette a safe,
+    // runnable insertion without inventing fake type-specific values. Optional
+    // positional parameters before a later required argument are represented by
+    // nil so the later required slot keeps its correct position.
+    var insertionSnippet: String {
+        let parameters = parameters ?? []
+        guard let lastRequired = parameters.lastIndex(where: { $0.isRequired }) else {
+            return "\(name)()"
+        }
+
+        let arguments = parameters[...lastRequired].map { parameter in
+            parameter.isRequired ? "Ask" : "nil"
+        }
+        return "\(name)(\(arguments.joined(separator: ", ")))"
     }
 }
 
