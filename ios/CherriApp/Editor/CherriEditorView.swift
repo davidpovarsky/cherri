@@ -12,6 +12,8 @@ struct CherriEditorView: View {
     @State private var editPosition = CodeEditor.Position()
     @State private var messages: Set<TextLocated<Message>> = []
     @State private var showActionPalette = false
+    @State private var pendingPaletteAction: CherriActionInfo?
+    @State private var paletteInsertionRange: NSRange?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -33,9 +35,9 @@ struct CherriEditorView: View {
         .task(id: diagnostic?.id) {
             refreshDiagnostic()
         }
-        .sheet(isPresented: $showActionPalette) {
+        .sheet(isPresented: $showActionPalette, onDismiss: commitPaletteSelection) {
             ActionPaletteView(actions: actions) { action in
-                insert(action: action, replacing: nil)
+                pendingPaletteAction = action
             }
         }
     }
@@ -43,6 +45,8 @@ struct CherriEditorView: View {
     private var completionBar: some View {
         HStack(spacing: 8) {
             Button {
+                paletteInsertionRange = editPosition.selections.first
+                pendingPaletteAction = nil
                 showActionPalette = true
             } label: {
                 Label("Actions", systemImage: "wand.and.stars")
@@ -133,6 +137,18 @@ struct CherriEditorView: View {
             || value == 95
     }
 
+    private func commitPaletteSelection() {
+        guard let action = pendingPaletteAction else {
+            paletteInsertionRange = nil
+            return
+        }
+
+        let insertionRange = paletteInsertionRange
+        pendingPaletteAction = nil
+        paletteInsertionRange = nil
+        insert(action: action, replacing: insertionRange)
+    }
+
     private func insert(action: CherriActionInfo, replacing requestedRange: NSRange?) {
         let source = text as NSString
         let selection = editPosition.selections.first ?? NSRange(location: source.length, length: 0)
@@ -146,15 +162,26 @@ struct CherriEditorView: View {
         }
 
         let insertion = "\(action.name)()"
-        text = source.replacingCharacters(in: range, with: insertion)
+        let updatedText = source.replacingCharacters(in: range, with: insertion)
+        let updatedLength = (updatedText as NSString).length
 
         let nameLength = (action.name as NSString).length
         let hasParameters = !(action.parameters ?? []).isEmpty
-        let cursor = range.location + nameLength + (hasParameters ? 1 : 2)
-        editPosition = CodeEditor.Position(
-            selections: [NSRange(location: cursor, length: 0)],
-            verticalScrollPosition: editPosition.verticalScrollPosition
-        )
+        let desiredCursor = range.location + nameLength + (hasParameters ? 1 : 2)
+        let cursor = min(max(desiredCursor, 0), updatedLength)
+        let scrollPosition = editPosition.verticalScrollPosition
+
+        text = updatedText
+
+        // CodeEditorView applies text and selection in the same SwiftUI update. On iOS,
+        // defer the selection by one main-runloop turn so UITextView has the new text
+        // before receiving the new selectedRange.
+        DispatchQueue.main.async {
+            editPosition = CodeEditor.Position(
+                selections: [NSRange(location: cursor, length: 0)],
+                verticalScrollPosition: scrollPosition
+            )
+        }
     }
 
     private func refreshDiagnostic() {

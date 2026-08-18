@@ -27,72 +27,68 @@ struct WorkspaceView: View {
     @State private var showShortcutImporter = false
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                if horizontalSizeClass == .regular {
-                    HStack(spacing: 0) {
-                        editorPane
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        Divider()
-                        previewPane
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        VStack(spacing: 0) {
+            if horizontalSizeClass == .regular {
+                HStack(spacing: 0) {
+                    editorPane
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Divider()
+                    previewPane
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            } else {
+                Picker("Workspace", selection: $selectedPane) {
+                    ForEach(WorkspacePane.allCases) { pane in
+                        Text(pane.rawValue).tag(pane)
                     }
-                } else {
-                    Picker("Workspace", selection: $selectedPane) {
-                        ForEach(WorkspacePane.allCases) { pane in
-                            Text(pane.rawValue).tag(pane)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.vertical, 8)
 
-                    switch selectedPane {
-                    case .code:
-                        editorPane
-                    case .preview:
-                        previewPane
+                switch selectedPane {
+                case .code:
+                    editorPane
+                case .preview:
+                    previewPane
+                }
+            }
+
+            statusBar
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    Task { await build(signed: false) }
+                } label: {
+                    Label("Build", systemImage: "hammer.fill")
+                }
+                .disabled(isBusy)
+
+                Button {
+                    showSigningConfirmation = true
+                } label: {
+                    Label("Sign", systemImage: "checkmark.seal.fill")
+                }
+                .disabled(isBusy)
+
+                if let signedURL {
+                    ShareLink(item: signedURL) {
+                        Label("Share", systemImage: "square.and.arrow.up")
                     }
                 }
 
-                statusBar
-            }
-            .navigationTitle(fileDisplayName)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
+                Menu {
                     Button {
-                        Task { await build(signed: false) }
+                        showShortcutImporter = true
                     } label: {
-                        Label("Build", systemImage: "hammer.fill")
-                    }
-                    .disabled(isBusy)
-
-                    Button {
-                        showSigningConfirmation = true
-                    } label: {
-                        Label("Sign", systemImage: "checkmark.seal.fill")
-                    }
-                    .disabled(isBusy)
-
-                    if let signedURL {
-                        ShareLink(item: signedURL) {
-                            Label("Share", systemImage: "square.and.arrow.up")
-                        }
+                        Label("Import Shortcut Plist", systemImage: "square.and.arrow.down")
                     }
 
-                    Menu {
-                        Button {
-                            showShortcutImporter = true
-                        } label: {
-                            Label("Import Shortcut Plist", systemImage: "square.and.arrow.down")
-                        }
-
-                        Divider()
-                        Toggle("Live Preview", isOn: $livePreview)
-                    } label: {
-                        Label("Options", systemImage: "ellipsis.circle")
-                    }
+                    Divider()
+                    Toggle("Live Preview", isOn: $livePreview)
+                } label: {
+                    Label("Options", systemImage: "ellipsis.circle")
                 }
             }
         }

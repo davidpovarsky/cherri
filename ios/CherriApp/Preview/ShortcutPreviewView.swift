@@ -22,10 +22,7 @@ struct ShortcutPreviewView: UIViewRepresentable {
             withExtension: "html",
             subdirectory: "PreviewShortcut"
         ) else {
-            webView.loadHTMLString(
-                "<html><body><p>Preview resources are missing. Run the iOS bootstrap build.</p></body></html>",
-                baseURL: nil
-            )
+            context.coordinator.showError("Preview resources are missing from the app bundle.", in: webView)
             return webView
         }
 
@@ -55,6 +52,28 @@ struct ShortcutPreviewView: UIViewRepresentable {
             renderIfReady(in: webView)
         }
 
+        func webView(
+            _ webView: WKWebView,
+            didFail navigation: WKNavigation!,
+            withError error: Error
+        ) {
+            showError("Preview navigation failed: \(error.localizedDescription)", in: webView)
+        }
+
+        func webView(
+            _ webView: WKWebView,
+            didFailProvisionalNavigation navigation: WKNavigation!,
+            withError error: Error
+        ) {
+            showError("Preview failed to load: \(error.localizedDescription)", in: webView)
+        }
+
+        func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+            isReady = false
+            lastPayloadKey = nil
+            webView.reload()
+        }
+
         func renderIfReady(in webView: WKWebView) {
             guard isReady else { return }
 
@@ -68,12 +87,47 @@ struct ShortcutPreviewView: UIViewRepresentable {
             let base64 = plist.base64EncodedString()
             let payloadKey = "\(parent.name):\(base64.hashValue)"
             guard payloadKey != lastPayloadKey else { return }
-            lastPayloadKey = payloadKey
 
             let encodedBase64 = Self.javaScriptString(base64)
             let encodedName = Self.javaScriptString(parent.name)
-            let script = "window.renderShortcutFromBase64?.(\(encodedBase64), \(encodedName))"
-            webView.evaluateJavaScript(script)
+            let script = """
+            (() => {
+                if (typeof window.renderShortcutFromBase64 !== 'function') {
+                    throw new Error('preview-shortcut bundle did not initialize');
+                }
+                return window.renderShortcutFromBase64(\(encodedBase64), \(encodedName));
+            })()
+            """
+
+            webView.evaluateJavaScript(script) { [weak self, weak webView] _, error in
+                guard let self, let webView else { return }
+                if let error {
+                    self.showError("Shortcut preview failed: \(error.localizedDescription)", in: webView)
+                    return
+                }
+                self.lastPayloadKey = payloadKey
+            }
+        }
+
+        func showError(_ message: String, in webView: WKWebView) {
+            isReady = true
+            lastPayloadKey = nil
+
+            let escapedMessage = Self.htmlEscaped(message)
+            let html = """
+            <!doctype html>
+            <html>
+            <head>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body { font: -apple-system-body; margin: 0; padding: 20px; color: #8b1a1a; background: transparent; }
+                .error { border: 1px solid rgba(139, 26, 26, .25); border-radius: 12px; padding: 14px; background: rgba(255, 0, 0, .04); }
+              </style>
+            </head>
+            <body><div class="error">\(escapedMessage)</div></body>
+            </html>
+            """
+            webView.loadHTMLString(html, baseURL: nil)
         }
 
         private static func javaScriptString(_ value: String) -> String {
@@ -82,6 +136,15 @@ struct ShortcutPreviewView: UIViewRepresentable {
                 return "\"\""
             }
             return string
+        }
+
+        private static func htmlEscaped(_ value: String) -> String {
+            value
+                .replacingOccurrences(of: "&", with: "&amp;")
+                .replacingOccurrences(of: "<", with: "&lt;")
+                .replacingOccurrences(of: ">", with: "&gt;")
+                .replacingOccurrences(of: "\"", with: "&quot;")
+                .replacingOccurrences(of: "'", with: "&#39;")
         }
     }
 }
