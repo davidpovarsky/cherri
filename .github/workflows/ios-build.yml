@@ -60,6 +60,7 @@ jobs:
       - name: Build iOS Simulator app
         working-directory: ios
         run: |
+          set +e
           xcodebuild \
             -project Cherri.xcodeproj \
             -scheme Cherri \
@@ -67,4 +68,18 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
-            build
+            build > xcodebuild.log 2>&1
+          status=$?
+          set -e
+
+          if [ "$status" -ne 0 ]; then
+            echo "::group::Relevant Xcode errors"
+            grep -nE 'error:|fatal error:|Undefined symbols|duplicate symbol|ld: |clang: error:|SwiftCompile|BUILD FAILED' xcodebuild.log | tail -n 250 || true
+            echo "::endgroup::"
+            echo "::group::Xcode log tail"
+            tail -n 100 xcodebuild.log
+            echo "::endgroup::"
+            exit "$status"
+          fi
+
+          tail -n 60 xcodebuild.log
