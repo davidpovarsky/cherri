@@ -18,6 +18,7 @@ struct WorkspaceView: View {
     @State private var selectedPane: WorkspacePane = .code
     @State private var compiled: CompiledShortcut?
     @State private var diagnostic: CompilationDiagnostic?
+    @State private var actionCatalog: [CherriActionInfo] = []
     @State private var isCompiling = false
     @State private var isSigning = false
     @State private var isImporting = false
@@ -129,7 +130,11 @@ struct WorkspaceView: View {
     }
 
     private var editorPane: some View {
-        CherriEditorView(text: $document.text, diagnostic: diagnostic)
+        CherriEditorView(
+            text: $document.text,
+            diagnostic: diagnostic,
+            actions: actionCatalog
+        )
     }
 
     private var previewPane: some View {
@@ -172,7 +177,7 @@ struct WorkspaceView: View {
             } else if compiled != nil {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
-                Text("Compiled")
+                Text("Compiled · \(actionCatalog.count) actions")
             } else {
                 Text("Ready")
             }
@@ -221,6 +226,7 @@ struct WorkspaceView: View {
 
             compiled = result
             diagnostic = nil
+            await refreshActionCatalog()
 
             if let signedData = result.signedShortcut {
                 signedURL = try writeSignedShortcut(signedData, name: result.name)
@@ -238,6 +244,13 @@ struct WorkspaceView: View {
                 column: 1
             )
             signedURL = nil
+        }
+    }
+
+    @MainActor
+    private func refreshActionCatalog() async {
+        if let actions = try? await CherriCompiler.actionCatalog() {
+            actionCatalog = actions
         }
     }
 
@@ -263,6 +276,7 @@ struct WorkspaceView: View {
             diagnostic = nil
             signedURL = nil
             selectedPane = .code
+            await refreshActionCatalog()
         } catch let compilerError as CompilationDiagnostic {
             diagnostic = compilerError
         } catch {
