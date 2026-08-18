@@ -20,6 +20,7 @@ struct WorkspaceView: View {
     @State private var isCompiling = false
     @State private var isSigning = false
     @State private var signedURL: URL?
+    @State private var showSigningConfirmation = false
 
     var body: some View {
         NavigationStack {
@@ -64,7 +65,7 @@ struct WorkspaceView: View {
                     .disabled(isCompiling || isSigning)
 
                     Button {
-                        Task { await build(signed: true) }
+                        showSigningConfirmation = true
                     } label: {
                         Label("Sign", systemImage: "checkmark.seal.fill")
                     }
@@ -83,6 +84,14 @@ struct WorkspaceView: View {
                     }
                 }
             }
+        }
+        .alert("Sign Shortcut with HubSign?", isPresented: $showSigningConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Send and Sign") {
+                Task { await build(signed: true) }
+            }
+        } message: {
+            Text("Signing sends the generated Shortcut plist to Cherri's existing HubSign service. Editing, Build, and live Preview stay on this device.")
         }
         .task(id: document.text) {
             guard livePreview else { return }
@@ -118,7 +127,7 @@ struct WorkspaceView: View {
         HStack(spacing: 8) {
             if isSigning {
                 ProgressView()
-                .controlSize(.small)
+                    .controlSize(.small)
                 Text("Signing Shortcut…")
             } else if isCompiling {
                 ProgressView()
