@@ -18,6 +18,11 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - path: CherriApp
+        excludes:
+          - Resources/PreviewShortcut
+      - path: CherriApp/Resources/PreviewShortcut
+        type: folder
+        buildPhase: resources
     info:
       path: CherriApp/Info.plist
       properties:
