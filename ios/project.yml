@@ -1,0 +1,67 @@
+name: Cherri
+
+options:
+  bundleIdPrefix: org.cherrilang
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+packages:
+  CodeEditorView:
+    url: https://github.com/mchakravarty/CodeEditorView.git
+    revision: 5386056ab53d43363083cb96069715a9608aa048
+
+targets:
+  Cherri:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: CherriApp
+    info:
+      path: CherriApp/Info.plist
+      properties:
+        CFBundleDisplayName: Cherri
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        UILaunchScreen: {}
+        UISupportsDocumentBrowser: true
+        LSSupportsOpeningDocumentsInPlace: true
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Cherri Source
+            CFBundleTypeRole: Editor
+            LSHandlerRank: Owner
+            LSItemContentTypes:
+              - org.cherrilang.cherri.file
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: org.cherrilang.cherri.file
+            UTTypeDescription: Cherri Source
+            UTTypeConformsTo:
+              - public.plain-text
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - cherri
+              public.mime-type: text/x-cherri
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.cherrilang.Cherri
+        PRODUCT_NAME: Cherri
+        SWIFT_VERSION: "6.0"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+    dependencies:
+      - package: CodeEditorView
+        product: CodeEditorView
+      - package: CodeEditorView
+        product: LanguageSupport
+      - framework: Vendor/CherriCore.xcframework
+
+schemes:
+  Cherri:
+    build:
+      targets:
+        Cherri: all
+    run:
+      config: Debug
+    archive:
+      config: Release
