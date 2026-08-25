@@ -141,6 +141,7 @@ type catalogEntry struct {
 	Title              string             `json:"title"`
 	Category           string             `json:"category"`
 	Parameters         []catalogParameter `json:"parameters"`
+	EmittedKeys        []string           `json:"emittedKeys"`
 	Builtin            bool               `json:"builtin"`
 }
 
@@ -202,6 +203,11 @@ func parseCatalog(data []byte, source string) (*actionCatalog, error) {
 			if key == "" {
 				key = parameter.Name
 			}
+			if key != "" {
+				keys[key] = true
+			}
+		}
+		for _, key := range entry.EmittedKeys {
 			if key != "" {
 				keys[key] = true
 			}
@@ -283,8 +289,17 @@ var complexSerializationTypes = map[string]bool{
 	"WFAppIntentDescriptor":           true,
 }
 
+// complexParameterKeys are parameter keys that always demand manual
+// construction regardless of their serialized shape.
+var complexParameterKeys = map[string]bool{
+	"AppIntentDescriptor": true,
+}
+
 func requiresCustomImplementation(record *ActionRecord) bool {
-	for _, value := range record.Parameters {
+	for key, value := range record.Parameters {
+		if complexParameterKeys[key] {
+			return true
+		}
 		if serializationNeedsCustom(value) {
 			return true
 		}
@@ -300,6 +315,12 @@ func serializationNeedsCustom(value *NormalizedValue) bool {
 		return true
 	}
 	if value.Serialization == "WFAppIntentDescriptor" {
+		return true
+	}
+	// App Intent descriptors also appear as plain nested dictionaries without
+	// a WFSerializationType marker (observed in App Intent-backed filter
+	// actions), so the field name itself is treated as structural evidence.
+	if _, found := value.Fields["AppIntentDescriptor"]; found {
 		return true
 	}
 	for _, child := range value.Items {

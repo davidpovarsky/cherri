@@ -11,6 +11,7 @@ real Shortcut evidence / corpus
         -> cherri --actions-json   (machine-readable catalog, shared source of truth)
         -> tools/shortcut-corpus   (ingest, sanitize, dedupe, classify, report)
         -> reports -> review -> action definitions in actions/*.cherri
+        -> fork-specific changes recorded in docs/fork-action-provenance.json
         -> compiler / decompiler / docs / Skill / iOS palette / preview metadata
 ```
 

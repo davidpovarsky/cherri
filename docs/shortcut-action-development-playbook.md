@@ -411,6 +411,53 @@ Prefer the smallest fixture that proves the action/variant.
 
 Do not commit an entire real user Shortcut merely because it reproduces the action.
 
+## Fork action provenance (required)
+
+Every fork-specific action change must be recorded in:
+
+```text
+docs/fork-action-provenance.json
+```
+
+This registry is required maintenance, not optional documentation. Whenever a task:
+
+- adds a Cherri action,
+- expands an existing action with new parameters or behavior,
+- changes serialization emitted for an action,
+- changes compiler or decompiler handling of an action, or
+- changes fork-specific action metadata,
+
+the corresponding provenance entry MUST be created or updated in the same task. A commit must never introduce fork-specific action behavior whose provenance is missing.
+
+### What belongs in the registry
+
+- `added-by-fork`: actions that do not exist in upstream Cherri.
+- `modified-by-fork`: upstream actions whose parameters, serialization, or compile/decompile handling this fork extends or corrects.
+
+Record the change, reason, evidence source (corpus batch / observed counts), affected files, and the first fork commit once known. Do not duplicate full parameter schemas or implementation code — point at the implementation; Cherri definitions remain the only semantics source.
+
+### What does NOT belong
+
+- Entries for untouched inherited actions: **no entry means "inherited from upstream"**. Keep the registry small.
+- Analyzer/tooling or metadata-only work goes under `infrastructure`, never as fake action additions.
+
+### Upstream baseline and recovery
+
+The registry records the upstream baseline SHA (merge-base with `upstream/main` at seeding time). To inspect or restore original upstream behavior:
+
+```sh
+git fetch upstream
+git show 951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2:<path>   # original implementation
+git diff 951c0bb -- <path>                                  # exact fork delta
+git log --follow -- <path>                                  # file history
+```
+
+Do not keep backup copies of upstream files; git history is the recovery mechanism.
+
+### When upstream catches up
+
+If a later upstream version provides functionality we previously added, update the entry's `supersededByUpstream` field and append to its `history` instead of deleting it, then deliberately decide whether to inherit upstream, keep ours, or reconcile.
+
 ## Documentation after an action change
 
 Do not manually maintain duplicate action signatures in Markdown.

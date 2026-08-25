@@ -94,6 +94,10 @@ Before a substantial change to a forked component:
 
 Do not force-push upstream state over local work.
 
+### Fork action provenance
+
+Any fork-specific action addition or material action change (parameters, serialization, compiler/decompiler handling, fork-specific metadata) must be recorded in `docs/fork-action-provenance.json` in the same task. No entry means the action is inherited from upstream untouched. See `docs/shortcut-action-development-playbook.md` for the full policy and recovery procedure.
+
 ## Branch and Commit Discipline
 
 Work on the branch explicitly requested by the user/task. Do not merge to `main` unless explicitly asked.

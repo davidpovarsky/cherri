@@ -271,6 +271,7 @@ var actions = map[string]*actionDefinition{
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompContactValue(action, "WFEmailAddress", emailAddress)
 		},
+		emittedKeys: []string{"WFEmailAddress"},
 	},
 	"phoneNumber": {
 		doc: selfDoc{
@@ -305,6 +306,7 @@ var actions = map[string]*actionDefinition{
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompContactValue(action, "WFPhoneNumber", phoneNumber)
 		},
+		emittedKeys: []string{"WFPhoneNumber"},
 	},
 	"newContact": {
 		doc: selfDoc{
@@ -370,6 +372,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFContactPhoneNumbers", "WFContactEmails"},
 	},
 	"labelFile": {
 		doc: selfDoc{
@@ -403,6 +406,7 @@ var actions = map[string]*actionDefinition{
 				"WFLabelColorNumber": fileLabelsMap[color],
 			}
 		},
+		emittedKeys: []string{"WFLabelColorNumber"},
 	},
 	"filterFiles": {
 		doc: selfDoc{
@@ -452,6 +456,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFContentItemLimitEnabled"},
 	},
 	"getPDFText": {
 		doc: selfDoc{
@@ -510,6 +515,7 @@ var actions = map[string]*actionDefinition{
 				"WFGetTextFromPDFTextType": "Text",
 			}
 		},
+		emittedKeys: []string{"WFGetTextFromPDFTextType"},
 	},
 	"containsText": {
 		doc: selfDoc{
@@ -603,6 +609,7 @@ var actions = map[string]*actionDefinition{
 				},
 			}
 		},
+		emittedKeys: []string{"WFFile"},
 	},
 	"splitText": {
 		doc: selfDoc{
@@ -627,6 +634,7 @@ var actions = map[string]*actionDefinition{
 		appendParamsFunc: textParts,
 		decomp:           decompTextParts,
 		outputType:       Arr,
+		emittedKeys:      []string{"Show-text", "WFTextSeparator", "WFTextCustomSeparator"},
 	},
 	"joinText": {
 		doc: selfDoc{
@@ -651,6 +659,7 @@ var actions = map[string]*actionDefinition{
 		appendParamsFunc: textParts,
 		decomp:           decompTextParts,
 		outputType:       String,
+		emittedKeys:      []string{"Show-text", "WFTextSeparator", "WFTextCustomSeparator"},
 	},
 	"url": {
 		doc: selfDoc{
@@ -677,7 +686,8 @@ var actions = map[string]*actionDefinition{
 				"WFURLActionURL":      urlItems,
 			}
 		},
-		decomp: decompInfiniteURLAction,
+		decomp:      decompInfiniteURLAction,
+		emittedKeys: []string{"Show-WFURLActionURL", "WFURLActionURL"},
 	},
 	"addToReadingList": {
 		doc: selfDoc{
@@ -705,7 +715,8 @@ var actions = map[string]*actionDefinition{
 				"WFURL":               urlItems,
 			}
 		},
-		decomp: decompInfiniteURLAction,
+		decomp:      decompInfiniteURLAction,
+		emittedKeys: []string{"Show-WFURLActionURL", "WFURL"},
 	},
 	"prompt": {
 		doc: selfDoc{
@@ -755,6 +766,7 @@ var actions = map[string]*actionDefinition{
 
 			return defaultAnswer
 		},
+		emittedKeys: []string{"WFAskActionDefaultAnswer", "WFAskActionDefaultAnswerNumber"},
 	},
 	"openApp": {
 		doc: selfDoc{
@@ -769,6 +781,12 @@ var actions = map[string]*actionDefinition{
 				name:      "appID",
 				validType: String,
 				key:       "WFAppIdentifier",
+			},
+			{
+				name:      "slideOver",
+				validType: Bool,
+				key:       "WFOpenInSlideOver",
+				optional:  true,
 			},
 		},
 		check: func(args []actionArgument, definition *actionDefinition) {
@@ -788,8 +806,20 @@ var actions = map[string]*actionDefinition{
 			}
 		},
 		decomp: func(action *ShortcutAction) (arguments []string) {
-			return decompAppAction("WFAppIdentifier", action)
+			var appArguments = decompAppAction("WFAppIdentifier", action)
+			switch slideOver := action.WFWorkflowActionParameters["WFOpenInSlideOver"].(type) {
+			case bool:
+				if slideOver {
+					appArguments = append(appArguments, "true")
+				}
+			case uint64:
+				if slideOver == 1 {
+					appArguments = append(appArguments, "true")
+				}
+			}
+			return appArguments
 		},
+		emittedKeys: []string{"WFSelectedApp"},
 	},
 	"hideApp": {
 		doc: selfDoc{
@@ -825,6 +855,7 @@ var actions = map[string]*actionDefinition{
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFApp", action)
 		},
+		emittedKeys: []string{"WFApp"},
 	},
 	"hideAllApps": {
 		doc: selfDoc{
@@ -847,6 +878,7 @@ var actions = map[string]*actionDefinition{
 		appendParams: map[string]any{
 			"WFHideAppMode": "All Apps",
 		},
+		emittedKeys: []string{"WFAppsExcept"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFAppsExcept", action)
 		},
@@ -882,6 +914,7 @@ var actions = map[string]*actionDefinition{
 				},
 			}
 		},
+		emittedKeys: []string{"WFApp"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFApp", action)
 		},
@@ -907,6 +940,7 @@ var actions = map[string]*actionDefinition{
 		appendParams: map[string]any{
 			"WFQuitAppMode": "All Apps",
 		},
+		emittedKeys: []string{"WFAppsExcept"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFAppsExcept", action)
 		},
@@ -945,6 +979,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFApp", "WFAskToSaveChanges"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFApp", action)
 		},
@@ -971,7 +1006,8 @@ var actions = map[string]*actionDefinition{
 			"WFQuitAppMode":      "All Apps",
 			"WFAskToSaveChanges": false,
 		},
-		makeParams: makeAllAppsAction,
+		makeParams:  makeAllAppsAction,
+		emittedKeys: []string{"WFAppsExcept"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFAppsExcept", action)
 		},
@@ -1058,6 +1094,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFPrimaryAppIdentifier", "WFSecondaryAppIdentifier"},
 	},
 	"openShortcut": {
 		doc: selfDoc{
@@ -1088,6 +1125,7 @@ var actions = map[string]*actionDefinition{
 			}
 			return
 		},
+		emittedKeys: []string{"target"},
 	},
 	"runSelf": {
 		doc: selfDoc{
@@ -1124,6 +1162,7 @@ var actions = map[string]*actionDefinition{
 			}
 			return
 		},
+		emittedKeys: []string{"isSelf", "WFWorkflow"},
 	},
 	"list": {
 		doc: selfDoc{
@@ -1163,6 +1202,7 @@ var actions = map[string]*actionDefinition{
 			}
 			return
 		},
+		emittedKeys: []string{"WFItems"},
 	},
 	"openCustomXCallbackURL": {
 		doc: selfDoc{
@@ -1219,6 +1259,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFXCallbackCustomCallbackEnabled", "WFXCallbackCustomSuccessURLEnabled"},
 	},
 	"createShortcutLink": {
 		doc: selfDoc{
@@ -1277,6 +1318,7 @@ var actions = map[string]*actionDefinition{
 			}
 			return
 		},
+		emittedKeys: []string{"WFContentItemLimitEnabled"},
 		check: func(args []actionArgument, _ *actionDefinition) {
 			if args[1].value != nil {
 				var alphabetic = []string{"Title", "App Name", "Name", "Random"}
@@ -1369,6 +1411,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"isSelf", "WFMeasurementUnit"},
 	},
 	"measurement": {
 		doc: selfDoc{
@@ -1420,6 +1463,7 @@ var actions = map[string]*actionDefinition{
 				},
 			}
 		},
+		emittedKeys: []string{"WFMeasurementUnit"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			if action.WFWorkflowActionParameters["WFMeasurementUnit"] != nil {
 				var measurementUnit WFMeasurementUnit
@@ -1491,6 +1535,7 @@ var actions = map[string]*actionDefinition{
 				"WFTextActionText": argumentValue(args, 0),
 			}
 		},
+		emittedKeys: []string{"WFTextActionText"},
 	},
 	"embedFile": {
 		doc: selfDoc{
@@ -1524,6 +1569,7 @@ var actions = map[string]*actionDefinition{
 				"WFTextActionText": encodedFile,
 			}
 		},
+		emittedKeys: []string{"WFTextActionText"},
 	},
 	"updateContact": {
 		doc: selfDoc{
@@ -1580,7 +1626,8 @@ var actions = map[string]*actionDefinition{
 		appendParamsFunc: func(args []actionArgument) map[string]any {
 			return appendSetMultitaskingModeParam("Windowed Apps", "windowedApps", "macwindow.on.rectangle")
 		},
-		minVersion: 26,
+		emittedKeys: []string{"mode"},
+		minVersion:  26,
 	},
 	"setStageManagerMultitasking": {
 		doc: selfDoc{
@@ -1609,7 +1656,8 @@ var actions = map[string]*actionDefinition{
 		appendParamsFunc: func(args []actionArgument) map[string]any {
 			return appendSetMultitaskingModeParam("Stage Manager", "stageManager", "squares.leading.rectangle")
 		},
-		minVersion: 26,
+		emittedKeys: []string{"mode"},
+		minVersion:  26,
 	},
 	"setFocusMode": {
 		doc: selfDoc{
@@ -1660,6 +1708,7 @@ var actions = map[string]*actionDefinition{
 
 			return map[string]any{}
 		},
+		emittedKeys: []string{"FocusModes"},
 	},
 	"toggleFocusMode": {
 		doc: selfDoc{
@@ -1692,6 +1741,7 @@ var actions = map[string]*actionDefinition{
 
 			return params
 		},
+		emittedKeys: []string{"Operation", "FocusModes"},
 	},
 	"generateImage": {
 		doc: selfDoc{
@@ -1776,6 +1826,53 @@ var actions = map[string]*actionDefinition{
 				},
 			}
 		},
+		emittedKeys: []string{"style"},
+	},
+	"run": {
+		doc: selfDoc{
+			title:       "Run Shortcut",
+			description: "Run a shortcut from this shortcut, with optional input.",
+			category:    "shortcuts",
+		},
+		identifier: "runworkflow",
+		parameters: []parameterDefinition{
+			{
+				name:      "shortcutName",
+				validType: String,
+				key:       "WFWorkflowName",
+			},
+			{
+				name:      "input",
+				key:       "WFInput",
+				validType: Variable,
+				optional:  true,
+			},
+		},
+		makeParams: func(args []actionArgument) map[string]any {
+			var name = argumentValue(args, 0)
+			return map[string]any{
+				"WFWorkflowName": name,
+				// Mirrors runSelf's emission and real-world Shortcuts output, which
+				// carries both the modern reference dict and the legacy name key.
+				// workflowIdentifier is a generated placeholder; Shortcuts resolves
+				// the target through workflowName when the identifier is unknown.
+				"WFWorkflow": map[string]any{
+					"workflowIdentifier": uuid.New().String(),
+					"isSelf":             false,
+					"workflowName":       name,
+				},
+			}
+		},
+		decomp: func(action *ShortcutAction) (arguments []string) {
+			if action.WFWorkflowActionParameters["WFInput"] != nil {
+				arguments = append(arguments, decompValue(action.WFWorkflowActionParameters["WFInput"]))
+			}
+			if action.WFWorkflowActionParameters["WFWorkflowName"] != nil {
+				arguments = append(arguments, decompReferenceValue(action.WFWorkflowActionParameters["WFWorkflowName"]))
+			}
+			return
+		},
+		emittedKeys: []string{"WFWorkflow"},
 	},
 }
 
@@ -2128,7 +2225,10 @@ func replaceAppIDs(args []actionArgument, _ *actionDefinition) {
 				continue
 			}
 
-			var id = getArgValue(args[a]).(string)
+			var id, isString = getArgValue(args[a]).(string)
+			if !isString {
+				continue
+			}
 			args[a].value = replaceAppID(id)
 		}
 	}

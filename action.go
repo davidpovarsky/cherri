@@ -87,6 +87,7 @@ type actionDefinition struct {
 	makeParams         paramsFunc     // makeParams overrides automatic handling of arguments for custom logic based on the arguments collected.
 	appendParams       map[string]any // appendParams allows for adding additional parameters not based on the provided arguments without affecting automatic handling.
 	appendParamsFunc   paramsFunc     // appendParamsFunc allows for adding additional parameters based on the provided arguments without disabling automatic handling.
+	emittedKeys        []string       // emittedKeys declares plist keys written dynamically by makeParams/appendParamsFunc beyond declared parameter keys, published through the machine-readable action catalog.
 	decomp             func(action *ShortcutAction) (arguments []string)
 	appIntent          appIntent
 	outputType         tokenType

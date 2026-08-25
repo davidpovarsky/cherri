@@ -258,6 +258,57 @@ func TestPlistAndJsonFormsProduceSameFingerprints(t *testing.T) {
 	}
 }
 
+func TestNestedPlainAppIntentDescriptorRequiresCustomImplementation(t *testing.T) {
+	// Real App Intent-backed filter actions carry their descriptor as a plain
+	// nested dictionary without a WFSerializationType marker.
+	record := &ActionRecord{
+		Identifier: "is.workflow.actions.filter.notes",
+		Parameters: map[string]*NormalizedValue{
+			"AppIntentDescriptor": {
+				Kind: kindDictionary,
+				Fields: map[string]*NormalizedValue{
+					"ActionRequiresAppInstallation": {Kind: kindBoolean, Constant: "true"},
+					"BundleIdentifier":              {Kind: kindString, Constant: "com.apple.mobilenotes", TextClass: "constant"},
+				},
+			},
+			"WFContentItemLimitEnabled": {Kind: kindBoolean, Constant: "true"},
+		},
+	}
+	if !requiresCustomImplementation(record) {
+		t.Fatal("plain nested AppIntentDescriptor must require custom implementation")
+	}
+
+	deepNested := &ActionRecord{
+		Identifier: "com.example.app.SomeIntent",
+		Parameters: map[string]*NormalizedValue{
+			"container": {
+				Kind: kindDictionary,
+				Fields: map[string]*NormalizedValue{
+					"inner": {
+						Kind: kindDictionary,
+						Fields: map[string]*NormalizedValue{
+							"AppIntentDescriptor": {Kind: kindDictionary},
+						},
+					},
+				},
+			},
+		},
+	}
+	if !requiresCustomImplementation(deepNested) {
+		t.Fatal("deeply nested AppIntentDescriptor field must require custom implementation")
+	}
+
+	declarative := &ActionRecord{
+		Identifier: "is.workflow.actions.example",
+		Parameters: map[string]*NormalizedValue{
+			"WFTextActionText": {Kind: kindString, Constant: "hello"},
+		},
+	}
+	if requiresCustomImplementation(declarative) {
+		t.Fatal("declarative shape must not require custom implementation")
+	}
+}
+
 func readJSON(t *testing.T, path string, target any) {
 	t.Helper()
 	data, err := os.ReadFile(path)
