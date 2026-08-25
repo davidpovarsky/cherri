@@ -33,7 +33,14 @@ sh "$SKILL_DIR/scripts/setup.sh"
 sh "$SKILL_DIR/scripts/action.sh" "search terms"
 ```
 
-3. Consult local upstream documentation when syntax, types, includes, imports, signing, or decompilation is uncertain:
+For structured lookups (identifiers, parameter keys, enums, output types),
+query the machine-readable action catalog instead of parsing docs by hand:
+
+```sh
+sh "$SKILL_DIR/scripts/catalog.sh" 'is.workflow.actions.alert'
+```
+
+3. Consult local documentation when syntax, types, includes, imports, signing, or decompilation is uncertain. Documentation comes from the platform docs repository (`CHERRI_DOCS_REPO`, default: the davidpovarsky/cherrilang.org fork; override in the environment if needed):
 
 ```sh
 sh "$SKILL_DIR/scripts/search-docs.sh" "topic"

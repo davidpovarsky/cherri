@@ -132,6 +132,10 @@ func init() {
 		ExpectsValue: true,
 	})
 	args.Register(args.Argument{
+		Name:        "actions-json",
+		Description: "Print the machine-readable action catalog as JSON.",
+	})
+	args.Register(args.Argument{
 		Name:         "glyph",
 		Description:  "Search for available glyphs.",
 		DefaultValue: "",

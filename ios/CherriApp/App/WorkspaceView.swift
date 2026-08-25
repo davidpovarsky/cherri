@@ -19,6 +19,7 @@ struct WorkspaceView: View {
     @State private var compiled: CompiledShortcut?
     @State private var diagnostic: CompilationDiagnostic?
     @State private var actionCatalog: [CherriActionInfo] = []
+    @State private var previewActionMetadataJSON: String?
     @State private var isCompiling = false
     @State private var isSigning = false
     @State private var isImporting = false
@@ -148,6 +149,7 @@ struct WorkspaceView: View {
         ShortcutPreviewView(
             plist: compiled?.plist,
             name: compiled?.name ?? fileDisplayName,
+            actionMetadataJSON: previewActionMetadataJSON,
             onEdit: { edit in
                 Task { @MainActor in
                     handlePreviewEdit(edit)
@@ -267,7 +269,24 @@ struct WorkspaceView: View {
     private func refreshActionCatalog() async {
         if let actions = try? await CherriCompiler.actionCatalog() {
             actionCatalog = actions
+            previewActionMetadataJSON = Self.previewMetadataJSON(from: actions)
         }
+    }
+
+    // Compact shared metadata for preview-shortcut's generic fallback path:
+    // only identifiers missing a built-in renderer need entries, but passing
+    // all titled actions keeps the bridge dumb and stable.
+    static func previewMetadataJSON(from actions: [CherriActionInfo]) -> String? {
+        var metadata: [String: [String: String]] = [:]
+        for action in actions {
+            guard let identifier = action.shortcutIdentifier,
+                  let title = action.title,
+                  !title.isEmpty else { continue }
+            metadata[identifier] = ["title": title]
+        }
+        guard !metadata.isEmpty,
+              let data = try? JSONSerialization.data(withJSONObject: metadata) else { return nil }
+        return String(data: data, encoding: .utf8)
     }
 
     @MainActor

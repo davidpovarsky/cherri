@@ -1,0 +1,107 @@
+name: Shortcut Corpus Analysis
+
+on:
+  pull_request:
+    paths:
+      - 'tools/shortcut-corpus/**'
+      - 'actions_catalog.go'
+      - 'args.go'
+      - 'main.go'
+      - 'ios_bridge.go'
+      - 'actions/**'
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/shortcut-corpus.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'tools/shortcut-corpus/**'
+      - 'actions_catalog.go'
+      - '.github/workflows/shortcut-corpus.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: shortcut-corpus-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  corpus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.x'
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Vet corpus tooling
+        run: go vet ./tools/...
+
+      - name: Corpus tooling tests
+        run: go test ./tools/... -v
+
+      - name: Compiler tests affected by catalog changes
+        run: |
+          go test -run TestCherriNoSign ./...
+          go test -run TestDecomp ./...
+
+      - name: Build cherri CLI and analyzer
+        run: |
+          go build -o dist/cherri .
+          go build -o dist/shortcut-corpus ./tools/shortcut-corpus
+
+      - name: Generate machine-readable catalog
+        run: |
+          dist/cherri --actions-json --no-ansi > dist/actions-catalog.json
+          python3 - <<'PY'
+          import json
+          with open('dist/actions-catalog.json') as f:
+              catalog = json.load(f)
+          assert catalog['ok'] is True
+          assert catalog['count'] == len(catalog['actions'])
+          assert catalog['count'] > 100
+          print(f"catalog ok: {catalog['count']} actions")
+          PY
+
+      - name: Analyze sanitized fixture corpus
+        run: |
+          mkdir -p analysis
+          dist/shortcut-corpus analyze \
+            -in tools/shortcut-corpus/testdata \
+            -catalog dist/actions-catalog.json \
+            -out analysis \
+            -state analysis/corpus-state.json
+
+      - name: Structural comparator check
+        run: |
+          dist/shortcut-corpus compare \
+            tools/shortcut-corpus/testdata/sample-shortcut.plist \
+            tools/shortcut-corpus/testdata/sample-shortcut.plist
+
+      - name: Upload analysis artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: shortcut-corpus-analysis
+          path: |
+            analysis/summary.json
+            analysis/summary.md
+            analysis/known-actions.json
+            analysis/new-actions.json
+            analysis/variants.json
+            analysis/third-party-actions.json
+            analysis/needs-review.json
+            analysis/candidates/
+            dist/actions-catalog.json
+          if-no-files-found: error
+          retention-days: 30

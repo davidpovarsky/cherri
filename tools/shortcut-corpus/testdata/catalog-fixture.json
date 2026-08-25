@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "version": "1",
+  "count": 3,
+  "actions": [
+    {
+      "name": "alert",
+      "shortcutIdentifier": "is.workflow.actions.alert",
+      "title": "Alert",
+      "category": "basic",
+      "parameters": [
+        { "name": "alert", "key": "WFAlertActionTitle", "type": "text" },
+        { "name": "showCancel", "key": "WFAlertActionCancelButtonShown", "type": "bool" }
+      ]
+    },
+    {
+      "name": "comment",
+      "shortcutIdentifier": "is.workflow.actions.comment",
+      "title": "Comment",
+      "category": "basic",
+      "parameters": [
+        { "name": "text", "key": "WFCommentActionText", "type": "text" }
+      ]
+    },
+    {
+      "name": "waitToReturn",
+      "shortIdentifier": "is.workflow.actions.waittoreturn",
+      "shortcutIdentifier": "is.workflow.actions.waittoreturn",
+      "title": "Wait to Return",
+      "category": "basic",
+      "parameters": []
+    }
+  ]
+}

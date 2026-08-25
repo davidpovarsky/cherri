@@ -25,6 +25,10 @@ printf 'Testing compiler...\n'
 printf 'Testing action discovery wrapper...\n'
 sh "$SKILL_DIR/scripts/action.sh" show >/dev/null
 
+printf 'Testing machine-readable catalog wrapper...\n'
+"$CHERRI_BIN_RESOLVED" --actions-json | grep -q '"ok":true'
+sh "$SKILL_DIR/scripts/catalog.sh" 'is.workflow.actions.alert' >/dev/null
+
 TMP=${TMPDIR:-/tmp}/cherri-skill-test-$$
 mkdir -p "$TMP/decompiled"
 trap 'rm -rf "$TMP"' EXIT INT TERM
