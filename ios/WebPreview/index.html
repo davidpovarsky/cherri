@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Cherri Shortcut Preview</title>
+  <style>
+    html, body { margin: 0; min-height: 100%; background: transparent; }
+    body { padding: 12px; box-sizing: border-box; }
+    #shortcut-preview label.toggle {
+      pointer-events: auto !important;
+      touch-action: manipulation;
+      cursor: pointer;
+    }
+    #shortcut-preview .cherri-editable-value {
+      cursor: text;
+      border-radius: 0.35rem;
+      transition: box-shadow 120ms ease, background-color 120ms ease;
+    }
+    #shortcut-preview .cherri-editable-value:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.35);
+      background: rgba(0, 122, 255, 0.08);
+    }
+  </style>
+</head>
+<body>
+  <div id="shortcut-preview"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

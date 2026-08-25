@@ -1,0 +1,15 @@
+{
+  "name": "cherri-ios-preview",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build --base=./ --outDir ../CherriApp/Resources/PreviewShortcut --emptyOutDir && node postprocess.mjs"
+  },
+  "dependencies": {
+    "preview-shortcut": "1.3.4"
+  },
+  "devDependencies": {
+    "typescript": "5.9.2",
+    "vite": "8.0.14"
+  }
+}

@@ -1,0 +1,114 @@
+name: OpenMinis Skill
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'skills/cherri-shortcuts/**'
+      - '.github/workflows/openminis-skill.yml'
+      - '*.go'
+      - 'actions/**'
+      - 'go.mod'
+      - 'go.sum'
+  workflow_dispatch:
+
+concurrency:
+  group: openminis-skill-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.x'
+
+      - name: Test Cherri core
+        run: |
+          go test -run TestCherriNoSign -v ./...
+          go test -run TestDecomp -v ./...
+
+      - name: Build Linux CLIs
+        run: |
+          mkdir -p dist
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -ldflags='-s -w' -o dist/cherri-linux-arm64 .
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags='-s -w' -o dist/cherri-linux-amd64 .
+          chmod +x dist/cherri-linux-arm64 dist/cherri-linux-amd64
+          ls -lh dist/cherri-linux-*
+
+      - name: Validate skill structure
+        run: |
+          test -f skills/cherri-shortcuts/SKILL.md
+          test -f skills/cherri-shortcuts/scripts/setup.sh
+          test -f skills/cherri-shortcuts/scripts/build.sh
+          test -f skills/cherri-shortcuts/references/openminis.md
+          grep -q '^name: cherri-shortcuts$' skills/cherri-shortcuts/SKILL.md
+          grep -q '^description:' skills/cherri-shortcuts/SKILL.md
+          for script in skills/cherri-shortcuts/scripts/*.sh; do sh -n "$script"; done
+
+      - name: Test skill wrappers on Linux
+        env:
+          CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
+          SKILL_DIR: ${{ github.workspace }}/skills/cherri-shortcuts
+        run: sh skills/cherri-shortcuts/scripts/self-test.sh --skip-setup
+
+      - name: Enable ARM64 emulation
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Test ARM64 binary in Alpine
+        run: |
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD:/repo" \
+            alpine:3.22 \
+            sh -c '
+              chmod +x /repo/dist/cherri-linux-arm64 &&
+              CHERRI_BIN=/repo/dist/cherri-linux-arm64 \
+              SKILL_DIR=/repo/skills/cherri-shortcuts \
+              sh /repo/skills/cherri-shortcuts/scripts/self-test.sh --skip-setup
+            '
+
+      - name: Package source and ready-to-import OpenMinis skill
+        run: |
+          rm -rf dist/package-source dist/package-arm64
+          mkdir -p dist/package-source dist/package-arm64/cherri-shortcuts/bin
+
+          cp -R skills/cherri-shortcuts dist/package-source/cherri-shortcuts
+          cp -R skills/cherri-shortcuts/. dist/package-arm64/cherri-shortcuts/
+          cp dist/cherri-linux-arm64 dist/package-arm64/cherri-shortcuts/bin/cherri
+          cp LICENSE dist/package-arm64/cherri-shortcuts/LICENSE.cherri
+
+          (
+            cd dist/package-source
+            zip -qry ../cherri-shortcuts-skill-source.zip cherri-shortcuts
+          )
+          (
+            cd dist/package-arm64
+            zip -qry ../cherri-shortcuts-openminis-arm64.zip cherri-shortcuts
+          )
+
+          ls -lh dist/*.zip dist/cherri-linux-*
+
+      - name: Upload OpenMinis skill artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cherri-OpenMinis-Skill
+          path: |
+            dist/cherri-shortcuts-openminis-arm64.zip
+            dist/cherri-shortcuts-skill-source.zip
+            dist/cherri-linux-arm64
+            dist/cherri-linux-amd64
+          if-no-files-found: error
+          retention-days: 30
