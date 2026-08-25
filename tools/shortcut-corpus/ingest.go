@@ -182,7 +182,7 @@ func discoverInputs(inputs []string) ([]string, error) {
 
 func isShortcutCandidate(name string) bool {
 	switch strings.ToLower(filepath.Ext(name)) {
-	case ".json", ".plist", ".shortcut":
+	case ".json", ".plist", ".shortcut", ".xml":
 		return true
 	}
 	return false

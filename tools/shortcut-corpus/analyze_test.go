@@ -258,6 +258,35 @@ func TestPlistAndJsonFormsProduceSameFingerprints(t *testing.T) {
 	}
 }
 
+func TestXMLShortcutFilesAreDiscovered(t *testing.T) {
+	if !isShortcutCandidate("exported-shortcut.xml") {
+		t.Fatal("canonical Apple XML plist Shortcut exports must be treated as candidates")
+	}
+	plistBytes, err := os.ReadFile(filepath.Join("testdata", "sample-shortcut.plist"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	xmlPath := filepath.Join(dir, "exported-shortcut.xml")
+	if err = os.WriteFile(xmlPath, plistBytes, 0644); err != nil {
+		t.Fatal(err)
+	}
+	discovered, err := discoverInputs([]string{dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(discovered) != 1 || discovered[0] != xmlPath {
+		t.Fatalf("expected XML export to be discovered, got %v", discovered)
+	}
+	doc, err := parseDocument(xmlPath, plistBytes)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(doc.actions) == 0 {
+		t.Fatal("parsed XML document must contain actions")
+	}
+}
+
 func TestNestedPlainAppIntentDescriptorRequiresCustomImplementation(t *testing.T) {
 	// Real App Intent-backed filter actions carry their descriptor as a plain
 	// nested dictionary without a WFSerializationType marker.
