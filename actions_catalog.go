@@ -149,7 +149,7 @@ var compilerConstructs = []catalogActionInfo{
 		Category:           "controlflow",
 		Builtin:            true,
 		CompilerConstruct:  true,
-		EmittedKeys:        []string{"GroupingIdentifier", "UUID", "WFCondition", "WFConditions", "WFConditionalActionString", "WFControlFlowMode", "WFDate", "WFAnotherDate", "WFInput", "WFAnotherNumber", "WFNumberValue"},
+		EmittedKeys:        []string{"GroupingIdentifier", "UUID", "WFCondition", "WFConditions", "WFConditionalActionString", "WFConditionalLegacyComparisonBehavior", "WFControlFlowMode", "WFDate", "WFAnotherDate", "WFInput", "WFAnotherNumber", "WFNumberValue"},
 	},
 	{
 		Name:               "menu",

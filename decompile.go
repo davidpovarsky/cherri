@@ -729,6 +729,10 @@ func decompConditional(action *ShortcutAction) {
 	case startStatement:
 		beginStatement(If, action)
 
+		if action.WFWorkflowActionParameters["WFConditionalLegacyComparisonBehavior"] == true {
+			code.WriteString("legacy ")
+		}
+
 		if action.WFWorkflowActionParameters["WFConditions"] != nil {
 			var conditions = action.WFWorkflowActionParameters["WFConditions"].(map[string]interface{})
 			var conditionValue = conditions["Value"].(map[string]interface{})
@@ -1440,6 +1444,15 @@ func scoreActionMatch(splitAction actionValue, splitActionParams []parameterDefi
 	var splitActionAddParams []parameterDefinition
 	if splitAction.definition.appendParamsFunc != nil {
 		for key, value := range splitAction.definition.appendParamsFunc([]actionArgument{}) {
+			splitActionAddParams = append(splitActionAddParams, parameterDefinition{
+				key:          key,
+				defaultValue: value,
+			})
+		}
+	}
+
+	if len(splitAction.definition.appendParams) != 0 {
+		for key, value := range splitAction.definition.appendParams {
 			splitActionAddParams = append(splitActionAddParams, parameterDefinition{
 				key:          key,
 				defaultValue: value,

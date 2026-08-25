@@ -330,6 +330,7 @@ var iosVersion = 26.4
 type WFConditions struct {
 	conditions                    []condition
 	WFActionParameterFilterPrefix int
+	legacyComparison              bool
 }
 
 type condition struct {

@@ -110,6 +110,72 @@
       ],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "conditional",
+      "identifier": "is.workflow.actions.conditional",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-extended",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "compiler construct (parser.go collectConditionals, shortcutgen.go makeConditionalAction, decompile.go decompConditional)",
+      "forkLocations": [
+        "parser.go",
+        "shortcutgen.go",
+        "decompile.go",
+        "actions_catalog.go"
+      ],
+      "firstForkCommit": null,
+      "change": "Added optional `legacy` keyword in if statements (`if legacy <conditions> {`). When present, compilation emits WFConditionalLegacyComparisonBehavior:true on the conditional start action; the decompiler reconstructs the keyword when the flag is present. Output is unchanged unless the keyword is used. Catalog compilerConstruct emittedKeys extended accordingly.",
+      "reason": "Real modern Shortcuts re-saving conditionals emit WFConditionalLegacyComparisonBehavior; without the keyword the flag was unrepresentable and round-trip lossy.",
+      "evidence": "corpus batch-001 x2 + shortcut-lib decoded samples x3 (5 observations, 2 independent sources, clients 3612/4033)",
+      "notes": [
+        "Keyword placement before the condition list avoids ambiguity with !x has-value forms and && chains.",
+        "Observed evidence covers single-comparison form; multi-condition predicate-form emission shares the same key placement."
+      ],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "base64Encode / base64Decode",
+      "identifier": "is.workflow.actions.base64encode",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-extended",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/crypto.cherri (both definitions)",
+      "forkLocations": [
+        "actions/crypto.cherri"
+      ],
+      "firstForkCommit": null,
+      "change": "Added optional trailing text parameter lineBreakMode ('WFBase64LineBreakMode') to both base64Encode and base64Decode; omitted when not provided. Documented values: 'None' (observed in real modern export), 'Every 64 Characters', 'Every 76 Characters' (ToolKit v78 corroboration); value domain intentionally left incomplete, modeled as pass-through text.",
+      "reason": "Real Shortcuts serialize the line-break mode next to WFInput/WFEncodeMode; previously unrepresentable.",
+      "evidence": "local batch-001 x1 (client 3612, 'None') + playground golden x1 (historical client, 'None'); ToolKit v78 enum cases corroborate domain",
+      "notes": [
+        "Required a decompiler split-action matching fix: static DSL appendParams maps were never scored, so encode/decode names sharing the identifier tied once both declared the parameter and the winner was iteration-order dependent. Static maps now score like appendParamsFunc-derived params (see infrastructure entry)."
+      ],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getUpcomingEvents",
+      "identifier": "is.workflow.actions.getupcomingevents",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions/calendar.cherri"
+      ],
+      "firstForkCommit": null,
+      "change": "New declarative action getUpcomingEvents(number ?count: 'WFGetUpcomingItemCount', text ?dateSpecifier: 'WFDateSpecifier', text ?specifiedDate: 'WFSpecifiedDate'): variable. All parameters optional; omitted keys are not emitted. Output type variable (container reader pattern).",
+      "reason": "Action absent from upstream; corpus evidence matured to two independent real corpora with an empty-parameter shape proving optionality of every key.",
+      "evidence": "corpus batch-001 x1 (full shape incl. WFSpecifiedDate) + shortcut-lib x2 (full + empty shapes); dateSpecifier values 'Today' and 'Specified Day' observed across both sources",
+      "notes": [
+        "WFGetUpcomingItemCalendar intentionally NOT implemented: payload embeds device-generated picker data (calendar UUID, RGBAValue, localized title) that cannot be reproduced from source alone. Calendar-carrying export shapes therefore classify VARIANT until a representation is designed; minimal shapes compile KNOWN.",
+        "dateSpecifier is free text, not an enum: only 'Today'/'Specified Day' observed; full domain unverified.",
+        "specifiedDate observed as locale-formatted date string."
+      ],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
@@ -138,6 +204,30 @@
       "reason": "App Intent-backed actions (e.g. is.workflow.actions.filter.notes) were misclassified SAFE_CANDIDATE instead of CUSTOM_IMPLEMENTATION_REQUIRED.",
       "evidence": "batch-001: filter.notes reclassified correctly; unit test TestNestedPlainAppIntentDescriptorRequiresCustomImplementation.",
       "note": "Tooling provenance, not an action addition."
+    },
+    {
+      "name": "corpus analyzer XML plist ingestion",
+      "locations": [
+        "tools/shortcut-corpus/ingest.go",
+        "tools/shortcut-corpus/analyze_test.go",
+        ".gitignore"
+      ],
+      "firstForkCommit": null,
+      "change": "Candidate discovery now accepts .xml files (canonical Apple Shortcut export serialization); parse-time validation still rejects non-Shortcut XML. Gitignore extended to corpus-state*.json and root catalog artifacts.",
+      "reason": "Both external real corpora (shortcut-lib decoded samples, Shortcuts Playground golden XML) ship XML plists; zero files were ingestible without it.",
+      "evidence": "session 2 external expansion: shortcut-lib 20/20 and golden 19/19 files ingested after the change, 0 before; unit test TestXMLShortcutFilesAreDiscovered.",
+      "note": "Tooling provenance, not an action addition."
+    },
+    {
+      "name": "decompiler split-action static-parameter scoring",
+      "locations": [
+        "decompile.go (scoreActionMatch)"
+      ],
+      "firstForkCommit": null,
+      "change": "Split-action matching now scores static DSL appendParams maps in addition to appendParamsFunc-derived parameters when choosing between multiple Cherri names sharing one identifier.",
+      "reason": "Once base64Encode/base64Decode both declared WFBase64LineBreakMode, their match scores tied for encode payloads and the winner depended on map iteration order; the static 'input':'Encode' marker was never consulted. Scoring fixed static keys adds deterministic discrimination without changing any candidate's existing score downward.",
+      "evidence": "encode-with-lineBreakMode payload decompiled as base64Decode before the fix, base64Encode after; plain encode/decode round-trips unchanged; TestDecomp passes.",
+      "note": "Compiler/decompiler infrastructure motivated by base64Encode work; affects identifier-name resolution generally."
     }
   ]
 }
