@@ -149,6 +149,117 @@ func TestForkActionCatalogCompleteness(t *testing.T) {
 			t.Errorf("parameters = %+v, want exactly 3 optional parameters", entry.Parameters)
 		}
 	})
+
+	// Apple first-party App Intent wrapper batch: every wrapper must expose
+	// its outer identifier, derived appIntent facet (Apple legacy placeholder
+	// TeamIdentifier, no installation flag), and evidence-backed parameters
+	// through the shared catalog automatically.
+	t.Run("apple intent wrappers", func(t *testing.T) {
+		expectations := []struct {
+			name            string
+			outerIdentifier string
+			intent          string
+			bundle          string
+			params          map[string]string
+			emittedKeys     []string
+		}{
+			{
+				name:            "setSilentMode",
+				outerIdentifier: "com.apple.ShortcutsActions.SetSilentModeAction",
+				intent:          "SetSilentModeAction",
+				bundle:          "com.apple.ShortcutsActions",
+				params:          map[string]string{"state": "state"},
+				emittedKeys:     []string{"UUID", "operation"},
+			},
+			{
+				name:            "searchSpotlight",
+				outerIdentifier: "com.apple.Spotlight.SearchSpotlightIntent",
+				intent:          "SearchSpotlightIntent",
+				bundle:          "com.apple.Spotlight",
+				params:          map[string]string{"criteria": "criteria"},
+				emittedKeys:     []string{"UUID"},
+			},
+			{
+				name:            "createRemindersList",
+				outerIdentifier: "com.apple.reminders.TTRCreateListAppIntent",
+				intent:          "TTRCreateListAppIntent",
+				bundle:          "com.apple.reminders",
+				emittedKeys:     []string{"UUID"},
+			},
+			{
+				name:            "startStopwatch",
+				outerIdentifier: "com.apple.clock.StartStopwatchIntent",
+				intent:          "StartStopwatchIntent",
+				bundle:          "com.apple.clock",
+				emittedKeys:     []string{"UUID"},
+			},
+			{
+				name:            "stopStopwatch",
+				outerIdentifier: "com.apple.clock.StopStopwatchIntent",
+				intent:          "StopStopwatchIntent",
+				bundle:          "com.apple.clock",
+				emittedKeys:     []string{"UUID"},
+			},
+			{
+				name:            "playAudiobook",
+				outerIdentifier: "com.apple.iBooksX.PlayAudiobookIntent",
+				intent:          "PlayAudiobookIntent",
+				bundle:          "com.apple.iBooksX",
+				params:          map[string]string{"target": "target"},
+				emittedKeys:     []string{"UUID"},
+			},
+			{
+				name:            "openBook",
+				outerIdentifier: "com.apple.iBooksX.OpenBookIntent",
+				intent:          "OpenBookIntent",
+				bundle:          "com.apple.iBooksX",
+				params:          map[string]string{"target": "target"},
+				emittedKeys:     []string{"UUID"},
+			},
+		}
+
+		for _, want := range expectations {
+			t.Run(want.name, func(t *testing.T) {
+				entry, found := byName[want.name]
+				if !found {
+					t.Fatal("missing from catalog")
+				}
+				if entry.ShortcutIdentifier != want.outerIdentifier {
+					t.Errorf("identifier = %q, want %q", entry.ShortcutIdentifier, want.outerIdentifier)
+				}
+
+				if entry.AppIntent == nil {
+					t.Fatalf("appIntent facet missing")
+				}
+				facet := entry.AppIntent
+				if facet.AppIntentIdentifier != want.intent || facet.BundleIdentifier != want.bundle {
+					t.Errorf("appIntent facet = %+v, want %s/%s", facet, want.bundle, want.intent)
+				}
+				if facet.TeamIdentifier != appleLegacyTeamIdentifier {
+					t.Errorf("TeamIdentifier = %q, want Apple legacy placeholder", facet.TeamIdentifier)
+				}
+				if facet.RequiresAppInstallation != nil {
+					t.Errorf("RequiresAppInstallation = %+v, want omitted tri-state", facet.RequiresAppInstallation)
+				}
+
+				if len(entry.Parameters) != len(want.params) {
+					t.Errorf("parameters = %+v, want exactly %d", entry.Parameters, len(want.params))
+				}
+				for paramName, key := range want.params {
+					param := findCatalogParameter(t, entry, paramName)
+					if param.Key != key {
+						t.Errorf("%s parameter = %+v, want plist key %q", paramName, param, key)
+					}
+				}
+
+				for _, emitted := range want.emittedKeys {
+					if !slices.Contains(entry.EmittedKeys, emitted) {
+						t.Errorf("emittedKeys %v missing %q", entry.EmittedKeys, emitted)
+					}
+				}
+			})
+		}
+	})
 }
 
 func findCatalogParameter(t *testing.T, entry catalogActionInfo, name string) catalogParameter {

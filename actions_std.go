@@ -7,6 +7,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"maps"
 	"os"
 	"reflect"
 	"regexp"
@@ -37,6 +38,28 @@ var toggleAlarmIntent = appleAppIntent("Clock", "com.apple.clock", "ToggleAlarmI
 var createShortcutiCloudLinkIntent = appleAppIntent("Shortcuts", "com.apple.shortcuts", "CreateShortcutiCloudLinkAction")
 
 var setMultitaskingModeIntent = appleAppIntent("ShortcutsActions", "com.apple.ShortcutsActions", "SetMultitaskingModeAction")
+
+var setSilentModeIntent = appleAppIntent("ShortcutsActions", "com.apple.ShortcutsActions", "SetSilentModeAction")
+
+var searchSpotlightIntent = appleAppIntent("Spotlight", "com.apple.Spotlight", "SearchSpotlightIntent")
+
+var createRemindersListIntent = appleAppIntent("Reminders", "com.apple.reminders", "TTRCreateListAppIntent")
+
+var startStopwatchIntent = appleAppIntent("Clock", "com.apple.clock", "StartStopwatchIntent")
+
+var stopStopwatchIntent = appleAppIntent("Clock", "com.apple.clock", "StopStopwatchIntent")
+
+var playAudiobookIntent = appleAppIntent("Books", "com.apple.iBooksX", "PlayAudiobookIntent")
+
+var openBookIntent = appleAppIntent("Books", "com.apple.iBooksX", "OpenBookIntent")
+
+// actionInstanceUUID mirrors real-device exports, which stamp every App Intent
+// action with a per-instance UUID parameter. Shortcuts regenerates these
+// freely; a generated placeholder keeps the emitted shape faithful without
+// pretending to know Apple's value.
+func actionInstanceUUID() map[string]any {
+	return map[string]any{"UUID": uuid.New().String()}
+}
 
 // actions is the data structure that determines every action the compiler knows about.
 // The key determines the identifier of the identifier that must be used in the syntax, it's value defines its behavior, etc. using an actionDefinition.
@@ -125,7 +148,7 @@ var actions = map[string]*actionDefinition{
 		},
 		appIdentifier: "com.apple.clock",
 		identifier:    "DeleteAlarmIntent",
-		appIntent: appleAppIntent("Clock", "com.apple.clock", "DeleteAlarmIntent"),
+		appIntent:     appleAppIntent("Clock", "com.apple.clock", "DeleteAlarmIntent"),
 		parameters: []parameterDefinition{
 			{
 				name:      "alarm",
@@ -216,6 +239,141 @@ var actions = map[string]*actionDefinition{
 		appendParams: map[string]any{
 			"operation": "Toggle",
 		},
+	},
+	"setSilentMode": {
+		doc: selfDoc{
+			title:       "Set Silent Mode",
+			description: "Turns silent mode on or off.",
+			category:    "settings",
+			subcategory: "Silent Mode",
+		},
+		appIdentifier: "com.apple.ShortcutsActions",
+		identifier:    "SetSilentModeAction",
+		appIntent:     setSilentModeIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "state",
+				validType: Integer,
+				key:       "state",
+			},
+		},
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			params := map[string]any{"operation": "turn"}
+			maps.Copy(params, actionInstanceUUID())
+			return params
+		},
+		emittedKeys: []string{"operation", "UUID"},
+	},
+	"searchSpotlight": {
+		doc: selfDoc{
+			title:       "Search Spotlight",
+			description: "Opens Spotlight search, optionally with search criteria.",
+			category:    "Apps",
+			subcategory: "Spotlight",
+		},
+		appIdentifier: "com.apple.Spotlight",
+		identifier:    "SearchSpotlightIntent",
+		appIntent:     searchSpotlightIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "criteria",
+				validType: String,
+				key:       "criteria",
+			},
+		},
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"createRemindersList": {
+		doc: selfDoc{
+			title:       "Create Reminders List",
+			description: "Creates a new list in Reminders.",
+			category:    "calendar",
+			subcategory: "Reminders",
+		},
+		appIdentifier: "com.apple.reminders",
+		identifier:    "TTRCreateListAppIntent",
+		appIntent:     createRemindersListIntent,
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"startStopwatch": {
+		doc: selfDoc{
+			title:       "Start Stopwatch",
+			description: "Starts the stopwatch.",
+			category:    "calendar",
+			subcategory: "Stopwatch",
+		},
+		appIdentifier: "com.apple.clock",
+		identifier:    "StartStopwatchIntent",
+		appIntent:     startStopwatchIntent,
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"stopStopwatch": {
+		doc: selfDoc{
+			title:       "Stop Stopwatch",
+			description: "Stops the stopwatch.",
+			category:    "calendar",
+			subcategory: "Stopwatch",
+		},
+		appIdentifier: "com.apple.clock",
+		identifier:    "StopStopwatchIntent",
+		appIntent:     stopStopwatchIntent,
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"playAudiobook": {
+		doc: selfDoc{
+			title:       "Play Audiobook",
+			description: "Plays an audiobook in Books. `target` is expected to be a book or audiobook reference.",
+			category:    "books",
+			subcategory: "Books",
+		},
+		appIdentifier: "com.apple.iBooksX",
+		identifier:    "PlayAudiobookIntent",
+		appIntent:     playAudiobookIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "target",
+				validType: Variable,
+				key:       "target",
+			},
+		},
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"openBook": {
+		doc: selfDoc{
+			title:       "Open Book",
+			description: "Opens a book in Books. `target` is expected to be a book reference.",
+			category:    "books",
+			subcategory: "Books",
+		},
+		appIdentifier: "com.apple.iBooksX",
+		identifier:    "OpenBookIntent",
+		appIntent:     openBookIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "target",
+				validType: Variable,
+				key:       "target",
+			},
+		},
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
 	},
 	"emailAddress": {
 		doc: selfDoc{
@@ -1034,9 +1192,9 @@ var actions = map[string]*actionDefinition{
 				}
 				switch args[2].value {
 				case "half":
-					args[2].value = "½ + ½"
+					args[2].value = "Â½ + Â½"
 				case "thirdByTwo":
-					args[2].value = "⅓ + ⅔"
+					args[2].value = "â…“ + â…”"
 				}
 			}
 		},
@@ -1068,9 +1226,9 @@ var actions = map[string]*actionDefinition{
 
 			var ratio = "half"
 			switch splitRatio {
-			case "½ + ½":
+			case "Â½ + Â½":
 				ratio = "half"
-			case "⅓ + ⅔":
+			case "â…“ + â…”":
 				ratio = "thirdByTwo"
 			}
 

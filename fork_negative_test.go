@@ -227,3 +227,27 @@ func TestNegativeGetUpcomingEventsTooManyArguments(t *testing.T) {
 		"const events = getUpcomingEvents(5, \"Today\", \"May 20, 2025\", \"extra\")\n",
 		"Too many arguments")
 }
+
+func TestNegativeSetSilentModeRejectsTextState(t *testing.T) {
+	expectCompileError(t, "silentmode-text-state",
+		"setSilentMode(\"on\")\n",
+		"for argument 'state'")
+}
+
+func TestNegativeSearchSpotlightRejectsNumberCriteria(t *testing.T) {
+	expectCompileError(t, "spotlight-number-criteria",
+		"searchSpotlight(42)\n",
+		"for argument 'criteria'")
+}
+
+func TestNegativePlayAudiobookMissingRequiredTarget(t *testing.T) {
+	expectCompileError(t, "playaudio-missing-target",
+		"playAudiobook()\n",
+		"Missing required 1st argument")
+}
+
+func TestNegativeStopStopwatchTooManyArguments(t *testing.T) {
+	expectCompileError(t, "stopwatch-extra-arg",
+		"stopStopwatch(true)\n",
+		"Too many arguments")
+}

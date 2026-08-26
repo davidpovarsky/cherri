@@ -130,6 +130,81 @@ var curatedAppIntentSpecs = []struct {
 		declaredParams:   []string{"automaticallyShowAndHideDock", "showRecentApps"},
 		appendedParamKey: "mode",
 	},
+	{
+		name:            "setSilentMode",
+		outerIdentifier: "com.apple.ShortcutsActions.SetSilentModeAction",
+		descriptor: map[string]any{
+			"Name":                "ShortcutsActions",
+			"BundleIdentifier":    "com.apple.ShortcutsActions",
+			"AppIntentIdentifier": "SetSilentModeAction",
+			"TeamIdentifier":      appleLegacyTeamIdentifier,
+		},
+		declaredParams:   []string{"state"},
+		appendedParamKey: "operation",
+	},
+	{
+		name:            "searchSpotlight",
+		outerIdentifier: "com.apple.Spotlight.SearchSpotlightIntent",
+		descriptor: map[string]any{
+			"Name":                "Spotlight",
+			"BundleIdentifier":    "com.apple.Spotlight",
+			"AppIntentIdentifier": "SearchSpotlightIntent",
+			"TeamIdentifier":      appleLegacyTeamIdentifier,
+		},
+		declaredParams: []string{"criteria"},
+	},
+	{
+		name:            "createRemindersList",
+		outerIdentifier: "com.apple.reminders.TTRCreateListAppIntent",
+		descriptor: map[string]any{
+			"Name":                "Reminders",
+			"BundleIdentifier":    "com.apple.reminders",
+			"AppIntentIdentifier": "TTRCreateListAppIntent",
+			"TeamIdentifier":      appleLegacyTeamIdentifier,
+		},
+	},
+	{
+		name:            "startStopwatch",
+		outerIdentifier: "com.apple.clock.StartStopwatchIntent",
+		descriptor: map[string]any{
+			"Name":                "Clock",
+			"BundleIdentifier":    "com.apple.clock",
+			"AppIntentIdentifier": "StartStopwatchIntent",
+			"TeamIdentifier":      appleLegacyTeamIdentifier,
+		},
+	},
+	{
+		name:            "stopStopwatch",
+		outerIdentifier: "com.apple.clock.StopStopwatchIntent",
+		descriptor: map[string]any{
+			"Name":                "Clock",
+			"BundleIdentifier":    "com.apple.clock",
+			"AppIntentIdentifier": "StopStopwatchIntent",
+			"TeamIdentifier":      appleLegacyTeamIdentifier,
+		},
+	},
+	{
+		name:            "playAudiobook",
+		outerIdentifier: "com.apple.iBooksX.PlayAudiobookIntent",
+		descriptor: map[string]any{
+			"Name":                "Books",
+			"BundleIdentifier":    "com.apple.iBooksX",
+			"AppIntentIdentifier": "PlayAudiobookIntent",
+			"TeamIdentifier":      appleLegacyTeamIdentifier,
+		},
+		declaredParams: []string{"target"},
+	},
+	{
+		name:            "openBook",
+		outerIdentifier: "com.apple.iBooksX.OpenBookIntent",
+		descriptor: map[string]any{
+			"Name":                "Books",
+			"BundleIdentifier":    "com.apple.iBooksX",
+			"AppIntentIdentifier": "OpenBookIntent",
+			"TeamIdentifier":      appleLegacyTeamIdentifier,
+		},
+		declaredParams: []string{"target"},
+	},
 }
 
 // TestCuratedAppIntentBackwardCompatibility locks the exact emitted structure
@@ -553,4 +628,146 @@ func TestCuratedMatchingWinsOverRawAction(t *testing.T) {
 	r.runCherri("curated-wins/recompile", sourceBPath, "--skip-sign", "--no-ansi")
 	assertStructurallyEqual(t, "curated-wins", alarmPath,
 		filepath.Join(r.dir, "curated-wins_b_unsigned.shortcut"))
+}
+
+// TestCuratedAppleIntentObservedShapesRoundTrip feeds sanitized REAL corpus
+// shapes (shortcut-lib dictionary.xml/intelly.xml and batch-001 exports)
+// through decompile -> typed Cherri -> recompile -> structural compare. Each
+// fixture must decompile to its curated wrapper — never rawAction — and the
+// recompiled document must be structurally equal to the observed shape under
+// the corpus comparator (UUIDs canonicalized by first appearance).
+func TestCuratedAppleIntentObservedShapesRoundTrip(t *testing.T) {
+	var r = newRoundTripRunner(t)
+
+	var envelopePath = r.compileSource("observed-shape-env", "@placeholder = \"fixture\"\n")
+	var envelope = loadRoundTripDocument(t, envelopePath)
+
+	var writeFixture = func(label string, actions []map[string]any) string {
+		envelope["WFWorkflowActions"] = actions
+		var data, err = plist.Marshal(envelope, plist.XMLFormat)
+		if err != nil {
+			t.Fatalf("%s: marshal fixture: %v", label, err)
+		}
+		var path = filepath.Join(r.dir, label+".shortcut")
+		if err = os.WriteFile(path, data, 0644); err != nil {
+			t.Fatalf("%s: write fixture: %v", label, err)
+		}
+		return path
+	}
+
+	var expectTypedRoundTrip = func(t *testing.T, label string, fixturePath string, wantCall string) {
+		var decompiled = r.decompileShortcut(label, fixturePath)
+		if strings.Contains(decompiled, "rawAction(") {
+			t.Errorf("%s: observed curated shape degraded to rawAction:\n%s", label, decompiled)
+		}
+		if !strings.Contains(decompiled, wantCall) {
+			t.Errorf("%s: decompiled output lost %q call:\n%s", label, wantCall, decompiled)
+		}
+		var sourceBPath = filepath.Join(r.dir, label+"_b.cherri")
+		if err := os.WriteFile(sourceBPath, []byte(decompiled), 0644); err != nil {
+			t.Fatal(err)
+		}
+		r.runCherri(label+"/recompile", sourceBPath, "--skip-sign", "--no-ansi")
+		assertStructurallyEqual(t, label, fixturePath,
+			filepath.Join(r.dir, label+"_b_unsigned.shortcut"))
+	}
+
+	var appleIntentDescriptor = func(name, bundle, intent string) map[string]any {
+		return map[string]any{
+			"AppIntentIdentifier": intent,
+			"BundleIdentifier":    bundle,
+			"Name":                name,
+			"TeamIdentifier":      appleLegacyTeamIdentifier,
+		}
+	}
+
+	t.Run("startStopwatch/descriptor-only", func(t *testing.T) {
+		var fixturePath = writeFixture("obs-startwatch", []map[string]any{{
+			"WFWorkflowActionIdentifier": "com.apple.clock.StartStopwatchIntent",
+			"WFWorkflowActionParameters": map[string]any{
+				"AppIntentDescriptor": appleIntentDescriptor("Clock", "com.apple.clock", "StartStopwatchIntent"),
+				"UUID":                "5B9D84F6-1F3D-4A3E-B1F4-604EEE7B2ECE",
+			},
+		}})
+		expectTypedRoundTrip(t, "obs-startwatch", fixturePath, "startStopwatch(")
+	})
+
+	t.Run("stopStopwatch/descriptor-only", func(t *testing.T) {
+		var fixturePath = writeFixture("obs-stopwatch", []map[string]any{{
+			"WFWorkflowActionIdentifier": "com.apple.clock.StopStopwatchIntent",
+			"WFWorkflowActionParameters": map[string]any{
+				"AppIntentDescriptor": appleIntentDescriptor("Clock", "com.apple.clock", "StopStopwatchIntent"),
+				"UUID":                "D1EE38DC-D59C-40C2-93A0-0726CF1C156F",
+			},
+		}})
+		expectTypedRoundTrip(t, "obs-stopwatch", fixturePath, "stopStopwatch(")
+	})
+
+	t.Run("createRemindersList/descriptor-only", func(t *testing.T) {
+		var fixturePath = writeFixture("obs-remlist", []map[string]any{{
+			"WFWorkflowActionIdentifier": "com.apple.reminders.TTRCreateListAppIntent",
+			"WFWorkflowActionParameters": map[string]any{
+				"AppIntentDescriptor": appleIntentDescriptor("Reminders", "com.apple.reminders", "TTRCreateListAppIntent"),
+				"UUID":                "66D9F708-A1AD-4841-975B-9C5F7A639639",
+			},
+		}})
+		expectTypedRoundTrip(t, "obs-remlist", fixturePath, "createRemindersList(")
+	})
+
+	t.Run("setSilentMode/operation-and-integer-state", func(t *testing.T) {
+		var fixturePath = writeFixture("obs-silentmode", []map[string]any{{
+			"WFWorkflowActionIdentifier": "com.apple.ShortcutsActions.SetSilentModeAction",
+			"WFWorkflowActionParameters": map[string]any{
+				"AppIntentDescriptor": appleIntentDescriptor("ShortcutsActions", "com.apple.ShortcutsActions", "SetSilentModeAction"),
+				"operation":           "turn",
+				"state":               0,
+				"UUID":                "0964622C-E106-434C-A718-34FE530F1BA4",
+			},
+		}})
+		expectTypedRoundTrip(t, "obs-silentmode", fixturePath, "setSilentMode(")
+	})
+
+	t.Run("searchSpotlight/empty-criteria", func(t *testing.T) {
+		var fixturePath = writeFixture("obs-spotlight", []map[string]any{{
+			"WFWorkflowActionIdentifier": "com.apple.Spotlight.SearchSpotlightIntent",
+			"WFWorkflowActionParameters": map[string]any{
+				"AppIntentDescriptor": appleIntentDescriptor("Spotlight", "com.apple.Spotlight", "SearchSpotlightIntent"),
+				"criteria":            "",
+				"UUID":                "5664CF3E-146B-473B-B2DD-BAA2F38A1B9B",
+			},
+		}})
+		expectTypedRoundTrip(t, "obs-spotlight", fixturePath, "searchSpotlight(")
+	})
+
+	t.Run("playAudiobook/reference-target", func(t *testing.T) {
+		// Mirrors dictionary.xml: a producer action names its output "Book";
+		// PlayAudiobookIntent carries it as a WFTextTokenAttachment reference.
+		var bookUUID = "244D9ABE-D15B-4D93-ACDE-C6C28F3DEE3A"
+		var fixturePath = writeFixture("obs-playaudio", []map[string]any{
+			{
+				"WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
+				"WFWorkflowActionParameters": map[string]any{
+					"CustomOutputName": "Book",
+					"UUID":             bookUUID,
+					"WFTextActionText": "I, Robot",
+				},
+			},
+			{
+				"WFWorkflowActionIdentifier": "com.apple.iBooksX.PlayAudiobookIntent",
+				"WFWorkflowActionParameters": map[string]any{
+					"AppIntentDescriptor": appleIntentDescriptor("Books", "com.apple.iBooksX", "PlayAudiobookIntent"),
+					"UUID":                "B32FC975-BA4B-4660-831E-971D017AD193",
+					"target": map[string]any{
+						"Value": map[string]any{
+							"OutputName": "Book",
+							"OutputUUID": bookUUID,
+							"Type":       "ActionOutput",
+						},
+						"WFSerializationType": "WFTextTokenAttachment",
+					},
+				},
+			},
+		})
+		expectTypedRoundTrip(t, "obs-playaudio", fixturePath, "playAudiobook(")
+	})
 }

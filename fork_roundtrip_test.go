@@ -454,6 +454,60 @@ func TestForkActionRoundTrips(t *testing.T) {
 		r.runForkActionRoundTrip("upcoming-dates",
 			"#include 'actions/calendar'\n\n@events = getUpcomingEvents(5, \"Specified Day\", \"May 20, 2025\")\n", nil)
 	})
+
+	t.Run("setSilentMode/integer-state", func(t *testing.T) {
+		r.runForkActionRoundTrip("silent-mode",
+			"setSilentMode(0)\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "setSilentMode(") {
+					t.Errorf("decompiled source lost setSilentMode call:\n%s", decompiled)
+				}
+			})
+	})
+
+	t.Run("searchSpotlight/criteria", func(t *testing.T) {
+		r.runForkActionRoundTrip("spotlight",
+			"searchSpotlight(\"cherri docs\")\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "searchSpotlight(") {
+					t.Errorf("decompiled source lost searchSpotlight call:\n%s", decompiled)
+				}
+			})
+	})
+
+	t.Run("createRemindersList/no-params", func(t *testing.T) {
+		r.runForkActionRoundTrip("remlist", "createRemindersList()\n", nil)
+	})
+
+	t.Run("startStopwatch/no-params", func(t *testing.T) {
+		r.runForkActionRoundTrip("stopwatch-start", "startStopwatch()\n", nil)
+	})
+
+	t.Run("stopStopwatch/no-params", func(t *testing.T) {
+		r.runForkActionRoundTrip("stopwatch-stop", "stopStopwatch()\n", nil)
+	})
+
+	t.Run("playAudiobook/reference-target", func(t *testing.T) {
+		r.runForkActionRoundTrip("play-audiobook",
+			"@book = \"I, Robot\"\nplayAudiobook(@book)\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "playAudiobook(@book)") &&
+					!strings.Contains(decompiled, "playAudiobook( @book )") {
+					t.Errorf("decompiled source lost playAudiobook target reference:\n%s", decompiled)
+				}
+			})
+	})
+
+	t.Run("openBook/reference-target", func(t *testing.T) {
+		r.runForkActionRoundTrip("open-book",
+			"@book = \"I, Robot\"\nopenBook(@book)\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "openBook(@book)") &&
+					!strings.Contains(decompiled, "openBook( @book )") {
+					t.Errorf("decompiled source lost openBook target reference:\n%s", decompiled)
+				}
+			})
+	})
 }
 
 func assertBase64DecodesAsEncode(t *testing.T, r *roundTripRunner, label string, source string) {
