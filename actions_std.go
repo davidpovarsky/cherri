@@ -268,7 +268,7 @@ var actions = map[string]*actionDefinition{
 		doc: selfDoc{
 			title:       "Search Spotlight",
 			description: "Opens Spotlight search, optionally with search criteria.",
-			category:    "Apps",
+			category:    "device",
 			subcategory: "Spotlight",
 		},
 		appIdentifier: "com.apple.Spotlight",
@@ -335,7 +335,7 @@ var actions = map[string]*actionDefinition{
 		doc: selfDoc{
 			title:       "Play Audiobook",
 			description: "Plays an audiobook in Books. `target` is expected to be a book or audiobook reference.",
-			category:    "books",
+			category:    "documents",
 			subcategory: "Books",
 		},
 		appIdentifier: "com.apple.iBooksX",
@@ -357,7 +357,7 @@ var actions = map[string]*actionDefinition{
 		doc: selfDoc{
 			title:       "Open Book",
 			description: "Opens a book in Books. `target` is expected to be a book reference.",
-			category:    "books",
+			category:    "documents",
 			subcategory: "Books",
 		},
 		appIdentifier: "com.apple.iBooksX",
