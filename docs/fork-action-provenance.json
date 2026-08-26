@@ -117,10 +117,13 @@
       "reason": "Real Shortcuts carry the dict form next to the legacy name key; improves emitted fidelity and structural round-trip while preserving the one-line UX.",
       "evidence": "corpus batch-001: OBSERVED x3 shapes containing WFWorkflow dict; verified round-trip via tests/shortcuts.cherri",
       "notes": [
-        "workflowIdentifier is a generated placeholder UUID because name-to-UUID resolution requires device data; Shortcuts resolves through workflowName. This derivation is INFERRED from existing runSelf behavior, not confirmed on-device."
+        "workflowIdentifier is a generated placeholder UUID because name-to-UUID resolution requires device data; Shortcuts resolves through workflowName. This derivation is INFERRED from existing runSelf behavior, not confirmed on-device.",
+        "Follow-up decompiler correction (same session as the App Intent descriptor generalization): run() now quotes plain WFWorkflowName literals on decompile and the run/runSelf post-check syncs the definition with the resolved name, so run targets survive round-trip instead of decompiling to run()."
       ],
       "supersededByUpstream": null,
-      "history": []
+      "history": [
+        "Follow-up correction: decompiled run() keeps its quoted shortcutName argument; run/runSelf descriptor check no longer leaves a mismatched definition after split matching."
+      ]
     },
     {
       "name": "conditional",
@@ -141,10 +144,13 @@
       "evidence": "corpus batch-001 x2 + shortcut-lib decoded samples x3 (5 observations, 2 independent sources, clients 3612/4033)",
       "notes": [
         "Keyword placement before the condition list avoids ambiguity with !x has-value forms and && chains.",
-        "Observed evidence covers single-comparison form; multi-condition predicate-form emission shares the same key placement."
+        "Observed evidence covers single-comparison form; multi-condition predicate-form emission shares the same key placement.",
+        "Follow-up correction (same session as the App Intent descriptor generalization): WFCondition is now always emitted on predicate templates. LessThan serializes as 0 and the previous omitempty tag silently dropped the operator from &&-chain templates, which also crashed decompilation of those exports."
       ],
       "supersededByUpstream": null,
-      "history": []
+      "history": [
+        "Follow-up correction: predicate templates always emit WFCondition (LessThan=0 no longer omitted); decompCondition treats absence as LessThan for older exports instead of panicking. Recorded with the infrastructure entry 'app intent descriptor generalization'."
+      ]
     },
     {
       "name": "base64Encode / base64Decode",
@@ -191,6 +197,20 @@
   ],
   "infrastructure": [
     {
+      "name": "app intent descriptor generalization",
+      "locations": [
+        "action.go",
+        "actions_catalog.go",
+        "actions_std.go",
+        "decompile.go"
+      ],
+      "firstForkCommit": null,
+      "change": "Generalized appIntent with explicit teamIdentifier, tri-state requiresAppInstallation (*bool), and a centralized legacy-Apple TeamIdentifier policy (appleAppIntent / emittedTeamIdentifier); appIntentDescriptor now emits typed values so booleans survive. Added the derived catalog appIntent facet (no parallel table; outer identifier stays in shortcutIdentifier). Decompiled structured values (plain dictionaries, serialized dictionaries, reference envelopes) now render as lossless dictionary literals in rawAction output instead of collapsing to empty strings, and split-action matching treats a single positive parameter match as decisive over the default action.",
+      "reason": "Phase 1 App Intent infrastructure: third-party descriptors must be representable without fabricating TeamIdentifier values, the shared catalog must describe emitted descriptors, and rawAction must remain a provably lossless fallback for unknown descriptor-bearing actions.",
+      "evidence": "Automated round-trip suite (fork_roundtrip_test.go, app_intent_test.go): 14 fork-action forms plus 6 sanitized App Intent fixtures prove compile -> decompile -> recompile structural equality under the corpus comparator policy; 8 curated actions locked byte-structurally backward compatible.",
+      "note": "Infrastructure provenance; no new Shortcut action. firstForkCommit recorded in a follow-up provenance-metadata commit per the non-circular workflow."
+    },
+    {
       "name": "action catalog completeness",
       "locations": [
         "action.go",
@@ -203,6 +223,17 @@
       "reason": "Analyzer and downstream consumers compared observed Shortcut shapes against incomplete key sets, misclassifying most control-flow and builtin emissions as VARIANT/NEW.",
       "evidence": "batch-001 analysis: VARIANT shapes 57 -> 9, occurrences 116 -> 10 after this change; zero regressions.",
       "note": "Metadata/tooling work, not a new Shortcut action."
+    },
+    {
+      "name": "windows output path resolution",
+      "locations": [
+        "output.go"
+      ],
+      "firstForkCommit": null,
+      "change": "getOutputPath derives the output file ending with filepath.Base instead of splitting on '/', so Windows paths (backslash separators, drive letters) resolve correctly instead of degrading to an empty directory and exiting; TestRoundTrip redirects decompiled output to a temporary directory rather than os.DevNull.",
+      "reason": "The mandated local verification suite (go test -run TestRoundTrip) could not run on Windows at all: -o targets and the os.DevNull redirect both exited with \"Output path '' does not exist!\".",
+      "evidence": "TestRoundTrip green on windows/amd64 after the change; identical failure reproduced at baseline ca91289 before it.",
+      "note": "Tooling/platform provenance, not an action addition. firstForkCommit recorded in a follow-up provenance-metadata commit."
     },
     {
       "name": "corpus analyzer App Intent detection",

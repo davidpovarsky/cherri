@@ -149,7 +149,10 @@ type WFConditionValue struct {
 }
 
 type WFConditionParam struct {
-	WFCondition               int             `plist:",omitempty"`
+	// WFCondition is always emitted: LessThan serializes as 0, which
+	// omitempty silently dropped, losing the operator from predicate
+	// templates and crashing decompilation of those exports.
+	WFCondition               int             `plist:"WFCondition"`
 	WFInput                   WFInputVariable `plist:",omitempty"`
 	WFConditionalActionString any             `plist:",omitempty"`
 	WFNumberValue             any             `plist:",omitempty"`

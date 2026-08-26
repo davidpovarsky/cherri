@@ -32,23 +32,11 @@ var fileLabelsMap = map[string]int{
 	"gray":   1,
 }
 
-var toggleAlarmIntent = appIntent{
-	name:                "Clock",
-	bundleIdentifier:    "com.apple.clock",
-	appIntentIdentifier: "ToggleAlarmIntent",
-}
+var toggleAlarmIntent = appleAppIntent("Clock", "com.apple.clock", "ToggleAlarmIntent")
 
-var createShortcutiCloudLinkIntent = appIntent{
-	name:                "Shortcuts",
-	bundleIdentifier:    "com.apple.shortcuts",
-	appIntentIdentifier: "CreateShortcutiCloudLinkAction",
-}
+var createShortcutiCloudLinkIntent = appleAppIntent("Shortcuts", "com.apple.shortcuts", "CreateShortcutiCloudLinkAction")
 
-var setMultitaskingModeIntent = appIntent{
-	name:                "ShortcutsActions",
-	bundleIdentifier:    "com.apple.ShortcutsActions",
-	appIntentIdentifier: "SetMultitaskingModeAction",
-}
+var setMultitaskingModeIntent = appleAppIntent("ShortcutsActions", "com.apple.ShortcutsActions", "SetMultitaskingModeAction")
 
 // actions is the data structure that determines every action the compiler knows about.
 // The key determines the identifier of the identifier that must be used in the syntax, it's value defines its behavior, etc. using an actionDefinition.
@@ -86,11 +74,7 @@ var actions = map[string]*actionDefinition{
 				optional:  true,
 			},
 		},
-		appIntent: appIntent{
-			name:                "Clock",
-			bundleIdentifier:    "com.apple.clock",
-			appIntentIdentifier: "CreateAlarmIntent",
-		},
+		appIntent: appleAppIntent("Clock", "com.apple.clock", "CreateAlarmIntent"),
 		check: func(args []actionArgument, _ *actionDefinition) {
 			if len(args) < 4 {
 				return
@@ -141,11 +125,7 @@ var actions = map[string]*actionDefinition{
 		},
 		appIdentifier: "com.apple.clock",
 		identifier:    "DeleteAlarmIntent",
-		appIntent: appIntent{
-			name:                "Clock",
-			bundleIdentifier:    "com.apple.clock",
-			appIntentIdentifier: "DeleteAlarmIntent",
-		},
+		appIntent: appleAppIntent("Clock", "com.apple.clock", "DeleteAlarmIntent"),
 		parameters: []parameterDefinition{
 			{
 				name:      "alarm",
@@ -1874,7 +1854,9 @@ var actions = map[string]*actionDefinition{
 				arguments = append(arguments, decompValue(action.WFWorkflowActionParameters["WFInput"]))
 			}
 			if action.WFWorkflowActionParameters["WFWorkflowName"] != nil {
-				arguments = append(arguments, decompReferenceValue(action.WFWorkflowActionParameters["WFWorkflowName"]))
+				// Reference envelopes decompile to variable names; plain names
+				// must be emitted as quoted string literals.
+				arguments = append(arguments, decompValue(action.WFWorkflowActionParameters["WFWorkflowName"]))
 			}
 			return
 		},

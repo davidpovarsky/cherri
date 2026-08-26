@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -153,9 +154,11 @@ func TestRoundTrip(t *testing.T) {
 				t.Skipf("compile output absent — run TestCherriNoSign first: %s", plistPath)
 			}
 
-			// Direct decompiler output to /dev/null so no .cherri files land in
-			// tests/, which would be picked up and compiled by TestCherriNoSign.
-			args.Args["output"] = os.DevNull
+			// Direct decompiler output to a temporary directory so no .cherri
+			// files land in tests/, which would be picked up and compiled by
+			// TestCherriNoSign. os.DevNull is not a writable file path on Windows.
+			var decompOutput = filepath.Join(t.TempDir(), "decompiled.cherri")
+			args.Args["output"] = decompOutput
 			args.Args["import"] = plistPath
 			decompile(importShortcut(args.Value("import")))
 			delete(args.Args, "output")

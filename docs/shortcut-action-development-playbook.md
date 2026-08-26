@@ -329,6 +329,19 @@ Complex behavior can include:
 
 Do not create a separate compiler path if Cherri already has an appropriate abstraction.
 
+## App Intent policy (Phase 1)
+
+Cherri's existing App Intent infrastructure is authoritative:
+
+- `actionDefinition.appIntent` plus `appIntentDescriptor()` are the only representation. There is no second App Intent engine, no parallel descriptor table, and no dedicated `appIntent(...)` source syntax; generic source syntax and filter/predicate machinery remain deferred follow-up work.
+- The outer `WFWorkflowActionIdentifier` is independent of the descriptor fields (`BundleIdentifier`, `Name`, `AppIntentIdentifier`, `TeamIdentifier`, optional flags). Never derive one from the other; classic-identifier hybrids such as Notes/filter actions carry both.
+- `TeamIdentifier` must not be fabricated for third-party intents. Curated Apple actions emit the confirmed placeholder `0000000000` through the centralized legacy policy (`appleAppIntent(...)`); third-party definitions set `teamIdentifier` explicitly or omit it entirely.
+- `ActionRequiresAppInstallation` is tri-state: unspecified omits the key; explicit true/false emit the boolean. Unspecified and false are never collapsed.
+- Known curated actions always win decompilation and compile through their typed definitions. Unknown or unrepresentable actions fall back to `rawAction(...)`, which is the lossless serialization fallback: outer identifier, complete descriptors, booleans, nested dictionaries, and variable/reference envelopes all survive. Do not invent new syntax to avoid rawAction.
+- The machine-readable catalog exposes an `appIntent` facet derived directly from the action definition. Palette, preview, Skill, and generated docs consume that facet; none of them maintain their own App Intent list.
+
+Curated third-party wrappers remain evidence-backed exceptions decided case by case; bulk additions are out of scope until the shared infrastructure stays proven correct.
+
 ## Decompiler requirements
 
 Adding compile support is not automatically complete.
