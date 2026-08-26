@@ -1,0 +1,15 @@
+// compile-only: Get Upcoming Events requires on-device calendar data at runtime
+
+// All parameters omitted (matches observed empty-parameter export shape)
+const allUpcoming = getUpcomingEvents()
+
+// Count only
+const nextFive = getUpcomingEvents(5)
+
+// Specifier values observed in real exports: 'Today', 'Specified Day'
+const todays = getUpcomingEvents(0, "Today")
+
+// Specified day with locale-formatted date string
+const onDate = getUpcomingEvents(10, "Specified Day", "May 20, 2025")
+
+show("✅ All tests passed")

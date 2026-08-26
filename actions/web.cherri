@@ -50,7 +50,7 @@ action 'safari.geturl' getCurrentURL()
 action showWebpage(text url: 'WFURL', bool ?useReader: 'WFEnterSafariReader')
 
 // [Doc]: [Safari] Run JavaScript on Webpage: Run some custom JavaScript on the current webpage in Safari.
-action runJavaScriptOnWebpage(text javascript: 'WFJavaScript')
+action runJavaScriptOnWebpage(text javascript: 'WFJavaScript', &variable ?input: 'WFInput')
 
 enum webpageDetail {
 	'Page Contents',

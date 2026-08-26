@@ -1,0 +1,69 @@
+name: Upstream Sync Check
+
+# Detects new upstream commits and opens a sync PR for human review.
+# Never auto-merges upstream into our branches.
+#
+# This is long-term infrastructure for the main branch only. Scheduled runs
+# always execute on the default branch; manual dispatches are pinned below so
+# experimental branches (agent/*) are never used as a sync base.
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cherri-upstream:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Check upstream Cherri
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git remote add upstream https://github.com/electrikmilk/cherri.git
+          git fetch upstream main
+
+          BEHIND=$(git rev-list --count HEAD..upstream/main)
+          echo "Behind upstream by $BEHIND commits."
+          if [ "$BEHIND" -eq 0 ]; then
+            echo "Up to date."
+            exit 0
+          fi
+
+          BRANCH="sync/upstream-main"
+          git branch -a --list "$BRANCH" | grep -q "$BRANCH" && {
+            echo "Sync branch already exists; a PR may already be open."
+            exit 0
+          }
+
+          git config user.name "cherri-sync-bot"
+          git config user.email "actions@github.com"
+          git checkout -b "$BRANCH"
+          if ! git merge --no-edit upstream/main; then
+            echo "::warning::Merge conflicts; manual resolution required."
+            git merge --abort
+            exit 1
+          fi
+
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Sync upstream electrikmilk/cherri main" \
+            --body "Automated upstream synchronization ($BEHIND commits). CI must pass; do not blind-merge." \
+            --draft

@@ -1,0 +1,19 @@
+// compile-only: interactive save/open/webview actions and runtime prompts cannot be asserted
+
+@content = "batch-001 provenance test"
+
+saveFile("Documents/batch001.txt", @content, true)
+
+@folder = selectFolder()
+saveFile("batch002.txt", @content, false, @folder)
+
+openApp("notes")
+
+openApp("com.apple.mobilesafari", true)
+
+runJavaScriptOnWebpage("document.title;", @content)
+
+@url = "https://www.icloud.com"
+openURL(@url)
+
+show("✅ All tests passed")

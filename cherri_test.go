@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -24,6 +25,10 @@ func TestCherri(_ *testing.T) {
 		fmt.Println(ansi("FAILED: unable to read tests directory", red))
 		panic(err)
 	}
+	// Fresh-process baseline per invocation (repeated runs via -count>N must
+	// not inherit enumerations/definitions from a previous iteration);
+	// fixtures then accumulate definitions among themselves as before.
+	resetParser()
 	loadStandardActions()
 	for _, file := range files {
 		if !strings.Contains(file.Name(), ".cherri") || file.Name() == "decomp-expected.cherri" || file.Name() == "decomp-me.cherri" {
@@ -38,7 +43,12 @@ func TestCherri(_ *testing.T) {
 		fmt.Println(ansi("✅  PASSED", green, bold))
 		fmt.Print("\n")
 
-		resetParser()
+		// Scratch-state-only reset: fixtures may rely on standard-action
+		// definitions accumulated by earlier fixtures, matching the
+		// documented order-dependence caveat; isolation-sensitive suites
+		// use resetParser() (full baseline) instead.
+		resetCompilerState()
+		loadStandardActions()
 
 		if signFailed {
 			fmt.Println(ansi("Using remote service HubSign", cyan, bold))
@@ -58,6 +68,23 @@ func TestCherriNoSign(t *testing.T) {
 
 func TestPackages(t *testing.T) {
 	args.Args["no-ansi"] = ""
+
+	// Snapshot pre-existing package artifacts so this test can never leave a
+	// root manifest/packages directory behind: a stray manifest makes every
+	// later compilation auto-install dependencies relative to its source dir.
+	var previousInfoPlistExisted = false
+	if _, statErr := os.Stat("info.plist"); statErr == nil {
+		previousInfoPlistExisted = true
+	}
+	t.Cleanup(func() {
+		if !previousInfoPlistExisted {
+			if _, statErr := os.Stat("info.plist"); statErr == nil {
+				if removeErr := os.Remove("info.plist"); removeErr != nil {
+					t.Logf("cleanup info.plist: %v", removeErr)
+				}
+			}
+		}
+	})
 
 	if _, statErr := os.Stat("info.plist"); !os.IsNotExist(statErr) {
 		var removeErr = os.Remove("info.plist")
@@ -107,6 +134,7 @@ func TestPackages(t *testing.T) {
 }
 
 func TestDecomp(t *testing.T) {
+	resetParser()
 	defer resetParser()
 
 	fmt.Println("Decompiling...")
@@ -137,7 +165,7 @@ func TestRoundTrip(t *testing.T) {
 
 	// Chosen because their plist structures are within the decompiler's action handlers.
 	var candidates = []string{
-		"tests/calc_unsigned.shortcut",
+		"tests/math_unsigned.shortcut",
 		"tests/numbers_unsigned.shortcut",
 		"tests/repeats_unsigned.shortcut",
 		"tests/conditionals_unsigned.shortcut",
@@ -153,9 +181,11 @@ func TestRoundTrip(t *testing.T) {
 				t.Skipf("compile output absent — run TestCherriNoSign first: %s", plistPath)
 			}
 
-			// Direct decompiler output to /dev/null so no .cherri files land in
-			// tests/, which would be picked up and compiled by TestCherriNoSign.
-			args.Args["output"] = os.DevNull
+			// Direct decompiler output to a temporary directory so no .cherri
+			// files land in tests/, which would be picked up and compiled by
+			// TestCherriNoSign. os.DevNull is not a writable file path on Windows.
+			var decompOutput = filepath.Join(t.TempDir(), "decompiled.cherri")
+			args.Args["output"] = decompOutput
 			args.Args["import"] = plistPath
 			decompile(importShortcut(args.Value("import")))
 			delete(args.Args, "output")
@@ -170,6 +200,8 @@ func TestRoundTrip(t *testing.T) {
 func TestActionIdentifiers(t *testing.T) {
 	args.Args["no-ansi"] = ""
 	args.Args["skip-sign"] = ""
+	delete(args.Args, "comments")
+	resetParser()
 	loadStandardActions()
 
 	currentTest = "tests/zz-action-identifiers.cherri"
@@ -229,49 +261,5 @@ func compile() {
 }
 
 func resetParser() {
-	lines = []string{}
-	chars = []rune{}
-	char = -1
-	idx = 0
-	lineIdx = 0
-	lineCharIdx = -1
-	controlFlowGroups = map[int]controlFlowGroup{}
-	groupingIdx = 0
-	variables = map[string]varValue{}
-	iconColor = -1263359489
-	iconGlyph = 61440
-	clientVersion = "900"
-	iosVersion = 26.0
-	questions = map[string]*question{}
-	hasShortcutInputVariables = false
-	tabLevel = 0
-	definedWorkflowTypes = []string{}
-	inputs = []string{}
-	outputs = []string{}
-	noInput = map[string]any{}
-	tokens = []token{}
-	included = []string{}
-	includes = []include{}
-	workflowName = ""
-	menus = map[string][]varValue{}
-	uuids = map[string]string{}
-	functions = map[string]*function{}
-	shortcut = Shortcut{}
-	actionIndex = 0
-	code.Reset()
-	varUUIDs = nil
-	constUUIDs = nil
-	identifierMap = nil
-	currentVariableValue = ""
-	decompilingText = false
-	decompilingDictionary = false
-	macDefinition = false
-	setMacDefinition = false
-	appIds = nil
-	pasteables = nil
-	usedEnums = nil
-	usingFunctions = false
-	currentCategory = ""
-	repeatItemIndex = 1
-	repeatIndexDepth = 1
+	resetCompilerStateFully()
 }

@@ -57,6 +57,14 @@ action 'properties.calendarevents' getEventDetail(variable event: 'WFInput', eve
 // [Doc]: [Calendars] Remove Events: Remove an event.
 action removeEvents(variable events: 'WFInputEvents', bool ?includeFutureEvents: 'WFCalendarIncludeFutureEvents' = false)
 
+// dateSpecifier values observed in real exports: 'Today', 'Specified Day'.
+// When dateSpecifier is 'Specified Day', provide specifiedDate as a
+// locale-formatted date string. Calendar filtering is not yet supported:
+// the observed WFGetUpcomingItemCalendar payload embeds device-generated
+// picker data that cannot be reproduced from source alone.
+// [Doc]: [Calendars] Get Upcoming Events: Get upcoming events from the calendars on this device.
+action 'getupcomingevents' getUpcomingEvents(number ?count: 'WFGetUpcomingItemCount', text ?dateSpecifier: 'WFDateSpecifier', text ?specifiedDate: 'WFSpecifiedDate'): variable
+
 // [Doc]: [Reminders] Open Reminders List
 action 'showlist' openRemindersList(variable list: 'WFList')
 

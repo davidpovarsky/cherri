@@ -883,6 +883,9 @@ func makeConditionalAction(t *token) {
 		conditionalParams["WFControlFlowMode"] = startStatement
 
 		var cond = t.value.(WFConditions)
+		if cond.legacyComparison {
+			conditionalParams["WFConditionalLegacyComparisonBehavior"] = true
+		}
 		if len(cond.conditions) == 1 || iosVersion < 18 {
 			var firstCondition = cond.conditions[0]
 			var firstArg = firstCondition.arguments[0]

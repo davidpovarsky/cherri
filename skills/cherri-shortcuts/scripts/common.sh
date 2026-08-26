@@ -7,7 +7,9 @@ SKILL_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 : "${CHERRI_HOME:=/var/minis/cherri}"
 : "${CHERRI_REPO:=https://github.com/davidpovarsky/cherri.git}"
 : "${CHERRI_REF:=main}"
-: "${CHERRI_DOCS_REPO:=https://github.com/electrikmilk/cherrilang.org.git}"
+# Our fork is the default documentation source for this platform so newly
+# supported actions document before upstream merges them. Override freely.
+: "${CHERRI_DOCS_REPO:=https://github.com/davidpovarsky/cherrilang.org.git}"
 : "${CHERRI_DOCS_REF:=main}"
 : "${CHERRI_DOCS_DIR:=$CHERRI_HOME/docs}"
 

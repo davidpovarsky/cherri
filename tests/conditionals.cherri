@@ -97,4 +97,9 @@ if @r != "right" { mustOutput("❌ FAIL: has value", "❌ FAIL: has value") }
 if !@empty { @r = "right" }
 if @r != "right" { mustOutput("❌ FAIL: is empty", "❌ FAIL: is empty") }
 
+// legacy comparison behavior flag (compiles to WFConditionalLegacyComparisonBehavior)
+@r = "wrong"
+if legacy @five == 5 { @r = "right" }
+if @r != "right" { mustOutput("❌ FAIL: legacy flag", "❌ FAIL: legacy flag") }
+
 show("✅ All tests passed")

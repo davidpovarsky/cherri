@@ -112,6 +112,14 @@ func main() {
 		os.Exit(0)
 	}
 
+	if args.Using("actions-json") {
+		markBuiltins()
+		defineRawAction()
+		loadStandardActions()
+		generateActionsJSON()
+		os.Exit(0)
+	}
+
 	if args.Using("glyph") {
 		handleGlyphSearch()
 		os.Exit(0)
