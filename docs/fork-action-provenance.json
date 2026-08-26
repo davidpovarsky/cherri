@@ -204,7 +204,7 @@
         "actions_std.go",
         "decompile.go"
       ],
-      "firstForkCommit": null,
+      "firstForkCommit": "71a6b798dd5f2bf9bcaba8bd7b45eb8d878bd98c",
       "change": "Generalized appIntent with explicit teamIdentifier, tri-state requiresAppInstallation (*bool), and a centralized legacy-Apple TeamIdentifier policy (appleAppIntent / emittedTeamIdentifier); appIntentDescriptor now emits typed values so booleans survive. Added the derived catalog appIntent facet (no parallel table; outer identifier stays in shortcutIdentifier). Decompiled structured values (plain dictionaries, serialized dictionaries, reference envelopes) now render as lossless dictionary literals in rawAction output instead of collapsing to empty strings, and split-action matching treats a single positive parameter match as decisive over the default action.",
       "reason": "Phase 1 App Intent infrastructure: third-party descriptors must be representable without fabricating TeamIdentifier values, the shared catalog must describe emitted descriptors, and rawAction must remain a provably lossless fallback for unknown descriptor-bearing actions.",
       "evidence": "Automated round-trip suite (fork_roundtrip_test.go, app_intent_test.go): 14 fork-action forms plus 6 sanitized App Intent fixtures prove compile -> decompile -> recompile structural equality under the corpus comparator policy; 8 curated actions locked byte-structurally backward compatible.",
@@ -229,7 +229,7 @@
       "locations": [
         "output.go"
       ],
-      "firstForkCommit": null,
+      "firstForkCommit": "71a6b798dd5f2bf9bcaba8bd7b45eb8d878bd98c",
       "change": "getOutputPath derives the output file ending with filepath.Base instead of splitting on '/', so Windows paths (backslash separators, drive letters) resolve correctly instead of degrading to an empty directory and exiting; TestRoundTrip redirects decompiled output to a temporary directory rather than os.DevNull.",
       "reason": "The mandated local verification suite (go test -run TestRoundTrip) could not run on Windows at all: -o targets and the os.DevNull redirect both exited with \"Output path '' does not exist!\".",
       "evidence": "TestRoundTrip green on windows/amd64 after the change; identical failure reproduced at baseline ca91289 before it.",
