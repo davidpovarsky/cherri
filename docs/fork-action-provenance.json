@@ -383,6 +383,22 @@
       "reason": "Once base64Encode/base64Decode both declared WFBase64LineBreakMode, their match scores tied for encode payloads and the winner depended on map iteration order; the static 'input':'Encode' marker was never consulted. Scoring fixed static keys adds deterministic discrimination without changing any candidate's existing score downward.",
       "evidence": "encode-with-lineBreakMode payload decompiled as base64Decode before the fix, base64Encode after; plain encode/decode round-trips unchanged; TestDecomp passes.",
       "note": "Compiler/decompiler infrastructure motivated by base64Encode work; affects identifier-name resolution generally."
+    },
+    {
+      "name": "self-contained standard-action include reconstruction in decompiler",
+      "locations": [
+        "action.go (actionDefinition.includeCategory, collectDefinedAction, collectToggleSetAction)",
+        "actions_std.go (checkMissingStandardInclude, markDecompiledInclude)",
+        "decompile.go (decompiledIncludes, emitDecompiledInclude, makeActionCallCode)",
+        "compiler_state.go (resetCompilerState)",
+        "ios_bridge.go (resetMobileDecompileState)",
+        "decomp_includes_test.go"
+      ],
+      "firstForkCommit": "5eb40d0491969e4624a49c4c3c92033ce09b4db3",
+      "change": "Decompiled Cherri source is now self-contained: every standard action include ('actions/<cat>') whose actions appear in the reconstructed source is emitted exactly once, automatically, instead of only for the first action that triggered a category probe.",
+      "reason": "Acceptance Test 01: a Shortcut with show(...), base64Encode(..., \"None\"), getUpcomingEvents(3) and startStopwatch() decompiled with getUpcomingEvents(3) but without #include 'actions/calendar', so the generated source failed to recompile. checkMissingStandardInclude probes categories by loading definitions into the global actions map; actions matching from side-effect-loaded categories never emitted their include. The general invariant now covers all action categories, not a calendar special case.",
+      "evidence": "Regression suite decomp_includes_test.go: acceptance-01 exact semantics (compile -> decompile -> recompile PASS with calendar+crypto includes), multi-category (calendar+crypto+web+documents) each exactly once, basic actions emit no includes, duplicate category single include, deterministic include order, in-process state isolation, sanitized external fixture round trip. go test ./... -count=1 PASS (local scratch build, Go 1.23; CI Go 1.24).",
+      "note": "Compiler/decompiler infrastructure provenance; no new Shortcut action. firstForkCommit recorded in follow-up provenance-metadata commit."
     }
   ]
 }
