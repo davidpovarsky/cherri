@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"testing"
 
 	args "github.com/electrikmilk/args-parser"
@@ -21,20 +20,26 @@ import (
 // and assert the standard diagnostics fire instead of a successful compile.
 // No parallel validation engine is involved.
 
-// The package initializer pre-populates some builtin definitions, so emptiness
-// of the actions map cannot indicate whether DSL-defined actions were loaded.
-var loadTestActionsOnce sync.Once
-
+// loadTestStandardActions establishes a clean definition baseline and loads
+// the DSL-defined standard actions. Safe to call repeatedly between
+// compilations: resetParser rolls back the definition caches and include
+// bookkeeping first, so the reload observes fresh-process conditions.
 func loadTestStandardActions() {
-	loadTestActionsOnce.Do(loadStandardActions)
+	resetParser()
+	loadStandardActions()
 }
 
 // expectCompileError compiles source expecting Cherri's parser/type checker to
-// abort with a diagnostic containing wantSubstring.
-func expectCompileError(t *testing.T, label string, source string, wantSubstring string) {
+// abort with a diagnostic containing wantSubstring. Optional setup functions
+// run after the definition baseline is established (e.g. seeding reference
+// state that resetParser would otherwise clear).
+func expectCompileError(t *testing.T, label string, source string, wantSubstring string, setup ...func()) {
 	t.Helper()
 
 	loadTestStandardActions()
+	for _, setupFn := range setup {
+		setupFn()
+	}
 
 	var previousNoAnsi, hadNoAnsi = args.Args["no-ansi"]
 	delete(args.Args, "no-ansi")
@@ -147,24 +152,32 @@ func TestNegativeSaveFileMissingRequiredPath(t *testing.T) {
 }
 
 func TestNegativeBase64EncodeRejectsReferenceInput(t *testing.T) {
-	// Seed a decoded --refs-style reference so the bare identifier resolves
-	// through the normal reference machinery rather than failing as unknown.
-	references["negFolderRef"] = map[string]any{"fileLocation": map[string]any{}}
-	defer delete(references, "negFolderRef")
 	expectCompileError(t, "base64-ref-input",
 		"base64Encode(negFolderRef)\n",
-		"not allowed for argument 'encodeInput'")
+		"not allowed for argument 'encodeInput'",
+		// Seed a decoded --refs-style reference so the bare identifier resolves
+		// through the normal reference machinery rather than failing as unknown.
+		func() {
+			references["negFolderRef"] = map[string]any{"fileLocation": map[string]any{}}
+			t.Cleanup(func() { delete(references, "negFolderRef") })
+		})
 }
 
 func TestPositiveForkReferenceParameters(t *testing.T) {
+	loadTestStandardActions()
+
 	references["posFolderRef"] = map[string]any{"displayName": "Documents", "fileLocation": map[string]any{}}
 	defer delete(references, "posFolderRef")
 
-	loadTestStandardActions()
+	var previousDebug, hadDebug = args.Args["debug"]
 	args.Args["debug"] = ""
+	var previousSkipSign, hadSkipSign = args.Args["skip-sign"]
 	args.Args["skip-sign"] = ""
 	delete(args.Args, "no-ansi")
-
+	defer func() {
+		restoreArg(args.Args, "debug", previousDebug, hadDebug)
+		restoreArg(args.Args, "skip-sign", previousSkipSign, hadSkipSign)
+	}()
 	var dir = t.TempDir()
 	var file = filepath.Join(dir, "positive-refs.cherri")
 	var source = "@content = \"data\"\n" +

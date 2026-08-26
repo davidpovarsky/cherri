@@ -203,7 +203,7 @@ Use `cherri --action=actionName` to look up a specific action's signature.
     ↓ createShortcut()   — serialize to plist, sign, write .shortcut
 ```
 
-**Critical:** The compiler uses heavy global state (see `resetParser()` in `cherri_test.go` for the full list). `resetParse()` (lowercase) rebuilds `contents`/`chars`/`lines` after any source modification. `resetParser()` (in test file) resets all global state between test runs.
+**Critical:** The compiler uses heavy global state. `resetParse()` (lowercase) rebuilds `contents`/`chars`/`lines` after any source modification. `compiler_state.go` owns the single authoritative baseline: `resetCompilerState()` restores every per-compilation mutable global, and `resetCompilerStateFully()` additionally rolls the process-global definition caches (`actions`, `enumerations`, include bookkeeping) back to a fresh-process snapshot captured in `init()`. The test helper `resetParser()` delegates to the full variant.
 
 ## Key Files
 
@@ -281,7 +281,7 @@ The test runner calls `compile()` which calls `main()`, so `os.Args[1]` is set t
 
 **Verification hierarchy:** On macOS, always run `go test -run TestCherri` as the final automated check — it is never sufficient to stop at `TestCherriNoSign`. `TestCherriNoSign` only confirms compilation does not panic; it does not validate plist structure. The signing step in `TestCherri` is the only automated confirmation that the generated plist is structurally accepted by the Shortcuts runtime. Use `TestCherriNoSign` only for rapid iteration or on non-macOS hosts. After `TestCherri` passes, the user performs the final verification: open the compiled `.shortcut` in QuickLook and import it into the Shortcuts app to confirm it runs correctly — this step cannot be automated.
 
-**Sequential test isolation:** The test functions are not designed to run sequentially in the same process. The global `actions` map and related state accumulate across test functions, so running `go test` (all tests together) may produce failures that do not occur in CI. Always run tests individually with `-run`, matching how the GitLab pipeline executes them.
+**Sequential test isolation:** The suite is sequential-safe as of the centralized `compiler_state.go` baseline: `TestCompileStateIsolation` and `TestDecompileStateIsolation` prove that compile/decompile operations separated only by the authoritative reset produce identical output, and `go test ./... -count=5` is expected to pass. Two deliberate exceptions remain: fixtures inside `TestCherri`/`TestCherriNoSign` share accumulated standard-action definitions (scratch-state-only reset between fixtures, fresh-process baseline at suite start), and end-to-end round-trip suites run phases through a cherri subprocess for full process isolation.
 
 **Dual-purpose test files:** Test files are designed to both compile clean in CI *and* run in the Shortcuts app to verify runtime behavior. Each assertable test file follows this pattern:
 

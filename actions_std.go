@@ -1971,6 +1971,7 @@ func includeStandardActions() {
 	}
 	lines = append(standardIncludes, lines...)
 	resetParse()
+	includedStandardActions = true
 }
 
 func checkMissingStandardInclude(identifier *string, parsing bool) {

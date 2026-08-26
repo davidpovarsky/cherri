@@ -355,7 +355,7 @@ cherri --action=actionName
 sh skills/cherri-shortcuts/scripts/self-test.sh
 ```
 
-Run test functions individually when required by Cherri's global-state test isolation; see the technical reference for the exact caveat.
+The compiler's per-compilation mutable state has a single authoritative reset (`compiler_state.go`); the full suite is sequential-safe and `go test -count=5` is expected to pass. Round-trip suites still isolate phases in subprocesses.
 
 ## Load Detailed Technical Reference Only When Needed
 
