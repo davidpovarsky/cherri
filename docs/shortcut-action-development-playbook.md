@@ -436,6 +436,20 @@ the corresponding provenance entry MUST be created or updated in the same task. 
 
 Record the change, reason, evidence source (corpus batch / observed counts), affected files, and the first fork commit once known. Do not duplicate full parameter schemas or implementation code — point at the implementation; Cherri definitions remain the only semantics source.
 
+### Non-circular firstForkCommit workflow (required)
+
+A commit cannot contain its own final SHA: editing the registry inside the implementation commit would change that commit's hash. Therefore:
+
+```text
+1. implement + test the change
+2. commit the implementation          -> stable implementation SHA
+3. record firstForkCommit values in a SEPARATE provenance-metadata commit
+   (batch several entries into one metadata commit when practical)
+4. validate referenced SHAs and push both commits
+```
+
+`TestForkActionProvenanceRegistry` enforces this: every finalized entry must carry a full 40-hex `firstForkCommit`, and when a `.git` directory is present the test verifies the commit exists and is an ancestor of HEAD. Never amend an implementation commit after a registry entry references it; if a rewrite is unavoidable, update all referencing entries in the next provenance-metadata commit.
+
 ### What does NOT belong
 
 - Entries for untouched inherited actions: **no entry means "inherited from upstream"**. Keep the registry small.

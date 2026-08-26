@@ -98,6 +98,8 @@ Do not force-push upstream state over local work.
 
 Any fork-specific action addition or material action change (parameters, serialization, compiler/decompiler handling, fork-specific metadata) must be recorded in `docs/fork-action-provenance.json` in the same task. No entry means the action is inherited from upstream untouched. See `docs/shortcut-action-development-playbook.md` for the full policy and recovery procedure.
 
+Provenance commits are non-circular: commit the implementation first, then record its SHA in `firstForkCommit` via a separate follow-up provenance-metadata commit before pushing. Never amend an implementation commit that a registry entry already references.
+
 ## Branch and Commit Discipline
 
 Work on the branch explicitly requested by the user/task. Do not merge to `main` unless explicitly asked.

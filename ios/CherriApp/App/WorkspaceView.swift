@@ -274,15 +274,28 @@ struct WorkspaceView: View {
     }
 
     // Compact shared metadata for preview-shortcut's generic fallback path:
-    // only identifiers missing a built-in renderer need entries, but passing
-    // all titled actions keeps the bridge dumb and stable.
+    // titles plus catalog-derived parameter label maps (plist key -> name)
+    // let unknown/new actions render meaningful cards without a second
+    // hand-maintained preview database.
     static func previewMetadataJSON(from actions: [CherriActionInfo]) -> String? {
-        var metadata: [String: [String: String]] = [:]
+        var metadata: [String: [String: Any]] = [:]
         for action in actions {
             guard let identifier = action.shortcutIdentifier,
                   let title = action.title,
                   !title.isEmpty else { continue }
-            metadata[identifier] = ["title": title]
+
+            var parameterLabels: [String: String] = [:]
+            for parameter in action.parameters ?? [] {
+                if let key = parameter.key, !key.isEmpty {
+                    parameterLabels[key] = parameter.name
+                }
+            }
+
+            var entry: [String: Any] = ["title": title]
+            if !parameterLabels.isEmpty {
+                entry["params"] = parameterLabels
+            }
+            metadata[identifier] = entry
         }
         guard !metadata.isEmpty,
               let data = try? JSONSerialization.data(withJSONObject: metadata) else { return nil }

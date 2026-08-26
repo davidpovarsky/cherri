@@ -1291,6 +1291,9 @@ func collectLegacyComparisonFlag(wfConditions *WFConditions) {
 
 	tokenAhead("legacy")
 	skipInlineWhitespace()
+	if char == '{' {
+		parserError("Expected condition after 'legacy' keyword in if statement.")
+	}
 	wfConditions.legacyComparison = true
 }
 

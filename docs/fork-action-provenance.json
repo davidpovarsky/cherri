@@ -21,7 +21,18 @@
     },
     "noEntryMeans": "Inherited from upstream and untouched by this fork. Do not create entries for unchanged actions.",
     "supersededByUpstream": "Set to the upstream SHA/subject that later provided equivalent functionality natively. Keep the entry and append to history instead of deleting it, then decide whether to drop, keep, or reconcile the fork implementation.",
-    "firstForkCommit": "The fork commit that introduced the change. Recorded once the change is committed."
+    "firstForkCommit": "The fork commit that INTRODUCED the change. Never the commit that records the metadata itself. See workflow below."
+  },
+  "workflow": {
+    "nonCircularProvenance": [
+      "1. Implement and test the action/infrastructure change.",
+      "2. Commit the implementation. This produces a stable implementation SHA.",
+      "3. In a SEPARATE follow-up commit, record firstForkCommit values referencing that implementation SHA (batch several entries into one provenance-metadata commit if practical).",
+      "4. Validate referenced SHAs (TestForkActionProvenanceRegistry does this when .git is present), then push both commits.",
+      "5. Never amend an already-referenced implementation commit: doing so invalidates every recorded SHA pointing at it.",
+      "6. If an implementation commit must be rewritten for safety reasons, update all referencing entries in the next provenance-metadata commit."
+    ],
+    "whySeparateCommits": "A commit cannot contain its own final SHA: editing the registry inside the implementation commit would change that commit's hash. The registry therefore always points one commit backwards, which is stable."
   },
   "recovery": {
     "inspectOriginal": "git show <baselineSha>:<upstreamLocation>",
@@ -41,7 +52,7 @@
       "forkLocations": [
         "actions/web.cherri"
       ],
-      "firstForkCommit": "ea30c2e23d2b7621a7129d71e5335386e8849b09",
+      "firstForkCommit": "4acb7819c0a9c7e34c3544e2994d14e1835db060",
       "change": "Added optional input parameter (&variable ?input: 'WFInput') so compiled actions can carry the webpage-content input real Shortcuts serialize.",
       "reason": "Every observed real-world sample carried WFInput; upstream definition emitted WFJavaScript only.",
       "evidence": "corpus batch-001: OBSERVED x4 (4 independent shapes), analysis/batch-001/variants.json (pre-fix)",
@@ -59,7 +70,7 @@
       "forkLocations": [
         "actions/documents.cherri"
       ],
-      "firstForkCommit": "ea30c2e23d2b7621a7129d71e5335386e8849b09",
+      "firstForkCommit": "4acb7819c0a9c7e34c3544e2994d14e1835db060",
       "change": "Added optional folder reference parameter (&variable ?folder: 'WFFolder') alongside the legacy path-based destination.",
       "reason": "Modern Shortcuts serialize Save File with WFFolder {displayName,fileLocation,filename} next to WFFileDestinationPath and WFAskWhereToSave; legacy path behavior preserved.",
       "evidence": "corpus batch-001: OBSERVED x3 shapes carrying WFFolder + WFAskWhereToSave",
@@ -79,7 +90,7 @@
       "forkLocations": [
         "actions_std.go"
       ],
-      "firstForkCommit": "ea30c2e23d2b7621a7129d71e5335386e8849b09",
+      "firstForkCommit": "4acb7819c0a9c7e34c3544e2994d14e1835db060",
       "change": "Added optional slideOver bool parameter (WFOpenInSlideOver) and matching custom-decompiler argument emission; made replaceAppIDs skip non-string arguments so boolean parameters coexist with app ID replacement.",
       "reason": "Real samples carry WFOpenInSlideOver:true (x2) and fuller WFSelectedApp dicts; slide-over was unrepresentable.",
       "evidence": "corpus batch-001: OBSERVED x6 shapes; WFOpenInSlideOver x2; round-trip verified via tests/corpus-batch001.cherri",
@@ -101,7 +112,7 @@
         "actions_std.go",
         "actions/shortcuts.cherri"
       ],
-      "firstForkCommit": "ea30c2e23d2b7621a7129d71e5335386e8849b09",
+      "firstForkCommit": "4acb7819c0a9c7e34c3544e2994d14e1835db060",
       "change": "Moved run() from declarative DSL (actions/shortcuts.cherri, definition removed) to a builtin in actions_std.go so compilation emits the modern WFWorkflow reference dict {workflowIdentifier,isSelf:false,workflowName} together with the legacy WFWorkflowName key, mirroring the existing runSelf pattern; added decompiler support emitting both arguments.",
       "reason": "Real Shortcuts carry the dict form next to the legacy name key; improves emitted fidelity and structural round-trip while preserving the one-line UX.",
       "evidence": "corpus batch-001: OBSERVED x3 shapes containing WFWorkflow dict; verified round-trip via tests/shortcuts.cherri",
@@ -124,7 +135,7 @@
         "decompile.go",
         "actions_catalog.go"
       ],
-      "firstForkCommit": null,
+      "firstForkCommit": "e15eb8a807f7d16edca9c66558802b9fb1ff85ba",
       "change": "Added optional `legacy` keyword in if statements (`if legacy <conditions> {`). When present, compilation emits WFConditionalLegacyComparisonBehavior:true on the conditional start action; the decompiler reconstructs the keyword when the flag is present. Output is unchanged unless the keyword is used. Catalog compilerConstruct emittedKeys extended accordingly.",
       "reason": "Real modern Shortcuts re-saving conditionals emit WFConditionalLegacyComparisonBehavior; without the keyword the flag was unrepresentable and round-trip lossy.",
       "evidence": "corpus batch-001 x2 + shortcut-lib decoded samples x3 (5 observations, 2 independent sources, clients 3612/4033)",
@@ -145,7 +156,7 @@
       "forkLocations": [
         "actions/crypto.cherri"
       ],
-      "firstForkCommit": null,
+      "firstForkCommit": "e15eb8a807f7d16edca9c66558802b9fb1ff85ba",
       "change": "Added optional trailing text parameter lineBreakMode ('WFBase64LineBreakMode') to both base64Encode and base64Decode; omitted when not provided. Documented values: 'None' (observed in real modern export), 'Every 64 Characters', 'Every 76 Characters' (ToolKit v78 corroboration); value domain intentionally left incomplete, modeled as pass-through text.",
       "reason": "Real Shortcuts serialize the line-break mode next to WFInput/WFEncodeMode; previously unrepresentable.",
       "evidence": "local batch-001 x1 (client 3612, 'None') + playground golden x1 (historical client, 'None'); ToolKit v78 enum cases corroborate domain",
@@ -165,7 +176,7 @@
       "forkLocations": [
         "actions/calendar.cherri"
       ],
-      "firstForkCommit": null,
+      "firstForkCommit": "e15eb8a807f7d16edca9c66558802b9fb1ff85ba",
       "change": "New declarative action getUpcomingEvents(number ?count: 'WFGetUpcomingItemCount', text ?dateSpecifier: 'WFDateSpecifier', text ?specifiedDate: 'WFSpecifiedDate'): variable. All parameters optional; omitted keys are not emitted. Output type variable (container reader pattern).",
       "reason": "Action absent from upstream; corpus evidence matured to two independent real corpora with an empty-parameter shape proving optionality of every key.",
       "evidence": "corpus batch-001 x1 (full shape incl. WFSpecifiedDate) + shortcut-lib x2 (full + empty shapes); dateSpecifier values 'Today' and 'Specified Day' observed across both sources",
@@ -187,7 +198,7 @@
         "actions_std.go",
         "tools/shortcut-corpus/normalize.go"
       ],
-      "firstForkCommit": "ea30c2e23d2b7621a7129d71e5335386e8849b09",
+      "firstForkCommit": "4acb7819c0a9c7e34c3544e2994d14e1835db060",
       "change": "Catalog v2: publishes emittedKeys (static appendParams keys plus dynamically written keys declared per builtin) and compilerConstruct entries (conditional, menu, repeat, repeat.each, setVariable, appendVariable, dictionaryValue) so --actions-json represents everything the compiler can emit.",
       "reason": "Analyzer and downstream consumers compared observed Shortcut shapes against incomplete key sets, misclassifying most control-flow and builtin emissions as VARIANT/NEW.",
       "evidence": "batch-001 analysis: VARIANT shapes 57 -> 9, occurrences 116 -> 10 after this change; zero regressions.",
@@ -199,7 +210,7 @@
         "tools/shortcut-corpus/normalize.go",
         "tools/shortcut-corpus/analyze_test.go"
       ],
-      "firstForkCommit": "ea30c2e23d2b7621a7129d71e5335386e8849b09",
+      "firstForkCommit": "4acb7819c0a9c7e34c3544e2994d14e1835db060",
       "change": "requiresCustomImplementation now treats AppIntentDescriptor as a complex parameter key and detects plain nested descriptor dictionaries lacking WFSerializationType markers.",
       "reason": "App Intent-backed actions (e.g. is.workflow.actions.filter.notes) were misclassified SAFE_CANDIDATE instead of CUSTOM_IMPLEMENTATION_REQUIRED.",
       "evidence": "batch-001: filter.notes reclassified correctly; unit test TestNestedPlainAppIntentDescriptorRequiresCustomImplementation.",
@@ -212,7 +223,7 @@
         "tools/shortcut-corpus/analyze_test.go",
         ".gitignore"
       ],
-      "firstForkCommit": null,
+      "firstForkCommit": "153063e8a95ef38a1d9fc5f0078d5dbded0a9163",
       "change": "Candidate discovery now accepts .xml files (canonical Apple Shortcut export serialization); parse-time validation still rejects non-Shortcut XML. Gitignore extended to corpus-state*.json and root catalog artifacts.",
       "reason": "Both external real corpora (shortcut-lib decoded samples, Shortcuts Playground golden XML) ship XML plists; zero files were ingestible without it.",
       "evidence": "session 2 external expansion: shortcut-lib 20/20 and golden 19/19 files ingested after the change, 0 before; unit test TestXMLShortcutFilesAreDiscovered.",
@@ -223,7 +234,7 @@
       "locations": [
         "decompile.go (scoreActionMatch)"
       ],
-      "firstForkCommit": null,
+      "firstForkCommit": "e15eb8a807f7d16edca9c66558802b9fb1ff85ba",
       "change": "Split-action matching now scores static DSL appendParams maps in addition to appendParamsFunc-derived parameters when choosing between multiple Cherri names sharing one identifier.",
       "reason": "Once base64Encode/base64Decode both declared WFBase64LineBreakMode, their match scores tied for encode payloads and the winner depended on map iteration order; the static 'input':'Encode' marker was never consulted. Scoring fixed static keys adds deterministic discrimination without changing any candidate's existing score downward.",
       "evidence": "encode-with-lineBreakMode payload decompiled as base64Decode before the fix, base64Encode after; plain encode/decode round-trips unchanged; TestDecomp passes.",
