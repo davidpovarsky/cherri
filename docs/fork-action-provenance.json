@@ -193,9 +193,122 @@
       ],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "setSilentMode",
+      "identifier": "com.apple.ShortcutsActions.SetSilentModeAction",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "5fecc00cc55b23e0da8733d26eb830aa3a47b970",
+      "change": "New builtin setSilentMode(state: integer): static appendParams operation='turn' plus per-instance UUID; Apple legacy placeholder descriptor via appleAppIntent.",
+      "reason": "Real batch-001 export carries operation 'turn' + integer state next to the ShortcutsActions descriptor; silent-mode control was unrepresentable.",
+      "evidence": "corpus batch-001 x1 (state:0 observed; only value seen, so no default and no bool coercion - modeled as evidence-backed integer)",
+      "notes": [
+        "state enum domain unverified beyond 0; free integer by design."
+      ],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "searchSpotlight",
+      "identifier": "com.apple.Spotlight.SearchSpotlightIntent",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "5fecc00cc55b23e0da8733d26eb830aa3a47b970",
+      "change": "New builtin searchSpotlight(text criteria): required text parameter plus per-instance UUID emission.",
+      "reason": "Batch-001 real export shows descriptor + criteria text (observed empty); Spotlight search was unrepresentable.",
+      "evidence": "corpus batch-001 x1 (criteria present but empty; optionality unproven either way, therefore required)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "createRemindersList",
+      "identifier": "com.apple.reminders.TTRCreateListAppIntent",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "5fecc00cc55b23e0da8733d26eb830aa3a47b970",
+      "change": "New zero-parameter builtin createRemindersList() emitting the observed descriptor and per-instance UUID.",
+      "reason": "Descriptor-only shape observed in a real decoded export; no user parameters were present in evidence.",
+      "evidence": "shortcut-lib dictionary.xml x1 (descriptor Name=Reminders, bundle=com.apple.reminders, TeamIdentifier=0000000000)",
+      "notes": [
+        "Runtime list-name prompting behavior NOT documented as guaranteed; only the serialized shape is confirmed."
+      ],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "startStopwatch / stopStopwatch",
+      "identifier": "com.apple.clock.StartStopwatchIntent / com.apple.clock.StopStopwatchIntent",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "5fecc00cc55b23e0da8733d26eb830aa3a47b970",
+      "change": "Two zero-parameter builtins for stopwatch control with identical descriptor-only shapes (Clock bundle, legacy placeholder team identifier, per-instance UUID).",
+      "reason": "Identical trivially-unambiguous shapes observed side by side in a real decoded export; lap/reset variants deferred pending more evidence breadth.",
+      "evidence": "shortcut-lib dictionary.xml x1 each (StartStopwatch/StopStopwatch descriptors back to back)",
+      "notes": [
+        "lapStopwatch/resetStopwatch observed in the same file and intentionally deferred to keep this batch breadth-first; identical implementation pattern applies."
+      ],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "playAudiobook / openBook",
+      "identifier": "com.apple.iBooksX.PlayAudiobookIntent / com.apple.iBooksX.OpenBookIntent",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "5fecc00cc55b23e0da8733d26eb830aa3a47b970",
+      "change": "Two builtins with required Variable reference parameter target ('WFTextTokenAttachment' output-reference envelope) plus per-instance UUID emission.",
+      "reason": "Real exports carry target as an ActionOutput WFTextTokenAttachment referencing a named producer output; Cherri's existing reference machinery reproduces this exactly (addToBooks precedent).",
+      "evidence": "shortcut-lib dictionary.xml x1 each (target attachments pointing at producer outputs named Book)",
+      "notes": [
+        "Legacy outer identifier com.apple.iBooks.openin (batch-001, older clients) intentionally left to rawAction fallback; modern iBooksX identifiers curated."
+      ],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
+    {
+      "name": "compiler state baseline centralization",
+      "locations": [
+        "compiler_state.go",
+        "cherri_test.go",
+        "fork_negative_test.go",
+        "actions_std.go",
+        "docs/agent-technical-reference.md"
+      ],
+      "firstForkCommit": "caf1e1128615c103e2e8c08630738e9caecc8a18",
+      "change": "Single authoritative resetCompilerState/resetCompilerStateFully baseline (new fork-owned file) replacing the partial test-side resetParser, which planted stale defaults (clientVersion '900', iosVersion 26.0, iconColor -1263359489 vs true 26.4 defaults) and missed isFirstCommentAction, extractedReferences/references, generation scratch maps, currentAction/savedAction, and package-subsystem state. resetParser now delegates; sequential compile/decompile regression tests prove neutral->noisy->neutral compilations emit identical documents and repeated decompilations match golden output; go test ./... -count=5 passes in one process. includeStandardActions now sets its own guard flag (mirroring the basic variant), fixing double-prepend failures when suites reload definitions; TestPackages cleans up generated manifests.",
+      "reason": "Multiple compile/decompile test functions previously cross-contaminated global state (documented caveat); the iOS bridge already maintained correct baselines privately, so one shared authoritative helper removes the divergence.",
+      "evidence": "Reproduction: sequential in-process compiles separated only by the old resetParser emitted WFWorkflowClientVersion 900 and iconColor -1263359489 instead of process-fresh 4528.0.4.2/3031607807; stale extractedReferences made repeat decompiles drop valid references; stale include bookkeeping suppressed '#include actions/location' emission.",
+      "note": "Test/tooling infrastructure provenance; no new Shortcut action. firstForkCommit recorded in follow-up provenance-metadata commit."
+    },
     {
       "name": "app intent descriptor generalization",
       "locations": [
