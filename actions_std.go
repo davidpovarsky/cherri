@@ -2157,9 +2157,22 @@ func checkMissingStandardInclude(identifier *string, parsing bool) {
 		if slices.Contains(included, fmt.Sprintf("actions/%s", actionInclude)) {
 			continue
 		}
-		lines = append([]string{fmt.Sprintf("#include 'actions/%s'\n", actionInclude)}, lines...)
+		if parsing {
+			// Compilation path: preserve the caller's source lines and probe
+			// by prepending the candidate include.
+			lines = append([]string{fmt.Sprintf("#include 'actions/%s'\n", actionInclude)}, lines...)
+		} else {
+			// Decompilation path: evaluate each candidate category in
+			// isolation so every definition parsed here is tagged with its
+			// OWN include category. Accumulating lines would re-parse
+			// earlier categories under the current one and mis-tag them,
+			// which would corrupt self-contained include reconstruction for
+			// actions that are not the probe's direct match.
+			lines = []string{fmt.Sprintf("#include 'actions/%s'\n", actionInclude)}
+		}
 		resetParse()
 		handleIncludes()
+		currentCategory = actionInclude
 		handleActionDefinitions()
 
 		if !parsing {
@@ -2176,10 +2189,22 @@ func checkMissingStandardInclude(identifier *string, parsing bool) {
 			exit(fmt.Sprintf("Action '%s()' requires include:\n\n%s", name, includeStatement))
 		} else {
 			popLine(includeStatement)
+			markDecompiledInclude(actionInclude)
 			break
 		}
 	}
+	currentCategory = ""
 	return
+}
+
+// markDecompiledInclude records that a standard action include has been
+// emitted into the decompiled source so later actions from the same category
+// do not duplicate it.
+func markDecompiledInclude(category string) {
+	if category == "" || slices.Contains(decompiledIncludes, category) {
+		return
+	}
+	decompiledIncludes = append(decompiledIncludes, category)
 }
 
 func getActionNameByIdentifier(identifier *string) (name string, err error) {

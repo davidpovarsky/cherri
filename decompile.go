@@ -29,6 +29,11 @@ const (
 var code strings.Builder
 var specialCharsRegex *regexp.Regexp
 
+// decompiledIncludes records the standard action include categories
+// ('actions/<cat>') already emitted into the generated source during the
+// current decompilation, so each required include appears exactly once.
+var decompiledIncludes []string
+
 func decompile(b []byte) {
 	var _, marshalIndexedErr = plist.Unmarshal(b, &shortcut)
 	handle(marshalIndexedErr)
@@ -1257,6 +1262,14 @@ func makeActionCallCode(action *ShortcutAction) string {
 		}
 	}
 
+	// Self-contained decompilation invariant: any action whose normal source
+	// representation lives in a standard action include (actions/<cat>.cherri)
+	// must carry that include in the generated source. checkMissingStandardInclude
+	// already emitted it for the probe that first located the action; this
+	// covers actions that matched from categories loaded as a side effect of
+	// an earlier probe.
+	emitDecompiledInclude(matchedAction.includeCategory)
+
 	if (matchedAction.macOnly || matchedAction.nonMacOnly) && !setMacDefinition {
 		macDefinition = matchedAction.macOnly && !matchedAction.nonMacOnly
 		popLine(fmt.Sprintf("#define mac %v", macDefinition))
@@ -1277,6 +1290,18 @@ func makeActionCallCode(action *ShortcutAction) string {
 	actionCallCode.WriteString(")")
 
 	return actionCallCode.String()
+}
+
+// emitDecompiledInclude prepends a standard action include to the generated
+// source exactly once per category. Only categories whose actions actually
+// appear in the decompiled output are emitted; basic and builtin/Go-defined
+// actions have an empty includeCategory and never trigger an include.
+func emitDecompiledInclude(category string) {
+	if category == "" || slices.Contains(decompiledIncludes, category) {
+		return
+	}
+	popLine(fmt.Sprintf("#include 'actions/%s'", category))
+	decompiledIncludes = append(decompiledIncludes, category)
 }
 
 // checkOutputType determines if action output is a constant or a variable.

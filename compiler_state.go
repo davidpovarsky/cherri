@@ -134,6 +134,7 @@ func resetCompilerState() {
 
 	// Decompilation state.
 	code.Reset()
+	decompiledIncludes = nil
 	varUUIDs = nil
 	constUUIDs = nil
 	identifierMap = nil

@@ -337,6 +337,7 @@ func embeddedErrorMessage(recovered any) string {
 
 func resetMobileDecompileState() {
 	code.Reset()
+	decompiledIncludes = nil
 	actionIndex = 0
 	tabLevel = 0
 	groupingIdx = 0

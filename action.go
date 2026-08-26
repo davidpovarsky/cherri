@@ -143,6 +143,7 @@ type actionDefinition struct {
 	minVersion         float64
 	maxVersion         float64
 	builtin            bool // builtin is based on if the action was in the actions map when it was first initialized.
+	includeCategory    string // Standard action include category ('actions/<cat>') that declared this definition; "" for builtin/Go-defined actions and basic actions that never require an include.
 }
 
 var enumerations = map[string][]string{
@@ -971,6 +972,7 @@ func collectDefinedAction() {
 		minVersion:         m.minVersion,
 		maxVersion:         m.maxVersion,
 		doc:                doc,
+		includeCategory:    currentCategory,
 	}
 }
 
@@ -1022,6 +1024,7 @@ func collectToggleSetAction(doc selfDoc) {
 		nonMacOnly:         m.nonMacOnly,
 		minVersion:         m.minVersion,
 		maxVersion:         m.maxVersion,
+		includeCategory:    currentCategory,
 	}
 
 	var setAppendParams = maps.Clone(extraBody)
@@ -1042,6 +1045,7 @@ func collectToggleSetAction(doc selfDoc) {
 		nonMacOnly:         m.nonMacOnly,
 		minVersion:         m.minVersion,
 		maxVersion:         m.maxVersion,
+		includeCategory:    currentCategory,
 	}
 }
 
