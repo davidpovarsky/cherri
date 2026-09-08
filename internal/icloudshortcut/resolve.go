@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -35,16 +36,20 @@ type Result struct {
 }
 
 type Resolver struct {
-	Client   *http.Client
-	MaxBytes int64
+	Client         *http.Client
+	MaxBytes       int64
 	RecordsBaseURL string
 }
 
 type recordResponse struct {
 	Fields struct {
-		Name struct { Value string `json:"value"` } `json:"name"`
+		Name struct {
+			Value string `json:"value"`
+		} `json:"name"`
 		Shortcut struct {
-			Value struct { DownloadURL string `json:"downloadURL"` } `json:"value"`
+			Value struct {
+				DownloadURL string `json:"downloadURL"`
+			} `json:"value"`
 		} `json:"shortcut"`
 	} `json:"fields"`
 }
@@ -97,11 +102,17 @@ func getLimited(ctx context.Context, client *http.Client, raw string, maxBytes i
 	req.Header.Set("User-Agent", "Cherri-Shortcut-Corpus/1")
 	var last error
 	for attempt := 0; attempt < 3; attempt++ {
-		response, requestErr := client.Do(req)
-		if requestErr != nil { last = requestErr; continue }
+		response, requestErr := client.Do(req.Clone(ctx))
+		if requestErr != nil {
+			last = requestErr
+			if attempt < 2 && !sleepContext(ctx, time.Duration(attempt+1)*250*time.Millisecond) { return nil, ctx.Err() }
+			continue
+		}
 		if response.StatusCode == http.StatusTooManyRequests || response.StatusCode >= 500 {
-			response.Body.Close(); last = fmt.Errorf("HTTP %d", response.StatusCode)
-			if attempt < 2 { time.Sleep(time.Duration(attempt+1) * 250 * time.Millisecond) }
+			delay := retryDelay(response, attempt)
+			response.Body.Close()
+			last = fmt.Errorf("HTTP %d", response.StatusCode)
+			if attempt < 2 && !sleepContext(ctx, delay) { return nil, ctx.Err() }
 			continue
 		}
 		if response.StatusCode != http.StatusOK { response.Body.Close(); return nil, fmt.Errorf("HTTP %d", response.StatusCode) }
@@ -114,8 +125,60 @@ func getLimited(ctx context.Context, client *http.Client, raw string, maxBytes i
 	return nil, last
 }
 
+func retryDelay(response *http.Response, attempt int) time.Duration {
+	value := strings.TrimSpace(response.Header.Get("Retry-After"))
+	if seconds, err := strconv.Atoi(value); err == nil && seconds >= 0 {
+		delay := time.Duration(seconds) * time.Second
+		if delay > 30*time.Second { return 30 * time.Second }
+		return delay
+	}
+	if when, err := http.ParseTime(value); err == nil {
+		delay := time.Until(when)
+		if delay < 0 { return 0 }
+		if delay > 30*time.Second { return 30 * time.Second }
+		return delay
+	}
+	return time.Duration(attempt+1) * 250 * time.Millisecond
+}
+
+func sleepContext(ctx context.Context, delay time.Duration) bool {
+	timer := time.NewTimer(delay)
+	defer timer.Stop()
+	select {
+	case <-timer.C:
+		return true
+	case <-ctx.Done():
+		return false
+	}
+}
+
 func secureClient(timeout time.Duration) *http.Client {
-	client := &http.Client{Timeout: timeout}
+	dialer := &net.Dialer{Timeout: 10 * time.Second, KeepAlive: 30 * time.Second}
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.DialContext = func(ctx context.Context, network, address string) (net.Conn, error) {
+		host, port, err := net.SplitHostPort(address)
+		if err != nil { return nil, err }
+		if strings.EqualFold(host, "localhost") { return nil, errors.New("local host rejected") }
+		if literal := net.ParseIP(host); literal != nil {
+			if !isPublicIP(literal) { return nil, errors.New("non-public IP rejected") }
+			return dialer.DialContext(ctx, network, net.JoinHostPort(literal.String(), port))
+		}
+		addresses, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
+		if err != nil { return nil, err }
+		if len(addresses) == 0 { return nil, errors.New("host resolved to no addresses") }
+		for _, resolved := range addresses {
+			if !isPublicIP(resolved) { return nil, errors.New("host resolved to non-public IP") }
+		}
+		var last error
+		for _, resolved := range addresses {
+			conn, dialErr := dialer.DialContext(ctx, network, net.JoinHostPort(resolved.String(), port))
+			if dialErr == nil { return conn, nil }
+			last = dialErr
+		}
+		return nil, last
+	}
+
+	client := &http.Client{Timeout: timeout, Transport: transport}
 	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		if len(via) >= 5 { return errors.New("too many redirects") }
 		return validatePublicHTTPS(req.URL.String())
