@@ -8,12 +8,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 )
 
 // analyze runs the full incremental pipeline:
 //
-//	discover -> hash -> dedupe -> parse -> sanitize -> fingerprint ->
-//	classify vs catalog -> update state -> reports -> candidates
+//	discover -> hash -> dedupe -> parse -> sanitize -> schema fingerprint ->
+//	update evidence -> reclassify all state vs current catalog -> reports/queue
 func analyze(config analyzeConfig) error {
 	if err := os.MkdirAll(config.outputDir, 0755); err != nil {
 		return fmt.Errorf("output directory: %w", err)
@@ -22,9 +23,6 @@ func analyze(config analyzeConfig) error {
 	state, err := loadState(config.statePath)
 	if err != nil {
 		return err
-	}
-	if state.Candidates == nil {
-		state.Candidates = map[string]bool{}
 	}
 
 	catalog, err := obtainCatalog(config)
@@ -67,33 +65,33 @@ func analyze(config analyzeConfig) error {
 		}
 
 		newActions := ingestDocument(state, doc, catalog, config)
-		record := &FileRecord{
-			Name:       doc.name,
-			ActionSeen: doc.rawActionCount,
-			NewActions: newActions,
-			FirstSeen:  now(),
-		}
-		if existing, seen := state.Files[hash]; seen && !config.force {
+		record := &FileRecord{Name: doc.name, ActionSeen: doc.rawActionCount, NewActions: newActions, FirstSeen: now()}
+		if existing, seen := state.Files[hash]; seen {
 			record.FirstSeen = existing.FirstSeen
 		}
 		state.Files[hash] = record
 
 		stats.analyzed++
-		if newActions > 0 || config.force {
+		if newActions > 0 {
 			stats.newFiles++
 		}
 	}
 
-	if err = state.save(config.statePath); err != nil {
-		return fmt.Errorf("saving state: %w", err)
-	}
+	reclassifyState(state, catalog)
+	state.CatalogDigest = catalog.digest
 	if !config.noCandidates {
 		if err = generateCandidates(state, config.outputDir); err != nil {
 			return fmt.Errorf("candidate generation: %w", err)
 		}
 	}
+	if err = state.save(config.statePath); err != nil {
+		return fmt.Errorf("saving state: %w", err)
+	}
 
 	report := buildReports(state, stats, config.outputDir)
+	if err = writeAgentQueue(state, catalog, config.outputDir, config.maxActionable, config.includeThirdParty); err != nil {
+		return fmt.Errorf("agent queue: %w", err)
+	}
 	printHumanSummary(report, os.Stdout)
 	return nil
 }
@@ -114,8 +112,6 @@ type analyzeStats struct {
 	failed           []failure
 }
 
-// ingestDocument normalizes every action of one document into state,
-// incrementing evidence for repeated shapes and flagging variants.
 func ingestDocument(state *State, doc *shortcutDocument, catalog *actionCatalog, config analyzeConfig) int {
 	var newActions int
 	for _, rawActionItem := range doc.actions {
@@ -124,48 +120,111 @@ func ingestDocument(state *State, doc *shortcutDocument, catalog *actionCatalog,
 			parameters[key] = normalizeValue(value)
 		}
 		trimmed := dropIgnoredKeys(parameters)
-
-		fingerprint := fingerprintAction(rawActionItem.Identifier, parameters)
+		fingerprint := fingerprintAction(rawActionItem.Identifier, trimmed)
 		if fingerprint == "" {
 			continue
 		}
 
-		existing, seen := state.Actions[fingerprint]
-		if seen && !config.force {
-			existing.Count++
-			existing.Evidence = evidenceObserved(existing.Count)
-			existing.LastSeen = now()
-			if !containsFile(existing.Files, doc.hash) && len(existing.Files) < 32 {
-				existing.Files = append(existing.Files, doc.hash)
+		if existing, seen := state.Actions[fingerprint]; seen {
+			if addSampleHash(existing, doc.hash) {
+				existing.LastSeen = now()
 			}
+			mergeValueObservations(existing, collectValueObservations(trimmed))
 			continue
 		}
 
 		record := &ActionRecord{
-			Fingerprint:   fingerprint,
-			Identifier:    rawActionItem.Identifier,
-			ParameterKeys: sortedKeys(trimmed),
-			Parameters:    trimmed,
-			Evidence:      evidenceObserved(1),
-			Count:         1,
-			Files:         []string{doc.hash},
-			FirstSeen:     now(),
-			LastSeen:      now(),
+			Fingerprint:       fingerprint,
+			Identifier:        rawActionItem.Identifier,
+			ParameterKeys:     sortedKeys(trimmed),
+			Parameters:        trimmed,
+			ValueObservations: collectValueObservations(trimmed),
+			Evidence:          evidenceObserved(1),
+			Count:             1,
+			SampleHashes:      []string{doc.hash},
+			Files:             []string{doc.hash},
+			FirstSeen:         now(),
+			LastSeen:          now(),
 		}
 		classify(record, catalog)
-
-		// An identifier already present in another structural form is a
-		// variant of that action, not an unrelated discovery.
-		if record.Classification == classUnknown && state.hasOtherFingerprint(rawActionItem.Identifier, fingerprint) {
+		if record.Classification == classUnknown && state.hasOtherFingerprint(record.Identifier, fingerprint) {
 			record.Classification = classVariant
-			record.Notes = append(record.Notes, "additional structural form of observed identifier")
+			record.Notes = []string{"additional structural schema of unresolved identifier"}
+		} else {
+			refineClassification(record)
 		}
-		refineClassification(record)
-
 		state.Actions[fingerprint] = record
 		newActions++
 	}
 	return newActions
+}
+
+// reclassifyState makes classification a derived view of normalized evidence
+// and the current Cherri catalog. No raw Shortcut file needs to be reparsed.
+func reclassifyState(state *State, catalog *actionCatalog) {
+	groups := map[string][]*ActionRecord{}
+	for _, record := range state.Actions {
+		normalizeRecordSamples(record)
+		classify(record, catalog)
+		if record.Classification == classUnknown {
+			groups[record.Identifier] = append(groups[record.Identifier], record)
+		}
+	}
+
+	for _, records := range groups {
+		sort.Slice(records, func(i, j int) bool {
+			if records[i].FirstSeen != records[j].FirstSeen {
+				return records[i].FirstSeen < records[j].FirstSeen
+			}
+			return records[i].Fingerprint < records[j].Fingerprint
+		})
+		for index, record := range records {
+			if index == 0 {
+				refineClassification(record)
+				continue
+			}
+			record.Classification = classVariant
+			record.Notes = []string{"additional structural schema of unresolved identifier"}
+		}
+	}
+
+	for fingerprint := range state.Candidates {
+		record := state.Actions[fingerprint]
+		if record == nil || record.Classification != classSafeCandidate {
+			delete(state.Candidates, fingerprint)
+		}
+	}
+}
+
+func reclassifyExisting(config analyzeConfig) error {
+	if err := os.MkdirAll(config.outputDir, 0755); err != nil {
+		return fmt.Errorf("output directory: %w", err)
+	}
+	state, err := loadState(config.statePath)
+	if err != nil {
+		return err
+	}
+	catalog, err := obtainCatalog(config)
+	if err != nil {
+		return err
+	}
+	reclassifyState(state, catalog)
+	state.CatalogDigest = catalog.digest
+	if !config.noCandidates {
+		if err = generateCandidates(state, config.outputDir); err != nil {
+			return fmt.Errorf("candidate generation: %w", err)
+		}
+	}
+	if err = state.save(config.statePath); err != nil {
+		return fmt.Errorf("saving state: %w", err)
+	}
+	stats := analyzeStats{catalogCount: catalog.count, catalogSource: catalog.source}
+	report := buildReports(state, stats, config.outputDir)
+	if err = writeAgentQueue(state, catalog, config.outputDir, config.maxActionable, config.includeThirdParty); err != nil {
+		return fmt.Errorf("agent queue: %w", err)
+	}
+	printHumanSummary(report, os.Stdout)
+	return nil
 }
 
 func containsFile(files []string, hash string) bool {
@@ -177,8 +236,6 @@ func containsFile(files []string, hash string) bool {
 	return false
 }
 
-// hasOtherFingerprint reports whether the same identifier was already
-// observed in a different structural form.
 func (state *State) hasOtherFingerprint(identifier, fingerprint string) bool {
 	for _, record := range state.Actions {
 		if record.Identifier == identifier && record.Fingerprint != fingerprint {

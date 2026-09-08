@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'tools/shortcut-corpus/**'
+      - 'internal/icloudshortcut/**'
+      - 'import.go'
       - 'actions_catalog.go'
       - 'args.go'
       - 'main.go'
@@ -17,6 +19,8 @@ on:
       - main
     paths:
       - 'tools/shortcut-corpus/**'
+      - 'internal/icloudshortcut/**'
+      - 'import.go'
       - 'actions_catalog.go'
       - '.github/workflows/shortcut-corpus.yml'
   workflow_dispatch:
@@ -46,12 +50,14 @@ jobs:
         run: go build -v ./...
 
       - name: Vet corpus tooling
-        run: go vet ./tools/...
+        run: go vet ./tools/... ./internal/icloudshortcut/...
 
-      - name: Corpus tooling tests
-        run: go test ./tools/... -v
+      - name: Corpus and iCloud resolver tests
+        run: |
+          go test ./tools/... -v
+          go test ./internal/icloudshortcut/... -v
 
-      - name: Compiler tests affected by catalog changes
+      - name: Compiler tests affected by catalog and import changes
         run: |
           go test -run TestCherriNoSign ./...
           go test -run TestDecomp ./...
@@ -82,6 +88,17 @@ jobs:
             -catalog dist/actions-catalog.json \
             -out analysis \
             -state analysis/corpus-state.json
+          test -s analysis/agent-queue.json
+          test -s analysis/agent-queue.md
+
+      - name: Reclassify without raw reparse
+        run: |
+          dist/shortcut-corpus reclassify \
+            -catalog dist/actions-catalog.json \
+            -out analysis/reclassified \
+            -state analysis/corpus-state.json
+          test -s analysis/reclassified/agent-queue.json
+          test -s analysis/reclassified/agent-queue.md
 
       - name: Structural comparator check
         run: |
@@ -89,7 +106,7 @@ jobs:
             tools/shortcut-corpus/testdata/sample-shortcut.plist \
             tools/shortcut-corpus/testdata/sample-shortcut.plist
 
-      - name: Upload analysis artifacts
+      - name: Upload sanitized analysis artifacts
         uses: actions/upload-artifact@v4
         with:
           name: shortcut-corpus-analysis
@@ -101,7 +118,13 @@ jobs:
             analysis/variants.json
             analysis/third-party-actions.json
             analysis/needs-review.json
+            analysis/agent-queue.json
+            analysis/agent-queue.md
             analysis/candidates/
+            analysis/reclassified/summary.json
+            analysis/reclassified/summary.md
+            analysis/reclassified/agent-queue.json
+            analysis/reclassified/agent-queue.md
             dist/actions-catalog.json
           if-no-files-found: error
           retention-days: 30
