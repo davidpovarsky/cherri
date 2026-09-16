@@ -1,0 +1,95 @@
+name: Cherri Shortcut Builder
+
+on:
+  workflow_dispatch:
+    inputs:
+      shortcut:
+        description: Choose a Cherri shortcut to compile and sign
+        required: true
+        type: choice
+        options:
+          - mozilla-reader.cherri
+      share:
+        description: Shortcut sharing scope
+        required: true
+        default: anyone
+        type: choice
+        options:
+          - anyone
+          - contacts
+
+jobs:
+  build-sign:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out compiler branch
+        uses: actions/checkout@v6
+        with:
+          ref: chatgpt/mozilla-reader-build
+
+      - name: Validate selected source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME='${{ inputs.shortcut }}'
+          case "$NAME" in
+            ''|*/*|*\\*|.*) echo "Invalid shortcut selection: $NAME" >&2; exit 2 ;;
+          esac
+          SOURCE="shortcut-sources/$NAME"
+          test -f "$SOURCE" || { echo "Source not found: $SOURCE" >&2; exit 1; }
+          case "$SOURCE" in
+            *.cherri) ;;
+            *) echo "Selected source is not a .cherri file" >&2; exit 2 ;;
+          esac
+          STEM="${NAME%.cherri}"
+          OUTPUT="build-output/${STEM}.shortcut"
+          mkdir -p build-output
+          echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
+          echo "stem=$STEM" >> "$GITHUB_OUTPUT"
+          echo "output=$OUTPUT" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.24'
+
+      - name: Build Cherri compiler
+        run: go build -o ./cherri .
+
+      - name: Compile and HubSign selected shortcut
+        env:
+          CHERRI_BIN: ${{ github.workspace }}/cherri
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x skills/cherri-shortcuts/scripts/build.sh
+          skills/cherri-shortcuts/scripts/build.sh \
+            '${{ steps.source.outputs.source }}' \
+            '${{ steps.source.outputs.output }}' \
+            --signed \
+            --${{ inputs.share }}
+
+      - name: Verify signed Shortcut
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE='${{ steps.source.outputs.output }}'
+          test -s "$FILE"
+          HEADER="$(dd if="$FILE" bs=1 count=4 2>/dev/null || true)"
+          test "$HEADER" = "AEA1" || {
+            echo "Signing result is not an AEA1 Shortcut: $FILE" >&2
+            exit 1
+          }
+          echo "Signed shortcut verified: $FILE"
+
+      - name: Upload signed Shortcut
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.source.outputs.stem }}-signed
+          path: ${{ steps.source.outputs.output }}
+          if-no-files-found: error
+          retention-days: 30
