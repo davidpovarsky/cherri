@@ -1,0 +1,43 @@
+name: Build Mozilla Reader Shortcut
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - chatgpt/mozilla-reader-build
+    paths:
+      - reader-build/mozilla-reader.cherri
+      - .github/workflows/mozilla-reader-build.yml
+
+jobs:
+  build-sign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.24'
+
+      - name: Build Cherri
+        run: go build -o ./cherri .
+
+      - name: Compile and sign Mozilla Reader
+        env:
+          CHERRI_BIN: ${{ github.workspace }}/cherri
+        run: |
+          chmod +x skills/cherri-shortcuts/scripts/build.sh
+          skills/cherri-shortcuts/scripts/build.sh reader-build/mozilla-reader.cherri reader-build/Mozilla-Reader.shortcut --signed --anyone
+
+      - name: Verify signed Shortcut
+        run: |
+          test -s reader-build/Mozilla-Reader.shortcut
+          test "$(dd if=reader-build/Mozilla-Reader.shortcut bs=1 count=4 2>/dev/null)" = "AEA1"
+
+      - name: Upload signed Shortcut
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mozilla-Reader-signed
+          path: reader-build/Mozilla-Reader.shortcut
+          if-no-files-found: error
