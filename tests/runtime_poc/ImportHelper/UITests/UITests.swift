@@ -14,13 +14,14 @@ class ImportHelperUITests: XCTestCase {
         print(springboard.debugDescription)
 
         var tapped = false
+        let targets = [("SpringBoard", springboard), ("Shortcuts", app)]
 
         // 1. Check for runtime permission "Allow" / "Always Allow" in SpringBoard and Shortcuts
-        for targetApp in [springboard, app] {
+        for (name, targetApp) in targets {
             for allowLabel in ["Allow", "Always Allow"] {
                 let btn = targetApp.buttons[allowLabel]
                 if btn.waitForExistence(timeout: 1) {
-                    print("Found and tapping '\(allowLabel)' in \(targetApp.bundleIdentifier)...")
+                    print("Found and tapping '\(allowLabel)' in \(name)...")
                     btn.tap()
                     tapped = true
                     break
@@ -31,9 +32,9 @@ class ImportHelperUITests: XCTestCase {
 
         // 2. Check for alerts in springboard or app
         if !tapped {
-            for alertApp in [springboard, app] {
+            for (name, alertApp) in targets {
                 for alert in alertApp.alerts.allElementsBoundByIndex {
-                    print("Found alert: \(alert.label)")
+                    print("Found alert: \(alert.label) in \(name)")
                     for btnName in ["Allow", "Always Allow", "OK", "Run", "Dismiss", "Close"] {
                         let b = alert.buttons[btnName]
                         if b.exists {
@@ -72,11 +73,11 @@ class ImportHelperUITests: XCTestCase {
                 "Run"
             ]
 
-            for targetApp in [app, springboard] {
+            for (name, targetApp) in targets {
                 for label in candidates {
                     let btn = targetApp.buttons[label]
                     if btn.waitForExistence(timeout: 1) {
-                        print("Tapping button by label: '\(label)' in \(targetApp.bundleIdentifier)...")
+                        print("Tapping button by label: '\(label)' in \(name)...")
                         btn.tap()
                         tapped = true
                         break
@@ -88,12 +89,12 @@ class ImportHelperUITests: XCTestCase {
 
         // 5. Predicate search across buttons for Allow or Add
         if !tapped {
-            for targetApp in [springboard, app] {
+            for (name, targetApp) in targets {
                 let predicate = NSPredicate(format: "label ==[c] 'Allow' OR label CONTAINS[c] 'Allow' OR label CONTAINS[c] 'Add'")
                 let matchingButtons = targetApp.buttons.matching(predicate)
                 if matchingButtons.count > 0 {
                     let firstMatching = matchingButtons.element(boundBy: 0)
-                    print("Tapping matching button with label: '\(firstMatching.label)' in \(targetApp.bundleIdentifier)...")
+                    print("Tapping matching button with label: '\(firstMatching.label)' in \(name)...")
                     firstMatching.tap()
                     tapped = true
                     break
