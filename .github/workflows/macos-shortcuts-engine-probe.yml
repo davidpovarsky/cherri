@@ -1,0 +1,46 @@
+name: macOS Shortcuts engine probe
+
+on:
+  push:
+    branches:
+      - agent/apple-runtime-extraction-v2
+  pull_request:
+    paths:
+      - '.github/workflows/macos-shortcuts-engine-probe.yml'
+      - 'tools/shortcut-runtime/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-shortcuts-engine-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Probe Shortcuts engine surfaces
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p probe
+          python3 tools/shortcut-runtime/runtime_probe.py --out-dir probe
+
+      - name: Upload probe results
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-shortcuts-engine-probe-${{ matrix.os }}
+          path: probe/
+          if-no-files-found: error
+          retention-days: 14

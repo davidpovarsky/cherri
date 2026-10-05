@@ -1,0 +1,441 @@
+name: macOS Shortcuts deep extraction v2
+
+on:
+  push:
+    branches:
+      - agent/apple-runtime-extraction-v2
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-shortcuts-deep-extract-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SHORTCUTKIT_REPO: https://github.com/frontboat/shortcutkit.git
+  SHORTCUTKIT_COMMIT: ee52c32937053268e4a035eba4b372fe77ec6411
+
+jobs:
+  builtin:
+    name: Builtins and environment (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Probe runtime environment and dyld identifiers
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out/data out/logs
+          python3 tools/shortcut-runtime/runtime_probe.py --out-dir out/data
+
+      - name: Extract built-in actions
+        shell: bash
+        run: |
+          set -uo pipefail
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
+          echo "$SHORTCUTKIT_COMMIT" > out/data/shortcutkit-commit.txt
+
+          open -gja Shortcuts || true
+          sleep 15
+
+          cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/extract-builtin-actions.js > out/builtin.js
+          osascript -l JavaScript out/builtin.js out/data/builtin-actions.json > out/logs/builtin.stdout.log 2> out/logs/builtin.stderr.log
+
+          python3 - <<'PY'
+          import json, pathlib
+          d = pathlib.Path('out/data')
+          defs = json.load(open(d/'builtin-actions.json')) if (d/'builtin-actions.json').exists() else {}
+          dyld = set((d/'builtin-action-identifiers.txt').read_text().splitlines()) if (d/'builtin-action-identifiers.txt').exists() else set()
+          bundled = sum(1 for x in defs.values() if x.get('FillingProvider') == 'WFBundledActionProvider')
+          summary = {
+              'builtinDefinitions': len(defs),
+              'bundled': bundled,
+              'intentProvider': len(defs) - bundled,
+              'dyldIdentifiers': len(dyld),
+              'definitionsWithoutDyld': sorted(set(defs) - dyld),
+              'dyldWithoutDefinition': sorted(dyld - set(defs))
+          }
+          (d/'builtin-summary.json').write_text(json.dumps(summary, indent=2, sort_keys=True))
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-builtin-macos-26
+          path: out/data/
+          if-no-files-found: warn
+
+  installed-apps:
+    name: Installed App Intents (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Dump installed app metadata
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out/data out/logs
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
+          python3 out/shortcutkit/tools/dump-appintents-actions.py out/data/app-provided-actions.json > out/logs/apps.stdout.log 2> out/logs/apps.stderr.log || true
+
+          python3 - <<'PY'
+          import json, pathlib
+          p = pathlib.Path('out/data/app-provided-actions.json')
+          xs = json.load(open(p)) if p.exists() else []
+          apps = {x.get('bundleIdentifier') for x in xs}
+          apple = [x for x in xs if (x.get('bundleIdentifier') or '').startswith('com.apple.')]
+          disc = [x for x in apple if x.get('discoverable') is True]
+          summary = {
+              'apps': len(apps),
+              'actions': len(xs),
+              'appleActions': len(apple),
+              'discoverableAppleActions': len(disc),
+              'nonAppleActions': len(xs) - len(apple),
+              'bundleIdentifiers': sorted(x for x in apps if x)
+          }
+          pathlib.Path('out/data/app-provided-summary.json').write_text(json.dumps(summary, indent=2))
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-installed-apps-macos-26
+          path: out/data/
+          if-no-files-found: warn
+
+  toolkit:
+    name: ToolKit registry (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Dump and inspect ToolKit registry
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out/data out/logs
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
+          open -gja Shortcuts || true
+          sleep 15
+          python3 tools/shortcut-runtime/extract_toolkit.py --data-dir out/data --logs-dir out/logs --shortcutkit-dir out/shortcutkit
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-toolkit-macos-26
+          path: out/data/
+          if-no-files-found: warn
+
+  gallery:
+    name: Gallery (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Dump Gallery
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out/data out/logs
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
+          python3 out/shortcutkit/tools/dump-gallery.py out/data/gallery-workflows.json > out/logs/gallery.stdout.log 2> out/logs/gallery.stderr.log || true
+
+          python3 - <<'PY'
+          import collections, json, pathlib
+          p = pathlib.Path('out/data/gallery-workflows.json')
+          ws = json.load(open(p)) if p.exists() else {}
+          ids = collections.Counter()
+          descriptors = 0
+          for w in ws.values():
+              for a in w.get('WFWorkflowActions', []):
+                  i = a.get('WFWorkflowActionIdentifier', '?')
+                  ids[i] += 1
+                  if 'AppIntentDescriptor' in str(a.get('WFWorkflowActionParameters', {})):
+                      descriptors += 1
+          summary = {
+              'workflows': len(ws),
+              'uniqueIdentifiers': len(ids),
+              'appIntentDescriptors': descriptors,
+              'identifiers': sorted(ids)
+          }
+          pathlib.Path('out/data/gallery-summary.json').write_text(json.dumps(summary, indent=2))
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-gallery-macos-26
+          path: out/data/
+          if-no-files-found: warn
+
+  parameter-shard:
+    name: Parameter shard ${{ matrix.shard }} of ${{ matrix.total_shards }} (macOS 26)
+    needs: builtin
+    runs-on: macos-26
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        total_shards: [10]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download built-in definitions
+        uses: actions/download-artifact@v4
+        with:
+          name: deep-extract-builtin-macos-26
+          path: out/data
+
+      - name: Run parameter extraction shard with watchdog
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out/data out/logs
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
+
+          open -gja Shortcuts || true
+          sleep 10
+
+          python3 tools/shortcut-runtime/extract_parameters.py \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count ${{ matrix.total_shards }} \
+            --actions-file out/data/builtin-actions.json \
+            --prelude-path out/shortcutkit/tools/jxa-prelude.js \
+            --out-dir out/data \
+            --action-timeout 20.0 \
+            --param-timeout 8.0
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-parameter-shard-${{ matrix.shard }}-macos-26
+          path: out/data/parameter-*-shard-${{ matrix.shard }}.*
+          if-no-files-found: warn
+
+  merge-parameters:
+    name: Merge parameter shards (macOS 26)
+    needs: parameter-shard
+    if: always()
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download all shard artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: deep-extract-parameter-shard-*-macos-26
+          merge-multiple: true
+          path: out/shards
+
+      - name: Merge parameter shards deterministically
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out/data
+          python3 tools/shortcut-runtime/merge_parameters.py \
+            --shards-dir out/shards \
+            --shard-count 10 \
+            --out-dir out/data
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-merged-parameters-macos-26
+          path: out/data/parameter-*.json
+          if-no-files-found: warn
+
+  encoding-table:
+    name: Encoding table (macOS 26)
+    needs: merge-parameters
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: deep-extract-merged-parameters-macos-26
+          path: out/data
+
+      - name: Extract encoding table
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out/data
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
+
+          cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/extract-encoding-table.js > out/encoding.js
+          osascript -l JavaScript out/encoding.js out/data/encoding-table.json out/data/parameter-encodings.json || true
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-encoding-table-macos-26
+          path: out/data/encoding-table.json
+          if-no-files-found: warn
+
+  roundtrips:
+    name: Encoding round trips (macOS 26)
+    needs: [encoding-table, merge-parameters]
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: deep-extract-merged-parameters-macos-26
+          path: out/data
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: deep-extract-encoding-table-macos-26
+          path: out/data
+
+      - name: Verify encodings
+        shell: bash
+        run: |
+          set -uo pipefail
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
+
+          cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/verify-encodings.js > out/verify.js
+          osascript -l JavaScript out/verify.js out/data/parameter-encodings.json out/data/encoding-table.json out/data/encoding-roundtrips.json || true
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-roundtrips-macos-26
+          path: out/data/encoding-roundtrips.json
+          if-no-files-found: warn
+
+  compare-and-snapshot:
+    name: Cherri comparison and snapshot (macOS 26)
+    needs: [builtin, installed-apps, toolkit, gallery, merge-parameters, encoding-table, roundtrips]
+    if: always()
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.x'
+
+      - name: Download all extraction artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: deep-extract-*-macos-26
+          merge-multiple: true
+          path: out/data
+
+      - name: Compile Cherri and generate catalog
+        shell: bash
+        run: |
+          set -uo pipefail
+          go build -o out/cherri .
+          out/cherri --actions-json --no-ansi > out/data/cherri-actions.json
+
+      - name: Run comparison against Cherri
+        shell: bash
+        run: |
+          set -uo pipefail
+          python3 tools/shortcut-runtime/compare_cherri.py \
+            --cherri-actions out/data/cherri-actions.json \
+            --builtin-defs out/data/builtin-actions.json \
+            --dyld-ids out/data/builtin-action-identifiers.txt \
+            --app-intents out/data/app-provided-actions.json \
+            --toolkit-summary out/data/toolkit-summary.json \
+            --parameter-encodings out/data/parameter-encodings.json \
+            --out-dir out/data
+
+      - name: Generate normalized Apple runtime snapshot and manifest
+        shell: bash
+        run: |
+          set -uo pipefail
+          CHERRI_SHA=$(git rev-parse HEAD)
+          python3 tools/shortcut-runtime/normalize_snapshot.py \
+            --builtin-defs out/data/builtin-actions.json \
+            --dyld-ids out/data/builtin-action-identifiers.txt \
+            --app-intents out/data/app-provided-actions.json \
+            --toolkit-summary out/data/toolkit-summary.json \
+            --gallery out/data/gallery-workflows.json \
+            --parameter-encodings out/data/parameter-encodings.json \
+            --roundtrips out/data/encoding-roundtrips.json \
+            --environment out/data/environment.json \
+            --cherri-sha "$CHERRI_SHA" \
+            --shortcutkit-commit "$SHORTCUTKIT_COMMIT" \
+            --shard-count 10 \
+            --out-dir out/data
+
+      - name: Publish Step Summary
+        shell: bash
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, os, pathlib
+          d = pathlib.Path('out/data')
+          comp = json.load(open(d/'comparison-summary.json')) if (d/'comparison-summary.json').exists() else {}
+          param = json.load(open(d/'parameter-encodings-summary.json')) if (d/'parameter-encodings-summary.json').exists() else {}
+          manifest = json.load(open(d/'apple-runtime-manifest.json')) if (d/'apple-runtime-manifest.json').exists() else {}
+
+          print("# Apple Shortcuts Runtime Extraction v2 Summary\n")
+          print(f"**macOS:** {manifest.get('macOS', 'unknown')} ({manifest.get('build', 'unknown')}) | **Shortcuts:** {manifest.get('shortcutsVersion', 'unknown')} | **WorkflowKit:** {manifest.get('workflowKitVersion', 'unknown')}\n")
+
+          print("## Extraction Surfaces")
+          print("| Surface | Extracted | Notes |")
+          print("| --- | --- | --- |")
+          b = comp.get('builtins', {})
+          print(f"| Built-in definitions | {b.get('totalDefinitions', 0)} | {b.get('covered', 0)} covered by Cherri ({b.get('coveragePercentage', 0)}%) |")
+          dy = comp.get('dyld', {})
+          print(f"| dyld shared-cache IDs | {dy.get('totalIdentifiers', 0)} | {dy.get('covered', 0)} covered by Cherri |")
+          ai = comp.get('appleAppIntents', {})
+          print(f"| Apple App Intents | {ai.get('totalExtracted', 0)} | {ai.get('totalCovered', 0)} covered (Discoverable: {ai.get('discoverableTotal', 0)} total, {ai.get('discoverableCovered', 0)} covered) |")
+          tk = comp.get('toolkit', {})
+          print(f"| ToolKit Tools | {tk.get('tools', 0)} | Visible: {tk.get('visible', 0)}, Hidden: {tk.get('hidden', 0)}, Containers: {tk.get('containers', 0)} |")
+
+          print("\n## Parameter Probing (Sharded)")
+          print(f"- **Total Attempted:** {param.get('actionsAttempted', 0)}")
+          print(f"- **Successful:** {param.get('actionsSuccessful', 0)}")
+          print(f"- **Timed Out (Bounded):** {param.get('actionsTimedOut', 0)}")
+          print(f"- **Errors:** {param.get('actionsError', 0)}")
+          print(f"- **Observed Parameter Classes:** {param.get('parameterClassesObserved', 0)}")
+          print(f"- **Missing Shards:** {param.get('missingShards', [])}")
+          PY
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apple-runtime-snapshot-macos-26
+          path: |
+            out/data/apple-runtime-snapshot.json
+            out/data/apple-runtime-manifest.json
+            out/data/comparison-summary.json
+            out/data/missing-builtins.json
+            out/data/missing-apple-app-intents.json
+            out/data/parameter-surface-gaps.json
+            out/data/parameter-encodings.json
+            out/data/parameter-encodings-summary.json
+            out/data/parameter-timeouts.json
+            out/data/parameter-errors.json
+            out/data/encoding-table.json
+            out/data/encoding-roundtrips.json
+          if-no-files-found: warn
