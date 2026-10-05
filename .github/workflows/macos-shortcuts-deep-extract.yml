@@ -53,14 +53,18 @@ jobs:
           osascript -l JavaScript out/builtin.js out/data/builtin-actions.json > out/logs/builtin.stdout.log 2> out/logs/builtin.stderr.log
           cache=/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld
           if ls "$cache"/dyld_shared_cache_arm64e* >/dev/null 2>&1; then
-            rg -a -o --no-filename 'is\.workflow\.actions\.[A-Za-z0-9._-]+' "$cache"/dyld_shared_cache_arm64e* 2>/dev/null | sort -u > out/data/builtin-action-identifiers.txt || true
+            if command -v rg >/dev/null 2>&1; then
+              rg -a -o --no-filename 'is\.workflow\.actions\.[A-Za-z0-9._-]+' "$cache"/dyld_shared_cache_arm64e* 2>/dev/null | sort -u > out/data/builtin-action-identifiers.txt || true
+            else
+              grep -a -o -E -h 'is\.workflow\.actions\.[A-Za-z0-9._-]+' "$cache"/dyld_shared_cache_arm64e* 2>/dev/null | sort -u > out/data/builtin-action-identifiers.txt || true
+            fi
           else
             : > out/data/builtin-action-identifiers.txt
           fi
           python3 - <<'PY'
           import json, pathlib
           d=pathlib.Path('out/data'); defs=json.load(open(d/'builtin-actions.json')); dyld=set((d/'builtin-action-identifiers.txt').read_text().splitlines())
-          bundled=sum(1 for x in defs.values() if x.get('AppDefinition') is None)
+          bundled=sum(1 for x in defs.values() if x.get('FillingProvider') == 'WFBundledActionProvider')
           summary={'builtinDefinitions':len(defs),'bundled':bundled,'intentProvider':len(defs)-bundled,'dyldIdentifiers':len(dyld),'definitionsWithoutDyld':sorted(set(defs)-dyld),'dyldWithoutDefinition':sorted(dyld-set(defs))}
           (d/'builtin-summary.json').write_text(json.dumps(summary,indent=2,sort_keys=True)); print(json.dumps(summary,indent=2))
           PY
@@ -85,7 +89,10 @@ jobs:
           git clone "$SHORTCUTKIT_REPO" out/shortcutkit
           git -C out/shortcutkit rev-parse HEAD > out/data/shortcutkit-commit.txt
           open -gja Shortcuts || true; sleep 20
-          python3 out/shortcutkit/tools/dump-toolkit-registry.py out/data > out/logs/toolkit.stdout.log 2> out/logs/toolkit.stderr.log || true
+          set +e
+          python3 out/shortcutkit/tools/dump-toolkit-registry.py out/data > out/logs/toolkit.stdout.log 2> out/logs/toolkit.stderr.log
+          toolkit_status=$?
+          set -e
           python3 - <<'PY'
           import glob,json,os,pathlib,sqlite3
           d=pathlib.Path('out/data'); files=sorted(glob.glob(os.path.expanduser('~/Library/Shortcuts/ToolKit/Tools-prod.*.sqlite'))); r={'toolkitDb':os.path.basename(files[-1]) if files else None,'failures':[]}
@@ -100,7 +107,8 @@ jobs:
               r['containers']=c.execute('select count(*) from ContainerMetadata').fetchone()[0]
               r['appleContainers']=c.execute("select count(*) from ContainerMetadata where id like 'com.apple.%'").fetchone()[0]
               r['thirdPartyContainers']=r['containers']-r['appleContainers']
-            r['appleAppIntents']=len(json.load(open(d/'apple-app-intents.json')).get('actions',{})) if (d/'apple-app-intents.json').exists() else 0
+            r['appleAppIntents']=c.execute("select count(*) from Tools t join ContainerMetadata cm on cm.rowId=t.sourceContainerId where t.sourceActionProvider='WFLinkActionProvider' and cm.id like 'com.apple.%' and t.visibilityFlags != 0").fetchone()[0]
+            if toolkit_status != 0: r['failures'].append('dump-toolkit-registry exit '+str(toolkit_status))
             c.close()
           else: r['failures'].append('ToolKit DB not found')
           (d/'toolkit-summary.json').write_text(json.dumps(r,indent=2,sort_keys=True)); print(json.dumps(r,indent=2))
@@ -211,6 +219,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.x'
       - uses: actions/download-artifact@v4
         with:
           pattern: deep-extract-*-macos-26
