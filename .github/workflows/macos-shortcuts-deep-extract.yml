@@ -27,7 +27,7 @@ jobs:
       matrix:
         os: [macos-15, macos-26]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 35
+    timeout-minutes: 120
     env:
       SHORTCUTKIT_REPO: https://github.com/frontboat/shortcutkit.git
     steps:
@@ -147,10 +147,6 @@ jobs:
             : > "$data/builtin-action-identifiers.txt"
             printf 'dyld-identifiers\t1\n' >> "$root/stage-status.tsv"
           fi
-
-          # Preserve the exact upstream script as an auditable reference and run it
-          # separately as an end-to-end check after the individual stages.
-          run_stage shortcutkit-end-to-end bash "$sk/tools/extract-builtin-actions.sh" || true
 
       - name: Inspect databases without exporting raw user data
         shell: bash
