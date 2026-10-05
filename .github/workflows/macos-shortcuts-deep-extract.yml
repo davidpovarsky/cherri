@@ -1,0 +1,305 @@
+name: macOS Shortcuts deep extraction
+
+on:
+  push:
+    branches:
+      - experiment/macos-shortcuts-engine-probe
+    paths:
+      - '.github/workflows/macos-shortcuts-deep-extract.yml'
+      - 'actions/**'
+      - '*.go'
+      - 'go.mod'
+      - 'go.sum'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-shortcuts-deep-extract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deep-extract:
+    name: Deep extraction (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    env:
+      SHORTCUTKIT_REPO: https://github.com/frontboat/shortcutkit.git
+    steps:
+      - name: Checkout Cherri
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.x'
+
+      - name: Build Cherri and capture current catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p deep-extract/cherri
+          go build -o deep-extract/cherri/cherri .
+          ./deep-extract/cherri/cherri --actions-json --no-ansi > deep-extract/cherri/actions-catalog.json
+          python3 - <<'PY'
+          import json
+          p = 'deep-extract/cherri/actions-catalog.json'
+          data = json.load(open(p))
+          assert data.get('ok') is True
+          print('current Cherri actions:', data.get('count', len(data.get('actions', []))))
+          PY
+
+      - name: Launch Shortcuts and wait for ToolKit indexing
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p deep-extract/data deep-extract/logs
+          {
+            echo "runner=${{ matrix.os }}"
+            date -u +%Y-%m-%dT%H:%M:%SZ
+            sw_vers
+            uname -a
+            echo '--- Shortcuts ---'
+            ls -ld /System/Applications/Shortcuts.app 2>&1 || true
+            defaults read /System/Applications/Shortcuts.app/Contents/Info.plist CFBundleShortVersionString 2>&1 || true
+            defaults read /System/Applications/Shortcuts.app/Contents/Info.plist CFBundleVersion 2>&1 || true
+            echo '--- frameworks ---'
+            for framework in WorkflowKit ActionKit; do
+              path="/System/Library/PrivateFrameworks/${framework}.framework"
+              ls -ld "$path" 2>&1 || true
+              defaults read "$path/Versions/A/Resources/Info.plist" CFBundleShortVersionString 2>&1 || true
+            done
+            echo '--- launch ---'
+            open -gja Shortcuts 2>&1 || true
+            sleep 20
+            pgrep -afil 'Shortcuts|Workflow' || true
+          } | tee deep-extract/data/environment.txt
+
+      - name: Pin and clone ShortcutKit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone "$SHORTCUTKIT_REPO" deep-extract/shortcutkit
+          SHORTCUTKIT_SHA="$(git -C deep-extract/shortcutkit rev-parse HEAD)"
+          echo "$SHORTCUTKIT_SHA" > deep-extract/data/shortcutkit-commit.txt
+          printf 'ShortcutKit commit: %s\n' "$SHORTCUTKIT_SHA"
+
+      - name: Run ShortcutKit extraction pipeline and isolated stages
+        shell: bash
+        run: |
+          set -uo pipefail
+          root="$PWD/deep-extract"
+          sk="$root/shortcutkit"
+          data="$root/data"
+          logs="$root/logs"
+          mkdir -p "$data" "$logs"
+          : > "$root/stage-status.tsv"
+
+          run_stage() {
+            name="$1"; shift
+            echo "=== stage: $name ==="
+            set +e
+            "$@" >"$logs/$name.stdout.log" 2>"$logs/$name.stderr.log"
+            status=$?
+            set -e
+            printf '%s\t%s\n' "$name" "$status" >> "$root/stage-status.tsv"
+            if [ "$status" -ne 0 ]; then
+              echo "stage $name failed with status $status"
+              tail -80 "$logs/$name.stderr.log" || true
+            else
+              tail -20 "$logs/$name.stdout.log" || true
+            fi
+            return 0
+          }
+
+          jxa() {
+            name="$1"; shift
+            cat "$sk/tools/jxa-prelude.js" "$sk/tools/$name.js" > "$root/$name.combined.js"
+            osascript -l JavaScript "$root/$name.combined.js" "$@"
+          }
+
+          # These are the exact ShortcutKit programs, run one stage at a time so a
+          # later failure cannot hide successful engine extraction stages.
+          run_stage builtin-actions jxa extract-builtin-actions "$data/builtin-actions.json"
+          run_stage parameter-encodings jxa extract-parameter-encodings "$data/parameter-encodings.json"
+          run_stage encoding-table jxa extract-encoding-table "$data/encoding-table.json" "$data/parameter-encodings.json"
+          run_stage encoding-roundtrips jxa verify-encodings "$data/parameter-encodings.json" "$data/encoding-table.json" "$data/encoding-roundtrips.json"
+          run_stage toolkit-registry python3 "$sk/tools/dump-toolkit-registry.py" "$data"
+          run_stage annotate-builtin-actions python3 "$sk/tools/annotate-builtin-actions.py" "$data/builtin-actions.json" "$data/toolkit-names.json" "$data/parameter-encodings.json"
+          run_stage app-provided-actions python3 "$sk/tools/dump-appintents-actions.py" "$data/app-provided-actions.json"
+          run_stage gallery-workflows python3 "$sk/tools/dump-gallery.py" "$data/gallery-workflows.json"
+
+          cache_dir=/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld
+          if ls "$cache_dir"/dyld_shared_cache_arm64e* >/dev/null 2>&1; then
+            if command -v rg >/dev/null 2>&1; then
+              rg -a -o --no-filename 'is\.workflow\.actions\.[A-Za-z0-9._-]+' "$cache_dir"/dyld_shared_cache_arm64e* 2>/dev/null
+            else
+              grep -a -o -E -h 'is\.workflow\.actions\.[A-Za-z0-9._-]+' "$cache_dir"/dyld_shared_cache_arm64e* 2>/dev/null
+            fi | sort -u > "$data/builtin-action-identifiers.txt"
+            printf 'dyld-identifiers\t0\n' >> "$root/stage-status.tsv"
+          else
+            echo "shared cache not found: $cache_dir" > "$logs/dyld-identifiers.stderr.log"
+            : > "$data/builtin-action-identifiers.txt"
+            printf 'dyld-identifiers\t1\n' >> "$root/stage-status.tsv"
+          fi
+
+          # Preserve the exact upstream script as an auditable reference and run it
+          # separately as an end-to-end check after the individual stages.
+          run_stage shortcutkit-end-to-end bash "$sk/tools/extract-builtin-actions.sh" || true
+
+      - name: Inspect databases without exporting raw user data
+        shell: bash
+        run: |
+          set -uo pipefail
+          python3 - deep-extract/data/db-report.json <<'PY'
+          import glob, json, os, pathlib, sqlite3, sys
+          out = pathlib.Path(sys.argv[1])
+          report = {'toolkit': {}, 'shortcuts': {}, 'failures': []}
+          def inspect(path, kind):
+              result = {'filename': os.path.basename(path), 'sizeBytes': os.path.getsize(path), 'tables': [], 'counts': {}}
+              try:
+                  con = sqlite3.connect(f'file:{path}?mode=ro', uri=True)
+                  tables = [r[0] for r in con.execute("select name from sqlite_master where type='table' order by name")]
+                  result['tables'] = tables
+                  for table in tables:
+                      if table.startswith('sqlite_'): continue
+                      safe = table.replace('"', '""')
+                      try:
+                          result['counts'][table] = con.execute(f'SELECT count(*) FROM "{safe}"').fetchone()[0]
+                      except Exception as e:
+                          result['counts'][table] = f'error: {e}'
+                  if kind == 'toolkit' and 'Tools' in tables:
+                      result['tools'] = con.execute('select count(*) from Tools').fetchone()[0]
+                      result['providers'] = {str(p or '(null)'): n for p, n in con.execute('select sourceActionProvider, count(*) from Tools group by sourceActionProvider order by 2 desc')}
+                      if 'ContainerMetadata' in tables:
+                          result['apps'] = con.execute('select count(distinct sourceContainerId) from Tools where sourceContainerId is not null').fetchone()[0]
+                          result['appleApps'] = con.execute("select count(distinct t.sourceContainerId) from Tools t join ContainerMetadata c on c.rowId=t.sourceContainerId where c.id like 'com.apple.%'").fetchone()[0]
+                          result['thirdPartyApps'] = con.execute("select count(distinct t.sourceContainerId) from Tools t join ContainerMetadata c on c.rowId=t.sourceContainerId where c.id not like 'com.apple.%'").fetchone()[0]
+                  con.close()
+              except Exception as e:
+                  result['error'] = str(e)
+              return result
+          toolkit = sorted(glob.glob(os.path.expanduser('~/Library/Shortcuts/ToolKit/Tools-prod.*.sqlite')))
+          if toolkit:
+              report['toolkit'] = inspect(toolkit[-1], 'toolkit')
+          else:
+              report['toolkit'] = {'error': 'ToolKit DB not found'}
+          shortcuts = os.path.expanduser('~/Library/Shortcuts/Shortcuts.sqlite')
+          report['shortcuts'] = inspect(shortcuts, 'shortcuts') if os.path.exists(shortcuts) else {'error': 'Shortcuts.sqlite not found'}
+          out.write_text(json.dumps(report, indent=2, sort_keys=True))
+          print(json.dumps(report, indent=2, sort_keys=True))
+          PY
+
+      - name: Compare extraction surface with current Cherri catalog
+        shell: bash
+        run: |
+          set -uo pipefail
+          python3 - deep-extract/data deep-extract/cherri/actions-catalog.json deep-extract/comparison.json <<'PY'
+          import json, pathlib, sys
+          data = pathlib.Path(sys.argv[1]); catalog = json.load(open(sys.argv[2])); out = pathlib.Path(sys.argv[3])
+          cherri = {a.get('shortcutIdentifier') for a in catalog.get('actions', []) if a.get('shortcutIdentifier')}
+          builtin = set(json.load(open(data/'builtin-actions.json')).keys()) if (data/'builtin-actions.json').exists() else set()
+          dyld = set((data/'builtin-action-identifiers.txt').read_text(errors='ignore').splitlines())
+          apple = set(json.load(open(data/'apple-app-intents.json')).get('actions', {})) if (data/'apple-app-intents.json').exists() else set()
+          def high_confidence(xs): return sorted(x for x in xs if x.startswith('is.workflow.actions.'))
+          result = {
+            'cherriActionCount': catalog.get('count', len(catalog.get('actions', []))),
+            'extractedBuiltinActions': len(builtin),
+            'rawDyldBuiltinIdentifiers': len(dyld),
+            'extractedAppleAppIntents': len(apple),
+            'builtinAlreadyRepresented': len(builtin & cherri),
+            'builtinMissingFromCherri': len(builtin - cherri),
+            'appleAppIntentsAlreadyRepresented': len(apple & cherri),
+            'appleAppIntentsMissingFromCherri': len(apple - cherri),
+            'missingBuiltinExamples': high_confidence(builtin - cherri)[:20],
+            'missingAppleAppIntentExamples': sorted(apple - cherri)[:20],
+            'dyldIdentifiersMissingFromDefinitions': len(dyld - builtin),
+          }
+          out.write_text(json.dumps(result, indent=2, sort_keys=True))
+          print(json.dumps(result, indent=2, sort_keys=True))
+          PY
+
+      - name: Write machine-readable summary and provenance
+        shell: bash
+        run: |
+          set -uo pipefail
+          python3 - deep-extract/data deep-extract/stage-status.tsv deep-extract/data/db-report.json deep-extract/comparison.json deep-extract/summary.json <<'PY'
+          import json, pathlib, plistlib, re, subprocess, sys
+          data, status_path, db_path, comparison_path, out_path = map(pathlib.Path, sys.argv[1:])
+          def count_json(name, key=None):
+              p = data/name
+              if not p.exists(): return 0
+              x = json.load(open(p)); return len(x.get(key, {})) if key else len(x)
+          def stage(name):
+              for line in status_path.read_text().splitlines():
+                  n, s = line.split('\t', 1)
+                  if n == name: return int(s) == 0
+              return False
+          env = {}
+          try: env['macOS'] = subprocess.check_output(['sw_vers','-productVersion'], text=True).strip()
+          except: env['macOS'] = 'unknown'
+          try: env['build'] = subprocess.check_output(['sw_vers','-buildVersion'], text=True).strip()
+          except: env['build'] = 'unknown'
+          env['arch'] = subprocess.check_output(['uname','-m'], text=True).strip()
+          def defaults(path, key):
+              try: return subprocess.check_output(['defaults','read',path,key], stderr=subprocess.DEVNULL, text=True).strip()
+              except: return 'unknown'
+          info='/System/Applications/Shortcuts.app/Contents/Info.plist'
+          env['shortcutsVersion']=defaults(info,'CFBundleShortVersionString'); env['shortcutsBuild']=defaults(info,'CFBundleVersion')
+          env['workflowKitVersion']=defaults('/System/Library/PrivateFrameworks/WorkflowKit.framework/Versions/A/Resources/Info.plist','CFBundleShortVersionString')
+          env['actionKitVersion']=defaults('/System/Library/PrivateFrameworks/ActionKit.framework/Versions/A/Resources/Info.plist','CFBundleShortVersionString')
+          enc = json.load(open(data/'parameter-encodings.json')) if (data/'parameter-encodings.json').exists() else {}
+          db = json.load(open(db_path)); cmp = json.load(open(comparison_path))
+          summary = {
+            'environment': env,
+            'shortcutKitCommit': (data/'shortcutkit-commit.txt').read_text().strip() if (data/'shortcutkit-commit.txt').exists() else 'unknown',
+            'extraction': {
+              'builtinActions': count_json('builtin-actions.json'),
+              'builtinIdentifierStrings': len((data/'builtin-action-identifiers.txt').read_text(errors='ignore').splitlines()) if (data/'builtin-action-identifiers.txt').exists() else 0,
+              'parameterEncodingClasses': len(enc.get('parameterClasses', {})),
+              'appleAppIntents': count_json('apple-app-intents.json','actions'),
+              'toolkitTools': db.get('toolkit',{}).get('tools', 0),
+              'toolkitApps': db.get('toolkit',{}).get('apps', 0),
+              'appProvidedActions': count_json('app-provided-actions.json'),
+              'galleryWorkflows': count_json('gallery-workflows.json'),
+            },
+            'providers': db.get('toolkit',{}).get('providers',{}),
+            'database': db,
+            'comparison': cmp,
+            'success': {
+              'workflowKitLoad': pathlib.Path('/System/Library/PrivateFrameworks/WorkflowKit.framework').exists(),
+              'actionKitLoad': pathlib.Path('/System/Library/PrivateFrameworks/ActionKit.framework').exists(),
+              'builtinActionExtraction': stage('builtin-actions'),
+              'parameterEncodingExtraction': stage('parameter-encodings'),
+              'serializationRoundTripVerification': stage('encoding-roundtrips'),
+              'toolkitRegistryExtraction': stage('toolkit-registry'),
+              'appleAppIntentExtraction': stage('app-provided-actions'),
+              'galleryExtraction': stage('gallery-workflows'),
+              'dyldIdentifierExtraction': stage('dyld-identifiers'),
+            },
+            'failures': [{'stage': n, 'status': int(s)} for n,s in (line.split('\t',1) for line in status_path.read_text().splitlines()) if int(s) != 0],
+          }
+          (data/'provenance.json').write_text(json.dumps({'summaryVersion': 1, 'runner': '${{ matrix.os }}', 'summary': summary}, indent=2, sort_keys=True))
+          out_path.write_text(json.dumps(summary, indent=2, sort_keys=True))
+          print(json.dumps(summary, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload safe extraction artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-shortcuts-deep-extract-${{ matrix.os }}
+          path: |
+            deep-extract/data/*.json
+            deep-extract/data/*.txt
+            deep-extract/comparison.json
+            deep-extract/summary.json
+            deep-extract/stage-status.tsv
+            deep-extract/logs/*.log
+          if-no-files-found: warn
+          retention-days: 14
