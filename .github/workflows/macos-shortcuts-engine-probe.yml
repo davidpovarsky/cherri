@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - experiment/macos-shortcuts-engine-probe
+  pull_request:
+    branches:
+      - agent/shortcut-corpus-acquisition
     paths:
       - '.github/workflows/macos-shortcuts-engine-probe.yml'
   workflow_dispatch:
@@ -33,7 +36,6 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p probe
-
           {
             echo "runner=${{ matrix.os }}"
             sw_vers
@@ -57,14 +59,13 @@ jobs:
 
           WORKFLOWKIT="/System/Library/PrivateFrameworks/WorkflowKit.framework/WorkflowKit"
           if [ -f "$WORKFLOWKIT" ]; then
-            strings "$WORKFLOWKIT" 2>/dev/null               | grep -Eo 'is\.workflow\.actions\.[A-Za-z0-9._-]+'               | sort -u > probe/workflowkit-identifiers.txt || true
+            strings "$WORKFLOWKIT" 2>/dev/null | grep -Eo 'is\.workflow\.actions\.[A-Za-z0-9._-]+' | sort -u > probe/workflowkit-identifiers.txt || true
           else
             : > probe/workflowkit-identifiers.txt
           fi
 
           cat > probe/private-framework-probe.js <<'JXA'
           ObjC.import('Foundation');
-
           function inspect(path) {
             var result = {path: path, exists: false, loaded: false, error: null};
             try {
@@ -73,20 +74,15 @@ jobs:
               if (!result.exists) return result;
               var bundle = $.NSBundle.bundleWithPath(path);
               result.loaded = !!bundle.loadAndReturnError(null);
-            } catch (e) {
-              result.error = String(e);
-            }
+            } catch (e) { result.error = String(e); }
             return result;
           }
-
-          var out = {
+          console.log(JSON.stringify({
             WorkflowKit: inspect('/System/Library/PrivateFrameworks/WorkflowKit.framework'),
             ActionKit: inspect('/System/Library/PrivateFrameworks/ActionKit.framework')
-          };
-          console.log(JSON.stringify(out, null, 2));
+          }, null, 2));
           JXA
-
-          osascript -l JavaScript probe/private-framework-probe.js             > probe/private-framework-load.json 2> probe/private-framework-load.stderr || true
+          osascript -l JavaScript probe/private-framework-probe.js > probe/private-framework-load.json 2> probe/private-framework-load.stderr || true
 
           {
             echo "=== Before launch ==="
@@ -103,16 +99,14 @@ jobs:
 
           {
             echo "Potential action indexes / databases:"
-            find "$HOME/Library" -maxdepth 8 -type f \( -iname '*.sqlite' -o -iname '*.db' -o -iname '*index*' \) 2>/dev/null               | grep -Ei 'shortcut|workflow|intent|action'               | sort || true
+            find "$HOME/Library" -maxdepth 8 -type f \( -iname '*.sqlite' -o -iname '*.db' -o -iname '*index*' \) 2>/dev/null | grep -Ei 'shortcut|workflow|intent|action' | sort || true
           } > probe/action-index-candidates.txt
 
           DB="$HOME/Library/Shortcuts/Shortcuts.sqlite"
           if [ -f "$DB" ]; then
             {
-              echo ".tables"
               sqlite3 "$DB" '.tables' || true
               echo
-              echo "schema names:"
               sqlite3 "$DB" "select name,type from sqlite_master order by type,name;" || true
             } > probe/shortcuts-sqlite.txt
           else
