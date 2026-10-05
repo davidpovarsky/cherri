@@ -183,7 +183,6 @@ jobs:
   merge-parameters:
     name: Merge parameter shards (macOS 26)
     needs: parameter-shard
-    if: always()
     runs-on: macos-26
     timeout-minutes: 15
     steps:
@@ -216,13 +215,13 @@ jobs:
   encoding-table:
     name: Encoding table (macOS 26)
     needs: merge-parameters
-    if: always()
     runs-on: macos-26
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
+      - name: Download merged parameters
+        uses: actions/download-artifact@v4
         with:
           name: deep-extract-merged-parameters-macos-26
           path: out/data
@@ -235,56 +234,52 @@ jobs:
           git clone "$SHORTCUTKIT_REPO" out/shortcutkit
           git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
 
-          cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/extract-encoding-table.js > out/encoding.js
-          osascript -l JavaScript out/encoding.js out/data/encoding-table.json out/data/parameter-encodings.json || true
+          cat out/shortcutkit/tools/jxa-prelude.js tools/shortcut-runtime/jxa/extract_encoding_table.js > out/encoding.js
+          osascript -l JavaScript out/encoding.js out/data/encoding-table.json out/data/parameter-encodings.json
 
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: deep-extract-encoding-table-macos-26
           path: out/data/encoding-table.json
-          if-no-files-found: warn
+          if-no-files-found: error
 
   roundtrips:
     name: Encoding round trips (macOS 26)
     needs: [encoding-table, merge-parameters]
-    if: always()
     runs-on: macos-26
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
+      - name: Download all input artifacts
+        uses: actions/download-artifact@v4
         with:
-          name: deep-extract-merged-parameters-macos-26
-          path: out/data
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: deep-extract-encoding-table-macos-26
+          pattern: deep-extract-*-macos-26
+          merge-multiple: true
           path: out/data
 
       - name: Verify encodings
         shell: bash
         run: |
           set -uo pipefail
+          mkdir -p out/data
           git clone "$SHORTCUTKIT_REPO" out/shortcutkit
           git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
 
-          cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/verify-encodings.js > out/verify.js
-          osascript -l JavaScript out/verify.js out/data/parameter-encodings.json out/data/encoding-table.json out/data/encoding-roundtrips.json || true
+          cat out/shortcutkit/tools/jxa-prelude.js tools/shortcut-runtime/jxa/verify_encodings.js > out/verify.js
+          osascript -l JavaScript out/verify.js out/data/parameter-encodings.json out/data/encoding-table.json out/data/encoding-roundtrips.json
 
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: deep-extract-roundtrips-macos-26
           path: out/data/encoding-roundtrips.json
-          if-no-files-found: warn
+          if-no-files-found: error
 
   compare-and-snapshot:
     name: Cherri comparison and snapshot (macOS 26)
     needs: [discovery, merge-parameters, encoding-table, roundtrips]
-    if: always()
     runs-on: macos-26
     timeout-minutes: 20
     steps:
