@@ -162,6 +162,8 @@ func printParsingDebug() {
 	printTokens(tokens)
 	fmt.Print("\n")
 
+	printAutomationsDebug()
+
 	fmt.Println(ansi("## DEFINITIONS ##", bold))
 	fmt.Println("Name: " + workflowName)
 	fmt.Println("Color:", iconColor)
@@ -212,6 +214,9 @@ func parse() {
 	case startOfLineTokenAhead(Definition):
 		advance()
 		collectDefinition()
+	case startOfLineTokenAhead(Trigger):
+		advance()
+		collectTrigger()
 	case startOfLineTokenAhead(Reference):
 		advance()
 		collectEncodedReference()
@@ -993,39 +998,33 @@ func collectVersionDefinition() {
 }
 
 func collectColorDefinition() {
-	var collectColor = collectUntil('\n')
-	collectColor = strings.ToLower(collectColor)
+	var collectColor = strings.ToLower(collectUntil('\n'))
 	if color, found := colors[collectColor]; found {
 		iconColor = color
-	} else {
-		var list = "Available icon colors:\n"
-		for c := range colors {
-			list += fmt.Sprintf("- %s\n", c)
-		}
-
-		parserError(fmt.Sprintf("Invalid icon color '%s'\n\n%s", collectColor, list))
+		return
 	}
+
+	var colorNames = make([]string, 0, len(colors))
+	for name := range colors {
+		colorNames = append(colorNames, name)
+	}
+
+	var list = makeValueList("Available icon colors:", colorNames, collectColor)
+	parserError(fmt.Sprintf("Invalid icon color '%s'\n\n%s", collectColor, list))
 }
 
 func collectTypeValues(typeName string, valueTypes map[string]string, slice *[]string) {
-	var collectedTypes = collectUntil('\n')
-	if collectedTypes == "" {
+	if lookAheadUntil('\n') == "" {
 		parserError("Expected type")
 	}
-	var definedTypes = strings.Split(collectedTypes, ",")
-	for _, definedType := range definedTypes {
-		definedType = strings.Trim(definedType, " ")
-		if _, found := valueTypes[definedType]; !found {
-			var list = makeKeyList(fmt.Sprintf("Available %s types:", typeName), workflowTypes, definedType)
-			parserError(fmt.Sprintf("Invalid %s type '%s'\n\n%s", typeName, definedType, list))
-			return
-		}
+
+	var list = valueList{name: fmt.Sprintf("%s type", typeName), mapList: &valueTypes}
+	for _, definedType := range list.parseList('\n') {
 		if slices.Contains(*slice, definedType) {
 			continue
 		}
-		*slice = append(*slice, fmt.Sprintf("%v", valueTypes[definedType]))
+		*slice = append(*slice, definedType)
 	}
-	return
 }
 
 func collectGlyphDefinition() {
@@ -1953,17 +1952,98 @@ func parserWarning(message string) {
 	fmt.Println(warning + "\n")
 }
 
+// valueList represents a list of values to parse, with built-in validation.
+type valueList struct {
+	name   string // name for the type of values (lowercase)
+	plural string // plural form of name to use (optional)
+
+	// either list or mapList can be set, but not both
+	list    *[]string
+	mapList *map[string]string
+
+	values []string // collected values
+}
+
+// parseList reads one or more comma-separated values up to `until`, validating
+// each as soon as it's collected so a bad value is reported where it sits
+// rather than after the cursor has already skipped past the whole list.
+func (v *valueList) parseList(until rune) []string {
+	if v.plural == "" {
+		v.plural = fmt.Sprintf("%ss", v.name)
+	}
+
+	for {
+		var stop = until
+		if strings.Contains(lookAheadUntil(until), ",") {
+			stop = ','
+		}
+
+		var collectedValue = strings.TrimSpace(collectUntil(stop))
+		v.validate(&collectedValue)
+
+		if v.mapList != nil {
+			collectedValue = (*v.mapList)[collectedValue]
+		}
+		v.values = append(v.values, collectedValue)
+
+		if char != ',' {
+			break
+		}
+		advance()
+	}
+
+	return v.values
+}
+
+// parse reads a single validated value. Indexing [0] is safe because
+// parseList never returns without appending at least once; an invalid value
+// terminates the program in validate before parseList can return.
+func (v *valueList) parse(until rune) string {
+	return v.parseList(until)[0]
+}
+
+func (v *valueList) validate(value *string) {
+	var match bool
+	if v.mapList != nil {
+		_, match = (*v.mapList)[*value]
+	} else {
+		match = slices.Contains(*v.list, *value)
+	}
+
+	if match {
+		return
+	}
+
+	var list string
+	if v.mapList != nil {
+		list = makeKeyList(fmt.Sprintf("Available %s:", v.plural), *v.mapList, *value)
+	} else {
+		list = makeValueList(fmt.Sprintf("Available %s:", v.plural), *v.list, *value)
+	}
+
+	parserError(fmt.Sprintf("Invalid %s '%s'\n\n%s", v.name, *value, list))
+}
+
 func makeKeyList(title string, list map[string]string, value string) string {
+	var keys = make([]string, 0, len(list))
+	for key := range list {
+		keys = append(keys, key)
+	}
+
+	return makeValueList(title, keys, value)
+}
+
+func makeValueList(title string, list []string, value string) string {
 	var formattedList strings.Builder
 	formattedList.WriteString("\033[0m")
-	formattedList.WriteString(fmt.Sprintf("%s\n", title))
-	for key := range list {
-		var matchedKey = key
-		var matched, result = matchString(&key, &value)
+	formattedList.WriteString(ansi(fmt.Sprintf("%s\n", title), yellow, italic, bold))
+	for _, item := range list {
+		var matchedItem = item
+		var matched, result = matchString(&item, &value)
 		if matched {
-			matchedKey = result
+			matchedItem = result
 		}
-		formattedList.WriteString(fmt.Sprintf("- %s\n", matchedKey))
+		formattedList.WriteString(fmt.Sprintf("- %s\n", matchedItem))
 	}
 	formattedList.WriteString("\033[0m")
 
@@ -1988,30 +2068,32 @@ func parserError(message string) {
 	}
 }
 
+// excerptError prints the error message followed by a colored excerpt of the source around it, underlining the offending character.
 func excerptError(message string, errorFilename string, errorLine int, errorCol int) {
-	fmt.Print("\033[31m")
-	fmt.Println("\n" + ansi(message, bold))
-	fmt.Printf("\n\033[2m----- \033[0m%s:%d:%d\n", errorFilename, errorLine, errorCol)
-	if len(lines) > (lineIdx-1) && lineIdx != 0 {
-		fmt.Printf("\033[2m%d | %s\033[0m\n", errorLine-1, lines[lineIdx-1])
+	fmt.Printf("\n%s\n", ansi(message, red, bold))
+	fmt.Printf("\n%s%s:%d:%d\n", ansi("----- ", dim), errorFilename, errorLine, errorCol)
+
+	if len(lines) > (lineIdx-1) && errorLine != 1 {
+		fmt.Println(ansi(fmt.Sprintf("%d | %s", errorLine-1, lines[lineIdx-1]), dim))
 	}
+
 	if len(lines) > lineIdx {
-		fmt.Printf("\033[31m\033[1m%d | ", errorLine)
+		var currentLine strings.Builder
+		currentLine.WriteString(fmt.Sprintf("%d | ", errorLine))
 		for c, chr := range strings.Split(lines[lineIdx], "") {
-			if c == idx {
-				fmt.Print(ansi(chr, underline))
+			if c == lineCharIdx {
+				currentLine.WriteString(ansi(chr, underline))
 			} else {
-				fmt.Print(chr)
+				currentLine.WriteString(chr)
 			}
 		}
-		fmt.Print("\033[0m\n")
+		fmt.Println(ansi(currentLine.String(), red, bold))
 	}
-	var spaces string
-	for i := 0; i < (lineCharIdx + 4); i++ {
-		spaces += " "
-	}
-	fmt.Println("\033[31m" + spaces + "^\033[0m")
+
+	var spaces = strings.Repeat(" ", lineCharIdx+4)
+	fmt.Println(ansi(fmt.Sprintf("%s^", spaces), red))
+
 	if len(lines) > (lineIdx + 1) {
-		fmt.Printf("\033[2m%d | %s\n-----\033[0m\n\n", errorLine+1, lines[lineIdx+1])
+		fmt.Print(ansi(fmt.Sprintf("%d | %s\n-----\n\n", errorLine+1, lines[lineIdx+1]), dim))
 	}
 }

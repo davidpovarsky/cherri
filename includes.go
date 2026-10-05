@@ -106,8 +106,8 @@ func parseInclude() {
 		if includeReadErr != nil {
 			parserError(fmt.Sprintf("Undefined actions include '%s'.", actionCat))
 		}
-	} else if includePath == "stdlib" {
-		includeFileBytes, includeReadErr = stdLib.ReadFile("stdlib.cherri")
+	} else if includePath == "stdfunc" || includePath == "stdlib" {
+		includeFileBytes, includeReadErr = stdFuncs.ReadFile("stdfunc.cherri")
 	} else {
 		if !strings.Contains(includePath, "..") {
 			includePath = relativePath + includePath
@@ -196,7 +196,8 @@ func delinquentFile() (errorFilename string, errorLine int, errorCol int) {
 func findOriginalLine(errorLine *int) {
 	for l, line := range strings.Split(originalContents, "\n") {
 		if line == lines[lineIdx] {
-			*errorLine = l
+			*errorLine = l + 1
+			break
 		}
 	}
 }

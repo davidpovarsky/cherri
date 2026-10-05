@@ -30,6 +30,7 @@ func generateShortcut() {
 		WFWorkflowMinimumClientVersionString: "900",
 		WFQuickActionSurfaces:                definedQuickActions,
 		WFWorkflowNoInputBehavior:            noInput,
+		WFWorkflowTriggers:                   automationTriggers,
 	}
 
 	waitFor(
@@ -42,12 +43,13 @@ func generateShortcut() {
 		func() {
 			shortcut.WFWorkflowOutputContentItemClasses = generateOutputContentItems()
 		},
-		func() {
-			shortcut.WFWorkflowImportQuestions = generateImportQuestions()
-		},
 	)
 
 	generateActions()
+
+	// Must run after generateActions(): question.actionIndex is only populated
+	// once each action referencing it has actually been generated.
+	shortcut.WFWorkflowImportQuestions = generateImportQuestions()
 
 	if args.Using("debug") {
 		printShortcutGenDebug()
@@ -63,6 +65,7 @@ func resetShortcutGen() {
 	uuids = map[string]string{}
 	variables = map[string]varValue{}
 	questions = map[string]*question{}
+	automationTriggers = []AutomationTrigger{}
 	noInput = map[string]any{}
 	definedWorkflowTypes = []string{}
 	definedQuickActions = []string{}
@@ -1177,7 +1180,7 @@ func makeRepeatEachAction(t *token) {
 type WFQuestion struct {
 	ParameterKey string `plist:",omitempty"`
 	Category     string `plist:",omitempty"`
-	ActionIndex  int    `plist:",omitempty"`
+	ActionIndex  int
 	Text         string `plist:",omitempty"`
 	DefaultValue any    `plist:",omitempty"`
 }
