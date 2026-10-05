@@ -206,6 +206,11 @@ func makeVariableValue(reference *WFActionReference, valueType tokenType, value 
 		var valuePtr = *value
 		var action = valuePtr.(action)
 		setCurrentAction(action.ident, actions[action.ident])
+		if action.ident == "rawAction" && len(action.args) > 0 {
+			if rawIdent, ok := getArgValue(action.args[0]).(string); ok {
+				currentAction.definition.overrideIdentifier = rawIdent
+			}
+		}
 		makeAction(action.args, reference)
 	case Dict:
 		addStdAction("dictionary", attachReferenceToParams(map[string]any{
@@ -1177,7 +1182,7 @@ func makeRepeatEachAction(t *token) {
 type WFQuestion struct {
 	ParameterKey string `plist:",omitempty"`
 	Category     string `plist:",omitempty"`
-	ActionIndex  int    `plist:",omitempty"`
+	ActionIndex  int    `plist:"ActionIndex"`
 	Text         string `plist:",omitempty"`
 	DefaultValue any    `plist:",omitempty"`
 }

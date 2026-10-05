@@ -25,3 +25,6 @@ action v16.4 'com.apple.shortcuts.SearchShortcutsAction' searchShortcuts(text qu
 // [Doc]: Make Shortcut: Create a shortcut.
 action v16.4 'com.apple.shortcuts.CreateWorkflowAction' makeShortcut(text name, bool ?open: 'OpenWhenRun' = true)
 
+// [Doc]: Get App Store Detail: Get a detail about an App Store app.
+action 'properties.appstore' getAppStoreDetail(variable app: 'WFInput', text detail: 'WFContentItemPropertyName')
+

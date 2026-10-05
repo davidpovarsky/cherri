@@ -24,6 +24,10 @@ struct ActionPaletteView: View {
                                 Text("macOS")
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
+                            } else if action.appIntent != nil {
+                                Text("App Intent")
+                                    .font(.caption2)
+                                    .foregroundStyle(.blue)
                             }
                         }
 
@@ -84,6 +88,8 @@ struct ActionPaletteView: View {
                 || action.description?.lowercased().contains(needle) == true
                 || action.category?.lowercased().contains(needle) == true
                 || action.subcategory?.lowercased().contains(needle) == true
+                || action.appIntent?.name.lowercased().contains(needle) == true
+                || action.appIntent?.appIntentIdentifier.lowercased().contains(needle) == true
         }
     }
 

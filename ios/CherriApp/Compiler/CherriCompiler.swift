@@ -52,6 +52,14 @@ struct CherriActionParameter: Decodable, Hashable, Sendable {
     }
 }
 
+struct CherriAppIntent: Decodable, Hashable, Sendable {
+    let name: String
+    let bundleIdentifier: String
+    let appIntentIdentifier: String
+    let teamIdentifier: String?
+    let requiresAppInstallation: Bool?
+}
+
 struct CherriActionInfo: Decodable, Identifiable, Hashable, Sendable {
     var id: String { name }
 
@@ -67,6 +75,17 @@ struct CherriActionInfo: Decodable, Identifiable, Hashable, Sendable {
     let nonMacOnly: Bool?
     let minVersion: Double?
     let maxVersion: Double?
+    let compilerConstruct: Bool?
+    let appIntent: CherriAppIntent?
+    let emittedKeys: [String]?
+    let catalogInsertionSnippet: String?
+
+    enum CodingKeys: String, CodingKey {
+        case name, shortcutIdentifier, title, description, category, subcategory
+        case parameters, outputType, macOnly, nonMacOnly, minVersion, maxVersion
+        case compilerConstruct, appIntent, emittedKeys
+        case catalogInsertionSnippet = "insertionSnippet"
+    }
 
     var signature: String {
         let arguments = (parameters ?? []).map(\.signature).joined(separator: ", ")
@@ -82,7 +101,11 @@ struct CherriActionInfo: Decodable, Identifiable, Hashable, Sendable {
     // runnable insertion without inventing fake type-specific values. Optional
     // positional parameters before a later required argument are represented by
     // nil so the later required slot keeps its correct position.
+    // Prefers the shared catalog-provided insertionSnippet if present.
     var insertionSnippet: String {
+        if let catalogInsertionSnippet, !catalogInsertionSnippet.isEmpty {
+            return catalogInsertionSnippet
+        }
         let parameters = parameters ?? []
         guard let lastRequired = parameters.lastIndex(where: { $0.isRequired }) else {
             return "\(name)()"

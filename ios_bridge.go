@@ -210,7 +210,9 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 	outputPath = ""
 
 	if _, err := plist.Unmarshal(plistBytes, &shortcut); err != nil {
-		panic(embeddedCompilerPanic{message: "Unable to read Shortcut plist: " + err.Error()})
+		if jsonErr := json.Unmarshal(plistBytes, &shortcut); jsonErr != nil {
+			panic(embeddedCompilerPanic{message: "Unable to read Shortcut plist: " + err.Error()})
+		}
 	}
 
 	loadBasicStandardActions()
@@ -223,7 +225,7 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 	mapControlFlowOutputs()
 	defineName()
 	decompileIcon()
-	decompileMobileWorkflowMetadata()
+	decompileWorkflowMetadata()
 	decompileActions()
 
 	return mobileCompileResponse{
@@ -231,50 +233,6 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 		Name:   name,
 		Source: code.String(),
 	}
-}
-
-// The upstream decompiler currently emits name/icon/action source but not the
-// Shortcut Details workflow/quick-action switches. The iOS visual editor edits
-// those exact plist fields, so preserve them as the existing Cherri definitions
-// documented for the same settings.
-func decompileMobileWorkflowMetadata() {
-	workflowOrder := []string{"menubar", "quickactions", "sharesheet", "notifications", "sleepmode", "watch", "onscreen", "search", "spotlight"}
-	quickActionOrder := []string{"finder", "services"}
-
-	from := mobileDefinitionValues(shortcut.WFWorkflowTypes, workflowTypes, workflowOrder)
-	quick := mobileDefinitionValues(shortcut.WFQuickActionSurfaces, quickActions, quickActionOrder)
-
-	wroteDefinition := false
-	if len(from) != 0 {
-		newCodeLine(fmt.Sprintf("#define from %s\n", strings.Join(from, ", ")))
-		wroteDefinition = true
-	}
-	if len(quick) != 0 {
-		newCodeLine(fmt.Sprintf("#define quickactions %s\n", strings.Join(quick, ", ")))
-		wroteDefinition = true
-	}
-	if wroteDefinition {
-		newCodeLine("\n")
-	}
-}
-
-func mobileDefinitionValues(selected []string, definitions map[string]string, order []string) []string {
-	selectedSet := make(map[string]struct{}, len(selected))
-	for _, value := range selected {
-		selectedSet[value] = struct{}{}
-	}
-
-	values := make([]string, 0, len(selected))
-	for _, cherriValue := range order {
-		shortcutValue, found := definitions[cherriValue]
-		if !found {
-			continue
-		}
-		if _, selected := selectedSet[shortcutValue]; selected {
-			values = append(values, cherriValue)
-		}
-	}
-	return values
 }
 
 func currentMobileActionCatalog() []mobileActionInfo {
@@ -349,6 +307,7 @@ func resetMobileDecompileState() {
 	questions = map[string]*question{}
 	menus = map[string][]varValue{}
 	uuids = map[string]string{}
+	importQuestionByActionParam = nil
 	controlFlowGroups = map[int]controlFlowGroup{}
 	includes = []include{}
 	definitions = map[string]any{}

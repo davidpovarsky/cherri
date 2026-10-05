@@ -211,3 +211,36 @@ action 'format.date' formatTimestamp(
     timeFormats ?timeFormat: 'WFTimeFormatStyle' = "Short",
     text ?customDateFormat: 'WFDateFormat'
 ): text
+
+enum timeBetweenDatesUnit {
+    'Minutes',
+    'Hours',
+    'Days',
+    'Weeks',
+    'Months',
+    'Years',
+    'Seconds',
+}
+
+// [Doc]: [Dates] Get Time Between Dates: Get the time between two dates.
+action 'gettimebetweendates' getTimeBetweenDates(
+    variable ?startDate: 'WFTimeUntilFromDate',
+    variable ?endDate: 'WFInput',
+    timeBetweenDatesUnit ?unit: 'WFTimeUntilUnit'
+): number
+
+// [Doc]: [Calendars] Add Event: Add a new calendar event.
+action 'addnewevent' addEvent(
+    text title: 'WFCalendarItemTitle',
+    variable ?startDate: 'WFCalendarItemStartDate',
+    variable ?endDate: 'WFCalendarItemEndDate',
+    bool ?allDay: 'WFCalendarItemAllDay',
+    text ?location: 'WFCalendarItemLocation'
+)
+
+// [Doc]: [Reminders] Add Reminder: Add a new reminder.
+action 'addnewreminder' addReminder(
+    text title: 'WFCalendarItemTitle',
+    bool ?alert: 'WFAlertEnabled'
+)
+

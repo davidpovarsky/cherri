@@ -214,6 +214,11 @@ func undefinable() bool {
 
 // makeAction builds an action based on its actionDefinition and adds it to the shortcut.
 func makeAction(arguments []actionArgument, reference *WFActionReference) {
+	if currentAction.identifier == "rawAction" && len(arguments) > 0 {
+		if rawIdent, ok := getArgValue(arguments[0]).(string); ok {
+			currentAction.definition.overrideIdentifier = rawIdent
+		}
+	}
 	actionIndex++
 	// Determine identifier
 	var ident = getFullActionIdentifier()
@@ -301,6 +306,11 @@ func makeActionParams(arguments []actionArgument, params map[string]any) {
 			params[param.key] = variableValue(arguments[i].value.(varValue))
 		} else {
 			params[param.key] = argumentValue(arguments, i)
+		}
+	}
+	if currentAction.identifier == "calculate" {
+		if op, found := params["WFScientificMathOperand"]; found {
+			params["WFMathOperand"] = op
 		}
 	}
 }
@@ -607,7 +617,11 @@ func questionArg(param *parameterDefinition, argument *actionArgument) {
 	if question, found := questions[identifier]; found {
 		question.parameter = param.key
 		question.actionIndex = actionIndex
-		argument.value = ""
+		if question.defaultValue != "" {
+			argument.value = question.defaultValue
+		} else {
+			argument.value = ""
+		}
 	}
 }
 
@@ -960,12 +974,18 @@ func collectDefinedAction() {
 
 	lineRef.replaceLines()
 
+	var emittedKeys []string
+	if identifier == "calculate" {
+		emittedKeys = []string{"WFMathOperand"}
+	}
+
 	actions[identifier] = &actionDefinition{
 		identifier:         m.shortIdentifier,
 		overrideIdentifier: m.overrideIdentifier,
 		parameters:         arguments,
 		outputType:         outputType,
 		appendParams:       setParams,
+		emittedKeys:        emittedKeys,
 		defaultAction:      defaultAction,
 		macOnly:            m.macOnly,
 		nonMacOnly:         m.nonMacOnly,

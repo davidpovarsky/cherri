@@ -74,7 +74,7 @@ enum fileDetail {
 }
 
 // [Doc]: [Files & Folders] Get File Detail: Get a detail about a file.
-action 'properties.files' getFileDetail(variable file: 'WFFolder', fileDetail detail: 'WFContentItemPropertyName')
+action 'properties.files' getFileDetail(variable file: 'WFInput', fileDetail detail: 'WFContentItemPropertyName')
 
 // [Doc]: [Files & Folders] Get Selected
 action 'finder.getselectedfiles' getSelectedFiles()

@@ -53,6 +53,8 @@ var playAudiobookIntent = appleAppIntent("Books", "com.apple.iBooksX", "PlayAudi
 
 var openBookIntent = appleAppIntent("Books", "com.apple.iBooksX", "OpenBookIntent")
 
+var transcribeAudioIntent = appleAppIntent("ShortcutsActions", "com.apple.ShortcutsActions", "TranscribeAudioAction")
+
 // actionInstanceUUID mirrors real-device exports, which stamp every App Intent
 // action with a per-instance UUID parameter. Shortcuts regenerates these
 // freely; a generated placeholder keeps the emitted shape faithful without
@@ -64,6 +66,25 @@ func actionInstanceUUID() map[string]any {
 // actions is the data structure that determines every action the compiler knows about.
 // The key determines the identifier of the identifier that must be used in the syntax, it's value defines its behavior, etc. using an actionDefinition.
 var actions = map[string]*actionDefinition{
+	"transcribeText": {
+		doc: selfDoc{
+			title:       "Transcribe Audio",
+			description: "Transcribes text from the provided audio.",
+			category:    "text",
+		},
+		appIdentifier: "com.apple.ShortcutsActions",
+		identifier:    "TranscribeAudioAction",
+		appIntent:     transcribeAudioIntent,
+		minVersion:    17,
+		outputType:    String,
+		parameters: []parameterDefinition{
+			{
+				name:      "audio",
+				validType: Variable,
+				key:       "audioFile",
+			},
+		},
+	},
 	"createAlarm": {
 		doc: selfDoc{
 			title:       "Create Alarm",
@@ -887,6 +908,20 @@ var actions = map[string]*actionDefinition{
 				name:         "multiline",
 				validType:    String,
 				key:          "WFAllowsMultilineText",
+				optional:     true,
+				defaultValue: true,
+			},
+			{
+				name:         "allowsDecimal",
+				validType:    Bool,
+				key:          "WFAskActionAllowsDecimalNumbers",
+				optional:     true,
+				defaultValue: true,
+			},
+			{
+				name:         "allowsNegative",
+				validType:    Bool,
+				key:          "WFAskActionAllowsNegativeNumbers",
 				optional:     true,
 				defaultValue: true,
 			},
@@ -2136,8 +2171,15 @@ func checkMissingStandardInclude(identifier *string, parsing bool) {
 	if !parsing && !args.Using("no-toolkit") {
 		connectToolkitDB()
 		var identifiers = strings.Split(*identifier, ".")
-		identifiers = append(identifiers[:3], identifiers[4:]...)
-		var baseIdentifier = strings.Join(identifiers, ".")
+		var baseIdentifier string
+		if len(identifiers) > 4 {
+			var baseParts = make([]string, 0, len(identifiers)-1)
+			baseParts = append(baseParts, identifiers[:3]...)
+			baseParts = append(baseParts, identifiers[4:]...)
+			baseIdentifier = strings.Join(baseParts, ".")
+		} else {
+			baseIdentifier = *identifier
+		}
 
 		var containerId, containerErr = getContainerIdByIdentifier(&baseIdentifier)
 		if containerErr == nil {

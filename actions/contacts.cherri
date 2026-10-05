@@ -70,3 +70,7 @@ action 'selectemail' selectEmailAddress()
 action 'setters.contacts' removeContactDetail(variable contact: 'WFInput', contactDetail detail: 'WFContentItemPropertyName') {
     "Mode": "Remove"
 }
+
+// [Doc]: Contacts: Select contacts or specify a contact.
+action 'contacts' selectContacts(variable ?contact: 'WFContact')
+

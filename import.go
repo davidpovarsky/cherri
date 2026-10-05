@@ -5,8 +5,10 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -50,19 +52,23 @@ func downloadShortcut() []byte {
 func readShortcutFile() []byte {
 	var _, statErr = os.Stat(importPath)
 	if os.IsNotExist(statErr) { exit("import: File does not exist!") }
-	var segments = strings.Split(importPath, "/")
-	filename = segments[len(segments)-1]
-	var nameSegments = strings.Split(filename, ".")
-	basename = nameSegments[0]
-	var extension = nameSegments[len(nameSegments)-1]
-	if extension != "shortcut" && extension != "plist" { exit("import: File is not a Shortcut or property list (plist) file.") }
-	relativePath = strings.Replace(importPath, filename, "", 1)
+	filename = filepath.Base(importPath)
+	var ext = strings.ToLower(filepath.Ext(importPath))
+	basename = strings.TrimSuffix(filename, filepath.Ext(importPath))
+	if ext != ".shortcut" && ext != ".plist" && ext != ".json" && ext != ".xml" {
+		exit("import: File is not a Shortcut, plist, XML, or JSON file.")
+	}
+	relativePath = importPath[:len(importPath)-len(filename)]
 	var b, readErr = os.ReadFile(importPath)
 	handle(readErr)
 	return b
 }
 
 func hasSignedBytes(b []byte) bool {
+	trimmed := bytes.TrimSpace(b)
+	if len(trimmed) > 0 && (trimmed[0] == '{' || trimmed[0] == '[') {
+		return false
+	}
 	if len(b) < 8 { return true }
 	var rawUnsignedBytes = []byte{98, 112, 108, 105, 115, 116, 48, 48}
 	var unsignedBytes = []byte{60, 63, 120, 109, 108, 32, 118, 101}

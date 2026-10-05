@@ -100,7 +100,23 @@ if ! VALIDATION_OUTPUT=$(sh "$SCRIPT_DIR/build.sh" "$CHERRI_SRC" "$VALIDATION" -
   exit 4
 fi
 
+# 5. Structural round-trip verification: prove that unmodified import matches
+#    the original Shortcut's semantics, ignoring volatile UUID regeneration.
+CORPUS_BIN="${SHORTCUT_CORPUS_BIN:-shortcut-corpus}"
+if [ -x "$SCRIPT_DIR/../../../dist/shortcut-corpus" ]; then
+  CORPUS_BIN="$SCRIPT_DIR/../../../dist/shortcut-corpus"
+elif [ -x "$SCRIPT_DIR/../../../dist/shortcut-corpus.exe" ]; then
+  CORPUS_BIN="$SCRIPT_DIR/../../../dist/shortcut-corpus.exe"
+fi
+if command -v "$CORPUS_BIN" >/dev/null 2>&1 || [ -x "$CORPUS_BIN" ]; then
+  if ! COMPARE_OUTPUT=$("$CORPUS_BIN" compare "$ORIGINAL" "$VALIDATION" 2>&1); then
+    echo "Warning: Decompiled shortcut has structural differences from original:" >&2
+    printf '%s\n' "$COMPARE_OUTPUT" >&2
+  fi
+fi
+
 printf '%s\n' "$ORIGINAL"
 printf '%s\n' "$CHERRI_SRC"
 printf '%s\n' "$VALIDATION"
 printf '%s\n' "$WORKSPACE"
+

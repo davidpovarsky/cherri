@@ -99,3 +99,13 @@ action 'com.apple.weather.AddSavedLocationIntent' addWeatherLocation(variable lo
 
 // [Doc]: [Weather] Remove Location from List: Remove a location from the Weather app.
 action 'com.apple.weather.RemoveSavedLocationIntent' removeWeatherLocation(variable location: 'entities')
+
+// [Doc]: [Maps] Get Directions: Get directions to a destination.
+action 'getdirections' getDirections(variable ?destination: 'WFDestination')
+
+// [Doc]: [Maps] Get Travel Time: Get travel time to a destination.
+action 'gettraveltime' getTravelTime(variable ?destination: 'WFDestination', variable ?customLocation: 'WFGetDirectionsCustomLocation')
+
+// [Doc]: [Maps] Get Distance: Get distance to a destination.
+action 'getdistance' getDistance(variable ?destination: 'WFGetDistanceDestination', text ?mode: 'WFGetDirectionsActionMode')
+

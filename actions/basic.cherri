@@ -44,8 +44,15 @@ action nothing()
 // [Doc]: Comment: Add an explicit comment.
 action comment(rawtext text: 'WFCommentActionText')
 
+// [Doc]: Get Variable: Retrieves the value of a variable.
+action 'getvariable' getVariable(variable variable: 'WFVariable'): variable
+
 // [Doc]: Get Type: Get the type of input.
 action 'getitemtype' typeOf(variable input: 'WFInput'): text
+
+// [Doc]: Get Type: Get the type of input.
+action 'gettypeaction' getType(variable input: 'WFInput', text ?fileType: 'WFFileType'): text
+
 
 // [Doc]: Get Object of Class: Get the object of `class` from a variable.
 action 'getclassaction' getObjectOfClass(text class: 'Class', variable from: 'Input')

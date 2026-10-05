@@ -8,7 +8,7 @@ enum imageCombineMode {
 }
 
 // [Doc]: [Image Editing] Combine Images
-action combineImages(variable images: 'WFInput', imageCombineMode ?mode: 'WFImageCombineMode' = "Vertically", number ?spacing: 'WFImageCombineSpacing' = 1)
+action 'image.combine' combineImages(variable images: 'WFInput', imageCombineMode ?mode: 'WFImageCombineMode' = "Vertically", number ?spacing: 'WFImageCombineSpacing' = 1)
 
 enum cropImagePosition {
 	'Center',

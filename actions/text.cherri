@@ -41,8 +41,6 @@ action 'showdefinition' define(text word: 'Word'): text
 // [Doc]: Speak: Speaks the provided text, optionally in another language.
 action 'speaktext' speak(text prompt: 'WFText', bool ?waitUntilFinished: 'WFSpeakTextWait' = true, text ?language: 'WFSpeakTextLanguage')
 
-// [Doc]: Transcribe Audio: Transcribes text from the provided audio.
-action v17 'com.apple.ShortcutsActions.TranscribeAudioAction' transcribeText(variable audio): text
 
 // [Doc]: [Text Editing] Uppercase: Transforms the text to all uppercase.
 action default 'text.changecase' uppercase(text text): text {

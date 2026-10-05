@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Cherri
  */
 package main
@@ -359,6 +359,22 @@ func (r *roundTripRunner) runForkActionRoundTrip(label string, source string, in
 	assertStructurallyEqual(r.t, label, shortcutA, shortcutB)
 }
 
+func (r *roundTripRunner) runRawActionRoundTrip(label string, source string, inspect func(decompiled string)) {
+	r.t.Helper()
+	var shortcutA = r.compileSource(label, source)
+	var decompiled = r.decompileShortcut(label, shortcutA)
+	if !strings.Contains(decompiled, "rawAction(") {
+		r.t.Errorf("%s: expected rawAction fallback, got:\n%s", label, decompiled)
+	}
+	if inspect != nil {
+		inspect(decompiled)
+	}
+	var sourceBPath = filepath.Join(r.dir, label+"_b.cherri")
+	var shortcutB = filepath.Join(r.dir, label+"_b_unsigned.shortcut")
+	r.runCherri(label+"/recompile", sourceBPath, "--skip-sign", "--no-ansi")
+	assertStructurallyEqual(r.t, label, shortcutA, shortcutB)
+}
+
 // TestForkActionRoundTrips closes the automated round-trip matrix for every
 // fork-specific action behavior previously marked PARTIAL. Forms are chosen
 // from the provenance evidence notes; interactive/device-only payloads are
@@ -507,6 +523,86 @@ func TestForkActionRoundTrips(t *testing.T) {
 					t.Errorf("decompiled source lost openBook target reference:\n%s", decompiled)
 				}
 			})
+	})
+
+	t.Run("getVariable/round-trip", func(t *testing.T) {
+		r.runForkActionRoundTrip("get-variable",
+			"@myVar = \"initial\"\n@val = getVariable(@myVar)\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "getVariable(") {
+					t.Errorf("decompiled source lost getVariable call:\n%s", decompiled)
+				}
+			})
+	})
+
+	t.Run("rawAction/uuid-outputName-and-params", func(t *testing.T) {
+		r.runRawActionRoundTrip("raw-action-params",
+			"rawAction(\"custom.action.withParams\", {\"OptionKey\": \"Enabled\", \"Timeout\": 30})\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "rawAction(\"custom.action.withParams\"") {
+					t.Errorf("decompiled source lost rawAction identifier:\n%s", decompiled)
+				}
+				if !strings.Contains(decompiled, "OptionKey") || !strings.Contains(decompiled, "Enabled") {
+					t.Errorf("decompiled source dropped semantic parameter OptionKey:\n%s", decompiled)
+				}
+			})
+	})
+
+	t.Run("unicode/hebrew-emoji-tokens", func(t *testing.T) {
+		r.runForkActionRoundTrip("unicode-tokens",
+			"@name = \"ישראל\"\n@message = \"שלום {@name}! 🚀 אימוג'י ובדיקה 🌟 תודה {@name}\"\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "שלום") || !strings.Contains(decompiled, "{@name}") {
+					t.Errorf("decompiled source corrupted Hebrew token string:\n%s", decompiled)
+				}
+			})
+	})
+
+	t.Run("workflowMetadata/from-inputs-and-question", func(t *testing.T) {
+		r.runForkActionRoundTrip("workflow-metadata",
+			"#define from sharesheet\n#define inputs text\n#question apiKey \"Enter API Key:\" \"default-key\"\n\ncomment(apiKey)\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "#define from sharesheet") {
+					t.Errorf("decompiled source lost '#define from sharesheet':\n%s", decompiled)
+				}
+				if !strings.Contains(decompiled, "#define inputs text") {
+					t.Errorf("decompiled source lost '#define inputs text':\n%s", decompiled)
+				}
+				if !strings.Contains(decompiled, "#question") {
+					t.Errorf("decompiled source lost '#question':\n%s", decompiled)
+				}
+			})
+	})
+
+	t.Run("representability/unmodeled-parameter-falls-back-to-rawAction", func(t *testing.T) {
+		var sc = Shortcut{
+			WFWorkflowActions: []ShortcutAction{
+				{
+					WFWorkflowActionIdentifier: "is.workflow.actions.filter.files",
+					WFWorkflowActionParameters: map[string]any{
+						UUID: "11111111-2222-3333-4444-555555555555",
+						"WFContentItemFilter": map[string]any{
+							"Value": "unmodeled_complex_filter",
+						},
+					},
+				},
+			},
+		}
+		plistBytes, err := plist.Marshal(sc, plist.XMLFormat)
+		if err != nil {
+			t.Fatalf("marshal test plist: %v", err)
+		}
+		var plistPath = filepath.Join(r.dir, "filter_in.plist")
+		if err := os.WriteFile(plistPath, plistBytes, 0644); err != nil {
+			t.Fatalf("write test plist: %v", err)
+		}
+		decompiled := r.decompileShortcut("representability-filter", plistPath)
+		if !strings.Contains(decompiled, "rawAction(\"is.workflow.actions.filter.files\"") {
+			t.Errorf("expected rawAction fallback for unmodeled parameter, got:\n%s", decompiled)
+		}
+		if !strings.Contains(decompiled, "WFContentItemFilter") {
+			t.Errorf("expected unmodeled parameter WFContentItemFilter preserved in rawAction, got:\n%s", decompiled)
+		}
 	})
 }
 

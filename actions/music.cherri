@@ -104,3 +104,10 @@ action addToPlaylist(text playlistName: 'WFPlaylistName', variable songs: 'WFInp
 
 // [Doc]: [Playlists] Get Playlist: Gets songs from a playlist
 action 'get.playlist' getPlaylistSongs(variable playlistName: 'WFPlaylistName'): array
+
+// [Doc]: Search iTunes: Search for music or media on iTunes.
+action 'searchitunes' searchiTunes(text query: 'WFSearchTerm', number ?limit: 'WFItemLimit')
+
+// [Doc]: [Playlists] Create Playlist: Create a new music playlist.
+action 'createplaylist' createPlaylist(text name: 'WFPlaylistName', text ?author: 'WFPlaylistAuthor')
+

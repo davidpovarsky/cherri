@@ -17,13 +17,14 @@ enum calculationOperation {
     'cos(X)',
     'tan(x)',
     'abs(x)',
+    'Modulus',
 }
 
 // [Doc]: Calculate: Perform various calculation operations using one or two operands.
 action 'math' calculate(
     calculationOperation operation: 'WFScientificMathOperation',
     number operandOne: 'WFInput',
-    number ?operandTwo: 'WFMathOperand'
+    number ?operandTwo: 'WFScientificMathOperand'
 ): number {
 	"WFMathOperation": "…"
 }
