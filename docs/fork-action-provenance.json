@@ -399,6 +399,28 @@
       "reason": "Acceptance Test 01: a Shortcut with show(...), base64Encode(..., \"None\"), getUpcomingEvents(3) and startStopwatch() decompiled with getUpcomingEvents(3) but without #include 'actions/calendar', so the generated source failed to recompile. checkMissingStandardInclude probes categories by loading definitions into the global actions map; actions matching from side-effect-loaded categories never emitted their include. The general invariant now covers all action categories, not a calendar special case.",
       "evidence": "Regression suite decomp_includes_test.go: acceptance-01 exact semantics (compile -> decompile -> recompile PASS with calendar+crypto includes), multi-category (calendar+crypto+web+documents) each exactly once, basic actions emit no includes, duplicate category single include, deterministic include order, in-process state isolation, sanitized external fixture round trip. go test ./... -count=1 PASS (local scratch build, Go 1.23; CI Go 1.24).",
       "note": "Compiler/decompiler infrastructure provenance; no new Shortcut action. firstForkCommit recorded in follow-up provenance-metadata commit."
+    },
+    {
+      "name": "upstream synchronization 2026-10",
+      "locations": [
+        "automations.go",
+        "shortcut.go",
+        "shortcutgen.go",
+        "action.go",
+        "parser.go",
+        "search.go",
+        "includes.go",
+        "stdfunc.cherri",
+        "actions/storage.cherri",
+        "actions/intelligence.cherri",
+        "actions/web.cherri",
+        "actions_std.go"
+      ],
+      "firstForkCommit": "19de2ca8ca2e91cb1a7cb8aff196f05b9abdc1a9",
+      "change": "Integrated upstream commits dc82114..a66db15 from electrikmilk/cherri/main: iOS 27 version constants and default target (5037.0.17), automation triggers (#trigger) without unsupported app trigger, storage actions (storeValue, getStoredValue, deleteStoredValue), iOS 27 Apple Intelligence actions (askModel, askProModel, askDeviceModel), fileRequest variable body, decompiler empty custom separator preservation, stdfunc rename with backward-compatible stdlib alias, import question action index resolution timing, and parser valueList validation and diagnostics.",
+      "reason": "Keep fork synchronized with upstream improvements while preserving all fork-owned extensions (machine-readable catalog, App Intent metadata, UTF-16 offset handling, compiler state isolation, round-trip tests, Skill workflows, and iOS app).",
+      "evidence": "All upstream tests and fork test suites pass (TestCherriNoSign, TestDecomp, TestForkActionRoundTrips, TestForkActionProvenanceRegistry, shortcut-corpus tool tests, and Skill self-test).",
+      "note": "Synchronized upstream commits dc82114..a66db15."
     }
   ]
 }
