@@ -269,8 +269,9 @@ func resetMobileLanguageState() {
 	noInput = nil
 	iconColor = 3031607807
 	iconGlyph = 61440
-	iosVersion = 26.4
-	clientVersion = versions["26.4"]
+	iosVersion = 27.0
+	clientVersion = versions["27"]
+	automationTriggers = nil
 	shortcut = Shortcut{}
 }
 

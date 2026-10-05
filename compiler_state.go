@@ -67,8 +67,8 @@ func resetCompilerStateFully() {
 //
 // Baseline values mirror the production defaults declared next to each global
 // and the values used by resetMobileLanguageState/resetMobileDecompileState:
-// iconColor 3031607807, iconGlyph 61440, iosVersion 26.4,
-// clientVersion versions["26.4"].
+// iconColor 3031607807, iconGlyph 61440, iosVersion 27.0,
+// clientVersion versions["27"].
 //
 // Deliberately NOT touched here:
 //   - immutable configuration and caches: actions/enumerations base maps,
@@ -100,13 +100,14 @@ func resetCompilerState() {
 	uuids = map[string]string{}
 	functions = map[string]*function{}
 	usingFunctions = false
+	automationTriggers = []AutomationTrigger{}
 
 	// Shortcut metadata definitions.
 	workflowName = ""
 	iconColor = 3031607807
 	iconGlyph = 61440
-	clientVersion = versions["26.4"]
-	iosVersion = 26.4
+	clientVersion = versions["27"]
+	iosVersion = 27.0
 	hasShortcutInputVariables = false
 	definedWorkflowTypes = []string{}
 	definedQuickActions = []string{}

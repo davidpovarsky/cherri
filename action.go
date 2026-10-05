@@ -13,13 +13,14 @@ import (
 	"reflect"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/electrikmilk/args-parser"
 )
 
-//go:embed stdlib.cherri
-var stdLib embed.FS
+//go:embed stdfunc.cherri
+var stdFuncs embed.FS
 
 //go:embed actions
 var stdActions embed.FS
@@ -263,6 +264,8 @@ var emptyAppIntent = appIntent{}
 
 // getActionParameters creates the actions' parameters by injecting the values of the arguments into the defined parameters.
 func getActionParameters(arguments []actionArgument) map[string]any {
+	resolveQuestionArgs(arguments)
+
 	var params = make(map[string]any)
 	if currentAction.definition.appendParamsFunc != nil {
 		maps.Copy(params, currentAction.definition.appendParamsFunc(arguments))
@@ -589,8 +592,6 @@ func checkArg(param *parameterDefinition, argument *actionArgument) {
 
 	typeCheck(param, argument)
 
-	questionArg(param, argument)
-
 	if param.literal {
 		checkLiteralValue(param, argument)
 	}
@@ -608,19 +609,23 @@ func checkArg(param *parameterDefinition, argument *actionArgument) {
 	}
 }
 
-// questionArg checks if the argument references a question so that it can update the question to point to the current action's argument.
-func questionArg(param *parameterDefinition, argument *actionArgument) {
-	if argument.valueType != Question {
-		return
-	}
-	var identifier = argument.value.(string)
-	if question, found := questions[identifier]; found {
-		question.parameter = param.key
-		question.actionIndex = actionIndex
-		if question.defaultValue != "" {
-			argument.value = question.defaultValue
-		} else {
-			argument.value = ""
+// resolveQuestionArgs points an import question to its action's final index and sets its
+// argument value. Must run at generation time: parse-time action counts don't account for
+// function header injection or control flow actions.
+func resolveQuestionArgs(arguments []actionArgument) {
+	for i := range arguments {
+		if arguments[i].valueType != Question || i >= len(currentAction.definition.parameters) {
+			continue
+		}
+		var identifier = arguments[i].value.(string)
+		if question, found := questions[identifier]; found {
+			question.parameter = currentAction.definition.parameters[i].key
+			question.actionIndex = len(shortcut.WFWorkflowActions)
+			if question.defaultValue != "" {
+				arguments[i].value = question.defaultValue
+			} else {
+				arguments[i].value = ""
+			}
 		}
 	}
 }
@@ -645,8 +650,27 @@ func generateActionDefinition(focus parameterDefinition, showEnums bool) string 
 	definition.WriteString(generateActionDoc())
 	definition.WriteString(generateActionCode(focus, showEnums))
 	definition.WriteString(generateActionPlatform())
+	definition.WriteString(generateActionVersion())
 
 	return definition.String()
+}
+
+func generateActionVersion() (versionStr string) {
+	var note string
+	switch {
+	case currentAction.definition.maxVersion != 0:
+		note = fmt.Sprintf("Deprecated as of version %s.", formatVersionNumber(currentAction.definition.maxVersion))
+	case currentAction.definition.minVersion != 0:
+		note = fmt.Sprintf("Requires version %s or later.", formatVersionNumber(currentAction.definition.minVersion))
+	default:
+		return
+	}
+
+	return ansi(fmt.Sprintf("\n\n**%s**", note), yellow)
+}
+
+func formatVersionNumber(version float64) string {
+	return strconv.FormatFloat(version, 'f', -1, 64)
 }
 
 func generateActionPlatform() (platformStr string) {
@@ -792,9 +816,9 @@ func generateActionParamDefinition(param parameterDefinition) string {
 	var definition strings.Builder
 	var argType string
 	if param.enum == "" {
-		argType = fmt.Sprintf("%s ", param.validType)
+		argType = fmt.Sprintf("%s", param.validType)
 	} else {
-		argType = fmt.Sprintf("%s ", param.enum)
+		argType = fmt.Sprintf("%s", param.enum)
 		if args.Using("debug") && param.qty {
 			argType = fmt.Sprintf("#%s", argType)
 		}
@@ -802,7 +826,10 @@ func generateActionParamDefinition(param parameterDefinition) string {
 	if param.ref {
 		argType = fmt.Sprintf("&%s", argType)
 	}
-	definition.WriteString(ansi(argType, magenta))
+	if param.literal {
+		argType += "!"
+	}
+	definition.WriteString(ansi(argType+" ", magenta))
 
 	if param.infinite {
 		definition.WriteString("...")
