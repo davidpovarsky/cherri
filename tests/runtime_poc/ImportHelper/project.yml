@@ -1,0 +1,44 @@
+name: ImportHelper
+options:
+  bundleIdPrefix: org.cherrilang.poc
+  deploymentTarget:
+    iOS: "17.0"
+settings:
+  base:
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGNING_REQUIRED: "NO"
+    CODE_SIGNING_ALLOWED: "NO"
+targets:
+  ImportHelper:
+    type: application
+    platform: iOS
+    sources:
+      - path: App.swift
+    info:
+      properties:
+        CFBundleIdentifier: org.cherrilang.poc.ImportHelper
+        UILaunchScreen: {}
+    settings:
+      base:
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_REQUIRED: "NO"
+  ImportHelperUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests.swift
+    dependencies:
+      - target: ImportHelper
+    settings:
+      base:
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_REQUIRED: "NO"
+schemes:
+  ImportHelper:
+    build:
+      targets:
+        ImportHelper: all
+        ImportHelperUITests: [test]
+    test:
+      targets:
+        - ImportHelperUITests
