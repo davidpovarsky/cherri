@@ -20,7 +20,7 @@ sys.path.insert(0, str(RUNTIME_TOOL_DIR))
 
 from extract_parameters import get_shard_actions, ParameterExtractor
 from merge_parameters import merge_shards, load_shard
-from extract_toolkit import inspect_sqlite_database
+from extract_toolkit import extract_toolkit_registry, inspect_sqlite_database
 from compare_cherri import run_comparison
 from normalize_snapshot import build_snapshot, sanitize_paths
 from runtime_probe import probe_frameworks
@@ -247,7 +247,7 @@ pathlib.Path(out_file).write_text(json.dumps(data))
                 }
             ]))
 
-            summary, _, missing_intents, _ = run_comparison(
+            summary, _, missing_intents, _, _ = run_comparison(
                 cherri_actions_path=str(cherri_file),
                 app_intents_path=str(app_file)
             )
@@ -275,7 +275,7 @@ pathlib.Path(out_file).write_text(json.dumps(data))
                 {"bundleIdentifier": "com.apple.app", "shortcutActionIdentifier": "com.apple.app.a3", "discoverable": False}
             ]))
 
-            summary, _, _, _ = run_comparison(
+            summary, _, _, _, _ = run_comparison(
                 cherri_actions_path=str(cherri_file),
                 app_intents_path=str(app_file)
             )
@@ -348,6 +348,282 @@ pathlib.Path(out_file).write_text(json.dumps(data))
         self.assertEqual(sanitized["path"], "~/work/cherri/ToolKit/Tools-prod.v67.sqlite")
         self.assertEqual(sanitized["nested"][0], "~/some/path")
         self.assertEqual(sanitized["nested"][1], "normal_string")
+
+    def test_13_toolkit_registry_full_extraction(self):
+        """Test 13: Full ToolKit registry extraction, semantic classifications, and determinism."""
+        with tempfile.TemporaryDirectory() as td:
+            db_path = pathlib.Path(td) / "Tools-prod.v67-test.sqlite"
+            con = sqlite3.connect(str(db_path))
+
+            # 1. Metadata
+            con.execute("CREATE TABLE Metadata (key TEXT PRIMARY KEY, value TEXT)")
+            con.execute("INSERT INTO Metadata VALUES ('OSVersion', '26.6.2')")
+            con.execute("INSERT INTO Metadata VALUES ('IndexerSource', 'linkd')")
+            con.execute("INSERT INTO Metadata VALUES ('VersionKey', '{\"uuid\": \"1111-2222-3333\"}')")
+            con.execute("INSERT INTO Metadata VALUES ('LaunchServicesDatabaseVersionKey', '{\"sequenceNumber\": 42}')")
+
+            # 2. Containers (Apple & third-party)
+            con.execute("CREATE TABLE ContainerMetadata (rowId INTEGER PRIMARY KEY, id TEXT, teamId TEXT, origin TEXT, containerType INTEGER)")
+            con.execute("INSERT INTO ContainerMetadata VALUES (1, 'com.apple.shortcuts', '0000000000', 'system', 1)")
+            con.execute("INSERT INTO ContainerMetadata VALUES (2, 'com.spotify.client', 'ABCDE12345', 'user', 1)")
+
+            con.execute("CREATE TABLE ContainerMetadataLocalizations (containerId INTEGER, locale TEXT, name TEXT)")
+            con.execute("INSERT INTO ContainerMetadataLocalizations VALUES (1, 'en', 'Shortcuts')")
+            con.execute("INSERT INTO ContainerMetadataLocalizations VALUES (2, 'en', 'Spotify')")
+
+            # 3. Types (primitive, entity, enum)
+            con.execute("CREATE TABLE Types (rowId INTEGER PRIMARY KEY, id BLOB, kind INTEGER)")
+            # Primitive boolean (tag 0x10)
+            con.execute("INSERT INTO Types VALUES (1, ?, 1)", (b"\x0a\x02\x10\x00",))
+            # Enum type
+            con.execute("INSERT INTO Types VALUES (2, ?, 3)", (b"\x0a\x02\x30\x00",))
+            # Primitive string (tag 0x30)
+            con.execute("INSERT INTO Types VALUES (3, ?, 1)", (b"\x0a\x02\x30\x00",))
+
+            con.execute("CREATE TABLE EnumerationCases (typeId INTEGER, id TEXT, title TEXT, locale TEXT)")
+            con.execute("INSERT INTO EnumerationCases VALUES (2, 'high', 'High Priority', 'en')")
+            con.execute("INSERT INTO EnumerationCases VALUES (2, 'low', 'Low Priority', 'en')")
+
+            con.execute("CREATE TABLE TypeDisplayRepresentations (typeId INTEGER, locale TEXT, name TEXT)")
+            con.execute("INSERT INTO TypeDisplayRepresentations VALUES (2, 'en', 'Priority')")
+
+            # 4. Tools (8 tools covering all classifications)
+            con.execute("CREATE TABLE Tools (rowId INTEGER PRIMARY KEY, id TEXT, toolType INTEGER, flags INTEGER, visibilityFlags INTEGER, sourceActionProvider TEXT, pythonName TEXT, sourceContainerId INTEGER, attributionContainerId INTEGER)")
+            # 1: Apple link runnable
+            con.execute("INSERT INTO Tools VALUES (1, 'com.apple.shortcuts.run', 1, 0, 1, 'WFLinkActionProvider', 'runShortcut', 1, NULL)")
+            # 2: Apple configuration-only
+            con.execute("INSERT INTO Tools VALUES (2, 'com.apple.shortcuts.config', 1, 0, 1, 'WFLinkActionProvider', 'configWidget', 1, NULL)")
+            # 3: Apple link hidden
+            con.execute("INSERT INTO Tools VALUES (3, 'com.apple.shortcuts.internal', 1, 0, 0, 'WFLinkActionProvider', 'internalHelper', 1, NULL)")
+            # 4: Apple synthesized
+            con.execute("INSERT INTO Tools VALUES (4, 'com.apple.shortcuts.synth', 1, 0, 1, 'WFLinkActionProvider', 'synthTool', 1, NULL)")
+            # 5: Built-in visible
+            con.execute("INSERT INTO Tools VALUES (5, 'is.workflow.actions.gettext', 0, 0, 1, 'WFBundledActionProvider', 'getText', 1, NULL)")
+            # 6: Built-in hidden
+            con.execute("INSERT INTO Tools VALUES (6, 'is.workflow.actions.retired', 0, 0, 0, 'WFBundledActionProvider', 'retiredAction', 1, NULL)")
+            # 7: Third-party link
+            con.execute("INSERT INTO Tools VALUES (7, 'com.spotify.play', 1, 0, 1, 'WFLinkActionProvider', 'playMusic', 2, NULL)")
+            # 8: Apple intent
+            con.execute("INSERT INTO Tools VALUES (8, 'com.apple.siri.intent', 2, 0, 1, 'WFIntentActionProvider', 'openSiri', 1, NULL)")
+
+            con.execute("CREATE TABLE ToolLocalizations (toolId INTEGER, locale TEXT, name TEXT, outputResultName TEXT, descriptionSummary TEXT, descriptionResult TEXT, descriptionNote TEXT)")
+            con.execute("INSERT INTO ToolLocalizations VALUES (1, 'en', 'Run Shortcut', 'Result', 'Runs a shortcut', 'Output of shortcut', 'Note')")
+            con.execute("INSERT INTO ToolLocalizations VALUES (5, 'en', 'Get Text', 'Text', 'Gets text', 'Resulting text', NULL)")
+
+            # 5. Parameters & Types
+            con.execute("CREATE TABLE Parameters (toolId INTEGER, key TEXT, sortOrder INTEGER, flags INTEGER)")
+            con.execute("INSERT INTO Parameters VALUES (1, 'name', 0, 1)")
+            con.execute("INSERT INTO Parameters VALUES (1, 'priority', 1, 0)")
+
+            con.execute("CREATE TABLE ParameterLocalizations (toolId INTEGER, key TEXT, locale TEXT, name TEXT, description TEXT, trueString TEXT, falseString TEXT)")
+            con.execute("INSERT INTO ParameterLocalizations VALUES (1, 'name', 'en', 'Shortcut Name', 'Name of the shortcut', NULL, NULL)")
+            con.execute("INSERT INTO ParameterLocalizations VALUES (1, 'priority', 'en', 'Priority Level', 'Level', NULL, NULL)")
+
+            con.execute("CREATE TABLE ToolParameterTypes (toolId INTEGER, key TEXT, typeId INTEGER)")
+            con.execute("INSERT INTO ToolParameterTypes VALUES (1, 'name', 3)")  # string
+            con.execute("INSERT INTO ToolParameterTypes VALUES (1, 'priority', 2)")  # enum
+            con.execute("INSERT INTO ToolParameterTypes VALUES (1, 'priority', 3)")  # alternative string type
+
+            con.execute("CREATE TABLE ToolOutputTypes (toolId INTEGER, typeIdentifier TEXT)")
+            con.execute("INSERT INTO ToolOutputTypes VALUES (1, 'com.apple.shortcuts.resultType')")
+
+            con.execute("CREATE TABLE SearchKeywords (toolId INTEGER, locale TEXT, keyword TEXT, \"order\" INTEGER)")
+            con.execute("INSERT INTO SearchKeywords VALUES (1, 'en', 'execute', 0)")
+
+            con.execute("CREATE TABLE LinkActionIdentifiers (toolId INTEGER, identifier TEXT)")
+            con.execute("INSERT INTO LinkActionIdentifiers VALUES (1, 'RunShortcutAction')")
+
+            con.execute("CREATE TABLE SystemToolProtocols (toolId INTEGER, identifier TEXT)")
+            con.execute("INSERT INTO SystemToolProtocols VALUES (2, 'widgetConfiguration')")
+            con.execute("INSERT INTO SystemToolProtocols VALUES (4, 'synthesizedTool')")
+
+            con.commit()
+            con.close()
+
+            registry, apple_actions, names, summary = extract_toolkit_registry(str(db_path))
+
+            # 1. Total count & tool retrieval
+            self.assertEqual(summary["totalTools"], 8)
+            self.assertEqual(len(registry["tools"]), 8)
+
+            # 2. Deterministic ordering: tools sorted by id
+            tool_ids = [t["identifier"] for t in registry["tools"]]
+            self.assertEqual(tool_ids, sorted(tool_ids))
+
+            # 3. Classifications
+            classifications = summary["classifications"]
+            self.assertEqual(classifications.get("apple_link_runnable"), 1)
+            self.assertEqual(classifications.get("apple_configuration_only"), 1)
+            self.assertEqual(classifications.get("apple_link_hidden"), 1)
+            self.assertEqual(classifications.get("apple_synthesized"), 1)
+            self.assertEqual(classifications.get("builtin_visible"), 1)
+            self.assertEqual(classifications.get("builtin_hidden"), 1)
+            self.assertEqual(classifications.get("third_party_link"), 1)
+            self.assertEqual(classifications.get("apple_intent"), 1)
+
+            # 4. Apple vs Third-party containers
+            self.assertEqual(summary["appleContainers"], 1)
+            self.assertEqual(summary["thirdPartyContainers"], 1)
+
+            # 5. Visible vs Hidden
+            self.assertEqual(summary["visible"], 6)
+            self.assertEqual(summary["hidden"], 2)
+
+            # 6. Detailed tool verification (Run Shortcut)
+            run_tool = next(t for t in registry["tools"] if t["identifier"] == "com.apple.shortcuts.run")
+            self.assertEqual(run_tool["name"], "Run Shortcut")
+            self.assertEqual(run_tool["outputName"], "Result")
+            self.assertEqual(run_tool["appIntentIdentifier"], "RunShortcutAction")
+            self.assertEqual(run_tool["keywords"], ["execute"])
+            self.assertEqual(len(run_tool["parameters"]), 2)
+
+            # Parameter 1: name
+            p_name = run_tool["parameters"][0]
+            self.assertEqual(p_name["key"], "name")
+            self.assertEqual(p_name["name"], "Shortcut Name")
+
+            # Parameter 2: priority (has enum cases and alternative type)
+            p_prio = run_tool["parameters"][1]
+            self.assertEqual(p_prio["key"], "priority")
+            self.assertEqual(p_prio["type"]["kind"], "enum")
+            self.assertEqual(len(p_prio["type"]["cases"]), 2)
+            self.assertEqual(p_prio["type"]["cases"][0]["id"], "high")
+            self.assertTrue(len(p_prio.get("alternativeTypes", [])) >= 1)
+
+            # 7. Derived files
+            self.assertIn("com.apple.shortcuts.run", apple_actions["actions"])
+            self.assertNotIn("com.apple.shortcuts.config", apple_actions["actions"])
+            self.assertNotIn("com.spotify.play", apple_actions["actions"])
+            self.assertIn("com.apple.shortcuts.run", names)
+            self.assertIn("name", names["com.apple.shortcuts.run"]["labels"])
+
+            # 8. Provenance
+            self.assertEqual(summary["provenance"]["osVersion"], "26.6.2")
+            self.assertEqual(summary["provenance"]["toolkitVersion"], "1111-2222-3333")
+            self.assertEqual(summary["provenance"]["dbFilename"], "Tools-prod.v67-test.sqlite")
+
+    def test_14_toolkit_registry_missing_db_raises(self):
+        """Test 14: Non-existent DB path cleanly raises FileNotFoundError."""
+        with self.assertRaises(FileNotFoundError):
+            extract_toolkit_registry("/tmp/nonexistent_toolkit_database_file.sqlite")
+
+    def test_15_toolkit_registry_missing_optional_tables_and_columns(self):
+        """Test 15: Extractor handles completely stripped/minimalist schemas without crashing."""
+        with tempfile.TemporaryDirectory() as td:
+            db_path = pathlib.Path(td) / "minimal.sqlite"
+            con = sqlite3.connect(str(db_path))
+            # Bare minimum Tools table only
+            con.execute("CREATE TABLE Tools (id TEXT PRIMARY KEY, sourceActionProvider TEXT)")
+            con.execute("INSERT INTO Tools VALUES ('com.test.bare_tool', 'WFLinkActionProvider')")
+            con.commit()
+            con.close()
+
+            registry, apple_actions, names, summary = extract_toolkit_registry(str(db_path))
+            self.assertEqual(summary["totalTools"], 1)
+            self.assertEqual(registry["tools"][0]["identifier"], "com.test.bare_tool")
+            self.assertEqual(registry["tools"][0]["parameters"], [])
+            self.assertEqual(registry["tools"][0]["protocols"], [])
+            self.assertEqual(summary["failures"], [])
+
+    def test_16_toolkit_registry_duplicates_and_malformed_data(self):
+        """Test 16: Duplicate tool IDs and malformed blobs are handled gracefully."""
+        with tempfile.TemporaryDirectory() as td:
+            db_path = pathlib.Path(td) / "malformed.sqlite"
+            con = sqlite3.connect(str(db_path))
+            con.execute("CREATE TABLE Metadata (key TEXT, value TEXT)")
+            con.execute("INSERT INTO Metadata VALUES ('VersionKey', 'INVALID_JSON{[[')")
+            con.execute("CREATE TABLE Tools (rowId INTEGER PRIMARY KEY, id TEXT, sourceActionProvider TEXT)")
+            con.execute("INSERT INTO Tools VALUES (1, 'com.duplicate.id', 'WFLinkActionProvider')")
+            con.execute("INSERT INTO Tools VALUES (2, 'com.duplicate.id', 'WFLinkActionProvider')")
+            con.execute("CREATE TABLE Types (rowId INTEGER PRIMARY KEY, id BLOB, kind INTEGER)")
+            con.execute("INSERT INTO Types VALUES (1, ?, 1)", (b"\xFF\xFF\xFF",))  # Malformed protobuf
+            con.commit()
+            con.close()
+
+            registry, apple_actions, names, summary = extract_toolkit_registry(str(db_path))
+            self.assertEqual(summary["totalTools"], 2)
+            self.assertIn("com.duplicate.id", summary["duplicateIdentifiers"])
+            self.assertIsNone(summary["provenance"]["toolkitVersion"])
+
+    def test_17_snapshot_integration_with_toolkit_evidence(self):
+        """Test 17: Normalized snapshot integrates ToolKit evidence as first-class surface."""
+        with tempfile.TemporaryDirectory() as td:
+            tk_reg_file = pathlib.Path(td) / "toolkit-registry.json"
+            tk_reg_file.write_text(json.dumps({
+                "provenance": {"dbFilename": "Tools.sqlite"},
+                "tools": [
+                    {
+                        "identifier": "com.apple.shortcuts.run",
+                        "classification": "apple_link_runnable",
+                        "provider": "WFLinkActionProvider",
+                        "hidden": False,
+                        "configuration": False,
+                        "parameters": [{"key": "name", "name": "Name"}]
+                    }
+                ]
+            }))
+
+            tk_sum_file = pathlib.Path(td) / "toolkit-summary.json"
+            tk_sum_file.write_text(json.dumps({
+                "totalTools": 1,
+                "visible": 1,
+                "hidden": 0,
+                "classifications": {"apple_link_runnable": 1}
+            }))
+
+            snapshot, manifest = build_snapshot(
+                toolkit_registry_path=str(tk_reg_file),
+                toolkit_summary_path=str(tk_sum_file)
+            )
+
+            # Check snapshot root
+            self.assertIn("toolkitEvidence", snapshot)
+            self.assertEqual(snapshot["toolkitEvidence"]["totalTools"], 1)
+
+            # Check actions record
+            action_rec = snapshot["actions"].get("com.apple.shortcuts.run")
+            self.assertIsNotNone(action_rec)
+            self.assertIn("toolkit", action_rec["sources"])
+            self.assertEqual(action_rec["metadata"]["toolkit"]["classification"], "apple_link_runnable")
+            self.assertEqual(len(action_rec["parameters"]), 1)
+
+            # Check manifest counts
+            self.assertEqual(manifest["counts"]["toolkitTotal"], 1)
+            self.assertEqual(manifest["counts"]["toolkitAppleRunnable"], 1)
+
+    def test_18_compare_cherri_with_toolkit_runnable(self):
+        """Test 18: Comparison separates Apple runnable ToolKit tools without polluting builtins."""
+        with tempfile.TemporaryDirectory() as td:
+            cherri_file = pathlib.Path(td) / "cherri.json"
+            cherri_file.write_text(json.dumps({
+                "actions": [{"name": "run", "shortcutIdentifier": "com.apple.shortcuts.run"}]
+            }))
+
+            tk_reg_file = pathlib.Path(td) / "toolkit-registry.json"
+            tk_reg_file.write_text(json.dumps({
+                "tools": [
+                    {"identifier": "com.apple.shortcuts.run", "classification": "apple_link_runnable"},
+                    {"identifier": "com.apple.shortcuts.missing", "classification": "apple_link_runnable"},
+                    {"identifier": "com.apple.shortcuts.config", "classification": "apple_configuration_only"}
+                ]
+            }))
+
+            tk_sum_file = pathlib.Path(td) / "toolkit-summary.json"
+            tk_sum_file.write_text(json.dumps({"totalTools": 3}))
+
+            summary, missing_defs, missing_intents, missing_runnable, _ = run_comparison(
+                cherri_actions_path=str(cherri_file),
+                toolkit_registry_path=str(tk_reg_file),
+                toolkit_summary_path=str(tk_sum_file)
+            )
+
+            tk_comp = summary["toolkit"]["appleLinkRunnable"]
+            self.assertEqual(tk_comp["total"], 2)
+            self.assertEqual(tk_comp["covered"], 1)
+            self.assertEqual(tk_comp["missing"], 1)
+            self.assertEqual(missing_runnable, ["com.apple.shortcuts.missing"])
+            # Builtins missing remains empty
+            self.assertEqual(missing_defs, [])
 
 
 if __name__ == "__main__":

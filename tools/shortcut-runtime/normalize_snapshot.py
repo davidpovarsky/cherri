@@ -54,6 +54,7 @@ def build_snapshot(
     builtin_defs_path=None,
     dyld_ids_path=None,
     app_intents_path=None,
+    toolkit_registry_path=None,
     toolkit_summary_path=None,
     gallery_path=None,
     parameter_encodings_path=None,
@@ -67,6 +68,8 @@ def build_snapshot(
     builtin_defs = load_json(builtin_defs_path, {})
     dyld_ids = set(load_lines(dyld_ids_path))
     app_actions_raw = load_json(app_intents_path, [])
+    toolkit_registry = load_json(toolkit_registry_path, {})
+    toolkit_summary = load_json(toolkit_summary_path, {})
     param_encodings = load_json(parameter_encodings_path, {})
     roundtrips = load_json(roundtrips_path, {})
     gallery_raw = load_json(gallery_path, {})
@@ -121,7 +124,31 @@ def build_snapshot(
             if item.get("parameters"):
                 rec["parameters"] = item["parameters"]
 
-    # 4. Gallery actions
+    # 4. ToolKit Registry Evidence
+    if isinstance(toolkit_registry, dict):
+        for tool in toolkit_registry.get("tools", []):
+            ident = tool.get("identifier")
+            if not ident:
+                continue
+            rec = get_action_record(ident)
+            if "toolkit" not in rec["sources"]:
+                rec["sources"].append("toolkit")
+            rec["metadata"]["toolkit"] = {
+                "classification": tool.get("classification"),
+                "provider": tool.get("provider"),
+                "bundleIdentifier": tool.get("app", {}).get("bundleIdentifier"),
+                "name": tool.get("name"),
+                "visible": not tool.get("hidden", False),
+                "hidden": tool.get("hidden", False),
+                "configuration": tool.get("configuration", False),
+                "synthesized": tool.get("synthesized", False),
+                "appIntentIdentifier": tool.get("appIntentIdentifier"),
+                "outputName": tool.get("outputName"),
+            }
+            if not rec.get("parameters") and tool.get("parameters"):
+                rec["parameters"] = tool["parameters"]
+
+    # 5. Gallery actions
     if isinstance(gallery_raw, dict):
         for wf_id, wf in gallery_raw.items():
             if isinstance(wf, dict):
@@ -132,7 +159,7 @@ def build_snapshot(
                         if "gallery" not in rec["sources"]:
                             rec["sources"].append("gallery")
 
-    # 5. Parameter encodings
+    # 6. Parameter encodings
     action_params = param_encodings.get("actionParameters", {})
     action_defaults = param_encodings.get("actionDefaults", {})
     action_outputs = param_encodings.get("actionOutputNames", {})
@@ -150,7 +177,7 @@ def build_snapshot(
         if ident in unavailable:
             rec["encodingEvidence"]["unavailable"] = True
 
-    # 6. Verification outcomes from roundtrips
+    # 7. Verification outcomes from roundtrips
     state_results = roundtrips.get("results", {})
     if state_results:
         # Match parameter classes to state verification
@@ -188,16 +215,33 @@ def build_snapshot(
             "builtinDefinitions": len(builtin_defs) if isinstance(builtin_defs, dict) else 0,
             "dyldIdentifiers": len(dyld_ids),
             "appIntentsTotal": len(app_actions_raw) if isinstance(app_actions_raw, list) else 0,
-            "parameterProbedActions": len(action_params)
+            "parameterProbedActions": len(action_params),
+            "toolkitTotal": toolkit_summary.get("totalTools", 0),
+            "toolkitAppleRunnable": toolkit_summary.get("classifications", {}).get("apple_link_runnable", 0),
+            "toolkitVisible": toolkit_summary.get("visible", 0),
+            "toolkitHidden": toolkit_summary.get("hidden", 0),
         }
     }
     sanitized_manifest = sanitize_paths(manifest)
 
-    return {
+    snapshot_result = {
         "schemaVersion": "2.0.0",
         "actionCount": len(sanitized_snapshot),
+        "toolkitEvidence": {
+            "totalTools": toolkit_summary.get("totalTools", 0),
+            "uniqueIdentifiers": toolkit_summary.get("uniqueIdentifiers", 0),
+            "visible": toolkit_summary.get("visible", 0),
+            "hidden": toolkit_summary.get("hidden", 0),
+            "containers": toolkit_summary.get("containers", 0),
+            "appleContainers": toolkit_summary.get("appleContainers", 0),
+            "thirdPartyContainers": toolkit_summary.get("thirdPartyContainers", 0),
+            "providers": toolkit_summary.get("providers", {}),
+            "classifications": toolkit_summary.get("classifications", {}),
+        },
         "actions": sanitized_snapshot
-    }, sanitized_manifest
+    }
+
+    return snapshot_result, sanitized_manifest
 
 
 def main():
@@ -205,6 +249,7 @@ def main():
     parser.add_argument("--builtin-defs", help="Path to builtin-actions.json")
     parser.add_argument("--dyld-ids", help="Path to builtin-action-identifiers.txt")
     parser.add_argument("--app-intents", help="Path to app-provided-actions.json")
+    parser.add_argument("--toolkit-registry", help="Path to toolkit-registry.json")
     parser.add_argument("--toolkit-summary", help="Path to toolkit-summary.json")
     parser.add_argument("--gallery", help="Path to gallery-workflows.json")
     parser.add_argument("--parameter-encodings", help="Path to parameter-encodings.json")
@@ -223,6 +268,7 @@ def main():
         builtin_defs_path=args.builtin_defs,
         dyld_ids_path=args.dyld_ids,
         app_intents_path=args.app_intents,
+        toolkit_registry_path=args.toolkit_registry,
         toolkit_summary_path=args.toolkit_summary,
         gallery_path=args.gallery,
         parameter_encodings_path=args.parameter_encodings,

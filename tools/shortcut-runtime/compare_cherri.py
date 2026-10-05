@@ -36,7 +36,7 @@ def load_lines(path):
 
 
 def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=None,
-                   app_intents_path=None, toolkit_summary_path=None,
+                   app_intents_path=None, toolkit_registry_path=None, toolkit_summary_path=None,
                    parameter_encodings_path=None):
     cherri_data = load_json(cherri_actions_path, {})
     cherri_actions = cherri_data.get("actions", [])
@@ -89,8 +89,14 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
     discoverable_covered = discoverable_ids & cherri_ids
     discoverable_missing = discoverable_ids - cherri_ids
 
-    # 4. ToolKit summary
+    # 4. ToolKit Evidence
     toolkit_summary = load_json(toolkit_summary_path, {})
+    toolkit_registry = load_json(toolkit_registry_path, {})
+    toolkit_tools = toolkit_registry.get("tools", [])
+    apple_runnable_tools = [t for t in toolkit_tools if t.get("classification") == "apple_link_runnable"]
+    apple_runnable_ids = {t["identifier"] for t in apple_runnable_tools if t.get("identifier")}
+    apple_runnable_covered = apple_runnable_ids & cherri_ids
+    apple_runnable_missing = apple_runnable_ids - cherri_ids
 
     # 5. Parameter surface gaps
     param_encodings = load_json(parameter_encodings_path, {})
@@ -143,14 +149,20 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
             "discoverableMissing": len(discoverable_missing)
         },
         "toolkit": {
-            "tools": toolkit_summary.get("Tools", 0),
+            "totalTools": toolkit_summary.get("totalTools", toolkit_summary.get("Tools", 0)),
             "visible": toolkit_summary.get("visible", 0),
             "hidden": toolkit_summary.get("hidden", 0),
             "uniqueIdentifiers": toolkit_summary.get("uniqueIdentifiers", 0),
             "providers": toolkit_summary.get("providers", {}),
+            "classifications": toolkit_summary.get("classifications", {}),
             "containers": toolkit_summary.get("containers", 0),
             "appleContainers": toolkit_summary.get("appleContainers", 0),
-            "thirdPartyContainers": toolkit_summary.get("thirdPartyContainers", 0)
+            "thirdPartyContainers": toolkit_summary.get("thirdPartyContainers", 0),
+            "appleLinkRunnable": {
+                "total": len(apple_runnable_ids),
+                "covered": len(apple_runnable_covered),
+                "missing": len(apple_runnable_missing)
+            }
         },
         "parameterSurface": {
             "actionsWithUnmodeledKeys": len(parameter_gaps)
@@ -159,8 +171,9 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
 
     missing_builtins_list = sorted(builtin_missing)
     missing_apple_intents_list = sorted(apple_intents_missing)
+    missing_apple_runnable_list = sorted(apple_runnable_missing)
 
-    return summary, missing_builtins_list, missing_apple_intents_list, parameter_gaps
+    return summary, missing_builtins_list, missing_apple_intents_list, missing_apple_runnable_list, parameter_gaps
 
 
 def main():
@@ -169,6 +182,7 @@ def main():
     parser.add_argument("--builtin-defs", help="Path to builtin-actions.json")
     parser.add_argument("--dyld-ids", help="Path to builtin-action-identifiers.txt")
     parser.add_argument("--app-intents", help="Path to app-provided-actions.json")
+    parser.add_argument("--toolkit-registry", help="Path to toolkit-registry.json")
     parser.add_argument("--toolkit-summary", help="Path to toolkit-summary.json")
     parser.add_argument("--parameter-encodings", help="Path to parameter-encodings.json")
     parser.add_argument("--out-dir", default="out", help="Output directory")
@@ -177,11 +191,12 @@ def main():
     out_dir = pathlib.Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    summary, missing_defs, missing_intents, gaps = run_comparison(
+    summary, missing_defs, missing_intents, missing_runnable, gaps = run_comparison(
         cherri_actions_path=args.cherri_actions,
         builtin_defs_path=args.builtin_defs,
         dyld_ids_path=args.dyld_ids,
         app_intents_path=args.app_intents,
+        toolkit_registry_path=args.toolkit_registry,
         toolkit_summary_path=args.toolkit_summary,
         parameter_encodings_path=args.parameter_encodings
     )
@@ -189,6 +204,7 @@ def main():
     (out_dir / "comparison-summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     (out_dir / "missing-builtins.json").write_text(json.dumps(missing_defs, indent=2), encoding="utf-8")
     (out_dir / "missing-apple-app-intents.json").write_text(json.dumps(missing_intents, indent=2), encoding="utf-8")
+    (out_dir / "missing-toolkit-apple-actions.json").write_text(json.dumps(missing_runnable, indent=2), encoding="utf-8")
     (out_dir / "parameter-surface-gaps.json").write_text(json.dumps(gaps, indent=2), encoding="utf-8")
 
     print("=== Cherri vs Apple Shortcuts Runtime Comparison ===")
@@ -200,6 +216,8 @@ def main():
     ai = summary["appleAppIntents"]
     print(f"Apple App Intents:    {ai['totalExtracted']} total | {ai['totalCovered']} covered | {ai['totalMissing']} missing")
     print(f"  (Discoverable:      {ai['discoverableTotal']} total | {ai['discoverableCovered']} covered | {ai['discoverableMissing']} missing)")
+    tk = summary["toolkit"]
+    print(f"ToolKit Registry:     {tk.get('totalTools', 0)} total tools | Visible: {tk.get('visible', 0)} | Apple Runnable: {tk.get('appleLinkRunnable', {}).get('total', 0)} ({tk.get('appleLinkRunnable', {}).get('covered', 0)} covered)")
     print(f"Parameter gaps:       {summary['parameterSurface']['actionsWithUnmodeledKeys']} actions with unmodeled keys")
 
 

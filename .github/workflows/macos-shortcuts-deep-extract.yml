@@ -49,6 +49,7 @@ jobs:
 
           cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/extract-builtin-actions.js > out/builtin.js
           osascript -l JavaScript out/builtin.js out/data/builtin-actions.json > out/logs/builtin.stdout.log 2> out/logs/builtin.stderr.log
+          python3 -c "import json; data = json.load(open('out/data/builtin-actions.json')); assert len(data) > 0, 'builtin-actions.json is missing or empty'"
 
           python3 - <<'PY'
           import json, pathlib
@@ -72,7 +73,8 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          python3 out/shortcutkit/tools/dump-appintents-actions.py out/data/app-provided-actions.json > out/logs/apps.stdout.log 2> out/logs/apps.stderr.log || true
+          python3 out/shortcutkit/tools/dump-appintents-actions.py out/data/app-provided-actions.json > out/logs/apps.stdout.log 2> out/logs/apps.stderr.log
+          python3 -c "import json; data = json.load(open('out/data/app-provided-actions.json')); assert len(data) > 0, 'app-provided-actions.json is missing or empty'"
 
           python3 - <<'PY'
           import json, pathlib
@@ -97,13 +99,16 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          python3 tools/shortcut-runtime/extract_toolkit.py --data-dir out/data --logs-dir out/logs --shortcutkit-dir out/shortcutkit
+          python3 tools/shortcut-runtime/extract_toolkit.py --data-dir out/data --logs-dir out/logs
+          python3 -c "import json; data = json.load(open('out/data/toolkit-registry.json')); assert len(data.get('tools', [])) > 0, 'toolkit-registry.json is missing or empty'"
+          python3 -c "import json; data = json.load(open('out/data/toolkit-summary.json')); assert data.get('totalTools', 0) > 0, 'toolkit-summary.json is missing or empty'"
 
       - name: Dump Gallery
         shell: bash
         run: |
           set -uo pipefail
-          python3 out/shortcutkit/tools/dump-gallery.py out/data/gallery-workflows.json > out/logs/gallery.stdout.log 2> out/logs/gallery.stderr.log || true
+          python3 out/shortcutkit/tools/dump-gallery.py out/data/gallery-workflows.json > out/logs/gallery.stdout.log 2> out/logs/gallery.stderr.log
+          python3 -c "import json; data = json.load(open('out/data/gallery-workflows.json')); assert len(data) > 0, 'gallery-workflows.json is missing or empty'"
 
           python3 - <<'PY'
           import collections, json, pathlib
@@ -132,7 +137,7 @@ jobs:
         with:
           name: deep-extract-discovery-macos-26
           path: out/data/
-          if-no-files-found: warn
+          if-no-files-found: error
 
   parameter-shard:
     name: Parameter shard ${{ matrix.shard }} of ${{ matrix.total_shards }} (macOS 26)
@@ -173,12 +178,14 @@ jobs:
             --action-timeout 20.0 \
             --param-timeout 8.0
 
+          python3 -c "import json; data = json.load(open('out/data/parameter-encodings-shard-${{ matrix.shard }}.json')); assert len(data.get('actionParameters', {})) > 0"
+
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: deep-extract-parameter-shard-${{ matrix.shard }}-macos-26
           path: out/data/parameter-*-shard-${{ matrix.shard }}.*
-          if-no-files-found: warn
+          if-no-files-found: error
 
   merge-parameters:
     name: Merge parameter shards (macOS 26)
@@ -205,12 +212,14 @@ jobs:
             --shard-count 4 \
             --out-dir out/data
 
+          python3 -c "import json; data = json.load(open('out/data/parameter-encodings.json')); assert len(data.get('actionParameters', {})) > 0"
+
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: deep-extract-merged-parameters-macos-26
           path: out/data/parameter-*.json
-          if-no-files-found: warn
+          if-no-files-found: error
 
   encoding-table:
     name: Encoding table (macOS 26)
@@ -312,6 +321,7 @@ jobs:
             --builtin-defs out/data/builtin-actions.json \
             --dyld-ids out/data/builtin-action-identifiers.txt \
             --app-intents out/data/app-provided-actions.json \
+            --toolkit-registry out/data/toolkit-registry.json \
             --toolkit-summary out/data/toolkit-summary.json \
             --parameter-encodings out/data/parameter-encodings.json \
             --out-dir out/data
@@ -325,6 +335,7 @@ jobs:
             --builtin-defs out/data/builtin-actions.json \
             --dyld-ids out/data/builtin-action-identifiers.txt \
             --app-intents out/data/app-provided-actions.json \
+            --toolkit-registry out/data/toolkit-registry.json \
             --toolkit-summary out/data/toolkit-summary.json \
             --gallery out/data/gallery-workflows.json \
             --parameter-encodings out/data/parameter-encodings.json \
@@ -334,6 +345,9 @@ jobs:
             --shortcutkit-commit "$SHORTCUTKIT_COMMIT" \
             --shard-count 4 \
             --out-dir out/data
+
+          python3 -c "import json; snap = json.load(open('out/data/apple-runtime-snapshot.json')); assert snap.get('actionCount', 0) > 0"
+          python3 -c "import json; man = json.load(open('out/data/apple-runtime-manifest.json')); assert man.get('counts', {}).get('totalUniqueActions', 0) > 0"
 
       - name: Publish Step Summary
         shell: bash
@@ -358,7 +372,7 @@ jobs:
           ai = comp.get('appleAppIntents', {})
           print(f"| Apple App Intents | {ai.get('totalExtracted', 0)} | {ai.get('totalCovered', 0)} covered (Discoverable: {ai.get('discoverableTotal', 0)} total, {ai.get('discoverableCovered', 0)} covered) |")
           tk = comp.get('toolkit', {})
-          print(f"| ToolKit Tools | {tk.get('tools', 0)} | Visible: {tk.get('visible', 0)}, Hidden: {tk.get('hidden', 0)}, Containers: {tk.get('containers', 0)} |")
+          print(f"| ToolKit Tools | {tk.get('totalTools', 0)} | Visible: {tk.get('visible', 0)}, Hidden: {tk.get('hidden', 0)}, Containers: {tk.get('containers', 0)} |")
 
           print("\n## Parameter Probing (Sharded)")
           print(f"- **Total Attempted:** {param.get('actionsAttempted', 0)}")
@@ -379,6 +393,7 @@ jobs:
             out/data/comparison-summary.json
             out/data/missing-builtins.json
             out/data/missing-apple-app-intents.json
+            out/data/missing-toolkit-apple-actions.json
             out/data/parameter-surface-gaps.json
             out/data/parameter-encodings.json
             out/data/parameter-encodings-summary.json
@@ -386,4 +401,8 @@ jobs:
             out/data/parameter-errors.json
             out/data/encoding-table.json
             out/data/encoding-roundtrips.json
-          if-no-files-found: warn
+            out/data/toolkit-registry.json
+            out/data/toolkit-apple-actions.json
+            out/data/toolkit-names.json
+            out/data/toolkit-summary.json
+          if-no-files-found: error
