@@ -281,6 +281,10 @@ cat artifacts/run.log
 ASSERT_PASSED=false
 UI_AUTOMATION_USED="ImportHelperUITests + AppleScript"
 
+echo "Checking for runtime permission dialog (Allow)..."
+sleep 2
+run_ui_helper "run_permission"
+
 echo "Polling simulator clipboard for up to 30 seconds..."
 for i in $(seq 1 30); do
     sleep 1
@@ -293,7 +297,7 @@ for i in $(seq 1 30); do
     fi
 
     # Fallback retry if run prompt appeared
-    if [ "$i" -eq 5 ] || [ "$i" -eq 12 ]; then
+    if [ "$i" -eq 3 ] || [ "$i" -eq 6 ] || [ "$i" -eq 12 ]; then
         echo "Poll $i: running UI helper and re-triggering run URL..."
         run_ui_helper "run_poll_$i"
         xcrun simctl openurl "$SIM_UDID" "$RUN_URL" 2>/dev/null || true

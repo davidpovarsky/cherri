@@ -6,71 +6,105 @@ class ImportHelperUITests: XCTestCase {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
         app.activate()
 
-        _ = app.wait(for: .runningForeground, timeout: 5)
+        _ = app.wait(for: .runningForeground, timeout: 3)
+
         print("=== SHORTCUTS DEBUG HIERARCHY ===")
         print(app.debugDescription)
+        print("=== SPRINGBOARD DEBUG HIERARCHY ===")
+        print(springboard.debugDescription)
 
-        // 1. Check for alerts in app or springboard
-        for alertApp in [app, springboard] {
-            for alert in alertApp.alerts.allElementsBoundByIndex {
-                print("Found alert: \(alert.label)")
-                for btnName in ["OK", "Allow", "Always Allow", "Run", "Dismiss", "Close"] {
-                    let b = alert.buttons[btnName]
-                    if b.exists {
-                        print("Tapping alert button: \(btnName)")
-                        b.tap()
+        var tapped = false
+
+        // 1. Check for runtime permission "Allow" / "Always Allow" in SpringBoard and Shortcuts
+        for targetApp in [springboard, app] {
+            for allowLabel in ["Allow", "Always Allow"] {
+                let btn = targetApp.buttons[allowLabel]
+                if btn.waitForExistence(timeout: 1) {
+                    print("Found and tapping '\(allowLabel)' in \(targetApp.bundleIdentifier)...")
+                    btn.tap()
+                    tapped = true
+                    break
+                }
+            }
+            if tapped { break }
+        }
+
+        // 2. Check for alerts in springboard or app
+        if !tapped {
+            for alertApp in [springboard, app] {
+                for alert in alertApp.alerts.allElementsBoundByIndex {
+                    print("Found alert: \(alert.label)")
+                    for btnName in ["Allow", "Always Allow", "OK", "Run", "Dismiss", "Close"] {
+                        let b = alert.buttons[btnName]
+                        if b.exists {
+                            print("Tapping alert button: \(btnName)")
+                            b.tap()
+                            tapped = true
+                            break
+                        }
+                    }
+                    if tapped { break }
+                }
+                if tapped { break }
+            }
+        }
+
+        // 3. Check for Onboarding "Continue" button
+        if !tapped {
+            let continueBtn = app.buttons["Continue"]
+            if continueBtn.waitForExistence(timeout: 1) {
+                print("Tapping 'Continue' onboarding button...")
+                continueBtn.tap()
+                tapped = true
+                sleep(1)
+            }
+        }
+
+        // 4. Search for Add Shortcut confirmation button across all buttons and sheets
+        if !tapped {
+            let candidates = [
+                "Add Shortcut",
+                "+ Add Shortcut",
+                "Add",
+                "Set Up Shortcut",
+                "Replace",
+                "Run Shortcut",
+                "Run"
+            ]
+
+            for targetApp in [app, springboard] {
+                for label in candidates {
+                    let btn = targetApp.buttons[label]
+                    if btn.waitForExistence(timeout: 1) {
+                        print("Tapping button by label: '\(label)' in \(targetApp.bundleIdentifier)...")
+                        btn.tap()
+                        tapped = true
                         break
                     }
+                }
+                if tapped { break }
+            }
+        }
+
+        // 5. Predicate search across buttons for Allow or Add
+        if !tapped {
+            for targetApp in [springboard, app] {
+                let predicate = NSPredicate(format: "label ==[c] 'Allow' OR label CONTAINS[c] 'Allow' OR label CONTAINS[c] 'Add'")
+                let matchingButtons = targetApp.buttons.matching(predicate)
+                if matchingButtons.count > 0 {
+                    let firstMatching = matchingButtons.element(boundBy: 0)
+                    print("Tapping matching button with label: '\(firstMatching.label)' in \(targetApp.bundleIdentifier)...")
+                    firstMatching.tap()
+                    tapped = true
+                    break
                 }
             }
         }
 
-        // 2. Check for Onboarding "Continue" button
-        let continueBtn = app.buttons["Continue"]
-        if continueBtn.waitForExistence(timeout: 2) {
-            print("Tapping 'Continue' onboarding button...")
-            continueBtn.tap()
-            sleep(1)
-        }
-
-        // 3. Search for Add Shortcut confirmation button across all buttons and sheets
-        let candidates = [
-            "Add Shortcut",
-            "+ Add Shortcut",
-            "Add",
-            "Set Up Shortcut",
-            "Replace",
-            "Run Shortcut",
-            "Run"
-        ]
-
-        var tapped = false
-        for label in candidates {
-            let btn = app.buttons[label]
-            if btn.waitForExistence(timeout: 2) {
-                print("Tapping button by label: '\(label)'...")
-                btn.tap()
-                tapped = true
-                break
-            }
-        }
-
-        if !tapped {
-            // Predicate search across buttons
-            let predicate = NSPredicate(format: "label CONTAINS[c] 'Add'")
-            let matchingButtons = app.buttons.matching(predicate)
-            if matchingButtons.count > 0 {
-                let firstMatching = matchingButtons.element(boundBy: 0)
-                print("Tapping matching button with label: '\(firstMatching.label)'")
-                firstMatching.tap()
-                tapped = true
-            }
-        }
-
-        // 4. Also check sheets / dialogs if button was inside a modal sheet
+        // 6. Also check sheets / dialogs if button was inside a modal sheet
         if !tapped {
             for sheet in app.sheets.allElementsBoundByIndex {
-                for label in candidates {
+                for label in ["Add Shortcut", "+ Add Shortcut", "Add", "Allow"] {
                     let btn = sheet.buttons[label]
                     if btn.exists {
                         print("Tapping sheet button: '\(label)'...")
