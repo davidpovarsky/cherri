@@ -1,0 +1,42 @@
+name: iOS 27 Shortcuts Runtime PoC
+
+on:
+  push:
+    branches:
+      - agent/ios27-shortcuts-runtime-poc
+  workflow_dispatch:
+
+concurrency:
+  group: ios27-poc-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ios27-runtime-poc:
+    runs-on: xcode-27
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Run iOS 27 Shortcuts Runtime PoC
+        run: bash scripts/ios27_runtime_poc.sh
+
+      - name: Upload PoC Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios27-shortcuts-runtime-poc-artifacts
+          path: artifacts/
+          retention-days: 7
