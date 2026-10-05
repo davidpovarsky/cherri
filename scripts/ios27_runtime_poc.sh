@@ -28,25 +28,38 @@ run_ui_helper() {
     local stage_name="$1"
     echo "Running UI helper for $stage_name..."
     
-    # 1. Attempt AppleScript keystrokes and clicks if Simulator GUI is available
+    # 1. Attempt AppleScript keystrokes if Simulator GUI is available
     open -a Simulator --args -CurrentDeviceUDID "$SIM_UDID" 2>/dev/null || true
     sleep 1
     osascript -e 'tell application "Simulator" to activate' 2>/dev/null || true
     osascript -e 'tell application "System Events" to key code 36' 2>/dev/null || true # Return
     osascript -e 'tell application "System Events" to key code 49' 2>/dev/null || true # Space
     
-    # 2. If xcodegen is available, run XCUITest helper
-    if command -v xcodegen >/dev/null 2>&1 && [ -f tests/runtime_poc/ImportHelper/project.yml ]; then
-        echo "Executing XCUITest helper via xcodebuild..."
+    # 2. Execute XCUITest helper
+    if [ -d tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj ]; then
+        echo "Executing XCUITest helper via xcodebuild test..."
         (
             cd tests/runtime_poc/ImportHelper
-            xcodegen generate >/dev/null 2>&1 || true
             xcodebuild test \
                 -project ImportHelper.xcodeproj \
                 -scheme ImportHelper \
                 -destination "id=$SIM_UDID" \
                 -resultBundlePath "${PWD}/../../../artifacts/ImportHelper_${stage_name}.xcresult" \
-                > "${PWD}/../../../artifacts/ui_helper_${stage_name}.log" 2>&1 || true
+                CODE_SIGN_IDENTITY="-" \
+                2>&1 | tee "${PWD}/../../../artifacts/ui_helper_${stage_name}.log" || true
+        )
+    elif command -v xcodegen >/dev/null 2>&1 && [ -f tests/runtime_poc/ImportHelper/project.yml ]; then
+        echo "Generating and executing XCUITest helper..."
+        (
+            cd tests/runtime_poc/ImportHelper
+            xcodegen generate 2>&1 | tee "${PWD}/../../../artifacts/xcodegen_${stage_name}.log" || true
+            xcodebuild test \
+                -project ImportHelper.xcodeproj \
+                -scheme ImportHelper \
+                -destination "id=$SIM_UDID" \
+                -resultBundlePath "${PWD}/../../../artifacts/ImportHelper_${stage_name}.xcresult" \
+                CODE_SIGN_IDENTITY="-" \
+                2>&1 | tee "${PWD}/../../../artifacts/ui_helper_${stage_name}.log" || true
         )
     fi
 }
@@ -235,40 +248,19 @@ xcrun simctl spawn "$SIM_UDID" log stream --predicate 'subsystem == "com.apple.s
 LOG_PID=$!
 echo "Simulator log stream active with PID $LOG_PID"
 
-# Start local HTTP server to host the signed shortcut
-python3 -m http.server 8000 --directory artifacts > artifacts/http_server.log 2>&1 &
-HTTP_PID=$!
-echo "HTTP server active on port 8000 with PID $HTTP_PID"
-sleep 2
+
 
 SHORTCUT_FILE="$(pwd)/artifacts/CherriRuntimePOC.shortcut"
-WORKING_IMPORT_METHOD="none"
 
-echo "Attempting Import Method 1: open -a Simulator with shortcut file"
+echo "Opening shortcut file in simulator..."
+xcrun simctl openurl "$SIM_UDID" "file://$SHORTCUT_FILE" > artifacts/import.log 2>&1 || true
 open -a Simulator "$SHORTCUT_FILE" 2>/dev/null || true
 sleep 3
-run_ui_helper "import_m1"
-xcrun simctl io "$SIM_UDID" screenshot artifacts/02_after_import_m1.png || true
+xcrun simctl io "$SIM_UDID" screenshot artifacts/02_import_sheet_presented.png || true
 
-echo "Attempting Import Method 2: simctl openurl file://"
-xcrun simctl openurl "$SIM_UDID" "file://$SHORTCUT_FILE" > artifacts/import_m2.log 2>&1 || true
+echo "Confirming import via UI helper..."
+run_ui_helper "import"
 sleep 3
-run_ui_helper "import_m2"
-xcrun simctl io "$SIM_UDID" screenshot artifacts/02_after_import_m2.png || true
-
-echo "Attempting Import Method 3: MobileSafari HTTP download"
-xcrun simctl openurl "$SIM_UDID" "http://127.0.0.1:8000/CherriRuntimePOC.shortcut" > artifacts/import_m3.log 2>&1 || true
-sleep 3
-run_ui_helper "import_m3"
-xcrun simctl io "$SIM_UDID" screenshot artifacts/02_after_import_m3.png || true
-
-echo "Attempting Import Method 4: shortcuts://import-shortcut/?url=..."
-IMPORT_URL="shortcuts://import-shortcut/?url=http%3A%2F%2F127.0.0.1%3A8000%2FCherriRuntimePOC.shortcut&name=CherriRuntimePOC"
-xcrun simctl openurl "$SIM_UDID" "$IMPORT_URL" > artifacts/import_m4.log 2>&1 || true
-sleep 3
-run_ui_helper "import_m4"
-xcrun simctl io "$SIM_UDID" screenshot artifacts/02_after_import_m4.png || true
-
 xcrun simctl io "$SIM_UDID" screenshot artifacts/02_after_import.png || true
 
 # [8] RUN & [9] ASSERT CLIPBOARD

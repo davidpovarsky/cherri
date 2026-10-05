@@ -30,6 +30,13 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
+      - name: Generate UI test helper project
+        run: |
+          cd tests/runtime_poc/ImportHelper
+          xcodegen generate
+          ls -la ImportHelper.xcodeproj
+          xcodebuild -project ImportHelper.xcodeproj -list
+
       - name: Run iOS 27 Shortcuts Runtime PoC
         run: bash scripts/ios27_runtime_poc.sh
 
