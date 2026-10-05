@@ -291,6 +291,207 @@
       ],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "getVariable",
+      "identifier": "is.workflow.actions.getvariable",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions/basic.cherri",
+        "decompile.go"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Added getVariable(variable variable: 'WFVariable'): variable to actions/basic.cherri and eliminated lossy decompiler skip/TODO degradation.",
+      "reason": "Preserve data flow semantics for is.workflow.actions.getvariable in real Shortcuts exports without dropping actions.",
+      "evidence": "batch-14 corpus evidence across multiple shortcuts; regression suite TestForkActionRoundTrips/getVariable/round-trip.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getType",
+      "identifier": "is.workflow.actions.gettypeaction",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions/basic.cherri"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Added getType(variable input: 'WFInput', text ?fileType: 'WFFileType'): text to actions/basic.cherri.",
+      "reason": "Observed in batch-14 corpus (DeveloperKit, etc.) for file type introspection.",
+      "evidence": "batch-14 corpus evidence x5 in DeveloperKit, Home Screen Icon Creator.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getTimeBetweenDates / addEvent / addReminder",
+      "identifier": "is.workflow.actions.gettimebetweendates / is.workflow.actions.addnewevent / is.workflow.actions.addnewreminder",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions/calendar.cherri"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Added getTimeBetweenDates, addEvent, and addReminder action definitions with enum arguments to actions/calendar.cherri.",
+      "reason": "Repeatedly observed in batch-14 corpus with calendar/reminder event creation and date arithmetic.",
+      "evidence": "batch-14 corpus evidence in DeveloperKit, OS.MOBIL.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getDirections / getTravelTime / getDistance",
+      "identifier": "is.workflow.actions.getdirections / is.workflow.actions.gettraveltime / is.workflow.actions.getdistance",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions/location.cherri"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Added getDirections, getTravelTime, and getDistance definitions to actions/location.cherri.",
+      "reason": "Maps navigation and transit estimation observed in corpus batch-14.",
+      "evidence": "batch-14 corpus evidence in OS.MOBIL.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getAppStoreDetail / searchiTunes / createPlaylist",
+      "identifier": "is.workflow.actions.properties.appstore / is.workflow.actions.searchitunes / is.workflow.actions.createplaylist",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions/shortcuts.cherri",
+        "actions/music.cherri"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Added getAppStoreDetail property action to actions/shortcuts.cherri and searchiTunes, createPlaylist actions to actions/music.cherri.",
+      "reason": "Media and App Store catalog queries in batch-14 corpus.",
+      "evidence": "batch-14 corpus evidence in Home Screen Icon Creator, Quick Icon Maker.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "selectContacts",
+      "identifier": "is.workflow.actions.contacts",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions/contacts.cherri"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Added selectContacts definition to actions/contacts.cherri for is.workflow.actions.contacts with WFContact parameter.",
+      "reason": "Address book contact picker in batch-14 corpus.",
+      "evidence": "batch-14 corpus evidence in OS.MOBIL.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "transcribeText",
+      "identifier": "com.apple.speech.recognition.TranscribeAudioAction",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": null,
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Defined typed transcribeAudioIntent AppIntent in actions_std.go mapping to ShortcutsActions bundle and TranscribeAudioAction intent.",
+      "reason": "Audio transcription with minVersion 17 observed in batch-14 AI shortcuts.",
+      "evidence": "batch-14 corpus evidence in Pro AI, Nuvole AI.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "combineImages identifier correction",
+      "identifier": "is.workflow.actions.image.combine",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-corrected",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/images.cherri",
+      "forkLocations": [
+        "actions/images.cherri"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Corrected combineImages identifier from auto-derived 'combine' to explicit 'image.combine' ('is.workflow.actions.image.combine').",
+      "reason": "Upstream emitted invalid action identifier is.workflow.actions.combine instead of the real Apple identifier is.workflow.actions.image.combine.",
+      "evidence": "batch-14 corpus evidence in wallpaper creator island 7.0.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getFileDetail parameter key correction",
+      "identifier": "is.workflow.actions.properties.files",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-corrected",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/documents.cherri",
+      "forkLocations": [
+        "actions/documents.cherri"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Corrected file input parameter key in getFileDetail from WFFolder to WFInput.",
+      "reason": "Upstream used WFFolder key causing mismatch with real Shortcuts serialization which always serializes file inputs as WFInput.",
+      "evidence": "batch-14 corpus evidence in Jellycuts Helper, DeveloperKit.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "calculate modulus and operand key mirroring",
+      "identifier": "is.workflow.actions.math",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-extended",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/math.cherri",
+      "forkLocations": [
+        "actions/math.cherri",
+        "action.go"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Added 'Modulus' operation to calculationOperation enum, changed operandTwo key to WFScientificMathOperand and mirrored WFMathOperand in makeActionParams.",
+      "reason": "Modulus operations and modern scientific operand serialization in real shortcuts.",
+      "evidence": "batch-14 corpus evidence in Shortcut Color_Glyph Editor.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "ask numeric bounds flags",
+      "identifier": "is.workflow.actions.ask",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-extended",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions_std.go",
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Added allowsDecimal (WFAskActionAllowsDecimalNumbers) and allowsNegative (WFAskActionAllowsNegativeNumbers) optional parameters to ask action in actions_std.go.",
+      "reason": "Real prompt/ask actions serialize explicit decimal and negative number constraints.",
+      "evidence": "batch-14 corpus evidence in Shortcut Color_Glyph Editor.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
@@ -399,6 +600,43 @@
       "reason": "Acceptance Test 01: a Shortcut with show(...), base64Encode(..., \"None\"), getUpcomingEvents(3) and startStopwatch() decompiled with getUpcomingEvents(3) but without #include 'actions/calendar', so the generated source failed to recompile. checkMissingStandardInclude probes categories by loading definitions into the global actions map; actions matching from side-effect-loaded categories never emitted their include. The general invariant now covers all action categories, not a calendar special case.",
       "evidence": "Regression suite decomp_includes_test.go: acceptance-01 exact semantics (compile -> decompile -> recompile PASS with calendar+crypto includes), multi-category (calendar+crypto+web+documents) each exactly once, basic actions emit no includes, duplicate category single include, deterministic include order, in-process state isolation, sanitized external fixture round trip. go test ./... -count=1 PASS (local scratch build, Go 1.23; CI Go 1.24).",
       "note": "Compiler/decompiler infrastructure provenance; no new Shortcut action. firstForkCommit recorded in follow-up provenance-metadata commit."
+    },
+    {
+      "name": "lossless rawAction parameter preservation and representability fallback",
+      "locations": [
+        "decompile.go",
+        "action.go",
+        "shortcutgen.go"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "isActionRepresentable validates that all semantic action parameters are expressible by typed Cherri definitions before emitting pretty calls; falls back losslessly to rawAction when unmodeled keys exist. processRawParameters clones non-destructively without dropping parameters when UUID and CustomOutputName are present.",
+      "reason": "Prevent silent data loss during decompile where known outer action identifiers carried unknown complex parameters such as WFContentItemFilter.",
+      "evidence": "Regression test TestForkActionRoundTrips/representability/unmodeled-parameter-falls-back-to-rawAction and rawAction/uuid-outputName-and-params.",
+      "note": "Critical decompilation roundtrip preservation invariant."
+    },
+    {
+      "name": "UTF-16 Unicode attachment range offset mapping",
+      "locations": [
+        "decompile.go"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Implemented utf16OffsetToRuneIndex to correctly map Apple Shortcuts UTF-16 code-unit range offsets to Go runes during token attachment reconstruction in strings with multi-byte or surrogate-pair characters.",
+      "reason": "Hebrew text, emojis, and multilingual token strings corrupted string reconstructions when surrogate pairs counted as 2 UTF-16 code units.",
+      "evidence": "Regression test TestForkActionRoundTrips/unicode/hebrew-emoji-tokens and corpus batch-14 strings.",
+      "note": "Serialization/decompilation infrastructure."
+    },
+    {
+      "name": "unified workflow metadata decompilation and question parameter binding",
+      "locations": [
+        "decompile.go",
+        "ios_bridge.go",
+        "shortcutgen.go"
+      ],
+      "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
+      "change": "Consolidated decompileWorkflowMetadata between CLI and iOS bridge emitting #define from, #define quickactions, #define inputs, #define outputs, #define noinput, and #question definitions. Bound WFWorkflowImportQuestions to action parameters and fixed WFQuestion.ActionIndex plist serialization.",
+      "reason": "Preserve Shortcut-level metadata and setup questions identically across CLI and mobile frontends.",
+      "evidence": "Regression test TestForkActionRoundTrips/workflowMetadata/from-inputs-and-question.",
+      "note": "Shared compiler/decompiler metadata infrastructure."
     }
   ]
 }
