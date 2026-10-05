@@ -18,8 +18,8 @@ env:
   SHORTCUTKIT_COMMIT: ee52c32937053268e4a035eba4b372fe77ec6411
 
 jobs:
-  builtin:
-    name: Builtins and environment (macOS 26)
+  discovery:
+    name: Discovery and engine surfaces (macOS 26)
     runs-on: macos-26
     timeout-minutes: 20
     steps:
@@ -32,7 +32,7 @@ jobs:
           mkdir -p out/data out/logs
           python3 tools/shortcut-runtime/runtime_probe.py --out-dir out/data
 
-      - name: Extract built-in actions
+      - name: Clone pinned ShortcutKit
         shell: bash
         run: |
           set -uo pipefail
@@ -40,6 +40,10 @@ jobs:
           git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
           echo "$SHORTCUTKIT_COMMIT" > out/data/shortcutkit-commit.txt
 
+      - name: Extract built-in actions
+        shell: bash
+        run: |
+          set -uo pipefail
           open -gja Shortcuts || true
           sleep 15
 
@@ -64,27 +68,10 @@ jobs:
           print(json.dumps(summary, indent=2))
           PY
 
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: deep-extract-builtin-macos-26
-          path: out/data/
-          if-no-files-found: warn
-
-  installed-apps:
-    name: Installed App Intents (macOS 26)
-    runs-on: macos-26
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Dump installed app metadata
+      - name: Dump installed App Intents
         shell: bash
         run: |
           set -uo pipefail
-          mkdir -p out/data out/logs
-          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
-          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
           python3 out/shortcutkit/tools/dump-appintents-actions.py out/data/app-provided-actions.json > out/logs/apps.stdout.log 2> out/logs/apps.stderr.log || true
 
           python3 - <<'PY'
@@ -106,52 +93,16 @@ jobs:
           print(json.dumps(summary, indent=2))
           PY
 
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: deep-extract-installed-apps-macos-26
-          path: out/data/
-          if-no-files-found: warn
-
-  toolkit:
-    name: ToolKit registry (macOS 26)
-    runs-on: macos-26
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v6
-
       - name: Dump and inspect ToolKit registry
         shell: bash
         run: |
           set -uo pipefail
-          mkdir -p out/data out/logs
-          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
-          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
-          open -gja Shortcuts || true
-          sleep 15
           python3 tools/shortcut-runtime/extract_toolkit.py --data-dir out/data --logs-dir out/logs --shortcutkit-dir out/shortcutkit
-
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: deep-extract-toolkit-macos-26
-          path: out/data/
-          if-no-files-found: warn
-
-  gallery:
-    name: Gallery (macOS 26)
-    runs-on: macos-26
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6
 
       - name: Dump Gallery
         shell: bash
         run: |
           set -uo pipefail
-          mkdir -p out/data out/logs
-          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
-          git -C out/shortcutkit checkout "$SHORTCUTKIT_COMMIT"
           python3 out/shortcutkit/tools/dump-gallery.py out/data/gallery-workflows.json > out/logs/gallery.stdout.log 2> out/logs/gallery.stderr.log || true
 
           python3 - <<'PY'
@@ -179,27 +130,27 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: deep-extract-gallery-macos-26
+          name: deep-extract-discovery-macos-26
           path: out/data/
           if-no-files-found: warn
 
   parameter-shard:
     name: Parameter shard ${{ matrix.shard }} of ${{ matrix.total_shards }} (macOS 26)
-    needs: builtin
+    needs: discovery
     runs-on: macos-26
-    timeout-minutes: 25
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        total_shards: [10]
+        shard: [0, 1, 2, 3]
+        total_shards: [4]
     steps:
       - uses: actions/checkout@v6
 
-      - name: Download built-in definitions
+      - name: Download discovery definitions
         uses: actions/download-artifact@v4
         with:
-          name: deep-extract-builtin-macos-26
+          name: deep-extract-discovery-macos-26
           path: out/data
 
       - name: Run parameter extraction shard with watchdog
@@ -252,7 +203,7 @@ jobs:
           mkdir -p out/data
           python3 tools/shortcut-runtime/merge_parameters.py \
             --shards-dir out/shards \
-            --shard-count 10 \
+            --shard-count 4 \
             --out-dir out/data
 
       - if: always()
@@ -265,6 +216,7 @@ jobs:
   encoding-table:
     name: Encoding table (macOS 26)
     needs: merge-parameters
+    if: always()
     runs-on: macos-26
     timeout-minutes: 20
     steps:
@@ -296,6 +248,7 @@ jobs:
   roundtrips:
     name: Encoding round trips (macOS 26)
     needs: [encoding-table, merge-parameters]
+    if: always()
     runs-on: macos-26
     timeout-minutes: 20
     steps:
@@ -330,7 +283,7 @@ jobs:
 
   compare-and-snapshot:
     name: Cherri comparison and snapshot (macOS 26)
-    needs: [builtin, installed-apps, toolkit, gallery, merge-parameters, encoding-table, roundtrips]
+    needs: [discovery, merge-parameters, encoding-table, roundtrips]
     if: always()
     runs-on: macos-26
     timeout-minutes: 20
@@ -384,7 +337,7 @@ jobs:
             --environment out/data/environment.json \
             --cherri-sha "$CHERRI_SHA" \
             --shortcutkit-commit "$SHORTCUTKIT_COMMIT" \
-            --shard-count 10 \
+            --shard-count 4 \
             --out-dir out/data
 
       - name: Publish Step Summary

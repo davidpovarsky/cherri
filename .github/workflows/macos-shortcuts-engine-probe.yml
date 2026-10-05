@@ -1,14 +1,11 @@
 name: macOS Shortcuts engine probe
 
 on:
-  push:
-    branches:
-      - agent/apple-runtime-extraction-v2
+  workflow_dispatch:
   pull_request:
     paths:
       - '.github/workflows/macos-shortcuts-engine-probe.yml'
       - 'tools/shortcut-runtime/**'
-  workflow_dispatch:
 
 permissions:
   contents: read
