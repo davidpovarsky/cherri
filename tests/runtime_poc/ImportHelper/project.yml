@@ -5,34 +5,33 @@ options:
     iOS: "17.0"
 settings:
   base:
-    CODE_SIGN_IDENTITY: ""
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_IDENTITY: "-"
     CODE_SIGNING_REQUIRED: "NO"
-    CODE_SIGNING_ALLOWED: "NO"
 targets:
   ImportHelper:
     type: application
     platform: iOS
     sources:
-      - path: App.swift
-    info:
-      properties:
-        CFBundleIdentifier: org.cherrilang.poc.ImportHelper
-        UILaunchScreen: {}
+      - Sources
     settings:
       base:
-        CODE_SIGN_IDENTITY: ""
-        CODE_SIGNING_REQUIRED: "NO"
+        PRODUCT_BUNDLE_IDENTIFIER: org.cherrilang.poc.ImportHelper
+        GENERATE_INFOPLIST_FILE: "YES"
+        CODE_SIGN_IDENTITY: "-"
   ImportHelperUITests:
     type: bundle.ui-testing
     platform: iOS
     sources:
-      - path: UITests.swift
+      - UITests
     dependencies:
       - target: ImportHelper
     settings:
       base:
-        CODE_SIGN_IDENTITY: ""
-        CODE_SIGNING_REQUIRED: "NO"
+        PRODUCT_BUNDLE_IDENTIFIER: org.cherrilang.poc.ImportHelperUITests
+        TEST_TARGET_NAME: ImportHelper
+        GENERATE_INFOPLIST_FILE: "YES"
+        CODE_SIGN_IDENTITY: "-"
 schemes:
   ImportHelper:
     build:
