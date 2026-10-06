@@ -45,36 +45,29 @@ sh "$SKILL_DIR/scripts/decompile.sh" "$TMP/test.shortcut" "$TMP/decompiled" >/de
 find "$TMP/decompiled" -maxdepth 1 -type f -name '*.cherri' | grep -q .
 
 printf 'Testing decompiled-source recompilation (self-contained invariant)...\n'
-cat > "$TMP/includes.cherri" <<'SRC'
-#include 'actions/calendar'
-#include 'actions/crypto'
-
-@input = "self test"
-@encoded = base64Encode(@input, "None")
-@events = getUpcomingEvents(3)
-show("Input: {@input}")
-show("Base64: {@encoded}")
-show("Events: {@events}")
+cat > "$TMP/v2actions.cherri" <<'SRC'
+let input = "self test"
+let encoded = base64Encode(input, lineBreakMode: "None")
+let events = getUpcomingEvents(3)
+show(f"Input: {input}")
+show(f"Base64: {encoded}")
+show(f"Events: {events}")
 SRC
-sh "$SKILL_DIR/scripts/build.sh" "$TMP/includes.cherri" "$TMP/includes.shortcut" --unsigned >/dev/null
-[ -s "$TMP/includes.shortcut" ]
+sh "$SKILL_DIR/scripts/build.sh" "$TMP/v2actions.cherri" "$TMP/v2actions.shortcut" --unsigned >/dev/null
+[ -s "$TMP/v2actions.shortcut" ]
 
-rm -rf "$TMP/decompiled-includes"
-mkdir -p "$TMP/decompiled-includes"
-sh "$SKILL_DIR/scripts/decompile.sh" "$TMP/includes.shortcut" "$TMP/decompiled-includes" >/dev/null
-INCLUDES_SRC=$(find "$TMP/decompiled-includes" -maxdepth 1 -type f -name '*.cherri' | head -n 1)
-[ -n "$INCLUDES_SRC" ] || { echo 'decompile produced no .cherri source' >&2; exit 1; }
-
-# Required standard action includes must be reconstructed automatically.
-grep -q "#include 'actions/calendar'" "$INCLUDES_SRC" || { echo 'missing #include actions/calendar in decompiled source' >&2; exit 1; }
-grep -q "#include 'actions/crypto'" "$INCLUDES_SRC" || { echo 'missing #include actions/crypto in decompiled source' >&2; exit 1; }
+rm -rf "$TMP/decompiled-v2"
+mkdir -p "$TMP/decompiled-v2"
+sh "$SKILL_DIR/scripts/decompile.sh" "$TMP/v2actions.shortcut" "$TMP/decompiled-v2" >/dev/null
+V2_SRC=$(find "$TMP/decompiled-v2" -maxdepth 1 -type f -name '*.cherri' | head -n 1)
+[ -n "$V2_SRC" ] || { echo 'decompile produced no .cherri source' >&2; exit 1; }
 
 # The decompiled source must compile without manual edits.
-sh "$SKILL_DIR/scripts/build.sh" "$INCLUDES_SRC" "$TMP/recompiled.shortcut" --unsigned >/dev/null
+sh "$SKILL_DIR/scripts/build.sh" "$V2_SRC" "$TMP/recompiled.shortcut" --unsigned >/dev/null
 [ -s "$TMP/recompiled.shortcut" ]
 
 printf 'Testing existing-Shortcut prepare/edit workflow...\n'
-PREPARE_OUT=$(sh "$SKILL_DIR/scripts/prepare-edit.sh" "$TMP/includes.shortcut" "$TMP/prepared" 2>&1)
+PREPARE_OUT=$(sh "$SKILL_DIR/scripts/prepare-edit.sh" "$TMP/v2actions.shortcut" "$TMP/prepared" 2>&1)
 printf '%s\n' "$PREPARE_OUT" | grep -q "$TMP/prepared/original/shortcut.plist"
 printf '%s\n' "$PREPARE_OUT" | grep -q "$TMP/prepared/source/.*\.cherri"
 printf '%s\n' "$PREPARE_OUT" | grep -q "$TMP/prepared/builds/validation.shortcut"

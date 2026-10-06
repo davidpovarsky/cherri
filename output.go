@@ -34,8 +34,10 @@ func getOutputPath(name string) string {
 		}
 
 		var relativeOutputPath = strings.Replace(outputPathArg, outputPathEnding, "", 1)
-		if _, err := os.Stat(relativeOutputPath); os.IsNotExist(err) {
-			exit(fmt.Sprintf("Output path '%s' does not exist!", relativeOutputPath))
+		if relativeOutputPath != "" {
+			if _, err := os.Stat(relativeOutputPath); os.IsNotExist(err) {
+				exit(fmt.Sprintf("Output path '%s' does not exist!", relativeOutputPath))
+			}
 		}
 
 		return outputPathArg

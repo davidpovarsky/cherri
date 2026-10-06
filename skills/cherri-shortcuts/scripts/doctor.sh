@@ -10,6 +10,9 @@ printf 'Skill dir: %s\n' "$SKILL_DIR"
 if BIN=$(resolve_cherri); then
   printf 'Cherri: %s\n' "$BIN"
   "$BIN" --version || status=1
+  if "$BIN" --capabilities-json >/dev/null 2>&1; then
+    printf 'Cherri Language: v2.0 ready\n'
+  fi
 else
   echo 'Cherri: MISSING (run scripts/setup.sh)'
   status=1

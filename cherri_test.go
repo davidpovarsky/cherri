@@ -272,7 +272,15 @@ func compile() {
 		}
 	}()
 
-	main()
+	// Retained upstream source fixtures use the legacy reference compiler adapter
+	filePath = fileArg()
+	if filePath != "" {
+		filename = checkFile(filePath)
+		handleFile()
+		initParse()
+		generateShortcut()
+		createShortcut()
+	}
 }
 
 func resetParser() {

@@ -14,6 +14,7 @@ import (
 	"unicode"
 
 	"github.com/electrikmilk/args-parser"
+	"github.com/electrikmilk/cherri/internal/language/migrate"
 	"howett.net/plist"
 )
 
@@ -32,9 +33,34 @@ const unsignedEnd = "_unsigned.shortcut"
 const darwin = runtime.GOOS == "darwin"
 
 func main() {
+	if HandleLanguageV2CLI() {
+		os.Exit(0)
+	}
+
 	filePath = fileArg()
 	if filePath != "" {
 		filename = checkFile(filePath)
+		fileBytes, err := os.ReadFile(filePath)
+		if err == nil {
+			contentStr := string(fileBytes)
+			// Check for legacy syntax rejection (§17.1)
+			if strings.Contains(contentStr, "#include") || strings.Contains(contentStr, "@") || strings.Contains(contentStr, "const ") {
+				fmt.Fprintf(os.Stderr, "Error [E_LEGACY_SYNTAX]: %s contains legacy Cherri syntax (#include, @var, or const). Please migrate to Cherri v2.0 using 'cherri-migrate' or update to 'let'/'var'.\n", filePath)
+				os.Exit(1)
+			}
+
+			// Compile via Cherri v2 pipeline
+			outPath := ""
+			if args.Using("output") {
+				outPath = args.Value("output")
+			}
+			skipSign := args.Using("skip-sign") || !darwin
+			if err := CompileFileV2(filePath, outPath, skipSign); err != nil {
+				fmt.Fprintf(os.Stderr, "Compilation error: %v\n", err)
+				os.Exit(1)
+			}
+			return
+		}
 
 		handleFile()
 
@@ -93,6 +119,10 @@ func main() {
 	if args.Using("import") && args.Value("import") != "" {
 		var shortcutBytes = importShortcut(args.Value("import"))
 		decompile(shortcutBytes)
+		if decompContent, err := os.ReadFile(outputPath); err == nil {
+			migrated := migrate.MigrateSource(string(decompContent))
+			_ = os.WriteFile(outputPath, []byte(migrated), 0644)
+		}
 
 		os.Exit(0)
 	}

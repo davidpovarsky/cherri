@@ -46,22 +46,32 @@ sh "$SKILL_DIR/scripts/catalog.sh" 'is.workflow.actions.alert'
 sh "$SKILL_DIR/scripts/search-docs.sh" "topic"
 ```
 
-4. Write a `.cherri` source file in the user's workspace. Prefer standard Cherri actions and packages over raw plist/action payloads.
-5. Compile unsigned first while iterating:
+4. Write a `.cherri` source file using Cherri Language v2.0:
+   - Use `let` for immutable bindings and `var` for mutable variables. Never use `@variable` or `const` (legacy syntax will be rejected with `E_LEGACY_SYNTAX`).
+   - Use `f"Hello {name}"` for string interpolation. Braces in plain strings `"..."` are literal.
+   - Use 0-based indexing for lists (`list[0]`).
+   - Do NOT use `#include` directives; all actions are in scope.
+   - Use named arguments: `resizeImage(photo, width: 800)`.
+   - Prefer standard Cherri actions over raw plist payloads. When an undocumented or raw plist action is strictly necessary, use `native.action(identifier: "...", parameters: {...})`.
 
+5. Check syntax and types before building:
+```sh
+"$CHERRI_BIN" check source.cherri --json
+```
+
+6. Compile unsigned first while iterating:
 ```sh
 sh "$SKILL_DIR/scripts/build.sh" source.cherri output.shortcut --unsigned
 ```
 
-6. If compilation fails, read the compiler error, search the relevant action/docs, edit the source, and retry. Never claim success without a successful compiler exit.
-7. For final delivery, sign explicitly through Cherri/HubSign unless the user asks for unsigned output:
-
+7. If compilation fails, read the compiler diagnostic code (e.g. `E_UNKNOWN_ARGUMENT`, `E_ARGUMENT_TYPE`, `E_MISSING_ARGUMENT`), search the relevant action/docs, edit the source, and retry. Never claim success without a successful compiler exit.
+8. For final delivery, sign explicitly through Cherri/HubSign unless the user asks for unsigned output:
 ```sh
 sh "$SKILL_DIR/scripts/build.sh" source.cherri output.shortcut --signed
 ```
 
-8. Verify a signed result starts with `AEA1`. The build wrapper performs this check automatically.
-9. Return both the `.cherri` source and final `.shortcut` when practical so the workflow remains editable and reproducible.
+9. Verify a signed result starts with `AEA1`. The build wrapper performs this check automatically.
+10. Return both the `.cherri` source and final `.shortcut` when practical so the workflow remains editable and reproducible.
 
 ## Edit an existing Shortcut (first-class workflow)
 

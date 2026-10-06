@@ -51,10 +51,11 @@ else
     SRC="$CHERRI_HOME/src"
     if [ ! -d "$SRC/.git" ]; then
       rm -rf "$SRC"
-      git clone --depth 1 --branch "$CHERRI_REF" "$CHERRI_REPO" "$SRC"
+      git clone "$CHERRI_REPO" "$SRC"
+      git -C "$SRC" checkout "$CHERRI_REF"
     elif [ "$UPDATE" -eq 1 ] || [ "$FORCE" -eq 1 ]; then
-      git -C "$SRC" fetch --depth 1 origin "$CHERRI_REF"
-      git -C "$SRC" reset --hard FETCH_HEAD
+      git -C "$SRC" fetch origin
+      git -C "$SRC" checkout "$CHERRI_REF"
     fi
 
     echo "Building Cherri for $(uname -s)/$(uname -m)..."
@@ -78,10 +79,9 @@ fi
 if command -v git >/dev/null 2>&1; then
   if [ ! -d "$CHERRI_DOCS_DIR/.git" ]; then
     rm -rf "$CHERRI_DOCS_DIR"
-    git clone --depth 1 --branch "$CHERRI_DOCS_REF" "$CHERRI_DOCS_REPO" "$CHERRI_DOCS_DIR" || true
+    git clone "$CHERRI_DOCS_REPO" "$CHERRI_DOCS_DIR" && git -C "$CHERRI_DOCS_DIR" checkout "$CHERRI_DOCS_REF" || true
   elif [ "$UPDATE" -eq 1 ]; then
-    git -C "$CHERRI_DOCS_DIR" fetch --depth 1 origin "$CHERRI_DOCS_REF" || true
-    git -C "$CHERRI_DOCS_DIR" reset --hard FETCH_HEAD || true
+    git -C "$CHERRI_DOCS_DIR" fetch origin && git -C "$CHERRI_DOCS_DIR" checkout "$CHERRI_DOCS_REF" || true
   fi
 fi
 

@@ -21,6 +21,10 @@ import (
 	"unsafe"
 
 	args "github.com/electrikmilk/args-parser"
+	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/protocol"
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/service"
 	"howett.net/plist"
 )
 
@@ -94,6 +98,38 @@ func CherriActionCatalog() *C.char {
 	return C.CString(string(encoded))
 }
 
+// CherriAnalyze parses and analyzes Cherri v2 source and returns JSON diagnostics.
+//
+//export CherriAnalyze
+func CherriAnalyze(source *C.char) *C.char {
+	src := C.GoString(source)
+	svc := service.NewService(schema.DefaultRegistry())
+	uri := "file:///mobile.cherri"
+	svc.OpenDocument(uri, 1, src)
+	diags, fp := svc.Analyze(uri)
+
+	var wireDiags []protocol.DiagnosticItem
+	hasErrors := false
+	for _, d := range diags {
+		wireDiags = append(wireDiags, protocol.ToDiagnosticItem(d))
+		if d.Severity == analysis.SeverityError {
+			hasErrors = true
+		}
+	}
+
+	resp := protocol.AnalyzeResponse{
+		URI:               uri,
+		Version:           1,
+		LanguageVersion:   schema.LanguageVersion,
+		SchemaFingerprint: fp,
+		Diagnostics:       wireDiags,
+		Valid:             !hasErrors,
+	}
+
+	encoded, _ := json.Marshal(resp)
+	return C.CString(string(encoded))
+}
+
 func encodeMobileResponse(response mobileCompileResponse) *C.char {
 	encoded, err := json.Marshal(response)
 	if err != nil {
@@ -137,6 +173,25 @@ func compileForMobile(source string, requestedName string, sign bool) (response 
 	resetMobileLanguageState()
 	resetMobileDecompileState()
 	name := normalizedMobileName(requestedName)
+
+	// Try Cherri v2 compiler first
+	if !strings.Contains(source, "#include") && !strings.Contains(source, "@") && !strings.Contains(source, "const ") {
+		if v2Bytes, err := CompileSourceToPlist(name+".cherri", source); err == nil {
+			response = mobileCompileResponse{
+				OK:          true,
+				Name:        name,
+				PlistBase64: base64.StdEncoding.EncodeToString(v2Bytes),
+			}
+			if sign {
+				service := hubSign()
+				signedShortcut := requestSignedShortcut(&service)
+				if len(signedShortcut) > 0 && looksLikeSignedShortcut(signedShortcut) {
+					response.SignedBase64 = base64.StdEncoding.EncodeToString(signedShortcut)
+				}
+			}
+			return response
+		}
+	}
 
 	filePath = ""
 	filename = name + ".cherri"

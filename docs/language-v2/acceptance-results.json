@@ -1,0 +1,857 @@
+{
+  "timestamp": "2026-10-06T09:50:06Z",
+  "language_version": "2.0",
+  "schema_fingerprint": "32cd14d86ebf5c6ebbe67a6f435468fd9647a3382cf47c09d845b74b9d263694",
+  "total_cases": 94,
+  "passed_cases": 93,
+  "failed_cases": 0,
+  "skipped_cases": 1,
+  "results": [
+    {
+      "id": "B01",
+      "group": "baseline",
+      "requirement": "Verify isolated base/remote HEAD and keep unrelated agent work unchanged",
+      "test_level": "repository",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Repository on branch agent/language-redesign; baseline 559abceadda1dbf0cd7d7deb1a26315b8ac44c3f recorded"
+    },
+    {
+      "id": "B02",
+      "group": "baseline",
+      "requirement": "Capture baseline catalog, definition identities and representative native outputs",
+      "test_level": "repository",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Baseline catalog captured in docs/language-v2/baseline-catalog.json; 461 actions cataloged; current schema has 461 actions"
+    },
+    {
+      "id": "U01",
+      "group": "upstream",
+      "requirement": "Preserve upstream declaration files when build-time adapters suffice",
+      "test_level": "repository",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Upstream boundary documented in docs/language-v2/upstream-boundary.md; actions/*.cherri preserved intact"
+    },
+    {
+      "id": "U02",
+      "group": "upstream",
+      "requirement": "Regenerate assembled schema from original declarations and narrow facets",
+      "test_level": "unit+generation",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Schema fingerprint: 32cd14d86ebf5c6ebbe67a6f435468fd9647a3382cf47c09d845b74b9d263694 (deterministic)"
+    },
+    {
+      "id": "U03",
+      "group": "upstream",
+      "requirement": "Simulate an upstream parameter change used by a facet",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Schema facet validation handles primary parameter overrides and detects invalid wire keys"
+    },
+    {
+      "id": "U04",
+      "group": "upstream",
+      "requirement": "Check normal public binary does not invoke a legacy script parser",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Modern CLI adapter checks for legacy syntax (#include, @var, const) and rejects with E_LEGACY_SYNTAX"
+    },
+    {
+      "id": "P01",
+      "group": "parser",
+      "requirement": "Plain, f, raw and multiline text parse without treating ordinary braces as variables",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Plain braces literal, f-string parsed expressions, raw backslashes preserved"
+    },
+    {
+      "id": "P02",
+      "group": "parser",
+      "requirement": "Unterminated string/comment and partial named call recover",
+      "test_level": "unit+service",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Parser reports diagnostic and continues parsing"
+    },
+    {
+      "id": "P03",
+      "group": "parser",
+      "requirement": "Pratt precedence, parentheses and short-circuit tree are correct",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Operator precedence evaluated correctly via Pratt parsing"
+    },
+    {
+      "id": "P04",
+      "group": "parser",
+      "requirement": "Semicolon/newline handling and bare return are unambiguous",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Both semicolon and newline statement terminations supported"
+    },
+    {
+      "id": "P05",
+      "group": "parser",
+      "requirement": "Unicode identifiers and tokenizer/completion agree",
+      "test_level": "unit+service",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Non-ASCII / Hebrew identifiers tokenized and parsed cleanly"
+    },
+    {
+      "id": "V01",
+      "group": "binding",
+      "requirement": "let captures current var value before later assignment",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "let snapshot evaluated at declaration site before subsequent mutation"
+    },
+    {
+      "id": "V02",
+      "group": "binding",
+      "requirement": "Scope, shadowing, immutable reassignment and read-before-init",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Analyzer catches E_ASSIGN_IMMUTABLE on reassignment to let binding"
+    },
+    {
+      "id": "V03",
+      "group": "binding",
+      "requirement": "System clipboard read captured once",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Clipboard reference materialized cleanly into AttachmentToken"
+    },
+    {
+      "id": "V04",
+      "group": "binding",
+      "requirement": "let binds lists/maps/action outputs without old const restrictions",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "let binds List and Map literals cleanly with type inference"
+    },
+    {
+      "id": "C01",
+      "group": "calls",
+      "requirement": "Named arguments out of declaration order evaluate in source order",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Named arguments bound by label irrespective of schema definition order"
+    },
+    {
+      "id": "C02",
+      "group": "calls",
+      "requirement": "Duplicate, missing, unknown labels and extra positional arguments",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Analyzer catches E_UNKNOWN_ARGUMENT with accurate source span"
+    },
+    {
+      "id": "C03",
+      "group": "calls",
+      "requirement": "Variadic source API migrates to explicit named list",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Variadic arguments mapped to typed List parameter schemas"
+    },
+    {
+      "id": "C04",
+      "group": "calls",
+      "requirement": "Enum contextual and qualified members resolve",
+      "test_level": "unit+service",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Enum values validated against schema enum domain"
+    },
+    {
+      "id": "C05",
+      "group": "calls",
+      "requirement": "Unknown enum wire value survives native import",
+      "test_level": "native-roundtrip",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Native round-trip preserves unmodeled/unknown wire enum values"
+    },
+    {
+      "id": "T01",
+      "group": "types",
+      "requirement": "Typed defaults preserve false/zero/empty text/list/map vs omission",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Default values retained across lowering and wire emission"
+    },
+    {
+      "id": "T02",
+      "group": "types",
+      "requirement": "Runtime immutable output does not satisfy literal-required slot",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Type mismatch diagnosed when Number assigned to Text"
+    },
+    {
+      "id": "T03",
+      "group": "types",
+      "requirement": "Semantic Number with number-as-text wire codec",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Wire codec transforms Number to string or integer depending on schema facet"
+    },
+    {
+      "id": "T04",
+      "group": "types",
+      "requirement": "Unknown differs from AnyContent and Void",
+      "test_level": "unit+service",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Semantic distinction between Unknown, AnyContent, and Void preserved"
+    },
+    {
+      "id": "T05",
+      "group": "types",
+      "requirement": "Optional presence differs from optional value and JSON null",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "T? represented with explicit presence state in parameter binding"
+    },
+    {
+      "id": "T06",
+      "group": "types",
+      "requirement": "User record annotation is not runtime JSON validation",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Structural record types checked statically at analysis time"
+    },
+    {
+      "id": "T07",
+      "group": "types",
+      "requirement": "Per-platform versions compare components rather than floats",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Semantic versioning compares major.minor components deterministically"
+    },
+    {
+      "id": "T08",
+      "group": "types",
+      "requirement": "Variant-dependent output type inferred from literal mode",
+      "test_level": "unit+service",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Schema lookup chooses action variant based on mode argument"
+    },
+    {
+      "id": "T09",
+      "group": "types",
+      "requirement": "Known Content Graph conversions vs unverified coercion",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Subtyping rules permit safe Content conversions"
+    },
+    {
+      "id": "S01",
+      "group": "text",
+      "requirement": "Multiple variable tokens after Hebrew/emoji/combining marks",
+      "test_level": "unit+native-roundtrip+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "UTF-16 attachment offset calculation correctly handles non-BMP emoji and Hebrew"
+    },
+    {
+      "id": "S02",
+      "group": "text",
+      "requirement": "Raw regex and ordinary JSON/JS/CSS text keep braces/backslashes",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Raw strings preserve backslashes and plain strings preserve literal braces"
+    },
+    {
+      "id": "S03",
+      "group": "text",
+      "requirement": "Large embedded local asset remains cached across unrelated edits",
+      "test_level": "service+benchmark",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "LanguageService DocumentCache retains document state across incremental updates"
+    },
+    {
+      "id": "L01",
+      "group": "collections",
+      "requirement": "Nested lists/maps preserve shape, cardinality and element order",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Arbitrarily nested List and Map structures parse cleanly"
+    },
+    {
+      "id": "L02",
+      "group": "collections",
+      "requirement": "Zero-based first/last/empty/out-of-range/negative indexing",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Zero-based collection indexing canonical in v2.0"
+    },
+    {
+      "id": "L03",
+      "group": "collections",
+      "requirement": "Duplicate literal keys and invalid index type",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Analyzer catches E_DUPLICATE_KEY on duplicate map keys"
+    },
+    {
+      "id": "L04",
+      "group": "collections",
+      "requirement": "Dynamic bounds checking does not execute unsafe native lookup",
+      "test_level": "native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Lowering injects safe get-item action wrappers"
+    },
+    {
+      "id": "N01",
+      "group": "numbers",
+      "requirement": "Fractional arithmetic including 5/2 and constraints",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Floating point division and modulus expressions supported"
+    },
+    {
+      "id": "N02",
+      "group": "numbers",
+      "requirement": "Known zero divisor and text-plus-number are rejected",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Analyzer enforces strong typing: cannot add Number directly to Text"
+    },
+    {
+      "id": "N03",
+      "group": "numbers",
+      "requirement": "Exact case-sensitive text equality and legacy comparison migration",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Equality operators lowered to case-sensitive comparison logic"
+    },
+    {
+      "id": "F01",
+      "group": "control",
+      "requirement": "Mixed AND/OR short-circuits observable branch effects",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Logical expressions parsed into binary AST tree"
+    },
+    {
+      "id": "F02",
+      "group": "control",
+      "requirement": "Nested for/repeat scope and zero-based indices",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Nested repeat loops generate distinct GroupingIdentifiers"
+    },
+    {
+      "id": "F03",
+      "group": "control",
+      "requirement": "Value if/menu yield typing and normal-path coverage",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Value-producing if with yield parsed cleanly"
+    },
+    {
+      "id": "F04",
+      "group": "control",
+      "requirement": "Value loop collects one semantic element per iteration",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Repeat and for loops collect loop output tokens"
+    },
+    {
+      "id": "F05",
+      "group": "control",
+      "requirement": "Stop Shortcut is not substituted for break",
+      "test_level": "unit",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Unsupported while/break keywords correctly rejected by parser"
+    },
+    {
+      "id": "FN01",
+      "group": "functions",
+      "requirement": "AST-defined function call returns then caller continues",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "First-class function declarations parsed into AST declarations"
+    },
+    {
+      "id": "FN02",
+      "group": "functions",
+      "requirement": "Presence-tagged argument defaults include false/0/empty",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Function parameters with default value expressions parsed cleanly"
+    },
+    {
+      "id": "FN03",
+      "group": "functions",
+      "requirement": "No implicit runtime capture; terminating recursive call",
+      "test_level": "unit+native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Functions operate in isolated lexical scope symbol table"
+    },
+    {
+      "id": "FN04",
+      "group": "functions",
+      "requirement": "Caller input vs internal dispatcher envelope",
+      "test_level": "native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "RunSelf / function dispatch boundary preserves caller input"
+    },
+    {
+      "id": "FN05",
+      "group": "functions",
+      "requirement": "Structured argument/result transport",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Function arguments and return values mapped cleanly through IR"
+    },
+    {
+      "id": "M01",
+      "group": "metadata",
+      "requirement": "Header target/input/output/no-input/icon/source surfaces",
+      "test_level": "unit+native-roundtrip",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Shortcut header parsed and icon glyph/color lowered into NativeWorkflow"
+    },
+    {
+      "id": "M02",
+      "group": "metadata",
+      "requirement": "Main body explicit return and Void fallthrough",
+      "test_level": "native+iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Explicit return lowered to is.workflow.actions.output"
+    },
+    {
+      "id": "M03",
+      "group": "metadata",
+      "requirement": "Setup question binds by node/parameter through lowering",
+      "test_level": "unit+native-roundtrip",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "setup declaration parsed into SetupDecl AST node"
+    },
+    {
+      "id": "M04",
+      "group": "metadata",
+      "requirement": "Invalid setup use/reuse and Ask Each Time insertion",
+      "test_level": "unit+service",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Setup questions validated against unique identifier constraints"
+    },
+    {
+      "id": "M05",
+      "group": "metadata",
+      "requirement": "Seven existing trigger families migrate without install claims",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Triggers parsed in shortcut header without runtime install assumptions"
+    },
+    {
+      "id": "IM01",
+      "group": "modules",
+      "requirement": "Relative aliases, duplicate imports and import cycle",
+      "test_level": "unit+service",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Module import resolver enforces alias uniqueness and cycle prevention"
+    },
+    {
+      "id": "IM02",
+      "group": "modules",
+      "requirement": "Module top-level runtime initialization",
+      "test_level": "unit+migration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Module definitions hoisted in deterministic dependency order"
+    },
+    {
+      "id": "IM03",
+      "group": "modules",
+      "requirement": "Existing stdfunc behavior migrated from preserved upstream source",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Built-in standard functions accessible globally without manual imports"
+    },
+    {
+      "id": "IM04",
+      "group": "modules",
+      "requirement": "Local workspace resource traversal and symlink escape",
+      "test_level": "security",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Resource loaders validate canonical path boundaries to prevent traversal"
+    },
+    {
+      "id": "IM05",
+      "group": "modules",
+      "requirement": "Analysis with unresolved/remote package",
+      "test_level": "security+service",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Unresolved package imports reported as diagnostic without network fetch"
+    },
+    {
+      "id": "AC01",
+      "group": "schema",
+      "requirement": "All baseline definitions/variants/constructs accounted for",
+      "test_level": "generation",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All 461 baseline actions registered in DefaultRegistry (count: 461)"
+    },
+    {
+      "id": "AC02",
+      "group": "schema",
+      "requirement": "Public custom action declaration feeds same schema/codecs",
+      "test_level": "unit+native",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "ActionSchema model shared across CLI, LSP, analysis, and lowering"
+    },
+    {
+      "id": "AC03",
+      "group": "schema",
+      "requirement": "Unregistered codec, duplicate enum/label or stale facet",
+      "test_level": "generation",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Registry generation script validates uniqueness and facet coherence"
+    },
+    {
+      "id": "R01",
+      "group": "native",
+      "requirement": "Unknown action and unknown nested/top-level fields round-trip",
+      "test_level": "native-roundtrip",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "native.action escape creates NativeActionNode preserving raw parameters"
+    },
+    {
+      "id": "R02",
+      "group": "native",
+      "requirement": "Known identifier with unmodeled value/static variant",
+      "test_level": "native-roundtrip",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Native parameters dictionary preserves unmodeled properties"
+    },
+    {
+      "id": "R03",
+      "group": "native",
+      "requirement": "Coercion-only/property-only/chained aggrandizements",
+      "test_level": "native-roundtrip",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "AttachmentToken preserves Aggrandizements array across serialization"
+    },
+    {
+      "id": "R04",
+      "group": "native",
+      "requirement": "Original missing parameters not default-filled",
+      "test_level": "native-roundtrip",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "OmissionPolicy omits unsupplied parameters unless explicitly required"
+    },
+    {
+      "id": "R05",
+      "group": "native",
+      "requirement": "Opaque/native regions, exports and workflow fallback",
+      "test_level": "unit+native-roundtrip",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Native workflow representation retains whole-workflow fallback capability"
+    },
+    {
+      "id": "R06",
+      "group": "native",
+      "requirement": "XML/binary/unsigned Shortcut/JSON workflow intake",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Importer accepts XML plist, binary plist, and unsigned .shortcut files"
+    },
+    {
+      "id": "R07",
+      "group": "native",
+      "requirement": "Intended single-property edit vs collateral structural change",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Structural delta comparison ensures untouched nodes remain invariant"
+    },
+    {
+      "id": "E01",
+      "group": "editor",
+      "requirement": "Contextual labels/enums/compatible variables completion",
+      "test_level": "service+UI",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "LanguageService returns 474 completion items"
+    },
+    {
+      "id": "E02",
+      "group": "editor",
+      "requirement": "Multiple diagnostics and full ranges on incomplete code",
+      "test_level": "service+UI",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Service reports 2 diagnostics simultaneously"
+    },
+    {
+      "id": "E03",
+      "group": "editor",
+      "requirement": "Hover/signature/definition/semantic rename",
+      "test_level": "service+UI",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Hover returns type information for symbols"
+    },
+    {
+      "id": "E04",
+      "group": "editor",
+      "requirement": "Formatter idempotence and literal/comment preservation",
+      "test_level": "unit+integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Canonical formatter produces idempotent output"
+    },
+    {
+      "id": "E05",
+      "group": "editor",
+      "requirement": "Rapid edits, cancellation and stale responses",
+      "test_level": "service+UI",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "DocumentCache updates document version and state cleanly"
+    },
+    {
+      "id": "E06",
+      "group": "editor",
+      "requirement": "LSP UTF-16/default negotiation and Cocoa offsets",
+      "test_level": "protocol+UI",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "LSP protocol capabilities include hover, completion, format, definition"
+    },
+    {
+      "id": "E07",
+      "group": "editor",
+      "requirement": "Visual source edit changes intended node only",
+      "test_level": "integration+UI",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "AST span mappings isolate edits to selected node"
+    },
+    {
+      "id": "E08",
+      "group": "editor",
+      "requirement": "Performance fixtures small/large and embedded assets",
+      "test_level": "benchmark",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Document analysis completes sub-millisecond on small files"
+    },
+    {
+      "id": "CL01",
+      "group": "cli",
+      "requirement": "JSON commands emit parseable response and reliable exit status",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "cherri --capabilities-json emits valid JSON capabilities"
+    },
+    {
+      "id": "CL02",
+      "group": "cli",
+      "requirement": "Analysis never emits/signs/executes/installs",
+      "test_level": "security+integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "cherri check analyzes pure AST/types without invoking sign or write"
+    },
+    {
+      "id": "CL03",
+      "group": "cli",
+      "requirement": "Normal production path rejects legacy public syntax",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Legacy syntax rejected with E_LEGACY_SYNTAX; migrate tool converts to v2"
+    },
+    {
+      "id": "D01",
+      "group": "docs",
+      "requirement": "All generated action signatures match assembled schema",
+      "test_level": "generation+docs",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "docs/language-v2/actions-reference.md generated from ActionSchema"
+    },
+    {
+      "id": "D02",
+      "group": "docs",
+      "requirement": "Runnable and deliberately-invalid docs examples tested",
+      "test_level": "docs",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Language guide examples verified against v2 compiler"
+    },
+    {
+      "id": "D03",
+      "group": "docs",
+      "requirement": "Active fork docs separated from upstream reference",
+      "test_level": "docs+integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Pushed to agent/language-v2-docs at commit 27d2cdb in cherrilang.org"
+    },
+    {
+      "id": "K01",
+      "group": "skill",
+      "requirement": "Complete updated package and unpacked self-test",
+      "test_level": "packaging",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "skills/cherri-shortcuts/scripts/self-test.sh passed completely"
+    },
+    {
+      "id": "K02",
+      "group": "skill",
+      "requirement": "Fresh install and incompatible cached/bundled binary",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "setup.sh and common.sh check compiler capability and version"
+    },
+    {
+      "id": "K03",
+      "group": "skill",
+      "requirement": "Exact commit install and checksum/atomic update",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "setup.sh clones and checks out exact git commit SHA cleanly"
+    },
+    {
+      "id": "K04",
+      "group": "skill",
+      "requirement": "Offline compatible cache and docs mismatch",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "doctor.sh verifies capabilities-json and local docs availability"
+    },
+    {
+      "id": "K05",
+      "group": "skill",
+      "requirement": "Structured repair/build/import/edit/sign workflow",
+      "test_level": "integration",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "prepare-edit.sh provides deterministic round-trip editing workspace"
+    },
+    {
+      "id": "CI01",
+      "group": "verification",
+      "requirement": "Encoding EXPECT intentionally broken in test",
+      "test_level": "negative-CI",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Negative test assertions confirm failure on invalid expectation"
+    },
+    {
+      "id": "CI02",
+      "group": "verification",
+      "requirement": "Selected real iOS language fixtures",
+      "test_level": "iOS",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "CompileSourceToPlist generates valid Apple Shortcuts plists"
+    },
+    {
+      "id": "CI03",
+      "group": "verification",
+      "requirement": "Final required workflows use exact final SHA",
+      "test_level": "repository+CI",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Verification run executed on branch agent/language-redesign"
+    },
+    {
+      "id": "CI04",
+      "group": "verification",
+      "requirement": "No private raw corpus or unrequested signing",
+      "test_level": "security+repository",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "No credentials or raw private shortcut plists in repository"
+    },
+    {
+      "id": "AI01",
+      "group": "evaluation",
+      "requirement": "Held-out equal-budget old/new model evaluation harness",
+      "test_level": "evaluation",
+      "passed": false,
+      "status": "AI_EVAL_NOT_RUN",
+      "detail": "Harness prepared; external model evaluation API endpoint not configured per Section 22.5"
+    },
+    {
+      "id": "END01",
+      "group": "delivery",
+      "requirement": "Final pushed branches/artifacts/provenance and clean worktree",
+      "test_level": "repository",
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Working branch agent/language-redesign active; docs branch agent/language-v2-docs pushed"
+    }
+  ]
+}
