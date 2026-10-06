@@ -346,7 +346,9 @@ func (f *Formatter) formatExpression(expr Expression) {
 			if !first {
 				f.buf.WriteString(", ")
 			}
-			fmt.Fprintf(&f.buf, "%s: ", arg.Label)
+			if arg.Label != "" {
+				fmt.Fprintf(&f.buf, "%s: ", arg.Label)
+			}
 			f.formatExpression(arg.Value)
 			first = false
 		}

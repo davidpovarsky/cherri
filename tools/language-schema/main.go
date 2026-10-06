@@ -72,13 +72,6 @@ var facets = map[string]ActionFacet{
 			"image": "Image",
 		},
 	},
-	"filterImages": {
-		PrimaryParameterID: "images",
-		OutputTypeOverride: "List<Image>",
-		ParamTypeOverrides: map[string]string{
-			"images": "List<Image>",
-		},
-	},
 	"text": {
 		PrimaryParameterID: "text",
 		OutputTypeOverride: "Text",
@@ -90,31 +83,12 @@ var facets = map[string]ActionFacet{
 		PrimaryParameterID: "input",
 		OutputTypeOverride: "Void",
 	},
-	"showResult": {
-		PrimaryParameterID: "input",
-		OutputTypeOverride: "Void",
-	},
 	"alert": {
-		PrimaryParameterID: "message",
+		PrimaryParameterID: "alert",
 		OutputTypeOverride: "Void",
 		ParamTypeOverrides: map[string]string{
-			"message": "Text",
-			"title":   "Text",
-		},
-	},
-	"askForInput": {
-		PrimaryParameterID: "prompt",
-		OutputTypeOverride: "Text",
-		ParamTypeOverrides: map[string]string{
-			"prompt": "Text",
-		},
-	},
-	"calculate": {
-		PrimaryParameterID: "number",
-		OutputTypeOverride: "Number",
-		ParamTypeOverrides: map[string]string{
-			"number":  "Number",
-			"operand": "Number",
+			"alert": "Text",
+			"title": "Text",
 		},
 	},
 	"count": {
@@ -136,21 +110,83 @@ var facets = map[string]ActionFacet{
 	},
 }
 
-func main() {
-	catalogPath := filepath.Join("docs", "language-v2", "baseline-catalog.json")
-	if len(os.Args) > 1 {
-		catalogPath = os.Args[1]
+func validateFacets(catalog *LegacyCatalog) error {
+	actionsByName := make(map[string]*LegacyAction)
+	for i := range catalog.Actions {
+		actionsByName[catalog.Actions[i].Name] = &catalog.Actions[i]
 	}
 
-	data, err := os.ReadFile(catalogPath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading catalog: %v\n", err)
-		os.Exit(1)
+	for facetName, facet := range facets {
+		act, ok := actionsByName[facetName]
+		if !ok {
+			return fmt.Errorf("facet references unknown action %q", facetName)
+		}
+
+		if facet.PrimaryParameterID != "" {
+			paramFound := false
+			for _, p := range act.Parameters {
+				if p.Name == facet.PrimaryParameterID {
+					paramFound = true
+					break
+				}
+			}
+			if !paramFound {
+				return fmt.Errorf("facet for %q references unknown primary parameter %q", facetName, facet.PrimaryParameterID)
+			}
+		}
+
+		for paramName := range facet.ParamTypeOverrides {
+			paramFound := false
+			for _, p := range act.Parameters {
+				if p.Name == paramName {
+					paramFound = true
+					break
+				}
+			}
+			if !paramFound {
+				return fmt.Errorf("facet for %q references unknown parameter %q in type overrides", facetName, paramName)
+			}
+		}
+	}
+	return nil
+}
+
+func main() {
+	var data []byte
+	var catalogPath string
+
+	if len(os.Args) > 1 && !strings.HasPrefix(os.Args[1], "-") {
+		catalogPath = os.Args[1]
+		var err error
+		data, err = os.ReadFile(catalogPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading catalog file %s: %v\n", catalogPath, err)
+			os.Exit(1)
+		}
+	} else {
+		// Prefer current live definition facts from root compiler via --actions-json
+		catalogPath = filepath.Join("docs", "language-v2", "baseline-catalog.json")
+		if _, err := os.Stat(catalogPath); err == nil {
+			var readErr error
+			data, readErr = os.ReadFile(catalogPath)
+			if readErr != nil {
+				fmt.Fprintf(os.Stderr, "Error reading baseline catalog: %v\n", readErr)
+				os.Exit(1)
+			}
+		} else {
+			fmt.Fprintf(os.Stderr, "No catalog path provided and %s not found\n", catalogPath)
+			os.Exit(1)
+		}
 	}
 
 	var catalog LegacyCatalog
 	if err := json.Unmarshal(data, &catalog); err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing catalog JSON: %v\n", err)
+		os.Exit(1)
+	}
+
+	if err := validateFacets(&catalog); err != nil {
+		fmt.Fprintf(os.Stderr, "Facet validation failed: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -165,7 +201,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Generated %s successfully from %d actions.\n", outPath, len(catalog.Actions))
+	fmt.Printf("Generated %s successfully from %d actions (all facets valid).\n", outPath, len(catalog.Actions))
 }
 
 func mapType(legacyType string) string {

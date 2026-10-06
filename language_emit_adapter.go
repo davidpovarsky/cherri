@@ -8,8 +8,10 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/lower"
 	"github.com/electrikmilk/cherri/internal/language/schema"
@@ -38,7 +40,10 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 		sc.WFWorkflowIcon.WFWorkflowIconStartColor = 4282601983
 	}
 	if len(sc.WFWorkflowTypes) == 0 {
-		sc.WFWorkflowTypes = []string{"NCWidget", "WatchKit"}
+		sc.WFWorkflowTypes = []string{"Watch", "WFWorkflowTypeShowInSearch"}
+	}
+	if len(wf.InputContentItemClasses) > 0 {
+		sc.WFWorkflowInputContentItemClasses = wf.InputContentItemClasses
 	}
 
 	for _, node := range wf.Actions {
@@ -59,6 +64,26 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 			action.WFWorkflowActionParameters["GroupingIdentifier"] = node.GroupingIdentifier
 		}
 		sc.WFWorkflowActions = append(sc.WFWorkflowActions, action)
+	}
+
+	for _, q := range wf.ImportQuestions {
+		actionIndex := 0
+		if idx, ok := q["ActionIndex"].(int); ok {
+			actionIndex = idx
+		} else if idx, ok := q["ActionIndex"].(int64); ok {
+			actionIndex = int(idx)
+		}
+		paramKey, _ := q["ParameterKey"].(string)
+		text, _ := q["Text"].(string)
+		defVal, _ := q["DefaultValue"].(string)
+		category, _ := q["Category"].(string)
+		sc.WFWorkflowImportQuestions = append(sc.WFWorkflowImportQuestions, WFQuestion{
+			ActionIndex:  actionIndex,
+			ParameterKey: paramKey,
+			Text:         text,
+			DefaultValue: defVal,
+			Category:     category,
+		})
 	}
 
 	return sc
@@ -113,7 +138,16 @@ func CompileSourceToPlist(filePath string, content string) ([]byte, error) {
 		return nil, fmt.Errorf("syntax error: %s", parser.Errors()[0])
 	}
 
-	lowerer := lower.NewLowerer(schema.DefaultRegistry())
+	reg := schema.DefaultRegistry()
+	analyzer := analysis.NewAnalyzer(reg)
+	analyzer.Analyze(prog)
+	for _, diag := range analyzer.Diagnostics() {
+		if diag.Severity == analysis.SeverityError {
+			return nil, fmt.Errorf("semantic error [%s]: %s at %v", diag.Code, diag.Message, diag.Span)
+		}
+	}
+
+	lowerer := lower.NewLowerer(reg)
 	wf, err := lowerer.LowerProgram(prog)
 	if err != nil {
 		return nil, fmt.Errorf("lowering error: %w", err)
@@ -162,6 +196,8 @@ func CompileFileV2(filePath string, outputPath string, skipSign bool) error {
 	if outputPath == "" {
 		outputPath = base + ".shortcut"
 	}
+	_, _ = plist.Unmarshal(plistBytes, &shortcut)
+	basename = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
 	sign()
 	_ = os.Remove(unsignedPath)
 	return nil

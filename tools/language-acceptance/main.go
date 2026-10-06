@@ -6,9 +6,12 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -23,6 +26,8 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
+
+const ExpectedContractSHA256 = "3c427d654759f2b09f61f288778dba3a7c53e195e04af9b03677d9c9ba8a5a0a"
 
 type CaseSpec struct {
 	ID               string `json:"id"`
@@ -48,13 +53,14 @@ type ContractFile struct {
 }
 
 type CaseResult struct {
-	ID          string `json:"id"`
-	Group       string `json:"group"`
-	Requirement string `json:"requirement"`
-	TestLevel   string `json:"test_level"`
-	Passed      bool   `json:"passed"`
-	Status      string `json:"status"` // PASSED, FAILED, AI_EVAL_NOT_RUN
-	Detail      string `json:"detail"`
+	ID          string   `json:"id"`
+	Group       string   `json:"group"`
+	Requirement string   `json:"requirement"`
+	TestLevel   string   `json:"test_level"`
+	ExecutedLevels []string `json:"executed_levels,omitempty"`
+	Passed      bool     `json:"passed"`
+	Status      string   `json:"status"` // PASSED, FAILED, AI_EVAL_NOT_RUN
+	Detail      string   `json:"detail"`
 }
 
 type AcceptanceReport struct {
@@ -92,30 +98,143 @@ func (r *Runner) Record(id, group, req, level string, passed bool, status, detai
 	}
 }
 
-func main() {
-	runner := NewRunner()
-
-	// Load contract to get all 94 case definitions
-	contractPath := filepath.Join("..", "..", "..", "Downloads", "cherri-language-agent-kit", "cherri-language-acceptance-contract.json")
-	if _, err := os.Stat(contractPath); os.IsNotExist(err) {
-		contractPath = "cherri-language-acceptance-contract.json"
+func ResolveAndLoadContract(explicitPath string) (*ContractFile, string, error) {
+	candidates := []string{}
+	if explicitPath != "" {
+		candidates = append(candidates, explicitPath)
+	} else {
+		candidates = append(candidates,
+			filepath.Join("tests", "language-v2", "acceptance-contract.json"),
+			filepath.Join("..", "..", "tests", "language-v2", "acceptance-contract.json"),
+			filepath.Join("..", "tests", "language-v2", "acceptance-contract.json"),
+			"acceptance-contract.json",
+		)
 	}
-	content, err := os.ReadFile(contractPath)
-	if err != nil {
-		// Fallback path
-		contractPath = `C:\Users\DAVID\Downloads\cherri-language-agent-kit\cherri-language-acceptance-contract.json`
-		content, err = os.ReadFile(contractPath)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not load contract file: %v\n", err)
-			os.Exit(1)
+
+	var content []byte
+	var loadedPath string
+	var err error
+	for _, p := range candidates {
+		content, err = os.ReadFile(p)
+		if err == nil {
+			loadedPath = p
+			break
 		}
+	}
+	if loadedPath == "" {
+		return nil, "", fmt.Errorf("contract file not found in candidates: %v", candidates)
+	}
+
+	h := sha256.Sum256(content)
+	actualSHA := hex.EncodeToString(h[:])
+	if actualSHA != ExpectedContractSHA256 {
+		return nil, loadedPath, fmt.Errorf("contract SHA256 mismatch: got %s, expected %s", actualSHA, ExpectedContractSHA256)
 	}
 
 	var contract ContractFile
 	if err := json.Unmarshal(content, &contract); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to parse contract: %v\n", err)
+		return nil, loadedPath, fmt.Errorf("failed to parse contract JSON: %w", err)
+	}
+	if contract.CaseCount != 94 || len(contract.Cases) != 94 {
+		return nil, loadedPath, fmt.Errorf("contract case count mismatch: declared %d, found %d", contract.CaseCount, len(contract.Cases))
+	}
+
+	return &contract, loadedPath, nil
+}
+
+func ValidateAndAggregate(contract *ContractFile, results map[string]CaseResult, schemaFingerprint string) (*AcceptanceReport, error) {
+	var finalResults []CaseResult
+	passed := 0
+	failed := 0
+	skipped := 0
+	var validationErrors []string
+
+	for _, c := range contract.Cases {
+		res, exists := results[c.ID]
+		if !exists {
+			validationErrors = append(validationErrors, fmt.Sprintf("missing required contract case %s", c.ID))
+			failed++
+			finalResults = append(finalResults, CaseResult{
+				ID:          c.ID,
+				Group:       c.Group,
+				Requirement: c.Requirement,
+				TestLevel:   c.MinimumTestLevel,
+				Passed:      false,
+				Status:      "FAILED",
+				Detail:      "Case not executed by test runner",
+			})
+			continue
+		}
+
+		// Consistency validation:
+		if res.Status == "PASSED" || res.Status == "PASS" {
+			if !res.Passed {
+				validationErrors = append(validationErrors, fmt.Sprintf("case %s has status %s but passed is false", c.ID, res.Status))
+				failed++
+			} else {
+				passed++
+			}
+		} else if res.Passed {
+			validationErrors = append(validationErrors, fmt.Sprintf("case %s has passed == true but status is %s", c.ID, res.Status))
+			failed++
+		} else if res.Status == "AI_EVAL_NOT_RUN" || res.Status == "BLOCKED_EXTERNAL" {
+			skipped++
+		} else {
+			failed++
+		}
+
+		finalResults = append(finalResults, res)
+	}
+
+	// Check for unknown or duplicate IDs injected into results
+	for id := range results {
+		found := false
+		for _, c := range contract.Cases {
+			if c.ID == id {
+				found = true
+				break
+			}
+		}
+		if !found {
+			validationErrors = append(validationErrors, fmt.Sprintf("unknown case ID in results: %s", id))
+			failed++
+		}
+	}
+
+	report := &AcceptanceReport{
+		Timestamp:         time.Now().UTC().Format(time.RFC3339),
+		LanguageVersion:   schema.LanguageVersion,
+		SchemaFingerprint: schemaFingerprint,
+		TotalCases:        len(contract.Cases),
+		PassedCases:       passed,
+		FailedCases:       failed,
+		SkippedCases:      skipped,
+		Results:           finalResults,
+	}
+
+	if len(validationErrors) > 0 {
+		return report, fmt.Errorf("acceptance validation failed: %s", strings.Join(validationErrors, "; "))
+	}
+
+	return report, nil
+}
+
+func main() {
+	var explicitContract string
+	for _, arg := range os.Args[1:] {
+		if strings.HasPrefix(arg, "--contract=") {
+			explicitContract = strings.TrimPrefix(arg, "--contract=")
+		}
+	}
+
+	contract, loadedPath, err := ResolveAndLoadContract(explicitContract)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not load contract file: %v\n", err)
 		os.Exit(1)
 	}
+	fmt.Printf("Loaded verified acceptance contract from %s (%d cases)\n", loadedPath, len(contract.Cases))
+
+	runner := NewRunner()
 
 	fmt.Printf("Executing Acceptance Contract (%d planned cases)...\n\n", len(contract.Cases))
 
@@ -143,45 +262,7 @@ func main() {
 	runner.runEvaluation()
 	runner.runDelivery()
 
-	// Compile results matching contract ordering
-	passed := 0
-	failed := 0
-	skipped := 0
-	var finalResults []CaseResult
-
-	for _, c := range contract.Cases {
-		res, exists := runner.results[c.ID]
-		if !exists {
-			res = CaseResult{
-				ID:          c.ID,
-				Group:       c.Group,
-				Requirement: c.Requirement,
-				TestLevel:   c.MinimumTestLevel,
-				Passed:      false,
-				Status:      "FAILED",
-				Detail:      "Case not executed by test runner",
-			}
-		}
-		finalResults = append(finalResults, res)
-		if res.Status == "PASSED" {
-			passed++
-		} else if res.Status == "AI_EVAL_NOT_RUN" {
-			skipped++
-		} else {
-			failed++
-		}
-	}
-
-	report := AcceptanceReport{
-		Timestamp:         time.Now().UTC().Format(time.RFC3339),
-		LanguageVersion:   schema.LanguageVersion,
-		SchemaFingerprint: runner.reg.Fingerprint(),
-		TotalCases:        len(contract.Cases),
-		PassedCases:       passed,
-		FailedCases:       failed,
-		SkippedCases:      skipped,
-		Results:           finalResults,
-	}
+	report, valErr := ValidateAndAggregate(contract, runner.results, runner.reg.Fingerprint())
 
 	outBytes, _ := json.MarshalIndent(report, "", "  ")
 	outPath := filepath.Join("docs", "language-v2", "acceptance-results.json")
@@ -195,9 +276,12 @@ func main() {
 	fmt.Printf("Failed:             %d\n", report.FailedCases)
 	fmt.Printf("External Blocked:   %d (AI Evaluation)\n", report.SkippedCases)
 	fmt.Printf("Report written to:  %s\n", outPath)
+	if valErr != nil {
+		fmt.Printf("VALIDATION ERROR:   %v\n", valErr)
+	}
 	fmt.Println("==================================================")
 
-	if failed > 0 {
+	if valErr != nil || report.FailedCases > 0 {
 		os.Exit(1)
 	}
 }
@@ -221,16 +305,27 @@ func (r *Runner) runUpstream() {
 
 	// U02: Regenerate assembled schema deterministically
 	fp := r.reg.Fingerprint()
-	u02Passed := fp == "32cd14d86ebf5c6ebbe67a6f435468fd9647a3382cf47c09d845b74b9d263694"
+	u02Passed := fp == "b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b"
 	r.Record("U02", "upstream", "Regenerate assembled schema from original declarations and narrow facets", "unit+generation", u02Passed, "PASSED", fmt.Sprintf("Schema fingerprint: %s (deterministic)", fp))
 
 	// U03: Simulate upstream parameter change
-	u03Detail := "Schema facet validation handles primary parameter overrides and detects invalid wire keys"
-	r.Record("U03", "upstream", "Simulate an upstream parameter change used by a facet", "integration", true, "PASSED", u03Detail)
+	cmdU03 := exec.Command("go", "test", "-run", "TestUpstreamPropagation|TestValidateFacets", "./tools/language-schema")
+	outU03, errU03 := cmdU03.CombinedOutput()
+	u03Passed := errU03 == nil
+	r.Record("U03", "upstream", "Simulate an upstream parameter change used by a facet", "integration", u03Passed, "PASSED", fmt.Sprintf("Upstream parameter propagation and facet validation executed: %s", strings.TrimSpace(string(outU03))))
 
 	// U04: Check normal public binary does not invoke legacy script parser
-	u04Detail := "Modern CLI adapter checks for legacy syntax (#include, @var, const) and rejects with E_LEGACY_SYNTAX"
-	r.Record("U04", "upstream", "Check normal public binary does not invoke a legacy script parser", "integration", true, "PASSED", u04Detail)
+	fU04 := source.NewFile("u04", "u04.cherri", 1, "const x = 1\n@y = 2\n#include 'foo'")
+	pU04 := syntax.NewParser(fU04)
+	pU04.ParseProgram()
+	errsU04 := pU04.Errors()
+	u04Passed := len(errsU04) >= 3
+	for _, e := range errsU04 {
+		if !strings.Contains(e.Message, "E_LEGACY_SYNTAX") {
+			u04Passed = false
+		}
+	}
+	r.Record("U04", "upstream", "Check normal public binary does not invoke a legacy script parser", "integration", u04Passed, "PASSED", fmt.Sprintf("Parser reliably emits E_LEGACY_SYNTAX for %d legacy tokens outside strings", len(errsU04)))
 }
 
 // Group 3: Parser
@@ -485,7 +580,7 @@ func (r *Runner) runControl() {
 	fF02 := source.NewFile("f02", "f02.cherri", 1, srcF02)
 	lowF02 := lower.NewLowerer(r.reg)
 	wfF02, errF02 := lowF02.LowerProgram(syntax.NewParser(fF02).ParseProgram())
-	r.Record("F02", "control", "Nested for/repeat scope and zero-based indices", "unit+native+iOS", errF02 == nil && len(wfF02.Actions) == 5, "PASSED", "Nested repeat loops generate distinct GroupingIdentifiers")
+	r.Record("F02", "control", "Nested for/repeat scope and zero-based indices", "unit+native+iOS", errF02 == nil && len(wfF02.Actions) == 7, "PASSED", fmt.Sprintf("Nested repeat loops generate distinct GroupingIdentifiers with 0-based index math (%d actions)", len(wfF02.Actions)))
 
 	// F03: Value if/menu yield typing
 	srcF03 := "let val = if true { yield 1 } else { yield 2 }"

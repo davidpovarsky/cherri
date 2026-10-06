@@ -523,6 +523,17 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 
 	callName := calleeIdent.Name
 
+	// 0. Check native escape / rawAction
+	if callName == "rawAction" || callName == "native.action" || callName == "action" {
+		if call.PrimaryArg != nil {
+			a.analyzeExpression(call.PrimaryArg, scope)
+		}
+		for _, nArg := range call.NamedArgs {
+			a.analyzeExpression(nArg.Value, scope)
+		}
+		return types.AnyContent
+	}
+
 	// 1. Check user-defined function in scope
 	if sym, found := scope.Lookup(callName); found && sym.Type != nil {
 		// Evaluate arguments
@@ -560,8 +571,22 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	}
 
 	// Step 3 & 4: Named arguments binding
+	paramIndex := 1
+	if call.PrimaryArg == nil {
+		paramIndex = 0
+	}
 	for _, nArg := range call.NamedArgs {
-		param, paramExists := actionSchema.ParameterByLabel(nArg.Label)
+		var param *schema.ParameterSchema
+		var paramExists bool
+		if nArg.Label != "" {
+			param, paramExists = actionSchema.ParameterByLabel(nArg.Label)
+		} else {
+			if paramIndex < len(actionSchema.Parameters) {
+				param = &actionSchema.Parameters[paramIndex]
+				paramExists = true
+				paramIndex++
+			}
+		}
 		if !paramExists {
 			a.error(CodeUnknownArgument, nArg.Span, fmt.Sprintf("unknown argument label %q in call to %q", nArg.Label, callName))
 			a.analyzeExpression(nArg.Value, scope)

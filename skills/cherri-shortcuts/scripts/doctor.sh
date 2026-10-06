@@ -10,8 +10,16 @@ printf 'Skill dir: %s\n' "$SKILL_DIR"
 if BIN=$(resolve_cherri); then
   printf 'Cherri: %s\n' "$BIN"
   "$BIN" --version || status=1
-  if "$BIN" --capabilities-json >/dev/null 2>&1; then
-    printf 'Cherri Language: v2.0 ready\n'
+  if CAP_OUTPUT=$("$BIN" --capabilities-json 2>&1); then
+    if printf '%s\n' "$CAP_OUTPUT" | grep -q '"languageVersion":"2.0"'; then
+      printf 'Cherri Language: v2.0 ready\n'
+    else
+      echo 'Cherri: Incompatible compiler (missing languageVersion 2.0)' >&2
+      status=1
+    fi
+  else
+    echo 'Cherri: Incompatible compiler (lacks --capabilities-json)' >&2
+    status=1
   fi
 else
   echo 'Cherri: MISSING (run scripts/setup.sh)'

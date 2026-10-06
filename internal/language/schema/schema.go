@@ -210,3 +210,14 @@ func (r *Registry) LookupEnum(enumName string) ([]string, bool) {
 	vals, ok := r.enumsByName[enumName]
 	return vals, ok
 }
+
+// AllEnums returns all enum mappings.
+func (r *Registry) AllEnums() map[string][]string {
+	res := make(map[string][]string, len(r.enumsByName))
+	for k, v := range r.enumsByName {
+		cpy := make([]string, len(v))
+		copy(cpy, v)
+		res[k] = cpy
+	}
+	return res
+}

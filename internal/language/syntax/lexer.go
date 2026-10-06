@@ -233,6 +233,18 @@ func (l *Lexer) NextToken() Token {
 		return l.makeToken(TokenSlash, "/", startPos, leadingTrivia)
 	case '%':
 		return l.makeToken(TokenPercent, "%", startPos, leadingTrivia)
+	case '@':
+		for isIdentContinue(l.peekRune()) {
+			l.nextRune()
+		}
+		text := l.src[startPos:l.pos]
+		return l.makeToken(TokenAtIdent, text, startPos, leadingTrivia)
+	case '#':
+		for isIdentContinue(l.peekRune()) {
+			l.nextRune()
+		}
+		text := l.src[startPos:l.pos]
+		return l.makeToken(TokenDirective, text, startPos, leadingTrivia)
 	}
 
 	span := l.file.SpanForOffsets(startPos, l.pos)
@@ -513,7 +525,7 @@ func (l *Lexer) skipWhitespaceAndComments() []source.Trivia {
 }
 
 func isIdentStart(r rune) bool {
-	return r == '_' || r == '@' || unicode.IsLetter(r)
+	return r == '_' || unicode.IsLetter(r)
 }
 
 func isIdentContinue(r rune) bool {

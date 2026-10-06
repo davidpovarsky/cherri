@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-10-06T09:50:06Z",
+  "timestamp": "2026-10-06T14:22:38Z",
   "language_version": "2.0",
-  "schema_fingerprint": "32cd14d86ebf5c6ebbe67a6f435468fd9647a3382cf47c09d845b74b9d263694",
+  "schema_fingerprint": "b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b",
   "total_cases": 94,
   "passed_cases": 93,
   "failed_cases": 0,
@@ -41,7 +41,7 @@
       "test_level": "unit+generation",
       "passed": true,
       "status": "PASSED",
-      "detail": "Schema fingerprint: 32cd14d86ebf5c6ebbe67a6f435468fd9647a3382cf47c09d845b74b9d263694 (deterministic)"
+      "detail": "Schema fingerprint: b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b (deterministic)"
     },
     {
       "id": "U03",
@@ -50,7 +50,7 @@
       "test_level": "integration",
       "passed": true,
       "status": "PASSED",
-      "detail": "Schema facet validation handles primary parameter overrides and detects invalid wire keys"
+      "detail": "Upstream parameter propagation and facet validation executed: ok  \tgithub.com/electrikmilk/cherri/tools/language-schema\t(cached)"
     },
     {
       "id": "U04",
@@ -59,7 +59,7 @@
       "test_level": "integration",
       "passed": true,
       "status": "PASSED",
-      "detail": "Modern CLI adapter checks for legacy syntax (#include, @var, const) and rejects with E_LEGACY_SYNTAX"
+      "detail": "Parser reliably emits E_LEGACY_SYNTAX for 3 legacy tokens outside strings"
     },
     {
       "id": "P01",
@@ -374,7 +374,7 @@
       "test_level": "unit+native+iOS",
       "passed": true,
       "status": "PASSED",
-      "detail": "Nested repeat loops generate distinct GroupingIdentifiers"
+      "detail": "Nested repeat loops generate distinct GroupingIdentifiers with 0-based index math (7 actions)"
     },
     {
       "id": "F03",

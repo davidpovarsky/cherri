@@ -47,7 +47,7 @@ Steps:
 2. Read the generated `.cherri` and map the user's request onto it.
 3. Search `action.sh`/`catalog.sh` before guessing syntax.
 4. Edit only the generated `.cherri`. Prefer typed Cherri actions. Keep
-   unknown actions as `rawAction(...)` when the decompiler can preserve them;
+   unknown actions as `native.action(...)` when the decompiler can preserve them;
    never drop an action merely because it is unsupported.
 5. Compile unsigned until the compiler accepts the source:
 
@@ -84,7 +84,7 @@ Prefer this order:
 1. `cherri --action=<query>` through `scripts/action.sh`.
 2. Local upstream docs through `scripts/search-docs.sh`.
 3. Cherri source/action definitions only when the CLI/docs are insufficient.
-4. `rawAction` only when the action cannot be represented by a supported Cherri definition.
+4. `native.action` only when the action cannot be represented by a supported Cherri definition.
 
 Never invent Apple Shortcuts plist keys from memory when the compiler can generate them.
 

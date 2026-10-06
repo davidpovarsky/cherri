@@ -18,10 +18,23 @@ mkdir -p "$CHERRI_HOME/bin"
 
 if [ -f "$BUNDLED_CHERRI" ] && [ "$FORCE" -eq 0 ]; then
   chmod +x "$BUNDLED_CHERRI" 2>/dev/null || true
-  echo "Using bundled Cherri: $BUNDLED_CHERRI"
-elif [ -x "$CACHED_CHERRI" ] && [ "$UPDATE" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
-  echo "Using cached Cherri: $CACHED_CHERRI"
-else
+  if "$BUNDLED_CHERRI" --capabilities-json 2>&1 | grep -q '"languageVersion":"2.0"'; then
+    echo "Using bundled Cherri: $BUNDLED_CHERRI"
+  else
+    echo "Bundled Cherri is outdated or incompatible; will use fresh build."
+    FORCE=1
+  fi
+fi
+
+if [ -x "$CACHED_CHERRI" ] && [ "$UPDATE" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
+  if "$CACHED_CHERRI" --capabilities-json 2>&1 | grep -q '"languageVersion":"2.0"'; then
+    echo "Using cached Cherri: $CACHED_CHERRI"
+  else
+    echo "Cached Cherri is outdated or incompatible; updating..."
+    FORCE=1
+  fi
+fi
+if [ "$FORCE" -eq 1 ] || { [ ! -f "$BUNDLED_CHERRI" ] && [ ! -x "$CACHED_CHERRI" ]; }; then
   if [ -n "${CHERRI_PREBUILT_URL:-}" ]; then
     echo "Downloading prebuilt Cherri..."
     if command -v wget >/dev/null 2>&1; then

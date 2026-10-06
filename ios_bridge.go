@@ -130,6 +130,39 @@ func CherriAnalyze(source *C.char) *C.char {
 	return C.CString(string(encoded))
 }
 
+// CherriComplete computes contextual completions at (line, column) in source.
+//
+//export CherriComplete
+func CherriComplete(source *C.char, line C.int, column C.int) *C.char {
+	src := C.GoString(source)
+	svc := service.NewService(schema.DefaultRegistry())
+	uri := "file:///mobile.cherri"
+	svc.OpenDocument(uri, 1, src)
+	items := svc.Complete(uri, int(line), int(column))
+
+	var wireItems []protocol.CompletionItem
+	for _, it := range items {
+		wireItems = append(wireItems, protocol.CompletionItem{
+			Label:         it.Label,
+			Kind:          int(it.Kind),
+			Detail:        it.Detail,
+			Documentation: it.Documentation,
+			InsertText:    it.InsertText,
+		})
+	}
+
+	resp := protocol.CompleteResponse{
+		URI:               uri,
+		Version:           1,
+		LanguageVersion:   schema.LanguageVersion,
+		SchemaFingerprint: svc.SchemaFingerprint(),
+		Items:             wireItems,
+	}
+
+	encoded, _ := json.Marshal(resp)
+	return C.CString(string(encoded))
+}
+
 func encodeMobileResponse(response mobileCompileResponse) *C.char {
 	encoded, err := json.Marshal(response)
 	if err != nil {
@@ -145,7 +178,7 @@ func CherriFree(pointer *C.char) {
 	C.free(unsafe.Pointer(pointer))
 }
 
-func compileForMobile(source string, requestedName string, sign bool) (response mobileCompileResponse) {
+func compileForMobile(src string, requestedName string, sign bool) (response mobileCompileResponse) {
 	mobileCompileMu.Lock()
 	defer mobileCompileMu.Unlock()
 
@@ -174,9 +207,17 @@ func compileForMobile(source string, requestedName string, sign bool) (response 
 	resetMobileDecompileState()
 	name := normalizedMobileName(requestedName)
 
-	// Try Cherri v2 compiler first
-	if !strings.Contains(source, "#include") && !strings.Contains(source, "@") && !strings.Contains(source, "const ") {
-		if v2Bytes, err := CompileSourceToPlist(name+".cherri", source); err == nil {
+	// Try Cherri v2 compiler first for modern v2 syntax
+	isLegacy := strings.Contains(src, "#include") ||
+		strings.Contains(src, "#define") ||
+		strings.Contains(src, "#import") ||
+		strings.Contains(src, "@") ||
+		strings.Contains(src, "const ") ||
+		strings.Contains(src, "Ask")
+
+	if !isLegacy {
+		v2Bytes, err := CompileSourceToPlist(name+".cherri", src)
+		if err == nil {
 			response = mobileCompileResponse{
 				OK:          true,
 				Name:        name,
@@ -200,7 +241,7 @@ func compileForMobile(source string, requestedName string, sign bool) (response 
 	inputPath = ""
 	outputPath = ""
 	workflowName = name
-	contents = source
+	contents = src
 
 	initParse()
 	generateShortcut()
@@ -291,7 +332,45 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 }
 
 func currentMobileActionCatalog() []mobileActionInfo {
-	return buildActionCatalog()
+	reg := schema.DefaultRegistry()
+	var catalog []mobileActionInfo
+	for _, act := range reg.AllActions() {
+		var params []catalogParameter
+		for _, p := range act.Parameters {
+			params = append(params, catalogParameter{
+				Name:       p.Label,
+				Key:        p.WireKey,
+				Type:       p.TypeName,
+				Optional:   p.Optional,
+				Enum:       p.EnumName,
+				EnumValues: p.EnumValues,
+				Default:    p.DefaultValue,
+			})
+		}
+		var intent *catalogAppIntent
+		if act.AppIntent != nil {
+			intent = &catalogAppIntent{
+				Name:                act.AppIntent.Name,
+				BundleIdentifier:    act.AppIntent.BundleIdentifier,
+				AppIntentIdentifier: act.AppIntent.AppIntentIdentifier,
+				TeamIdentifier:      act.AppIntent.TeamIdentifier,
+			}
+		}
+		catalog = append(catalog, catalogActionInfo{
+			Name:               act.CallableName,
+			ShortcutIdentifier: act.AppleIdentifier,
+			Title:              act.Docs.Title,
+			Description:        act.Docs.Description,
+			Category:           act.Docs.Category,
+			Subcategory:        act.Docs.Subcategory,
+			Parameters:         params,
+			OutputType:         act.OutputTypeName,
+			CompilerConstruct:  act.CompilerConstruct,
+			InsertionSnippet:   act.Docs.InsertionSnippet,
+			AppIntent:          intent,
+		})
+	}
+	return catalog
 }
 
 func ensureMobileBaseLanguageState() {

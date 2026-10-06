@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -114,8 +115,12 @@ func (s *Service) Analyze(uri string) ([]analysis.Diagnostic, string) {
 
 	// 1. Add parse errors
 	for _, pe := range doc.ParseErrors {
+		code := analysis.CodeSyntax
+		if strings.Contains(pe.Message, analysis.CodeLegacySyntax) {
+			code = analysis.CodeLegacySyntax
+		}
 		diags = append(diags, analysis.Diagnostic{
-			Code:     analysis.CodeSyntax,
+			Code:     code,
 			Severity: analysis.SeverityError,
 			Span:     pe.Span,
 			Message:  pe.Message,
@@ -128,6 +133,11 @@ func (s *Service) Analyze(uri string) ([]analysis.Diagnostic, string) {
 	}
 
 	return diags, s.registry.Fingerprint()
+}
+
+// SchemaFingerprint returns the fingerprint of the underlying schema registry.
+func (s *Service) SchemaFingerprint() string {
+	return s.registry.Fingerprint()
 }
 
 // Format formats the document text using canonical Cherri v2 formatting.
@@ -143,6 +153,25 @@ func (s *Service) Format(uri string) (string, error) {
 	return syntax.Format(doc.Program), nil
 }
 
+var labelRegex = regexp.MustCompile(`\b([a-zA-Z_][a-zA-Z0-9_]*)\s*:`)
+
+func completionKindPriority(kind CompletionItemKind) int {
+	switch kind {
+	case CompletionKindParameter:
+		return 0
+	case CompletionKindEnum:
+		return 1
+	case CompletionKindVariable:
+		return 2
+	case CompletionKindFunction:
+		return 3
+	case CompletionKindKeyword:
+		return 4
+	default:
+		return 5
+	}
+}
+
 // Complete returns contextual completions at the given 1-based line and column.
 func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 	s.mu.RLock()
@@ -154,18 +183,122 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 		return items
 	}
 
-	// 1. Action completions
-	for _, a := range s.registry.AllActions() {
-		items = append(items, CompletionItem{
-			Label:         a.CallableName,
-			Kind:          CompletionKindFunction,
-			Detail:        fmt.Sprintf("action %s(...) -> %s", a.CallableName, a.OutputTypeName),
-			Documentation: a.Docs.Description,
-			InsertText:    a.Docs.InsertionSnippet,
-		})
+	lines := strings.Split(doc.File.Content, "\n")
+	var linePrefix string
+	if line-1 >= 0 && line-1 < len(lines) {
+		currentLine := lines[line-1]
+		if col-1 >= 0 && col-1 <= len(currentLine) {
+			linePrefix = currentLine[:col-1]
+		} else {
+			linePrefix = currentLine
+		}
 	}
 
-	// 2. Local variable & function completions
+	// Determine if inside an open call
+	openParen := -1
+	parenDepth := 0
+	for i := len(linePrefix) - 1; i >= 0; i-- {
+		ch := linePrefix[i]
+		if ch == ')' {
+			parenDepth++
+		} else if ch == '(' {
+			if parenDepth > 0 {
+				parenDepth--
+			} else {
+				openParen = i
+				break
+			}
+		}
+	}
+
+	var callIdent string
+	usedLabels := make(map[string]bool)
+	trimmedPrefix := strings.TrimSpace(linePrefix)
+	isDot := strings.HasSuffix(trimmedPrefix, ".")
+
+	if openParen >= 0 {
+		// Find call identifier right before '('
+		identEnd := openParen
+		for identEnd > 0 && (linePrefix[identEnd-1] == ' ' || linePrefix[identEnd-1] == '\t') {
+			identEnd--
+		}
+		identStart := identEnd
+		for identStart > 0 && isIdentChar(rune(linePrefix[identStart-1])) {
+			identStart--
+		}
+		callIdent = linePrefix[identStart:identEnd]
+
+		// Extract used labels inside args so far
+		argsText := linePrefix[openParen+1:]
+		matches := labelRegex.FindAllStringSubmatch(argsText, -1)
+		for _, m := range matches {
+			if len(m) > 1 {
+				usedLabels[m[1]] = true
+			}
+		}
+	}
+
+	// 1. Contextual parameter labels and enum values for the active call
+	if callIdent != "" {
+		if act, ok := s.registry.LookupAction(callIdent); ok {
+			for _, p := range act.Parameters {
+				if p.Label != "" && !usedLabels[p.Label] {
+					items = append(items, CompletionItem{
+						Label:         p.Label,
+						Kind:          CompletionKindParameter,
+						Detail:        fmt.Sprintf("%s: %s (parameter)", p.Label, p.TypeName),
+						Documentation: p.DisplayName,
+						InsertText:    p.Label + ": ",
+					})
+				}
+				for _, ev := range p.EnumValues {
+					items = append(items, CompletionItem{
+						Label:         "." + ev,
+						Kind:          CompletionKindEnum,
+						Detail:        fmt.Sprintf("enum %s (%s)", p.EnumName, p.Label),
+						Documentation: p.DisplayName,
+						InsertText:    "." + ev,
+					})
+				}
+			}
+		}
+		if doc.Program != nil {
+			for _, decl := range doc.Program.Declarations {
+				if fn, ok := decl.(*syntax.FunctionDecl); ok && fn.Name == callIdent {
+					for _, p := range fn.Parameters {
+						if p.Name != "" && !usedLabels[p.Name] {
+							typeStr := "parameter"
+							if nt, ok := p.TypeExpr.(*syntax.NamedTypeAnnotation); ok {
+								typeStr = nt.Name
+							}
+							items = append(items, CompletionItem{
+								Label:      p.Name,
+								Kind:       CompletionKindParameter,
+								Detail:     fmt.Sprintf("%s: %s (parameter)", p.Name, typeStr),
+								InsertText: p.Name + ": ",
+							})
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// 2. If dot prefix, offer general enum members
+	if isDot {
+		for enumName, vals := range s.registry.AllEnums() {
+			for _, v := range vals {
+				items = append(items, CompletionItem{
+					Label:      "." + v,
+					Kind:       CompletionKindEnum,
+					Detail:     "enum " + enumName,
+					InsertText: "." + v,
+				})
+			}
+		}
+	}
+
+	// 3. Local variable & function completions
 	if doc.Program != nil {
 		for _, decl := range doc.Program.Declarations {
 			if fn, ok := decl.(*syntax.FunctionDecl); ok {
@@ -187,7 +320,18 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 		}
 	}
 
-	// 3. Keywords
+	// 4. Action completions
+	for _, a := range s.registry.AllActions() {
+		items = append(items, CompletionItem{
+			Label:         a.CallableName,
+			Kind:          CompletionKindFunction,
+			Detail:        fmt.Sprintf("action %s(...) -> %s", a.CallableName, a.OutputTypeName),
+			Documentation: a.Docs.Description,
+			InsertText:    a.Docs.InsertionSnippet,
+		})
+	}
+
+	// 5. Keywords
 	keywords := []string{"let", "var", "function", "return", "yield", "if", "else", "for", "repeat", "menu", "import", "shortcut"}
 	for _, kw := range keywords {
 		items = append(items, CompletionItem{
@@ -196,10 +340,29 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 		})
 	}
 
-	sort.Slice(items, func(i, j int) bool {
-		return items[i].Label < items[j].Label
+	// Deduplicate items preserving priority order
+	seen := make(map[string]bool)
+	var deduped []CompletionItem
+	for _, it := range items {
+		key := fmt.Sprintf("%s:%d", it.Label, it.Kind)
+		if !seen[key] {
+			seen[key] = true
+			deduped = append(deduped, it)
+		}
+	}
+
+	// Sort items: contextual Parameters and Enums first, then Variables, Functions, Keywords, Actions.
+	// Within the same kind, sort by Label.
+	sort.SliceStable(deduped, func(i, j int) bool {
+		ki := completionKindPriority(deduped[i].Kind)
+		kj := completionKindPriority(deduped[j].Kind)
+		if ki != kj {
+			return ki < kj
+		}
+		return deduped[i].Label < deduped[j].Label
 	})
-	return items
+
+	return deduped
 }
 
 // Hover returns hover information at 1-based line and column.

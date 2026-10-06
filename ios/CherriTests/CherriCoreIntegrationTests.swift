@@ -149,6 +149,35 @@ final class CherriCoreIntegrationTests: XCTestCase {
         }
     }
 
+    func testV2LanguageLetAndFStringCompile() async throws {
+        let source = """
+        let greeting = "Hello"
+        let msg = f"{greeting}, world!"
+        show(msg)
+        """
+        let result = try await CherriCompiler.compile(source: source, name: "V2 Test")
+        let plist = try propertyList(result.plist)
+        let actions = try XCTUnwrap(plist["WFWorkflowActions"] as? [[String: Any]])
+        XCTAssertFalse(actions.isEmpty)
+    }
+
+    func testCherriAnalyzeReturnsMultipleDiagnostics() async throws {
+        let source = """
+        let x = 10
+        x = 20
+        let s: Text = 123
+        """
+        let resp = try await CherriCompiler.analyze(source: source)
+        XCTAssertFalse(resp.valid)
+        XCTAssertGreaterThanOrEqual(resp.diagnostics.count, 2)
+    }
+
+    func testCherriCompleteReturnsContextualItems() async throws {
+        let source = "show("
+        let items = try await CherriCompiler.complete(source: source, line: 1, column: 6)
+        XCTAssertFalse(items.isEmpty)
+    }
+
     private func propertyList(_ data: Data) throws -> [String: Any] {
         let object = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)
         return try XCTUnwrap(object as? [String: Any])

@@ -227,6 +227,20 @@ func (p *Parser) parseShortcutDecl() *ShortcutDecl {
 				break
 			}
 			val := p.parseExpression(precNone)
+			for p.curr.Type == TokenComma && p.peek.Type != TokenColon {
+				p.advance()
+				nextElem := p.parseExpression(precNone)
+				if nextElem != nil {
+					if listExpr, isList := val.(*ListExpr); isList {
+						listExpr.Elements = append(listExpr.Elements, nextElem)
+					} else {
+						val = &ListExpr{
+							Span:     val.NodeSpan().Merge(nextElem.NodeSpan()),
+							Elements: []Expression{val, nextElem},
+						}
+					}
+				}
+			}
 			if decl.Metadata == nil {
 				decl.Metadata = &RecordExpr{
 					Span: fieldTok.Span,
@@ -642,7 +656,31 @@ func (p *Parser) parseStatement() Statement {
 	case TokenWhile, TokenBreak, TokenContinue:
 		kwTok := p.advance()
 		p.errorAt(kwTok.Span, fmt.Sprintf("unsupported keyword '%s': while, break, and continue are reserved unsupported future keywords in Cherri v2.0", kwTok.Text))
-		for p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
+		for p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && !p.currHasLeadingNewline() {
+			p.advance()
+		}
+		p.match(TokenSemicolon)
+		return nil
+	case TokenConst:
+		kwTok := p.advance()
+		p.errorAt(kwTok.Span, "Error [E_LEGACY_SYNTAX]: 'const' declaration is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate' or update to 'let'.")
+		for p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && !p.currHasLeadingNewline() {
+			p.advance()
+		}
+		p.match(TokenSemicolon)
+		return nil
+	case TokenAtIdent:
+		nameTok := p.advance()
+		p.errorAt(nameTok.Span, fmt.Sprintf("Error [E_LEGACY_SYNTAX]: '%s' variable syntax is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate' or update to 'var' / 'let'.", nameTok.Text))
+		for p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && !p.currHasLeadingNewline() {
+			p.advance()
+		}
+		p.match(TokenSemicolon)
+		return nil
+	case TokenDirective:
+		dirTok := p.advance()
+		p.errorAt(dirTok.Span, fmt.Sprintf("Error [E_LEGACY_SYNTAX]: '%s' preprocessor directive is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate'.", dirTok.Text))
+		for p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && !p.currHasLeadingNewline() {
 			p.advance()
 		}
 		p.match(TokenSemicolon)
@@ -922,6 +960,14 @@ func (p *Parser) parsePrefix() Expression {
 			Name: tok.Text,
 		}
 
+	case TokenAtIdent:
+		p.advance()
+		p.errorAt(tok.Span, fmt.Sprintf("Error [E_LEGACY_SYNTAX]: '%s' variable syntax is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate' or update to variable reference.", tok.Text))
+		return &IdentExpr{
+			Span: tok.Span,
+			Name: tok.Text,
+		}
+
 	case TokenDot:
 		// Leading dot: .member (enum shorthand)
 		p.advance()
@@ -1146,7 +1192,7 @@ func (p *Parser) parseCallExpr(callee Expression) *CallExpr {
 		Callee: callee,
 	}
 
-	// Arguments: can start with unlabeled primary argument, or named argument label: val
+	// Arguments: can start with unlabeled primary argument, followed by named or positional arguments
 	first := true
 	for p.curr.Type != TokenRParen && p.curr.Type != TokenEOF {
 		if first && p.peek.Type != TokenColon {
@@ -1161,17 +1207,30 @@ func (p *Parser) parseCallExpr(callee Expression) *CallExpr {
 		}
 
 		// Named argument: label: val
-		labelTok, ok := p.expect(TokenIdent)
-		if !ok {
-			break
+		if p.curr.Type == TokenIdent && p.peek.Type == TokenColon {
+			labelTok, _ := p.expect(TokenIdent)
+			p.expect(TokenColon)
+			val := p.parseExpression(precNone)
+			if val == nil {
+				break
+			}
+			call.NamedArgs = append(call.NamedArgs, NamedArg{
+				Span:  labelTok.Span.Merge(val.NodeSpan()),
+				Label: labelTok.Text,
+				Value: val,
+			})
+		} else {
+			// Positional argument
+			val := p.parseExpression(precNone)
+			if val == nil {
+				break
+			}
+			call.NamedArgs = append(call.NamedArgs, NamedArg{
+				Span:  val.NodeSpan(),
+				Label: "",
+				Value: val,
+			})
 		}
-		p.expect(TokenColon)
-		val := p.parseExpression(precNone)
-		call.NamedArgs = append(call.NamedArgs, NamedArg{
-			Span:  labelTok.Span.Merge(val.NodeSpan()),
-			Label: labelTok.Text,
-			Value: val,
-		})
 		first = false
 		if !p.match(TokenComma) {
 			break
@@ -1189,3 +1248,13 @@ func isUpper(s string) bool {
 	}
 	return strings.ToUpper(s[:1]) == s[:1]
 }
+
+func (p *Parser) currHasLeadingNewline() bool {
+	for _, tr := range p.curr.Leading {
+		if strings.Contains(tr.Text, "\n") {
+			return true
+		}
+	}
+	return false
+}
+

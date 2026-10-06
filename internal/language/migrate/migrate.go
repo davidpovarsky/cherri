@@ -5,6 +5,8 @@
 package migrate
 
 import (
+	"fmt"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -20,6 +22,67 @@ func MigrateSource(input string) string {
 	reg := schema.DefaultRegistry()
 	lines := strings.Split(input, "\n")
 	var outLines []string
+
+	// Collect legacy directives (#define, #include)
+	var shortcutName string
+	var iconGlyph string
+	var iconColor string
+	var imports []string
+	otherDefines := make(map[string]string)
+
+	type questionDef struct {
+		name       string
+		prompt     string
+		defaultVal string
+	}
+	var questions []questionDef
+
+	for _, l := range lines {
+		trimmed := strings.TrimSpace(l)
+		if strings.HasPrefix(trimmed, "#define ") {
+			rest := strings.TrimPrefix(trimmed, "#define ")
+			parts := strings.Fields(rest)
+			if len(parts) >= 2 {
+				key := parts[0]
+				val := strings.TrimSpace(rest[len(key):])
+				val = strings.Trim(val, "\"")
+				switch key {
+				case "name":
+					shortcutName = val
+				case "icon":
+					iconGlyph = val
+				case "color":
+					iconColor = val
+				default:
+					otherDefines[key] = val
+				}
+			} else if len(parts) == 1 {
+				otherDefines[parts[0]] = "true"
+			}
+		} else if strings.HasPrefix(trimmed, "#include ") {
+			mod := strings.TrimSpace(strings.TrimPrefix(trimmed, "#include "))
+			mod = strings.Trim(mod, "\"'")
+			if !strings.HasPrefix(mod, "actions/") && mod != "" {
+				imports = append(imports, mod)
+			}
+		} else if strings.HasPrefix(trimmed, "#question ") {
+			rest := strings.TrimSpace(strings.TrimPrefix(trimmed, "#question "))
+			parts := strings.Split(rest, "\"")
+			if len(parts) >= 3 {
+				qName := strings.TrimSpace(parts[0])
+				prompt := parts[1]
+				defVal := ""
+				if len(parts) >= 5 {
+					defVal = parts[3]
+				}
+				questions = append(questions, questionDef{
+					name:       qName,
+					prompt:     prompt,
+					defaultVal: defVal,
+				})
+			}
+		}
+	}
 
 	// Track variable mutability: if a var is assigned to multiple times, use 'var', else 'let'
 	varAssignmentCount := make(map[string]int)
@@ -39,7 +102,7 @@ func MigrateSource(input string) string {
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
 
-		// 1. Drop legacy preprocessor directives (#include, #define, etc.)
+		// 1. Skip legacy preprocessor directives (handled in header/imports)
 		if strings.HasPrefix(trimmed, "#") {
 			continue
 		}
@@ -113,7 +176,56 @@ func MigrateSource(input string) string {
 		outLines = append(outLines, line)
 	}
 
-	result := strings.Join(outLines, "\n")
+	var outHeader strings.Builder
+	if shortcutName != "" || iconGlyph != "" || iconColor != "" || len(otherDefines) > 0 {
+		name := shortcutName
+		if name == "" {
+			name = "Shortcut"
+		}
+		outHeader.WriteString(fmt.Sprintf("shortcut %q {\n", name))
+		if iconGlyph != "" || iconColor != "" {
+			if iconGlyph != "" && iconColor != "" {
+				outHeader.WriteString(fmt.Sprintf("    icon: {\n        glyph: %s,\n        color: %s\n    }\n", iconGlyph, iconColor))
+			} else if iconGlyph != "" {
+				outHeader.WriteString(fmt.Sprintf("    icon: %s\n", iconGlyph))
+			} else {
+				outHeader.WriteString(fmt.Sprintf("    color: %s\n", iconColor))
+			}
+		}
+		for k, v := range otherDefines {
+			if strings.Contains(v, ",") {
+				vTrim := strings.TrimSpace(v)
+				if !strings.HasPrefix(vTrim, "[") {
+					v = "[" + vTrim + "]"
+				}
+			}
+			outHeader.WriteString(fmt.Sprintf("    %s: %s\n", k, v))
+		}
+		outHeader.WriteString("}\n\n")
+	}
+
+	for _, imp := range imports {
+		alias := filepath.Base(imp)
+		alias = strings.TrimSuffix(alias, filepath.Ext(alias))
+		alias = strings.ReplaceAll(alias, "-", "_")
+		if !isValidIdent(alias) {
+			alias = "importedModule"
+		}
+		outHeader.WriteString(fmt.Sprintf("import %q as %s\n", imp, alias))
+	}
+	if len(imports) > 0 {
+		outHeader.WriteString("\n")
+	}
+
+	for _, q := range questions {
+		outHeader.WriteString(fmt.Sprintf("setup %s: Text {\n    prompt: %q\n", q.name, q.prompt))
+		if q.defaultVal != "" {
+			outHeader.WriteString(fmt.Sprintf("    default: %q\n", q.defaultVal))
+		}
+		outHeader.WriteString("}\n\n")
+	}
+
+	result := outHeader.String() + strings.Join(outLines, "\n")
 
 	// Try formatting canonically
 	file := source.NewFile("migration", "migration.cherri", 1, result)
@@ -149,7 +261,7 @@ func labelCallArguments(line string, reg *schema.Registry) string {
 		}
 	}
 
-	if callee == "" {
+	if callee == "" || callee == "rawAction" || callee == "action" || callee == "native" {
 		return line
 	}
 
@@ -177,7 +289,7 @@ func labelCallArguments(line string, reg *schema.Registry) string {
 			}
 		}
 
-		if i > 0 && !isLabeled && i < len(actionSchema.Parameters) {
+		if i > 0 && !isLabeled && i < len(actionSchema.Parameters) && actionSchema.Parameters[i].Label != "" && !strings.HasPrefix(trimmed, "{") {
 			param := actionSchema.Parameters[i]
 			newArgs = append(newArgs, param.Label+": "+trimmed)
 		} else {

@@ -129,6 +129,50 @@ private struct CompilerBridgeResponse: Decodable {
     let column: Int?
 }
 
+struct CherriCompletionItem: Decodable, Identifiable, Hashable, Sendable {
+    var id: String { "\(label)_\(kind)" }
+    let label: String
+    let kind: Int
+    let detail: String?
+    let documentation: String?
+    let insertText: String?
+}
+
+struct CherriWirePosition: Decodable, Hashable, Sendable {
+    let line: Int
+    let character: Int
+}
+
+struct CherriWireRange: Decodable, Hashable, Sendable {
+    let start: CherriWirePosition
+    let end: CherriWirePosition
+}
+
+struct CherriWireDiagnostic: Decodable, Identifiable, Hashable, Sendable {
+    var id: String { "\(code)_\(range.start.line)_\(range.start.character)_\(message)" }
+    let code: String
+    let severity: String
+    let message: String
+    let range: CherriWireRange
+}
+
+struct CherriAnalyzeResponse: Decodable, Sendable {
+    let uri: String
+    let version: Int
+    let languageVersion: String
+    let schemaFingerprint: String
+    let diagnostics: [CherriWireDiagnostic]
+    let valid: Bool
+}
+
+private struct CompleteBridgeResponse: Decodable {
+    let uri: String?
+    let version: Int?
+    let languageVersion: String?
+    let schemaFingerprint: String?
+    let items: [CherriCompletionItem]?
+}
+
 private struct ActionCatalogBridgeResponse: Decodable {
     let ok: Bool
     let actions: [CherriActionInfo]?
@@ -151,6 +195,18 @@ enum CherriCompiler {
     static func actionCatalog() async throws -> [CherriActionInfo] {
         try await Task.detached(priority: .utility) {
             try callActionCatalogBridge()
+        }.value
+    }
+
+    static func analyze(source: String) async throws -> CherriAnalyzeResponse {
+        try await Task.detached(priority: .userInitiated) {
+            try callAnalyzeBridge(source: source)
+        }.value
+    }
+
+    static func complete(source: String, line: Int, column: Int) async throws -> [CherriCompletionItem] {
+        try await Task.detached(priority: .userInitiated) {
+            try callCompleteBridge(source: source, line: line, column: column)
         }.value
     }
 
@@ -233,5 +289,32 @@ enum CherriCompiler {
             )
         }
         return response
+    }
+
+    private static func callAnalyzeBridge(source: String) throws -> CherriAnalyzeResponse {
+        let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+            CherriAnalyze(UnsafeMutablePointer(mutating: sourcePointer))
+        }
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri analyze returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        return try JSONDecoder().decode(CherriAnalyzeResponse.self, from: responseData)
+    }
+
+    private static func callCompleteBridge(source: String, line: Int, column: Int) throws -> [CherriCompletionItem] {
+        let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+            CherriComplete(UnsafeMutablePointer(mutating: sourcePointer), Int32(line), Int32(column))
+        }
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri complete returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        let resp = try JSONDecoder().decode(CompleteBridgeResponse.self, from: responseData)
+        return resp.items ?? []
     }
 }

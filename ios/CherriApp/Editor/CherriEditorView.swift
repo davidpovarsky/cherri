@@ -6,6 +6,7 @@ import SwiftUI
 struct CherriEditorView: View {
     @Binding var text: String
     let diagnostic: CompilationDiagnostic?
+    var diagnostics: [CompilationDiagnostic] = []
     let actions: [CherriActionInfo]
 
     @Environment(\.colorScheme) private var colorScheme
@@ -14,6 +15,7 @@ struct CherriEditorView: View {
     @State private var showActionPalette = false
     @State private var pendingPaletteAction: CherriActionInfo?
     @State private var paletteInsertionRange: NSRange?
+    @State private var contextualCompletions: [CherriCompletionItem] = []
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,6 +37,9 @@ struct CherriEditorView: View {
         .task(id: diagnostic?.id) {
             refreshDiagnostic()
         }
+        .task(id: editPosition.selections.first) {
+            await refreshContextualCompletions()
+        }
         .sheet(isPresented: $showActionPalette, onDismiss: commitPaletteSelection) {
             ActionPaletteView(actions: actions) { action in
                 pendingPaletteAction = action
@@ -55,7 +60,33 @@ struct CherriEditorView: View {
             .buttonStyle(.borderless)
             .disabled(actions.isEmpty)
 
-            if !completionSuggestions.isEmpty {
+            if !contextualCompletions.isEmpty {
+                Divider()
+                    .frame(height: 24)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(contextualCompletions.prefix(8)) { item in
+                            Button {
+                                insertItem(item, replacing: completionContext?.range)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(item.label)
+                                        .font(.system(.caption, design: .monospaced, weight: .semibold))
+                                    if let detail = item.detail, !detail.isEmpty {
+                                        Text(detail)
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 5)
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                }
+            } else if !completionSuggestions.isEmpty {
                 Divider()
                     .frame(height: 24)
 
@@ -176,23 +207,69 @@ struct CherriEditorView: View {
         text = source.replacingCharacters(in: range, with: action.insertionSnippet)
     }
 
+    private func insertItem(_ item: CherriCompletionItem, replacing requestedRange: NSRange?) {
+        let source = text as NSString
+        let selection = editPosition.selections.first ?? NSRange(location: source.length, length: 0)
+        let candidate = requestedRange ?? selection
+        let range: NSRange
+
+        if candidate.location >= 0 && candidate.location + candidate.length <= source.length {
+            range = candidate
+        } else {
+            range = NSRange(location: source.length, length: 0)
+        }
+
+        let replacement = item.insertText ?? item.label
+        text = source.replacingCharacters(in: range, with: replacement)
+    }
+
+    private func lineAndColumn(at offset: Int) -> (line: Int, column: Int) {
+        let ns = text as NSString
+        let bounded = min(max(offset, 0), ns.length)
+        var line = 1
+        var col = 1
+        for i in 0..<bounded {
+            if ns.character(at: i) == 10 { // newline
+                line += 1
+                col = 1
+            } else {
+                col += 1
+            }
+        }
+        return (line, col)
+    }
+
+    private func refreshContextualCompletions() async {
+        guard let selection = editPosition.selections.first else {
+            contextualCompletions = []
+            return
+        }
+        let (line, col) = lineAndColumn(at: selection.location)
+        if let items = try? await CherriCompiler.complete(source: text, line: line, column: col), !items.isEmpty {
+            contextualCompletions = items
+        } else {
+            contextualCompletions = []
+        }
+    }
+
     private func refreshDiagnostic() {
         messages.removeAll()
-        guard let diagnostic else { return }
-
-        messages.insert(
-            TextLocated(
-                location: TextLocation(
-                    oneBasedLine: max(diagnostic.line, 1),
-                    column: max(diagnostic.column, 1)
-                ),
-                entity: Message(
-                    category: .error,
-                    length: 1,
-                    summary: "Error",
-                    description: AttributedString(diagnostic.message)
+        let allDiags = diagnostics.isEmpty ? (diagnostic.map { [$0] } ?? []) : diagnostics
+        for diag in allDiags {
+            messages.insert(
+                TextLocated(
+                    location: TextLocation(
+                        oneBasedLine: max(diag.line, 1),
+                        column: max(diag.column, 1)
+                    ),
+                    entity: Message(
+                        category: .error,
+                        length: 1,
+                        summary: "Error",
+                        description: AttributedString(diag.message)
+                    )
                 )
             )
-        )
+        }
     }
 }

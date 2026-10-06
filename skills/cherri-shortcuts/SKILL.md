@@ -102,7 +102,7 @@ sh "$SKILL_DIR/scripts/prepare-edit.sh" INPUT_PLIST_OR_UNSIGNED_SHORTCUT [WORKSP
    modification.
 3. Use `action.sh`/`catalog.sh` before guessing syntax.
 4. Edit ONLY the generated `.cherri` source. Prefer normal typed Cherri
-   actions; preserve unknown/unsupported actions via `rawAction(...)` when
+   actions; preserve unknown/unsupported actions via `native.action(...)` when
    possible — never delete an unknown action just to make compilation easier.
 5. Compile unsigned and fix any diagnostics:
 
@@ -124,7 +124,7 @@ sh "$SKILL_DIR/scripts/build.sh" WORKSPACE/source/shortcut.cherri WORKSPACE/buil
 
 Known limits: direct extraction of signed `AEA1` Shortcuts is not supported
 yet — use the extractor Shortcut / iCloud-link workflow to provide a plist.
-Decompilation is beta: third-party app actions may degrade to `rawAction`
+Decompilation is beta: third-party app actions may degrade to `native.action`
 calls, and a plist structure Cherri cannot represent must be reported, not
 silently dropped.
 

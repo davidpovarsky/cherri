@@ -22,8 +22,9 @@ type AttachmentToken struct {
 // NativeWorkflow represents an entire Apple Shortcut workflow ready for plist serialization.
 type NativeWorkflow struct {
 	ClientVersion      string                   `json:"clientVersion"`
-	WorkflowTypes      []string                 `json:"workflowTypes,omitempty"`
-	IconGlyph          int                      `json:"iconGlyph,omitempty"`
+	WorkflowTypes           []string                 `json:"workflowTypes,omitempty"`
+	InputContentItemClasses []string                 `json:"inputContentItemClasses,omitempty"`
+	IconGlyph               int                      `json:"iconGlyph,omitempty"`
 	IconColor          int                      `json:"iconColor,omitempty"`
 	Actions            []*NativeActionNode      `json:"actions"`
 	ImportQuestions    []map[string]interface{} `json:"importQuestions,omitempty"`
@@ -36,7 +37,6 @@ type NativeWorkflow struct {
 func NewNativeWorkflow() *NativeWorkflow {
 	return &NativeWorkflow{
 		ClientVersion: "4711",
-		WorkflowTypes: []string{"NCWidget", "WatchKit"},
 		Actions:       make([]*NativeActionNode, 0),
 	}
 }

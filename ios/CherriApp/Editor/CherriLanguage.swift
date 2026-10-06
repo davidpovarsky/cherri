@@ -1,6 +1,10 @@
 import LanguageSupport
 
 private let cherriReservedIdentifiers = [
+    // Cherri v2 keywords
+    "let", "var", "yield", "shortcut", "setup", "trigger", "as", "case", "none",
+    "Number", "Bool", "Text", "List", "Map", "return",
+
     // Control flow and declarations. Kept in sync with Cherri's own token set
     // and the existing cherri-vscode grammar.
     "if", "else", "repeat", "for", "in", "menu", "item", "const", "action",
@@ -24,7 +28,7 @@ private let cherriReservedIdentifiers = [
 
 private let cherriReservedOperators = [
     "=", "+=", "-=", "*=", "/=", "==", "!=", ">", ">=", "<", "<=", "<>",
-    "+", "-", "*", "/", "%", "&&", "||", "@", "#", ":"
+    "+", "-", "*", "/", "%", "&&", "||", "!", "@", "#", ":", "->", "."
 ]
 
 extension LanguageConfiguration {
@@ -32,7 +36,7 @@ extension LanguageConfiguration {
         let stringRegex: Regex<Substring> = /\"(?:\\\"|[^\"])*+\"/
         let numberRegex: Regex<Substring> = /-?[0-9]+(?:\.[0-9]+)?/
         let identifierRegex: Regex<Substring> = /[A-Za-z_][A-Za-z0-9_]*/
-        let operatorRegex: Regex<Substring> = /[=+*%!<>&|?:@#\/-]+/
+        let operatorRegex: Regex<Substring> = /[=+*%!<>&|?:@#\/.\-]+/
 
         return LanguageConfiguration(
             name: "Cherri",

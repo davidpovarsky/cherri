@@ -40,15 +40,7 @@ func main() {
 	filePath = fileArg()
 	if filePath != "" {
 		filename = checkFile(filePath)
-		fileBytes, err := os.ReadFile(filePath)
-		if err == nil {
-			contentStr := string(fileBytes)
-			// Check for legacy syntax rejection (§17.1)
-			if strings.Contains(contentStr, "#include") || strings.Contains(contentStr, "@") || strings.Contains(contentStr, "const ") {
-				fmt.Fprintf(os.Stderr, "Error [E_LEGACY_SYNTAX]: %s contains legacy Cherri syntax (#include, @var, or const). Please migrate to Cherri v2.0 using 'cherri-migrate' or update to 'let'/'var'.\n", filePath)
-				os.Exit(1)
-			}
-
+		if _, err := os.Stat(filePath); err == nil {
 			// Compile via Cherri v2 pipeline
 			outPath := ""
 			if args.Using("output") {

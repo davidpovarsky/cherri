@@ -49,6 +49,11 @@ const (
 	TokenBreak
 	TokenContinue
 
+	// Legacy tokens for migration diagnostics
+	TokenConst     // const
+	TokenAtIdent   // @variable
+	TokenDirective // #include, #define, etc.
+
 	// Delimiters & punctuation
 	TokenLParen    // (
 	TokenRParen    // )
@@ -114,6 +119,7 @@ var keywords = map[string]TokenType{
 	"while":    TokenWhile,
 	"break":    TokenBreak,
 	"continue": TokenContinue,
+	"const":    TokenConst,
 	"true":     TokenTrue,
 	"false":    TokenFalse,
 	"none":     TokenNone,

@@ -139,11 +139,13 @@ func mapVariables() {
 				variables[varName] = varValue{}
 			}
 
-			if action.WFWorkflowActionParameters["WFInput"] != nil {
+			if inputMap, isMap := action.WFWorkflowActionParameters["WFInput"].(map[string]any); isMap && inputMap != nil {
 				var wfInput WFInput
-				mapToStruct(action.WFWorkflowActionParameters["WFInput"], &wfInput)
-				if _, found := uuids[wfInput.Value.OutputUUID]; !found {
-					varUUIDs = append(varUUIDs, wfInput.Value.OutputUUID)
+				mapToStruct(inputMap, &wfInput)
+				if wfInput.Value.OutputUUID != "" {
+					if _, found := uuids[wfInput.Value.OutputUUID]; !found {
+						varUUIDs = append(varUUIDs, wfInput.Value.OutputUUID)
+					}
 				}
 			}
 		}
@@ -1685,11 +1687,15 @@ func matchAction(action *ShortcutAction) (name string, definition actionDefiniti
 			if name != "run" && name != "runSelf" {
 				return
 			}
-			var workflow = action.WFWorkflowActionParameters["WFWorkflow"].(map[string]interface{})
+			workflow, ok := action.WFWorkflowActionParameters["WFWorkflow"].(map[string]interface{})
+			if !ok {
+				return
+			}
 			if _, isSelf := workflow["isSelf"]; !isSelf {
 				return
 			}
-			if workflow["isSelf"].(bool) || action.WFWorkflowActionParameters["WFWorkflowName"] == basename {
+			isSelfVal, _ := workflow["isSelf"].(bool)
+			if isSelfVal || action.WFWorkflowActionParameters["WFWorkflowName"] == basename {
 				name = "runSelf"
 				definition = *actions["runSelf"]
 			} else {

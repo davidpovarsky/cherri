@@ -18,6 +18,7 @@ struct WorkspaceView: View {
     @State private var selectedPane: WorkspacePane = .code
     @State private var compiled: CompiledShortcut?
     @State private var diagnostic: CompilationDiagnostic?
+    @State private var diagnostics: [CompilationDiagnostic] = []
     @State private var actionCatalog: [CherriActionInfo] = []
     @State private var previewActionMetadataJSON: String?
     @State private var isCompiling = false
@@ -141,6 +142,7 @@ struct WorkspaceView: View {
         CherriEditorView(
             text: $document.text,
             diagnostic: diagnostic,
+            diagnostics: diagnostics,
             actions: actionCatalog
         )
     }
@@ -244,6 +246,7 @@ struct WorkspaceView: View {
 
             compiled = result
             diagnostic = nil
+            diagnostics = []
             await refreshActionCatalog()
 
             if let signedData = result.signedShortcut {
@@ -254,13 +257,26 @@ struct WorkspaceView: View {
                 return
             }
             diagnostic = compilerError
+            if let analysis = try? await CherriCompiler.analyze(source: source), !analysis.valid && !analysis.diagnostics.isEmpty {
+                diagnostics = analysis.diagnostics.map {
+                    CompilationDiagnostic(
+                        message: $0.message,
+                        line: $0.range.start.line + 1,
+                        column: $0.range.start.character + 1
+                    )
+                }
+            } else {
+                diagnostics = [compilerError]
+            }
             signedURL = nil
         } catch {
-            diagnostic = CompilationDiagnostic(
+            let diag = CompilationDiagnostic(
                 message: error.localizedDescription,
                 line: 1,
                 column: 1
             )
+            diagnostic = diag
+            diagnostics = [diag]
             signedURL = nil
         }
     }

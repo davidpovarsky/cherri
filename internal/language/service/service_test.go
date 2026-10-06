@@ -64,3 +64,42 @@ func TestServiceHover(t *testing.T) {
 		t.Errorf("expected non-empty hover contents")
 	}
 }
+
+func TestServiceContextualCallComplete(t *testing.T) {
+	svc := NewService(schema.DefaultRegistry())
+	uri := "file:///call.cherri"
+	code := `resizeImage(photo, `
+	svc.OpenDocument(uri, 1, code)
+
+	items := svc.Complete(uri, 1, len(code)+1)
+	if len(items) == 0 {
+		t.Fatalf("expected completions inside call, got 0")
+	}
+
+	foundParam := false
+	for _, it := range items {
+		if it.Kind == CompletionKindParameter {
+			foundParam = true
+			break
+		}
+	}
+	if !foundParam {
+		t.Errorf("expected to find parameter completion for resizeImage arguments")
+	}
+
+	// Test dot completion for enums
+	dotURI := "file:///dot.cherri"
+	dotCode := `.`
+	svc.OpenDocument(dotURI, 1, dotCode)
+	dotItems := svc.Complete(dotURI, 1, 2)
+	foundEnum := false
+	for _, it := range dotItems {
+		if it.Kind == CompletionKindEnum {
+			foundEnum = true
+			break
+		}
+	}
+	if !foundEnum {
+		t.Errorf("expected to find enum completion after dot")
+	}
+}

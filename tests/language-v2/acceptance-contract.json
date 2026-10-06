@@ -1,0 +1,866 @@
+{
+  "kind": "planned_acceptance_contract",
+  "status": "SPECIFICATION_ONLY_NOT_TEST_RESULTS",
+  "prepared_date": "2026-10-06",
+  "repository": "davidpovarsky/cherri",
+  "research_baseline": "559abceadda1dbf0cd7d7deb1a26315b8ac44c3f",
+  "language_contract": "2.0",
+  "catalog_contract": "3.0",
+  "authority": "cherri-language-agent-prompt.md",
+  "rules": [
+    "Map every requirement ID to implementation paths and actual test IDs/results.",
+    "A pass requires an assertion at the minimum stated level; mocks do not count as real Apple runtime.",
+    "Apple/evaluation external unavailability is explicit; incomplete core code is not a platform skip.",
+    "This file contains planned requirements only. No tests were executed to generate it.",
+    "Add further regressions as implementation uncovers concrete defects."
+  ],
+  "case_count": 94,
+  "cases": [
+    {
+      "id": "B01",
+      "group": "baseline",
+      "requirement": "Verify isolated base/remote HEAD and keep unrelated agent work unchanged",
+      "minimum_test_level": "repository",
+      "expected": "Recorded full SHA, owned worktree, no unrelated reset",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "B02",
+      "group": "baseline",
+      "requirement": "Capture baseline catalog, definition identities and representative native outputs",
+      "minimum_test_level": "repository",
+      "expected": "Every prior definition has a migration disposition; no dummy count padding",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "U01",
+      "group": "upstream",
+      "requirement": "Preserve upstream declaration files when build-time adapters suffice",
+      "minimum_test_level": "repository",
+      "expected": "No mechanical mass rewrite of actions/*.cherri; diff boundary manifest",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "U02",
+      "group": "upstream",
+      "requirement": "Regenerate assembled schema from original declarations and narrow facets",
+      "minimum_test_level": "unit+generation",
+      "expected": "Identical inputs produce identical semantic fingerprint",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "U03",
+      "group": "upstream",
+      "requirement": "Simulate an upstream parameter change used by a facet",
+      "minimum_test_level": "integration",
+      "expected": "Change propagates correctly or explicit assumption-conflict error",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "U04",
+      "group": "upstream",
+      "requirement": "Check normal public binary does not invoke a legacy script parser",
+      "minimum_test_level": "integration",
+      "expected": "New source path is singular; legacy reference importer is build-time/migration-only",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "P01",
+      "group": "parser",
+      "requirement": "Plain, f, raw and multiline text parse without treating ordinary braces as variables",
+      "minimum_test_level": "unit",
+      "expected": "Exact literal preservation and f-expression parsing",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "P02",
+      "group": "parser",
+      "requirement": "Unterminated string/comment and partial named call recover",
+      "minimum_test_level": "unit+service",
+      "expected": "Exact errors; completion still available; no hang",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "P03",
+      "group": "parser",
+      "requirement": "Pratt precedence, parentheses and short-circuit tree are correct",
+      "minimum_test_level": "unit",
+      "expected": "Documented tree shape; chaining comparison rejected",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "P04",
+      "group": "parser",
+      "requirement": "Semicolon/newline handling and bare return are unambiguous",
+      "minimum_test_level": "unit",
+      "expected": "No accidental return of expression from next line",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "P05",
+      "group": "parser",
+      "requirement": "Unicode identifiers and tokenizer/completion agree",
+      "minimum_test_level": "unit+service",
+      "expected": "Hebrew and valid combining marks supported; forbidden identifier controls diagnosed",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "V01",
+      "group": "binding",
+      "requirement": "let captures current var value before later assignment",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "1 retained after source var changes from 1 to 2",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "V02",
+      "group": "binding",
+      "requirement": "Scope, shadowing, immutable reassignment and read-before-init",
+      "minimum_test_level": "unit",
+      "expected": "Expected errors/warnings; narrowing respects reassignment",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "V03",
+      "group": "binding",
+      "requirement": "System clipboard read captured once",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "Later writes do not change earlier let value",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "V04",
+      "group": "binding",
+      "requirement": "let binds lists/maps/action outputs without old const restrictions",
+      "minimum_test_level": "unit+native",
+      "expected": "Valid binding and preserved data shape",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C01",
+      "group": "calls",
+      "requirement": "Named arguments out of declaration order evaluate in source order",
+      "minimum_test_level": "unit+native",
+      "expected": "Effects ordered and each argument evaluated exactly once",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C02",
+      "group": "calls",
+      "requirement": "Duplicate, missing, unknown labels and extra positional arguments",
+      "minimum_test_level": "unit",
+      "expected": "Specific stable diagnostics with parameter ranges",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C03",
+      "group": "calls",
+      "requirement": "Variadic source API migrates to explicit named list",
+      "minimum_test_level": "unit+native",
+      "expected": "Empty/single/multiple inputs preserved; no undocumented flattening",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C04",
+      "group": "calls",
+      "requirement": "Enum contextual and qualified members resolve",
+      "minimum_test_level": "unit+service",
+      "expected": "Correct type/member suggestions and exact wire values",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "C05",
+      "group": "calls",
+      "requirement": "Unknown enum wire value survives native import",
+      "minimum_test_level": "native-roundtrip",
+      "expected": "No guessed replacement with a known enum member",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "T01",
+      "group": "types",
+      "requirement": "Typed defaults preserve false/zero/empty text/list/map vs omission",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "Default applied only when argument absent",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "T02",
+      "group": "types",
+      "requirement": "Runtime immutable output does not satisfy literal-required slot",
+      "minimum_test_level": "unit",
+      "expected": "E_LITERAL_REQUIRED; pure eligible literal expression accepted",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "T03",
+      "group": "types",
+      "requirement": "Semantic Number with number-as-text wire codec",
+      "minimum_test_level": "unit+native",
+      "expected": "Public numeric signature, verified exact wire representation",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "T04",
+      "group": "types",
+      "requirement": "Unknown differs from AnyContent and Void",
+      "minimum_test_level": "unit+service",
+      "expected": "No false type guarantee; invalid operations rejected",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "T05",
+      "group": "types",
+      "requirement": "Optional presence differs from optional value and JSON null",
+      "minimum_test_level": "unit+native",
+      "expected": "Explicit presence tracked; no omitted false or null-to-missing coercion",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "T06",
+      "group": "types",
+      "requirement": "User record annotation is not runtime JSON validation",
+      "minimum_test_level": "unit",
+      "expected": "Unvalidated external value rejected or remains Unknown/JsonValue",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "T07",
+      "group": "types",
+      "requirement": "Per-platform versions compare components rather than floats",
+      "minimum_test_level": "unit",
+      "expected": "18.10 differs from 18.1; iOS not inferred from macOS",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "T08",
+      "group": "types",
+      "requirement": "Variant-dependent output type inferred from literal mode",
+      "minimum_test_level": "unit+service",
+      "expected": "Single vs multiple result cardinality represented truthfully",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "T09",
+      "group": "types",
+      "requirement": "Known Content Graph conversions vs unverified coercion",
+      "minimum_test_level": "unit+native",
+      "expected": "No blanket any-type acceptance or invented safe cast",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "S01",
+      "group": "text",
+      "requirement": "Multiple variable tokens after Hebrew/emoji/combining marks",
+      "minimum_test_level": "unit+native-roundtrip+iOS",
+      "expected": "Correct UTF-16 attachment offsets and observable text",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "S02",
+      "group": "text",
+      "requirement": "Raw regex and ordinary JSON/JS/CSS text keep braces/backslashes",
+      "minimum_test_level": "unit+native",
+      "expected": "No regex-based reference substitution",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "S03",
+      "group": "text",
+      "requirement": "Large embedded local asset remains cached across unrelated edits",
+      "minimum_test_level": "service+benchmark",
+      "expected": "No repeated heavy parse/I/O on every keystroke",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "L01",
+      "group": "collections",
+      "requirement": "Nested lists/maps preserve shape, cardinality and element order",
+      "minimum_test_level": "unit+native",
+      "expected": "No silent flatten/drop; explicit unsupported shape if truly unencodable",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "L02",
+      "group": "collections",
+      "requirement": "Zero-based first/last/empty/out-of-range/negative indexing",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "Correct value or none; no wrapping/truncation",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "L03",
+      "group": "collections",
+      "requirement": "Duplicate literal keys and invalid index type",
+      "minimum_test_level": "unit",
+      "expected": "Deterministic explicit diagnostic",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "L04",
+      "group": "collections",
+      "requirement": "Dynamic bounds checking does not execute unsafe native lookup",
+      "minimum_test_level": "native+iOS",
+      "expected": "Guarded no-item path rather than incorrect target error",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "N01",
+      "group": "numbers",
+      "requirement": "Fractional arithmetic including 5/2 and constraints",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "No integer-division fold; no undocumented rounding/scaling",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "N02",
+      "group": "numbers",
+      "requirement": "Known zero divisor and text-plus-number are rejected",
+      "minimum_test_level": "unit",
+      "expected": "Meaningful stable diagnostic",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "N03",
+      "group": "numbers",
+      "requirement": "Exact case-sensitive text equality and legacy comparison migration",
+      "minimum_test_level": "unit+native",
+      "expected": "New contract tested; old semantics preserved explicitly",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "F01",
+      "group": "control",
+      "requirement": "Mixed AND/OR short-circuits observable branch effects",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "Untaken side-effecting operand is not executed",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "F02",
+      "group": "control",
+      "requirement": "Nested for/repeat scope and zero-based indices",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "No Repeat Item/Index collision or leakage",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "F03",
+      "group": "control",
+      "requirement": "Value if/menu yield typing and normal-path coverage",
+      "minimum_test_level": "unit+native",
+      "expected": "Matching result; missing/wrong yield diagnosed",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "F04",
+      "group": "control",
+      "requirement": "Value loop collects one semantic element per iteration",
+      "minimum_test_level": "unit+native",
+      "expected": "Zero iterations gives empty list; no accidental flatten",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "F05",
+      "group": "control",
+      "requirement": "Stop Shortcut is not substituted for break",
+      "minimum_test_level": "unit",
+      "expected": "Unsupported break/continue/while clearly diagnosed",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "FN01",
+      "group": "functions",
+      "requirement": "AST-defined function call returns then caller continues",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "Correct local return and later caller marker",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "FN02",
+      "group": "functions",
+      "requirement": "Presence-tagged argument defaults include false/0/empty",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "No truthiness-driven fallback",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "FN03",
+      "group": "functions",
+      "requirement": "No implicit runtime capture; terminating recursive call",
+      "minimum_test_level": "unit+native+iOS",
+      "expected": "Capture rejected; recursion typed and correct",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "FN04",
+      "group": "functions",
+      "requirement": "Caller input vs internal dispatcher envelope",
+      "minimum_test_level": "native+iOS",
+      "expected": "system.input not silently replaced by transport dictionary",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "FN05",
+      "group": "functions",
+      "requirement": "Structured argument/result transport",
+      "minimum_test_level": "unit+native",
+      "expected": "List/map/optional shapes retained or exact limitation reported",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "M01",
+      "group": "metadata",
+      "requirement": "Header target/input/output/no-input/icon/source surfaces",
+      "minimum_test_level": "unit+native-roundtrip",
+      "expected": "Exact known mapping; unknown native metadata retained",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "M02",
+      "group": "metadata",
+      "requirement": "Main body explicit return and Void fallthrough",
+      "minimum_test_level": "native+iOS",
+      "expected": "No accidental last-action result leakage",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "M03",
+      "group": "metadata",
+      "requirement": "Setup question binds by node/parameter through lowering",
+      "minimum_test_level": "unit+native-roundtrip",
+      "expected": "Correct final ActionIndex including zero",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "M04",
+      "group": "metadata",
+      "requirement": "Invalid setup use/reuse and Ask Each Time insertion",
+      "minimum_test_level": "unit+service",
+      "expected": "Unsupported binding rejected; no silent runtime prompts",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "M05",
+      "group": "metadata",
+      "requirement": "Seven existing trigger families migrate without install claims",
+      "minimum_test_level": "unit+native",
+      "expected": "Exact representable payload and honest capability status",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "IM01",
+      "group": "modules",
+      "requirement": "Relative aliases, duplicate imports and import cycle",
+      "minimum_test_level": "unit+service",
+      "expected": "Stable namespace resolution; cycle path diagnostic",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "IM02",
+      "group": "modules",
+      "requirement": "Module top-level runtime initialization",
+      "minimum_test_level": "unit+migration",
+      "expected": "Rejected or explicitly migrated; not silently dropped",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "IM03",
+      "group": "modules",
+      "requirement": "Existing stdfunc behavior migrated from preserved upstream source",
+      "minimum_test_level": "unit+native",
+      "expected": "No handwritten second library; source hash and behavior tests",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "IM04",
+      "group": "modules",
+      "requirement": "Local workspace resource traversal and symlink escape",
+      "minimum_test_level": "security",
+      "expected": "Unauthorized reads rejected; no credential/path exposure",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "IM05",
+      "group": "modules",
+      "requirement": "Analysis with unresolved/remote package",
+      "minimum_test_level": "security+service",
+      "expected": "No network/install; explicit local dependency diagnostic",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "AC01",
+      "group": "schema",
+      "requirement": "All baseline definitions/variants/constructs accounted for",
+      "minimum_test_level": "generation",
+      "expected": "No dropped wrapper; no callable construct with invalid syntax",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "AC02",
+      "group": "schema",
+      "requirement": "Public custom action declaration feeds same schema/codecs",
+      "minimum_test_level": "unit+native",
+      "expected": "No arbitrary code execution or separate action database",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "AC03",
+      "group": "schema",
+      "requirement": "Unregistered codec, duplicate enum/label or stale facet",
+      "minimum_test_level": "generation",
+      "expected": "Hard validation failure, not default success",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "R01",
+      "group": "native",
+      "requirement": "Unknown action and unknown nested/top-level fields round-trip",
+      "minimum_test_level": "native-roundtrip",
+      "expected": "Preserved fields, order-sensitive arrays and reference graph",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "R02",
+      "group": "native",
+      "requirement": "Known identifier with unmodeled value/static variant",
+      "minimum_test_level": "native-roundtrip",
+      "expected": "Deep representability check or native fallback",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "R03",
+      "group": "native",
+      "requirement": "Coercion-only/property-only/chained aggrandizements",
+      "minimum_test_level": "native-roundtrip",
+      "expected": "Correct ordered transformations preserved",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "R04",
+      "group": "native",
+      "requirement": "Original missing parameters not default-filled",
+      "minimum_test_level": "native-roundtrip",
+      "expected": "Omission preserved including false/zero distinctions",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "R05",
+      "group": "native",
+      "requirement": "Opaque/native regions, exports and workflow fallback",
+      "minimum_test_level": "unit+native-roundtrip",
+      "expected": "Valid reference boundary; nonexistent output rejected",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "R06",
+      "group": "native",
+      "requirement": "XML/binary/unsigned Shortcut/JSON workflow intake",
+      "minimum_test_level": "integration",
+      "expected": "Shared normalization and correct AEA1 limitation",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "R07",
+      "group": "native",
+      "requirement": "Intended single-property edit vs collateral structural change",
+      "minimum_test_level": "integration",
+      "expected": "Only explicit requested delta permitted before signing",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "E01",
+      "group": "editor",
+      "requirement": "Contextual labels/enums/compatible variables completion",
+      "minimum_test_level": "service+UI",
+      "expected": "Actual expected-type candidates rather than global prefix list",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "E02",
+      "group": "editor",
+      "requirement": "Multiple diagnostics and full ranges on incomplete code",
+      "minimum_test_level": "service+UI",
+      "expected": "Useful independent errors, no crash or flood",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "E03",
+      "group": "editor",
+      "requirement": "Hover/signature/definition/semantic rename",
+      "minimum_test_level": "service+UI",
+      "expected": "Same engine; strings/comments/shadowed identifiers not renamed",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "E04",
+      "group": "editor",
+      "requirement": "Formatter idempotence and literal/comment preservation",
+      "minimum_test_level": "unit+integration",
+      "expected": "Second format produces no diff",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "E05",
+      "group": "editor",
+      "requirement": "Rapid edits, cancellation and stale responses",
+      "minimum_test_level": "service+UI",
+      "expected": "Old analysis never overwrites newest version",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "E06",
+      "group": "editor",
+      "requirement": "LSP UTF-16/default negotiation and Cocoa offsets",
+      "minimum_test_level": "protocol+UI",
+      "expected": "Consistent Hebrew/emoji caret and diagnostic positions",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "E07",
+      "group": "editor",
+      "requirement": "Visual source edit changes intended node only",
+      "minimum_test_level": "integration+UI",
+      "expected": "Comments/unrelated source preserved; unmappable generated action not guessed",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "E08",
+      "group": "editor",
+      "requirement": "Performance fixtures small/large and embedded assets",
+      "minimum_test_level": "benchmark",
+      "expected": "Recorded hardware/input/version and real latency percentiles",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "CL01",
+      "group": "cli",
+      "requirement": "JSON commands emit parseable response and reliable exit status",
+      "minimum_test_level": "integration",
+      "expected": "No progress text on stdout; errors non-zero",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "CL02",
+      "group": "cli",
+      "requirement": "Analysis never emits/signs/executes/installs",
+      "minimum_test_level": "security+integration",
+      "expected": "Instrumented side-effect assertions",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "CL03",
+      "group": "cli",
+      "requirement": "Normal production path rejects legacy public syntax",
+      "minimum_test_level": "integration",
+      "expected": "E_LEGACY_SYNTAX with migration guidance",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "D01",
+      "group": "docs",
+      "requirement": "All generated action signatures match assembled schema",
+      "minimum_test_level": "generation+docs",
+      "expected": "Complete intended categories, fingerprint match",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "D02",
+      "group": "docs",
+      "requirement": "Runnable and deliberately-invalid docs examples tested",
+      "minimum_test_level": "docs",
+      "expected": "Real compiler success or exact expected diagnostic",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "D03",
+      "group": "docs",
+      "requirement": "Active fork docs separated from upstream reference",
+      "minimum_test_level": "docs+integration",
+      "expected": "Skill/app search current subtree; old examples not recommended",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "K01",
+      "group": "skill",
+      "requirement": "Complete updated package and unpacked self-test",
+      "minimum_test_level": "packaging",
+      "expected": "Usable complete Skill, not SKILL.md-only patch",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "K02",
+      "group": "skill",
+      "requirement": "Fresh install and incompatible cached/bundled binary",
+      "minimum_test_level": "integration",
+      "expected": "Doctor selects verified compatible pair or fails clearly",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "K03",
+      "group": "skill",
+      "requirement": "Exact commit install and checksum/atomic update",
+      "minimum_test_level": "integration",
+      "expected": "No clone --branch SHA assumption or partial overwrite",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "K04",
+      "group": "skill",
+      "requirement": "Offline compatible cache and docs mismatch",
+      "minimum_test_level": "integration",
+      "expected": "Compatible offline works; mismatch cannot silently fall back",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "K05",
+      "group": "skill",
+      "requirement": "Structured repair/build/import/edit/sign workflow",
+      "minimum_test_level": "integration",
+      "expected": "New syntax throughout; allowed-delta gate before signing",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "CI01",
+      "group": "verification",
+      "requirement": "Encoding EXPECT intentionally broken in test",
+      "minimum_test_level": "negative-CI",
+      "expected": "Mandatory gate demonstrably fails",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "CI02",
+      "group": "verification",
+      "requirement": "Selected real iOS language fixtures",
+      "minimum_test_level": "iOS",
+      "expected": "Assertions depend on values; sentinel reset per test; logs/xcresult saved",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "CI03",
+      "group": "verification",
+      "requirement": "Final required workflows use exact final SHA",
+      "minimum_test_level": "repository+CI",
+      "expected": "Build/app/language/docs/Skill/runtime identities match",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "CI04",
+      "group": "verification",
+      "requirement": "No private raw corpus or unrequested signing",
+      "minimum_test_level": "security+repository",
+      "expected": "Sanitized fixtures and auditable explicit signing path",
+      "negative_case": true,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "AI01",
+      "group": "evaluation",
+      "requirement": "Held-out equal-budget old/new model evaluation harness",
+      "minimum_test_level": "evaluation",
+      "expected": "Real measured results or explicit AI_EVAL_NOT_RUN, never invented",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    },
+    {
+      "id": "END01",
+      "group": "delivery",
+      "requirement": "Final pushed branches/artifacts/provenance and clean worktree",
+      "minimum_test_level": "repository",
+      "expected": "Full SHAs, artifact links, requirement ledger and limitations",
+      "negative_case": false,
+      "status": "PLANNED_NOT_EXECUTED"
+    }
+  ]
+}

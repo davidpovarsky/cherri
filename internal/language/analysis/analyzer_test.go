@@ -1,6 +1,7 @@
 package analysis
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
@@ -14,7 +15,22 @@ func parseAndAnalyze(code string) []Diagnostic {
 	prog := parser.ParseProgram()
 	analyzer := NewAnalyzer(schema.DefaultRegistry())
 	analyzer.Analyze(prog)
-	return analyzer.Diagnostics()
+
+	var diags []Diagnostic
+	for _, pe := range parser.Errors() {
+		code := CodeSyntax
+		if strings.Contains(pe.Message, CodeLegacySyntax) {
+			code = CodeLegacySyntax
+		}
+		diags = append(diags, Diagnostic{
+			Code:     code,
+			Severity: SeverityError,
+			Span:     pe.Span,
+			Message:  pe.Message,
+		})
+	}
+	diags = append(diags, analyzer.Diagnostics()...)
+	return diags
 }
 
 func hasErrorCode(diags []Diagnostic, code string) bool {

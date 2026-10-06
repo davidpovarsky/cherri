@@ -38,6 +38,24 @@ type AnalyzeResponse struct {
 	Valid             bool             `json:"valid"`
 }
 
+// CompletionItem represents a completion candidate for wire protocols.
+type CompletionItem struct {
+	Label         string `json:"label"`
+	Kind          int    `json:"kind"`
+	Detail        string `json:"detail,omitempty"`
+	Documentation string `json:"documentation,omitempty"`
+	InsertText    string `json:"insertText,omitempty"`
+}
+
+// CompleteResponse contains completion results.
+type CompleteResponse struct {
+	URI               string           `json:"uri"`
+	Version           int              `json:"version"`
+	LanguageVersion   string           `json:"languageVersion"`
+	SchemaFingerprint string           `json:"schemaFingerprint"`
+	Items             []CompletionItem `json:"items"`
+}
+
 // CapabilitiesResponse is emitted by `cherri --capabilities-json`.
 type CapabilitiesResponse struct {
 	LanguageVersion      string   `json:"languageVersion"`
