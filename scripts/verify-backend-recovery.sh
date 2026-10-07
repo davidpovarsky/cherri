@@ -3,6 +3,14 @@
 # Acceptance and recovery verification driver for Cherri Language v2 canonical backend recovery.
 set -euo pipefail
 
+if ! command -v go >/dev/null 2>&1; then
+  if [ -d "/c/Program Files/Go/bin" ]; then
+    export PATH="$PATH:/c/Program Files/Go/bin"
+  elif [ -d "/mnt/c/Program Files/Go/bin" ]; then
+    export PATH="$PATH:/mnt/c/Program Files/Go/bin"
+  fi
+fi
+
 PHASE="local"
 OUT_DIR=""
 EVIDENCE=""

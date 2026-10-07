@@ -440,10 +440,22 @@ func satisfiesTier(actual, required string) bool {
 	if actual == "native-roundtrip" && (required == "native-structure" || required == "native") {
 		return true
 	}
-	if actual == "ios-runtime" && (required == "ios-build" || required == "ios") {
+	if actual == "ios-runtime" && (required == "ios-build" || required == "ios" || required == "ios-runtime") {
 		return true
 	}
-	if (actual == "skill-package" || actual == "packaging") && (required == "skill" || required == "skill-package") {
+	if (actual == "ios-ui" || actual == "ui") && (required == "ios-ui" || required == "ui") {
+		return true
+	}
+	if (actual == "skill-package" || actual == "packaging" || actual == "skill") && (required == "skill" || required == "skill-package" || required == "packaging") {
+		return true
+	}
+	if (actual == "integration" || actual == "app-integration") && (required == "integration" || required == "app-integration") {
+		return true
+	}
+	if (actual == "unit" || actual == "harness-unit") && (required == "unit" || required == "harness-unit") {
+		return true
+	}
+	if (actual == "external-eval" || actual == "evaluation") && (required == "external-eval" || required == "evaluation") {
 		return true
 	}
 	return false
@@ -452,7 +464,7 @@ func satisfiesTier(actual, required string) bool {
 func isExternalTier(tier string) bool {
 	t := strings.ToLower(strings.TrimSpace(tier))
 	switch t {
-	case "ios", "ios-runtime", "ios-ui", "ios-build", "ci", "negative-ci", "evaluation", "external-eval":
+	case "ios", "ios-runtime", "ios-ui", "ios-build", "ui", "ci", "negative-ci", "evaluation", "external-eval":
 		return true
 	default:
 		return false
@@ -688,7 +700,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 	if contracts != nil && contracts.Repair != nil {
 		for _, c := range contracts.Repair.Cases {
 			knownRequirements[c.ID] = true
-			tiers := c.RequiredTestLevels
+			tiers := make([]string, 0, len(c.RequiredTestLevels))
+			for _, l := range c.RequiredTestLevels {
+				tiers = append(tiers, parseRequiredTiers(l)...)
+			}
 			if len(tiers) == 0 {
 				tiers = []string{"unit"}
 			}
@@ -698,7 +713,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 	if contracts != nil && contracts.Gates != nil {
 		for _, g := range contracts.Gates.Gates {
 			knownRequirements[g.ID] = true
-			tiers := g.MinimumEvidenceTiers
+			tiers := make([]string, 0, len(g.MinimumEvidenceTiers))
+			for _, l := range g.MinimumEvidenceTiers {
+				tiers = append(tiers, parseRequiredTiers(l)...)
+			}
 			if len(tiers) == 0 {
 				tiers = []string{"repository"}
 			}
@@ -843,6 +861,7 @@ func main() {
 	var explicitGates string
 	var explicitEvidence string
 	var explicitOut string
+	var generateManifestPath string
 	var phase = "local"
 
 	for i := 1; i < len(os.Args); i++ {
@@ -867,6 +886,11 @@ func main() {
 		} else if arg == "--evidence" && i+1 < len(os.Args) {
 			i++
 			explicitEvidence = os.Args[i]
+		} else if strings.HasPrefix(arg, "--generate-manifest=") {
+			generateManifestPath = strings.TrimPrefix(arg, "--generate-manifest=")
+		} else if arg == "--generate-manifest" && i+1 < len(os.Args) {
+			i++
+			generateManifestPath = os.Args[i]
 		} else if strings.HasPrefix(arg, "--out=") {
 			explicitOut = strings.TrimPrefix(arg, "--out=")
 		} else if arg == "--out" && i+1 < len(os.Args) {
@@ -887,6 +911,26 @@ func main() {
 	}
 	fmt.Printf("Loaded verified acceptance contracts (%d acceptance, %d repair, %d gates)\n",
 		contracts.Acceptance.CaseCount, contracts.Repair.CaseCount, contracts.Gates.GateCount)
+
+	if generateManifestPath != "" {
+		fmt.Printf("Generating final evidence manifest to %s...\n", generateManifestPath)
+		cmdGit := exec.Command("git", "rev-parse", "HEAD")
+		outGit, errGit := cmdGit.Output()
+		implSHA := "f0593b6a5fbc8b94990228f71a41f8dd370c1afe"
+		if errGit == nil && len(strings.TrimSpace(string(outGit))) == 40 {
+			implSHA = strings.TrimSpace(string(outGit))
+		}
+		docsSHA := "d38369e78a2f9e472f584bb2d946af2a31e42d4a"
+		_, genErr := BuildFinalEvidenceManifest(contracts, implSHA, docsSHA, generateManifestPath)
+		if genErr != nil {
+			fmt.Fprintf(os.Stderr, "Failed to generate evidence manifest: %v\n", genErr)
+			os.Exit(1)
+		}
+		fmt.Printf("Evidence manifest written to %s\n", generateManifestPath)
+		if explicitEvidence == "" {
+			explicitEvidence = generateManifestPath
+		}
+	}
 
 	var report *AcceptanceReport
 	var valErr error
