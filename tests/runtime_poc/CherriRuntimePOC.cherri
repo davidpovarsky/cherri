@@ -9,7 +9,7 @@ if 10 > 5 {
 var loopTrace = ""
 for (outerIndex, outer) in ["A", "B"] {
     for (innerIndex, inner) in ["1", "2"] {
-        loopTrace += f"{outerIndex}:{outer}:{innerIndex}:{inner}|"
+        loopTrace = f"{loopTrace}{outerIndex}:{outer}:{innerIndex}:{inner}|"
     }
 }
 

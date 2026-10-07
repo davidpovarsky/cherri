@@ -107,10 +107,13 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	}
 
 	outputUUID := call.OutputUUID
-	if call.OutputName != "" && call.OutputUUID != "" {
+	if call.OutputUUID != "" {
 		params["UUID"] = call.OutputUUID
+	}
+	if call.OutputName != "" {
 		params["CustomOutputName"] = call.OutputName
 	}
+
 
 	action := ShortcutAction{
 		WFWorkflowActionIdentifier: fullIdent,
@@ -338,10 +341,13 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 	for k, v := range params {
 		cleanParams[k] = sanitizeRawParamValue(v)
 	}
-	if outputName != "" && outputUUID != "" {
+	if outputUUID != "" {
 		cleanParams["UUID"] = outputUUID
+	}
+	if outputName != "" {
 		cleanParams["CustomOutputName"] = outputName
 	}
+
 	if groupingID != "" {
 		cleanParams["GroupingIdentifier"] = groupingID
 	}

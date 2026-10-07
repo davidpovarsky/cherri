@@ -849,7 +849,24 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 			OutputUUID: uuid,
 			OutputName: "Text",
 		}
+	case map[string]interface{}:
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.gettext",
+			OutputUUID:      uuid,
+			OutputName:      "Text",
+			Parameters: map[string]interface{}{
+				"WFTextActionText": v,
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "Text",
+		}
 	default:
+
 		node := &ir.NativeActionNode{
 			NodeID:          uuid,
 			AppleIdentifier: "is.workflow.actions.gettext",
