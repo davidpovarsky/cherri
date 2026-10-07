@@ -998,8 +998,10 @@ func main() {
 	// Generate and update requirements-evidence-map.json covering all 94 acceptance, 52 repair, and 33 recovery gates
 	evidenceMap, mapErr := BuildRequirementsEvidenceMap(contracts)
 	if mapErr == nil {
-		testsMapPath := filepath.Join("tests", "language-v2", "requirements-evidence-map.json")
-		_ = WriteRequirementsEvidenceMap(evidenceMap, testsMapPath)
+		if explicitEvidence == "" {
+			testsMapPath := filepath.Join("tests", "language-v2", "requirements-evidence-map.json")
+			_ = WriteRequirementsEvidenceMap(evidenceMap, testsMapPath)
+		}
 		outDir := explicitOut
 		if outDir != "" {
 			if fi, err := os.Stat(outDir); err == nil && !fi.IsDir() {
