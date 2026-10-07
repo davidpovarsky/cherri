@@ -183,7 +183,13 @@ func compileForMobile(src string, requestedName string, sign bool) (response mob
 	mobileCompileMu.Lock()
 	defer mobileCompileMu.Unlock()
 
+	embeddedCompilerMode = true
+	previousArgs := args.Args
+	args.Args = map[string]string{"no-ansi": ""}
+
 	defer func() {
+		embeddedCompilerMode = false
+		args.Args = previousArgs
 		if recovered := recover(); recovered != nil {
 			response = mobileCompileResponse{
 				OK:     false,

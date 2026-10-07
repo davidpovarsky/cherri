@@ -70,7 +70,9 @@ class ImportHelperUITests: XCTestCase {
                 "Set Up Shortcut",
                 "Replace",
                 "Run Shortcut",
-                "Run"
+                "Run",
+                "Play, CherriRuntimePOC",
+                "CherriRuntimePOC"
             ]
 
             for (name, targetApp) in targets {

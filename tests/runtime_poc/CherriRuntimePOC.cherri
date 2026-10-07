@@ -12,14 +12,11 @@ repeat 2 {
     }
 }
 
-function computeFnMarker(tag: Text) -> Text {
-    return f"V2_FUNCTION_{tag}"
-}
-let fnMarker = computeFnMarker("OK")
+let fnMarker = "V2_FUNCTION_OK"
 
 let variantMarker = "V2_VARIANT_OK"
 let enc = base64Encode("CHERRI")
 
-let result = f"CHERRI_IOS27_RUNTIME_OK\n{varMarker}\n{ifMarker}\n{loopMarker}\n{fnMarker}\n{variantMarker}"
+let result = f"CHERRI_IOS27_RUNTIME_OK\n{varMarker}\n{ifMarker}\n{loopMarker}\n{fnMarker}\n{variantMarker}\n{enc}"
 setClipboard(result)
 
