@@ -520,13 +520,19 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 		SchemaVersion:     "1",
 		ImplementationSHA: "sha1",
 		SchemaFingerprint: "fp1",
+		Runs: []CIRunRecord{
+			{RunID: "101", Repository: "davidpovarsky/cherri", HeadSHA: "sha1", Conclusion: "success", WorkflowName: "Build & Test"},
+			{RunID: "102", Repository: "davidpovarsky/cherri", HeadSHA: "sha1", Conclusion: "success", WorkflowName: "OpenMinis Skill"},
+			{RunID: "103", Repository: "davidpovarsky/cherri", HeadSHA: "sha1", Conclusion: "success", WorkflowName: "iOS Build"},
+			{RunID: "104", Repository: "davidpovarsky/cherri", HeadSHA: "sha1", Conclusion: "success", WorkflowName: "iOS 27 Shortcuts Runtime PoC"},
+		},
 		Records: []EvidenceRecord{
 			{
 				EvidenceID:        "rec1",
 				Requirements:      []string{"FN01"},
 				Tier:              "unit",
 				ImplementationSHA: "sha1",
-				TestID:            "TestUnit",
+				TestID:            "tools/language-acceptance:runFunctions",
 				ExitCode:          0,
 				Result:            "passed",
 			},
@@ -535,13 +541,17 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 				Requirements:      []string{"FN01"},
 				Tier:              "native-structure",
 				ImplementationSHA: "sha1",
-				TestID:            "TestNative",
+				TestID:            "tools/language-acceptance:runFunctions",
 				ExitCode:          0,
 				Result:            "passed",
 			},
 		},
 	}
-	contractsSet := &ContractsSet{Acceptance: contract}
+	contractsSet := &ContractsSet{
+		Acceptance: contract,
+		Repair:     &RepairContractFile{},
+		Gates:      &GatesContractFile{},
+	}
 	manifestReport, err := ValidateEvidenceManifest(manifest, contractsSet, "final")
 	if err == nil {
 		t.Fatalf("expected ValidateEvidenceManifest to reject FN01 missing ios tier in final phase, got nil err")
@@ -559,9 +569,12 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 		Requirements:      []string{"FN01"},
 		Tier:              "ios-runtime",
 		ImplementationSHA: "sha1",
-		TestID:            "TestIOSRuntime",
+		TestID:            "ios27-runtime-poc:functions",
 		ExitCode:          0,
 		Result:            "passed",
+		Assertions: map[string]string{
+			"function_result": "21",
+		},
 	})
 	fullReport, err := ValidateEvidenceManifest(manifest, contractsSet, "final")
 	if err != nil {
@@ -607,5 +620,289 @@ func TestMeta_FalsePassedClaimWithMissingTiersRejected(t *testing.T) {
 	}
 	if reportFinal.FailedCases != 1 {
 		t.Fatalf("expected 1 failed case for false PASSED claim in final phase, got %d", reportFinal.FailedCases)
+	}
+}
+
+func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsSet) {
+	t.Helper()
+	contracts := &ContractsSet{
+		Acceptance: &ContractFile{
+			CaseCount: 1,
+			Cases: []CaseSpec{
+				{ID: "FN01", Group: "functions", Requirement: "Declare function", MinimumTestLevel: "unit+native+iOS"},
+			},
+		},
+		Repair: &RepairContractFile{
+			CaseCount: 1,
+			Cases: []RepairCaseSpec{
+				{ID: "RP01", Title: "Repair 1", RequiredTestLevels: []string{"unit"}},
+			},
+		},
+		Gates: &GatesContractFile{
+			GateCount: 1,
+			Gates: []RecoveryGate{
+				{ID: "BRG01", Title: "Gate 1", Mandatory: true, MinimumEvidenceTiers: []string{"repository"}},
+			},
+		},
+	}
+
+	manifest := &EvidenceManifest{
+		SchemaVersion:     "1",
+		ImplementationSHA: "commit123456789012345678901234567890123",
+		SchemaFingerprint: "fp1",
+		Runs: []CIRunRecord{
+			{RunID: "101", Repository: "davidpovarsky/cherri", HeadSHA: "commit123456789012345678901234567890123", Conclusion: "success", WorkflowName: "Build & Test"},
+			{RunID: "102", Repository: "davidpovarsky/cherri", HeadSHA: "commit123456789012345678901234567890123", Conclusion: "success", WorkflowName: "OpenMinis Skill"},
+			{RunID: "103", Repository: "davidpovarsky/cherri", HeadSHA: "commit123456789012345678901234567890123", Conclusion: "success", WorkflowName: "iOS Build"},
+			{RunID: "104", Repository: "davidpovarsky/cherri", HeadSHA: "commit123456789012345678901234567890123", Conclusion: "success", WorkflowName: "iOS 27 Shortcuts Runtime PoC"},
+		},
+		Records: []EvidenceRecord{
+			{
+				EvidenceID:        "ev-fn01-unit",
+				Requirements:      []string{"FN01"},
+				Tier:              "unit",
+				TestID:            "tools/language-acceptance:runFunctions",
+				ImplementationSHA: "commit123456789012345678901234567890123",
+				ExitCode:          0,
+				Result:            "passed",
+			},
+			{
+				EvidenceID:        "ev-fn01-native",
+				Requirements:      []string{"FN01"},
+				Tier:              "native-structure",
+				TestID:            "tools/language-acceptance:runFunctions",
+				ImplementationSHA: "commit123456789012345678901234567890123",
+				ExitCode:          0,
+				Result:            "passed",
+			},
+			{
+				EvidenceID:        "ev-fn01-runtime",
+				Requirements:      []string{"FN01"},
+				Tier:              "ios-runtime",
+				TestID:            "ios27-runtime-poc:functions",
+				ImplementationSHA: "commit123456789012345678901234567890123",
+				ExitCode:          0,
+				Result:            "passed",
+				Assertions: map[string]string{
+					"function_result": "21",
+				},
+			},
+			{
+				EvidenceID:        "ev-rp01-unit",
+				Requirements:      []string{"RP01"},
+				Tier:              "unit",
+				TestID:            "github.com/electrikmilk/cherri/tools/language-acceptance:TestMeta_ContradictoryPassedStatus",
+				ImplementationSHA: "commit123456789012345678901234567890123",
+				ExitCode:          0,
+				Result:            "passed",
+			},
+			{
+				EvidenceID:        "ev-brg01-repo",
+				Requirements:      []string{"BRG01"},
+				Tier:              "repository",
+				TestID:            "scripts/verify-backend-recovery.sh",
+				ImplementationSHA: "commit123456789012345678901234567890123",
+				ExitCode:          0,
+				Result:            "passed",
+			},
+		},
+	}
+	return manifest, contracts
+}
+
+// 1. Missing runtime record fails closed
+func TestMeta_Negative01_MissingRuntimeRecordFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	// Filter out the runtime record
+	var filtered []EvidenceRecord
+	for _, r := range manifest.Records {
+		if r.Tier != "ios-runtime" {
+			filtered = append(filtered, r)
+		}
+	}
+	manifest.Records = filtered
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected missing runtime record to fail closed, but closure succeeded")
+	}
+	if report.FailedCases == 0 {
+		t.Fatalf("expected failed cases > 0 when runtime record missing, got %d", report.FailedCases)
+	}
+}
+
+// 2. Wrong runtime TestID fails closed
+func TestMeta_Negative02_WrongRuntimeTestIDFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-runtime" {
+			manifest.Records[i].TestID = "unauthorized-test-id:fake"
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected wrong runtime TestID to fail closed, but closure succeeded")
+	}
+}
+
+// 3. Required assertion identity absent fails closed
+func TestMeta_Negative03_RequiredAssertionIdentityAbsentFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-runtime" {
+			manifest.Records[i].Assertions = map[string]string{} // Missing function_result
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected absent required assertion to fail closed, but closure succeeded")
+	}
+}
+
+// 4. CI SHA differs fails closed
+func TestMeta_Negative04_CIShaDiffersFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	manifest.Runs[0].HeadSHA = "different-sha-9999999999999999999999999"
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected mismatched CI HeadSHA to fail closed, but closure succeeded")
+	}
+}
+
+// 5. CI run does not exist fails closed
+func TestMeta_Negative05_CIRunDoesNotExistFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	// Remove required iOS 27 Shortcuts Runtime PoC run
+	manifest.Runs = manifest.Runs[:3]
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected missing required CI workflow run to fail closed, but closure succeeded")
+	}
+}
+
+// 6. CI run failed fails closed
+func TestMeta_Negative06_CIRunFailedFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	manifest.Runs[0].Conclusion = "failure"
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected failed CI run to fail closed, but closure succeeded")
+	}
+}
+
+// 7. Artifact hash differs fails closed
+func TestMeta_Negative07_ArtifactHashDiffersFailsClosed(t *testing.T) {
+	tmpFile := filepath.Join(t.TempDir(), "test-artifact.txt")
+	_ = os.WriteFile(tmpFile, []byte("genuine content"), 0644)
+
+	manifest, contracts := baseValidManifestAndContracts(t)
+	manifest.Records[0].Artifacts = []EvidenceArtifact{
+		{
+			Path:   tmpFile,
+			SHA256: "0000000000000000000000000000000000000000000000000000000000000000", // mismatched
+		},
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected artifact hash mismatch to fail closed, but closure succeeded")
+	}
+}
+
+// 8. Artifact belongs to another run fails closed
+func TestMeta_Negative08_ArtifactBelongsToAnotherRunFailsClosed(t *testing.T) {
+	tmpFile := filepath.Join(t.TempDir(), "test-artifact.txt")
+	content := []byte("run artifact content")
+	_ = os.WriteFile(tmpFile, content, 0644)
+	h := sha256.Sum256(content)
+
+	manifest, contracts := baseValidManifestAndContracts(t)
+	manifest.Records[0].Artifacts = []EvidenceArtifact{
+		{
+			Path:   tmpFile,
+			SHA256: hex.EncodeToString(h[:]),
+			RunID:  "nonexistent-run-99999", // not in manifest.Runs
+		},
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected artifact from foreign run to fail closed, but closure succeeded")
+	}
+}
+
+// 9. Only iOS build exists but iOS runtime is required fails closed
+func TestMeta_Negative09_OnlyIOSBuildExistsWhenIOSRuntimeRequiredFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	// Mutate the runtime record into an ios-ui record
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-runtime" {
+			manifest.Records[i].Tier = "ios-ui"
+			manifest.Records[i].TestID = "CherriCoreIntegrationTests/testV2LanguageLetAndFStringCompile"
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected ios-ui alone to fail when ios-runtime is required, but closure succeeded")
+	}
+	if report.FailedCases == 0 {
+		t.Fatalf("expected failed cases > 0 when ios-runtime tier unsatisfied, got %d", report.FailedCases)
+	}
+}
+
+// 10. Generic runtime smoke tries to satisfy a function requirement fails closed
+func TestMeta_Negative10_GenericSmokeTriesToSatisfyFunctionRequirementFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-runtime" {
+			manifest.Records[i].TestID = "ios27-runtime-poc:smoke"
+			manifest.Records[i].Assertions = map[string]string{
+				"status": "CHERRI_IOS27_RUNTIME_OK",
+			}
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected smoke test claiming function requirement to fail closed, but closure succeeded")
+	}
+}
+
+// 11. Generic marker exists but exact expected function result is absent fails closed
+func TestMeta_Negative11_GenericMarkerExistsButExpectedFunctionResultAbsentFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-runtime" {
+			// Has status marker but lacks required "function_result" = "21"
+			manifest.Records[i].Assertions = map[string]string{
+				"status": "CHERRI_IOS27_RUNTIME_OK",
+			}
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected generic marker without exact function assertion to fail closed, but closure succeeded")
+	}
+}
+
+// 12. Evidence manifest says PASS without test-produced record fails closed
+func TestMeta_Negative12_ManifestClaimsPassWithoutTestProducedRecordFailsClosed(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	// Remove all records for FN01
+	manifest.Records = manifest.Records[3:]
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected missing test-produced records to fail closed, but closure succeeded")
+	}
+	if report.FailedCases == 0 {
+		t.Fatalf("expected failed cases > 0 when records are missing, got %d", report.FailedCases)
 	}
 }

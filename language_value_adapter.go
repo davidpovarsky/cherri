@@ -7,69 +7,28 @@ package main
 
 import (
 	"fmt"
-	"strings"
-	"unicode/utf16"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
 )
 
 func convertAggrandizements(transforms []backend.Transformation) []Aggrandizement {
-	if len(transforms) == 0 {
-		return nil
-	}
-	res := make([]Aggrandizement, len(transforms))
-	for i, t := range transforms {
-		res[i] = Aggrandizement{
-			Type:              t.Type,
-			PropertyName:      t.PropertyName,
-			CoercionItemClass: t.CoercionItemClass,
-			DictionaryKey:     t.DictionaryKey,
-			PropertyUserInfo:  t.PropertyUserInfo,
-		}
-	}
-	return res
+	desc := ReferenceToDescriptor(&backend.Reference{Transformations: transforms})
+	return desc.Aggrandizements
 }
 
 func encodeReferenceValue(ref *backend.Reference) Value {
-	if ref == nil {
-		return Value{}
-	}
-	val := Value{}
-	switch ref.Kind {
-	case backend.RefActionResult, backend.RefLoopResult:
-		val.Type = "ActionOutput"
-		val.OutputUUID = ref.ProducerID
-		val.OutputName = ref.ProducerName
-	case backend.RefMutableBinding:
-		val.Type = "Variable"
-		val.VariableName = ref.ProducerName
-		if val.VariableName == "" {
-			val.VariableName = ref.ProducerID
-		}
-	case backend.RefSystemValue, backend.RefExtensionInput:
-		val.Type = "ExtensionInput"
-		val.VariableName = ref.ProducerName
-	case backend.RefAskEachTime:
-		val.Type = "Ask"
-	default:
-		if ref.ProducerID != "" {
-			val.Type = "ActionOutput"
-			val.OutputUUID = ref.ProducerID
-			val.OutputName = ref.ProducerName
-		} else {
-			val.Type = "Variable"
-			val.VariableName = ref.ProducerName
-		}
-	}
-	if len(ref.Transformations) > 0 {
-		val.Aggrandizements = convertAggrandizements(ref.Transformations)
-	}
-	return val
+	desc := ReferenceToDescriptor(ref)
+	return EncodeReferenceValue(desc)
 }
 
 func encodeReferenceAttachment(ref *backend.Reference) WFTextTokenAttachment {
+	desc := ReferenceToDescriptor(ref)
+	res := EncodeReferenceAttachment(desc, "WFTextTokenAttachment")
+	if att, ok := res.(WFTextTokenAttachment); ok {
+		return att
+	}
 	return WFTextTokenAttachment{
-		Value:               encodeReferenceValue(ref),
+		Value:               EncodeReferenceValue(desc),
 		WFSerializationType: "WFTextTokenAttachment",
 	}
 }
@@ -115,67 +74,7 @@ func encodeReferenceMap(ref *backend.Reference) map[string]any {
 }
 
 func encodeTextSegments(segments []backend.TextSegment) any {
-	var fullText strings.Builder
-	attachmentsByRange := make(map[string]any)
-
-	for _, seg := range segments {
-		if !seg.IsExpr {
-			fullText.WriteString(seg.Text)
-		} else if seg.Reference != nil {
-			startUTF16 := len(utf16.Encode([]rune(fullText.String())))
-			fullText.WriteString("\uFFFC") // Object replacement char
-			rangeKey := fmt.Sprintf("{%d, 1}", startUTF16)
-
-			val := encodeReferenceValue(seg.Reference)
-			valMap := map[string]any{
-				"Type": val.Type,
-			}
-			if val.OutputUUID != "" {
-				valMap["OutputUUID"] = val.OutputUUID
-			}
-			if val.OutputName != "" {
-				valMap["OutputName"] = val.OutputName
-			}
-			if val.VariableName != "" {
-				valMap["VariableName"] = val.VariableName
-			}
-			if len(val.Aggrandizements) > 0 {
-				aggrs := make([]map[string]any, len(val.Aggrandizements))
-				for i, a := range val.Aggrandizements {
-					m := map[string]any{"Type": a.Type}
-					if a.PropertyName != "" {
-						m["PropertyName"] = a.PropertyName
-					}
-					if a.CoercionItemClass != "" {
-						m["CoercionItemClass"] = a.CoercionItemClass
-					}
-					if a.DictionaryKey != "" {
-						m["DictionaryKey"] = a.DictionaryKey
-					}
-					if a.PropertyUserInfo != nil {
-						m["PropertyUserInfo"] = a.PropertyUserInfo
-					}
-					aggrs[i] = m
-				}
-				valMap["Aggrandizements"] = aggrs
-			}
-			attachmentsByRange[rangeKey] = valMap
-		} else {
-			fullText.WriteString(formatLiteral(seg.Value))
-		}
-	}
-
-	if len(attachmentsByRange) == 0 {
-		return fullText.String()
-	}
-
-	return map[string]any{
-		"WFSerializationType": "WFTextTokenString",
-		"Value": map[string]any{
-			"string":             fullText.String(),
-			"attachmentsByRange": attachmentsByRange,
-		},
-	}
+	return EncodeTextSegmentsShared(segments)
 }
 
 func formatLiteral(val backend.SemanticValue) string {

@@ -26,6 +26,7 @@ type varValue struct {
 	constant     bool
 	repeatItem   bool
 	prompt       string
+	descriptor   *ReferenceDescriptor
 }
 
 var globals = map[string]varValue{

@@ -306,7 +306,11 @@ func makeActionParams(arguments []actionArgument, params map[string]any) {
 		}
 
 		if param.validType == Variable {
-			params[param.key] = variableValue(arguments[i].value.(varValue))
+			if vv, ok := arguments[i].value.(varValue); ok {
+				params[param.key] = variableValue(vv)
+			} else {
+				params[param.key] = argumentValue(arguments, i)
+			}
 		} else {
 			params[param.key] = argumentValue(arguments, i)
 		}

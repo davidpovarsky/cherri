@@ -114,7 +114,7 @@ if [ "$PHASE" = "local" ]; then
 
   echo ""
   echo "--- Step 3: Canonical vs v2 action parity matrix tests ---"
-  go test -v -run "TestActionParityMatrix|TestParityMatrix_Explicit12Categories" .
+  go test -v -run "TestCompilerEndToEndParityMatrix|TestComparatorMutationMatrix|TestActionParityMatrix|TestParityMatrix_Explicit12Categories" .
 
   echo ""
   echo "--- Step 4: Acceptance validator meta tests & contract digests ---"

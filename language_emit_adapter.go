@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -22,6 +21,7 @@ import (
 )
 
 // EmitNativeWorkflow converts NativeWorkflow IR into a concrete Shortcut struct for plist serialization.
+// QUARANTINED: Legacy/migration helper preserved for compatibility; unreachable from normal production CompileSourceToPlist().
 func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 	sc := Shortcut{
 		WFWorkflowIcon: ShortcutIcon{
@@ -166,23 +166,16 @@ func CompileSourceToPlist(filePath string, content string) ([]byte, error) {
 		}
 	}
 
-	lowerer := lower.NewLowerer(reg)
+	session := NewCanonicalBackendSession()
+	defer session.Close()
+
+	lowerer := lower.NewLowererWithSession(reg, session)
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
-	wf, err := lowerer.LowerProgram(prog)
-	if err != nil {
+	if err := lowerer.LowerProgramToSession(prog); err != nil {
 		return nil, fmt.Errorf("lowering error: %w", err)
 	}
 
-	sc := EmitNativeWorkflow(wf)
-
-	var buf bytes.Buffer
-	enc := plist.NewEncoder(&buf)
-	enc.Indent("\t")
-	if err := enc.Encode(sc); err != nil {
-		return nil, fmt.Errorf("plist encoding error: %w", err)
-	}
-
-	return buf.Bytes(), nil
+	return session.Finalize()
 }
 
 // CompileFileV2 compiles a Cherri v2 file to an unsigned or signed .shortcut file.

@@ -7,12 +7,36 @@ package main
 
 import (
 	"fmt"
+	"maps"
 	"sync"
 )
 
 var (
-	compilerSessionMutex sync.Mutex
+	compilerSessionMutex     sync.Mutex
+	canonicalActionsOnce     sync.Once
+	canonicalStandardActions map[string]*actionDefinition
 )
+
+func EnsureCanonicalStandardActions() map[string]*actionDefinition {
+	canonicalActionsOnce.Do(func() {
+		allCats := append([]string{"basic"}, actionIncludes...)
+		for _, actionInclude := range allCats {
+			lines = append(lines, fmt.Sprintf("#include 'actions/%s'\n", actionInclude))
+			resetParse()
+			handleIncludes()
+			currentCategory = actionInclude
+			handleActionDefinitions()
+
+			included = []string{}
+			includes = []include{}
+			lines = []string{}
+			tokens = []token{}
+			resetParse()
+		}
+		canonicalStandardActions = maps.Clone(actions)
+	})
+	return canonicalStandardActions
+}
 
 // BackendTransaction represents an isolated emission transaction.
 type BackendTransaction struct {
@@ -21,14 +45,14 @@ type BackendTransaction struct {
 
 func BeginBackendTransaction() (*BackendTransaction, func()) {
 	compilerSessionMutex.Lock()
-	resetCompilerStateFully()
+	resetCompilerState()
 
 	tx := &BackendTransaction{
 		actionStack: make([]actionReference, 0, 8),
 	}
 
 	cleanup := func() {
-		resetCompilerStateFully()
+		resetCompilerState()
 		compilerSessionMutex.Unlock()
 	}
 

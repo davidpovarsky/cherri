@@ -400,7 +400,11 @@ func variableValue(variable varValue) any {
 }
 
 func variableValueWithSerialization(variable varValue, serializationType string) any {
-	var identifier = variable.value.(string)
+	if variable.descriptor != nil {
+		return EncodeReferenceAttachment(*variable.descriptor, serializationType)
+	}
+
+	var identifier, _ = variable.value.(string)
 	var variableReference varValue
 	var aggrandizements []Aggrandizement
 	if global, found := globals[identifier]; found {
@@ -442,31 +446,22 @@ func variableValueWithSerialization(variable varValue, serializationType string)
 	if variable.variableType != "" {
 		varType = variable.variableType
 	}
-	var varValue = Value{}
+
+	var desc ReferenceDescriptor
+	desc.Aggrandizements = aggrandizements
 	if variable.constant {
-		var varUUID = uuids[identifier]
-		varValue.OutputName = identifier
-		varValue.OutputUUID = varUUID
-		varValue.Type = "ActionOutput"
+		desc.Kind = "ActionOutput"
+		desc.OutputName = identifier
+		desc.OutputUUID = uuids[identifier]
 	} else {
-		varValue.VariableName = identifier
-		varValue.Type = varType
+		desc.Kind = varType
+		desc.VariableName = identifier
 		if varType == Ask && variable.prompt != "" {
-			varValue.Prompt = variable.prompt
+			desc.Prompt = variable.prompt
 		}
 	}
-	if len(aggrandizements) > 0 {
-		varValue.Aggrandizements = aggrandizements
-	}
 
-	if serializationType == "" {
-		return varValue
-	}
-
-	return WFTextTokenAttachment{
-		Value:               varValue,
-		WFSerializationType: serializationType,
-	}
+	return EncodeReferenceAttachment(desc, serializationType)
 }
 
 type inlineVariable struct {
@@ -514,24 +509,19 @@ func makeAttachmentValues() {
 			exit(fmt.Sprintf("Undefined reference '%s'", inlineVar.identifier))
 		}
 
-		var attachmentValue Value
 		var aggrandizements []Aggrandizement
 		var varType = "Variable"
 		if varValue.variableType != "" {
 			varType = varValue.variableType
 		}
+		var desc ReferenceDescriptor
 		if !varValue.constant {
-			attachmentValue = Value{
-				VariableName: globalDisplayName(inlineVar.identifier, *varValue),
-				Type:         varType,
-			}
+			desc.Kind = varType
+			desc.VariableName = globalDisplayName(inlineVar.identifier, *varValue)
 		} else {
-			var varUUID = uuids[inlineVar.identifier]
-			attachmentValue = Value{
-				OutputName: inlineVar.identifier,
-				OutputUUID: varUUID,
-				Type:       "ActionOutput",
-			}
+			desc.Kind = "ActionOutput"
+			desc.OutputName = inlineVar.identifier
+			desc.OutputUUID = uuids[inlineVar.identifier]
 		}
 
 		if inlineVar.getAs != "" {
@@ -548,9 +538,9 @@ func makeAttachmentValues() {
 				parserError(fmt.Sprintf("Invalid content item for type coerce '%s'\n\n%s\n", inlineVar.coerce, list))
 			}
 		}
-		if inlineVar.getAs != "" || inlineVar.coerce != "" {
-			attachmentValue.Aggrandizements = aggrandizements
-		}
+		desc.Aggrandizements = aggrandizements
+
+		attachmentValue := EncodeReferenceValue(desc)
 
 		var positionsKey = fmt.Sprintf("{%d, 1}", inlineVar.col)
 		varPositions[positionsKey] = attachmentValue
@@ -664,12 +654,28 @@ func paramValue(arg actionArgument, handleAs tokenType) any {
 	}
 	switch arg.valueType {
 	case Variable:
+		varVal := arg.value.(varValue)
+		if varVal.descriptor != nil {
+			if handleAs == String {
+				attVal := EncodeReferenceValue(*varVal.descriptor)
+				return WFTextTokenString{
+					Value: WFTextTokenStringValue{
+						String: "\uFFFC",
+						AttachmentsByRange: map[string]Value{
+							"{0, 1}": attVal,
+						},
+					},
+					WFSerializationType: "WFTextTokenString",
+				}
+			}
+			return variableValue(varVal)
+		}
 		if handleAs == String {
-			var refStr = makeVariableReferenceString(arg.value.(varValue))
+			var refStr = makeVariableReferenceString(varVal)
 			return attachmentValues(fmt.Sprintf("{%s}", refStr))
 		}
 
-		return variableValue(arg.value.(varValue))
+		return variableValue(varVal)
 	case Dict:
 		return makeDictionaryValue(&arg.value)
 	case Integer:
@@ -692,7 +698,14 @@ func paramValue(arg actionArgument, handleAs tokenType) any {
 	case RawString:
 		return arg.value.(string)
 	default:
-		return attachmentValues(arg.value.(string))
+		switch v := arg.value.(type) {
+		case WFTextTokenString, WFTextTokenAttachment, WFDictionaryFieldValue, WFArrayValue, WFBoolValue:
+			return v
+		case string:
+			return attachmentValues(v)
+		default:
+			return v
+		}
 	}
 }
 

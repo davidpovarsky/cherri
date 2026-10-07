@@ -125,13 +125,38 @@ These files originate upstream and contain fork hooks. Listed in order of sensit
 | `tests/language-v2/` | New language test fixtures |
 | `docs/language-v2/` | Language documentation |
 
-### Root Bridge Files (To Be Created)
+### Root Bridge Files
 | File | Purpose |
 |------|---------|
 | `language_registry_adapter.go` | Bind schema to existing serializers |
-| `language_emit_adapter.go` | Bridge new IR to existing emitters |
+| `language_emit_adapter.go` | Bridge legacy IR / fallback to existing emitters |
+| `language_backend_adapter.go` | Production adapter bridging lowering to CanonicalBackendSession |
+| `language_backend_session.go` | Canonical compiler session encapsulating action resolution, control flows, and emission |
+| `shared_codec.go` | Shared wire/value/reference/aggrandizement codecs used across legacy and v2 |
 | `language_cli_adapter.go` | Route CLI commands to new language |
 | `language_bridge_adapter.go` | Route iOS bridge to new service |
+
+## Production Compilation Call Path (Language v2)
+
+The verified production pipeline routes strictly through the canonical backend:
+
+```text
+CompileSourceToPlist(source, name)
+    ↓
+v2 Parser / AST
+    ↓
+Semantic Analysis (Scope, Types, Diagnostics)
+    ↓
+Lowerer (Language Semantics, Bindings, AST Expression Lowering)
+    ↓
+CanonicalBackendSession (EnsureCanonicalStandardActions, EmitResolvedCall, Control Flow)
+    ↓
+Shared Codecs (`shared_codec.go`, `EncodeReferenceValue`, `makeActionParams`, Aggrandizements)
+    ↓
+Shortcut Plist (`WFWorkflowActions`, `WFWorkflowClientVersion`)
+```
+
+This architecture ensures one evolving source of truth, where upstream action definitions and shared wire codecs directly power Language v2 without duplicate emitters.
 
 ## Generated Files (To Be Created)
 

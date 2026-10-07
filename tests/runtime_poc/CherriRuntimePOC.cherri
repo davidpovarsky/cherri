@@ -1,22 +1,24 @@
-let varMarker = "V2_VAR_OK"
+var myVar = "initial"
+myVar = "updated"
 
-var ifMarker = "V2_IF_FAIL"
+var condResult = "false"
 if 10 > 5 {
-    ifMarker = "V2_IF_OK"
+    condResult = "true"
 }
 
-var loopMarker = "V2_LOOP_FAIL"
-repeat 2 {
-    repeat 2 {
-        loopMarker = "V2_NESTED_LOOP_OK"
+var loopTrace = ""
+for (outerIndex, outer) in ["A", "B"] {
+    for (innerIndex, inner) in ["1", "2"] {
+        loopTrace += f"{outerIndex}:{outer}:{innerIndex}:{inner}|"
     }
 }
 
-let fnMarker = "V2_FUNCTION_OK"
+function multiply(value: Number, factor: Number = 2) -> Number {
+    return value * factor
+}
+let fnResult = multiply(7, factor: 3)
 
-let variantMarker = "V2_VARIANT_OK"
 let enc = base64Encode("CHERRI")
 
-let result = f"CHERRI_IOS27_RUNTIME_OK\n{varMarker}\n{ifMarker}\n{loopMarker}\n{fnMarker}\n{variantMarker}\n{enc}"
+let result = f"CHERRI_IOS27_RUNTIME_OK\nVAR={myVar}\nIF={condResult}\nLOOPS={loopTrace}\nFUNCTION={fnResult}\nBASE64={enc}"
 setClipboard(result)
-

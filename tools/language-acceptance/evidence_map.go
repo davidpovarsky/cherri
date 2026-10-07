@@ -9,14 +9,15 @@ import (
 )
 
 type RequirementEvidenceMapping struct {
-	ID                string   `json:"id"`
-	Type              string   `json:"type"` // "acceptance", "repair", "recovery_gate"
-	Title             string   `json:"title"`
-	RequiredTiers     []string `json:"required_tiers"`
-	TestIDs           []string `json:"test_ids"`
-	FixtureIdentities []string `json:"fixture_identities"`
-	Assertions        []string `json:"assertions"`
-	ResultReferences  []string `json:"result_references"`
+	ID                 string            `json:"id"`
+	Type               string            `json:"type"` // "acceptance", "repair", "recovery_gate"
+	Title              string            `json:"title"`
+	RequiredTiers      []string          `json:"required_tiers"`
+	TestIDs            []string          `json:"test_ids"`
+	RequiredAssertions map[string]string `json:"required_assertions,omitempty"`
+	FixtureIdentities  []string          `json:"fixture_identities"`
+	Assertions         []string          `json:"assertions"`
+	ResultReferences   []string          `json:"result_references"`
 }
 
 type RequirementsEvidenceMapFile struct {
@@ -54,6 +55,35 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 		tiers := parseRequiredTiers(c.MinimumTestLevel)
 		testIDs := deriveAcceptanceTestIDs(c.ID, c.Group)
 		fixtures := deriveAcceptanceFixtures(c.ID, c.Group)
+		reqAssertions := make(map[string]string)
+		switch c.ID {
+		case "FN01", "FN02", "FN03", "FN04":
+			reqAssertions["function_result"] = "21"
+			testIDs = append(testIDs, "ios27-runtime-poc:functions")
+		case "F01":
+			reqAssertions["conditional_result"] = "true"
+			testIDs = append(testIDs, "ios27-runtime-poc:conditionals")
+		case "F02", "F04", "LP01", "LP02", "LP03":
+			reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
+			testIDs = append(testIDs, "ios27-runtime-poc:nested-loops")
+		case "V01", "V02", "V03":
+			reqAssertions["variable_result"] = "updated"
+			testIDs = append(testIDs, "ios27-runtime-poc:variables")
+		case "SV01":
+			reqAssertions["base64_result"] = "Q0hFUlJJ"
+			testIDs = append(testIDs, "ios27-runtime-poc:static-variants")
+		}
+		if hasLevel(tiers, "ci") {
+			testIDs = append(testIDs, "github-actions:Build & Test", "github-actions:OpenMinis Skill")
+		}
+		if hasLevel(tiers, "ios-ui") {
+			testIDs = append(testIDs, "CherriCoreIntegrationTests/testCherriAnalyzeReturnsMultipleDiagnostics",
+				"CherriCoreIntegrationTests/testCherriCompleteReturnsContextualItems",
+				"CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis",
+				"CherriCoreIntegrationTests/testV2LanguageLetAndFStringCompile",
+				"ios-build:CherriCoreTests_iOS_Simulator")
+		}
+
 		assertions := []string{
 			fmt.Sprintf("Requirement satisfied: %s", c.Requirement),
 			fmt.Sprintf("Expected behavior verified: %s", c.Expected),
@@ -63,14 +93,15 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 		}
 
 		mapping := RequirementEvidenceMapping{
-			ID:                c.ID,
-			Type:              "acceptance",
-			Title:             c.Requirement,
-			RequiredTiers:     tiers,
-			TestIDs:           testIDs,
-			FixtureIdentities: fixtures,
-			Assertions:        assertions,
-			ResultReferences:  resultRefs,
+			ID:                 c.ID,
+			Type:               "acceptance",
+			Title:              c.Requirement,
+			RequiredTiers:      tiers,
+			TestIDs:            testIDs,
+			RequiredAssertions: reqAssertions,
+			FixtureIdentities:  fixtures,
+			Assertions:         assertions,
+			ResultReferences:   resultRefs,
 		}
 		doc.Mappings[c.ID] = mapping
 		doc.Records = append(doc.Records, mapping)
@@ -84,6 +115,32 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 		}
 		testIDs := deriveRepairTestIDs(c.ID, c.Title)
 		fixtures := deriveRepairFixtures(c.ID)
+		reqAssertions := make(map[string]string)
+		switch c.ID {
+		case "RP03":
+			reqAssertions["variable_result"] = "updated"
+			testIDs = append(testIDs, "ios27-runtime-poc:variables")
+		case "RP08":
+			reqAssertions["base64_result"] = "Q0hFUlJJ"
+			testIDs = append(testIDs, "ios27-runtime-poc:static-variants")
+		case "RP13":
+			reqAssertions["conditional_result"] = "true"
+			testIDs = append(testIDs, "ios27-runtime-poc:conditionals")
+		case "RP14":
+			reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
+			testIDs = append(testIDs, "ios27-runtime-poc:nested-loops")
+		}
+		if hasLevel(tiers, "ci") {
+			testIDs = append(testIDs, "github-actions:Build & Test", "github-actions:OpenMinis Skill")
+		}
+		if hasLevel(tiers, "ios-ui") {
+			testIDs = append(testIDs, "CherriCoreIntegrationTests/testCherriAnalyzeReturnsMultipleDiagnostics",
+				"CherriCoreIntegrationTests/testCherriCompleteReturnsContextualItems",
+				"CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis",
+				"CherriCoreIntegrationTests/testV2LanguageLetAndFStringCompile",
+				"ios-build:CherriCoreTests_iOS_Simulator")
+		}
+
 		assertions := []string{
 			fmt.Sprintf("Scenario verified: %s", c.Scenario),
 			fmt.Sprintf("Expected observation: %s", c.ExpectedObservation),
@@ -93,14 +150,15 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 		}
 
 		mapping := RequirementEvidenceMapping{
-			ID:                c.ID,
-			Type:              "repair",
-			Title:             c.Title,
-			RequiredTiers:     tiers,
-			TestIDs:           testIDs,
-			FixtureIdentities: fixtures,
-			Assertions:        assertions,
-			ResultReferences:  resultRefs,
+			ID:                 c.ID,
+			Type:               "repair",
+			Title:              c.Title,
+			RequiredTiers:      tiers,
+			TestIDs:            testIDs,
+			RequiredAssertions: reqAssertions,
+			FixtureIdentities:  fixtures,
+			Assertions:         assertions,
+			ResultReferences:   resultRefs,
 		}
 		doc.Mappings[c.ID] = mapping
 		doc.Records = append(doc.Records, mapping)
@@ -114,6 +172,26 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 		}
 		testIDs := deriveGateTestIDs(g.ID, g.ProposedTestPrefix)
 		fixtures := deriveGateFixtures(g.ID)
+		reqAssertions := make(map[string]string)
+		switch g.ID {
+		case "BRG17":
+			reqAssertions["base64_result"] = "Q0hFUlJJ"
+			testIDs = append(testIDs, "ios27-runtime-poc:static-variants")
+		case "BRG24":
+			reqAssertions["status"] = "CHERRI_IOS27_RUNTIME_OK"
+			testIDs = append(testIDs, "ios27-runtime-poc:smoke")
+		}
+		if hasLevel(tiers, "ci") {
+			testIDs = append(testIDs, "github-actions:Build & Test", "github-actions:OpenMinis Skill")
+		}
+		if hasLevel(tiers, "ios-ui") {
+			testIDs = append(testIDs, "CherriCoreIntegrationTests/testCherriAnalyzeReturnsMultipleDiagnostics",
+				"CherriCoreIntegrationTests/testCherriCompleteReturnsContextualItems",
+				"CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis",
+				"CherriCoreIntegrationTests/testV2LanguageLetAndFStringCompile",
+				"ios-build:CherriCoreTests_iOS_Simulator")
+		}
+
 		assertions := []string{
 			fmt.Sprintf("Scenario: %s", g.Scenario),
 			fmt.Sprintf("Expected observation: %s", g.ExpectedObservation),
@@ -123,14 +201,15 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 		}
 
 		mapping := RequirementEvidenceMapping{
-			ID:                g.ID,
-			Type:              "recovery_gate",
-			Title:             g.Title,
-			RequiredTiers:     tiers,
-			TestIDs:           testIDs,
-			FixtureIdentities: fixtures,
-			Assertions:        assertions,
-			ResultReferences:  resultRefs,
+			ID:                 g.ID,
+			Type:               "recovery_gate",
+			Title:              g.Title,
+			RequiredTiers:      tiers,
+			TestIDs:            testIDs,
+			RequiredAssertions: reqAssertions,
+			FixtureIdentities:  fixtures,
+			Assertions:         assertions,
+			ResultReferences:   resultRefs,
 		}
 		doc.Mappings[g.ID] = mapping
 		doc.Records = append(doc.Records, mapping)

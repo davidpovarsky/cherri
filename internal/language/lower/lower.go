@@ -6,6 +6,7 @@ import (
 	"strings"
 	"unicode/utf16"
 
+	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
@@ -19,15 +20,34 @@ type BindingRef struct {
 	VariableName string // for setvariable
 }
 
+var contentItemClasses = map[string]string{
+	"text":        "WFStringContentItem",
+	"number":      "WFNumberContentItem",
+	"date":        "WFDateContentItem",
+	"boolean":     "WFBooleanContentItem",
+	"dictionary":  "WFDictionaryContentItem",
+	"image":       "WFImageContentItem",
+	"url":         "WFURLContentItem",
+	"file":        "WFGenericFileContentItem",
+	"pdf":         "WFPDFContentItem",
+	"contact":     "WFContactContentItem",
+	"phonenumber": "WFPhoneNumberContentItem",
+	"email":       "WFEmailAddressContentItem",
+	"location":    "WFLocationContentItem",
+}
+
 // Lowerer transforms a Cherri v2 AST into Native Shortcut IR.
 type Lowerer struct {
 	registry       *schema.Registry
+	session        backend.Session
 	workflow       *ir.NativeWorkflow
 	bindings       map[string]BindingRef
 	functions      map[string]*syntax.FunctionDecl
 	setupQuestions map[string]*syntax.SetupDecl
 	WorkflowName   string
-	uuidCounter    int
+	uuidCounter        int
+	repeatDepth        int
+	currentBindingName string
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -44,6 +64,13 @@ func NewLowerer(registry *schema.Registry) *Lowerer {
 	}
 }
 
+// NewLowererWithSession creates a new AST lowerer connected to a backend session.
+func NewLowererWithSession(registry *schema.Registry, session backend.Session) *Lowerer {
+	l := NewLowerer(registry)
+	l.session = session
+	return l
+}
+
 // GenerateUUID returns a formatted UUID.
 func (l *Lowerer) GenerateUUID() string {
 	l.uuidCounter++
@@ -54,8 +81,15 @@ func (l *Lowerer) GenerateUUID() string {
 	return fmt.Sprintf("%08X-%04X-%04X-%04X-%012X", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
 }
 
-// LowerProgram compiles an AST Program into NativeWorkflow IR.
-func (l *Lowerer) LowerProgram(prog *syntax.Program) (*ir.NativeWorkflow, error) {
+func (l *Lowerer) emitAction(node *ir.NativeActionNode) {
+	if l.session != nil {
+		_ = l.session.EmitRawAction(node.AppleIdentifier, node.Parameters, node.OutputUUID, node.OutputName, node.GroupingIdentifier)
+	}
+	l.workflow.AddAction(node)
+}
+
+// LowerProgramToSession compiles an AST Program into the configured backend.Session.
+func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 	// 1. Process declarations (metadata, shortcut header, functions, setup)
 	for _, decl := range prog.Declarations {
 		switch d := decl.(type) {
@@ -78,21 +112,33 @@ func (l *Lowerer) LowerProgram(prog *syntax.Program) (*ir.NativeWorkflow, error)
 				q["DefaultValue"] = d.DefaultValue
 			}
 			l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, q)
+			if l.session != nil {
+				l.session.AddImportQuestion(q)
+			}
 		}
 	}
 
 	// 2. If functions are declared, isolate dispatcher in Mode 0 and main statements in Mode 1 (Otherwise)
 	if len(l.functions) > 0 {
-		return l.lowerProgramWithFunctions(prog)
+		_, err := l.lowerProgramWithFunctions(prog)
+		return err
 	}
 
 	// 3. Process statements in source order
 	for _, stmt := range prog.Statements {
 		if err := l.lowerStatement(stmt); err != nil {
-			return nil, err
+			return err
 		}
 	}
 
+	return nil
+}
+
+// LowerProgram compiles an AST Program into NativeWorkflow IR.
+func (l *Lowerer) LowerProgram(prog *syntax.Program) (*ir.NativeWorkflow, error) {
+	if err := l.LowerProgramToSession(prog); err != nil {
+		return nil, err
+	}
 	return l.workflow, nil
 }
 
@@ -220,7 +266,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 	// 1. Initialize _cherri_is_fn = 0.0
 	initNumUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          initNumUUID,
 		AppleIdentifier: "is.workflow.actions.number",
 		OutputUUID:      initNumUUID,
@@ -228,7 +274,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 			"WFNumberActionNumber": 0.0,
 		},
 	})
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          l.GenerateUUID(),
 		AppleIdentifier: "is.workflow.actions.setvariable",
 		Parameters: map[string]interface{}{
@@ -244,7 +290,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 	// 2. Guard: Only check function payload if ShortcutInput has a value
 	hasInputGroupUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
 		GroupingIdentifier: hasInputGroupUUID,
@@ -258,7 +304,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	})
 
 	dictUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          dictUUID,
 		AppleIdentifier: "is.workflow.actions.detect.dictionary",
 		OutputUUID:      dictUUID,
@@ -268,7 +314,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	})
 
 	chkUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          chkUUID,
 		AppleIdentifier: "is.workflow.actions.getvalueforkey",
 		OutputUUID:      chkUUID,
@@ -280,7 +326,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	})
 
 	chkGroupUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
 		GroupingIdentifier: chkGroupUUID,
@@ -295,7 +341,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	})
 
 	setOneNumUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          setOneNumUUID,
 		AppleIdentifier: "is.workflow.actions.number",
 		OutputUUID:      setOneNumUUID,
@@ -303,7 +349,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 			"WFNumberActionNumber": 1.0,
 		},
 	})
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          l.GenerateUUID(),
 		AppleIdentifier: "is.workflow.actions.setvariable",
 		Parameters: map[string]interface{}{
@@ -312,7 +358,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		},
 	})
 
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
 		GroupingIdentifier: chkGroupUUID,
@@ -323,7 +369,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		},
 	})
 
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
 		GroupingIdentifier: hasInputGroupUUID,
@@ -339,7 +385,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	// Mode 1: Otherwise -> Main program statements
 	// Mode 2: End If
 	mainGroupUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
 		GroupingIdentifier: mainGroupUUID,
@@ -355,7 +401,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 	// Mode 0: Function Dispatcher
 	fnDictUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          fnDictUUID,
 		AppleIdentifier: "is.workflow.actions.detect.dictionary",
 		OutputUUID:      fnDictUUID,
@@ -365,7 +411,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	})
 
 	fnNameUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          fnNameUUID,
 		AppleIdentifier: "is.workflow.actions.getvalueforkey",
 		OutputUUID:      fnNameUUID,
@@ -377,7 +423,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	})
 
 	argsUUID := l.GenerateUUID()
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          argsUUID,
 		AppleIdentifier: "is.workflow.actions.getvalueforkey",
 		OutputUUID:      argsUUID,
@@ -390,7 +436,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 	for _, fn := range l.functions {
 		fnGroupUUID := l.GenerateUUID()
-		l.workflow.AddAction(&ir.NativeActionNode{
+		l.emitAction(&ir.NativeActionNode{
 			NodeID:             l.GenerateUUID(),
 			AppleIdentifier:    "is.workflow.actions.conditional",
 			GroupingIdentifier: fnGroupUUID,
@@ -411,7 +457,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 		for idx, param := range fn.Parameters {
 			argItemUUID := l.GenerateUUID()
-			l.workflow.AddAction(&ir.NativeActionNode{
+			l.emitAction(&ir.NativeActionNode{
 				NodeID:          argItemUUID,
 				AppleIdentifier: "is.workflow.actions.getitemfromlist",
 				OutputUUID:      argItemUUID,
@@ -441,13 +487,13 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		l.bindings = savedBindings
 
 		if !hasReturn {
-			l.workflow.AddAction(&ir.NativeActionNode{
+			l.emitAction(&ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
 				AppleIdentifier: "is.workflow.actions.output",
 			})
 		}
 
-		l.workflow.AddAction(&ir.NativeActionNode{
+		l.emitAction(&ir.NativeActionNode{
 			NodeID:             l.GenerateUUID(),
 			AppleIdentifier:    "is.workflow.actions.conditional",
 			GroupingIdentifier: fnGroupUUID,
@@ -460,13 +506,13 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	}
 
 	// Exit the child execution immediately so it never falls through
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:          l.GenerateUUID(),
 		AppleIdentifier: "is.workflow.actions.exit",
 	})
 
 	// Mode 1: Otherwise -> Main Statements
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
 		GroupingIdentifier: mainGroupUUID,
@@ -484,7 +530,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	}
 
 	// Mode 2: End If
-	l.workflow.AddAction(&ir.NativeActionNode{
+	l.emitAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
 		GroupingIdentifier: mainGroupUUID,
@@ -530,13 +576,13 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 					"WFOutput": val,
 				},
 			}
-			l.workflow.AddAction(node)
+			l.emitAction(node)
 		} else {
 			node := &ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
 				AppleIdentifier: "is.workflow.actions.output",
 			}
-			l.workflow.AddAction(node)
+			l.emitAction(node)
 		}
 		return nil
 	case *syntax.BlockStmt:
@@ -561,7 +607,11 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 		return nil
 	}
 
+	if !b.Mutable {
+		l.currentBindingName = b.Name
+	}
 	val, err := l.lowerExpression(b.Value)
+	l.currentBindingName = ""
 	if err != nil {
 		return err
 	}
@@ -576,7 +626,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 				"WFInput":        l.materializeToAttachment(val),
 			},
 		}
-		l.workflow.AddAction(node)
+		l.emitAction(node)
 		l.bindings[b.Name] = BindingRef{
 			IsVariable:   true,
 			VariableName: b.Name,
@@ -614,7 +664,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 					},
 				},
 			}
-			l.workflow.AddAction(node)
+			l.emitAction(node)
 			l.bindings[b.Name] = BindingRef{
 				IsVariable: false,
 				OutputUUID: uuid,
@@ -634,7 +684,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 						"WFNumberActionNumber": v,
 					},
 				}
-				l.workflow.AddAction(node)
+				l.emitAction(node)
 			case map[string]interface{}:
 				if serType, ok := v["WFSerializationType"].(string); ok && serType == "WFTextTokenString" {
 					node := &ir.NativeActionNode{
@@ -646,7 +696,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 							"WFTextActionText": v,
 						},
 					}
-					l.workflow.AddAction(node)
+					l.emitAction(node)
 				} else {
 					node := &ir.NativeActionNode{
 						NodeID:          uuid,
@@ -657,7 +707,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 							"WFItems": v,
 						},
 					}
-					l.workflow.AddAction(node)
+					l.emitAction(node)
 				}
 			case []interface{}:
 				node := &ir.NativeActionNode{
@@ -669,7 +719,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 						"WFItems": v,
 					},
 				}
-				l.workflow.AddAction(node)
+				l.emitAction(node)
 			case bool:
 				bNum := 0.0
 				if v {
@@ -684,7 +734,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 						"WFNumberActionNumber": bNum,
 					},
 				}
-				l.workflow.AddAction(node)
+				l.emitAction(node)
 			default:
 				node := &ir.NativeActionNode{
 					NodeID:          uuid,
@@ -695,7 +745,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 						"WFTextActionText": val,
 					},
 				}
-				l.workflow.AddAction(node)
+				l.emitAction(node)
 			}
 			l.bindings[b.Name] = BindingRef{
 				IsVariable: false,
@@ -742,7 +792,7 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 				"WFMathOperand":   val,
 			},
 		}
-		l.workflow.AddAction(mathNode)
+		l.emitAction(mathNode)
 		finalVal = &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: mathUUID,
@@ -757,7 +807,7 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 			"WFInput":        l.materializeToAttachment(finalVal),
 		},
 	}
-	l.workflow.AddAction(node)
+	l.emitAction(node)
 	return nil
 }
 
@@ -777,7 +827,7 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 				"WFNumberActionNumber": v,
 			},
 		}
-		l.workflow.AddAction(node)
+		l.emitAction(node)
 		return &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: uuid,
@@ -793,7 +843,7 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 				"WFTextActionText": v,
 			},
 		}
-		l.workflow.AddAction(node)
+		l.emitAction(node)
 		return &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: uuid,
@@ -809,7 +859,7 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 				"WFTextActionText": fmt.Sprintf("%v", v),
 			},
 		}
-		l.workflow.AddAction(node)
+		l.emitAction(node)
 		return &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: uuid,
@@ -900,7 +950,7 @@ func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 		ControlFlowMode:    0,
 		Parameters:         params,
 	}
-	l.workflow.AddAction(beginNode)
+	l.emitAction(beginNode)
 
 	// 2. Then block statements
 	for _, ts := range stmt.ThenBlock.Statements {
@@ -921,7 +971,7 @@ func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 				"WFControlFlowMode":  1,
 			},
 		}
-		l.workflow.AddAction(elseNode)
+		l.emitAction(elseNode)
 
 		if err := l.lowerStatement(stmt.ElseBlock); err != nil {
 			return err
@@ -939,11 +989,14 @@ func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 			"WFControlFlowMode":  2,
 		},
 	}
-	l.workflow.AddAction(endNode)
+	l.emitAction(endNode)
 	return nil
 }
 
 func (l *Lowerer) lowerRepeat(stmt *syntax.RepeatStmt) error {
+	l.repeatDepth++
+	defer func() { l.repeatDepth-- }()
+
 	groupUUID := l.GenerateUUID()
 	countVal, err := l.lowerExpression(stmt.Count)
 	if err != nil {
@@ -961,7 +1014,12 @@ func (l *Lowerer) lowerRepeat(stmt *syntax.RepeatStmt) error {
 			"WFRepeatCount":      countVal,
 		},
 	}
-	l.workflow.AddAction(beginNode)
+	l.emitAction(beginNode)
+
+	repeatIndexName := "Repeat Index"
+	if l.repeatDepth > 1 {
+		repeatIndexName = fmt.Sprintf("Repeat Index %d", l.repeatDepth)
+	}
 
 	var prevBinding BindingRef
 	var hadBinding bool
@@ -972,16 +1030,17 @@ func (l *Lowerer) lowerRepeat(stmt *syntax.RepeatStmt) error {
 			NodeID:          mathUUID,
 			AppleIdentifier: "is.workflow.actions.math",
 			OutputUUID:      mathUUID,
+			OutputName:      stmt.IndexVar,
 			Parameters: map[string]interface{}{
 				"WFMathOperation": "-",
 				"WFInput": &ir.AttachmentToken{
 					Type:       "Variable",
-					OutputName: "Repeat Index",
+					OutputName: repeatIndexName,
 				},
 				"WFMathOperand": 1.0,
 			},
 		}
-		l.workflow.AddAction(mathNode)
+		l.emitAction(mathNode)
 		l.bindings[stmt.IndexVar] = BindingRef{
 			IsVariable: false,
 			OutputUUID: mathUUID,
@@ -1013,11 +1072,14 @@ func (l *Lowerer) lowerRepeat(stmt *syntax.RepeatStmt) error {
 			"WFControlFlowMode":  2,
 		},
 	}
-	l.workflow.AddAction(endNode)
+	l.emitAction(endNode)
 	return nil
 }
 
 func (l *Lowerer) lowerFor(stmt *syntax.ForStmt) error {
+	l.repeatDepth++
+	defer func() { l.repeatDepth-- }()
+
 	groupUUID := l.GenerateUUID()
 	iterVal, err := l.lowerExpression(stmt.Iterable)
 	if err != nil {
@@ -1035,15 +1097,34 @@ func (l *Lowerer) lowerFor(stmt *syntax.ForStmt) error {
 			"WFInput":            iterVal,
 		},
 	}
-	l.workflow.AddAction(beginNode)
+	l.emitAction(beginNode)
+
+	repeatItemName := "Repeat Item"
+	repeatIndexName := "Repeat Index"
+	if l.repeatDepth > 1 {
+		repeatItemName = fmt.Sprintf("Repeat Item %d", l.repeatDepth)
+		repeatIndexName = fmt.Sprintf("Repeat Index %d", l.repeatDepth)
+	}
 
 	var prevItemBinding BindingRef
 	var hadItemBinding bool
 	if stmt.ItemVar != "" {
 		prevItemBinding, hadItemBinding = l.bindings[stmt.ItemVar]
+		setVarNode := &ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.setvariable",
+			Parameters: map[string]interface{}{
+				"WFVariableName": stmt.ItemVar,
+				"WFInput": &ir.AttachmentToken{
+					Type:       "Variable",
+					OutputName: repeatItemName,
+				},
+			},
+		}
+		l.emitAction(setVarNode)
 		l.bindings[stmt.ItemVar] = BindingRef{
 			IsVariable:   true,
-			VariableName: "Repeat Item",
+			VariableName: stmt.ItemVar,
 		}
 	}
 
@@ -1056,16 +1137,17 @@ func (l *Lowerer) lowerFor(stmt *syntax.ForStmt) error {
 			NodeID:          mathUUID,
 			AppleIdentifier: "is.workflow.actions.math",
 			OutputUUID:      mathUUID,
+			OutputName:      stmt.IndexVar,
 			Parameters: map[string]interface{}{
 				"WFMathOperation": "-",
 				"WFInput": &ir.AttachmentToken{
 					Type:       "Variable",
-					OutputName: "Repeat Index",
+					OutputName: repeatIndexName,
 				},
 				"WFMathOperand": 1.0,
 			},
 		}
-		l.workflow.AddAction(mathNode)
+		l.emitAction(mathNode)
 		l.bindings[stmt.IndexVar] = BindingRef{
 			IsVariable: false,
 			OutputUUID: mathUUID,
@@ -1104,7 +1186,7 @@ func (l *Lowerer) lowerFor(stmt *syntax.ForStmt) error {
 			"WFControlFlowMode":  2,
 		},
 	}
-	l.workflow.AddAction(endNode)
+	l.emitAction(endNode)
 	return nil
 }
 
@@ -1132,7 +1214,7 @@ func (l *Lowerer) lowerMenu(stmt *syntax.MenuStmt) error {
 			"WFMenuItems":        items,
 		},
 	}
-	l.workflow.AddAction(beginNode)
+	l.emitAction(beginNode)
 
 	for _, c := range stmt.Cases {
 		caseNode := &ir.NativeActionNode{
@@ -1146,7 +1228,7 @@ func (l *Lowerer) lowerMenu(stmt *syntax.MenuStmt) error {
 				"WFMenuItemTitle":    c.Label,
 			},
 		}
-		l.workflow.AddAction(caseNode)
+		l.emitAction(caseNode)
 
 		for _, s := range c.BodyBlock.Statements {
 			if err := l.lowerStatement(s); err != nil {
@@ -1165,7 +1247,7 @@ func (l *Lowerer) lowerMenu(stmt *syntax.MenuStmt) error {
 			"WFControlFlowMode":  2,
 		},
 	}
-	l.workflow.AddAction(endNode)
+	l.emitAction(endNode)
 	return nil
 }
 
@@ -1206,6 +1288,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				OutputUUID: ref.OutputUUID,
 				OutputName: ref.OutputName,
 			}, nil
+		}
+		if q, isQ := l.setupQuestions[e.Name]; isQ {
+			return q.DefaultValue, nil
 		}
 		// Built-in / system checks
 		if e.Name == "clipboard" {
@@ -1267,13 +1352,13 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFNumberValue":      1.0,
 				},
 			}
-			l.workflow.AddAction(beginNode)
+			l.emitAction(beginNode)
 			fNode := &ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
 				AppleIdentifier: "is.workflow.actions.number",
 				Parameters:      map[string]interface{}{"WFNumberActionNumber": 0.0},
 			}
-			l.workflow.AddAction(fNode)
+			l.emitAction(fNode)
 			elseNode := &ir.NativeActionNode{
 				NodeID:             l.GenerateUUID(),
 				AppleIdentifier:    "is.workflow.actions.conditional",
@@ -1284,13 +1369,13 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFControlFlowMode":  1,
 				},
 			}
-			l.workflow.AddAction(elseNode)
+			l.emitAction(elseNode)
 			tNode := &ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
 				AppleIdentifier: "is.workflow.actions.number",
 				Parameters:      map[string]interface{}{"WFNumberActionNumber": 1.0},
 			}
-			l.workflow.AddAction(tNode)
+			l.emitAction(tNode)
 			endNode := &ir.NativeActionNode{
 				NodeID:             uuid,
 				AppleIdentifier:    "is.workflow.actions.conditional",
@@ -1302,7 +1387,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFControlFlowMode":  2,
 				},
 			}
-			l.workflow.AddAction(endNode)
+			l.emitAction(endNode)
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 
 		case syntax.TokenMinus:
@@ -1320,7 +1405,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFMathOperand":   operand,
 				},
 			}
-			l.workflow.AddAction(node)
+			l.emitAction(node)
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 
 		case syntax.TokenPlus:
@@ -1336,6 +1421,22 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if tok, ok := targetVal.(*ir.AttachmentToken); ok {
+			if strKey, ok := indexVal.(string); ok {
+				newTok := &ir.AttachmentToken{
+					Type:            tok.Type,
+					OutputUUID:      tok.OutputUUID,
+					OutputName:      tok.OutputName,
+					Aggrandizements: make([]map[string]interface{}, len(tok.Aggrandizements)),
+				}
+				copy(newTok.Aggrandizements, tok.Aggrandizements)
+				newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+					"Type":          "WFDictionaryValueVariableAggrandizement",
+					"DictionaryKey": strKey,
+				})
+				return newTok, nil
+			}
+		}
 		if n, ok := indexVal.(float64); ok {
 			uuid := l.GenerateUUID()
 			node := &ir.NativeActionNode{
@@ -1348,7 +1449,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFItemIndex":     n + 1.0, // 1-based index in Apple Shortcuts
 				},
 			}
-			l.workflow.AddAction(node)
+			l.emitAction(node)
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 		} else if strKey, ok := indexVal.(string); ok {
 			uuid := l.GenerateUUID()
@@ -1362,7 +1463,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFGetDictionaryValueType": "Value",
 				},
 			}
-			l.workflow.AddAction(node)
+			l.emitAction(node)
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 		} else {
 			// Dynamic index: add 1
@@ -1377,7 +1478,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFMathOperand":   1.0,
 				},
 			}
-			l.workflow.AddAction(mathNode)
+			l.emitAction(mathNode)
 
 			uuid := l.GenerateUUID()
 			node := &ir.NativeActionNode{
@@ -1390,7 +1491,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFItemIndex":     &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: mathUUID},
 				},
 			}
-			l.workflow.AddAction(node)
+			l.emitAction(node)
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 		}
 
@@ -1398,6 +1499,27 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		targetVal, err := l.lowerExpression(e.Target)
 		if err != nil {
 			return nil, err
+		}
+		if tok, ok := targetVal.(*ir.AttachmentToken); ok {
+			newTok := &ir.AttachmentToken{
+				Type:            tok.Type,
+				OutputUUID:      tok.OutputUUID,
+				OutputName:      tok.OutputName,
+				Aggrandizements: make([]map[string]interface{}, len(tok.Aggrandizements)),
+			}
+			copy(newTok.Aggrandizements, tok.Aggrandizements)
+			if itemClass, ok := contentItemClasses[strings.ToLower(e.Property)]; ok {
+				newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+					"Type":              "WFCoercionVariableAggrandizement",
+					"CoercionItemClass": itemClass,
+				})
+			} else {
+				newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+					"Type":         "WFPropertyVariableAggrandizement",
+					"PropertyName": e.Property,
+				})
+			}
+			return newTok, nil
 		}
 		uuid := l.GenerateUUID()
 		node := &ir.NativeActionNode{
@@ -1410,7 +1532,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				"WFGetDictionaryValueType": "Value",
 			},
 		}
-		l.workflow.AddAction(node)
+		l.emitAction(node)
 		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 
 	case *syntax.BinaryExpr:
@@ -1563,7 +1685,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				ControlFlowMode:    0,
 				Parameters:         params,
 			}
-			l.workflow.AddAction(beginNode)
+			l.emitAction(beginNode)
 
 			// Then branch: 1.0 (true)
 			tNode := &ir.NativeActionNode{
@@ -1571,7 +1693,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				AppleIdentifier: "is.workflow.actions.number",
 				Parameters:      map[string]interface{}{"WFNumberActionNumber": 1.0},
 			}
-			l.workflow.AddAction(tNode)
+			l.emitAction(tNode)
 
 			// Else branch: 0.0 (false)
 			elseNode := &ir.NativeActionNode{
@@ -1584,14 +1706,14 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFControlFlowMode":  1,
 				},
 			}
-			l.workflow.AddAction(elseNode)
+			l.emitAction(elseNode)
 
 			fNode := &ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
 				AppleIdentifier: "is.workflow.actions.number",
 				Parameters:      map[string]interface{}{"WFNumberActionNumber": 0.0},
 			}
-			l.workflow.AddAction(fNode)
+			l.emitAction(fNode)
 
 			endNode := &ir.NativeActionNode{
 				NodeID:             uuid,
@@ -1604,7 +1726,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFControlFlowMode":  2,
 				},
 			}
-			l.workflow.AddAction(endNode)
+			l.emitAction(endNode)
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 		}
 
@@ -1622,7 +1744,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"WFScientificMathOperand":   right,
 				},
 			}
-			l.workflow.AddAction(node)
+			l.emitAction(node)
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 		}
 
@@ -1649,7 +1771,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				"WFMathOperand":   right,
 			},
 		}
-		l.workflow.AddAction(node)
+		l.emitAction(node)
 		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 	}
 
@@ -1724,6 +1846,155 @@ func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
 	}, nil
 }
 
+func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticValue, error) {
+	if f, ok := expr.(*syntax.FStringExpr); ok {
+		var segments []backend.TextSegment
+		hasRef := false
+		for _, part := range f.Parts {
+			if !part.IsExpr {
+				segments = append(segments, backend.TextSegment{
+					IsExpr: false,
+					Text:   part.Text,
+				})
+			} else {
+				val, err := l.lowerExpression(part.Expr)
+				if err != nil {
+					return backend.SemanticValue{}, err
+				}
+				semVal := l.toSemanticValue(val)
+				if semVal.Kind == backend.ValReference {
+					hasRef = true
+					segments = append(segments, backend.TextSegment{
+						IsExpr:    true,
+						Reference: semVal.Ref,
+					})
+				} else {
+					segments = append(segments, backend.TextSegment{
+						IsExpr: false,
+						Text:   formatSemanticLiteral(semVal),
+					})
+				}
+			}
+		}
+		if hasRef {
+			return backend.SemanticValue{
+				Kind:     backend.ValTextSegments,
+				Segments: segments,
+			}, nil
+		}
+		var full strings.Builder
+		for _, seg := range segments {
+			full.WriteString(seg.Text)
+		}
+		return backend.SemanticValue{
+			Kind:   backend.ValString,
+			StrVal: full.String(),
+		}, nil
+	}
+
+	val, err := l.lowerExpression(expr)
+	if err != nil {
+		return backend.SemanticValue{}, err
+	}
+	return l.toSemanticValue(val), nil
+}
+
+func formatSemanticLiteral(val backend.SemanticValue) string {
+	switch val.Kind {
+	case backend.ValBool:
+		return fmt.Sprintf("%t", val.BoolVal)
+	case backend.ValInt:
+		return fmt.Sprintf("%d", val.IntVal)
+	case backend.ValFloat:
+		if val.FloatVal == float64(int64(val.FloatVal)) {
+			return fmt.Sprintf("%d", int64(val.FloatVal))
+		}
+		return fmt.Sprintf("%g", val.FloatVal)
+	case backend.ValString:
+		return val.StrVal
+	default:
+		return ""
+	}
+}
+
+func (l *Lowerer) toSemanticValue(val interface{}) backend.SemanticValue {
+	if val == nil {
+		return backend.SemanticValue{Kind: backend.ValNil}
+	}
+	switch v := val.(type) {
+	case bool:
+		return backend.SemanticValue{Kind: backend.ValBool, BoolVal: v}
+	case int:
+		return backend.SemanticValue{Kind: backend.ValInt, IntVal: int64(v)}
+	case int64:
+		return backend.SemanticValue{Kind: backend.ValInt, IntVal: v}
+	case float64:
+		return backend.SemanticValue{Kind: backend.ValFloat, FloatVal: v}
+	case string:
+		return backend.SemanticValue{Kind: backend.ValString, StrVal: v}
+	case *ir.AttachmentToken:
+		var kind backend.ReferenceKind
+		switch v.Type {
+		case "ActionOutput":
+			kind = backend.RefActionResult
+		case "Variable":
+			kind = backend.RefMutableBinding
+		case "ExtensionInput":
+			kind = backend.RefExtensionInput
+		case "Ask":
+			kind = backend.RefAskEachTime
+		default:
+			kind = backend.RefActionResult
+		}
+		var transforms []backend.Transformation
+		if len(v.Aggrandizements) > 0 {
+			for _, m := range v.Aggrandizements {
+				t := backend.Transformation{
+					Type: fmt.Sprintf("%v", m["Type"]),
+				}
+				if prop, ok := m["PropertyName"].(string); ok {
+					t.PropertyName = prop
+				}
+				if cClass, ok := m["CoercionItemClass"].(string); ok {
+					t.CoercionItemClass = cClass
+				}
+				if dKey, ok := m["DictionaryKey"].(string); ok {
+					t.DictionaryKey = dKey
+				}
+				transforms = append(transforms, t)
+			}
+		}
+		return backend.SemanticValue{
+			Kind: backend.ValReference,
+			Ref: &backend.Reference{
+				Kind:            kind,
+				ProducerID:      v.OutputUUID,
+				ProducerName:    v.OutputName,
+				Transformations: transforms,
+			},
+		}
+	case *backend.Reference:
+		return backend.SemanticValue{
+			Kind: backend.ValReference,
+			Ref:  v,
+		}
+	case []interface{}:
+		items := make([]backend.SemanticValue, len(v))
+		for i, el := range v {
+			items[i] = l.toSemanticValue(el)
+		}
+		return backend.SemanticValue{Kind: backend.ValList, ListVal: items}
+	case map[string]interface{}:
+		entries := make([]backend.DictEntry, 0, len(v))
+		for k, el := range v {
+			entries = append(entries, backend.DictEntry{Key: k, Value: l.toSemanticValue(el)})
+		}
+		return backend.SemanticValue{Kind: backend.ValDict, DictVal: entries}
+	default:
+		return backend.SemanticValue{Kind: backend.ValRawNative, RawNativeVal: v}
+	}
+}
+
 func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	var actionName string
 	switch c := call.Callee.(type) {
@@ -1742,9 +2013,14 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	// Check native escape: native.action, action, rawAction
 	if actionName == "native.action" || actionName == "action" || actionName == "rawAction" {
 		uuid := l.GenerateUUID()
+		outputUUID := ""
+		if l.currentBindingName != "" {
+			outputUUID = uuid
+		}
 		node := &ir.NativeActionNode{
 			NodeID:     uuid,
-			OutputUUID: uuid,
+			OutputUUID: outputUUID,
+			OutputName: l.currentBindingName,
 			Parameters: make(map[string]interface{}),
 		}
 		if call.PrimaryArg != nil {
@@ -1769,7 +2045,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				}
 			}
 		}
-		l.workflow.AddAction(node)
+		l.emitAction(node)
 		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 	}
 
@@ -1841,7 +2117,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			OutputName:      actionName + "Result",
 			Parameters:      runParams,
 		}
-		l.workflow.AddAction(runNode)
+		l.emitAction(runNode)
 		return &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: uuid,
@@ -1855,6 +2131,105 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	}
 
 	uuid := l.GenerateUUID()
+
+	if l.session != nil {
+		callArgs := make([]backend.CallArgument, 0, len(call.NamedArgs)+1)
+		if call.PrimaryArg != nil {
+			if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
+				primVal, err := l.lowerSemanticValue(call.PrimaryArg)
+				if err != nil {
+					return nil, err
+				}
+				wireKey := primParam.WireKey
+				if wireKey == "" {
+					wireKey = primParam.Label
+				}
+				callArgs = append(callArgs, backend.CallArgument{
+					ParameterID: wireKey,
+					Position:    0,
+					Value:       primVal,
+				})
+			}
+		}
+
+		paramIndex := 1
+		if call.PrimaryArg == nil {
+			paramIndex = 0
+		}
+		for _, nArg := range call.NamedArgs {
+			var param *schema.ParameterSchema
+			var exists bool
+			if nArg.Label != "" {
+				param, exists = actionSchema.ParameterByLabel(nArg.Label)
+			} else {
+				if paramIndex < len(actionSchema.Parameters) {
+					param = &actionSchema.Parameters[paramIndex]
+					exists = true
+					paramIndex++
+				}
+			}
+			if exists && param != nil {
+				val, err := l.lowerSemanticValue(nArg.Value)
+				if err != nil {
+					return nil, err
+				}
+				wireKey := param.WireKey
+				if wireKey == "" {
+					wireKey = param.Label
+				}
+				pos := -1
+				for pIdx, p := range actionSchema.Parameters {
+					if p.ID == param.ID || p.Label == param.Label {
+						pos = pIdx
+						break
+					}
+				}
+				if pos < 0 {
+					pos = paramIndex
+				}
+				callArgs = append(callArgs, backend.CallArgument{
+					ParameterID: wireKey,
+					Position:    pos,
+					Value:       val,
+				})
+			}
+		}
+
+		outputName := ""
+		if l.currentBindingName != "" {
+			outputName = l.currentBindingName
+		} else if actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void" {
+			outputName = actionName + "Result"
+		}
+		var outputUUID string
+		if outputName != "" {
+			outputUUID = uuid
+		}
+
+		resolvedCall := backend.ResolvedCall{
+			DefinitionID:    actionName,
+			AppleIdentifier: actionSchema.AppleIdentifier,
+			OutputUUID:      outputUUID,
+			OutputName:      outputName,
+			Arguments:       callArgs,
+			NodeID:          uuid,
+		}
+
+		outUUID, err := l.session.EmitResolvedCall(resolvedCall)
+		if err != nil {
+			return nil, err
+		}
+
+		if outUUID != "" {
+			return &ir.AttachmentToken{
+				Type:       "ActionOutput",
+				OutputUUID: outUUID,
+				OutputName: outputName,
+			}, nil
+		}
+		return nil, nil
+	}
+
 	node := &ir.NativeActionNode{
 		NodeID:          uuid,
 		AppleIdentifier: actionSchema.AppleIdentifier,
@@ -2000,7 +2375,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 	}
 
-	l.workflow.AddAction(node)
+	l.emitAction(node)
 
 	if node.OutputUUID != "" {
 		return &ir.AttachmentToken{

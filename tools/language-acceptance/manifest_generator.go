@@ -8,11 +8,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
-func fileArtifactIfPresent(relPath string) *EvidenceArtifact {
+func fileArtifactIfPresent(relPath string, runID string) *EvidenceArtifact {
 	content, err := os.ReadFile(relPath)
 	if err != nil {
 		return nil
@@ -21,82 +22,62 @@ func fileArtifactIfPresent(relPath string) *EvidenceArtifact {
 	return &EvidenceArtifact{
 		Path:   filepath.ToSlash(relPath),
 		SHA256: hex.EncodeToString(h[:]),
+		RunID:  runID,
 	}
 }
 
-func discoverCIRuns(commitSHA string) []CIRunRecord {
+func discoverCIRuns(commitSHA string) ([]CIRunRecord, error) {
 	cmd := exec.Command("gh", "run", "list", "--commit", commitSHA, "--json", "databaseId,name,conclusion,event,attempt,headSha")
 	out, err := cmd.Output()
-	if err == nil {
-		var ghRuns []struct {
-			DatabaseID int64  `json:"databaseId"`
-			Name       string `json:"name"`
-			Conclusion string `json:"conclusion"`
-			Event      string `json:"event"`
-			Attempt    int    `json:"attempt"`
-			HeadSHA    string `json:"headSha"`
-		}
-		if json.Unmarshal(out, &ghRuns) == nil && len(ghRuns) > 0 {
-			var records []CIRunRecord
-			for _, r := range ghRuns {
-				records = append(records, CIRunRecord{
-					RunID:        fmt.Sprint(r.DatabaseID),
-					Repository:   "davidpovarsky/cherri",
-					Event:        r.Event,
-					Attempt:      r.Attempt,
-					HeadSHA:      r.HeadSHA,
-					CheckoutSHA:  r.HeadSHA,
-					Conclusion:   r.Conclusion,
-					WorkflowName: r.Name,
-				})
-			}
-			return records
-		}
+	if err != nil {
+		return nil, fmt.Errorf("CI evidence unavailable: gh run list failed: %w", err)
 	}
+	var ghRuns []struct {
+		DatabaseID int64  `json:"databaseId"`
+		Name       string `json:"name"`
+		Conclusion string `json:"conclusion"`
+		Event      string `json:"event"`
+		Attempt    int    `json:"attempt"`
+		HeadSHA    string `json:"headSha"`
+	}
+	if err := json.Unmarshal(out, &ghRuns); err != nil {
+		return nil, fmt.Errorf("CI evidence unavailable: failed to parse gh run list: %w", err)
+	}
+	if len(ghRuns) == 0 {
+		return nil, fmt.Errorf("CI evidence unavailable: no CI runs found for commit %s", commitSHA)
+	}
+	var records []CIRunRecord
+	for _, r := range ghRuns {
+		records = append(records, CIRunRecord{
+			RunID:        fmt.Sprint(r.DatabaseID),
+			Repository:   "davidpovarsky/cherri",
+			Event:        r.Event,
+			Attempt:      r.Attempt,
+			HeadSHA:      r.HeadSHA,
+			CheckoutSHA:  r.HeadSHA,
+			Conclusion:   r.Conclusion,
+			WorkflowName: r.Name,
+		})
+	}
+	return records, nil
+}
 
-	// Fallback to verified runs
-	return []CIRunRecord{
-		{
-			RunID:        "37662699247",
-			Repository:   "davidpovarsky/cherri",
-			Event:        "workflow_dispatch",
-			Attempt:      1,
-			HeadSHA:      commitSHA,
-			CheckoutSHA:  commitSHA,
-			Conclusion:   "success",
-			WorkflowName: "Build & Test",
-		},
-		{
-			RunID:        "37662712532",
-			Repository:   "davidpovarsky/cherri",
-			Event:        "workflow_dispatch",
-			Attempt:      1,
-			HeadSHA:      commitSHA,
-			CheckoutSHA:  commitSHA,
-			Conclusion:   "success",
-			WorkflowName: "OpenMinis Skill",
-		},
-		{
-			RunID:        "37662728285",
-			Repository:   "davidpovarsky/cherri",
-			Event:        "workflow_dispatch",
-			Attempt:      1,
-			HeadSHA:      commitSHA,
-			CheckoutSHA:  commitSHA,
-			Conclusion:   "success",
-			WorkflowName: "iOS Build",
-		},
-		{
-			RunID:        "37662740612",
-			Repository:   "davidpovarsky/cherri",
-			Event:        "workflow_dispatch",
-			Attempt:      1,
-			HeadSHA:      commitSHA,
-			CheckoutSHA:  commitSHA,
-			Conclusion:   "success",
-			WorkflowName: "iOS 27 Shortcuts Runtime PoC",
-		},
+func ingestEvidenceFile(path string) ([]EvidenceRecord, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
 	}
+	var recs []EvidenceRecord
+	if err := json.Unmarshal(data, &recs); err == nil && len(recs) > 0 {
+		return recs, nil
+	}
+	var wrapper struct {
+		Records []EvidenceRecord `json:"records"`
+	}
+	if err := json.Unmarshal(data, &wrapper); err == nil && len(wrapper.Records) > 0 {
+		return wrapper.Records, nil
+	}
+	return nil, fmt.Errorf("no evidence records parsed from %s", path)
 }
 
 func BuildFinalEvidenceManifest(contracts *ContractsSet, implSHA, docsSHA, outPath string) (*EvidenceManifest, error) {
@@ -104,7 +85,10 @@ func BuildFinalEvidenceManifest(contracts *ContractsSet, implSHA, docsSHA, outPa
 		return nil, fmt.Errorf("all contracts must be loaded to generate final evidence manifest")
 	}
 
-	runs := discoverCIRuns(implSHA)
+	runs, err := discoverCIRuns(implSHA)
+	if err != nil {
+		return nil, err
+	}
 
 	manifest := &EvidenceManifest{
 		SchemaVersion:     "1",
@@ -116,172 +100,144 @@ func BuildFinalEvidenceManifest(contracts *ContractsSet, implSHA, docsSHA, outPa
 		Runs:              runs,
 	}
 
-	// Prepare artifacts
+	// 1. Ingest real evidence files from artifacts / disk
+	candidateEvidenceFiles := []string{
+		"artifacts/runtime-evidence.json",
+		"artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/runtime-evidence.json",
+		"artifacts/backend-recovery/evidence/local-runner-evidence.json",
+	}
+
+	evidenceDirs := []string{
+		"artifacts/backend-recovery/evidence",
+		"artifacts/evidence",
+	}
+	for _, dir := range evidenceDirs {
+		entries, err := os.ReadDir(dir)
+		if err == nil {
+			for _, entry := range entries {
+				if strings.HasSuffix(entry.Name(), ".json") {
+					candidateEvidenceFiles = append(candidateEvidenceFiles, filepath.Join(dir, entry.Name()))
+				}
+			}
+		}
+	}
+
+	seenRecIDs := make(map[string]bool)
+	for _, f := range candidateEvidenceFiles {
+		recs, err := ingestEvidenceFile(f)
+		if err == nil {
+			for _, r := range recs {
+				if r.EvidenceID != "" && !seenRecIDs[r.EvidenceID] {
+					seenRecIDs[r.EvidenceID] = true
+					if r.ImplementationSHA == "" {
+						r.ImplementationSHA = implSHA
+					}
+					manifest.Records = append(manifest.Records, r)
+				}
+			}
+		}
+	}
+
+	// 2. Discover artifacts for verified runs
+	var runtimeRunID, uiRunID, buildRunID, skillRunID string
+	for _, r := range runs {
+		if r.Conclusion == "success" || r.Conclusion == "SUCCESS" {
+			switch r.WorkflowName {
+			case "iOS 27 Shortcuts Runtime PoC":
+				runtimeRunID = r.RunID
+			case "iOS Build":
+				uiRunID = r.RunID
+			case "Build & Test":
+				buildRunID = r.RunID
+			case "OpenMinis Skill":
+				skillRunID = r.RunID
+			}
+		}
+	}
+
 	var runtimeArtifacts []EvidenceArtifact
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/clipboard-result.txt"); art != nil {
+	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/clipboard-result.txt", runtimeRunID); art != nil {
 		runtimeArtifacts = append(runtimeArtifacts, *art)
 	}
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/CherriRuntimePOC.shortcut"); art != nil {
+	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/CherriRuntimePOC.shortcut", runtimeRunID); art != nil {
 		runtimeArtifacts = append(runtimeArtifacts, *art)
 	}
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/CherriRuntimePOC.cherri"); art != nil {
+	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/CherriRuntimePOC.cherri", runtimeRunID); art != nil {
 		runtimeArtifacts = append(runtimeArtifacts, *art)
 	}
 
 	var uiArtifacts []EvidenceArtifact
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios-build/Cherri-Simulator-app/Info.plist"); art != nil {
+	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios-build/Cherri-Simulator-app/Info.plist", uiRunID); art != nil {
 		uiArtifacts = append(uiArtifacts, *art)
 	}
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios-build/Cherri-unsigned-IPA/Cherri-unsigned.ipa"); art != nil {
+	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios-build/Cherri-unsigned-IPA/Cherri-unsigned.ipa", uiRunID); art != nil {
 		uiArtifacts = append(uiArtifacts, *art)
 	}
 
-	// 1. Acceptance cases
-	for _, c := range contracts.Acceptance.Cases {
-		tiers := parseRequiredTiers(c.MinimumTestLevel)
-		testIDs := deriveAcceptanceTestIDs(c.ID, c.Group)
-
-		for _, tier := range tiers {
-			recID := fmt.Sprintf("ev-%s-%s", c.ID, tier)
-			rec := EvidenceRecord{
-				EvidenceID:        recID,
-				Requirements:      []string{c.ID},
-				Tier:              tier,
+	// 3. For verified CI runs, add genuine CI evidence records
+	if buildRunID != "" {
+		manifest.Records = append(manifest.Records, EvidenceRecord{
+			EvidenceID:        "ev-ci-build-test",
+			Requirements:      []string{"BRG01", "BRG33"},
+			Tier:              "ci",
+			TestID:            "github-actions:Build & Test",
+			ImplementationSHA: implSHA,
+			ExitCode:          0,
+			Result:            "passed",
+			Detail:            fmt.Sprintf("Build & Test passed on commit %s (run %s)", implSHA, buildRunID),
+		})
+	}
+	if skillRunID != "" {
+		manifest.Records = append(manifest.Records, EvidenceRecord{
+			EvidenceID:        "ev-ci-openminis-skill",
+			Requirements:      []string{"SK01", "SK02", "SK03", "SK04"},
+			Tier:              "ci",
+			TestID:            "github-actions:OpenMinis Skill",
+			ImplementationSHA: implSHA,
+			ExitCode:          0,
+			Result:            "passed",
+			Detail:            fmt.Sprintf("OpenMinis Skill passed on commit %s (run %s)", implSHA, skillRunID),
+		})
+	}
+	if uiRunID != "" {
+		swiftTests := []struct {
+			testMethod string
+			reqs       []string
+		}{
+			{"CherriCoreIntegrationTests/testCherriAnalyzeReturnsMultipleDiagnostics", []string{"ED02", "ED03"}},
+			{"CherriCoreIntegrationTests/testCherriCompleteReturnsContextualItems", []string{"ED04"}},
+			{"CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis", []string{"ED05", "ED06"}},
+			{"CherriCoreIntegrationTests/testV2LanguageLetAndFStringCompile", []string{"ED01"}},
+			{"CherriCoreIntegrationTests/testActionCatalogUsesCompilerDefinitions", []string{"ED07"}},
+			{"CherriCoreIntegrationTests/testPaletteSnippetSuppliesRequiredArguments", []string{"ED08"}},
+			{"CherriCoreIntegrationTests/testShortcutPlistEditorAppliesPreviewEdits", []string{"ED09"}},
+		}
+		for i, st := range swiftTests {
+			manifest.Records = append(manifest.Records, EvidenceRecord{
+				EvidenceID:        fmt.Sprintf("ev-ios-ui-%d", i+1),
+				Requirements:      st.reqs,
+				Tier:              "ios-ui",
+				TestID:            st.testMethod,
 				ImplementationSHA: implSHA,
 				ExitCode:          0,
 				Result:            "passed",
-			}
-
-			switch tier {
-			case "ios-runtime":
-				rec.TestID = "ios27-runtime-poc:ImportHelperUITests+CherriRuntimePOC"
-				rec.Command = []string{"scripts/ios27_runtime_poc.sh"}
-				rec.Artifacts = runtimeArtifacts
-				rec.Detail = fmt.Sprintf("Requirement %s verified on iOS 27 Shortcuts simulator (run 37662740612)", c.ID)
-			case "ios-ui":
-				rec.TestID = "ios-build:CherriCoreTests_iOS_Simulator"
-				rec.Command = []string{"xcodebuild", "test", "-scheme", "CherriApp"}
-				rec.Artifacts = uiArtifacts
-				rec.Detail = fmt.Sprintf("Requirement %s verified in iOS Simulator UI suite (run 37662728285)", c.ID)
-			case "ci":
-				rec.TestID = "github-actions:Build & Test"
-				rec.Detail = fmt.Sprintf("Requirement %s verified by CI workflow (run 37662699247)", c.ID)
-			case "negative-ci":
-				rec.TestID = "github-actions:TestCherri_negative_checks"
-				rec.Detail = fmt.Sprintf("Requirement %s verified by negative test suite in CI", c.ID)
-			case "external-eval":
-				if c.ID == "AI01" {
-					rec.TestID = "evaluation:Section22.5"
-					rec.Result = "not_run"
-					rec.Detail = "Held-out evaluation endpoint not configured per Section 22.5"
-				} else {
-					rec.TestID = testIDs[0]
-					rec.Detail = fmt.Sprintf("Requirement %s evaluated", c.ID)
-				}
-			default:
-				rec.TestID = testIDs[0]
-				rec.Detail = fmt.Sprintf("Requirement %s verified at tier %s", c.ID, tier)
-			}
-
-			manifest.Records = append(manifest.Records, rec)
+				Artifacts:         uiArtifacts,
+				Detail:            fmt.Sprintf("Swift XCTest %s passed in iOS Build (run %s)", st.testMethod, uiRunID),
+			})
 		}
 	}
 
-	// 2. Repair cases
-	for _, c := range contracts.Repair.Cases {
-		tiers := make([]string, 0, len(c.RequiredTestLevels))
-		for _, l := range c.RequiredTestLevels {
-			tiers = append(tiers, parseRequiredTiers(l)...)
-		}
-		if len(tiers) == 0 {
-			tiers = []string{"unit"}
-		}
-		testIDs := deriveRepairTestIDs(c.ID, c.Title)
-
-		for _, tier := range tiers {
-			recID := fmt.Sprintf("ev-%s-%s", c.ID, tier)
-			rec := EvidenceRecord{
-				EvidenceID:        recID,
-				Requirements:      []string{c.ID},
-				Tier:              tier,
-				ImplementationSHA: implSHA,
-				ExitCode:          0,
-				Result:            "passed",
-			}
-
-			switch tier {
-			case "ios-runtime":
-				rec.TestID = "ios27-runtime-poc:ImportHelperUITests+CherriRuntimePOC"
-				rec.Command = []string{"scripts/ios27_runtime_poc.sh"}
-				rec.Artifacts = runtimeArtifacts
-				rec.Detail = fmt.Sprintf("Repair %s verified on iOS 27 Shortcuts simulator (run 37662740612)", c.ID)
-			case "ios-ui":
-				rec.TestID = "ios-build:CherriCoreTests_iOS_Simulator"
-				rec.Command = []string{"xcodebuild", "test", "-scheme", "CherriApp"}
-				rec.Artifacts = uiArtifacts
-				rec.Detail = fmt.Sprintf("Repair %s verified in iOS Simulator UI suite (run 37662728285)", c.ID)
-			case "ci":
-				rec.TestID = "github-actions:Build & Test"
-				rec.Detail = fmt.Sprintf("Repair %s verified by CI workflow (run 37662699247)", c.ID)
-			case "negative-ci":
-				rec.TestID = "github-actions:TestCherri_negative_checks"
-				rec.Detail = fmt.Sprintf("Repair %s verified by negative test suite in CI", c.ID)
-			default:
-				rec.TestID = testIDs[0]
-				rec.Detail = fmt.Sprintf("Repair %s verified at tier %s", c.ID, tier)
-			}
-
-			manifest.Records = append(manifest.Records, rec)
-		}
-	}
-
-	// 3. Recovery Gates
-	for _, g := range contracts.Gates.Gates {
-		tiers := make([]string, 0, len(g.MinimumEvidenceTiers))
-		for _, l := range g.MinimumEvidenceTiers {
-			tiers = append(tiers, parseRequiredTiers(l)...)
-		}
-		if len(tiers) == 0 {
-			tiers = []string{"repository"}
-		}
-		testIDs := deriveGateTestIDs(g.ID, g.ProposedTestPrefix)
-
-		for _, tier := range tiers {
-			recID := fmt.Sprintf("ev-%s-%s", g.ID, tier)
-			rec := EvidenceRecord{
-				EvidenceID:        recID,
-				Requirements:      []string{g.ID},
-				Tier:              tier,
-				ImplementationSHA: implSHA,
-				ExitCode:          0,
-				Result:            "passed",
-			}
-
-			switch tier {
-			case "ios-runtime":
-				rec.TestID = "ios27-runtime-poc:ImportHelperUITests+CherriRuntimePOC"
-				rec.Command = []string{"scripts/ios27_runtime_poc.sh"}
-				rec.Artifacts = runtimeArtifacts
-				rec.Detail = fmt.Sprintf("Gate %s verified on iOS 27 Shortcuts simulator (run 37662740612)", g.ID)
-			case "ios-ui":
-				rec.TestID = "ios-build:CherriCoreTests_iOS_Simulator"
-				rec.Command = []string{"xcodebuild", "test", "-scheme", "CherriApp"}
-				rec.Artifacts = uiArtifacts
-				rec.Detail = fmt.Sprintf("Gate %s verified in iOS Simulator UI suite (run 37662728285)", g.ID)
-			case "ci":
-				rec.TestID = "github-actions:Build & Test"
-				rec.Detail = fmt.Sprintf("Gate %s verified by CI workflow (run 37662699247)", g.ID)
-			case "negative-ci":
-				rec.TestID = "github-actions:TestCherri_negative_checks"
-				rec.Detail = fmt.Sprintf("Gate %s verified by negative test suite in CI", g.ID)
-			default:
-				rec.TestID = testIDs[0]
-				rec.Detail = fmt.Sprintf("Gate %s verified at tier %s", g.ID, tier)
-			}
-
-			manifest.Records = append(manifest.Records, rec)
-		}
-	}
+	// 4. AI01 per Section 22.5
+	manifest.Records = append(manifest.Records, EvidenceRecord{
+		EvidenceID:        "ev-AI01-external-eval",
+		Requirements:      []string{"AI01"},
+		Tier:              "external-eval",
+		TestID:            "evaluation:Section22.5",
+		ImplementationSHA: implSHA,
+		ExitCode:          0,
+		Result:            "not_run",
+		Detail:            "Held-out evaluation endpoint not configured per Section 22.5",
+	})
 
 	data, err := json.MarshalIndent(manifest, "", "  ")
 	if err != nil {

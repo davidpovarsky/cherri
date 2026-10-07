@@ -309,9 +309,13 @@ for i in $(seq 1 30); do
     CLIP_VAL=$(xcrun simctl pbpaste "$SIM_UDID" 2>/dev/null || true)
     echo "Poll $i/30: '$CLIP_VAL'"
     if echo "$CLIP_VAL" | grep -q "CHERRI_IOS27_RUNTIME_OK"; then
-        if echo "$CLIP_VAL" | grep -q "V2_VAR_OK" && echo "$CLIP_VAL" | grep -q "V2_IF_OK" && echo "$CLIP_VAL" | grep -q "V2_NESTED_LOOP_OK" && echo "$CLIP_VAL" | grep -q "V2_FUNCTION_OK" && echo "$CLIP_VAL" | grep -q "V2_VARIANT_OK"; then
+        if echo "$CLIP_VAL" | grep -q "VAR=updated" && \
+           echo "$CLIP_VAL" | grep -q "IF=true" && \
+           echo "$CLIP_VAL" | grep -q "LOOPS=0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2" && \
+           echo "$CLIP_VAL" | grep -q "FUNCTION=21" && \
+           echo "$CLIP_VAL" | grep -q "BASE64=Q0hFUlJJ"; then
             ASSERT_PASSED=true
-            echo "ASSERTION PASSED on poll $i: Expected v2 conformance markers detected (smoke, var, if, nested_loop, function, variant)!"
+            echo "ASSERTION PASSED on poll $i: Expected v2 conformance markers detected (VAR=updated, IF=true, LOOPS=..., FUNCTION=21, BASE64=Q0hFUlJJ)!"
             break
         fi
     fi
@@ -341,6 +345,89 @@ echo "Final Clipboard: $CLIP_VAL"
 echo "UI Automation Used: $UI_AUTOMATION_USED"
 
 if [ "$ASSERT_PASSED" = "true" ]; then
+    HEAD_SHA=$(git rev-parse HEAD 2>/dev/null || echo "")
+    cat <<EOF > artifacts/runtime-evidence.json
+[
+  {
+    "evidence_id": "ev-runtime-smoke",
+    "requirements": ["BRG24"],
+    "tier": "ios-runtime",
+    "test_id": "ios27-runtime-poc:smoke",
+    "implementation_sha": "$HEAD_SHA",
+    "result": "passed",
+    "exit_code": 0,
+    "assertions": {
+      "status": "CHERRI_IOS27_RUNTIME_OK"
+    },
+    "detail": "Simulator executed imported Cherri shortcut successfully"
+  },
+  {
+    "evidence_id": "ev-runtime-variables",
+    "requirements": ["V01", "V02", "V03", "RP03"],
+    "tier": "ios-runtime",
+    "test_id": "ios27-runtime-poc:variables",
+    "implementation_sha": "$HEAD_SHA",
+    "result": "passed",
+    "exit_code": 0,
+    "assertions": {
+      "variable_result": "updated"
+    },
+    "detail": "Variable mutation and read verified in iOS Shortcuts runtime"
+  },
+  {
+    "evidence_id": "ev-runtime-conditionals",
+    "requirements": ["F01", "RP13"],
+    "tier": "ios-runtime",
+    "test_id": "ios27-runtime-poc:conditionals",
+    "implementation_sha": "$HEAD_SHA",
+    "result": "passed",
+    "exit_code": 0,
+    "assertions": {
+      "conditional_result": "true"
+    },
+    "detail": "Conditional branch (10 > 5) calculated and verified in iOS Shortcuts runtime"
+  },
+  {
+    "evidence_id": "ev-runtime-loops",
+    "requirements": ["F02", "F04", "LP01", "LP02", "LP03", "RP14"],
+    "tier": "ios-runtime",
+    "test_id": "ios27-runtime-poc:nested-loops",
+    "implementation_sha": "$HEAD_SHA",
+    "result": "passed",
+    "exit_code": 0,
+    "assertions": {
+      "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
+    },
+    "detail": "Nested loops with outer/inner item and index variables verified in iOS Shortcuts runtime"
+  },
+  {
+    "evidence_id": "ev-runtime-functions",
+    "requirements": ["FN01", "FN02", "FN03", "FN04"],
+    "tier": "ios-runtime",
+    "test_id": "ios27-runtime-poc:functions",
+    "implementation_sha": "$HEAD_SHA",
+    "result": "passed",
+    "exit_code": 0,
+    "assertions": {
+      "function_result": "21"
+    },
+    "detail": "Function definition with parameters and return value execution verified in iOS Shortcuts runtime"
+  },
+  {
+    "evidence_id": "ev-runtime-static-variants",
+    "requirements": ["SV01", "RP08", "BRG17"],
+    "tier": "ios-runtime",
+    "test_id": "ios27-runtime-poc:static-variants",
+    "implementation_sha": "$HEAD_SHA",
+    "result": "passed",
+    "exit_code": 0,
+    "assertions": {
+      "base64_result": "Q0hFUlJJ"
+    },
+    "detail": "Static variant Base64 encoding verified in iOS Shortcuts runtime"
+  }
+]
+EOF
     echo "=================================================="
     echo "IOS27_SHORTCUTS_RUNTIME_POC=PASS"
     echo "=================================================="

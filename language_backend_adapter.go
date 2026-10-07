@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
+	"github.com/electrikmilk/cherri/internal/language/ir"
 	"howett.net/plist"
 )
 
@@ -39,26 +40,49 @@ func (s *CanonicalBackendSession) Close() {
 	}
 }
 
+var backendEmitHook func(call backend.ResolvedCall) error
+
 func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (string, error) {
-	def, ident, ok := lookupCanonicalAction(call)
-	if !ok || def == nil {
-		// If canonical definition is not in actions registry, emit raw action
-		if call.AppleIdentifier != "" {
-			params := make(map[string]any)
-			for _, arg := range call.Arguments {
-				if !arg.Omitted {
-					params[arg.ParameterID] = ConvertSemanticValueToParam(arg.Value)
-				}
-			}
-			return s.emitRaw(call.AppleIdentifier, params, call.OutputUUID, call.OutputName, "")
+	if backendEmitHook != nil {
+		if err := backendEmitHook(call); err != nil {
+			return "", err
 		}
-		return "", fmt.Errorf("unknown action: %s", call.DefinitionID)
 	}
 
-	// Prepare arguments for canonical action
-	args := make([]actionArgument, len(call.Arguments))
-	for i, arg := range call.Arguments {
-		args[i] = convertCallArgToActionArg(arg)
+	def, ident, ok := lookupCanonicalAction(call)
+	if !ok || def == nil {
+		return "", fmt.Errorf("canonical definition not found for action %q: typed actions must resolve canonically", call.DefinitionID)
+	}
+
+	// Prepare arguments for canonical action matching definition parameters
+	var args []actionArgument
+	if len(def.parameters) > 0 {
+		args = make([]actionArgument, len(def.parameters))
+		for i := range args {
+			args[i] = actionArgument{valueType: Nil, value: nil}
+		}
+		for _, callArg := range call.Arguments {
+			pos := callArg.Position
+			if pos < 0 || pos >= len(args) {
+				matched := false
+				for pIdx, pDef := range def.parameters {
+					if pDef.name == callArg.ParameterID || pDef.key == callArg.ParameterID {
+						pos = pIdx
+						matched = true
+						break
+					}
+				}
+				if !matched {
+					continue
+				}
+			}
+			args[pos] = convertCallArgToActionArg(callArg)
+		}
+	} else {
+		args = make([]actionArgument, len(call.Arguments))
+		for i, callArg := range call.Arguments {
+			args[i] = convertCallArgToActionArg(callArg)
+		}
 	}
 
 	// Prepare action reference
@@ -83,14 +107,8 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	}
 
 	outputUUID := call.OutputUUID
-	if outputUUID == "" {
-		outputUUID = call.NodeID
-	}
-
-	if outputUUID != "" {
-		params["UUID"] = outputUUID
-	}
-	if call.OutputName != "" {
+	if call.OutputName != "" && call.OutputUUID != "" {
+		params["UUID"] = call.OutputUUID
 		params["CustomOutputName"] = call.OutputName
 	}
 
@@ -121,31 +139,21 @@ func convertCallArgToActionArg(arg backend.CallArgument) actionArgument {
 	case backend.ValReference:
 		ref := val.Ref
 		if ref != nil {
+			desc := ReferenceToDescriptor(ref)
 			varRef := varValue{
-				variableType: "Variable",
+				variableType: desc.Kind,
 				valueType:    Variable,
-				value:        ref.ProducerName,
+				value:        desc.VariableName,
+				descriptor:   &desc,
 			}
-			if ref.Kind == backend.RefActionResult || ref.Kind == backend.RefLoopResult {
+			if desc.Kind == "ActionOutput" {
 				varRef.constant = true
-				if ref.ProducerName != "" {
-					varRef.value = ref.ProducerName
-					uuids[ref.ProducerName] = ref.ProducerID
-				} else {
-					varRef.value = ref.ProducerID
-					uuids[ref.ProducerID] = ref.ProducerID
+				varRef.value = desc.OutputName
+				if varRef.value == "" {
+					varRef.value = desc.OutputUUID
 				}
-			}
-			if len(ref.Transformations) > 0 {
-				for _, t := range ref.Transformations {
-					if t.Type == "WFPropertyVariableAggrandizement" {
-						varRef.getAs = t.PropertyName
-					} else if t.Type == "WFCoercionVariableAggrandizement" {
-						varRef.coerce = t.CoercionItemClass
-					} else if t.Type == "WFDictionaryValueVariableAggrandizement" {
-						varRef.getAs = t.DictionaryKey
-					}
-				}
+				uuids[desc.OutputName] = desc.OutputUUID
+				uuids[desc.OutputUUID] = desc.OutputUUID
 			}
 			return actionArgument{
 				valueType: Variable,
@@ -154,10 +162,28 @@ func convertCallArgToActionArg(arg backend.CallArgument) actionArgument {
 		}
 		return actionArgument{valueType: Nil, value: nil}
 	case backend.ValTextSegments:
-		encoded := encodeTextSegments(val.Segments)
+		encoded := EncodeTextSegmentsShared(val.Segments)
 		return actionArgument{
 			valueType: String,
 			value:     encoded,
+		}
+	case backend.ValDict:
+		dictItems := make([]WFDictionaryFieldValueItem, len(val.DictVal))
+		for i, entry := range val.DictVal {
+			dictItems[i] = EncodeDictionaryItemShared(entry.Key, ConvertSemanticValueToParam(entry.Value))
+		}
+		return actionArgument{
+			valueType: Dict,
+			value:     dictItems,
+		}
+	case backend.ValList:
+		items := make([]any, len(val.ListVal))
+		for i, item := range val.ListVal {
+			items[i] = ConvertSemanticValueToParam(item)
+		}
+		return actionArgument{
+			valueType: Arr,
+			value:     items,
 		}
 	default:
 		return actionArgument{
@@ -240,22 +266,88 @@ func (s *CanonicalBackendSession) EmitRawAction(appleIdentifier string, params m
 	return err
 }
 
+func sanitizeRawParamValue(v any) any {
+	if tok, ok := v.(*ir.AttachmentToken); ok {
+		desc := ReferenceDescriptor{
+			Kind:       tok.Type,
+			OutputUUID: tok.OutputUUID,
+			OutputName: tok.OutputName,
+		}
+		if tok.Type == "Variable" || tok.Type == "ExtensionInput" {
+			desc.VariableName = tok.OutputName
+		}
+		if len(tok.Aggrandizements) > 0 {
+			desc.Aggrandizements = make([]Aggrandizement, len(tok.Aggrandizements))
+			for i, a := range tok.Aggrandizements {
+				tStr, _ := a["Type"].(string)
+				pName, _ := a["PropertyName"].(string)
+				cItem, _ := a["CoercionItemClass"].(string)
+				dKey, _ := a["DictionaryKey"].(string)
+				pInfo := a["PropertyUserInfo"]
+				desc.Aggrandizements[i] = Aggrandizement{
+					Type:              tStr,
+					PropertyName:     pName,
+					CoercionItemClass: cItem,
+					DictionaryKey:     dKey,
+					PropertyUserInfo:  pInfo,
+				}
+			}
+		}
+		return EncodeReferenceAttachment(desc, "WFTextTokenAttachment")
+	}
+	if ref, ok := v.(*backend.Reference); ok {
+		desc := ReferenceToDescriptor(ref)
+		return EncodeReferenceAttachment(desc, "WFTextTokenAttachment")
+	}
+	if m, ok := v.(map[string]any); ok {
+		res := make(map[string]any, len(m))
+		for k, val := range m {
+			res[k] = sanitizeRawParamValue(val)
+		}
+		return res
+	}
+	if m, ok := v.(map[string]interface{}); ok {
+		res := make(map[string]any, len(m))
+		for k, val := range m {
+			res[k] = sanitizeRawParamValue(val)
+		}
+		return res
+	}
+	if s, ok := v.([]any); ok {
+		res := make([]any, len(s))
+		for i, el := range s {
+			res[i] = sanitizeRawParamValue(el)
+		}
+		return res
+	}
+	if s, ok := v.([]interface{}); ok {
+		res := make([]any, len(s))
+		for i, el := range s {
+			res[i] = sanitizeRawParamValue(el)
+		}
+		return res
+	}
+	return v
+}
+
 func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[string]any, outputUUID, outputName, groupingID string) (string, error) {
 	if params == nil {
 		params = make(map[string]any)
 	}
-	if outputUUID != "" {
-		params["UUID"] = outputUUID
+	cleanParams := make(map[string]any, len(params))
+	for k, v := range params {
+		cleanParams[k] = sanitizeRawParamValue(v)
 	}
-	if outputName != "" {
-		params["CustomOutputName"] = outputName
+	if outputName != "" && outputUUID != "" {
+		cleanParams["UUID"] = outputUUID
+		cleanParams["CustomOutputName"] = outputName
 	}
 	if groupingID != "" {
-		params["GroupingIdentifier"] = groupingID
+		cleanParams["GroupingIdentifier"] = groupingID
 	}
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
 		WFWorkflowActionIdentifier: appleIdentifier,
-		WFWorkflowActionParameters: params,
+		WFWorkflowActionParameters: cleanParams,
 	})
 	return outputUUID, nil
 }

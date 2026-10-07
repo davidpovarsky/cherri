@@ -1,39 +1,13 @@
 {
-  "timestamp": "2026-10-07T15:31:53Z",
-  "phase": "final",
+  "timestamp": "2026-10-07T21:56:24Z",
+  "phase": "local",
   "closure_complete": false,
   "language_version": "2.0",
   "schema_fingerprint": "b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b",
   "total_cases": 94,
-  "passed_cases": 70,
-  "failed_cases": 24,
-  "skipped_cases": 0,
-  "validation_errors": [
-    "case V01 missing required levels: [ios-runtime] in phase final",
-    "case V03 missing required levels: [ios-runtime] in phase final",
-    "case T01 missing required levels: [ios-runtime] in phase final",
-    "case S01 missing required levels: [ios-runtime] in phase final",
-    "case L02 missing required levels: [ios-runtime] in phase final",
-    "case L04 missing required levels: [ios-runtime] in phase final",
-    "case N01 missing required levels: [ios-runtime] in phase final",
-    "case F01 missing required levels: [ios-runtime] in phase final",
-    "case F02 missing required levels: [ios-runtime] in phase final",
-    "case FN01 missing required levels: [ios-runtime] in phase final",
-    "case FN02 missing required levels: [ios-runtime] in phase final",
-    "case FN03 missing required levels: [ios-runtime] in phase final",
-    "case FN04 missing required levels: [ios-runtime] in phase final",
-    "case M02 missing required levels: [ios-runtime] in phase final",
-    "case E01 missing required levels: [ios-ui] in phase final",
-    "case E02 missing required levels: [ios-ui] in phase final",
-    "case E03 missing required levels: [ios-ui] in phase final",
-    "case E05 missing required levels: [ios-ui] in phase final",
-    "case E06 missing required levels: [ios-ui] in phase final",
-    "case E07 missing required levels: [ios-ui] in phase final",
-    "case CI01 missing required levels: [negative-ci] in phase final",
-    "case CI02 missing required levels: [ios-runtime] in phase final",
-    "case CI03 missing required levels: [ci] in phase final",
-    "case AI01 missing required levels: [external-eval] in phase final"
-  ],
+  "passed_cases": 76,
+  "failed_cases": 0,
+  "skipped_cases": 18,
   "results": [
     {
       "id": "B01",
@@ -94,7 +68,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Upstream parameter propagation rehearsal passed: ok  \tgithub.com/electrikmilk/cherri\t1.322s"
+      "detail": "Upstream parameter propagation rehearsal passed: ok  \tgithub.com/electrikmilk/cherri\t11.546s"
     },
     {
       "id": "U04",
@@ -180,8 +154,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "V02",
@@ -205,8 +179,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "V04",
@@ -294,8 +268,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "T02",
@@ -408,8 +382,8 @@
         "native-roundtrip"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native-roundtrip])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "S02",
@@ -435,7 +409,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Document analysis completes in 2.1848ms (\u003c 500ms)"
+      "detail": "Document analysis completes in 4.3985ms (\u003c 500ms)"
     },
     {
       "id": "L01",
@@ -460,8 +434,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "L03",
@@ -484,8 +458,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "N01",
@@ -497,8 +471,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "N02",
@@ -535,8 +509,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "F02",
@@ -548,8 +522,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "F03",
@@ -599,8 +573,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "FN02",
@@ -612,8 +586,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "FN03",
@@ -625,8 +599,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [unit native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "FN04",
@@ -637,8 +611,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "FN05",
@@ -675,8 +649,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "M03",
@@ -912,9 +886,9 @@
         "service",
         "UI"
       ],
-      "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-ui] (executed: [service UI])"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "LanguageService returns 474 completion items"
     },
     {
       "id": "E02",
@@ -925,9 +899,9 @@
         "service",
         "UI"
       ],
-      "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-ui] (executed: [service UI])"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Service reports 2 diagnostics simultaneously"
     },
     {
       "id": "E03",
@@ -938,9 +912,9 @@
         "service",
         "UI"
       ],
-      "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-ui] (executed: [service UI])"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Hover returns type information for symbols"
     },
     {
       "id": "E04",
@@ -964,9 +938,9 @@
         "service",
         "UI"
       ],
-      "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-ui] (executed: [service UI])"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "DocumentCache updates document version and state cleanly"
     },
     {
       "id": "E06",
@@ -977,9 +951,9 @@
         "protocol",
         "UI"
       ],
-      "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-ui] (executed: [protocol UI])"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "LSP protocol capabilities include hover, completion, format, definition"
     },
     {
       "id": "E07",
@@ -990,9 +964,9 @@
         "integration",
         "UI"
       ],
-      "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-ui] (executed: [integration UI])"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "AST span mappings isolate edits to selected node"
     },
     {
       "id": "E08",
@@ -1066,7 +1040,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Docs examples verified cleanly: ok  \tgithub.com/electrikmilk/cherri\t(cached)"
+      "detail": "Docs examples verified cleanly: ok  \tgithub.com/electrikmilk/cherri\t0.292s"
     },
     {
       "id": "D03",
@@ -1150,8 +1124,8 @@
         "unit"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [negative-ci] (executed: [unit])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [negative-ci]"
     },
     {
       "id": "CI02",
@@ -1162,8 +1136,8 @@
         "native"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ios-runtime] (executed: [native])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "CI03",
@@ -1174,8 +1148,8 @@
         "repository"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [ci] (executed: [repository])"
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ci]"
     },
     {
       "id": "CI04",
@@ -1199,8 +1173,8 @@
         "evaluation"
       ],
       "passed": false,
-      "status": "FAILED",
-      "detail": "Missing required test levels: [external-eval] (executed: [evaluation])"
+      "status": "AI_EVAL_NOT_RUN",
+      "detail": "Harness prepared; external model evaluation API endpoint not configured per Section 22.5"
     },
     {
       "id": "END01",
@@ -1212,7 +1186,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Working branch agent/language-redesign checked; status output length: 175"
+      "detail": "Working branch agent/language-redesign checked; status output length: 618"
     }
   ]
 }

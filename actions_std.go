@@ -661,9 +661,8 @@ var actions = map[string]*actionDefinition{
 				return map[string]any{}
 			}
 
-			if len(args) > 1 {
-				var richText = getArgValue(args[1]).(bool)
-				if richText {
+			if len(args) > 1 && args[1].value != nil {
+				if richText, ok := getArgValue(args[1]).(bool); ok && richText {
 					return map[string]any{
 						"WFGetTextFromPDFTextType": "Rich Text",
 					}
@@ -2121,6 +2120,10 @@ func loadStandardActions() {
 	handleIncludes()
 	handleActionDefinitions()
 	resetParse()
+	included = []string{}
+	includes = []include{}
+	lines = []string{}
+	tokens = []token{}
 }
 
 func loadBasicStandardActions() {
