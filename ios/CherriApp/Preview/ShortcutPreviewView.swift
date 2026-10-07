@@ -5,6 +5,7 @@ import WebKit
 struct ShortcutPreviewView: UIViewRepresentable {
     let plist: Data?
     let name: String
+    var actionMetadataJSON: String?
     let onEdit: (ShortcutPreviewEdit) -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -39,6 +40,7 @@ struct ShortcutPreviewView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         context.coordinator.parent = self
+        context.coordinator.registerActionMetadataIfNeeded(in: webView)
         context.coordinator.renderIfReady(in: webView)
     }
 
@@ -52,6 +54,7 @@ struct ShortcutPreviewView: UIViewRepresentable {
         var parent: ShortcutPreviewView
         private var isReady = false
         private var lastPayloadKey: String?
+        private var lastRegisteredMetadata: String?
 
         init(parent: ShortcutPreviewView) {
             self.parent = parent
@@ -59,7 +62,23 @@ struct ShortcutPreviewView: UIViewRepresentable {
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             isReady = true
+            registerActionMetadataIfNeeded(in: webView)
             renderIfReady(in: webView)
+        }
+
+        // Shared Cherri catalog metadata flows into preview-shortcut's generic
+        // fallback renderer so actions without a built-in definition still get
+        // a titled card. Registration is idempotent per metadata payload.
+        func registerActionMetadataIfNeeded(in webView: WKWebView) {
+            guard let metadata = parent.actionMetadataJSON,
+                  !metadata.isEmpty,
+                  metadata != lastRegisteredMetadata else { return }
+
+            let encoded = Self.javaScriptString(metadata)
+            lastRegisteredMetadata = metadata
+            webView.evaluateJavaScript(
+                "window.registerCherriActionMetadata?.(JSON.parse(\(encoded)))"
+            )
         }
 
         func webView(

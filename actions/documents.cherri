@@ -92,7 +92,8 @@ action 'file.rename' rename(&variable file: 'WFFile', text newName: 'WFNewFilena
 action default 'documentpicker.save' saveFilePrompt(variable file: 'WFInput', bool ?overwrite: 'WFSaveFileOverwrite' = false)
 
 // [Doc]: [Files & Folders] Save File: Save contents to a file at the specified path.
-action 'documentpicker.save' saveFile(text path: 'WFFileDestinationPath', &variable content: 'WFInput', bool ?overwrite: 'WFSaveFileOverwrite' = false) {
+// [Doc]: [Files & Folders] Save File: Save `content` to `path`, optionally into a referenced `folder`.
+action 'documentpicker.save' saveFile(text path: 'WFFileDestinationPath', &variable content: 'WFInput', bool ?overwrite: 'WFSaveFileOverwrite' = false, &variable ?folder: 'WFFolder') {
 	"WFAskWhereToSave": false
 }
 

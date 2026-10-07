@@ -94,6 +94,12 @@ Before a substantial change to a forked component:
 
 Do not force-push upstream state over local work.
 
+### Fork action provenance
+
+Any fork-specific action addition or material action change (parameters, serialization, compiler/decompiler handling, fork-specific metadata) must be recorded in `docs/fork-action-provenance.json` in the same task. No entry means the action is inherited from upstream untouched. See `docs/shortcut-action-development-playbook.md` for the full policy and recovery procedure.
+
+Provenance commits are non-circular: commit the implementation first, then record its SHA in `firstForkCommit` via a separate follow-up provenance-metadata commit before pushing. Never amend an implementation commit that a registry entry already references.
+
 ## Branch and Commit Discipline
 
 Work on the branch explicitly requested by the user/task. Do not merge to `main` unless explicitly asked.
@@ -349,7 +355,7 @@ cherri --action=actionName
 sh skills/cherri-shortcuts/scripts/self-test.sh
 ```
 
-Run test functions individually when required by Cherri's global-state test isolation; see the technical reference for the exact caveat.
+The compiler's per-compilation mutable state has a single authoritative reset (`compiler_state.go`); the full suite is sequential-safe and `go test -count=5` is expected to pass. Round-trip suites still isolate phases in subprocesses.
 
 ## Load Detailed Technical Reference Only When Needed
 

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/electrikmilk/args-parser"
@@ -17,7 +18,7 @@ import (
 func getOutputPath(name string) string {
 	if args.Using("output") && args.Value("output") != "" {
 		var outputPathArg = args.Value("output")
-		var outputPathEnding = end(strings.Split(outputPathArg, "/"))
+		var outputPathEnding = filepath.Base(outputPathArg)
 
 		if !strings.Contains(outputPathEnding, ".") {
 			var outputPathInfo, outputPathErr = os.Stat(outputPathArg)

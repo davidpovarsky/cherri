@@ -7,6 +7,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"maps"
 	"os"
 	"reflect"
 	"regexp"
@@ -32,22 +33,32 @@ var fileLabelsMap = map[string]int{
 	"gray":   1,
 }
 
-var toggleAlarmIntent = appIntent{
-	name:                "Clock",
-	bundleIdentifier:    "com.apple.clock",
-	appIntentIdentifier: "ToggleAlarmIntent",
-}
+var toggleAlarmIntent = appleAppIntent("Clock", "com.apple.clock", "ToggleAlarmIntent")
 
-var createShortcutiCloudLinkIntent = appIntent{
-	name:                "Shortcuts",
-	bundleIdentifier:    "com.apple.shortcuts",
-	appIntentIdentifier: "CreateShortcutiCloudLinkAction",
-}
+var createShortcutiCloudLinkIntent = appleAppIntent("Shortcuts", "com.apple.shortcuts", "CreateShortcutiCloudLinkAction")
 
-var setMultitaskingModeIntent = appIntent{
-	name:                "ShortcutsActions",
-	bundleIdentifier:    "com.apple.ShortcutsActions",
-	appIntentIdentifier: "SetMultitaskingModeAction",
+var setMultitaskingModeIntent = appleAppIntent("ShortcutsActions", "com.apple.ShortcutsActions", "SetMultitaskingModeAction")
+
+var setSilentModeIntent = appleAppIntent("ShortcutsActions", "com.apple.ShortcutsActions", "SetSilentModeAction")
+
+var searchSpotlightIntent = appleAppIntent("Spotlight", "com.apple.Spotlight", "SearchSpotlightIntent")
+
+var createRemindersListIntent = appleAppIntent("Reminders", "com.apple.reminders", "TTRCreateListAppIntent")
+
+var startStopwatchIntent = appleAppIntent("Clock", "com.apple.clock", "StartStopwatchIntent")
+
+var stopStopwatchIntent = appleAppIntent("Clock", "com.apple.clock", "StopStopwatchIntent")
+
+var playAudiobookIntent = appleAppIntent("Books", "com.apple.iBooksX", "PlayAudiobookIntent")
+
+var openBookIntent = appleAppIntent("Books", "com.apple.iBooksX", "OpenBookIntent")
+
+// actionInstanceUUID mirrors real-device exports, which stamp every App Intent
+// action with a per-instance UUID parameter. Shortcuts regenerates these
+// freely; a generated placeholder keeps the emitted shape faithful without
+// pretending to know Apple's value.
+func actionInstanceUUID() map[string]any {
+	return map[string]any{"UUID": uuid.New().String()}
 }
 
 // actions is the data structure that determines every action the compiler knows about.
@@ -86,11 +97,7 @@ var actions = map[string]*actionDefinition{
 				optional:  true,
 			},
 		},
-		appIntent: appIntent{
-			name:                "Clock",
-			bundleIdentifier:    "com.apple.clock",
-			appIntentIdentifier: "CreateAlarmIntent",
-		},
+		appIntent: appleAppIntent("Clock", "com.apple.clock", "CreateAlarmIntent"),
 		check: func(args []actionArgument, _ *actionDefinition) {
 			if len(args) < 4 {
 				return
@@ -141,11 +148,7 @@ var actions = map[string]*actionDefinition{
 		},
 		appIdentifier: "com.apple.clock",
 		identifier:    "DeleteAlarmIntent",
-		appIntent: appIntent{
-			name:                "Clock",
-			bundleIdentifier:    "com.apple.clock",
-			appIntentIdentifier: "DeleteAlarmIntent",
-		},
+		appIntent:     appleAppIntent("Clock", "com.apple.clock", "DeleteAlarmIntent"),
 		parameters: []parameterDefinition{
 			{
 				name:      "alarm",
@@ -237,6 +240,141 @@ var actions = map[string]*actionDefinition{
 			"operation": "Toggle",
 		},
 	},
+	"setSilentMode": {
+		doc: selfDoc{
+			title:       "Set Silent Mode",
+			description: "Turns silent mode on or off.",
+			category:    "settings",
+			subcategory: "Silent Mode",
+		},
+		appIdentifier: "com.apple.ShortcutsActions",
+		identifier:    "SetSilentModeAction",
+		appIntent:     setSilentModeIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "state",
+				validType: Integer,
+				key:       "state",
+			},
+		},
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			params := map[string]any{"operation": "turn"}
+			maps.Copy(params, actionInstanceUUID())
+			return params
+		},
+		emittedKeys: []string{"operation", "UUID"},
+	},
+	"searchSpotlight": {
+		doc: selfDoc{
+			title:       "Search Spotlight",
+			description: "Opens Spotlight search, optionally with search criteria.",
+			category:    "device",
+			subcategory: "Spotlight",
+		},
+		appIdentifier: "com.apple.Spotlight",
+		identifier:    "SearchSpotlightIntent",
+		appIntent:     searchSpotlightIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "criteria",
+				validType: String,
+				key:       "criteria",
+			},
+		},
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"createRemindersList": {
+		doc: selfDoc{
+			title:       "Create Reminders List",
+			description: "Creates a new list in Reminders.",
+			category:    "calendar",
+			subcategory: "Reminders",
+		},
+		appIdentifier: "com.apple.reminders",
+		identifier:    "TTRCreateListAppIntent",
+		appIntent:     createRemindersListIntent,
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"startStopwatch": {
+		doc: selfDoc{
+			title:       "Start Stopwatch",
+			description: "Starts the stopwatch.",
+			category:    "calendar",
+			subcategory: "Stopwatch",
+		},
+		appIdentifier: "com.apple.clock",
+		identifier:    "StartStopwatchIntent",
+		appIntent:     startStopwatchIntent,
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"stopStopwatch": {
+		doc: selfDoc{
+			title:       "Stop Stopwatch",
+			description: "Stops the stopwatch.",
+			category:    "calendar",
+			subcategory: "Stopwatch",
+		},
+		appIdentifier: "com.apple.clock",
+		identifier:    "StopStopwatchIntent",
+		appIntent:     stopStopwatchIntent,
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"playAudiobook": {
+		doc: selfDoc{
+			title:       "Play Audiobook",
+			description: "Plays an audiobook in Books. `target` is expected to be a book or audiobook reference.",
+			category:    "documents",
+			subcategory: "Books",
+		},
+		appIdentifier: "com.apple.iBooksX",
+		identifier:    "PlayAudiobookIntent",
+		appIntent:     playAudiobookIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "target",
+				validType: Variable,
+				key:       "target",
+			},
+		},
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"openBook": {
+		doc: selfDoc{
+			title:       "Open Book",
+			description: "Opens a book in Books. `target` is expected to be a book reference.",
+			category:    "documents",
+			subcategory: "Books",
+		},
+		appIdentifier: "com.apple.iBooksX",
+		identifier:    "OpenBookIntent",
+		appIntent:     openBookIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "target",
+				validType: Variable,
+				key:       "target",
+			},
+		},
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
 	"emailAddress": {
 		doc: selfDoc{
 			title:       "Email Address",
@@ -271,6 +409,7 @@ var actions = map[string]*actionDefinition{
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompContactValue(action, "WFEmailAddress", emailAddress)
 		},
+		emittedKeys: []string{"WFEmailAddress"},
 	},
 	"phoneNumber": {
 		doc: selfDoc{
@@ -305,6 +444,7 @@ var actions = map[string]*actionDefinition{
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompContactValue(action, "WFPhoneNumber", phoneNumber)
 		},
+		emittedKeys: []string{"WFPhoneNumber"},
 	},
 	"newContact": {
 		doc: selfDoc{
@@ -370,6 +510,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFContactPhoneNumbers", "WFContactEmails"},
 	},
 	"labelFile": {
 		doc: selfDoc{
@@ -403,6 +544,7 @@ var actions = map[string]*actionDefinition{
 				"WFLabelColorNumber": fileLabelsMap[color],
 			}
 		},
+		emittedKeys: []string{"WFLabelColorNumber"},
 	},
 	"filterFiles": {
 		doc: selfDoc{
@@ -452,6 +594,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFContentItemLimitEnabled"},
 	},
 	"getPDFText": {
 		doc: selfDoc{
@@ -510,6 +653,7 @@ var actions = map[string]*actionDefinition{
 				"WFGetTextFromPDFTextType": "Text",
 			}
 		},
+		emittedKeys: []string{"WFGetTextFromPDFTextType"},
 	},
 	"containsText": {
 		doc: selfDoc{
@@ -603,6 +747,7 @@ var actions = map[string]*actionDefinition{
 				},
 			}
 		},
+		emittedKeys: []string{"WFFile"},
 	},
 	"splitText": {
 		doc: selfDoc{
@@ -627,6 +772,7 @@ var actions = map[string]*actionDefinition{
 		appendParamsFunc: textParts,
 		decomp:           decompTextParts,
 		outputType:       Arr,
+		emittedKeys:      []string{"Show-text", "WFTextSeparator", "WFTextCustomSeparator"},
 	},
 	"joinText": {
 		doc: selfDoc{
@@ -651,6 +797,7 @@ var actions = map[string]*actionDefinition{
 		appendParamsFunc: textParts,
 		decomp:           decompTextParts,
 		outputType:       String,
+		emittedKeys:      []string{"Show-text", "WFTextSeparator", "WFTextCustomSeparator"},
 	},
 	"url": {
 		doc: selfDoc{
@@ -677,7 +824,8 @@ var actions = map[string]*actionDefinition{
 				"WFURLActionURL":      urlItems,
 			}
 		},
-		decomp: decompInfiniteURLAction,
+		decomp:      decompInfiniteURLAction,
+		emittedKeys: []string{"Show-WFURLActionURL", "WFURLActionURL"},
 	},
 	"addToReadingList": {
 		doc: selfDoc{
@@ -705,7 +853,8 @@ var actions = map[string]*actionDefinition{
 				"WFURL":               urlItems,
 			}
 		},
-		decomp: decompInfiniteURLAction,
+		decomp:      decompInfiniteURLAction,
+		emittedKeys: []string{"Show-WFURLActionURL", "WFURL"},
 	},
 	"prompt": {
 		doc: selfDoc{
@@ -755,6 +904,7 @@ var actions = map[string]*actionDefinition{
 
 			return defaultAnswer
 		},
+		emittedKeys: []string{"WFAskActionDefaultAnswer", "WFAskActionDefaultAnswerNumber"},
 	},
 	"openApp": {
 		doc: selfDoc{
@@ -770,11 +920,20 @@ var actions = map[string]*actionDefinition{
 				validType: String,
 				key:       "WFAppIdentifier",
 			},
+			{
+				name:      "slideOver",
+				validType: Bool,
+				key:       "WFOpenInSlideOver",
+				optional:  true,
+			},
 		},
 		check: func(args []actionArgument, definition *actionDefinition) {
 			replaceAppIDs(args, definition)
 		},
 		appendParamsFunc: func(args []actionArgument) map[string]any {
+			if len(args) == 0 {
+				return map[string]any{}
+			}
 			if args[0].valueType == Variable {
 				return map[string]any{
 					"WFSelectedApp": argumentValue(args, 0),
@@ -788,8 +947,20 @@ var actions = map[string]*actionDefinition{
 			}
 		},
 		decomp: func(action *ShortcutAction) (arguments []string) {
-			return decompAppAction("WFAppIdentifier", action)
+			var appArguments = decompAppAction("WFAppIdentifier", action)
+			switch slideOver := action.WFWorkflowActionParameters["WFOpenInSlideOver"].(type) {
+			case bool:
+				if slideOver {
+					appArguments = append(appArguments, "true")
+				}
+			case uint64:
+				if slideOver == 1 {
+					appArguments = append(appArguments, "true")
+				}
+			}
+			return appArguments
 		},
+		emittedKeys: []string{"WFSelectedApp"},
 	},
 	"hideApp": {
 		doc: selfDoc{
@@ -825,6 +996,7 @@ var actions = map[string]*actionDefinition{
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFApp", action)
 		},
+		emittedKeys: []string{"WFApp"},
 	},
 	"hideAllApps": {
 		doc: selfDoc{
@@ -847,6 +1019,7 @@ var actions = map[string]*actionDefinition{
 		appendParams: map[string]any{
 			"WFHideAppMode": "All Apps",
 		},
+		emittedKeys: []string{"WFAppsExcept"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFAppsExcept", action)
 		},
@@ -882,6 +1055,7 @@ var actions = map[string]*actionDefinition{
 				},
 			}
 		},
+		emittedKeys: []string{"WFApp"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFApp", action)
 		},
@@ -907,6 +1081,7 @@ var actions = map[string]*actionDefinition{
 		appendParams: map[string]any{
 			"WFQuitAppMode": "All Apps",
 		},
+		emittedKeys: []string{"WFAppsExcept"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFAppsExcept", action)
 		},
@@ -945,6 +1120,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFApp", "WFAskToSaveChanges"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFApp", action)
 		},
@@ -971,7 +1147,8 @@ var actions = map[string]*actionDefinition{
 			"WFQuitAppMode":      "All Apps",
 			"WFAskToSaveChanges": false,
 		},
-		makeParams: makeAllAppsAction,
+		makeParams:  makeAllAppsAction,
+		emittedKeys: []string{"WFAppsExcept"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompAppAction("WFAppsExcept", action)
 		},
@@ -1015,14 +1192,17 @@ var actions = map[string]*actionDefinition{
 				}
 				switch args[2].value {
 				case "half":
-					args[2].value = "½ + ½"
+					args[2].value = "Â½ + Â½"
 				case "thirdByTwo":
-					args[2].value = "⅓ + ⅔"
+					args[2].value = "â…“ + â…”"
 				}
 			}
 		},
 		appendParamsFunc: func(args []actionArgument) map[string]any {
 			var params = make(map[string]any)
+			if len(args) == 0 {
+				return params
+			}
 			if args[0].valueType == Variable {
 				params["WFPrimaryAppIdentifier"] = argumentValue(args, 0)
 			} else {
@@ -1046,9 +1226,9 @@ var actions = map[string]*actionDefinition{
 
 			var ratio = "half"
 			switch splitRatio {
-			case "½ + ½":
+			case "Â½ + Â½":
 				ratio = "half"
-			case "⅓ + ⅔":
+			case "â…“ + â…”":
 				ratio = "thirdByTwo"
 			}
 
@@ -1058,6 +1238,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFPrimaryAppIdentifier", "WFSecondaryAppIdentifier"},
 	},
 	"openShortcut": {
 		doc: selfDoc{
@@ -1088,6 +1269,7 @@ var actions = map[string]*actionDefinition{
 			}
 			return
 		},
+		emittedKeys: []string{"target"},
 	},
 	"runSelf": {
 		doc: selfDoc{
@@ -1124,6 +1306,7 @@ var actions = map[string]*actionDefinition{
 			}
 			return
 		},
+		emittedKeys: []string{"isSelf", "WFWorkflow"},
 	},
 	"list": {
 		doc: selfDoc{
@@ -1163,6 +1346,7 @@ var actions = map[string]*actionDefinition{
 			}
 			return
 		},
+		emittedKeys: []string{"WFItems"},
 	},
 	"openCustomXCallbackURL": {
 		doc: selfDoc{
@@ -1219,6 +1403,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"WFXCallbackCustomCallbackEnabled", "WFXCallbackCustomSuccessURLEnabled"},
 	},
 	"createShortcutLink": {
 		doc: selfDoc{
@@ -1277,6 +1462,7 @@ var actions = map[string]*actionDefinition{
 			}
 			return
 		},
+		emittedKeys: []string{"WFContentItemLimitEnabled"},
 		check: func(args []actionArgument, _ *actionDefinition) {
 			if args[1].value != nil {
 				var alphabetic = []string{"Title", "App Name", "Name", "Random"}
@@ -1369,6 +1555,7 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		emittedKeys: []string{"isSelf", "WFMeasurementUnit"},
 	},
 	"measurement": {
 		doc: selfDoc{
@@ -1420,6 +1607,7 @@ var actions = map[string]*actionDefinition{
 				},
 			}
 		},
+		emittedKeys: []string{"WFMeasurementUnit"},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			if action.WFWorkflowActionParameters["WFMeasurementUnit"] != nil {
 				var measurementUnit WFMeasurementUnit
@@ -1491,6 +1679,7 @@ var actions = map[string]*actionDefinition{
 				"WFTextActionText": argumentValue(args, 0),
 			}
 		},
+		emittedKeys: []string{"WFTextActionText"},
 	},
 	"embedFile": {
 		doc: selfDoc{
@@ -1524,6 +1713,7 @@ var actions = map[string]*actionDefinition{
 				"WFTextActionText": encodedFile,
 			}
 		},
+		emittedKeys: []string{"WFTextActionText"},
 	},
 	"updateContact": {
 		doc: selfDoc{
@@ -1580,7 +1770,8 @@ var actions = map[string]*actionDefinition{
 		appendParamsFunc: func(args []actionArgument) map[string]any {
 			return appendSetMultitaskingModeParam("Windowed Apps", "windowedApps", "macwindow.on.rectangle")
 		},
-		minVersion: 26,
+		emittedKeys: []string{"mode"},
+		minVersion:  26,
 	},
 	"setStageManagerMultitasking": {
 		doc: selfDoc{
@@ -1609,7 +1800,8 @@ var actions = map[string]*actionDefinition{
 		appendParamsFunc: func(args []actionArgument) map[string]any {
 			return appendSetMultitaskingModeParam("Stage Manager", "stageManager", "squares.leading.rectangle")
 		},
-		minVersion: 26,
+		emittedKeys: []string{"mode"},
+		minVersion:  26,
 	},
 	"setFocusMode": {
 		doc: selfDoc{
@@ -1660,6 +1852,7 @@ var actions = map[string]*actionDefinition{
 
 			return map[string]any{}
 		},
+		emittedKeys: []string{"FocusModes"},
 	},
 	"toggleFocusMode": {
 		doc: selfDoc{
@@ -1692,6 +1885,7 @@ var actions = map[string]*actionDefinition{
 
 			return params
 		},
+		emittedKeys: []string{"Operation", "FocusModes"},
 	},
 	"generateImage": {
 		doc: selfDoc{
@@ -1776,6 +1970,55 @@ var actions = map[string]*actionDefinition{
 				},
 			}
 		},
+		emittedKeys: []string{"style"},
+	},
+	"run": {
+		doc: selfDoc{
+			title:       "Run Shortcut",
+			description: "Run a shortcut from this shortcut, with optional input.",
+			category:    "shortcuts",
+		},
+		identifier: "runworkflow",
+		parameters: []parameterDefinition{
+			{
+				name:      "shortcutName",
+				validType: String,
+				key:       "WFWorkflowName",
+			},
+			{
+				name:      "input",
+				key:       "WFInput",
+				validType: Variable,
+				optional:  true,
+			},
+		},
+		makeParams: func(args []actionArgument) map[string]any {
+			var name = argumentValue(args, 0)
+			return map[string]any{
+				"WFWorkflowName": name,
+				// Mirrors runSelf's emission and real-world Shortcuts output, which
+				// carries both the modern reference dict and the legacy name key.
+				// workflowIdentifier is a generated placeholder; Shortcuts resolves
+				// the target through workflowName when the identifier is unknown.
+				"WFWorkflow": map[string]any{
+					"workflowIdentifier": uuid.New().String(),
+					"isSelf":             false,
+					"workflowName":       name,
+				},
+			}
+		},
+		decomp: func(action *ShortcutAction) (arguments []string) {
+			if action.WFWorkflowActionParameters["WFInput"] != nil {
+				arguments = append(arguments, decompValue(action.WFWorkflowActionParameters["WFInput"]))
+			}
+			if action.WFWorkflowActionParameters["WFWorkflowName"] != nil {
+				// Reference envelopes decompile to variable names; plain names
+				// must be emitted as quoted string literals.
+				arguments = append(arguments, decompValue(action.WFWorkflowActionParameters["WFWorkflowName"]))
+			}
+			return
+		},
+		emittedKeys: []string{"WFWorkflow"},
 	},
 }
 
@@ -1886,6 +2129,7 @@ func includeStandardActions() {
 	}
 	lines = append(standardIncludes, lines...)
 	resetParse()
+	includedStandardActions = true
 }
 
 func checkMissingStandardInclude(identifier *string, parsing bool) {
@@ -1913,9 +2157,22 @@ func checkMissingStandardInclude(identifier *string, parsing bool) {
 		if slices.Contains(included, fmt.Sprintf("actions/%s", actionInclude)) {
 			continue
 		}
-		lines = append([]string{fmt.Sprintf("#include 'actions/%s'\n", actionInclude)}, lines...)
+		if parsing {
+			// Compilation path: preserve the caller's source lines and probe
+			// by prepending the candidate include.
+			lines = append([]string{fmt.Sprintf("#include 'actions/%s'\n", actionInclude)}, lines...)
+		} else {
+			// Decompilation path: evaluate each candidate category in
+			// isolation so every definition parsed here is tagged with its
+			// OWN include category. Accumulating lines would re-parse
+			// earlier categories under the current one and mis-tag them,
+			// which would corrupt self-contained include reconstruction for
+			// actions that are not the probe's direct match.
+			lines = []string{fmt.Sprintf("#include 'actions/%s'\n", actionInclude)}
+		}
 		resetParse()
 		handleIncludes()
+		currentCategory = actionInclude
 		handleActionDefinitions()
 
 		if !parsing {
@@ -1932,10 +2189,22 @@ func checkMissingStandardInclude(identifier *string, parsing bool) {
 			exit(fmt.Sprintf("Action '%s()' requires include:\n\n%s", name, includeStatement))
 		} else {
 			popLine(includeStatement)
+			markDecompiledInclude(actionInclude)
 			break
 		}
 	}
+	currentCategory = ""
 	return
+}
+
+// markDecompiledInclude records that a standard action include has been
+// emitted into the decompiled source so later actions from the same category
+// do not duplicate it.
+func markDecompiledInclude(category string) {
+	if category == "" || slices.Contains(decompiledIncludes, category) {
+		return
+	}
+	decompiledIncludes = append(decompiledIncludes, category)
 }
 
 func getActionNameByIdentifier(identifier *string) (name string, err error) {
@@ -2128,7 +2397,10 @@ func replaceAppIDs(args []actionArgument, _ *actionDefinition) {
 				continue
 			}
 
-			var id = getArgValue(args[a]).(string)
+			var id, isString = getArgValue(args[a]).(string)
+			if !isString {
+				continue
+			}
 			args[a].value = replaceAppID(id)
 		}
 	}

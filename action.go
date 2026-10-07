@@ -70,10 +70,56 @@ type checkFunc func(args []actionArgument, definition *actionDefinition)
 // paramsFunc is a function that can be passed a collected actions arguments as a slice of actionArgument that must return action params as a result.
 type paramsFunc func(args []actionArgument) map[string]any
 
+// appIntent describes the AppIntentDescriptor an action emits alongside its
+// parameters. The outer WFWorkflowActionIdentifier is independent of this
+// descriptor: classic-identifier hybrids carry both, and descriptor fields
+// must never be derived from the outer identifier.
 type appIntent struct {
-	name                string
-	bundleIdentifier    string
-	appIntentIdentifier string
+	name                    string
+	bundleIdentifier        string
+	appIntentIdentifier     string
+	teamIdentifier          string
+	requiresAppInstallation *bool
+	// legacyAppleTeamIdentifier marks curated Apple actions whose confirmed
+	// descriptors carry Apple's placeholder TeamIdentifier. Third-party
+	// definitions must set teamIdentifier explicitly; it is never fabricated
+	// for them.
+	legacyAppleTeamIdentifier bool
+}
+
+// appleLegacyTeamIdentifier is the placeholder TeamIdentifier observed in
+// Apple's own App Intent descriptors; it applies only to curated Apple
+// actions and is never used as a default for third-party intents.
+const appleLegacyTeamIdentifier = "0000000000"
+
+// appleAppIntent builds the descriptor for a curated Apple action.
+func appleAppIntent(name string, bundleIdentifier string, appIntentIdentifier string) appIntent {
+	return appIntent{
+		name:                      name,
+		bundleIdentifier:          bundleIdentifier,
+		appIntentIdentifier:       appIntentIdentifier,
+		legacyAppleTeamIdentifier: true,
+	}
+}
+
+// requiresAppInstallation gives appIntent's tri-state installation flag an
+// explicit value: nil (unspecified) omits ActionRequiresAppInstallation.
+func requiresAppInstallation(required bool) *bool {
+	return &required
+}
+
+// emittedTeamIdentifier resolves the TeamIdentifier an action actually
+// emits: an explicitly configured value wins, legacy Apple actions emit the
+// historical placeholder, and anything else emits nothing rather than
+// inventing a team identifier.
+func emittedTeamIdentifier(intent appIntent) (string, bool) {
+	if intent.teamIdentifier != "" {
+		return intent.teamIdentifier, true
+	}
+	if intent.legacyAppleTeamIdentifier {
+		return appleLegacyTeamIdentifier, true
+	}
+	return "", false
 }
 
 // actionDefinition defines an action, what it expects and has functions for checking the arguments and creating the parameters.
@@ -87,6 +133,7 @@ type actionDefinition struct {
 	makeParams         paramsFunc     // makeParams overrides automatic handling of arguments for custom logic based on the arguments collected.
 	appendParams       map[string]any // appendParams allows for adding additional parameters not based on the provided arguments without affecting automatic handling.
 	appendParamsFunc   paramsFunc     // appendParamsFunc allows for adding additional parameters based on the provided arguments without disabling automatic handling.
+	emittedKeys        []string       // emittedKeys declares plist keys written dynamically by makeParams/appendParamsFunc beyond declared parameter keys, published through the machine-readable action catalog.
 	decomp             func(action *ShortcutAction) (arguments []string)
 	appIntent          appIntent
 	outputType         tokenType
@@ -96,6 +143,7 @@ type actionDefinition struct {
 	minVersion         float64
 	maxVersion         float64
 	builtin            bool // builtin is based on if the action was in the actions map when it was first initialized.
+	includeCategory    string // Standard action include category ('actions/<cat>') that declared this definition; "" for builtin/Go-defined actions and basic actions that never require an include.
 }
 
 var enumerations = map[string][]string{
@@ -805,13 +853,19 @@ func generateActionDebugDefinition() string {
 }
 
 func appIntentDescriptor(intent appIntent) map[string]any {
+	var descriptor = map[string]any{
+		"Name":                intent.name,
+		"BundleIdentifier":    intent.bundleIdentifier,
+		"AppIntentIdentifier": intent.appIntentIdentifier,
+	}
+	if teamIdentifier, emitted := emittedTeamIdentifier(intent); emitted {
+		descriptor["TeamIdentifier"] = teamIdentifier
+	}
+	if intent.requiresAppInstallation != nil {
+		descriptor["ActionRequiresAppInstallation"] = *intent.requiresAppInstallation
+	}
 	return map[string]any{
-		"AppIntentDescriptor": map[string]string{
-			"TeamIdentifier":      "0000000000",
-			"BundleIdentifier":    intent.bundleIdentifier,
-			"Name":                intent.name,
-			"AppIntentIdentifier": intent.appIntentIdentifier,
-		},
+		"AppIntentDescriptor": descriptor,
 	}
 }
 
@@ -918,6 +972,7 @@ func collectDefinedAction() {
 		minVersion:         m.minVersion,
 		maxVersion:         m.maxVersion,
 		doc:                doc,
+		includeCategory:    currentCategory,
 	}
 }
 
@@ -969,6 +1024,7 @@ func collectToggleSetAction(doc selfDoc) {
 		nonMacOnly:         m.nonMacOnly,
 		minVersion:         m.minVersion,
 		maxVersion:         m.maxVersion,
+		includeCategory:    currentCategory,
 	}
 
 	var setAppendParams = maps.Clone(extraBody)
@@ -989,6 +1045,7 @@ func collectToggleSetAction(doc selfDoc) {
 		nonMacOnly:         m.nonMacOnly,
 		minVersion:         m.minVersion,
 		maxVersion:         m.maxVersion,
+		includeCategory:    currentCategory,
 	}
 }
 

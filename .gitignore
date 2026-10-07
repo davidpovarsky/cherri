@@ -34,6 +34,9 @@
 # Packages
 /packages/
 
+# Local build output
+/dist/
+
 # iOS generated output
 /.build/ios-cherri-core/
 /ios/Cherri.xcodeproj/
@@ -43,3 +46,17 @@
 
 # Nix
 result
+
+# Shortcut corpus: raw inbox data, analysis output, and processing state are
+# environment artifacts and must never be committed. Sanitized synthetic
+# fixtures under tools/shortcut-corpus/testdata/ are intentional exceptions.
+/corpus-inbox/
+/analysis/
+corpus-state*.json
+/catalog.json
+/catalog-err.txt
+!tools/shortcut-corpus/testdata/**
+!tools/shortcut-corpus/testdata/**/*
+# Sanitized external Shortcut fixture for the self-contained decompilation
+# regression suite (no personal data; derived from curated test source).
+!tests/external-shortcut-fixture.plist

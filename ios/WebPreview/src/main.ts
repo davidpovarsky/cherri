@@ -1,9 +1,10 @@
 import 'preview-shortcut/css';
-import { ShortcutPreview } from 'preview-shortcut';
+import { ShortcutPreview, registerActionMetadata } from 'preview-shortcut';
 
 type CherriPreviewWindow = Window & {
   renderShortcutFromBase64?: (base64: string, name: string) => void;
   clearShortcutPreview?: () => void;
+  registerCherriActionMetadata?: (metadata: Record<string, { title?: string }>) => void;
   webkit?: {
     messageHandlers?: {
       cherriPreviewEdit?: {
@@ -270,4 +271,10 @@ hostWindow.clearShortcutPreview = () => {
   if (element) {
     element.innerHTML = '';
   }
+};
+
+// Feed shared Cherri action catalog metadata into preview-shortcut's generic
+// fallback path so newly supported actions render titled cards.
+hostWindow.registerCherriActionMetadata = (metadata) => {
+  registerActionMetadata(metadata);
 };

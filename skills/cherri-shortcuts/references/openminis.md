@@ -41,7 +41,47 @@ Override with environment variables:
 - `CHERRI_DOCS_DIR`
 - `CHERRI_PREBUILT_URL`
 
+## Editing an existing Shortcut from a shared plist
+
+The user's iOS helper Shortcut extracts and shares a workflow plist (XML
+plist, binary plist, or unsigned `.shortcut` containing a workflow plist).
+This is a first-class workflow of the skill:
+
+```text
+plist received from iOS helper Shortcut
+        -> prepare-edit.sh <path> [WORKSPACE]
+        -> preserved original + editable .cherri + unsigned validation build
+        -> agent edits the .cherri per the user request
+        -> unsigned compile (validate)
+        -> explicit sign -> AEA1 .shortcut
+```
+
+`prepare-edit.sh` lives in `scripts/`. It creates
+`/var/minis/shared/cherri-edits/<safe-name>-<timestamp>/` with
+`original/`, `source/`, and `builds/` subdirectories, never modifies the
+input, rejects signed `AEA1` input with a clear diagnostic (direct signed
+extraction is not supported yet — use the extractor Shortcut / iCloud-link
+workflow to provide a plist), and proves the decompiled source recompiles
+before reporting readiness. It never signs.
+
+Input contract:
+
+- Supported: XML plist, binary plist, unsigned `.shortcut` (workflow plist).
+  The plist is the source of truth.
+- Optional: a JSON companion is only an inspection/debugging aid or metadata
+  companion — never required, never the source of truth.
+- Unsupported direct: signed `AEA1` Shortcut wrappers (clear early
+  diagnostic; do not feed AEA1 bytes to the plist import).
+- iCloud links remain supported through `decompile.sh` for read-only
+  inspection; the plist-based edit workflow is preferred for editing.
+
+The agent receives the shared file as an explicit path (attached/shared file
+or a file under the Open Minis shared workspace) and passes that exact path
+to `prepare-edit.sh`. Do not rely on "latest file in directory" discovery as
+the primary behavior.
+
 ## Limitations
+
 
 - macOS native `shortcuts sign` is unavailable; the default signed path uses HubSign.
 - The macOS Shortcuts Toolkit SQLite database is not automatically available inside iSH. Decompile uses `--no-toolkit` by default. A user-supplied Toolkit DB can be used manually with Cherri's `--toolkit` option.

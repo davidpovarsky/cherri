@@ -1261,6 +1261,8 @@ func collectConditionals(identifier string) {
 	var conditions WFConditions
 	conditions.WFActionParameterFilterPrefix = -1
 	for char != 1 && char != '{' {
+		collectLegacyComparisonFlag(&conditions)
+
 		var conditional = collectConditional()
 
 		collectFilterPrefix(&conditions)
@@ -1275,6 +1277,24 @@ func collectConditionals(identifier string) {
 		valueType: If,
 		value:     conditions,
 	})
+}
+
+// collectLegacyComparisonFlag consumes an optional `legacy` keyword placed
+// before the first condition of an if statement. Real Shortcuts exports carry
+// WFConditionalLegacyComparisonBehavior on conditionals re-saved by modern
+// clients; the keyword opts a statement into emitting that flag.
+func collectLegacyComparisonFlag(wfConditions *WFConditions) {
+	var ahead = lookAheadUntil(' ')
+	if ahead != "legacy" {
+		return
+	}
+
+	tokenAhead("legacy")
+	skipInlineWhitespace()
+	if char == '{' {
+		parserError("Expected condition after 'legacy' keyword in if statement.")
+	}
+	wfConditions.legacyComparison = true
 }
 
 func collectFilterPrefix(wfConditions *WFConditions) {

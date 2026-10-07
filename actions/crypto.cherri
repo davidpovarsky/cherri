@@ -2,13 +2,16 @@
 Cryptography Actions
 */
 
+// lineBreakMode is a pass-through string: only 'None' has been observed in real
+// exports; 'Every 64 Characters' and 'Every 76 Characters' are corroborated but
+// the full value domain is unverified. The same applies to base64Decode below.
 // [Doc]: Base 64 Encode: Base 64 encodes input.
-action default 'base64encode' base64Encode(variable encodeInput: 'WFInput'): text {
+action default 'base64encode' base64Encode(variable encodeInput: 'WFInput', text ?lineBreakMode: 'WFBase64LineBreakMode'): text {
 	"input": "Encode"
 }
 
 // [Doc]: Base 64 Decode: Base 64 decodes input.
-action 'base64encode' base64Decode(variable input: 'WFInput'): variable {
+action 'base64encode' base64Decode(variable input: 'WFInput', text ?lineBreakMode: 'WFBase64LineBreakMode'): variable {
 	"WFEncodeMode": "Decode"
 }
 

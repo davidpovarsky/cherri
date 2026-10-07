@@ -29,6 +29,11 @@ const (
 var code strings.Builder
 var specialCharsRegex *regexp.Regexp
 
+// decompiledIncludes records the standard action include categories
+// ('actions/<cat>') already emitted into the generated source during the
+// current decompilation, so each required include appears exactly once.
+var decompiledIncludes []string
+
 func decompile(b []byte) {
 	var _, marshalIndexedErr = plist.Unmarshal(b, &shortcut)
 	handle(marshalIndexedErr)
@@ -729,6 +734,10 @@ func decompConditional(action *ShortcutAction) {
 	case startStatement:
 		beginStatement(If, action)
 
+		if action.WFWorkflowActionParameters["WFConditionalLegacyComparisonBehavior"] == true {
+			code.WriteString("legacy ")
+		}
+
 		if action.WFWorkflowActionParameters["WFConditions"] != nil {
 			var conditions = action.WFWorkflowActionParameters["WFConditions"].(map[string]interface{})
 			var conditionValue = conditions["Value"].(map[string]interface{})
@@ -770,7 +779,13 @@ func matchConditionOperator(number int) tokenType {
 }
 
 func decompCondition(condition map[string]interface{}, action *ShortcutAction) {
-	var conditionInt = condition["WFCondition"].(uint64)
+	// Exports predating the always-emitted WFCondition fix omit the key for
+	// LessThan (0); treat absence as LessThan instead of panicking.
+	var conditionValue, found = condition["WFCondition"]
+	if !found {
+		conditionValue = uint64(0)
+	}
+	var conditionInt = conditionValue.(uint64)
 	var conditionalOperator = matchConditionOperator(int(conditionInt))
 	if conditionalOperator == "" {
 		decompError(fmt.Sprintf("Invalid conditional %v", conditionInt), action)
@@ -939,6 +954,10 @@ func escapeString(value string) string {
 }
 
 func decompValueObject(value map[string]interface{}) string {
+	if isPlainDictionaryValue(value) {
+		return decompPlainDictionary(value)
+	}
+
 	if v, found := value["Value"]; found {
 		if reflect.TypeOf(v).Kind() == reflect.Map {
 			value = v.(map[string]interface{})
@@ -984,6 +1003,112 @@ func decompValueObject(value map[string]interface{}) string {
 	}
 
 	return decompObjectValue(value)
+}
+
+// isPlainDictionaryValue reports whether the map is a plain nested dictionary
+// (an App Intent descriptor, folder reference payload, app picker, or workflow
+// reference) rather than a serialized Shortcuts value or text token, which
+// require their specialized handling.
+func isPlainDictionaryValue(value map[string]interface{}) bool {
+	if value == nil {
+		return false
+	}
+	var serializationMarkers = []string{
+		"WFSerializationType",
+		"WFDictionaryFieldValueItems",
+		"Value",
+		"Type",
+		"string",
+		"attachmentsByRange",
+		"Aggrandizements",
+	}
+	for _, marker := range serializationMarkers {
+		if _, found := value[marker]; found {
+			return false
+		}
+	}
+	return true
+}
+
+// decompPlainDictionary renders a plain nested dictionary as a Cherri
+// dictionary literal so unknown-action parameters (rawAction) and structured
+// parameters survive decompilation instead of collapsing to empty output.
+func decompPlainDictionary(value map[string]interface{}) string {
+	decompilingDictionary = true
+	defer func() { decompilingDictionary = false }()
+
+	var rendered = make(map[string]any, len(value))
+	for key, item := range value {
+		rendered[key] = decompStructuredValue(item)
+	}
+	var jsonBytes, jsonErr = json.MarshalIndent(rendered, strings.Repeat("\t", tabLevel), "\t")
+	handle(jsonErr)
+
+	return string(jsonBytes)
+}
+
+// decompPlainDictionaryTree renders a plain nested dictionary as a generic
+// tree so callers embedding it inside another literal keep native nesting.
+func decompPlainDictionaryTree(value map[string]interface{}) map[string]any {
+	var rendered = make(map[string]any, len(value))
+	for key, item := range value {
+		rendered[key] = decompStructuredValue(item)
+	}
+	return rendered
+}
+
+// decompStructuredValue renders one structured value for dictionary-literal
+// contexts: reference envelopes become {@name} interpolation strings, plain
+// nested dictionaries and serialized dictionaries stay native trees so they
+// regenerate losslessly, and scalars pass through untouched so booleans and
+// numbers survive recompilation.
+func decompStructuredValue(value any) any {
+	switch typed := value.(type) {
+	case map[string]interface{}:
+		if isReferenceValue(typed) {
+			return fmt.Sprintf("{%s}", decompValueObject(typed))
+		}
+		if isPlainDictionaryValue(typed) {
+			return decompPlainDictionaryTree(typed)
+		}
+		if items, ok := serializedDictionaryItems(typed); ok {
+			return decompDictionaryItems(items)
+		}
+		return decompValueObject(typed)
+	case []interface{}:
+		var rendered = make([]any, len(typed))
+		for i, element := range typed {
+			rendered[i] = decompStructuredValue(element)
+		}
+		return rendered
+	default:
+		return value
+	}
+}
+
+// serializedDictionaryItems extracts dictionary items from a Shortcuts
+// serialized dictionary value (WFDictionaryFieldValue or any wrapper carrying
+// Value.WFDictionaryFieldValueItems).
+func serializedDictionaryItems(value map[string]any) ([]WFDictionaryFieldValueItem, bool) {
+	var inner, found = value["WFDictionaryFieldValueItems"]
+	if !found {
+		var wrapper, hasWrapper = value["Value"]
+		if !hasWrapper {
+			return nil, false
+		}
+		var wrapperMap, isMap = wrapper.(map[string]any)
+		if !isMap {
+			return nil, false
+		}
+		inner, found = wrapperMap["WFDictionaryFieldValueItems"]
+		if !found {
+			return nil, false
+		}
+	}
+
+	var items []WFDictionaryFieldValueItem
+	mapToStruct(inner, &items)
+	return items, true
 }
 
 func decompObjectValue(valueObj any) string {
@@ -1137,6 +1262,14 @@ func makeActionCallCode(action *ShortcutAction) string {
 		}
 	}
 
+	// Self-contained decompilation invariant: any action whose normal source
+	// representation lives in a standard action include (actions/<cat>.cherri)
+	// must carry that include in the generated source. checkMissingStandardInclude
+	// already emitted it for the probe that first located the action; this
+	// covers actions that matched from categories loaded as a side effect of
+	// an earlier probe.
+	emitDecompiledInclude(matchedAction.includeCategory)
+
 	if (matchedAction.macOnly || matchedAction.nonMacOnly) && !setMacDefinition {
 		macDefinition = matchedAction.macOnly && !matchedAction.nonMacOnly
 		popLine(fmt.Sprintf("#define mac %v", macDefinition))
@@ -1157,6 +1290,18 @@ func makeActionCallCode(action *ShortcutAction) string {
 	actionCallCode.WriteString(")")
 
 	return actionCallCode.String()
+}
+
+// emitDecompiledInclude prepends a standard action include to the generated
+// source exactly once per category. Only categories whose actions actually
+// appear in the decompiled output are emitted; basic and builtin/Go-defined
+// actions have an empty includeCategory and never trigger an include.
+func emitDecompiledInclude(category string) {
+	if category == "" || slices.Contains(decompiledIncludes, category) {
+		return
+	}
+	popLine(fmt.Sprintf("#include 'actions/%s'", category))
+	decompiledIncludes = append(decompiledIncludes, category)
 }
 
 // checkOutputType determines if action output is a constant or a variable.
@@ -1292,13 +1437,13 @@ func processRawParameters(params map[string]any) map[string]any {
 	for key, value := range params {
 		if key == UUID || key == "CustomOutputName" {
 			delete(params, key)
+			continue
 		}
 
-		if reflect.TypeOf(value).Kind() == reflect.Map {
-			decompilingDictionary = true
-			params[key] = decompValueObject(value.(map[string]interface{}))
-			decompilingDictionary = false
-		}
+		// Structured values (descriptors, references, nested dictionaries)
+		// must reach the generated rawAction source losslessly; strings and
+		// scalars pass through unchanged.
+		params[key] = decompStructuredValue(value)
 	}
 
 	return params
@@ -1335,7 +1480,12 @@ func matchAction(action *ShortcutAction) (name string, definition actionDefiniti
 				name = "runSelf"
 				definition = *actions["runSelf"]
 			} else {
+				// Split matching may have landed on either shared-identifier
+				// definition on a scoring tie; the descriptor decides, so the
+				// definition must follow the name or run loses its
+				// shortcutName argument.
 				name = "run"
+				definition = *actions["run"]
 			}
 		}
 
@@ -1368,6 +1518,16 @@ func matchSplitAction(splitActions *[]actionValue, parameters map[string]any, id
 	var matches = getSplitActionMatches(splitActions, parameters)
 
 	if len(matches) == 0 {
+		return
+	}
+
+	// A single positive parameter match is decisive even against the default
+	// action: without this, unambiguous shapes like selectFolder's
+	// WFPickingMode:"Folders" degraded to the default selectFile and lost
+	// their distinguishing parameters.
+	if len(matches) == 1 {
+		*identifier = matches[0].action.identifier
+		*definition = *matches[0].action.definition
 		return
 	}
 
@@ -1440,6 +1600,15 @@ func scoreActionMatch(splitAction actionValue, splitActionParams []parameterDefi
 	var splitActionAddParams []parameterDefinition
 	if splitAction.definition.appendParamsFunc != nil {
 		for key, value := range splitAction.definition.appendParamsFunc([]actionArgument{}) {
+			splitActionAddParams = append(splitActionAddParams, parameterDefinition{
+				key:          key,
+				defaultValue: value,
+			})
+		}
+	}
+
+	if len(splitAction.definition.appendParams) != 0 {
+		for key, value := range splitAction.definition.appendParams {
 			splitActionAddParams = append(splitActionAddParams, parameterDefinition{
 				key:          key,
 				defaultValue: value,

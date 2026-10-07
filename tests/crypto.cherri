@@ -18,6 +18,13 @@ if encoded != "aGVsbG8=" {
     mustOutput("❌ FAIL: base64Encode — got {encoded}, expected 'aGVsbG8='", "❌ FAIL: base64Encode — got {encoded}, expected 'aGVsbG8='")
 }
 
+// base64 encode with line break mode (observed value: None)
+@longInput = "The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog."
+const encodedNoBreak = base64Encode(@longInput, "None")
+if encodedNoBreak == "" {
+    mustOutput("❌ FAIL: base64Encode lineBreakMode — empty result", "❌ FAIL: base64Encode lineBreakMode — empty result")
+}
+
 // base64 decode round-trip
 @b64 = "aGVsbG8="
 const decoded = base64Decode(@b64)
