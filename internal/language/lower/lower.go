@@ -81,11 +81,9 @@ func (l *Lowerer) LowerProgram(prog *syntax.Program) (*ir.NativeWorkflow, error)
 		}
 	}
 
-	// 2. Generate runSelf dispatcher if functions are declared
+	// 2. If functions are declared, isolate dispatcher in Mode 0 and main statements in Mode 1 (Otherwise)
 	if len(l.functions) > 0 {
-		if err := l.generateFunctionsDispatcher(); err != nil {
-			return nil, err
-		}
+		return l.lowerProgramWithFunctions(prog)
 	}
 
 	// 3. Process statements in source order
@@ -217,17 +215,36 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) {
 	}
 }
 
-func (l *Lowerer) generateFunctionsDispatcher() error {
+func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWorkflow, error) {
 	l.workflow.HasShortcutInputVariables = true
+
+	// 1. Initialize _cherri_is_fn = 0.0
+	initNumUUID := l.GenerateUUID()
+	l.workflow.AddAction(&ir.NativeActionNode{
+		NodeID:          initNumUUID,
+		AppleIdentifier: "is.workflow.actions.number",
+		OutputUUID:      initNumUUID,
+		Parameters: map[string]interface{}{
+			"WFNumberActionNumber": 0.0,
+		},
+	})
+	l.workflow.AddAction(&ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters: map[string]interface{}{
+			"WFVariableName": "_cherri_is_fn",
+			"WFInput":        &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: initNumUUID},
+		},
+	})
 
 	inputToken := &ir.AttachmentToken{
 		Type:       "ExtensionInput",
 		OutputName: "ShortcutInput",
 	}
 
-	// Guard: Only execute function dispatch if ShortcutInput has a value
+	// 2. Guard: Only check function payload if ShortcutInput has a value
 	hasInputGroupUUID := l.GenerateUUID()
-	hasInputIf := &ir.NativeActionNode{
+	l.workflow.AddAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
 		GroupingIdentifier: hasInputGroupUUID,
@@ -238,24 +255,20 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 			"WFInput":            inputToken,
 			"WFCondition":        100, // Has Any Value
 		},
-	}
-	l.workflow.AddAction(hasInputIf)
-
-	groupUUID := l.GenerateUUID()
+	})
 
 	dictUUID := l.GenerateUUID()
-	dictNode := &ir.NativeActionNode{
+	l.workflow.AddAction(&ir.NativeActionNode{
 		NodeID:          dictUUID,
 		AppleIdentifier: "is.workflow.actions.detect.dictionary",
 		OutputUUID:      dictUUID,
 		Parameters: map[string]interface{}{
 			"WFInput": inputToken,
 		},
-	}
-	l.workflow.AddAction(dictNode)
+	})
 
 	chkUUID := l.GenerateUUID()
-	chkNode := &ir.NativeActionNode{
+	l.workflow.AddAction(&ir.NativeActionNode{
 		NodeID:          chkUUID,
 		AppleIdentifier: "is.workflow.actions.getvalueforkey",
 		OutputUUID:      chkUUID,
@@ -264,53 +277,120 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 			"WFDictionaryKey":          "cherri_functions",
 			"WFGetDictionaryValueType": "Value",
 		},
-	}
-	l.workflow.AddAction(chkNode)
+	})
 
-	beginIf := &ir.NativeActionNode{
+	chkGroupUUID := l.GenerateUUID()
+	l.workflow.AddAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
-		GroupingIdentifier: groupUUID,
+		GroupingIdentifier: chkGroupUUID,
 		ControlFlowMode:    0,
 		Parameters: map[string]interface{}{
-			"GroupingIdentifier": groupUUID,
+			"GroupingIdentifier": chkGroupUUID,
 			"WFControlFlowMode":  0,
 			"WFInput":            &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: chkUUID},
 			"WFCondition":        4, // Is
 			"WFNumberValue":      1.0,
 		},
-	}
-	l.workflow.AddAction(beginIf)
+	})
+
+	setOneNumUUID := l.GenerateUUID()
+	l.workflow.AddAction(&ir.NativeActionNode{
+		NodeID:          setOneNumUUID,
+		AppleIdentifier: "is.workflow.actions.number",
+		OutputUUID:      setOneNumUUID,
+		Parameters: map[string]interface{}{
+			"WFNumberActionNumber": 1.0,
+		},
+	})
+	l.workflow.AddAction(&ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters: map[string]interface{}{
+			"WFVariableName": "_cherri_is_fn",
+			"WFInput":        &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: setOneNumUUID},
+		},
+	})
+
+	l.workflow.AddAction(&ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		GroupingIdentifier: chkGroupUUID,
+		ControlFlowMode:    2,
+		Parameters: map[string]interface{}{
+			"GroupingIdentifier": chkGroupUUID,
+			"WFControlFlowMode":  2,
+		},
+	})
+
+	l.workflow.AddAction(&ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		GroupingIdentifier: hasInputGroupUUID,
+		ControlFlowMode:    2,
+		Parameters: map[string]interface{}{
+			"GroupingIdentifier": hasInputGroupUUID,
+			"WFControlFlowMode":  2,
+		},
+	})
+
+	// 3. Main branching conditional:
+	// Mode 0: If _cherri_is_fn == 1.0 -> Function dispatcher
+	// Mode 1: Otherwise -> Main program statements
+	// Mode 2: End If
+	mainGroupUUID := l.GenerateUUID()
+	l.workflow.AddAction(&ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		GroupingIdentifier: mainGroupUUID,
+		ControlFlowMode:    0,
+		Parameters: map[string]interface{}{
+			"GroupingIdentifier": mainGroupUUID,
+			"WFControlFlowMode":  0,
+			"WFInput":            &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_is_fn"},
+			"WFCondition":        4, // Is
+			"WFNumberValue":      1.0,
+		},
+	})
+
+	// Mode 0: Function Dispatcher
+	fnDictUUID := l.GenerateUUID()
+	l.workflow.AddAction(&ir.NativeActionNode{
+		NodeID:          fnDictUUID,
+		AppleIdentifier: "is.workflow.actions.detect.dictionary",
+		OutputUUID:      fnDictUUID,
+		Parameters: map[string]interface{}{
+			"WFInput": inputToken,
+		},
+	})
 
 	fnNameUUID := l.GenerateUUID()
-	fnNameNode := &ir.NativeActionNode{
+	l.workflow.AddAction(&ir.NativeActionNode{
 		NodeID:          fnNameUUID,
 		AppleIdentifier: "is.workflow.actions.getvalueforkey",
 		OutputUUID:      fnNameUUID,
 		Parameters: map[string]interface{}{
-			"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: dictUUID},
+			"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
 			"WFDictionaryKey":          "function",
 			"WFGetDictionaryValueType": "Value",
 		},
-	}
-	l.workflow.AddAction(fnNameNode)
+	})
 
 	argsUUID := l.GenerateUUID()
-	argsNode := &ir.NativeActionNode{
+	l.workflow.AddAction(&ir.NativeActionNode{
 		NodeID:          argsUUID,
 		AppleIdentifier: "is.workflow.actions.getvalueforkey",
 		OutputUUID:      argsUUID,
 		Parameters: map[string]interface{}{
-			"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: dictUUID},
+			"WFInput":                  &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnDictUUID},
 			"WFDictionaryKey":          "arguments",
 			"WFGetDictionaryValueType": "Value",
 		},
-	}
-	l.workflow.AddAction(argsNode)
+	})
 
 	for _, fn := range l.functions {
 		fnGroupUUID := l.GenerateUUID()
-		fnIf := &ir.NativeActionNode{
+		l.workflow.AddAction(&ir.NativeActionNode{
 			NodeID:             l.GenerateUUID(),
 			AppleIdentifier:    "is.workflow.actions.conditional",
 			GroupingIdentifier: fnGroupUUID,
@@ -322,8 +402,7 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 				"WFCondition":               4, // Is
 				"WFConditionalActionString": fn.Name,
 			},
-		}
-		l.workflow.AddAction(fnIf)
+		})
 
 		savedBindings := make(map[string]BindingRef)
 		for k, v := range l.bindings {
@@ -332,7 +411,7 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 
 		for idx, param := range fn.Parameters {
 			argItemUUID := l.GenerateUUID()
-			argItemNode := &ir.NativeActionNode{
+			l.workflow.AddAction(&ir.NativeActionNode{
 				NodeID:          argItemUUID,
 				AppleIdentifier: "is.workflow.actions.getitemfromlist",
 				OutputUUID:      argItemUUID,
@@ -341,8 +420,7 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 					"WFItemSpecifier": "Item At Index",
 					"WFItemIndex":     float64(idx + 1),
 				},
-			}
-			l.workflow.AddAction(argItemNode)
+			})
 			l.bindings[param.Name] = BindingRef{
 				IsVariable: false,
 				OutputUUID: argItemUUID,
@@ -356,7 +434,7 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 				hasReturn = true
 			}
 			if err := l.lowerStatement(stmt); err != nil {
-				return fmt.Errorf("function %s: %w", fn.Name, err)
+				return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 			}
 		}
 
@@ -369,7 +447,7 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 			})
 		}
 
-		fnEnd := &ir.NativeActionNode{
+		l.workflow.AddAction(&ir.NativeActionNode{
 			NodeID:             l.GenerateUUID(),
 			AppleIdentifier:    "is.workflow.actions.conditional",
 			GroupingIdentifier: fnGroupUUID,
@@ -378,40 +456,46 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 				"GroupingIdentifier": fnGroupUUID,
 				"WFControlFlowMode":  2,
 			},
-		}
-		l.workflow.AddAction(fnEnd)
+		})
 	}
 
-	exitAllNode := &ir.NativeActionNode{
+	// Exit the child execution immediately so it never falls through
+	l.workflow.AddAction(&ir.NativeActionNode{
 		NodeID:          l.GenerateUUID(),
-		AppleIdentifier: "is.workflow.actions.output",
-	}
-	l.workflow.AddAction(exitAllNode)
+		AppleIdentifier: "is.workflow.actions.exit",
+	})
 
-	endIf := &ir.NativeActionNode{
+	// Mode 1: Otherwise -> Main Statements
+	l.workflow.AddAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
-		GroupingIdentifier: groupUUID,
-		ControlFlowMode:    2,
+		GroupingIdentifier: mainGroupUUID,
+		ControlFlowMode:    1,
 		Parameters: map[string]interface{}{
-			"GroupingIdentifier": groupUUID,
-			"WFControlFlowMode":  2,
+			"GroupingIdentifier": mainGroupUUID,
+			"WFControlFlowMode":  1,
 		},
-	}
-	l.workflow.AddAction(endIf)
+	})
 
-	hasInputEnd := &ir.NativeActionNode{
+	for _, stmt := range prog.Statements {
+		if err := l.lowerStatement(stmt); err != nil {
+			return nil, err
+		}
+	}
+
+	// Mode 2: End If
+	l.workflow.AddAction(&ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
-		GroupingIdentifier: hasInputGroupUUID,
+		GroupingIdentifier: mainGroupUUID,
 		ControlFlowMode:    2,
 		Parameters: map[string]interface{}{
-			"GroupingIdentifier": hasInputGroupUUID,
+			"GroupingIdentifier": mainGroupUUID,
 			"WFControlFlowMode":  2,
 		},
-	}
-	l.workflow.AddAction(hasInputEnd)
-	return nil
+	})
+
+	return l.workflow, nil
 }
 
 func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
@@ -1808,14 +1892,25 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 
 			if ident, isIdent := call.PrimaryArg.(*syntax.IdentExpr); isIdent {
 				if setupQ, isSetup := l.setupQuestions[ident.Name]; isSetup {
-					qMap := map[string]interface{}{
-						"ActionIndex":  len(l.workflow.Actions),
-						"ParameterKey": wireKey,
-						"Text":         setupQ.Prompt,
-						"DefaultValue": setupQ.DefaultValue,
-						"Category":     "Parameter",
+					found := false
+					for idx, existingQ := range l.workflow.ImportQuestions {
+						if existingQ["ParameterKey"] == ident.Name {
+							l.workflow.ImportQuestions[idx]["ActionIndex"] = len(l.workflow.Actions)
+							l.workflow.ImportQuestions[idx]["ParameterKey"] = wireKey
+							found = true
+							break
+						}
 					}
-					l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, qMap)
+					if !found {
+						qMap := map[string]interface{}{
+							"ActionIndex":  len(l.workflow.Actions),
+							"ParameterKey": wireKey,
+							"Text":         setupQ.Prompt,
+							"DefaultValue": setupQ.DefaultValue,
+							"Category":     "Parameter",
+						}
+						l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, qMap)
+					}
 					if setupQ.DefaultValue != "" {
 						node.Parameters[wireKey] = setupQ.DefaultValue
 					}
@@ -1854,14 +1949,25 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 
 			if ident, isIdent := nArg.Value.(*syntax.IdentExpr); isIdent {
 				if setupQ, isSetup := l.setupQuestions[ident.Name]; isSetup {
-					qMap := map[string]interface{}{
-						"ActionIndex":  len(l.workflow.Actions),
-						"ParameterKey": wireKey,
-						"Text":         setupQ.Prompt,
-						"DefaultValue": setupQ.DefaultValue,
-						"Category":     "Parameter",
+					found := false
+					for idx, existingQ := range l.workflow.ImportQuestions {
+						if existingQ["ParameterKey"] == ident.Name {
+							l.workflow.ImportQuestions[idx]["ActionIndex"] = len(l.workflow.Actions)
+							l.workflow.ImportQuestions[idx]["ParameterKey"] = wireKey
+							found = true
+							break
+						}
 					}
-					l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, qMap)
+					if !found {
+						qMap := map[string]interface{}{
+							"ActionIndex":  len(l.workflow.Actions),
+							"ParameterKey": wireKey,
+							"Text":         setupQ.Prompt,
+							"DefaultValue": setupQ.DefaultValue,
+							"Category":     "Parameter",
+						}
+						l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, qMap)
+					}
 					if setupQ.DefaultValue != "" {
 						node.Parameters[wireKey] = setupQ.DefaultValue
 					}
