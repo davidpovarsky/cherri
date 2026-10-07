@@ -18,7 +18,12 @@ func obtainCatalog(config analyzeConfig) (*actionCatalog, error) {
 		return loadCatalogFromFile(config.catalogPath)
 	}
 	if config.cherriBin == "" {
-		return &actionCatalog{byIdentifier: map[string]*catalogEntry{}, source: "none"}, nil
+		return &actionCatalog{
+			byIdentifier: map[string][]*catalogEntry{},
+			knownKeys:    map[string]map[string]bool{},
+			parameters:   map[string]map[string][]catalogParameter{},
+			source:       "none",
+		}, nil
 	}
 
 	output, err := exec.Command(config.cherriBin, "--actions-json").Output()

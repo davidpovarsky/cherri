@@ -9,7 +9,7 @@
 # Test binary, built with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
+# Output of the go coverage tool, especially when used with LiteIDE
 *.out
 
 # Tests
@@ -47,12 +47,15 @@
 # Nix
 result
 
-# Shortcut corpus: raw inbox data, analysis output, and processing state are
-# environment artifacts and must never be committed. Sanitized synthetic
-# fixtures under tools/shortcut-corpus/testdata/ are intentional exceptions.
+# Shortcut corpus: raw inbox data, analysis output, acquisition/semantic state,
+# and local source caches are environment artifacts and must never be committed.
+# Sanitized synthetic fixtures under tools/shortcut-corpus/testdata/ are
+# intentional exceptions.
 /corpus-inbox/
+/corpus-cache/
 /analysis/
 corpus-state*.json
+corpus-acquisition-state*.json
 /catalog.json
 /catalog-err.txt
 !tools/shortcut-corpus/testdata/**

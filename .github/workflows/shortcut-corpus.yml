@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'tools/shortcut-corpus/**'
+      - 'internal/icloudshortcut/**'
+      - 'import.go'
       - 'actions_catalog.go'
       - 'args.go'
       - 'main.go'
@@ -17,6 +19,8 @@ on:
       - main
     paths:
       - 'tools/shortcut-corpus/**'
+      - 'internal/icloudshortcut/**'
+      - 'import.go'
       - 'actions_catalog.go'
       - '.github/workflows/shortcut-corpus.yml'
   workflow_dispatch:
@@ -26,6 +30,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -34,33 +39,99 @@ jobs:
     timeout-minutes: 20
 
     steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
           go-version: '1.24.x'
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Build
         run: go build -v ./...
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Vet corpus tooling
-        run: go vet ./tools/...
+        run: go vet ./tools/... ./internal/icloudshortcut/...
 
-      - name: Corpus tooling tests
-        run: go test ./tools/... -v
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Corpus and iCloud resolver tests
+        run: |
+          go test ./tools/... -v
+          go test ./internal/icloudshortcut/... -v
 
-      - name: Compiler tests affected by catalog changes
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Compiler tests affected by catalog and import changes
         run: |
           go test -run TestCherriNoSign ./...
           go test -run TestDecomp ./...
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Build cherri CLI and analyzer
         run: |
           go build -o dist/cherri .
           go build -o dist/shortcut-corpus ./tools/shortcut-corpus
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Generate machine-readable catalog
         run: |
           dist/cherri --actions-json --no-ansi > dist/actions-catalog.json
@@ -74,6 +145,14 @@ jobs:
           print(f"catalog ok: {catalog['count']} actions")
           PY
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Analyze sanitized fixture corpus
         run: |
           mkdir -p analysis
@@ -82,14 +161,49 @@ jobs:
             -catalog dist/actions-catalog.json \
             -out analysis \
             -state analysis/corpus-state.json
+          test -s analysis/agent-queue.json
+          test -s analysis/agent-queue.md
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Reclassify without raw reparse
+        run: |
+          dist/shortcut-corpus reclassify \
+            -catalog dist/actions-catalog.json \
+            -out analysis/reclassified \
+            -state analysis/corpus-state.json
+          test -s analysis/reclassified/agent-queue.json
+          test -s analysis/reclassified/agent-queue.md
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Structural comparator check
         run: |
           dist/shortcut-corpus compare \
             tools/shortcut-corpus/testdata/sample-shortcut.plist \
             tools/shortcut-corpus/testdata/sample-shortcut.plist
 
-      - name: Upload analysis artifacts
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Upload sanitized analysis artifacts
         uses: actions/upload-artifact@v4
         with:
           name: shortcut-corpus-analysis
@@ -101,7 +215,13 @@ jobs:
             analysis/variants.json
             analysis/third-party-actions.json
             analysis/needs-review.json
+            analysis/agent-queue.json
+            analysis/agent-queue.md
             analysis/candidates/
+            analysis/reclassified/summary.json
+            analysis/reclassified/summary.md
+            analysis/reclassified/agent-queue.json
+            analysis/reclassified/agent-queue.md
             dist/actions-catalog.json
           if-no-files-found: error
           retention-days: 30

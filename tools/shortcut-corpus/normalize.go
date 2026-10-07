@@ -14,10 +14,6 @@ import (
 	"strings"
 )
 
-// NormalizedValue is the privacy-safe structural form of any Shortcut
-// parameter value. Personal content never survives normalization: free-text
-// strings become typed placeholders, while system constants and enum-like
-// tokens are preserved verbatim because they define action structure.
 type NormalizedValue struct {
 	Kind          string                      `json:"kind"`
 	Constant      string                      `json:"constant,omitempty"`
@@ -36,14 +32,8 @@ const (
 	kindDictionary = "dict"
 )
 
-var ignoredParameterKeys = map[string]bool{
-	"UUID":             true,
-	"CustomOutputName": true,
-}
+var ignoredParameterKeys = map[string]bool{"UUID": true, "CustomOutputName": true}
 
-// normalizeValue converts raw Shortcut data into its normalized structural
-// form. Numeric literals and booleans are structural and kept; strings go
-// through sanitization; serialized payloads record their type.
 func normalizeValue(value any) *NormalizedValue {
 	switch typed := value.(type) {
 	case nil:
@@ -54,17 +44,17 @@ func normalizeValue(value any) *NormalizedValue {
 		return &NormalizedValue{Kind: kindNumber, Constant: formatNumber(typed)}
 	case int:
 		return &NormalizedValue{Kind: kindNumber, Constant: fmt.Sprintf("%d", typed)}
+	case int64:
+		return &NormalizedValue{Kind: kindNumber, Constant: fmt.Sprintf("%d", typed)}
+	case uint64:
+		return &NormalizedValue{Kind: kindNumber, Constant: fmt.Sprintf("%d", typed)}
 	case string:
 		sanitized, class := sanitizeText(typed)
 		return &NormalizedValue{Kind: kindString, Constant: sanitized, TextClass: string(class)}
 	case []any:
 		var items []*NormalizedValue
-		for _, item := range typed {
-			items = append(items, normalizeValue(item))
-		}
-		if items == nil {
-			items = []*NormalizedValue{}
-		}
+		for _, item := range typed { items = append(items, normalizeValue(item)) }
+		if items == nil { items = []*NormalizedValue{} }
 		return &NormalizedValue{Kind: kindArray, Items: items}
 	case map[string]any:
 		return normalizeSerializedMap(typed)
@@ -75,291 +65,242 @@ func normalizeValue(value any) *NormalizedValue {
 
 func normalizeSerializedMap(value map[string]any) *NormalizedValue {
 	serialization, _ := value["WFSerializationType"].(string)
-	normalized := &NormalizedValue{
-		Kind:          kindDictionary,
-		Serialization: serialization,
-		Fields:        map[string]*NormalizedValue{},
-	}
+	normalized := &NormalizedValue{Kind: kindDictionary, Serialization: serialization, Fields: map[string]*NormalizedValue{}}
 	for key, field := range value {
-		if key == "WFSerializationType" {
-			continue
-		}
+		if key == "WFSerializationType" { continue }
 		normalized.Fields[key] = normalizeValue(field)
 	}
 	return normalized
 }
 
 func formatNumber(value float64) string {
-	if value == float64(int64(value)) {
-		return fmt.Sprintf("%d", int64(value))
-	}
+	if value == float64(int64(value)) { return fmt.Sprintf("%d", int64(value)) }
 	return fmt.Sprintf("%g", value)
 }
 
-// Fingerprint identifies one unique structural action shape: identifier plus
-// parameter keys plus normalized parameter structure. Identical shapes across
-// files deduplicate into a single record with growing evidence.
-func fingerprintAction(identifier string, parameters map[string]*NormalizedValue) string {
-	canonical := struct {
-		Identifier string                      `json:"identifier"`
-		Parameters map[string]*NormalizedValue `json:"parameters"`
-	}{Identifier: identifier, Parameters: dropIgnoredKeys(parameters)}
+type schemaValue struct {
+	Kind          string                 `json:"kind"`
+	Serialization string                 `json:"serialization,omitempty"`
+	Items         []schemaValue          `json:"items,omitempty"`
+	Fields        map[string]schemaValue `json:"fields,omitempty"`
+}
 
-	encoded, err := json.Marshal(canonical)
-	if err != nil {
-		return ""
+func valueSchema(value *NormalizedValue) schemaValue {
+	if value == nil { return schemaValue{Kind: kindNull} }
+	result := schemaValue{Kind: value.Kind, Serialization: value.Serialization}
+	if len(value.Fields) != 0 {
+		result.Fields = make(map[string]schemaValue, len(value.Fields))
+		for key, child := range value.Fields { result.Fields[key] = valueSchema(child) }
 	}
+	if len(value.Items) != 0 {
+		unique := map[string]schemaValue{}
+		for _, child := range value.Items {
+			schema := valueSchema(child)
+			encoded, _ := json.Marshal(schema)
+			unique[string(encoded)] = schema
+		}
+		keys := make([]string, 0, len(unique))
+		for key := range unique { keys = append(keys, key) }
+		sort.Strings(keys)
+		for _, key := range keys { result.Items = append(result.Items, unique[key]) }
+	}
+	return result
+}
+
+func fingerprintAction(identifier string, parameters map[string]*NormalizedValue) string {
+	trimmed := dropIgnoredKeys(parameters)
+	schema := make(map[string]schemaValue, len(trimmed))
+	for key, value := range trimmed { schema[key] = valueSchema(value) }
+	canonical := struct {
+		Identifier string                 `json:"identifier"`
+		Parameters map[string]schemaValue `json:"parameters"`
+	}{Identifier: identifier, Parameters: schema}
+	encoded, err := json.Marshal(canonical)
+	if err != nil { return "" }
 	digest := sha256.Sum256(encoded)
 	return hex.EncodeToString(digest[:])
 }
 
+func collectValueObservations(parameters map[string]*NormalizedValue) map[string][]string {
+	observations := map[string][]string{}
+	for key, value := range dropIgnoredKeys(parameters) { collectValueObservation(key, value, observations) }
+	if len(observations) == 0 { return nil }
+	return observations
+}
+
+func collectValueObservation(path string, value *NormalizedValue, observations map[string][]string) {
+	if value == nil { return }
+	if value.Kind == kindString && value.Constant != "" && !strings.HasPrefix(value.Constant, placeholderPrefix) {
+		observations[path] = boundedUniqueStrings(append(observations[path], value.Constant), 32)
+	}
+	for _, child := range value.Items { collectValueObservation(path+"[]", child, observations) }
+	for key, child := range value.Fields { collectValueObservation(path+"."+key, child, observations) }
+}
+
+func mergeValueObservations(record *ActionRecord, incoming map[string][]string) {
+	if len(incoming) == 0 { return }
+	if record.ValueObservations == nil { record.ValueObservations = map[string][]string{} }
+	for path, values := range incoming { record.ValueObservations[path] = boundedUniqueStrings(append(record.ValueObservations[path], values...), 32) }
+}
+
 func dropIgnoredKeys(parameters map[string]*NormalizedValue) map[string]*NormalizedValue {
 	result := make(map[string]*NormalizedValue, len(parameters))
-	for key, value := range parameters {
-		if ignoredParameterKeys[key] {
-			continue
-		}
-		result[key] = value
-	}
+	for key, value := range parameters { if !ignoredParameterKeys[key] { result[key] = value } }
 	return result
 }
 
 func sortedKeys(parameters map[string]*NormalizedValue) []string {
 	keys := make([]string, 0, len(parameters))
-	for key := range parameters {
-		keys = append(keys, key)
-	}
+	for key := range parameters { keys = append(keys, key) }
 	sort.Strings(keys)
 	return keys
 }
 
-// catalogEntry mirrors the subset of `cherri --actions-json` entries used for
-// comparison. Only reliable metadata published by Cherri is consulted.
 type catalogEntry struct {
 	Name               string             `json:"name"`
 	ShortcutIdentifier string             `json:"shortcutIdentifier"`
 	Title              string             `json:"title"`
+	Description        string             `json:"description"`
 	Category           string             `json:"category"`
+	Subcategory        string             `json:"subcategory"`
 	Parameters         []catalogParameter `json:"parameters"`
 	EmittedKeys        []string           `json:"emittedKeys"`
+	OutputType         string             `json:"outputType"`
+	MacOnly            bool               `json:"macOnly"`
+	NonMacOnly         bool               `json:"nonMacOnly"`
+	MinVersion         float64            `json:"minVersion"`
+	MaxVersion         float64            `json:"maxVersion"`
 	Builtin            bool               `json:"builtin"`
+	Custom             bool               `json:"custom"`
+	CompilerConstruct  bool               `json:"compilerConstruct"`
+	AppIntent          *catalogAppIntent  `json:"appIntent"`
 }
 
 type catalogParameter struct {
 	Name       string   `json:"name"`
 	Key        string   `json:"key"`
 	Type       string   `json:"type"`
+	Optional   bool     `json:"optional"`
+	Infinite   bool     `json:"infinite"`
+	Reference  bool     `json:"reference"`
+	Literal    bool     `json:"literal"`
 	Enum       string   `json:"enum"`
 	EnumValues []string `json:"enumValues"`
+	Default    string   `json:"default"`
 }
 
-// actionCatalog is the loaded view of Cherri's machine-readable catalog.
+type catalogAppIntent struct {
+	Name                    string `json:"name"`
+	BundleIdentifier        string `json:"bundleIdentifier"`
+	AppIntentIdentifier     string `json:"appIntentIdentifier"`
+	TeamIdentifier          string `json:"teamIdentifier"`
+	RequiresAppInstallation *bool  `json:"requiresAppInstallation"`
+}
+
 type actionCatalog struct {
-	byIdentifier map[string]*catalogEntry
+	byIdentifier map[string][]*catalogEntry
 	knownKeys    map[string]map[string]bool
+	parameters   map[string]map[string][]catalogParameter
 	count        int
 	source       string
+	digest       string
 }
 
 func loadCatalogFromFile(path string) (*actionCatalog, error) {
 	data, err := readFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("catalog file %s: %w", path, err)
-	}
+	if err != nil { return nil, fmt.Errorf("catalog file %s: %w", path, err) }
 	return parseCatalog(data, path)
 }
 
 func parseCatalog(data []byte, source string) (*actionCatalog, error) {
-	var response struct {
-		OK      bool           `json:"ok"`
-		Error   string         `json:"error"`
-		Actions []catalogEntry `json:"actions"`
-	}
-	if err := json.Unmarshal(data, &response); err != nil {
-		return nil, fmt.Errorf("catalog %s is not valid JSON: %w", source, err)
-	}
-	if !response.OK {
-		return nil, fmt.Errorf("catalog %s reported error: %s", source, response.Error)
-	}
-
-	catalog := &actionCatalog{
-		byIdentifier: map[string]*catalogEntry{},
-		knownKeys:    map[string]map[string]bool{},
-		source:       filepath.Base(source),
-	}
+	var response struct { OK bool `json:"ok"`; Error string `json:"error"`; Actions []catalogEntry `json:"actions"` }
+	if err := json.Unmarshal(data, &response); err != nil { return nil, fmt.Errorf("catalog %s is not valid JSON: %w", source, err) }
+	if !response.OK { return nil, fmt.Errorf("catalog %s reported error: %s", source, response.Error) }
+	catalog := &actionCatalog{byIdentifier: map[string][]*catalogEntry{}, knownKeys: map[string]map[string]bool{}, parameters: map[string]map[string][]catalogParameter{}, source: filepath.Base(source), digest: hashBytes(data)}
 	for index := range response.Actions {
 		entry := &response.Actions[index]
-		if entry.ShortcutIdentifier == "" {
-			continue
-		}
-		catalog.byIdentifier[entry.ShortcutIdentifier] = entry
-		keys, exists := catalog.knownKeys[entry.ShortcutIdentifier]
-		if !exists {
-			keys = map[string]bool{}
-			catalog.knownKeys[entry.ShortcutIdentifier] = keys
-		}
+		identifier := entry.ShortcutIdentifier
+		if identifier == "" { continue }
+		catalog.byIdentifier[identifier] = append(catalog.byIdentifier[identifier], entry)
+		keys := catalog.knownKeys[identifier]
+		if keys == nil { keys = map[string]bool{}; catalog.knownKeys[identifier] = keys }
+		params := catalog.parameters[identifier]
+		if params == nil { params = map[string][]catalogParameter{}; catalog.parameters[identifier] = params }
 		for _, parameter := range entry.Parameters {
-			key := parameter.Key
-			if key == "" {
-				key = parameter.Name
-			}
-			if key != "" {
-				keys[key] = true
-			}
+			key := parameter.Key; if key == "" { key = parameter.Name }
+			if key != "" { keys[key] = true; params[key] = append(params[key], parameter) }
 		}
-		for _, key := range entry.EmittedKeys {
-			if key != "" {
-				keys[key] = true
-			}
-		}
+		for _, key := range entry.EmittedKeys { if key != "" { keys[key] = true } }
 	}
 	catalog.count = len(catalog.byIdentifier)
 	return catalog, nil
 }
 
-// knownParameterKeys returns the union of parameter keys Cherri models for an
-// identifier across every definition sharing it (several Cherri actions can
-// target one identifier), or nil when the identifier is unknown.
-func (catalog *actionCatalog) knownParameterKeys(identifier string) map[string]bool {
-	return catalog.knownKeys[identifier]
+func (catalog *actionCatalog) knownParameterKeys(identifier string) map[string]bool { return catalog.knownKeys[identifier] }
+func (catalog *actionCatalog) known(identifier string) bool { return len(catalog.byIdentifier[identifier]) != 0 }
+func (catalog *actionCatalog) enumValues(identifier, key string) (map[string]bool, bool) {
+	values := map[string]bool{}; hasEnum := false
+	for _, parameter := range catalog.parameters[identifier][key] {
+		if parameter.Enum == "" && len(parameter.EnumValues) == 0 { continue }
+		hasEnum = true
+		for _, value := range parameter.EnumValues { values[value] = true }
+	}
+	return values, hasEnum
 }
 
-func (catalog *actionCatalog) known(identifier string) bool {
-	_, found := catalog.byIdentifier[identifier]
-	return found
-}
-
-// classification constants represent analyzer verdicts. Observed data alone
-// never promotes a record past NEEDS_REVIEW into production use.
 const (
-	classKnown                   = "KNOWN"
-	classNew                     = "NEW"
-	classVariant                 = "VARIANT"
-	classThirdParty              = "THIRD_PARTY"
-	classUnknown                 = "UNKNOWN"
-	classNeedsReview             = "NEEDS_REVIEW"
-	classSafeCandidate           = "SAFE_CANDIDATE"
+	classKnown = "KNOWN"
+	classNew = "NEW"
+	classVariant = "VARIANT"
+	classThirdParty = "THIRD_PARTY"
+	classUnknown = "UNKNOWN"
+	classNeedsReview = "NEEDS_REVIEW"
+	classSafeCandidate = "SAFE_CANDIDATE"
 	classCustomImplementationReq = "CUSTOM_IMPLEMENTATION_REQUIRED"
 )
 
-// classify assigns a classification to a normalized action shape using the
-// catalog and previously observed forms of the same identifier.
 func classify(record *ActionRecord, catalog *actionCatalog) {
+	record.Classification = ""; record.Notes = nil
 	identifier := record.Identifier
-
-	if !strings.HasPrefix(identifier, "is.workflow.") && strings.Contains(identifier, ".") {
-		record.Classification = classThirdParty
-		record.Evidence.Status = "observed"
-		return
-	}
-
+	if !strings.HasPrefix(identifier, "is.workflow.") && strings.Contains(identifier, ".") { record.Classification = classThirdParty; record.Evidence.Status = "observed"; return }
 	knownKeys := catalog.knownParameterKeys(identifier)
-	observed := observedKeySet(record.Parameters)
-
-	switch {
-	case knownKeys == nil:
-		record.Classification = classUnknown
-		record.Notes = append(record.Notes, "identifier not present in Cherri catalog")
-	case keySubset(observed, unionSets(knownKeys, ignoredParameterKeys)):
-		record.Classification = classKnown
-		record.Evidence.Status = "observed"
-	default:
-		record.Classification = classVariant
-		record.Notes = append(record.Notes, "parameter shape differs from Cherri definition")
+	if knownKeys == nil { record.Classification = classUnknown; record.Notes = append(record.Notes, "identifier not present in Cherri catalog"); return }
+	unknown := differenceKeys(observedKeySet(record.Parameters), unionSets(knownKeys, ignoredParameterKeys))
+	if len(unknown) != 0 { record.Classification = classVariant; record.Notes = append(record.Notes, "unmodeled parameter keys: "+strings.Join(unknown, ", ")); return }
+	for key, values := range record.ValueObservations {
+		if strings.Contains(key, ".") || strings.Contains(key, "[]") { continue }
+		allowed, hasEnum := catalog.enumValues(identifier, key)
+		if !hasEnum || len(allowed) == 0 { continue }
+		for _, value := range values {
+			if !allowed[value] { record.Classification = classVariant; record.Notes = append(record.Notes, fmt.Sprintf("observed system constant %q for %s is outside Cherri enum", value, key)); return }
+		}
 	}
+	record.Classification = classKnown; record.Evidence.Status = "observed"
 }
 
-// refineClassification applies candidate-safety analysis to records that are
-// new to Cherri. It never mutates KNOWN records.
 func refineClassification(record *ActionRecord) {
-	if record.Classification != classUnknown {
-		return
-	}
-	if requiresCustomImplementation(record) {
-		record.Classification = classCustomImplementationReq
-		return
-	}
+	if record.Classification != classUnknown { return }
+	if requiresCustomImplementation(record) { record.Classification = classCustomImplementationReq; return }
 	record.Classification = classSafeCandidate
-	record.Notes = append(record.Notes, "declarative shape suitable for generated candidate")
+	record.Notes = append(record.Notes, "declarative schema suitable for generated candidate")
 }
 
-var complexSerializationTypes = map[string]bool{
-	"WFQuantityFieldValue":            true,
-	"WFContentPredicateTableTemplate": true,
-	"WFAppIntentDescriptor":           true,
-}
-
-// complexParameterKeys are parameter keys that always demand manual
-// construction regardless of their serialized shape.
-var complexParameterKeys = map[string]bool{
-	"AppIntentDescriptor": true,
-}
+var complexSerializationTypes = map[string]bool{"WFQuantityFieldValue": true, "WFContentPredicateTableTemplate": true, "WFAppIntentDescriptor": true}
+var complexParameterKeys = map[string]bool{"AppIntentDescriptor": true}
 
 func requiresCustomImplementation(record *ActionRecord) bool {
-	for key, value := range record.Parameters {
-		if complexParameterKeys[key] {
-			return true
-		}
-		if serializationNeedsCustom(value) {
-			return true
-		}
-	}
+	for key, value := range record.Parameters { if complexParameterKeys[key] || serializationNeedsCustom(value) { return true } }
 	return false
 }
-
 func serializationNeedsCustom(value *NormalizedValue) bool {
-	if value == nil {
-		return false
-	}
-	if complexSerializationTypes[value.Serialization] {
-		return true
-	}
-	if value.Serialization == "WFAppIntentDescriptor" {
-		return true
-	}
-	// App Intent descriptors also appear as plain nested dictionaries without
-	// a WFSerializationType marker (observed in App Intent-backed filter
-	// actions), so the field name itself is treated as structural evidence.
-	if _, found := value.Fields["AppIntentDescriptor"]; found {
-		return true
-	}
-	for _, child := range value.Items {
-		if serializationNeedsCustom(child) {
-			return true
-		}
-	}
-	for _, child := range value.Fields {
-		if serializationNeedsCustom(child) {
-			return true
-		}
-	}
+	if value == nil { return false }
+	if complexSerializationTypes[value.Serialization] { return true }
+	if _, found := value.Fields["AppIntentDescriptor"]; found { return true }
+	for _, child := range value.Items { if serializationNeedsCustom(child) { return true } }
+	for _, child := range value.Fields { if serializationNeedsCustom(child) { return true } }
 	return false
 }
-
-func observedKeySet(parameters map[string]*NormalizedValue) map[string]bool {
-	keys := map[string]bool{}
-	for key := range parameters {
-		keys[key] = true
-	}
-	return keys
-}
-
-func keySubset(observed, allowed map[string]bool) bool {
-	for key := range observed {
-		if !allowed[key] {
-			return false
-		}
-	}
-	return true
-}
-
-func unionSets(a, b map[string]bool) map[string]bool {
-	union := make(map[string]bool, len(a)+len(b))
-	for key := range a {
-		union[key] = true
-	}
-	for key := range b {
-		union[key] = true
-	}
-	return union
-}
+func observedKeySet(parameters map[string]*NormalizedValue) map[string]bool { keys := map[string]bool{}; for key := range parameters { keys[key] = true }; return keys }
+func keySubset(observed, allowed map[string]bool) bool { return len(differenceKeys(observed, allowed)) == 0 }
+func differenceKeys(observed, allowed map[string]bool) []string { var result []string; for key := range observed { if !allowed[key] { result = append(result, key) } }; sort.Strings(result); return result }
+func unionSets(a, b map[string]bool) map[string]bool { union := make(map[string]bool, len(a)+len(b)); for key := range a { union[key] = true }; for key := range b { union[key] = true }; return union }
