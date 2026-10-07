@@ -8,6 +8,7 @@ on:
       - 'tools/shortcut-runtime/**'
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -24,9 +25,25 @@ jobs:
     timeout-minutes: 15
 
     steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Probe Shortcuts engine surfaces
         shell: bash
         run: |
@@ -34,6 +51,14 @@ jobs:
           mkdir -p probe
           python3 tools/shortcut-runtime/runtime_probe.py --out-dir probe
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Upload probe results
         uses: actions/upload-artifact@v4
         with:
