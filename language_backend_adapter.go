@@ -351,7 +351,23 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 	if groupingID != "" {
 		cleanParams["GroupingIdentifier"] = groupingID
 	}
+	if appleIdentifier == "is.workflow.actions.conditional" {
+		if att, ok := cleanParams["WFInput"].(WFTextTokenAttachment); ok {
+			cleanParams["WFInput"] = map[string]any{
+				"Type":     "Variable",
+				"Variable": att,
+			}
+		} else if input, ok := cleanParams["WFInput"].(map[string]any); ok {
+			if _, hasVar := input["Variable"]; !hasVar {
+				cleanParams["WFInput"] = map[string]any{
+					"Type":     "Variable",
+					"Variable": input,
+				}
+			}
+		}
+	}
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
+
 		WFWorkflowActionIdentifier: appleIdentifier,
 		WFWorkflowActionParameters: cleanParams,
 	})

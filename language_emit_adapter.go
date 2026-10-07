@@ -74,7 +74,23 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 		if node.GroupingIdentifier != "" {
 			action.WFWorkflowActionParameters["GroupingIdentifier"] = node.GroupingIdentifier
 		}
+		if action.WFWorkflowActionIdentifier == "is.workflow.actions.conditional" {
+			if att, ok := action.WFWorkflowActionParameters["WFInput"].(WFTextTokenAttachment); ok {
+				action.WFWorkflowActionParameters["WFInput"] = map[string]any{
+					"Type":     "Variable",
+					"Variable": att,
+				}
+			} else if input, ok := action.WFWorkflowActionParameters["WFInput"].(map[string]any); ok {
+				if _, hasVar := input["Variable"]; !hasVar {
+					action.WFWorkflowActionParameters["WFInput"] = map[string]any{
+						"Type":     "Variable",
+						"Variable": input,
+					}
+				}
+			}
+		}
 		sc.WFWorkflowActions = append(sc.WFWorkflowActions, action)
+
 	}
 
 	for _, q := range wf.ImportQuestions {
