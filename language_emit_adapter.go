@@ -101,6 +101,10 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 }
 
 func transformIRParamValue(v any) any {
+	return transformIRParamValueContext(v, false)
+}
+
+func transformIRParamValueContext(v any, inAttachmentsByRange bool) any {
 	if tok, ok := v.(*ir.AttachmentToken); ok {
 		valMap := map[string]any{
 			"Type": tok.Type,
@@ -114,6 +118,12 @@ func transformIRParamValue(v any) any {
 		if tok.Type == "Variable" || tok.Type == "ExtensionInput" {
 			valMap["VariableName"] = tok.OutputName
 		}
+		if len(tok.Aggrandizements) > 0 {
+			valMap["Aggrandizements"] = tok.Aggrandizements
+		}
+		if inAttachmentsByRange {
+			return valMap
+		}
 		return map[string]any{
 			"Value":               valMap,
 			"WFSerializationType": "WFTextTokenAttachment",
@@ -123,7 +133,7 @@ func transformIRParamValue(v any) any {
 	if m, ok := v.(map[string]interface{}); ok {
 		res := make(map[string]any, len(m))
 		for k, val := range m {
-			res[k] = transformIRParamValue(val)
+			res[k] = transformIRParamValueContext(val, inAttachmentsByRange || k == "attachmentsByRange")
 		}
 		return res
 	}
@@ -131,7 +141,7 @@ func transformIRParamValue(v any) any {
 	if s, ok := v.([]interface{}); ok {
 		res := make([]any, len(s))
 		for i, val := range s {
-			res[i] = transformIRParamValue(val)
+			res[i] = transformIRParamValueContext(val, inAttachmentsByRange)
 		}
 		return res
 	}

@@ -6,14 +6,12 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"reflect"
 	"testing"
 
+	"github.com/electrikmilk/cherri/internal/shortcutcompare"
 	"howett.net/plist"
 )
 
@@ -34,8 +32,8 @@ func TestActionParityMatrix(t *testing.T) {
 			Category:         "static variant parameter",
 			TargetIdentifier: "is.workflow.actions.base64encode",
 			LegacyCherri: `#include 'actions/crypto'
-@input = "hello"
-@out = base64Encode(@input)
+const input = "hello"
+const out = base64Encode(input)
 `,
 			V2Cherri: `let input = "hello"
 let out = base64Encode(input)
@@ -46,8 +44,8 @@ let out = base64Encode(input)
 			Category:         "static variant parameter",
 			TargetIdentifier: "is.workflow.actions.base64encode",
 			LegacyCherri: `#include 'actions/crypto'
-@input = "aGVsbG8="
-@out = base64Decode(@input)
+const input = "aGVsbG8="
+const out = base64Decode(input)
 `,
 			V2Cherri: `let input = "aGVsbG8="
 let out = base64Decode(input)
@@ -58,7 +56,7 @@ let out = base64Decode(input)
 			Category:         "enum and optional omitted parameter",
 			TargetIdentifier: "is.workflow.actions.getupcomingevents",
 			LegacyCherri: `#include 'actions/calendar'
-@events = getUpcomingEvents(5)
+const events = getUpcomingEvents(5)
 `,
 			V2Cherri: `let events = getUpcomingEvents(5)
 `,
@@ -68,19 +66,19 @@ let out = base64Decode(input)
 			Category:         "AppIntent descriptor",
 			TargetIdentifier: "com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent",
 			LegacyCherri: `#include 'actions/calendar'
-@alarm = "TestAlarm"
-turnOnAlarm(@alarm)
+const alarm = "TestAlarm"
+const res = turnOnAlarm(alarm)
 `,
 			V2Cherri: `let alarm = "TestAlarm"
-turnOnAlarm(alarm)
+let res = turnOnAlarm(alarm)
 `,
 		},
 		{
 			Name:             "text_token_variable_input",
 			Category:         "variable/token parameter",
 			TargetIdentifier: "is.workflow.actions.showresult",
-			LegacyCherri: `@val = "Hello World"
-show(@val)
+			LegacyCherri: `const val = "Hello World"
+show(val)
 `,
 			V2Cherri: `let val = "Hello World"
 show(val)
@@ -91,11 +89,11 @@ show(val)
 			Category:         "custom parameter builder with static params",
 			TargetIdentifier: "is.workflow.actions.documentpicker.save",
 			LegacyCherri: `#include 'actions/documents'
-@content = "evidence data"
-saveFile("output.txt", @content, true)
+const content = "evidence data"
+const file = saveFile("output.txt", content, true)
 `,
 			V2Cherri: `let content = "evidence data"
-saveFile("output.txt", content, overwrite: true)
+let file = saveFile("output.txt", content, overwrite: true)
 `,
 		},
 		{
@@ -103,7 +101,7 @@ saveFile("output.txt", content, overwrite: true)
 			Category:         "nested token / custom action",
 			TargetIdentifier: "is.workflow.actions.runjavascriptonwebpage",
 			LegacyCherri: `#include 'actions/web'
-@res = runJavaScriptOnWebpage("document.title;")
+const res = runJavaScriptOnWebpage("document.title;")
 `,
 			V2Cherri: `let res = runJavaScriptOnWebpage("document.title;")
 `,
@@ -191,107 +189,24 @@ saveFile("output.txt", content, overwrite: true)
 			lParams, _ := legacyTarget["WFWorkflowActionParameters"].(map[string]any)
 			vParams, _ := v2Target["WFWorkflowActionParameters"].(map[string]any)
 
-			compareActionParameters(t, fix.Name, lParams, vParams)
+			scope := shortcutcompare.BuildDocumentScope(legacyDoc, v2Doc)
+			compareActionParameters(t, fix.Name, lParams, vParams, scope)
 		})
 	}
 }
 
-func compareActionParameters(t *testing.T, prefix string, legacyParams, v2Params map[string]any) {
+func compareActionParameters(t *testing.T, prefix string, legacyParams, v2Params map[string]any, scope *shortcutcompare.Scope) {
 	t.Helper()
 
-	// Keys to ignore during comparison (UUIDs, auto-generated variable names, and parser artifacts)
-	ignoredKeys := map[string]bool{
-		"UUID":                         true,
-		"CustomOutputName":             true,
-		"WFWorkflowActionParameters":   true,
-		"GroupingIdentifier":           true,
-		"input":                        true, // legacy parser artifact in crypto.cherri
-	}
-
-	for k, lVal := range legacyParams {
-		if ignoredKeys[k] {
-			continue
-		}
-		vVal, exists := v2Params[k]
-		if !exists {
-			t.Errorf("%s: key %q present in legacy but missing in v2 (legacy val=%v)", prefix, k, lVal)
-			continue
-		}
-
-		if !semanticValueEqual(lVal, vVal) {
-			t.Errorf("%s: parameter %q mismatch:\n  legacy: %v\n  v2:     %v", prefix, k, lVal, vVal)
-		}
-	}
-
-	for k, vVal := range v2Params {
-		if ignoredKeys[k] {
-			continue
-		}
-		if _, exists := legacyParams[k]; !exists {
-			t.Errorf("%s: key %q present in v2 but missing in legacy (v2 val=%v)", prefix, k, vVal)
+	res := shortcutcompare.CompareActionParameters(legacyParams, v2Params, scope)
+	if !res.Equal {
+		for _, diff := range res.Differences {
+			t.Errorf("%s: parameter mismatch at %s (%s): legacy=%v, v2=%v", prefix, diff.Path, diff.Kind, diff.A, diff.B)
 		}
 	}
 }
 
 func semanticValueEqual(a, b any) bool {
-	if reflect.DeepEqual(a, b) {
-		return true
-	}
-
-	// Normalize numeric representations
-	switch va := a.(type) {
-	case int:
-		if vb, ok := b.(float64); ok {
-			return float64(va) == vb
-		}
-		if vb, ok := b.(uint64); ok {
-			return uint64(va) == vb
-		}
-	case float64:
-		if vb, ok := b.(int); ok {
-			return va == float64(vb)
-		}
-		if vb, ok := b.(uint64); ok {
-			return va == float64(vb)
-		}
-	}
-
-	// Handle maps (e.g. AppIntentDescriptor, token attachments)
-	mapA, isMapA := a.(map[string]any)
-	mapB, isMapB := b.(map[string]any)
-	if isMapA && isMapB {
-		// Both are Shortcut token references (legacy named variable vs v2 SSA action output)
-		isTokenA := mapA["WFSerializationType"] == "WFTextTokenAttachment" || mapA["WFSerializationType"] == "WFTextTokenString"
-		isTokenB := mapB["WFSerializationType"] == "WFTextTokenAttachment" || mapB["WFSerializationType"] == "WFTextTokenString"
-		if isTokenA && isTokenB {
-			return true
-		}
-
-		for k, valA := range mapA {
-			if k == "UUID" || k == "OutputUUID" {
-				continue
-			}
-			valB, exists := mapB[k]
-			if !exists || !semanticValueEqual(valA, valB) {
-				return false
-			}
-		}
-		return true
-	}
-
-	// String representations
-	strA := fmt.Sprint(a)
-	strB := fmt.Sprint(b)
-	if strA == strB {
-		return true
-	}
-
-	// JSON fallback
-	jA, errA := json.Marshal(a)
-	jB, errB := json.Marshal(b)
-	if errA == nil && errB == nil && string(jA) == string(jB) {
-		return true
-	}
-
-	return false
+	res := shortcutcompare.CompareActionParameters(map[string]any{"v": a}, map[string]any{"v": b}, nil)
+	return res.Equal
 }

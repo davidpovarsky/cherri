@@ -1686,6 +1686,9 @@ func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
 				if tok.Type == "Variable" {
 					att["VariableName"] = tok.OutputName
 				}
+				if len(tok.Aggrandizements) > 0 {
+					att["Aggrandizements"] = tok.Aggrandizements
+				}
 				attachmentsByRange[rangeKey] = att
 			} else {
 				// Literal value: format directly into text!
@@ -1859,10 +1862,6 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		Parameters:      make(map[string]interface{}),
 	}
 	for k, v := range actionSchema.StaticParameters {
-		if k == "input" {
-			// Skip internal parser helper entries
-			continue
-		}
 		node.Parameters[k] = v
 	}
 	if actionSchema.AppIntent != nil {
@@ -1887,6 +1886,19 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			wireKey := primParam.WireKey
 			if wireKey == "" {
 				wireKey = "WFInput"
+			}
+			if primParam.TypeName == "Text" || primParam.TypeName == "String" || (primParam.Type != nil && (primParam.Type.Name() == "Text" || primParam.Type.Name() == "String")) {
+				if tok, isTok := primVal.(*ir.AttachmentToken); isTok {
+					primVal = map[string]interface{}{
+						"WFSerializationType": "WFTextTokenString",
+						"Value": map[string]interface{}{
+							"string": "\uFFFC",
+							"attachmentsByRange": map[string]interface{}{
+								"{0, 1}": tok,
+							},
+						},
+					}
+				}
 			}
 			node.Parameters[wireKey] = primVal
 
@@ -1944,6 +1956,19 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			wireKey := param.WireKey
 			if wireKey == "" {
 				wireKey = param.Label
+			}
+			if param.TypeName == "Text" || param.TypeName == "String" || (param.Type != nil && (param.Type.Name() == "Text" || param.Type.Name() == "String")) {
+				if tok, isTok := val.(*ir.AttachmentToken); isTok {
+					val = map[string]interface{}{
+						"WFSerializationType": "WFTextTokenString",
+						"Value": map[string]interface{}{
+							"string": "\uFFFC",
+							"attachmentsByRange": map[string]interface{}{
+								"{0, 1}": tok,
+							},
+						},
+					}
+				}
 			}
 			node.Parameters[wireKey] = val
 

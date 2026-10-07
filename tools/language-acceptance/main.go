@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -29,7 +30,12 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
-const ExpectedContractSHA256 = "3c427d654759f2b09f61f288778dba3a7c53e195e04af9b03677d9c9ba8a5a0a"
+const (
+	ExpectedContractSHA256   = "3c427d654759f2b09f61f288778dba3a7c53e195e04af9b03677d9c9ba8a5a0a"
+	ExpectedAcceptanceSHA256 = "3c427d654759f2b09f61f288778dba3a7c53e195e04af9b03677d9c9ba8a5a0a"
+	ExpectedRepairSHA256     = "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+	ExpectedGatesSHA256      = "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+)
 
 type CaseSpec struct {
 	ID               string `json:"id"`
@@ -54,6 +60,47 @@ type ContractFile struct {
 	Cases            []CaseSpec `json:"cases"`
 }
 
+type RepairCaseSpec struct {
+	ID                     string   `json:"id"`
+	Title                  string   `json:"title"`
+	OriginalRequirementIDs []string `json:"original_requirement_ids"`
+	RequiredTestLevels     []string `json:"required_test_levels"`
+	Scenario               string   `json:"scenario"`
+	ExpectedObservation    string   `json:"expected_observation"`
+	Status                 string   `json:"status"`
+}
+
+type RepairContractFile struct {
+	Kind      string           `json:"kind"`
+	Status    string           `json:"status"`
+	CaseCount int              `json:"case_count"`
+	Cases     []RepairCaseSpec `json:"cases"`
+}
+
+type RecoveryGate struct {
+	ID                   string   `json:"id"`
+	Title                string   `json:"title"`
+	Status               string   `json:"status"`
+	Mandatory            bool     `json:"mandatory"`
+	MinimumEvidenceTiers []string `json:"minimum_evidence_tiers"`
+	Scenario             string   `json:"scenario"`
+	ExpectedObservation  string   `json:"expected_observation"`
+	ProposedTestPrefix   string   `json:"proposed_test_prefix"`
+}
+
+type GatesContractFile struct {
+	Kind      string         `json:"kind"`
+	Status    string         `json:"status"`
+	GateCount int            `json:"gate_count"`
+	Gates     []RecoveryGate `json:"gates"`
+}
+
+type ContractsSet struct {
+	Acceptance *ContractFile
+	Repair     *RepairContractFile
+	Gates      *GatesContractFile
+}
+
 type CaseResult struct {
 	ID             string   `json:"id"`
 	Group          string   `json:"group"`
@@ -61,18 +108,61 @@ type CaseResult struct {
 	TestLevel      string   `json:"test_level"`
 	ExecutedLevels []string `json:"executed_levels,omitempty"`
 	Passed         bool     `json:"passed"`
-	Status         string   `json:"status"` // PASSED, FAILED, AI_EVAL_NOT_RUN
+	Status         string   `json:"status"` // PASSED, FAILED, NOT_RUN, BLOCKED_EXTERNAL, AI_EVAL_NOT_RUN
 	Detail         string   `json:"detail"`
+}
+
+type EvidenceArtifact struct {
+	Path   string `json:"path"`
+	SHA256 string `json:"sha256"`
+}
+
+type EvidenceRecord struct {
+	EvidenceID        string             `json:"evidence_id"`
+	Requirements      []string           `json:"requirements"`
+	Tier              string             `json:"tier"`
+	ImplementationSHA string             `json:"implementation_sha,omitempty"`
+	FixtureSHA256     string             `json:"fixture_sha256,omitempty"`
+	TestID            string             `json:"test_id"`
+	Command           []string           `json:"command,omitempty"`
+	ExitCode          int                `json:"exit_code"`
+	Result            string             `json:"result"` // passed, failed, not_run, blocked_external
+	Artifacts         []EvidenceArtifact `json:"artifacts,omitempty"`
+	Detail            string             `json:"detail,omitempty"`
+}
+
+type CIRunRecord struct {
+	RunID        string `json:"run_id"`
+	Repository   string `json:"repository,omitempty"`
+	Event        string `json:"event,omitempty"`
+	Attempt      int    `json:"attempt,omitempty"`
+	HeadSHA      string `json:"head_sha"`
+	CheckoutSHA  string `json:"checkout_sha,omitempty"`
+	Conclusion   string `json:"conclusion"` // success, failure, cancelled
+	WorkflowName string `json:"workflow_name,omitempty"`
+}
+
+type EvidenceManifest struct {
+	SchemaVersion     string           `json:"schema_version"`
+	ImplementationSHA string           `json:"implementation_sha"`
+	DocsSHA           string           `json:"docs_sha"`
+	SchemaFingerprint string           `json:"schema_fingerprint"`
+	CodecFingerprint  string           `json:"codec_fingerprint"`
+	Records           []EvidenceRecord `json:"records"`
+	Runs              []CIRunRecord    `json:"runs,omitempty"`
 }
 
 type AcceptanceReport struct {
 	Timestamp         string       `json:"timestamp"`
+	Phase             string       `json:"phase,omitempty"`
+	ClosureComplete   bool         `json:"closure_complete"`
 	LanguageVersion   string       `json:"language_version"`
 	SchemaFingerprint string       `json:"schema_fingerprint"`
 	TotalCases        int          `json:"total_cases"`
 	PassedCases       int          `json:"passed_cases"`
 	FailedCases       int          `json:"failed_cases"`
 	SkippedCases      int          `json:"skipped_cases"`
+	ValidationErrors  []string     `json:"validation_errors,omitempty"`
 	Results           []CaseResult `json:"results"`
 }
 
@@ -145,29 +235,202 @@ func ResolveAndLoadContract(explicitPath string) (*ContractFile, string, error) 
 	return &contract, loadedPath, nil
 }
 
+func ResolveAndLoadRepairContract(explicitPath string) (*RepairContractFile, string, error) {
+	candidates := []string{}
+	if explicitPath != "" {
+		candidates = append(candidates, explicitPath)
+	} else {
+		candidates = append(candidates,
+			filepath.Join("tests", "language-v2", "repair-regression-plan.json"),
+			filepath.Join("..", "..", "tests", "language-v2", "repair-regression-plan.json"),
+			filepath.Join("..", "tests", "language-v2", "repair-regression-plan.json"),
+			"repair-regression-plan.json",
+		)
+	}
+
+	var content []byte
+	var loadedPath string
+	for _, p := range candidates {
+		c, err := os.ReadFile(p)
+		if err == nil {
+			content = c
+			loadedPath = p
+			break
+		}
+	}
+	if loadedPath == "" {
+		return nil, "", fmt.Errorf("repair regression plan file not found in candidates: %v", candidates)
+	}
+
+	h := sha256.Sum256(content)
+	actualSHA := hex.EncodeToString(h[:])
+	if actualSHA != ExpectedRepairSHA256 {
+		return nil, loadedPath, fmt.Errorf("repair contract SHA256 mismatch: got %s, expected %s", actualSHA, ExpectedRepairSHA256)
+	}
+
+	var contract RepairContractFile
+	if err := json.Unmarshal(content, &contract); err != nil {
+		return nil, loadedPath, fmt.Errorf("failed to parse repair contract JSON: %w", err)
+	}
+	if contract.CaseCount != 52 || len(contract.Cases) != 52 {
+		return nil, loadedPath, fmt.Errorf("repair contract case count mismatch: declared %d, found %d", contract.CaseCount, len(contract.Cases))
+	}
+
+	return &contract, loadedPath, nil
+}
+
+func ResolveAndLoadGatesContract(explicitPath string) (*GatesContractFile, string, error) {
+	candidates := []string{}
+	if explicitPath != "" {
+		candidates = append(candidates, explicitPath)
+	} else {
+		candidates = append(candidates,
+			filepath.Join("tests", "language-v2", "backend-recovery-gates.json"),
+			filepath.Join("..", "..", "tests", "language-v2", "backend-recovery-gates.json"),
+			filepath.Join("..", "tests", "language-v2", "backend-recovery-gates.json"),
+			"backend-recovery-gates.json",
+		)
+	}
+
+	var content []byte
+	var loadedPath string
+	for _, p := range candidates {
+		c, err := os.ReadFile(p)
+		if err == nil {
+			content = c
+			loadedPath = p
+			break
+		}
+	}
+	if loadedPath == "" {
+		return nil, "", fmt.Errorf("backend recovery gates file not found in candidates: %v", candidates)
+	}
+
+	h := sha256.Sum256(content)
+	actualSHA := hex.EncodeToString(h[:])
+	if actualSHA != ExpectedGatesSHA256 {
+		return nil, loadedPath, fmt.Errorf("backend recovery gates SHA256 mismatch: got %s, expected %s", actualSHA, ExpectedGatesSHA256)
+	}
+
+	var contract GatesContractFile
+	if err := json.Unmarshal(content, &contract); err != nil {
+		return nil, loadedPath, fmt.Errorf("failed to parse gates contract JSON: %w", err)
+	}
+	if contract.GateCount != 33 || len(contract.Gates) != 33 {
+		return nil, loadedPath, fmt.Errorf("gates contract count mismatch: declared %d, found %d", contract.GateCount, len(contract.Gates))
+	}
+
+	return &contract, loadedPath, nil
+}
+
+func LoadAllContracts(acceptancePath, repairPath, gatesPath string) (*ContractsSet, error) {
+	acc, _, err := ResolveAndLoadContract(acceptancePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed loading acceptance contract: %w", err)
+	}
+	rep, _, err := ResolveAndLoadRepairContract(repairPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed loading repair regression plan: %w", err)
+	}
+	gates, _, err := ResolveAndLoadGatesContract(gatesPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed loading backend recovery gates: %w", err)
+	}
+	return &ContractsSet{
+		Acceptance: acc,
+		Repair:     rep,
+		Gates:      gates,
+	}, nil
+}
+
+func parseRequiredTiers(levelStr string) []string {
+	parts := strings.Split(levelStr, "+")
+	var result []string
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		switch strings.ToLower(p) {
+		case "unit":
+			result = append(result, "unit")
+		case "analysis":
+			result = append(result, "analysis")
+		case "native", "native-structure":
+			result = append(result, "native-structure")
+		case "roundtrip", "native-roundtrip":
+			result = append(result, "native-roundtrip")
+		case "ios", "ios-runtime":
+			result = append(result, "ios-runtime")
+		case "ios-build":
+			result = append(result, "ios-build")
+		case "ui", "ios-ui":
+			result = append(result, "ios-ui")
+		case "integration":
+			result = append(result, "integration")
+		case "service":
+			result = append(result, "service")
+		case "cli":
+			result = append(result, "cli")
+		case "docs":
+			result = append(result, "docs")
+		case "skill", "skill-package", "packaging":
+			result = append(result, "skill-package")
+		case "ci", "negative-ci":
+			result = append(result, "integration")
+		case "repository":
+			result = append(result, "repository")
+		case "security":
+			result = append(result, "security")
+		case "benchmark":
+			result = append(result, "benchmark")
+		case "evaluation", "external-eval":
+			result = append(result, "external-eval")
+		default:
+			result = append(result, strings.ToLower(p))
+		}
+	}
+	return result
+}
+
+func satisfiesTier(actual, required string) bool {
+	actual = strings.ToLower(strings.TrimSpace(actual))
+	required = strings.ToLower(strings.TrimSpace(required))
+	if actual == required {
+		return true
+	}
+	if (actual == "native-structure" || actual == "native") && (required == "native-structure" || required == "native") {
+		return true
+	}
+	if actual == "native-roundtrip" && (required == "native-structure" || required == "native") {
+		return true
+	}
+	if actual == "ios-runtime" && (required == "ios-build" || required == "ios") {
+		return true
+	}
+	if (actual == "skill-package" || actual == "packaging") && (required == "skill" || required == "skill-package") {
+		return true
+	}
+	return false
+}
+
 func hasLevel(executed []string, req string) bool {
 	req = strings.ToLower(strings.TrimSpace(req))
 	for _, el := range executed {
-		el = strings.ToLower(strings.TrimSpace(el))
-		if el == req {
+		if satisfiesTier(el, req) {
 			return true
 		}
-		if req == "ios" && (el == "ios-runtime" || el == "ios-build" || el == "ios") {
+		el = strings.ToLower(strings.TrimSpace(el))
+		if el == req {
 			return true
 		}
 		if req == "ui" && (el == "ios-ui" || el == "ui") {
 			return true
 		}
-		if req == "ci" && (el == "negative-ci" || el == "ci") {
+		if req == "ci" && (el == "negative-ci" || el == "ci" || el == "integration") {
 			return true
 		}
-		if req == "native" && (el == "native-structure" || el == "native") {
-			return true
-		}
-		if req == "roundtrip" && (el == "native-roundtrip" || el == "roundtrip") {
-			return true
-		}
-		if req == "skill" && (el == "packaging" || el == "skill") {
+		if req == "skill" && (el == "packaging" || el == "skill" || el == "skill-package") {
 			return true
 		}
 	}
@@ -175,6 +438,10 @@ func hasLevel(executed []string, req string) bool {
 }
 
 func ValidateAndAggregate(contract *ContractFile, results map[string]CaseResult, schemaFingerprint string) (*AcceptanceReport, error) {
+	return ValidateAndAggregateWithPhase(contract, results, schemaFingerprint, "local")
+}
+
+func ValidateAndAggregateWithPhase(contract *ContractFile, results map[string]CaseResult, schemaFingerprint string, phase string) (*AcceptanceReport, error) {
 	var finalResults []CaseResult
 	passed := 0
 	failed := 0
@@ -199,18 +466,20 @@ func ValidateAndAggregate(contract *ContractFile, results map[string]CaseResult,
 			continue
 		}
 
+		caseFailed := false
+		isPendingExternal := res.Status == "AI_EVAL_NOT_RUN" || res.Status == "BLOCKED_EXTERNAL" || res.Status == "NOT_RUN"
+
 		// 1. Check executed levels
-		if len(res.ExecutedLevels) == 0 && res.Status != "AI_EVAL_NOT_RUN" {
+		if len(res.ExecutedLevels) == 0 && !isPendingExternal {
 			validationErrors = append(validationErrors, fmt.Sprintf("case %s has no executed test levels recorded", c.ID))
-			failed++
-		} else if res.Status != "AI_EVAL_NOT_RUN" {
-			// Check required levels
+			caseFailed = true
+		} else if !isPendingExternal {
 			requiredLevels := strings.Split(c.MinimumTestLevel, "+")
 			for _, req := range requiredLevels {
 				req = strings.TrimSpace(req)
 				if !hasLevel(res.ExecutedLevels, req) {
 					validationErrors = append(validationErrors, fmt.Sprintf("case %s executed levels %v do not satisfy required level %q", c.ID, res.ExecutedLevels, req))
-					failed++
+					caseFailed = true
 					break
 				}
 			}
@@ -220,17 +489,35 @@ func ValidateAndAggregate(contract *ContractFile, results map[string]CaseResult,
 		if res.Status == "PASSED" || res.Status == "PASS" {
 			if !res.Passed {
 				validationErrors = append(validationErrors, fmt.Sprintf("case %s has status %s but passed is false", c.ID, res.Status))
-				failed++
-			} else {
-				passed++
+				caseFailed = true
 			}
 		} else if res.Passed {
 			validationErrors = append(validationErrors, fmt.Sprintf("case %s has passed == true but status is %s", c.ID, res.Status))
+			caseFailed = true
+		} else if !isPendingExternal {
+			caseFailed = true
+		}
+
+		if caseFailed {
 			failed++
-		} else if res.Status == "AI_EVAL_NOT_RUN" || res.Status == "BLOCKED_EXTERNAL" {
-			skipped++
+			res.Passed = false
+			res.Status = "FAILED"
+			if res.Detail != "" {
+				validationErrors = append(validationErrors, fmt.Sprintf("case %s failed: %s", c.ID, res.Detail))
+			} else {
+				validationErrors = append(validationErrors, fmt.Sprintf("case %s failed assertion", c.ID))
+			}
+		} else if isPendingExternal {
+			if phase == "final" && c.ID != "AI01" {
+				failed++
+				res.Passed = false
+				res.Status = "FAILED"
+				validationErrors = append(validationErrors, fmt.Sprintf("mandatory case %s unresolved in final phase: %s", c.ID, res.Status))
+			} else {
+				skipped++
+			}
 		} else {
-			failed++
+			passed++
 		}
 
 		finalResults = append(finalResults, res)
@@ -253,12 +540,15 @@ func ValidateAndAggregate(contract *ContractFile, results map[string]CaseResult,
 
 	report := &AcceptanceReport{
 		Timestamp:         time.Now().UTC().Format(time.RFC3339),
+		Phase:             phase,
+		ClosureComplete:   phase == "final" && failed == 0 && len(validationErrors) == 0,
 		LanguageVersion:   schema.LanguageVersion,
 		SchemaFingerprint: schemaFingerprint,
 		TotalCases:        len(contract.Cases),
 		PassedCases:       passed,
 		FailedCases:       failed,
 		SkippedCases:      skipped,
+		ValidationErrors:  validationErrors,
 		Results:           finalResults,
 	}
 
@@ -269,62 +559,357 @@ func ValidateAndAggregate(contract *ContractFile, results map[string]CaseResult,
 	return report, nil
 }
 
-func main() {
-	var explicitContract string
-	for _, arg := range os.Args[1:] {
-		if strings.HasPrefix(arg, "--contract=") {
-			explicitContract = strings.TrimPrefix(arg, "--contract=")
+func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSet, phase string) (*AcceptanceReport, error) {
+	if manifest == nil {
+		return nil, fmt.Errorf("evidence manifest is nil")
+	}
+
+	var validationErrors []string
+	seenEvidenceIDs := make(map[string]bool)
+
+	for _, rec := range manifest.Records {
+		if rec.EvidenceID == "" {
+			validationErrors = append(validationErrors, "evidence record missing evidence_id")
+			continue
+		}
+		if seenEvidenceIDs[rec.EvidenceID] {
+			validationErrors = append(validationErrors, fmt.Sprintf("duplicate evidence_id: %s", rec.EvidenceID))
+		}
+		seenEvidenceIDs[rec.EvidenceID] = true
+
+		if rec.TestID == "" {
+			validationErrors = append(validationErrors, fmt.Sprintf("evidence record %s has empty test_id", rec.EvidenceID))
+		}
+
+		if rec.ImplementationSHA != "" && manifest.ImplementationSHA != "" && rec.ImplementationSHA != manifest.ImplementationSHA {
+			validationErrors = append(validationErrors, fmt.Sprintf("evidence record %s implementation_sha mismatch: record=%s, manifest=%s", rec.EvidenceID, rec.ImplementationSHA, manifest.ImplementationSHA))
+		}
+
+		if rec.ExitCode != 0 && (rec.Result == "passed" || rec.Result == "PASS") {
+			validationErrors = append(validationErrors, fmt.Sprintf("contradictory record %s: non-zero exit code %d with passed result", rec.EvidenceID, rec.ExitCode))
+		}
+
+		for _, art := range rec.Artifacts {
+			if art.Path == "" {
+				continue
+			}
+			content, err := os.ReadFile(art.Path)
+			if err != nil {
+				validationErrors = append(validationErrors, fmt.Sprintf("referenced artifact %s in record %s does not exist: %v", art.Path, rec.EvidenceID, err))
+				continue
+			}
+			if art.SHA256 != "" {
+				h := sha256.Sum256(content)
+				actSHA := hex.EncodeToString(h[:])
+				if actSHA != art.SHA256 {
+					validationErrors = append(validationErrors, fmt.Sprintf("artifact %s sha256 mismatch in record %s: got %s, expected %s", art.Path, rec.EvidenceID, actSHA, art.SHA256))
+				}
+			}
 		}
 	}
 
-	contract, loadedPath, err := ResolveAndLoadContract(explicitContract)
+	for _, run := range manifest.Runs {
+		if run.Conclusion != "success" && run.Conclusion != "SUCCESS" {
+			validationErrors = append(validationErrors, fmt.Sprintf("CI run %s failed with conclusion %s", run.RunID, run.Conclusion))
+		}
+	}
+
+	knownRequirements := make(map[string]bool)
+	requirementTiers := make(map[string][]string)
+
+	if contracts != nil && contracts.Acceptance != nil {
+		for _, c := range contracts.Acceptance.Cases {
+			knownRequirements[c.ID] = true
+			requirementTiers[c.ID] = parseRequiredTiers(c.MinimumTestLevel)
+		}
+	}
+	if contracts != nil && contracts.Repair != nil {
+		for _, c := range contracts.Repair.Cases {
+			knownRequirements[c.ID] = true
+			tiers := c.RequiredTestLevels
+			if len(tiers) == 0 {
+				tiers = []string{"unit"}
+			}
+			requirementTiers[c.ID] = tiers
+		}
+	}
+	if contracts != nil && contracts.Gates != nil {
+		for _, g := range contracts.Gates.Gates {
+			knownRequirements[g.ID] = true
+			tiers := g.MinimumEvidenceTiers
+			if len(tiers) == 0 {
+				tiers = []string{"repository"}
+			}
+			requirementTiers[g.ID] = tiers
+		}
+	}
+
+	for _, rec := range manifest.Records {
+		for _, reqID := range rec.Requirements {
+			if !knownRequirements[reqID] {
+				validationErrors = append(validationErrors, fmt.Sprintf("unknown requirement ID %q in evidence record %s", reqID, rec.EvidenceID))
+			}
+		}
+	}
+
+	passed := 0
+	failed := 0
+	skipped := 0
+	var results []CaseResult
+
+	sortedReqIDs := make([]string, 0, len(knownRequirements))
+	for id := range knownRequirements {
+		sortedReqIDs = append(sortedReqIDs, id)
+	}
+	sort.Strings(sortedReqIDs)
+
+	for _, id := range sortedReqIDs {
+		reqTiers := requirementTiers[id]
+		satisfiedTiers := make(map[string]bool)
+		hasFailedRecord := false
+
+		for _, rec := range manifest.Records {
+			coversReq := false
+			for _, r := range rec.Requirements {
+				if r == id {
+					coversReq = true
+					break
+				}
+			}
+			if !coversReq {
+				continue
+			}
+
+			if rec.Result == "failed" || rec.Result == "FAILED" || rec.ExitCode != 0 {
+				hasFailedRecord = true
+			} else if rec.Result == "passed" || rec.Result == "PASS" {
+				for _, reqTier := range reqTiers {
+					if satisfiesTier(rec.Tier, reqTier) {
+						satisfiedTiers[reqTier] = true
+					}
+				}
+			}
+		}
+
+		allTiersSatisfied := true
+		for _, reqTier := range reqTiers {
+			if !satisfiedTiers[reqTier] {
+				allTiersSatisfied = false
+				break
+			}
+		}
+
+		res := CaseResult{
+			ID:        id,
+			TestLevel: strings.Join(reqTiers, "+"),
+		}
+
+		if hasFailedRecord {
+			failed++
+			res.Passed = false
+			res.Status = "FAILED"
+			res.Detail = "Evidence record reported failure"
+		} else if allTiersSatisfied {
+			passed++
+			res.Passed = true
+			res.Status = "PASSED"
+			res.Detail = "All required tiers satisfied by verified evidence"
+		} else {
+			if phase == "local" {
+				allRemainingExternal := true
+				for _, reqTier := range reqTiers {
+					if !satisfiedTiers[reqTier] {
+						if reqTier != "ios-runtime" && reqTier != "ios-ui" && reqTier != "external-eval" {
+							allRemainingExternal = false
+							break
+						}
+					}
+				}
+				if allRemainingExternal {
+					skipped++
+					res.Passed = false
+					res.Status = "NOT_RUN"
+					res.Detail = "Pending external / CI execution tier"
+				} else {
+					failed++
+					res.Passed = false
+					res.Status = "FAILED"
+					res.Detail = "Local required tier not satisfied"
+					validationErrors = append(validationErrors, fmt.Sprintf("requirement %s has unsatisfied local tier", id))
+				}
+			} else {
+				if id == "AI01" {
+					skipped++
+					res.Passed = false
+					res.Status = "BLOCKED_EXTERNAL"
+					res.Detail = "Held-out evaluation endpoint not configured per Section 22.5"
+				} else {
+					failed++
+					res.Passed = false
+					res.Status = "FAILED"
+					res.Detail = "Unsatisfied required tiers in final closure"
+					validationErrors = append(validationErrors, fmt.Sprintf("requirement %s has unsatisfied required tiers in final phase", id))
+				}
+			}
+		}
+		results = append(results, res)
+	}
+
+	report := &AcceptanceReport{
+		Timestamp:         time.Now().UTC().Format(time.RFC3339),
+		Phase:             phase,
+		ClosureComplete:   phase == "final" && failed == 0 && len(validationErrors) == 0,
+		LanguageVersion:   schema.LanguageVersion,
+		SchemaFingerprint: manifest.SchemaFingerprint,
+		TotalCases:        len(knownRequirements),
+		PassedCases:       passed,
+		FailedCases:       failed,
+		SkippedCases:      skipped,
+		ValidationErrors:  validationErrors,
+		Results:           results,
+	}
+
+	if len(validationErrors) > 0 {
+		return report, fmt.Errorf("evidence validation failed: %s", strings.Join(validationErrors, "; "))
+	}
+	return report, nil
+}
+
+func main() {
+	var explicitContract string
+	var explicitRepairContract string
+	var explicitGates string
+	var explicitEvidence string
+	var explicitOut string
+	var phase = "local"
+
+	for i := 1; i < len(os.Args); i++ {
+		arg := os.Args[i]
+		if strings.HasPrefix(arg, "--contract=") {
+			explicitContract = strings.TrimPrefix(arg, "--contract=")
+		} else if arg == "--contract" && i+1 < len(os.Args) {
+			i++
+			explicitContract = os.Args[i]
+		} else if strings.HasPrefix(arg, "--repair-contract=") {
+			explicitRepairContract = strings.TrimPrefix(arg, "--repair-contract=")
+		} else if arg == "--repair-contract" && i+1 < len(os.Args) {
+			i++
+			explicitRepairContract = os.Args[i]
+		} else if strings.HasPrefix(arg, "--gates=") {
+			explicitGates = strings.TrimPrefix(arg, "--gates=")
+		} else if arg == "--gates" && i+1 < len(os.Args) {
+			i++
+			explicitGates = os.Args[i]
+		} else if strings.HasPrefix(arg, "--evidence=") {
+			explicitEvidence = strings.TrimPrefix(arg, "--evidence=")
+		} else if arg == "--evidence" && i+1 < len(os.Args) {
+			i++
+			explicitEvidence = os.Args[i]
+		} else if strings.HasPrefix(arg, "--out=") {
+			explicitOut = strings.TrimPrefix(arg, "--out=")
+		} else if arg == "--out" && i+1 < len(os.Args) {
+			i++
+			explicitOut = os.Args[i]
+		} else if strings.HasPrefix(arg, "--phase=") {
+			phase = strings.TrimPrefix(arg, "--phase=")
+		} else if arg == "--phase" && i+1 < len(os.Args) {
+			i++
+			phase = os.Args[i]
+		}
+	}
+
+	contracts, err := LoadAllContracts(explicitContract, explicitRepairContract, explicitGates)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not load contract file: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Could not load contract files: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("Loaded verified acceptance contract from %s (%d cases)\n", loadedPath, len(contract.Cases))
+	fmt.Printf("Loaded verified acceptance contracts (%d acceptance, %d repair, %d gates)\n",
+		contracts.Acceptance.CaseCount, contracts.Repair.CaseCount, contracts.Gates.GateCount)
 
-	runner := NewRunner()
+	var report *AcceptanceReport
+	var valErr error
 
-	fmt.Printf("Executing Acceptance Contract (%d planned cases)...\n\n", len(contract.Cases))
+	if explicitEvidence != "" {
+		fmt.Printf("Validating evidence manifest from %s (phase: %s)...\n", explicitEvidence, phase)
+		manifestBytes, err := os.ReadFile(explicitEvidence)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not read evidence manifest %s: %v\n", explicitEvidence, err)
+			os.Exit(1)
+		}
+		var manifest EvidenceManifest
+		if err := json.Unmarshal(manifestBytes, &manifest); err != nil {
+			fmt.Fprintf(os.Stderr, "Could not parse evidence manifest %s: %v\n", explicitEvidence, err)
+			os.Exit(1)
+		}
+		report, valErr = ValidateEvidenceManifest(&manifest, contracts, phase)
+	} else {
+		fmt.Printf("Executing Acceptance Contract runner (phase: %s)...\n\n", phase)
+		runner := NewRunner()
 
-	// Run all test groups
-	runner.runBaseline()
-	runner.runUpstream()
-	runner.runParser()
-	runner.runBinding()
-	runner.runCalls()
-	runner.runTypes()
-	runner.runText()
-	runner.runCollections()
-	runner.runNumbers()
-	runner.runControl()
-	runner.runFunctions()
-	runner.runMetadata()
-	runner.runModules()
-	runner.runSchema()
-	runner.runNative()
-	runner.runEditor()
-	runner.runCLI()
-	runner.runDocs()
-	runner.runSkill()
-	runner.runVerification()
-	runner.runEvaluation()
-	runner.runDelivery()
+		// Run all test groups
+		runner.runBaseline()
+		runner.runUpstream()
+		runner.runParser()
+		runner.runBinding()
+		runner.runCalls()
+		runner.runTypes()
+		runner.runText()
+		runner.runCollections()
+		runner.runNumbers()
+		runner.runControl()
+		runner.runFunctions()
+		runner.runMetadata()
+		runner.runModules()
+		runner.runSchema()
+		runner.runNative()
+		runner.runEditor()
+		runner.runCLI()
+		runner.runDocs()
+		runner.runSkill()
+		runner.runVerification()
+		runner.runEvaluation()
+		runner.runDelivery()
 
-	report, valErr := ValidateAndAggregate(contract, runner.results, runner.reg.Fingerprint())
+		report, valErr = ValidateAndAggregateWithPhase(contracts.Acceptance, runner.results, runner.reg.Fingerprint(), phase)
+	}
+
+	outPath := explicitOut
+	if outPath == "" {
+		outPath = filepath.Join("docs", "language-v2", "acceptance-results.json")
+	} else {
+		fi, err := os.Stat(outPath)
+		if err == nil && fi.IsDir() {
+			outPath = filepath.Join(outPath, "acceptance-results.json")
+		} else if strings.HasSuffix(outPath, "/") || strings.HasSuffix(outPath, "\\") {
+			outPath = filepath.Join(outPath, "acceptance-results.json")
+		}
+	}
 
 	outBytes, _ := json.MarshalIndent(report, "", "  ")
-	outPath := filepath.Join("docs", "language-v2", "acceptance-results.json")
 	_ = os.MkdirAll(filepath.Dir(outPath), 0755)
 	_ = os.WriteFile(outPath, outBytes, 0644)
 
+	// Generate and update requirements-evidence-map.json covering all 94 acceptance, 52 repair, and 33 recovery gates
+	evidenceMap, mapErr := BuildRequirementsEvidenceMap(contracts)
+	if mapErr == nil {
+		testsMapPath := filepath.Join("tests", "language-v2", "requirements-evidence-map.json")
+		_ = WriteRequirementsEvidenceMap(evidenceMap, testsMapPath)
+		outDir := explicitOut
+		if outDir != "" {
+			if fi, err := os.Stat(outDir); err == nil && !fi.IsDir() {
+				outDir = filepath.Dir(outDir)
+			}
+			_ = WriteRequirementsEvidenceMap(evidenceMap, filepath.Join(outDir, "requirements-evidence-map.json"))
+		}
+	}
+
 	fmt.Println("==================================================")
-	fmt.Printf("ACCEPTANCE RESULTS SUMMARY:\n")
+	fmt.Printf("ACCEPTANCE RESULTS SUMMARY (Phase: %s):\n", phase)
 	fmt.Printf("Total Requirements: %d\n", report.TotalCases)
 	fmt.Printf("Passed:             %d\n", report.PassedCases)
 	fmt.Printf("Failed:             %d\n", report.FailedCases)
-	fmt.Printf("External Blocked:   %d (AI Evaluation)\n", report.SkippedCases)
+	fmt.Printf("Skipped / Pending:  %d\n", report.SkippedCases)
+	fmt.Printf("Closure Complete:   %t\n", report.ClosureComplete)
 	fmt.Printf("Report written to:  %s\n", outPath)
 	if valErr != nil {
 		fmt.Printf("VALIDATION ERROR:   %v\n", valErr)
@@ -332,6 +917,9 @@ func main() {
 	fmt.Println("==================================================")
 
 	if valErr != nil || report.FailedCases > 0 {
+		os.Exit(1)
+	}
+	if phase == "final" && !report.ClosureComplete {
 		os.Exit(1)
 	}
 }

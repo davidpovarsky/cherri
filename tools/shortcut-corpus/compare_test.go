@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/electrikmilk/cherri/internal/shortcutcompare"
 )
 
 const plistTemplate = `<?xml version="1.0" encoding="UTF-8"?>
@@ -24,6 +26,17 @@ const plistTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 	<array>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.gettext</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>UUID</key>
+				<string>%s</string>
+				<key>WFTextActionText</key>
+				<string>Sample text</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
@@ -34,7 +47,7 @@ const plistTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 					<key>Value</key>
 					<dict>
 						<key>Type</key>
-						<string>Variable</string>
+						<string>ActionOutput</string>
 						<key>OutputName</key>
 						<string>Provided Input</string>
 						<key>OutputUUID</key>
@@ -50,9 +63,9 @@ const plistTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 </plist>
 `
 
-func writeTempShortcut(t *testing.T, dir, name, clientVersion, actionUUID, outputUUID string) string {
+func writeTempShortcut(t *testing.T, dir, name, clientVersion, action0UUID, action1UUID string) string {
 	t.Helper()
-	content := fmt.Sprintf(plistTemplate, clientVersion, actionUUID, outputUUID)
+	content := fmt.Sprintf(plistTemplate, clientVersion, action0UUID, action1UUID, action0UUID)
 	path := filepath.Join(dir, name)
 	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 		t.Fatal(err)
@@ -118,26 +131,42 @@ func TestComparatorDetectsSemanticDifferences(t *testing.T) {
 }
 
 func TestCanonicalizerPreservesRelationshipsAcrossDocuments(t *testing.T) {
-	docA := map[string]any{
-		"a": map[string]any{"ref": "11111111-2222-3333-4444-555555555555"},
-		"b": "11111111-2222-3333-4444-555555555555",
-	}
-	docB := map[string]any{
-		"a": map[string]any{"ref": "ffffffff-0000-1111-2222-333333333333"},
-		"b": "ffffffff-0000-1111-2222-333333333333",
-	}
-	canonicalizerA := &canonicalizer{uuidSeen: map[string]string{}}
-	canonicalizerB := &canonicalizer{uuidSeen: map[string]string{}}
-	if fmt.Sprint(canonicalizerA.walk(docA)) != fmt.Sprint(canonicalizerB.walk(docB)) {
-		t.Fatal("same relationship structure with different UUID values must canonicalize identically")
+	makeDoc := func(producerUUID, consumerUUID, refUUID string) map[string]any {
+		return map[string]any{
+			"WFWorkflowActions": []any{
+				map[string]any{
+					"WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
+					"WFWorkflowActionParameters": map[string]any{
+						"UUID": producerUUID,
+					},
+				},
+				map[string]any{
+					"WFWorkflowActionIdentifier": "is.workflow.actions.getvariable",
+					"WFWorkflowActionParameters": map[string]any{
+						"UUID": consumerUUID,
+						"WFVariable": map[string]any{
+							"Value": map[string]any{
+								"Type":       "ActionOutput",
+								"OutputUUID": refUUID,
+							},
+						},
+					},
+				},
+			},
+		}
 	}
 
-	docC := map[string]any{
-		"a": map[string]any{"ref": "ffffffff-0000-1111-2222-333333333333"},
-		"b": "eeeeeeee-0000-1111-2222-333333333333",
+	docA := makeDoc("11111111-2222-3333-4444-555555555555", "22222222-2222-3333-4444-555555555555", "11111111-2222-3333-4444-555555555555")
+	docB := makeDoc("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", "bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee", "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+	docC := makeDoc("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", "bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee", "cccccccc-bbbb-cccc-dddd-eeeeeeeeeeee")
+
+	resAB := shortcutcompare.CompareDocuments(docA, docB)
+	if !resAB.Equal {
+		t.Fatalf("expected isomorphic relationship graphs to be equal, got diffs: %+v", resAB.Differences)
 	}
-	canonicalizerC := &canonicalizer{uuidSeen: map[string]string{}}
-	if fmt.Sprint(canonicalizerA.walk(docA)) == fmt.Sprint(canonicalizerC.walk(docC)) {
-		t.Fatal("different relationship structures must not canonicalize identically")
+
+	resAC := shortcutcompare.CompareDocuments(docA, docC)
+	if resAC.Equal {
+		t.Fatal("expected different relationship graph (referencing non-matching producer) to be rejected")
 	}
 }

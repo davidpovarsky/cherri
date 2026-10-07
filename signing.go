@@ -159,17 +159,17 @@ func requestSignedShortcutExplicit(service *SigningService, inPath, outPath stri
 	var xmlData []byte
 	var marshalErr error
 
-	if len(shortcut.WFWorkflowActions) > 0 {
-		xmlData, marshalErr = plist.Marshal(shortcut, plist.XMLFormat)
-		if marshalErr != nil {
-			return nil, fmt.Errorf("failed to marshal shortcut plist: %w", marshalErr)
-		}
-	} else if inPath != "" {
+	if inPath != "" {
 		raw, readErr := os.ReadFile(inPath)
 		if readErr != nil {
 			return nil, fmt.Errorf("failed to read unsigned shortcut %s: %w", inPath, readErr)
 		}
 		xmlData = raw
+	} else if len(shortcut.WFWorkflowActions) > 0 {
+		xmlData, marshalErr = plist.Marshal(shortcut, plist.XMLFormat)
+		if marshalErr != nil {
+			return nil, fmt.Errorf("failed to marshal shortcut plist: %w", marshalErr)
+		}
 	} else {
 		return nil, fmt.Errorf("no shortcut data or input path available to sign")
 	}
@@ -178,6 +178,15 @@ func requestSignedShortcutExplicit(service *SigningService, inPath, outPath stri
 	if name == "" {
 		name = strings.TrimSuffix(filepath.Base(outPath), ".shortcut")
 	}
+	if name == "" {
+		name = "Shortcut"
+	}
+
+	return SignShortcutBytes(service, name, xmlData)
+}
+
+// SignShortcutBytes signs explicit plist XML bytes using a remote signing service.
+func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]byte, error) {
 	if name == "" {
 		name = "Shortcut"
 	}

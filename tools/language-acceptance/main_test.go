@@ -1,6 +1,9 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -17,32 +20,58 @@ func sampleTestContract() *ContractFile {
 	}
 }
 
+func sampleContractsSet() *ContractsSet {
+	return &ContractsSet{
+		Acceptance: sampleTestContract(),
+		Repair: &RepairContractFile{
+			CaseCount: 1,
+			Cases: []RepairCaseSpec{
+				{ID: "RP01", Title: "Repair 1", RequiredTestLevels: []string{"unit"}},
+			},
+		},
+		Gates: &GatesContractFile{
+			GateCount: 1,
+			Gates: []RecoveryGate{
+				{ID: "BRG01", Title: "Gate 1", Mandatory: true, MinimumEvidenceTiers: []string{"repository"}},
+			},
+		},
+	}
+}
+
 // 1. One actual assertion returns false -> verifier rejects
 func TestMeta_AssertionReturnsFalse(t *testing.T) {
 	contract := sampleTestContract()
 	results := map[string]CaseResult{
-		"C01": {ID: "C01", Passed: true, Status: "PASS"},
-		"C02": {ID: "C02", Passed: false, Status: "FAILED", Detail: "assertion returned false"},
-		"C03": {ID: "C03", Passed: true, Status: "PASS"},
+		"C01": {ID: "C01", ExecutedLevels: []string{"unit"}, Passed: true, Status: "PASSED"},
+		"C02": {ID: "C02", ExecutedLevels: []string{"native"}, Passed: false, Status: "FAILED", Detail: "assertion returned false"},
+		"C03": {ID: "C03", ExecutedLevels: []string{"ios-runtime"}, Passed: true, Status: "PASSED"},
 	}
 	report, err := ValidateAndAggregate(contract, results, "test_fp")
-	if report.FailedCases == 0 {
-		t.Fatalf("expected failed cases > 0 when assertion fails, got %d", report.FailedCases)
+	if err == nil {
+		t.Fatalf("expected validation error when a case fails, got nil")
 	}
-	_ = err
+	if report.FailedCases != 1 {
+		t.Fatalf("expected failed cases == 1 when assertion fails, got %d", report.FailedCases)
+	}
+	if report.PassedCases != 2 {
+		t.Fatalf("expected passed cases == 2, got %d", report.PassedCases)
+	}
 }
 
-// 2. Result says success but includes a false boolean -> verifier rejects
+// 2. Result says success but includes a false boolean or vice versa -> verifier rejects
 func TestMeta_ContradictoryPassedStatus(t *testing.T) {
 	contract := sampleTestContract()
 	results := map[string]CaseResult{
-		"C01": {ID: "C01", Passed: false, Status: "PASS", Detail: "contradictory"},
-		"C02": {ID: "C02", Passed: true, Status: "PASS"},
-		"C03": {ID: "C03", Passed: true, Status: "PASS"},
+		"C01": {ID: "C01", ExecutedLevels: []string{"unit"}, Passed: false, Status: "PASSED", Detail: "contradictory"},
+		"C02": {ID: "C02", ExecutedLevels: []string{"native"}, Passed: true, Status: "PASSED"},
+		"C03": {ID: "C03", ExecutedLevels: []string{"ios-runtime"}, Passed: true, Status: "PASSED"},
 	}
-	_, err := ValidateAndAggregate(contract, results, "test_fp")
+	report, err := ValidateAndAggregate(contract, results, "test_fp")
 	if err == nil {
-		t.Fatalf("expected error on contradictory passed=false and status=PASS, got nil")
+		t.Fatalf("expected error on contradictory passed=false and status=PASSED, got nil")
+	}
+	if report.FailedCases != 1 {
+		t.Fatalf("expected 1 failed case for contradictory status, got %d", report.FailedCases)
 	}
 }
 
@@ -50,24 +79,27 @@ func TestMeta_ContradictoryPassedStatus(t *testing.T) {
 func TestMeta_MissingRequiredID(t *testing.T) {
 	contract := sampleTestContract()
 	results := map[string]CaseResult{
-		"C01": {ID: "C01", Passed: true, Status: "PASS"},
-		"C02": {ID: "C02", Passed: true, Status: "PASS"},
+		"C01": {ID: "C01", ExecutedLevels: []string{"unit"}, Passed: true, Status: "PASSED"},
+		"C02": {ID: "C02", ExecutedLevels: []string{"native"}, Passed: true, Status: "PASSED"},
 		// C03 is missing
 	}
-	_, err := ValidateAndAggregate(contract, results, "test_fp")
+	report, err := ValidateAndAggregate(contract, results, "test_fp")
 	if err == nil {
 		t.Fatalf("expected error when required ID is missing, got nil")
 	}
+	if report.FailedCases != 1 {
+		t.Fatalf("expected 1 failed case for missing ID, got %d", report.FailedCases)
+	}
 }
 
-// 4. Duplicate or unknown IDs injected -> verifier rejects
+// 4. Unknown IDs injected into results -> verifier rejects
 func TestMeta_UnknownIDInjected(t *testing.T) {
 	contract := sampleTestContract()
 	results := map[string]CaseResult{
-		"C01":      {ID: "C01", Passed: true, Status: "PASS"},
-		"C02":      {ID: "C02", Passed: true, Status: "PASS"},
-		"C03":      {ID: "C03", Passed: true, Status: "PASS"},
-		"UNKNOWN":  {ID: "UNKNOWN", Passed: true, Status: "PASS"},
+		"C01":     {ID: "C01", ExecutedLevels: []string{"unit"}, Passed: true, Status: "PASSED"},
+		"C02":     {ID: "C02", ExecutedLevels: []string{"native"}, Passed: true, Status: "PASSED"},
+		"C03":     {ID: "C03", ExecutedLevels: []string{"ios-runtime"}, Passed: true, Status: "PASSED"},
+		"UNKNOWN": {ID: "UNKNOWN", ExecutedLevels: []string{"unit"}, Passed: true, Status: "PASSED"},
 	}
 	_, err := ValidateAndAggregate(contract, results, "test_fp")
 	if err == nil {
@@ -75,7 +107,7 @@ func TestMeta_UnknownIDInjected(t *testing.T) {
 	}
 }
 
-// 5. Contract has changed or was truncated -> verifier rejects
+// 5. Contract hash mismatch or modification -> verifier rejects
 func TestMeta_ContractHashMismatch(t *testing.T) {
 	tmpFile := filepath.Join(t.TempDir(), "fake_contract.json")
 	if err := os.WriteFile(tmpFile, []byte(`{"case_count": 0, "cases": []}`), 0644); err != nil {
@@ -83,86 +115,359 @@ func TestMeta_ContractHashMismatch(t *testing.T) {
 	}
 	_, _, err := ResolveAndLoadContract(tmpFile)
 	if err == nil {
-		t.Fatalf("expected error loading modified contract, got nil")
+		t.Fatalf("expected error loading modified acceptance contract, got nil")
 	}
-}
-
-// 6. Selected go test -run matches zero tests -> check detection
-func TestMeta_ZeroMatchingTestsDetected(t *testing.T) {
-	matchingTests := 0
-	if matchingTests == 0 {
-		// Verifier detects zero tests executed
-		err := "selected test pattern matched 0 tests"
-		if err == "" {
-			t.Fatal("expected error")
-		}
-	}
-}
-
-// 7. Only parsing ran for a native/iOS requirement -> reject as incomplete
-func TestMeta_WeakTestLevelRejection(t *testing.T) {
-	reqMinLevel := "native+iOS"
-	executedLevel := "unit" // only parsed
-	isSatisfied := executedLevel == reqMinLevel || (executedLevel == "native" && reqMinLevel == "unit")
-	if isSatisfied {
-		t.Fatalf("unit test level must not satisfy native+iOS requirement")
-	}
-}
-
-// 8. Result evidence belongs to a different source SHA/schema/fixture -> reject
-func TestMeta_MismatchedEvidenceDigest(t *testing.T) {
-	expectedSHA := "expected_commit_sha_123"
-	actualEvidenceSHA := "stale_commit_sha_456"
-	if expectedSHA == actualEvidenceSHA {
-		t.Fatalf("expected mismatch")
-	}
-}
-
-// 9. Referenced artifact is missing or has wrong digest -> reject
-func TestMeta_MissingReferencedArtifact(t *testing.T) {
-	artifactPath := filepath.Join(t.TempDir(), "nonexistent_shortcut.shortcut")
-	if _, err := os.Stat(artifactPath); !os.IsNotExist(err) {
-		t.Fatalf("expected artifact to not exist")
-	}
-}
-
-// 10. JSON or report writing fails -> reject
-func TestMeta_ReportWriteFailure(t *testing.T) {
-	// Attempt to write to unwritable location
-	badPath := filepath.Join(t.TempDir(), "not_a_dir", "sub", "report.json")
-	err := os.WriteFile(badPath, []byte("{}"), 0644)
+	_, _, err = ResolveAndLoadRepairContract(tmpFile)
 	if err == nil {
-		t.Fatalf("expected file write to fail on invalid parent path")
+		t.Fatalf("expected error loading modified repair contract, got nil")
+	}
+	_, _, err = ResolveAndLoadGatesContract(tmpFile)
+	if err == nil {
+		t.Fatalf("expected error loading modified gates contract, got nil")
 	}
 }
 
-// 11. Required CI run is pending, cancelled, skipped, or failed -> reject
+// 6. Selected test matches zero tests / empty test_id in manifest -> verifier rejects
+func TestMeta_ZeroMatchingTestsDetected(t *testing.T) {
+	contracts := sampleContractsSet()
+	manifest := &EvidenceManifest{
+		SchemaVersion:     "1",
+		ImplementationSHA: "commit123",
+		SchemaFingerprint: "fp123",
+		Records: []EvidenceRecord{
+			{
+				EvidenceID:        "ev1",
+				Requirements:      []string{"C01"},
+				Tier:              "unit",
+				ImplementationSHA: "commit123",
+				TestID:            "", // Zero matching tests!
+				ExitCode:          0,
+				Result:            "passed",
+			},
+		},
+	}
+	_, err := ValidateEvidenceManifest(manifest, contracts, "local")
+	if err == nil {
+		t.Fatalf("expected error when record has empty test_id (zero matching tests), got nil")
+	}
+}
+
+// 7. Only parsing ran (or ios-build instead of ios-runtime) -> reject as incomplete
+func TestMeta_WeakTestLevelRejection(t *testing.T) {
+	contract := sampleTestContract() // C03 requires "iOS" -> ios-runtime
+	results := map[string]CaseResult{
+		"C01": {ID: "C01", ExecutedLevels: []string{"unit"}, Passed: true, Status: "PASSED"},
+		"C02": {ID: "C02", ExecutedLevels: []string{"native-structure"}, Passed: true, Status: "PASSED"},
+		// C03 executed only "ios-build" instead of "ios-runtime"
+		"C03": {ID: "C03", ExecutedLevels: []string{"ios-build"}, Passed: true, Status: "PASSED"},
+	}
+	report, err := ValidateAndAggregate(contract, results, "test_fp")
+	if err == nil {
+		t.Fatalf("expected validation error when ios-build is offered for ios requirement, got nil")
+	}
+	if report.FailedCases != 1 {
+		t.Fatalf("expected C03 to fail tier check, got FailedCases=%d", report.FailedCases)
+	}
+}
+
+// 8. Result evidence belongs to a different implementation commit SHA -> verifier rejects
+func TestMeta_MismatchedEvidenceDigest(t *testing.T) {
+	contracts := sampleContractsSet()
+	manifest := &EvidenceManifest{
+		SchemaVersion:     "1",
+		ImplementationSHA: "expected-commit-sha-456",
+		SchemaFingerprint: "fp123",
+		Records: []EvidenceRecord{
+			{
+				EvidenceID:        "ev1",
+				Requirements:      []string{"C01"},
+				Tier:              "unit",
+				ImplementationSHA: "stale-commit-sha-789", // Stale SHA!
+				TestID:            "TestUnit",
+				ExitCode:          0,
+				Result:            "passed",
+			},
+		},
+	}
+	_, err := ValidateEvidenceManifest(manifest, contracts, "local")
+	if err == nil {
+		t.Fatalf("expected error on mismatched implementation_sha in record, got nil")
+	}
+}
+
+// 9. Referenced artifact file is missing -> verifier rejects
+func TestMeta_MissingReferencedArtifact(t *testing.T) {
+	contracts := sampleContractsSet()
+	missingPath := filepath.Join(t.TempDir(), "nonexistent_file.shortcut")
+	manifest := &EvidenceManifest{
+		SchemaVersion:     "1",
+		ImplementationSHA: "commit123",
+		SchemaFingerprint: "fp123",
+		Records: []EvidenceRecord{
+			{
+				EvidenceID:        "ev1",
+				Requirements:      []string{"C01"},
+				Tier:              "unit",
+				ImplementationSHA: "commit123",
+				TestID:            "TestUnit",
+				ExitCode:          0,
+				Result:            "passed",
+				Artifacts: []EvidenceArtifact{
+					{Path: missingPath, SHA256: "somehash"},
+				},
+			},
+		},
+	}
+	_, err := ValidateEvidenceManifest(manifest, contracts, "local")
+	if err == nil {
+		t.Fatalf("expected error on nonexistent referenced artifact, got nil")
+	}
+}
+
+// 10. Referenced artifact has wrong digest -> verifier rejects
+func TestMeta_ArtifactHashMismatch(t *testing.T) {
+	contracts := sampleContractsSet()
+	dir := t.TempDir()
+	artFile := filepath.Join(dir, "artifact.shortcut")
+	if err := os.WriteFile(artFile, []byte("real content"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	manifest := &EvidenceManifest{
+		SchemaVersion:     "1",
+		ImplementationSHA: "commit123",
+		SchemaFingerprint: "fp123",
+		Records: []EvidenceRecord{
+			{
+				EvidenceID:        "ev1",
+				Requirements:      []string{"C01"},
+				Tier:              "unit",
+				ImplementationSHA: "commit123",
+				TestID:            "TestUnit",
+				ExitCode:          0,
+				Result:            "passed",
+				Artifacts: []EvidenceArtifact{
+					{Path: artFile, SHA256: "corrupted_hash_that_does_not_match"},
+				},
+			},
+		},
+	}
+	_, err := ValidateEvidenceManifest(manifest, contracts, "local")
+	if err == nil {
+		t.Fatalf("expected error on artifact SHA256 mismatch, got nil")
+	}
+}
+
+// 11. Required CI run is pending, cancelled, or failed -> verifier rejects
 func TestMeta_FailedOrPendingCIRejection(t *testing.T) {
-	for _, status := range []string{"pending", "cancelled", "skipped", "failure"} {
-		isSuccess := status == "success"
-		if isSuccess {
-			t.Fatalf("status %s must not be considered success", status)
+	contracts := sampleContractsSet()
+	for _, conclusion := range []string{"failure", "cancelled", "skipped", "timed_out"} {
+		manifest := &EvidenceManifest{
+			SchemaVersion:     "1",
+			ImplementationSHA: "commit123",
+			SchemaFingerprint: "fp123",
+			Records: []EvidenceRecord{
+				{
+					EvidenceID:        "ev1",
+					Requirements:      []string{"C01"},
+					Tier:              "unit",
+					ImplementationSHA: "commit123",
+					TestID:            "TestUnit",
+					ExitCode:          0,
+					Result:            "passed",
+				},
+			},
+			Runs: []CIRunRecord{
+				{
+					RunID:      "run-123",
+					HeadSHA:    "commit123",
+					Conclusion: conclusion,
+				},
+			},
+		}
+		_, err := ValidateEvidenceManifest(manifest, contracts, "local")
+		if err == nil {
+			t.Fatalf("expected error for CI conclusion %q, got nil", conclusion)
 		}
 	}
 }
 
-// 12. Required encoding EXPECT is deliberately violated -> negative gate fails
-func TestMeta_DeliberateEncodingExpectViolation(t *testing.T) {
-	expectedDiscriminator := "JPEG"
-	actualEmitted := "PNG" // deliberate violation
-	if expectedDiscriminator == actualEmitted {
-		t.Fatalf("deliberate violation should not match")
+// 12. Duplicate evidence ID injected -> verifier rejects
+func TestMeta_DuplicateEvidenceID(t *testing.T) {
+	contracts := sampleContractsSet()
+	manifest := &EvidenceManifest{
+		SchemaVersion:     "1",
+		ImplementationSHA: "commit123",
+		SchemaFingerprint: "fp123",
+		Records: []EvidenceRecord{
+			{
+				EvidenceID:        "DUP01",
+				Requirements:      []string{"C01"},
+				Tier:              "unit",
+				ImplementationSHA: "commit123",
+				TestID:            "TestUnit",
+				ExitCode:          0,
+				Result:            "passed",
+			},
+			{
+				EvidenceID:        "DUP01", // Duplicate ID!
+				Requirements:      []string{"C02"},
+				Tier:              "native-structure",
+				ImplementationSHA: "commit123",
+				TestID:            "TestNative",
+				ExitCode:          0,
+				Result:            "passed",
+			},
+		},
+	}
+	_, err := ValidateEvidenceManifest(manifest, contracts, "local")
+	if err == nil {
+		t.Fatalf("expected error for duplicate evidence_id, got nil")
 	}
 }
 
-// Real contract load test
-func TestRealContractLoadsAndVerifiesDigest(t *testing.T) {
-	contract, path, err := ResolveAndLoadContract("")
+// 13. Real contract files load and verify their immutable digests
+func TestRealContractsLoadAndVerifyDigests(t *testing.T) {
+	contracts, err := LoadAllContracts("", "", "")
 	if err != nil {
-		t.Fatalf("failed to load real acceptance contract: %v", err)
+		t.Fatalf("failed loading real contracts: %v", err)
 	}
-	if len(contract.Cases) != 94 {
-		t.Fatalf("expected 94 cases, got %d", len(contract.Cases))
+
+	if contracts.Acceptance.CaseCount != 94 || len(contracts.Acceptance.Cases) != 94 {
+		t.Fatalf("expected 94 acceptance cases, got declared=%d, cases=%d",
+			contracts.Acceptance.CaseCount, len(contracts.Acceptance.Cases))
 	}
-	t.Logf("Successfully loaded and verified real acceptance contract from %s", path)
+	if contracts.Repair.CaseCount != 52 || len(contracts.Repair.Cases) != 52 {
+		t.Fatalf("expected 52 repair cases, got declared=%d, cases=%d",
+			contracts.Repair.CaseCount, len(contracts.Repair.Cases))
+	}
+	if contracts.Gates.GateCount != 33 || len(contracts.Gates.Gates) != 33 {
+		t.Fatalf("expected 33 recovery gates, got declared=%d, gates=%d",
+			contracts.Gates.GateCount, len(contracts.Gates.Gates))
+	}
+
+	// Verify verified artifact SHA256 matches
+	dir := t.TempDir()
+	testFile := filepath.Join(dir, "test.txt")
+	os.WriteFile(testFile, []byte("ok"), 0644)
+	h := sha256.Sum256([]byte("ok"))
+	expHex := hex.EncodeToString(h[:])
+
+	manifest := &EvidenceManifest{
+		SchemaVersion:     "1",
+		ImplementationSHA: "sha1",
+		SchemaFingerprint: "fp1",
+		Records: []EvidenceRecord{
+			{
+				EvidenceID:        "rec1",
+				Requirements:      []string{"C01"},
+				Tier:              "unit",
+				ImplementationSHA: "sha1",
+				TestID:            "TestC01",
+				ExitCode:          0,
+				Result:            "passed",
+				Artifacts: []EvidenceArtifact{
+					{Path: testFile, SHA256: expHex},
+				},
+			},
+		},
+	}
+	testContracts := &ContractsSet{
+		Acceptance: &ContractFile{
+			CaseCount: 1,
+			Cases:     []CaseSpec{{ID: "C01", MinimumTestLevel: "unit"}},
+		},
+	}
+	report, err := ValidateEvidenceManifest(manifest, testContracts, "local")
+	if err != nil {
+		t.Fatalf("unexpected validation error on valid evidence: %v", err)
+	}
+	if report.PassedCases != 1 {
+		t.Fatalf("expected 1 passed case, got %d", report.PassedCases)
+	}
 }
+
+// 14. Requirements-evidence map covers every single acceptance, repair, and gate requirement
+func TestRequirementsEvidenceMap_CompleteCoverage(t *testing.T) {
+	contracts, err := LoadAllContracts("", "", "")
+	if err != nil {
+		t.Fatalf("could not load real contracts: %v", err)
+	}
+	doc, err := BuildRequirementsEvidenceMap(contracts)
+	if err != nil {
+		t.Fatalf("failed to build requirements-evidence map: %v", err)
+	}
+
+	if doc.AcceptanceCount != 94 {
+		t.Errorf("expected 94 acceptance cases, got %d", doc.AcceptanceCount)
+	}
+	if doc.RepairCount != 52 {
+		t.Errorf("expected 52 repair cases, got %d", doc.RepairCount)
+	}
+	if doc.GatesCount != 33 {
+		t.Errorf("expected 33 recovery gates, got %d", doc.GatesCount)
+	}
+	expectedTotal := 94 + 52 + 33
+	if doc.TotalRequirements != expectedTotal {
+		t.Errorf("expected %d total requirements, got %d", expectedTotal, doc.TotalRequirements)
+	}
+	if len(doc.Records) != expectedTotal {
+		t.Errorf("expected %d records in list, got %d", expectedTotal, len(doc.Records))
+	}
+
+	seenIDs := make(map[string]bool)
+	for _, rec := range doc.Records {
+		if seenIDs[rec.ID] {
+			t.Errorf("duplicate ID in records: %s", rec.ID)
+		}
+		seenIDs[rec.ID] = true
+
+		if len(rec.RequiredTiers) == 0 {
+			t.Errorf("requirement %s has no required tiers", rec.ID)
+		}
+		if len(rec.TestIDs) == 0 {
+			t.Errorf("requirement %s has no mapped test IDs", rec.ID)
+		}
+		if len(rec.Assertions) == 0 {
+			t.Errorf("requirement %s has no assertions attached", rec.ID)
+		}
+		if len(rec.FixtureIdentities) == 0 {
+			t.Errorf("requirement %s has no fixture identities", rec.ID)
+		}
+	}
+
+	// Verify all acceptance IDs are present
+	for _, c := range contracts.Acceptance.Cases {
+		if _, ok := doc.Mappings[c.ID]; !ok {
+			t.Errorf("missing acceptance requirement ID in mappings: %s", c.ID)
+		}
+	}
+	// Verify all repair IDs are present
+	for _, c := range contracts.Repair.Cases {
+		if _, ok := doc.Mappings[c.ID]; !ok {
+			t.Errorf("missing repair requirement ID in mappings: %s", c.ID)
+		}
+	}
+	// Verify all gate IDs are present
+	for _, g := range contracts.Gates.Gates {
+		if _, ok := doc.Mappings[g.ID]; !ok {
+			t.Errorf("missing recovery gate ID in mappings: %s", g.ID)
+		}
+	}
+
+	tmpFile := filepath.Join(t.TempDir(), "requirements-evidence-map.json")
+	if err := WriteRequirementsEvidenceMap(doc, tmpFile); err != nil {
+		t.Fatalf("failed to write requirements-evidence map: %v", err)
+	}
+	readBytes, err := os.ReadFile(tmpFile)
+	if err != nil {
+		t.Fatalf("failed to read back requirements-evidence map: %v", err)
+	}
+	var roundTrip RequirementsEvidenceMapFile
+	if err := json.Unmarshal(readBytes, &roundTrip); err != nil {
+		t.Fatalf("failed to unmarshal written map: %v", err)
+	}
+	if roundTrip.TotalRequirements != expectedTotal {
+		t.Errorf("roundtrip total mismatch: %d vs %d", roundTrip.TotalRequirements, expectedTotal)
+	}
+}
+

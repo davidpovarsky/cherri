@@ -12,6 +12,7 @@ package main
 import "C"
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -22,9 +23,12 @@ import (
 
 	args "github.com/electrikmilk/args-parser"
 	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/lower"
 	"github.com/electrikmilk/cherri/internal/language/protocol"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/service"
+	"github.com/electrikmilk/cherri/internal/language/source"
+	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"howett.net/plist"
 )
 
@@ -182,91 +186,97 @@ func compileForMobile(src string, requestedName string, sign bool) (response mob
 	mobileCompileMu.Lock()
 	defer mobileCompileMu.Unlock()
 
-	embeddedCompilerMode = true
-	previousArgs := args.Args
-	args.Args = map[string]string{
-		"skip-sign": "",
-		"no-ansi":   "",
-	}
-
 	defer func() {
-		embeddedCompilerMode = false
-		args.Args = previousArgs
 		if recovered := recover(); recovered != nil {
 			response = mobileCompileResponse{
 				OK:     false,
-				Error:  embeddedErrorMessage(recovered),
-				Line:   max(lineIdx+1, 1),
-				Column: max(lineCharIdx+1, 1),
+				Error:  fmt.Sprintf("%v", recovered),
+				Line:   1,
+				Column: 1,
 			}
-			resetEmbeddedFailureState()
 		}
 	}()
 
-	resetMobileLanguageState()
-	resetMobileDecompileState()
 	name := normalizedMobileName(requestedName)
+	if name == "" {
+		name = "Shortcut"
+	}
 
-	// Try Cherri v2 compiler first for modern v2 syntax
-	isLegacy := strings.Contains(src, "#include") ||
-		strings.Contains(src, "#define") ||
-		strings.Contains(src, "#import") ||
-		strings.Contains(src, "@") ||
-		strings.Contains(src, "const ") ||
-		strings.Contains(src, "Ask")
-
-	if !isLegacy {
-		v2Bytes, err := CompileSourceToPlist(name+".cherri", src)
-		if err == nil {
-			response = mobileCompileResponse{
-				OK:          true,
-				Name:        name,
-				PlistBase64: base64.StdEncoding.EncodeToString(v2Bytes),
-			}
-			if sign {
-				service := hubSign()
-				signedShortcut := requestSignedShortcut(&service)
-				if len(signedShortcut) > 0 && looksLikeSignedShortcut(signedShortcut) {
-					response.SignedBase64 = base64.StdEncoding.EncodeToString(signedShortcut)
-				}
-			}
-			return response
+	docID := source.DocumentID(name + ".cherri")
+	file := source.NewFile(docID, name+".cherri", 1, src)
+	parser := syntax.NewParser(file)
+	prog := parser.ParseProgram()
+	if len(parser.Errors()) > 0 {
+		err0 := parser.Errors()[0]
+		return mobileCompileResponse{
+			OK:     false,
+			Error:  err0.Message,
+			Line:   err0.Span.Start.Line,
+			Column: err0.Span.Start.Column,
 		}
 	}
 
-	filePath = ""
-	filename = name + ".cherri"
-	basename = name
-	relativePath = ""
-	inputPath = ""
-	outputPath = ""
-	workflowName = name
-	contents = src
-
-	initParse()
-	generateShortcut()
-
-	plistBytes, err := plist.Marshal(shortcut, plist.XMLFormat)
-	if err != nil {
-		panic(err)
+	reg := schema.DefaultRegistry()
+	analyzer := analysis.NewAnalyzer(reg)
+	analyzer.Analyze(prog)
+	for _, diag := range analyzer.Diagnostics() {
+		if diag.Severity == analysis.SeverityError {
+			return mobileCompileResponse{
+				OK:     false,
+				Error:  fmt.Sprintf("[%s] %s", diag.Code, diag.Message),
+				Line:   diag.Span.Start.Line,
+				Column: diag.Span.Start.Column,
+			}
+		}
 	}
 
+	lowerer := lower.NewLowerer(reg)
+	lowerer.WorkflowName = name
+	wf, err := lowerer.LowerProgram(prog)
+	if err != nil {
+		return mobileCompileResponse{
+			OK:     false,
+			Error:  fmt.Sprintf("Lowering error: %v", err),
+			Line:   1,
+			Column: 1,
+		}
+	}
+
+	sc := EmitNativeWorkflow(wf)
+	var buf bytes.Buffer
+	enc := plist.NewEncoder(&buf)
+	enc.Indent("\t")
+	if err := enc.Encode(sc); err != nil {
+		return mobileCompileResponse{
+			OK:     false,
+			Error:  fmt.Sprintf("Plist encoding error: %v", err),
+			Line:   1,
+			Column: 1,
+		}
+	}
+
+	v2Bytes := buf.Bytes()
 	response = mobileCompileResponse{
 		OK:          true,
-		Name:        workflowName,
-		PlistBase64: base64.StdEncoding.EncodeToString(plistBytes),
+		Name:        name,
+		PlistBase64: base64.StdEncoding.EncodeToString(v2Bytes),
 	}
 
 	if sign {
 		service := hubSign()
-		signedShortcut := requestSignedShortcut(&service)
-		if len(signedShortcut) == 0 {
-			panic(embeddedCompilerPanic{message: "Signing service returned no Shortcut data."})
+		signedShortcut, signErr := SignShortcutBytes(&service, name, v2Bytes)
+		if signErr != nil {
+			response.OK = false
+			response.Error = fmt.Sprintf("Signing error: %v", signErr)
+			return response
 		}
-		if !looksLikeSignedShortcut(signedShortcut) {
-			panic(embeddedCompilerPanic{message: "Signing server response does not look like a Shortcut file."})
+		if len(signedShortcut) > 0 && looksLikeSignedShortcut(signedShortcut) {
+			response.SignedBase64 = base64.StdEncoding.EncodeToString(signedShortcut)
+		} else {
+			response.OK = false
+			response.Error = "Signing server response does not look like a signed Shortcut (missing AEA1 magic)"
+			return response
 		}
-		response.SignedBase64 = base64.StdEncoding.EncodeToString(signedShortcut)
 	}
 
 	return response
