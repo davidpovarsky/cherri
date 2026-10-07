@@ -666,6 +666,63 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 	return nil
 }
 
+func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
+	if tok, ok := val.(*ir.AttachmentToken); ok {
+		return tok
+	}
+	uuid := l.GenerateUUID()
+	switch v := val.(type) {
+	case float64:
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.number",
+			OutputUUID:      uuid,
+			OutputName:      "Number",
+			Parameters: map[string]interface{}{
+				"WFNumberActionNumber": v,
+			},
+		}
+		l.workflow.AddAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "Number",
+		}
+	case string:
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.gettext",
+			OutputUUID:      uuid,
+			OutputName:      "Text",
+			Parameters: map[string]interface{}{
+				"WFTextActionText": v,
+			},
+		}
+		l.workflow.AddAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "Text",
+		}
+	default:
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.gettext",
+			OutputUUID:      uuid,
+			OutputName:      "Text",
+			Parameters: map[string]interface{}{
+				"WFTextActionText": fmt.Sprintf("%v", v),
+			},
+		}
+		l.workflow.AddAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "Text",
+		}
+	}
+}
+
 func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 	groupUUID := l.GenerateUUID()
 
@@ -705,7 +762,7 @@ func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 				return err
 			}
 
-			params["WFInput"] = leftVal
+			params["WFInput"] = l.materializeToAttachment(leftVal)
 			params["WFCondition"] = condCode
 			switch r := rightVal.(type) {
 			case float64:
@@ -726,7 +783,7 @@ func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 			if err != nil {
 				return err
 			}
-			params["WFInput"] = condVal
+			params["WFInput"] = l.materializeToAttachment(condVal)
 			params["WFCondition"] = 4
 			params["WFNumberValue"] = 1.0
 		}
@@ -735,7 +792,7 @@ func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 		if err != nil {
 			return err
 		}
-		params["WFInput"] = condVal
+		params["WFInput"] = l.materializeToAttachment(condVal)
 		params["WFCondition"] = 4
 		params["WFNumberValue"] = 1.0
 	}
