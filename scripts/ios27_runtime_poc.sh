@@ -301,9 +301,9 @@ for i in $(seq 1 30); do
     CLIP_VAL=$(xcrun simctl pbpaste "$SIM_UDID" 2>/dev/null || true)
     echo "Poll $i/30: '$CLIP_VAL'"
     if echo "$CLIP_VAL" | grep -q "CHERRI_IOS27_RUNTIME_OK"; then
-        if echo "$CLIP_VAL" | grep -q "V2_VAR_OK" && echo "$CLIP_VAL" | grep -q "V2_IF_OK" && echo "$CLIP_VAL" | grep -q "V2_FUNCTION_OK" && echo "$CLIP_VAL" | grep -q "V2_VARIANT_OK"; then
+        if echo "$CLIP_VAL" | grep -q "V2_VAR_OK" && echo "$CLIP_VAL" | grep -q "V2_IF_OK" && echo "$CLIP_VAL" | grep -q "V2_NESTED_LOOP_OK" && echo "$CLIP_VAL" | grep -q "V2_FUNCTION_OK" && echo "$CLIP_VAL" | grep -q "V2_VARIANT_OK"; then
             ASSERT_PASSED=true
-            echo "ASSERTION PASSED on poll $i: Expected v2 conformance markers detected (smoke, var, if, function, variant)!"
+            echo "ASSERTION PASSED on poll $i: Expected v2 conformance markers detected (smoke, var, if, nested_loop, function, variant)!"
             break
         fi
     fi
