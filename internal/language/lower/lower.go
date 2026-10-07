@@ -350,7 +350,11 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 			}
 		}
 
+		hasReturn := false
 		for _, stmt := range fn.Body.Statements {
+			if _, ok := stmt.(*syntax.ReturnStmt); ok {
+				hasReturn = true
+			}
 			if err := l.lowerStatement(stmt); err != nil {
 				return fmt.Errorf("function %s: %w", fn.Name, err)
 			}
@@ -358,11 +362,12 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 
 		l.bindings = savedBindings
 
-		exitNode := &ir.NativeActionNode{
-			NodeID:          l.GenerateUUID(),
-			AppleIdentifier: "is.workflow.actions.exit",
+		if !hasReturn {
+			l.workflow.AddAction(&ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.output",
+			})
 		}
-		l.workflow.AddAction(exitNode)
 
 		fnEnd := &ir.NativeActionNode{
 			NodeID:             l.GenerateUUID(),
@@ -379,7 +384,7 @@ func (l *Lowerer) generateFunctionsDispatcher() error {
 
 	exitAllNode := &ir.NativeActionNode{
 		NodeID:          l.GenerateUUID(),
-		AppleIdentifier: "is.workflow.actions.exit",
+		AppleIdentifier: "is.workflow.actions.output",
 	}
 	l.workflow.AddAction(exitAllNode)
 
@@ -440,6 +445,12 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 				Parameters: map[string]interface{}{
 					"WFOutput": val,
 				},
+			}
+			l.workflow.AddAction(node)
+		} else {
+			node := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.output",
 			}
 			l.workflow.AddAction(node)
 		}
