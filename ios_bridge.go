@@ -23,12 +23,9 @@ import (
 
 	args "github.com/electrikmilk/args-parser"
 	"github.com/electrikmilk/cherri/internal/language/analysis"
-	"github.com/electrikmilk/cherri/internal/language/lower"
 	"github.com/electrikmilk/cherri/internal/language/protocol"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/service"
-	"github.com/electrikmilk/cherri/internal/language/source"
-	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"howett.net/plist"
 )
 
@@ -245,17 +242,24 @@ func compileForMobile(src string, requestedName string, sign bool) (response mob
 
 	initParse()
 	generateShortcut()
-	serializeShortcut()
+
+	var buf bytes.Buffer
+	enc := plist.NewEncoder(&buf)
+	enc.Indent("\t")
+	if err := enc.Encode(shortcut); err != nil {
+		panic(err)
+	}
+	legacyBytes := buf.Bytes()
 
 	response = mobileCompileResponse{
 		OK:          true,
 		Name:        workflowName,
-		PlistBase64: base64.StdEncoding.EncodeToString(plistBytes),
+		PlistBase64: base64.StdEncoding.EncodeToString(legacyBytes),
 	}
 
 	if sign {
 		service := hubSign()
-		signedShortcut, signErr := SignShortcutBytes(&service, workflowName, plistBytes)
+		signedShortcut, signErr := SignShortcutBytes(&service, workflowName, legacyBytes)
 		if signErr != nil {
 			response.OK = false
 			response.Error = fmt.Sprintf("Signing error: %v", signErr)
