@@ -16,7 +16,7 @@ permissions:
 jobs:
   ios27-runtime-poc:
     runs-on: xcode-27
-    timeout-minutes: 20
+    timeout-minutes: 35
 
     steps:
       - name: Checkout repository
@@ -39,6 +39,7 @@ jobs:
             -project ImportHelper.xcodeproj \
             -scheme ImportHelper \
             -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath .build \
             CODE_SIGN_IDENTITY="-"
 
       - name: Run iOS 27 Shortcuts Runtime PoC

@@ -37,16 +37,28 @@ run_ui_helper() {
     
     # 2. Execute XCUITest helper
     if [ -d tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj ]; then
-        echo "Executing XCUITest helper via xcodebuild test..."
+        echo "Executing XCUITest helper via xcodebuild..."
         (
             cd tests/runtime_poc/ImportHelper
-            xcodebuild test \
-                -project ImportHelper.xcodeproj \
-                -scheme ImportHelper \
-                -destination "id=$SIM_UDID" \
-                -resultBundlePath "${PWD}/../../../artifacts/ImportHelper_${stage_name}.xcresult" \
-                CODE_SIGN_IDENTITY="-" \
-                2>&1 | tee "${PWD}/../../../artifacts/ui_helper_${stage_name}.log" || true
+            XCTESTRUN=$(find .build -name "*.xctestrun" 2>/dev/null | head -n 1)
+            if [ -n "$XCTESTRUN" ] && [ -f "$XCTESTRUN" ]; then
+                echo "Running test-without-building with $XCTESTRUN..."
+                xcodebuild test-without-building \
+                    -xctestrun "$XCTESTRUN" \
+                    -destination "id=$SIM_UDID" \
+                    -resultBundlePath "${PWD}/../../../artifacts/ImportHelper_${stage_name}.xcresult" \
+                    CODE_SIGN_IDENTITY="-" \
+                    2>&1 | tee "${PWD}/../../../artifacts/ui_helper_${stage_name}.log" || true
+            else
+                xcodebuild test \
+                    -project ImportHelper.xcodeproj \
+                    -scheme ImportHelper \
+                    -destination "id=$SIM_UDID" \
+                    -derivedDataPath .build \
+                    -resultBundlePath "${PWD}/../../../artifacts/ImportHelper_${stage_name}.xcresult" \
+                    CODE_SIGN_IDENTITY="-" \
+                    2>&1 | tee "${PWD}/../../../artifacts/ui_helper_${stage_name}.log" || true
+            fi
         )
     elif command -v xcodegen >/dev/null 2>&1 && [ -f tests/runtime_poc/ImportHelper/project.yml ]; then
         echo "Generating and executing XCUITest helper..."
@@ -57,6 +69,7 @@ run_ui_helper() {
                 -project ImportHelper.xcodeproj \
                 -scheme ImportHelper \
                 -destination "id=$SIM_UDID" \
+                -derivedDataPath .build \
                 -resultBundlePath "${PWD}/../../../artifacts/ImportHelper_${stage_name}.xcresult" \
                 CODE_SIGN_IDENTITY="-" \
                 2>&1 | tee "${PWD}/../../../artifacts/ui_helper_${stage_name}.log" || true
@@ -291,13 +304,8 @@ cat artifacts/run.log
 ASSERT_PASSED=false
 UI_AUTOMATION_USED="ImportHelperUITests + AppleScript"
 
-echo "Checking for runtime permission dialog (Allow)..."
-sleep 2
-run_ui_helper "run_permission"
-
 echo "Polling simulator clipboard for up to 30 seconds..."
 for i in $(seq 1 30); do
-    sleep 1
     CLIP_VAL=$(xcrun simctl pbpaste "$SIM_UDID" 2>/dev/null || true)
     echo "Poll $i/30: '$CLIP_VAL'"
     if echo "$CLIP_VAL" | grep -q "CHERRI_IOS27_RUNTIME_OK"; then
@@ -308,12 +316,13 @@ for i in $(seq 1 30); do
         fi
     fi
 
-    # Fallback retry if run prompt appeared
-    if [ "$i" -eq 3 ] || [ "$i" -eq 6 ] || [ "$i" -eq 12 ]; then
-        echo "Poll $i: running UI helper and re-triggering run URL..."
-        run_ui_helper "run_poll_$i"
+    # If not passed by poll 3, check for runtime permission dialog (Allow)
+    if [ "$i" -eq 3 ]; then
+        echo "Poll $i: Checking for runtime permission dialog (Allow)..."
+        run_ui_helper "run_permission"
         xcrun simctl openurl "$SIM_UDID" "$RUN_URL" 2>/dev/null || true
     fi
+    sleep 1
 done
 
 echo "$CLIP_VAL" > artifacts/clipboard-result.txt
