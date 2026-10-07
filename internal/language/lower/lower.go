@@ -573,7 +573,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			AppleIdentifier: "is.workflow.actions.setvariable",
 			Parameters: map[string]interface{}{
 				"WFVariableName": b.Name,
-				"WFInput":        val,
+				"WFInput":        l.materializeToAttachment(val),
 			},
 		}
 		l.workflow.AddAction(node)
@@ -754,7 +754,7 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 		AppleIdentifier: "is.workflow.actions.setvariable",
 		Parameters: map[string]interface{}{
 			"WFVariableName": a.Name,
-			"WFInput":        finalVal,
+			"WFInput":        l.materializeToAttachment(finalVal),
 		},
 	}
 	l.workflow.AddAction(node)
