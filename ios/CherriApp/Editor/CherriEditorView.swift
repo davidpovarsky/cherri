@@ -162,10 +162,8 @@ struct CherriEditorView: View {
     }
 
     private func isIdentifierUnit(_ value: unichar) -> Bool {
-        (value >= 65 && value <= 90)
-            || (value >= 97 && value <= 122)
-            || (value >= 48 && value <= 57)
-            || value == 95
+        guard let scalar = UnicodeScalar(value) else { return false }
+        return scalar == "_" || CharacterSet.letters.contains(scalar) || CharacterSet.decimalDigits.contains(scalar)
     }
 
     private func commitPaletteSelection() {

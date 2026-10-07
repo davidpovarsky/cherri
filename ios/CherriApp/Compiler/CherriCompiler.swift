@@ -163,6 +163,20 @@ struct CherriAnalyzeResponse: Decodable, Sendable {
     let schemaFingerprint: String
     let diagnostics: [CherriWireDiagnostic]
     let valid: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case uri, version, languageVersion, schemaFingerprint, diagnostics, valid
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        uri = try container.decode(String.self, forKey: .uri)
+        version = try container.decode(Int.self, forKey: .version)
+        languageVersion = try container.decode(String.self, forKey: .languageVersion)
+        schemaFingerprint = try container.decode(String.self, forKey: .schemaFingerprint)
+        diagnostics = try container.decodeIfPresent([CherriWireDiagnostic].self, forKey: .diagnostics) ?? []
+        valid = try container.decode(Bool.self, forKey: .valid)
+    }
 }
 
 private struct CompleteBridgeResponse: Decodable {

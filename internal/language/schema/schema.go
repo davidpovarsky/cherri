@@ -85,6 +85,7 @@ type ActionSchema struct {
 	Docs               ActionDocs           `json:"docs"`
 	CompilerConstruct  bool                 `json:"compilerConstruct,omitempty"`
 	EvidenceStatus     EvidenceStatus       `json:"evidenceStatus,omitempty"`
+	StaticParameters   map[string]any       `json:"staticParameters,omitempty"`
 }
 
 // ParameterByLabel returns the parameter schema matching the given label.

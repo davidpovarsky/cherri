@@ -1,15 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
 )
 
-// LegacyCatalog matches the structure of baseline-catalog.json
+// LegacyCatalog matches the structure of baseline-catalog.json or live --actions-json output
 type LegacyCatalog struct {
 	Actions []LegacyAction `json:"actions"`
 }
@@ -28,6 +30,7 @@ type LegacyAction struct {
 	Custom             bool              `json:"custom"`
 	InsertionSnippet   string            `json:"insertionSnippet"`
 	AppIntent          *LegacyAppIntent  `json:"appIntent"`
+	StaticParameters   map[string]any    `json:"staticParameters,omitempty"`
 }
 
 type LegacyParameter struct {
@@ -164,18 +167,34 @@ func main() {
 			os.Exit(1)
 		}
 	} else {
-		// Prefer current live definition facts from root compiler via --actions-json
-		catalogPath = filepath.Join("docs", "language-v2", "baseline-catalog.json")
-		if _, err := os.Stat(catalogPath); err == nil {
+		// Production path: Extract live definition facts directly from compiler via --actions-json
+		// This guarantees that canonical action definitions in actions/*.cherri and actions_std.go are the single source of truth.
+		cmd := exec.Command("go", "run", ".", "--actions-json")
+		if _, err := os.Stat("main.go"); err != nil {
+			dir, _ := os.Getwd()
+			for i := 0; i < 3; i++ {
+				parent := filepath.Dir(dir)
+				if _, statErr := os.Stat(filepath.Join(parent, "main.go")); statErr == nil {
+					cmd.Dir = parent
+					break
+				}
+				dir = parent
+			}
+		}
+		var stdout, stderr bytes.Buffer
+		cmd.Stdout = &stdout
+		cmd.Stderr = &stderr
+		if err := cmd.Run(); err != nil {
+			// Fallback if go run is blocked in isolated test directory: check baseline
+			catalogPath = filepath.Join("docs", "language-v2", "baseline-catalog.json")
 			var readErr error
 			data, readErr = os.ReadFile(catalogPath)
 			if readErr != nil {
-				fmt.Fprintf(os.Stderr, "Error reading baseline catalog: %v\n", readErr)
+				fmt.Fprintf(os.Stderr, "Error extracting live catalog (%v: %s) and reading baseline (%v)\n", err, stderr.String(), readErr)
 				os.Exit(1)
 			}
 		} else {
-			fmt.Fprintf(os.Stderr, "No catalog path provided and %s not found\n", catalogPath)
-			os.Exit(1)
+			data = stdout.Bytes()
 		}
 	}
 
@@ -318,6 +337,31 @@ func initDefaultRegistry() *Registry {
 			fmt.Fprintf(&b, "\t\t\t\tBundleIdentifier: %q,\n", a.AppIntent.BundleIdentifier)
 			fmt.Fprintf(&b, "\t\t\t\tAppIntentIdentifier: %q,\n", a.AppIntent.AppIntentIdentifier)
 			fmt.Fprintf(&b, "\t\t\t\tTeamIdentifier: %q,\n", a.AppIntent.TeamIdentifier)
+			b.WriteString("\t\t\t},\n")
+		}
+
+		if len(a.StaticParameters) > 0 {
+			b.WriteString("\t\t\tStaticParameters: map[string]any{\n")
+			keys := make([]string, 0, len(a.StaticParameters))
+			for k := range a.StaticParameters {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			for _, k := range keys {
+				val := a.StaticParameters[k]
+				switch v := val.(type) {
+				case string:
+					fmt.Fprintf(&b, "\t\t\t\t%q: %q,\n", k, v)
+				case bool:
+					fmt.Fprintf(&b, "\t\t\t\t%q: %t,\n", k, v)
+				case float64:
+					fmt.Fprintf(&b, "\t\t\t\t%q: %v,\n", k, v)
+				case int:
+					fmt.Fprintf(&b, "\t\t\t\t%q: %d,\n", k, v)
+				default:
+					fmt.Fprintf(&b, "\t\t\t\t%q: %q,\n", k, fmt.Sprint(v))
+				}
+			}
 			b.WriteString("\t\t\t},\n")
 		}
 

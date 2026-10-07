@@ -126,6 +126,10 @@ func init() {
 		Description: "Do not sign the compiled Shortcut.",
 	})
 	args.Register(args.Argument{
+		Name:        "legacy",
+		Description: "Compile using legacy Cherri pipeline.",
+	})
+	args.Register(args.Argument{
 		Name:         "action",
 		Description:  "Search for available actions. Empty prints all definitions.",
 		DefaultValue: "",

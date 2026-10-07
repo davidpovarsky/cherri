@@ -56,6 +56,8 @@ type catalogActionInfo struct {
 	// actionDefinition.appIntent. The outer identifier is already exposed
 	// through shortcutIdentifier and is not duplicated here.
 	AppIntent *catalogAppIntent `json:"appIntent,omitempty"`
+	// StaticParameters declares invariant plist parameters attached by the action definition.
+	StaticParameters map[string]any `json:"staticParameters,omitempty"`
 }
 
 // catalogAppIntent describes what Cherri actually emits for an action's
@@ -136,6 +138,14 @@ func buildActionCatalog() []catalogActionInfo {
 			parameters = append(parameters, item)
 		}
 
+		var staticParams map[string]any
+		if len(definition.appendParams) > 0 {
+			staticParams = make(map[string]any, len(definition.appendParams))
+			for k, v := range definition.appendParams {
+				staticParams[k] = v
+			}
+		}
+
 		catalog = append(catalog, catalogActionInfo{
 			Name:               name,
 			ShortcutIdentifier: catalogShortcutIdentifier(name, definition),
@@ -154,6 +164,7 @@ func buildActionCatalog() []catalogActionInfo {
 			Custom:             !definition.builtin,
 			InsertionSnippet:   computeInsertionSnippet(name, parameters),
 			AppIntent:          catalogAppIntentFor(definition),
+			StaticParameters:   staticParams,
 		})
 	}
 

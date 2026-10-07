@@ -35,7 +35,7 @@ extension LanguageConfiguration {
     static func cherri(_ languageService: LanguageService? = nil) -> LanguageConfiguration {
         let stringRegex: Regex<Substring> = /\"(?:\\\"|[^\"])*+\"/
         let numberRegex: Regex<Substring> = /-?[0-9]+(?:\.[0-9]+)?/
-        let identifierRegex: Regex<Substring> = /[A-Za-z_][A-Za-z0-9_]*/
+        let identifierRegex: Regex<Substring> = /[\p{L}_][\p{L}\p{Nd}_]*/
         let operatorRegex: Regex<Substring> = /[=+*%!<>&|?:@#\/.\-]+/
 
         return LanguageConfiguration(

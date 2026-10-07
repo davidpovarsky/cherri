@@ -178,6 +178,21 @@ final class CherriCoreIntegrationTests: XCTestCase {
         XCTAssertFalse(items.isEmpty)
     }
 
+    func testUnicodeIdentifierCompilationAndAnalysis() async throws {
+        let source = """
+        let שלום = "world"
+        let תוצאה = f"hello {שלום}"
+        show(תוצאה)
+        """
+        let analysisResp = try await CherriCompiler.analyze(source: source)
+        XCTAssertTrue(analysisResp.valid, "Unicode identifiers should analyze cleanly: \(analysisResp.diagnostics)")
+
+        let compileResult = try await CherriCompiler.compile(source: source, name: "Unicode Test")
+        let plist = try propertyList(compileResult.plist)
+        let actions = try XCTUnwrap(plist["WFWorkflowActions"] as? [[String: Any]])
+        XCTAssertFalse(actions.isEmpty)
+    }
+
     private func propertyList(_ data: Data) throws -> [String: Any] {
         let object = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)
         return try XCTUnwrap(object as? [String: Any])

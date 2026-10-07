@@ -108,7 +108,7 @@ func CherriAnalyze(source *C.char) *C.char {
 	svc.OpenDocument(uri, 1, src)
 	diags, fp := svc.Analyze(uri)
 
-	var wireDiags []protocol.DiagnosticItem
+	wireDiags := make([]protocol.DiagnosticItem, 0)
 	hasErrors := false
 	for _, d := range diags {
 		wireDiags = append(wireDiags, protocol.ToDiagnosticItem(d))
@@ -140,7 +140,7 @@ func CherriComplete(source *C.char, line C.int, column C.int) *C.char {
 	svc.OpenDocument(uri, 1, src)
 	items := svc.Complete(uri, int(line), int(column))
 
-	var wireItems []protocol.CompletionItem
+	wireItems := make([]protocol.CompletionItem, 0)
 	for _, it := range items {
 		wireItems = append(wireItems, protocol.CompletionItem{
 			Label:         it.Label,

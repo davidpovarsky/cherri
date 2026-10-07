@@ -13,6 +13,19 @@ if BIN=$(resolve_cherri); then
   if CAP_OUTPUT=$("$BIN" --capabilities-json 2>&1); then
     if printf '%s\n' "$CAP_OUTPUT" | grep -q '"languageVersion":"2.0"'; then
       printf 'Cherri Language: v2.0 ready\n'
+      MANIFEST="$SKILL_DIR/compatibility-manifest.json"
+      if [ -f "$MANIFEST" ]; then
+        EXPECTED_FP=$(grep '"schemaFingerprint"' "$MANIFEST" | sed 's/.*: *"\([^"]*\)".*/\1/')
+        if [ -n "$EXPECTED_FP" ]; then
+          ACTUAL_FP=$(printf '%s\n' "$CAP_OUTPUT" | grep '"schemaFingerprint"' | sed 's/.*: *"\([^"]*\)".*/\1/')
+          if [ -n "$ACTUAL_FP" ] && [ "$EXPECTED_FP" != "$ACTUAL_FP" ]; then
+            printf 'Cherri: Schema fingerprint mismatch (expected %s, got %s)\n' "$EXPECTED_FP" "$ACTUAL_FP" >&2
+            status=1
+          else
+            printf 'Schema fingerprint: %s (verified)\n' "$EXPECTED_FP"
+          fi
+        fi
+      fi
     else
       echo 'Cherri: Incompatible compiler (missing languageVersion 2.0)' >&2
       status=1

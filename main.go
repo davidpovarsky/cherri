@@ -40,7 +40,7 @@ func main() {
 	filePath = fileArg()
 	if filePath != "" {
 		filename = checkFile(filePath)
-		if _, err := os.Stat(filePath); err == nil {
+		if !args.Using("legacy") {
 			// Compile via Cherri v2 pipeline
 			outPath := ""
 			if args.Using("output") {

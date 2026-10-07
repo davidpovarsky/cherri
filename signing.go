@@ -12,7 +12,9 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/electrikmilk/args-parser"
@@ -23,50 +25,69 @@ var signFailed = false
 var signingServiceFailed = false
 var backoff = 10
 
-// sign runs the shortcuts sign command on the unsigned shortcut file.
-func sign() {
-	if !darwin {
-		useHubSign()
-		return
+// SignShortcut signs the unsigned shortcut at inPath and writes the signed file to outPath.
+func SignShortcut(inPath, outPath, mode string) error {
+	if mode == "" {
+		mode = "people-who-know-me"
+		if args.Using("share") && args.Value("share") == "anyone" {
+			mode = "anyone"
+		}
 	}
 
-	var signingMode = "people-who-know-me"
-	if args.Using("share") && args.Value("share") == "anyone" {
-		signingMode = "anyone"
-	}
+	inputPath = inPath
+	outputPath = outPath
 
-	if args.Using("debug") {
-		fmt.Printf("Signing %s to %s...", inputPath, outputPath)
-	}
-	var sign = exec.Command(
-		"shortcuts",
-		"sign",
-		"-i", inputPath,
-		"-o", outputPath,
-		"-m", signingMode,
-	)
-	var stdErr bytes.Buffer
-	sign.Stderr = &stdErr
-	var signErr = sign.Run()
-	if signErr != nil {
+	if darwin {
+		if args.Using("debug") {
+			fmt.Printf("Signing %s to %s...", inPath, outPath)
+		}
+		var signCmd = exec.Command(
+			"shortcuts",
+			"sign",
+			"-i", inPath,
+			"-o", outPath,
+			"-m", mode,
+		)
+		var stdErr bytes.Buffer
+		signCmd.Stderr = &stdErr
+		var signErr = signCmd.Run()
+		if signErr == nil {
+			data, readErr := os.ReadFile(outPath)
+			if readErr == nil && looksLikeSignedShortcut(data) {
+				if args.Using("debug") {
+					fmt.Println(ansi("Done.", green))
+				}
+				return nil
+			}
+		}
+
 		signFailed = true
 		if args.Using("debug") {
 			fmt.Print(ansi("Failed!\n", red))
 		}
-
 		fmt.Printf("%s\n%s\n", ansi("Failed to sign Shortcut using macOS :(", orange, bold), ansi(stdErr.String(), orange))
-
-		useHubSign()
 	}
 
-	if args.Using("debug") {
-		fmt.Println(ansi("Done.", green))
+	var hub = hubSign()
+	return useSigningServiceExplicit(&hub, inPath, outPath)
+}
+
+// sign runs the shortcuts sign command on the unsigned shortcut file.
+func sign() {
+	var signingMode = "people-who-know-me"
+	if args.Using("share") && args.Value("share") == "anyone" {
+		signingMode = "anyone"
+	}
+	if err := SignShortcut(inputPath, outputPath, signingMode); err != nil {
+		exit(err.Error())
 	}
 }
 
 func useHubSign() {
 	var hubSignService = hubSign()
-	useSigningService(&hubSignService)
+	if err := useSigningServiceExplicit(&hubSignService, inputPath, outputPath); err != nil {
+		exit(err.Error())
+	}
 }
 
 type SigningService struct {
@@ -77,6 +98,12 @@ type SigningService struct {
 
 // Sign the Shortcut using a signing service.
 func useSigningService(service *SigningService) {
+	if err := useSigningServiceExplicit(service, inputPath, outputPath); err != nil {
+		exit(err.Error())
+	}
+}
+
+func useSigningServiceExplicit(service *SigningService, inPath, outPath string) error {
 	handleBackoff(service)
 
 	if !args.Using("no-ansi") {
@@ -86,21 +113,27 @@ func useSigningService(service *SigningService) {
 		}
 	}
 
-	var signedShortcut = requestSignedShortcut(service)
+	var signedShortcut, err = requestSignedShortcutExplicit(service, inPath, outPath)
+	if err != nil {
+		return err
+	}
 	if len(signedShortcut) == 0 {
-		return
+		return fmt.Errorf("signing service returned empty response")
 	}
 
 	if !looksLikeSignedShortcut(signedShortcut) {
-		exit("Signing server response does not look like a Shortcut file.")
+		return fmt.Errorf("signing server response does not look like a signed Shortcut (missing AEA1 magic)")
 	}
 
-	var writeErr = os.WriteFile(outputPath, signedShortcut, 0600)
-	handle(writeErr)
+	var writeErr = os.WriteFile(outPath, signedShortcut, 0644)
+	if writeErr != nil {
+		return fmt.Errorf("failed to write signed shortcut to %s: %w", outPath, writeErr)
+	}
 
 	if args.Using("debug") {
 		fmt.Println(ansi("Done.", green))
 	}
+	return nil
 }
 
 func handleBackoff(service *SigningService) {
@@ -115,18 +148,53 @@ func handleBackoff(service *SigningService) {
 }
 
 func requestSignedShortcut(service *SigningService) []byte {
-	var marshaledPlist, plistErr = plist.Marshal(shortcut, plist.XMLFormat)
-	handle(plistErr)
+	bytes, err := requestSignedShortcutExplicit(service, inputPath, outputPath)
+	if err != nil {
+		exit(err.Error())
+	}
+	return bytes
+}
+
+func requestSignedShortcutExplicit(service *SigningService, inPath, outPath string) ([]byte, error) {
+	var xmlData []byte
+	var marshalErr error
+
+	if len(shortcut.WFWorkflowActions) > 0 {
+		xmlData, marshalErr = plist.Marshal(shortcut, plist.XMLFormat)
+		if marshalErr != nil {
+			return nil, fmt.Errorf("failed to marshal shortcut plist: %w", marshalErr)
+		}
+	} else if inPath != "" {
+		raw, readErr := os.ReadFile(inPath)
+		if readErr != nil {
+			return nil, fmt.Errorf("failed to read unsigned shortcut %s: %w", inPath, readErr)
+		}
+		xmlData = raw
+	} else {
+		return nil, fmt.Errorf("no shortcut data or input path available to sign")
+	}
+
+	name := basename
+	if name == "" {
+		name = strings.TrimSuffix(filepath.Base(outPath), ".shortcut")
+	}
+	if name == "" {
+		name = "Shortcut"
+	}
 
 	var payload = map[string]string{
-		"shortcutName": basename,
-		"shortcut":     string(marshaledPlist),
+		"shortcutName": name,
+		"shortcut":     string(xmlData),
 	}
 	var jsonPayload, jsonErr = json.Marshal(payload)
-	handle(jsonErr)
+	if jsonErr != nil {
+		return nil, fmt.Errorf("failed to marshal json payload: %w", jsonErr)
+	}
 
 	var request, httpErr = http.NewRequest("POST", service.url, bytes.NewReader(jsonPayload))
-	handle(httpErr)
+	if httpErr != nil {
+		return nil, fmt.Errorf("failed to create http request: %w", httpErr)
+	}
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("User-Agent", fmt.Sprintf("cherri/%s", version))
 
@@ -134,20 +202,21 @@ func requestSignedShortcut(service *SigningService) []byte {
 		Timeout: time.Second * 30,
 	}
 	var response, resErr = client.Do(request)
-	handle(resErr)
+	if resErr != nil {
+		return nil, fmt.Errorf("signing request error: %w", resErr)
+	}
 	defer response.Body.Close()
 
 	var responseContentType = response.Header.Get("Content-Type")
 	var allowedContentTypes = []string{"application/octet-stream", "application/x-plist", "application/x-apple-shortcut"}
 	if !slices.Contains(allowedContentTypes, responseContentType) {
-		exit(fmt.Sprintf("Unsupported response type: %s", responseContentType))
+		return nil, fmt.Errorf("unsupported response type: %s", responseContentType)
 	}
 
 	if response.StatusCode != http.StatusOK {
 		signingServiceFailed = true
 		backoff += 10
-		fmt.Println(ansi(fmt.Sprintf("Failed to sign Shortcut (%s)", response.Status), red))
-		return []byte{}
+		return nil, fmt.Errorf("failed to sign Shortcut (%s)", response.Status)
 	}
 
 	signingServiceFailed = false
@@ -159,9 +228,11 @@ func requestSignedShortcut(service *SigningService) []byte {
 	}
 
 	var body, readErr = io.ReadAll(response.Body)
-	handle(readErr)
+	if readErr != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", readErr)
+	}
 
-	return body
+	return body, nil
 }
 
 // looksLikeSignedShortcut performs quick checks to make sure response is a signed Shortcut.

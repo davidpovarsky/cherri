@@ -122,3 +122,15 @@ func TestRepro_FIX02_AcceptanceFalseCounting(t *testing.T) {
 	}
 }
 
+// TestRepro_UnicodeIdentifier verifies Unicode identifier compilation.
+func TestRepro_UnicodeIdentifier(t *testing.T) {
+	code := "let שלום = \"world\"\nlet תוצאה = f\"hello {שלום}\"\nshow(תוצאה)\n"
+	plistBytes, err := CompileSourceToPlist("unicode.cherri", code)
+	if err != nil {
+		t.Fatalf("Unicode compilation failed: %v", err)
+	}
+	if len(plistBytes) == 0 {
+		t.Fatalf("Unicode compilation produced empty plist")
+	}
+}
+

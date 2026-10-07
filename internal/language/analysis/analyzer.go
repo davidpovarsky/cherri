@@ -129,6 +129,9 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate enum declaration %q", d.Name))
 			}
 		case *syntax.ImportDecl:
+			if strings.HasPrefix(d.Path, "http://") || strings.HasPrefix(d.Path, "https://") {
+				a.error(CodeWorkspaceAccess, d.Span, fmt.Sprintf("remote package imports not permitted: %q", d.Path))
+			}
 			if !scope.Define(&Symbol{Name: d.Alias, Type: types.Unknown, Initialized: true, Span: d.Span}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate import alias %q", d.Alias))
 			}

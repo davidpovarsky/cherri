@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/electrikmilk/args-parser"
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/lower"
@@ -31,6 +32,7 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 		WFWorkflowMinimumClientVersion:       900,
 		WFWorkflowMinimumClientVersionString: "900",
 		WFWorkflowTypes:                      wf.WorkflowTypes,
+		WFWorkflowHasShortcutInputVariables:  wf.HasShortcutInputVariables,
 	}
 
 	if sc.WFWorkflowIcon.WFWorkflowIconGlyphNumber == 0 {
@@ -148,6 +150,7 @@ func CompileSourceToPlist(filePath string, content string) ([]byte, error) {
 	}
 
 	lowerer := lower.NewLowerer(reg)
+	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
 	wf, err := lowerer.LowerProgram(prog)
 	if err != nil {
 		return nil, fmt.Errorf("lowering error: %w", err)
@@ -166,7 +169,7 @@ func CompileSourceToPlist(filePath string, content string) ([]byte, error) {
 }
 
 // CompileFileV2 compiles a Cherri v2 file to an unsigned or signed .shortcut file.
-func CompileFileV2(filePath string, outputPath string, skipSign bool) error {
+func CompileFileV2(filePath string, targetOutPath string, skipSign bool) error {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
 		return err
@@ -183,22 +186,32 @@ func CompileFileV2(filePath string, outputPath string, skipSign bool) error {
 		return err
 	}
 
-	if outputPath != "" && outputPath != unsignedPath {
-		_ = os.WriteFile(outputPath, plistBytes, 0644)
+	if targetOutPath == "" {
+		targetOutPath = base + ".shortcut"
 	}
 
 	if skipSign {
+		if targetOutPath != unsignedPath {
+			if err := os.WriteFile(targetOutPath, plistBytes, 0644); err != nil {
+				return err
+			}
+		}
 		return nil
 	}
 
-	// Sign using existing sign machinery
-	inputPath = unsignedPath
-	if outputPath == "" {
-		outputPath = base + ".shortcut"
-	}
+	// Prepare shortcut and basename for signing
 	_, _ = plist.Unmarshal(plistBytes, &shortcut)
 	basename = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
-	sign()
+
+	signingMode := "people-who-know-me"
+	if args.Using("share") && args.Value("share") == "anyone" {
+		signingMode = "anyone"
+	}
+
+	if err := SignShortcut(unsignedPath, targetOutPath, signingMode); err != nil {
+		return fmt.Errorf("signing failed: %w", err)
+	}
+
 	_ = os.Remove(unsignedPath)
 	return nil
 }

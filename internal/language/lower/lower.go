@@ -26,6 +26,7 @@ type Lowerer struct {
 	bindings       map[string]BindingRef
 	functions      map[string]*syntax.FunctionDecl
 	setupQuestions map[string]*syntax.SetupDecl
+	WorkflowName   string
 	uuidCounter    int
 }
 
@@ -64,12 +65,27 @@ func (l *Lowerer) LowerProgram(prog *syntax.Program) (*ir.NativeWorkflow, error)
 			l.functions[d.Name] = d
 		case *syntax.SetupDecl:
 			l.setupQuestions[d.Name] = d
+			prompt := d.Prompt
+			if prompt == "" {
+				prompt = "Enter " + d.Name
+			}
+			q := map[string]interface{}{
+				"Category":     "Parameter",
+				"ParameterKey": d.Name,
+				"Text":         prompt,
+			}
+			if d.DefaultValue != "" {
+				q["DefaultValue"] = d.DefaultValue
+			}
+			l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, q)
 		}
 	}
 
 	// 2. Generate runSelf dispatcher if functions are declared
 	if len(l.functions) > 0 {
-		l.generateFunctionsDispatcher()
+		if err := l.generateFunctionsDispatcher(); err != nil {
+			return nil, err
+		}
 	}
 
 	// 3. Process statements in source order
@@ -83,6 +99,10 @@ func (l *Lowerer) LowerProgram(prog *syntax.Program) (*ir.NativeWorkflow, error)
 }
 
 func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) {
+	if d.Name != "" {
+		l.WorkflowName = d.Name
+		l.workflow.Name = d.Name
+	}
 	// Defaults
 	l.workflow.IconGlyph = 59789
 	l.workflow.IconColor = 4282601983
@@ -197,13 +217,31 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) {
 	}
 }
 
-func (l *Lowerer) generateFunctionsDispatcher() {
-	groupUUID := l.GenerateUUID()
+func (l *Lowerer) generateFunctionsDispatcher() error {
+	l.workflow.HasShortcutInputVariables = true
 
 	inputToken := &ir.AttachmentToken{
 		Type:       "ExtensionInput",
 		OutputName: "ShortcutInput",
 	}
+
+	// Guard: Only execute function dispatch if ShortcutInput has a value
+	hasInputGroupUUID := l.GenerateUUID()
+	hasInputIf := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		GroupingIdentifier: hasInputGroupUUID,
+		ControlFlowMode:    0,
+		Parameters: map[string]interface{}{
+			"GroupingIdentifier": hasInputGroupUUID,
+			"WFControlFlowMode":  0,
+			"WFInput":            inputToken,
+			"WFCondition":        100, // Has Any Value
+		},
+	}
+	l.workflow.AddAction(hasInputIf)
+
+	groupUUID := l.GenerateUUID()
 
 	dictUUID := l.GenerateUUID()
 	dictNode := &ir.NativeActionNode{
@@ -313,7 +351,9 @@ func (l *Lowerer) generateFunctionsDispatcher() {
 		}
 
 		for _, stmt := range fn.Body.Statements {
-			_ = l.lowerStatement(stmt)
+			if err := l.lowerStatement(stmt); err != nil {
+				return fmt.Errorf("function %s: %w", fn.Name, err)
+			}
 		}
 
 		l.bindings = savedBindings
@@ -354,6 +394,19 @@ func (l *Lowerer) generateFunctionsDispatcher() {
 		},
 	}
 	l.workflow.AddAction(endIf)
+
+	hasInputEnd := &ir.NativeActionNode{
+		NodeID:             l.GenerateUUID(),
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		GroupingIdentifier: hasInputGroupUUID,
+		ControlFlowMode:    2,
+		Parameters: map[string]interface{}{
+			"GroupingIdentifier": hasInputGroupUUID,
+			"WFControlFlowMode":  2,
+		},
+	}
+	l.workflow.AddAction(hasInputEnd)
+	return nil
 }
 
 func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
@@ -1610,6 +1663,14 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			"arguments":        argsList,
 		}
 
+		wfTarget := map[string]interface{}{
+			"workflowIdentifier": l.GenerateUUID(),
+			"isSelf":             true,
+		}
+		if l.WorkflowName != "" {
+			wfTarget["workflowName"] = l.WorkflowName
+		}
+
 		uuid := l.GenerateUUID()
 		runNode := &ir.NativeActionNode{
 			NodeID:          uuid,
@@ -1617,8 +1678,8 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			OutputUUID:      uuid,
 			OutputName:      actionName + "Result",
 			Parameters: map[string]interface{}{
-				"WFWorkflowName": "", // Self
-				"WFInput":        dispatchDict,
+				"WFWorkflow": wfTarget,
+				"WFInput":    dispatchDict,
 			},
 		}
 		l.workflow.AddAction(runNode)
@@ -1640,10 +1701,20 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		AppleIdentifier: actionSchema.AppleIdentifier,
 		Parameters:      make(map[string]interface{}),
 	}
-	if actionName == "base64Encode" {
-		node.Parameters["WFEncodeMode"] = "Encode"
-	} else if actionName == "base64Decode" {
-		node.Parameters["WFEncodeMode"] = "Decode"
+	for k, v := range actionSchema.StaticParameters {
+		if k == "input" {
+			// Skip internal parser helper entries
+			continue
+		}
+		node.Parameters[k] = v
+	}
+	if actionSchema.AppIntent != nil {
+		node.Parameters["AppIntentDescriptor"] = map[string]interface{}{
+			"AppIntentIdentifier": actionSchema.AppIntent.AppIntentIdentifier,
+			"BundleIdentifier":    actionSchema.AppIntent.BundleIdentifier,
+			"Name":                actionSchema.AppIntent.Name,
+			"TeamIdentifier":      actionSchema.AppIntent.TeamIdentifier,
+		}
 	}
 	if actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void" {
 		node.OutputUUID = uuid

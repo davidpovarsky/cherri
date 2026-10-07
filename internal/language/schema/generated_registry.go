@@ -34,6 +34,10 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Notifications",
 				InsertionSnippet: "DNDOff()",
 			},
+			StaticParameters: map[string]any{
+				"Enabled": 0,
+				"FocusModes": "map[Value:map[WFDictionaryFieldValueItems:[map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:DisplayString] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:Do Not Disturb] WFSerializationType:WFTextTokenString]] map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:Identifier] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:com.apple.donotdisturb.mode.default] WFSerializationType:WFTextTokenString]]]] WFSerializationType:WFDictionaryFieldValue]",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -52,6 +56,10 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Notifications",
 				InsertionSnippet: "DNDOn()",
+			},
+			StaticParameters: map[string]any{
+				"Enabled": 1,
+				"FocusModes": "map[Value:map[WFDictionaryFieldValueItems:[map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:DisplayString] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:Do Not Disturb] WFSerializationType:WFTextTokenString]] map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:Identifier] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:com.apple.donotdisturb.mode.default] WFSerializationType:WFTextTokenString]]]] WFSerializationType:WFDictionaryFieldValue]",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -651,6 +659,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Notifications",
 				InsertionSnippet: "alert(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFAlertActionCancelButtonShown": false,
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "alert",
@@ -694,6 +705,10 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Text Editing",
 				InsertionSnippet: "alternatingCase(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"Show-text": true,
+				"WFCaseType": "cApItAlIzE wItH aLtErNaTiNg cAsE",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -771,6 +786,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Files & Folders",
 				InsertionSnippet: "appendToFile(Ask, Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFAppendFileWriteMode": "Append",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "filePath",
@@ -814,6 +832,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Language Models",
 				InsertionSnippet: "askChatGPT(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFLLMModel": "ChatGPT",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -875,6 +896,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Language Models",
 				InsertionSnippet: "askCloudLLM(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFLLMModel": "Private Cloud Compute",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "prompt",
@@ -934,6 +958,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Language Models",
 				InsertionSnippet: "askDeviceModel(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFLLMModel": "Apple Intelligence on Device",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1070,6 +1097,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Language Models",
 				InsertionSnippet: "askModel(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFLLMModel": "Apple Intelligence",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "prompt",
@@ -1142,6 +1172,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Language Models",
 				InsertionSnippet: "askProModel(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFLLMModel": "Apple Intelligence Pro",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1216,6 +1249,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "",
 				InsertionSnippet: "base64Decode(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFEncodeMode": "Decode",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "input",
@@ -1260,6 +1296,10 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "",
 				InsertionSnippet: "base64Encode(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFEncodeMode": "Encode",
+				"input": "Encode",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "encodeInput",
@@ -1303,6 +1343,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "calculate(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFMathOperation": "…",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1394,6 +1437,10 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Text Editing",
 				InsertionSnippet: "capitalize(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"Show-text": true,
+				"WFCaseType": "Capitalize with sentence case",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "text",
@@ -1426,6 +1473,10 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Text Editing",
 				InsertionSnippet: "capitalizeAll(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"Show-text": true,
+				"WFCaseType": "Capitalize Every Word",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "text",
@@ -1457,6 +1508,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Rounding",
 				InsertionSnippet: "ceil(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFRoundMode": "Always Round Up",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1686,6 +1740,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Notifications",
 				InsertionSnippet: "confirm(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFAlertActionCancelButtonShown": true,
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "alert",
@@ -1760,6 +1817,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Battery",
 				InsertionSnippet: "connectedToCharger()",
+			},
+			StaticParameters: map[string]any{
+				"Subject": "Is Connected to Charger",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -1999,6 +2059,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Image Editing",
 				InsertionSnippet: "convertToJPEG(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFImageFormat": "JPEG",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "image",
@@ -2087,6 +2150,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Text Editing",
 				InsertionSnippet: "correctSpelling(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"Show-text": true,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2533,6 +2599,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Dates",
 				InsertionSnippet: "currentDate()",
 			},
+			StaticParameters: map[string]any{
+				"WFDateActionMode": "Current Date",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -2551,6 +2620,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "currentLocation()",
+			},
+			StaticParameters: map[string]any{
+				"WFLocation": "map[Value:map[WFDictionaryFieldValueItems:[map[WFItemType:4 WFKey:map[Value:map[AttachmentsByRange:<nil> String:isCurrentLocation] WFSerializationType:WFTextTokenString] WFValue:map[Value:true WFSerializationType:WFNumberSubstitutableState]]]] WFSerializationType:WFDictionaryFieldValue]",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -2571,6 +2643,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Image Editing",
 				InsertionSnippet: "customImageMask(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFMaskType": "Custom Image",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2615,6 +2690,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Image Editing",
 				InsertionSnippet: "customImageOverlay(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFShouldShowImageEditor": false,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2748,6 +2826,10 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Appearance",
 				InsertionSnippet: "darkMode()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "set",
+				"style": "dark",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -2767,6 +2849,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Dates",
 				InsertionSnippet: "date(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFDateActionMode": "Specified Date",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3062,6 +3147,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "HTTP",
 				InsertionSnippet: "downloadURL(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFHTTPMethod": "GET",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "url",
@@ -3226,6 +3314,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Audio",
 				InsertionSnippet: "encodeAudio(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFMediaAudioOnly": true,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3460,6 +3551,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Phone",
 				InsertionSnippet: "facetimeCall(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFFaceTimeType": "Video",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "contact",
@@ -3539,6 +3633,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "HTTP",
 				InsertionSnippet: "fileRequest(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFHTTPBodyType": "File",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "url",
@@ -3608,6 +3705,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Files & Folders",
 				InsertionSnippet: "fileSize(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFFileSizeIncludeUnits": false,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3895,6 +3995,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "",
 				InsertionSnippet: "flashlightOff()",
 			},
+			StaticParameters: map[string]any{
+				"state": 0,
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -3914,6 +4017,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "flashlightOn()",
+			},
+			StaticParameters: map[string]any{
+				"state": 1,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3994,6 +4100,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Rounding",
 				InsertionSnippet: "floor(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFRoundMode": "Always Round Down",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "number",
@@ -4040,6 +4149,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "HTTP",
 				InsertionSnippet: "formRequest(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFHTTPBodyType": "Form",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4110,6 +4222,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Formatting",
 				InsertionSnippet: "formatDate(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFTimeFormatStyle": "None",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4214,6 +4329,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Formatting",
 				InsertionSnippet: "formatTime(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFDateFormatStyle": "None",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4409,6 +4527,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Writing Tools",
 				InsertionSnippet: "generateKeyPoints(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"summaryType": "createKeyPoints",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4830,6 +4951,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Wireless",
 				InsertionSnippet: "getCellularDetail(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFNetworkDetailsNetwork": "Cellular",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "detail",
@@ -4862,6 +4986,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Battery",
 				InsertionSnippet: "getChargeLimit()",
+			},
+			StaticParameters: map[string]any{
+				"Subject": "Charge Limit",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -5440,6 +5567,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "IP Address",
 				InsertionSnippet: "getExternalIP()",
 			},
+			StaticParameters: map[string]any{
+				"WFIPAddressSourceOption": "External",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "type",
@@ -5667,6 +5797,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Lists",
 				InsertionSnippet: "getFirstItem(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFItemSpecifier": "First Item",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "list",
@@ -5762,6 +5895,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Giphy",
 				InsertionSnippet: "getGifs(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFGiphyShowPicker": false,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6044,6 +6180,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Dictionaries",
 				InsertionSnippet: "getKeys(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFGetDictionaryValueType": "All Keys",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "dictionary",
@@ -6094,6 +6233,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Lists",
 				InsertionSnippet: "getLastItem(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFItemSpecifier": "Last Item",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6300,6 +6442,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Lists",
 				InsertionSnippet: "getListItem(Ask, Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFItemSpecifier": "Item At Index",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "list",
@@ -6343,6 +6488,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Lists",
 				InsertionSnippet: "getListItems(Ask, Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFItemSpecifier": "Items in Range",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6399,6 +6547,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "IP Address",
 				InsertionSnippet: "getLocalIP()",
+			},
+			StaticParameters: map[string]any{
+				"WFIPAddressSourceOption": "Local",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6513,6 +6664,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Regular Expressions",
 				InsertionSnippet: "getMatchGroup(Ask, Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFGetGroupType": "Group At Index",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "matches",
@@ -6556,6 +6710,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Regular Expressions",
 				InsertionSnippet: "getMatchGroups(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFGetGroupType": "All Groups",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7118,6 +7275,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Lists",
 				InsertionSnippet: "getRandomItem(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFItemSpecifier": "Random Item",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7766,6 +7926,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Dictionaries",
 				InsertionSnippet: "getValue(Ask, Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFGetDictionaryValueType": "Value",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "dictionary",
@@ -7809,6 +7972,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Dictionaries",
 				InsertionSnippet: "getValues(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFGetDictionaryValueType": "All Values",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7872,6 +8038,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Wallpaper",
 				InsertionSnippet: "getWallpaper()",
+			},
+			StaticParameters: map[string]any{
+				"WFPosterType": "Current",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -8065,6 +8234,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Wireless",
 				InsertionSnippet: "getWifiDetail(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFNetworkDetailsNetwork": "Wi-Fi",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "detail",
@@ -8205,6 +8377,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Apps",
 				InsertionSnippet: "hideAllApps()",
 			},
+			StaticParameters: map[string]any{
+				"WFHideAppMode": "All Apps",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "except",
@@ -8268,6 +8443,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Battery",
 				InsertionSnippet: "isCharging()",
 			},
+			StaticParameters: map[string]any{
+				"Subject": "Is Charging",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -8286,6 +8464,10 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "IP Address",
 				InsertionSnippet: "isOnline()",
+			},
+			StaticParameters: map[string]any{
+				"WFIPAddressSourceOption": "External",
+				"WFIPAddressTypeOption": "IPv4",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -8351,6 +8533,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "HTTP",
 				InsertionSnippet: "jsonRequest(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFHTTPBodyType": "JSON",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8420,6 +8605,10 @@ func initDefaultRegistry() *Registry {
 				Category: "device",
 				Subcategory: "Apps",
 				InsertionSnippet: "killAllApps()",
+			},
+			StaticParameters: map[string]any{
+				"WFAskToSaveChanges": false,
+				"WFQuitAppMode": "All Apps",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8529,6 +8718,10 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Appearance",
 				InsertionSnippet: "lightMode()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "set",
+				"style": "light",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -8681,6 +8874,10 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Text Editing",
 				InsertionSnippet: "lowercase(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"Show-text": true,
+				"WFCaseType": "lowercase",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "text",
@@ -8829,6 +9026,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "",
 				InsertionSnippet: "makeDiskImage(Ask, Ask)",
 			},
+			StaticParameters: map[string]any{
+				"SizeToFit": true,
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "name",
@@ -8885,6 +9085,10 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "GIFs",
 				InsertionSnippet: "makeGIF(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFMakeGIFActionAutoSize": true,
+				"WFMakeGIFActionLoopEnabled": true,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9337,6 +9541,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "makeSizedDiskImage(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"SizeToFit": false,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9830,6 +10037,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Output",
 				InsertionSnippet: "mustOutput(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFNoOutputSurfaceBehavior": "Respond",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10366,6 +10576,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "URLs",
 				InsertionSnippet: "openURL(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"Show-WFInput": true,
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "url",
@@ -10494,6 +10707,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Output",
 				InsertionSnippet: "outputOrClipboard(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFNoOutputSurfaceBehavior": "Copy to Clipboard",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "output",
@@ -10525,6 +10741,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Image Editing",
 				InsertionSnippet: "overlayImage(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFShouldShowImageEditor": true,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10568,6 +10787,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Playback",
 				InsertionSnippet: "pause()",
+			},
+			StaticParameters: map[string]any{
+				"WFPlayPauseBehavior": "Pause",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -10618,6 +10840,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Playback",
 				InsertionSnippet: "play()",
+			},
+			StaticParameters: map[string]any{
+				"WFPlayPauseBehavior": "Play",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -10676,6 +10901,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Playback",
 				InsertionSnippet: "playLater(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFWhenToPlay": "Later",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10768,6 +10996,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Playback",
 				InsertionSnippet: "playNext(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFWhenToPlay": "Next",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10864,6 +11095,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Files & Folders",
 				InsertionSnippet: "prependToFile(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFAppendFileWriteMode": "Prepend",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11070,6 +11304,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Apps",
 				InsertionSnippet: "quitAllApps()",
 			},
+			StaticParameters: map[string]any{
+				"WFQuitAppMode": "All Apps",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "except",
@@ -11221,6 +11458,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "",
 				InsertionSnippet: "reboot()",
 			},
+			StaticParameters: map[string]any{
+				"WFShutdownMode": "Restart",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -11335,6 +11575,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "removeContactDetail(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"Mode": "Remove",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11761,6 +12004,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Image Editing",
 				InsertionSnippet: "resizeImageByLongestEdge(Ask, Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFImageResizeKey": "Longest Edge",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "image",
@@ -11804,6 +12050,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Image Editing",
 				InsertionSnippet: "resizeImageByPercent(Ask, Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFImageResizeKey": "Percentage",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11989,6 +12238,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Rounding",
 				InsertionSnippet: "round(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFRoundMode": "Normal",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12421,6 +12673,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Files & Folders",
 				InsertionSnippet: "saveFile(Ask, Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFAskWhereToSave": false,
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "path",
@@ -12580,6 +12835,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "",
 				InsertionSnippet: "saveToDropbox(Ask, Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFAskWhereToSave": false,
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "file",
@@ -12636,6 +12894,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "saveToDropboxPrompt(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFAskWhereToSave": true,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13258,6 +13519,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Files & Folders",
 				InsertionSnippet: "selectFolder()",
+			},
+			StaticParameters: map[string]any{
+				"WFPickingMode": "Folders",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14285,6 +14549,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Hearing",
 				InsertionSnippet: "setMediaBackgroundSounds(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"setting": "whenMediaIsPlaying",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "status",
@@ -14316,6 +14583,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Metadata",
 				InsertionSnippet: "setMetadata(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"Metadata": true,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -15532,6 +15802,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Playback",
 				InsertionSnippet: "skipBack()",
 			},
+			StaticParameters: map[string]any{
+				"WFSkipBackBehavior": "Previous Song",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16147,6 +16420,10 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Image Editing",
 				InsertionSnippet: "stripImageMetadata(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFImageFormat": "Match Input",
+				"WFImagePreserveMetadata": false,
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "image",
@@ -16179,6 +16456,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Metadata",
 				InsertionSnippet: "stripMediaMetadata(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"Metadata": true,
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "media",
@@ -16210,6 +16490,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "takeInteractiveScreenshot()",
+			},
+			StaticParameters: map[string]any{
+				"WFTakeScreenshotScreenshotType": "Interactive",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16291,6 +16574,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "takeScreenshot()",
+			},
+			StaticParameters: map[string]any{
+				"WFTakeScreenshotScreenshotType": "Full Screen",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16422,6 +16708,10 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Text Editing",
 				InsertionSnippet: "titleCase(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"Show-text": true,
+				"WFCaseType": "Capitalize with Title Case",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "text",
@@ -16453,6 +16743,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Connectivity",
 				InsertionSnippet: "toggleAirplaneMode()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16478,6 +16771,9 @@ func initDefaultRegistry() *Registry {
 				BundleIdentifier: "com.apple.clock",
 				AppIntentIdentifier: "ToggleAlarmIntent",
 				TeamIdentifier: "0000000000",
+			},
+			StaticParameters: map[string]any{
+				"operation": "Toggle",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16523,6 +16819,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Appearance",
 				InsertionSnippet: "toggleAppearance()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16541,6 +16840,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "toggleAutoAnswerCalls()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -16561,6 +16863,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Hearing",
 				InsertionSnippet: "toggleBackgroundSounds()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16579,6 +16884,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Connectivity",
 				InsertionSnippet: "toggleBluetooth()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -16599,6 +16907,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Connectivity",
 				InsertionSnippet: "toggleCellularData()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16617,6 +16928,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Vision",
 				InsertionSnippet: "toggleClassicInvert()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -16637,6 +16951,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Hearing",
 				InsertionSnippet: "toggleClosedCaptionsSDH()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16655,6 +16972,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Vision",
 				InsertionSnippet: "toggleColorFilters()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -16675,6 +16995,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Vision",
 				InsertionSnippet: "toggleContrast()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16693,6 +17016,10 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Notifications",
 				InsertionSnippet: "toggleDND()",
+			},
+			StaticParameters: map[string]any{
+				"FocusModes": "map[Value:map[WFDictionaryFieldValueItems:[map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:DisplayString] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:Do Not Disturb] WFSerializationType:WFTextTokenString]] map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:Identifier] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:com.apple.donotdisturb.mode.default] WFSerializationType:WFTextTokenString]]]] WFSerializationType:WFDictionaryFieldValue]",
+				"Operation": "Toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -16713,6 +17040,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "toggleFlashlight()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16781,6 +17111,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Personal Hotspot",
 				InsertionSnippet: "toggleHotspot()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16799,6 +17132,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Hearing",
 				InsertionSnippet: "toggleLEDFlash()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -16819,6 +17155,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Hearing",
 				InsertionSnippet: "toggleLeftRightBalance()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16851,6 +17190,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Hearing",
 				InsertionSnippet: "toggleLiveCaptions()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16869,6 +17211,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Battery",
 				InsertionSnippet: "toggleLowPowerMode()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -16889,6 +17234,10 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Hearing",
 				InsertionSnippet: "toggleMediaBackgroundSounds()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+				"setting": "whenMediaIsPlaying",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16907,6 +17256,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Hearing",
 				InsertionSnippet: "toggleMonoAudio()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -16927,6 +17279,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Display",
 				InsertionSnippet: "toggleNightShift()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16945,6 +17300,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Display",
 				InsertionSnippet: "toggleOrientationLock()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -16965,6 +17323,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Playback",
 				InsertionSnippet: "togglePlayPause()",
 			},
+			StaticParameters: map[string]any{
+				"WFPlayPauseBehavior": "Play/Pause",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -16983,6 +17344,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Vision",
 				InsertionSnippet: "toggleReduceMotion()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -17003,6 +17367,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Vision",
 				InsertionSnippet: "toggleReduceTransparency()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -17021,6 +17388,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Vision",
 				InsertionSnippet: "toggleSmartInvert()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -17041,6 +17411,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "",
 				InsertionSnippet: "toggleStageManager()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17087,6 +17460,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "",
 				InsertionSnippet: "toggleSwitchControl()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -17105,6 +17481,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Display",
 				InsertionSnippet: "toggleTrueTone()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -17125,6 +17504,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Vision",
 				InsertionSnippet: "toggleVoiceControl()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -17143,6 +17525,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Vision",
 				InsertionSnippet: "toggleWhitePoint()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -17163,6 +17548,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "Connectivity",
 				InsertionSnippet: "toggleWifi()",
 			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
+			},
 			Parameters: []ParameterSchema{
 			},
 		},
@@ -17181,6 +17569,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Vision",
 				InsertionSnippet: "toggleZoom()",
+			},
+			StaticParameters: map[string]any{
+				"operation": "toggle",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -17371,6 +17762,9 @@ func initDefaultRegistry() *Registry {
 				AppIntentIdentifier: "ToggleAlarmIntent",
 				TeamIdentifier: "0000000000",
 			},
+			StaticParameters: map[string]any{
+				"state": 0,
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "alarm",
@@ -17421,6 +17815,9 @@ func initDefaultRegistry() *Registry {
 				BundleIdentifier: "com.apple.clock",
 				AppIntentIdentifier: "ToggleAlarmIntent",
 				TeamIdentifier: "0000000000",
+			},
+			StaticParameters: map[string]any{
+				"state": 1,
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17499,6 +17896,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "",
 				InsertionSnippet: "updateContact(Ask, Ask, Ask)",
 			},
+			StaticParameters: map[string]any{
+				"Mode": "Set",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "contact",
@@ -17556,6 +17956,10 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "Text Editing",
 				InsertionSnippet: "uppercase(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"Show-text": true,
+				"WFCaseType": "UPPERCASE",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17620,6 +18024,9 @@ func initDefaultRegistry() *Registry {
 				Subcategory: "URLs",
 				InsertionSnippet: "urlDecode(Ask)",
 			},
+			StaticParameters: map[string]any{
+				"WFEncodeMode": "Decode",
+			},
 			Parameters: []ParameterSchema{
 				{
 					ID: "input",
@@ -17651,6 +18058,9 @@ func initDefaultRegistry() *Registry {
 				Category: "",
 				Subcategory: "URLs",
 				InsertionSnippet: "urlEncode(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFEncodeMode": "Encode",
 			},
 			Parameters: []ParameterSchema{
 				{

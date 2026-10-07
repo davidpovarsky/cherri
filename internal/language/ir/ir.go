@@ -21,16 +21,18 @@ type AttachmentToken struct {
 
 // NativeWorkflow represents an entire Apple Shortcut workflow ready for plist serialization.
 type NativeWorkflow struct {
-	ClientVersion      string                   `json:"clientVersion"`
-	WorkflowTypes           []string                 `json:"workflowTypes,omitempty"`
-	InputContentItemClasses []string                 `json:"inputContentItemClasses,omitempty"`
-	IconGlyph               int                      `json:"iconGlyph,omitempty"`
-	IconColor          int                      `json:"iconColor,omitempty"`
-	Actions            []*NativeActionNode      `json:"actions"`
-	ImportQuestions    []map[string]interface{} `json:"importQuestions,omitempty"`
-	HasExplicitReturn  bool                     `json:"hasExplicitReturn"`
-	IsFullNativePass   bool                     `json:"isFullNativePass"`
-	NativeWorkflowRaw  map[string]interface{}   `json:"nativeWorkflowRaw,omitempty"`
+	Name                      string                   `json:"name,omitempty"`
+	ClientVersion             string                   `json:"clientVersion"`
+	WorkflowTypes             []string                 `json:"workflowTypes,omitempty"`
+	InputContentItemClasses   []string                 `json:"inputContentItemClasses,omitempty"`
+	IconGlyph                 int                      `json:"iconGlyph,omitempty"`
+	IconColor                 int                      `json:"iconColor,omitempty"`
+	Actions                   []*NativeActionNode      `json:"actions"`
+	ImportQuestions           []map[string]interface{} `json:"importQuestions,omitempty"`
+	HasExplicitReturn         bool                     `json:"hasExplicitReturn"`
+	HasShortcutInputVariables bool                     `json:"hasShortcutInputVariables"`
+	IsFullNativePass          bool                     `json:"isFullNativePass"`
+	NativeWorkflowRaw         map[string]interface{}   `json:"nativeWorkflowRaw,omitempty"`
 }
 
 // NewNativeWorkflow creates an initialized NativeWorkflow.

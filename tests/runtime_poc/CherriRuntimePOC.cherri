@@ -1,2 +1,18 @@
-let val = "CHERRI_IOS27_RUNTIME_OK"
-setClipboard(val)
+let varMarker = "V2_VAR_OK"
+
+var ifMarker = "V2_IF_FAIL"
+if 10 > 5 {
+    ifMarker = "V2_IF_OK"
+}
+
+function computeFnMarker(tag: Text) -> Text {
+    return f"V2_FUNCTION_{tag}"
+}
+let fnMarker = computeFnMarker("OK")
+
+let variantMarker = "V2_VARIANT_OK"
+let enc = base64Encode("CHERRI")
+
+let result = f"CHERRI_IOS27_RUNTIME_OK\n{varMarker}\n{ifMarker}\n{fnMarker}\n{variantMarker}"
+setClipboard(result)
+

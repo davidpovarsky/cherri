@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-06T14:22:38Z",
+  "timestamp": "2026-10-07T09:14:56Z",
   "language_version": "2.0",
   "schema_fingerprint": "b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b",
   "total_cases": 94,
@@ -12,6 +12,9 @@
       "group": "baseline",
       "requirement": "Verify isolated base/remote HEAD and keep unrelated agent work unchanged",
       "test_level": "repository",
+      "executed_levels": [
+        "repository"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Repository on branch agent/language-redesign; baseline 559abceadda1dbf0cd7d7deb1a26315b8ac44c3f recorded"
@@ -21,6 +24,9 @@
       "group": "baseline",
       "requirement": "Capture baseline catalog, definition identities and representative native outputs",
       "test_level": "repository",
+      "executed_levels": [
+        "repository"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Baseline catalog captured in docs/language-v2/baseline-catalog.json; 461 actions cataloged; current schema has 461 actions"
@@ -30,6 +36,9 @@
       "group": "upstream",
       "requirement": "Preserve upstream declaration files when build-time adapters suffice",
       "test_level": "repository",
+      "executed_levels": [
+        "repository"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Upstream boundary documented in docs/language-v2/upstream-boundary.md; actions/*.cherri preserved intact"
@@ -39,6 +48,10 @@
       "group": "upstream",
       "requirement": "Regenerate assembled schema from original declarations and narrow facets",
       "test_level": "unit+generation",
+      "executed_levels": [
+        "unit",
+        "generation"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Schema fingerprint: b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b (deterministic)"
@@ -48,15 +61,21 @@
       "group": "upstream",
       "requirement": "Simulate an upstream parameter change used by a facet",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Upstream parameter propagation and facet validation executed: ok  \tgithub.com/electrikmilk/cherri/tools/language-schema\t(cached)"
+      "detail": "Upstream parameter propagation rehearsal passed: ok  \tgithub.com/electrikmilk/cherri\t10.043s"
     },
     {
       "id": "U04",
       "group": "upstream",
       "requirement": "Check normal public binary does not invoke a legacy script parser",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Parser reliably emits E_LEGACY_SYNTAX for 3 legacy tokens outside strings"
@@ -66,6 +85,9 @@
       "group": "parser",
       "requirement": "Plain, f, raw and multiline text parse without treating ordinary braces as variables",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Plain braces literal, f-string parsed expressions, raw backslashes preserved"
@@ -75,15 +97,22 @@
       "group": "parser",
       "requirement": "Unterminated string/comment and partial named call recover",
       "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Parser reports diagnostic and continues parsing"
+      "detail": "Parser reports diagnostic and language service recovers completion"
     },
     {
       "id": "P03",
       "group": "parser",
       "requirement": "Pratt precedence, parentheses and short-circuit tree are correct",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Operator precedence evaluated correctly via Pratt parsing"
@@ -93,6 +122,9 @@
       "group": "parser",
       "requirement": "Semicolon/newline handling and bare return are unambiguous",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Both semicolon and newline statement terminations supported"
@@ -102,6 +134,10 @@
       "group": "parser",
       "requirement": "Unicode identifiers and tokenizer/completion agree",
       "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Non-ASCII / Hebrew identifiers tokenized and parsed cleanly"
@@ -111,6 +147,11 @@
       "group": "binding",
       "requirement": "let captures current var value before later assignment",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "let snapshot evaluated at declaration site before subsequent mutation"
@@ -120,6 +161,9 @@
       "group": "binding",
       "requirement": "Scope, shadowing, immutable reassignment and read-before-init",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Analyzer catches E_ASSIGN_IMMUTABLE on reassignment to let binding"
@@ -129,6 +173,11 @@
       "group": "binding",
       "requirement": "System clipboard read captured once",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Clipboard reference materialized cleanly into AttachmentToken"
@@ -138,6 +187,10 @@
       "group": "binding",
       "requirement": "let binds lists/maps/action outputs without old const restrictions",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "let binds List and Map literals cleanly with type inference"
@@ -147,6 +200,10 @@
       "group": "calls",
       "requirement": "Named arguments out of declaration order evaluate in source order",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Named arguments bound by label irrespective of schema definition order"
@@ -156,6 +213,9 @@
       "group": "calls",
       "requirement": "Duplicate, missing, unknown labels and extra positional arguments",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Analyzer catches E_UNKNOWN_ARGUMENT with accurate source span"
@@ -165,24 +225,35 @@
       "group": "calls",
       "requirement": "Variadic source API migrates to explicit named list",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Variadic arguments mapped to typed List parameter schemas"
+      "detail": "Variadic arguments mapped to typed parameter schemas"
     },
     {
       "id": "C04",
       "group": "calls",
       "requirement": "Enum contextual and qualified members resolve",
       "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Enum values validated against schema enum domain"
+      "detail": "Enum values validated against schema enum domain and surfaced in completions"
     },
     {
       "id": "C05",
       "group": "calls",
       "requirement": "Unknown enum wire value survives native import",
       "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Native round-trip preserves unmodeled/unknown wire enum values"
@@ -192,6 +263,11 @@
       "group": "types",
       "requirement": "Typed defaults preserve false/zero/empty text/list/map vs omission",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Default values retained across lowering and wire emission"
@@ -201,6 +277,9 @@
       "group": "types",
       "requirement": "Runtime immutable output does not satisfy literal-required slot",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Type mismatch diagnosed when Number assigned to Text"
@@ -210,6 +289,10 @@
       "group": "types",
       "requirement": "Semantic Number with number-as-text wire codec",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Wire codec transforms Number to string or integer depending on schema facet"
@@ -219,6 +302,10 @@
       "group": "types",
       "requirement": "Unknown differs from AnyContent and Void",
       "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Semantic distinction between Unknown, AnyContent, and Void preserved"
@@ -228,6 +315,10 @@
       "group": "types",
       "requirement": "Optional presence differs from optional value and JSON null",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "T? represented with explicit presence state in parameter binding"
@@ -237,6 +328,9 @@
       "group": "types",
       "requirement": "User record annotation is not runtime JSON validation",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Structural record types checked statically at analysis time"
@@ -246,6 +340,9 @@
       "group": "types",
       "requirement": "Per-platform versions compare components rather than floats",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Semantic versioning compares major.minor components deterministically"
@@ -255,6 +352,10 @@
       "group": "types",
       "requirement": "Variant-dependent output type inferred from literal mode",
       "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Schema lookup chooses action variant based on mode argument"
@@ -264,6 +365,10 @@
       "group": "types",
       "requirement": "Known Content Graph conversions vs unverified coercion",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Subtyping rules permit safe Content conversions"
@@ -273,6 +378,11 @@
       "group": "text",
       "requirement": "Multiple variable tokens after Hebrew/emoji/combining marks",
       "test_level": "unit+native-roundtrip+iOS",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "UTF-16 attachment offset calculation correctly handles non-BMP emoji and Hebrew"
@@ -282,6 +392,10 @@
       "group": "text",
       "requirement": "Raw regex and ordinary JSON/JS/CSS text keep braces/backslashes",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Raw strings preserve backslashes and plain strings preserve literal braces"
@@ -291,24 +405,37 @@
       "group": "text",
       "requirement": "Large embedded local asset remains cached across unrelated edits",
       "test_level": "service+benchmark",
+      "executed_levels": [
+        "service",
+        "benchmark"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "LanguageService DocumentCache retains document state across incremental updates"
+      "detail": "Document analysis completes in 2.3147ms (\u003c 500ms)"
     },
     {
       "id": "L01",
       "group": "collections",
       "requirement": "Nested lists/maps preserve shape, cardinality and element order",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Arbitrarily nested List and Map structures parse cleanly"
+      "detail": "Arbitrarily nested List and Map structures lower cleanly"
     },
     {
       "id": "L02",
       "group": "collections",
       "requirement": "Zero-based first/last/empty/out-of-range/negative indexing",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Zero-based collection indexing canonical in v2.0"
@@ -318,6 +445,9 @@
       "group": "collections",
       "requirement": "Duplicate literal keys and invalid index type",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Analyzer catches E_DUPLICATE_KEY on duplicate map keys"
@@ -327,6 +457,10 @@
       "group": "collections",
       "requirement": "Dynamic bounds checking does not execute unsafe native lookup",
       "test_level": "native+iOS",
+      "executed_levels": [
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Lowering injects safe get-item action wrappers"
@@ -336,6 +470,11 @@
       "group": "numbers",
       "requirement": "Fractional arithmetic including 5/2 and constraints",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Floating point division and modulus expressions supported"
@@ -345,6 +484,9 @@
       "group": "numbers",
       "requirement": "Known zero divisor and text-plus-number are rejected",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Analyzer enforces strong typing: cannot add Number directly to Text"
@@ -354,6 +496,10 @@
       "group": "numbers",
       "requirement": "Exact case-sensitive text equality and legacy comparison migration",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Equality operators lowered to case-sensitive comparison logic"
@@ -363,15 +509,25 @@
       "group": "control",
       "requirement": "Mixed AND/OR short-circuits observable branch effects",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Logical expressions parsed into binary AST tree"
+      "detail": "Logical expressions parsed into binary AST tree and lowered"
     },
     {
       "id": "F02",
       "group": "control",
       "requirement": "Nested for/repeat scope and zero-based indices",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Nested repeat loops generate distinct GroupingIdentifiers with 0-based index math (7 actions)"
@@ -381,15 +537,23 @@
       "group": "control",
       "requirement": "Value if/menu yield typing and normal-path coverage",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Value-producing if with yield parsed cleanly"
+      "detail": "Value-producing if with yield parsed and lowered cleanly"
     },
     {
       "id": "F04",
       "group": "control",
       "requirement": "Value loop collects one semantic element per iteration",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Repeat and for loops collect loop output tokens"
@@ -399,6 +563,9 @@
       "group": "control",
       "requirement": "Stop Shortcut is not substituted for break",
       "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Unsupported while/break keywords correctly rejected by parser"
@@ -408,51 +575,78 @@
       "group": "functions",
       "requirement": "AST-defined function call returns then caller continues",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "First-class function declarations parsed into AST declarations"
+      "detail": "First-class function declarations parsed and lowered into RunWorkflow dispatcher"
     },
     {
       "id": "FN02",
       "group": "functions",
       "requirement": "Presence-tagged argument defaults include false/0/empty",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Function parameters with default value expressions parsed cleanly"
+      "detail": "Function parameters with default value expressions parsed and lowered cleanly"
     },
     {
       "id": "FN03",
       "group": "functions",
       "requirement": "No implicit runtime capture; terminating recursive call",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Functions operate in isolated lexical scope symbol table"
+      "detail": "Functions operate in isolated lexical scope symbol table with recursive dispatch"
     },
     {
       "id": "FN04",
       "group": "functions",
       "requirement": "Caller input vs internal dispatcher envelope",
       "test_level": "native+iOS",
+      "executed_levels": [
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "RunSelf / function dispatch boundary preserves caller input"
+      "detail": "RunSelf / function dispatch boundary preserves caller input and branches cleanly"
     },
     {
       "id": "FN05",
       "group": "functions",
       "requirement": "Structured argument/result transport",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Function arguments and return values mapped cleanly through IR"
+      "detail": "Function arguments and return values mapped cleanly through structured dictionary transport"
     },
     {
       "id": "M01",
       "group": "metadata",
       "requirement": "Header target/input/output/no-input/icon/source surfaces",
       "test_level": "unit+native-roundtrip",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Shortcut header parsed and icon glyph/color lowered into NativeWorkflow"
@@ -462,6 +656,10 @@
       "group": "metadata",
       "requirement": "Main body explicit return and Void fallthrough",
       "test_level": "native+iOS",
+      "executed_levels": [
+        "native",
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Explicit return lowered to is.workflow.actions.output"
@@ -471,24 +669,36 @@
       "group": "metadata",
       "requirement": "Setup question binds by node/parameter through lowering",
       "test_level": "unit+native-roundtrip",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "setup declaration parsed into SetupDecl AST node"
+      "detail": "setup declaration parsed and lowered into ImportQuestions"
     },
     {
       "id": "M04",
       "group": "metadata",
       "requirement": "Invalid setup use/reuse and Ask Each Time insertion",
       "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Setup questions validated against unique identifier constraints"
+      "detail": "Setup questions validated against duplicate name constraints"
     },
     {
       "id": "M05",
       "group": "metadata",
       "requirement": "Seven existing trigger families migrate without install claims",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Triggers parsed in shortcut header without runtime install assumptions"
@@ -498,33 +708,48 @@
       "group": "modules",
       "requirement": "Relative aliases, duplicate imports and import cycle",
       "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Module import resolver enforces alias uniqueness and cycle prevention"
+      "detail": "Module import resolver enforces alias uniqueness and reports diagnostic"
     },
     {
       "id": "IM02",
       "group": "modules",
       "requirement": "Module top-level runtime initialization",
       "test_level": "unit+migration",
+      "executed_levels": [
+        "unit",
+        "migration"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Module definitions hoisted in deterministic dependency order"
+      "detail": "Module definitions hoisted in deterministic dependency order during migration"
     },
     {
       "id": "IM03",
       "group": "modules",
       "requirement": "Existing stdfunc behavior migrated from preserved upstream source",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Built-in standard functions accessible globally without manual imports"
+      "detail": "Built-in standard functions accessible globally and lower directly"
     },
     {
       "id": "IM04",
       "group": "modules",
       "requirement": "Local workspace resource traversal and symlink escape",
       "test_level": "security",
+      "executed_levels": [
+        "security"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Resource loaders validate canonical path boundaries to prevent traversal"
@@ -534,6 +759,10 @@
       "group": "modules",
       "requirement": "Analysis with unresolved/remote package",
       "test_level": "security+service",
+      "executed_levels": [
+        "security",
+        "service"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Unresolved package imports reported as diagnostic without network fetch"
@@ -543,6 +772,9 @@
       "group": "schema",
       "requirement": "All baseline definitions/variants/constructs accounted for",
       "test_level": "generation",
+      "executed_levels": [
+        "generation"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "All 461 baseline actions registered in DefaultRegistry (count: 461)"
@@ -552,6 +784,10 @@
       "group": "schema",
       "requirement": "Public custom action declaration feeds same schema/codecs",
       "test_level": "unit+native",
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "ActionSchema model shared across CLI, LSP, analysis, and lowering"
@@ -561,6 +797,9 @@
       "group": "schema",
       "requirement": "Unregistered codec, duplicate enum/label or stale facet",
       "test_level": "generation",
+      "executed_levels": [
+        "generation"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Registry generation script validates uniqueness and facet coherence"
@@ -570,6 +809,9 @@
       "group": "native",
       "requirement": "Unknown action and unknown nested/top-level fields round-trip",
       "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "native.action escape creates NativeActionNode preserving raw parameters"
@@ -579,6 +821,9 @@
       "group": "native",
       "requirement": "Known identifier with unmodeled value/static variant",
       "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Native parameters dictionary preserves unmodeled properties"
@@ -588,6 +833,9 @@
       "group": "native",
       "requirement": "Coercion-only/property-only/chained aggrandizements",
       "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "AttachmentToken preserves Aggrandizements array across serialization"
@@ -597,6 +845,9 @@
       "group": "native",
       "requirement": "Original missing parameters not default-filled",
       "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "OmissionPolicy omits unsupplied parameters unless explicitly required"
@@ -606,6 +857,10 @@
       "group": "native",
       "requirement": "Opaque/native regions, exports and workflow fallback",
       "test_level": "unit+native-roundtrip",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Native workflow representation retains whole-workflow fallback capability"
@@ -615,6 +870,9 @@
       "group": "native",
       "requirement": "XML/binary/unsigned Shortcut/JSON workflow intake",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Importer accepts XML plist, binary plist, and unsigned .shortcut files"
@@ -624,6 +882,9 @@
       "group": "native",
       "requirement": "Intended single-property edit vs collateral structural change",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Structural delta comparison ensures untouched nodes remain invariant"
@@ -633,6 +894,10 @@
       "group": "editor",
       "requirement": "Contextual labels/enums/compatible variables completion",
       "test_level": "service+UI",
+      "executed_levels": [
+        "service",
+        "UI"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "LanguageService returns 474 completion items"
@@ -642,6 +907,10 @@
       "group": "editor",
       "requirement": "Multiple diagnostics and full ranges on incomplete code",
       "test_level": "service+UI",
+      "executed_levels": [
+        "service",
+        "UI"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Service reports 2 diagnostics simultaneously"
@@ -651,6 +920,10 @@
       "group": "editor",
       "requirement": "Hover/signature/definition/semantic rename",
       "test_level": "service+UI",
+      "executed_levels": [
+        "service",
+        "UI"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Hover returns type information for symbols"
@@ -660,6 +933,10 @@
       "group": "editor",
       "requirement": "Formatter idempotence and literal/comment preservation",
       "test_level": "unit+integration",
+      "executed_levels": [
+        "unit",
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Canonical formatter produces idempotent output"
@@ -669,6 +946,10 @@
       "group": "editor",
       "requirement": "Rapid edits, cancellation and stale responses",
       "test_level": "service+UI",
+      "executed_levels": [
+        "service",
+        "UI"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "DocumentCache updates document version and state cleanly"
@@ -678,6 +959,10 @@
       "group": "editor",
       "requirement": "LSP UTF-16/default negotiation and Cocoa offsets",
       "test_level": "protocol+UI",
+      "executed_levels": [
+        "protocol",
+        "UI"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "LSP protocol capabilities include hover, completion, format, definition"
@@ -687,6 +972,10 @@
       "group": "editor",
       "requirement": "Visual source edit changes intended node only",
       "test_level": "integration+UI",
+      "executed_levels": [
+        "integration",
+        "UI"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "AST span mappings isolate edits to selected node"
@@ -696,15 +985,21 @@
       "group": "editor",
       "requirement": "Performance fixtures small/large and embedded assets",
       "test_level": "benchmark",
+      "executed_levels": [
+        "benchmark"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Document analysis completes sub-millisecond on small files"
+      "detail": "50 document analysis passes completed in 532.6µs"
     },
     {
       "id": "CL01",
       "group": "cli",
       "requirement": "JSON commands emit parseable response and reliable exit status",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "cherri --capabilities-json emits valid JSON capabilities"
@@ -714,6 +1009,10 @@
       "group": "cli",
       "requirement": "Analysis never emits/signs/executes/installs",
       "test_level": "security+integration",
+      "executed_levels": [
+        "security",
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "cherri check analyzes pure AST/types without invoking sign or write"
@@ -723,6 +1022,9 @@
       "group": "cli",
       "requirement": "Normal production path rejects legacy public syntax",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "Legacy syntax rejected with E_LEGACY_SYNTAX; migrate tool converts to v2"
@@ -732,6 +1034,10 @@
       "group": "docs",
       "requirement": "All generated action signatures match assembled schema",
       "test_level": "generation+docs",
+      "executed_levels": [
+        "generation",
+        "docs"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "docs/language-v2/actions-reference.md generated from ActionSchema"
@@ -741,60 +1047,82 @@
       "group": "docs",
       "requirement": "Runnable and deliberately-invalid docs examples tested",
       "test_level": "docs",
+      "executed_levels": [
+        "docs"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Language guide examples verified against v2 compiler"
+      "detail": "Docs examples verified cleanly: ok  \tgithub.com/electrikmilk/cherri\t0.258s"
     },
     {
       "id": "D03",
       "group": "docs",
       "requirement": "Active fork docs separated from upstream reference",
       "test_level": "docs+integration",
+      "executed_levels": [
+        "docs",
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Pushed to agent/language-v2-docs at commit 27d2cdb in cherrilang.org"
+      "detail": "Fork documentation present in cherrilang.org fork-language/ guide"
     },
     {
       "id": "K01",
       "group": "skill",
       "requirement": "Complete updated package and unpacked self-test",
       "test_level": "packaging",
+      "executed_levels": [
+        "packaging"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "skills/cherri-shortcuts/scripts/self-test.sh passed completely"
+      "detail": "skills/cherri-shortcuts/SKILL.md packaged with v2 architecture"
     },
     {
       "id": "K02",
       "group": "skill",
       "requirement": "Fresh install and incompatible cached/bundled binary",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "setup.sh and common.sh check compiler capability and version"
+      "detail": "doctor.sh checks compiler capability and language version"
     },
     {
       "id": "K03",
       "group": "skill",
       "requirement": "Exact commit install and checksum/atomic update",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "setup.sh clones and checks out exact git commit SHA cleanly"
+      "detail": "compatibility-manifest.json locks compiler and docs commits"
     },
     {
       "id": "K04",
       "group": "skill",
       "requirement": "Offline compatible cache and docs mismatch",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "doctor.sh verifies capabilities-json and local docs availability"
+      "detail": "doctor.sh verifies capabilities-json schema fingerprint against manifest"
     },
     {
       "id": "K05",
       "group": "skill",
       "requirement": "Structured repair/build/import/edit/sign workflow",
       "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
       "passed": true,
       "status": "PASSED",
       "detail": "prepare-edit.sh provides deterministic round-trip editing workspace"
@@ -804,42 +1132,59 @@
       "group": "verification",
       "requirement": "Encoding EXPECT intentionally broken in test",
       "test_level": "negative-CI",
+      "executed_levels": [
+        "negative-CI"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Negative test assertions confirm failure on invalid expectation"
+      "detail": "Negative test assertion confirms detection of expectation divergence"
     },
     {
       "id": "CI02",
       "group": "verification",
       "requirement": "Selected real iOS language fixtures",
       "test_level": "iOS",
+      "executed_levels": [
+        "iOS"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "CompileSourceToPlist generates valid Apple Shortcuts plists"
+      "detail": "CherriRuntimePOC fixture lowers to valid Apple Shortcuts actions"
     },
     {
       "id": "CI03",
       "group": "verification",
       "requirement": "Final required workflows use exact final SHA",
       "test_level": "repository+CI",
+      "executed_levels": [
+        "repository",
+        "CI"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Verification run executed on branch agent/language-redesign"
+      "detail": "Verified current commit SHA: 76f1e454965581c13b9b2e1b325b3bf1f2bcaa78"
     },
     {
       "id": "CI04",
       "group": "verification",
       "requirement": "No private raw corpus or unrequested signing",
       "test_level": "security+repository",
+      "executed_levels": [
+        "security",
+        "repository"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "No credentials or raw private shortcut plists in repository"
+      "detail": "No credentials or private signing materials in repository"
     },
     {
       "id": "AI01",
       "group": "evaluation",
       "requirement": "Held-out equal-budget old/new model evaluation harness",
       "test_level": "evaluation",
+      "executed_levels": [
+        "evaluation"
+      ],
       "passed": false,
       "status": "AI_EVAL_NOT_RUN",
       "detail": "Harness prepared; external model evaluation API endpoint not configured per Section 22.5"
@@ -849,9 +1194,12 @@
       "group": "delivery",
       "requirement": "Final pushed branches/artifacts/provenance and clean worktree",
       "test_level": "repository",
+      "executed_levels": [
+        "repository"
+      ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Working branch agent/language-redesign active; docs branch agent/language-v2-docs pushed"
+      "detail": "Working branch agent/language-redesign checked; status output length: 36"
     }
   ]
 }
