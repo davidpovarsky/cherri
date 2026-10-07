@@ -112,11 +112,10 @@ func transformIRParamValueContext(v any, inAttachmentsByRange bool) any {
 		if tok.OutputUUID != "" {
 			valMap["OutputUUID"] = tok.OutputUUID
 		}
-		if tok.OutputName != "" {
-			valMap["OutputName"] = tok.OutputName
-		}
 		if tok.Type == "Variable" || tok.Type == "ExtensionInput" {
 			valMap["VariableName"] = tok.OutputName
+		} else if tok.OutputName != "" {
+			valMap["OutputName"] = tok.OutputName
 		}
 		if len(tok.Aggrandizements) > 0 {
 			valMap["Aggrandizements"] = tok.Aggrandizements

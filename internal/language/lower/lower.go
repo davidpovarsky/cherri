@@ -1680,11 +1680,10 @@ func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
 				if tok.OutputUUID != "" {
 					att["OutputUUID"] = tok.OutputUUID
 				}
-				if tok.OutputName != "" {
-					att["OutputName"] = tok.OutputName
-				}
 				if tok.Type == "Variable" {
 					att["VariableName"] = tok.OutputName
+				} else if tok.OutputName != "" {
+					att["OutputName"] = tok.OutputName
 				}
 				if len(tok.Aggrandizements) > 0 {
 					att["Aggrandizements"] = tok.Aggrandizements

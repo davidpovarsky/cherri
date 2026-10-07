@@ -471,3 +471,141 @@ func TestRequirementsEvidenceMap_CompleteCoverage(t *testing.T) {
 	}
 }
 
+// 15. A requirement requiring unit+native+iOS cannot become final PASS with only unit/native evidence
+func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
+	contract := &ContractFile{
+		CaseCount: 1,
+		Cases: []CaseSpec{
+			{ID: "FN01", Group: "functions", Requirement: "AST function call", MinimumTestLevel: "unit+native+iOS"},
+		},
+	}
+
+	// 1. In local runner with only unit+native executed:
+	localResults := map[string]CaseResult{
+		"FN01": {
+			ID:             "FN01",
+			ExecutedLevels: []string{"unit", "native"},
+			Passed:         true,
+			Status:         "PENDING_EXTERNAL",
+		},
+	}
+	localReport, err := ValidateAndAggregateWithPhase(contract, localResults, "fp1", "local")
+	if err != nil {
+		t.Fatalf("unexpected validation error in local phase: %v", err)
+	}
+	if localReport.PassedCases != 0 {
+		t.Fatalf("local phase must NOT mark FN01 as passed without iOS evidence, got passed=%d", localReport.PassedCases)
+	}
+	if localReport.SkippedCases != 1 {
+		t.Fatalf("local phase should record FN01 as pending/skipped, got skipped=%d", localReport.SkippedCases)
+	}
+	if localReport.Results[0].Status != "PENDING_EXTERNAL" {
+		t.Fatalf("expected PENDING_EXTERNAL status for FN01 in local phase, got %s", localReport.Results[0].Status)
+	}
+
+	// 2. In final phase with only unit+native executed:
+	finalReport, err := ValidateAndAggregateWithPhase(contract, localResults, "fp1", "final")
+	if err == nil {
+		t.Fatalf("expected final phase to reject FN01 without iOS evidence, got nil err")
+	}
+	if finalReport.FailedCases != 1 {
+		t.Fatalf("expected FN01 to fail in final phase without iOS evidence, got failed=%d", finalReport.FailedCases)
+	}
+	if finalReport.ClosureComplete {
+		t.Fatalf("closure_complete must be false when mandatory tier is missing")
+	}
+
+	// 3. In manifest validation: only unit and native records provided for FN01 -> rejected in final phase
+	manifest := &EvidenceManifest{
+		SchemaVersion:     "1",
+		ImplementationSHA: "sha1",
+		SchemaFingerprint: "fp1",
+		Records: []EvidenceRecord{
+			{
+				EvidenceID:        "rec1",
+				Requirements:      []string{"FN01"},
+				Tier:              "unit",
+				ImplementationSHA: "sha1",
+				TestID:            "TestUnit",
+				ExitCode:          0,
+				Result:            "passed",
+			},
+			{
+				EvidenceID:        "rec2",
+				Requirements:      []string{"FN01"},
+				Tier:              "native-structure",
+				ImplementationSHA: "sha1",
+				TestID:            "TestNative",
+				ExitCode:          0,
+				Result:            "passed",
+			},
+		},
+	}
+	contractsSet := &ContractsSet{Acceptance: contract}
+	manifestReport, err := ValidateEvidenceManifest(manifest, contractsSet, "final")
+	if err == nil {
+		t.Fatalf("expected ValidateEvidenceManifest to reject FN01 missing ios tier in final phase, got nil err")
+	}
+	if manifestReport.FailedCases != 1 {
+		t.Fatalf("expected 1 failed case in manifest validation, got %d", manifestReport.FailedCases)
+	}
+	if manifestReport.ClosureComplete {
+		t.Fatalf("closure_complete must be false when ios tier missing in manifest")
+	}
+
+	// 4. In manifest validation: add genuine ios-runtime record -> succeeds!
+	manifest.Records = append(manifest.Records, EvidenceRecord{
+		EvidenceID:        "rec3",
+		Requirements:      []string{"FN01"},
+		Tier:              "ios-runtime",
+		ImplementationSHA: "sha1",
+		TestID:            "TestIOSRuntime",
+		ExitCode:          0,
+		Result:            "passed",
+	})
+	fullReport, err := ValidateEvidenceManifest(manifest, contractsSet, "final")
+	if err != nil {
+		t.Fatalf("expected full evidence to pass all tiers, got error: %v", err)
+	}
+	if fullReport.PassedCases != 1 {
+		t.Fatalf("expected 1 passed case with full tiers, got %d", fullReport.PassedCases)
+	}
+	if !fullReport.ClosureComplete {
+		t.Fatalf("expected closure_complete=true with all tiers satisfied")
+	}
+}
+
+// 16. Claiming PASSED when required tiers are missing is strictly rejected
+func TestMeta_FalsePassedClaimWithMissingTiersRejected(t *testing.T) {
+	contract := &ContractFile{
+		CaseCount: 1,
+		Cases: []CaseSpec{
+			{ID: "F01", Group: "flow", Requirement: "Branch condition", MinimumTestLevel: "unit+native+iOS"},
+		},
+	}
+	results := map[string]CaseResult{
+		"F01": {
+			ID:             "F01",
+			ExecutedLevels: []string{"unit", "native"},
+			Passed:         true,
+			Status:         "PASSED", // Claiming PASSED without iOS
+		},
+	}
+	// In local phase:
+	reportLocal, errLocal := ValidateAndAggregateWithPhase(contract, results, "fp1", "local")
+	if errLocal == nil {
+		t.Fatalf("expected validation error when case claims PASSED without satisfying required tiers in local phase, got nil")
+	}
+	if reportLocal.FailedCases != 1 {
+		t.Fatalf("expected 1 failed case for false PASSED claim in local phase, got %d", reportLocal.FailedCases)
+	}
+
+	// In final phase:
+	reportFinal, errFinal := ValidateAndAggregateWithPhase(contract, results, "fp1", "final")
+	if errFinal == nil {
+		t.Fatalf("expected validation error when case claims PASSED without satisfying required tiers in final phase, got nil")
+	}
+	if reportFinal.FailedCases != 1 {
+		t.Fatalf("expected 1 failed case for false PASSED claim in final phase, got %d", reportFinal.FailedCases)
+	}
+}

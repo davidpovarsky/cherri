@@ -179,6 +179,36 @@ func NewRunner() *Runner {
 }
 
 func (r *Runner) Record(id, group, req, level string, executedLevels []string, passed bool, status, detail string) {
+	requiredLevels := parseRequiredTiers(level)
+	var missingTiers []string
+	for _, reqTier := range requiredLevels {
+		var found bool
+		for _, el := range executedLevels {
+			if satisfiesTier(el, reqTier) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			missingTiers = append(missingTiers, reqTier)
+		}
+	}
+
+	if len(missingTiers) > 0 {
+		allMissingExternal := true
+		for _, mt := range missingTiers {
+			if !isExternalTier(mt) {
+				allMissingExternal = false
+				break
+			}
+		}
+		if allMissingExternal && passed {
+			status = "PENDING_EXTERNAL"
+			passed = false
+			detail = fmt.Sprintf("Local assertions verified; pending external tier: %v (%s)", missingTiers, detail)
+		}
+	}
+
 	r.results[id] = CaseResult{
 		ID:             id,
 		Group:          group,
@@ -376,8 +406,10 @@ func parseRequiredTiers(levelStr string) []string {
 			result = append(result, "docs")
 		case "skill", "skill-package", "packaging":
 			result = append(result, "skill-package")
-		case "ci", "negative-ci":
-			result = append(result, "integration")
+		case "ci":
+			result = append(result, "ci")
+		case "negative-ci":
+			result = append(result, "negative-ci")
 		case "repository":
 			result = append(result, "repository")
 		case "security":
@@ -399,6 +431,9 @@ func satisfiesTier(actual, required string) bool {
 	if actual == required {
 		return true
 	}
+	if (actual == "ci" || actual == "negative-ci") && (required == "ci" || required == "negative-ci") {
+		return true
+	}
 	if (actual == "native-structure" || actual == "native") && (required == "native-structure" || required == "native") {
 		return true
 	}
@@ -414,23 +449,20 @@ func satisfiesTier(actual, required string) bool {
 	return false
 }
 
+func isExternalTier(tier string) bool {
+	t := strings.ToLower(strings.TrimSpace(tier))
+	switch t {
+	case "ios", "ios-runtime", "ios-ui", "ios-build", "ci", "negative-ci", "evaluation", "external-eval":
+		return true
+	default:
+		return false
+	}
+}
+
 func hasLevel(executed []string, req string) bool {
 	req = strings.ToLower(strings.TrimSpace(req))
 	for _, el := range executed {
 		if satisfiesTier(el, req) {
-			return true
-		}
-		el = strings.ToLower(strings.TrimSpace(el))
-		if el == req {
-			return true
-		}
-		if req == "ui" && (el == "ios-ui" || el == "ui") {
-			return true
-		}
-		if req == "ci" && (el == "negative-ci" || el == "ci" || el == "integration") {
-			return true
-		}
-		if req == "skill" && (el == "packaging" || el == "skill" || el == "skill-package") {
 			return true
 		}
 	}
@@ -466,35 +498,47 @@ func ValidateAndAggregateWithPhase(contract *ContractFile, results map[string]Ca
 			continue
 		}
 
-		caseFailed := false
-		isPendingExternal := res.Status == "AI_EVAL_NOT_RUN" || res.Status == "BLOCKED_EXTERNAL" || res.Status == "NOT_RUN"
+		isExplicitSkipped := res.Status == "AI_EVAL_NOT_RUN" || res.Status == "BLOCKED_EXTERNAL" || res.Status == "NOT_RUN" || res.Status == "PENDING_EXTERNAL"
 
-		// 1. Check executed levels
-		if len(res.ExecutedLevels) == 0 && !isPendingExternal {
-			validationErrors = append(validationErrors, fmt.Sprintf("case %s has no executed test levels recorded", c.ID))
-			caseFailed = true
-		} else if !isPendingExternal {
-			requiredLevels := strings.Split(c.MinimumTestLevel, "+")
-			for _, req := range requiredLevels {
-				req = strings.TrimSpace(req)
-				if !hasLevel(res.ExecutedLevels, req) {
-					validationErrors = append(validationErrors, fmt.Sprintf("case %s executed levels %v do not satisfy required level %q", c.ID, res.ExecutedLevels, req))
-					caseFailed = true
+		// Parse required tiers
+		requiredLevels := parseRequiredTiers(c.MinimumTestLevel)
+		satisfiedTiers := make(map[string]bool)
+		for _, req := range requiredLevels {
+			for _, el := range res.ExecutedLevels {
+				if satisfiesTier(el, req) {
+					satisfiedTiers[req] = true
 					break
 				}
 			}
 		}
 
-		// 2. Consistency validation:
-		if res.Status == "PASSED" || res.Status == "PASS" {
-			if !res.Passed {
-				validationErrors = append(validationErrors, fmt.Sprintf("case %s has status %s but passed is false", c.ID, res.Status))
-				caseFailed = true
+		var missingTiers []string
+		for _, req := range requiredLevels {
+			if !satisfiedTiers[req] {
+				missingTiers = append(missingTiers, req)
 			}
-		} else if res.Passed {
+		}
+
+		allMissingAreExternal := true
+		for _, mt := range missingTiers {
+			if !isExternalTier(mt) {
+				allMissingAreExternal = false
+				break
+			}
+		}
+
+		// Consistency validation
+		var caseFailed bool
+		if (res.Status == "PASSED" || res.Status == "PASS") && !res.Passed {
+			validationErrors = append(validationErrors, fmt.Sprintf("case %s has status %s but passed is false", c.ID, res.Status))
+			caseFailed = true
+		} else if res.Passed && (res.Status == "FAILED" || res.Status == "FAIL") {
 			validationErrors = append(validationErrors, fmt.Sprintf("case %s has passed == true but status is %s", c.ID, res.Status))
 			caseFailed = true
-		} else if !isPendingExternal {
+		} else if (res.Status == "PASSED" || res.Status == "PASS") && len(missingTiers) > 0 {
+			validationErrors = append(validationErrors, fmt.Sprintf("case %s claimed status %s but executed levels %v do not satisfy required levels %v", c.ID, res.Status, res.ExecutedLevels, missingTiers))
+			caseFailed = true
+		} else if !res.Passed && !isExplicitSkipped {
 			caseFailed = true
 		}
 
@@ -507,7 +551,23 @@ func ValidateAndAggregateWithPhase(contract *ContractFile, results map[string]Ca
 			} else {
 				validationErrors = append(validationErrors, fmt.Sprintf("case %s failed assertion", c.ID))
 			}
-		} else if isPendingExternal {
+		} else if len(missingTiers) > 0 {
+			// Some required tiers are missing from executed levels
+			if phase == "local" && allMissingAreExternal {
+				// External tier (e.g. iOS runtime, CI) remains pending
+				skipped++
+				res.Passed = false
+				res.Status = "PENDING_EXTERNAL"
+				res.Detail = fmt.Sprintf("Local assertions verified; pending external tier: %v", missingTiers)
+			} else {
+				// Missing tier in final phase or missing required local tier -> FAILS
+				failed++
+				res.Passed = false
+				res.Status = "FAILED"
+				res.Detail = fmt.Sprintf("Missing required test levels: %v (executed: %v)", missingTiers, res.ExecutedLevels)
+				validationErrors = append(validationErrors, fmt.Sprintf("case %s missing required levels: %v in phase %s", c.ID, missingTiers, phase))
+			}
+		} else if isExplicitSkipped {
 			if phase == "final" && c.ID != "AI01" {
 				failed++
 				res.Passed = false
@@ -518,6 +578,8 @@ func ValidateAndAggregateWithPhase(contract *ContractFile, results map[string]Ca
 			}
 		} else {
 			passed++
+			res.Passed = true
+			res.Status = "PASSED"
 		}
 
 		finalResults = append(finalResults, res)
@@ -1078,7 +1140,7 @@ func (r *Runner) runBinding() {
 	diagsV01 := analyzeSrc(r.reg, srcV01)
 	wfV01, errV01 := lowerSrc(r.reg, srcV01)
 	v01Passed := len(diagsV01) == 0 && errV01 == nil && len(wfV01.Actions) >= 2
-	r.Record("V01", "binding", "let captures current var value before later assignment", "unit+native+iOS", []string{"unit", "native", "iOS"}, v01Passed, "PASSED", "let snapshot evaluated at declaration site before subsequent mutation")
+	r.Record("V01", "binding", "let captures current var value before later assignment", "unit+native+iOS", []string{"unit", "native"}, v01Passed, "PASSED", "let snapshot evaluated at declaration site before subsequent mutation")
 
 	// V02: Scope, shadowing, immutable reassignment
 	srcV02 := "let c = 10\nc = 20"
@@ -1096,7 +1158,7 @@ func (r *Runner) runBinding() {
 	srcV03 := "let clip = clipboard\nshow(clip)"
 	wfV03, errV03 := lowerSrc(r.reg, srcV03)
 	v03Passed := errV03 == nil && len(wfV03.Actions) > 0
-	r.Record("V03", "binding", "System clipboard read captured once", "unit+native+iOS", []string{"unit", "native", "iOS"}, v03Passed, "PASSED", "Clipboard reference materialized cleanly into AttachmentToken")
+	r.Record("V03", "binding", "System clipboard read captured once", "unit+native+iOS", []string{"unit", "native"}, v03Passed, "PASSED", "Clipboard reference materialized cleanly into AttachmentToken")
 
 	// V04: let binds collections and action outputs
 	srcV04 := "let items = [1, 2, 3]\nlet cfg = {\"host\": \"localhost\"}"
@@ -1156,7 +1218,7 @@ func (r *Runner) runTypes() {
 	actBase64, okBase64 := r.reg.LookupAction("base64Encode")
 	wfT01, errT01 := lowerSrc(r.reg, "base64Encode(\"test\")")
 	t01Passed := okBase64 && actBase64.StaticParameters != nil && errT01 == nil && len(wfT01.Actions) > 0
-	r.Record("T01", "types", "Typed defaults preserve false/zero/empty text/list/map vs omission", "unit+native+iOS", []string{"unit", "native", "iOS"}, t01Passed, "PASSED", "Default values retained across lowering and wire emission")
+	r.Record("T01", "types", "Typed defaults preserve false/zero/empty text/list/map vs omission", "unit+native+iOS", []string{"unit", "native"}, t01Passed, "PASSED", "Default values retained across lowering and wire emission")
 
 	// T02: Runtime immutable output does not satisfy literal slot
 	srcT02 := "let x = 1 + 2\nlet y: Text = x"
@@ -1222,7 +1284,7 @@ func (r *Runner) runText() {
 	srcS01 := "let n = \"עולם 🌍\"\nlet msg = f\"שלום {n}! סוף\""
 	wfS01, errS01 := lowerSrc(r.reg, srcS01)
 	s01Passed := errS01 == nil && len(wfS01.Actions) > 0
-	r.Record("S01", "text", "Multiple variable tokens after Hebrew/emoji/combining marks", "unit+native-roundtrip+iOS", []string{"unit", "native-roundtrip", "iOS"}, s01Passed, "PASSED", "UTF-16 attachment offset calculation correctly handles non-BMP emoji and Hebrew")
+	r.Record("S01", "text", "Multiple variable tokens after Hebrew/emoji/combining marks", "unit+native-roundtrip+iOS", []string{"unit", "native-roundtrip"}, s01Passed, "PASSED", "UTF-16 attachment offset calculation correctly handles non-BMP emoji and Hebrew")
 
 	// S02: Raw regex and JSON
 	srcS02 := "let re = r\"\\d+\\s+[a-z]\"\nlet j = \"{\\\"key\\\": 1}\""
@@ -1255,7 +1317,7 @@ func (r *Runner) runCollections() {
 	srcL02 := "let items = [10, 20, 30]\nlet first = items[0]"
 	wfL02, errL02 := lowerSrc(r.reg, srcL02)
 	l02Passed := errL02 == nil && len(wfL02.Actions) > 0
-	r.Record("L02", "collections", "Zero-based first/last/empty/out-of-range/negative indexing", "unit+native+iOS", []string{"unit", "native", "iOS"}, l02Passed, "PASSED", "Zero-based collection indexing canonical in v2.0")
+	r.Record("L02", "collections", "Zero-based first/last/empty/out-of-range/negative indexing", "unit+native+iOS", []string{"unit", "native"}, l02Passed, "PASSED", "Zero-based collection indexing canonical in v2.0")
 
 	// L03: Duplicate literal keys
 	srcL03 := "let m = {\"k\": 1, \"k\": 2}"
@@ -1273,7 +1335,7 @@ func (r *Runner) runCollections() {
 	srcL04 := "let items = [1, 2]\nlet x = items[1]"
 	wfL04, errL04 := lowerSrc(r.reg, srcL04)
 	l04Passed := errL04 == nil && len(wfL04.Actions) > 0
-	r.Record("L04", "collections", "Dynamic bounds checking does not execute unsafe native lookup", "native+iOS", []string{"native", "iOS"}, l04Passed, "PASSED", "Lowering injects safe get-item action wrappers")
+	r.Record("L04", "collections", "Dynamic bounds checking does not execute unsafe native lookup", "native+iOS", []string{"native"}, l04Passed, "PASSED", "Lowering injects safe get-item action wrappers")
 }
 
 // Group 9: Numbers
@@ -1282,7 +1344,7 @@ func (r *Runner) runNumbers() {
 	srcN01 := "let half = 5 / 2\nlet rem = 10 % 3"
 	wfN01, errN01 := lowerSrc(r.reg, srcN01)
 	n01Passed := errN01 == nil && len(wfN01.Actions) > 0
-	r.Record("N01", "numbers", "Fractional arithmetic including 5/2 and constraints", "unit+native+iOS", []string{"unit", "native", "iOS"}, n01Passed, "PASSED", "Floating point division and modulus expressions supported")
+	r.Record("N01", "numbers", "Fractional arithmetic including 5/2 and constraints", "unit+native+iOS", []string{"unit", "native"}, n01Passed, "PASSED", "Floating point division and modulus expressions supported")
 
 	// N02: Known zero divisor and text-plus-number
 	srcN02 := "let bad = \"count: \" + 5"
@@ -1309,13 +1371,13 @@ func (r *Runner) runControl() {
 	srcF01 := "if false && (1 / 0 == 0) { show(\"never\") }"
 	wfF01, errF01 := lowerSrc(r.reg, srcF01)
 	f01Passed := errF01 == nil && len(wfF01.Actions) > 0
-	r.Record("F01", "control", "Mixed AND/OR short-circuits observable branch effects", "unit+native+iOS", []string{"unit", "native", "iOS"}, f01Passed, "PASSED", "Logical expressions parsed into binary AST tree and lowered")
+	r.Record("F01", "control", "Mixed AND/OR short-circuits observable branch effects", "unit+native+iOS", []string{"unit", "native"}, f01Passed, "PASSED", "Logical expressions parsed into binary AST tree and lowered")
 
 	// F02: Nested for/repeat scope
 	srcF02 := "repeat 3 as i {\n    repeat 2 as j {\n        show(f\"{i}:{j}\")\n    }\n}"
 	wfF02, errF02 := lowerSrc(r.reg, srcF02)
 	f02Passed := errF02 == nil && len(wfF02.Actions) == 7
-	r.Record("F02", "control", "Nested for/repeat scope and zero-based indices", "unit+native+iOS", []string{"unit", "native", "iOS"}, f02Passed, "PASSED", fmt.Sprintf("Nested repeat loops generate distinct GroupingIdentifiers with 0-based index math (%d actions)", len(wfF02.Actions)))
+	r.Record("F02", "control", "Nested for/repeat scope and zero-based indices", "unit+native+iOS", []string{"unit", "native"}, f02Passed, "PASSED", fmt.Sprintf("Nested repeat loops generate distinct GroupingIdentifiers with 0-based index math (%d actions)", len(wfF02.Actions)))
 
 	// F03: Value if/menu yield typing
 	srcF03 := "let val = if true { yield 1 } else { yield 2 }"
@@ -1344,25 +1406,25 @@ func (r *Runner) runFunctions() {
 	srcFN01 := "function add(a: Number, b: Number) -> Number {\n    return a + b\n}\nlet res = add(1, b: 2)"
 	wfFN01, errFN01 := lowerSrc(r.reg, srcFN01)
 	fn01Passed := errFN01 == nil && len(wfFN01.Actions) > 0
-	r.Record("FN01", "functions", "AST-defined function call returns then caller continues", "unit+native+iOS", []string{"unit", "native", "iOS"}, fn01Passed, "PASSED", "First-class function declarations parsed and lowered into RunWorkflow dispatcher")
+	r.Record("FN01", "functions", "AST-defined function call returns then caller continues", "unit+native+iOS", []string{"unit", "native"}, fn01Passed, "PASSED", "First-class function declarations parsed and lowered into RunWorkflow dispatcher")
 
 	// FN02: Presence-tagged argument defaults
 	srcFN02 := "function greet(name: Text, formal: Bool = false) -> Text {\n    return name\n}\nlet g = greet(\"Alice\")"
 	wfFN02, errFN02 := lowerSrc(r.reg, srcFN02)
 	fn02Passed := errFN02 == nil && len(wfFN02.Actions) > 0
-	r.Record("FN02", "functions", "Presence-tagged argument defaults include false/0/empty", "unit+native+iOS", []string{"unit", "native", "iOS"}, fn02Passed, "PASSED", "Function parameters with default value expressions parsed and lowered cleanly")
+	r.Record("FN02", "functions", "Presence-tagged argument defaults include false/0/empty", "unit+native+iOS", []string{"unit", "native"}, fn02Passed, "PASSED", "Function parameters with default value expressions parsed and lowered cleanly")
 
 	// FN03: No implicit runtime capture; terminating recursive call
 	srcFN03 := "function countdown(n: Number) -> Number {\n    if n <= 0 { return 0 }\n    return countdown(n - 1)\n}\nlet c = countdown(3)"
 	wfFN03, errFN03 := lowerSrc(r.reg, srcFN03)
 	fn03Passed := errFN03 == nil && len(wfFN03.Actions) > 0
-	r.Record("FN03", "functions", "No implicit runtime capture; terminating recursive call", "unit+native+iOS", []string{"unit", "native", "iOS"}, fn03Passed, "PASSED", "Functions operate in isolated lexical scope symbol table with recursive dispatch")
+	r.Record("FN03", "functions", "No implicit runtime capture; terminating recursive call", "unit+native+iOS", []string{"unit", "native"}, fn03Passed, "PASSED", "Functions operate in isolated lexical scope symbol table with recursive dispatch")
 
 	// FN04: Caller input vs internal dispatcher envelope
 	srcFN04 := "function test(x: Number) -> Number { return x }\nlet r = test(5)"
 	wfFN04, errFN04 := lowerSrc(r.reg, srcFN04)
 	fn04Passed := errFN04 == nil && len(wfFN04.Actions) > 0
-	r.Record("FN04", "functions", "Caller input vs internal dispatcher envelope", "native+iOS", []string{"native", "iOS"}, fn04Passed, "PASSED", "RunSelf / function dispatch boundary preserves caller input and branches cleanly")
+	r.Record("FN04", "functions", "Caller input vs internal dispatcher envelope", "native+iOS", []string{"native"}, fn04Passed, "PASSED", "RunSelf / function dispatch boundary preserves caller input and branches cleanly")
 
 	// FN05: Structured argument transport
 	srcFN05 := "function info(name: Text, count: Number) -> Text {\n    return f\"{name}: {count}\"\n}\nlet s = info(\"items\", count: 10)"
@@ -1383,7 +1445,7 @@ func (r *Runner) runMetadata() {
 	srcM02 := "return \"done\""
 	wfM02, errM02 := lowerSrc(r.reg, srcM02)
 	m02Passed := errM02 == nil && wfM02.HasExplicitReturn
-	r.Record("M02", "metadata", "Main body explicit return and Void fallthrough", "native+iOS", []string{"native", "iOS"}, m02Passed, "PASSED", "Explicit return lowered to is.workflow.actions.output")
+	r.Record("M02", "metadata", "Main body explicit return and Void fallthrough", "native+iOS", []string{"native"}, m02Passed, "PASSED", "Explicit return lowered to is.workflow.actions.output")
 
 	// M03: Setup question binds by node/parameter
 	srcM03 := "setup apiKey: Text {\n    prompt: \"Enter API Key\"\n}"
@@ -1652,19 +1714,19 @@ func (r *Runner) runVerification() {
 	expectVal := "correct"
 	actualVal := "broken"
 	ci01Passed := expectVal != actualVal
-	r.Record("CI01", "verification", "Encoding EXPECT intentionally broken in test", "negative-CI", []string{"negative-CI"}, ci01Passed, "PASSED", "Negative test assertion confirms detection of expectation divergence")
+	r.Record("CI01", "verification", "Encoding EXPECT intentionally broken in test", "negative-CI", []string{"unit"}, ci01Passed, "PASSED", "Negative test assertion confirms detection of expectation divergence")
 
 	// CI02: Selected real iOS language fixtures
 	pocBytes, errPoc := os.ReadFile("tests/runtime_poc/CherriRuntimePOC.cherri")
 	pocWf, errPocWf := lowerSrc(r.reg, string(pocBytes))
 	ci02Passed := errPoc == nil && errPocWf == nil && len(pocWf.Actions) > 0
-	r.Record("CI02", "verification", "Selected real iOS language fixtures", "iOS", []string{"iOS"}, ci02Passed, "PASSED", "CherriRuntimePOC fixture lowers to valid Apple Shortcuts actions")
+	r.Record("CI02", "verification", "Selected real iOS language fixtures", "iOS", []string{"native"}, ci02Passed, "PASSED", "CherriRuntimePOC fixture lowers to valid Apple Shortcuts actions")
 
 	// CI03: Final required workflows use exact final SHA
 	cmdGit := exec.Command("git", "rev-parse", "HEAD")
 	outGit, errGit := cmdGit.CombinedOutput()
 	ci03Passed := errGit == nil && len(strings.TrimSpace(string(outGit))) == 40
-	r.Record("CI03", "verification", "Final required workflows use exact final SHA", "repository+CI", []string{"repository", "CI"}, ci03Passed, "PASSED", fmt.Sprintf("Verified current commit SHA: %s", strings.TrimSpace(string(outGit))))
+	r.Record("CI03", "verification", "Final required workflows use exact final SHA", "repository+CI", []string{"repository"}, ci03Passed, "PASSED", fmt.Sprintf("Verified current commit SHA: %s", strings.TrimSpace(string(outGit))))
 
 	// CI04: No private raw corpus or unrequested signing
 	// Verify no uncommitted signing keys or private fixtures in repo

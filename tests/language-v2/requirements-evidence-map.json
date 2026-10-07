@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_at": "2026-10-07T15:00:19Z",
+  "generated_at": "2026-10-07T15:49:52Z",
   "authority": "CHERRI-CANONICAL-BACKEND-RECOVERY.md Appendix A \u0026 Section 4.4",
   "total_requirements": 179,
   "acceptance_count": 94,
@@ -861,7 +861,7 @@
       "type": "recovery_gate",
       "title": "Actual encoding negative gate and exact-SHA CI",
       "required_tiers": [
-        "integration",
+        "ci",
         "ios-runtime",
         "repository",
         "security"
@@ -1040,7 +1040,7 @@
       "type": "acceptance",
       "title": "Encoding EXPECT intentionally broken in test",
       "required_tiers": [
-        "integration"
+        "negative-ci"
       ],
       "test_ids": [
         "tools/language-acceptance:runVerification"
@@ -1083,7 +1083,7 @@
       "title": "Final required workflows use exact final SHA",
       "required_tiers": [
         "repository",
-        "integration"
+        "ci"
       ],
       "test_ids": [
         "tools/language-acceptance:runVerification"
@@ -3455,7 +3455,7 @@
       "type": "repair",
       "title": "Native encoding negative gate",
       "required_tiers": [
-        "integration"
+        "negative-ci"
       ],
       "test_ids": [
         "tests/language-v2/repair:RP47"
@@ -3498,7 +3498,7 @@
       "title": "Final SHA and artifact binding",
       "required_tiers": [
         "repository",
-        "integration",
+        "ci",
         "skill-package"
       ],
       "test_ids": [
@@ -5964,7 +5964,7 @@
       "type": "acceptance",
       "title": "Encoding EXPECT intentionally broken in test",
       "required_tiers": [
-        "integration"
+        "negative-ci"
       ],
       "test_ids": [
         "tools/language-acceptance:runVerification"
@@ -6007,7 +6007,7 @@
       "title": "Final required workflows use exact final SHA",
       "required_tiers": [
         "repository",
-        "integration"
+        "ci"
       ],
       "test_ids": [
         "tools/language-acceptance:runVerification"
@@ -7125,7 +7125,7 @@
       "type": "repair",
       "title": "Native encoding negative gate",
       "required_tiers": [
-        "integration"
+        "negative-ci"
       ],
       "test_ids": [
         "tests/language-v2/repair:RP47"
@@ -7168,7 +7168,7 @@
       "title": "Final SHA and artifact binding",
       "required_tiers": [
         "repository",
-        "integration",
+        "ci",
         "skill-package"
       ],
       "test_ids": [
@@ -7973,7 +7973,7 @@
       "type": "recovery_gate",
       "title": "Actual encoding negative gate and exact-SHA CI",
       "required_tiers": [
-        "integration",
+        "ci",
         "ios-runtime",
         "repository",
         "security"
