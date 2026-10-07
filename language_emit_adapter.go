@@ -54,6 +54,15 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 			WFWorkflowActionParameters: make(map[string]any),
 		}
 		for k, v := range node.Parameters {
+			if node.AppleIdentifier == "is.workflow.actions.conditional" && k == "WFInput" {
+				if _, ok := v.(*ir.AttachmentToken); ok {
+					action.WFWorkflowActionParameters[k] = map[string]any{
+						"Type":     "Variable",
+						"Variable": transformIRParamValue(v),
+					}
+					continue
+				}
+			}
 			action.WFWorkflowActionParameters[k] = transformIRParamValue(v)
 		}
 		if node.OutputUUID != "" {
@@ -102,11 +111,10 @@ func transformIRParamValue(v any) any {
 		if tok.OutputName != "" {
 			valMap["OutputName"] = tok.OutputName
 		}
-		if tok.Type == "Variable" {
+		if tok.Type == "Variable" || tok.Type == "ExtensionInput" {
 			valMap["VariableName"] = tok.OutputName
 		}
 		return map[string]any{
-			"Type":                tok.Type,
 			"Value":               valMap,
 			"WFSerializationType": "WFTextTokenAttachment",
 		}

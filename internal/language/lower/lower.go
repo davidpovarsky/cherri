@@ -1671,16 +1671,21 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			wfTarget["workflowName"] = l.WorkflowName
 		}
 
+		runParams := map[string]interface{}{
+			"WFWorkflow": wfTarget,
+			"WFInput":    dispatchDict,
+		}
+		if l.WorkflowName != "" {
+			runParams["WFWorkflowName"] = l.WorkflowName
+		}
+
 		uuid := l.GenerateUUID()
 		runNode := &ir.NativeActionNode{
 			NodeID:          uuid,
 			AppleIdentifier: "is.workflow.actions.runworkflow",
 			OutputUUID:      uuid,
 			OutputName:      actionName + "Result",
-			Parameters: map[string]interface{}{
-				"WFWorkflow": wfTarget,
-				"WFInput":    dispatchDict,
-			},
+			Parameters:      runParams,
 		}
 		l.workflow.AddAction(runNode)
 		return &ir.AttachmentToken{
