@@ -1,0 +1,170 @@
+name: macOS Shortcuts engine probe
+
+on:
+  push:
+    branches:
+      - experiment/macos-shortcuts-engine-probe
+  pull_request:
+    branches:
+      - agent/shortcut-corpus-acquisition
+    paths:
+      - '.github/workflows/macos-shortcuts-engine-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: macos-shortcuts-engine-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Probe Shortcuts engine surfaces
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p probe
+          {
+            echo "runner=${{ matrix.os }}"
+            sw_vers
+            uname -a
+            echo
+            echo "Shortcuts application:"
+            ls -ld /System/Applications/Shortcuts.app 2>&1 || true
+            defaults read /System/Applications/Shortcuts.app/Contents/Info CFBundleShortVersionString 2>&1 || true
+            defaults read /System/Applications/Shortcuts.app/Contents/Info CFBundleVersion 2>&1 || true
+          } > probe/environment.txt
+
+          {
+            for framework in WorkflowKit ActionKit; do
+              path="/System/Library/PrivateFrameworks/${framework}.framework"
+              echo "=== ${framework} ==="
+              ls -ld "$path" 2>&1 || true
+              find "$path" -maxdepth 2 -type f -print 2>/dev/null | head -80 || true
+              echo
+            done
+          } > probe/frameworks.txt
+
+          WORKFLOWKIT="/System/Library/PrivateFrameworks/WorkflowKit.framework/WorkflowKit"
+          if [ -f "$WORKFLOWKIT" ]; then
+            strings "$WORKFLOWKIT" 2>/dev/null | grep -Eo 'is\.workflow\.actions\.[A-Za-z0-9._-]+' | sort -u > probe/workflowkit-identifiers.txt || true
+          else
+            : > probe/workflowkit-identifiers.txt
+          fi
+
+          cat > probe/private-framework-probe.js <<'JXA'
+          ObjC.import('Foundation');
+          function inspect(path) {
+            var result = {path: path, exists: false, loaded: false, error: null};
+            try {
+              var fm = $.NSFileManager.defaultManager;
+              result.exists = !!fm.fileExistsAtPath(path);
+              if (!result.exists) return result;
+              var bundle = $.NSBundle.bundleWithPath(path);
+              result.loaded = !!bundle.loadAndReturnError(null);
+            } catch (e) { result.error = String(e); }
+            return result;
+          }
+          console.log(JSON.stringify({
+            WorkflowKit: inspect('/System/Library/PrivateFrameworks/WorkflowKit.framework'),
+            ActionKit: inspect('/System/Library/PrivateFrameworks/ActionKit.framework')
+          }, null, 2));
+          JXA
+          osascript -l JavaScript probe/private-framework-probe.js > probe/private-framework-load.json 2> probe/private-framework-load.stderr || true
+
+          {
+            echo "=== Before launch ==="
+            find "$HOME/Library" -maxdepth 5 \( -iname '*Shortcuts*' -o -iname '*Workflow*' \) -print 2>/dev/null | sort || true
+            echo
+            echo "=== Launch attempt ==="
+            open -gja Shortcuts 2>&1 || true
+            sleep 8
+            pgrep -afil 'Shortcuts|Workflow' || true
+            echo
+            echo "=== After launch ==="
+            find "$HOME/Library" -maxdepth 6 \( -iname '*Shortcuts*' -o -iname '*Workflow*' \) -print 2>/dev/null | sort || true
+          } > probe/shortcuts-launch.txt
+
+          {
+            echo "Potential action indexes / databases:"
+            find "$HOME/Library" -maxdepth 8 -type f \( -iname '*.sqlite' -o -iname '*.db' -o -iname '*index*' \) 2>/dev/null | grep -Ei 'shortcut|workflow|intent|action' | sort || true
+          } > probe/action-index-candidates.txt
+
+          DB="$HOME/Library/Shortcuts/Shortcuts.sqlite"
+          if [ -f "$DB" ]; then
+            {
+              sqlite3 "$DB" '.tables' || true
+              echo
+              sqlite3 "$DB" "select name,type from sqlite_master order by type,name;" || true
+            } > probe/shortcuts-sqlite.txt
+          else
+            echo "Shortcuts.sqlite not present" > probe/shortcuts-sqlite.txt
+          fi
+
+          python3 - <<'PY'
+          import json, pathlib, re
+          root = pathlib.Path("probe")
+          ids = (root/"workflowkit-identifiers.txt").read_text(errors="ignore").splitlines()
+          candidates = (root/"action-index-candidates.txt").read_text(errors="ignore").splitlines()
+          launch = (root/"shortcuts-launch.txt").read_text(errors="ignore")
+          summary = {
+              "workflowkit_identifier_count": len(ids),
+              "workflowkit_identifier_examples": ids[:25],
+              "action_index_candidate_count": len(candidates),
+              "action_index_candidates": candidates[:50],
+              "shortcuts_process_seen": bool(re.search(r"Shortcuts", launch, re.I)),
+              "shortcuts_sqlite_present": pathlib.Path.home().joinpath("Library/Shortcuts/Shortcuts.sqlite").exists(),
+          }
+          try:
+              raw = (root/"private-framework-load.json").read_text(errors="ignore").strip()
+              summary["framework_load"] = json.loads(raw) if raw else None
+          except Exception as e:
+              summary["framework_load_parse_error"] = str(e)
+          (root/"summary.json").write_text(json.dumps(summary, indent=2))
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Upload probe results
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-shortcuts-engine-probe-${{ matrix.os }}
+          path: probe/
+          if-no-files-found: error
+          retention-days: 14

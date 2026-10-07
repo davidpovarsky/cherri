@@ -1,0 +1,513 @@
+name: macOS Shortcuts deep extraction
+
+on:
+  push:
+    branches: [experiment/macos-shortcuts-engine-probe]
+    paths:
+      - '.github/workflows/macos-shortcuts-deep-extract.yml'
+      - 'actions/**'
+      - '*.go'
+      - 'go.mod'
+      - 'go.sum'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: macos-shortcuts-deep-extract-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SHORTCUTKIT_REPO: https://github.com/frontboat/shortcutkit.git
+
+jobs:
+  builtin:
+    name: Builtins and environment (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/checkout@v6
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Extract builtins and dyld identifiers
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out/data out/logs
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          git -C out/shortcutkit rev-parse HEAD > out/data/shortcutkit-commit.txt
+          {
+            echo '{'
+            printf '  "runner": "macos-26",\n'
+            printf '  "macOS": "%s",\n' "$(sw_vers -productVersion)"
+            printf '  "build": "%s",\n' "$(sw_vers -buildVersion)"
+            printf '  "arch": "%s",\n' "$(uname -m)"
+            printf '  "shortcutsVersion": "%s",\n' "$(defaults read /System/Applications/Shortcuts.app/Contents/Info.plist CFBundleShortVersionString 2>/dev/null || echo unknown)"
+            printf '  "shortcutsBuild": "%s",\n' "$(defaults read /System/Applications/Shortcuts.app/Contents/Info.plist CFBundleVersion 2>/dev/null || echo unknown)"
+            printf '  "workflowKitVersion": "%s",\n' "$(defaults read /System/Library/PrivateFrameworks/WorkflowKit.framework/Versions/A/Resources/Info.plist CFBundleShortVersionString 2>/dev/null || echo unknown)"
+            printf '  "actionKitVersion": "%s"\n' "$(defaults read /System/Library/PrivateFrameworks/ActionKit.framework/Versions/A/Resources/Info.plist CFBundleShortVersionString 2>/dev/null || echo unknown)"
+            echo '}'
+          } > out/data/environment.json
+          open -gja Shortcuts || true
+          sleep 20
+          cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/extract-builtin-actions.js > out/builtin.js
+          osascript -l JavaScript out/builtin.js out/data/builtin-actions.json > out/logs/builtin.stdout.log 2> out/logs/builtin.stderr.log
+          cache=/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld
+          if ls "$cache"/dyld_shared_cache_arm64e* >/dev/null 2>&1; then
+            if command -v rg >/dev/null 2>&1; then
+              rg -a -o --no-filename 'is\.workflow\.actions\.[A-Za-z0-9._-]+' "$cache"/dyld_shared_cache_arm64e* 2>/dev/null | sort -u > out/data/builtin-action-identifiers.txt || true
+            else
+              grep -a -o -E -h 'is\.workflow\.actions\.[A-Za-z0-9._-]+' "$cache"/dyld_shared_cache_arm64e* 2>/dev/null | sort -u > out/data/builtin-action-identifiers.txt || true
+            fi
+          else
+            : > out/data/builtin-action-identifiers.txt
+          fi
+          python3 - <<'PY'
+          import json, pathlib
+          d=pathlib.Path('out/data'); defs=json.load(open(d/'builtin-actions.json')); dyld=set((d/'builtin-action-identifiers.txt').read_text().splitlines())
+          bundled=sum(1 for x in defs.values() if x.get('FillingProvider') == 'WFBundledActionProvider')
+          summary={'builtinDefinitions':len(defs),'bundled':bundled,'intentProvider':len(defs)-bundled,'dyldIdentifiers':len(dyld),'definitionsWithoutDyld':sorted(set(defs)-dyld),'dyldWithoutDefinition':sorted(dyld-set(defs))}
+          (d/'builtin-summary.json').write_text(json.dumps(summary,indent=2,sort_keys=True)); print(json.dumps(summary,indent=2))
+          PY
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-builtin-macos-26
+          path: out/data/
+          if-no-files-found: warn
+
+  toolkit:
+    name: ToolKit registry (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/checkout@v6
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Dump ToolKit registry independently
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out/data out/logs
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          git -C out/shortcutkit rev-parse HEAD > out/data/shortcutkit-commit.txt
+          open -gja Shortcuts || true; sleep 20
+          set +e
+          python3 out/shortcutkit/tools/dump-toolkit-registry.py out/data > out/logs/toolkit.stdout.log 2> out/logs/toolkit.stderr.log
+          toolkit_status=$?
+          set -e
+          python3 - <<'PY'
+          import glob,json,os,pathlib,sqlite3
+          d=pathlib.Path('out/data'); files=sorted(glob.glob(os.path.expanduser('~/Library/Shortcuts/ToolKit/Tools-prod.*.sqlite'))); r={'toolkitDb':os.path.basename(files[-1]) if files else None,'failures':[]}
+          if files:
+            c=sqlite3.connect(f'file:{files[-1]}?mode=ro',uri=True); tables={x[0] for x in c.execute("select name from sqlite_master where type='table'")}
+            for t in ['Tools','Parameters','ToolParameterTypes','ToolOutputTypes','EnumerationCases']: r[t]=c.execute(f'SELECT count(*) FROM "{t}"').fetchone()[0] if t in tables else 0
+            r['providers']={str(p or '(null)'):n for p,n in c.execute('select sourceActionProvider,count(*) from Tools group by sourceActionProvider')}
+            r['visible']=c.execute('select count(*) from Tools where visibilityFlags != 0').fetchone()[0]
+            r['hidden']=r['Tools']-r['visible']; r['uniqueIdentifiers']=c.execute('select count(distinct id) from Tools').fetchone()[0]
+            r['duplicateIdentifiers']=[x[0] for x in c.execute('select id from Tools group by id having count(*)>1')]
+            if 'ContainerMetadata' in tables:
+              r['containers']=c.execute('select count(*) from ContainerMetadata').fetchone()[0]
+              r['appleContainers']=c.execute("select count(*) from ContainerMetadata where id like 'com.apple.%'").fetchone()[0]
+              r['thirdPartyContainers']=r['containers']-r['appleContainers']
+            r['appleAppIntents']=c.execute("select count(*) from Tools t join ContainerMetadata cm on cm.rowId=t.sourceContainerId where t.sourceActionProvider='WFLinkActionProvider' and cm.id like 'com.apple.%' and t.visibilityFlags != 0").fetchone()[0]
+            if toolkit_status != 0: r['failures'].append('dump-toolkit-registry exit '+str(toolkit_status))
+            c.close()
+          else: r['failures'].append('ToolKit DB not found')
+          (d/'toolkit-summary.json').write_text(json.dumps(r,indent=2,sort_keys=True)); print(json.dumps(r,indent=2))
+          PY
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-toolkit-macos-26
+          path: out/data/
+          if-no-files-found: warn
+
+  installed-apps:
+    name: Installed App Intents (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/checkout@v6
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Dump installed app metadata
+        shell: bash
+        run: |
+          set -uo pipefail; mkdir -p out/data out/logs
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          python3 out/shortcutkit/tools/dump-appintents-actions.py out/data/app-provided-actions.json > out/logs/apps.stdout.log 2> out/logs/apps.stderr.log || true
+          python3 - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('out/data/app-provided-actions.json'); xs=json.load(open(p)) if p.exists() else []
+          apps={x.get('bundleIdentifier') for x in xs}; apple=[x for x in xs if (x.get('bundleIdentifier') or '').startswith('com.apple.')]
+          pathlib.Path('out/data/app-provided-summary.json').write_text(json.dumps({'apps':len(apps),'actions':len(xs),'appleActions':len(apple),'nonAppleActions':len(xs)-len(apple),'bundleIdentifiers':sorted(x for x in apps if x)},indent=2))
+          PY
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-installed-apps-macos-26
+          path: out/data/
+          if-no-files-found: warn
+
+  gallery:
+    name: Gallery (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/checkout@v6
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Dump Gallery independently
+        shell: bash
+        run: |
+          set -uo pipefail; mkdir -p out/data out/logs
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          python3 out/shortcutkit/tools/dump-gallery.py out/data/gallery-workflows.json > out/logs/gallery.stdout.log 2> out/logs/gallery.stderr.log || true
+          python3 - <<'PY'
+          import collections,json,pathlib
+          p=pathlib.Path('out/data/gallery-workflows.json'); ws=json.load(open(p)) if p.exists() else {}; ids=collections.Counter(); descriptors=0
+          for w in ws.values():
+            for a in w.get('WFWorkflowActions',[]):
+              i=a.get('WFWorkflowActionIdentifier','?'); ids[i]+=1
+              if 'AppIntentDescriptor' in str(a.get('WFWorkflowActionParameters',{})): descriptors+=1
+          pathlib.Path('out/data/gallery-summary.json').write_text(json.dumps({'workflows':len(ws),'uniqueIdentifiers':len(ids),'appIntentDescriptors':descriptors,'identifiers':sorted(ids)},indent=2))
+          PY
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-gallery-macos-26
+          path: out/data/
+          if-no-files-found: warn
+
+  parameter-encodings:
+    name: Parameter encodings (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/checkout@v6
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Run expensive probe with heartbeat
+        shell: bash
+        run: |
+          set -uo pipefail; mkdir -p out/data out/logs
+          git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          start=$(date +%s); echo "$start" > out/data/parameter-start.txt
+          cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/extract-parameter-encodings.js > out/parameter.js
+          ( osascript -l JavaScript out/parameter.js out/data/parameter-encodings.json > out/logs/parameter.stdout.log 2> out/logs/parameter.stderr.log; echo $? > out/data/parameter-exit.txt ) & pid=$!
+          echo "$pid" > out/data/osascript.pid
+          while kill -0 "$pid" 2>/dev/null; do
+            now=$(date +%s); elapsed=$((now-start)); size=0; lines=0
+            [ -f out/data/parameter-encodings.json ] && size=$(stat -f%z out/data/parameter-encodings.json)
+            [ -f out/logs/parameter.stdout.log ] && lines=$(wc -l < out/logs/parameter.stdout.log)
+            ps -p "$pid" -o pid=,state=,etime=,pcpu=,pmem= 2>/dev/null | tee -a out/logs/heartbeat.log || true
+            printf 'heartbeat elapsed=%ss outputBytes=%s stdoutLines=%s\n' "$elapsed" "$size" "$lines" | tee -a out/logs/heartbeat.log
+            sleep 60
+          done
+          wait "$pid" || true
+          python3 - <<'PY'
+          import json,pathlib,time
+          d=pathlib.Path('out'); p=d/'data/parameter-encodings.json'; s={'outputProduced':p.exists(),'outputBytes':p.stat().st_size if p.exists() else 0,'stdoutLines':len((d/'logs/parameter.stdout.log').read_text(errors='ignore').splitlines()),'stderrTail':(d/'logs/parameter.stderr.log').read_text(errors='ignore')[-2000:]}
+          if p.exists():
+            x=json.load(open(p)); s.update({'parameterClasses':len(x.get('parameterClasses',{})),'actions':len(x.get('actionParameters',{})),'unavailableActions':len(x.get('unavailableActions',[]))})
+          (d/'data/parameter-stage-summary.json').write_text(json.dumps(s,indent=2,sort_keys=True)); print(json.dumps(s,indent=2))
+          PY
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-parameter-encodings-macos-26
+          path: out/data/ out/logs/
+          if-no-files-found: warn
+
+  compare:
+    name: Cherri comparison (macOS 26)
+    needs: [builtin, toolkit, installed-apps]
+    if: always()
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/checkout@v6
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.x'
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: deep-extract-*-macos-26
+          merge-multiple: true
+          path: out
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Compare extracted surfaces with Cherri
+        shell: bash
+        run: |
+          set -uo pipefail; mkdir -p out
+          go build -o out/cherri .
+          out/cherri --actions-json --no-ansi > out/cherri-actions.json
+          python3 - <<'PY'
+          import json,pathlib
+          d=pathlib.Path('out'); c=json.load(open(d/'cherri-actions.json')); known={x.get('shortcutIdentifier') for x in c.get('actions',[])}
+          defs=json.load(open(d/'builtin-actions.json')) if (d/'builtin-actions.json').exists() else {}; raw=set((d/'builtin-action-identifiers.txt').read_text().splitlines()) if (d/'builtin-action-identifiers.txt').exists() else set(); ai=json.load(open(d/'apple-app-intents.json')).get('actions',{}) if (d/'apple-app-intents.json').exists() else {}
+          r={'cherriActions':c.get('count',len(c.get('actions',[]))),'builtinDefinitions':len(defs),'builtinCovered':len(set(defs)&known),'builtinMissing':len(set(defs)-known),'rawIdentifiers':len(raw),'rawCovered':len(raw&known),'rawMissing':len(raw-known),'appleAppIntents':len(ai),'appleCovered':len(set(ai)&known),'appleMissing':len(set(ai)-known),'missingBuiltins':sorted(set(defs)-known)[:30],'missingAppleAppIntents':sorted(set(ai)-known)[:30]}
+          (d/'comparison-summary.json').write_text(json.dumps(r,indent=2,sort_keys=True)); (d/'missing-builtins.json').write_text(json.dumps(sorted(set(defs)-known),indent=2)); (d/'missing-apple-app-intents.json').write_text(json.dumps(sorted(set(ai)-known),indent=2)); print(json.dumps(r,indent=2))
+          PY
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-extract-comparison-macos-26
+          path: out/
+          if-no-files-found: warn
+
+  encoding-table:
+    name: Encoding table (macOS 26)
+    needs: parameter-encodings
+    if: needs.parameter-encodings.result == 'success'
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/checkout@v6
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with: {name: deep-extract-parameter-encodings-macos-26, path: out}
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Extract encoding table
+        shell: bash
+        run: |
+          set -uo pipefail; git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/extract-encoding-table.js > out/encoding.js
+          osascript -l JavaScript out/encoding.js out/encoding-table.json out/parameter-encodings.json || true
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: {name: deep-extract-encoding-table-macos-26, path: out/encoding-table.json, if-no-files-found: warn}
+
+  roundtrips:
+    name: Encoding round trips (macOS 26)
+    needs: encoding-table
+    if: needs.encoding-table.result == 'success'
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/checkout@v6
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with: {pattern: deep-extract-*-macos-26, merge-multiple: true, path: out}
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Verify encodings
+        shell: bash
+        run: |
+          set -uo pipefail; git clone "$SHORTCUTKIT_REPO" out/shortcutkit
+          cat out/shortcutkit/tools/jxa-prelude.js out/shortcutkit/tools/verify-encodings.js > out/verify.js
+          osascript -l JavaScript out/verify.js out/parameter-encodings.json out/encoding-table.json out/encoding-roundtrips.json || true
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: {name: deep-extract-roundtrips-macos-26, path: out/encoding-roundtrips.json, if-no-files-found: warn}
