@@ -363,6 +363,9 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 		cleanParams["GroupingIdentifier"] = groupingID
 	}
 	if appleIdentifier == "is.workflow.actions.conditional" {
+		if mode, ok := cleanParams["WFControlFlowMode"].(int); !ok || mode == 0 {
+			cleanParams["WFConditionalLegacyComparisonBehavior"] = true
+		}
 		if att, ok := cleanParams["WFInput"].(WFTextTokenAttachment); ok {
 			cleanParams["WFInput"] = map[string]any{
 				"Type":     "Variable",

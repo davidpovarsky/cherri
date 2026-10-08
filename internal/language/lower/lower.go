@@ -327,10 +327,11 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		GroupingIdentifier: hasInputGroupUUID,
 		ControlFlowMode:    0,
 		Parameters: map[string]interface{}{
-			"GroupingIdentifier": hasInputGroupUUID,
-			"WFControlFlowMode":  0,
-			"WFInput":            inputToken,
-			"WFCondition":        100, // Has Any Value
+			"GroupingIdentifier":                    hasInputGroupUUID,
+			"WFControlFlowMode":                     0,
+			"WFInput":                               inputToken,
+			"WFCondition":                           100, // Has Any Value
+			"WFConditionalLegacyComparisonBehavior": true,
 		},
 	})
 
@@ -363,11 +364,11 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		GroupingIdentifier: chkGroupUUID,
 		ControlFlowMode:    0,
 		Parameters: map[string]interface{}{
-			"GroupingIdentifier":        chkGroupUUID,
-			"WFControlFlowMode":         0,
-			"WFInput":                   &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: chkUUID},
-			"WFCondition":               4, // Is
-			"WFConditionalActionString": "1",
+			"GroupingIdentifier":                    chkGroupUUID,
+			"WFControlFlowMode":                     0,
+			"WFInput":                               &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: chkUUID},
+			"WFCondition":                           100, // Has Any Value
+			"WFConditionalLegacyComparisonBehavior": true,
 		},
 	})
 
@@ -422,11 +423,12 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		GroupingIdentifier: mainGroupUUID,
 		ControlFlowMode:    0,
 		Parameters: map[string]interface{}{
-			"GroupingIdentifier":        mainGroupUUID,
-			"WFControlFlowMode":         0,
-			"WFInput":                   &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_is_fn"},
-			"WFCondition":               4, // Is
-			"WFConditionalActionString": "1",
+			"GroupingIdentifier":                    mainGroupUUID,
+			"WFControlFlowMode":                     0,
+			"WFInput":                               &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_is_fn"},
+			"WFCondition":                           4, // Is
+			"WFConditionalActionString":             "1",
+			"WFConditionalLegacyComparisonBehavior": true,
 		},
 	})
 
@@ -473,11 +475,12 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 			GroupingIdentifier: fnGroupUUID,
 			ControlFlowMode:    0,
 			Parameters: map[string]interface{}{
-				"GroupingIdentifier":        fnGroupUUID,
-				"WFControlFlowMode":         0,
-				"WFInput":                   &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnNameUUID},
-				"WFCondition":               4, // Is
-				"WFConditionalActionString": fn.Name,
+				"GroupingIdentifier":                    fnGroupUUID,
+				"WFControlFlowMode":                     0,
+				"WFInput":                               &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnNameUUID},
+				"WFCondition":                           4, // Is
+				"WFConditionalActionString":             fn.Name,
+				"WFConditionalLegacyComparisonBehavior": true,
 			},
 		})
 
