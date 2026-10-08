@@ -295,14 +295,14 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		l.session.SetMetadata("hasShortcutInputVariables", true)
 	}
 
-	// 1. Initialize _cherri_is_fn = 0.0
+	// 1. Initialize _cherri_is_fn = "0"
 	initNumUUID := l.GenerateUUID()
 	l.emitAction(&ir.NativeActionNode{
 		NodeID:          initNumUUID,
-		AppleIdentifier: "is.workflow.actions.number",
+		AppleIdentifier: "is.workflow.actions.gettext",
 		OutputUUID:      initNumUUID,
 		Parameters: map[string]interface{}{
-			"WFNumberActionNumber": 0.0,
+			"WFTextActionText": "0",
 		},
 	})
 	l.emitAction(&ir.NativeActionNode{
@@ -363,21 +363,21 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		GroupingIdentifier: chkGroupUUID,
 		ControlFlowMode:    0,
 		Parameters: map[string]interface{}{
-			"GroupingIdentifier": chkGroupUUID,
-			"WFControlFlowMode":  0,
-			"WFInput":            &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: chkUUID},
-			"WFCondition":        4, // Is
-			"WFNumberValue":      1.0,
+			"GroupingIdentifier":        chkGroupUUID,
+			"WFControlFlowMode":         0,
+			"WFInput":                   &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: chkUUID},
+			"WFCondition":               4, // Is
+			"WFConditionalActionString": "1",
 		},
 	})
 
 	setOneNumUUID := l.GenerateUUID()
 	l.emitAction(&ir.NativeActionNode{
 		NodeID:          setOneNumUUID,
-		AppleIdentifier: "is.workflow.actions.number",
+		AppleIdentifier: "is.workflow.actions.gettext",
 		OutputUUID:      setOneNumUUID,
 		Parameters: map[string]interface{}{
-			"WFNumberActionNumber": 1.0,
+			"WFTextActionText": "1",
 		},
 	})
 	l.emitAction(&ir.NativeActionNode{
@@ -422,11 +422,11 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		GroupingIdentifier: mainGroupUUID,
 		ControlFlowMode:    0,
 		Parameters: map[string]interface{}{
-			"GroupingIdentifier": mainGroupUUID,
-			"WFControlFlowMode":  0,
-			"WFInput":            &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_is_fn"},
-			"WFCondition":        4, // Is
-			"WFNumberValue":      1.0,
+			"GroupingIdentifier":        mainGroupUUID,
+			"WFControlFlowMode":         0,
+			"WFInput":                   &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_is_fn"},
+			"WFCondition":               4, // Is
+			"WFConditionalActionString": "1",
 		},
 	})
 
@@ -2154,7 +2154,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 
 		dispatchDict := map[string]interface{}{
-			"cherri_functions": 1.0,
+			"cherri_functions": "1",
 			"function":         actionName,
 			"arguments":        argsList,
 		}
