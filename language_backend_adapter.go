@@ -411,6 +411,10 @@ func (s *CanonicalBackendSession) SetMetadata(name string, value any) {
 		} else if c, ok := value.(int64); ok {
 			s.shortcut.WFWorkflowIcon.WFWorkflowIconStartColor = int(c)
 		}
+	case "hasShortcutInputVariables":
+		if b, ok := value.(bool); ok {
+			s.shortcut.WFWorkflowHasShortcutInputVariables = b
+		}
 	}
 }
 

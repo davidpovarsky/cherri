@@ -35,6 +35,9 @@ func defineRawAction() {
 
 func handleRawParams(params map[string]any) {
 	for key, value := range params {
+		if key == "WFWorkflow" {
+			continue
+		}
 		params[key] = normalizeRawActionParamValue(value)
 	}
 }

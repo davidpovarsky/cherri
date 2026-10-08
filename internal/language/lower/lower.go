@@ -291,6 +291,9 @@ func (l *Lowerer) bindSetupQuestion(qName string, wireKey string) {
 
 func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWorkflow, error) {
 	l.workflow.HasShortcutInputVariables = true
+	if l.session != nil {
+		l.session.SetMetadata("hasShortcutInputVariables", true)
+	}
 
 	// 1. Initialize _cherri_is_fn = 0.0
 	initNumUUID := l.GenerateUUID()
