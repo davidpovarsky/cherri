@@ -85,11 +85,21 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 		}
 	}
 
+	// Trim trailing omitted/nil arguments so len(args) reflects passed arguments
+	for len(args) > 0 && args[len(args)-1].valueType == Nil {
+		args = args[:len(args)-1]
+	}
+
 	// Prepare action reference
 	actRef := actionReference{
 		identifier: ident,
 		definition: *def,
 		arguments:  args,
+	}
+	if ident == "rawAction" && len(args) > 0 {
+		if rawIdent, ok := getArgValue(args[0]).(string); ok {
+			actRef.definition.overrideIdentifier = rawIdent
+		}
 	}
 	s.tx.PushAction(actRef)
 	defer s.tx.PopAction()
@@ -341,6 +351,7 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 	for k, v := range params {
 		cleanParams[k] = sanitizeRawParamValue(v)
 	}
+	handleRawParams(cleanParams)
 	if outputUUID != "" {
 		cleanParams["UUID"] = outputUUID
 	}
@@ -422,6 +433,16 @@ func (s *CanonicalBackendSession) AddImportQuestion(q map[string]any) {
 		DefaultValue: defVal,
 		Category:     category,
 	})
+}
+
+func (s *CanonicalBackendSession) BindImportQuestion(questionName string, wireKey string) {
+	for idx, q := range s.shortcut.WFWorkflowImportQuestions {
+		if q.ParameterKey == questionName {
+			s.shortcut.WFWorkflowImportQuestions[idx].ActionIndex = len(s.shortcut.WFWorkflowActions)
+			s.shortcut.WFWorkflowImportQuestions[idx].ParameterKey = wireKey
+			break
+		}
+	}
 }
 
 func (s *CanonicalBackendSession) Finalize() ([]byte, error) {

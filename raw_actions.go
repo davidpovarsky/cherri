@@ -56,6 +56,9 @@ func normalizeRawActionParamValue(value any) any {
 		}
 		return attachmentValues(v)
 	case map[string]any:
+		if _, hasType := v["WFSerializationType"]; hasType {
+			return v
+		}
 		var normalized any = normalizeRawActionDictionary(v)
 		return makeDictionaryValue(&normalized)
 	case []any:

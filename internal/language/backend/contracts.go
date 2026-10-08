@@ -136,5 +136,6 @@ type Session interface {
 	EmitRawAction(appleIdentifier string, params map[string]any, outputUUID, outputName, groupingID string) error
 	SetMetadata(name string, value any)
 	AddImportQuestion(question map[string]any)
+	BindImportQuestion(questionName string, wireKey string)
 	Finalize() ([]byte, error)
 }

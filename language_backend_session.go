@@ -19,20 +19,8 @@ var (
 
 func EnsureCanonicalStandardActions() map[string]*actionDefinition {
 	canonicalActionsOnce.Do(func() {
-		allCats := append([]string{"basic"}, actionIncludes...)
-		for _, actionInclude := range allCats {
-			lines = append(lines, fmt.Sprintf("#include 'actions/%s'\n", actionInclude))
-			resetParse()
-			handleIncludes()
-			currentCategory = actionInclude
-			handleActionDefinitions()
-
-			included = []string{}
-			includes = []include{}
-			lines = []string{}
-			tokens = []token{}
-			resetParse()
-		}
+		loadStandardActions()
+		defineRawAction()
 		canonicalStandardActions = maps.Clone(actions)
 	})
 	return canonicalStandardActions

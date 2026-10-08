@@ -259,6 +259,34 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) {
 			}
 		}
 	}
+
+	if l.session != nil {
+		if len(l.workflow.WorkflowTypes) > 0 {
+			l.session.SetMetadata("workflowTypes", l.workflow.WorkflowTypes)
+		}
+		if len(l.workflow.InputContentItemClasses) > 0 {
+			l.session.SetMetadata("inputContentItemClasses", l.workflow.InputContentItemClasses)
+		}
+		if l.workflow.IconGlyph != 0 {
+			l.session.SetMetadata("iconGlyph", l.workflow.IconGlyph)
+		}
+		if l.workflow.IconColor != 0 {
+			l.session.SetMetadata("iconColor", l.workflow.IconColor)
+		}
+	}
+}
+
+func (l *Lowerer) bindSetupQuestion(qName string, wireKey string) {
+	for idx, existingQ := range l.workflow.ImportQuestions {
+		if existingQ["ParameterKey"] == qName {
+			l.workflow.ImportQuestions[idx]["ActionIndex"] = len(l.workflow.Actions)
+			l.workflow.ImportQuestions[idx]["ParameterKey"] = wireKey
+			break
+		}
+	}
+	if l.session != nil {
+		l.session.BindImportQuestion(qName, wireKey)
+	}
 }
 
 func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWorkflow, error) {
@@ -865,6 +893,22 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 			OutputUUID: uuid,
 			OutputName: "Text",
 		}
+	case []interface{}:
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.list",
+			OutputUUID:      uuid,
+			OutputName:      "List",
+			Parameters: map[string]interface{}{
+				"WFItems": v,
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "List",
+		}
 	default:
 
 		node := &ir.NativeActionNode{
@@ -1103,6 +1147,8 @@ func (l *Lowerer) lowerFor(stmt *syntax.ForStmt) error {
 		return err
 	}
 
+	iterToken := l.materializeToAttachment(iterVal)
+
 	beginNode := &ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.repeat.each",
@@ -1111,7 +1157,7 @@ func (l *Lowerer) lowerFor(stmt *syntax.ForStmt) error {
 		Parameters: map[string]interface{}{
 			"GroupingIdentifier": groupUUID,
 			"WFControlFlowMode":  0,
-			"WFInput":            iterVal,
+			"WFInput":            iterToken,
 		},
 	}
 	l.emitAction(beginNode)
@@ -2110,6 +2156,18 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			"arguments":        argsList,
 		}
 
+		dispatchUUID := l.GenerateUUID()
+		dispatchNode := &ir.NativeActionNode{
+			NodeID:          dispatchUUID,
+			AppleIdentifier: "is.workflow.actions.dictionary",
+			OutputUUID:      dispatchUUID,
+			OutputName:      "FunctionPayload",
+			Parameters: map[string]interface{}{
+				"WFItems": dispatchDict,
+			},
+		}
+		l.emitAction(dispatchNode)
+
 		wfTarget := map[string]interface{}{
 			"workflowIdentifier": l.GenerateUUID(),
 			"isSelf":             true,
@@ -2120,7 +2178,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 
 		runParams := map[string]interface{}{
 			"WFWorkflow": wfTarget,
-			"WFInput":    dispatchDict,
+			"WFInput": &ir.AttachmentToken{
+				Type:       "ActionOutput",
+				OutputUUID: dispatchUUID,
+				OutputName: "FunctionPayload",
+			},
 		}
 		if l.WorkflowName != "" {
 			runParams["WFWorkflowName"] = l.WorkflowName
@@ -2153,13 +2215,38 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		callArgs := make([]backend.CallArgument, 0, len(call.NamedArgs)+1)
 		if call.PrimaryArg != nil {
 			if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
-				primVal, err := l.lowerSemanticValue(call.PrimaryArg)
-				if err != nil {
-					return nil, err
+				var primVal backend.SemanticValue
+				if primParam.WireKey == "WFInput" || primParam.Codec == "token" {
+					if _, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit {
+						rawVal, err := l.lowerExpression(call.PrimaryArg)
+						if err == nil {
+							att := l.materializeToAttachment(rawVal)
+							primVal = backend.SemanticValue{
+								Kind: backend.ValReference,
+								Ref: &backend.Reference{
+									Kind:         backend.RefActionResult,
+									ProducerID:   att.OutputUUID,
+									ProducerName: att.OutputName,
+								},
+							}
+						}
+					}
+				}
+				if primVal.Kind == backend.ValNil {
+					var err error
+					primVal, err = l.lowerSemanticValue(call.PrimaryArg)
+					if err != nil {
+						return nil, err
+					}
 				}
 				wireKey := primParam.WireKey
 				if wireKey == "" {
 					wireKey = primParam.Label
+				}
+				if ident, isIdent := call.PrimaryArg.(*syntax.IdentExpr); isIdent {
+					if _, isSetup := l.setupQuestions[ident.Name]; isSetup {
+						l.bindSetupQuestion(ident.Name, wireKey)
+					}
 				}
 				callArgs = append(callArgs, backend.CallArgument{
 					ParameterID: wireKey,
@@ -2194,6 +2281,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if wireKey == "" {
 					wireKey = param.Label
 				}
+				if ident, isIdent := nArg.Value.(*syntax.IdentExpr); isIdent {
+					if _, isSetup := l.setupQuestions[ident.Name]; isSetup {
+						l.bindSetupQuestion(ident.Name, wireKey)
+					}
+				}
 				pos := -1
 				for pIdx, p := range actionSchema.Parameters {
 					if p.ID == param.ID || p.Label == param.Label {
@@ -2212,14 +2304,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			}
 		}
 
-		outputName := ""
-		if l.currentBindingName != "" {
-			outputName = l.currentBindingName
-		} else if actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void" {
-			outputName = actionName + "Result"
-		}
+		outputName := l.currentBindingName
 		var outputUUID string
-		if outputName != "" {
+		if outputName != "" || (actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void") {
 			outputUUID = uuid
 		}
 
@@ -2238,10 +2325,17 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 
 		if outUUID != "" {
+			outRefName := outputName
+			if outRefName == "" {
+				outRefName = actionSchema.Docs.Title
+				if outRefName == "" {
+					outRefName = actionSchema.OutputTypeName
+				}
+			}
 			return &ir.AttachmentToken{
 				Type:       "ActionOutput",
 				OutputUUID: outUUID,
-				OutputName: outputName,
+				OutputName: outRefName,
 			}, nil
 		}
 		return nil, nil
