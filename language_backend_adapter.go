@@ -280,6 +280,10 @@ func (s *CanonicalBackendSession) EmitRawAction(appleIdentifier string, params m
 }
 
 func sanitizeRawParamValue(v any) any {
+	return sanitizeRawParamValueContext(v, false)
+}
+
+func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
 	if tok, ok := v.(*ir.AttachmentToken); ok {
 		desc := ReferenceDescriptor{
 			Kind:       tok.Type,
@@ -306,37 +310,49 @@ func sanitizeRawParamValue(v any) any {
 				}
 			}
 		}
+		if inAttachmentsByRange {
+			return EncodeReferenceValue(desc)
+		}
 		return EncodeReferenceAttachment(desc, "WFTextTokenAttachment")
 	}
 	if ref, ok := v.(*backend.Reference); ok {
 		desc := ReferenceToDescriptor(ref)
+		if inAttachmentsByRange {
+			return EncodeReferenceValue(desc)
+		}
 		return EncodeReferenceAttachment(desc, "WFTextTokenAttachment")
+	}
+	if att, ok := v.(WFTextTokenAttachment); ok {
+		if inAttachmentsByRange {
+			return att.Value
+		}
+		return att
 	}
 	if m, ok := v.(map[string]any); ok {
 		res := make(map[string]any, len(m))
 		for k, val := range m {
-			res[k] = sanitizeRawParamValue(val)
+			res[k] = sanitizeRawParamValueContext(val, inAttachmentsByRange || k == "attachmentsByRange")
 		}
 		return res
 	}
 	if m, ok := v.(map[string]interface{}); ok {
 		res := make(map[string]any, len(m))
 		for k, val := range m {
-			res[k] = sanitizeRawParamValue(val)
+			res[k] = sanitizeRawParamValueContext(val, inAttachmentsByRange || k == "attachmentsByRange")
 		}
 		return res
 	}
 	if s, ok := v.([]any); ok {
 		res := make([]any, len(s))
 		for i, el := range s {
-			res[i] = sanitizeRawParamValue(el)
+			res[i] = sanitizeRawParamValueContext(el, inAttachmentsByRange)
 		}
 		return res
 	}
 	if s, ok := v.([]interface{}); ok {
 		res := make([]any, len(s))
 		for i, el := range s {
-			res[i] = sanitizeRawParamValue(el)
+			res[i] = sanitizeRawParamValueContext(el, inAttachmentsByRange)
 		}
 		return res
 	}
@@ -376,6 +392,31 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 				cleanParams["WFInput"] = map[string]any{
 					"Type":     "Variable",
 					"Variable": input,
+				}
+			}
+		}
+	}
+	if appleIdentifier == "is.workflow.actions.output" {
+		if att, ok := cleanParams["WFOutput"].(WFTextTokenAttachment); ok {
+			cleanParams["WFOutput"] = map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value": map[string]any{
+					"string": "\uFFFC",
+					"attachmentsByRange": map[string]any{
+						"{0, 1}": att.Value,
+					},
+				},
+			}
+		} else if outMap, ok := cleanParams["WFOutput"].(map[string]any); ok {
+			if outMap["WFSerializationType"] == "WFTextTokenAttachment" {
+				cleanParams["WFOutput"] = map[string]any{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]any{
+						"string": "\uFFFC",
+						"attachmentsByRange": map[string]any{
+							"{0, 1}": outMap["Value"],
+						},
+					},
 				}
 			}
 		}

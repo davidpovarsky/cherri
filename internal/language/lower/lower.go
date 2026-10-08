@@ -602,6 +602,17 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 			if err != nil {
 				return err
 			}
+			if tok, isTok := val.(*ir.AttachmentToken); isTok {
+				val = map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string": "\uFFFC",
+						"attachmentsByRange": map[string]interface{}{
+							"{0, 1}": tok,
+						},
+					},
+				}
+			}
 			// Emit output action: is.workflow.actions.output
 			node := &ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
