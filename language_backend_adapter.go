@@ -381,11 +381,22 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 		}
 	}
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
-
 		WFWorkflowActionIdentifier: appleIdentifier,
 		WFWorkflowActionParameters: cleanParams,
 	})
 	return outputUUID, nil
+}
+
+func (s *CanonicalBackendSession) RenameOutput(outputUUID string, newName string) {
+	for i := range s.shortcut.WFWorkflowActions {
+		params := s.shortcut.WFWorkflowActions[i].WFWorkflowActionParameters
+		if params != nil {
+			if uuid, ok := params["UUID"].(string); ok && uuid == outputUUID {
+				params["CustomOutputName"] = newName
+				return
+			}
+		}
+	}
 }
 
 func (s *CanonicalBackendSession) SetMetadata(name string, value any) {

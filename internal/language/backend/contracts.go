@@ -134,6 +134,7 @@ type Session interface {
 	BeginControl(region ControlRegion) error
 	EndControl(region ControlRegion) error
 	EmitRawAction(appleIdentifier string, params map[string]any, outputUUID, outputName, groupingID string) error
+	RenameOutput(outputUUID string, newName string)
 	SetMetadata(name string, value any)
 	AddImportQuestion(question map[string]any)
 	BindImportQuestion(questionName string, wireKey string)

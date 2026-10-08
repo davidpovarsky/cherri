@@ -680,6 +680,9 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 					break
 				}
 			}
+			if l.session != nil {
+				l.session.RenameOutput(ref.OutputUUID, b.Name)
+			}
 		} else if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "Variable" {
 			// Materialize mutable variable read with getvariable so later mutations don't affect this let binding!
 			uuid := l.GenerateUUID()
@@ -2195,18 +2198,22 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 
 		uuid := l.GenerateUUID()
+		outName := actionName + "Result"
+		if l.currentBindingName != "" {
+			outName = l.currentBindingName
+		}
 		runNode := &ir.NativeActionNode{
 			NodeID:          uuid,
 			AppleIdentifier: "is.workflow.actions.runworkflow",
 			OutputUUID:      uuid,
-			OutputName:      actionName + "Result",
+			OutputName:      outName,
 			Parameters:      runParams,
 		}
 		l.emitAction(runNode)
 		return &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: uuid,
-			OutputName: actionName + "Result",
+			OutputName: outName,
 		}, nil
 	}
 
