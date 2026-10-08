@@ -421,6 +421,27 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 			}
 		}
 	}
+	if appleIdentifier == "is.workflow.actions.list" {
+		if arr, ok := cleanParams["WFItems"].(WFArrayValue); ok {
+			cleanParams["WFItems"] = arr.Value
+		} else if m, ok := cleanParams["WFItems"].(map[string]any); ok {
+			if m["WFSerializationType"] == "WFArrayParameterState" {
+				if val, exists := m["Value"]; exists {
+					cleanParams["WFItems"] = val
+				}
+			}
+		} else if items, ok := cleanParams["WFItems"].([]any); ok {
+			var dictItems []WFDictionaryFieldValueItem
+			for _, item := range items {
+				if dItem, ok := item.(WFDictionaryFieldValueItem); ok {
+					dictItems = append(dictItems, dItem)
+				} else {
+					dictItems = append(dictItems, makeDictionaryItem("", item))
+				}
+			}
+			cleanParams["WFItems"] = dictItems
+		}
+	}
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
 		WFWorkflowActionIdentifier: appleIdentifier,
 		WFWorkflowActionParameters: cleanParams,

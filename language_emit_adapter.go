@@ -114,6 +114,27 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 				}
 			}
 		}
+		if action.WFWorkflowActionIdentifier == "is.workflow.actions.list" {
+			if arr, ok := action.WFWorkflowActionParameters["WFItems"].(WFArrayValue); ok {
+				action.WFWorkflowActionParameters["WFItems"] = arr.Value
+			} else if m, ok := action.WFWorkflowActionParameters["WFItems"].(map[string]any); ok {
+				if m["WFSerializationType"] == "WFArrayParameterState" {
+					if val, exists := m["Value"]; exists {
+						action.WFWorkflowActionParameters["WFItems"] = val
+					}
+				}
+			} else if items, ok := action.WFWorkflowActionParameters["WFItems"].([]any); ok {
+				var dictItems []WFDictionaryFieldValueItem
+				for _, item := range items {
+					if dItem, ok := item.(WFDictionaryFieldValueItem); ok {
+						dictItems = append(dictItems, dItem)
+					} else {
+						dictItems = append(dictItems, makeDictionaryItem("", item))
+					}
+				}
+				action.WFWorkflowActionParameters["WFItems"] = dictItems
+			}
+		}
 		sc.WFWorkflowActions = append(sc.WFWorkflowActions, action)
 
 	}
