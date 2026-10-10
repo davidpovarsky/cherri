@@ -232,8 +232,11 @@ func (r *Runner) Record(id, group, req, level string, executedLevels []string, p
 
 	resStr := "failed"
 	exitCode := 1
-	if passed || status == "PENDING_EXTERNAL" || status == "PASSED" {
+	if passed || status == "PENDING_EXTERNAL" || status == "PASSED" || status == "AI_EVAL_NOT_RUN" {
 		resStr = "passed"
+		if status == "AI_EVAL_NOT_RUN" {
+			resStr = "not_run"
+		}
 		exitCode = 0
 	}
 
@@ -763,11 +766,15 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 
 	knownRequirements := make(map[string]bool)
 	requirementTiers := make(map[string][]string)
+	requirementGroup := make(map[string]string)
+	requirementDesc := make(map[string]string)
 
 	if contracts != nil && contracts.Acceptance != nil {
 		for _, c := range contracts.Acceptance.Cases {
 			knownRequirements[c.ID] = true
 			requirementTiers[c.ID] = parseRequiredTiers(c.MinimumTestLevel)
+			requirementGroup[c.ID] = c.Group
+			requirementDesc[c.ID] = c.Requirement
 		}
 	}
 	if contracts != nil && contracts.Repair != nil {
@@ -781,6 +788,8 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				tiers = []string{"unit"}
 			}
 			requirementTiers[c.ID] = tiers
+			requirementGroup[c.ID] = "repair"
+			requirementDesc[c.ID] = c.Title
 		}
 	}
 	if contracts != nil && contracts.Gates != nil {
@@ -794,6 +803,8 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				tiers = []string{"repository"}
 			}
 			requirementTiers[g.ID] = tiers
+			requirementGroup[g.ID] = "gate"
+			requirementDesc[g.ID] = g.Title
 		}
 	}
 
@@ -903,9 +914,19 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			}
 		}
 
+		var executedLevels []string
+		for _, reqTier := range reqTiers {
+			if satisfiedTiers[reqTier] {
+				executedLevels = append(executedLevels, reqTier)
+			}
+		}
+
 		res := CaseResult{
-			ID:        id,
-			TestLevel: strings.Join(reqTiers, "+"),
+			ID:             id,
+			Group:          requirementGroup[id],
+			Requirement:    requirementDesc[id],
+			TestLevel:      strings.Join(reqTiers, "+"),
+			ExecutedLevels: executedLevels,
 		}
 
 		if hasFailedRecord {

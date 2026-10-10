@@ -9,6 +9,9 @@ if ! command -v go >/dev/null 2>&1; then
   elif [ -d "/mnt/c/Program Files/Go/bin" ]; then
     export PATH="$PATH:/mnt/c/Program Files/Go/bin"
   fi
+  if ! command -v go >/dev/null 2>&1 && command -v go.exe >/dev/null 2>&1; then
+    go() { go.exe "$@"; }
+  fi
 fi
 
 PHASE="local"

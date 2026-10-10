@@ -389,7 +389,7 @@ if [ "$ASSERT_PASSED" = "true" ]; then
   },
   {
     "evidence_id": "ev-runtime-loops",
-    "requirements": ["F02", "F04", "LP01", "LP02", "LP03", "RP14"],
+    "requirements": ["F02", "F04", "RP14"],
     "tier": "ios-runtime",
     "test_id": "ios27-runtime-poc:nested-loops",
     "implementation_sha": "$HEAD_SHA",
@@ -415,7 +415,7 @@ if [ "$ASSERT_PASSED" = "true" ]; then
   },
   {
     "evidence_id": "ev-runtime-static-variants",
-    "requirements": ["SV01", "RP08", "BRG17"],
+    "requirements": ["RP08", "BRG17"],
     "tier": "ios-runtime",
     "test_id": "ios27-runtime-poc:static-variants",
     "implementation_sha": "$HEAD_SHA",

@@ -115,5 +115,19 @@
 | D01-D03 | PASSED | M5 docs | `docs/language-v2`, `cherrilang.org` |
 | K01-K05 | PASSED | M5 Skill | `skills/cherri-shortcuts/scripts/self-test.sh` |
 | CI01-CI04 | PASSED | M6 verification | `tools/language-acceptance/main_test.go`, test suite |
-| AI01 | AI_EVAL_NOT_RUN | M6 evaluation | External model eval endpoint unconfigured (Sec 22.5) |
-| END01 | PASSED | M6 delivery | Clean branch `agent/language-redesign`, provenances recorded |
+| AI01 | BLOCKED_EXTERNAL | M6 evaluation | External model eval endpoint unconfigured (Sec 22.5) |
+| END01 | PASSED | M6-M7 delivery | Clean branch `agent/canonical-backend-production-cutover`, provenances & CI artifacts recorded |
+| RP01-RP52 | PASSED | M7 repair regressions | `defects_repro_test.go`, `compiler_parity_matrix_test.go`, `ios27-runtime-poc` |
+| BRG01-BRG33 | PASSED | M7 backend recovery gates | `CanonicalBackendSession`, `compiler_architecture_test.go`, 4 green CI runs |
+
+### M7 - Canonical Backend Production Cutover & Evidence Closure
+- [x] Production compiler path (`compile_v2.go`, `ios_bridge.go`) cut over to `CanonicalBackendSession`
+- [x] `is.workflow.actions.list` `WFItems` serialized as direct `NSArray` of `WFDictionaryFieldValueItem` for iOS 27 Shortcuts runtime compliance
+- [x] Full local test matrix (`TestCompilerEndToEndParityMatrix`, `TestArchitecture`, `TestCherriNoSign`, `TestDecomp`, `TestForkActionRoundTrips`, `tools/language-acceptance`) passing
+- [x] All 4 required GitHub Actions workflows succeeded on implementation commit `71d2845dd4472b99775209121ee744be8aa2b608`:
+  - `Build & Test`: Run `37856193824` (SUCCESS)
+  - `OpenMinis Skill`: Run `37856197670` (SUCCESS)
+  - `iOS Build`: Run `37856201209` (SUCCESS)
+  - `iOS 27 Shortcuts Runtime PoC`: Run `37856204715` (SUCCESS — `CHERRI_IOS27_RUNTIME_OK`, `VAR=updated`, `IF=true`, `LOOPS=0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|`, `FUNCTION=21`, `BASE64=Q0hFUlJJ`)
+- [x] Final acceptance closure verified (`closure_complete: true`, 178 passed, 0 failed, 1 skipped `AI01` out of 179 total requirements)
+

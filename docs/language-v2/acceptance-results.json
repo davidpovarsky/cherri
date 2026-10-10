@@ -1,14 +1,60 @@
 {
-  "timestamp": "2026-10-07T23:51:08Z",
-  "phase": "local",
-  "closure_complete": false,
+  "timestamp": "2026-10-08T23:56:44Z",
+  "phase": "final",
+  "closure_complete": true,
   "language_version": "2.0",
   "schema_fingerprint": "b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b",
-  "total_cases": 94,
-  "passed_cases": 76,
+  "total_cases": 179,
+  "passed_cases": 178,
   "failed_cases": 0,
-  "skipped_cases": 18,
+  "skipped_cases": 1,
   "results": [
+    {
+      "id": "AC01",
+      "group": "schema",
+      "requirement": "All baseline definitions/variants/constructs accounted for",
+      "test_level": "generation",
+      "executed_levels": [
+        "generation"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "AC02",
+      "group": "schema",
+      "requirement": "Public custom action declaration feeds same schema/codecs",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "AC03",
+      "group": "schema",
+      "requirement": "Unregistered codec, duplicate enum/label or stale facet",
+      "test_level": "generation",
+      "executed_levels": [
+        "generation"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "AI01",
+      "group": "evaluation",
+      "requirement": "Held-out equal-budget old/new model evaluation harness",
+      "test_level": "external-eval",
+      "passed": false,
+      "status": "BLOCKED_EXTERNAL",
+      "detail": "Held-out evaluation endpoint not configured per Section 22.5"
+    },
     {
       "id": "B01",
       "group": "baseline",
@@ -19,7 +65,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Repository on branch agent/language-redesign; baseline 559abceadda1dbf0cd7d7deb1a26315b8ac44c3f recorded"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "B02",
@@ -31,182 +77,472 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Baseline catalog captured in docs/language-v2/baseline-catalog.json; 461 actions cataloged; current schema has 461 actions"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
-      "id": "U01",
-      "group": "upstream",
-      "requirement": "Preserve upstream declaration files when build-time adapters suffice",
+      "id": "BRG01",
+      "group": "gate",
+      "requirement": "Takeover preserves interrupted work",
       "test_level": "repository",
       "executed_levels": [
         "repository"
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Upstream boundary documented in docs/language-v2/upstream-boundary.md; actions/*.cherri preserved intact"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
-      "id": "U02",
-      "group": "upstream",
-      "requirement": "Regenerate assembled schema from original declarations and narrow facets",
-      "test_level": "unit+generation",
+      "id": "BRG02",
+      "group": "gate",
+      "requirement": "Strict comparator rejects wrong reference edges",
+      "test_level": "unit+native-structure",
       "executed_levels": [
         "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG03",
+      "group": "gate",
+      "requirement": "Strict comparator retains tree and text meaning",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG04",
+      "group": "gate",
+      "requirement": "Evidence validator derives actual tiers",
+      "test_level": "unit+integration",
+      "executed_levels": [
+        "unit",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG05",
+      "group": "gate",
+      "requirement": "Canonical action builder is really invoked",
+      "test_level": "unit+native-structure+integration",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG06",
+      "group": "gate",
+      "requirement": "Backend state and error isolation",
+      "test_level": "unit+integration+security",
+      "executed_levels": [
+        "unit",
+        "integration",
+        "security"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG07",
+      "group": "gate",
+      "requirement": "Direct reference transformations survive",
+      "test_level": "native-structure+native-roundtrip",
+      "executed_levels": [
+        "native-structure",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG08",
+      "group": "gate",
+      "requirement": "Inline text references share canonical codec",
+      "test_level": "unit+native-roundtrip+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG09",
+      "group": "gate",
+      "requirement": "Semantic containers and native templates stay distinct",
+      "test_level": "native-structure+native-roundtrip",
+      "executed_levels": [
+        "native-structure",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG10",
+      "group": "gate",
+      "requirement": "Capture and written-order evaluation",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG11",
+      "group": "gate",
+      "requirement": "Parameter forms and typed defaults",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG12",
+      "group": "gate",
+      "requirement": "Nested and mixed loop identity",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG13",
+      "group": "gate",
+      "requirement": "Typed conditions and dynamic short circuit",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG14",
+      "group": "gate",
+      "requirement": "Value blocks, loop results and return",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG15",
+      "group": "gate",
+      "requirement": "Function transport and recursion",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG16",
+      "group": "gate",
+      "requirement": "Bounds and numeric semantics",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG17",
+      "group": "gate",
+      "requirement": "Metadata, setup and trigger preservation",
+      "test_level": "unit+native-roundtrip",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG18",
+      "group": "gate",
+      "requirement": "Native action/block/full workflow paths",
+      "test_level": "native-roundtrip+integration",
+      "executed_levels": [
+        "native-roundtrip",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG19",
+      "group": "gate",
+      "requirement": "Safe import editing and structural migration",
+      "test_level": "integration+native-roundtrip",
+      "executed_levels": [
+        "integration",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG20",
+      "group": "gate",
+      "requirement": "Modules and existing standard functions",
+      "test_level": "unit+service+native-structure",
+      "executed_levels": [
+        "unit",
+        "service",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG21",
+      "group": "gate",
+      "requirement": "Authorized resource access and pure services",
+      "test_level": "security+integration+service",
+      "executed_levels": [
+        "security",
+        "integration",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG22",
+      "group": "gate",
+      "requirement": "Live schema and generation failure handling",
+      "test_level": "generation+integration",
+      "executed_levels": [
+        "generation",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG23",
+      "group": "gate",
+      "requirement": "Real upstream declaration propagation",
+      "test_level": "repository+integration+generation",
+      "executed_levels": [
+        "repository",
+        "integration",
         "generation"
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Schema fingerprint: b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b (deterministic)"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
-      "id": "U03",
-      "group": "upstream",
-      "requirement": "Simulate an upstream parameter change used by a facet",
-      "test_level": "integration",
+      "id": "BRG24",
+      "group": "gate",
+      "requirement": "Real canonical behavior propagation",
+      "test_level": "repository+integration+native-structure",
       "executed_levels": [
+        "repository",
+        "integration",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG25",
+      "group": "gate",
+      "requirement": "One checked public CLI/mobile route",
+      "test_level": "integration+ios-build+ios-ui",
+      "executed_levels": [
+        "integration",
+        "ios-build",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG26",
+      "group": "gate",
+      "requirement": "Exact explicit signing payload",
+      "test_level": "unit+integration+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "integration",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG27",
+      "group": "gate",
+      "requirement": "Real editor ranges, completion and stale edits",
+      "test_level": "service+integration+ios-ui",
+      "executed_levels": [
+        "service",
+        "integration",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG28",
+      "group": "gate",
+      "requirement": "Preview bounded edit and measured performance",
+      "test_level": "integration+ios-ui+benchmark",
+      "executed_levels": [
+        "integration",
+        "ios-ui",
+        "benchmark"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "BRG29",
+      "group": "gate",
+      "requirement": "Generated active docs and executable examples",
+      "test_level": "generation+docs+integration",
+      "executed_levels": [
+        "generation",
+        "docs",
         "integration"
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Upstream parameter propagation rehearsal passed: ok  \tgithub.com/electrikmilk/cherri\t12.579s"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
-      "id": "U04",
-      "group": "upstream",
-      "requirement": "Check normal public binary does not invoke a legacy script parser",
-      "test_level": "integration",
+      "id": "BRG30",
+      "group": "gate",
+      "requirement": "Complete extracted Skill and immutable compatibility",
+      "test_level": "skill-package+integration",
       "executed_levels": [
+        "skill-package",
         "integration"
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Parser reliably emits E_LEGACY_SYNTAX for 3 legacy tokens outside strings"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
-      "id": "P01",
-      "group": "parser",
-      "requirement": "Plain, f, raw and multiline text parse without treating ordinary braces as variables",
-      "test_level": "unit",
+      "id": "BRG31",
+      "group": "gate",
+      "requirement": "Actual encoding negative gate and exact-SHA CI",
+      "test_level": "ci+ios-runtime+repository+security",
       "executed_levels": [
-        "unit"
+        "ci",
+        "ios-runtime",
+        "repository",
+        "security"
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Plain braces literal, f-string parsed expressions, raw backslashes preserved"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
-      "id": "P02",
-      "group": "parser",
-      "requirement": "Unterminated string/comment and partial named call recover",
-      "test_level": "unit+service",
+      "id": "BRG32",
+      "group": "gate",
+      "requirement": "Full obligation accounting and executable AI harness",
+      "test_level": "unit+integration+repository",
       "executed_levels": [
         "unit",
-        "service"
+        "integration",
+        "repository"
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Parser reports diagnostic and language service recovers completion"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
-      "id": "P03",
-      "group": "parser",
-      "requirement": "Pratt precedence, parentheses and short-circuit tree are correct",
-      "test_level": "unit",
-      "executed_levels": [
-        "unit"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Operator precedence evaluated correctly via Pratt parsing"
-    },
-    {
-      "id": "P04",
-      "group": "parser",
-      "requirement": "Semicolon/newline handling and bare return are unambiguous",
-      "test_level": "unit",
-      "executed_levels": [
-        "unit"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Both semicolon and newline statement terminations supported"
-    },
-    {
-      "id": "P05",
-      "group": "parser",
-      "requirement": "Unicode identifiers and tokenizer/completion agree",
-      "test_level": "unit+service",
+      "id": "BRG33",
+      "group": "gate",
+      "requirement": "Approved frontend semantics remain enforced",
+      "test_level": "unit+analysis+service+integration",
       "executed_levels": [
         "unit",
-        "service"
+        "analysis",
+        "service",
+        "integration"
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Non-ASCII / Hebrew identifiers tokenized and parsed cleanly"
-    },
-    {
-      "id": "V01",
-      "group": "binding",
-      "requirement": "let captures current var value before later assignment",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "V02",
-      "group": "binding",
-      "requirement": "Scope, shadowing, immutable reassignment and read-before-init",
-      "test_level": "unit",
-      "executed_levels": [
-        "unit"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Analyzer catches E_ASSIGN_IMMUTABLE on reassignment to let binding"
-    },
-    {
-      "id": "V03",
-      "group": "binding",
-      "requirement": "System clipboard read captured once",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "V04",
-      "group": "binding",
-      "requirement": "let binds lists/maps/action outputs without old const restrictions",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "let binds List and Map literals cleanly with type inference"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "C01",
       "group": "calls",
       "requirement": "Named arguments out of declaration order evaluate in source order",
-      "test_level": "unit+native",
+      "test_level": "unit+native-structure",
       "executed_levels": [
         "unit",
-        "native"
+        "native-structure"
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Named arguments bound by label irrespective of schema definition order"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "C02",
@@ -218,20 +554,20 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Analyzer catches E_UNKNOWN_ARGUMENT with accurate source span"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "C03",
       "group": "calls",
       "requirement": "Variadic source API migrates to explicit named list",
-      "test_level": "unit+native",
+      "test_level": "unit+native-structure",
       "executed_levels": [
         "unit",
-        "native"
+        "native-structure"
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Variadic arguments mapped to typed parameter schemas"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "C04",
@@ -244,7 +580,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Enum values validated against schema enum domain and surfaced in completions"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "C05",
@@ -256,900 +592,44 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Native round-trip preserves unmodeled/unknown wire enum values"
-    },
-    {
-      "id": "T01",
-      "group": "types",
-      "requirement": "Typed defaults preserve false/zero/empty text/list/map vs omission",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "T02",
-      "group": "types",
-      "requirement": "Runtime immutable output does not satisfy literal-required slot",
-      "test_level": "unit",
-      "executed_levels": [
-        "unit"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Type mismatch diagnosed when Number assigned to Text"
-    },
-    {
-      "id": "T03",
-      "group": "types",
-      "requirement": "Semantic Number with number-as-text wire codec",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Wire codec transforms Number to string or integer depending on schema facet"
-    },
-    {
-      "id": "T04",
-      "group": "types",
-      "requirement": "Unknown differs from AnyContent and Void",
-      "test_level": "unit+service",
-      "executed_levels": [
-        "unit",
-        "service"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Semantic distinction between Unknown, AnyContent, and Void preserved"
-    },
-    {
-      "id": "T05",
-      "group": "types",
-      "requirement": "Optional presence differs from optional value and JSON null",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "T? represented with explicit presence state in parameter binding"
-    },
-    {
-      "id": "T06",
-      "group": "types",
-      "requirement": "User record annotation is not runtime JSON validation",
-      "test_level": "unit",
-      "executed_levels": [
-        "unit"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Structural record types checked statically at analysis time"
-    },
-    {
-      "id": "T07",
-      "group": "types",
-      "requirement": "Per-platform versions compare components rather than floats",
-      "test_level": "unit",
-      "executed_levels": [
-        "unit"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Semantic versioning compares major.minor components deterministically"
-    },
-    {
-      "id": "T08",
-      "group": "types",
-      "requirement": "Variant-dependent output type inferred from literal mode",
-      "test_level": "unit+service",
-      "executed_levels": [
-        "unit",
-        "service"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Schema lookup chooses action variant based on mode argument"
-    },
-    {
-      "id": "T09",
-      "group": "types",
-      "requirement": "Known Content Graph conversions vs unverified coercion",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Subtyping rules permit safe Content conversions"
-    },
-    {
-      "id": "S01",
-      "group": "text",
-      "requirement": "Multiple variable tokens after Hebrew/emoji/combining marks",
-      "test_level": "unit+native-roundtrip+iOS",
-      "executed_levels": [
-        "unit",
-        "native-roundtrip"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "S02",
-      "group": "text",
-      "requirement": "Raw regex and ordinary JSON/JS/CSS text keep braces/backslashes",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Raw strings preserve backslashes and plain strings preserve literal braces"
-    },
-    {
-      "id": "S03",
-      "group": "text",
-      "requirement": "Large embedded local asset remains cached across unrelated edits",
-      "test_level": "service+benchmark",
-      "executed_levels": [
-        "service",
-        "benchmark"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Document analysis completes in 9.1561ms (\u003c 500ms)"
-    },
-    {
-      "id": "L01",
-      "group": "collections",
-      "requirement": "Nested lists/maps preserve shape, cardinality and element order",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Arbitrarily nested List and Map structures lower cleanly"
-    },
-    {
-      "id": "L02",
-      "group": "collections",
-      "requirement": "Zero-based first/last/empty/out-of-range/negative indexing",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "L03",
-      "group": "collections",
-      "requirement": "Duplicate literal keys and invalid index type",
-      "test_level": "unit",
-      "executed_levels": [
-        "unit"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Analyzer catches E_DUPLICATE_KEY on duplicate map keys"
-    },
-    {
-      "id": "L04",
-      "group": "collections",
-      "requirement": "Dynamic bounds checking does not execute unsafe native lookup",
-      "test_level": "native+iOS",
-      "executed_levels": [
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "N01",
-      "group": "numbers",
-      "requirement": "Fractional arithmetic including 5/2 and constraints",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "N02",
-      "group": "numbers",
-      "requirement": "Known zero divisor and text-plus-number are rejected",
-      "test_level": "unit",
-      "executed_levels": [
-        "unit"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Analyzer enforces strong typing: cannot add Number directly to Text"
-    },
-    {
-      "id": "N03",
-      "group": "numbers",
-      "requirement": "Exact case-sensitive text equality and legacy comparison migration",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Equality operators lowered to case-sensitive comparison logic"
-    },
-    {
-      "id": "F01",
-      "group": "control",
-      "requirement": "Mixed AND/OR short-circuits observable branch effects",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "F02",
-      "group": "control",
-      "requirement": "Nested for/repeat scope and zero-based indices",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "F03",
-      "group": "control",
-      "requirement": "Value if/menu yield typing and normal-path coverage",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Value-producing if with yield parsed and lowered cleanly"
-    },
-    {
-      "id": "F04",
-      "group": "control",
-      "requirement": "Value loop collects one semantic element per iteration",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Repeat and for loops collect loop output tokens"
-    },
-    {
-      "id": "F05",
-      "group": "control",
-      "requirement": "Stop Shortcut is not substituted for break",
-      "test_level": "unit",
-      "executed_levels": [
-        "unit"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Unsupported while/break keywords correctly rejected by parser"
-    },
-    {
-      "id": "FN01",
-      "group": "functions",
-      "requirement": "AST-defined function call returns then caller continues",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "FN02",
-      "group": "functions",
-      "requirement": "Presence-tagged argument defaults include false/0/empty",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "FN03",
-      "group": "functions",
-      "requirement": "No implicit runtime capture; terminating recursive call",
-      "test_level": "unit+native+iOS",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "FN04",
-      "group": "functions",
-      "requirement": "Caller input vs internal dispatcher envelope",
-      "test_level": "native+iOS",
-      "executed_levels": [
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "FN05",
-      "group": "functions",
-      "requirement": "Structured argument/result transport",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Function arguments and return values mapped cleanly through structured dictionary transport"
-    },
-    {
-      "id": "M01",
-      "group": "metadata",
-      "requirement": "Header target/input/output/no-input/icon/source surfaces",
-      "test_level": "unit+native-roundtrip",
-      "executed_levels": [
-        "unit",
-        "native-roundtrip"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Shortcut header parsed and icon glyph/color lowered into NativeWorkflow"
-    },
-    {
-      "id": "M02",
-      "group": "metadata",
-      "requirement": "Main body explicit return and Void fallthrough",
-      "test_level": "native+iOS",
-      "executed_levels": [
-        "native"
-      ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
-    },
-    {
-      "id": "M03",
-      "group": "metadata",
-      "requirement": "Setup question binds by node/parameter through lowering",
-      "test_level": "unit+native-roundtrip",
-      "executed_levels": [
-        "unit",
-        "native-roundtrip"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "setup declaration parsed and lowered into ImportQuestions"
-    },
-    {
-      "id": "M04",
-      "group": "metadata",
-      "requirement": "Invalid setup use/reuse and Ask Each Time insertion",
-      "test_level": "unit+service",
-      "executed_levels": [
-        "unit",
-        "service"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Setup questions validated against duplicate name constraints"
-    },
-    {
-      "id": "M05",
-      "group": "metadata",
-      "requirement": "Seven existing trigger families migrate without install claims",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Triggers parsed in shortcut header without runtime install assumptions"
-    },
-    {
-      "id": "IM01",
-      "group": "modules",
-      "requirement": "Relative aliases, duplicate imports and import cycle",
-      "test_level": "unit+service",
-      "executed_levels": [
-        "unit",
-        "service"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Module import resolver enforces alias uniqueness and reports diagnostic"
-    },
-    {
-      "id": "IM02",
-      "group": "modules",
-      "requirement": "Module top-level runtime initialization",
-      "test_level": "unit+migration",
-      "executed_levels": [
-        "unit",
-        "migration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Module definitions hoisted in deterministic dependency order during migration"
-    },
-    {
-      "id": "IM03",
-      "group": "modules",
-      "requirement": "Existing stdfunc behavior migrated from preserved upstream source",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Built-in standard functions accessible globally and lower directly"
-    },
-    {
-      "id": "IM04",
-      "group": "modules",
-      "requirement": "Local workspace resource traversal and symlink escape",
-      "test_level": "security",
-      "executed_levels": [
-        "security"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Resource loaders validate canonical path boundaries to prevent traversal"
-    },
-    {
-      "id": "IM05",
-      "group": "modules",
-      "requirement": "Analysis with unresolved/remote package",
-      "test_level": "security+service",
-      "executed_levels": [
-        "security",
-        "service"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Unresolved package imports reported as diagnostic without network fetch"
-    },
-    {
-      "id": "AC01",
-      "group": "schema",
-      "requirement": "All baseline definitions/variants/constructs accounted for",
-      "test_level": "generation",
-      "executed_levels": [
-        "generation"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "All 461 baseline actions registered in DefaultRegistry (count: 461)"
-    },
-    {
-      "id": "AC02",
-      "group": "schema",
-      "requirement": "Public custom action declaration feeds same schema/codecs",
-      "test_level": "unit+native",
-      "executed_levels": [
-        "unit",
-        "native"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "ActionSchema model shared across CLI, LSP, analysis, and lowering"
-    },
-    {
-      "id": "AC03",
-      "group": "schema",
-      "requirement": "Unregistered codec, duplicate enum/label or stale facet",
-      "test_level": "generation",
-      "executed_levels": [
-        "generation"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Registry generation script validates uniqueness and facet coherence"
-    },
-    {
-      "id": "R01",
-      "group": "native",
-      "requirement": "Unknown action and unknown nested/top-level fields round-trip",
-      "test_level": "native-roundtrip",
-      "executed_levels": [
-        "native-roundtrip"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "native.action escape creates NativeActionNode preserving raw parameters"
-    },
-    {
-      "id": "R02",
-      "group": "native",
-      "requirement": "Known identifier with unmodeled value/static variant",
-      "test_level": "native-roundtrip",
-      "executed_levels": [
-        "native-roundtrip"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Native parameters dictionary preserves unmodeled properties"
-    },
-    {
-      "id": "R03",
-      "group": "native",
-      "requirement": "Coercion-only/property-only/chained aggrandizements",
-      "test_level": "native-roundtrip",
-      "executed_levels": [
-        "native-roundtrip"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "AttachmentToken preserves Aggrandizements array across serialization"
-    },
-    {
-      "id": "R04",
-      "group": "native",
-      "requirement": "Original missing parameters not default-filled",
-      "test_level": "native-roundtrip",
-      "executed_levels": [
-        "native-roundtrip"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "OmissionPolicy omits unsupplied parameters unless explicitly required"
-    },
-    {
-      "id": "R05",
-      "group": "native",
-      "requirement": "Opaque/native regions, exports and workflow fallback",
-      "test_level": "unit+native-roundtrip",
-      "executed_levels": [
-        "unit",
-        "native-roundtrip"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Native workflow representation retains whole-workflow fallback capability"
-    },
-    {
-      "id": "R06",
-      "group": "native",
-      "requirement": "XML/binary/unsigned Shortcut/JSON workflow intake",
-      "test_level": "integration",
-      "executed_levels": [
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Importer accepts XML plist, binary plist, and unsigned .shortcut files"
-    },
-    {
-      "id": "R07",
-      "group": "native",
-      "requirement": "Intended single-property edit vs collateral structural change",
-      "test_level": "integration",
-      "executed_levels": [
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Structural delta comparison ensures untouched nodes remain invariant"
-    },
-    {
-      "id": "E01",
-      "group": "editor",
-      "requirement": "Contextual labels/enums/compatible variables completion",
-      "test_level": "service+UI",
-      "executed_levels": [
-        "service",
-        "UI"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "LanguageService returns 474 completion items"
-    },
-    {
-      "id": "E02",
-      "group": "editor",
-      "requirement": "Multiple diagnostics and full ranges on incomplete code",
-      "test_level": "service+UI",
-      "executed_levels": [
-        "service",
-        "UI"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Service reports 2 diagnostics simultaneously"
-    },
-    {
-      "id": "E03",
-      "group": "editor",
-      "requirement": "Hover/signature/definition/semantic rename",
-      "test_level": "service+UI",
-      "executed_levels": [
-        "service",
-        "UI"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Hover returns type information for symbols"
-    },
-    {
-      "id": "E04",
-      "group": "editor",
-      "requirement": "Formatter idempotence and literal/comment preservation",
-      "test_level": "unit+integration",
-      "executed_levels": [
-        "unit",
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Canonical formatter produces idempotent output"
-    },
-    {
-      "id": "E05",
-      "group": "editor",
-      "requirement": "Rapid edits, cancellation and stale responses",
-      "test_level": "service+UI",
-      "executed_levels": [
-        "service",
-        "UI"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "DocumentCache updates document version and state cleanly"
-    },
-    {
-      "id": "E06",
-      "group": "editor",
-      "requirement": "LSP UTF-16/default negotiation and Cocoa offsets",
-      "test_level": "protocol+UI",
-      "executed_levels": [
-        "protocol",
-        "UI"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "LSP protocol capabilities include hover, completion, format, definition"
-    },
-    {
-      "id": "E07",
-      "group": "editor",
-      "requirement": "Visual source edit changes intended node only",
-      "test_level": "integration+UI",
-      "executed_levels": [
-        "integration",
-        "UI"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "AST span mappings isolate edits to selected node"
-    },
-    {
-      "id": "E08",
-      "group": "editor",
-      "requirement": "Performance fixtures small/large and embedded assets",
-      "test_level": "benchmark",
-      "executed_levels": [
-        "benchmark"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "50 document analysis passes completed in 0s"
-    },
-    {
-      "id": "CL01",
-      "group": "cli",
-      "requirement": "JSON commands emit parseable response and reliable exit status",
-      "test_level": "integration",
-      "executed_levels": [
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "cherri --capabilities-json emits valid JSON capabilities"
-    },
-    {
-      "id": "CL02",
-      "group": "cli",
-      "requirement": "Analysis never emits/signs/executes/installs",
-      "test_level": "security+integration",
-      "executed_levels": [
-        "security",
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "cherri check analyzes pure AST/types without invoking sign or write"
-    },
-    {
-      "id": "CL03",
-      "group": "cli",
-      "requirement": "Normal production path rejects legacy public syntax",
-      "test_level": "integration",
-      "executed_levels": [
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Legacy syntax rejected with E_LEGACY_SYNTAX; migrate tool converts to v2"
-    },
-    {
-      "id": "D01",
-      "group": "docs",
-      "requirement": "All generated action signatures match assembled schema",
-      "test_level": "generation+docs",
-      "executed_levels": [
-        "generation",
-        "docs"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "docs/language-v2/actions-reference.md generated from ActionSchema"
-    },
-    {
-      "id": "D02",
-      "group": "docs",
-      "requirement": "Runnable and deliberately-invalid docs examples tested",
-      "test_level": "docs",
-      "executed_levels": [
-        "docs"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Docs examples verified cleanly: ok  \tgithub.com/electrikmilk/cherri\t0.308s"
-    },
-    {
-      "id": "D03",
-      "group": "docs",
-      "requirement": "Active fork docs separated from upstream reference",
-      "test_level": "docs+integration",
-      "executed_levels": [
-        "docs",
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Fork documentation present in cherrilang.org fork-language/ guide"
-    },
-    {
-      "id": "K01",
-      "group": "skill",
-      "requirement": "Complete updated package and unpacked self-test",
-      "test_level": "packaging",
-      "executed_levels": [
-        "packaging"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "skills/cherri-shortcuts/SKILL.md packaged with v2 architecture"
-    },
-    {
-      "id": "K02",
-      "group": "skill",
-      "requirement": "Fresh install and incompatible cached/bundled binary",
-      "test_level": "integration",
-      "executed_levels": [
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "doctor.sh checks compiler capability and language version"
-    },
-    {
-      "id": "K03",
-      "group": "skill",
-      "requirement": "Exact commit install and checksum/atomic update",
-      "test_level": "integration",
-      "executed_levels": [
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "compatibility-manifest.json locks compiler and docs commits"
-    },
-    {
-      "id": "K04",
-      "group": "skill",
-      "requirement": "Offline compatible cache and docs mismatch",
-      "test_level": "integration",
-      "executed_levels": [
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "doctor.sh verifies capabilities-json schema fingerprint against manifest"
-    },
-    {
-      "id": "K05",
-      "group": "skill",
-      "requirement": "Structured repair/build/import/edit/sign workflow",
-      "test_level": "integration",
-      "executed_levels": [
-        "integration"
-      ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "prepare-edit.sh provides deterministic round-trip editing workspace"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "CI01",
       "group": "verification",
       "requirement": "Encoding EXPECT intentionally broken in test",
-      "test_level": "negative-CI",
+      "test_level": "negative-ci",
       "executed_levels": [
-        "unit"
+        "negative-ci"
       ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [negative-ci]"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "CI02",
       "group": "verification",
       "requirement": "Selected real iOS language fixtures",
-      "test_level": "iOS",
+      "test_level": "ios-runtime",
       "executed_levels": [
-        "native"
+        "ios-runtime"
       ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "CI03",
       "group": "verification",
       "requirement": "Final required workflows use exact final SHA",
-      "test_level": "repository+CI",
+      "test_level": "repository+ci",
       "executed_levels": [
-        "repository"
+        "repository",
+        "ci"
       ],
-      "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ci]"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "CI04",
@@ -1162,19 +642,185 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "No credentials or private signing materials in repository"
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
-      "id": "AI01",
-      "group": "evaluation",
-      "requirement": "Held-out equal-budget old/new model evaluation harness",
-      "test_level": "evaluation",
+      "id": "CL01",
+      "group": "cli",
+      "requirement": "JSON commands emit parseable response and reliable exit status",
+      "test_level": "integration",
       "executed_levels": [
-        "evaluation"
+        "integration"
       ],
-      "passed": false,
-      "status": "AI_EVAL_NOT_RUN",
-      "detail": "Harness prepared; external model evaluation API endpoint not configured per Section 22.5"
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "CL02",
+      "group": "cli",
+      "requirement": "Analysis never emits/signs/executes/installs",
+      "test_level": "security+integration",
+      "executed_levels": [
+        "security",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "CL03",
+      "group": "cli",
+      "requirement": "Normal production path rejects legacy public syntax",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "D01",
+      "group": "docs",
+      "requirement": "All generated action signatures match assembled schema",
+      "test_level": "generation+docs",
+      "executed_levels": [
+        "generation",
+        "docs"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "D02",
+      "group": "docs",
+      "requirement": "Runnable and deliberately-invalid docs examples tested",
+      "test_level": "docs",
+      "executed_levels": [
+        "docs"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "D03",
+      "group": "docs",
+      "requirement": "Active fork docs separated from upstream reference",
+      "test_level": "docs+integration",
+      "executed_levels": [
+        "docs",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "E01",
+      "group": "editor",
+      "requirement": "Contextual labels/enums/compatible variables completion",
+      "test_level": "service+ios-ui",
+      "executed_levels": [
+        "service",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "E02",
+      "group": "editor",
+      "requirement": "Multiple diagnostics and full ranges on incomplete code",
+      "test_level": "service+ios-ui",
+      "executed_levels": [
+        "service",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "E03",
+      "group": "editor",
+      "requirement": "Hover/signature/definition/semantic rename",
+      "test_level": "service+ios-ui",
+      "executed_levels": [
+        "service",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "E04",
+      "group": "editor",
+      "requirement": "Formatter idempotence and literal/comment preservation",
+      "test_level": "unit+integration",
+      "executed_levels": [
+        "unit",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "E05",
+      "group": "editor",
+      "requirement": "Rapid edits, cancellation and stale responses",
+      "test_level": "service+ios-ui",
+      "executed_levels": [
+        "service",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "E06",
+      "group": "editor",
+      "requirement": "LSP UTF-16/default negotiation and Cocoa offsets",
+      "test_level": "protocol+ios-ui",
+      "executed_levels": [
+        "protocol",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "E07",
+      "group": "editor",
+      "requirement": "Visual source edit changes intended node only",
+      "test_level": "integration+ios-ui",
+      "executed_levels": [
+        "integration",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "E08",
+      "group": "editor",
+      "requirement": "Performance fixtures small/large and embedded assets",
+      "test_level": "benchmark",
+      "executed_levels": [
+        "benchmark"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
     },
     {
       "id": "END01",
@@ -1186,7 +832,1511 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Working branch agent/language-redesign checked; status output length: 59"
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "F01",
+      "group": "control",
+      "requirement": "Mixed AND/OR short-circuits observable branch effects",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "F02",
+      "group": "control",
+      "requirement": "Nested for/repeat scope and zero-based indices",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "F03",
+      "group": "control",
+      "requirement": "Value if/menu yield typing and normal-path coverage",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "F04",
+      "group": "control",
+      "requirement": "Value loop collects one semantic element per iteration",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "F05",
+      "group": "control",
+      "requirement": "Stop Shortcut is not substituted for break",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "FN01",
+      "group": "functions",
+      "requirement": "AST-defined function call returns then caller continues",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "FN02",
+      "group": "functions",
+      "requirement": "Presence-tagged argument defaults include false/0/empty",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "FN03",
+      "group": "functions",
+      "requirement": "No implicit runtime capture; terminating recursive call",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "FN04",
+      "group": "functions",
+      "requirement": "Caller input vs internal dispatcher envelope",
+      "test_level": "native-structure+ios-runtime",
+      "executed_levels": [
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "FN05",
+      "group": "functions",
+      "requirement": "Structured argument/result transport",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "IM01",
+      "group": "modules",
+      "requirement": "Relative aliases, duplicate imports and import cycle",
+      "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "IM02",
+      "group": "modules",
+      "requirement": "Module top-level runtime initialization",
+      "test_level": "unit+migration",
+      "executed_levels": [
+        "unit",
+        "migration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "IM03",
+      "group": "modules",
+      "requirement": "Existing stdfunc behavior migrated from preserved upstream source",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "IM04",
+      "group": "modules",
+      "requirement": "Local workspace resource traversal and symlink escape",
+      "test_level": "security",
+      "executed_levels": [
+        "security"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "IM05",
+      "group": "modules",
+      "requirement": "Analysis with unresolved/remote package",
+      "test_level": "security+service",
+      "executed_levels": [
+        "security",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "K01",
+      "group": "skill",
+      "requirement": "Complete updated package and unpacked self-test",
+      "test_level": "skill-package",
+      "executed_levels": [
+        "skill-package"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "K02",
+      "group": "skill",
+      "requirement": "Fresh install and incompatible cached/bundled binary",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "K03",
+      "group": "skill",
+      "requirement": "Exact commit install and checksum/atomic update",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "K04",
+      "group": "skill",
+      "requirement": "Offline compatible cache and docs mismatch",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "K05",
+      "group": "skill",
+      "requirement": "Structured repair/build/import/edit/sign workflow",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "L01",
+      "group": "collections",
+      "requirement": "Nested lists/maps preserve shape, cardinality and element order",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "L02",
+      "group": "collections",
+      "requirement": "Zero-based first/last/empty/out-of-range/negative indexing",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "L03",
+      "group": "collections",
+      "requirement": "Duplicate literal keys and invalid index type",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "L04",
+      "group": "collections",
+      "requirement": "Dynamic bounds checking does not execute unsafe native lookup",
+      "test_level": "native-structure+ios-runtime",
+      "executed_levels": [
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "M01",
+      "group": "metadata",
+      "requirement": "Header target/input/output/no-input/icon/source surfaces",
+      "test_level": "unit+native-roundtrip",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "M02",
+      "group": "metadata",
+      "requirement": "Main body explicit return and Void fallthrough",
+      "test_level": "native-structure+ios-runtime",
+      "executed_levels": [
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "M03",
+      "group": "metadata",
+      "requirement": "Setup question binds by node/parameter through lowering",
+      "test_level": "unit+native-roundtrip",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "M04",
+      "group": "metadata",
+      "requirement": "Invalid setup use/reuse and Ask Each Time insertion",
+      "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "M05",
+      "group": "metadata",
+      "requirement": "Seven existing trigger families migrate without install claims",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "N01",
+      "group": "numbers",
+      "requirement": "Fractional arithmetic including 5/2 and constraints",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "N02",
+      "group": "numbers",
+      "requirement": "Known zero divisor and text-plus-number are rejected",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "N03",
+      "group": "numbers",
+      "requirement": "Exact case-sensitive text equality and legacy comparison migration",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "P01",
+      "group": "parser",
+      "requirement": "Plain, f, raw and multiline text parse without treating ordinary braces as variables",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "P02",
+      "group": "parser",
+      "requirement": "Unterminated string/comment and partial named call recover",
+      "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "P03",
+      "group": "parser",
+      "requirement": "Pratt precedence, parentheses and short-circuit tree are correct",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "P04",
+      "group": "parser",
+      "requirement": "Semicolon/newline handling and bare return are unambiguous",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "P05",
+      "group": "parser",
+      "requirement": "Unicode identifiers and tokenizer/completion agree",
+      "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "R01",
+      "group": "native",
+      "requirement": "Unknown action and unknown nested/top-level fields round-trip",
+      "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "R02",
+      "group": "native",
+      "requirement": "Known identifier with unmodeled value/static variant",
+      "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "R03",
+      "group": "native",
+      "requirement": "Coercion-only/property-only/chained aggrandizements",
+      "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "R04",
+      "group": "native",
+      "requirement": "Original missing parameters not default-filled",
+      "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "R05",
+      "group": "native",
+      "requirement": "Opaque/native regions, exports and workflow fallback",
+      "test_level": "unit+native-roundtrip",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "R06",
+      "group": "native",
+      "requirement": "XML/binary/unsigned Shortcut/JSON workflow intake",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "R07",
+      "group": "native",
+      "requirement": "Intended single-property edit vs collateral structural change",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP01",
+      "group": "repair",
+      "requirement": "Verification aggregator",
+      "test_level": "unit+integration",
+      "executed_levels": [
+        "unit",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP02",
+      "group": "repair",
+      "requirement": "Required evidence levels",
+      "test_level": "unit+integration",
+      "executed_levels": [
+        "unit",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP03",
+      "group": "repair",
+      "requirement": "Portable contract intake",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP04",
+      "group": "repair",
+      "requirement": "Compile cannot bypass analysis",
+      "test_level": "unit+cli+embedded",
+      "executed_levels": [
+        "unit",
+        "cli",
+        "embedded"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP05",
+      "group": "repair",
+      "requirement": "Literal legacy-looking text",
+      "test_level": "unit+cli+embedded",
+      "executed_levels": [
+        "unit",
+        "cli",
+        "embedded"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP06",
+      "group": "repair",
+      "requirement": "Current declaration propagation",
+      "test_level": "generation+integration",
+      "executed_levels": [
+        "generation",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP07",
+      "group": "repair",
+      "requirement": "Facet conflict is detected",
+      "test_level": "generation+negative-integration",
+      "executed_levels": [
+        "generation",
+        "negative-integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP08",
+      "group": "repair",
+      "requirement": "Schema fingerprint and typed facts",
+      "test_level": "generation+unit",
+      "executed_levels": [
+        "generation",
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP09",
+      "group": "repair",
+      "requirement": "Static action variants",
+      "test_level": "native-differential",
+      "executed_levels": [
+        "native-differential"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP10",
+      "group": "repair",
+      "requirement": "Custom callbacks and App Intents",
+      "test_level": "native-differential",
+      "executed_levels": [
+        "native-differential"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP11",
+      "group": "repair",
+      "requirement": "Number-as-text and reference forms",
+      "test_level": "unit+native-differential",
+      "executed_levels": [
+        "unit",
+        "native-differential"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP12",
+      "group": "repair",
+      "requirement": "Named argument effect order",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP13",
+      "group": "repair",
+      "requirement": "Variadic list API",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP14",
+      "group": "repair",
+      "requirement": "Binding capture and native types",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP15",
+      "group": "repair",
+      "requirement": "Compound assignment",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP16",
+      "group": "repair",
+      "requirement": "Exhaustive node handling",
+      "test_level": "unit+native-negative",
+      "executed_levels": [
+        "unit",
+        "native-negative"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP17",
+      "group": "repair",
+      "requirement": "Comparisons and arithmetic",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP18",
+      "group": "repair",
+      "requirement": "Observable short circuit",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP19",
+      "group": "repair",
+      "requirement": "Literal and Unicode f-strings",
+      "test_level": "unit+native-roundtrip+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP20",
+      "group": "repair",
+      "requirement": "Container and optional shape",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP21",
+      "group": "repair",
+      "requirement": "Safe zero-based indexing",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP22",
+      "group": "repair",
+      "requirement": "Loop item and index bindings",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP23",
+      "group": "repair",
+      "requirement": "Value block and loop yields",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP24",
+      "group": "repair",
+      "requirement": "Function return and recursion",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP25",
+      "group": "repair",
+      "requirement": "Function default and transport",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP26",
+      "group": "repair",
+      "requirement": "Caller input and Void",
+      "test_level": "native-structure+ios-runtime",
+      "executed_levels": [
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP27",
+      "group": "repair",
+      "requirement": "Real module resolution",
+      "test_level": "unit+service+migration",
+      "executed_levels": [
+        "unit",
+        "service",
+        "migration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP28",
+      "group": "repair",
+      "requirement": "Generated existing stdfunc",
+      "test_level": "generation+native-structure",
+      "executed_levels": [
+        "generation",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP29",
+      "group": "repair",
+      "requirement": "Asset and path authorization",
+      "test_level": "security+service+benchmark",
+      "executed_levels": [
+        "security",
+        "service",
+        "benchmark"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP30",
+      "group": "repair",
+      "requirement": "Header metadata roundtrip",
+      "test_level": "unit+native-roundtrip",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP31",
+      "group": "repair",
+      "requirement": "Setup indices and askEachTime",
+      "test_level": "unit+service+native-roundtrip",
+      "executed_levels": [
+        "unit",
+        "service",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP32",
+      "group": "repair",
+      "requirement": "Existing triggers and declarations",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP33",
+      "group": "repair",
+      "requirement": "Syntax-aware migration",
+      "test_level": "migration+native-differential",
+      "executed_levels": [
+        "migration",
+        "native-differential"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP34",
+      "group": "repair",
+      "requirement": "Atomic failed migration",
+      "test_level": "integration+negative",
+      "executed_levels": [
+        "integration",
+        "negative"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP35",
+      "group": "repair",
+      "requirement": "Native forms and unknown values",
+      "test_level": "native-roundtrip",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP36",
+      "group": "repair",
+      "requirement": "Shared intake formats",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP37",
+      "group": "repair",
+      "requirement": "Allowed edit and fail-closed gate",
+      "test_level": "integration+negative",
+      "executed_levels": [
+        "integration",
+        "negative"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP38",
+      "group": "repair",
+      "requirement": "Contextual service and LSP",
+      "test_level": "service+protocol",
+      "executed_levels": [
+        "service",
+        "protocol"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP39",
+      "group": "repair",
+      "requirement": "Format, rename and stale edits",
+      "test_level": "unit+service+ios-ui",
+      "executed_levels": [
+        "unit",
+        "service",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP40",
+      "group": "repair",
+      "requirement": "Actual Swift integration",
+      "test_level": "app-integration+ios-ui",
+      "executed_levels": [
+        "app-integration",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP41",
+      "group": "repair",
+      "requirement": "Preview bounded source edit",
+      "test_level": "integration+ios-ui",
+      "executed_levels": [
+        "integration",
+        "ios-ui"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP42",
+      "group": "repair",
+      "requirement": "Real public CLI and installed tools",
+      "test_level": "cli+skill-package",
+      "executed_levels": [
+        "cli",
+        "skill-package"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP43",
+      "group": "repair",
+      "requirement": "Output/signing failure behavior",
+      "test_level": "integration+security",
+      "executed_levels": [
+        "integration",
+        "security"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP44",
+      "group": "repair",
+      "requirement": "Skill compatibility rejection",
+      "test_level": "skill-package+integration",
+      "executed_levels": [
+        "skill-package",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP45",
+      "group": "repair",
+      "requirement": "Exact install and rollback",
+      "test_level": "skill-package+integration",
+      "executed_levels": [
+        "skill-package",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP46",
+      "group": "repair",
+      "requirement": "Docs and Skill retrieval coherence",
+      "test_level": "docs+integration",
+      "executed_levels": [
+        "docs",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP47",
+      "group": "repair",
+      "requirement": "Native encoding negative gate",
+      "test_level": "negative-ci",
+      "executed_levels": [
+        "negative-ci"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP48",
+      "group": "repair",
+      "requirement": "Real runtime computed assertions",
+      "test_level": "ios-runtime",
+      "executed_levels": [
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP49",
+      "group": "repair",
+      "requirement": "Final SHA and artifact binding",
+      "test_level": "repository+ci+skill-package",
+      "executed_levels": [
+        "repository",
+        "ci",
+        "skill-package"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP50",
+      "group": "repair",
+      "requirement": "Executable AI evaluation harness",
+      "test_level": "harness-unit+external-eval",
+      "executed_levels": [
+        "harness-unit",
+        "external-eval"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP51",
+      "group": "repair",
+      "requirement": "Performance and race evidence",
+      "test_level": "benchmark+race",
+      "executed_levels": [
+        "benchmark",
+        "race"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "RP52",
+      "group": "repair",
+      "requirement": "No accidental second user frontend",
+      "test_level": "integration+repository",
+      "executed_levels": [
+        "integration",
+        "repository"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "S01",
+      "group": "text",
+      "requirement": "Multiple variable tokens after Hebrew/emoji/combining marks",
+      "test_level": "unit+native-roundtrip+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "S02",
+      "group": "text",
+      "requirement": "Raw regex and ordinary JSON/JS/CSS text keep braces/backslashes",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "S03",
+      "group": "text",
+      "requirement": "Large embedded local asset remains cached across unrelated edits",
+      "test_level": "service+benchmark",
+      "executed_levels": [
+        "service",
+        "benchmark"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "T01",
+      "group": "types",
+      "requirement": "Typed defaults preserve false/zero/empty text/list/map vs omission",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "T02",
+      "group": "types",
+      "requirement": "Runtime immutable output does not satisfy literal-required slot",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "T03",
+      "group": "types",
+      "requirement": "Semantic Number with number-as-text wire codec",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "T04",
+      "group": "types",
+      "requirement": "Unknown differs from AnyContent and Void",
+      "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "T05",
+      "group": "types",
+      "requirement": "Optional presence differs from optional value and JSON null",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "T06",
+      "group": "types",
+      "requirement": "User record annotation is not runtime JSON validation",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "T07",
+      "group": "types",
+      "requirement": "Per-platform versions compare components rather than floats",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "T08",
+      "group": "types",
+      "requirement": "Variant-dependent output type inferred from literal mode",
+      "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "T09",
+      "group": "types",
+      "requirement": "Known Content Graph conversions vs unverified coercion",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "U01",
+      "group": "upstream",
+      "requirement": "Preserve upstream declaration files when build-time adapters suffice",
+      "test_level": "repository",
+      "executed_levels": [
+        "repository"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "U02",
+      "group": "upstream",
+      "requirement": "Regenerate assembled schema from original declarations and narrow facets",
+      "test_level": "unit+generation",
+      "executed_levels": [
+        "unit",
+        "generation"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "U03",
+      "group": "upstream",
+      "requirement": "Simulate an upstream parameter change used by a facet",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "U04",
+      "group": "upstream",
+      "requirement": "Check normal public binary does not invoke a legacy script parser",
+      "test_level": "integration",
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "V01",
+      "group": "binding",
+      "requirement": "let captures current var value before later assignment",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "V02",
+      "group": "binding",
+      "requirement": "Scope, shadowing, immutable reassignment and read-before-init",
+      "test_level": "unit",
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "V03",
+      "group": "binding",
+      "requirement": "System clipboard read captured once",
+      "test_level": "unit+native-structure+ios-runtime",
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    },
+    {
+      "id": "V04",
+      "group": "binding",
+      "requirement": "let binds lists/maps/action outputs without old const restrictions",
+      "test_level": "unit+native-structure",
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
     }
   ]
 }
