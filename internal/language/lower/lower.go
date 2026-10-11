@@ -15,10 +15,11 @@ import (
 
 // BindingRef represents how a variable is stored and referenced in Shortcuts.
 type BindingRef struct {
-	IsVariable   bool   // true = setvariable/getvariable, false = direct action output token
-	OutputUUID   string // for action output
-	OutputName   string
-	VariableName string // for setvariable
+	IsVariable      bool   // true = setvariable/getvariable, false = direct action output token
+	OutputUUID      string // for action output
+	OutputName      string
+	VariableName    string // for setvariable
+	Aggrandizements []map[string]interface{}
 }
 
 var contentItemClasses = map[string]string{
@@ -936,18 +937,21 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 		// If val is already an action output reference from the last action
 		if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "ActionOutput" {
 			l.bindings[b.Name] = BindingRef{
-				IsVariable: false,
-				OutputUUID: ref.OutputUUID,
-				OutputName: b.Name,
+				IsVariable:      false,
+				OutputUUID:      ref.OutputUUID,
+				OutputName:      b.Name,
+				Aggrandizements: ref.Aggrandizements,
 			}
-			for _, act := range l.workflow.Actions {
-				if act.NodeID == ref.OutputUUID || act.OutputUUID == ref.OutputUUID {
-					act.OutputName = b.Name
-					break
+			if len(ref.Aggrandizements) == 0 {
+				for _, act := range l.workflow.Actions {
+					if act.NodeID == ref.OutputUUID || act.OutputUUID == ref.OutputUUID {
+						act.OutputName = b.Name
+						break
+					}
 				}
-			}
-			if l.session != nil {
-				l.session.RenameOutput(ref.OutputUUID, b.Name)
+				if l.session != nil {
+					l.session.RenameOutput(ref.OutputUUID, b.Name)
+				}
 			}
 		} else if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "Variable" {
 			// Materialize mutable variable read with getvariable so later mutations don't affect this let binding!
@@ -969,9 +973,26 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			}
 			l.emitAction(node)
 			l.bindings[b.Name] = BindingRef{
-				IsVariable: false,
-				OutputUUID: uuid,
-				OutputName: b.Name,
+				IsVariable:      false,
+				OutputUUID:      uuid,
+				OutputName:      b.Name,
+				Aggrandizements: ref.Aggrandizements,
+			}
+		} else if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "Clipboard" {
+			uuid := l.GenerateUUID()
+			node := &ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.getclipboard",
+				OutputUUID:      uuid,
+				OutputName:      b.Name,
+				Parameters:      map[string]interface{}{},
+			}
+			l.emitAction(node)
+			l.bindings[b.Name] = BindingRef{
+				IsVariable:      false,
+				OutputUUID:      uuid,
+				OutputName:      b.Name,
+				Aggrandizements: ref.Aggrandizements,
 			}
 		} else {
 			// Materialize literal or computed value based on its semantic type
@@ -1693,16 +1714,26 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 	case *syntax.IdentExpr:
 		if ref, found := l.bindings[e.Name]; found {
 			if ref.IsVariable {
-				return &ir.AttachmentToken{
+				tok := &ir.AttachmentToken{
 					Type:       "Variable",
 					OutputName: ref.VariableName,
-				}, nil
+				}
+				if len(ref.Aggrandizements) > 0 {
+					tok.Aggrandizements = make([]map[string]interface{}, len(ref.Aggrandizements))
+					copy(tok.Aggrandizements, ref.Aggrandizements)
+				}
+				return tok, nil
 			}
-			return &ir.AttachmentToken{
+			tok := &ir.AttachmentToken{
 				Type:       "ActionOutput",
 				OutputUUID: ref.OutputUUID,
 				OutputName: ref.OutputName,
-			}, nil
+			}
+			if len(ref.Aggrandizements) > 0 {
+				tok.Aggrandizements = make([]map[string]interface{}, len(ref.Aggrandizements))
+				copy(tok.Aggrandizements, ref.Aggrandizements)
+			}
+			return tok, nil
 		}
 		if q, isQ := l.setupQuestions[e.Name]; isQ {
 			return q.DefaultValue, nil
