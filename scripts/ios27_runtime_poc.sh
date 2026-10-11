@@ -38,8 +38,10 @@ run_ui_helper() {
     # 2. Execute XCUITest helper
     if [ -d tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj ]; then
         echo "Executing XCUITest helper via xcodebuild..."
+        rm -rf "${PWD}/artifacts/ImportHelper_${stage_name}.xcresult"
         (
             cd tests/runtime_poc/ImportHelper
+            rm -rf "${PWD}/../../../artifacts/ImportHelper_${stage_name}.xcresult"
             XCTESTRUN=$(find .build -name "*.xctestrun" 2>/dev/null | head -n 1)
             if [ -n "$XCTESTRUN" ] && [ -f "$XCTESTRUN" ]; then
                 echo "Running test-without-building with $XCTESTRUN..."

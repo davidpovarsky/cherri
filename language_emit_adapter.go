@@ -112,6 +112,31 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 						},
 					}
 				}
+			} else if num, ok := action.WFWorkflowActionParameters["WFOutput"].(float64); ok {
+				strVal := fmt.Sprintf("%v", num)
+				if num == float64(int64(num)) {
+					strVal = fmt.Sprintf("%d", int64(num))
+				}
+				action.WFWorkflowActionParameters["WFOutput"] = map[string]any{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]any{
+						"string": strVal,
+					},
+				}
+			} else if num, ok := action.WFWorkflowActionParameters["WFOutput"].(int); ok {
+				action.WFWorkflowActionParameters["WFOutput"] = map[string]any{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]any{
+						"string": fmt.Sprintf("%d", num),
+					},
+				}
+			} else if str, ok := action.WFWorkflowActionParameters["WFOutput"].(string); ok {
+				action.WFWorkflowActionParameters["WFOutput"] = map[string]any{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]any{
+						"string": str,
+					},
+				}
 			}
 		}
 		if action.WFWorkflowActionIdentifier == "is.workflow.actions.list" {

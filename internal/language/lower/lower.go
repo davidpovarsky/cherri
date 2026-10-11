@@ -838,6 +838,31 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 						},
 					},
 				}
+			} else if num, isNum := val.(float64); isNum {
+				strVal := fmt.Sprintf("%v", num)
+				if num == float64(int64(num)) {
+					strVal = fmt.Sprintf("%d", int64(num))
+				}
+				val = map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string": strVal,
+					},
+				}
+			} else if num, isNum := val.(int); isNum {
+				val = map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string": fmt.Sprintf("%d", num),
+					},
+				}
+			} else if str, isStr := val.(string); isStr {
+				val = map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string": str,
+					},
+				}
 			}
 			// Emit output action: is.workflow.actions.output
 			node := &ir.NativeActionNode{

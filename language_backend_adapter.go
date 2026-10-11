@@ -419,6 +419,31 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 					},
 				}
 			}
+		} else if num, ok := cleanParams["WFOutput"].(float64); ok {
+			strVal := fmt.Sprintf("%v", num)
+			if num == float64(int64(num)) {
+				strVal = fmt.Sprintf("%d", int64(num))
+			}
+			cleanParams["WFOutput"] = map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value": map[string]any{
+					"string": strVal,
+				},
+			}
+		} else if num, ok := cleanParams["WFOutput"].(int); ok {
+			cleanParams["WFOutput"] = map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value": map[string]any{
+					"string": fmt.Sprintf("%d", num),
+				},
+			}
+		} else if str, ok := cleanParams["WFOutput"].(string); ok {
+			cleanParams["WFOutput"] = map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value": map[string]any{
+					"string": str,
+				},
+			}
 		}
 	}
 	if appleIdentifier == "is.workflow.actions.list" {

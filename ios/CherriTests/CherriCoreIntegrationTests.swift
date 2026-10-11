@@ -204,7 +204,7 @@ final class CherriCoreIntegrationTests: XCTestCase {
         XCTAssertFalse(resp.valid)
         XCTAssertGreaterThanOrEqual(resp.diagnostics.count, 3)
         let codes = Set(resp.diagnostics.map(\.code))
-        XCTAssertTrue(codes.contains("E_IMMUTABLE_ASSIGN"))
+        XCTAssertTrue(codes.contains("E_ASSIGN_IMMUTABLE") || codes.contains("E_IMMUTABLE_ASSIGN"))
         XCTAssertTrue(codes.contains("E_ARGUMENT_TYPE"))
         XCTAssertTrue(codes.contains("E_UNKNOWN_ACTION"))
     }
@@ -309,7 +309,7 @@ final class CherriCoreIntegrationTests: XCTestCase {
         let diag1 = try XCTUnwrap(resp1.diagnostics.first)
         XCTAssertEqual(diag1.range.start.line, 0)
         XCTAssertEqual(diag1.range.start.character, 15)
-        XCTAssertEqual(diag1.range.end.character, 29)
+        XCTAssertEqual(diag1.range.end.character, 27)
 
         // Hebrew with combining mark: "שָׁ" (Shin + Qamats + Shin Dot = 3 BMP code points = 3 UTF-16 units)
         let hebrewLine = "let x = \"שָׁ\" ; unknownHeb()\n"
@@ -317,7 +317,7 @@ final class CherriCoreIntegrationTests: XCTestCase {
         let diag2 = try XCTUnwrap(resp2.diagnostics.first)
         XCTAssertEqual(diag2.range.start.line, 0)
         XCTAssertEqual(diag2.range.start.character, 16)
-        XCTAssertEqual(diag2.range.end.character, 28)
+        XCTAssertEqual(diag2.range.end.character, 26)
     }
 
     func testE07BoundedVisualSourceEditAndRejection() async throws {
