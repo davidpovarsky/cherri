@@ -14,6 +14,10 @@ import (
 
 	"github.com/electrikmilk/args-parser"
 	"github.com/electrikmilk/cherri/internal/language/backend"
+	"github.com/electrikmilk/cherri/internal/language/lower"
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/source"
+	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"howett.net/plist"
 )
 
@@ -193,3 +197,28 @@ func compileLegacyInProcessHelper(t *testing.T, source string) []byte {
 	}
 	return bytes
 }
+
+type failingRawActionSession struct {
+	backend.Session
+	sentinel error
+}
+
+func (f *failingRawActionSession) EmitRawAction(appleIdent string, params map[string]any, outputUUID, outputName, groupingUUID string) error {
+	return f.sentinel
+}
+
+func TestEmitRawActionErrorPropagation(t *testing.T) {
+	sentinel := errors.New("raw action emission sentinel failure")
+	sess := &failingRawActionSession{sentinel: sentinel}
+	l := lower.NewLowererWithSession(schema.DefaultRegistry(), sess)
+
+	file := source.NewFile("raw_err.cherri", "raw_err.cherri", 1, `let x = "hi"`)
+	parser := syntax.NewParser(file)
+	prog := parser.ParseProgram()
+
+	err := l.LowerProgramToSession(prog)
+	if !errors.Is(err, sentinel) {
+		t.Fatalf("expected LowerProgramToSession to propagate EmitRawAction error %v, got: %v", sentinel, err)
+	}
+}
+

@@ -2,7 +2,7 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `32cd14d86ebf5c6ebbe67a6f435468fd9647a3382cf47c09d845b74b9d263694`  
+**Schema Fingerprint:** `b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b`  
 **Total Actions:** 461  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.

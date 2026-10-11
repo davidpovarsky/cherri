@@ -16,6 +16,7 @@ type DocumentID string
 type Position struct {
 	Line        int `json:"line"`        // 1-based line number
 	Column      int `json:"column"`      // 1-based column (in UTF-8 runes)
+	UTF16Column int `json:"utf16Column"` // 1-based column (in UTF-16 code units)
 	ByteOffset  int `json:"byteOffset"`  // 0-based UTF-8 byte offset
 	UTF16Offset int `json:"utf16Offset"` // 0-based UTF-16 code unit offset
 }
@@ -26,6 +27,17 @@ func (p Position) LSPLine() int {
 		return 0
 	}
 	return p.Line - 1
+}
+
+// LSPCharacterColumn returns 0-based UTF-16 character offset on the line.
+func (p Position) LSPCharacterColumn() int {
+	if p.UTF16Column > 0 {
+		return p.UTF16Column - 1
+	}
+	if p.Column > 0 {
+		return p.Column - 1
+	}
+	return 0
 }
 
 // LSPCharacter returns 0-based UTF-16 character offset for LSP protocol on this line.
@@ -225,6 +237,7 @@ func (f *File) PositionFromByteOffset(offset int) Position {
 	return Position{
 		Line:        lineInfo.LineNumber,
 		Column:      col,
+		UTF16Column: (utf16Off - lineInfo.UTF16Start) + 1,
 		ByteOffset:  offset,
 		UTF16Offset: utf16Off,
 	}
@@ -267,6 +280,7 @@ func (f *File) PositionFromLSP(line int, character int) Position {
 	return Position{
 		Line:        lineInfo.LineNumber,
 		Column:      col,
+		UTF16Column: currUTF16 + 1,
 		ByteOffset:  byteOffset,
 		UTF16Offset: lineInfo.UTF16Start + currUTF16,
 	}

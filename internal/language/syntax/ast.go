@@ -14,6 +14,7 @@ type Program struct {
 	Span         source.Span
 	Declarations []Declaration
 	Statements   []Statement
+	Comments     []source.Trivia
 }
 
 func (p *Program) NodeSpan() source.Span { return p.Span }

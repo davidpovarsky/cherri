@@ -227,6 +227,89 @@ jobs:
 
           grep -nE 'Test Case|TEST SUCCEEDED' xcodetest.log | tail -n 120 || tail -n 80 xcodetest.log
 
+          python3 - xcodetest.log ios-test-evidence.json "${GITHUB_SHA:-}" "${GITHUB_RUN_ID:-}" <<'PY'
+          import hashlib, json, re, sys
+          from pathlib import Path
+
+          log_path = Path(sys.argv[1])
+          out_path = Path(sys.argv[2])
+          impl_sha = sys.argv[3]
+          run_id = sys.argv[4]
+          log_bytes = log_path.read_bytes()
+          log_sha = hashlib.sha256(log_bytes).hexdigest()
+          log_text = log_bytes.decode("utf-8", errors="replace")
+
+          passed_tests = set()
+          for m in re.finditer(r"Test Case '-\[\w+\.(\w+)\s+(\w+)\]' passed", log_text):
+              passed_tests.add(f"{m.group(1)}/{m.group(2)}")
+
+          test_req_map = {
+              "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis": (["E01", "BRG27"], {"multi_diagnostics": "true"}),
+              "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition": (["E02", "RP40"], {"completion_hover_sig_def": "true"}),
+              "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing": (["E03"], {"scoped_rename": "true"}),
+              "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics": (["E04", "RP39"], {"formatter_idempotent_comments": "true"}),
+              "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits": (["E05"], {"versioned_edits_isolated": "true"}),
+              "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew": (["E06"], {"utf16_spans_exact": "true"}),
+              "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection": (["E07", "RP41", "BRG28"], {"visual_source_edit_bounded": "true"}),
+              "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract": (["BRG25"], {"shared_analysis_bridge": "true"}),
+              "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis": (["P05"], {"unicode_identifiers": "true"}),
+          }
+
+          records = []
+          for test_id, (reqs, assertions) in sorted(test_req_map.items()):
+              if test_id in passed_tests:
+                  safe_name = test_id.replace("/", "_")
+                  records.append({
+                      "evidence_id": f"ev-ios-ui-{safe_name}",
+                      "requirements": reqs,
+                      "tier": "ios-ui",
+                      "implementation_sha": impl_sha,
+                      "test_id": test_id,
+                      "command": ["xcodebuild", "test", "-scheme", "Cherri"],
+                      "exit_code": 0,
+                      "result": "passed",
+                      "assertions": assertions,
+                      "artifacts": [{
+                          "path": "artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/xcodetest.log",
+                          "sha256": log_sha,
+                          "run_id": run_id,
+                      }],
+                      "detail": f"Executed and passed {test_id} in iOS Simulator",
+                  })
+                  if test_id == "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract":
+                      records.append({
+                          "evidence_id": "ev-ios-build-BRG25",
+                          "requirements": ["BRG25"],
+                          "tier": "ios-build",
+                          "implementation_sha": impl_sha,
+                          "test_id": test_id,
+                          "command": ["xcodebuild", "build-for-testing", "-scheme", "Cherri"],
+                          "exit_code": 0,
+                          "result": "passed",
+                          "assertions": assertions,
+                          "artifacts": [{
+                              "path": "artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/xcodetest.log",
+                              "sha256": log_sha,
+                              "run_id": run_id,
+                          }],
+                          "detail": "Built iOS Simulator app and verified shared bridge contract",
+                      })
+
+          out_path.parent.mkdir(parents=True, exist_ok=True)
+          out_path.write_text(json.dumps({"records": records}, indent=2))
+          print(f"Wrote {len(records)} real iOS test evidence records to {out_path}")
+          PY
+
+      - name: Upload iOS test evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-evidence
+          path: |
+            ios/xcodetest.log
+            ios/ios-test-evidence.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main
         continue-on-error: true

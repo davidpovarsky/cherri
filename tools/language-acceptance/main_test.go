@@ -356,6 +356,7 @@ func TestRealContractsLoadAndVerifyDigests(t *testing.T) {
 		SchemaVersion:     "1",
 		ImplementationSHA: "sha1",
 		SchemaFingerprint: "fp1",
+		CodecFingerprint:  "codec_fp1",
 		Records: []EvidenceRecord{
 			{
 				EvidenceID:        "rec1",
@@ -365,6 +366,7 @@ func TestRealContractsLoadAndVerifyDigests(t *testing.T) {
 				TestID:            "TestC01",
 				ExitCode:          0,
 				Result:            "passed",
+				Assertions:        map[string]string{"assertion": "ok"},
 				Artifacts: []EvidenceArtifact{
 					{Path: testFile, SHA256: expHex},
 				},
@@ -515,11 +517,18 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 		t.Fatalf("closure_complete must be false when mandatory tier is missing")
 	}
 
+	artPath := filepath.Join(t.TempDir(), "clipboard-result.txt")
+	artContent := []byte("CHERRI_IOS27_RUNTIME_OK\nFUNCTION=21\n")
+	_ = os.WriteFile(artPath, artContent, 0644)
+	artSum := sha256.Sum256(artContent)
+	artHex := hex.EncodeToString(artSum[:])
+
 	// 3. In manifest validation: only unit and native records provided for FN01 -> rejected in final phase
 	manifest := &EvidenceManifest{
 		SchemaVersion:     "1",
 		ImplementationSHA: "sha1",
 		SchemaFingerprint: "fp1",
+		CodecFingerprint:  "codec_fp1",
 		Runs: []CIRunRecord{
 			{RunID: "101", Repository: "davidpovarsky/cherri", HeadSHA: "sha1", Conclusion: "success", WorkflowName: "Build & Test"},
 			{RunID: "102", Repository: "davidpovarsky/cherri", HeadSHA: "sha1", Conclusion: "success", WorkflowName: "OpenMinis Skill"},
@@ -535,6 +544,7 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 				TestID:            "tools/language-acceptance:runFunctions",
 				ExitCode:          0,
 				Result:            "passed",
+				Assertions:        map[string]string{"assertion": "unit ok"},
 			},
 			{
 				EvidenceID:        "rec2",
@@ -544,6 +554,7 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 				TestID:            "tools/language-acceptance:runFunctions",
 				ExitCode:          0,
 				Result:            "passed",
+				Assertions:        map[string]string{"assertion": "native ok"},
 			},
 		},
 	}
@@ -573,7 +584,16 @@ func TestMeta_UnitAndNativeCannotSatisfyIOSInFinal(t *testing.T) {
 		ExitCode:          0,
 		Result:            "passed",
 		Assertions: map[string]string{
-			"function_result": "21",
+			"function_result":       "21",
+			"caller_continuation":   "22",
+			"defaults_explicit":     "0:0::",
+			"defaults_omitted":      "1:9:def:",
+			"recursion_fact3":       "6",
+			"void_output":           "",
+			"partial_envelope_safe": "multiply",
+		},
+		Artifacts: []EvidenceArtifact{
+			{Path: artPath, SHA256: artHex, RunID: "104"},
 		},
 	})
 	fullReport, err := ValidateEvidenceManifest(manifest, contractsSet, "final")
@@ -625,11 +645,24 @@ func TestMeta_FalsePassedClaimWithMissingTiersRejected(t *testing.T) {
 
 func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsSet) {
 	t.Helper()
+	artPath := filepath.Join(t.TempDir(), "clipboard-result.txt")
+	artContent := []byte("CHERRI_IOS27_RUNTIME_OK\nFUNCTION=21\n")
+	_ = os.WriteFile(artPath, artContent, 0644)
+	artSum := sha256.Sum256(artContent)
+	artHex := hex.EncodeToString(artSum[:])
+
+	uiArtPath := filepath.Join(t.TempDir(), "xcodetest.log")
+	uiArtContent := []byte("Test Case '-[CherriTests.CherriCoreIntegrationTests testE01MultiDiagnosticAnalysis]' passed\n")
+	_ = os.WriteFile(uiArtPath, uiArtContent, 0644)
+	uiSum := sha256.Sum256(uiArtContent)
+	uiHex := hex.EncodeToString(uiSum[:])
+
 	contracts := &ContractsSet{
 		Acceptance: &ContractFile{
-			CaseCount: 1,
+			CaseCount: 2,
 			Cases: []CaseSpec{
 				{ID: "FN01", Group: "functions", Requirement: "Declare function", MinimumTestLevel: "unit+native+iOS"},
+				{ID: "E01", Group: "editor", Requirement: "Multi diagnostics", MinimumTestLevel: "service+UI"},
 			},
 		},
 		Repair: &RepairContractFile{
@@ -649,7 +682,9 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 	manifest := &EvidenceManifest{
 		SchemaVersion:     "1",
 		ImplementationSHA: "commit123456789012345678901234567890123",
+		DocsSHA:           "docs12345678901234567890123456789012345",
 		SchemaFingerprint: "fp1",
+		CodecFingerprint:  "codec_fp1",
 		Runs: []CIRunRecord{
 			{RunID: "101", Repository: "davidpovarsky/cherri", HeadSHA: "commit123456789012345678901234567890123", Conclusion: "success", WorkflowName: "Build & Test"},
 			{RunID: "102", Repository: "davidpovarsky/cherri", HeadSHA: "commit123456789012345678901234567890123", Conclusion: "success", WorkflowName: "OpenMinis Skill"},
@@ -665,6 +700,7 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 				ImplementationSHA: "commit123456789012345678901234567890123",
 				ExitCode:          0,
 				Result:            "passed",
+				Assertions:        map[string]string{"assertion": "unit ok"},
 			},
 			{
 				EvidenceID:        "ev-fn01-native",
@@ -674,6 +710,7 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 				ImplementationSHA: "commit123456789012345678901234567890123",
 				ExitCode:          0,
 				Result:            "passed",
+				Assertions:        map[string]string{"assertion": "native ok"},
 			},
 			{
 				EvidenceID:        "ev-fn01-runtime",
@@ -684,7 +721,39 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 				ExitCode:          0,
 				Result:            "passed",
 				Assertions: map[string]string{
-					"function_result": "21",
+					"function_result":       "21",
+					"caller_continuation":   "22",
+					"defaults_explicit":     "0:0::",
+					"defaults_omitted":      "1:9:def:",
+					"recursion_fact3":       "6",
+					"void_output":           "",
+					"partial_envelope_safe": "multiply",
+				},
+				Artifacts: []EvidenceArtifact{
+					{Path: artPath, SHA256: artHex, RunID: "104"},
+				},
+			},
+			{
+				EvidenceID:        "ev-e01-service",
+				Requirements:      []string{"E01"},
+				Tier:              "service",
+				TestID:            "tools/language-acceptance:runEditor",
+				ImplementationSHA: "commit123456789012345678901234567890123",
+				ExitCode:          0,
+				Result:            "passed",
+				Assertions:        map[string]string{"assertion": "service ok"},
+			},
+			{
+				EvidenceID:        "ev-e01-ui",
+				Requirements:      []string{"E01"},
+				Tier:              "ios-ui",
+				TestID:            "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis",
+				ImplementationSHA: "commit123456789012345678901234567890123",
+				ExitCode:          0,
+				Result:            "passed",
+				Assertions:        map[string]string{"multi_diagnostics": "true"},
+				Artifacts: []EvidenceArtifact{
+					{Path: uiArtPath, SHA256: uiHex, RunID: "103"},
 				},
 			},
 			{
@@ -695,6 +764,7 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 				ImplementationSHA: "commit123456789012345678901234567890123",
 				ExitCode:          0,
 				Result:            "passed",
+				Assertions:        map[string]string{"assertion": "rp01 ok"},
 			},
 			{
 				EvidenceID:        "ev-brg01-repo",
@@ -704,6 +774,7 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 				ImplementationSHA: "commit123456789012345678901234567890123",
 				ExitCode:          0,
 				Result:            "passed",
+				Assertions:        map[string]string{"assertion": "brg01 ok"},
 			},
 		},
 	}
@@ -906,3 +977,352 @@ func TestMeta_Negative12_ManifestClaimsPassWithoutTestProducedRecordFailsClosed(
 		t.Fatalf("expected failed cases > 0 when records are missing, got %d", report.FailedCases)
 	}
 }
+
+// Section 1E: End-to-End Aggregator Adversarial Meta-Tests (BuildFinalEvidenceManifest + ValidateEvidenceManifest)
+func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
+	origDiscover := ciRunDiscoveryFunc
+	origPaths := defaultEvidencePathsFunc
+	t.Cleanup(func() {
+		ciRunDiscoveryFunc = origDiscover
+		defaultEvidencePathsFunc = origPaths
+	})
+
+	runEndToEnd := func(t *testing.T, mutate func(dir string, baseManifest *EvidenceManifest, contracts *ContractsSet, evFile string)) (*AcceptanceReport, error) {
+		t.Helper()
+		baseManifest, contracts := baseValidManifestAndContracts(t)
+		dir := t.TempDir()
+		evFile := filepath.Join(dir, "producer-evidence.json")
+		raw, err := json.MarshalIndent(baseManifest.Records, "", "  ")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(evFile, raw, 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		ciRunDiscoveryFunc = func(commitSHA string) ([]CIRunRecord, error) {
+			return baseManifest.Runs, nil
+		}
+		defaultEvidencePathsFunc = func() []string {
+			if _, err := os.Stat(evFile); err == nil {
+				return []string{evFile}
+			}
+			return nil
+		}
+
+		if mutate != nil {
+			mutate(dir, baseManifest, contracts, evFile)
+			if _, err := os.Stat(evFile); err == nil {
+				rawMut, _ := json.MarshalIndent(baseManifest.Records, "", "  ")
+				_ = os.WriteFile(evFile, rawMut, 0644)
+			}
+		}
+
+		outManifestPath := filepath.Join(dir, "final-manifest.json")
+		built, err := BuildFinalEvidenceManifest(contracts, baseManifest.ImplementationSHA, baseManifest.DocsSHA, outManifestPath)
+		if err != nil {
+			return nil, err
+		}
+		return ValidateEvidenceManifest(built, contracts, "final")
+	}
+
+	// Sanity check: unmodified end-to-end aggregator passes
+	repOk, errOk := runEndToEnd(t, nil)
+	if errOk != nil || !repOk.ClosureComplete {
+		t.Fatalf("expected unmodified end-to-end aggregator to pass, got err=%v, closure=%v", errOk, repOk)
+	}
+
+	// Attack 1: Delete all evidence files while leaving all four successful CI run IDs
+	t.Run("Attack01_DeleteAllEvidenceFilesWithGreenCI", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			_ = os.Remove(evFile)
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) || (rep != nil && rep.FailedCases == 0) {
+			t.Fatalf("Attack 1 must fail closed when all evidence files are deleted: err=%v, rep=%+v", err, rep)
+		}
+	})
+
+	// Attack 2: Evidence record with exit_code != 0 and result = "passed"
+	t.Run("Attack02_NonZeroExitCodeWithPassedResult", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			bm.Records[0].ExitCode = 2
+			bm.Records[0].Result = "passed"
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 2 must reject exit_code != 0 with passed result")
+		}
+	})
+
+	// Attack 3: Contradictory exit_code == 0 with result = "failed"
+	t.Run("Attack03_ContradictoryFailedResultWithZeroExit", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			bm.Records[0].ExitCode = 0
+			bm.Records[0].Result = "failed"
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 3 must reject contradictory failed status")
+		}
+	})
+
+	// Attack 4: Missing any single acceptance ID, repair ID, or gate ID
+	t.Run("Attack04_MissingAcceptanceRepairOrGateID", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			// Drop BRG01 record
+			bm.Records = bm.Records[:len(bm.Records)-1]
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 4 must reject missing gate ID")
+		}
+	})
+
+	// Attack 5: Injected unknown requirement ID
+	t.Run("Attack05_InjectedUnknownRequirementID", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			bm.Records[0].Requirements = append(bm.Records[0].Requirements, "BOGUS_REQ_999")
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 5 must reject unknown requirement ID")
+		}
+	})
+
+	// Attack 6: Modified contract file hash
+	t.Run("Attack06_ModifiedContractHash", func(t *testing.T) {
+		tmpContract := filepath.Join(t.TempDir(), "corrupt-acceptance.json")
+		_ = os.WriteFile(tmpContract, []byte(`{"case_count":94}`), 0644)
+		if _, err := LoadAllContracts(tmpContract, "", ""); err == nil {
+			t.Fatalf("Attack 6 must reject modified contract hash")
+		}
+	})
+
+	// Attack 7: Unauthorized test_id including prefix/substring spoofing
+	t.Run("Attack07_UnauthorizedTestIDPrefixAndSubstringSpoofing", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			// Prefix spoof without "/" boundary and substring spoof
+			bm.Records[0].TestID = "spoof/tools/language-acceptance:runFunctionsEvil"
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 7 must reject spoofed test_id")
+		}
+	})
+
+	// Attack 8: Weak tier substitution (service supplied where ios-ui is required)
+	t.Run("Attack08_WeakTierSubstitutionServiceForIOSUI", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			for i := range bm.Records {
+				if bm.Records[i].EvidenceID == "ev-e01-ui" {
+					bm.Records[i].Tier = "service"
+				}
+			}
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 8 must reject service tier substituted for ios-ui")
+		}
+	})
+
+	// Attack 9: Empty or mismatched implementation_sha on evidence record (no silent backfilling!)
+	t.Run("Attack09_EmptyImplementationSHANotBackfilled", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			bm.Records[0].ImplementationSHA = ""
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 9 must reject empty implementation_sha without backfilling")
+		}
+	})
+
+	// Attack 10: Missing referenced artifact or corrupt artifact SHA-256
+	t.Run("Attack10_MissingOrCorruptArtifact", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			for i := range bm.Records {
+				if bm.Records[i].Tier == "ios-runtime" {
+					bm.Records[i].Artifacts = nil
+				}
+			}
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 10 must reject ios-runtime record with missing artifacts")
+		}
+	})
+
+	// Attack 11: Wrong RequiredAssertions value (function_result = "0" instead of "21")
+	t.Run("Attack11_WrongRequiredAssertionValue", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			for i := range bm.Records {
+				if bm.Records[i].Tier == "ios-runtime" {
+					bm.Records[i].Assertions["function_result"] = "0"
+				}
+			}
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 11 must reject wrong function_result assertion value")
+		}
+	})
+
+	// Attack 12: Duplicate evidence_id across ingested files
+	t.Run("Attack12_DuplicateEvidenceIDAcrossIngestedFiles", func(t *testing.T) {
+		rep, err := runEndToEnd(t, func(dir string, bm *EvidenceManifest, c *ContractsSet, evFile string) {
+			dup := bm.Records[0]
+			bm.Records = append(bm.Records, dup)
+		})
+		if err == nil || (rep != nil && rep.ClosureComplete) {
+			t.Fatalf("Attack 12 must reject duplicate evidence_id in ingested files")
+		}
+	})
+}
+
+func TestFull179ContractRequirements_EndToEndClosureAndProducerIsolation(t *testing.T) {
+	origDiscover := ciRunDiscoveryFunc
+	origPaths := defaultEvidencePathsFunc
+	t.Cleanup(func() {
+		ciRunDiscoveryFunc = origDiscover
+		defaultEvidencePathsFunc = origPaths
+	})
+
+	contracts, err := LoadAllContracts("", "", "")
+	if err != nil {
+		t.Fatalf("LoadAllContracts failed: %v", err)
+	}
+
+	dir := t.TempDir()
+	implSHA := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+	docsSHA := "4218b152f6aea5e8e17912a8b4a8924ffd819f00"
+
+	runs := []CIRunRecord{
+		{RunID: "201", Repository: "davidpovarsky/cherri", HeadSHA: implSHA, CheckoutSHA: implSHA, Conclusion: "success", WorkflowName: "Build & Test"},
+		{RunID: "202", Repository: "davidpovarsky/cherri", HeadSHA: implSHA, CheckoutSHA: implSHA, Conclusion: "success", WorkflowName: "OpenMinis Skill"},
+		{RunID: "203", Repository: "davidpovarsky/cherri", HeadSHA: implSHA, CheckoutSHA: implSHA, Conclusion: "success", WorkflowName: "iOS Build"},
+		{RunID: "204", Repository: "davidpovarsky/cherri", HeadSHA: implSHA, CheckoutSHA: implSHA, Conclusion: "success", WorkflowName: "iOS 27 Shortcuts Runtime PoC"},
+	}
+	ciRunDiscoveryFunc = func(commitSHA string) ([]CIRunRecord, error) {
+		return runs, nil
+	}
+
+	// 1. Run real local Runner for all 22 groups + repair + gates + CI
+	runner := NewRunner()
+	runner.implSHA = implSHA
+	runner.runBaseline()
+	runner.runUpstream()
+	runner.runParser()
+	runner.runBinding()
+	runner.runCalls()
+	runner.runTypes()
+	runner.runText()
+	runner.runCollections()
+	runner.runNumbers()
+	runner.runControl()
+	runner.runFunctions()
+	runner.runMetadata()
+	runner.runModules()
+	runner.runSchema()
+	runner.runNative()
+	runner.runEditor()
+	runner.runCLI()
+	runner.runDocs()
+	runner.runSkill()
+	runner.runVerification()
+	runner.runEvaluation()
+	runner.runDelivery()
+	runner.runRepairCases(contracts.Repair)
+	runner.runRecoveryGates(contracts.Gates)
+	runner.runCIVerification()
+
+	localEvPath := filepath.Join(dir, "local-runner-evidence.json")
+	localBytes, _ := json.MarshalIndent(runner.records, "", "  ")
+	_ = os.WriteFile(localEvPath, localBytes, 0644)
+
+	// 2. Skill producer file (matches self-test.sh output)
+	skillArtPath := filepath.Join(dir, "test.shortcut")
+	skillArtBytes := []byte("bplist00-skill")
+	_ = os.WriteFile(skillArtPath, skillArtBytes, 0644)
+	skillArtSum := sha256.Sum256(skillArtBytes)
+	skillArt := EvidenceArtifact{Path: skillArtPath, SHA256: hex.EncodeToString(skillArtSum[:]), RunID: "202"}
+
+	skillRecs := []EvidenceRecord{
+		{
+			EvidenceID:        "ev-skill-package-self-test",
+			Requirements:      []string{"K01", "RP42", "RP44", "RP45", "RP49", "BRG30"},
+			Tier:              "skill-package",
+			ImplementationSHA: implSHA,
+			TestID:            "skills/cherri-shortcuts/scripts/self-test.sh",
+			ExitCode:          0,
+			Result:            "passed",
+			Assertions:        map[string]string{"scenarios_passed": "10"},
+			Artifacts:         []EvidenceArtifact{skillArt},
+		},
+		{
+			EvidenceID:        "ev-skill-integration-self-test",
+			Requirements:      []string{"K02", "K03", "K04", "K05", "D03", "RP44", "RP45", "RP46", "BRG30"},
+			Tier:              "integration",
+			ImplementationSHA: implSHA,
+			TestID:            "skills/cherri-shortcuts/scripts/self-test.sh",
+			ExitCode:          0,
+			Result:            "passed",
+			Assertions:        map[string]string{"scenarios_passed": "10"},
+			Artifacts:         []EvidenceArtifact{skillArt},
+		},
+	}
+	skillEvPath := filepath.Join(dir, "skill-evidence.json")
+	skillEvBytes, _ := json.MarshalIndent(skillRecs, "", "  ")
+	_ = os.WriteFile(skillEvPath, skillEvBytes, 0644)
+
+	// 3. iOS Build Simulator XCTests producer file (matches ios-build.yml output)
+	uiArtPath := filepath.Join(dir, "xcodetest.log")
+	uiArtBytes := []byte("TEST SUCCEEDED")
+	_ = os.WriteFile(uiArtPath, uiArtBytes, 0644)
+	uiArtSum := sha256.Sum256(uiArtBytes)
+	uiArt := EvidenceArtifact{Path: uiArtPath, SHA256: hex.EncodeToString(uiArtSum[:]), RunID: "203"}
+
+	iosRecs := []EvidenceRecord{
+		{EvidenceID: "ev-ios-ui-E01", Requirements: []string{"E01", "BRG27"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis", ExitCode: 0, Result: "passed", Assertions: map[string]string{"multi_diagnostics": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E02", Requirements: []string{"E02", "RP40"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition", ExitCode: 0, Result: "passed", Assertions: map[string]string{"completion_hover_sig_def": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E03", Requirements: []string{"E03"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing", ExitCode: 0, Result: "passed", Assertions: map[string]string{"scoped_rename": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E04", Requirements: []string{"E04", "RP39"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics", ExitCode: 0, Result: "passed", Assertions: map[string]string{"formatter_idempotent_comments": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E05", Requirements: []string{"E05"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits", ExitCode: 0, Result: "passed", Assertions: map[string]string{"versioned_edits_isolated": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E06", Requirements: []string{"E06"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew", ExitCode: 0, Result: "passed", Assertions: map[string]string{"utf16_spans_exact": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E07", Requirements: []string{"E07", "RP41", "BRG28"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection", ExitCode: 0, Result: "passed", Assertions: map[string]string{"visual_source_edit_bounded": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-BRG25", Requirements: []string{"BRG25"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract", ExitCode: 0, Result: "passed", Assertions: map[string]string{"shared_analysis_bridge": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-build-BRG25", Requirements: []string{"BRG25"}, Tier: "ios-build", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract", ExitCode: 0, Result: "passed", Assertions: map[string]string{"shared_analysis_bridge": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+	}
+	iosEvPath := filepath.Join(dir, "ios-test-evidence.json")
+	iosEvBytes, _ := json.MarshalIndent(iosRecs, "", "  ")
+	_ = os.WriteFile(iosEvPath, iosEvBytes, 0644)
+
+	// 4. iOS 27 Shortcuts Runtime PoC producer file (matches scripts/ios27_runtime_poc.sh output)
+	rtArtPath := filepath.Join(dir, "clipboard-result.txt")
+	rtArtBytes := []byte("CHERRI_IOS27_RUNTIME_OK\n")
+	_ = os.WriteFile(rtArtPath, rtArtBytes, 0644)
+	rtArtSum := sha256.Sum256(rtArtBytes)
+	rtArt := EvidenceArtifact{Path: rtArtPath, SHA256: hex.EncodeToString(rtArtSum[:]), RunID: "204"}
+
+	runtimeRecs := []EvidenceRecord{
+		{EvidenceID: "ev-runtime-smoke", Requirements: []string{"CI02", "RP48", "BRG26", "BRG31"}, Tier: "ios-runtime", ImplementationSHA: implSHA, TestID: "ios27-runtime-poc:smoke", ExitCode: 0, Result: "passed", Assertions: map[string]string{"status": "CHERRI_IOS27_RUNTIME_OK"}, Artifacts: []EvidenceArtifact{rtArt}},
+		{EvidenceID: "ev-runtime-variables", Requirements: []string{"V01", "V03", "RP12", "RP14", "BRG10"}, Tier: "ios-runtime", ImplementationSHA: implSHA, TestID: "ios27-runtime-poc:variables", ExitCode: 0, Result: "passed", Assertions: map[string]string{"variable_result": "updated", "captured_before": "initial", "num_captured": "10", "clip_captured": "clip_initial"}, Artifacts: []EvidenceArtifact{rtArt}},
+		{EvidenceID: "ev-runtime-unicode", Requirements: []string{"S01", "RP19", "BRG08"}, Tier: "ios-runtime", ImplementationSHA: implSHA, TestID: "ios27-runtime-poc:unicode", ExitCode: 0, Result: "passed", Assertions: map[string]string{"unicode_output": "שלום 👩‍💻 אָ"}, Artifacts: []EvidenceArtifact{rtArt}},
+		{EvidenceID: "ev-runtime-indexing", Requirements: []string{"L02", "L04", "RP21"}, Tier: "ios-runtime", ImplementationSHA: implSHA, TestID: "ios27-runtime-poc:indexing", ExitCode: 0, Result: "passed", Assertions: map[string]string{"index_trace": "alpha:gamma:::::beta"}, Artifacts: []EvidenceArtifact{rtArt}},
+		{EvidenceID: "ev-runtime-numbers", Requirements: []string{"N01", "RP15", "RP17", "BRG16"}, Tier: "ios-runtime", ImplementationSHA: implSHA, TestID: "ios27-runtime-poc:numbers", ExitCode: 0, Result: "passed", Assertions: map[string]string{"math_trace": "2.5:1:11:0:1:0", "index_trace": "alpha:gamma:::::beta"}, Artifacts: []EvidenceArtifact{rtArt}},
+		{EvidenceID: "ev-runtime-conditionals", Requirements: []string{"F01", "RP18", "BRG13"}, Tier: "ios-runtime", ImplementationSHA: implSHA, TestID: "ios27-runtime-poc:conditionals", ExitCode: 0, Result: "passed", Assertions: map[string]string{"conditional_result": "true", "short_circuit_trace": "START|RAN_RHS:0:1:1"}, Artifacts: []EvidenceArtifact{rtArt}},
+		{EvidenceID: "ev-runtime-loops", Requirements: []string{"F02", "F04", "RP22", "BRG12", "BRG14"}, Tier: "ios-runtime", ImplementationSHA: implSHA, TestID: "ios27-runtime-poc:nested-loops", ExitCode: 0, Result: "passed", Assertions: map[string]string{"loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|", "value_blocks": "pos:neg:zero:0|1|2|"}, Artifacts: []EvidenceArtifact{rtArt}},
+		{EvidenceID: "ev-runtime-functions", Requirements: []string{"FN01", "FN02", "FN03", "FN04", "T01", "M02", "RP24", "RP25", "RP26", "BRG11", "BRG15"}, Tier: "ios-runtime", ImplementationSHA: implSHA, TestID: "ios27-runtime-poc:functions", ExitCode: 0, Result: "passed", Assertions: map[string]string{"function_result": "21", "caller_continuation": "22", "defaults_explicit": "0:0::", "defaults_omitted": "1:9:def:", "recursion_fact3": "6", "void_output": "", "partial_envelope_safe": "multiply"}, Artifacts: []EvidenceArtifact{rtArt}},
+	}
+	runtimeEvPath := filepath.Join(dir, "runtime-evidence.json")
+	runtimeEvBytes, _ := json.MarshalIndent(runtimeRecs, "", "  ")
+	_ = os.WriteFile(runtimeEvPath, runtimeEvBytes, 0644)
+
+	defaultEvidencePathsFunc = func() []string {
+		return []string{localEvPath, skillEvPath, iosEvPath, runtimeEvPath}
+	}
+
+	manifest, err := BuildFinalEvidenceManifest(contracts, implSHA, docsSHA, filepath.Join(dir, "final-manifest.json"))
+	if err != nil {
+		t.Fatalf("BuildFinalEvidenceManifest failed: %v", err)
+	}
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err != nil {
+		t.Fatalf("ValidateEvidenceManifest failed on full 179 requirement set: %v", err)
+	}
+	if report.TotalCases != 179 || report.PassedCases != 178 || report.SkippedCases != 1 || report.FailedCases != 0 || !report.ClosureComplete {
+		t.Fatalf("unexpected report counts: total=%d passed=%d skipped=%d failed=%d closure=%t",
+			report.TotalCases, report.PassedCases, report.SkippedCases, report.FailedCases, report.ClosureComplete)
+	}
+}
+
+

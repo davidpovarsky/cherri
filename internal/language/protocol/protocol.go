@@ -2,6 +2,7 @@ package protocol
 
 import (
 	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
@@ -56,12 +57,64 @@ type CompleteResponse struct {
 	Items             []CompletionItem `json:"items"`
 }
 
+// HoverResponse contains hover documentation and range.
+type HoverResponse struct {
+	OK       bool   `json:"ok"`
+	Contents string `json:"contents,omitempty"`
+	Range    *Range `json:"range,omitempty"`
+}
+
+// DefinitionResponse contains go-to-definition target location.
+type DefinitionResponse struct {
+	OK    bool   `json:"ok"`
+	URI   string `json:"uri,omitempty"`
+	Range *Range `json:"range,omitempty"`
+}
+
+// SignatureHelpResponse contains signature help for an active call.
+type SignatureHelpResponse struct {
+	OK              bool     `json:"ok"`
+	Label           string   `json:"label,omitempty"`
+	Documentation   string   `json:"documentation,omitempty"`
+	Parameters      []string `json:"parameters,omitempty"`
+	ActiveParameter int      `json:"activeParameter"`
+}
+
+// TextEditItem represents a source text replacement over a UTF-16 range.
+type TextEditItem struct {
+	Range   Range  `json:"range"`
+	NewText string `json:"newText"`
+}
+
+// RenameResponse contains the result of a scoped symbol rename.
+type RenameResponse struct {
+	OK     bool           `json:"ok"`
+	Source string         `json:"source,omitempty"`
+	Edits  []TextEditItem `json:"edits,omitempty"`
+	Error  string         `json:"error,omitempty"`
+}
+
+// FormatResponse contains canonical formatted source.
+type FormatResponse struct {
+	OK     bool   `json:"ok"`
+	Source string `json:"source,omitempty"`
+	Error  string `json:"error,omitempty"`
+}
+
+// SourceEditResponse contains the result of a bounded AST visual source edit.
+type SourceEditResponse struct {
+	OK     bool   `json:"ok"`
+	Source string `json:"source,omitempty"`
+	Error  string `json:"error,omitempty"`
+}
+
 // CapabilitiesResponse is emitted by `cherri --capabilities-json`.
 type CapabilitiesResponse struct {
 	LanguageVersion      string   `json:"languageVersion"`
 	CatalogSchemaVersion string   `json:"catalogSchemaVersion"`
 	ProtocolVersion      string   `json:"protocolVersion"`
 	SchemaFingerprint    string   `json:"schemaFingerprint"`
+	CodecFingerprint     string   `json:"codecFingerprint"`
 	ActionCount          int      `json:"actionCount"`
 	Features             []string `json:"features"`
 }
@@ -75,11 +128,11 @@ func ToDiagnosticItem(d analysis.Diagnostic) DiagnosticItem {
 		Range: Range{
 			Start: Position{
 				Line:      d.Span.Start.LSPLine(),
-				Character: d.Span.Start.Column - 1,
+				Character: d.Span.Start.LSPCharacterColumn(),
 			},
 			End: Position{
 				Line:      d.Span.End.LSPLine(),
-				Character: d.Span.End.Column - 1,
+				Character: d.Span.End.LSPCharacterColumn(),
 			},
 		},
 	}
@@ -95,6 +148,7 @@ func BuildCapabilities(reg *schema.Registry) CapabilitiesResponse {
 		CatalogSchemaVersion: schema.CatalogSchemaVersion,
 		ProtocolVersion:      ProtocolVersion,
 		SchemaFingerprint:    reg.Fingerprint(),
+		CodecFingerprint:     backend.CodecFingerprint(),
 		ActionCount:          len(reg.AllActions()),
 		Features: []string{
 			"let_var_bindings",

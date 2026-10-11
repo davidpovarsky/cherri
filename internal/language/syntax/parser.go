@@ -32,11 +32,20 @@ const (
 
 // Parser parses Cherri v2 source tokens into an AST.
 type Parser struct {
-	file   *source.File
-	lexer  *Lexer
-	curr   Token
-	peek   Token
-	errors []ParseError
+	file     *source.File
+	lexer    *Lexer
+	curr     Token
+	peek     Token
+	errors   []ParseError
+	comments []source.Trivia
+}
+
+func (p *Parser) collectComments(tok Token) {
+	for _, tr := range tok.Leading {
+		if tr.Kind == source.TriviaLineComment || tr.Kind == source.TriviaBlockComment {
+			p.comments = append(p.comments, tr)
+		}
+	}
 }
 
 // NewParser creates a new Parser for a source file.
@@ -47,7 +56,9 @@ func NewParser(file *source.File) *Parser {
 		lexer: l,
 	}
 	p.curr = p.lexer.NextToken()
+	p.collectComments(p.curr)
 	p.peek = p.lexer.NextToken()
+	p.collectComments(p.peek)
 	return p
 }
 
@@ -64,6 +75,7 @@ func (p *Parser) advance() Token {
 	prev := p.curr
 	p.curr = p.peek
 	p.peek = p.lexer.NextToken()
+	p.collectComments(p.peek)
 	return prev
 }
 
@@ -109,6 +121,7 @@ func (p *Parser) ParseProgram() *Program {
 		}
 	}
 
+	prog.Comments = p.comments
 	if len(prog.Statements) > 0 {
 		prog.Span = prog.Statements[0].NodeSpan().Merge(prog.Statements[len(prog.Statements)-1].NodeSpan())
 	}

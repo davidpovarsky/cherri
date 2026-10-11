@@ -10,7 +10,13 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/schema"
+)
+
+var (
+	ciRunDiscoveryFunc       = discoverCIRuns
+	defaultEvidencePathsFunc = defaultEvidencePaths
 )
 
 func fileArtifactIfPresent(relPath string, runID string) *EvidenceArtifact {
@@ -80,12 +86,61 @@ func ingestEvidenceFile(path string) ([]EvidenceRecord, error) {
 	return nil, fmt.Errorf("no evidence records parsed from %s", path)
 }
 
+func firstExistingFile(paths ...string) string {
+	for _, p := range paths {
+		if info, err := os.Stat(p); err == nil && !info.IsDir() {
+			return p
+		}
+	}
+	return ""
+}
+
+func defaultEvidencePaths() []string {
+	var files []string
+
+	if p := firstExistingFile(
+		"artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/runtime-evidence.json",
+		"artifacts/runtime-evidence.json",
+	); p != "" {
+		files = append(files, p)
+	}
+
+	if p := firstExistingFile(
+		"artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/ios-test-evidence.json",
+		"artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/ios/ios-test-evidence.json",
+		"artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/ios/.build/ios-test-evidence.json",
+		"ios/ios-test-evidence.json",
+	); p != "" {
+		files = append(files, p)
+	}
+
+	if p := firstExistingFile(
+		"artifacts/backend-recovery/ci-artifacts/openminis-skill/Cherri-OpenMinis-Skill/skill-evidence.json",
+		"artifacts/backend-recovery/ci-artifacts/openminis-skill/openminis-skill-evidence/skill-evidence.json",
+		"artifacts/evidence/skill-evidence.json",
+	); p != "" {
+		files = append(files, p)
+	}
+
+	for _, dir := range []string{"artifacts/backend-recovery/evidence"} {
+		entries, err := os.ReadDir(dir)
+		if err == nil {
+			for _, entry := range entries {
+				if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".json") {
+					files = append(files, filepath.Join(dir, entry.Name()))
+				}
+			}
+		}
+	}
+	return files
+}
+
 func BuildFinalEvidenceManifest(contracts *ContractsSet, implSHA, docsSHA, outPath string) (*EvidenceManifest, error) {
 	if contracts == nil || contracts.Acceptance == nil || contracts.Repair == nil || contracts.Gates == nil {
 		return nil, fmt.Errorf("all contracts must be loaded to generate final evidence manifest")
 	}
 
-	runs, err := discoverCIRuns(implSHA)
+	runs, err := ciRunDiscoveryFunc(implSHA)
 	if err != nil {
 		return nil, err
 	}
@@ -95,213 +150,22 @@ func BuildFinalEvidenceManifest(contracts *ContractsSet, implSHA, docsSHA, outPa
 		ImplementationSHA: implSHA,
 		DocsSHA:           docsSHA,
 		SchemaFingerprint: schema.DefaultRegistry().Fingerprint(),
-		CodecFingerprint:  schema.DefaultRegistry().Fingerprint(),
+		CodecFingerprint:  backend.CodecFingerprint(),
 		Records:           make([]EvidenceRecord, 0, 250),
 		Runs:              runs,
 	}
 
-	// 1. Ingest real evidence files from artifacts / disk
-	candidateEvidenceFiles := []string{
-		"artifacts/runtime-evidence.json",
-		"artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/runtime-evidence.json",
-		"artifacts/backend-recovery/evidence/local-runner-evidence.json",
-	}
-
-	evidenceDirs := []string{
-		"artifacts/backend-recovery/evidence",
-		"artifacts/evidence",
-	}
-	for _, dir := range evidenceDirs {
-		entries, err := os.ReadDir(dir)
-		if err == nil {
-			for _, entry := range entries {
-				if strings.HasSuffix(entry.Name(), ".json") {
-					candidateEvidenceFiles = append(candidateEvidenceFiles, filepath.Join(dir, entry.Name()))
-				}
-			}
-		}
-	}
-
-	seenRecIDs := make(map[string]bool)
+	candidateEvidenceFiles := defaultEvidencePathsFunc()
+	seenFiles := make(map[string]bool)
 	for _, f := range candidateEvidenceFiles {
-		recs, err := ingestEvidenceFile(f)
+		cleanPath := filepath.Clean(f)
+		if seenFiles[cleanPath] {
+			continue
+		}
+		seenFiles[cleanPath] = true
+		recs, err := ingestEvidenceFile(cleanPath)
 		if err == nil {
-			for _, r := range recs {
-				if r.EvidenceID != "" && !seenRecIDs[r.EvidenceID] {
-					seenRecIDs[r.EvidenceID] = true
-					if r.ImplementationSHA == "" {
-						r.ImplementationSHA = implSHA
-					}
-					manifest.Records = append(manifest.Records, r)
-				}
-			}
-		}
-	}
-
-	// 2. Discover artifacts for verified runs
-	var runtimeRunID, uiRunID, buildRunID, skillRunID string
-	for _, r := range runs {
-		if r.Conclusion == "success" || r.Conclusion == "SUCCESS" {
-			switch r.WorkflowName {
-			case "iOS 27 Shortcuts Runtime PoC":
-				runtimeRunID = r.RunID
-			case "iOS Build":
-				uiRunID = r.RunID
-			case "Build & Test":
-				buildRunID = r.RunID
-			case "OpenMinis Skill":
-				skillRunID = r.RunID
-			}
-		}
-	}
-
-	var runtimeArtifacts []EvidenceArtifact
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/clipboard-result.txt", runtimeRunID); art != nil {
-		runtimeArtifacts = append(runtimeArtifacts, *art)
-	}
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/CherriRuntimePOC.shortcut", runtimeRunID); art != nil {
-		runtimeArtifacts = append(runtimeArtifacts, *art)
-	}
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/CherriRuntimePOC.cherri", runtimeRunID); art != nil {
-		runtimeArtifacts = append(runtimeArtifacts, *art)
-	}
-
-	var uiArtifacts []EvidenceArtifact
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios-build/Cherri-Simulator-app/Info.plist", uiRunID); art != nil {
-		uiArtifacts = append(uiArtifacts, *art)
-	}
-	if art := fileArtifactIfPresent("artifacts/backend-recovery/ci-artifacts/ios-build/Cherri-unsigned-IPA/Cherri-unsigned.ipa", uiRunID); art != nil {
-		uiArtifacts = append(uiArtifacts, *art)
-	}
-
-	// 3. Synthesize evidence records for all requirements using verified contracts & evidence map
-	evidenceMap, mapErr := BuildRequirementsEvidenceMap(contracts)
-	if mapErr != nil {
-		return nil, mapErr
-	}
-
-	satisfiedTiers := make(map[string]map[string]bool)
-	for _, rec := range manifest.Records {
-		for _, req := range rec.Requirements {
-			if satisfiedTiers[req] == nil {
-				satisfiedTiers[req] = make(map[string]bool)
-			}
-			satisfiedTiers[req][rec.Tier] = true
-		}
-	}
-
-	for reqID, m := range evidenceMap.Mappings {
-		for _, reqTier := range m.RequiredTiers {
-			isSat := false
-			for existingTier := range satisfiedTiers[reqID] {
-				if reqTier == "ios-runtime" {
-					if existingTier == "ios-runtime" {
-						isSat = true
-						break
-					}
-				} else if satisfiesTier(existingTier, reqTier) {
-					isSat = true
-					break
-				}
-			}
-			if isSat {
-				continue
-			}
-
-			testIDs := m.TestIDs
-			if len(testIDs) == 0 {
-				testIDs = []string{"tools/language-acceptance:runAll"}
-			}
-
-			if reqTier == "ci" || reqTier == "negative-ci" || reqTier == "skill-package" {
-				tid := testIDs[0]
-				for _, cand := range testIDs {
-					if strings.Contains(cand, "github-actions") {
-						tid = cand
-						break
-					}
-				}
-				manifest.Records = append(manifest.Records, EvidenceRecord{
-					EvidenceID:        fmt.Sprintf("ev-ci-%s-%s", reqID, reqTier),
-					Requirements:      []string{reqID},
-					Tier:              reqTier,
-					TestID:            tid,
-					ImplementationSHA: implSHA,
-					ExitCode:          0,
-					Result:            "passed",
-					Detail:            fmt.Sprintf("CI verified in runs %s / %s", buildRunID, skillRunID),
-				})
-			} else if reqTier == "ios-ui" {
-				tid := testIDs[0]
-				for _, cand := range testIDs {
-					if strings.Contains(cand, "CherriCore") || strings.Contains(cand, "ios-build") {
-						tid = cand
-						break
-					}
-				}
-				manifest.Records = append(manifest.Records, EvidenceRecord{
-					EvidenceID:        fmt.Sprintf("ev-ios-ui-%s", reqID),
-					Requirements:      []string{reqID},
-					Tier:              "ios-ui",
-					TestID:            tid,
-					ImplementationSHA: implSHA,
-					ExitCode:          0,
-					Result:            "passed",
-					Artifacts:         uiArtifacts,
-					Detail:            fmt.Sprintf("Swift XCTest verified in iOS Build (run %s)", uiRunID),
-				})
-			} else if reqTier == "ios-runtime" {
-				tid := testIDs[0]
-				for _, cand := range testIDs {
-					if strings.Contains(cand, "ios27-runtime-poc") {
-						tid = cand
-						break
-					}
-				}
-				asns := m.RequiredAssertions
-				if len(asns) == 0 {
-					asns = map[string]string{"status": "CHERRI_IOS27_RUNTIME_OK"}
-				}
-				manifest.Records = append(manifest.Records, EvidenceRecord{
-					EvidenceID:        fmt.Sprintf("ev-runtime-%s", reqID),
-					Requirements:      []string{reqID},
-					Tier:              "ios-runtime",
-					TestID:            tid,
-					ImplementationSHA: implSHA,
-					ExitCode:          0,
-					Result:            "passed",
-					Assertions:        asns,
-					Artifacts:         runtimeArtifacts,
-					Detail:            fmt.Sprintf("iOS Shortcuts runtime execution verified in run %s", runtimeRunID),
-				})
-			} else if reqID == "AI01" {
-				manifest.Records = append(manifest.Records, EvidenceRecord{
-					EvidenceID:        "ev-ai01-external-eval",
-					Requirements:      []string{"AI01"},
-					Tier:              "external-eval",
-					TestID:            "tools/language-acceptance:runEvaluation",
-					ImplementationSHA: implSHA,
-					ExitCode:          0,
-					Result:            "not_run",
-					Detail:            "Held-out evaluation endpoint not configured per Section 22.5",
-				})
-			} else {
-				asnText := "verified"
-				if len(m.Assertions) > 0 {
-					asnText = m.Assertions[0]
-				}
-				manifest.Records = append(manifest.Records, EvidenceRecord{
-					EvidenceID:        fmt.Sprintf("ev-local-%s-%s", reqID, reqTier),
-					Requirements:      []string{reqID},
-					Tier:              reqTier,
-					TestID:            testIDs[0],
-					ImplementationSHA: implSHA,
-					ExitCode:          0,
-					Result:            "passed",
-					Assertions:        map[string]string{"assertion": asnText},
-					Detail:            asnText,
-				})
-			}
+			manifest.Records = append(manifest.Records, recs...)
 		}
 	}
 
@@ -321,3 +185,4 @@ func BuildFinalEvidenceManifest(contracts *ContractsSet, implSHA, docsSHA, outPa
 
 	return manifest, nil
 }
+

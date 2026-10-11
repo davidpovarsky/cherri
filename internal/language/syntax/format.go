@@ -3,12 +3,16 @@ package syntax
 import (
 	"fmt"
 	"strings"
+
+	"github.com/electrikmilk/cherri/internal/language/source"
 )
 
 // Formatter formats a Cherri v2 AST into canonical Cherri source code.
 type Formatter struct {
-	indent int
-	buf    strings.Builder
+	indent     int
+	buf        strings.Builder
+	comments   []source.Trivia
+	commentIdx int
 }
 
 // NewFormatter creates a new Formatter.
@@ -19,6 +23,9 @@ func NewFormatter() *Formatter {
 // Format formats a Program into canonical source text.
 func Format(prog *Program) string {
 	f := NewFormatter()
+	if prog != nil {
+		f.comments = prog.Comments
+	}
 	f.formatProgram(prog)
 	return f.buf.String()
 }
@@ -29,11 +36,25 @@ func (f *Formatter) writeIndent() {
 	}
 }
 
+func (f *Formatter) emitCommentsBefore(byteOffset int) {
+	for f.commentIdx < len(f.comments) {
+		c := f.comments[f.commentIdx]
+		if c.Span.Start.ByteOffset > byteOffset {
+			break
+		}
+		f.writeIndent()
+		f.buf.WriteString(strings.TrimSpace(c.Text))
+		f.buf.WriteString("\n")
+		f.commentIdx++
+	}
+}
+
 func (f *Formatter) formatProgram(prog *Program) {
 	for i, decl := range prog.Declarations {
 		if i > 0 {
 			f.buf.WriteString("\n")
 		}
+		f.emitCommentsBefore(decl.NodeSpan().Start.ByteOffset)
 		f.formatDeclaration(decl)
 		f.buf.WriteString("\n")
 	}
@@ -46,8 +67,17 @@ func (f *Formatter) formatProgram(prog *Program) {
 		if i > 0 {
 			f.buf.WriteString("\n")
 		}
+		f.emitCommentsBefore(stmt.NodeSpan().Start.ByteOffset)
 		f.formatStatement(stmt)
 		f.buf.WriteString("\n")
+	}
+
+	for f.commentIdx < len(f.comments) {
+		c := f.comments[f.commentIdx]
+		f.writeIndent()
+		f.buf.WriteString(strings.TrimSpace(c.Text))
+		f.buf.WriteString("\n")
+		f.commentIdx++
 	}
 }
 
@@ -269,9 +299,11 @@ func (f *Formatter) formatBlockStmt(blk *BlockStmt, withIndent bool) {
 	f.buf.WriteString("{\n")
 	f.indent++
 	for _, stmt := range blk.Statements {
+		f.emitCommentsBefore(stmt.NodeSpan().Start.ByteOffset)
 		f.formatStatement(stmt)
 		f.buf.WriteString("\n")
 	}
+	f.emitCommentsBefore(blk.Span.End.ByteOffset)
 	f.indent--
 	f.writeIndent()
 	f.buf.WriteString("}")
@@ -419,6 +451,39 @@ func (f *Formatter) formatExpression(expr Expression) {
 		f.buf.WriteString("}")
 	case *IfStmt:
 		f.formatIfStmt(e, false)
+	case *ForStmt:
+		f.buf.WriteString("for ")
+		if e.IndexVar != "" {
+			fmt.Fprintf(&f.buf, "(%s, %s)", e.IndexVar, e.ItemVar)
+		} else {
+			f.buf.WriteString(e.ItemVar)
+		}
+		f.buf.WriteString(" in ")
+		f.formatExpression(e.Iterable)
+		f.buf.WriteString(" ")
+		f.formatBlockStmt(e.BodyBlock, false)
+	case *RepeatStmt:
+		f.buf.WriteString("repeat ")
+		f.formatExpression(e.Count)
+		if e.IndexVar != "" {
+			fmt.Fprintf(&f.buf, " as %s", e.IndexVar)
+		}
+		f.buf.WriteString(" ")
+		f.formatBlockStmt(e.BodyBlock, false)
+	case *MenuStmt:
+		f.buf.WriteString("menu(")
+		f.formatExpression(e.Prompt)
+		f.buf.WriteString(") {\n")
+		f.indent++
+		for _, c := range e.Cases {
+			f.writeIndent()
+			fmt.Fprintf(&f.buf, "case %q ", c.Label)
+			f.formatBlockStmt(c.BodyBlock, false)
+			f.buf.WriteString("\n")
+		}
+		f.indent--
+		f.writeIndent()
+		f.buf.WriteString("}")
 	}
 }
 

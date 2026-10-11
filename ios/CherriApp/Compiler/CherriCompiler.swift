@@ -179,6 +179,50 @@ struct CherriAnalyzeResponse: Decodable, Sendable {
     }
 }
 
+struct CherriHoverResponse: Decodable, Sendable {
+    let ok: Bool
+    let contents: String?
+    let range: CherriWireRange?
+}
+
+struct CherriDefinitionResponse: Decodable, Sendable {
+    let ok: Bool
+    let uri: String?
+    let range: CherriWireRange?
+}
+
+struct CherriSignatureHelpResponse: Decodable, Sendable {
+    let ok: Bool
+    let label: String?
+    let documentation: String?
+    let parameters: [String]?
+    let activeParameter: Int?
+}
+
+struct CherriTextEditItem: Decodable, Hashable, Sendable {
+    let range: CherriWireRange
+    let newText: String
+}
+
+struct CherriRenameResponse: Decodable, Sendable {
+    let ok: Bool
+    let source: String?
+    let edits: [CherriTextEditItem]?
+    let error: String?
+}
+
+struct CherriFormatResponse: Decodable, Sendable {
+    let ok: Bool
+    let source: String?
+    let error: String?
+}
+
+struct CherriSourceEditResponse: Decodable, Sendable {
+    let ok: Bool
+    let source: String?
+    let error: String?
+}
+
 private struct CompleteBridgeResponse: Decodable {
     let uri: String?
     let version: Int?
@@ -218,9 +262,51 @@ enum CherriCompiler {
         }.value
     }
 
+    static func analyzeVersioned(uri: String = "file:///mobile.cherri", version: Int, source: String) async throws -> CherriAnalyzeResponse {
+        try await Task.detached(priority: .userInitiated) {
+            try callAnalyzeVersionedBridge(uri: uri, version: version, source: source)
+        }.value
+    }
+
     static func complete(source: String, line: Int, column: Int) async throws -> [CherriCompletionItem] {
         try await Task.detached(priority: .userInitiated) {
             try callCompleteBridge(source: source, line: line, column: column)
+        }.value
+    }
+
+    static func hover(source: String, line: Int, column: Int) async throws -> CherriHoverResponse {
+        try await Task.detached(priority: .userInitiated) {
+            try callHoverBridge(source: source, line: line, column: column)
+        }.value
+    }
+
+    static func definition(source: String, line: Int, column: Int) async throws -> CherriDefinitionResponse {
+        try await Task.detached(priority: .userInitiated) {
+            try callDefinitionBridge(source: source, line: line, column: column)
+        }.value
+    }
+
+    static func signatureHelp(source: String, line: Int, column: Int) async throws -> CherriSignatureHelpResponse {
+        try await Task.detached(priority: .userInitiated) {
+            try callSignatureHelpBridge(source: source, line: line, column: column)
+        }.value
+    }
+
+    static func rename(source: String, line: Int, column: Int, newName: String) async throws -> CherriRenameResponse {
+        try await Task.detached(priority: .userInitiated) {
+            try callRenameBridge(source: source, line: line, column: column, newName: newName)
+        }.value
+    }
+
+    static func format(source: String) async throws -> String {
+        try await Task.detached(priority: .userInitiated) {
+            try callFormatBridge(source: source)
+        }.value
+    }
+
+    static func editSourceNode(source: String, actionIndex: Int, paramLabel: String, newExpr: String) async throws -> CherriSourceEditResponse {
+        try await Task.detached(priority: .userInitiated) {
+            try callEditSourceNodeBridge(source: source, actionIndex: actionIndex, paramLabel: paramLabel, newExpr: newExpr)
         }.value
     }
 
@@ -318,6 +404,25 @@ enum CherriCompiler {
         return try JSONDecoder().decode(CherriAnalyzeResponse.self, from: responseData)
     }
 
+    private static func callAnalyzeVersionedBridge(uri: String, version: Int, source: String) throws -> CherriAnalyzeResponse {
+        let resultPointer: UnsafeMutablePointer<CChar>? = uri.withCString { uriPointer in
+            source.withCString { sourcePointer in
+                CherriAnalyzeVersioned(
+                    UnsafeMutablePointer(mutating: uriPointer),
+                    Int32(version),
+                    UnsafeMutablePointer(mutating: sourcePointer)
+                )
+            }
+        }
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri analyzeVersioned returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        return try JSONDecoder().decode(CherriAnalyzeResponse.self, from: responseData)
+    }
+
     private static func callCompleteBridge(source: String, line: Int, column: Int) throws -> [CherriCompletionItem] {
         let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
             CherriComplete(UnsafeMutablePointer(mutating: sourcePointer), Int32(line), Int32(column))
@@ -330,5 +435,103 @@ enum CherriCompiler {
         let responseData = Data(String(cString: resultPointer).utf8)
         let resp = try JSONDecoder().decode(CompleteBridgeResponse.self, from: responseData)
         return resp.items ?? []
+    }
+
+    private static func callHoverBridge(source: String, line: Int, column: Int) throws -> CherriHoverResponse {
+        let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+            CherriHover(UnsafeMutablePointer(mutating: sourcePointer), Int32(line), Int32(column))
+        }
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri hover returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        return try JSONDecoder().decode(CherriHoverResponse.self, from: responseData)
+    }
+
+    private static func callDefinitionBridge(source: String, line: Int, column: Int) throws -> CherriDefinitionResponse {
+        let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+            CherriDefinition(UnsafeMutablePointer(mutating: sourcePointer), Int32(line), Int32(column))
+        }
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri definition returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        return try JSONDecoder().decode(CherriDefinitionResponse.self, from: responseData)
+    }
+
+    private static func callSignatureHelpBridge(source: String, line: Int, column: Int) throws -> CherriSignatureHelpResponse {
+        let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+            CherriSignatureHelp(UnsafeMutablePointer(mutating: sourcePointer), Int32(line), Int32(column))
+        }
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri signatureHelp returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        return try JSONDecoder().decode(CherriSignatureHelpResponse.self, from: responseData)
+    }
+
+    private static func callRenameBridge(source: String, line: Int, column: Int, newName: String) throws -> CherriRenameResponse {
+        let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+            newName.withCString { namePointer in
+                CherriRename(
+                    UnsafeMutablePointer(mutating: sourcePointer),
+                    Int32(line),
+                    Int32(column),
+                    UnsafeMutablePointer(mutating: namePointer)
+                )
+            }
+        }
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri rename returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        return try JSONDecoder().decode(CherriRenameResponse.self, from: responseData)
+    }
+
+    private static func callFormatBridge(source: String) throws -> String {
+        let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+            CherriFormat(UnsafeMutablePointer(mutating: sourcePointer))
+        }
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri format returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        let resp = try JSONDecoder().decode(CherriFormatResponse.self, from: responseData)
+        guard resp.ok, let formatted = resp.source else {
+            throw CompilationDiagnostic(message: resp.error ?? "Format failed.", line: 1, column: 1)
+        }
+        return formatted
+    }
+
+    private static func callEditSourceNodeBridge(source: String, actionIndex: Int, paramLabel: String, newExpr: String) throws -> CherriSourceEditResponse {
+        let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
+            paramLabel.withCString { labelPointer in
+                newExpr.withCString { exprPointer in
+                    CherriEditSourceNode(
+                        UnsafeMutablePointer(mutating: sourcePointer),
+                        Int32(actionIndex),
+                        UnsafeMutablePointer(mutating: labelPointer),
+                        UnsafeMutablePointer(mutating: exprPointer)
+                    )
+                }
+            }
+        }
+        guard let resultPointer else {
+            throw CompilationDiagnostic(message: "Cherri editSourceNode returned no response.", line: 1, column: 1)
+        }
+        defer { CherriFree(resultPointer) }
+
+        let responseData = Data(String(cString: resultPointer).utf8)
+        return try JSONDecoder().decode(CherriSourceEditResponse.self, from: responseData)
     }
 }

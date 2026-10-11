@@ -127,7 +127,12 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 					"triggerCharacters": []string{".", ":", "\""},
 				},
 				"hoverProvider":              true,
+				"definitionProvider":         true,
+				"renameProvider":             true,
 				"documentFormattingProvider": true,
+				"signatureHelpProvider": map[string]interface{}{
+					"triggerCharacters": []string{"(", ","},
+				},
 			},
 			"serverInfo": map[string]interface{}{
 				"name":    "cherri-lsp",
@@ -236,6 +241,110 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 			}
 		}
 
+	case "textDocument/definition":
+		var p struct {
+			TextDocument struct {
+				URI string `json:"uri"`
+			} `json:"textDocument"`
+			Position struct {
+				Line      int `json:"line"`
+				Character int `json:"character"`
+			} `json:"position"`
+		}
+		if err := json.Unmarshal(msg.Params, &p); err == nil {
+			span := s.svc.Definition(p.TextDocument.URI, p.Position.Line+1, p.Position.Character+1)
+			if span == nil {
+				s.sendResponse(msg.ID, nil)
+			} else {
+				s.sendResponse(msg.ID, map[string]interface{}{
+					"uri": p.TextDocument.URI,
+					"range": map[string]interface{}{
+						"start": map[string]int{
+							"line":      span.Start.LSPLine(),
+							"character": span.Start.LSPCharacterColumn(),
+						},
+						"end": map[string]int{
+							"line":      span.End.LSPLine(),
+							"character": span.End.LSPCharacterColumn(),
+						},
+					},
+				})
+			}
+		}
+
+	case "textDocument/signatureHelp":
+		var p struct {
+			TextDocument struct {
+				URI string `json:"uri"`
+			} `json:"textDocument"`
+			Position struct {
+				Line      int `json:"line"`
+				Character int `json:"character"`
+			} `json:"position"`
+		}
+		if err := json.Unmarshal(msg.Params, &p); err == nil {
+			sig := s.svc.SignatureHelp(p.TextDocument.URI, p.Position.Line+1, p.Position.Character+1)
+			if sig == nil {
+				s.sendResponse(msg.ID, nil)
+			} else {
+				params := make([]map[string]interface{}, len(sig.Parameters))
+				for i, pl := range sig.Parameters {
+					params[i] = map[string]interface{}{"label": pl}
+				}
+				s.sendResponse(msg.ID, map[string]interface{}{
+					"signatures": []map[string]interface{}{
+						{
+							"label":         sig.Label,
+							"documentation": sig.Documentation,
+							"parameters":    params,
+						},
+					},
+					"activeSignature": 0,
+					"activeParameter": sig.ActiveParameter,
+				})
+			}
+		}
+
+	case "textDocument/rename":
+		var p struct {
+			TextDocument struct {
+				URI string `json:"uri"`
+			} `json:"textDocument"`
+			Position struct {
+				Line      int `json:"line"`
+				Character int `json:"character"`
+			} `json:"position"`
+			NewName string `json:"newName"`
+		}
+		if err := json.Unmarshal(msg.Params, &p); err == nil {
+			_, edits, err := s.svc.Rename(p.TextDocument.URI, p.Position.Line+1, p.Position.Character+1, p.NewName)
+			if err != nil {
+				s.sendResponse(msg.ID, nil)
+			} else {
+				wireEdits := make([]map[string]interface{}, len(edits))
+				for i, ed := range edits {
+					wireEdits[i] = map[string]interface{}{
+						"range": map[string]interface{}{
+							"start": map[string]int{
+								"line":      ed.Span.Start.LSPLine(),
+								"character": ed.Span.Start.LSPCharacterColumn(),
+							},
+							"end": map[string]int{
+								"line":      ed.Span.End.LSPLine(),
+								"character": ed.Span.End.LSPCharacterColumn(),
+							},
+						},
+						"newText": ed.NewText,
+					}
+				}
+				s.sendResponse(msg.ID, map[string]interface{}{
+					"changes": map[string]interface{}{
+						p.TextDocument.URI: wireEdits,
+					},
+				})
+			}
+		}
+
 	default:
 		if msg.ID != nil {
 			s.sendResponse(msg.ID, nil)
@@ -262,11 +371,11 @@ func (s *Server) publishDiagnostics(uri string) {
 			"range": map[string]interface{}{
 				"start": map[string]int{
 					"line":      d.Span.Start.LSPLine(),
-					"character": d.Span.Start.Column - 1,
+					"character": d.Span.Start.LSPCharacterColumn(),
 				},
 				"end": map[string]int{
 					"line":      d.Span.End.LSPLine(),
-					"character": d.Span.End.Column - 1,
+					"character": d.Span.End.LSPCharacterColumn(),
 				},
 			},
 		})

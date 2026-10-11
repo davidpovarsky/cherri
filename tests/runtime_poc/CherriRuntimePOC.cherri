@@ -1,24 +1,127 @@
+// 1. Variable & Clipboard Capture (V01, V02, V03, RP14, BRG10)
 var myVar = "initial"
+let capturedBefore = myVar
 myVar = "updated"
 
+var numCaptureSrc = 1
+let numCaptured = numCaptureSrc
+numCaptureSrc = 2
+
+setClipboard("clip_initial")
+let clipCaptured = clipboard
+setClipboard("clip_overwritten")
+
+// 2. Unicode f-string interpolation (S01, RP19, BRG08)
+let hebWord = "שָׁלוֹם"
+let emojiGlobe = "🌍"
+let unicodeOut = f"{hebWord}:{emojiGlobe}:{numCaptured}"
+
+// 3. Safe 0-based list indexing & dynamic bounds guard (L02, L04, RP21, BRG16)
+let listItems = ["alpha", "beta", "gamma"]
+let emptyItems: List<Text> = []
+let idxFirst = listItems[0]
+let idxLast = listItems[2]
+let idxNeg = listItems[-1]
+let idxOOB = listItems[9]
+let idxEmpty = emptyItems[0]
+var dynIdx = 99
+let idxDynOOB = listItems[dynIdx]
+dynIdx = 1
+let idxDynOK = listItems[dynIdx]
+
+// 4. Fractional arithmetic, modulus, compound assignment & comparisons (N01, RP15, RP17, BRG16)
+let fracDiv = 5 / 2
+let modRes = 10 % 3
+var compoundVal = 10
+compoundVal += 3
+compoundVal *= 2
+compoundVal -= 4
+compoundVal /= 2
+var cmpLeft = 2
+let cmpGT = cmpLeft > 3
+let cmpEQ = cmpLeft == 2
+let cmpNE = cmpLeft != 2
+
+// 5. Conditionals & Dynamic Short-Circuiting (F01, RP18, BRG13)
 var condResult = "false"
 if 10 > 5 {
     condResult = "true"
 }
+var scTrace = "START"
+var dynFalse = false
+var dynTrue = true
+let scAndSkip = dynFalse && (if true {
+    scTrace = f"{scTrace}|BAD_AND"
+    yield true
+} else {
+    yield false
+})
+let scOrSkip = dynTrue || (if true {
+    scTrace = f"{scTrace}|BAD_OR"
+    yield true
+} else {
+    yield false
+})
+let scAndRun = dynTrue && (if true {
+    scTrace = f"{scTrace}|RAN_RHS"
+    yield true
+} else {
+    yield false
+})
 
+// 6. Nested loops with 0-based indices & value-producing blocks/loops (F02, F03, F04, RP22, RP23, BRG12, BRG14)
 var loopTrace = ""
 for (outerIndex, outer) in ["A", "B"] {
     for (innerIndex, inner) in ["1", "2"] {
         loopTrace = f"{loopTrace}{outerIndex}:{outer}:{innerIndex}:{inner}|"
     }
 }
+let valIf = if 10 > 5 {
+    yield "then_val"
+} else {
+    yield "else_val"
+}
+let valLoop = for item in ["X", "Y"] {
+    yield f"<{item}>"
+}
+let valLoop0 = valLoop[0]
+let valLoop1 = valLoop[1]
 
+// 7. Functions: return & continuation, presence defaults, recursion, caller input, Void fallthrough (FN01, FN02, FN03, FN04, T01, M02, RP24, RP25, RP26, BRG11, BRG15)
 function multiply(value: Number, factor: Number = 2) -> Number {
     return value * factor
 }
-let fnResult = multiply(7, factor: 3)
 
+function checkDefaults(flag: Bool = true, num: Number = 9, txt: Text = "def") -> Text {
+    let inRef = ShortcutInput
+    return f"{flag}:{num}:{txt}:{inRef}"
+}
+
+function fact(n: Number) -> Number {
+    if n <= 1 {
+        return 1
+    }
+    let prev = fact(n - 1)
+    return n * prev
+}
+
+function voidNoLeak(x: Number) {
+    let unused = x + 100
+    return
+}
+
+let fnResult = multiply(7, factor: 3)
+let fnCallerCont = fnResult + 1
+let defExplicit = checkDefaults(false, num: 0, txt: "")
+let defOmitted = checkDefaults()
+let factRes = fact(3)
+let voidOut = voidNoLeak(5)
+let partialEnvelope = {"cherri_functions": "1", "function": "multiply"}
+let envSafe = partialEnvelope["function"]
+
+// 8. Static variant Base64 (SV01, RP08, BRG17)
 let enc = base64Encode("CHERRI")
 
-let result = f"CHERRI_IOS27_RUNTIME_OK\nVAR={myVar}\nIF={condResult}\nLOOPS={loopTrace}\nFUNCTION={fnResult}\nBASE64={enc}"
+let result = f"CHERRI_IOS27_RUNTIME_OK\nVAR={myVar}\nCAPTURED_BEFORE={capturedBefore}\nNUM_CAPTURED={numCaptured}\nCLIP_CAPTURED={clipCaptured}\nUNICODE={unicodeOut}\nIDX={idxFirst}:{idxLast}:{idxNeg}:{idxOOB}:{idxEmpty}:{idxDynOOB}:{idxDynOK}\nMATH={fracDiv}:{modRes}:{compoundVal}:{cmpGT}:{cmpEQ}:{cmpNE}\nIF={condResult}\nSC={scTrace}:{scAndSkip}:{scOrSkip}:{scAndRun}\nLOOPS={loopTrace}\nVAL_BLOCKS={valIf}:{valLoop0}{valLoop1}\nFUNCTION={fnResult}\nFN_CONT={fnCallerCont}\nDEFAULTS_EXPLICIT={defExplicit}\nDEFAULTS_OMITTED={defOmitted}\nFACT={factRes}\nVOID_OUT={voidOut}\nENV_SAFE={envSafe}\nBASE64={enc}"
 setClipboard(result)
+

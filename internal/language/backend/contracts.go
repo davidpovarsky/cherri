@@ -5,6 +5,24 @@
 
 package backend
 
+import (
+	"crypto/sha256"
+	"encoding/hex"
+)
+
+// CodecFingerprint returns the deterministic SHA256 fingerprint of the canonical backend codec contract.
+func CodecFingerprint() string {
+	const codecDescriptor = "cherri-canonical-codec:v2.0\n" +
+		"refs:ActionResult,MutableBinding,SystemValue,LoopItem,LoopIndex,LoopResult,ExtensionInput,AskEachTime\n" +
+		"values:Nil,Bool,Int,Float,String,Reference,TextSegments,List,Dict,RawNative\n" +
+		"controls:If,Repeat,For,Menu:modes=0,1,2\n" +
+		"tokens:WFTextTokenAttachment,WFTextTokenString,WFDictionaryFieldValueItem,WFNumberSubstitutableState\n" +
+		"aggrandizements:WFPropertyVariableAggrandizement,WFCoercionVariableAggrandizement,WFDictionaryValueVariableAggrandizement,WFDateFormatVariableAggrandizement\n" +
+		"fn_envelope:__cherri_fn_envelope_v2__:_cherri_caller_input:has_arg_n\n"
+	sum := sha256.Sum256([]byte(codecDescriptor))
+	return hex.EncodeToString(sum[:])
+}
+
 // ReferenceKind describes the kind of symbolic reference.
 type ReferenceKind int
 

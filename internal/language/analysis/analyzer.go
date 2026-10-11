@@ -57,10 +57,12 @@ func (s *Scope) LookupLocal(name string) (*Symbol, bool) {
 
 // Analyzer performs semantic analysis on a parsed Program.
 type Analyzer struct {
-	registry    *schema.Registry
-	diagnostics []Diagnostic
-	currentFn   *syntax.FunctionDecl
-	inValueBlk  bool
+	registry     *schema.Registry
+	diagnostics  []Diagnostic
+	currentFn    *syntax.FunctionDecl
+	inValueBlk   bool
+	topLevelVars map[string]source.Span
+	yieldedTypes []types.Type
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -69,7 +71,8 @@ func NewAnalyzer(registry *schema.Registry) *Analyzer {
 		registry = schema.DefaultRegistry()
 	}
 	return &Analyzer{
-		registry: registry,
+		registry:     registry,
+		topLevelVars: make(map[string]source.Span),
 	}
 }
 
@@ -99,11 +102,20 @@ func (a *Analyzer) warn(code string, span source.Span, msg string) {
 // Analyze performs full semantic verification of a Program.
 func (a *Analyzer) Analyze(prog *syntax.Program) {
 	scope := NewScope(nil)
+	a.topLevelVars = make(map[string]source.Span)
 
 	// Builtin namespace symbols
 	scope.Define(&Symbol{Name: "system", Type: types.Unknown, Initialized: true})
 	scope.Define(&Symbol{Name: "native", Type: types.Unknown, Initialized: true})
 	scope.Define(&Symbol{Name: "builtin", Type: types.Unknown, Initialized: true})
+	scope.Define(&Symbol{Name: "clipboard", Type: types.AnyContent, Initialized: true})
+	scope.Define(&Symbol{Name: "ShortcutInput", Type: types.AnyContent, Initialized: true})
+
+	for _, stmt := range prog.Statements {
+		if b, ok := stmt.(*syntax.BindingStmt); ok {
+			a.topLevelVars[b.Name] = b.Span
+		}
+	}
 
 	// Pass 1: Collect declarations
 	for _, decl := range prog.Declarations {
@@ -262,7 +274,10 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if !a.inValueBlk {
 			a.error(CodeYieldContext, s.Span, "'yield' statement is only permitted inside value-producing if/menu/for/repeat blocks")
 		}
-		a.analyzeExpression(s.Value, scope)
+		yt := a.analyzeExpression(s.Value, scope)
+		if yt != nil {
+			a.yieldedTypes = append(a.yieldedTypes, yt)
+		}
 
 	case *syntax.BlockStmt:
 		blockScope := NewScope(scope)
@@ -324,6 +339,61 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 	}
 }
 
+func blockHasYield(blk *syntax.BlockStmt) bool {
+	if blk == nil {
+		return false
+	}
+	for _, st := range blk.Statements {
+		switch s := st.(type) {
+		case *syntax.YieldStmt:
+			return true
+		case *syntax.BlockStmt:
+			if blockHasYield(s) {
+				return true
+			}
+		case *syntax.IfStmt:
+			if ifBranchHasYield(s) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func ifBranchHasYield(s *syntax.IfStmt) bool {
+	if s == nil || s.ElseBlock == nil {
+		return false
+	}
+	if !blockHasYield(s.ThenBlock) {
+		return false
+	}
+	switch el := s.ElseBlock.(type) {
+	case *syntax.BlockStmt:
+		return blockHasYield(el)
+	case *syntax.IfStmt:
+		return ifBranchHasYield(el)
+	default:
+		return false
+	}
+}
+
+func isZeroNumberLiteral(expr syntax.Expression) bool {
+	switch e := expr.(type) {
+	case *syntax.LiteralExpr:
+		if e.Type == syntax.TokenNumber {
+			var n float64
+			if _, err := fmt.Sscanf(e.Value, "%f", &n); err == nil && n == 0 {
+				return true
+			}
+		}
+	case *syntax.UnaryExpr:
+		if e.Op == syntax.TokenMinus || e.Op == syntax.TokenPlus {
+			return isZeroNumberLiteral(e.Operand)
+		}
+	}
+	return false
+}
+
 func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types.Type {
 	if expr == nil {
 		return types.Unknown
@@ -362,6 +432,12 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 		}
 		sym, found := scope.Lookup(e.Name)
 		if !found {
+			if a.currentFn != nil {
+				if _, isTopVar := a.topLevelVars[e.Name]; isTopVar {
+					a.error(CodeUnknownName, e.Span, fmt.Sprintf("cannot capture outer variable %q inside function %q; pass it as a parameter", e.Name, a.currentFn.Name))
+					return types.Unknown
+				}
+			}
 			// Check if it's an action name
 			if _, isAction := a.registry.LookupAction(e.Name); isAction {
 				return types.Unknown // Callable action
@@ -390,14 +466,17 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	case *syntax.IndexExpr:
 		targetType := a.analyzeExpression(e.Target, scope)
 		idxType := a.analyzeExpression(e.Index, scope)
+		if mapType, ok := targetType.(types.MapType); ok {
+			if idxType != nil && !idxType.AssignableTo(mapType.Key) && idxType.Kind() != types.KindUnknown {
+				a.error(CodeArgumentType, e.Index.NodeSpan(), fmt.Sprintf("map index requires %s, got %s", mapType.Key, idxType))
+			}
+			return types.NewOptional(mapType.Value)
+		}
 		if idxType != nil && !idxType.AssignableTo(types.Number) && idxType.Kind() != types.KindUnknown {
 			a.error(CodeArgumentType, e.Index.NodeSpan(), fmt.Sprintf("index expression requires Number, got %s", idxType))
 		}
 		if listType, ok := targetType.(types.ListType); ok {
 			return types.NewOptional(listType.Element)
-		}
-		if mapType, ok := targetType.(types.MapType); ok {
-			return types.NewOptional(mapType.Value)
 		}
 		return types.Unknown
 
@@ -431,6 +510,9 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 			}
 			if rightType != nil && !rightType.AssignableTo(types.Number) && rightType.Kind() != types.KindUnknown {
 				a.error(CodeArgumentType, e.Right.NodeSpan(), fmt.Sprintf("numeric operator requires Number, got %s", rightType))
+			}
+			if (e.Op == syntax.TokenSlash || e.Op == syntax.TokenPercent) && isZeroNumberLiteral(e.Right) {
+				a.error(CodeArgumentType, e.Right.NodeSpan(), "division or modulus by constant zero is not allowed")
 			}
 			return types.Number
 
@@ -486,30 +568,74 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 
 	case *syntax.IfStmt:
 		oldVal := a.inValueBlk
+		oldYields := a.yieldedTypes
 		a.inValueBlk = true
+		a.yieldedTypes = nil
 		a.analyzeStatement(e, scope)
+		yields := a.yieldedTypes
+		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
+		if !ifBranchHasYield(e) {
+			a.error(CodeYieldContext, e.Span, "value-producing 'if' expression requires 'else' and 'yield' in all branches")
+		}
+		if len(yields) > 0 {
+			return yields[0]
+		}
 		return types.Unknown
 
 	case *syntax.RepeatStmt:
 		oldVal := a.inValueBlk
+		oldYields := a.yieldedTypes
 		a.inValueBlk = true
+		a.yieldedTypes = nil
 		a.analyzeStatement(e, scope)
+		yields := a.yieldedTypes
+		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		return types.NewList(types.Unknown)
+		if !blockHasYield(e.BodyBlock) {
+			a.error(CodeYieldContext, e.Span, "value-producing 'repeat' expression requires 'yield' in loop body")
+		}
+		elemType := types.Type(types.Unknown)
+		if len(yields) > 0 {
+			elemType = yields[0]
+		}
+		return types.NewList(elemType)
 
 	case *syntax.ForStmt:
 		oldVal := a.inValueBlk
+		oldYields := a.yieldedTypes
 		a.inValueBlk = true
+		a.yieldedTypes = nil
 		a.analyzeStatement(e, scope)
+		yields := a.yieldedTypes
+		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		return types.NewList(types.Unknown)
+		if !blockHasYield(e.BodyBlock) {
+			a.error(CodeYieldContext, e.Span, "value-producing 'for' expression requires 'yield' in loop body")
+		}
+		elemType := types.Type(types.Unknown)
+		if len(yields) > 0 {
+			elemType = yields[0]
+		}
+		return types.NewList(elemType)
 
 	case *syntax.MenuStmt:
 		oldVal := a.inValueBlk
+		oldYields := a.yieldedTypes
 		a.inValueBlk = true
+		a.yieldedTypes = nil
 		a.analyzeStatement(e, scope)
+		yields := a.yieldedTypes
+		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
+		for _, c := range e.Cases {
+			if !blockHasYield(c.BodyBlock) {
+				a.error(CodeYieldContext, c.Span, fmt.Sprintf("value-producing 'menu' case %q requires 'yield'", c.Label))
+			}
+		}
+		if len(yields) > 0 {
+			return yields[0]
+		}
 		return types.Unknown
 	}
 
