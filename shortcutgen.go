@@ -14,24 +14,32 @@ import (
 	"github.com/electrikmilk/args-parser"
 )
 
+// BuildWorkflowHeader creates an authoritative default Shortcut struct
+// initialized with current client version and standard defaults.
+func BuildWorkflowHeader() Shortcut {
+	return Shortcut{
+		WFWorkflowIcon: ShortcutIcon{
+			WFWorkflowIconGlyphNumber: iconGlyph,
+			WFWorkflowIconStartColor:  iconColor,
+		},
+		WFWorkflowClientVersion:              clientVersion,
+		WFWorkflowHasShortcutInputVariables:  false,
+		WFWorkflowMinimumClientVersion:       900,
+		WFWorkflowMinimumClientVersionString: "900",
+		WFWorkflowActions:                   make([]ShortcutAction, 0),
+	}
+}
+
 func generateShortcut() {
 	if args.Using("debug") {
 		fmt.Print("Generating Shortcut data...")
 	}
 
-	shortcut = Shortcut{
-		WFWorkflowIcon: ShortcutIcon{
-			iconGlyph,
-			iconColor,
-		},
-		WFWorkflowClientVersion:              clientVersion,
-		WFWorkflowHasShortcutInputVariables:  hasShortcutInputVariables,
-		WFWorkflowMinimumClientVersion:       900,
-		WFWorkflowMinimumClientVersionString: "900",
-		WFQuickActionSurfaces:                definedQuickActions,
-		WFWorkflowNoInputBehavior:            noInput,
-		WFWorkflowTriggers:                   automationTriggers,
-	}
+	shortcut = BuildWorkflowHeader()
+	shortcut.WFWorkflowHasShortcutInputVariables = hasShortcutInputVariables
+	shortcut.WFQuickActionSurfaces = definedQuickActions
+	shortcut.WFWorkflowNoInputBehavior = noInput
+	shortcut.WFWorkflowTriggers = automationTriggers
 
 	waitFor(
 		func() {
@@ -728,10 +736,32 @@ func makeDictionary(value interface{}) (dictItems []WFDictionaryFieldValueItem) 
 	if value == nil {
 		return []WFDictionaryFieldValueItem{}
 	}
-	for key, item := range value.(map[string]interface{}) {
-		dictItems = append(dictItems, makeDictionaryItem(key, item))
+	if items, ok := value.([]WFDictionaryFieldValueItem); ok {
+		return items
 	}
-	return
+	if m, ok := value.(map[string]interface{}); ok {
+		keys := make([]string, 0, len(m))
+		for k := range m {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			dictItems = append(dictItems, makeDictionaryItem(key, m[key]))
+		}
+		return
+	}
+	if m, ok := value.(map[string]any); ok {
+		keys := make([]string, 0, len(m))
+		for k := range m {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			dictItems = append(dictItems, makeDictionaryItem(key, m[key]))
+		}
+		return
+	}
+	return []WFDictionaryFieldValueItem{}
 }
 
 func makeDictionaryItem(key string, value any) WFDictionaryFieldValueItem {
@@ -751,7 +781,7 @@ func makeDictionaryItem(key string, value any) WFDictionaryFieldValueItem {
 				Value:               WFTextTokenStringValue{String: v},
 			}
 		}
-	case int, float64:
+	case int, int64, int32, float64, float32:
 		itemType = itemTypeNumber
 		wfValue = WFTextTokenString{
 			WFSerializationType: "WFTextTokenString",
@@ -765,10 +795,32 @@ func makeDictionaryItem(key string, value any) WFDictionaryFieldValueItem {
 		}
 		wfValue = makeArrayValue(items)
 	case map[string]interface{}:
+		if ser, ok := v["WFSerializationType"].(string); ok && (ser == "WFTextTokenAttachment" || ser == "WFTextTokenString") {
+			itemType = itemTypeText
+			wfValue = v
+			break
+		}
+		if t, ok := v["Type"].(string); ok && (t == "ActionOutput" || t == "Variable" || t == "ExtensionInput" || t == "Ask") {
+			itemType = itemTypeText
+			valObj := Value{
+				Type: t,
+			}
+			if u, ok := v["OutputUUID"].(string); ok {
+				valObj.OutputUUID = u
+			}
+			if n, ok := v["OutputName"].(string); ok {
+				valObj.OutputName = n
+			}
+			if vn, ok := v["VariableName"].(string); ok {
+				valObj.VariableName = vn
+			}
+			wfValue = WFTextTokenAttachment{
+				WFSerializationType: "WFTextTokenAttachment",
+				Value:               valObj,
+			}
+			break
+		}
 		itemType = itemTypeDict
-		// Shortcuts wraps nested dict items in two WFDictionaryFieldValue layers:
-		// the outer marks the value type, the inner holds the items. Top-level
-		// dict actions use only one layer (handled by makeDictionaryValue).
 		wfValue = WFDictionaryFieldValue{
 			WFSerializationType: "WFDictionaryFieldValue",
 			Value: WFDictionaryFieldValue{
@@ -797,8 +849,11 @@ func makeDictionaryItem(key string, value any) WFDictionaryFieldValueItem {
 		itemType = itemTypeBool
 		wfValue = v
 	default:
-		exit(fmt.Sprintf("Unsupported dictionary item value type %T", value))
-		return WFDictionaryFieldValueItem{}
+		itemType = itemTypeText
+		wfValue = WFTextTokenString{
+			WFSerializationType: "WFTextTokenString",
+			Value:               WFTextTokenStringValue{String: fmt.Sprint(v)},
+		}
 	}
 	return buildDictionaryItem(key, itemType, wfValue)
 }

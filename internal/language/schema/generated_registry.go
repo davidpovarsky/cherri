@@ -36,7 +36,47 @@ func initDefaultRegistry() *Registry {
 			},
 			StaticParameters: map[string]any{
 				"Enabled": 0,
-				"FocusModes": "map[Value:map[WFDictionaryFieldValueItems:[map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:DisplayString] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:Do Not Disturb] WFSerializationType:WFTextTokenString]] map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:Identifier] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:com.apple.donotdisturb.mode.default] WFSerializationType:WFTextTokenString]]]] WFSerializationType:WFDictionaryFieldValue]",
+				"FocusModes": map[string]any{
+					"Value": map[string]any{
+						"WFDictionaryFieldValueItems": []any{
+							map[string]any{
+								"WFItemType": 0,
+								"WFKey": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "DisplayString",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+								"WFValue": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "Do Not Disturb",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+							},
+							map[string]any{
+								"WFItemType": 0,
+								"WFKey": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "Identifier",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+								"WFValue": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "com.apple.donotdisturb.mode.default",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+							},
+						},
+					},
+					"WFSerializationType": "WFDictionaryFieldValue",
+				},
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -59,7 +99,47 @@ func initDefaultRegistry() *Registry {
 			},
 			StaticParameters: map[string]any{
 				"Enabled": 1,
-				"FocusModes": "map[Value:map[WFDictionaryFieldValueItems:[map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:DisplayString] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:Do Not Disturb] WFSerializationType:WFTextTokenString]] map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:Identifier] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:com.apple.donotdisturb.mode.default] WFSerializationType:WFTextTokenString]]]] WFSerializationType:WFDictionaryFieldValue]",
+				"FocusModes": map[string]any{
+					"Value": map[string]any{
+						"WFDictionaryFieldValueItems": []any{
+							map[string]any{
+								"WFItemType": 0,
+								"WFKey": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "DisplayString",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+								"WFValue": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "Do Not Disturb",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+							},
+							map[string]any{
+								"WFItemType": 0,
+								"WFKey": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "Identifier",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+								"WFValue": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "com.apple.donotdisturb.mode.default",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+							},
+						},
+					},
+					"WFSerializationType": "WFDictionaryFieldValue",
+				},
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -2622,7 +2702,27 @@ func initDefaultRegistry() *Registry {
 				InsertionSnippet: "currentLocation()",
 			},
 			StaticParameters: map[string]any{
-				"WFLocation": "map[Value:map[WFDictionaryFieldValueItems:[map[WFItemType:4 WFKey:map[Value:map[AttachmentsByRange:<nil> String:isCurrentLocation] WFSerializationType:WFTextTokenString] WFValue:map[Value:true WFSerializationType:WFNumberSubstitutableState]]]] WFSerializationType:WFDictionaryFieldValue]",
+				"WFLocation": map[string]any{
+					"Value": map[string]any{
+						"WFDictionaryFieldValueItems": []any{
+							map[string]any{
+								"WFItemType": 4,
+								"WFKey": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "isCurrentLocation",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+								"WFValue": map[string]any{
+									"Value": true,
+									"WFSerializationType": "WFNumberSubstitutableState",
+								},
+							},
+						},
+					},
+					"WFSerializationType": "WFDictionaryFieldValue",
+				},
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -17018,7 +17118,47 @@ func initDefaultRegistry() *Registry {
 				InsertionSnippet: "toggleDND()",
 			},
 			StaticParameters: map[string]any{
-				"FocusModes": "map[Value:map[WFDictionaryFieldValueItems:[map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:DisplayString] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:Do Not Disturb] WFSerializationType:WFTextTokenString]] map[WFItemType:0 WFKey:map[Value:map[AttachmentsByRange:<nil> String:Identifier] WFSerializationType:WFTextTokenString] WFValue:map[Value:map[AttachmentsByRange:<nil> String:com.apple.donotdisturb.mode.default] WFSerializationType:WFTextTokenString]]]] WFSerializationType:WFDictionaryFieldValue]",
+				"FocusModes": map[string]any{
+					"Value": map[string]any{
+						"WFDictionaryFieldValueItems": []any{
+							map[string]any{
+								"WFItemType": 0,
+								"WFKey": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "DisplayString",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+								"WFValue": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "Do Not Disturb",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+							},
+							map[string]any{
+								"WFItemType": 0,
+								"WFKey": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "Identifier",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+								"WFValue": map[string]any{
+									"Value": map[string]any{
+										"AttachmentsByRange": "<nil>",
+										"String": "com.apple.donotdisturb.mode.default",
+									},
+									"WFSerializationType": "WFTextTokenString",
+								},
+							},
+						},
+					},
+					"WFSerializationType": "WFDictionaryFieldValue",
+				},
 				"Operation": "Toggle",
 			},
 			Parameters: []ParameterSchema{
@@ -18237,7 +18377,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "controlflow",
 				Subcategory: "",
-				InsertionSnippet: "@variable = Ask",
+				InsertionSnippet: "var variable = Ask",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -18256,7 +18396,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "controlflow",
 				Subcategory: "",
-				InsertionSnippet: "@variable += Ask",
+				InsertionSnippet: "variable += Ask",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -18275,7 +18415,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "controlflow",
 				Subcategory: "",
-				InsertionSnippet: "const dict = {\n\t\\\"key\\\": \\\"value\\\"\n}",
+				InsertionSnippet: "let dict = {\n\t\\\"key\\\": \\\"value\\\"\n}",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -18294,7 +18434,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "math",
 				Subcategory: "",
-				InsertionSnippet: "const result = 1 + 1",
+				InsertionSnippet: "let result = 1 + 1",
 			},
 			Parameters: []ParameterSchema{
 			},

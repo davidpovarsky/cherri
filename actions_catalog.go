@@ -260,7 +260,7 @@ var compilerConstructs = []catalogActionInfo{
 		Category:           "controlflow",
 		Builtin:            true,
 		CompilerConstruct:  true,
-		InsertionSnippet:   "@variable = Ask",
+		InsertionSnippet:   "var variable = Ask",
 		EmittedKeys:        []string{"WFInput", "WFVariableName"},
 	},
 	{
@@ -270,7 +270,7 @@ var compilerConstructs = []catalogActionInfo{
 		Category:           "controlflow",
 		Builtin:            true,
 		CompilerConstruct:  true,
-		InsertionSnippet:   "@variable += Ask",
+		InsertionSnippet:   "variable += Ask",
 		EmittedKeys:        []string{"WFInput", "WFVariableName"},
 	},
 	{
@@ -280,7 +280,7 @@ var compilerConstructs = []catalogActionInfo{
 		Category:           "controlflow",
 		Builtin:            true,
 		CompilerConstruct:  true,
-		InsertionSnippet:   "const dict = {\n\t\"key\": \"value\"\n}",
+		InsertionSnippet:   "let dict = {\n\t\"key\": \"value\"\n}",
 		EmittedKeys:        []string{"WFItems"},
 	},
 	{
@@ -290,7 +290,7 @@ var compilerConstructs = []catalogActionInfo{
 		Category:           "math",
 		Builtin:            true,
 		CompilerConstruct:  true,
-		InsertionSnippet:   "const result = 1 + 1",
+		InsertionSnippet:   "let result = 1 + 1",
 		EmittedKeys:        []string{"Input"},
 	},
 }

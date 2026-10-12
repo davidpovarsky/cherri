@@ -2051,6 +2051,9 @@ func makeValueList(title string, list []string, value string) string {
 }
 
 func parserError(message string) {
+	if embeddedCompilerMode {
+		panic(embeddedCompilerPanic{message: message})
+	}
 	lines = strings.Split(contents, "\n")
 	var errorFilename, errorLine, errorCol = delinquentFile()
 

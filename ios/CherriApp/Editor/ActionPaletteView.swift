@@ -20,7 +20,11 @@ struct ActionPaletteView: View {
                                 .font(.headline)
                                 .foregroundStyle(.primary)
                             Spacer()
-                            if action.macOnly == true {
+                            if action.compilerConstruct == true {
+                                Text("Syntax")
+                                    .font(.caption2)
+                                    .foregroundStyle(.purple)
+                            } else if action.macOnly == true {
                                 Text("macOS")
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)

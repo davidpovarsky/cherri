@@ -238,9 +238,9 @@ private struct ActionCatalogBridgeResponse: Decodable {
 }
 
 enum CherriCompiler {
-    static func compile(source: String, name: String, signed: Bool = false) async throws -> CompiledShortcut {
+    static func compile(source: String, name: String, mode: String = "auto", signed: Bool = false) async throws -> CompiledShortcut {
         try await Task.detached(priority: .userInitiated) {
-            try callCompileBridge(source: source, name: name, signed: signed)
+            try callCompileBridge(source: source, name: name, mode: mode, signed: signed)
         }.value
     }
 
@@ -310,14 +310,17 @@ enum CherriCompiler {
         }.value
     }
 
-    private static func callCompileBridge(source: String, name: String, signed: Bool) throws -> CompiledShortcut {
+    private static func callCompileBridge(source: String, name: String, mode: String, signed: Bool) throws -> CompiledShortcut {
         let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
             name.withCString { namePointer in
-                let mutableSource = UnsafeMutablePointer(mutating: sourcePointer)
-                let mutableName = UnsafeMutablePointer(mutating: namePointer)
-                return signed
-                    ? CherriCompileSigned(mutableSource, mutableName)
-                    : CherriCompile(mutableSource, mutableName)
+                mode.withCString { modePointer in
+                    let mutableSource = UnsafeMutablePointer(mutating: sourcePointer)
+                    let mutableName = UnsafeMutablePointer(mutating: namePointer)
+                    let mutableMode = UnsafeMutablePointer(mutating: modePointer)
+                    return signed
+                        ? CherriCompileSignedMode(mutableSource, mutableName, mutableMode)
+                        : CherriCompileMode(mutableSource, mutableName, mutableMode)
+                }
             }
         }
 

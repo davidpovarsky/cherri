@@ -1,6 +1,14 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+enum CherriLanguageMode: String, CaseIterable, Identifiable {
+    case v2 = "v2"
+    case legacy = "legacy"
+    case auto = "auto"
+
+    var id: Self { self }
+}
+
 private enum WorkspacePane: String, CaseIterable, Identifiable {
     case code = "Code"
     case preview = "Preview"
@@ -15,6 +23,7 @@ struct WorkspaceView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @AppStorage("Cherri.livePreview") private var livePreview = true
 
+    @State private var languageMode: CherriLanguageMode = .v2
     @State private var selectedPane: WorkspacePane = .code
     @State private var compiled: CompiledShortcut?
     @State private var diagnostic: CompilationDiagnostic?
@@ -237,6 +246,7 @@ struct WorkspaceView: View {
             let result = try await CherriCompiler.compile(
                 source: source,
                 name: requestedName,
+                mode: languageMode.rawValue,
                 signed: signed
             )
 
@@ -338,7 +348,7 @@ struct WorkspaceView: View {
             signedURL = nil
 
             Task { @MainActor in
-                await syncPreviewEditToSource(plist: editedPlist, name: name, generation: generation)
+                await syncPreviewEditToSource(edit: edit, plist: editedPlist, name: name, generation: generation)
             }
         } catch {
             diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
@@ -346,7 +356,7 @@ struct WorkspaceView: View {
     }
 
     @MainActor
-    private func syncPreviewEditToSource(plist: Data, name: String, generation: Int) async {
+    private func syncPreviewEditToSource(edit: ShortcutPreviewEdit, plist: Data, name: String, generation: Int) async {
         isApplyingPreviewEdit = true
         defer {
             if generation == previewEditGeneration {
@@ -355,21 +365,69 @@ struct WorkspaceView: View {
         }
 
         do {
-            let source = try await CherriCompiler.decompile(plist: plist, name: name)
-            let rebuilt = try await CherriCompiler.compile(source: source, name: name)
-            guard generation == previewEditGeneration else { return }
+            if languageMode == .v2 || languageMode == .auto {
+                switch edit {
+                case .actionParameter(let actionIndex, let key, let value):
+                    let formattedExpr = formatPreviewValueForCherri(value)
+                    let editResp = try await CherriCompiler.editSourceNode(
+                        source: document.text,
+                        actionIndex: actionIndex,
+                        paramLabel: key,
+                        newExpr: formattedExpr
+                    )
+                    guard editResp.ok, let newSource = editResp.source else {
+                        throw CompilationDiagnostic(
+                            message: "Visual edit cannot safely update this source (\(editResp.error ?? "unsupported parameter")). Source preserved.",
+                            line: 1,
+                            column: 1
+                        )
+                    }
+                    let rebuilt = try await CherriCompiler.compile(source: newSource, name: name, mode: languageMode.rawValue)
+                    guard generation == previewEditGeneration else { return }
 
-            document.text = source
-            compiled = rebuilt
-            diagnostic = nil
-            signedURL = nil
-            await refreshActionCatalog()
+                    document.text = newSource
+                    compiled = rebuilt
+                    diagnostic = nil
+                    signedURL = nil
+                    await refreshActionCatalog()
+                default:
+                    throw CompilationDiagnostic(
+                        message: "Visual metadata edit cannot safely update v2 source directly. Source preserved.",
+                        line: 1,
+                        column: 1
+                    )
+                }
+            } else {
+                let source = try await CherriCompiler.decompile(plist: plist, name: name)
+                let rebuilt = try await CherriCompiler.compile(source: source, name: name, mode: "legacy")
+                guard generation == previewEditGeneration else { return }
+
+                document.text = source
+                compiled = rebuilt
+                diagnostic = nil
+                signedURL = nil
+                await refreshActionCatalog()
+            }
         } catch let compilerError as CompilationDiagnostic {
             guard generation == previewEditGeneration else { return }
             diagnostic = compilerError
         } catch {
             guard generation == previewEditGeneration else { return }
             diagnostic = CompilationDiagnostic(message: error.localizedDescription, line: 1, column: 1)
+        }
+    }
+
+    private func formatPreviewValueForCherri(_ value: ShortcutPreviewValue) -> String {
+        switch value {
+        case .string(let s):
+            let escaped = s.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
+            return "\"\(escaped)\""
+        case .integer(let i):
+            return "\(i)"
+        case .real(let r):
+            return "\(r)"
+        case .bool(let b):
+            return b ? "true" : "false"
         }
     }
 

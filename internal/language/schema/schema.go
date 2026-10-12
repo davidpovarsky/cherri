@@ -157,9 +157,22 @@ func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 
 	h := sha256.New()
 	for _, a := range sorted {
-		fmt.Fprintf(h, "ACT:%s:%s:%s:%s\n", a.CallableName, a.AppleIdentifier, a.OutputTypeName, a.PrimaryParameterID)
+		fmt.Fprintf(h, "ACT:%s:%s:%s:%s:%t\n", a.CallableName, a.AppleIdentifier, a.OutputTypeName, a.PrimaryParameterID, a.CompilerConstruct)
+		if a.AppIntent != nil {
+			fmt.Fprintf(h, "  INTENT:%s:%s:%s:%s\n", a.AppIntent.Name, a.AppIntent.BundleIdentifier, a.AppIntent.AppIntentIdentifier, a.AppIntent.TeamIdentifier)
+		}
+		if len(a.StaticParameters) > 0 {
+			statKeys := make([]string, 0, len(a.StaticParameters))
+			for k := range a.StaticParameters {
+				statKeys = append(statKeys, k)
+			}
+			sort.Strings(statKeys)
+			for _, k := range statKeys {
+				fmt.Fprintf(h, "  STAT:%s=%v\n", k, a.StaticParameters[k])
+			}
+		}
 		for _, p := range a.Parameters {
-			fmt.Fprintf(h, "  P:%s:%s:%s:%t:%s:%s\n", p.ID, p.Label, p.TypeName, p.Optional, p.WireKey, p.Codec)
+			fmt.Fprintf(h, "  P:%s:%s:%s:%t:%s:%s:%s:%t\n", p.ID, p.Label, p.TypeName, p.Optional, p.WireKey, p.Codec, p.DefaultValue, p.Variadic)
 			for _, ev := range p.EnumValues {
 				fmt.Fprintf(h, "    E:%s\n", ev)
 			}

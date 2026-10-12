@@ -25,6 +25,9 @@ type NativeWorkflow struct {
 	ClientVersion             string                   `json:"clientVersion"`
 	WorkflowTypes             []string                 `json:"workflowTypes,omitempty"`
 	InputContentItemClasses   []string                 `json:"inputContentItemClasses,omitempty"`
+	OutputContentItemClasses  []string                 `json:"outputContentItemClasses,omitempty"`
+	NoInputBehavior           string                   `json:"noInputBehavior,omitempty"`
+	QuickActionSurfaces       []string                 `json:"quickActionSurfaces,omitempty"`
 	IconGlyph                 int                      `json:"iconGlyph,omitempty"`
 	IconColor                 int                      `json:"iconColor,omitempty"`
 	Actions                   []*NativeActionNode      `json:"actions"`

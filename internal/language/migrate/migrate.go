@@ -143,18 +143,22 @@ func MigrateSource(input string) string {
 		// 4. Strip remaining @ symbols from variables in expressions: {@foo} -> {foo}, @foo -> foo
 		line = strings.ReplaceAll(line, "{@", "{")
 
-		// Strip @ outside strings / from variable tokens
+		// Strip @ outside strings and comments / from variable tokens
 		var sb strings.Builder
 		inStr := false
+		inComment := false
 		runes := []rune(line)
 		for i := 0; i < len(runes); i++ {
+			if !inStr && i+1 < len(runes) && runes[i] == '/' && runes[i+1] == '/' {
+				inComment = true
+			}
 			r := runes[i]
 			if r == '"' && (i == 0 || runes[i-1] != '\\') {
 				inStr = !inStr
 				sb.WriteRune(r)
 				continue
 			}
-			if !inStr && r == '@' {
+			if !inStr && !inComment && r == '@' {
 				// skip @
 				continue
 			}

@@ -32,6 +32,8 @@ import sys
 
 path = Path(sys.argv[1])
 source = path.read_text()
+if "if embeddedCompilerMode {" in source:
+    sys.exit(0)
 needle = "func parserError(message string) {\n"
 replacement = """func parserError(message string) {
 \tif embeddedCompilerMode {

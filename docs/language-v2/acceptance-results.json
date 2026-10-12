@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-10-12T00:52:04Z",
+  "timestamp": "2026-10-12T12:52:58Z",
   "phase": "local",
   "closure_complete": false,
   "language_version": "2.0",
-  "schema_fingerprint": "b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b",
+  "schema_fingerprint": "cd5c0b8eaeabc28a9b0bc0002cb742b4bd725a97bb88ab5aa7d408983c7825a4",
   "total_cases": 94,
-  "passed_cases": 72,
+  "passed_cases": 71,
   "failed_cases": 0,
-  "skipped_cases": 22,
+  "skipped_cases": 23,
   "results": [
     {
       "id": "B01",
@@ -56,7 +56,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Schema fingerprint: b9d113dcc143e6ba9fefe0f7566a8489005b7f2ee1840b6ade3409eb4490cc4b (deterministic)"
+      "detail": "Schema fingerprint: cd5c0b8eaeabc28a9b0bc0002cb742b4bd725a97bb88ab5aa7d408983c7825a4 (deterministic)"
     },
     {
       "id": "U03",
@@ -68,7 +68,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Upstream parameter propagation rehearsal passed: ok  \tgithub.com/electrikmilk/cherri\t(cached)"
+      "detail": "Upstream parameter propagation rehearsal passed: ok  \tgithub.com/electrikmilk/cherri\t17.430s"
     },
     {
       "id": "U04",
@@ -409,7 +409,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Document analysis completes in 44.4944ms (\u003c 500ms)"
+      "detail": "Document analysis completes in 4.8782ms (\u003c 500ms)"
     },
     {
       "id": "L01",
@@ -972,7 +972,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "50 document analysis passes completed in 19.3741ms"
+      "detail": "50 document analysis passes completed in 666.1µs"
     },
     {
       "id": "CL01",
@@ -1034,7 +1034,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Docs examples verified cleanly: ok  \tgithub.com/electrikmilk/cherri\t(cached)"
+      "detail": "Docs examples verified cleanly: ok  \tgithub.com/electrikmilk/cherri\t3.772s"
     },
     {
       "id": "D03",
@@ -1139,12 +1139,11 @@
       "requirement": "Final required workflows use exact final SHA",
       "test_level": "repository+CI",
       "executed_levels": [
-        "repository",
-        "ci"
+        "repository"
       ],
-      "passed": true,
-      "status": "PASSED",
-      "detail": "Local assertions verified; pending external tier: [ci] (Verified current commit SHA: 1944bfe90d4a1e7a9710e741c2993b8aad5f1b88)"
+      "passed": false,
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ci]"
     },
     {
       "id": "CI04",
@@ -1181,7 +1180,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Working branch checked; status output length: 207"
+      "detail": "Working branch checked; status output length: 202"
     }
   ]
 }

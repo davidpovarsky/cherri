@@ -33,33 +33,7 @@ func lookupCanonicalAction(call backend.ResolvedCall) (*actionDefinition, string
 		}
 	}
 
-	// 3. Fallback search by AppleIdentifier
-	if call.AppleIdentifier != "" {
-		for ident, def := range stdActions {
-			if def != nil {
-				savedIdent := currentAction.identifier
-				currentAction.identifier = ident
-				currentAction.definition = *def
-				fullID := getFullActionIdentifier()
-				currentAction.identifier = savedIdent
-				if fullID == call.AppleIdentifier {
-					return def, ident, true
-				}
-			}
-		}
-		for ident, def := range actions {
-			if def != nil {
-				savedIdent := currentAction.identifier
-				currentAction.identifier = ident
-				currentAction.definition = *def
-				fullID := getFullActionIdentifier()
-				currentAction.identifier = savedIdent
-				if fullID == call.AppleIdentifier {
-					return def, ident, true
-				}
-			}
-		}
-	}
-
+	// 3. Fallback search by AppleIdentifier is deliberately disallowed for named calls.
+	// Named action invocations must resolve by stable canonical definition or variant identity.
 	return nil, "", false
 }

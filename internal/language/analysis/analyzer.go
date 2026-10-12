@@ -110,6 +110,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	scope.Define(&Symbol{Name: "builtin", Type: types.Unknown, Initialized: true})
 	scope.Define(&Symbol{Name: "clipboard", Type: types.AnyContent, Initialized: true})
 	scope.Define(&Symbol{Name: "ShortcutInput", Type: types.AnyContent, Initialized: true})
+	scope.Define(&Symbol{Name: "Ask", Type: types.Unknown, Initialized: true})
 
 	for _, stmt := range prog.Statements {
 		if b, ok := stmt.(*syntax.BindingStmt); ok {

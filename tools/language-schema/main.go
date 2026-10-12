@@ -209,12 +209,35 @@ func main() {
 		os.Exit(1)
 	}
 
+	verifyOnly := false
+	for _, arg := range os.Args[1:] {
+		if arg == "--verify-generated" {
+			verifyOnly = true
+			break
+		}
+	}
+
 	outPath := filepath.Join("internal", "language", "schema", "generated_registry.go")
-	if len(os.Args) > 2 {
+	if len(os.Args) > 2 && !strings.HasPrefix(os.Args[2], "-") {
 		outPath = os.Args[2]
 	}
 
 	code := generateGoCode(&catalog)
+
+	if verifyOnly {
+		existing, err := os.ReadFile(outPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading existing %s for verification: %v\n", outPath, err)
+			os.Exit(1)
+		}
+		if string(existing) != code {
+			fmt.Fprintf(os.Stderr, "Drift detected! Generated registry at %s differs from live catalog definition.\n", outPath)
+			os.Exit(1)
+		}
+		fmt.Printf("Generated registry at %s is verified and up-to-date with live catalog.\n", outPath)
+		return
+	}
+
 	if err := os.WriteFile(outPath, []byte(code), 0644); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing generated code: %v\n", err)
 		os.Exit(1)
@@ -349,18 +372,7 @@ func initDefaultRegistry() *Registry {
 			sort.Strings(keys)
 			for _, k := range keys {
 				val := a.StaticParameters[k]
-				switch v := val.(type) {
-				case string:
-					fmt.Fprintf(&b, "\t\t\t\t%q: %q,\n", k, v)
-				case bool:
-					fmt.Fprintf(&b, "\t\t\t\t%q: %t,\n", k, v)
-				case float64:
-					fmt.Fprintf(&b, "\t\t\t\t%q: %v,\n", k, v)
-				case int:
-					fmt.Fprintf(&b, "\t\t\t\t%q: %d,\n", k, v)
-				default:
-					fmt.Fprintf(&b, "\t\t\t\t%q: %q,\n", k, fmt.Sprint(v))
-				}
+				fmt.Fprintf(&b, "\t\t\t\t%q: %s,\n", k, formatGoLiteral(val, "\t\t\t\t"))
 			}
 			b.WriteString("\t\t\t},\n")
 		}
@@ -472,5 +484,51 @@ func mapGoType(t string) string {
 		return "types.NewMap(types.Text, types.AnyContent)"
 	default:
 		return "types.Unknown"
+	}
+}
+
+func formatGoLiteral(val any, indent string) string {
+	switch v := val.(type) {
+	case string:
+		return fmt.Sprintf("%q", v)
+	case bool:
+		return fmt.Sprintf("%t", v)
+	case int:
+		return fmt.Sprintf("%d", v)
+	case int64:
+		return fmt.Sprintf("%d", v)
+	case float64:
+		return fmt.Sprintf("%v", v)
+	case map[string]any:
+		if len(v) == 0 {
+			return "map[string]any{}"
+		}
+		var b bytes.Buffer
+		b.WriteString("map[string]any{\n")
+		keys := make([]string, 0, len(v))
+		for k := range v {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			b.WriteString(indent + "\t")
+			fmt.Fprintf(&b, "%q: %s,\n", k, formatGoLiteral(v[k], indent+"\t"))
+		}
+		b.WriteString(indent + "}")
+		return b.String()
+	case []any:
+		if len(v) == 0 {
+			return "[]any{}"
+		}
+		var b bytes.Buffer
+		b.WriteString("[]any{\n")
+		for _, item := range v {
+			b.WriteString(indent + "\t")
+			fmt.Fprintf(&b, "%s,\n", formatGoLiteral(item, indent+"\t"))
+		}
+		b.WriteString(indent + "}")
+		return b.String()
+	default:
+		return fmt.Sprintf("%q", fmt.Sprint(v))
 	}
 }

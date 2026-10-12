@@ -125,9 +125,11 @@ type ControlFlowKind int
 
 const (
 	ControlIf ControlFlowKind = iota
+	ControlElse
 	ControlRepeat
 	ControlFor
 	ControlMenu
+	ControlMenuCase
 )
 
 // ControlRegion describes a begin/middle/end of a control structure.
@@ -144,6 +146,10 @@ type ControlRegion struct {
 	IndexName          string
 	LoopID             string
 	ParentLoopID       string
+	MenuPrompt         any
+	MenuCases          []string
+	MenuCaseTitle      string
+	OutputUUID         string
 }
 
 // Session is the interface for driving emission into the canonical backend.

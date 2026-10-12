@@ -22,14 +22,12 @@ type CanonicalBackendSession struct {
 
 func NewCanonicalBackendSession() *CanonicalBackendSession {
 	tx, cleanup := BeginBackendTransaction()
+	sc := BuildWorkflowHeader()
+	sc.WFWorkflowImportQuestions = make([]WFQuestion, 0)
 	return &CanonicalBackendSession{
-		tx:      tx,
-		cleanup: cleanup,
-		shortcut: Shortcut{
-			WFWorkflowClientVersion:   "4711",
-			WFWorkflowActions:         make([]ShortcutAction, 0),
-			WFWorkflowImportQuestions: make([]WFQuestion, 0),
-		},
+		tx:       tx,
+		cleanup:  cleanup,
+		shortcut: sc,
 	}
 }
 
@@ -73,7 +71,7 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 					}
 				}
 				if !matched {
-					continue
+					return "", fmt.Errorf("unknown parameter %q for canonical action %q", callArg.ParameterID, ident)
 				}
 			}
 			args[pos] = convertCallArgToActionArg(callArg)
@@ -181,13 +179,13 @@ func convertCallArgToActionArg(arg backend.CallArgument) actionArgument {
 			value:     encoded,
 		}
 	case backend.ValDict:
-		dictItems := make([]WFDictionaryFieldValueItem, len(val.DictVal))
-		for i, entry := range val.DictVal {
-			dictItems[i] = EncodeDictionaryItemShared(entry.Key, ConvertSemanticValueToParam(entry.Value))
+		dictMap := make(map[string]interface{}, len(val.DictVal))
+		for _, entry := range val.DictVal {
+			dictMap[entry.Key] = ConvertSemanticValueToParam(entry.Value)
 		}
 		return actionArgument{
 			valueType: Dict,
-			value:     dictItems,
+			value:     dictMap,
 		}
 	case backend.ValList:
 		items := make([]any, len(val.ListVal))
@@ -208,39 +206,38 @@ func convertCallArgToActionArg(arg backend.CallArgument) actionArgument {
 
 func (s *CanonicalBackendSession) BeginControl(region backend.ControlRegion) error {
 	var ident string
-	params := make(map[string]any)
-	params["GroupingIdentifier"] = region.GroupingIdentifier
-	params["WFControlFlowMode"] = 0
+	var params map[string]any
 
 	switch region.Kind {
 	case backend.ControlIf:
 		ident = "is.workflow.actions.conditional"
+		var input any
 		if region.ConditionInput != nil {
-			params["WFInput"] = map[string]any{
+			input = map[string]any{
 				"Type":     "Variable",
 				"Variable": encodeReferenceMap(region.ConditionInput),
 			}
 		}
-		params["WFCondition"] = region.ConditionOperator
-		if region.ConditionValue != nil {
-			params["WFConditionalActionString"] = fmt.Sprint(region.ConditionValue)
-		}
+		params = BuildIfStart(region.GroupingIdentifier, input, region.ConditionOperator, region.ConditionValue, true)
+	case backend.ControlElse:
+		ident = "is.workflow.actions.conditional"
+		params = BuildIfElse(region.GroupingIdentifier)
 	case backend.ControlRepeat:
 		ident = "is.workflow.actions.repeat.count"
-		if region.Count != nil {
-			params["WFRepeatCount"] = region.Count
-		}
+		params = BuildRepeatCountStart(region.GroupingIdentifier, region.Count)
 	case backend.ControlFor:
 		ident = "is.workflow.actions.repeat.each"
-		if region.Iterable != nil {
-			if ref, ok := region.Iterable.(*backend.Reference); ok {
-				params["WFInput"] = encodeReferenceMap(ref)
-			} else {
-				params["WFInput"] = region.Iterable
-			}
+		var iterable any = region.Iterable
+		if ref, ok := region.Iterable.(*backend.Reference); ok {
+			iterable = encodeReferenceMap(ref)
 		}
+		params = BuildRepeatEachStart(region.GroupingIdentifier, iterable)
 	case backend.ControlMenu:
 		ident = "is.workflow.actions.choosefrommenu"
+		params = BuildMenuStart(region.GroupingIdentifier, region.MenuPrompt, region.MenuCases)
+	case backend.ControlMenuCase:
+		ident = "is.workflow.actions.choosefrommenu"
+		params = BuildMenuCase(region.GroupingIdentifier, region.MenuCaseTitle)
 	}
 
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
@@ -252,19 +249,21 @@ func (s *CanonicalBackendSession) BeginControl(region backend.ControlRegion) err
 
 func (s *CanonicalBackendSession) EndControl(region backend.ControlRegion) error {
 	var ident string
-	params := make(map[string]any)
-	params["GroupingIdentifier"] = region.GroupingIdentifier
-	params["WFControlFlowMode"] = 2 // End
+	var params map[string]any
 
 	switch region.Kind {
 	case backend.ControlIf:
 		ident = "is.workflow.actions.conditional"
+		params = BuildIfEnd(region.GroupingIdentifier, region.OutputUUID)
 	case backend.ControlRepeat:
 		ident = "is.workflow.actions.repeat.count"
+		params = BuildLoopEnd(region.GroupingIdentifier, region.OutputUUID)
 	case backend.ControlFor:
 		ident = "is.workflow.actions.repeat.each"
+		params = BuildLoopEnd(region.GroupingIdentifier, region.OutputUUID)
 	case backend.ControlMenu:
 		ident = "is.workflow.actions.choosefrommenu"
+		params = BuildMenuEnd(region.GroupingIdentifier, region.OutputUUID)
 	}
 
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
@@ -359,6 +358,34 @@ func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
 	return v
 }
 
+func normalizeV2RawParamValue(value any) any {
+	if value == nil {
+		return nil
+	}
+	switch v := value.(type) {
+	case string:
+		return v
+	case map[string]any:
+		if _, hasType := v["WFSerializationType"]; hasType {
+			return v
+		}
+		normalized := make(map[string]any, len(v))
+		for key, item := range v {
+			normalized[key] = normalizeV2RawParamValue(item)
+		}
+		var valAny any = normalized
+		return makeDictionaryValue(&valAny)
+	case []any:
+		var items = make([]WFDictionaryFieldValueItem, 0, len(v))
+		for _, item := range v {
+			items = append(items, makeDictionaryItem("", normalizeV2RawParamValue(item)))
+		}
+		return makeArrayValue(items)
+	default:
+		return value
+	}
+}
+
 func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[string]any, outputUUID, outputName, groupingID string) (string, error) {
 	if params == nil {
 		params = make(map[string]any)
@@ -367,7 +394,37 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 	for k, v := range params {
 		cleanParams[k] = sanitizeRawParamValue(v)
 	}
-	handleRawParams(cleanParams)
+	for k, v := range cleanParams {
+		if k == "WFWorkflow" {
+			continue
+		}
+		cleanParams[k] = normalizeV2RawParamValue(v)
+	}
+	if appleIdentifier == "is.workflow.actions.dictionary" {
+		if dictVal, ok := cleanParams["WFItems"].(WFDictionaryFieldValue); ok {
+			cleanParams["WFItems"] = dictVal
+		} else if m, ok := cleanParams["WFItems"].(map[string]any); ok {
+			if ser, hasSer := m["WFSerializationType"]; hasSer && ser == "WFDictionaryFieldValue" {
+				// already wrapped
+			} else {
+				var valAny any = m
+				cleanParams["WFItems"] = makeDictionaryValue(&valAny)
+			}
+		} else if m, ok := cleanParams["WFItems"].(map[string]interface{}); ok {
+			if ser, hasSer := m["WFSerializationType"]; hasSer && ser == "WFDictionaryFieldValue" {
+				// already wrapped
+			} else {
+				var valAny any = m
+				cleanParams["WFItems"] = makeDictionaryValue(&valAny)
+			}
+		} else if items, ok := cleanParams["WFItems"].([]WFDictionaryFieldValueItem); ok {
+			var valAny any = items
+			cleanParams["WFItems"] = makeDictionaryValue(&valAny)
+		} else if items, ok := cleanParams["WFItems"].([]any); ok {
+			var valAny any = items
+			cleanParams["WFItems"] = makeDictionaryValue(&valAny)
+		}
+	}
 	if outputUUID != "" {
 		cleanParams["UUID"] = outputUUID
 	}
@@ -467,6 +524,70 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 			cleanParams["WFItems"] = dictItems
 		}
 	}
+	if appleIdentifier == "is.workflow.actions.choosefrommenu" {
+		switch items := cleanParams["WFMenuItems"].(type) {
+		case []WFMenuItem:
+			// already typed []WFMenuItem
+		case []string:
+			menuItems := make([]WFMenuItem, len(items))
+			for i, str := range items {
+				menuItems[i] = WFMenuItem{
+					WFItemType: 0,
+					WFValue:    str,
+				}
+			}
+			cleanParams["WFMenuItems"] = menuItems
+		case []map[string]any:
+			menuItems := make([]WFMenuItem, len(items))
+			for i, m := range items {
+				mItem := WFMenuItem{WFItemType: 0}
+				if t, ok := m["WFItemType"].(int); ok {
+					mItem.WFItemType = t
+				}
+				if v, ok := m["WFValue"]; ok {
+					mItem.WFValue = v
+				}
+				menuItems[i] = mItem
+			}
+			cleanParams["WFMenuItems"] = menuItems
+		case []any:
+			menuItems := make([]WFMenuItem, len(items))
+			for i, it := range items {
+				if mItem, ok := it.(WFMenuItem); ok {
+					menuItems[i] = mItem
+				} else if m, ok := it.(map[string]any); ok {
+					mItem := WFMenuItem{WFItemType: 0}
+					if t, ok := m["WFItemType"].(int); ok {
+						mItem.WFItemType = t
+					}
+					if v, ok := m["WFValue"]; ok {
+						mItem.WFValue = v
+					}
+					menuItems[i] = mItem
+				} else if m, ok := it.(map[string]interface{}); ok {
+					mItem := WFMenuItem{WFItemType: 0}
+					if t, ok := m["WFItemType"].(int); ok {
+						mItem.WFItemType = t
+					}
+					if v, ok := m["WFValue"]; ok {
+						mItem.WFValue = v
+					}
+					menuItems[i] = mItem
+				} else if s, ok := it.(string); ok {
+					menuItems[i] = WFMenuItem{
+						WFItemType: 0,
+						WFValue:    s,
+					}
+				}
+			}
+			cleanParams["WFMenuItems"] = menuItems
+		}
+		if title, ok := cleanParams["WFMenuItemTitle"].(string); ok {
+			if _, hasAttr := cleanParams["WFMenuItemAttributedTitle"]; !hasAttr {
+				cleanParams["WFMenuItemAttributedTitle"] = title
+			}
+		}
+	}
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
 		WFWorkflowActionIdentifier: appleIdentifier,
 		WFWorkflowActionParameters: cleanParams,
@@ -499,6 +620,54 @@ func (s *CanonicalBackendSession) SetMetadata(name string, value any) {
 	case "inputContentItemClasses":
 		if classes, ok := value.([]string); ok {
 			s.shortcut.WFWorkflowInputContentItemClasses = classes
+		}
+	case "outputContentItemClasses":
+		if classes, ok := value.([]string); ok {
+			s.shortcut.WFWorkflowOutputContentItemClasses = classes
+		}
+	case "noInputBehavior":
+		if m, ok := value.(map[string]any); ok {
+			s.shortcut.WFWorkflowNoInputBehavior = m
+		} else if str, ok := value.(string); ok {
+			switch str {
+			case "clipboard", "getClipboard":
+				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
+					"Name": "WFWorkflowNoInputBehaviorGetClipboard",
+				}
+			case "ask", "askForInput":
+				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
+					"Name": "WFWorkflowNoInputBehaviorAskForInput",
+				}
+			case "error", "showError":
+				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
+					"Name": "WFWorkflowNoInputBehaviorShowError",
+				}
+			default:
+				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
+					"Name": str,
+				}
+			}
+		}
+	case "quickActionSurfaces":
+		if surfaces, ok := value.([]string); ok {
+			s.shortcut.WFQuickActionSurfaces = surfaces
+		}
+	case "triggers":
+		if triggers, ok := value.([]AutomationTrigger); ok {
+			s.shortcut.WFWorkflowTriggers = triggers
+		}
+	case "trigger":
+		if trigger, ok := value.(AutomationTrigger); ok {
+			s.shortcut.WFWorkflowTriggers = append(s.shortcut.WFWorkflowTriggers, trigger)
+		} else if m, ok := value.(map[string]any); ok {
+			ident, _ := m["Identifier"].(string)
+			params, _ := m["Parameters"].(map[string]any)
+			u, _ := m["UUID"].(string)
+			s.shortcut.WFWorkflowTriggers = append(s.shortcut.WFWorkflowTriggers, AutomationTrigger{
+				WFTriggerIdentifier:           ident,
+				WFTriggerSerializedParameters: params,
+				WFTriggerUUID:                 u,
+			})
 		}
 	case "iconGlyph":
 		if g, ok := value.(int); ok {
