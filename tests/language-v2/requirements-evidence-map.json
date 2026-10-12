@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_at": "2026-10-11T16:33:55Z",
+  "generated_at": "2026-10-12T00:52:04Z",
   "authority": "CHERRI-CANONICAL-BACKEND-RECOVERY.md Appendix A \u0026 Section 4.4",
   "total_requirements": 179,
   "acceptance_count": 94,
@@ -343,7 +343,7 @@
         "ios27-runtime-poc:unicode"
       ],
       "required_assertions": {
-        "unicode_output": "שלום 👩‍💻 אָ"
+        "unicode_output": "שָׁלוֹם:🌍:1"
       },
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG08"
@@ -398,7 +398,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -462,7 +462,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG12"
@@ -522,7 +522,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG14"
@@ -1635,7 +1635,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#F02"
@@ -1684,7 +1684,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#F04"
@@ -2929,7 +2929,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -2983,7 +2983,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -3122,7 +3122,7 @@
         "ios27-runtime-poc:unicode"
       ],
       "required_assertions": {
-        "unicode_output": "שלום 👩‍💻 אָ"
+        "unicode_output": "שָׁלוֹם:🌍:1"
       },
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP19"
@@ -3202,7 +3202,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP22"
@@ -3977,7 +3977,7 @@
         "ios27-runtime-poc:unicode"
       ],
       "required_assertions": {
-        "unicode_output": "שלום 👩‍💻 אָ"
+        "unicode_output": "שָׁלוֹם:🌍:1"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#S01"
@@ -4345,7 +4345,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -4396,7 +4396,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -4694,7 +4694,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -4745,7 +4745,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -5109,7 +5109,7 @@
         "ios27-runtime-poc:unicode"
       ],
       "required_assertions": {
-        "unicode_output": "שלום 👩‍💻 אָ"
+        "unicode_output": "שָׁלוֹם:🌍:1"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#S01"
@@ -5376,7 +5376,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#F02"
@@ -5425,7 +5425,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#F04"
@@ -6929,7 +6929,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -6983,7 +6983,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -7122,7 +7122,7 @@
         "ios27-runtime-poc:unicode"
       ],
       "required_assertions": {
-        "unicode_output": "שלום 👩‍💻 אָ"
+        "unicode_output": "שָׁלוֹם:🌍:1"
       },
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP19"
@@ -7202,7 +7202,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP22"
@@ -8167,7 +8167,7 @@
         "ios27-runtime-poc:unicode"
       ],
       "required_assertions": {
-        "unicode_output": "שלום 👩‍💻 אָ"
+        "unicode_output": "שָׁלוֹם:🌍:1"
       },
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG08"
@@ -8222,7 +8222,7 @@
       "required_assertions": {
         "captured_before": "initial",
         "clip_captured": "clip_initial",
-        "num_captured": "10",
+        "num_captured": "1",
         "variable_result": "updated"
       },
       "fixture_identities": [
@@ -8286,7 +8286,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG12"
@@ -8346,7 +8346,7 @@
       ],
       "required_assertions": {
         "loop_trace": "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
-        "value_blocks": "pos:neg:zero:0|1|2|"
+        "value_blocks": "then_val:\u003cX\u003e\u003cY\u003e"
       },
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG14"

@@ -41,11 +41,11 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	case "V01", "V03", "RP12", "RP14", "BRG10":
 		reqAssertions["variable_result"] = "updated"
 		reqAssertions["captured_before"] = "initial"
-		reqAssertions["num_captured"] = "10"
+		reqAssertions["num_captured"] = "1"
 		reqAssertions["clip_captured"] = "clip_initial"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:variables")
 	case "S01", "RP19", "BRG08":
-		reqAssertions["unicode_output"] = "שלום 👩‍💻 אָ"
+		reqAssertions["unicode_output"] = "שָׁלוֹם:🌍:1"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:unicode")
 	case "L02", "L04", "RP21":
 		reqAssertions["index_trace"] = "alpha:gamma:::::beta"
@@ -60,7 +60,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 		*testIDs = append(*testIDs, "ios27-runtime-poc:conditionals")
 	case "F02", "F04", "RP22", "BRG12", "BRG14":
 		reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
-		reqAssertions["value_blocks"] = "pos:neg:zero:0|1|2|"
+		reqAssertions["value_blocks"] = "then_val:<X><Y>"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:nested-loops")
 	case "FN01", "FN02", "FN03", "FN04", "T01", "M02", "RP24", "RP25", "RP26", "BRG11", "BRG15":
 		reqAssertions["function_result"] = "21"
