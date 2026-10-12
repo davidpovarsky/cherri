@@ -134,10 +134,6 @@ type WFQuantityFieldValue struct {
 	WFSerializationType string          `plist:",omitempty"`
 }
 
-type WFMenuItem struct {
-	WFItemType int `plist:",omitempty"`
-	WFValue    any `plist:",omitempty"`
-}
 
 type WFContentPredicateTableTemplate struct {
 	Value               WFConditionValue `plist:",omitempty"`

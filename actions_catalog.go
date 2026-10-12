@@ -230,7 +230,7 @@ var compilerConstructs = []catalogActionInfo{
 		Category:           "controlflow",
 		Builtin:            true,
 		CompilerConstruct:  true,
-		InsertionSnippet:   "menu \"Choose\" {\n\t\"Option 1\": {\n\t\t\n\t}\n}",
+		InsertionSnippet:   "menu(\"Choose\") {\n\tcase \"Option 1\" {\n\t\t\n\t}\n}",
 		EmittedKeys:        []string{"GroupingIdentifier", "UUID", "WFControlFlowMode", "WFMenuItemAttributedTitle", "WFMenuItemTitle", "WFMenuItems", "WFMenuPrompt"},
 	},
 	{

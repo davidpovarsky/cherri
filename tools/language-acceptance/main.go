@@ -1321,7 +1321,7 @@ func (r *Runner) runBaseline() {
 	// B01: Verify isolated base/remote HEAD
 	ledgerBytes, err := os.ReadFile(resolveRepoPath(filepath.Join("docs", "language-v2", "implementation-ledger.md")))
 	b01Passed := err == nil && strings.Contains(string(ledgerBytes), "559abceadda1dbf0cd7d7deb1a26315b8ac44c3f")
-	b01Detail := "Repository on branch agent/language-redesign; baseline 559abceadda1dbf0cd7d7deb1a26315b8ac44c3f recorded"
+	b01Detail := "Repository on branch agent/shared-shortcuts-engine-v2-repair; baseline 559abceadda1dbf0cd7d7deb1a26315b8ac44c3f recorded"
 	r.Record("B01", "baseline", "Verify isolated base/remote HEAD and keep unrelated agent work unchanged", "repository", []string{"repository"}, b01Passed, "PASSED", b01Detail)
 
 	// B02: Capture baseline catalog

@@ -1,6 +1,6 @@
 # Language v2.0 Implementation Ledger
 
-**Branch:** `agent/language-redesign`
+**Branch:** `agent/shared-shortcuts-engine-v2-repair`
 **Base SHA:** `559abceadda1dbf0cd7d7deb1a26315b8ac44c3f`
 **Base branch:** `agent/apple-runtime-extraction-v2`
 **Started:** 2026-10-06

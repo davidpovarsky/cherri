@@ -956,7 +956,7 @@ func makeConditionalAction(t *token) {
 	}
 	switch t.valueType {
 	case If:
-		conditionalParams["WFControlFlowMode"] = startStatement
+		conditionalParams["WFControlFlowMode"] = ControlFlowStart
 
 		var cond = t.value.(WFConditions)
 		if cond.legacyComparison {
@@ -990,10 +990,9 @@ func makeConditionalAction(t *token) {
 			conditionalParams["WFConditions"] = makeConditions(&cond)
 		}
 	case Else:
-		conditionalParams["WFControlFlowMode"] = statementPart
+		conditionalParams = BuildIfElse(t.ident)
 	case EndClosure:
-		conditionalParams["UUID"] = createUUIDReference(t.value.(string))
-		conditionalParams["WFControlFlowMode"] = endStatement
+		conditionalParams = BuildIfEnd(t.ident, createUUIDReference(t.value.(string)))
 	}
 
 	addStdAction("conditional", conditionalParams)
@@ -1158,96 +1157,58 @@ func conditionalParameterVariableLegacy(params map[string]any, arg actionArgumen
 }
 
 func makeMenuAction(t *token) {
-	var menuParams = map[string]any{
-		"GroupingIdentifier": t.ident,
-		"WFControlFlowMode":  startStatement,
-	}
 	if t.valueType == EndClosure {
-		menuParams["WFControlFlowMode"] = endStatement
-		menuParams["UUID"] = createUUIDReference(t.value.(string))
+		addStdAction("choosefrommenu", BuildMenuEnd(t.ident, createUUIDReference(t.value.(string))))
+		return
 	}
-	if t.valueType != EndClosure {
-		if t.valueType != Nil {
-			menuParams["WFMenuPrompt"] = paramValue(actionArgument{
-				valueType: t.valueType,
-				value:     t.value,
-			}, String)
-		}
-		var menuItemParams = menus[t.ident]
-		var menuItems = make([]WFMenuItem, 0, len(menuItemParams))
-		for _, item := range menuItemParams {
-			menuItems = append(menuItems, WFMenuItem{
-				WFItemType: 0,
-				WFValue: paramValue(actionArgument{
-					valueType: item.valueType,
-					value:     item.value,
-				}, String),
-			})
-		}
-
-		menuParams["WFMenuItems"] = menuItems
+	var prompt any
+	if t.valueType != Nil {
+		prompt = paramValue(actionArgument{
+			valueType: t.valueType,
+			value:     t.value,
+		}, String)
 	}
-
-	addStdAction("choosefrommenu", menuParams)
+	var menuItemParams = menus[t.ident]
+	itemTitles := make([]string, len(menuItemParams))
+	for i, item := range menuItemParams {
+		itemTitles[i] = fmt.Sprint(paramValue(actionArgument{
+			valueType: item.valueType,
+			value:     item.value,
+		}, String))
+	}
+	addStdAction("choosefrommenu", BuildMenuStart(t.ident, prompt, itemTitles))
 }
 
 func makeMenuItemAction(t *token) {
-	addStdAction("choosefrommenu", map[string]any{
-		"GroupingIdentifier": t.ident,
-		"WFControlFlowMode":  statementPart,
-		"WFMenuItemAttributedTitle": paramValue(actionArgument{
-			valueType: t.valueType,
-			value:     t.value,
-		}, String),
-		"WFMenuItemTitle": paramValue(actionArgument{
-			valueType: t.valueType,
-			value:     t.value,
-		}, String),
-	})
+	title := fmt.Sprint(paramValue(actionArgument{
+		valueType: t.valueType,
+		value:     t.value,
+	}, String))
+	addStdAction("choosefrommenu", BuildMenuCase(t.ident, title))
 }
 
 func makeRepeatAction(t *token) {
-	var controlFlowMode = startStatement
 	if t.valueType == EndClosure {
-		controlFlowMode = endStatement
+		addStdAction("repeat.count", BuildLoopEnd(t.ident, createUUIDReference(t.value.(string))))
+		return
 	}
-	var repeatParams = map[string]any{
-		"WFControlFlowMode":  controlFlowMode,
-		"GroupingIdentifier": t.ident,
-	}
-	if controlFlowMode == endStatement {
-		repeatParams["UUID"] = createUUIDReference(t.value.(string))
-	}
-	if controlFlowMode == startStatement {
-		repeatParams["WFRepeatCount"] = paramValue(actionArgument{
-			valueType: t.valueType,
-			value:     t.value,
-		}, Integer)
-	}
-
-	addStdAction("repeat.count", repeatParams)
+	count := paramValue(actionArgument{
+		valueType: t.valueType,
+		value:     t.value,
+	}, Integer)
+	addStdAction("repeat.count", BuildRepeatCountStart(t.ident, count))
 }
 
 func makeRepeatEachAction(t *token) {
-	var controlFlowMode = startStatement
 	if t.valueType == EndClosure {
-		controlFlowMode = endStatement
+		addStdAction("repeat.each", BuildLoopEnd(t.ident, createUUIDReference(t.value.(string))))
+		return
 	}
-	var repeatEachParams = map[string]any{
-		"WFControlFlowMode":  controlFlowMode,
-		"GroupingIdentifier": t.ident,
-	}
-	if controlFlowMode == endStatement {
-		repeatEachParams["UUID"] = createUUIDReference(t.value.(string))
-	}
-	if controlFlowMode == startStatement {
-		repeatEachParams["WFInput"] = paramValue(actionArgument{
-			valueType: t.valueType,
-			value:     t.value,
-		}, Integer)
-	}
-
-	addStdAction("repeat.each", repeatEachParams)
+	iterable := paramValue(actionArgument{
+		valueType: t.valueType,
+		value:     t.value,
+	}, Integer)
+	addStdAction("repeat.each", BuildRepeatEachStart(t.ident, iterable))
 }
 
 type WFQuestion struct {

@@ -5,7 +5,7 @@ name: Build & Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "agent/**" ]
   workflow_dispatch:
 
 concurrency:
@@ -29,6 +29,9 @@ jobs:
     - name: Test
       run: go test -run TestCherriNoSign -v ./...
 
+    - name: Full Matrix Regression Tests
+      run: go test -count=1 -timeout=10m -v -run "TestCore|TestCodec|TestCTRL|TestMETA|TestLANG|TestIOS|TestGEN" ./...
+
     - name: Decompilation Test
       run: go test -run TestDecomp -v ./...
 
@@ -50,6 +53,9 @@ jobs:
 
     - name: Test
       run: go test -run TestCherriNoSign -v ./...
+
+    - name: Full Matrix Regression Tests
+      run: go test -count=1 -timeout=10m -v -run "TestCore|TestCodec|TestCTRL|TestMETA|TestLANG|TestIOS|TestGEN" ./...
 
     - name: Decompilation Test
       run: go test -run TestDecomp -v ./...

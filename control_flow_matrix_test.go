@@ -2,6 +2,11 @@ package main
 
 import (
 	"fmt"
+	"go/ast"
+	"go/parser"
+	gotoken "go/token"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -495,4 +500,48 @@ let res = dynamicCond || quicklook("right_or_action")
 		}
 	})
 }
+
+func TestCTRL008_ASTControlFlowSourceOwnership(t *testing.T) {
+	// Guard Gate G1/G2: Verify zero handwritten occurrences of "WFControlFlowMode" in internal/language/lower
+	// Control flow parameter maps must be owned exclusively by internal/language/backend/control.go
+	lowerDir := filepath.Join(".", "internal", "language", "lower")
+	fset := gotoken.NewFileSet()
+	pkgs, err := parser.ParseDir(fset, lowerDir, nil, 0)
+	if err != nil {
+		t.Fatalf("failed to parse %s: %v", lowerDir, err)
+	}
+
+	var violations []string
+	for _, pkg := range pkgs {
+		for fileName, fileAst := range pkg.Files {
+			ast.Inspect(fileAst, func(n ast.Node) bool {
+				lit, ok := n.(*ast.BasicLit)
+				if ok && lit.Kind == gotoken.STRING {
+					cleanVal := strings.Trim(lit.Value, `"`)
+					if cleanVal == "WFControlFlowMode" {
+						pos := fset.Position(lit.Pos())
+						violations = append(violations, fmt.Sprintf("%s:%d:%d", fileName, pos.Line, pos.Column))
+					}
+				}
+				return true
+			})
+		}
+	}
+
+	if len(violations) > 0 {
+		t.Fatalf("Found %d unauthorized occurrences of \"WFControlFlowMode\" in internal/language/lower/ (must use shared backend builders):\n%s",
+			len(violations), strings.Join(violations, "\n"))
+	}
+
+	// Also verify that internal/language/backend/control.go actually defines the authoritative builders
+	controlFile := filepath.Join(".", "internal", "language", "backend", "control.go")
+	content, err := os.ReadFile(controlFile)
+	if err != nil {
+		t.Fatalf("failed to read %s: %v", controlFile, err)
+	}
+	if !strings.Contains(string(content), "ControlFlowStart") {
+		t.Errorf("expected %s to define ControlFlowStart", controlFile)
+	}
+}
+
 

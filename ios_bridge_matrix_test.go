@@ -106,6 +106,21 @@ func TestIOS003_PaletteActionSnippetsInV2(t *testing.T) {
 		}
 	}
 
+	// Test compilation of all compiler construct snippets in v2 mode
+	for _, construct := range compilerConstructs {
+		t.Run("construct_"+construct.Name, func(t *testing.T) {
+			src := construct.InsertionSnippet + "\n"
+			if construct.Name == "appendVariable" {
+				src = "var variable = Ask\n" + src
+			}
+			resp := compileForMobileMode(src, construct.Name, "v2", false)
+			if !resp.OK {
+				t.Fatalf("compiler construct %q snippet failed to compile in v2:\n%s\nError: %s (line %d, col %d)",
+					construct.Name, src, resp.Error, resp.Line, resp.Column)
+			}
+		})
+	}
+
 	// Test compilation of representative v2 action snippets
 	representativeSnippets := []struct {
 		name    string
@@ -119,6 +134,7 @@ func TestIOS003_PaletteActionSnippetsInV2(t *testing.T) {
 		{"ifConstruct", "if (Ask) {\n\tshow(Ask)\n}\n"},
 		{"repeatConstruct", "repeat (Ask) {\n\tshow(Ask)\n}\n"},
 		{"forConstruct", "for item in Ask {\n\tshow(item)\n}\n"},
+		{"menuConstruct", "menu(\"Choose\") {\n\tcase \"Option 1\" {\n\t\tshow(Ask)\n\t}\n}\n"},
 	}
 
 	for _, tc := range representativeSnippets {
