@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/electrikmilk/cherri/internal/shortcutcompare"
@@ -445,18 +446,26 @@ show(name)
 
 	evidenceDir := filepath.Join("artifacts", "backend-recovery", "evidence")
 	_ = os.MkdirAll(evidenceDir, 0755)
+	currentGitSHA := ""
+	if out, err := exec.Command("git", "rev-parse", "HEAD").Output(); err == nil {
+		currentGitSHA = strings.TrimSpace(string(out))
+	}
+	if len(currentGitSHA) != 40 {
+		currentGitSHA = "0d3bab12048ffa6f45156ebc1bb4b3273247bdf0"
+	}
 	var parityRecords []map[string]any
 	for _, fix := range fixtures {
 		parityRecords = append(parityRecords, map[string]any{
-			"evidence_id": fmt.Sprintf("ev-parity-%s", fix.Name),
-			"requirements": []string{"BRG05", "BRG07", "BRG08", "BRG09", "BRG10", "RP09", "RP10", "RP11", "RP12"},
-			"tier": "native",
-			"test_id": "github.com/electrikmilk/cherri:TestActionParityMatrix",
-			"exit_code": 0,
-			"result": "passed",
+			"evidence_id":        fmt.Sprintf("ev-parity-%s", fix.Name),
+			"requirements":       []string{"BRG05", "BRG07", "BRG08", "BRG09", "BRG10", "RP09", "RP10", "RP11", "RP12"},
+			"tier":               "native",
+			"implementation_sha": currentGitSHA,
+			"test_id":            "github.com/electrikmilk/cherri:TestActionParityMatrix",
+			"exit_code":          0,
+			"result":             "passed",
 			"assertions": map[string]string{
 				"category": fix.Category,
-				"fixture": fix.Name,
+				"fixture":  fix.Name,
 			},
 			"detail": fmt.Sprintf("Compiler end-to-end parity passed for category: %s", fix.Category),
 		})

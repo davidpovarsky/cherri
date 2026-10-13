@@ -1,4 +1,9 @@
-# Language v2.0 Implementation Ledger
+# Language v2.0 Implementation Ledger (HISTORICAL / SUPERSEDED)
+
+> [!WARNING]
+> **HISTORICAL ARCHIVE:** This document records historical claims and early milestones from branch `agent/shared-shortcuts-engine-v2-repair` (2026-10-06).
+> It is **SUPERSEDED** by the living master plan at `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md` and current validated reports (`docs/language-v2/acceptance-results.json`).
+> Do not use the completion checkboxes or '93/94 PASSED' / 'closure_complete: true' claims in this historical document as current verification status.
 
 **Branch:** `agent/shared-shortcuts-engine-v2-repair`
 **Base SHA:** `559abceadda1dbf0cd7d7deb1a26315b8ac44c3f`

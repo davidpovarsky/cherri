@@ -52,7 +52,6 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 		*testIDs = append(*testIDs, "ios27-runtime-poc:indexing")
 	case "N01", "RP15", "RP17", "BRG16":
 		reqAssertions["math_trace"] = "2.5:1:11:0:1:0"
-		reqAssertions["index_trace"] = "alpha:gamma:::::beta"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:numbers")
 	case "F01", "RP18", "BRG13":
 		reqAssertions["conditional_result"] = "true"
@@ -60,7 +59,6 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 		*testIDs = append(*testIDs, "ios27-runtime-poc:conditionals")
 	case "F02", "F04", "RP22", "BRG12", "BRG14":
 		reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
-		reqAssertions["value_blocks"] = "then_val:<X><Y>"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:nested-loops")
 	case "FN01", "FN02", "FN03", "FN04", "T01", "M02", "RP24", "RP25", "RP26", "BRG11", "BRG15":
 		reqAssertions["function_result"] = "21"

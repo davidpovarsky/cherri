@@ -3,6 +3,7 @@
 This file is the operating contract for coding agents working in this repository.
 
 Read `CONTRIBUTING.md` at the start of every session. Then read this file before making changes.
+For Cherri v2 language work, also read the living master plan at `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md` before editing.
 
 The older, detailed compiler/language reference that previously lived here is preserved at `docs/agent-technical-reference.md`. Load that file only when the task actually requires parser, compiler, plist, action-definition, decompiler, or language-internals detail. Do not load it by default.
 
