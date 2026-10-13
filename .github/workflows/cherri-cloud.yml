@@ -1,0 +1,53 @@
+name: Cherri Cloud - Compile & Simulator
+
+on:
+  push:
+    branches:
+      - 'cloud-cherri-request/**'
+    paths:
+      - 'cloud-requests/**'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: cherri-cloud-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cherri-cloud:
+    name: Cherri Cloud (${{ github.ref_name }})
+    runs-on: ${{ startsWith(github.ref_name, 'cloud-cherri-request/simulate-') && 'xcode-27' || 'ubuntu-latest' }}
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout isolated request
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Go for GitHub-hosted compilation
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Configure Xcode UI runner (simulator requests only)
+        if: startsWith(github.ref_name, 'cloud-cherri-request/simulate-')
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+          brew install xcodegen
+
+      - name: Fetch live canonical Skill, compile, and optionally simulate
+        run: bash scripts/cherri-cloud/run-request.sh
+
+      - name: Upload source, compiled Shortcut and runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-cloud-output
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 14
