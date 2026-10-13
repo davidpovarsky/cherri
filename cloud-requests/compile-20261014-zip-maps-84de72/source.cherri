@@ -1,0 +1,215 @@
+// ZIP > hierarchical vCard navigator. Exact native file objects are shared.
+// Data-driven extension categorization and Base64 icons: two dictionary actions.
+shortcut "ZIP • Browse & Share" {
+    from: sharesheet
+    inputs: file
+}
+
+let fileKinds = {
+    "swift": "code",
+    "py": "code",
+    "js": "code",
+    "ts": "code",
+    "jsx": "code",
+    "tsx": "code",
+    "html": "code",
+    "css": "code",
+    "sh": "code",
+    "go": "code",
+    "c": "code",
+    "h": "code",
+    "cpp": "code",
+    "hpp": "code",
+    "java": "code",
+    "kt": "code",
+    "rs": "code",
+    "rb": "code",
+    "php": "code",
+    "sql": "code",
+    "jsonl": "code",
+    "swiftpm": "playground",
+    "playground": "playground",
+    "playgroundbook": "playground",
+    "xcodeproj": "folder",
+    "xcworkspace": "folder",
+    "xcassets": "folder",
+    "bundle": "folder",
+    "framework": "folder",
+    "app": "folder",
+    "rtfd": "folder",
+    "jpg": "image",
+    "jpeg": "image",
+    "png": "image",
+    "gif": "image",
+    "heic": "image",
+    "webp": "image",
+    "svg": "image",
+    "tiff": "image",
+    "tif": "image",
+    "bmp": "image",
+    "avif": "image",
+    "ico": "image",
+    "pdf": "pdf",
+    "txt": "document",
+    "md": "document",
+    "rtf": "document",
+    "doc": "document",
+    "docx": "document",
+    "csv": "document",
+    "tsv": "document",
+    "json": "document",
+    "yaml": "document",
+    "yml": "document",
+    "xml": "document",
+    "plist": "document",
+    "pages": "document",
+    "numbers": "document",
+    "epub": "document",
+    "log": "document",
+    "ini": "document",
+    "toml": "document",
+    "mp4": "video",
+    "mov": "video",
+    "m4v": "video",
+    "avi": "video",
+    "mkv": "video",
+    "webm": "video",
+    "mp3": "audio",
+    "m4a": "audio",
+    "wav": "audio",
+    "aac": "audio",
+    "flac": "audio",
+    "ogg": "audio",
+    "aiff": "audio",
+    "zip": "archive",
+    "7z": "archive",
+    "rar": "archive",
+    "tar": "archive",
+    "gz": "archive",
+    "bz2": "archive",
+    "xz": "archive",
+    "tgz": "archive"
+}
+
+let kindIcons = {
+    "folder": "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAABLklEQVR42u3cWw6CMBCFYZiwF+OeXJ57Mq4GH0wM4ToFpHP5+yol/ZzjNGDStu/7JtPo9Je+njezjPvjrbyy3aywZecO+RrYF1XJlnja9cXPVNg1dbPUElg7y5Em2ZDA5Z1FSWztlJY10oHLOwLmblpZwOHzPEw1kQYMGLCr0e2Yo3+fYvAxW67UHp9+NfiU5dY1S5WFVjTTpQGzLZn7GRdtdREqXPTdBYm03izXJ7CumS4NGHCOfTjMiz4q7HZbUsaQpgUYMGDAgAEDBgwYMGDAgAEDBpwGbP+tpXKFcvodLWuLI23TXLSq7q93p2kBBgwY8HGwiz/Kjo8vk0gnAYdP9Q+YONKBizykydIHIbV06XBFnnIWz/Hw/hi4VDkpneBa23A0jVf5mYcPBRsfLNB1SULUvsMAAAAASUVORK5CYII=",
+    "file": "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABQUlEQVR42u3cWw7CIBCFYTrpWl1B4yIaV9DN4oOJMfaGdiAzw8+rvfDlEJgmwpBzTj21sfzS2/1hlrHMU+GVw2nClp1/yI/AvqiFbImnPe78RsKuqadRS2DtJkdSZ00Cx7uJktjaNa3XIR043i9g35NWD23IOWuN5/IKfm/UHTxBpZPLPKklfFF7qlJ5vtqQ1upNA7OY0jYwG5206i2TdmfpSmbTy1INs/V1WN3soPDQNfuotBTNbkpLLbOnWlrF7Ozj4bp5tIMprKIumvkeBgwYMGDAgAEDBgwYMGDAgAEDBgwYMGDAgAED7gLccoPI9XeJkX40e4uk+v/eN6J9MUdrCTBp1QGr71uw1t7AjpelwCF/0mTvh5BaKq1wIa85u+d4eN9RvJec/HqDa23iaBqvcs3Dh4K1J39ngftPWNkIAAAAAElFTkSuQmCC",
+    "playground": "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAAB1ElEQVR42u2cURKDIAxE7U7/e5xepsfzMj1OT2A/nHEcsRQhGyCEb5R9JosEWm/LskwjtXt618/r2SzGY34n9rz9jXDLnBnkMeC+UBOxYY82Lv4kwl2j/g01DNOe4mAarMFweE+hYJs2RBs1pQ2H9wA49qQ1CrD5fN5ntae0AzuwAzuwAzuwA/cNnL5pqnMfLvCq8jG/S+Rul4sz36n5s8qNrNX3PGs3RlSJEQ7lXq1Mwv6yjwANWpd6Z1A1xcMb5nPkKilm4muppMzmlehoxLpqZkbL1mWMBX3rpvdnmBm1rJuoW9zMaM26bDOjC+sKjo6K1i20SR4zlK0bX3IomBnNWpdk5r43ADIedN/AShFmV3BUK0H/YWfMWPWrJWoFR30LQnPCaKH2hOyojCDLvgWhk37ZURJ/gmCkVkTlJQDGAhYV7VRlLJB0lKciaQFLXGkVnjyQVHGrpYPuxCUHtfZEUwZTuDPYyq4mJ7v25B6mHbSmSGcfqbF2LT+vZ+HJw3af1oEFVTImBf/JgwM7sAM7sAM7cF3guueAam3F9JQeBNh8Vm+AA6e04SDv0RDfbTBG67O0uSCHOD+/49H7PzB/RQ5XL+iadvJP0/RKLvnxIWPtC9yhBBqeidc2AAAAAElFTkSuQmCC",
+    "code": "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAAB7ElEQVR42u2cXRLCIAyE2x0P5Q08hafzFN7AW+FDZzqd0lIK+YGQPipovm4WEnQ6hxCmka5H/tDn+9ssxu/zyhw5XyrcMmcBeQq4L9RMbNijTQd/oHDXqJdSwzDtIQ6mwS4YlvcQCrZpY7RRU9qwvDvAsRetUYDN5/M2qz2lHdiBHdiBHdiBHbhv4PxD0/TgW5+jBrxE+fu88sONB6+vkDM/WPNnCTdRq295OPRkVzgO+m5nEo+nvRHQsm4mLTkzWGnT8p5hHM6iYmbclmrabL4WHY1YN57CZGZoWVdyFiVwgXUrE7uSGY1Y92wWuZmhYt1bKtGaGcLWVd/z0YJ1LycSmhny1i0LlMrMkLQu+T0tuHf6BwDCBZk0MO1SJ6QwdwfHaiXoSse91JEBl+0TxUET7oKQXDBaWOpA+62VNaPALgiBpUW3HyQGZj2O4eg9oWUnyVn0KX1p5gLNmQpYxkqrJrH5KhnebunWQSyrdVkU5jtGJ9zziVO6vszm7j15f0zbxrqSpAGWdzvw8C7i5/sbH6zna7UOJi9g5xDCIH89XBLH//LgwA7swA7swA6sC6z7O6Bk1eEpPQ6w+axeAQdOacMib9FQczrRHa2v0uZEjnFOn+PR+zHImXK4O6Fr2skfTdMrOeXDh4xdf3BwGFqw+zMHAAAAAElFTkSuQmCC",
+    "image": "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABuklEQVR42u2c3Q3CMAyE4dSdmIRNGKObMAlTlQekqmpDSInt+K8PSKDS5OPOjh2g12VZLpGOqf3U+f5Si/F43hrPvP5UWDPnH+Q1YFuojdjwR1uffEFh06g/pYZj2iIOLsEOOJa3CAXftEe0qJZ2LO8OMHbSigLs3s9bV4dTeOp8f3tfJlMq88bwENrOcWGOtnN0WKTtmUMmLfEsIuysrLQSOGOYPT5ZM8KkCnX7lAk7Y1hN/cBU26TCCTyq18uk5WhZ+ogZaB2W7EAyaSVwArPXW6z7R9BDe3z0b2mBvUHIAFRI/DQPqzkrLpXf7oUqx+5qD46PA8JslWxcrLTImSGvZNHhKy13gQkB2vn+OuVVVmOzx3CLdJLfyINV3h1JEazlRUKRIRa6Z8VkYgZr6FZIto8e1uE6SSMth8gQCN1sD8mcogKYfIq0F4RyWtWW5qMlvHLuaWk1M9X1yTbiNfxyKy1NB6whG/83B6gNWqbRMWTUgQlsGjh2Ji0pYCsrCsnCmctSEGD3rl4BA1vaschbNFhsAHq6mvBZ2pnIR5yv9/Gw/g/Mb8rBekN/dvJ5axqb5JQ3H3J2vAEFTOXpMkBncwAAAABJRU5ErkJggg==",
+    "pdf": "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABVElEQVR42u3cyxGDMAxFUeOhIErIJlWzoYR05OwyTADjYJlI8mUbfifPH5kZGFJKoadtLN/19XiqZUzLXLjncJqwZucFeQ5si1rIjv60+ZvfSdg09TTq6Fi7y4mhsy06jncXFX1rt7Rem7TjeL+A3SU8yp6uvKbdJpA5VrABDiklkdNdpq5J+ZPU3+e0zFFnT7tpHv5XvIVmkatoHLSa5qx0lG5n1jstNTKrnodbmLUXHuJmA5WWrNlGaSloNlNLS5ktLR5EzKMSTGEVVW/u+5kWYMCAAQMGDBgwYMCANayWKlc2gs+6adKA6cOKOiEJAwbMPEyTBkwfZh6mSQMGDBgwYMCAATcB3/PKhMhVWDzU/f2NFgzC7zyEDl7j+YTBoNUJWOdiXbw9992kHYe8psWjH1xqGaXdhbzlHH7Hw3opcpRc/PUA09rAp2msyiU/PuRsewOtIojbI+qCwwAAAABJRU5ErkJggg==",
+    "document": "undefined",
+    "video": "undefined",
+    "audio": "undefined",
+    "archive": "undefined"
+}
+
+
+// The extracted objects stay as native Shortcuts file/folder content items.
+// Only the numeric path is rebuilt when moving up/down.
+let rootItems = extractArchive(ShortcutInput)
+if count(rootItems) == 0 {
+    alert("The ZIP is empty.", title: "ZIP Navigator")
+    stop()
+}
+var route = ""
+if count(rootItems) == 1 {
+    let first = getFirstItem(rootItems)
+    let firstExt = lowercase(getText(getFileDetail(first, detail: "File Extension")))
+    let firstKind = getText(getValue(fileKinds, key: firstExt))
+    let firstType = lowercase(getText(typeOf(first)))
+    // A proven folder or a Playgrounds package: enter immediately.
+    // An extensionless plain file: display a choice with Direct Share.
+    let folderEvidence = count(matchText(r"folder|directory|playground", f"{firstKind}|{firstType}"))
+    if folderEvidence > 0 {
+        route = "1"
+    } else if firstExt != "" {
+        share(first)
+        stop()
+    }
+}
+
+// One native Repeat loop handles all folder depths without extra Shortcuts.
+repeat 96 as navigationStep {
+    var entries = rootItems
+    var currentFolder = ShortcutInput
+    var currentPath = "ZIP"
+    if route != "" {
+        let segments = matchText(r"[0-9]+", route)
+        for segment in segments {
+            let position = getNumbers(getText(segment))
+            currentFolder = getListItem(entries, index: position)
+            currentPath = f"{currentPath} / {getText(getName(currentFolder))}"
+            entries = getFolderContents(currentFolder, recursive: false)
+        }
+    }
+
+    var cards = ""
+    if route != "" {
+        cards = f"BEGIN:VCARD\nVERSION:3.0\nN:⬅ Go up;;;;\nFN:⬅ Go up\nORG:Folder navigation\nTITLE:0\nPHOTO;BASE64:{getText(getValue(kindIcons, key: "folder"))}\nEND:VCARD\nBEGIN:VCARD\nVERSION:3.0\nN:↗ Share this folder;;;;\nFN:↗ Share this folder\nORG:Share folder\nTITLE:900000\nPHOTO;BASE64:{getText(getValue(kindIcons, key: "folder"))}\nEND:VCARD\n"
+    }
+
+    var position = 0
+    for item in entries {
+        position += 1
+        let fileName = getText(getName(item))
+        let safe1 = replaceText(";", r"\;", fileName)
+        let safe2 = replaceText(",", r"\,", safe1)
+        let safeName = replaceText(r"[\r\n]", " ", safe2, regExp: true)
+        let ext = lowercase(getText(getFileDetail(item, detail: "File Extension")))
+        var kind = getText(getValue(fileKinds, key: ext))
+        if kind == "" {
+            kind = "file"
+        }
+        let nativeType = lowercase(getText(typeOf(item)))
+        let detectedFolder = count(matchText(r"folder|directory", nativeType))
+        let folderHint = count(matchText(r"\(\)|folder|directory", f"({ext})|{nativeType}"))
+        if folderHint > 0 {
+            // Preserve Swift's unique icon and package identity.
+            if kind != "playground" {
+                kind = "folder"
+            }
+        }
+        let iconData = getText(getValue(kindIcons, key: kind))
+
+        let vcard = f"BEGIN:VCARD\nVERSION:3.0\nN:{safeName};;;;\nFN:{safeName}\nORG:{kind}\nTITLE:{position}\nPHOTO;BASE64:{iconData}\nEND:VCARD\n"
+        cards = f"{cards}{vcard}"
+
+        // A file without an extension can resemble a folder on iOS.
+        // Offer an explicit direct-share entry without discarding the object.
+        if ext == "" && detectedFolder == 0 {
+            let directShareID = position + 100000
+            let alternative = f"BEGIN:VCARD\nVERSION:3.0\nN:↗ Share {safeName};;;;\nFN:↗ Share {safeName}\nORG:Extensionless file\nTITLE:{directShareID}\nPHOTO;BASE64:{getText(getValue(kindIcons, key: "file"))}\nEND:VCARD\n"
+            cards = f"{cards}{alternative}"
+        }
+    }
+
+    let vcFile = setName(cards, name: "ZIP Navigator.vcf")
+    let contacts = getContacts(vcFile)
+    let selection = chooseFromList(contacts, prompt: currentPath)
+    let selectedID = getNumbers(getContactDetail(selection, detail: "Job Title"))
+
+    if selectedID == 0 {
+        route = replaceText(r"(\.[0-9]+|^[0-9]+)$", "", route, regExp: true)
+    } else if selectedID == 900000 {
+        share(currentFolder)
+        stop()
+    } else if selectedID > 100000 {
+        share(getListItem(entries, index: selectedID - 100000))
+        stop()
+    } else {
+        let chosenFile = getListItem(entries, index: selectedID)
+        let chosenKind = getText(getContactDetail(selection, detail: "Company"))
+        if count(matchText(r"^(folder|playground)$", chosenKind)) > 0 {
+            if route == "" {
+                route = f"{selectedID}"
+            } else {
+                route = f"{route}.{selectedID}"
+            }
+        } else {
+            share(chosenFile)
+            stop()
+        }
+    }
+}
+alert("Navigation limit reached.", title: "ZIP Navigator")
