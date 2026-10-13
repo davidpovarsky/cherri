@@ -1,0 +1,41 @@
+// ZIP -> share items without explicit Save File actions.
+shortcut "ZIP • Share Extracted" {
+    from: sharesheet
+    inputs: file
+}
+
+let files = extractArchive(ShortcutInput)
+let total = count(files)
+if total == 0 {
+    alert("The ZIP archive is empty.", title: "No files")
+} else if total == 1 {
+    share(files)
+} else {
+    var cards = ""
+    var itemIndex = 0
+    for file in files {
+        itemIndex += 1
+        let name = getText(getName(file))
+        let ext = lowercase(getText(getFileDetail(file, detail: "File Extension")))
+        var kind = "File"
+        if ext == "swift" || ext == "swiftpm" || ext == "playground" {
+            kind = "Swift / Playground"
+        } else if ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "webp" {
+            kind = "Image"
+        } else if ext == "pdf" {
+            kind = "PDF"
+        } else if ext == "txt" || ext == "md" || ext == "json" || ext == "html" {
+            kind = "Text / Data"
+        }
+        let card = f"BEGIN:VCARD\nVERSION:3.0\nN;CHARSET=UTF-8:{itemIndex}) {name};;;;\nORG;CHARSET=UTF-8:{kind}\nPHOTO;BASE64:no\nEND:VCARD\n"
+        cards = f"{cards}{card}"
+    }
+    let vcardFile = setName(cards, name: "ZipMenu.vcf")
+    let contacts = getContacts(vcardFile)
+    let chosen = chooseFromList(contacts, prompt: "Choose a file to share")
+    let chosenName = getText(getContactDetail(chosen, detail: "Name"))
+    let indexes = matchText(r"^[0-9]+", chosenName)
+    let indexNumber = getNumbers(getFirstItem(indexes))
+    let selectedFile = getListItem(files, index: indexNumber)
+    share(selectedFile)
+}
