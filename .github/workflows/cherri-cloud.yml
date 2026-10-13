@@ -18,7 +18,7 @@ concurrency:
 jobs:
   cherri-cloud:
     name: Cherri Cloud (${{ github.ref_name }})
-    runs-on: ${{ startsWith(github.ref_name, 'cloud-cherri-request/simulate-') && 'xcode-27' || 'ubuntu-latest' }}
+    runs-on: ${{ startsWith(github.ref_name, 'cloud-cherri-request/simulate-') && 'xcode-27' || startsWith(github.ref_name, 'cloud-cherri-request/sign-') && 'macos-latest' || 'ubuntu-latest' }}
     timeout-minutes: 45
 
     steps:
