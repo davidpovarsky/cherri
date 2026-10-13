@@ -52,6 +52,21 @@ data={"request_key":key,"mode":mode,"request_commit":os.environ["GITHUB_SHA"],"s
 with open("artifacts/request-metadata.json","w",encoding="utf-8") as f:json.dump(data,f,indent=2)
 PY
 if [ "$MODE" = "sign" ] || [ "$MODE" = "simulate" ]; then
+    # macOS CI has no signed-in iCloud account. Apple's native 'shortcuts sign'
+    # can hang waiting for an unavailable account on headless runners. Override
+    # only that command so canonical Cherri SignShortcut() immediately falls back
+    # to the normal HubSign backend. This does not replace Cherri signing logic.
+    if [ "$(uname -s)" = "Darwin" ]; then
+        HEADLESS_SHORTCUTS_BIN="$RUNNER_TEMP/cherri-headless-sign-bin"
+        mkdir -p "$HEADLESS_SHORTCUTS_BIN"
+        cat > "$HEADLESS_SHORTCUTS_BIN/shortcuts" <<'WRAPPER'
+#!/bin/sh
+echo "Native shortcuts sign skipped on headless GitHub runner (no iCloud); Cherri HubSign fallback follows." >&2
+exit 2
+WRAPPER
+        chmod +x "$HEADLESS_SHORTCUTS_BIN/shortcuts"
+        export PATH="$HEADLESS_SHORTCUTS_BIN:$PATH"
+    fi
     echo "Signing via canonical Skill (remote signing service may receive plist)..."
     sh "$SKILL_DIR/scripts/build.sh" "$STAGING/$BUILD_NAME.cherri" "artifacts/$BUILD_NAME.shortcut" --signed
     python3 - "$BUILD_NAME" <<'PY'
