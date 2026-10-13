@@ -1,0 +1,10 @@
+shortcut "Map lookup check" {
+ from: sharesheet
+ inputs: file
+}
+let extLookup = {"swift":"code", "jpg":"image", "json":"data"}
+let iconLookup = {"code":"SWIFT64", "image":"PIC64", "data":"DATA64"}
+let input = "swift"
+let category = getValue(extLookup, key: input)
+let icon = getValue(iconLookup, key: getText(category))
+show(f"{category}:{icon}")
