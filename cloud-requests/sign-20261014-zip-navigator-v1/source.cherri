@@ -1,0 +1,112 @@
+// ZIP Navigator v2 — temporary extraction and nested directory selection.
+// Folder/package selections open the next level. Explicit folder share is available.
+shortcut "ZIP • Browse & Share" {
+    from: sharesheet
+    inputs: file
+}
+
+let rootItems = extractArchive(ShortcutInput)
+if count(rootItems) == 0 {
+    alert("Nothing to extract.", title: "Empty ZIP")
+    stop()
+}
+
+// Preserve every file as a real Shortcuts content item. Store only numeric
+// positions in the navigation route to avoid losing file/folder references.
+var route = ""
+if count(rootItems) == 1 {
+    let firstItem = getFirstItem(rootItems)
+    let ext = lowercase(getText(getFileDetail(firstItem, detail: "File Extension")))
+    let t = lowercase(getText(typeOf(firstItem)))
+    if ext == "" || count(matchText(r"folder|directory", t)) > 0 || count(matchText(r"^(swiftpm|playground|playgroundbook|xcodeproj|xcworkspace|xcassets|bundle|framework|app|rtfd)$", ext)) > 0 {
+        route = "1"
+    } else {
+        share(firstItem)
+        stop()
+    }
+}
+
+repeat 96 as turn {
+    var items = rootItems
+    var currentFolder = ShortcutInput
+    var location = "ZIP"
+    if route != "" {
+        let segments = matchText(r"[0-9]+", route)
+        for segment in segments {
+            let segmentNumber = getNumbers(getText(segment))
+            currentFolder = getListItem(items, index: segmentNumber)
+            location = f"{location} / {getText(getName(currentFolder))}"
+            items = getFolderContents(currentFolder, recursive: false)
+        }
+    }
+    let total = count(items)
+    var contactsText = ""
+    if route != "" {
+        contactsText = f"BEGIN:VCARD\nVERSION:3.0\nN:⬅ Go up;;;;\nFN:⬅ Go up\nORG:{location}\nTITLE:0\nEND:VCARD\nBEGIN:VCARD\nVERSION:3.0\nN:↗ Share folder;;;;\nFN:↗ Share folder\nORG:{location}\nTITLE:900000\nEND:VCARD\n"
+    }
+    var ordinal = 0
+    for item in items {
+        ordinal += 1
+        let nm = getText(getName(item))
+        let safe1 = replaceText(";", r"\;", nm)
+        let safe2 = replaceText(",", r"\,", safe1)
+        let safe = replaceText(r"[\r\n]", " ", safe2, regExp: true)
+        let ext = lowercase(getText(getFileDetail(item, detail: "File Extension")))
+        let nativeType = lowercase(getText(typeOf(item)))
+        let isPackage = count(matchText(r"^(swiftpm|playground|playgroundbook|xcodeproj|xcworkspace|xcassets|bundle|framework|app|rtfd)$", ext)) > 0
+        let folder = count(matchText(r"folder|directory", nativeType)) > 0 || isPackage || ext == ""
+        var category = "File"
+        if folder {
+            category = "📁 Folder — Open"
+        } else if count(matchText(r"^(swift|py|js|ts|html|css|sh|go)$", ext)) > 0 {
+            category = "💻 Code"
+        } else if count(matchText(r"^(jpg|jpeg|png|gif|heic|webp)$", ext)) > 0 {
+            category = "🖼 Image"
+        } else if ext == "pdf" {
+            category = "📕 PDF"
+        } else {
+            category = "📄 File"
+        }
+        let one = f"BEGIN:VCARD\nVERSION:3.0\nN:{safe};;;;\nFN:{safe}\nORG:{category}\nTITLE:{ordinal}\nEND:VCARD\n"
+        contactsText = f"{contactsText}{one}"
+        if ext == "" && count(matchText(r"folder|directory", nativeType)) == 0 {
+            let secondary = ordinal + 100000
+            let alt = f"BEGIN:VCARD\nVERSION:3.0\nN:↗ Share {safe};;;;\nFN:↗ Share {safe}\nORG:File without extension\nTITLE:{secondary}\nEND:VCARD\n"
+            contactsText = f"{contactsText}{alt}"
+        }
+    }
+    if total == 0 && route == "" {
+        alert("There are no files in this ZIP.")
+        stop()
+    }
+    let menuFile = setName(contactsText, name: "ZIP Navigator.vcf")
+    let contacts = getContacts(menuFile)
+    let choice = chooseFromList(contacts, prompt: location)
+    let choiceID = getNumbers(getContactDetail(choice, detail: "Job Title"))
+    if choiceID == 0 {
+        route = replaceText(r"(\.[0-9]+|^[0-9]+)$", "", route, regExp: true)
+    } else if choiceID == 900000 {
+        share(currentFolder)
+        stop()
+    } else if choiceID > 100000 {
+        let idx = choiceID - 100000
+        share(getListItem(items, index: idx))
+        stop()
+    } else {
+        let chosen = getListItem(items, index: choiceID)
+        let chosenExt = lowercase(getText(getFileDetail(chosen, detail: "File Extension")))
+        let chosenType = lowercase(getText(typeOf(chosen)))
+        let package = count(matchText(r"^(swiftpm|playground|playgroundbook|xcodeproj|xcworkspace|xcassets|bundle|framework|app|rtfd)$", chosenExt)) > 0
+        if package || chosenExt == "" || count(matchText(r"folder|directory", chosenType)) > 0 {
+            if route == "" {
+                route = f"{choiceID}"
+            } else {
+                route = f"{route}.{choiceID}"
+            }
+        } else {
+            share(chosen)
+            stop()
+        }
+    }
+}
+alert("Too many navigation steps.", title: "ZIP Navigator")
