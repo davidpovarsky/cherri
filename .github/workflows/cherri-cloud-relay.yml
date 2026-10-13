@@ -1,0 +1,81 @@
+name: Cherri Cloud Relay - No-Commit Compilation
+
+# One-time installation on the fixed relay branch. Normal requests are handled
+# by re-running the relevant matrix job after updating the fixed draft PR body.
+# No new branch or commit is needed for any subsequent Shortcut.
+on:
+  push:
+    branches:
+      - cloud-cherri-relay
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+
+jobs:
+  compile:
+    name: Cherri Cloud Relay (${{ matrix.mode }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - mode: compile
+            runner: ubuntu-latest
+          - mode: sign
+            runner: macos-latest
+          - mode: simulate
+            runner: xcode-27
+    concurrency:
+      group: cherri-cloud-relay-${{ github.repository }}-${{ matrix.mode }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout fixed relay source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Load authenticated PR request and Git blob
+        id: request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHERRI_TARGET_MODE: ${{ matrix.mode }}
+        run: python3 relay/prepare.py
+
+      - name: Configure Go only when a request is present
+        if: steps.request.outputs.ready == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: false
+
+      - name: Restore version-pinned compiler and docs cache
+        if: steps.request.outputs.ready == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/cherri-cloud-home
+          key: cherri-relay-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.request.outputs.compiler_sha }}-${{ steps.request.outputs.docs_sha }}
+
+      - name: Prepare iOS 27 simulator only when requested
+        if: steps.request.outputs.ready == 'true' && matrix.mode == 'simulate'
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+          if ! command -v xcodegen >/dev/null 2>&1; then brew install xcodegen; fi
+
+      - name: Compile with canonical Cherri Skill
+        if: steps.request.outputs.ready == 'true'
+        run: bash relay/build.sh
+
+      - name: Upload per-request Shortcut and evidence
+        if: always() && steps.request.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-relay-${{ steps.request.outputs.request_id }}-a${{ github.run_attempt }}-${{ matrix.mode }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 14
