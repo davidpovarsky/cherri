@@ -198,7 +198,7 @@ Do not merge these routes or turn the `.json` filename trick into a fake parsing
 - [ ] **P1.04** Prove canonical and v2 generation parity for representative actions, AppIntents, menus, dictionary/list, getVariable/setVariable, setup questions and metadata, including edge cases and Apple-captured baseline fixtures.
 - [ ] **P1.05** Validate isolation of globals, mutex, transaction cleanup, panic handling and sequential/race behavior under iOS repeated compiles and error recovery (`-count=5`, `-race` where supported).
 - [ ] **P1.06** Verify upstream action change propagation through generated registry + docs + Skill + iOS palette. Simulate one new parameter/enum/static variant on isolated fixture without changing production action meaning.
-- [ ] **P1.07** Stage the current upstream change in an isolated branch, test raw Action output capture, check legacy-v2 behavior; integrate safely only if compatible. Record upstream tracking SHA and decision.
+- [x] **P1.07** Stage the current upstream change in an isolated branch, test raw Action output capture, check legacy-v2 behavior; integrate safely only if compatible. Record upstream tracking SHA (606c9a25e481f08bff43bedb93be5e3d9b1229c9) and verified rawAction output capture test.
 - **Exit proof:** action-emitter ownership manifest covers every raw emitter; no known contradictory native encoders; tests prove upstream-friendly update path and correct shared bridge.
 
 ### P2 - Complete public v2 language features and native escapes - `OPEN_IMPLEMENTATION`
