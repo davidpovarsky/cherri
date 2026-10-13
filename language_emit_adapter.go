@@ -237,6 +237,11 @@ func transformIRParamValueContext(v any, inAttachmentsByRange bool) any {
 
 // CompileSourceToPlist compiles Cherri v2 source code directly to unsigned plist bytes.
 func CompileSourceToPlist(filePath string, content string) ([]byte, error) {
+	return CompileSourceToPlistWithModules(filePath, content, nil)
+}
+
+// CompileSourceToPlistWithModules compiles Cherri v2 source code with optional virtual modules.
+func CompileSourceToPlistWithModules(filePath string, content string, virtualModules map[string]string) ([]byte, error) {
 	file := source.NewFile(source.DocumentID(filePath), filePath, 1, content)
 	parser := syntax.NewParser(file)
 	prog := parser.ParseProgram()
@@ -258,6 +263,9 @@ func CompileSourceToPlist(filePath string, content string) ([]byte, error) {
 
 	lowerer := lower.NewLowererWithSession(reg, session)
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
+	if virtualModules != nil {
+		lowerer.SetVirtualModules(virtualModules)
+	}
 	if err := lowerer.LowerProgramToSession(prog); err != nil {
 		return nil, fmt.Errorf("lowering error: %w", err)
 	}

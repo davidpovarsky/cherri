@@ -2,6 +2,7 @@ package analysis
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
@@ -63,6 +64,7 @@ type Analyzer struct {
 	inValueBlk   bool
 	topLevelVars map[string]source.Span
 	yieldedTypes []types.Type
+	importStack  []string
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -79,6 +81,11 @@ func NewAnalyzer(registry *schema.Registry) *Analyzer {
 // Diagnostics returns all diagnostics produced during analysis.
 func (a *Analyzer) Diagnostics() []Diagnostic {
 	return a.diagnostics
+}
+
+// SetImportStack sets the active import chain for cycle detection.
+func (a *Analyzer) SetImportStack(stack []string) {
+	a.importStack = stack
 }
 
 func (a *Analyzer) error(code string, span source.Span, msg string) {
@@ -144,6 +151,16 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 		case *syntax.ImportDecl:
 			if strings.HasPrefix(d.Path, "http://") || strings.HasPrefix(d.Path, "https://") {
 				a.error(CodeWorkspaceAccess, d.Span, fmt.Sprintf("remote package imports not permitted: %q", d.Path))
+			}
+			cleanPath := filepath.Clean(d.Path)
+			if strings.HasPrefix(cleanPath, "..") || filepath.IsAbs(d.Path) {
+				a.error(CodeWorkspaceAccess, d.Span, fmt.Sprintf("path traversal outside workspace not permitted: %q", d.Path))
+			}
+			for _, p := range a.importStack {
+				if p == d.Path || p == cleanPath {
+					a.error(CodeImportCycle, d.Span, fmt.Sprintf("import cycle detected: %s -> %s", strings.Join(a.importStack, " -> "), d.Path))
+					break
+				}
 			}
 			if !scope.Define(&Symbol{Name: d.Alias, Type: types.Unknown, Initialized: true, Span: d.Span}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate import alias %q", d.Alias))

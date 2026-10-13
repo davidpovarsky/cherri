@@ -140,13 +140,13 @@ The 2026-10-13 final iOS artifact includes two distinct exact-tap markers, succe
 
 ### 4.1 Confirmed missing/rejected production behaviors - priority P0
 
-| Key | Evidence | Required resolution |
-|---|---|---|
-| `GAP-NATIVE-PLIST` | `internal/language/lower/lower.go` explicitly errors: `native.plist is unsupported` | Define safe typed/opaque plist representation per original contract, implement end-to-end, and show lossless round-trip + negative tests. |
-| `GAP-NATIVE-REF` | Same lowering file explicitly errors: `native.ref is unsupported` | Implement exact native reference representation and deterministic serialization without stringifying/losing aggrandizements. |
-| `GAP-NATIVE-WORKFLOW` | Same file explicitly errors: `native.workflow is unsupported` | Implement a lossless full-workflow escape/import path, preserve unknown nested/top-level keys, and document correct limits. |
-| `GAP-MODULE-LOWERING` | `LowerProgramToSession` currently returns `unsupported import ... modular imports are not supported in Cherri v2` for `ImportDecl` | Reconcile formal modular-import requirements with real production compile path; implement safe local modules or explicitly prove a separate supported path. Do not treat successful parsing/analyzing as successful compiling. |
-| `GAP-DISCARDED-NATIVE-ERRORS` | `lowerCall` in `lower.go` for `native.action` contains `val, _ := l.lowerExpression(...)` | Propagate evaluation errors; reject invalid/missing Apple IDs or malformed params; add negative tests for silent partial emission. |
+| Key | Evidence | Required resolution | Status |
+|---|---|---|---|
+| `GAP-NATIVE-PLIST` | `internal/language/lower/lower.go` explicitly errors: `native.plist is unsupported` | Define safe typed/opaque plist representation per original contract, implement end-to-end, and show lossless round-trip + negative tests. | **RESOLVED** (`ir.RawPlistValue`, end-to-end lower/backend adapter unwrap, `TestNATIVE_PlistPassThrough` PASS) |
+| `GAP-NATIVE-REF` | Same lowering file explicitly errors: `native.ref is unsupported` | Implement exact native reference representation and deterministic serialization without stringifying/losing aggrandizements. | **RESOLVED** (typed reference constructor, ActionOutput/Variable/ExtensionInput, chained aggrandizements, `TestNATIVE_RefAggrandizements` PASS) |
+| `GAP-NATIVE-WORKFLOW` | Same file explicitly errors: `native.workflow is unsupported` | Implement a lossless full-workflow escape/import path, preserve unknown nested/top-level keys, and document correct limits. | **RESOLVED** (full-workflow import & metadata merge in backend adapter, `TestNATIVE_WorkflowPreservation` PASS) |
+| `GAP-MODULE-LOWERING` | `LowerProgramToSession` currently returns `unsupported import ... modular imports are not supported in Cherri v2` for `ImportDecl` | Reconcile formal modular-import requirements with real production compile path; implement safe local modules or explicitly prove a separate supported path. Do not treat successful parsing/analyzing as successful compiling. | **RESOLVED** (module resolver, local/virtual/disk modules, topological loading, cycle detection, path traversal security, runtime init rejection, `TestMODULES_*` PASS) |
+| `GAP-DISCARDED-NATIVE-ERRORS` | `lowerCall` in `lower.go` for `native.action` contains `val, _ := l.lowerExpression(...)` | Propagate evaluation errors; reject invalid/missing Apple IDs or malformed params; add negative tests for silent partial emission. | **RESOLVED** (all lowerExpression errors propagated, empty identifier fails closed, dict param validated, `TestNATIVE_EmptyIdentifierFails`, `TestNATIVE_InvalidExpressionInParametersFails` PASS) |
 
 ### 4.2 High-priority checks (do not call bugs without reproduction)
 
@@ -203,12 +203,12 @@ Do not merge these routes or turn the `.json` filename trick into a fake parsing
 
 ### P2 - Complete public v2 language features and native escapes - `OPEN_IMPLEMENTATION`
 
-- [ ] **P2.01** Implement `native.plist` in syntax/analysis/types/lowering/serialization/import, with opaque value kinds where needed, strict type/size/recursion validation, XML/binary/JSON preservation, no unrequested signing.
-- [ ] **P2.02** Implement `native.ref`: typed native variable/action output and chained aggrandizements, output UUID identity, error on undefined/invalid references; preserve round-trip graph.
-- [ ] **P2.03** Implement `native.workflow`: full-workflow native escape/import with lossless unknown fields, correct metadata/actions ordering, explicit boundaries for writable vs opaque data. Do not reconstruct an arbitrary native tree through text substitutions.
-- [ ] **P2.04** Implement and test safe **local** modular `import` compilation; current `LowerProgramToSession` explicitly rejects `ImportDecl`. Support aliases/relative paths, cycles, duplicate import handling, namespace resolution, per-module initialization order, no path escapes/symlink traversal, no arbitrary remote fetch.
+- [x] **P2.01** Implement `native.plist` in syntax/analysis/types/lowering/serialization/import, with opaque value kinds where needed, strict type/size/recursion validation, XML/binary/JSON preservation, no unrequested signing.
+- [x] **P2.02** Implement `native.ref`: typed native variable/action output and chained aggrandizements, output UUID identity, error on undefined/invalid references; preserve round-trip graph.
+- [x] **P2.03** Implement `native.workflow`: full-workflow native escape/import with lossless unknown fields, correct metadata/actions ordering, explicit boundaries for writable vs opaque data. Do not reconstruct an arbitrary native tree through text substitutions.
+- [x] **P2.04** Implement and test safe **local** modular `import` compilation; current `LowerProgramToSession` explicitly rejects `ImportDecl`. Support aliases/relative paths, cycles, duplicate import handling, namespace resolution, per-module initialization order, no path escapes/symlink traversal, no arbitrary remote fetch.
 - [ ] **P2.05** Complete custom `action`, `enum`, `type` declaration semantics: verify registered declarations lead to correct typed, validated execution, rather than merely parsed-and-stored declarations. Preserve canonical definition extensibility; do not duplicate built-in catalog.
-- [ ] **P2.06** Fix ignored `lowerExpression` errors in `native.action`. Validate required native identifier, parameter shapes and correct native dictionary/reference typing.
+- [x] **P2.06** Fix ignored `lowerExpression` errors in `native.action`. Validate required native identifier, parameter shapes and correct native dictionary/reference typing.
 - [ ] **P2.07** Complete any other contractually promised feature found by *executable* coverage review (not speculative feature creep). Cover default/presence types, `yield`, nested/recursive functions, zero-based indexing, literal braces, metadata/trigger source preservation, explicit returns.
 - [ ] **P2.08** Make all user-facing docs and completions reflect **actual** support; ensure unsupported syntax is either implemented or documented accurately, not silently emulated.
 - **Exit proof:** every public advertised feature has positive/negative analysis, compilation and native structure tests; native escape trio has differential round-trips; imports work end-to-end; no accepted declaration silently no-ops.

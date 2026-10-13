@@ -2,6 +2,7 @@ package syntax
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/source"
@@ -190,23 +191,35 @@ func (p *Parser) parseDeclaration() Declaration {
 
 func (p *Parser) parseImportDecl() *ImportDecl {
 	startTok := p.advance() // import
-	pathTok, ok := p.expect(TokenString)
-	if !ok {
+	var pathTok Token
+	if p.curr.Type == TokenString || p.curr.Type == TokenIdent {
+		pathTok = p.advance()
+	} else {
+		p.errorAt(p.curr.Span, "expected string or identifier for import path")
 		return nil
 	}
-	if _, ok := p.expect(TokenAs); !ok {
-		return nil
-	}
-	aliasTok, ok := p.expect(TokenIdent)
-	if !ok {
-		return nil
+
+	alias := ""
+	endSpan := pathTok.Span
+	if p.curr.Type == TokenAs {
+		p.advance()
+		aliasTok, ok := p.expect(TokenIdent)
+		if !ok {
+			return nil
+		}
+		alias = aliasTok.Text
+		endSpan = aliasTok.Span
+	} else {
+		base := filepath.Base(pathTok.Text)
+		base = strings.TrimSuffix(base, ".cherri")
+		alias = base
 	}
 	p.match(TokenSemicolon)
 
 	return &ImportDecl{
-		Span:  startTok.Span.Merge(aliasTok.Span),
+		Span:  startTok.Span.Merge(endSpan),
 		Path:  pathTok.Text,
-		Alias: aliasTok.Text,
+		Alias: alias,
 	}
 }
 

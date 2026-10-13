@@ -4,12 +4,15 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math"
+	"os"
+	"path/filepath"
 	"strings"
 	"unicode/utf16"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"howett.net/plist"
 )
@@ -50,6 +53,10 @@ type Lowerer struct {
 	enums              map[string]*syntax.EnumDecl
 	types              map[string]*syntax.TypeDecl
 	actions            map[string]*syntax.ActionDecl
+	importStack        []string
+	modules            map[string]string
+	virtualModules     map[string]string
+	importedFunctions  []*syntax.FunctionDecl
 	WorkflowName       string
 	uuidCounter        int
 	repeatDepth        int
@@ -71,6 +78,26 @@ func NewLowerer(registry *schema.Registry) *Lowerer {
 		enums:          make(map[string]*syntax.EnumDecl),
 		types:          make(map[string]*syntax.TypeDecl),
 		actions:        make(map[string]*syntax.ActionDecl),
+		modules:        make(map[string]string),
+		virtualModules: make(map[string]string),
+	}
+}
+
+// SetVirtualModule configures an in-memory virtual module for testing or embedded compilation.
+func (l *Lowerer) SetVirtualModule(path, content string) {
+	if l.virtualModules == nil {
+		l.virtualModules = make(map[string]string)
+	}
+	l.virtualModules[path] = content
+}
+
+// SetVirtualModules sets multiple virtual modules.
+func (l *Lowerer) SetVirtualModules(vm map[string]string) {
+	if l.virtualModules == nil {
+		l.virtualModules = make(map[string]string)
+	}
+	for k, v := range vm {
+		l.virtualModules[k] = v
 	}
 }
 
@@ -273,7 +300,9 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 			}
 			l.types[d.Name] = d
 		case *syntax.ImportDecl:
-			return fmt.Errorf("unsupported import %q: modular imports are not supported in Cherri v2", d.Path)
+			if err := l.lowerImport(d); err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("unhandled declaration %T: declarations must not be silently dropped", decl)
 		}
@@ -307,6 +336,115 @@ func (l *Lowerer) LowerProgram(prog *syntax.Program) (*ir.NativeWorkflow, error)
 		return nil, err
 	}
 	return l.workflow, nil
+}
+
+func (l *Lowerer) lowerImport(d *syntax.ImportDecl) error {
+	if strings.HasPrefix(d.Path, "http://") || strings.HasPrefix(d.Path, "https://") {
+		return fmt.Errorf("remote package imports not permitted: %q", d.Path)
+	}
+	cleanPath := filepath.Clean(d.Path)
+	if strings.HasPrefix(cleanPath, "..") || filepath.IsAbs(d.Path) {
+		return fmt.Errorf("path traversal outside workspace not permitted: %q", d.Path)
+	}
+
+	for _, p := range l.importStack {
+		if p == d.Path || p == cleanPath {
+			return fmt.Errorf("import cycle detected: %s -> %s", strings.Join(l.importStack, " -> "), d.Path)
+		}
+	}
+
+	// 1. Check if built-in module from registry
+	isBuiltin := false
+	if l.registry != nil {
+		for _, act := range l.registry.AllActions() {
+			if act.Module != "" && (act.Module == d.Path || act.Module == cleanPath) {
+				isBuiltin = true
+				break
+			}
+		}
+	}
+	if isBuiltin {
+		if l.modules == nil {
+			l.modules = make(map[string]string)
+		}
+		l.modules[d.Alias] = d.Path
+		return nil
+	}
+
+	// 2. Resolve local module content
+	var content string
+	if vmContent, ok := l.virtualModules[d.Path]; ok {
+		content = vmContent
+	} else if vmContent, ok := l.virtualModules[cleanPath]; ok {
+		content = vmContent
+	} else {
+		filePath := cleanPath
+		if _, err := os.Stat(filePath); os.IsNotExist(err) {
+			if _, err2 := os.Stat(filePath + ".cherri"); err2 == nil {
+				filePath = filePath + ".cherri"
+			} else {
+				return fmt.Errorf("cannot resolve module %q: file not found", d.Path)
+			}
+		}
+		data, err := os.ReadFile(filePath)
+		if err != nil {
+			return fmt.Errorf("cannot read module %q: %w", d.Path, err)
+		}
+		content = string(data)
+	}
+
+	// 3. Parse module
+	srcFile := source.NewFile(source.DocumentID(d.Path), d.Path, 1, content)
+	parser := syntax.NewParser(srcFile)
+	modProg := parser.ParseProgram()
+	if len(parser.Errors()) > 0 {
+		return fmt.Errorf("syntax error in imported module %q: %v", d.Path, parser.Errors()[0])
+	}
+
+	// 4. Check top-level statements (IM02)
+	if len(modProg.Statements) > 0 {
+		return fmt.Errorf("module top-level runtime initialization rejected: imported module %q contains top-level executable statements", d.Path)
+	}
+
+	// 5. Register declarations
+	l.importStack = append(l.importStack, d.Path)
+	defer func() {
+		if len(l.importStack) > 0 {
+			l.importStack = l.importStack[:len(l.importStack)-1]
+		}
+	}()
+
+	for _, decl := range modProg.Declarations {
+		switch m := decl.(type) {
+		case *syntax.FunctionDecl:
+			if d.Alias != "" {
+				l.functions[d.Alias+"."+m.Name] = m
+			}
+			l.functions[m.Name] = m
+			l.importedFunctions = append(l.importedFunctions, m)
+		case *syntax.EnumDecl:
+			if d.Alias != "" {
+				l.enums[d.Alias+"."+m.Name] = m
+			}
+			l.enums[m.Name] = m
+		case *syntax.TypeDecl:
+			if d.Alias != "" {
+				l.types[d.Alias+"."+m.Name] = m
+			}
+			l.types[m.Name] = m
+		case *syntax.ActionDecl:
+			if d.Alias != "" {
+				l.actions[d.Alias+"."+m.Name] = m
+			}
+			l.actions[m.Name] = m
+		case *syntax.ImportDecl:
+			if err := l.lowerImport(m); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
@@ -744,11 +882,24 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 		},
 	})
 
+	allFuncs := make([]*syntax.FunctionDecl, 0, len(l.functions))
+	seenFuncs := make(map[string]bool)
 	for _, decl := range prog.Declarations {
-		fn, ok := decl.(*syntax.FunctionDecl)
-		if !ok {
-			continue
+		if fn, ok := decl.(*syntax.FunctionDecl); ok {
+			if !seenFuncs[fn.Name] {
+				allFuncs = append(allFuncs, fn)
+				seenFuncs[fn.Name] = true
+			}
 		}
+	}
+	for _, fn := range l.importedFunctions {
+		if !seenFuncs[fn.Name] {
+			allFuncs = append(allFuncs, fn)
+			seenFuncs[fn.Name] = true
+		}
+	}
+
+	for _, fn := range allFuncs {
 		fnGroupUUID := l.GenerateUUID()
 		l.emitIfStart(fnGroupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnNameUUID}, 4, fn.Name, true)
 
@@ -2613,6 +2764,15 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	case *syntax.MemberExpr:
 		if targetIdent, ok := c.Target.(*syntax.IdentExpr); ok && targetIdent.Name == "native" {
 			actionName = "native." + c.Property
+		} else if targetIdent, ok := c.Target.(*syntax.IdentExpr); ok {
+			fullName := targetIdent.Name + "." + c.Property
+			if _, ok := l.functions[fullName]; ok {
+				actionName = fullName
+			} else if _, ok := l.functions[c.Property]; ok {
+				actionName = c.Property
+			} else {
+				actionName = c.Property
+			}
 		} else {
 			actionName = c.Property
 		}
@@ -2962,7 +3122,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		dispatchDict := map[string]interface{}{
 			"_cherri_magic":        "__cherri_fn_envelope_v2__",
 			"cherri_functions":     "1",
-			"function":             actionName,
+			"function":             fn.Name,
 			"_cherri_caller_input": &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"},
 		}
 		for i, param := range fn.Parameters {
