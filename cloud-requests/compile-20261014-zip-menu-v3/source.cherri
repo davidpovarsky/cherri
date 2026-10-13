@@ -1,0 +1,79 @@
+// Cherri Language v2 — Share selected ZIP contents, no explicit save actions.
+shortcut "ZIP • Share Extracted" {
+    from: sharesheet
+    inputs: file
+}
+
+let icon_swift = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAAB1ElEQVR42u2cURKDIAxE7U7/e5xepsfzMj1OT2A/nHEcsRQhGyCEb5R9JosEWm/LskwjtXt618/r2SzGY34n9rz9jXDLnBnkMeC+UBOxYY82Lv4kwl2j/g01DNOe4mAarMFweE+hYJs2RBs1pQ2H9wA49qQ1CrD5fN5ntae0AzuwAzuwAzuwA/cNnL5pqnMfLvCq8jG/S+Rul4sz36n5s8qNrNX3PGs3RlSJEQ7lXq1Mwv6yjwANWpd6Z1A1xcMb5nPkKilm4muppMzmlehoxLpqZkbL1mWMBX3rpvdnmBm1rJuoW9zMaM26bDOjC+sKjo6K1i20SR4zlK0bX3IomBnNWpdk5r43ADIedN/AShFmV3BUK0H/YWfMWPWrJWoFR30LQnPCaKH2hOyojCDLvgWhk37ZURJ/gmCkVkTlJQDGAhYV7VRlLJB0lKciaQFLXGkVnjyQVHGrpYPuxCUHtfZEUwZTuDPYyq4mJ7v25B6mHbSmSGcfqbF2LT+vZ+HJw3af1oEFVTImBf/JgwM7sAM7sAM7cF3guueAam3F9JQeBNh8Vm+AA6e04SDv0RDfbTBG67O0uSCHOD+/49H7PzB/RQ5XL+iadvJP0/RKLvnxIWPtC9yhBBqeidc2AAAAAElFTkSuQmCC"
+let icon_code = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAAB7ElEQVR42u2cXRLCIAyE2x0P5Q08hafzFN7AW+FDZzqd0lIK+YGQPipovm4WEnQ6hxCmka5H/tDn+9ssxu/zyhw5XyrcMmcBeQq4L9RMbNijTQd/oHDXqJdSwzDtIQ6mwS4YlvcQCrZpY7RRU9qwvDvAsRetUYDN5/M2qz2lHdiBHdiBHdiBHbhv4PxD0/TgW5+jBrxE+fu88sONB6+vkDM/WPNnCTdRq295OPRkVzgO+m5nEo+nvRHQsm4mLTkzWGnT8p5hHM6iYmbclmrabL4WHY1YN57CZGZoWVdyFiVwgXUrE7uSGY1Y92wWuZmhYt1bKtGaGcLWVd/z0YJ1LycSmhny1i0LlMrMkLQu+T0tuHf6BwDCBZk0MO1SJ6QwdwfHaiXoSse91JEBl+0TxUET7oKQXDBaWOpA+62VNaPALgiBpUW3HyQGZj2O4eg9oWUnyVn0KX1p5gLNmQpYxkqrJrH5KhnebunWQSyrdVkU5jtGJ9zziVO6vszm7j15f0zbxrqSpAGWdzvw8C7i5/sbH6zna7UOJi9g5xDCIH89XBLH//LgwA7swA7swA6sC6z7O6Bk1eEpPQ6w+axeAQdOacMib9FQczrRHa2v0uZEjnFOn+PR+zHImXK4O6Fr2skfTdMrOeXDh4xdf3BwGFqw+zMHAAAAAElFTkSuQmCC"
+let icon_image = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABuklEQVR42u2c3Q3CMAyE4dSdmIRNGKObMAlTlQekqmpDSInt+K8PSKDS5OPOjh2g12VZLpGOqf3U+f5Si/F43hrPvP5UWDPnH+Q1YFuojdjwR1uffEFh06g/pYZj2iIOLsEOOJa3CAXftEe0qJZ2LO8OMHbSigLs3s9bV4dTeOp8f3tfJlMq88bwENrOcWGOtnN0WKTtmUMmLfEsIuysrLQSOGOYPT5ZM8KkCnX7lAk7Y1hN/cBU26TCCTyq18uk5WhZ+ogZaB2W7EAyaSVwArPXW6z7R9BDe3z0b2mBvUHIAFRI/DQPqzkrLpXf7oUqx+5qD46PA8JslWxcrLTImSGvZNHhKy13gQkB2vn+OuVVVmOzx3CLdJLfyINV3h1JEazlRUKRIRa6Z8VkYgZr6FZIto8e1uE6SSMth8gQCN1sD8mcogKYfIq0F4RyWtWW5qMlvHLuaWk1M9X1yTbiNfxyKy1NB6whG/83B6gNWqbRMWTUgQlsGjh2Ji0pYCsrCsnCmctSEGD3rl4BA1vaschbNFhsAHq6mvBZ2pnIR5yv9/Gw/g/Mb8rBekN/dvJ5axqb5JQ3H3J2vAEFTOXpMkBncwAAAABJRU5ErkJggg=="
+let icon_pdf = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABVElEQVR42u3cyxGDMAxFUeOhIErIJlWzoYR05OwyTADjYJlI8mUbfifPH5kZGFJKoadtLN/19XiqZUzLXLjncJqwZucFeQ5si1rIjv60+ZvfSdg09TTq6Fi7y4mhsy06jncXFX1rt7Rem7TjeL+A3SU8yp6uvKbdJpA5VrABDiklkdNdpq5J+ZPU3+e0zFFnT7tpHv5XvIVmkatoHLSa5qx0lG5n1jstNTKrnodbmLUXHuJmA5WWrNlGaSloNlNLS5ktLR5EzKMSTGEVVW/u+5kWYMCAAQMGDBgwYMCANayWKlc2gs+6adKA6cOKOiEJAwbMPEyTBkwfZh6mSQMGDBgwYMCAATcB3/PKhMhVWDzU/f2NFgzC7zyEDl7j+YTBoNUJWOdiXbw9992kHYe8psWjH1xqGaXdhbzlHH7Hw3opcpRc/PUA09rAp2msyiU/PuRsewOtIojbI+qCwwAAAABJRU5ErkJggg=="
+let icon_document = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAABLElEQVR42u2cQRKCMAxFIcNhPJ5bT+DW43mbutAFIwU6EmKTvK4Z0zf/E34Y6VhKGTKtqf3Sy+PWLcbzem+8ctxVuGfOH8i3gH2hNmJLPNrtzVcUdo26K7UEpq3iyJBsSWB5q1ASm3aJltXSgeX9AszdtLIAh/fz3NXpFJ60fqh9QDsjIVvfwwa0WlXEC61WLXFEq1KR5zDAAAMMMMAAA+xveFBP+SclOSyNpV1MFCgMMMAA06UJHlia4IHCAAMMMMAEDxQGmOCBpQEGGGCCR59dHUtjaYIHlgY4MrD9n8sPVpS/78C4lnSyD7Mqn48tM3z28H5Y0rSSAPecjXTDX2JLBxZ5jiZeQr/WJJO+SwcTeYmzeo6H9yiyppx4HOKPvIHgaBqf5JqHDwVbL+eXfC/CA2isAAAAAElFTkSuQmCC"
+let icon_video = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABd0lEQVR42u3cyxHCMAwE0KBxXfRCB5RCB/RCY+HGMORnm1haSesrEPxmFdsxIZd5nqdMrdS/9XF9wjLur1vlOy+HCSM7O+R7YF/USrbE0+53fiVh19TDqCWwdpUjU7ImgeNdRUls7ZKWtaQDx/sDzD1oZQGHr+fvqmZJE0wwwQQTDNRKx2fqd8xMrnhPThhK29Efca3t6JV417b2TQJom3pYdIYKkBOY8zDBhrXnPuH764bA1i5pc7PBOWwbtdmgZcU2HqX1zfbTknLUKPOwGhtr4aHARlxpDTWDLi3HRV0wweOuxiSVFi5hhcvskoeKAlbePJFUWsuErXbFSh6qTUmbb3eWPFTVhHHum+E2bfTWeQ7j/9T0b8L4N69V9lBOPyL4MkYGHRd2bpehRwec8IrCd3BaIphgggkmuAHsd2Hcsf5nSScBh6/qDzBxSQcO+ZsmWy+E1HKUDhfykrP5HA/v/8DcSk5aP+BaO/HRNF7lZz58KFh7A02Bnp5YliZEAAAAAElFTkSuQmCC"
+let icon_audio = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABaklEQVR42u3c4Q2DIBAFYCXs0A1dwRm6Qjd0CvvDpDEKSBWOu8fjb23SLw/x0Kvjuq5DT8PnH/p6f9QylnnKPHK8TFiz84Y8BbZFzWQ7PG36xwcSNk29jNoBa4McN3Q2HHC8QZTD1p5pvU5p4HgPwL4XrV7A8PN5P6s5pQk2uu8tcAPALlI7OC3cPr290HrIGFWDxaiWFq2ClYKHF2oH1y77WHgQDDZYaaEXId6c9uEyznOYlRYrLVZaLDwIJphgggkmmGCCCSaYYIIJfjaEn6RVuQFwMMQ29PLU8uCg4fz8OkaVaSbyMpMzJ89lngTMXsmpKNYr1v4mnnBbnG8Vb6v2Pw8faePrcPO+TlZaNUPT0LbLhKuFrKQru1jCaY+eHvSSl6VNlbl5QADrFAamdKudWpO9N1fpTsDws/oH7HhKA4e8p7nnO1tDWq7ScCGfOdH3eFj/B2YsOffvF0xrB76axqq85MuHwMYXQ0mWz0OHlOAAAAAASUVORK5CYII="
+let icon_archive = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABQUlEQVR42u3cyw3CMAyA4dbqJtzZjinYjjuzlAMSqkjfTp3Y+XOlVfrFVuJGJf04jl1Lbdh/6et5q5Zxf7x3XtlvRrhm5wn5GtgXdSdb4mnXH34mwq6pm6GWwNpZjnSNNQkc3lmUxNamtFZTOnB4/4BtT1qtgMPn8zSrSWnAgAG7aoN9l9NXNvsFggir37ANbtfkhRTUFulX3GmVvWeYtI4mmHLSUg406zBgwIABB6+lNeuE/WJ+PsJlN4ZO906ldfFgpw+qKdSYtAADBgyYSivzOmG8nlNpUWllH2z2tJilAQMGDLjSSos9rYorrYJmTb+Dfd988gAYMGDAgC+stHxVLKQ04IDgsvuPZu3LJKUbAYfP6h+w4ZQOHOQpTZZ+CKlllg4X5JSzeI6H939gLkVOjt7gWttxNI1Xec7Dh4K1D0DAkheisSu8AAAAAElFTkSuQmCC"
+let icon_folder = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAABLklEQVR42u3cWw6CMBCFYZiwF+OeXJ57Mq4GH0wM4ToFpHP5+yol/ZzjNGDStu/7JtPo9Je+njezjPvjrbyy3aywZecO+RrYF1XJlnja9cXPVNg1dbPUElg7y5Em2ZDA5Z1FSWztlJY10oHLOwLmblpZwOHzPEw1kQYMGLCr0e2Yo3+fYvAxW67UHp9+NfiU5dY1S5WFVjTTpQGzLZn7GRdtdREqXPTdBYm03izXJ7CumS4NGHCOfTjMiz4q7HZbUsaQpgUYMGDAgAEDBgwYMGDAgAEDBpwGbP+tpXKFcvodLWuLI23TXLSq7q93p2kBBgwY8HGwiz/Kjo8vk0gnAYdP9Q+YONKBizykydIHIbV06XBFnnIWz/Hw/hi4VDkpneBa23A0jVf5mYcPBRsfLNB1SULUvsMAAAAASUVORK5CYII="
+let icon_file = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABQUlEQVR42u3cWw7CIBCFYTrpWl1B4yIaV9DN4oOJMfaGdiAzw8+rvfDlEJgmwpBzTj21sfzS2/1hlrHMU+GVw2nClp1/yI/AvqiFbImnPe78RsKuqadRS2DtJkdSZ00Cx7uJktjaNa3XIR043i9g35NWD23IOWuN5/IKfm/UHTxBpZPLPKklfFF7qlJ5vtqQ1upNA7OY0jYwG5206i2TdmfpSmbTy1INs/V1WN3soPDQNfuotBTNbkpLLbOnWlrF7Ozj4bp5tIMprKIumvkeBgwYMGDAgAEDBgwYMGDAgAEDBgwYMGDAgAED7gLccoPI9XeJkX40e4uk+v/eN6J9MUdrCTBp1QGr71uw1t7AjpelwCF/0mTvh5BaKq1wIa85u+d4eN9RvJec/HqDa23iaBqvcs3Dh4K1J39ngftPWNkIAAAAAElFTkSuQmCC"
+
+// The built-in Extract Archive returns temporary content items / folders.
+let items = extractArchive(ShortcutInput)
+let total = count(items)
+if total == 0 {
+    alert("This archive contains no files.", title: "Empty ZIP")
+} else if total == 1 {
+    // Direct share; no picker when the archive contains one top-level item.
+    share(items)
+} else {
+    var allVcards = ""
+    var itemIndex = 0
+    for file in items {
+        itemIndex += 1
+        let fileName = getText(getName(file))
+        let safeName1 = replaceText(";", r"\;", fileName)
+        let safeName2 = replaceText(",", r"\,", safeName1)
+        let safeName = replaceText(r"[\r\n]", " ", safeName2, regExp: true)
+        let ext = lowercase(getText(getFileDetail(file, detail: "File Extension")))
+        let itemType = getText(typeOf(file))
+        var kind = "File"
+        var iconB64 = icon_file
+        if count(matchText(r"^(swift|swiftpm|playground|playgroundbook)$", ext)) > 0 {
+            kind = "Swift / Playground"
+            iconB64 = icon_swift
+        } else if count(matchText(r"(?i)^(folder|directory)$", itemType)) > 0 {
+            kind = "Folder"
+            iconB64 = icon_folder
+        } else if count(matchText(r"^(png|jpg|jpeg|heic|gif|webp|svg)$", ext)) > 0 {
+            kind = "Image"
+            iconB64 = icon_image
+        } else if ext == "pdf" {
+            kind = "PDF"
+            iconB64 = icon_pdf
+        } else if count(matchText(r"^(txt|md|rtf|docx|json|csv|yaml|yml|xml)$", ext)) > 0 {
+            kind = "Document / Data"
+            iconB64 = icon_document
+        } else if count(matchText(r"^(py|js|ts|jsx|tsx|html|css|sh|go)$", ext)) > 0 {
+            kind = "Source code"
+            iconB64 = icon_code
+        } else if count(matchText(r"^(mp4|mov|m4v|avi|mkv)$", ext)) > 0 {
+            kind = "Video"
+            iconB64 = icon_video
+        } else if count(matchText(r"^(mp3|m4a|wav|aac|flac)$", ext)) > 0 {
+            kind = "Audio"
+            iconB64 = icon_audio
+        } else if count(matchText(r"^(zip|7z|rar|tar|gz)$", ext)) > 0 {
+            kind = "Archive"
+            iconB64 = icon_archive
+        }
+        // Store the original 1-based index in the hidden vCard job title field.
+        // No filename lookup is needed: duplicate filenames stay unambiguous.
+        let oneCard = f"BEGIN:VCARD\nVERSION:3.0\nN;CHARSET=UTF-8:{safeName};;;;\nFN;CHARSET=UTF-8:{safeName}\nORG;CHARSET=UTF-8:{kind}\nTITLE:{itemIndex}\nPHOTO;BASE64:{iconB64}\nEND:VCARD\n"
+        allVcards = f"{allVcards}{oneCard}"
+    }
+    // A synthetic temporary .vcf content item, not a saved Contact.
+    let menuFile = setName(allVcards, name: "ZIP Menu.vcf")
+    let options = getContacts(menuFile)
+    let selection = chooseFromList(options, prompt: "Which extracted item should I share?")
+    let itemNumber = getNumbers(getContactDetail(selection, detail: "Job Title"))
+    let chosenFile = getListItem(items, index: itemNumber)
+    share(chosenFile)
+}
