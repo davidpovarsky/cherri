@@ -1,0 +1,130 @@
+// ZIP Navigator v2 — temporary extraction and nested directory selection.
+// Folder/package selections open the next level. Explicit folder share is available.
+shortcut "ZIP • Browse & Share" {
+    from: sharesheet
+    inputs: file
+}
+
+let icon_swift = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAAB1ElEQVR42u2cURKDIAxE7U7/e5xepsfzMj1OT2A/nHEcsRQhGyCEb5R9JosEWm/LskwjtXt618/r2SzGY34n9rz9jXDLnBnkMeC+UBOxYY82Lv4kwl2j/g01DNOe4mAarMFweE+hYJs2RBs1pQ2H9wA49qQ1CrD5fN5ntae0AzuwAzuwAzuwA/cNnL5pqnMfLvCq8jG/S+Rul4sz36n5s8qNrNX3PGs3RlSJEQ7lXq1Mwv6yjwANWpd6Z1A1xcMb5nPkKilm4muppMzmlehoxLpqZkbL1mWMBX3rpvdnmBm1rJuoW9zMaM26bDOjC+sKjo6K1i20SR4zlK0bX3IomBnNWpdk5r43ADIedN/AShFmV3BUK0H/YWfMWPWrJWoFR30LQnPCaKH2hOyojCDLvgWhk37ZURJ/gmCkVkTlJQDGAhYV7VRlLJB0lKciaQFLXGkVnjyQVHGrpYPuxCUHtfZEUwZTuDPYyq4mJ7v25B6mHbSmSGcfqbF2LT+vZ+HJw3af1oEFVTImBf/JgwM7sAM7sAM7cF3guueAam3F9JQeBNh8Vm+AA6e04SDv0RDfbTBG67O0uSCHOD+/49H7PzB/RQ5XL+iadvJP0/RKLvnxIWPtC9yhBBqeidc2AAAAAElFTkSuQmCC"
+let icon_code = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAAB7ElEQVR42u2cXRLCIAyE2x0P5Q08hafzFN7AW+FDZzqd0lIK+YGQPipovm4WEnQ6hxCmka5H/tDn+9ssxu/zyhw5XyrcMmcBeQq4L9RMbNijTQd/oHDXqJdSwzDtIQ6mwS4YlvcQCrZpY7RRU9qwvDvAsRetUYDN5/M2qz2lHdiBHdiBHdiBHbhv4PxD0/TgW5+jBrxE+fu88sONB6+vkDM/WPNnCTdRq295OPRkVzgO+m5nEo+nvRHQsm4mLTkzWGnT8p5hHM6iYmbclmrabL4WHY1YN57CZGZoWVdyFiVwgXUrE7uSGY1Y92wWuZmhYt1bKtGaGcLWVd/z0YJ1LycSmhny1i0LlMrMkLQu+T0tuHf6BwDCBZk0MO1SJ6QwdwfHaiXoSse91JEBl+0TxUET7oKQXDBaWOpA+62VNaPALgiBpUW3HyQGZj2O4eg9oWUnyVn0KX1p5gLNmQpYxkqrJrH5KhnebunWQSyrdVkU5jtGJ9zziVO6vszm7j15f0zbxrqSpAGWdzvw8C7i5/sbH6zna7UOJi9g5xDCIH89XBLH//LgwA7swA7swA6sC6z7O6Bk1eEpPQ6w+axeAQdOacMib9FQczrRHa2v0uZEjnFOn+PR+zHImXK4O6Fr2skfTdMrOeXDh4xdf3BwGFqw+zMHAAAAAElFTkSuQmCC"
+let icon_image = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABuklEQVR42u2c3Q3CMAyE4dSdmIRNGKObMAlTlQekqmpDSInt+K8PSKDS5OPOjh2g12VZLpGOqf3U+f5Si/F43hrPvP5UWDPnH+Q1YFuojdjwR1uffEFh06g/pYZj2iIOLsEOOJa3CAXftEe0qJZ2LO8OMHbSigLs3s9bV4dTeOp8f3tfJlMq88bwENrOcWGOtnN0WKTtmUMmLfEsIuysrLQSOGOYPT5ZM8KkCnX7lAk7Y1hN/cBU26TCCTyq18uk5WhZ+ogZaB2W7EAyaSVwArPXW6z7R9BDe3z0b2mBvUHIAFRI/DQPqzkrLpXf7oUqx+5qD46PA8JslWxcrLTImSGvZNHhKy13gQkB2vn+OuVVVmOzx3CLdJLfyINV3h1JEazlRUKRIRa6Z8VkYgZr6FZIto8e1uE6SSMth8gQCN1sD8mcogKYfIq0F4RyWtWW5qMlvHLuaWk1M9X1yTbiNfxyKy1NB6whG/83B6gNWqbRMWTUgQlsGjh2Ji0pYCsrCsnCmctSEGD3rl4BA1vaschbNFhsAHq6mvBZ2pnIR5yv9/Gw/g/Mb8rBekN/dvJ5axqb5JQ3H3J2vAEFTOXpMkBncwAAAABJRU5ErkJggg=="
+let icon_pdf = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABVElEQVR42u3cyxGDMAxFUeOhIErIJlWzoYR05OwyTADjYJlI8mUbfifPH5kZGFJKoadtLN/19XiqZUzLXLjncJqwZucFeQ5si1rIjv60+ZvfSdg09TTq6Fi7y4mhsy06jncXFX1rt7Rem7TjeL+A3SU8yp6uvKbdJpA5VrABDiklkdNdpq5J+ZPU3+e0zFFnT7tpHv5XvIVmkatoHLSa5qx0lG5n1jstNTKrnodbmLUXHuJmA5WWrNlGaSloNlNLS5ktLR5EzKMSTGEVVW/u+5kWYMCAAQMGDBgwYMCANayWKlc2gs+6adKA6cOKOiEJAwbMPEyTBkwfZh6mSQMGDBgwYMCAATcB3/PKhMhVWDzU/f2NFgzC7zyEDl7j+YTBoNUJWOdiXbw9992kHYe8psWjH1xqGaXdhbzlHH7Hw3opcpRc/PUA09rAp2msyiU/PuRsewOtIojbI+qCwwAAAABJRU5ErkJggg=="
+let icon_folder = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABc2X6AAABLklEQVR42u3cWw6CMBCFYZiwF+OeXJ57Mq4GH0wM4ToFpHP5+yol/ZzjNGDStu/7JtPo9Je+njezjPvjrbyy3aywZecO+RrYF1XJlnja9cXPVNg1dbPUElg7y5Em2ZDA5Z1FSWztlJY10oHLOwLmblpZwOHzPEw1kQYMGLCr0e2Yo3+fYvAxW67UHp9+NfiU5dY1S5WFVjTTpQGzLZn7GRdtdREqXPTdBYm03izXJ7CumS4NGHCOfTjMiz4q7HZbUsaQpgUYMGDAgAEDBgwYMGDAgAEDBpwGbP+tpXKFcvodLWuLI23TXLSq7q93p2kBBgwY8HGwiz/Kjo8vk0gnAYdP9Q+YONKBizykydIHIbV06XBFnnIWz/Hw/hi4VDkpneBa23A0jVf5mYcPBRsfLNB1SULUvsMAAAAASUVORK5CYII="
+let icon_file = "iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAIAAAABQUlEQVR42u3cWw7CIBCFYTrpWl1B4yIaV9DN4oOJMfaGdiAzw8+rvfDlEJgmwpBzTj21sfzS2/1hlrHMU+GVw2nClp1/yI/AvqiFbImnPe78RsKuqadRS2DtJkdSZ00Cx7uJktjaNa3XIR043i9g35NWD23IOWuN5/IKfm/UHTxBpZPLPKklfFF7qlJ5vtqQ1upNA7OY0jYwG5206i2TdmfpSmbTy1INs/V1WN3soPDQNfuotBTNbkpLLbOnWlrF7Ozj4bp5tIMprKIumvkeBgwYMGDAgAEDBgwYMGDAgAEDBgwYMGDAgAED7gLccoPI9XeJkX40e4uk+v/eN6J9MUdrCTBp1QGr71uw1t7AjpelwCF/0mTvh5BaKq1wIa85u+d4eN9RvJec/HqDa23iaBqvcs3Dh4K1J39ngftPWNkIAAAAAElFTkSuQmCC"
+
+let rootItems = extractArchive(ShortcutInput)
+if count(rootItems) == 0 {
+    alert("Nothing to extract.", title: "Empty ZIP")
+    stop()
+}
+
+// Preserve every file as a real Shortcuts content item. Store only numeric
+// positions in the navigation route to avoid losing file/folder references.
+var route = ""
+if count(rootItems) == 1 {
+    let firstItem = getFirstItem(rootItems)
+    let ext = lowercase(getText(getFileDetail(firstItem, detail: "File Extension")))
+    let t = lowercase(getText(typeOf(firstItem)))
+    if ext == "" || count(matchText(r"folder|directory", t)) > 0 || count(matchText(r"^(swiftpm|playground|playgroundbook|xcodeproj|xcworkspace|xcassets|bundle|framework|app|rtfd)$", ext)) > 0 {
+        route = "1"
+    } else {
+        share(firstItem)
+        stop()
+    }
+}
+
+repeat 96 as turn {
+    var items = rootItems
+    var currentFolder = ShortcutInput
+    var location = "ZIP"
+    if route != "" {
+        let segments = matchText(r"[0-9]+", route)
+        for segment in segments {
+            let segmentNumber = getNumbers(getText(segment))
+            currentFolder = getListItem(items, index: segmentNumber)
+            location = f"{location} / {getText(getName(currentFolder))}"
+            items = getFolderContents(currentFolder, recursive: false)
+        }
+    }
+    let total = count(items)
+    var contactsText = ""
+    if route != "" {
+        contactsText = f"BEGIN:VCARD\nVERSION:3.0\nN:⬅ Go up;;;;\nFN:⬅ Go up\nORG:{location}\nTITLE:0\nPHOTO;BASE64:{icon_folder}\nEND:VCARD\nBEGIN:VCARD\nVERSION:3.0\nN:↗ Share folder;;;;\nFN:↗ Share folder\nORG:{location}\nTITLE:900000\nPHOTO;BASE64:{icon_folder}\nEND:VCARD\n"
+    }
+    var ordinal = 0
+    for item in items {
+        ordinal += 1
+        let nm = getText(getName(item))
+        let safe1 = replaceText(";", r"\;", nm)
+        let safe2 = replaceText(",", r"\,", safe1)
+        let safe = replaceText(r"[\r\n]", " ", safe2, regExp: true)
+        let ext = lowercase(getText(getFileDetail(item, detail: "File Extension")))
+        let nativeType = lowercase(getText(typeOf(item)))
+        let isPackage = count(matchText(r"^(swiftpm|playground|playgroundbook|xcodeproj|xcworkspace|xcassets|bundle|framework|app|rtfd)$", ext)) > 0
+        let folder = count(matchText(r"folder|directory", nativeType)) > 0 || isPackage || ext == ""
+        var category = "File"
+        var iconB64 = icon_file
+        if folder {
+            category = "📁 Folder — Open"
+            iconB64 = icon_folder
+            if count(matchText(r"^(swiftpm|playground|playgroundbook)$", ext)) > 0 {
+                iconB64 = icon_swift
+            }
+        } else if count(matchText(r"^(swift|py|js|ts|html|css|sh|go)$", ext)) > 0 {
+            category = "💻 Code"
+            iconB64 = icon_code
+            if ext == "swift" {
+                iconB64 = icon_swift
+            }
+        } else if count(matchText(r"^(jpg|jpeg|png|gif|heic|webp)$", ext)) > 0 {
+            category = "🖼 Image"
+            iconB64 = icon_image
+        } else if ext == "pdf" {
+            category = "📕 PDF"
+            iconB64 = icon_pdf
+        } else {
+            category = "📄 File"
+        }
+        let one = f"BEGIN:VCARD\nVERSION:3.0\nN:{safe};;;;\nFN:{safe}\nORG:{category}\nTITLE:{ordinal}\nPHOTO;BASE64:{iconB64}\nEND:VCARD\n"
+        contactsText = f"{contactsText}{one}"
+        if ext == "" && count(matchText(r"folder|directory", nativeType)) == 0 {
+            let secondary = ordinal + 100000
+            let alt = f"BEGIN:VCARD\nVERSION:3.0\nN:↗ Share {safe};;;;\nFN:↗ Share {safe}\nORG:File without extension\nTITLE:{secondary}\nPHOTO;BASE64:{icon_file}\nEND:VCARD\n"
+            contactsText = f"{contactsText}{alt}"
+        }
+    }
+    if total == 0 && route == "" {
+        alert("There are no files in this ZIP.")
+        stop()
+    }
+    let menuFile = setName(contactsText, name: "ZIP Navigator.vcf")
+    let contacts = getContacts(menuFile)
+    let choice = chooseFromList(contacts, prompt: location)
+    let choiceID = getNumbers(getContactDetail(choice, detail: "Job Title"))
+    if choiceID == 0 {
+        route = replaceText(r"(\.[0-9]+|^[0-9]+)$", "", route, regExp: true)
+    } else if choiceID == 900000 {
+        share(currentFolder)
+        stop()
+    } else if choiceID > 100000 {
+        let idx = choiceID - 100000
+        share(getListItem(items, index: idx))
+        stop()
+    } else {
+        let chosen = getListItem(items, index: choiceID)
+        let chosenExt = lowercase(getText(getFileDetail(chosen, detail: "File Extension")))
+        let chosenType = lowercase(getText(typeOf(chosen)))
+        let package = count(matchText(r"^(swiftpm|playground|playgroundbook|xcodeproj|xcworkspace|xcassets|bundle|framework|app|rtfd)$", chosenExt)) > 0
+        if package || chosenExt == "" || count(matchText(r"folder|directory", chosenType)) > 0 {
+            if route == "" {
+                route = f"{choiceID}"
+            } else {
+                route = f"{route}.{choiceID}"
+            }
+        } else {
+            share(chosen)
+            stop()
+        }
+    }
+}
+alert("Too many navigation steps.", title: "ZIP Navigator")
