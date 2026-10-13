@@ -26,6 +26,92 @@ class ImportHelperUITests: XCTestCase {
         var tapped = false
         let targets = [("SpringBoard", springboard), ("Shortcuts", app)]
 
+        // 0. STRICT MENU SELECTION STAGE
+        // Must locate and tap the exact requested menu item (Alpha or Beta).
+        // Never fall through to Allow, Run, Add, or generic buttons.
+        if stage.hasPrefix("menu_select_") {
+            let validTargets = ["Alpha", "Beta"]
+            guard validTargets.contains(menuTarget) else {
+                XCTFail("CHERRI_EXACT_MENU_TAP failed: invalid or disallowed menuTarget '\(menuTarget)' for strict stage '\(stage)'")
+                return
+            }
+            if stage == "menu_select_alpha" && menuTarget != "Alpha" {
+                XCTFail("CHERRI_EXACT_MENU_TAP failed: stage menu_select_alpha expected target 'Alpha', got '\(menuTarget)'")
+                return
+            }
+            if stage == "menu_select_beta" && menuTarget != "Beta" {
+                XCTFail("CHERRI_EXACT_MENU_TAP failed: stage menu_select_beta expected target 'Beta', got '\(menuTarget)'")
+                return
+            }
+
+            print("Strict menu selection stage: '\(stage)' with target '\(menuTarget)'")
+
+            var exactTapped = false
+            for (name, targetApp) in targets {
+                // Priority 1: staticText (as observed on iOS 27 for Choose from Menu)
+                let text = targetApp.staticTexts[menuTarget]
+                if text.waitForExistence(timeout: 4) {
+                    let actualLabel = text.label.isEmpty ? menuTarget : text.label
+                    print("Found exact staticText '\(menuTarget)' in \(name), tapping...")
+                    text.tap()
+                    print("CHERRI_EXACT_MENU_TAP target=\(menuTarget) actual_label=\(actualLabel) app=\(name) kind=staticText stage=\(stage) result=tapped")
+                    exactTapped = true
+                    break
+                }
+
+                // Priority 2: cell
+                let cell = targetApp.cells[menuTarget]
+                if cell.waitForExistence(timeout: 2) {
+                    let actualLabel = cell.label.isEmpty ? menuTarget : cell.label
+                    print("Found exact menu cell '\(menuTarget)' in \(name), tapping...")
+                    cell.tap()
+                    print("CHERRI_EXACT_MENU_TAP target=\(menuTarget) actual_label=\(actualLabel) app=\(name) kind=cell stage=\(stage) result=tapped")
+                    exactTapped = true
+                    break
+                }
+
+                // Priority 3: cell containing staticText with exact identifier
+                let cellWithText = targetApp.tables.cells.containing(.staticText, identifier: menuTarget).element
+                if cellWithText.waitForExistence(timeout: 2) {
+                    print("Found exact cell containing staticText '\(menuTarget)' in \(name), tapping...")
+                    cellWithText.tap()
+                    print("CHERRI_EXACT_MENU_TAP target=\(menuTarget) actual_label=\(menuTarget) app=\(name) kind=cellContainingText stage=\(stage) result=tapped")
+                    exactTapped = true
+                    break
+                }
+
+                // Priority 4: button
+                let btn = targetApp.buttons[menuTarget]
+                if btn.waitForExistence(timeout: 2) {
+                    let actualLabel = btn.label.isEmpty ? menuTarget : btn.label
+                    print("Found exact menu button '\(menuTarget)' in \(name), tapping...")
+                    btn.tap()
+                    print("CHERRI_EXACT_MENU_TAP target=\(menuTarget) actual_label=\(actualLabel) app=\(name) kind=button stage=\(stage) result=tapped")
+                    exactTapped = true
+                    break
+                }
+
+                // Priority 5: any descendant with exact identifier
+                let elem = targetApp.descendants(matching: .any)[menuTarget]
+                if elem.waitForExistence(timeout: 2) {
+                    let actualLabel = elem.label.isEmpty ? menuTarget : elem.label
+                    print("Found exact descendant matching '\(menuTarget)' in \(name), tapping...")
+                    elem.tap()
+                    print("CHERRI_EXACT_MENU_TAP target=\(menuTarget) actual_label=\(actualLabel) app=\(name) kind=descendant stage=\(stage) result=tapped")
+                    exactTapped = true
+                    break
+                }
+            }
+
+            if !exactTapped {
+                XCTFail("CHERRI_EXACT_MENU_TAP failed: could not locate or tap exact menu target '\(menuTarget)' in stage '\(stage)'. Never falling through to permissions or generic buttons.")
+                return
+            }
+
+            print("UI Test Helper finished strict menu tap. Target: \(menuTarget)")
+            return
+        }
+
         // 1. If in IMPORT mode, prioritize tapping Add Shortcut / Replace / Set Up
         if stage.contains("import") {
             let importCandidates = [
@@ -46,48 +132,6 @@ class ImportHelperUITests: XCTestCase {
                     }
                 }
                 if tapped { break }
-            }
-        }
-
-        // 2. If menu target is requested, search for and tap the menu item
-        if !tapped && !menuTarget.isEmpty {
-            print("Looking for menu item: '\(menuTarget)'")
-            for (name, targetApp) in targets {
-                let text = targetApp.staticTexts[menuTarget]
-                if text.waitForExistence(timeout: 2) {
-                    print("Found and tapping staticText '\(menuTarget)' in \(name)...")
-                    text.tap()
-                    tapped = true
-                    break
-                }
-                let cell = targetApp.cells[menuTarget]
-                if cell.waitForExistence(timeout: 1) {
-                    print("Found and tapping menu cell '\(menuTarget)' in \(name)...")
-                    cell.tap()
-                    tapped = true
-                    break
-                }
-                let cellWithText = targetApp.tables.cells.containing(.staticText, identifier: menuTarget).element
-                if cellWithText.waitForExistence(timeout: 1) {
-                    print("Found and tapping cell containing '\(menuTarget)' in \(name)...")
-                    cellWithText.tap()
-                    tapped = true
-                    break
-                }
-                let btn = targetApp.buttons[menuTarget]
-                if btn.waitForExistence(timeout: 1) {
-                    print("Found and tapping menu button '\(menuTarget)' in \(name)...")
-                    btn.tap()
-                    tapped = true
-                    break
-                }
-                let elem = targetApp.descendants(matching: .any)[menuTarget]
-                if elem.waitForExistence(timeout: 1) {
-                    print("Found descendant matching '\(menuTarget)' in \(name), tapping...")
-                    elem.tap()
-                    tapped = true
-                    break
-                }
             }
         }
 

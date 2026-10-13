@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os/exec"
 	"strings"
 	"testing"
 )
@@ -72,5 +73,23 @@ func TestVerifyEvents_NegativeSingleTestMissing(t *testing.T) {
 
 	if len(res.Missing) != 1 || res.Missing[0] != "TestCTRL008_ASTControlFlowSourceOwnership" {
 		t.Errorf("expected TestCTRL008_ASTControlFlowSourceOwnership to be missing, got %v", res.Missing)
+	}
+}
+
+func TestVerifyEvents_Exact44Count(t *testing.T) {
+	if len(requiredTestNames) != 44 {
+		t.Fatalf("expected exactly 44 required test names, got %d", len(requiredTestNames))
+	}
+}
+
+func TestRunCommandAndVerify_NegativeChildProcessFailure(t *testing.T) {
+	// Execute a command designed to fail (go test with an invalid flag)
+	cmd := exec.Command("go", "test", "-unsupported-dummy-flag-for-testing-failure")
+	_, err := RunCommandAndVerify(cmd, nil)
+	if err == nil {
+		t.Fatalf("expected RunCommandAndVerify to fail when child process exits with non-zero status, but it succeeded")
+	}
+	if !strings.Contains(err.Error(), "child test process failed") {
+		t.Errorf("expected error to mention 'child test process failed', got: %v", err)
 	}
 }

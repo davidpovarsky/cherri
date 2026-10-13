@@ -157,6 +157,32 @@ func extractFamily(testName string) string {
 	return s
 }
 
+// RunCommandAndVerify executes a command streaming test events, verifies them, and propagates child exit errors.
+func RunCommandAndVerify(cmd *exec.Cmd, out io.Writer) (*DiscoveryResult, error) {
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get stdout pipe: %w", err)
+	}
+	if err := cmd.Start(); err != nil {
+		return nil, fmt.Errorf("failed to start command: %w", err)
+	}
+
+	var r io.Reader = stdout
+	if out != nil {
+		r = io.TeeReader(stdout, out)
+	}
+	res, vErr := VerifyEvents(r)
+	waitErr := cmd.Wait()
+
+	if waitErr != nil {
+		return res, fmt.Errorf("child test process failed: %w", waitErr)
+	}
+	if vErr != nil {
+		return nil, fmt.Errorf("verification error: %w", vErr)
+	}
+	return res, nil
+}
+
 func main() {
 	runRegex := flag.String("run", "", "If set, executes go test with -json using this regex and verifies output")
 	inputFile := flag.String("file", "", "Path to test output JSON file (default: stdin)")
@@ -167,25 +193,10 @@ func main() {
 	if *runRegex != "" {
 		fmt.Printf("=== Running go test -json with regex: %s ===\n", *runRegex)
 		cmd := exec.Command("go", "test", "-count=1", "-timeout=15m", "-json", "-run", *runRegex, "./...")
-		stdout, err := cmd.StdoutPipe()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to get stdout pipe: %v\n", err)
-			os.Exit(1)
-		}
 		cmd.Stderr = os.Stderr
-
-		if err := cmd.Start(); err != nil {
-			fmt.Fprintf(os.Stderr, "failed to start go test: %v\n", err)
-			os.Exit(1)
-		}
-
-		// Tee to os.Stdout so CI shows the output live
-		r := io.TeeReader(stdout, os.Stdout)
-		res, vErr := VerifyEvents(r)
-		_ = cmd.Wait()
-
-		if vErr != nil {
-			fmt.Fprintf(os.Stderr, "verification error: %v\n", vErr)
+		res, err := RunCommandAndVerify(cmd, os.Stdout)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
 			os.Exit(1)
 		}
 		printReportAndExit(res)
@@ -210,21 +221,10 @@ func main() {
 			// No stdin piped, default to running the canonical matrix regex
 			fmt.Println("No input piped; running canonical full matrix regex: ^Test(CORE|CODEC|CTRL|META|LANG|IOS|GEN)")
 			cmd := exec.Command("go", "test", "-count=1", "-timeout=15m", "-json", "-run", "^Test(CORE|CODEC|CTRL|META|LANG|IOS|GEN)", "./...")
-			stdout, err := cmd.StdoutPipe()
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "failed to get stdout pipe: %v\n", err)
-				os.Exit(1)
-			}
 			cmd.Stderr = os.Stderr
-			if err := cmd.Start(); err != nil {
-				fmt.Fprintf(os.Stderr, "failed to start go test: %v\n", err)
-				os.Exit(1)
-			}
-			r := io.TeeReader(stdout, os.Stdout)
-			res, vErr := VerifyEvents(r)
-			_ = cmd.Wait()
-			if vErr != nil {
-				fmt.Fprintf(os.Stderr, "verification error: %v\n", vErr)
+			res, err := RunCommandAndVerify(cmd, os.Stdout)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
 				os.Exit(1)
 			}
 			printReportAndExit(res)
@@ -285,7 +285,7 @@ func printReportAndExit(res *DiscoveryResult) {
 		os.Exit(1)
 	}
 
-	fmt.Println("\nALL 43 MANDATORY TOP-LEVEL REGRESSION TESTS VERIFIED PASS!")
+	fmt.Printf("\nALL %d MANDATORY TOP-LEVEL REGRESSION TESTS VERIFIED PASS!\n", len(requiredTestNames))
 	fmt.Println("GATE: PASS")
 	os.Exit(0)
 }

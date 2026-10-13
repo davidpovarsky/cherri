@@ -41,11 +41,14 @@ run_ui_helper() {
     fi
 
     # 1. Attempt AppleScript keystrokes if Simulator GUI is available
+    # SUPPRESSED for menu_select_* stages to ensure only exact XCUITest tap proof counts
     open -a Simulator --args -CurrentDeviceUDID "$SIM_UDID" 2>/dev/null || true
     sleep 1
     osascript -e 'tell application "Simulator" to activate' 2>/dev/null || true
-    osascript -e 'tell application "System Events" to key code 36' 2>/dev/null || true # Return
-    osascript -e 'tell application "System Events" to key code 49' 2>/dev/null || true # Space
+    if [[ "$stage_name" != menu_select_* ]]; then
+        osascript -e 'tell application "System Events" to key code 36' 2>/dev/null || true # Return
+        osascript -e 'tell application "System Events" to key code 49' 2>/dev/null || true # Space
+    fi
     
     # 2. Execute XCUITest helper
     if [ -d tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj ]; then
@@ -84,6 +87,7 @@ except Exception as e:
                 xcodebuild test-without-building \
                     -xctestrun "$XCTESTRUN" \
                     -destination "id=$SIM_UDID" \
+                    -maximum-test-execution-time-allowance 45 \
                     -resultBundlePath "${PWD}/../../../artifacts/ImportHelper_${stage_name}.xcresult" \
                     CODE_SIGN_IDENTITY="-" \
                     2>&1 | tee "${PWD}/../../../artifacts/ui_helper_${stage_name}.log" || true
@@ -92,6 +96,7 @@ except Exception as e:
                     -project ImportHelper.xcodeproj \
                     -scheme ImportHelper \
                     -destination "id=$SIM_UDID" \
+                    -maximum-test-execution-time-allowance 45 \
                     -derivedDataPath .build \
                     -resultBundlePath "${PWD}/../../../artifacts/ImportHelper_${stage_name}.xcresult" \
                     CODE_SIGN_IDENTITY="-" \
@@ -543,6 +548,7 @@ RUN_MENU_URL="shortcuts://run-shortcut?name=CherriMenuRuntimePOC"
 xcrun simctl openurl "$SIM_UDID" "$RUN_MENU_URL" > artifacts/run_menu_alpha.log 2>&1 || true
 
 MENU_ALPHA_PASSED=false
+MENU_ALPHA_TAPPED=false
 for i in $(seq 1 30); do
     CLIP_ALPHA=$(xcrun simctl pbpaste "$SIM_UDID" 2>/dev/null || true)
     echo "Menu Alpha Poll $i/30: '$CLIP_ALPHA'"
@@ -555,11 +561,27 @@ for i in $(seq 1 30); do
     fi
 
     if [ "$i" -eq 2 ] || [ "$i" -eq 5 ] || [ "$i" -eq 10 ]; then
-        echo "Poll $i: Attempting to select 'Alpha' via UI helper..."
-        run_ui_helper "menu_select_alpha" "Alpha"
+        if [ "$MENU_ALPHA_TAPPED" != "true" ]; then
+            echo "Poll $i: Attempting to select 'Alpha' via UI helper..."
+            run_ui_helper "menu_select_alpha" "Alpha"
+            if grep -q "CHERRI_EXACT_MENU_TAP target=Alpha actual_label=Alpha" "artifacts/ui_helper_menu_select_alpha.log" 2>/dev/null; then
+                MENU_ALPHA_TAPPED=true
+                echo "ASSERTION PASSED: Exact menu tap for Alpha verified in XCTest log!"
+            fi
+        fi
     fi
+
+    # If menu item was tapped but clipboard hasn't updated, check for post-selection permission dialog
+    if [ "$MENU_ALPHA_TAPPED" = "true" ] && [ "$MENU_ALPHA_PASSED" != "true" ]; then
+        if [ "$i" -eq 4 ] || [ "$i" -eq 8 ] || [ "$i" -eq 12 ]; then
+            echo "Poll $i: Menu item tapped; checking for clipboard permission prompt via run_permission_menu..."
+            run_ui_helper "run_permission_menu"
+        fi
+    fi
+
     sleep 1
 done
+echo "$CLIP_ALPHA" > artifacts/menu-alpha-clipboard-result.txt
 
 # Menu Execution 2: Select "Beta"
 echo "=== Menu Run 2: Target branch Beta ==="
@@ -567,6 +589,7 @@ echo -n "BEFORE_MENU_BETA" | xcrun simctl pbcopy "$SIM_UDID"
 xcrun simctl openurl "$SIM_UDID" "$RUN_MENU_URL" > artifacts/run_menu_beta.log 2>&1 || true
 
 MENU_BETA_PASSED=false
+MENU_BETA_TAPPED=false
 for i in $(seq 1 30); do
     CLIP_BETA=$(xcrun simctl pbpaste "$SIM_UDID" 2>/dev/null || true)
     echo "Menu Beta Poll $i/30: '$CLIP_BETA'"
@@ -579,22 +602,45 @@ for i in $(seq 1 30); do
     fi
 
     if [ "$i" -eq 2 ] || [ "$i" -eq 5 ] || [ "$i" -eq 10 ]; then
-        echo "Poll $i: Attempting to select 'Beta' via UI helper..."
-        run_ui_helper "menu_select_beta" "Beta"
+        if [ "$MENU_BETA_TAPPED" != "true" ]; then
+            echo "Poll $i: Attempting to select 'Beta' via UI helper..."
+            run_ui_helper "menu_select_beta" "Beta"
+            if grep -q "CHERRI_EXACT_MENU_TAP target=Beta actual_label=Beta" "artifacts/ui_helper_menu_select_beta.log" 2>/dev/null; then
+                MENU_BETA_TAPPED=true
+                echo "ASSERTION PASSED: Exact menu tap for Beta verified in XCTest log!"
+            fi
+        fi
     fi
+
+    if [ "$MENU_BETA_TAPPED" = "true" ] && [ "$MENU_BETA_PASSED" != "true" ]; then
+        if [ "$i" -eq 4 ] || [ "$i" -eq 8 ] || [ "$i" -eq 12 ]; then
+            echo "Poll $i: Checking for permission dialog via run_permission_menu..."
+            run_ui_helper "run_permission_menu"
+        fi
+    fi
+
     sleep 1
 done
+echo "$CLIP_BETA" > artifacts/menu-beta-clipboard-result.txt
 
-MENU_RUNTIME_STATUS="BLOCKED"
+# Check if log actually recorded exact tap even if loop exited immediately
+if [ "$MENU_ALPHA_TAPPED" != "true" ] && grep -q "CHERRI_EXACT_MENU_TAP target=Alpha actual_label=Alpha" "artifacts/ui_helper_menu_select_alpha.log" 2>/dev/null; then
+    MENU_ALPHA_TAPPED=true
+fi
+if [ "$MENU_BETA_TAPPED" != "true" ] && grep -q "CHERRI_EXACT_MENU_TAP target=Beta actual_label=Beta" "artifacts/ui_helper_menu_select_beta.log" 2>/dev/null; then
+    MENU_BETA_TAPPED=true
+fi
+
+MENU_RUNTIME_STATUS="FAIL"
 MENU_DIAGNOSTIC=""
-if [ "$MENU_ALPHA_PASSED" = "true" ] && [ "$MENU_BETA_PASSED" = "true" ]; then
+if [ "$MENU_ALPHA_PASSED" = "true" ] && [ "$MENU_BETA_PASSED" = "true" ] && [ "$MENU_ALPHA_TAPPED" = "true" ] && [ "$MENU_BETA_TAPPED" = "true" ]; then
     MENU_RUNTIME_STATUS="PASS"
-    echo "Choose from Menu interactive runtime passed for both Alpha and Beta!"
+    echo "Choose from Menu interactive runtime passed for both Alpha and Beta with exact XCUITest tap proof!"
 else
-    MENU_RUNTIME_STATUS="BLOCKED"
-    MENU_DIAGNOSTIC="Shortcuts menu prompt presentation/dismissal could not be automated via XCUITest in headless simulator environment. Structural tests passed; runtime case honestly marked BLOCKED."
-    echo "WARNING: $MENU_DIAGNOSTIC"
-    xcrun simctl io "$SIM_UDID" screenshot artifacts/04_menu_blocked.png 2>/dev/null || true
+    MENU_RUNTIME_STATUS="FAIL"
+    MENU_DIAGNOSTIC="Shortcuts menu prompt interactive selection failed or lacked exact-tap proof (Alpha: pass=$MENU_ALPHA_PASSED tapped=$MENU_ALPHA_TAPPED; Beta: pass=$MENU_BETA_PASSED tapped=$MENU_BETA_TAPPED)"
+    echo "ERROR: $MENU_DIAGNOSTIC"
+    xcrun simctl io "$SIM_UDID" screenshot artifacts/04_menu_failed.png 2>/dev/null || true
 fi
 
 # Reset Shortcuts to clean library state before next fixture
@@ -647,7 +693,7 @@ cleanup
 HEAD_SHA=$(git rev-parse HEAD 2>/dev/null || echo "")
 
 python3 - << PY
-import hashlib, json, sys
+import hashlib, json, re, sys
 from pathlib import Path
 
 head_sha = "${HEAD_SHA}"
@@ -657,6 +703,42 @@ dict_passed = ("${DICT_PASSED}" == "true")
 menu_status = "${MENU_RUNTIME_STATUS}"
 menu_diag = "${MENU_DIAGNOSTIC}"
 legacy_if_passed = ("${LEGACY_IF_PASSED}" == "true")
+
+def make_proof(target, stage, log_file, clip_file, sentinel, expected_clip, opposite_clip):
+    lp = Path(log_file)
+    cp = Path(clip_file)
+    log_text = lp.read_text(encoding="utf-8", errors="replace") if lp.exists() else ""
+    clip_text = cp.read_text(encoding="utf-8", errors="replace").strip() if cp.exists() else ""
+    m = re.search(r'CHERRI_EXACT_MENU_TAP\s+target=(\S+)\s+actual_label=(\S+)\s+app=(\S+)\s+kind=(\S+)\s+stage=(\S+)\s+result=(\S+)', log_text)
+    exact_tap = bool(m and m.group(1) == target and m.group(6) == "tapped" and "Found and tapping 'Allow' in SpringBoard" not in log_text)
+    xctest_passed = bool("** TEST EXECUTE SUCCEEDED **" in log_text or ("passed" in log_text and "0 failures" in log_text))
+    runtime_pass = bool(exact_tap and xctest_passed and (expected_clip in clip_text) and (opposite_clip not in clip_text))
+    proof = {
+        "target": target,
+        "actual_label": m.group(2) if m else "",
+        "app": m.group(3) if m else "",
+        "kind": m.group(4) if m else "",
+        "stage": stage,
+        "result": m.group(6) if m else "failed",
+        "xctest_passed": xctest_passed,
+        "exact_tap_confirmed": exact_tap,
+        "clipboard_sentinel": sentinel,
+        "clipboard_result": clip_text,
+        "runtime_pass": runtime_pass,
+        "head_sha": head_sha,
+        "run_id": run_id,
+        "log_file": log_file,
+        "log_sha256": hashlib.sha256(lp.read_bytes()).hexdigest() if lp.exists() else "",
+        "clipboard_file": clip_file,
+        "clipboard_sha256": hashlib.sha256(cp.read_bytes()).hexdigest() if cp.exists() else "",
+    }
+    return proof
+
+alpha_proof = make_proof("Alpha", "menu_select_alpha", "artifacts/ui_helper_menu_select_alpha.log", "artifacts/menu-alpha-clipboard-result.txt", "BEFORE_MENU_ALPHA", "CHERRI_MENU_ALPHA", "CHERRI_MENU_BETA")
+Path("artifacts/menu-alpha-selection-proof.json").write_text(json.dumps(alpha_proof, indent=2), encoding="utf-8")
+
+beta_proof = make_proof("Beta", "menu_select_beta", "artifacts/ui_helper_menu_select_beta.log", "artifacts/menu-beta-clipboard-result.txt", "BEFORE_MENU_BETA", "CHERRI_MENU_BETA", "CHERRI_MENU_ALPHA")
+Path("artifacts/menu-beta-selection-proof.json").write_text(json.dumps(beta_proof, indent=2), encoding="utf-8")
 
 def file_art(rel_src, rel_ci):
     p = Path(rel_src)
@@ -679,6 +761,12 @@ arts = [a for a in [
     file_art("artifacts/CherriDictionaryRuntimePOC.cherri", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/CherriDictionaryRuntimePOC.cherri"),
     file_art("artifacts/CherriMenuRuntimePOC.shortcut", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/CherriMenuRuntimePOC.shortcut"),
     file_art("artifacts/CherriMenuRuntimePOC.cherri", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/CherriMenuRuntimePOC.cherri"),
+    file_art("artifacts/menu-alpha-selection-proof.json", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/menu-alpha-selection-proof.json"),
+    file_art("artifacts/menu-beta-selection-proof.json", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/menu-beta-selection-proof.json"),
+    file_art("artifacts/menu-alpha-clipboard-result.txt", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/menu-alpha-clipboard-result.txt"),
+    file_art("artifacts/menu-beta-clipboard-result.txt", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/menu-beta-clipboard-result.txt"),
+    file_art("artifacts/ui_helper_menu_select_alpha.log", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ui_helper_menu_select_alpha.log"),
+    file_art("artifacts/ui_helper_menu_select_beta.log", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ui_helper_menu_select_beta.log"),
     file_art("artifacts/legacy-if-clipboard-result.txt", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/legacy-if-clipboard-result.txt"),
     file_art("artifacts/CherriLegacyIfPOC.shortcut", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/CherriLegacyIfPOC.shortcut"),
     file_art("artifacts/CherriLegacyIfPOC.cherri", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/CherriLegacyIfPOC.cherri"),
@@ -923,13 +1011,19 @@ records = [
         "tier": "ios-runtime",
         "test_id": "ios27-runtime-poc:menu-alpha",
         "implementation_sha": head_sha,
-        "result": "passed" if ("${MENU_ALPHA_PASSED}" == "true") else ("blocked" if menu_status == "BLOCKED" else "failed"),
-        "exit_code": 0 if ("${MENU_ALPHA_PASSED}" == "true") else 1,
+        "result": "passed" if alpha_proof["runtime_pass"] else "failed",
+        "exit_code": 0 if alpha_proof["runtime_pass"] else 1,
         "structural_pass": True,
-        "runtime_pass": ("${MENU_ALPHA_PASSED}" == "true"),
-        "assertions": {"target": "Alpha", "selected": "${MENU_ALPHA_PASSED}"},
+        "runtime_pass": alpha_proof["runtime_pass"],
+        "assertions": {
+            "target": "Alpha",
+            "selected": "${MENU_ALPHA_PASSED}",
+            "exact_tap": alpha_proof["exact_tap_confirmed"],
+            "actual_label": alpha_proof["actual_label"],
+            "host_app": alpha_proof["app"],
+        },
         "artifacts": arts,
-        "detail": "Menu branch Alpha execution: " + ("verified in runtime" if ("${MENU_ALPHA_PASSED}" == "true") else menu_diag),
+        "detail": "Menu branch Alpha execution: " + ("verified with exact XCUITest tap and runtime clipboard" if alpha_proof["runtime_pass"] else menu_diag),
     },
     {
         "evidence_id": "ev-runtime-menu-beta",
@@ -937,13 +1031,19 @@ records = [
         "tier": "ios-runtime",
         "test_id": "ios27-runtime-poc:menu-beta",
         "implementation_sha": head_sha,
-        "result": "passed" if ("${MENU_BETA_PASSED}" == "true") else ("blocked" if menu_status == "BLOCKED" else "failed"),
-        "exit_code": 0 if ("${MENU_BETA_PASSED}" == "true") else 1,
+        "result": "passed" if beta_proof["runtime_pass"] else "failed",
+        "exit_code": 0 if beta_proof["runtime_pass"] else 1,
         "structural_pass": True,
-        "runtime_pass": ("${MENU_BETA_PASSED}" == "true"),
-        "assertions": {"target": "Beta", "selected": "${MENU_BETA_PASSED}"},
+        "runtime_pass": beta_proof["runtime_pass"],
+        "assertions": {
+            "target": "Beta",
+            "selected": "${MENU_BETA_PASSED}",
+            "exact_tap": beta_proof["exact_tap_confirmed"],
+            "actual_label": beta_proof["actual_label"],
+            "host_app": beta_proof["app"],
+        },
         "artifacts": arts,
-        "detail": "Menu branch Beta execution: " + ("verified in runtime" if ("${MENU_BETA_PASSED}" == "true") else menu_diag),
+        "detail": "Menu branch Beta execution: " + ("verified with exact XCUITest tap and runtime clipboard" if beta_proof["runtime_pass"] else menu_diag),
     },
     # Legacy If condition evidence record
     {
@@ -967,12 +1067,17 @@ out_p.write_text(json.dumps(records, indent=2), encoding="utf-8")
 print(f"Wrote {len(records)} runtime evidence records to {out_p}")
 PY
 
+echo ""
+echo "=== Running Evidence Verifier Gate ==="
+go run ./tools/ios-runtime-verifier --dir artifacts
+
+echo ""
 echo "=== SUMMARY OF RESULTS ==="
 echo "Device: $SIM_NAME ($SIM_UDID)"
 echo "Runtime: $SIM_RUNTIME"
 echo "Fixture 1 (CherriRuntimePOC):       PASSED=$POC_PASSED"
 echo "Fixture 2 (Dictionary Approaches):  PASSED=$DICT_PASSED"
-echo "Fixture 3 (Choose from Menu UI):    STATUS=$MENU_RUNTIME_STATUS (Alpha=$MENU_ALPHA_PASSED, Beta=$MENU_BETA_PASSED)"
+echo "Fixture 3 (Choose from Menu UI):    STATUS=$MENU_RUNTIME_STATUS (Alpha=$MENU_ALPHA_PASSED [tapped=$MENU_ALPHA_TAPPED], Beta=$MENU_BETA_PASSED [tapped=$MENU_BETA_TAPPED])"
 echo "Fixture 4 (Legacy If Condition):    PASSED=$LEGACY_IF_PASSED"
 
 if [ "$POC_PASSED" != "true" ]; then
@@ -990,14 +1095,12 @@ if [ "$LEGACY_IF_PASSED" != "true" ]; then
     exit 1
 fi
 
-if [ "$MENU_RUNTIME_STATUS" = "BLOCKED" ]; then
-    echo "=================================================="
-    echo "IOS27_SHORTCUTS_RUNTIME_POC=PASS (Menu UI runtime marked BLOCKED due to simulator headless constraints, structural PASS verified)"
-    echo "=================================================="
-    exit 0
+if [ "$MENU_RUNTIME_STATUS" != "PASS" ] || [ "$MENU_ALPHA_PASSED" != "true" ] || [ "$MENU_BETA_PASSED" != "true" ] || [ "$MENU_ALPHA_TAPPED" != "true" ] || [ "$MENU_BETA_TAPPED" != "true" ]; then
+    echo "FATAL: Interactive Menu runtime verification failed (Status=$MENU_RUNTIME_STATUS, Alpha=$MENU_ALPHA_PASSED, Beta=$MENU_BETA_PASSED, AlphaTapped=$MENU_ALPHA_TAPPED, BetaTapped=$MENU_BETA_TAPPED)."
+    exit 1
 fi
 
 echo "=================================================="
-echo "IOS27_SHORTCUTS_RUNTIME_POC=PASS"
+echo "IOS27_SHORTCUTS_RUNTIME_POC=PASS (All 4 fixtures verified pass)"
 echo "=================================================="
 exit 0
