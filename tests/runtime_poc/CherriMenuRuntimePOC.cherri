@@ -1,0 +1,11 @@
+// CherriMenuRuntimePOC.cherri
+// Choose from Menu interactive test for iOS 27 runtime
+
+menu("Choose test branch") {
+    case "Alpha" {
+        setClipboard("CHERRI_MENU_ALPHA")
+    }
+    case "Beta" {
+        setClipboard("CHERRI_MENU_BETA")
+    }
+}

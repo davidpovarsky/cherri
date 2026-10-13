@@ -18,41 +18,130 @@ type WFMenuItem struct {
 	WFValue    any `plist:",omitempty"`
 }
 
-// BuildIfStart constructs the beginning action parameters for a conditional block.
-func BuildIfStart(groupingID string, input any, conditionCode int, compareVal any, isLegacy bool) map[string]any {
+// ConditionOperandType represents the type of a comparison operand.
+type ConditionOperandType int
+
+const (
+	OperandDefault ConditionOperandType = iota
+	OperandNumber
+	OperandString
+	OperandDate
+	OperandQuantity
+)
+
+// ConditionSpec encapsulates all parameters required to build an Apple Shortcuts conditional start action.
+type ConditionSpec struct {
+	GroupingIdentifier string
+	IsLegacy           bool
+
+	// Multi-condition representation (iOS 18+ WFConditions)
+	Conditions any
+
+	// Single condition representation (WFCondition / legacy / iOS < 18)
+	Input         any
+	ConditionCode int
+
+	// Comparison operands (routed by operand type or set directly)
+	DurationValue any // WFDuration
+	DateValue     any // WFDate
+	AnotherDate   any // WFAnotherDate
+	NumberValue   any // WFNumberValue
+	AnotherNumber any // WFAnotherNumber
+	StringValue   any // WFConditionalActionString
+}
+
+// RouteComparisonValue routes a comparison value into the appropriate wire field.
+func (s *ConditionSpec) RouteComparisonValue(val any, opType ConditionOperandType) {
+	switch opType {
+	case OperandDate:
+		if s.DateValue == nil {
+			s.DateValue = val
+		} else {
+			s.AnotherDate = val
+		}
+	case OperandNumber:
+		if s.NumberValue == nil {
+			s.NumberValue = val
+		} else {
+			s.AnotherNumber = val
+		}
+	case OperandQuantity:
+		s.DurationValue = val
+	default:
+		s.StringValue = val
+	}
+}
+
+// BuildConditionalStart constructs the parameter map for an Apple Shortcuts conditional start action.
+func BuildConditionalStart(spec ConditionSpec) map[string]any {
 	params := map[string]any{
-		"GroupingIdentifier": groupingID,
+		"GroupingIdentifier": spec.GroupingIdentifier,
 		"WFControlFlowMode":  ControlFlowStart,
 	}
-	if isLegacy {
+	if spec.IsLegacy {
 		params["WFConditionalLegacyComparisonBehavior"] = true
 	}
-	if input != nil {
-		params["WFInput"] = input
+	if spec.Conditions != nil {
+		params["WFConditions"] = spec.Conditions
+		return params
 	}
-	params["WFCondition"] = conditionCode
 
+	if spec.Input != nil {
+		params["WFInput"] = spec.Input
+	}
+	params["WFCondition"] = spec.ConditionCode
+
+	if spec.DurationValue != nil {
+		params["WFDuration"] = spec.DurationValue
+	}
+	if spec.DateValue != nil {
+		params["WFDate"] = spec.DateValue
+	}
+	if spec.AnotherDate != nil {
+		params["WFAnotherDate"] = spec.AnotherDate
+	}
+	if spec.NumberValue != nil {
+		params["WFNumberValue"] = spec.NumberValue
+	}
+	if spec.AnotherNumber != nil {
+		params["WFAnotherNumber"] = spec.AnotherNumber
+	}
+	if spec.StringValue != nil {
+		params["WFConditionalActionString"] = spec.StringValue
+	}
+
+	return params
+}
+
+// BuildIfStart constructs the beginning action parameters for a conditional block.
+func BuildIfStart(groupingID string, input any, conditionCode int, compareVal any, isLegacy bool) map[string]any {
+	spec := ConditionSpec{
+		GroupingIdentifier: groupingID,
+		Input:              input,
+		ConditionCode:      conditionCode,
+		IsLegacy:           isLegacy,
+	}
 	if compareVal != nil {
 		switch v := compareVal.(type) {
 		case float64:
-			params["WFNumberValue"] = v
+			spec.NumberValue = v
 		case int:
-			params["WFNumberValue"] = float64(v)
+			spec.NumberValue = float64(v)
 		case int64:
-			params["WFNumberValue"] = float64(v)
+			spec.NumberValue = float64(v)
 		case bool:
 			bNum := 0.0
 			if v {
 				bNum = 1.0
 			}
-			params["WFNumberValue"] = bNum
+			spec.NumberValue = bNum
 		case string:
-			params["WFConditionalActionString"] = v
+			spec.StringValue = v
 		default:
-			params["WFNumberValue"] = v
+			spec.NumberValue = v
 		}
 	}
-	return params
+	return BuildConditionalStart(spec)
 }
 
 // BuildIfElse constructs the else branch action parameters.

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/electrikmilk/args-parser"
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/lower"
@@ -328,8 +329,8 @@ menu("בחר פעולה") {
 	}
 }
 
-// CTRL-005 Mutation test: Ensure comparator/engine rejects untyped []string for WFMenuItems
-func TestCTRL005_RejectStringSliceForWFMenuItems(t *testing.T) {
+// CTRL-009 Mutation test: Ensure comparator/engine rejects untyped []string for WFMenuItems
+func TestCTRL009_RejectStringSliceForWFMenuItems(t *testing.T) {
 	session := NewCanonicalBackendSession()
 	defer session.Close()
 
@@ -533,6 +534,37 @@ func TestCTRL008_ASTControlFlowSourceOwnership(t *testing.T) {
 			len(violations), strings.Join(violations, "\n"))
 	}
 
+	// Guard Gate G3: Verify shortcutgen.go does not handcraft conditional Apple wire keys.
+	// All control flow action parameters must be built by shared backend builders.
+	shortcutgenFile := "shortcutgen.go"
+	shortcutgenAst, err := parser.ParseFile(fset, shortcutgenFile, nil, 0)
+	if err != nil {
+		t.Fatalf("failed to parse %s: %v", shortcutgenFile, err)
+	}
+
+	disallowedKeys := map[string]bool{
+		"WFControlFlowMode":                     true,
+		"WFConditions":                          true,
+		"WFConditionalLegacyComparisonBehavior": true,
+	}
+	var shortcutgenViolations []string
+	ast.Inspect(shortcutgenAst, func(n ast.Node) bool {
+		lit, ok := n.(*ast.BasicLit)
+		if ok && lit.Kind == gotoken.STRING {
+			cleanVal := strings.Trim(lit.Value, `"`)
+			if disallowedKeys[cleanVal] {
+				pos := fset.Position(lit.Pos())
+				shortcutgenViolations = append(shortcutgenViolations, fmt.Sprintf("%s:%d:%d (%s)", shortcutgenFile, pos.Line, pos.Column, cleanVal))
+			}
+		}
+		return true
+	})
+
+	if len(shortcutgenViolations) > 0 {
+		t.Fatalf("Found %d unauthorized handwritten conditional wire keys in shortcutgen.go (must delegate to backend.BuildConditionalStart):\n%s",
+			len(shortcutgenViolations), strings.Join(shortcutgenViolations, "\n"))
+	}
+
 	// Also verify that internal/language/backend/control.go actually defines the authoritative builders
 	controlFile := filepath.Join(".", "internal", "language", "backend", "control.go")
 	content, err := os.ReadFile(controlFile)
@@ -542,6 +574,177 @@ func TestCTRL008_ASTControlFlowSourceOwnership(t *testing.T) {
 	if !strings.Contains(string(content), "ControlFlowStart") {
 		t.Errorf("expected %s to define ControlFlowStart", controlFile)
 	}
+	if !strings.Contains(string(content), "BuildConditionalStart") {
+		t.Errorf("expected %s to define BuildConditionalStart", controlFile)
+	}
 }
+
+func TestCTRL010_LegacyConditionalParityMatrix(t *testing.T) {
+	// Subtest 1: Direct backend.BuildConditionalStart parity for single and multi-condition
+	t.Run("DirectBuilderParity", func(t *testing.T) {
+		// Single numeric condition
+		specSingle := backend.ConditionSpec{
+			GroupingIdentifier: "grp-single",
+			IsLegacy:           true,
+			Input: map[string]any{
+				"Type": "Variable",
+			},
+			ConditionCode: 4, // Is
+			NumberValue:   42.0,
+		}
+		paramsSingle := backend.BuildConditionalStart(specSingle)
+		if paramsSingle["GroupingIdentifier"] != "grp-single" {
+			t.Errorf("expected grp-single")
+		}
+		if paramsSingle["WFControlFlowMode"] != backend.ControlFlowStart {
+			t.Errorf("expected ControlFlowStart")
+		}
+		if paramsSingle["WFConditionalLegacyComparisonBehavior"] != true {
+			t.Errorf("expected WFConditionalLegacyComparisonBehavior == true")
+		}
+		if paramsSingle["WFCondition"] != 4 {
+			t.Errorf("expected WFCondition == 4")
+		}
+		if paramsSingle["WFNumberValue"] != 42.0 {
+			t.Errorf("expected WFNumberValue == 42.0")
+		}
+
+		// Quantity comparison with special condition codes 1000/1001
+		specQuantity := backend.ConditionSpec{
+			GroupingIdentifier: "grp-quantity",
+			ConditionCode:      1000,
+			DurationValue: map[string]any{
+				"Magnitude": 5,
+				"Unit":      "seconds",
+			},
+		}
+		paramsQuantity := backend.BuildConditionalStart(specQuantity)
+		if paramsQuantity["WFCondition"] != 1000 {
+			t.Errorf("expected WFCondition == 1000 for quantity greater than")
+		}
+		if paramsQuantity["WFDuration"] == nil {
+			t.Errorf("expected WFDuration in paramsQuantity")
+		}
+
+		// Multi-condition payload
+		multiPayload := map[string]any{"SerializationType": "WFContentPredicateTableTemplate"}
+		specMulti := backend.ConditionSpec{
+			GroupingIdentifier: "grp-multi",
+			Conditions:         multiPayload,
+		}
+		paramsMulti := backend.BuildConditionalStart(specMulti)
+		if paramsMulti["WFConditions"] == nil {
+			t.Errorf("expected WFConditions in paramsMulti")
+		}
+		if _, hasSingleCond := paramsMulti["WFCondition"]; hasSingleCond {
+			t.Errorf("expected no WFCondition when WFConditions is present")
+		}
+	})
+
+	// Subtest 2: RouteComparisonValue with OperandDate and OperandString
+	t.Run("RouteComparisonValue", func(t *testing.T) {
+		spec := backend.ConditionSpec{
+			GroupingIdentifier: "grp-route",
+		}
+		spec.RouteComparisonValue("first-date", backend.OperandDate)
+		spec.RouteComparisonValue("second-date", backend.OperandDate)
+		if spec.DateValue != "first-date" || spec.AnotherDate != "second-date" {
+			t.Errorf("expected DateValue and AnotherDate routed correctly")
+		}
+
+		specNum := backend.ConditionSpec{
+			GroupingIdentifier: "grp-route-num",
+		}
+		specNum.RouteComparisonValue(10.0, backend.OperandNumber)
+		specNum.RouteComparisonValue(20.0, backend.OperandNumber)
+		if specNum.NumberValue != 10.0 || specNum.AnotherNumber != 20.0 {
+			t.Errorf("expected NumberValue and AnotherNumber routed correctly")
+		}
+
+		params := backend.BuildConditionalStart(specNum)
+		if params["WFNumberValue"] != 10.0 || params["WFAnotherNumber"] != 20.0 {
+			t.Errorf("expected WFNumberValue and WFAnotherNumber in built parameters")
+		}
+	})
+
+	// Subtest 3: Legacy compile with single, nested, and else branches
+	t.Run("LegacyCompileParity", func(t *testing.T) {
+		// Reset parser and state
+		defer resetParser()
+		resetParser()
+		loadStandardActions()
+
+		legacyCode := `
+@x = 5
+@y = 10
+if @x == 5 {
+    if @y > 5 {
+        show("nested true")
+    } else {
+        show("nested false")
+    }
+} else {
+    show("outer false")
+}
+`
+		tmpDir := t.TempDir()
+		srcFile := filepath.Join(tmpDir, "legacy_test.cherri")
+		if err := os.WriteFile(srcFile, []byte(legacyCode), 0644); err != nil {
+			t.Fatalf("failed to write legacy code: %v", err)
+		}
+
+		origArgs := args.Args
+		defer func() { args.Args = origArgs }()
+		args.Args = map[string]string{
+			"skip-sign": "",
+			"no-ansi":   "",
+		}
+		currentTest = srcFile
+		os.Args = []string{"cherri", srcFile}
+
+		compile()
+
+		// Validate shortcut output
+		var condStarts, condElses, condEnds int
+		var groupIDs = make(map[string]int)
+
+		for _, act := range shortcut.WFWorkflowActions {
+			if act.WFWorkflowActionIdentifier == "is.workflow.actions.conditional" {
+				mode, _ := act.WFWorkflowActionParameters["WFControlFlowMode"].(int)
+				grp, _ := act.WFWorkflowActionParameters["GroupingIdentifier"].(string)
+				if grp != "" {
+					groupIDs[grp]++
+				}
+				switch mode {
+				case 0:
+					condStarts++
+				case 1:
+					condElses++
+				case 2:
+					condEnds++
+				}
+			}
+		}
+
+		if condStarts != 2 {
+			t.Errorf("expected 2 conditional starts, got %d", condStarts)
+		}
+		if condElses != 2 {
+			t.Errorf("expected 2 conditional elses, got %d", condElses)
+		}
+		if condEnds != 2 {
+			t.Errorf("expected 2 conditional ends, got %d", condEnds)
+		}
+		if len(groupIDs) != 2 {
+			t.Errorf("expected 2 distinct GroupingIdentifiers, got %d", len(groupIDs))
+		}
+		for grp, count := range groupIDs {
+			if count != 3 {
+				t.Errorf("expected group %s to have 3 segments (start, else, end), got %d", grp, count)
+			}
+		}
+	})
+}
+
 
 

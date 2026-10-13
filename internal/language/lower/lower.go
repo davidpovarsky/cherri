@@ -342,6 +342,18 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 					fmt.Sscanf(lit.Value, "%d", &g)
 					l.workflow.IconGlyph = g
 				}
+			case "color":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					var c int
+					fmt.Sscanf(lit.Value, "%d", &c)
+					l.workflow.IconColor = c
+				}
+			case "glyph":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					var g int
+					fmt.Sscanf(lit.Value, "%d", &g)
+					l.workflow.IconGlyph = g
+				}
 			case "targets":
 				if list, ok := f.Value.(*syntax.ListExpr); ok {
 					var targets []string

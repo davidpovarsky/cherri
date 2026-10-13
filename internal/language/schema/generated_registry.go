@@ -18320,7 +18320,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "controlflow",
 				Subcategory: "",
-				InsertionSnippet: "menu \\\"Choose\\\" {\n\t\\\"Option 1\\\": {\n\t\t\n\t}\n}",
+				InsertionSnippet: "menu(\\\"Choose\\\") {\n\tcase \\\"Option 1\\\" {\n\t\t\n\t}\n}",
 			},
 			Parameters: []ParameterSchema{
 			},

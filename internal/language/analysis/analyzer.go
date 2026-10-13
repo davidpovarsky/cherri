@@ -459,7 +459,24 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 			}
 			a.error(CodeUnknownName, e.Span, fmt.Sprintf("property %q does not exist on record %s", e.Property, rec))
 		}
-		return types.Unknown
+		switch strings.ToLower(e.Property) {
+		case "dictionary":
+			return types.NewMap(types.Text, types.AnyContent)
+		case "date":
+			return types.Date
+		case "number":
+			return types.Number
+		case "text", "string":
+			return types.Text
+		case "bool", "boolean":
+			return types.Bool
+		case "file":
+			return types.File
+		case "image":
+			return types.Image
+		default:
+			return types.Unknown
+		}
 
 	case *syntax.EnumMemberExpr:
 		return types.Text
@@ -472,6 +489,9 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 				a.error(CodeArgumentType, e.Index.NodeSpan(), fmt.Sprintf("map index requires %s, got %s", mapType.Key, idxType))
 			}
 			return types.NewOptional(mapType.Value)
+		}
+		if targetType != nil && (targetType.Kind() == types.KindUnknown || targetType.Kind() == types.KindAnyContent) {
+			return types.Unknown
 		}
 		if idxType != nil && !idxType.AssignableTo(types.Number) && idxType.Kind() != types.KindUnknown {
 			a.error(CodeArgumentType, e.Index.NodeSpan(), fmt.Sprintf("index expression requires Number, got %s", idxType))

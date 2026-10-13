@@ -1,0 +1,39 @@
+// CherriDictionaryRuntimePOC.cherri
+// Runtime PoC verifying all 4 Dictionary approaches in Apple Shortcuts on iOS 27:
+// Approach A: JSON Text -> getDictionary()
+// Approach B: Native Dictionary action { ... } in both let and var contexts (nested, Hebrew, emoji, empty)
+// Approach C: setName(jsonText, "sample.json") (item renaming, distinct from dictionary parsing)
+// Approach D: jsonText.dictionary (variable reference coercion with WFCoercionVariableAggrandizement)
+
+// Approach A: JSON Text -> getDictionary
+let jsonA = "{\"key\": \"valA\", \"hebrew\": \"שלום\", \"emoji\": \"🚀\"}"
+let dictA = getDictionary(jsonA)
+let resA = dictA["key"]
+
+// Approach B (let): Native Dictionary with Hebrew and emoji
+let dictBLet = {
+    "key": "valBLet",
+    "hebrew": "עברית",
+    "emoji": "🎉"
+}
+let resBLet = dictBLet["key"]
+
+// Approach B (var): Mutable Dictionary variable
+var dictBVar = {
+    "key": "valBVar",
+    "count": 42
+}
+let resBVar = dictBVar["key"]
+
+// Approach C: setName JSON Text (item renaming)
+let jsonC = "{\"key\": \"valC\"}"
+let itemC = setName(jsonC, "sample.json")
+let resCName = getName(itemC)
+
+// Approach D: Dictionary reference coercion (.dictionary)
+let jsonD = "{\"key\": \"valD\"}"
+let dictD = jsonD.dictionary
+let resD = dictD["key"]
+
+let result = f"CHERRI_DICT_RUNTIME_OK\nDICT_A={resA}\nDICT_B_LET={resBLet}\nDICT_B_VAR={resBVar}\nDICT_C_NAME={resCName}\nDICT_D={resD}"
+setClipboard(result)

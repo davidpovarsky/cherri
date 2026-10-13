@@ -1,0 +1,11 @@
+// CherriLegacyIfPOC.cherri
+// Legacy conditional fixture for iOS 27 runtime verification
+#include 'actions/sharing'
+
+@x = 5
+if @x == 5 {
+    @msg = "CHERRI_LEGACY_IF_OK"
+} else {
+    @msg = "CHERRI_LEGACY_IF_FAIL"
+}
+setClipboard(@msg)

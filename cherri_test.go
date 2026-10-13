@@ -17,7 +17,15 @@ import (
 
 var currentTest string
 
-func TestCherri(_ *testing.T) {
+func TestCherri(t *testing.T) {
+	if !args.Using("skip-sign") {
+		if !darwin {
+			t.Skip("local shortcut signing is only supported on macOS; use TestCherriNoSign on other platforms")
+		}
+		if os.Getenv("CI") != "" {
+			t.Skip("shortcuts signing is not supported in headless CI without keychain credentials; use TestCherriNoSign")
+		}
+	}
 	args.Args["no-ansi"] = ""
 	args.Args["comments"] = ""
 	var files, err = os.ReadDir("tests")

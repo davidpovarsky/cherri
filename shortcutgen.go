@@ -951,21 +951,18 @@ func makeArrayVariable(t *token) {
 }
 
 func makeConditionalAction(t *token) {
-	var conditionalParams = map[string]any{
-		"GroupingIdentifier": t.ident,
-	}
+	var conditionalParams map[string]any
 	switch t.valueType {
 	case If:
-		conditionalParams["WFControlFlowMode"] = ControlFlowStart
-
 		var cond = t.value.(WFConditions)
-		if cond.legacyComparison {
-			conditionalParams["WFConditionalLegacyComparisonBehavior"] = true
+		spec := ConditionSpec{
+			GroupingIdentifier: t.ident,
+			IsLegacy:           cond.legacyComparison,
 		}
 		if len(cond.conditions) == 1 || iosVersion < 18 {
 			var firstCondition = cond.conditions[0]
 			var firstArg = firstCondition.arguments[0]
-			conditionalParams["WFInput"] = map[string]any{
+			spec.Input = map[string]any{
 				"Type":     "Variable",
 				"Variable": variableValue(firstArg.value.(varValue)),
 			}
@@ -978,17 +975,18 @@ func makeConditionalAction(t *token) {
 					conditionCode = 1001
 				}
 			}
+			spec.ConditionCode = conditionCode
 			var inputType = inputEffectiveType(firstArg.value.(varValue))
 			if len(firstCondition.arguments) > 1 {
-				conditionalParameterLegacy(conditionalParams, firstCondition.arguments[1], inputType)
+				conditionalParameterLegacy(&spec, firstCondition.arguments[1], inputType)
 			}
 			if len(firstCondition.arguments) > 2 {
-				conditionalParameterLegacy(conditionalParams, firstCondition.arguments[2], inputType)
+				conditionalParameterLegacy(&spec, firstCondition.arguments[2], inputType)
 			}
-			conditionalParams["WFCondition"] = conditionCode
 		} else {
-			conditionalParams["WFConditions"] = makeConditions(&cond)
+			spec.Conditions = makeConditions(&cond)
 		}
+		conditionalParams = BuildConditionalStart(spec)
 	case Else:
 		conditionalParams = BuildIfElse(t.ident)
 	case EndClosure:
@@ -1037,22 +1035,14 @@ func routeConditionalValue(param *WFConditionParam, val any, inputType tokenType
 	}
 }
 
-func routeConditionalValueLegacy(params map[string]any, val any, inputType tokenType) {
+func routeConditionalValueLegacy(spec *ConditionSpec, val any, inputType tokenType) {
 	switch inputType {
 	case Date:
-		if _, exists := params["WFDate"]; !exists {
-			params["WFDate"] = val
-		} else {
-			params["WFAnotherDate"] = val
-		}
+		spec.RouteComparisonValue(val, OperandDate)
 	case Integer, Float, Bool:
-		if _, exists := params["WFNumberValue"]; !exists {
-			params["WFNumberValue"] = val
-		} else {
-			params["WFAnotherNumber"] = val
-		}
+		spec.RouteComparisonValue(val, OperandNumber)
 	default:
-		params["WFConditionalActionString"] = val
+		spec.RouteComparisonValue(val, OperandString)
 	}
 }
 
@@ -1126,33 +1116,33 @@ func conditionalParameterVariable(param *WFConditionParam, arg actionArgument, i
 	}
 }
 
-// conditionalParameterLegacy is for iOS < 18 compatibility where we still use map[string]any
-func conditionalParameterLegacy(params map[string]any, arg actionArgument, inputType tokenType) {
+// conditionalParameterLegacy routes single comparison arguments into typed ConditionSpec
+func conditionalParameterLegacy(spec *ConditionSpec, arg actionArgument, inputType tokenType) {
 	switch arg.valueType {
 	case Quantity:
-		params["WFDuration"] = makeQuantityFieldValue(arg.value.([]actionArgument))
+		spec.DurationValue = makeQuantityFieldValue(arg.value.([]actionArgument))
 	case Variable:
-		conditionalParameterVariableLegacy(params, arg, inputType)
+		conditionalParameterVariableLegacy(spec, arg, inputType)
 	case Bool:
 		var boolNumber = 0
 		if arg.value == true {
 			boolNumber = 1
 		}
-		routeConditionalValueLegacy(params, paramValue(actionArgument{valueType: Integer, value: boolNumber}, Integer), inputType)
+		routeConditionalValueLegacy(spec, paramValue(actionArgument{valueType: Integer, value: boolNumber}, Integer), inputType)
 	case Integer, Float:
-		routeConditionalValueLegacy(params, paramValue(arg, arg.valueType), Integer)
+		routeConditionalValueLegacy(spec, paramValue(arg, arg.valueType), Integer)
 	default:
-		routeConditionalValueLegacy(params, paramValue(arg, arg.valueType), inputType)
+		routeConditionalValueLegacy(spec, paramValue(arg, arg.valueType), inputType)
 	}
 }
 
-func conditionalParameterVariableLegacy(params map[string]any, arg actionArgument, inputType tokenType) {
+func conditionalParameterVariableLegacy(spec *ConditionSpec, arg actionArgument, inputType tokenType) {
 	var condVarValue = arg.value.(varValue)
 	switch inputType {
 	case Date, Integer, Float, Bool:
-		routeConditionalValueLegacy(params, variableValue(condVarValue), inputType)
+		routeConditionalValueLegacy(spec, variableValue(condVarValue), inputType)
 	default:
-		routeConditionalValueLegacy(params, attachmentValues(fmt.Sprintf("{%s}", makeVariableReferenceString(condVarValue))), inputType)
+		routeConditionalValueLegacy(spec, attachmentValues(fmt.Sprintf("{%s}", makeVariableReferenceString(condVarValue))), inputType)
 	}
 }
 

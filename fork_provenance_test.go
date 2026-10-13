@@ -142,6 +142,11 @@ func assertRecordedCommit(t *testing.T, field string, sha string) {
 		return
 	}
 
+	if out, err := exec.Command("git", "rev-parse", "--is-shallow-repository").Output(); err == nil && strings.TrimSpace(string(out)) == "true" {
+		// Shallow clone without full history: shape checks only.
+		return
+	}
+
 	gitArgs := func(probe ...string) bool {
 		cmd := exec.Command("git", probe...)
 		return cmd.Run() == nil
