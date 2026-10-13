@@ -8,6 +8,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
@@ -15,9 +16,10 @@ import (
 )
 
 type CanonicalBackendSession struct {
-	tx       *BackendTransaction
-	cleanup  func()
-	shortcut Shortcut
+	tx          *BackendTransaction
+	cleanup     func()
+	shortcut    Shortcut
+	rawWorkflow map[string]any
 }
 
 func NewCanonicalBackendSession() *CanonicalBackendSession {
@@ -321,6 +323,12 @@ func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
 		}
 		return EncodeReferenceAttachment(desc, "WFTextTokenAttachment")
 	}
+	if raw, ok := v.(*ir.RawPlistValue); ok {
+		return &ir.RawPlistValue{Data: sanitizeRawParamValueContext(raw.Data, inAttachmentsByRange)}
+	}
+	if raw, ok := v.(ir.RawPlistValue); ok {
+		return &ir.RawPlistValue{Data: sanitizeRawParamValueContext(raw.Data, inAttachmentsByRange)}
+	}
 	if att, ok := v.(WFTextTokenAttachment); ok {
 		if inAttachmentsByRange {
 			return att.Value
@@ -358,11 +366,41 @@ func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
 	return v
 }
 
+func normalizeRawPlistData(data any) any {
+	if data == nil {
+		return nil
+	}
+	switch d := data.(type) {
+	case *ir.RawPlistValue:
+		return normalizeRawPlistData(d.Data)
+	case ir.RawPlistValue:
+		return normalizeRawPlistData(d.Data)
+	case map[string]any:
+		res := make(map[string]any, len(d))
+		for k, v := range d {
+			res[k] = normalizeRawPlistData(v)
+		}
+		return res
+	case []any:
+		res := make([]any, len(d))
+		for i, v := range d {
+			res[i] = normalizeRawPlistData(v)
+		}
+		return res
+	default:
+		return d
+	}
+}
+
 func normalizeV2RawParamValue(value any) any {
 	if value == nil {
 		return nil
 	}
 	switch v := value.(type) {
+	case *ir.RawPlistValue:
+		return normalizeRawPlistData(v.Data)
+	case ir.RawPlistValue:
+		return normalizeRawPlistData(v.Data)
 	case string:
 		return v
 	case map[string]any:
@@ -387,6 +425,9 @@ func normalizeV2RawParamValue(value any) any {
 }
 
 func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[string]any, outputUUID, outputName, groupingID string) (string, error) {
+	if strings.TrimSpace(appleIdentifier) == "" {
+		return "", fmt.Errorf("action identifier must not be empty")
+	}
 	if params == nil {
 		params = make(map[string]any)
 	}
@@ -685,6 +726,12 @@ func (s *CanonicalBackendSession) SetMetadata(name string, value any) {
 		if b, ok := value.(bool); ok {
 			s.shortcut.WFWorkflowHasShortcutInputVariables = b
 		}
+	case "rawWorkflow":
+		if m, ok := value.(map[string]any); ok {
+			s.rawWorkflow = m
+		} else if m, ok := value.(map[string]interface{}); ok {
+			s.rawWorkflow = m
+		}
 	}
 }
 
@@ -720,6 +767,29 @@ func (s *CanonicalBackendSession) BindImportQuestion(questionName string, wireKe
 }
 
 func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
+	if len(s.rawWorkflow) > 0 {
+		merged := make(map[string]any, len(s.rawWorkflow)+10)
+		for k, v := range s.rawWorkflow {
+			merged[k] = v
+		}
+		var sBuf bytes.Buffer
+		if err := plist.NewEncoder(&sBuf).Encode(s.shortcut); err == nil {
+			var sMap map[string]any
+			if _, err := plist.Unmarshal(sBuf.Bytes(), &sMap); err == nil {
+				for k, v := range sMap {
+					merged[k] = v
+				}
+			}
+		}
+		var buf bytes.Buffer
+		enc := plist.NewEncoder(&buf)
+		enc.Indent("\t")
+		if err := enc.Encode(merged); err != nil {
+			return nil, fmt.Errorf("plist encoding error: %w", err)
+		}
+		return buf.Bytes(), nil
+	}
+
 	var buf bytes.Buffer
 	enc := plist.NewEncoder(&buf)
 	enc.Indent("\t")

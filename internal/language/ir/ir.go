@@ -19,6 +19,11 @@ type AttachmentToken struct {
 	Aggrandizements []map[string]interface{} `json:"aggrandizements,omitempty"`
 }
 
+// RawPlistValue represents an opaque native plist pass-through value.
+type RawPlistValue struct {
+	Data any `json:"data"`
+}
+
 // NativeWorkflow represents an entire Apple Shortcut workflow ready for plist serialization.
 type NativeWorkflow struct {
 	Name                      string                   `json:"name,omitempty"`

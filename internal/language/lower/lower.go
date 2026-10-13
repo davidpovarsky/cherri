@@ -11,6 +11,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"howett.net/plist"
 )
 
 // BindingRef represents how a variable is stored and referenced in Shortcuts.
@@ -1818,7 +1819,10 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 	case *syntax.MapExpr:
 		dict := make(map[string]interface{})
 		for _, entry := range e.Entries {
-			kVal, _ := l.lowerExpression(entry.Key)
+			kVal, err := l.lowerExpression(entry.Key)
+			if err != nil {
+				return nil, err
+			}
 			vVal, err := l.lowerExpression(entry.Value)
 			if err != nil {
 				return nil, err
@@ -2421,7 +2425,10 @@ func (l *Lowerer) lowerSemanticValue(expr syntax.Expression) (backend.SemanticVa
 	if m, ok := expr.(*syntax.MapExpr); ok {
 		entries := make([]backend.DictEntry, 0, len(m.Entries))
 		for _, entry := range m.Entries {
-			kVal, _ := l.lowerExpression(entry.Key)
+			kVal, err := l.lowerExpression(entry.Key)
+			if err != nil {
+				return backend.SemanticValue{}, err
+			}
 			vVal, err := l.lowerSemanticValue(entry.Value)
 			if err != nil {
 				return backend.SemanticValue{}, err
@@ -2627,7 +2634,10 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			Parameters: make(map[string]interface{}),
 		}
 		if call.PrimaryArg != nil {
-			val, _ := l.lowerExpression(call.PrimaryArg)
+			val, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, fmt.Errorf("failed to lower action identifier: %w", err)
+			}
 			if s, ok := val.(string); ok {
 				node.AppleIdentifier = s
 			} else {
@@ -2636,29 +2646,273 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 		for _, arg := range call.NamedArgs {
 			if arg.Label == "identifier" {
-				if lit, ok := arg.Value.(*syntax.LiteralExpr); ok {
-					node.AppleIdentifier = fmt.Sprintf("%v", lit.Value)
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, fmt.Errorf("failed to lower action identifier: %w", err)
+				}
+				if s, ok := val.(string); ok {
+					node.AppleIdentifier = s
+				} else {
+					node.AppleIdentifier = fmt.Sprintf("%v", val)
 				}
 			} else if arg.Label == "parameters" || arg.Label == "" {
-				val, _ := l.lowerExpression(arg.Value)
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, fmt.Errorf("failed to lower action parameters: %w", err)
+				}
 				if m, ok := val.(map[string]interface{}); ok {
 					for k, v := range m {
 						node.Parameters[k] = v
 					}
+				} else if m, ok := val.(map[string]any); ok {
+					for k, v := range m {
+						node.Parameters[k] = v
+					}
+				} else {
+					return nil, fmt.Errorf("parameters argument to %s must be a dictionary, got %T", actionName, val)
 				}
+			} else if arg.Label == "uuid" || arg.Label == "outputUUID" {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				node.OutputUUID = fmt.Sprint(val)
+			} else if arg.Label == "outputName" || arg.Label == "customOutputName" {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				node.OutputName = fmt.Sprint(val)
+			} else if arg.Label == "groupingIdentifier" {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				node.GroupingIdentifier = fmt.Sprint(val)
+			} else {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, fmt.Errorf("failed to lower parameter %s: %w", arg.Label, err)
+				}
+				node.Parameters[arg.Label] = val
 			}
 		}
+		if strings.TrimSpace(node.AppleIdentifier) == "" {
+			return nil, fmt.Errorf("%s requires a non-empty action identifier", actionName)
+		}
 		l.emitAction(node)
+		if l.emitErr != nil {
+			return nil, l.emitErr
+		}
 		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 	}
 	if actionName == "native.plist" {
-		return nil, fmt.Errorf("native.plist is unsupported: use native.action to emit raw action dictionaries directly")
+		var targetExpr syntax.Expression
+		if call.PrimaryArg != nil {
+			targetExpr = call.PrimaryArg
+		} else {
+			for _, arg := range call.NamedArgs {
+				if arg.Label == "data" || arg.Label == "plist" || arg.Label == "value" || arg.Label == "" {
+					targetExpr = arg.Value
+					break
+				}
+			}
+		}
+		if targetExpr == nil {
+			return nil, fmt.Errorf("native.plist requires a plist expression or dictionary")
+		}
+		val, err := l.lowerExpression(targetExpr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to lower native.plist data: %w", err)
+		}
+		if str, ok := val.(string); ok && (strings.HasPrefix(strings.TrimSpace(str), "<?xml") || strings.HasPrefix(strings.TrimSpace(str), "<plist")) {
+			var parsed any
+			if _, err := plist.Unmarshal([]byte(str), &parsed); err != nil {
+				return nil, fmt.Errorf("native.plist failed to parse XML plist: %w", err)
+			}
+			return &ir.RawPlistValue{Data: parsed}, nil
+		}
+		return &ir.RawPlistValue{Data: val}, nil
 	}
 	if actionName == "native.ref" {
-		return nil, fmt.Errorf("native.ref is unsupported: use variable or action output references directly")
+		var kind string
+		var outputUUID string
+		var outputName string
+		var aggrs []map[string]interface{}
+
+		if call.PrimaryArg != nil {
+			val, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, fmt.Errorf("failed to lower native.ref kind: %w", err)
+			}
+			kind = fmt.Sprint(val)
+		}
+
+		for _, arg := range call.NamedArgs {
+			val, err := l.lowerExpression(arg.Value)
+			if err != nil {
+				return nil, fmt.Errorf("failed to lower native.ref argument %s: %w", arg.Label, err)
+			}
+			switch arg.Label {
+			case "kind", "type":
+				kind = fmt.Sprint(val)
+			case "uuid", "outputUUID":
+				outputUUID = fmt.Sprint(val)
+			case "name", "variable", "outputName":
+				outputName = fmt.Sprint(val)
+			case "aggrandizements":
+				if list, ok := val.([]interface{}); ok {
+					for _, item := range list {
+						if m, ok := item.(map[string]interface{}); ok {
+							aggrs = append(aggrs, m)
+						} else if m, ok := item.(map[string]any); ok {
+							aggrs = append(aggrs, m)
+						}
+					}
+				}
+			case "coerce", "coercion":
+				aggrs = append(aggrs, map[string]interface{}{
+					"Type":              "WFCoercionVariableAggrandizement",
+					"CoercionItemClass": fmt.Sprint(val),
+				})
+			case "property":
+				aggrs = append(aggrs, map[string]interface{}{
+					"Type":         "WFPropertyVariableAggrandizement",
+					"PropertyName": fmt.Sprint(val),
+				})
+			case "key", "dictionaryKey":
+				aggrs = append(aggrs, map[string]interface{}{
+					"Type":          "WFDictionaryValueVariableAggrandizement",
+					"DictionaryKey": fmt.Sprint(val),
+				})
+			}
+		}
+
+		normKind := strings.ToLower(strings.TrimSpace(kind))
+		switch normKind {
+		case "actionoutput", "output":
+			kind = "ActionOutput"
+			if strings.TrimSpace(outputUUID) == "" {
+				return nil, fmt.Errorf("native.ref for ActionOutput requires a non-empty uuid")
+			}
+		case "variable", "var":
+			kind = "Variable"
+			if strings.TrimSpace(outputName) == "" {
+				return nil, fmt.Errorf("native.ref for Variable requires a non-empty name")
+			}
+		case "shortcutinput", "extensioninput", "input":
+			kind = "ExtensionInput"
+		case "clipboard":
+			kind = "Clipboard"
+		case "ask", "askeachtime":
+			kind = "Ask"
+		default:
+			if kind == "" {
+				return nil, fmt.Errorf("native.ref requires a reference kind (e.g. ActionOutput, Variable, ShortcutInput)")
+			}
+		}
+
+		tok := &ir.AttachmentToken{
+			Type:            kind,
+			OutputUUID:      outputUUID,
+			OutputName:      outputName,
+			Aggrandizements: aggrs,
+		}
+		return tok, nil
 	}
 	if actionName == "native.workflow" {
-		return nil, fmt.Errorf("native.workflow is unsupported: use shortcut metadata block")
+		var targetExpr syntax.Expression
+		if call.PrimaryArg != nil {
+			targetExpr = call.PrimaryArg
+		} else {
+			for _, arg := range call.NamedArgs {
+				if arg.Label == "workflow" || arg.Label == "data" || arg.Label == "plist" || arg.Label == "" {
+					targetExpr = arg.Value
+					break
+				}
+			}
+		}
+		if targetExpr == nil {
+			return nil, fmt.Errorf("native.workflow requires a workflow dictionary or plist data")
+		}
+		val, err := l.lowerExpression(targetExpr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to lower native.workflow: %w", err)
+		}
+		var rawMap map[string]interface{}
+		if str, ok := val.(string); ok && (strings.HasPrefix(strings.TrimSpace(str), "<?xml") || strings.HasPrefix(strings.TrimSpace(str), "<plist")) {
+			var parsed any
+			if _, err := plist.Unmarshal([]byte(str), &parsed); err != nil {
+				return nil, fmt.Errorf("native.workflow failed to parse XML plist: %w", err)
+			}
+			if m, ok := parsed.(map[string]interface{}); ok {
+				rawMap = m
+			} else if m, ok := parsed.(map[string]any); ok {
+				rawMap = m
+			}
+		} else if m, ok := val.(map[string]interface{}); ok {
+			rawMap = m
+		} else if m, ok := val.(map[string]any); ok {
+			rawMap = m
+		} else {
+			return nil, fmt.Errorf("native.workflow argument must be a workflow dictionary or XML plist string, got %T", val)
+		}
+
+		l.workflow.IsFullNativePass = true
+		l.workflow.NativeWorkflowRaw = rawMap
+		if l.session != nil {
+			l.session.SetMetadata("rawWorkflow", rawMap)
+		}
+
+		if v, ok := rawMap["WFWorkflowClientVersion"].(string); ok {
+			l.workflow.ClientVersion = v
+			if l.session != nil {
+				l.session.SetMetadata("clientVersion", v)
+			}
+		}
+		if types, ok := rawMap["WFWorkflowTypes"].([]string); ok {
+			l.workflow.WorkflowTypes = types
+			if l.session != nil {
+				l.session.SetMetadata("workflowTypes", types)
+			}
+		}
+		if classes, ok := rawMap["WFWorkflowInputContentItemClasses"].([]string); ok {
+			l.workflow.InputContentItemClasses = classes
+			if l.session != nil {
+				l.session.SetMetadata("inputContentItemClasses", classes)
+			}
+		}
+
+		if acts, ok := rawMap["WFWorkflowActions"].([]interface{}); ok {
+			for _, act := range acts {
+				if actMap, ok := act.(map[string]interface{}); ok {
+					ident, _ := actMap["WFWorkflowActionIdentifier"].(string)
+					params, _ := actMap["WFWorkflowActionParameters"].(map[string]interface{})
+					if params == nil {
+						params = make(map[string]interface{})
+					}
+					node := &ir.NativeActionNode{
+						NodeID:          l.GenerateUUID(),
+						AppleIdentifier: ident,
+						Parameters:      params,
+					}
+					if u, ok := params["UUID"].(string); ok {
+						node.OutputUUID = u
+					}
+					if n, ok := params["CustomOutputName"].(string); ok {
+						node.OutputName = n
+					}
+					if g, ok := params["GroupingIdentifier"].(string); ok {
+						node.GroupingIdentifier = g
+					}
+					l.emitAction(node)
+					if l.emitErr != nil {
+						return nil, l.emitErr
+					}
+				}
+			}
+		}
+		return nil, nil
 	}
 
 	// Check user-declared action

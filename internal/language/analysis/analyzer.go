@@ -664,17 +664,26 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 }
 
 func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
-	calleeIdent, ok := call.Callee.(*syntax.IdentExpr)
-	if !ok {
-		// e.g. callee is a member access or complex expression
+	var callName string
+	switch c := call.Callee.(type) {
+	case *syntax.IdentExpr:
+		callName = c.Name
+	case *syntax.MemberExpr:
+		if targetIdent, ok := c.Target.(*syntax.IdentExpr); ok && targetIdent.Name == "native" {
+			callName = "native." + c.Property
+		} else {
+			a.analyzeExpression(call.Callee, scope)
+			return types.Unknown
+		}
+	default:
+		// e.g. callee is a complex expression
 		a.analyzeExpression(call.Callee, scope)
 		return types.Unknown
 	}
 
-	callName := calleeIdent.Name
-
 	// 0. Check native escape / rawAction
-	if callName == "rawAction" || callName == "native.action" || callName == "action" {
+	if callName == "rawAction" || callName == "native.action" || callName == "action" ||
+		callName == "native.plist" || callName == "native.ref" || callName == "native.workflow" {
 		if call.PrimaryArg != nil {
 			a.analyzeExpression(call.PrimaryArg, scope)
 		}
