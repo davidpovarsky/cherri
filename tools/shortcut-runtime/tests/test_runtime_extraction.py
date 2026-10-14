@@ -625,6 +625,49 @@ pathlib.Path(out_file).write_text(json.dumps(data))
             # Builtins missing remains empty
             self.assertEqual(missing_defs, [])
 
+    def test_19_compare_cherri_variant_aggregation_disjoint_keys(self):
+        """Test 19: Action variants sharing an Apple identifier aggregate disjoint parameter keys without false unmodeled gaps."""
+        with tempfile.TemporaryDirectory() as td:
+            cherri_file = pathlib.Path(td) / "cherri.json"
+            cherri_file.write_text(json.dumps({
+                "actions": [
+                    {
+                        "name": "getValue",
+                        "shortcutIdentifier": "is.workflow.actions.getvalueforkey",
+                        "parameters": [{"key": "WFGetDictionaryValueType"}, {"key": "WFDictionaryKey"}]
+                    },
+                    {
+                        "name": "getValues",
+                        "shortcutIdentifier": "is.workflow.actions.getvalueforkey",
+                        "parameters": [{"key": "WFGetDictionaryValueType"}]
+                    }
+                ]
+            }))
+
+            builtin_file = pathlib.Path(td) / "builtin.json"
+            builtin_file.write_text(json.dumps({
+                "is.workflow.actions.getvalueforkey": {}
+            }))
+
+            param_enc_file = pathlib.Path(td) / "parameter-encodings.json"
+            param_enc_file.write_text(json.dumps({
+                "actionParameters": {
+                    "is.workflow.actions.getvalueforkey": [
+                        {"key": "WFGetDictionaryValueType"},
+                        {"key": "WFDictionaryKey"}
+                    ]
+                }
+            }))
+
+            summary, _, _, _, gaps = run_comparison(
+                cherri_actions_path=str(cherri_file),
+                builtin_defs_path=str(builtin_file),
+                parameter_encodings_path=str(param_enc_file)
+            )
+
+            self.assertEqual(summary["parameterSurface"]["actionsWithUnmodeledKeys"], 0)
+            self.assertEqual(len(gaps), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

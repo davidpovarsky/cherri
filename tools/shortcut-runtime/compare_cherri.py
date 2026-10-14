@@ -16,20 +16,44 @@ import sys
 
 
 def load_json(path, default=None):
-    if not path or not os.path.exists(path):
+    if path is None:
         return default
+    if isinstance(path, (dict, list)):
+        return path
+    actual_path = path
+    if not os.path.exists(actual_path):
+        if os.path.exists(str(actual_path) + ".gz"):
+            actual_path = str(actual_path) + ".gz"
+        else:
+            return default
     try:
-        return json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+        if str(actual_path).endswith(".gz"):
+            import gzip
+            with gzip.open(actual_path, "rt", encoding="utf-8") as f:
+                return json.load(f)
+        return json.loads(pathlib.Path(actual_path).read_text(encoding="utf-8"))
     except Exception as e:
         print(f"Warning: Failed to load {path}: {e}", file=sys.stderr)
         return default
 
 
 def load_lines(path):
-    if not path or not os.path.exists(path):
+    if path is None:
         return []
+    if isinstance(path, (list, set)):
+        return list(path)
+    actual_path = path
+    if not os.path.exists(actual_path):
+        if os.path.exists(str(actual_path) + ".gz"):
+            actual_path = str(actual_path) + ".gz"
+        else:
+            return []
     try:
-        return [line.strip() for line in pathlib.Path(path).read_text(encoding="utf-8").splitlines() if line.strip()]
+        if str(actual_path).endswith(".gz"):
+            import gzip
+            with gzip.open(actual_path, "rt", encoding="utf-8") as f:
+                return [line.strip() for line in f.read().splitlines() if line.strip()]
+        return [line.strip() for line in pathlib.Path(actual_path).read_text(encoding="utf-8").splitlines() if line.strip()]
     except Exception as e:
         print(f"Warning: Failed to load lines from {path}: {e}", file=sys.stderr)
         return []
@@ -188,6 +212,7 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
 def main():
     parser = argparse.ArgumentParser(description="Compares extracted Apple runtime surfaces against Cherri catalog")
     parser.add_argument("--cherri-actions", required=True, help="Path to cherri-actions.json")
+    parser.add_argument("--snapshot", help="Path to apple-runtime-snapshot.json or .json.gz")
     parser.add_argument("--builtin-defs", help="Path to builtin-actions.json")
     parser.add_argument("--dyld-ids", help="Path to builtin-action-identifiers.txt")
     parser.add_argument("--app-intents", help="Path to app-provided-actions.json")
@@ -200,12 +225,52 @@ def main():
     out_dir = pathlib.Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    builtin_defs = args.builtin_defs
+    dyld_ids = args.dyld_ids
+    app_intents = args.app_intents
+    toolkit_registry = args.toolkit_registry
+
+    if args.snapshot:
+        snap = load_json(args.snapshot, {})
+        actions = snap.get("actions", {})
+        if not builtin_defs:
+            builtin_defs = {k: v.get("metadata", {}).get("builtin", {}) for k, v in actions.items() if "builtinDefinition" in v.get("sources", [])}
+        if not dyld_ids:
+            dyld_ids = [k for k, v in actions.items() if "dyld" in v.get("sources", [])]
+        if not app_intents:
+            app_intents_list = []
+            for k, v in actions.items():
+                if "appIntent" in v.get("sources", []):
+                    meta = v.get("metadata", {})
+                    app_intents_list.append({
+                        "bundleIdentifier": meta.get("bundleIdentifier") or v.get("bundleIdentifier") or "",
+                        "shortcutActionIdentifier": v.get("identifier") or k,
+                        "discoverable": meta.get("discoverable", False)
+                    })
+            app_intents = {"actions": app_intents_list}
+        if not toolkit_registry:
+            tk_reg_path = pathlib.Path("docs/apple-runtime/toolkit-registry.json.gz")
+            if tk_reg_path.exists():
+                toolkit_registry = str(tk_reg_path)
+            else:
+                toolkit_registry = snap.get("toolkitEvidence", {})
+
+    if not args.toolkit_summary:
+        tk_sum_path = pathlib.Path("docs/apple-runtime/toolkit-summary.json")
+        if tk_sum_path.exists():
+            args.toolkit_summary = str(tk_sum_path)
+
+    if not args.parameter_encodings:
+        pe_path = pathlib.Path("docs/apple-runtime/parameter-encodings.json.gz")
+        if pe_path.exists():
+            args.parameter_encodings = str(pe_path)
+
     summary, missing_defs, missing_intents, missing_runnable, gaps = run_comparison(
         cherri_actions_path=args.cherri_actions,
-        builtin_defs_path=args.builtin_defs,
-        dyld_ids_path=args.dyld_ids,
-        app_intents_path=args.app_intents,
-        toolkit_registry_path=args.toolkit_registry,
+        builtin_defs_path=builtin_defs,
+        dyld_ids_path=dyld_ids,
+        app_intents_path=app_intents,
+        toolkit_registry_path=toolkit_registry,
         toolkit_summary_path=args.toolkit_summary,
         parameter_encodings_path=args.parameter_encodings
     )

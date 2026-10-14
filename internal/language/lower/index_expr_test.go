@@ -136,3 +136,132 @@ let v = dict[""]
 		t.Errorf("FAIL: unexpected error message: %v", err)
 	}
 }
+
+func TestMapIndexUnicodeKeyLowering(t *testing.T) {
+	code := `let dict = {"שלום": "עולם"}
+let k = "שלום"
+let v = dict[k]
+show(v)
+`
+	file := source.NewFile("unicode_key.cherri", "file:///unicode_key.cherri", 1, code)
+	parser := syntax.NewParser(file)
+	prog := parser.ParseProgram()
+	if len(parser.Errors()) > 0 {
+		t.Fatalf("unexpected parse errors: %v", parser.Errors())
+	}
+
+	lowerer := NewLowerer(schema.DefaultRegistry())
+	wf, err := lowerer.LowerProgram(prog)
+	if err != nil {
+		t.Fatalf("unexpected lowering error: %v", err)
+	}
+
+	foundGetValue := false
+	for _, act := range wf.Actions {
+		if act.AppleIdentifier == "is.workflow.actions.getvalueforkey" {
+			foundGetValue = true
+			keyParam, ok := act.Parameters["WFDictionaryKey"].(map[string]interface{})
+			if !ok {
+				t.Fatalf("expected WFDictionaryKey to be map, got %T", act.Parameters["WFDictionaryKey"])
+			}
+			if keyParam["WFSerializationType"] != "WFTextTokenString" {
+				t.Errorf("expected WFTextTokenString serialization, got %v", keyParam["WFSerializationType"])
+			}
+		}
+	}
+	if !foundGetValue {
+		t.Errorf("expected is.workflow.actions.getvalueforkey for unicode map index")
+	}
+}
+
+func TestMapIndexLetVarLowering(t *testing.T) {
+	code := `var dict = {"a": 1}
+var k = "a"
+var v = dict[k]
+`
+	file := source.NewFile("var_map.cherri", "file:///var_map.cherri", 1, code)
+	parser := syntax.NewParser(file)
+	prog := parser.ParseProgram()
+	if len(parser.Errors()) > 0 {
+		t.Fatalf("unexpected parse errors: %v", parser.Errors())
+	}
+
+	lowerer := NewLowerer(schema.DefaultRegistry())
+	wf, err := lowerer.LowerProgram(prog)
+	if err != nil {
+		t.Fatalf("unexpected lowering error: %v", err)
+	}
+
+	foundGetValue := false
+	for _, act := range wf.Actions {
+		if act.AppleIdentifier == "is.workflow.actions.getvalueforkey" {
+			foundGetValue = true
+		}
+	}
+	if !foundGetValue {
+		t.Errorf("expected is.workflow.actions.getvalueforkey for var dict indexing")
+	}
+}
+
+func TestMapIndexNestedMapLowering(t *testing.T) {
+	code := `let nested = {"outer": {"inner": "target"}}
+let k1 = "outer"
+let k2 = "inner"
+let mid = nested[k1]
+let res = mid[k2]
+`
+	file := source.NewFile("nested_map.cherri", "file:///nested_map.cherri", 1, code)
+	parser := syntax.NewParser(file)
+	prog := parser.ParseProgram()
+	if len(parser.Errors()) > 0 {
+		t.Fatalf("unexpected parse errors: %v", parser.Errors())
+	}
+
+	lowerer := NewLowerer(schema.DefaultRegistry())
+	wf, err := lowerer.LowerProgram(prog)
+	if err != nil {
+		t.Fatalf("unexpected lowering error: %v", err)
+	}
+
+	getValueCount := 0
+	for _, act := range wf.Actions {
+		if act.AppleIdentifier == "is.workflow.actions.getvalueforkey" {
+			getValueCount++
+		}
+	}
+	if getValueCount < 2 {
+		t.Errorf("expected at least 2 is.workflow.actions.getvalueforkey actions for nested map access, got %d", getValueCount)
+	}
+}
+
+func TestMapIndexDirectGetValueCall(t *testing.T) {
+	code := `let dict = {"name": "Cherri"}
+let k = "name"
+let v = getValue(dict, key: k)
+`
+	file := source.NewFile("direct_getvalue.cherri", "file:///direct_getvalue.cherri", 1, code)
+	parser := syntax.NewParser(file)
+	prog := parser.ParseProgram()
+	if len(parser.Errors()) > 0 {
+		t.Fatalf("unexpected parse errors: %v", parser.Errors())
+	}
+
+	lowerer := NewLowerer(schema.DefaultRegistry())
+	wf, err := lowerer.LowerProgram(prog)
+	if err != nil {
+		t.Fatalf("unexpected lowering error: %v", err)
+	}
+
+	foundGetValue := false
+	for _, act := range wf.Actions {
+		if act.AppleIdentifier == "is.workflow.actions.getvalueforkey" {
+			foundGetValue = true
+			if _, ok := act.Parameters["WFDictionaryKey"]; !ok {
+				t.Errorf("expected WFDictionaryKey in direct getValue call")
+			}
+		}
+	}
+	if !foundGetValue {
+		t.Errorf("expected is.workflow.actions.getvalueforkey in direct getValue call")
+	}
+}

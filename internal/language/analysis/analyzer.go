@@ -3,6 +3,7 @@ package analysis
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
@@ -58,15 +59,19 @@ func (s *Scope) LookupLocal(name string) (*Symbol, bool) {
 
 // Analyzer performs semantic analysis on a parsed Program.
 type Analyzer struct {
-	registry     *schema.Registry
-	diagnostics  []Diagnostic
-	currentFn    *syntax.FunctionDecl
-	inValueBlk   bool
-	topLevelVars map[string]source.Span
-	yieldedTypes []types.Type
-	importStack  []string
-	isMacTarget  *bool
-	exprTypes    map[syntax.Expression]types.Type
+	registry          *schema.Registry
+	diagnostics       []Diagnostic
+	currentFn         *syntax.FunctionDecl
+	inValueBlk        bool
+	topLevelVars      map[string]source.Span
+	yieldedTypes      []types.Type
+	importStack       []string
+	isMacTarget       *bool
+	exprTypes         map[syntax.Expression]types.Type
+	targets           []string
+	hasExplicitTarget bool
+	minTargetVersion  float64
+	maxTargetVersion  float64
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -94,6 +99,67 @@ func (a *Analyzer) IsMacTarget() *bool {
 // SetIsMacTarget explicitly sets the active target platform constraint.
 func (a *Analyzer) SetIsMacTarget(isMac *bool) {
 	a.isMacTarget = isMac
+	if isMac != nil {
+		a.hasExplicitTarget = true
+		if *isMac {
+			a.targets = []string{"macos"}
+		} else {
+			a.targets = []string{"ios", "ipados"}
+		}
+	} else {
+		a.hasExplicitTarget = false
+		a.targets = nil
+	}
+}
+
+// Targets returns the active target platforms.
+func (a *Analyzer) Targets() []string {
+	return a.targets
+}
+
+// SetTargets explicitly sets the target platforms.
+func (a *Analyzer) SetTargets(targets []string) {
+	a.targets = targets
+	a.hasExplicitTarget = len(targets) > 0
+	hasMac := false
+	hasNonMac := false
+	for _, t := range targets {
+		tl := strings.ToLower(t)
+		if tl == "mac" || tl == "macos" {
+			hasMac = true
+		} else if tl == "ios" || tl == "ipados" || tl == "watchos" {
+			hasNonMac = true
+		}
+	}
+	if hasMac && !hasNonMac {
+		v := true
+		a.isMacTarget = &v
+	} else if hasNonMac && !hasMac {
+		v := false
+		a.isMacTarget = &v
+	} else {
+		a.isMacTarget = nil
+	}
+}
+
+// MinTargetVersion returns the declared minimum target OS version.
+func (a *Analyzer) MinTargetVersion() float64 {
+	return a.minTargetVersion
+}
+
+// SetMinTargetVersion sets the minimum target OS version.
+func (a *Analyzer) SetMinTargetVersion(v float64) {
+	a.minTargetVersion = v
+}
+
+// MaxTargetVersion returns the declared maximum target OS version.
+func (a *Analyzer) MaxTargetVersion() float64 {
+	return a.maxTargetVersion
+}
+
+// SetMaxTargetVersion sets the maximum target OS version.
+func (a *Analyzer) SetMaxTargetVersion(v float64) {
+	a.maxTargetVersion = v
 }
 
 // Diagnostics returns all diagnostics produced during analysis.
@@ -211,19 +277,30 @@ func (a *Analyzer) analyzeShortcutDecl(sd *syntax.ShortcutDecl) {
 			if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
 				val := lit.Value == "true"
 				a.isMacTarget = &val
+				a.hasExplicitTarget = true
+				if val {
+					a.targets = []string{"macos"}
+				} else {
+					a.targets = []string{"ios", "ipados"}
+				}
 			}
 		case "target":
 			if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
-				val := strings.ToLower(lit.Value) == "macos" || strings.ToLower(lit.Value) == "mac"
+				t := strings.ToLower(lit.Value)
+				a.targets = []string{t}
+				a.hasExplicitTarget = true
+				val := (t == "macos" || t == "mac")
 				a.isMacTarget = &val
 			}
 		case "targets":
 			if list, ok := f.Value.(*syntax.ListExpr); ok {
+				var targets []string
 				hasMac := false
 				hasNonMac := false
 				for _, el := range list.Elements {
 					if lit, ok := el.(*syntax.LiteralExpr); ok {
 						v := strings.ToLower(lit.Value)
+						targets = append(targets, v)
 						if v == "mac" || v == "macos" {
 							hasMac = true
 						} else if v == "ios" || v == "ipados" || v == "watchos" {
@@ -231,12 +308,28 @@ func (a *Analyzer) analyzeShortcutDecl(sd *syntax.ShortcutDecl) {
 						}
 					}
 				}
+				a.targets = targets
+				a.hasExplicitTarget = len(targets) > 0
 				if hasMac && !hasNonMac {
 					val := true
 					a.isMacTarget = &val
 				} else if hasNonMac && !hasMac {
 					val := false
 					a.isMacTarget = &val
+				} else {
+					a.isMacTarget = nil
+				}
+			}
+		case "minVersion", "iosVersion", "clientVersion", "version":
+			if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+				if v, err := strconv.ParseFloat(lit.Value, 64); err == nil {
+					a.minTargetVersion = v
+				}
+			}
+		case "maxVersion":
+			if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+				if v, err := strconv.ParseFloat(lit.Value, 64); err == nil {
+					a.maxTargetVersion = v
 				}
 			}
 		}
@@ -805,12 +898,31 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return types.Unknown
 	}
 
-	if a.isMacTarget != nil {
-		if actionSchema.MacOnly && !*a.isMacTarget {
-			a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is only available on macOS", callName))
+	if a.hasExplicitTarget {
+		for _, target := range a.targets {
+			tl := strings.ToLower(target)
+			if tl == "mac" || tl == "macos" {
+				if actionSchema.NonMacOnly {
+					a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is not available on macOS", callName))
+				}
+			} else {
+				if actionSchema.MacOnly {
+					a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is only available on macOS (cannot target %s)", callName, target))
+				}
+			}
 		}
-		if actionSchema.NonMacOnly && *a.isMacTarget {
-			a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is not available on macOS", callName))
+		if a.minTargetVersion > 0 && actionSchema.MinVersion > 0 && actionSchema.MinVersion > a.minTargetVersion {
+			a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q requires minimum version %v, but shortcut target version is %v", callName, actionSchema.MinVersion, a.minTargetVersion))
+		}
+		if a.maxTargetVersion > 0 && actionSchema.MaxVersion > 0 && actionSchema.MaxVersion < a.maxTargetVersion {
+			a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is unsupported above version %v (shortcut target version is %v)", callName, actionSchema.MaxVersion, a.maxTargetVersion))
+		}
+	} else {
+		if actionSchema.MacOnly {
+			a.warn(CodeUnverifiedForm, call.Span, fmt.Sprintf("action %q is only available on macOS, but shortcut target is unspecified; specify target in shortcut metadata", callName))
+		}
+		if actionSchema.NonMacOnly {
+			a.warn(CodeUnverifiedForm, call.Span, fmt.Sprintf("action %q is not available on macOS, but shortcut target is unspecified; specify target in shortcut metadata", callName))
 		}
 	}
 
@@ -829,6 +941,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), "empty dictionary key is not allowed")
 				}
 			}
+			a.checkAcceptedForms(primParam, call.PrimaryArg, callName)
 			argType := a.analyzeExpression(call.PrimaryArg, scope)
 			if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
 				a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", primParam.Label, primParam.Type, argType))
@@ -870,6 +983,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			}
 		}
 
+		a.checkAcceptedForms(param, nArg.Value, callName)
 		argType := a.analyzeExpression(nArg.Value, scope)
 		if param.Type != nil && argType != nil && !argType.AssignableTo(param.Type) {
 			a.error(CodeArgumentType, nArg.Value.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Label, param.Type, argType))
@@ -903,6 +1017,68 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return actionSchema.OutputType
 	}
 	return types.Unknown
+}
+
+func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.Expression, callName string) {
+	if param == nil || len(param.AcceptedForms) == 0 {
+		return
+	}
+	hasLiteral := false
+	hasTokenString := false
+	hasAttachment := false
+	for _, f := range param.AcceptedForms {
+		switch f {
+		case "literal":
+			hasLiteral = true
+		case "tokenString":
+			hasTokenString = true
+		case "attachment(output)", "attachment(variable)":
+			hasAttachment = true
+		}
+	}
+
+	if param.EvidenceStatus == schema.EvidenceConfirmed {
+		switch expr := arg.(type) {
+		case *syntax.LiteralExpr:
+			if expr.Type == syntax.TokenNone || expr.Type == syntax.TokenNull {
+				return
+			}
+			if param.WireKey == "WFInput" {
+				return
+			}
+			if !hasLiteral && !hasTokenString {
+				a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q does not accept literal values; an attachment (variable or action output) is required", param.Label, callName))
+			}
+		case *syntax.ListExpr, *syntax.MapExpr:
+			if param.WireKey == "WFInput" {
+				return
+			}
+			if !hasLiteral && !hasTokenString {
+				a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q does not accept literal values; an attachment (variable or action output) is required", param.Label, callName))
+			}
+		case *syntax.FStringExpr:
+			if !hasTokenString && !hasLiteral && param.WireKey != "WFInput" {
+				a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q does not accept text token strings; an attachment is required", param.Label, callName))
+			}
+		case *syntax.IdentExpr, *syntax.MemberExpr, *syntax.CallExpr, *syntax.IndexExpr:
+			if !hasAttachment && !hasTokenString {
+				a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q requires a literal value, got dynamic variable/attachment", param.Label, callName))
+			}
+		}
+	} else {
+		switch expr := arg.(type) {
+		case *syntax.LiteralExpr:
+			if expr.Type == syntax.TokenNone || expr.Type == syntax.TokenNull {
+				return
+			}
+			if param.WireKey == "WFInput" {
+				return
+			}
+			if !hasLiteral && !hasTokenString && hasAttachment {
+				a.warn(CodeUnverifiedForm, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q may not accept literal values; attachment recommended", param.Label, callName))
+			}
+		}
+	}
 }
 
 func (a *Analyzer) resolveType(t syntax.TypeAnnotation) types.Type {

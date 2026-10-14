@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -89,6 +91,9 @@ var facets = map[string]ActionFacet{
 	"show": {
 		PrimaryParameterID: "input",
 		OutputTypeOverride: "Void",
+		ParamTypeOverrides: map[string]string{
+			"input": "AnyContent",
+		},
 	},
 	"alert": {
 		PrimaryParameterID: "alert",
@@ -361,20 +366,112 @@ func mapCodec(legacyType string) string {
 	}
 }
 
-func determineAcceptedForms(p LegacyParameter, codec string) []string {
+type AppleParameterEncoding struct {
+	Key              string   `json:"key"`
+	Class            string   `json:"class"`
+	SingleStateClass string   `json:"singleStateClass"`
+	VariableTypes    []string `json:"variableTypes"`
+	Default          any      `json:"default"`
+}
+
+type AppleEncodingsData struct {
+	ActionParameters map[string][]AppleParameterEncoding `json:"actionParameters"`
+}
+
+func loadAppleEncodings() *AppleEncodingsData {
+	paths := []string{
+		filepath.Join("docs", "apple-runtime", "parameter-encodings.json.gz"),
+		filepath.Join("..", "docs", "apple-runtime", "parameter-encodings.json.gz"),
+		filepath.Join("..", "..", "docs", "apple-runtime", "parameter-encodings.json.gz"),
+		filepath.Join("docs", "apple-runtime", "parameter-encodings.json"),
+		filepath.Join("..", "docs", "apple-runtime", "parameter-encodings.json"),
+	}
+	for _, p := range paths {
+		if strings.HasSuffix(p, ".gz") {
+			f, err := os.Open(p)
+			if err != nil {
+				continue
+			}
+			gz, err := gzip.NewReader(f)
+			if err != nil {
+				f.Close()
+				continue
+			}
+			data, err := io.ReadAll(gz)
+			gz.Close()
+			f.Close()
+			if err == nil && len(data) > 0 {
+				var res AppleEncodingsData
+				if json.Unmarshal(data, &res) == nil {
+					return &res
+				}
+			}
+		} else {
+			data, err := os.ReadFile(p)
+			if err == nil && len(data) > 0 {
+				var res AppleEncodingsData
+				if json.Unmarshal(data, &res) == nil {
+					return &res
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func determineAcceptedFormsAndEvidence(a *LegacyAction, p LegacyParameter, codec string, appleEnc *AppleEncodingsData) ([]string, string) {
+	if appleEnc != nil && a.ShortcutIdentifier != "" {
+		if params, ok := appleEnc.ActionParameters[a.ShortcutIdentifier]; ok {
+			for i := range params {
+				if params[i].Key == p.Key {
+					return determineConfirmedForms(&params[i], codec), "EvidenceConfirmed"
+				}
+			}
+		}
+	}
+	return determineInferredForms(codec), "EvidenceInferred"
+}
+
+func determineConfirmedForms(ap *AppleParameterEncoding, codec string) []string {
+	if ap.Class == "WFVariablePickerParameter" || ap.SingleStateClass == "WFVariableParameterState" {
+		return []string{"attachment(output)", "attachment(variable)"}
+	}
+	if ap.Class == "WFVariableFieldParameter" || ap.SingleStateClass == "WFStringParameterState" {
+		return []string{"literal"}
+	}
+	hasVar := false
+	for _, vt := range ap.VariableTypes {
+		if vt == "Variable" || vt == "ActionOutput" {
+			hasVar = true
+			break
+		}
+	}
+
+	if ap.Class == "WFTextInputParameter" || ap.SingleStateClass == "WFVariableStringParameterState" {
+		if hasVar {
+			return []string{"literal", "tokenString", "attachment(output)", "attachment(variable)"}
+		}
+		return []string{"literal", "tokenString"}
+	}
+
+	if !hasVar && len(ap.VariableTypes) > 0 {
+		return []string{"literal"}
+	}
+
 	switch codec {
 	case "text":
 		return []string{"literal", "tokenString"}
-	case "number":
+	case "token":
+		return []string{"attachment(output)", "attachment(variable)"}
+	default:
 		return []string{"literal", "attachment(output)", "attachment(variable)"}
-	case "bool":
-		return []string{"literal", "attachment(output)", "attachment(variable)"}
-	case "enum":
-		return []string{"literal", "attachment(output)", "attachment(variable)"}
-	case "dictionary":
-		return []string{"literal", "attachment(output)", "attachment(variable)"}
-	case "array":
-		return []string{"literal", "attachment(output)", "attachment(variable)"}
+	}
+}
+
+func determineInferredForms(codec string) []string {
+	switch codec {
+	case "text":
+		return []string{"literal", "tokenString"}
 	case "token":
 		return []string{"attachment(output)", "attachment(variable)"}
 	default:
@@ -411,6 +508,7 @@ func initDefaultRegistry() *Registry {
 `)
 
 	allEnums := make(map[string][]string)
+	appleEnc := loadAppleEncodings()
 
 	for _, a := range catalog.Actions {
 		facet, hasFacet := facets[a.Name]
@@ -432,6 +530,11 @@ func initDefaultRegistry() *Registry {
 			outType = mapGoType(outTypeName)
 		}
 
+		actionEvidence := "EvidenceInferred"
+		if appleEnc != nil && a.ShortcutIdentifier != "" && len(appleEnc.ActionParameters[a.ShortcutIdentifier]) > 0 {
+			actionEvidence = "EvidenceConfirmed"
+		}
+
 		b.WriteString("\t\t{\n")
 		fmt.Fprintf(&b, "\t\t\tID: %q,\n", a.Name)
 		fmt.Fprintf(&b, "\t\t\tCallableName: %q,\n", a.Name)
@@ -443,7 +546,7 @@ func initDefaultRegistry() *Registry {
 		fmt.Fprintf(&b, "\t\t\tOutputType: %s,\n", outType)
 		fmt.Fprintf(&b, "\t\t\tOutputTypeName: %q,\n", outTypeName)
 		fmt.Fprintf(&b, "\t\t\tCompilerConstruct: %t,\n", a.CompilerConstruct)
-		fmt.Fprintf(&b, "\t\t\tEvidenceStatus: EvidenceConfirmed,\n")
+		fmt.Fprintf(&b, "\t\t\tEvidenceStatus: %s,\n", actionEvidence)
 		if a.MacOnly {
 			fmt.Fprintf(&b, "\t\t\tMacOnly: true,\n")
 		}
@@ -504,7 +607,7 @@ func initDefaultRegistry() *Registry {
 				}
 			}
 
-			forms := determineAcceptedForms(p, codec)
+			forms, paramEvidence := determineAcceptedFormsAndEvidence(&a, p, codec, appleEnc)
 
 			b.WriteString("\t\t\t\t{\n")
 			fmt.Fprintf(&b, "\t\t\t\t\tID: %q,\n", p.Name)
@@ -542,7 +645,7 @@ func initDefaultRegistry() *Registry {
 				}
 			}
 			fmt.Fprintf(&b, "\t\t\t\t\tVariadic: %t,\n", p.Infinite)
-			fmt.Fprintf(&b, "\t\t\t\t\tEvidenceStatus: EvidenceConfirmed,\n")
+			fmt.Fprintf(&b, "\t\t\t\t\tEvidenceStatus: %s,\n", paramEvidence)
 			b.WriteString("\t\t\t\t},\n")
 		}
 		b.WriteString("\t\t\t},\n")

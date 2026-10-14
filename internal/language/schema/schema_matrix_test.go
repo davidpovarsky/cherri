@@ -107,6 +107,80 @@ func TestGEN002_FingerprintDetectsMutations(t *testing.T) {
 	if regVariadic.Fingerprint() == baseFP {
 		t.Fatalf("fingerprint did not change after mutating Variadic flag")
 	}
+
+	// 5. Mutate MacOnly
+	mutMacOnly := *baseAction
+	mutMacOnly.MacOnly = true
+	regMacOnly := NewRegistry([]*ActionSchema{&mutMacOnly}, nil)
+	if regMacOnly.Fingerprint() == baseFP {
+		t.Fatalf("fingerprint did not change after mutating MacOnly flag")
+	}
+
+	// 6. Mutate NonMacOnly
+	mutNonMacOnly := *baseAction
+	mutNonMacOnly.NonMacOnly = true
+	regNonMacOnly := NewRegistry([]*ActionSchema{&mutNonMacOnly}, nil)
+	if regNonMacOnly.Fingerprint() == baseFP {
+		t.Fatalf("fingerprint did not change after mutating NonMacOnly flag")
+	}
+
+	// 7. Mutate MinVersion
+	mutMinVer := *baseAction
+	mutMinVer.MinVersion = 17.0
+	regMinVer := NewRegistry([]*ActionSchema{&mutMinVer}, nil)
+	if regMinVer.Fingerprint() == baseFP {
+		t.Fatalf("fingerprint did not change after mutating MinVersion")
+	}
+
+	// 8. Mutate MaxVersion
+	mutMaxVer := *baseAction
+	mutMaxVer.MaxVersion = 26.0
+	regMaxVer := NewRegistry([]*ActionSchema{&mutMaxVer}, nil)
+	if regMaxVer.Fingerprint() == baseFP {
+		t.Fatalf("fingerprint did not change after mutating MaxVersion")
+	}
+
+	// 9. Mutate Variant
+	mutVariant := *baseAction
+	mutVariant.Variant = "secondary"
+	regVariant := NewRegistry([]*ActionSchema{&mutVariant}, nil)
+	if regVariant.Fingerprint() == baseFP {
+		t.Fatalf("fingerprint did not change after mutating Variant")
+	}
+
+	// 10. Mutate AcceptedForms
+	mutForms := *baseAction
+	mutForms.Parameters = []ParameterSchema{
+		{
+			ID:            "text",
+			Label:         "text",
+			TypeName:      "Text",
+			WireKey:       "WFText",
+			DefaultValue:  "Initial",
+			AcceptedForms: []string{"literal", "tokenString"},
+		},
+	}
+	regForms := NewRegistry([]*ActionSchema{&mutForms}, nil)
+	if regForms.Fingerprint() == baseFP {
+		t.Fatalf("fingerprint did not change after mutating AcceptedForms")
+	}
+
+	// 11. Mutate OmissionPolicy
+	mutOmit := *baseAction
+	mutOmit.Parameters = []ParameterSchema{
+		{
+			ID:             "text",
+			Label:          "text",
+			TypeName:       "Text",
+			WireKey:        "WFText",
+			DefaultValue:   "Initial",
+			OmissionPolicy: OmitPolicyOmit,
+		},
+	}
+	regOmit := NewRegistry([]*ActionSchema{&mutOmit}, nil)
+	if regOmit.Fingerprint() == baseFP {
+		t.Fatalf("fingerprint did not change after mutating OmissionPolicy")
+	}
 }
 
 // GEN-003: duplicate Apple identifier retains each named variant separately

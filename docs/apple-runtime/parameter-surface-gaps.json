@@ -81,23 +81,21 @@
   },
   {
     "identifier": "is.workflow.actions.airplanemode.set",
-    "cherriName": "toggleAirplaneMode",
+    "cherriName": "setAirplaneMode, toggleAirplaneMode",
     "unmodeledParameterKeys": [
-      "OnValue",
       "ShowWhenRun"
     ],
     "appleKeyCount": 3,
-    "cherriKeyCount": 1
+    "cherriKeyCount": 2
   },
   {
     "identifier": "is.workflow.actions.appearance",
-    "cherriName": "toggleAppearance",
+    "cherriName": "darkMode, lightMode, toggleAppearance",
     "unmodeledParameterKeys": [
-      "ShowWhenRun",
-      "style"
+      "ShowWhenRun"
     ],
     "appleKeyCount": 3,
-    "cherriKeyCount": 1
+    "cherriKeyCount": 2
   },
   {
     "identifier": "is.workflow.actions.ask",
@@ -114,33 +112,22 @@
     "cherriKeyCount": 7
   },
   {
-    "identifier": "is.workflow.actions.base64encode",
-    "cherriName": "base64Encode",
-    "unmodeledParameterKeys": [
-      "WFEncodeMode"
-    ],
-    "appleKeyCount": 3,
-    "cherriKeyCount": 3
-  },
-  {
     "identifier": "is.workflow.actions.bluetooth.set",
-    "cherriName": "toggleBluetooth",
+    "cherriName": "setBluetooth, toggleBluetooth",
     "unmodeledParameterKeys": [
-      "OnValue",
       "ShowWhenRun"
     ],
     "appleKeyCount": 3,
-    "cherriKeyCount": 1
+    "cherriKeyCount": 2
   },
   {
     "identifier": "is.workflow.actions.cellulardata.set",
-    "cherriName": "toggleCellularData",
+    "cherriName": "setCellularData, toggleCellularData",
     "unmodeledParameterKeys": [
-      "OnValue",
       "ShowWhenRun"
     ],
     "appleKeyCount": 3,
-    "cherriKeyCount": 1
+    "cherriKeyCount": 2
   },
   {
     "identifier": "is.workflow.actions.correctspelling",
@@ -162,15 +149,6 @@
     "cherriKeyCount": 2
   },
   {
-    "identifier": "is.workflow.actions.date",
-    "cherriName": "getHolidayDate",
-    "unmodeledParameterKeys": [
-      "WFDateActionDate"
-    ],
-    "appleKeyCount": 4,
-    "cherriKeyCount": 3
-  },
-  {
     "identifier": "is.workflow.actions.deletephotos",
     "cherriName": "deletePhotos",
     "unmodeledParameterKeys": [
@@ -180,20 +158,8 @@
     "cherriKeyCount": 1
   },
   {
-    "identifier": "is.workflow.actions.dnd.set",
-    "cherriName": "toggleFocusMode",
-    "unmodeledParameterKeys": [
-      "AssertionType",
-      "Enabled",
-      "Event",
-      "Time"
-    ],
-    "appleKeyCount": 6,
-    "cherriKeyCount": 2
-  },
-  {
     "identifier": "is.workflow.actions.documentpicker.open",
-    "cherriName": "getFileFromFolder",
+    "cherriName": "getFile, getFileFromFolder",
     "unmodeledParameterKeys": [
       "WFGetFolderContents"
     ],
@@ -201,59 +167,26 @@
     "cherriKeyCount": 3
   },
   {
-    "identifier": "is.workflow.actions.documentpicker.save",
-    "cherriName": "saveFilePrompt",
-    "unmodeledParameterKeys": [
-      "WFAskWhereToSave",
-      "WFFileDestinationPath",
-      "WFFolder"
-    ],
-    "appleKeyCount": 5,
-    "cherriKeyCount": 2
-  },
-  {
     "identifier": "is.workflow.actions.downloadurl",
-    "cherriName": "jsonRequest",
+    "cherriName": "downloadURL, fileRequest, formRequest, jsonRequest",
     "unmodeledParameterKeys": [
-      "ShowHeaders",
-      "WFFormValues",
-      "WFRequestVariable"
+      "ShowHeaders"
     ],
     "appleKeyCount": 8,
-    "cherriKeyCount": 5
-  },
-  {
-    "identifier": "is.workflow.actions.dropbox.savefile",
-    "cherriName": "saveToDropboxPrompt",
-    "unmodeledParameterKeys": [
-      "WFFileDestinationPath"
-    ],
-    "appleKeyCount": 4,
-    "cherriKeyCount": 3
+    "cherriKeyCount": 7
   },
   {
     "identifier": "is.workflow.actions.encodemedia",
-    "cherriName": "stripMediaMetadata",
+    "cherriName": "encodeAudio, encodeVideo, setMetadata, stripMediaMetadata",
     "unmodeledParameterKeys": [
-      "WFMediaAudioFormat",
-      "WFMediaAudioOnly",
-      "WFMediaCustomSpeed",
-      "WFMediaPreserveTransparency",
-      "WFMediaSize",
-      "WFMediaSpeed",
-      "WFMetadataAlbum",
-      "WFMetadataArtist",
-      "WFMetadataArtwork",
-      "WFMetadataGenre",
-      "WFMetadataTitle",
-      "WFMetadataYear"
+      "WFMediaSpeed"
     ],
     "appleKeyCount": 14,
-    "cherriKeyCount": 2
+    "cherriKeyCount": 13
   },
   {
     "identifier": "is.workflow.actions.file.append",
-    "cherriName": "prependToFile",
+    "cherriName": "appendToFile, prependToFile",
     "unmodeledParameterKeys": [
       "WFAppendOnNewLine",
       "WFFile"
@@ -299,17 +232,16 @@
   },
   {
     "identifier": "is.workflow.actions.flashlight",
-    "cherriName": "toggleFlashlight",
+    "cherriName": "flashlightOff, flashlightOn, toggleFlashlight",
     "unmodeledParameterKeys": [
-      "ShowWhenRun",
-      "state"
+      "ShowWhenRun"
     ],
     "appleKeyCount": 4,
-    "cherriKeyCount": 2
+    "cherriKeyCount": 3
   },
   {
     "identifier": "is.workflow.actions.format.date",
-    "cherriName": "formatTimestamp",
+    "cherriName": "formatDate, formatTime, formatTimestamp",
     "unmodeledParameterKeys": [
       "WFISO8601IncludeTime",
       "WFLocale",
@@ -368,17 +300,6 @@
     "cherriKeyCount": 2
   },
   {
-    "identifier": "is.workflow.actions.getitemfromlist",
-    "cherriName": "getRandomItem",
-    "unmodeledParameterKeys": [
-      "WFItemIndex",
-      "WFItemRangeEnd",
-      "WFItemRangeStart"
-    ],
-    "appleKeyCount": 5,
-    "cherriKeyCount": 2
-  },
-  {
     "identifier": "is.workflow.actions.getitemname",
     "cherriName": "getName",
     "unmodeledParameterKeys": [
@@ -415,82 +336,22 @@
     "cherriKeyCount": 3
   },
   {
-    "identifier": "is.workflow.actions.getvalueforkey",
-    "cherriName": "getValues",
-    "unmodeledParameterKeys": [
-      "WFDictionaryKey"
-    ],
-    "appleKeyCount": 3,
-    "cherriKeyCount": 2
-  },
-  {
-    "identifier": "is.workflow.actions.getwifi",
-    "cherriName": "getWifiDetail",
-    "unmodeledParameterKeys": [
-      "WFCellularDetail"
-    ],
-    "appleKeyCount": 3,
-    "cherriKeyCount": 2
-  },
-  {
     "identifier": "is.workflow.actions.giphy",
-    "cherriName": "searchGiphy",
+    "cherriName": "getGifs, searchGiphy",
     "unmodeledParameterKeys": [
-      "WFGiphyLimit",
-      "WFGiphySelectMultiple",
-      "WFGiphyShowPicker"
+      "WFGiphySelectMultiple"
     ],
     "appleKeyCount": 4,
-    "cherriKeyCount": 1
-  },
-  {
-    "identifier": "is.workflow.actions.hide.app",
-    "cherriName": "hideApp",
-    "unmodeledParameterKeys": [
-      "WFAppsExcept",
-      "WFHideAppMode"
-    ],
-    "appleKeyCount": 3,
-    "cherriKeyCount": 1
-  },
-  {
-    "identifier": "is.workflow.actions.image.convert",
-    "cherriName": "stripImageMetadata",
-    "unmodeledParameterKeys": [
-      "WFImageCompressionQuality"
-    ],
-    "appleKeyCount": 4,
-    "cherriKeyCount": 3
-  },
-  {
-    "identifier": "is.workflow.actions.image.mask",
-    "cherriName": "maskImage",
-    "unmodeledParameterKeys": [
-      "WFCustomMaskImage"
-    ],
-    "appleKeyCount": 4,
-    "cherriKeyCount": 3
-  },
-  {
-    "identifier": "is.workflow.actions.image.resize",
-    "cherriName": "resizeImageByPercent",
-    "unmodeledParameterKeys": [
-      "WFImageResizeHeight",
-      "WFImageResizeLength",
-      "WFImageResizeWidth"
-    ],
-    "appleKeyCount": 6,
     "cherriKeyCount": 3
   },
   {
     "identifier": "is.workflow.actions.lowpowermode.set",
-    "cherriName": "toggleLowPowerMode",
+    "cherriName": "setLowPowerMode, toggleLowPowerMode",
     "unmodeledParameterKeys": [
-      "OnValue",
       "ShowWhenRun"
     ],
     "appleKeyCount": 3,
-    "cherriKeyCount": 1
+    "cherriKeyCount": 2
   },
   {
     "identifier": "is.workflow.actions.makeimagefrompdfpage",
@@ -536,13 +397,12 @@
   },
   {
     "identifier": "is.workflow.actions.nightshift.set",
-    "cherriName": "toggleNightShift",
+    "cherriName": "setNightShift, toggleNightShift",
     "unmodeledParameterKeys": [
-      "OnValue",
       "ShowWhenRun"
     ],
     "appleKeyCount": 3,
-    "cherriKeyCount": 1
+    "cherriKeyCount": 2
   },
   {
     "identifier": "is.workflow.actions.openapp",
@@ -565,56 +425,17 @@
     "cherriKeyCount": 2
   },
   {
-    "identifier": "is.workflow.actions.openxcallbackurl",
-    "cherriName": "openXCallbackURL",
-    "unmodeledParameterKeys": [
-      "WFXCallbackCustomCallbackEnabled",
-      "WFXCallbackCustomCancelKey",
-      "WFXCallbackCustomErrorKey",
-      "WFXCallbackCustomSuccessKey",
-      "WFXCallbackCustomSuccessURL",
-      "WFXCallbackCustomSuccessURLEnabled"
-    ],
-    "appleKeyCount": 7,
-    "cherriKeyCount": 1
-  },
-  {
     "identifier": "is.workflow.actions.orientationlock.set",
-    "cherriName": "toggleOrientationLock",
+    "cherriName": "setOrientationLock, toggleOrientationLock",
     "unmodeledParameterKeys": [
-      "OnValue",
       "ShowWhenRun"
-    ],
-    "appleKeyCount": 3,
-    "cherriKeyCount": 1
-  },
-  {
-    "identifier": "is.workflow.actions.output",
-    "cherriName": "outputOrClipboard",
-    "unmodeledParameterKeys": [
-      "WFResponse"
     ],
     "appleKeyCount": 3,
     "cherriKeyCount": 2
   },
   {
-    "identifier": "is.workflow.actions.overlayimageonimage",
-    "cherriName": "overlayImage",
-    "unmodeledParameterKeys": [
-      "WFImageHeight",
-      "WFImagePosition",
-      "WFImageWidth",
-      "WFImageX",
-      "WFImageY",
-      "WFOverlayImageOpacity",
-      "WFRotation"
-    ],
-    "appleKeyCount": 10,
-    "cherriKeyCount": 3
-  },
-  {
     "identifier": "is.workflow.actions.pausemusic",
-    "cherriName": "togglePlayPause",
+    "cherriName": "pause, play, togglePlayPause",
     "unmodeledParameterKeys": [
       "WFMediaRoute"
     ],
@@ -623,13 +444,13 @@
   },
   {
     "identifier": "is.workflow.actions.personalhotspot.set",
-    "cherriName": "toggleHotspot",
+    "cherriName": "setHotspot, toggleHotspot",
     "unmodeledParameterKeys": [
       "OnValue",
       "ShowWhenRun"
     ],
     "appleKeyCount": 3,
-    "cherriKeyCount": 1
+    "cherriKeyCount": 2
   },
   {
     "identifier": "is.workflow.actions.playpodcast",
@@ -648,26 +469,6 @@
     ],
     "appleKeyCount": 2,
     "cherriKeyCount": 1
-  },
-  {
-    "identifier": "is.workflow.actions.quit.app",
-    "cherriName": "quitApp",
-    "unmodeledParameterKeys": [
-      "WFAppsExcept",
-      "WFAskToSaveChanges",
-      "WFQuitAppMode"
-    ],
-    "appleKeyCount": 4,
-    "cherriKeyCount": 1
-  },
-  {
-    "identifier": "is.workflow.actions.reboot",
-    "cherriName": "shutdown",
-    "unmodeledParameterKeys": [
-      "WFShutdownMode"
-    ],
-    "appleKeyCount": 1,
-    "cherriKeyCount": 0
   },
   {
     "identifier": "is.workflow.actions.recordaudio",
@@ -692,7 +493,7 @@
   },
   {
     "identifier": "is.workflow.actions.round",
-    "cherriName": "round",
+    "cherriName": "ceil, floor, round",
     "unmodeledParameterKeys": [
       "TenToThePowerOf"
     ],
@@ -871,13 +672,12 @@
   },
   {
     "identifier": "is.workflow.actions.stagemanager.set",
-    "cherriName": "toggleStageManager",
+    "cherriName": "setStageManager, toggleStageManager",
     "unmodeledParameterKeys": [
-      "ShowWhenRun",
-      "state"
+      "ShowWhenRun"
     ],
     "appleKeyCount": 5,
-    "cherriKeyCount": 3
+    "cherriKeyCount": 4
   },
   {
     "identifier": "is.workflow.actions.statistics",
@@ -899,17 +699,16 @@
   },
   {
     "identifier": "is.workflow.actions.takescreenshot",
-    "cherriName": "takeScreenshot",
+    "cherriName": "takeInteractiveScreenshot, takeScreenshot",
     "unmodeledParameterKeys": [
-      "WFTakeScreenshotActionInteractiveSelectionType",
       "WFTakeScreenshotIgnoreContextualAssistanceLayers"
     ],
     "appleKeyCount": 4,
-    "cherriKeyCount": 2
+    "cherriKeyCount": 3
   },
   {
     "identifier": "is.workflow.actions.text.changecase",
-    "cherriName": "uppercase",
+    "cherriName": "alternatingCase, capitalize, capitalizeAll, lowercase, titleCase, uppercase",
     "unmodeledParameterKeys": [
       "ShowWhenRun"
     ],
@@ -927,7 +726,7 @@
   },
   {
     "identifier": "is.workflow.actions.text.match",
-    "cherriName": "matchText",
+    "cherriName": "containsText, matchText",
     "unmodeledParameterKeys": [
       "ShowWhenRun"
     ],
@@ -936,13 +735,12 @@
   },
   {
     "identifier": "is.workflow.actions.text.match.getgroup",
-    "cherriName": "getMatchGroups",
+    "cherriName": "getMatchGroup, getMatchGroups",
     "unmodeledParameterKeys": [
-      "ShowWhenRun",
-      "WFGroupIndex"
+      "ShowWhenRun"
     ],
     "appleKeyCount": 4,
-    "cherriKeyCount": 2
+    "cherriKeyCount": 3
   },
   {
     "identifier": "is.workflow.actions.text.split",
@@ -964,13 +762,12 @@
   },
   {
     "identifier": "is.workflow.actions.truetone.set",
-    "cherriName": "toggleTrueTone",
+    "cherriName": "setTrueTone, toggleTrueTone",
     "unmodeledParameterKeys": [
-      "OnValue",
       "ShowWhenRun"
     ],
     "appleKeyCount": 3,
-    "cherriKeyCount": 1
+    "cherriKeyCount": 2
   },
   {
     "identifier": "is.workflow.actions.vibrate",
@@ -1006,12 +803,11 @@
   },
   {
     "identifier": "is.workflow.actions.wifi.set",
-    "cherriName": "toggleWifi",
+    "cherriName": "setWifi, toggleWifi",
     "unmodeledParameterKeys": [
-      "OnValue",
       "ShowWhenRun"
     ],
     "appleKeyCount": 3,
-    "cherriKeyCount": 1
+    "cherriKeyCount": 2
   }
 ]

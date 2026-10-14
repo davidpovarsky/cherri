@@ -319,6 +319,14 @@ Do not merge these routes or turn the `.json` filename trick into a fake parsing
   - All internal package tests (`./internal/...`) PASSED.
   - Root parity and native test suite (`go test -v .`) PASSED (100% across all 24 packages).
   - Worktree clean, zero accidental edits, ready for atomic commits and push to `agent/cherri-v2-product-completion`.
+- [x] **P9.08 Follow-Up: Evidence-Backed Contracts, Target Availability & Fingerprint Mutation Resistance (`COMPLETED_VERIFIED`):**
+  - **Sourced & Evidence-Tiered `AcceptedForms`:** Loaded `docs/apple-runtime/parameter-encodings.json.gz`. 555 parameters with real Apple extraction marked `EvidenceConfirmed` with source-backed forms (`WFVariablePickerParameter`, `WFTextInputParameter` with variables, etc.); 136 parameters marked `EvidenceInferred`. Generic inferred forms are clearly distinguished and never masqueraded as confirmed native support.
+  - **Target Availability & Version Enforcement:** In `internal/language/analysis/analyzer.go`: explicit target sets validated against action `MacOnly`/`NonMacOnly` (e.g. `targets: ["macos", "ios"]` rejects platform-exclusive actions); unspecified target emits `CodeUnverifiedForm` warning without breaking legacy source; version bounds checked against action `MinVersion`/`MaxVersion`.
+  - **Parameter Form Validation:** Implemented `checkAcceptedForms`: validates argument expression kinds against `param.AcceptedForms` for `EvidenceConfirmed` parameters (rejects literals for attachment-only parameters, rejects dynamic attachments for literal-only parameters); handles `none` and `null` omission sentinels cleanly without false-positive type errors.
+  - **Dynamic Map Indexing Plist Proof:** Added synthetic fixture `tests/language-v2/v2-dynamic-map-lookup.cherri`; verified emitted plist contains exact native `WFTextTokenString` wire structure with `\ufffc` and `attachmentsByRange`.
+  - **Schema Fingerprint Mutation Resistance:** Updated `Registry.computeFingerprint` in `internal/language/schema/schema.go` to deterministically hash `MacOnly`, `NonMacOnly`, `MinVersion`, `MaxVersion`, `Variant`, `OmissionPolicy`, and canonically sorted `AcceptedForms`. Added red-to-green mutation tests in `schema_matrix_test.go` (`TestGEN002_FingerprintDetectsMutations`). Deterministic fingerprint: `06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d`.
+  - **Runtime Comparator Regeneration:** Updated `tools/shortcut-runtime/compare_cherri.py` with `.gz` loading and variant aggregation; added `test_19_compare_cherri_variant_aggregation_disjoint_keys` (all 19 tests PASS). Regenerated `comparison-summary.json` (actions with unmodeled keys reduced from 98 to 81) and `parameter-surface-gaps.json` from versioned evidence.
+  - **Consumer & Acceptance Synchronization:** Regenerated registry (`generated_registry.go`) and docs (`actions-reference.md`). Updated U02 expected fingerprint and resolved C01 named argument validation. 70 acceptance tests pass locally.
 - **Exit proof:** Complete semantic reliability for dictionary indexing and platform targets, verified by green regression suites, accurate Apple comparator evidence, synchronized schema, and clean test passes across the repository.
 
 ## 6. Prioritization and recommended work batches
@@ -370,6 +378,7 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | 2026-10-14 | Candidate CI | `6cdb30d` | Verified candidate release across GitHub Actions CI workflows: Build & Test (38588108002 - 100% SUCCESS), OpenMinis Skill (38587332533 - 100% SUCCESS), iOS Build (38599962168 - 100% SUCCESS, 18 real iOS test evidence records, all E01-E07 checkpoints verified), iOS 27 Shortcuts Runtime PoC (38587433729 - 17 evidence records, Fixtures 2, 3, 4 PASS) | All 4 candidate CI workflows verified with zero synthetic bypasses; candidate ready for release tagging |
 | 2026-10-15 | P9 Batch 0 | `76d7225` | Adopted P9 scope: semantic reliability, Apple action metadata convergence, upstream integration. Re-verified upstream divergence (0 delta from 606c9a25, 176 ahead, 31 behind) and ShortcutKit HEAD (ee52c329 exact match). Added red baseline tests for Map dynamic key lowering bug (index_expr_test.go) and platform cross-check (platform_check_test.go). Verified compare_cherri.py false positive on getvalueforkey WFDictionaryKey. | Red baseline tests captured and verified; P9 milestone active |
 | 2026-10-15 | P9 Completion | `8c9be85` | Completed P9: (1) Added MacOnly, NonMacOnly, MinVersion, MaxVersion, AcceptedForms to schema; (2) Marked getParentDirectory as mac in documents.cherri; (3) Repaired IndexExpr map dynamic key lowering to emit native getvalueforkey wrapped in WFTextTokenString (\uFFFC + attachmentsByRange); (4) Added cross-platform compile checks (CodeUnsupportedTarget) and compile-time empty key validation; (5) Repaired compare_cherri.py variant aggregation eliminating getvalueforkey false positive; (6) Regenerated schema registry with new deterministic fingerprint 0a567059... and updated Skill manifest; (7) All 46/46 compiler tests, decompiler, internal packages, and root test suite PASS | P9 COMPLETED_VERIFIED |
+| 2026-10-15 | P9 Follow-up | `HEAD` | Completed P9 Follow-up: (1) Evidence-tiered AcceptedForms (555 Confirmed, 136 Inferred from parameter-encodings.json.gz); (2) Target availability & version bounds in analyzeCall (targets set, unspecified target warning, min/max version checking); (3) Parameter form validation (checkAcceptedForms with none/null sentinel handling); (4) Synthetic dynamic map lookup fixture plist proof; (5) Schema fingerprint mutation resistance (hashing platform/version/forms; red-to-green mutation tests; deterministic fingerprint 06e315d0...); (6) Regenerated comparison-summary.json (unmodeled keys 98 -> 81); (7) 70 acceptance tests PASS locally. | P9 Follow-Up COMPLETED_VERIFIED |
 
 
 
@@ -422,14 +431,14 @@ A requirement may be marked done only when its ledger row includes all applicabl
 |---|---|
 | Snapshot date | 2026-10-15 |
 | Last verified release baseline | `0d3bab12048ffa6f45156ebc1bb4b3273247bdf0` |
-| Active candidate branch / SHA | `agent/cherri-v2-product-completion` / `76d722502e20db977e84a095444d0172442655b8` |
-| Docs branch / SHA | `agent/cherri-v2-product-docs` / `4a12b1bfba22913fe2718d256cfb8047a6b44745` (`D_DOCS`) |
-| Current product verdict | P0-P8 completed; P9 (Semantic reliability, Apple metadata convergence, upstream integration) active. Batch 0 complete with verified red baselines. |
-| First next action | Execute Batch 1 (Apple runtime evidence audit and extraction decision) and Batch 2 (Action contracts in core/schema). |
-| Top implementation blocker | None (in-scope compiler and metadata gaps identified with reproducible baselines). |
-| Top evidence blocker | None (AI01 documented as contractually BLOCKED_EXTERNAL). |
+| Active candidate branch / SHA | `agent/cherri-v2-product-completion` |
+| Docs branch / SHA | `agent/cherri-v2-product-docs` |
+| Current product verdict | P9 Follow-Up complete: verified action contracts, target availability, AcceptedForms enforcement, schema mutation resistance, and runtime comparator reports regenerated. Executing immutable release sequence (C_CODE -> D_DOCS -> C_RELEASE). |
+| First next action | Execute immutable release sequence: (1) Commit C_CODE on Cherri; (2) Regenerate and commit D_DOCS on cherrilang.org; (3) Commit C_RELEASE on Cherri with updated manifest; (4) Verify Cloud routing and doctor tests. |
+| Top implementation blocker | None (all in-scope compiler, schema, test, and comparator items verified green). |
+| Top evidence blocker | AI01 documented as contractually BLOCKED_EXTERNAL. Concurrent iOS UI editor focus repairs maintained by separate agent. |
 | Structural caution | Preserve branch isolation (`agent/cherri-v2-product-completion`); coordinate safely with concurrent iOS UI agent; do not merge into main without explicit owner command. |
-| Next document update responsibility | Coding agent executing P9 batches. |
+| Next document update responsibility | Coding agent executing release sequence and final owner report. |
 
 ### Agent update template (copy below into the plan after EACH batch)
 

@@ -2,7 +2,7 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `0a56705987a2c52829e24451a40b96d5ab1a26ae67488457116b800ed5464005`  
+**Schema Fingerprint:** `06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d`  
 **Total Actions:** 461  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
@@ -6210,12 +6210,12 @@ share(input: AnyContent)
 Show `input`.
 
 ```cherri
-show(input: Text)
+show(input: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `input` | `Text` | Yes | - | `Text` | - |
+| `input` | `AnyContent` | Yes | - | `Text` | - |
 
 ---
 

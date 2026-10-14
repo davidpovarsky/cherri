@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
@@ -161,7 +162,9 @@ func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 
 	h := sha256.New()
 	for _, a := range sorted {
-		fmt.Fprintf(h, "ACT:%s:%s:%s:%s:%t\n", a.CallableName, a.AppleIdentifier, a.OutputTypeName, a.PrimaryParameterID, a.CompilerConstruct)
+		fmt.Fprintf(h, "ACT:%s:%s:%s:%s:%s:%t:%t:%t:%.2f:%.2f\n",
+			a.CallableName, a.AppleIdentifier, a.Variant, a.OutputTypeName, a.PrimaryParameterID,
+			a.CompilerConstruct, a.MacOnly, a.NonMacOnly, a.MinVersion, a.MaxVersion)
 		if a.AppIntent != nil {
 			fmt.Fprintf(h, "  INTENT:%s:%s:%s:%s\n", a.AppIntent.Name, a.AppIntent.BundleIdentifier, a.AppIntent.AppIntentIdentifier, a.AppIntent.TeamIdentifier)
 		}
@@ -176,7 +179,14 @@ func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 			}
 		}
 		for _, p := range a.Parameters {
-			fmt.Fprintf(h, "  P:%s:%s:%s:%t:%s:%s:%s:%t\n", p.ID, p.Label, p.TypeName, p.Optional, p.WireKey, p.Codec, p.DefaultValue, p.Variadic)
+			fmt.Fprintf(h, "  P:%s:%s:%s:%t:%s:%s:%s:%t:%s\n",
+				p.ID, p.Label, p.TypeName, p.Optional, p.WireKey, p.Codec, p.DefaultValue, p.Variadic, p.OmissionPolicy)
+			if len(p.AcceptedForms) > 0 {
+				forms := make([]string, len(p.AcceptedForms))
+				copy(forms, p.AcceptedForms)
+				sort.Strings(forms)
+				fmt.Fprintf(h, "    FORMS:%s\n", strings.Join(forms, ","))
+			}
 			for _, ev := range p.EnumValues {
 				fmt.Fprintf(h, "    E:%s\n", ev)
 			}

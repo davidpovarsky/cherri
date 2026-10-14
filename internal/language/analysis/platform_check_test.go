@@ -1,6 +1,7 @@
 package analysis
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
@@ -166,5 +167,131 @@ let v = dict[k]
 	}
 	if !foundText {
 		t.Errorf("expected to find Text in exprTypes")
+	}
+}
+
+func TestMixedTargets_RejectsNonPortableActions(t *testing.T) {
+	// Mixed targets ["macos", "ios"]: both MacOnly (makeDiskImage) and NonMacOnly (vibrate) must fail
+	code := `shortcut "CrossPlatform" {
+    targets: ["macos", "ios"]
+}
+makeDiskImage("test", "content")
+vibrate()
+`
+	analyzer := runAnalyzer(t, code)
+	macError := false
+	nonMacError := false
+	for _, diag := range analyzer.Diagnostics() {
+		if diag.Code == CodeUnsupportedTarget {
+			if strings.Contains(diag.Message, "makeDiskImage") {
+				macError = true
+			}
+			if strings.Contains(diag.Message, "vibrate") {
+				nonMacError = true
+			}
+		}
+	}
+	if !macError {
+		t.Errorf("expected CodeUnsupportedTarget for makeDiskImage on mixed target, got diagnostics: %v", analyzer.Diagnostics())
+	}
+	if !nonMacError {
+		t.Errorf("expected CodeUnsupportedTarget for vibrate on mixed target, got diagnostics: %v", analyzer.Diagnostics())
+	}
+}
+
+func TestExplicitTargetString(t *testing.T) {
+	code := `shortcut "IOSOnly" {
+    target: "ios"
+}
+makeDiskImage("test", "content")
+`
+	analyzer := runAnalyzer(t, code)
+	foundError := false
+	for _, diag := range analyzer.Diagnostics() {
+		if diag.Code == CodeUnsupportedTarget {
+			foundError = true
+			break
+		}
+	}
+	if !foundError {
+		t.Errorf("expected CodeUnsupportedTarget for makeDiskImage targeting ios")
+	}
+}
+
+func TestUnspecifiedTarget_EmitsWarning(t *testing.T) {
+	// When target is unspecified, platform-specific actions emit a warning rather than breaking
+	code := `makeDiskImage("test", "content")`
+	analyzer := runAnalyzer(t, code)
+	foundWarning := false
+	for _, diag := range analyzer.Diagnostics() {
+		if diag.Severity == SeverityWarning && diag.Code == CodeUnverifiedForm {
+			foundWarning = true
+			break
+		}
+	}
+	if !foundWarning {
+		t.Errorf("expected SeverityWarning for platform-specific action with unspecified target, got: %v", analyzer.Diagnostics())
+	}
+}
+
+func TestVersionBounds_MinVersion(t *testing.T) {
+	// askModel has MinVersion 26
+	codeLow := `shortcut "LowVersion" {
+    target: "ios"
+    minVersion: 15
+}
+askModel("prompt")
+`
+	analyzerLow := runAnalyzer(t, codeLow)
+	foundError := false
+	for _, diag := range analyzerLow.Diagnostics() {
+		if diag.Code == CodeUnsupportedTarget && strings.Contains(diag.Message, "minimum version") {
+			foundError = true
+			break
+		}
+	}
+	if !foundError {
+		t.Errorf("expected CodeUnsupportedTarget for minVersion lower than action requirement, got: %v", analyzerLow.Diagnostics())
+	}
+
+	codeHigh := `shortcut "HighVersion" {
+    target: "ios"
+    minVersion: 27
+}
+askModel("prompt")
+`
+	analyzerHigh := runAnalyzer(t, codeHigh)
+	for _, diag := range analyzerHigh.Diagnostics() {
+		if diag.Code == CodeUnsupportedTarget {
+			t.Errorf("unexpected CodeUnsupportedTarget when minVersion satisfies requirement: %v", diag)
+		}
+	}
+}
+
+func TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam(t *testing.T) {
+	// addEvent parameter 'startDate' requires attachment, rejects literal
+	code := `addEvent("Meeting", startDate: "tomorrow")`
+	analyzer := runAnalyzer(t, code)
+	foundError := false
+	for _, diag := range analyzer.Diagnostics() {
+		if diag.Code == CodeArgumentType && strings.Contains(diag.Message, "does not accept literal values") {
+			foundError = true
+			break
+		}
+	}
+	if !foundError {
+		t.Errorf("expected CodeArgumentType rejecting literal for attachment-only parameter, got: %v", analyzer.Diagnostics())
+	}
+}
+
+func TestAcceptedForms_AcceptsVariableAttachment(t *testing.T) {
+	code := `let d = date()
+addEvent("Meeting", startDate: d)
+`
+	analyzer := runAnalyzer(t, code)
+	for _, diag := range analyzer.Diagnostics() {
+		if diag.Code == CodeArgumentType && strings.Contains(diag.Message, "does not accept literal values") {
+			t.Errorf("unexpected argument type error for valid variable attachment: %v", diag)
+		}
 	}
 }
