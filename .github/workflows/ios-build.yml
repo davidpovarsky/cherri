@@ -205,8 +205,11 @@ jobs:
             exit 1
           fi
 
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool NO
           xcrun simctl boot "$SIMULATOR_UDID" >/dev/null 2>&1 || true
           xcrun simctl bootstatus "$SIMULATOR_UDID" -b
+          xcrun simctl spawn "$SIMULATOR_UDID" defaults write com.apple.Preferences KeyboardHardware -bool NO 2>/dev/null || true
+          xcrun simctl spawn "$SIMULATOR_UDID" defaults write -g ConnectHardwareKeyboard -bool NO 2>/dev/null || true
 
           set +e
           xcodebuild \

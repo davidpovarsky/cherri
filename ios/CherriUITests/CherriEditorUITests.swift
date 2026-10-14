@@ -15,7 +15,11 @@ final class CherriEditorUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments.append("--uitesting")
+        app.launchArguments.append(contentsOf: [
+            "--uitesting",
+            "-AppleLanguages", "(en)",
+            "-AppleKeyboards", "('en_US@hw=US;sw=QWERTY')"
+        ])
         app.launch()
     }
 
@@ -38,13 +42,21 @@ final class CherriEditorUITests: XCTestCase {
         return editor
     }
 
+    private func typeIntoEditor(_ editor: XCUIElement, _ text: String) {
+        if !editor.hasKeyboardFocus {
+            editor.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            _ = app.keyboards.firstMatch.waitForExistence(timeout: 2)
+        }
+        editor.typeText(text)
+    }
+
     // E01 & RP40: Contextual completion display, selection, insertion, and successful compilation
     func testE01CompletionDisplayAndInsertionUI() throws {
         let editor = ensureEditorReady()
         editor.tap()
 
         // Type prefix to trigger contextual actions or suggestions
-        editor.typeText("\nsho")
+        typeIntoEditor(editor, "\nsho")
 
         // Assert that Actions button exists
         let actionsBtn = app.buttons["actionsButton"]
@@ -87,7 +99,7 @@ final class CherriEditorUITests: XCTestCase {
 
         // Enter source with two distinct intentional errors
         let errorSource = "\nlet err1: Text = 1234\nlet err2: Number = \"not_a_number\"\n"
-        editor.typeText(errorSource)
+        typeIntoEditor(editor, errorSource)
 
         let buildBtn = app.buttons["buildButton"]
         XCTAssertTrue(buildBtn.waitForExistence(timeout: 5), "Build button must exist")
@@ -120,7 +132,7 @@ final class CherriEditorUITests: XCTestCase {
         editor.tap()
 
         // Enter valid code with variable and function call
-        editor.typeText("\nlet greeting = \"Cherri\"\nshow(greeting)\n")
+        typeIntoEditor(editor, "\nlet greeting = \"Cherri\"\nshow(greeting)\n")
 
         let buildBtn = app.buttons["buildButton"]
         XCTAssertTrue(buildBtn.waitForExistence(timeout: 5), "Build button must exist")
@@ -180,7 +192,7 @@ final class CherriEditorUITests: XCTestCase {
 
         // Simulate rapid typing burst of 5 statements
         for i in 1...5 {
-            editor.typeText("let burstVar\(i) = \(i)\n")
+            typeIntoEditor(editor, "let burstVar\(i) = \(i)\n")
         }
 
         // Verify editor retains content and UI remains interactive
@@ -205,7 +217,7 @@ final class CherriEditorUITests: XCTestCase {
 
         // Type bidirectional Hebrew with vowel marks and multi-scalar emoji
         let bidiSnippet = "let bidiMsg = \"שָׁלוֹם 🌍 דוב\"\nshow(bidiMsg)\n"
-        editor.typeText(bidiSnippet)
+        typeIntoEditor(editor, bidiSnippet)
 
         // Verify exact text was ingested without truncation
         let val = (editor.value as? String) ?? ""
@@ -226,7 +238,7 @@ final class CherriEditorUITests: XCTestCase {
         let editor = ensureEditorReady()
         editor.tap()
 
-        editor.typeText("show(\"CanvasPreviewFixture\")\n")
+        typeIntoEditor(editor, "show(\"CanvasPreviewFixture\")\n")
 
         let buildBtn = app.buttons["buildButton"]
         XCTAssertTrue(buildBtn.waitForExistence(timeout: 5), "Build button must exist")
@@ -260,7 +272,7 @@ final class CherriEditorUITests: XCTestCase {
         let editor = ensureEditorReady()
         editor.tap()
 
-        editor.typeText("// Cherri v2 Real World Workflow\nlet result = \"Success\"\nshow(result)\n")
+        typeIntoEditor(editor, "// Cherri v2 Real World Workflow\nlet result = \"Success\"\nshow(result)\n")
 
         let buildBtn = app.buttons["buildButton"]
         XCTAssertTrue(buildBtn.waitForExistence(timeout: 5), "Build button must exist")
