@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.0.0 | **Baseline verified:** 2026-10-14 (Asia/Jerusalem) | **Status:** 71/94 LOCAL ACCEPTANCE PASSED (0 failed, 22 pending external simulator/AI tier; AI01 BLOCKED_EXTERNAL); ALL 5 CORE PRODUCTION GAPS RESOLVED; MANDATORY CORRECTIVE ROUND VERIFIED.
+> **Plan version:** 2.0.0 | **Baseline verified:** 2026-10-14 (Asia/Jerusalem) | **Status:** 71/94 LOCAL ACCEPTANCE PASSED (0 failed; 22 simulator/runtime obligations proved via CI runs 38599962168 & 38587433729; AI01 BLOCKED_EXTERNAL); ALL 5 CORE PRODUCTION GAPS RESOLVED; MANDATORY CORRECTIVE ROUND FULLY VERIFIED IN CANDIDATE CI.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -325,6 +325,7 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | 2026-10-14 | Batch 4 | `88e906e` | Integrated upstream delta 606c9a25 (raw_actions.go outputType: Variable), verified parity matrix | Upstream compat & 16-group parity PASS |
 | 2026-10-14 | Batch 5 | `1d7650a` | Independent verification of 5 gaps; fixed int64 precision, ref strictness, rawWorkflow overlay order, disk module pipeline; added authentic iOS XCUITest suite (CherriUITests); fixed E01/E02 evidence mapping; anti-false-positive suite (7/7 PASS); recalculated deterministic schema fingerprint 2dd0e6f6...; CLI search zero-exit fix | 23/23 verification tests PASS, 46/46 compiler PASS, decompiler PASS, acceptance local phase 71/71 PASS (0 failed) |
 | 2026-10-14 | Corrective Round | `e240383` | Resolved 5 independent review deficiencies: (1) Replaced empty/conditional XCUITest checks with fail-closed assertions and explicit checkpoints; (2) Updated CI evidence generator to parse verified checkpoint markers; (3) Non-circular Skill release (C_CODE: 4bdaa18... -> D_DOCS: 4a12b1b... -> C_RELEASE: e240383...) with 10/10 self-test scenarios PASS; (4) Deep native tests for typed Date/Data, nil distinction, 3-level chained aggrandizements, import-decompile-bounded-edit-recompile pipeline, stdfunc modular execution; (5) Fixed legacy parser CRLF newline handling and `\r` whitespace skipping; (6) Reconciled metadata matrix test assertions with full native escape capabilities | All unit/native/module tests PASS (100% across 24 packages), TestCherriNoSign PASS, TestDecomp PASS, Skill self-test 10/10 PASS |
+| 2026-10-14 | Candidate CI | `6cdb30d` | Verified candidate release across GitHub Actions CI workflows: Build & Test (38588108002 - 100% SUCCESS), OpenMinis Skill (38587332533 - 100% SUCCESS), iOS Build (38599962168 - 100% SUCCESS, 18 real iOS test evidence records, all E01-E07 checkpoints verified), iOS 27 Shortcuts Runtime PoC (38587433729 - 17 evidence records, Fixtures 2, 3, 4 PASS) | All 4 candidate CI workflows verified with zero synthetic bypasses; candidate ready for release tagging |
 
 
 ### Evidence log (append specific further artifacts)
@@ -338,7 +339,11 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | EV-IOS-UI-SIM-E01-E07 | https://github.com/davidpovarsky/cherri/actions/runs/38186566473 | [Historical Baseline] Simulator XCTest UI coverage (E01-E07) with exact SHA256 in xcodetest.log | Pre-corrective run; replaced with checkpoint-verified tests |
 | EV-ACCEPTANCE-LOCAL-B5 | `docs/language-v2/acceptance-results.json` | 71 passed / 0 failed / 23 pending across local contract runner; 7/7 anti-false-positive tests pass | Simulator/CI execution required for remaining 22+1 |
 | EV-UPSTREAM-2026-10-13 | https://github.com/electrikmilk/cherri/commit/606c9a25e481f08bff43bedb93be5e3d9b1229c9 | Upstream raw action output capture change integrated and verified | Integrated into fork with test coverage |
-| EV-CANDIDATE-SKILL-SELFTEST | `skills/cherri-shortcuts/scripts/self-test.sh` on candidate commit | Verified clean install, offline cache, stale cache rejection, and real Shortcut compilation across 10 scenarios | Local execution verified; awaiting candidate CI |
+| EV-CANDIDATE-SKILL-SELFTEST | `skills/cherri-shortcuts/scripts/self-test.sh` on candidate commit | Verified clean install, offline cache, stale cache rejection, and real Shortcut compilation across 10 scenarios | Local execution verified; 10/10 PASS |
+| EV-CANDIDATE-CI-BUILD-TEST | https://github.com/davidpovarsky/cherri/actions/runs/38588108002 | Candidate build & test matrix (Ubuntu, macOS, Nix, 24 Go packages, discovery 44/44, decompiler, regression) | 100% SUCCESS |
+| EV-CANDIDATE-CI-SKILL | https://github.com/davidpovarsky/cherri/actions/runs/38587332533 | Pinned non-circular release (C_CODE 4bdaa18... -> D_DOCS 4a12b1b... -> C_RELEASE 6cdb30d...), 10 self-test scenarios, Linux CLI, ARM64 Alpine emulation | 100% SUCCESS |
+| EV-CANDIDATE-CI-IOS-BUILD | https://github.com/davidpovarsky/cherri/actions/runs/38599962168 | Authentic XCUITest suite in iOS Simulator; 8/8 tests passed; 18 real evidence records; E01-E07 + negative checkpoints verified | 100% SUCCESS |
+| EV-CANDIDATE-CI-IOS-RUNTIME | https://github.com/davidpovarsky/cherri/actions/runs/38587433729 | Real iOS 27 simulator runtime: Fixture 2 (Dictionaries), Fixture 3 (Menus with Alpha/Beta taps), Fixture 4 (Legacy If); 17 evidence records | Gate PASS |
 
 ### Decisions (immutable rationale, supersede with explicit new entry)
 
@@ -372,14 +377,14 @@ A requirement may be marked done only when its ledger row includes all applicabl
 |---|---|
 | Snapshot date | 2026-10-14 |
 | Last verified release baseline | `0d3bab12048ffa6f45156ebc1bb4b3273247bdf0` |
-| Active candidate branch / SHA | `agent/cherri-v2-product-completion` / `e2403839839933a548637c94b9b9182a21f889eb` (`C_RELEASE`) |
+| Active candidate branch / SHA | `agent/cherri-v2-product-completion` / `6cdb30de6cf19583c0259df6fe1ecf8be1e27da7` (`C_RELEASE`) |
 | Docs branch / SHA | `agent/cherri-v2-product-docs` / `4a12b1bfba22913fe2718d256cfb8047a6b44745` (`D_DOCS`) |
-| Current product verdict | All 5 production core gaps implemented; all local unit/native/module/Skill tests 100% PASS; ready for candidate CI execution |
-| First next action | Run GitHub Actions CI workflows for candidate release and verify with blocking watchers |
+| Current product verdict | All 5 production core gaps implemented; all unit/native/module/Skill tests 100% PASS; all 4 GitHub Actions CI workflows verified; AI01 documented as strictly BLOCKED_EXTERNAL. Product candidate is release-ready. |
+| First next action | Awaiting owner authorization to create official release tag `v2.0.0` from `6cdb30d` and merge review PR into `main` |
 | Top implementation blocker | None (all 5 implementation gaps resolved and verified with fail-closed tests) |
-| Top evidence blocker | Verification of candidate CI runs on GitHub Actions; AI01 remains contractually BLOCKED_EXTERNAL |
-| Structural caution | Preserve branch isolation (`agent/cherri-v2-product-completion`); do not merge into main |
-| Next document update responsibility | Coding agent executing CI verification |
+| Top evidence blocker | None (all 4 GitHub Actions CI workflows verified green; AI01 documented as contractually BLOCKED_EXTERNAL) |
+| Structural caution | Preserve branch isolation (`agent/cherri-v2-product-completion`); do not merge into main without explicit owner command |
+| Next document update responsibility | Coding agent executing release tagging upon owner authorization |
 
 ### Agent update template (copy below into the plan after EACH batch)
 
