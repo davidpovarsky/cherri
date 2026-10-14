@@ -492,6 +492,24 @@
       "notes": [],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "getParentDirectory",
+      "identifier": "is.workflow.actions.getparentdirectory",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-extended",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/documents.cherri",
+      "forkLocations": [
+        "actions/documents.cherri"
+      ],
+      "firstForkCommit": "8c9be85cb9e570dab1601f240d9f2a4734f42ffb",
+      "change": "Marked action as mac (MacOnly: true) and refined semantic facet return type to File.",
+      "reason": "Apple Shortcuts runtime evidence confirms is.workflow.actions.getparentdirectory is only supported on macOS.",
+      "evidence": "Apple Shortcuts runtime snapshot docs/apple-runtime/apple-runtime-manifest.json",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
