@@ -21,7 +21,7 @@ struct CherriEditorView: View {
     @State private var definitionText: String?
     @State private var showRenameAlert = false
     @State private var renameNewName = ""
-    @State private var renameTargetPosition: (line: Int, col: Int)?
+    @State private var renameTargetPosition: (line: Int, column: Int)?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -107,7 +107,7 @@ struct CherriEditorView: View {
             Button("Rename") {
                 if let pos = renameTargetPosition, !renameNewName.isEmpty {
                     Task {
-                        if let resp = try? await CherriCompiler.rename(source: text, line: pos.line, column: pos.col, newName: renameNewName), resp.ok, let newSource = resp.source {
+                        if let resp = try? await CherriCompiler.rename(source: text, line: pos.line, column: pos.column, newName: renameNewName), resp.ok, let newSource = resp.source {
                             text = newSource
                         }
                     }
