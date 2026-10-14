@@ -324,7 +324,8 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | 2026-10-14 | Batch 3 | `f34e20a` | Resolved GAP-MODULE-LOWERING: modular imports with cycle detection, path traversal security, runtime init rejection | 8/8 modular import tests PASS |
 | 2026-10-14 | Batch 4 | `88e906e` | Integrated upstream delta 606c9a25 (raw_actions.go outputType: Variable), verified parity matrix | Upstream compat & 16-group parity PASS |
 | 2026-10-14 | Batch 5 | `1d7650a` | Independent verification of 5 gaps; fixed int64 precision, ref strictness, rawWorkflow overlay order, disk module pipeline; added authentic iOS XCUITest suite (CherriUITests); fixed E01/E02 evidence mapping; anti-false-positive suite (7/7 PASS); recalculated deterministic schema fingerprint 2dd0e6f6...; CLI search zero-exit fix | 23/23 verification tests PASS, 46/46 compiler PASS, decompiler PASS, acceptance local phase 71/71 PASS (0 failed) |
-| 2026-10-14 | Corrective Round | `4bdaa18` | Resolved 5 independent review deficiencies: (1) Replaced empty/conditional XCUITest checks with fail-closed assertions and explicit checkpoints; (2) Updated CI evidence generator to parse verified checkpoint markers; (3) Non-circular Skill release (C_CODE: 4bdaa18... -> D_DOCS: 4a12b1b... -> C_RELEASE) with 10/10 self-test scenarios PASS; (4) Deep native tests for typed Date/Data, nil distinction, 3-level chained aggrandizements, import-decompile-bounded-edit-recompile pipeline, stdfunc modular execution; (5) Fixed legacy parser CRLF newline handling and `\r` whitespace skipping | All native/module tests PASS (100%), TestCherriNoSign PASS, TestDecomp PASS, Skill self-test 10/10 PASS |
+| 2026-10-14 | Corrective Round | `e240383` | Resolved 5 independent review deficiencies: (1) Replaced empty/conditional XCUITest checks with fail-closed assertions and explicit checkpoints; (2) Updated CI evidence generator to parse verified checkpoint markers; (3) Non-circular Skill release (C_CODE: 4bdaa18... -> D_DOCS: 4a12b1b... -> C_RELEASE: e240383...) with 10/10 self-test scenarios PASS; (4) Deep native tests for typed Date/Data, nil distinction, 3-level chained aggrandizements, import-decompile-bounded-edit-recompile pipeline, stdfunc modular execution; (5) Fixed legacy parser CRLF newline handling and `\r` whitespace skipping; (6) Reconciled metadata matrix test assertions with full native escape capabilities | All unit/native/module tests PASS (100% across 24 packages), TestCherriNoSign PASS, TestDecomp PASS, Skill self-test 10/10 PASS |
+
 
 ### Evidence log (append specific further artifacts)
 
@@ -371,7 +372,7 @@ A requirement may be marked done only when its ledger row includes all applicabl
 |---|---|
 | Snapshot date | 2026-10-14 |
 | Last verified release baseline | `0d3bab12048ffa6f45156ebc1bb4b3273247bdf0` |
-| Active candidate branch / SHA | `agent/cherri-v2-product-completion` / `4bdaa18f12fda813c523764556865b086d389048` (`C_CODE`) |
+| Active candidate branch / SHA | `agent/cherri-v2-product-completion` / `e2403839839933a548637c94b9b9182a21f889eb` (`C_RELEASE`) |
 | Docs branch / SHA | `agent/cherri-v2-product-docs` / `4a12b1bfba22913fe2718d256cfb8047a6b44745` (`D_DOCS`) |
 | Current product verdict | All 5 production core gaps implemented; all local unit/native/module/Skill tests 100% PASS; ready for candidate CI execution |
 | First next action | Run GitHub Actions CI workflows for candidate release and verify with blocking watchers |
