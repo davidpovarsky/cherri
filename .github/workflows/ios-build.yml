@@ -247,10 +247,21 @@ jobs:
           log_sha = hashlib.sha256(log_bytes).hexdigest()
           log_text = log_bytes.decode("utf-8", errors="replace")
 
-          passed_tests = set()
-          for m in re.finditer(r"Test Case '-\[(\w+)\.(\w+)\s+(\w+)\]' passed", log_text):
-              passed_tests.add(f"{m.group(2)}/{m.group(3)}")
-              passed_tests.add(f"{m.group(1)}/{m.group(3)}")
+          test_blocks = {}
+          pattern = re.compile(
+              r"Test Case '-\[(\w+)\.(\w+)\s+(\w+)\]' started\.(.*?)Test Case '-\[\1\.\2\s+\3\]' (passed|failed)",
+              re.DOTALL
+          )
+          for m in pattern.finditer(log_text):
+              target = m.group(1)
+              suite = m.group(2)
+              method = m.group(3)
+              body = m.group(4)
+              status = m.group(5)
+              test_blocks[f"{suite}/{method}"] = (status, body)
+              test_blocks[f"{target}/{method}"] = (status, body)
+
+          passed_tests = {k for k, (status, _) in test_blocks.items() if status == "passed"}
 
           # UI automation tests map to (requirements, assertions, required_checkpoint_marker)
           ui_test_map = {
@@ -308,14 +319,17 @@ jobs:
           records = []
           for test_id, (reqs, assertions, required_checkpoint) in sorted(ui_test_map.items()):
               method = test_id.split("/")[1]
-              test_passed = (test_id in passed_tests or f"CherriUITests/{method}" in passed_tests)
-              checkpoint_verified = (required_checkpoint in log_text)
+              test_entry = test_blocks.get(test_id) or test_blocks.get(f"CherriUITests/{method}")
+              if not test_entry:
+                  continue
+              test_status, test_body = test_entry
+              test_passed = (test_status == "passed")
+              checkpoint_verified = (required_checkpoint in test_body)
 
               if test_passed and checkpoint_verified:
-                  safe_name = method
                   canonical_test_id = f"CherriUITests/{method}"
                   records.append({
-                      "evidence_id": f"ev-ios-ui-{safe_name}",
+                      "evidence_id": f"ev-ios-ui-{method}",
                       "requirements": reqs,
                       "tier": "ios-ui",
                       "implementation_sha": impl_sha,
@@ -329,10 +343,10 @@ jobs:
                           "sha256": log_sha,
                           "run_id": run_id,
                       }],
-                      "detail": f"Executed and passed authentic UI automation test {canonical_test_id} with verified checkpoint {required_checkpoint} in iOS Simulator",
+                      "detail": f"Executed and passed authentic UI automation test {canonical_test_id} verifying {reqs} within test block in iOS Simulator",
                   })
               elif test_passed and not checkpoint_verified:
-                  print(f"WARNING: Test {test_id} passed in Xcode but skipped mandatory behavioral checkpoint {required_checkpoint}! Omitting evidence record.")
+                  print(f"WARNING: Test {test_id} passed in Xcode but missing verified assertion marker {required_checkpoint} inside test block! Omitting evidence record.")
 
           for test_id, (reqs, assertions) in sorted(service_test_map.items()):
               method = test_id.split("/")[1]

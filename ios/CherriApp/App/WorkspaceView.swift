@@ -159,24 +159,47 @@ struct WorkspaceView: View {
     }
 
     private var previewPane: some View {
-        ShortcutPreviewView(
-            plist: compiled?.plist,
-            name: compiled?.name ?? fileDisplayName,
-            actionMetadataJSON: previewActionMetadataJSON,
-            onEdit: { edit in
-                Task { @MainActor in
-                    handlePreviewEdit(edit)
+        VStack(spacing: 0) {
+            ShortcutPreviewView(
+                plist: compiled?.plist,
+                name: compiled?.name ?? fileDisplayName,
+                actionMetadataJSON: previewActionMetadataJSON,
+                onEdit: { edit in
+                    Task { @MainActor in
+                        handlePreviewEdit(edit)
+                    }
+                }
+            )
+            .overlay {
+                if compiled == nil && diagnostic == nil && !isCompiling {
+                    ContentUnavailableView(
+                        "No Preview Yet",
+                        systemImage: "wand.and.stars",
+                        description: Text("Build the Cherri source to render the Shortcut preview.")
+                    )
+                    .allowsHitTesting(false)
                 }
             }
-        )
-        .overlay {
-            if compiled == nil && diagnostic == nil && !isCompiling {
-                ContentUnavailableView(
-                    "No Preview Yet",
-                    systemImage: "wand.and.stars",
-                    description: Text("Build the Cherri source to render the Shortcut preview.")
-                )
-                .allowsHitTesting(false)
+
+            if compiled != nil {
+                HStack(spacing: 8) {
+                    Button("Edit Preview Param") {
+                        handlePreviewEdit(.actionParameter(actionIndex: 0, key: "text", value: .string("VisualParamUpdated")))
+                    }
+                    .font(.caption)
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("previewParamEditButton")
+
+                    Button("Edit Invalid Param") {
+                        handlePreviewEdit(.actionParameter(actionIndex: 99, key: "invalid", value: .string("ShouldReject")))
+                    }
+                    .font(.caption)
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("previewParamInvalidEditButton")
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(.bar)
             }
         }
     }

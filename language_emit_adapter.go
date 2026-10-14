@@ -90,29 +90,7 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 			}
 		}
 		if action.WFWorkflowActionIdentifier == "is.workflow.actions.output" {
-			if att, ok := action.WFWorkflowActionParameters["WFOutput"].(WFTextTokenAttachment); ok {
-				action.WFWorkflowActionParameters["WFOutput"] = map[string]any{
-					"WFSerializationType": "WFTextTokenString",
-					"Value": map[string]any{
-						"string": "\uFFFC",
-						"attachmentsByRange": map[string]any{
-							"{0, 1}": att.Value,
-						},
-					},
-				}
-			} else if outMap, ok := action.WFWorkflowActionParameters["WFOutput"].(map[string]any); ok {
-				if outMap["WFSerializationType"] == "WFTextTokenAttachment" {
-					action.WFWorkflowActionParameters["WFOutput"] = map[string]any{
-						"WFSerializationType": "WFTextTokenString",
-						"Value": map[string]any{
-							"string": "\uFFFC",
-							"attachmentsByRange": map[string]any{
-								"{0, 1}": outMap["Value"],
-							},
-						},
-					}
-				}
-			} else if num, ok := action.WFWorkflowActionParameters["WFOutput"].(float64); ok {
+			if num, ok := action.WFWorkflowActionParameters["WFOutput"].(float64); ok {
 				strVal := fmt.Sprintf("%v", num)
 				if num == float64(int64(num)) {
 					strVal = fmt.Sprintf("%d", int64(num))

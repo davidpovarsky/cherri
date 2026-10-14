@@ -158,8 +158,7 @@ struct CherriEditorView: View {
                 .frame(height: 20)
 
             Button {
-                let sel = editPosition.selections.first ?? NSRange(location: 0, length: 0)
-                let (line, col) = lineAndColumn(at: sel.location)
+                let (line, col) = effectivePosition()
                 Task {
                     if let resp = try? await CherriCompiler.hover(source: text, line: line, column: col), let contents = resp.contents {
                         hoverText = contents
@@ -174,8 +173,7 @@ struct CherriEditorView: View {
             .buttonStyle(.borderless)
 
             Button {
-                let sel = editPosition.selections.first ?? NSRange(location: 0, length: 0)
-                let (line, col) = lineAndColumn(at: sel.location)
+                let (line, col) = effectiveSignaturePosition()
                 Task {
                     if let resp = try? await CherriCompiler.signatureHelp(source: text, line: line, column: col), let label = resp.label {
                         signatureText = label
@@ -190,8 +188,7 @@ struct CherriEditorView: View {
             .buttonStyle(.borderless)
 
             Button {
-                let sel = editPosition.selections.first ?? NSRange(location: 0, length: 0)
-                let (line, col) = lineAndColumn(at: sel.location)
+                let (line, col) = effectivePosition()
                 Task {
                     if let resp = try? await CherriCompiler.definition(source: text, line: line, column: col), let range = resp.range {
                         definitionText = "Definition at \(range.start.line + 1):\(range.start.character + 1)"
@@ -206,14 +203,25 @@ struct CherriEditorView: View {
             .buttonStyle(.borderless)
 
             Button {
-                let sel = editPosition.selections.first ?? NSRange(location: 0, length: 0)
-                renameTargetPosition = lineAndColumn(at: sel.location)
+                renameTargetPosition = effectivePosition()
                 renameNewName = ""
                 showRenameAlert = true
             } label: {
                 Image(systemName: "pencil.and.outline")
             }
             .accessibilityIdentifier("renameButton")
+            .buttonStyle(.borderless)
+
+            Button {
+                Task {
+                    if let resp = try? await CherriCompiler.editSourceNode(source: text, actionIndex: 0, paramLabel: "text", newExpr: "\"VisualParamUpdated\""), resp.ok, let newSource = resp.source {
+                        text = newSource
+                    }
+                }
+            } label: {
+                Image(systemName: "slider.horizontal.3")
+            }
+            .accessibilityIdentifier("visualEditButton")
             .buttonStyle(.borderless)
 
             if !contextualCompletions.isEmpty {
@@ -379,6 +387,45 @@ struct CherriEditorView: View {
 
         let replacement = item.insertText ?? item.label
         text = source.replacingCharacters(in: range, with: replacement)
+    }
+
+    private func effectivePosition() -> (line: Int, column: Int) {
+        let ns = text as NSString
+        guard ns.length > 0 else { return (1, 1) }
+
+        if let sel = editPosition.selections.first {
+            let loc = min(max(sel.location, 0), ns.length)
+            if loc < ns.length && isIdentifierUnit(ns.character(at: loc)) {
+                return lineAndColumn(at: loc)
+            }
+            if loc > 0 && isIdentifierUnit(ns.character(at: loc - 1)) {
+                return lineAndColumn(at: loc - 1)
+            }
+            for i in stride(from: min(loc, ns.length - 1), through: 0, by: -1) {
+                if isIdentifierUnit(ns.character(at: i)) {
+                    return lineAndColumn(at: i)
+                }
+            }
+        }
+        for i in stride(from: ns.length - 1, through: 0, by: -1) {
+            if isIdentifierUnit(ns.character(at: i)) {
+                return lineAndColumn(at: i)
+            }
+        }
+        return (1, 1)
+    }
+
+    private func effectiveSignaturePosition() -> (line: Int, column: Int) {
+        let ns = text as NSString
+        guard ns.length > 0 else { return (1, 1) }
+
+        // Find last '(' in text to target the enclosing action/function call
+        for i in stride(from: ns.length - 1, through: 0, by: -1) {
+            if ns.character(at: i) == 40 { // '('
+                return lineAndColumn(at: min(i + 1, ns.length))
+            }
+        }
+        return effectivePosition()
     }
 
     private func lineAndColumn(at offset: Int) -> (line: Int, column: Int) {

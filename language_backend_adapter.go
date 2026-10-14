@@ -495,29 +495,7 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 		}
 	}
 	if appleIdentifier == "is.workflow.actions.output" {
-		if att, ok := cleanParams["WFOutput"].(WFTextTokenAttachment); ok {
-			cleanParams["WFOutput"] = map[string]any{
-				"WFSerializationType": "WFTextTokenString",
-				"Value": map[string]any{
-					"string": "\uFFFC",
-					"attachmentsByRange": map[string]any{
-						"{0, 1}": att.Value,
-					},
-				},
-			}
-		} else if outMap, ok := cleanParams["WFOutput"].(map[string]any); ok {
-			if outMap["WFSerializationType"] == "WFTextTokenAttachment" {
-				cleanParams["WFOutput"] = map[string]any{
-					"WFSerializationType": "WFTextTokenString",
-					"Value": map[string]any{
-						"string": "\uFFFC",
-						"attachmentsByRange": map[string]any{
-							"{0, 1}": outMap["Value"],
-						},
-					},
-				}
-			}
-		} else if num, ok := cleanParams["WFOutput"].(float64); ok {
+		if num, ok := cleanParams["WFOutput"].(float64); ok {
 			strVal := fmt.Sprintf("%v", num)
 			if num == float64(int64(num)) {
 				strVal = fmt.Sprintf("%d", int64(num))

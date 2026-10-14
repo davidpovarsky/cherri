@@ -1113,9 +1113,21 @@ func (s *Service) ApplyVisualSourceEdit(src string, actionIndex int, paramLabel 
 		return src[:sp.Start.ByteOffset] + trimmedExpr + src[sp.End.ByteOffset:], nil
 	}
 
-	// 2. Check if editing an existing NamedArg
-	for _, arg := range call.NamedArgs {
-		if arg.Label == canonicalLabel || (paramLabel != "" && arg.Label == paramLabel) {
+	// 2. Check if editing an existing NamedArg (either explicitly labeled or matching positional parameter index)
+	for argIdx, arg := range call.NamedArgs {
+		paramIdx := argIdx + 1
+		if call.PrimaryArg == nil {
+			paramIdx = argIdx
+		}
+		matchesPositional := false
+		if arg.Label == "" && hasSchema && paramIdx < len(actSchema.Parameters) {
+			if strings.EqualFold(actSchema.Parameters[paramIdx].Label, canonicalLabel) ||
+				strings.EqualFold(actSchema.Parameters[paramIdx].WireKey, canonicalLabel) {
+				matchesPositional = true
+			}
+		}
+
+		if arg.Label == canonicalLabel || (paramLabel != "" && arg.Label == paramLabel) || matchesPositional {
 			sp := arg.Value.NodeSpan()
 			return src[:sp.Start.ByteOffset] + trimmedExpr + src[sp.End.ByteOffset:], nil
 		}

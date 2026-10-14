@@ -112,6 +112,18 @@ func MigrateSource(input string) string {
 			line = strings.Replace(line, "const ", "let ", 1)
 		}
 
+		// 2b. Convert legacy function signatures: function name(type _param) -> function name(_param: Type)
+		if strings.HasPrefix(trimmed, "function ") {
+			line = migrateLegacyFunctionDecl(line)
+			trimmed = strings.TrimSpace(line)
+		}
+
+		// 2c. Convert legacy output(...) -> return ...
+		if strings.HasPrefix(trimmed, "output(") && strings.HasSuffix(trimmed, ")") {
+			line = migrateLegacyOutputStmt(line)
+			trimmed = strings.TrimSpace(line)
+		}
+
 		// 3. Convert @var = val -> let/var var = val
 		if strings.HasPrefix(trimmed, "@") {
 			// Check if +=, -=, *=, /=
@@ -362,4 +374,79 @@ func isValidIdent(s string) bool {
 		}
 	}
 	return true
+}
+
+func migrateLegacyFunctionDecl(line string) string {
+	idxOpen := strings.Index(line, "(")
+	idxClose := strings.LastIndex(line, ")")
+	if idxOpen == -1 || idxClose == -1 || idxOpen >= idxClose {
+		return line
+	}
+	prefix := line[:idxOpen]
+	rawParams := line[idxOpen+1 : idxClose]
+	suffix := line[idxClose+1:]
+
+	if strings.TrimSpace(rawParams) == "" {
+		return line
+	}
+
+	parts := strings.Split(rawParams, ",")
+	var newParams []string
+	needsMigration := false
+	for _, p := range parts {
+		trimmedP := strings.TrimSpace(p)
+		if strings.Contains(trimmedP, ":") {
+			newParams = append(newParams, trimmedP)
+			continue
+		}
+		fields := strings.Fields(trimmedP)
+		if len(fields) == 2 {
+			needsMigration = true
+			typeStr := fields[0]
+			nameStr := fields[1]
+			switch strings.ToLower(typeStr) {
+			case "text", "string":
+				typeStr = "Text"
+			case "array", "list":
+				typeStr = "List"
+			case "number", "int", "float":
+				typeStr = "Number"
+			case "bool", "boolean":
+				typeStr = "Bool"
+			case "dict", "dictionary":
+				typeStr = "Dictionary"
+			default:
+				typeStr = "Any"
+			}
+			newParams = append(newParams, fmt.Sprintf("%s: %s", nameStr, typeStr))
+		} else if len(fields) == 1 {
+			newParams = append(newParams, fields[0])
+		} else {
+			newParams = append(newParams, trimmedP)
+		}
+	}
+	if !needsMigration {
+		return line
+	}
+	return prefix + "(" + strings.Join(newParams, ", ") + ")" + suffix
+}
+
+func migrateLegacyOutputStmt(line string) string {
+	trimmed := strings.TrimSpace(line)
+	if !strings.HasPrefix(trimmed, "output(") || !strings.HasSuffix(trimmed, ")") {
+		return line
+	}
+	arg := trimmed[len("output(") : len(trimmed)-1]
+	argTrim := strings.TrimSpace(arg)
+	// Check if "{var}" or "{@var}"
+	if (strings.HasPrefix(argTrim, "\"{") && strings.HasSuffix(argTrim, "}\"")) ||
+		(strings.HasPrefix(argTrim, "f\"{") && strings.HasSuffix(argTrim, "}\"")) {
+		inner := strings.TrimSuffix(strings.TrimPrefix(argTrim, "\"{"), "}\"")
+		inner = strings.TrimSuffix(strings.TrimPrefix(inner, "f\"{"), "}\"")
+		inner = strings.TrimPrefix(inner, "@")
+		indent := line[:len(line)-len(strings.TrimLeft(line, " \t"))]
+		return indent + "return " + inner
+	}
+	indent := line[:len(line)-len(strings.TrimLeft(line, " \t"))]
+	return indent + "return " + argTrim
 }

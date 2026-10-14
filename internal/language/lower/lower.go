@@ -12,6 +12,7 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
+	"github.com/electrikmilk/cherri/internal/language/migrate"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
@@ -410,7 +411,13 @@ func (l *Lowerer) lowerImport(d *syntax.ImportDecl) error {
 	parser := syntax.NewParser(srcFile)
 	modProg := parser.ParseProgram()
 	if len(parser.Errors()) > 0 {
-		return fmt.Errorf("syntax error in imported module %q: %v", d.Path, parser.Errors()[0])
+		migrated := migrate.MigrateSource(content)
+		srcFile = source.NewFile(source.DocumentID(d.Path), d.Path, 1, migrated)
+		parser = syntax.NewParser(srcFile)
+		modProg = parser.ParseProgram()
+		if len(parser.Errors()) > 0 {
+			return fmt.Errorf("syntax error in imported module %q: %v", d.Path, parser.Errors()[0])
+		}
 	}
 
 	// 4. Check top-level statements (IM02)
@@ -1147,42 +1154,7 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 			if err != nil {
 				return err
 			}
-			if tok, isTok := val.(*ir.AttachmentToken); isTok {
-				val = map[string]interface{}{
-					"WFSerializationType": "WFTextTokenString",
-					"Value": map[string]interface{}{
-						"string": "\uFFFC",
-						"attachmentsByRange": map[string]interface{}{
-							"{0, 1}": tok,
-						},
-					},
-				}
-			} else if num, isNum := val.(float64); isNum {
-				strVal := fmt.Sprintf("%v", num)
-				if num == float64(int64(num)) {
-					strVal = fmt.Sprintf("%d", int64(num))
-				}
-				val = map[string]interface{}{
-					"WFSerializationType": "WFTextTokenString",
-					"Value": map[string]interface{}{
-						"string": strVal,
-					},
-				}
-			} else if num, isNum := val.(int); isNum {
-				val = map[string]interface{}{
-					"WFSerializationType": "WFTextTokenString",
-					"Value": map[string]interface{}{
-						"string": fmt.Sprintf("%d", num),
-					},
-				}
-			} else if str, isStr := val.(string); isStr {
-				val = map[string]interface{}{
-					"WFSerializationType": "WFTextTokenString",
-					"Value": map[string]interface{}{
-						"string": str,
-					},
-				}
-			}
+			val = l.materializeToAttachment(val)
 			// Emit output action: is.workflow.actions.output
 			node := &ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
@@ -1487,6 +1459,45 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 			OutputName:      "Number",
 			Parameters: map[string]interface{}{
 				"WFNumberActionNumber": v,
+			},
+		}
+		l.emitAction(node)
+		return &ir.AttachmentToken{
+			Type:       "ActionOutput",
+			OutputUUID: uuid,
+			OutputName: "Number",
+		}
+	case int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8:
+		var n float64
+		switch num := v.(type) {
+		case int:
+			n = float64(num)
+		case int64:
+			n = float64(num)
+		case int32:
+			n = float64(num)
+		case int16:
+			n = float64(num)
+		case int8:
+			n = float64(num)
+		case uint:
+			n = float64(num)
+		case uint64:
+			n = float64(num)
+		case uint32:
+			n = float64(num)
+		case uint16:
+			n = float64(num)
+		case uint8:
+			n = float64(num)
+		}
+		node := &ir.NativeActionNode{
+			NodeID:          uuid,
+			AppleIdentifier: "is.workflow.actions.number",
+			OutputUUID:      uuid,
+			OutputName:      "Number",
+			Parameters: map[string]interface{}{
+				"WFNumberActionNumber": n,
 			},
 		}
 		l.emitAction(node)
@@ -3254,6 +3265,29 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			Parameters:      runParams,
 		}
 		l.emitAction(runNode)
+
+		if named, ok := fn.ReturnType.(*syntax.NamedTypeAnnotation); ok && (named.Name == "Number" || named.Name == "Int" || named.Name == "Float") {
+			detectUUID := l.GenerateUUID()
+			detectNode := &ir.NativeActionNode{
+				NodeID:          detectUUID,
+				AppleIdentifier: "is.workflow.actions.detect.number",
+				OutputUUID:      detectUUID,
+				OutputName:      outName,
+				Parameters: map[string]interface{}{
+					"WFInput": &ir.AttachmentToken{
+						Type:       "ActionOutput",
+						OutputUUID: uuid,
+					},
+				},
+			}
+			l.emitAction(detectNode)
+			return &ir.AttachmentToken{
+				Type:       "ActionOutput",
+				OutputUUID: detectUUID,
+				OutputName: outName,
+			}, nil
+		}
+
 		return &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: uuid,

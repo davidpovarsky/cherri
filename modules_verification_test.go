@@ -262,28 +262,14 @@ func TestMODULES_StdFunc_RunJSAndChooseFromVCard(t *testing.T) {
 		t.Fatalf("stdfunc.cherri is unexpectedly empty")
 	}
 
-	// Generated v2 equivalent of the preserved stdfunc functions (per RP27 contract)
-	v2StdFuncCode := `function runJS(script: String) -> String {
-    let replaced = replaceText("#", "\u0023", script)
-    return replaced
-}
-
-function chooseFromVCard(items: Array, prompt: String) -> Any {
-    let named = setName(items, "cherri_chooseFromVCard.vcf")
-    let chosen = chooseFromList(named, prompt: prompt)
-    return chosen
-}
-`
 	mainCode := `import "./stdfunc.cherri" as std
 
 let jsRes = std.runJS("document.title")
-let selection = std.chooseFromVCard(["Item 1", "Item 2"], "Choose an option:")
+let selection = std.chooseFromVCard(["Item 1", "Item 2"], prompt: "Choose an option:")
 `
-	virtualMods := map[string]string{
-		"./stdfunc.cherri": v2StdFuncCode,
-	}
 
-	plistBytes, err := CompileSourceToPlistWithModules("main.cherri", mainCode, virtualMods)
+	// Compile directly using the real preserved stdfunc.cherri from disk (no synthetic virtual modules)
+	plistBytes, err := CompileSourceToPlistWithModules("main.cherri", mainCode, nil)
 	if err != nil {
 		t.Fatalf("failed to compile modular stdfunc execution: %v", err)
 	}

@@ -15,6 +15,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/service"
 	"howett.net/plist"
 )
 
@@ -656,10 +658,37 @@ func TestNATIVE_Workflow_ImportDecompileBoundedEditRecompilePipeline(t *testing.
 		t.Fatalf("decompiled source missing AppIntent action:\n%s", decompSource)
 	}
 
-	// Step 2: Perform a bounded edit modifying only the alert message
-	editedSource := strings.Replace(decompSource, "Original Alert Text 123", "Updated Bounded Alert Text 456", 1)
+	// Step 2: Perform bounded source-edit via official AST API with negative rejection & preservation
+	svc := service.NewService(schema.DefaultRegistry())
+
+	// Negative case 1: Out of range action index rejected
+	if _, err := svc.ApplyVisualSourceEdit(decompSource, 99, "alert", "\"Bad\""); err == nil {
+		t.Fatalf("expected out-of-range action index 99 to be rejected")
+	}
+
+	// Negative case 2: Invalid expression syntax rejected
+	if _, err := svc.ApplyVisualSourceEdit(decompSource, 0, "alert", ";;; invalid expression"); err == nil {
+		t.Fatalf("expected invalid replacement syntax to be rejected")
+	}
+
+	// Negative case 3: Unmappable opaque action edit rejected
+	if _, err := svc.ApplyVisualSourceEdit(decompSource, 1, "custom", "\"Bad\""); err == nil {
+		t.Fatalf("expected opaque AppIntent action edit to be rejected as unmappable")
+	}
+
+	// Bounded edit: mutate only target alert title parameter
+	editedSource, err := svc.ApplyVisualSourceEdit(decompSource, 0, "title", "\"Updated Bounded Alert Text 456\"")
+	if err != nil {
+		t.Fatalf("ApplyVisualSourceEdit failed: %v\ndecompSource was:\n%s", err, decompSource)
+	}
 	if editedSource == decompSource {
 		t.Fatalf("bounded edit substitution did not modify source")
+	}
+	if !strings.Contains(editedSource, "Updated Bounded Alert Text 456") {
+		t.Fatalf("edited source missing updated alert text:\n%s", editedSource)
+	}
+	if !strings.Contains(editedSource, "com.apple.opaque.appintent.action") {
+		t.Fatalf("edited source lost opaque AppIntent action:\n%s", editedSource)
 	}
 
 	// Step 3: Recompile the edited source

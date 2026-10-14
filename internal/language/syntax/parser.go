@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"unicode"
 
 	"github.com/electrikmilk/cherri/internal/language/source"
 )
@@ -1272,7 +1273,10 @@ func isUpper(s string) bool {
 	if len(s) == 0 {
 		return false
 	}
-	return strings.ToUpper(s[:1]) == s[:1]
+	for _, r := range s {
+		return unicode.IsUpper(r)
+	}
+	return false
 }
 
 func (p *Parser) currHasLeadingNewline() bool {
