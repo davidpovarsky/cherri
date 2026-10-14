@@ -63,8 +63,10 @@ struct ActionPaletteView: View {
                     .contentShape(Rectangle())
                     .padding(.vertical, 3)
                 }
+                .accessibilityIdentifier("paletteAction_\(action.name)")
                 .buttonStyle(.plain)
             }
+            .accessibilityIdentifier("actionPaletteList")
             .overlay {
                 if filteredActions.isEmpty {
                     ContentUnavailableView.search(text: query)

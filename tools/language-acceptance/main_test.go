@@ -1523,3 +1523,33 @@ func TestAntiFalsePositive_EmptyManifestLeavesAllExternalRequirementsUnsatisfied
 		t.Errorf("expected 0 passed cases for empty manifest in final phase, got %d", report.PassedCases)
 	}
 }
+
+// AFP-8: Green UI test with skipped interaction assertion fails closed
+func TestAntiFalsePositive_GreenUITestWithoutBehavioralCheckpoint_Rejected(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-ui" {
+			manifest.Records[i].Assertions = map[string]string{"completion_contextual": "skipped"}
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("green UI test with skipped interaction assertion must not achieve closure")
+	}
+}
+
+// AFP-9: Visual parameter edit with mutated wrong assertion key fails closed
+func TestAntiFalsePositive_MutatedSourceNodeTarget_Rejected(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-ui" {
+			manifest.Records[i].Assertions = map[string]string{"wrong_mutation_key": "true"}
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("mutated UI assertion must not achieve closure")
+	}
+}

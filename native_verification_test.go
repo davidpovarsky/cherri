@@ -6,8 +6,11 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"math"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -382,3 +385,406 @@ func TestNATIVE_JSONCompatibilityCheck(t *testing.T) {
 		t.Errorf("expected WFWorkflowActions in JSON round-trip")
 	}
 }
+
+// 7. GAP-NATIVE-TYPED: Real typed Date and Data payloads pass-through using XML and binary plist formats
+func TestNATIVE_Plist_TypedDateAndBinaryDataPassThrough(t *testing.T) {
+	// Real XML Plist payload containing <date> and base64-encoded <data>
+	xmlPayload := `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>EventDate</key>
+    <date>2026-10-14T15:30:00Z</date>
+    <key>PayloadData</key>
+    <data>AQIDBAUGBwgJCgsMDQ4PEA==</data>
+    <key>NestedDict</key>
+    <dict>
+        <key>InnerData</key>
+        <data>VGVzdERhdGE=</data>
+    </dict>
+</dict>
+</plist>`
+
+	code := `native.action("com.apple.custom.typed_data_date", parameters: {
+    "TypedConfig": native.plist(` + strconv.Quote(xmlPayload) + `)
+})
+`
+	plistBytes, err := CompileSourceToPlist("typed_payload.cherri", code)
+	if err != nil {
+		t.Fatalf("failed to compile typed payload cherri: %v", err)
+	}
+
+	// 1. Unmarshal XML/standard output plist
+	var rawMap map[string]any
+	if _, err := plist.Unmarshal(plistBytes, &rawMap); err != nil {
+		t.Fatalf("failed to unmarshal output plist: %v", err)
+	}
+
+	actions := rawMap["WFWorkflowActions"].([]any)
+	act := actions[0].(map[string]any)
+	params := act["WFWorkflowActionParameters"].(map[string]any)
+	typedCfg, ok := params["TypedConfig"].(map[string]any)
+	if !ok {
+		t.Fatalf("expected TypedConfig to be map[string]any, got %T", params["TypedConfig"])
+	}
+
+	// Verify typed time.Time
+	eventDate, isTime := typedCfg["EventDate"].(time.Time)
+	if !isTime {
+		t.Fatalf("expected EventDate to be time.Time, got %T (%v)", typedCfg["EventDate"], typedCfg["EventDate"])
+	}
+	expectedDate := time.Date(2026, 10, 14, 15, 30, 0, 0, time.UTC)
+	if !eventDate.Equal(expectedDate) {
+		t.Errorf("EventDate mismatch: expected %v, got %v", expectedDate, eventDate)
+	}
+
+	// Verify typed []byte for PayloadData
+	payloadData, isBytes := typedCfg["PayloadData"].([]byte)
+	if !isBytes {
+		t.Fatalf("expected PayloadData to be []byte, got %T (%v)", typedCfg["PayloadData"], typedCfg["PayloadData"])
+	}
+	expectedBytes := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+	if len(payloadData) != len(expectedBytes) {
+		t.Fatalf("expected %d bytes, got %d", len(expectedBytes), len(payloadData))
+	}
+	for i, b := range expectedBytes {
+		if payloadData[i] != b {
+			t.Errorf("byte mismatch at index %d: expected %d, got %d", i, b, payloadData[i])
+		}
+	}
+
+	// Verify nested []byte
+	nestedDict := typedCfg["NestedDict"].(map[string]any)
+	innerData, innerIsBytes := nestedDict["InnerData"].([]byte)
+	if !innerIsBytes {
+		t.Fatalf("expected InnerData to be []byte, got %T", nestedDict["InnerData"])
+	}
+	if string(innerData) != "TestData" {
+		t.Errorf("expected TestData, got %s", string(innerData))
+	}
+
+	// 2. Binary Plist serialization round-trip verification
+	binBytes, err := plist.Marshal(rawMap, plist.BinaryFormat)
+	if err != nil {
+		t.Fatalf("failed to marshal to binary plist: %v", err)
+	}
+	var binMap map[string]any
+	if _, err := plist.Unmarshal(binBytes, &binMap); err != nil {
+		t.Fatalf("failed to unmarshal binary plist: %v", err)
+	}
+	binActions := binMap["WFWorkflowActions"].([]any)
+	binParams := binActions[0].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
+	binTypedCfg := binParams["TypedConfig"].(map[string]any)
+
+	binDate, ok := binTypedCfg["EventDate"].(time.Time)
+	if !ok || !binDate.Equal(expectedDate) {
+		t.Errorf("binary plist round-trip date mismatch: %v", binTypedCfg["EventDate"])
+	}
+	binData, ok := binTypedCfg["PayloadData"].([]byte)
+	if !ok || len(binData) != 16 {
+		t.Errorf("binary plist round-trip data mismatch: %v", binTypedCfg["PayloadData"])
+	}
+}
+
+// 8. GAP-NATIVE-NIL-EMPTY: Verify distinct behavior for nil/absent values versus empty values
+func TestNATIVE_Plist_NilOmittedVsEmptyDistinction(t *testing.T) {
+	code := `native.action("com.apple.test.nil_vs_empty", parameters: {
+    "ExplicitEmptyString": "",
+    "ExplicitEmptyList": [],
+    "ExplicitEmptyDict": native.plist({}),
+    "NonEmptyString": "ValuePresent"
+})
+`
+	plistBytes, err := CompileSourceToPlist("nil_vs_empty.cherri", code)
+	if err != nil {
+		t.Fatalf("failed to compile nil_vs_empty: %v", err)
+	}
+
+	var rawMap map[string]any
+	if _, err := plist.Unmarshal(plistBytes, &rawMap); err != nil {
+		t.Fatalf("failed to unmarshal plist: %v", err)
+	}
+
+	act := rawMap["WFWorkflowActions"].([]any)[0].(map[string]any)
+	params := act["WFWorkflowActionParameters"].(map[string]any)
+
+	// Explicit empty string must exist and have length 0
+	emptyStr, exists := params["ExplicitEmptyString"].(string)
+	if !exists {
+		t.Errorf("expected ExplicitEmptyString to exist in plist")
+	}
+	if emptyStr != "" {
+		t.Errorf("expected empty string, got %q", emptyStr)
+	}
+
+	// Explicit empty list must exist and have length 0
+	var emptyListLen = -1
+	if rawList, isSlice := params["ExplicitEmptyList"].([]any); isSlice {
+		emptyListLen = len(rawList)
+	} else if stateMap, isMap := params["ExplicitEmptyList"].(map[string]any); isMap {
+		if stateMap["WFSerializationType"] == "WFArrayParameterState" {
+			if items, ok := stateMap["Value"].([]any); ok {
+				emptyListLen = len(items)
+			} else {
+				emptyListLen = 0 // omitempty in plist marshaling
+			}
+		}
+	}
+	if emptyListLen != 0 {
+		t.Errorf("expected ExplicitEmptyList to exist with length 0, got %d (%v)", emptyListLen, params["ExplicitEmptyList"])
+	}
+
+	// Explicit empty dict must exist and have length 0
+	emptyDict, exists := params["ExplicitEmptyDict"].(map[string]any)
+	if !exists {
+		t.Errorf("expected ExplicitEmptyDict to exist in plist")
+	}
+	if len(emptyDict) != 0 {
+		t.Errorf("expected empty dict, got length %d", len(emptyDict))
+	}
+
+	// Absent / omitted key must NOT exist in parameters map (distinguished from empty values)
+	if _, exists := params["OmittedOrNilKey"]; exists {
+		t.Errorf("expected OmittedOrNilKey to be absent from plist parameters")
+	}
+}
+
+// 9. GAP-NATIVE-CHAINED-REF: Multi-level chained aggrandizements (Coercion -> DictionaryKey -> Property)
+func TestNATIVE_Ref_ChainedMultiLevelAggrandizements(t *testing.T) {
+	code := `native.action("com.apple.custom.chained_refs", parameters: {
+    "DeepRef": native.ref("ActionOutput",
+        uuid: "B2C3D4E5-F6A7-8901-BCDE-F12345678901",
+        aggrandizements: [
+            { "Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFDictionaryContentItem" },
+            { "Type": "WFDictionaryValueVariableAggrandizement", "DictionaryKey": "session_payload" },
+            { "Type": "WFPropertyVariableAggrandizement", "PropertyName": "File Size" }
+        ]
+    )
+})
+`
+	plistBytes, err := CompileSourceToPlist("chained_refs.cherri", code)
+	if err != nil {
+		t.Fatalf("failed to compile chained_refs: %v", err)
+	}
+
+	var rawMap map[string]any
+	if _, err := plist.Unmarshal(plistBytes, &rawMap); err != nil {
+		t.Fatalf("failed to unmarshal plist: %v", err)
+	}
+
+	act := rawMap["WFWorkflowActions"].([]any)[0].(map[string]any)
+	params := act["WFWorkflowActionParameters"].(map[string]any)
+	deepRef := params["DeepRef"].(map[string]any)
+
+	if deepRef["WFSerializationType"] != "WFTextTokenAttachment" {
+		t.Errorf("expected WFTextTokenAttachment, got %v", deepRef["WFSerializationType"])
+	}
+	refVal := deepRef["Value"].(map[string]any)
+	if refVal["Type"] != "ActionOutput" {
+		t.Errorf("expected Type ActionOutput, got %v", refVal["Type"])
+	}
+	if refVal["OutputUUID"] != "B2C3D4E5-F6A7-8901-BCDE-F12345678901" {
+		t.Errorf("OutputUUID mismatch: %v", refVal["OutputUUID"])
+	}
+
+	aggrs := refVal["Aggrandizements"].([]any)
+	if len(aggrs) != 3 {
+		t.Fatalf("expected 3 chained aggrandizements, got %d", len(aggrs))
+	}
+
+	// Verify exact sequence of chained aggrandizements
+	aggr0 := aggrs[0].(map[string]any)
+	if aggr0["Type"] != "WFCoercionVariableAggrandizement" || aggr0["CoercionItemClass"] != "WFDictionaryContentItem" {
+		t.Errorf("aggrandizement 0 mismatch: %v", aggr0)
+	}
+
+	aggr1 := aggrs[1].(map[string]any)
+	if aggr1["Type"] != "WFDictionaryValueVariableAggrandizement" || aggr1["DictionaryKey"] != "session_payload" {
+		t.Errorf("aggrandizement 1 mismatch: %v", aggr1)
+	}
+
+	aggr2 := aggrs[2].(map[string]any)
+	if aggr2["Type"] != "WFPropertyVariableAggrandizement" || aggr2["PropertyName"] != "File Size" {
+		t.Errorf("aggrandizement 2 mismatch: %v", aggr2)
+	}
+}
+
+// 10. GAP-PIPELINE-E2E: Full end-to-end import -> decompile -> bounded edit -> recompile pipeline
+func TestNATIVE_Workflow_ImportDecompileBoundedEditRecompilePipeline(t *testing.T) {
+	// Construct a realistic Shortcut plist containing unknown keys, AppIntents, and standard actions
+	initialShortcut := map[string]any{
+		"WFWorkflowClientVersion":        "3200.0.7",
+		"WFWorkflowClientRelease":        "iOS 18.0",
+		"WFWorkflowMinimumClientVersion": 900,
+		"CustomEngineTag":                "CherriPreservationPipeline",
+		"WFWorkflowActions": []any{
+			map[string]any{
+				"WFWorkflowActionIdentifier": "is.workflow.actions.alert",
+				"WFWorkflowActionParameters": map[string]any{
+					"UUID":               "ALERT-UUID-001",
+					"WFAlertActionTitle": "Original Alert Text 123",
+				},
+			},
+			map[string]any{
+				"WFWorkflowActionIdentifier": "com.apple.opaque.appintent.action",
+				"WFWorkflowActionParameters": map[string]any{
+					"AppIntentDescriptor": map[string]any{
+						"AppIntentIdentifier": "OpaqueAppIntent",
+						"BundleIdentifier":    "com.example.app",
+					},
+					"CustomPayloadKey": "PreserveMeLosslessly",
+				},
+			},
+		},
+	}
+
+	initialPlistBytes, err := plist.Marshal(initialShortcut, plist.XMLFormat)
+	if err != nil {
+		t.Fatalf("failed to marshal initial shortcut plist: %v", err)
+	}
+
+	// Step 1: Decompile using production in-process decompiler
+	decompResp := decompileForMobile(initialPlistBytes, "PipelineTest")
+	if !decompResp.OK {
+		t.Fatalf("decompile failed: %s", decompResp.Error)
+	}
+	decompSource := decompResp.Source
+	if !strings.Contains(decompSource, "Original Alert Text 123") {
+		t.Fatalf("decompiled source missing original alert text:\n%s", decompSource)
+	}
+	if !strings.Contains(decompSource, "com.apple.opaque.appintent.action") {
+		t.Fatalf("decompiled source missing AppIntent action:\n%s", decompSource)
+	}
+
+	// Step 2: Perform a bounded edit modifying only the alert message
+	editedSource := strings.Replace(decompSource, "Original Alert Text 123", "Updated Bounded Alert Text 456", 1)
+	if editedSource == decompSource {
+		t.Fatalf("bounded edit substitution did not modify source")
+	}
+
+	// Step 3: Recompile the edited source
+	recompResp := compileForMobileMode(editedSource, "PipelineTest", "auto", false)
+	if !recompResp.OK {
+		t.Fatalf("recompile failed: %s (line %d col %d)", recompResp.Error, recompResp.Line, recompResp.Column)
+	}
+
+	// Step 4: Verify the recompiled plist
+	recompBytes, err := base64.StdEncoding.DecodeString(recompResp.PlistBase64)
+	if err != nil {
+		t.Fatalf("failed to decode recompiled base64 plist: %v", err)
+	}
+	var recompiledMap map[string]any
+	if _, err := plist.Unmarshal(recompBytes, &recompiledMap); err != nil {
+		t.Fatalf("failed to unmarshal recompiled plist: %v", err)
+	}
+
+	recompiledActions, ok := recompiledMap["WFWorkflowActions"].([]any)
+	if !ok || len(recompiledActions) != 2 {
+		t.Fatalf("expected 2 actions in recompiled shortcut, got %d", len(recompiledActions))
+	}
+
+	// Assert the bounded edit took effect on the alert action
+	alertAct := recompiledActions[0].(map[string]any)
+	alertParams := alertAct["WFWorkflowActionParameters"].(map[string]any)
+	if alertParams["WFAlertActionTitle"] != "Updated Bounded Alert Text 456" {
+		t.Errorf("bounded edit parameter mismatch: expected %q, got %v", "Updated Bounded Alert Text 456", alertParams["WFAlertActionTitle"])
+	}
+
+	// Assert the opaque AppIntent action survived losslessly with all its parameters
+	appIntentAct := recompiledActions[1].(map[string]any)
+	if appIntentAct["WFWorkflowActionIdentifier"] != "com.apple.opaque.appintent.action" {
+		t.Errorf("AppIntent action identifier mismatch: %v", appIntentAct["WFWorkflowActionIdentifier"])
+	}
+	appIntentParams := appIntentAct["WFWorkflowActionParameters"].(map[string]any)
+	rawDesc := appIntentParams["AppIntentDescriptor"]
+	var intentID, bundleID string
+	if descMap, ok := rawDesc.(map[string]any); ok {
+		if descMap["WFSerializationType"] == "WFDictionaryFieldValue" {
+			if vMap, ok := descMap["Value"].(map[string]any); ok {
+				if items, ok := vMap["WFDictionaryFieldValueItems"].([]any); ok {
+					for _, item := range items {
+						if itemMap, ok := item.(map[string]any); ok {
+							kStr := extractTokenStr(itemMap["WFKey"])
+							vStr := extractTokenStr(itemMap["WFValue"])
+							if kStr == "AppIntentIdentifier" {
+								intentID = vStr
+							} else if kStr == "BundleIdentifier" {
+								bundleID = vStr
+							}
+						}
+					}
+				}
+			}
+		} else {
+			if id, ok := descMap["AppIntentIdentifier"].(string); ok {
+				intentID = id
+			}
+			if bid, ok := descMap["BundleIdentifier"].(string); ok {
+				bundleID = bid
+			}
+		}
+	}
+	if intentID != "OpaqueAppIntent" || bundleID != "com.example.app" {
+		t.Errorf("AppIntentDescriptor corrupted in pipeline: intentID=%q, bundleID=%q (raw: %v)", intentID, bundleID, rawDesc)
+	}
+	if appIntentParams["CustomPayloadKey"] != "PreserveMeLosslessly" {
+		t.Errorf("CustomPayloadKey corrupted: %v", appIntentParams["CustomPayloadKey"])
+	}
+}
+
+// 11. GAP-NATIVE-MALFORMED: Malformed XML, invalid refs and type mismatches fail closed
+func TestNATIVE_MalformedRejectionsFailClosed(t *testing.T) {
+	testCases := []struct {
+		name        string
+		code        string
+		errContains string
+	}{
+		{
+			name:        "MalformedXMLPlist",
+			code:        `native.action("is.workflow.actions.alert", { "Key": native.plist("<?xml version=\"1.0\"?><plist><dict><unclosed>") })`,
+			errContains: "native.plist failed to parse XML plist",
+		},
+		{
+			name:        "ActionOutputEmptyUUID",
+			code:        `native.action("is.workflow.actions.alert", { "Key": native.ref("ActionOutput", uuid: "   ") })`,
+			errContains: "requires a non-empty uuid",
+		},
+		{
+			name:        "VariableEmptyName",
+			code:        `native.action("is.workflow.actions.alert", { "Key": native.ref("Variable", name: "   ") })`,
+			errContains: "requires a non-empty name",
+		},
+		{
+			name:        "UnknownRefType",
+			code:        `native.action("is.workflow.actions.alert", { "Key": native.ref("InvalidUnknownKind", uuid: "123") })`,
+			errContains: "unsupported or invalid native.ref kind",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := CompileSourceToPlist("malformed.cherri", tc.code)
+			if err == nil {
+				t.Fatalf("expected error for %s, got nil", tc.name)
+			}
+			if tc.errContains != "" && !strings.Contains(err.Error(), tc.errContains) {
+				t.Errorf("expected error containing %q, got %v", tc.errContains, err)
+			}
+		})
+	}
+}
+
+func extractTokenStr(val any) string {
+	if m, ok := val.(map[string]any); ok {
+		if vMap, ok := m["Value"].(map[string]any); ok {
+			if s, ok := vMap["string"].(string); ok {
+				return s
+			}
+		}
+		if s, ok := m["Value"].(string); ok {
+			return s
+		}
+	}
+	return strings.TrimSpace(fmt.Sprint(val))
+}
+

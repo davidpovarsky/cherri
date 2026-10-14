@@ -77,6 +77,7 @@ struct WorkspaceView: View {
                 } label: {
                     Label("Build", systemImage: "hammer.fill")
                 }
+                .accessibilityIdentifier("buildButton")
                 .disabled(isBusy)
 
                 Button {
@@ -84,6 +85,7 @@ struct WorkspaceView: View {
                 } label: {
                     Label("Sign", systemImage: "checkmark.seal.fill")
                 }
+                .accessibilityIdentifier("signButton")
                 .disabled(isBusy)
 
                 if let signedURL {
@@ -202,17 +204,21 @@ struct WorkspaceView: View {
                 Image(systemName: "xmark.circle.fill")
                     .foregroundStyle(.red)
                 Text("\(diagnostic.message) (\(diagnostic.locationDescription))")
+                    .accessibilityIdentifier("diagnosticStatusText")
                     .lineLimit(2)
             } else if compiled != nil {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
                 Text("Compiled · \(actionCatalog.count) actions · Preview editable")
+                    .accessibilityIdentifier("compiledStatusText")
             } else {
                 Text("Ready")
+                    .accessibilityIdentifier("readyStatusText")
             }
 
             Spacer()
         }
+        .accessibilityIdentifier("statusBar")
         .font(.footnote)
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
@@ -269,10 +275,18 @@ struct WorkspaceView: View {
             diagnostic = compilerError
             if let analysis = try? await CherriCompiler.analyze(source: source), !analysis.valid && !analysis.diagnostics.isEmpty {
                 diagnostics = analysis.diagnostics.map {
-                    CompilationDiagnostic(
+                    let startLine = $0.range.start.line + 1
+                    let startCol = $0.range.start.character + 1
+                    let endLine = $0.range.end.line + 1
+                    let endCol = $0.range.end.character + 1
+                    let len = (endLine == startLine && endCol > startCol) ? (endCol - startCol) : max(1, endCol - startCol)
+                    return CompilationDiagnostic(
                         message: $0.message,
-                        line: $0.range.start.line + 1,
-                        column: $0.range.start.character + 1
+                        line: startLine,
+                        column: startCol,
+                        endLine: endLine,
+                        endColumn: endCol,
+                        length: len
                     )
                 }
             } else {

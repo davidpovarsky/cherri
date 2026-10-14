@@ -249,15 +249,43 @@ jobs:
               passed_tests.add(f"{m.group(2)}/{m.group(3)}")
               passed_tests.add(f"{m.group(1)}/{m.group(3)}")
 
-          # UI automation tests map to tier: "ios-ui"
+          # UI automation tests map to (requirements, assertions, required_checkpoint_marker)
           ui_test_map = {
-              "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI": (["E01", "RP40"], {"completion_contextual": "true"}),
-              "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI": (["E02"], {"multi_diagnostics": "true"}),
-              "CherriEditorUITests/testE03EditorActionsHoverRenameUI": (["E03"], {"scoped_rename": "true"}),
-              "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI": (["E05"], {"versioned_edits_isolated": "true"}),
-              "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI": (["E06"], {"utf16_spans_exact": "true"}),
-              "CherriEditorUITests/testE07VisualParameterEditingCanvasUI": (["E07", "RP41", "BRG28"], {"visual_source_edit_bounded": "true"}),
-              "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI": (["BRG27"], {"multi_diagnostics": "true", "completion_contextual": "true"}),
+              "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI": (
+                  ["E01", "RP40"],
+                  {"completion_contextual": "true"},
+                  "[CHECKPOINT:E01_COMPLETION_INSERTED]"
+              ),
+              "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI": (
+                  ["E02"],
+                  {"multi_diagnostics": "true"},
+                  "[CHECKPOINT:E02_DIAGNOSTICS_VERIFIED]"
+              ),
+              "CherriEditorUITests/testE03EditorActionsHoverRenameUI": (
+                  ["E03"],
+                  {"scoped_rename": "true"},
+                  "[CHECKPOINT:E03_HOVER_SIG_DEF_RENAME_VERIFIED]"
+              ),
+              "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI": (
+                  ["E05"],
+                  {"versioned_edits_isolated": "true"},
+                  "[CHECKPOINT:E05_RAPID_EDITS_VERIFIED]"
+              ),
+              "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI": (
+                  ["E06"],
+                  {"utf16_spans_exact": "true"},
+                  "[CHECKPOINT:E06_UNICODE_VERIFIED]"
+              ),
+              "CherriEditorUITests/testE07VisualParameterEditingCanvasUI": (
+                  ["E07", "RP41", "BRG28"],
+                  {"visual_source_edit_bounded": "true"},
+                  "[CHECKPOINT:E07_PREVIEW_EDIT_VERIFIED]"
+              ),
+              "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI": (
+                  ["BRG27"],
+                  {"multi_diagnostics": "true", "completion_contextual": "true"},
+                  "[CHECKPOINT:BRG27_WORKFLOW_VERIFIED]"
+              ),
           }
 
           # Service and bridge integration tests map to tier: "service" or "integration"
@@ -275,9 +303,12 @@ jobs:
           }
 
           records = []
-          for test_id, (reqs, assertions) in sorted(ui_test_map.items()):
+          for test_id, (reqs, assertions, required_checkpoint) in sorted(ui_test_map.items()):
               method = test_id.split("/")[1]
-              if test_id in passed_tests or f"CherriUITests/{method}" in passed_tests:
+              test_passed = (test_id in passed_tests or f"CherriUITests/{method}" in passed_tests)
+              checkpoint_verified = (required_checkpoint in log_text)
+
+              if test_passed and checkpoint_verified:
                   safe_name = method
                   canonical_test_id = f"CherriUITests/{method}"
                   records.append({
@@ -295,8 +326,10 @@ jobs:
                           "sha256": log_sha,
                           "run_id": run_id,
                       }],
-                      "detail": f"Executed and passed authentic UI automation test {canonical_test_id} in iOS Simulator",
+                      "detail": f"Executed and passed authentic UI automation test {canonical_test_id} with verified checkpoint {required_checkpoint} in iOS Simulator",
                   })
+              elif test_passed and not checkpoint_verified:
+                  print(f"WARNING: Test {test_id} passed in Xcode but skipped mandatory behavioral checkpoint {required_checkpoint}! Omitting evidence record.")
 
           for test_id, (reqs, assertions) in sorted(service_test_map.items()):
               method = test_id.split("/")[1]

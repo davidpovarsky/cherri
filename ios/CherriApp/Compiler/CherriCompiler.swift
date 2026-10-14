@@ -2,13 +2,43 @@ import CherriCore
 import Foundation
 
 struct CompilationDiagnostic: Error, Identifiable, Equatable, Sendable {
-    let id = UUID()
+    let id: UUID
     let message: String
     let line: Int
     let column: Int
+    let endLine: Int?
+    let endColumn: Int?
+    let length: Int?
+
+    init(
+        message: String,
+        line: Int,
+        column: Int,
+        endLine: Int? = nil,
+        endColumn: Int? = nil,
+        length: Int? = nil,
+        id: UUID = UUID()
+    ) {
+        self.id = id
+        self.message = message
+        self.line = line
+        self.column = column
+        self.endLine = endLine
+        self.endColumn = endColumn
+        if let length = length {
+            self.length = length
+        } else if let endCol = endColumn, (endLine == nil || endLine == line), endCol > column {
+            self.length = endCol - column
+        } else {
+            self.length = 1
+        }
+    }
 
     var locationDescription: String {
-        "\(line):\(column)"
+        if let length = length, length > 1 {
+            return "\(line):\(column)-\(column + length)"
+        }
+        return "\(line):\(column)"
     }
 }
 

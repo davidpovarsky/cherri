@@ -1525,7 +1525,7 @@ func isActionRepresentable(action *ShortcutAction, def *actionDefinition) bool {
 // appear in the decompiled output are emitted; basic and builtin/Go-defined
 // actions have an empty includeCategory and never trigger an include.
 func emitDecompiledInclude(category string) {
-	if category == "" || slices.Contains(decompiledIncludes, category) {
+	if category == "" || category == "basic" || slices.Contains(decompiledIncludes, category) {
 		return
 	}
 	popLine(fmt.Sprintf("#include 'actions/%s'", category))
