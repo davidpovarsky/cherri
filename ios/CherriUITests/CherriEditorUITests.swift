@@ -43,10 +43,8 @@ final class CherriEditorUITests: XCTestCase {
     }
 
     private func typeIntoEditor(_ editor: XCUIElement, _ text: String) {
-        if !editor.hasKeyboardFocus {
-            editor.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-            _ = app.keyboards.firstMatch.waitForExistence(timeout: 2)
-        }
+        editor.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        _ = app.keyboards.firstMatch.waitForExistence(timeout: 2)
         editor.typeText(text)
     }
 
