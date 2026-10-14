@@ -520,6 +520,26 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 					"string": str,
 				},
 			}
+		} else if att, ok := cleanParams["WFOutput"].(map[string]any); ok && att["WFSerializationType"] == "WFTextTokenAttachment" {
+			cleanParams["WFOutput"] = map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value": map[string]any{
+					"string": "\uFFFC",
+					"attachmentsByRange": map[string]any{
+						"{0, 1}": att["Value"],
+					},
+				},
+			}
+		} else if att, ok := cleanParams["WFOutput"].(WFTextTokenAttachment); ok {
+			cleanParams["WFOutput"] = map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value": map[string]any{
+					"string": "\uFFFC",
+					"attachmentsByRange": map[string]any{
+						"{0, 1}": att.Value,
+					},
+				},
+			}
 		}
 	}
 	if appleIdentifier == "is.workflow.actions.list" {

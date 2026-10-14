@@ -11,7 +11,7 @@ struct CherriDocument: FileDocument {
 
     var text: String
 
-    init(text: String = "show(\"Hello from Cherri\")\n") {
+    init(text: String = CommandLine.arguments.contains("--uitesting") ? "" : "show(\"Hello from Cherri\")\n") {
         self.text = text
     }
 

@@ -224,6 +224,14 @@ struct CherriEditorView: View {
             .accessibilityIdentifier("visualEditButton")
             .buttonStyle(.borderless)
 
+            Button {
+                text = ""
+            } label: {
+                Image(systemName: "trash")
+            }
+            .accessibilityIdentifier("clearEditorButton")
+            .buttonStyle(.borderless)
+
             if !contextualCompletions.isEmpty {
                 Divider()
                     .frame(height: 24)

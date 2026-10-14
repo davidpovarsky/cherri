@@ -3233,8 +3233,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		l.emitAction(dispatchNode)
 
 		wfTarget := map[string]interface{}{
-			"workflowIdentifier": l.GenerateUUID(),
-			"isSelf":             true,
+			"isSelf": true,
 		}
 		if l.WorkflowName != "" {
 			wfTarget["workflowName"] = l.WorkflowName
