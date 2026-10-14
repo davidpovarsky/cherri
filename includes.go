@@ -117,7 +117,7 @@ func parseInclude() {
 	}
 	handle(includeReadErr)
 
-	var includeContents = string(includeFileBytes)
+	var includeContents = strings.ReplaceAll(strings.ReplaceAll(string(includeFileBytes), "\r\n", "\n"), "\r", "\n")
 	var includeLines = strings.Split(includeContents, "\n")
 	var includeLinesCount = len(includeLines)
 

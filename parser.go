@@ -40,7 +40,8 @@ var isFirstCommentAction = true
 // then reset the chars and lines, then reset the parser cursor position.
 // This is usually done when something modifies the contents of the file like functions or includes.
 func resetParse() {
-	contents = strings.Join(lines, "\n")
+	contents = strings.ReplaceAll(strings.Join(lines, "\n"), "\r\n", "\n")
+	contents = strings.ReplaceAll(contents, "\r", "\n")
 	chars = []rune(contents)
 	lines = strings.Split(contents, "\n")
 	firstChar()
@@ -71,6 +72,8 @@ func initParse() {
 	questions = make(map[string]*question)
 	controlFlowGroups = make(map[int]controlFlowGroup)
 	definitions = make(map[string]any)
+	contents = strings.ReplaceAll(contents, "\r\n", "\n")
+	contents = strings.ReplaceAll(contents, "\r", "\n")
 	originalContents = contents
 	chars = []rune(contents)
 	lines = strings.Split(contents, "\n")
@@ -1887,13 +1890,13 @@ func firstChar() {
 }
 
 func skipWhitespace() {
-	for char == ' ' || char == '\t' || char == '\n' {
+	for char == ' ' || char == '\t' || char == '\n' || char == '\r' {
 		advance()
 	}
 }
 
 func skipInlineWhitespace() {
-	for char == ' ' || char == '\t' {
+	for char == ' ' || char == '\t' || char == '\r' {
 		advance()
 	}
 }
