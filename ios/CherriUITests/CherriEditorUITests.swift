@@ -32,14 +32,22 @@ final class CherriEditorUITests: XCTestCase {
         let window = app.windows.firstMatch
         XCTAssertTrue(window.waitForExistence(timeout: 10), "Main application window must exist")
 
+        let editor = app.textViews["cherriCodeEditor"]
+        if editor.waitForExistence(timeout: 2) {
+            return editor
+        }
+
         let createDoc = app.buttons["Create Document"]
-        if createDoc.waitForExistence(timeout: 2) && createDoc.isHittable {
+        if createDoc.waitForExistence(timeout: 6) && createDoc.isHittable {
             createDoc.tap()
         }
 
-        let editor = app.textViews["cherriCodeEditor"].exists ? app.textViews["cherriCodeEditor"] : app.textViews.firstMatch
-        XCTAssertTrue(editor.waitForExistence(timeout: 10), "Editor text view must exist and be accessible")
-        return editor
+        if editor.waitForExistence(timeout: 10) {
+            return editor
+        }
+        let fallback = app.textViews.firstMatch
+        XCTAssertTrue(fallback.waitForExistence(timeout: 5), "Editor text view must exist and be accessible")
+        return fallback
     }
 
     private func typeIntoEditor(_ editor: XCUIElement, _ text: String) {
@@ -171,12 +179,14 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(renameBtn.waitForExistence(timeout: 5), "Rename button must exist in editor bar")
         renameBtn.tap()
 
-        let renameField = app.alerts.textFields.firstMatch.exists ? app.alerts.textFields.firstMatch : app.textFields["renameTextField"]
+        let alert = app.alerts.firstMatch
+        XCTAssertTrue(alert.waitForExistence(timeout: 5), "Rename dialog must appear")
+        let renameField = alert.textFields.firstMatch
         XCTAssertTrue(renameField.waitForExistence(timeout: 5), "Rename text field must appear in rename dialog")
         renameField.tap()
         renameField.typeText("messageGreeting")
 
-        let confirmRename = app.alerts.buttons["Rename"].exists ? app.alerts.buttons["Rename"] : app.buttons["confirmRenameButton"]
+        let confirmRename = alert.buttons["Rename"]
         XCTAssertTrue(confirmRename.waitForExistence(timeout: 5), "Confirm rename button must exist")
         confirmRename.tap()
 
