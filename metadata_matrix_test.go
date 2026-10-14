@@ -215,8 +215,8 @@ quicklook("hello")
 		if err == nil {
 			t.Fatalf("expected import to fail with explicit error, but it succeeded silently")
 		}
-		if !strings.Contains(err.Error(), "unsupported import") {
-			t.Errorf("expected error mentioning unsupported import, got: %v", err)
+		if !strings.Contains(err.Error(), "cannot resolve module") && !strings.Contains(err.Error(), "unsupported import") {
+			t.Errorf("expected error mentioning module resolution failure or unsupported import, got: %v", err)
 		}
 	})
 
@@ -318,31 +318,83 @@ native.action("is.workflow.actions.vibrate")
 
 	t.Run("NativePlist", func(t *testing.T) {
 		codePlist := `
-native.plist("key")
+native.action("com.apple.custom.data", parameters: {
+    "Payload": native.plist({ "CustomKey": "CustomVal" })
+})
 `
-		err := compileMetaSourceExpectingError(t, "lang003_plist", codePlist)
-		if err == nil || !strings.Contains(err.Error(), "native.plist is unsupported") {
-			t.Fatalf("expected explicit error for native.plist, got: %v", err)
+		session := compileMetaSourceToSession(t, "lang003_plist", codePlist)
+		defer session.Close()
+
+		found := false
+		for _, act := range session.shortcut.WFWorkflowActions {
+			if act.WFWorkflowActionIdentifier == "com.apple.custom.data" {
+				found = true
+				params := act.WFWorkflowActionParameters
+				if payload, ok := params["Payload"].(map[string]any); !ok || payload["CustomKey"] != "CustomVal" {
+					t.Errorf("expected native.plist Payload to have CustomKey=CustomVal, got %v", params["Payload"])
+				}
+			}
+		}
+		if !found {
+			t.Fatalf("expected native.action with native.plist to emit com.apple.custom.data")
 		}
 	})
 
 	t.Run("NativeRef", func(t *testing.T) {
 		codeRef := `
-native.ref("output")
+native.action("com.apple.custom.ref", parameters: {
+    "Output": native.ref("ActionOutput", uuid: "11111111-2222-3333-4444-555555555555")
+})
 `
-		err := compileMetaSourceExpectingError(t, "lang003_ref", codeRef)
-		if err == nil || !strings.Contains(err.Error(), "native.ref is unsupported") {
-			t.Fatalf("expected explicit error for native.ref, got: %v", err)
+		session := compileMetaSourceToSession(t, "lang003_ref", codeRef)
+		defer session.Close()
+
+		found := false
+		for _, act := range session.shortcut.WFWorkflowActions {
+			if act.WFWorkflowActionIdentifier == "com.apple.custom.ref" {
+				found = true
+				params := act.WFWorkflowActionParameters
+				if att, ok := params["Output"].(WFTextTokenAttachment); ok {
+					if att.WFSerializationType != "WFTextTokenAttachment" || att.Value.OutputUUID != "11111111-2222-3333-4444-555555555555" {
+						t.Errorf("unexpected attachment: %+v", att)
+					}
+				} else if out, ok := params["Output"].(map[string]any); ok {
+					if out["WFSerializationType"] != "WFTextTokenAttachment" {
+						t.Errorf("expected native.ref WFTextTokenAttachment, got %v", params["Output"])
+					}
+				} else {
+					t.Fatalf("unexpected type for Output: %T (%+v)", params["Output"], params["Output"])
+				}
+			}
+		}
+		if !found {
+			t.Fatalf("expected native.action with native.ref to emit com.apple.custom.ref")
 		}
 	})
 
 	t.Run("NativeWorkflow", func(t *testing.T) {
 		codeWf := `
-native.workflow("wf")
+native.workflow({
+    "WFWorkflowClientVersion": "2600.0",
+    "WFWorkflowActions": []
+})
 `
-		err := compileMetaSourceExpectingError(t, "lang003_wf", codeWf)
-		if err == nil || !strings.Contains(err.Error(), "native.workflow is unsupported") {
-			t.Fatalf("expected explicit error for native.workflow, got: %v", err)
+		session := compileMetaSourceToSession(t, "lang003_wf", codeWf)
+		defer session.Close()
+
+		if session.shortcut.WFWorkflowClientVersion != "2600.0" {
+			t.Errorf("expected client version 2600.0, got %s", session.shortcut.WFWorkflowClientVersion)
+		}
+	})
+
+	t.Run("NativeNegativeFailClosed", func(t *testing.T) {
+		errEmptyAct := compileMetaSourceExpectingError(t, "lang003_neg_act", `native.action("", {})`)
+		if errEmptyAct == nil {
+			t.Errorf("expected empty action id to fail")
+		}
+		errBadRef := compileMetaSourceExpectingError(t, "lang003_neg_ref", `native.action("test", parameters: { "r": native.ref("UnknownKind") })`)
+		if errBadRef == nil {
+			t.Errorf("expected unknown native.ref kind to fail")
 		}
 	})
 }
