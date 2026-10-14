@@ -72,30 +72,40 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	}
 
 	switch id {
-	case "E01", "BRG27":
+	case "E01":
+		reqUIAssertions["completion_contextual"] = "true"
+		*testIDs = append(*testIDs, "CherriUITests/testE01CompletionDisplayAndInsertionUI", "CherriCoreIntegrationTests/testE01ContextualCompletionService")
+	case "E02":
 		reqUIAssertions["multi_diagnostics"] = "true"
-		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis")
-	case "E02", "RP40":
-		reqUIAssertions["completion_hover_sig_def"] = "true"
-		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition")
+		*testIDs = append(*testIDs, "CherriUITests/testE02DiagnosticsRenderingAndNavigationUI", "CherriCoreIntegrationTests/testE02MultiDiagnosticAnalysisService")
 	case "E03":
 		reqUIAssertions["scoped_rename"] = "true"
-		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing")
-	case "E04", "RP39":
+		*testIDs = append(*testIDs, "CherriUITests/testE03EditorActionsHoverRenameUI", "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing")
+	case "E04":
 		reqUIAssertions["formatter_idempotent_comments"] = "true"
 		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics")
+	case "RP39":
+		reqUIAssertions["scoped_rename"] = "true"
+		*testIDs = append(*testIDs, "CherriUITests/testE03EditorActionsHoverRenameUI", "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics")
 	case "E05":
 		reqUIAssertions["versioned_edits_isolated"] = "true"
-		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits")
+		*testIDs = append(*testIDs, "CherriUITests/testE05EditorResponsivenessStaleEditsUI", "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits")
 	case "E06":
 		reqUIAssertions["utf16_spans_exact"] = "true"
-		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew")
+		*testIDs = append(*testIDs, "CherriUITests/testE06BidirectionalHebrewEmojiUI", "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew")
 	case "E07", "RP41", "BRG28":
 		reqUIAssertions["visual_source_edit_bounded"] = "true"
-		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection")
+		*testIDs = append(*testIDs, "CherriUITests/testE07VisualParameterEditingCanvasUI", "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection")
+	case "BRG27":
+		reqUIAssertions["multi_diagnostics"] = "true"
+		reqUIAssertions["completion_contextual"] = "true"
+		*testIDs = append(*testIDs, "CherriUITests/testBRG27EditorRealWorldWorkflowUI")
+	case "RP40":
+		reqUIAssertions["completion_contextual"] = "true"
+		*testIDs = append(*testIDs, "CherriUITests/testE01CompletionDisplayAndInsertionUI", "CherriCoreIntegrationTests/testRP40SwiftIntegrationService")
 	case "BRG25":
 		reqUIAssertions["shared_analysis_bridge"] = "true"
-		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract")
+		*testIDs = append(*testIDs, "CherriUITests/testBRG27EditorRealWorldWorkflowUI", "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract")
 	case "P05":
 		reqUIAssertions["unicode_identifiers"] = "true"
 		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis")

@@ -74,15 +74,31 @@ targets:
     dependencies:
       - target: Cherri
 
+  CherriUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: CherriUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.cherrilang.CherriUITests
+        SWIFT_VERSION: "5.0"
+        TEST_TARGET_NAME: Cherri
+    dependencies:
+      - target: Cherri
+
 schemes:
   Cherri:
     build:
       targets:
         Cherri: all
         CherriTests: [test]
+        CherriUITests: [test]
     test:
       targets:
         - CherriTests
+        - CherriUITests
     run:
       config: Debug
     archive:

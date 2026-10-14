@@ -11504,8 +11504,8 @@ func initDefaultRegistry() *Registry {
 			Module: "",
 			AppleIdentifier: "is.workflow.actions.rawaction",
 			PrimaryParameterID: "identifier",
-			OutputType: types.Unknown,
-			OutputTypeName: "Unknown",
+			OutputType: types.AnyContent,
+			OutputTypeName: "AnyContent",
 			CompilerConstruct: false,
 			EvidenceStatus: EvidenceConfirmed,
 			Docs: ActionDocs{

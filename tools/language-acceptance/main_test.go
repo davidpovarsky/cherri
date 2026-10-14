@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -652,7 +653,7 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 	artHex := hex.EncodeToString(artSum[:])
 
 	uiArtPath := filepath.Join(t.TempDir(), "xcodetest.log")
-	uiArtContent := []byte("Test Case '-[CherriTests.CherriCoreIntegrationTests testE01MultiDiagnosticAnalysis]' passed\n")
+	uiArtContent := []byte("Test Case '-[CherriUITests.CherriEditorUITests testE01CompletionDisplayAndInsertionUI]' passed\n")
 	_ = os.WriteFile(uiArtPath, uiArtContent, 0644)
 	uiSum := sha256.Sum256(uiArtContent)
 	uiHex := hex.EncodeToString(uiSum[:])
@@ -662,7 +663,7 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 			CaseCount: 2,
 			Cases: []CaseSpec{
 				{ID: "FN01", Group: "functions", Requirement: "Declare function", MinimumTestLevel: "unit+native+iOS"},
-				{ID: "E01", Group: "editor", Requirement: "Multi diagnostics", MinimumTestLevel: "service+UI"},
+				{ID: "E01", Group: "editor", Requirement: "Contextual completion", MinimumTestLevel: "service+UI"},
 			},
 		},
 		Repair: &RepairContractFile{
@@ -747,11 +748,11 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 				EvidenceID:        "ev-e01-ui",
 				Requirements:      []string{"E01"},
 				Tier:              "ios-ui",
-				TestID:            "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis",
+				TestID:            "CherriUITests/testE01CompletionDisplayAndInsertionUI",
 				ImplementationSHA: "commit123456789012345678901234567890123",
 				ExitCode:          0,
 				Result:            "passed",
-				Assertions:        map[string]string{"multi_diagnostics": "true"},
+				Assertions:        map[string]string{"completion_contextual": "true"},
 				Artifacts: []EvidenceArtifact{
 					{Path: uiArtPath, SHA256: uiHex, RunID: "103"},
 				},
@@ -1272,14 +1273,16 @@ func TestFull179ContractRequirements_EndToEndClosureAndProducerIsolation(t *test
 	uiArt := EvidenceArtifact{Path: uiArtPath, SHA256: hex.EncodeToString(uiArtSum[:]), RunID: "203"}
 
 	iosRecs := []EvidenceRecord{
-		{EvidenceID: "ev-ios-ui-E01", Requirements: []string{"E01", "BRG27"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis", ExitCode: 0, Result: "passed", Assertions: map[string]string{"multi_diagnostics": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
-		{EvidenceID: "ev-ios-ui-E02", Requirements: []string{"E02", "RP40"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition", ExitCode: 0, Result: "passed", Assertions: map[string]string{"completion_hover_sig_def": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
-		{EvidenceID: "ev-ios-ui-E03", Requirements: []string{"E03"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing", ExitCode: 0, Result: "passed", Assertions: map[string]string{"scoped_rename": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
-		{EvidenceID: "ev-ios-ui-E04", Requirements: []string{"E04", "RP39"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics", ExitCode: 0, Result: "passed", Assertions: map[string]string{"formatter_idempotent_comments": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
-		{EvidenceID: "ev-ios-ui-E05", Requirements: []string{"E05"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits", ExitCode: 0, Result: "passed", Assertions: map[string]string{"versioned_edits_isolated": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
-		{EvidenceID: "ev-ios-ui-E06", Requirements: []string{"E06"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew", ExitCode: 0, Result: "passed", Assertions: map[string]string{"utf16_spans_exact": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
-		{EvidenceID: "ev-ios-ui-E07", Requirements: []string{"E07", "RP41", "BRG28"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection", ExitCode: 0, Result: "passed", Assertions: map[string]string{"visual_source_edit_bounded": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
-		{EvidenceID: "ev-ios-ui-BRG25", Requirements: []string{"BRG25"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract", ExitCode: 0, Result: "passed", Assertions: map[string]string{"shared_analysis_bridge": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E01", Requirements: []string{"E01"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriUITests/testE01CompletionDisplayAndInsertionUI", ExitCode: 0, Result: "passed", Assertions: map[string]string{"completion_contextual": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E02", Requirements: []string{"E02"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriUITests/testE02DiagnosticsRenderingAndNavigationUI", ExitCode: 0, Result: "passed", Assertions: map[string]string{"multi_diagnostics": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E03", Requirements: []string{"E03", "RP39"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriUITests/testE03EditorActionsHoverRenameUI", ExitCode: 0, Result: "passed", Assertions: map[string]string{"scoped_rename": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E05", Requirements: []string{"E05"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriUITests/testE05EditorResponsivenessStaleEditsUI", ExitCode: 0, Result: "passed", Assertions: map[string]string{"versioned_edits_isolated": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E06", Requirements: []string{"E06"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriUITests/testE06BidirectionalHebrewEmojiUI", ExitCode: 0, Result: "passed", Assertions: map[string]string{"utf16_spans_exact": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-E07", Requirements: []string{"E07", "RP41", "BRG28"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriUITests/testE07VisualParameterEditingCanvasUI", ExitCode: 0, Result: "passed", Assertions: map[string]string{"visual_source_edit_bounded": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-BRG27", Requirements: []string{"BRG27", "BRG25"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriUITests/testBRG27EditorRealWorldWorkflowUI", ExitCode: 0, Result: "passed", Assertions: map[string]string{"multi_diagnostics": "true", "completion_contextual": "true", "shared_analysis_bridge": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-ui-RP40", Requirements: []string{"RP40"}, Tier: "ios-ui", ImplementationSHA: implSHA, TestID: "CherriUITests/testE01CompletionDisplayAndInsertionUI", ExitCode: 0, Result: "passed", Assertions: map[string]string{"completion_contextual": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-service-E04", Requirements: []string{"E04", "RP39"}, Tier: "service", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics", ExitCode: 0, Result: "passed", Assertions: map[string]string{"formatter_idempotent_comments": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
+		{EvidenceID: "ev-ios-service-BRG25", Requirements: []string{"BRG25"}, Tier: "service", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract", ExitCode: 0, Result: "passed", Assertions: map[string]string{"shared_analysis_bridge": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
 		{EvidenceID: "ev-ios-build-BRG25", Requirements: []string{"BRG25"}, Tier: "ios-build", ImplementationSHA: implSHA, TestID: "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract", ExitCode: 0, Result: "passed", Assertions: map[string]string{"shared_analysis_bridge": "true"}, Artifacts: []EvidenceArtifact{uiArt}},
 	}
 	iosEvPath := filepath.Join(dir, "ios-test-evidence.json")
@@ -1325,4 +1328,198 @@ func TestFull179ContractRequirements_EndToEndClosureAndProducerIsolation(t *test
 	}
 }
 
+// Phase 2.4 Anti-False-Positive Regression Test Suite
+// Proves that bridge-only results cannot satisfy UI requirements, swapped acceptance IDs are rejected,
+// and missing UI evidence causes the acceptance suite to report requirements open or blocked rather than passing.
 
+// AFP-1: Bridge-only results cannot satisfy UI requirements
+func TestAntiFalsePositive_BridgeOnlyCannotSatisfyUIRequirement(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+
+	// Replace the legitimate UI test with a bridge-only test purporting to be ios-ui
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-ui" {
+			manifest.Records[i].TestID = "CherriCoreIntegrationTests/testE01ContextualCompletionService"
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected validation error when bridge test claims ios-ui tier, but got success")
+	}
+	foundBridgeError := false
+	for _, vErr := range report.ValidationErrors {
+		if strings.Contains(vErr, "claims UI tier with bridge-only test") {
+			foundBridgeError = true
+			break
+		}
+	}
+	if !foundBridgeError {
+		t.Errorf("expected validation error mentioning bridge-only test on UI tier, got errors: %v", report.ValidationErrors)
+	}
+}
+
+// AFP-2: Bridge record with service tier does not satisfy UI level
+func TestAntiFalsePositive_BridgeRecordCannotSatisfyUILevel(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+
+	// Demote UI record to service tier
+	var filtered []EvidenceRecord
+	for _, r := range manifest.Records {
+		if r.Tier != "ios-ui" {
+			filtered = append(filtered, r)
+		}
+	}
+	// Add service record from bridge
+	filtered = append(filtered, EvidenceRecord{
+		EvidenceID:        "ev-bridge-service",
+		Requirements:      []string{"E01"},
+		Tier:              "service",
+		TestID:            "CherriCoreIntegrationTests/testE01ContextualCompletionService",
+		ExitCode:          0,
+		Result:            "passed",
+		ImplementationSHA: manifest.ImplementationSHA,
+	})
+	manifest.Records = filtered
+
+	report, _ := ValidateEvidenceManifest(manifest, contracts, "final")
+	if report.ClosureComplete {
+		t.Fatalf("expected closure to fail when UI tier is missing and only service tier is present")
+	}
+	if report.FailedCases == 0 {
+		t.Fatalf("expected failed cases when requirement E01 lacks UI evidence, got 0")
+	}
+}
+
+// AFP-3: Swapped acceptance IDs (E01 completion vs E02 diagnostics) are rejected
+func TestAntiFalsePositive_SwappedAcceptanceIDs_E01_E02(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+
+	// Mutate E01 record to assert multi_diagnostics instead of completion_contextual
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-ui" {
+			manifest.Records[i].Assertions = map[string]string{"multi_diagnostics": "true"}
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected rejection when E01 provides diagnostics assertion instead of completion assertion")
+	}
+	foundMismatch := false
+	for _, vErr := range report.ValidationErrors {
+		if strings.Contains(vErr, "missing required UI assertion") || strings.Contains(vErr, "assertion") {
+			foundMismatch = true
+			break
+		}
+	}
+	if !foundMismatch {
+		t.Errorf("expected assertion mismatch error for swapped ID, got: %v", report.ValidationErrors)
+	}
+}
+
+// AFP-4: Missing UI evidence leaves requirement unsatisfied (open or failed)
+func TestAntiFalsePositive_MissingUIEvidenceLeavesRequirementUnsatisfied(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+
+	// Strip all UI records
+	var stripped []EvidenceRecord
+	for _, r := range manifest.Records {
+		if r.Tier != "ios-ui" {
+			stripped = append(stripped, r)
+		}
+	}
+	manifest.Records = stripped
+
+	// In local phase: reports NOT_RUN / PENDING_EXTERNAL
+	reportLocal, _ := ValidateEvidenceManifest(manifest, contracts, "local")
+	var e01Res CaseResult
+	for _, r := range reportLocal.Results {
+		if r.ID == "E01" {
+			e01Res = r
+			break
+		}
+	}
+	if e01Res.Passed {
+		t.Errorf("E01 must not pass locally without UI evidence")
+	}
+
+	// In final phase: reports FAILED
+	reportFinal, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && reportFinal.ClosureComplete {
+		t.Fatalf("final closure must not succeed when UI evidence is missing")
+	}
+}
+
+// AFP-5: Invalid UI assertion value is rejected
+func TestAntiFalsePositive_InvalidUIAssertionValueRejected(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-ui" {
+			manifest.Records[i].Assertions = map[string]string{"completion_contextual": "false"}
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected rejection when UI assertion has false value")
+	}
+	foundMismatch := false
+	for _, vErr := range report.ValidationErrors {
+		if strings.Contains(vErr, "value mismatch") {
+			foundMismatch = true
+			break
+		}
+	}
+	if !foundMismatch {
+		t.Errorf("expected value mismatch error, got: %v", report.ValidationErrors)
+	}
+}
+
+// AFP-6: Unauthorized test ID claiming requirement is rejected
+func TestAntiFalsePositive_UnauthorizedTestIDForRequirementRejected(t *testing.T) {
+	manifest, contracts := baseValidManifestAndContracts(t)
+
+	for i := range manifest.Records {
+		if manifest.Records[i].Tier == "ios-ui" {
+			manifest.Records[i].TestID = "UnauthorizedSuite/testInjectFakeUI"
+		}
+	}
+
+	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("expected rejection when unauthorized test ID claims requirement")
+	}
+	foundAuthError := false
+	for _, vErr := range report.ValidationErrors {
+		if strings.Contains(vErr, "is not authorized for requirement") {
+			foundAuthError = true
+			break
+		}
+	}
+	if !foundAuthError {
+		t.Errorf("expected unauthorized test ID error, got: %v", report.ValidationErrors)
+	}
+}
+
+// AFP-7: Empty manifest leaves all external requirements unsatisfied
+func TestAntiFalsePositive_EmptyManifestLeavesAllExternalRequirementsUnsatisfied(t *testing.T) {
+	_, contracts := baseValidManifestAndContracts(t)
+	emptyManifest := &EvidenceManifest{
+		SchemaVersion:     "1",
+		ImplementationSHA: "commit123456789012345678901234567890123",
+		DocsSHA:           "docs12345678901234567890123456789012345",
+		SchemaFingerprint: "fp1",
+		CodecFingerprint:  "codec_fp1",
+		Records:           []EvidenceRecord{},
+	}
+
+	report, err := ValidateEvidenceManifest(emptyManifest, contracts, "final")
+	if err == nil && report.ClosureComplete {
+		t.Fatalf("empty manifest must not achieve closure")
+	}
+	if report.PassedCases != 0 {
+		t.Errorf("expected 0 passed cases for empty manifest in final phase, got %d", report.PassedCases)
+	}
+}

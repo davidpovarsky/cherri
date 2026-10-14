@@ -769,9 +769,6 @@ func (s *CanonicalBackendSession) BindImportQuestion(questionName string, wireKe
 func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
 	if len(s.rawWorkflow) > 0 {
 		merged := make(map[string]any, len(s.rawWorkflow)+10)
-		for k, v := range s.rawWorkflow {
-			merged[k] = v
-		}
 		var sBuf bytes.Buffer
 		if err := plist.NewEncoder(&sBuf).Encode(s.shortcut); err == nil {
 			var sMap map[string]any
@@ -780,6 +777,9 @@ func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
 					merged[k] = v
 				}
 			}
+		}
+		for k, v := range s.rawWorkflow {
+			merged[k] = v
 		}
 		var buf bytes.Buffer
 		enc := plist.NewEncoder(&buf)

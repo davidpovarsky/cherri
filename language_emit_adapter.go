@@ -263,6 +263,7 @@ func CompileSourceToPlistWithModules(filePath string, content string, virtualMod
 
 	lowerer := lower.NewLowererWithSession(reg, session)
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
+	lowerer.SetBaseFilePath(filePath)
 	if virtualModules != nil {
 		lowerer.SetVirtualModules(virtualModules)
 	}

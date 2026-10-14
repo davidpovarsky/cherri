@@ -45,7 +45,7 @@
 | Latest upstream delta since previous audit | One commit: `raw_actions.go` raw-value regex and `tests/raw-action-output-capture.cherri`; evaluate, do not blindly merge |
 | Action catalog baseline | **461 catalog entries**, approximately **349 unique Apple action identifiers**; catalog entries include compiler constructs, so 461 is **not** the count of distinct installable Apple actions |
 | Known definition extension mechanism | `actions/*.cherri` for declarative actions; `actions_std.go` for native special-case `actionDefinition` / AppIntent actions |
-| Schema fingerprint | `cd5c0b8eaeabc28a9b0bc0002cb742b4bd725a97bb88ab5aa7d408983c7825a4` |
+| Schema fingerprint | `2dd0e6f6b06ec67733494bbec0bdeb9663b95398edab9a282b62505159d2a80a` |
 | Codec fingerprint | `3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e` |
 | Skill manifest | `skills/cherri-shortcuts/compatibility-manifest.json` pins `C_CODE`, docs commit and both fingerprints |
 | Ownership/provenance | `docs/fork-action-provenance.json`; `docs/architecture/action-emitter-ownership.json`; `docs/architecture/action-definition-delta.json` |
@@ -322,7 +322,7 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | 2026-10-14 | Batches 1 & 2 | `51960b3` | Implemented native escapes: native.action, native.plist, native.ref, native.workflow, added native_test.go | 8/8 native escape tests PASS |
 | 2026-10-14 | Batch 3 | `f34e20a` | Resolved GAP-MODULE-LOWERING: modular imports with cycle detection, path traversal security, runtime init rejection | 8/8 modular import tests PASS |
 | 2026-10-14 | Batch 4 | `88e906e` | Integrated upstream delta 606c9a25 (raw_actions.go outputType: Variable), verified parity matrix | Upstream compat & 16-group parity PASS |
-| 2026-10-14 | Final Closure | HEAD | Reconciled evidence manifest with iOS simulator XCTest & runtime artifacts; executed final acceptance | 178 passed, 0 failed, 1 skipped (AI01), closure_complete=true |
+| 2026-10-14 | Batch 5 | HEAD | Independent verification of 5 gaps; fixed int64 precision, ref strictness, rawWorkflow overlay order, disk module pipeline; added authentic iOS XCUITest suite (CherriUITests); fixed E01/E02 evidence mapping; anti-false-positive suite (7/7 PASS); recalculated deterministic schema fingerprint 2dd0e6f6...; CLI search zero-exit fix | 23/23 verification tests PASS, 46/46 compiler PASS, decompiler PASS, acceptance local phase 71/71 PASS (0 failed) |
 
 ### Evidence log (append specific further artifacts)
 
@@ -333,7 +333,7 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | EV-SKILL-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455805121 | Compatible Skill package/wrappers in CI | Not all user-environment variations |
 | EV-IOS-RUNTIME-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455809831 | Real iOS 27 simulator four fixtures, explicit Alpha/Beta taps, dictionaries, legacy If | Verified simulator run artifacts |
 | EV-IOS-UI-SIM-E01-E07 | https://github.com/davidpovarsky/cherri/actions/runs/38186566473 | Simulator XCTest UI coverage (E01-E07) with exact SHA256 in xcodetest.log | Simulator UI; physical device is future manual scope |
-| EV-ACCEPTANCE-FINAL | `docs/language-v2/acceptance-results.json` | 178 passed / 0 failed / 1 skipped (AI01), closure_complete=true across 179 obligations | AI01 held-out model eval held out |
+| EV-ACCEPTANCE-LOCAL-B5 | `docs/language-v2/acceptance-results.json` | 71 passed / 0 failed / 23 pending across local contract runner; 7/7 anti-false-positive tests pass | Simulator/CI execution required for remaining 23 |
 | EV-UPSTREAM-2026-10-13 | https://github.com/electrikmilk/cherri/commit/606c9a25e481f08bff43bedb93be5e3d9b1229c9 | Upstream raw action output capture change integrated and verified | Integrated into fork with test coverage |
 
 ### Decisions (immutable rationale, supersede with explicit new entry)
@@ -344,6 +344,7 @@ A requirement may be marked done only when its ledger row includes all applicabl
 - **D004 Immutable two-step release:** Code commit SHA is pinned by later Skill/docs release commit; do not attempt circular `compilerCommit == C_RELEASE` metadata.
 - **D005 Preserve legacy compatibility:** Do not break the original Cherri front-end or its action semantics without an explicit, tested contract change.
 - **D006 Do not confuse modular analysis with modular compilation:** A parser/analyzer can accept an `import` while the production lowerer rejects it; this remains a real open product gap.
+- **D007 Strict tier segregation for iOS evidence:** Direct Swift-to-Go bridge tests (`CherriCoreIntegrationTests`) belong strictly to the `service` tier (RP40) and are formally forbidden from satisfying `ios-ui` obligations (E01–E07). Authentic `ios-ui` evidence must come from genuine XCUITest automation (`CherriEditorUITests`). E01 represents completion and E02 represents multi-diagnostics; test IDs and evidence mapping must strictly reflect this specification.
 
 ## 9. Source-of-truth links and docs reconciliation
 

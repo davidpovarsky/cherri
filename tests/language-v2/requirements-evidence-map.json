@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_at": "2026-10-13T23:56:53Z",
+  "generated_at": "2026-10-14T13:12:46Z",
   "authority": "CHERRI-CANONICAL-BACKEND-RECOVERY.md Appendix A \u0026 Section 4.4",
   "total_requirements": 179,
   "acceptance_count": 94,
@@ -800,6 +800,7 @@
         "tools/language-acceptance:runGates",
         "github.com/electrikmilk/cherri:ios_bridge:compileForMobile",
         "github.com/electrikmilk/cherri:signing:SignShortcutBytes",
+        "CherriUITests/testBRG27EditorRealWorldWorkflowUI",
         "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract"
       ],
       "required_ui_assertions": {
@@ -857,9 +858,10 @@
       "test_ids": [
         "tools/language-acceptance:runGates",
         "tests/language-v2/recovery:TestBackendRecovery27",
-        "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis"
+        "CherriUITests/testBRG27EditorRealWorldWorkflowUI"
       ],
       "required_ui_assertions": {
+        "completion_contextual": "true",
         "multi_diagnostics": "true"
       },
       "fixture_identities": [
@@ -887,6 +889,7 @@
         "github.com/electrikmilk/cherri:TestDecomp",
         "github.com/electrikmilk/cherri:TestDecompileTextPartsKeepsEmptyCustomSeparator",
         "github.com/electrikmilk/cherri:TestDecompIncludeReconstructionMultiCategory",
+        "CherriUITests/testE07VisualParameterEditingCanvasUI",
         "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection"
       ],
       "required_ui_assertions": {
@@ -1375,10 +1378,11 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
-        "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis"
+        "CherriUITests/testE01CompletionDisplayAndInsertionUI",
+        "CherriCoreIntegrationTests/testE01ContextualCompletionService"
       ],
       "required_ui_assertions": {
-        "multi_diagnostics": "true"
+        "completion_contextual": "true"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#E01"
@@ -1401,10 +1405,11 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
-        "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition"
+        "CherriUITests/testE02DiagnosticsRenderingAndNavigationUI",
+        "CherriCoreIntegrationTests/testE02MultiDiagnosticAnalysisService"
       ],
       "required_ui_assertions": {
-        "completion_hover_sig_def": "true"
+        "multi_diagnostics": "true"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#E02"
@@ -1427,6 +1432,7 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
+        "CherriUITests/testE03EditorActionsHoverRenameUI",
         "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing"
       ],
       "required_ui_assertions": {
@@ -1479,6 +1485,7 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
+        "CherriUITests/testE05EditorResponsivenessStaleEditsUI",
         "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits"
       ],
       "required_ui_assertions": {
@@ -1505,6 +1512,7 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
+        "CherriUITests/testE06BidirectionalHebrewEmojiUI",
         "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew"
       ],
       "required_ui_assertions": {
@@ -1531,6 +1539,7 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
+        "CherriUITests/testE07VisualParameterEditingCanvasUI",
         "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection"
       ],
       "required_ui_assertions": {
@@ -3620,10 +3629,11 @@
       "test_ids": [
         "tools/language-acceptance:runRepair",
         "tests/language-v2/repair:RP39",
+        "CherriUITests/testE03EditorActionsHoverRenameUI",
         "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics"
       ],
       "required_ui_assertions": {
-        "formatter_idempotent_comments": "true"
+        "scoped_rename": "true"
       },
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP39"
@@ -3647,10 +3657,11 @@
       "test_ids": [
         "tools/language-acceptance:runRepair",
         "tests/language-v2/repair:RP40",
-        "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition"
+        "CherriUITests/testE01CompletionDisplayAndInsertionUI",
+        "CherriCoreIntegrationTests/testRP40SwiftIntegrationService"
       ],
       "required_ui_assertions": {
-        "completion_hover_sig_def": "true"
+        "completion_contextual": "true"
       },
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP40"
@@ -3674,6 +3685,7 @@
       "test_ids": [
         "tools/language-acceptance:runRepair",
         "tests/language-v2/repair:RP41",
+        "CherriUITests/testE07VisualParameterEditingCanvasUI",
         "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection"
       ],
       "required_ui_assertions": {
@@ -6068,10 +6080,11 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
-        "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis"
+        "CherriUITests/testE01CompletionDisplayAndInsertionUI",
+        "CherriCoreIntegrationTests/testE01ContextualCompletionService"
       ],
       "required_ui_assertions": {
-        "multi_diagnostics": "true"
+        "completion_contextual": "true"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#E01"
@@ -6094,10 +6107,11 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
-        "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition"
+        "CherriUITests/testE02DiagnosticsRenderingAndNavigationUI",
+        "CherriCoreIntegrationTests/testE02MultiDiagnosticAnalysisService"
       ],
       "required_ui_assertions": {
-        "completion_hover_sig_def": "true"
+        "multi_diagnostics": "true"
       },
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#E02"
@@ -6120,6 +6134,7 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
+        "CherriUITests/testE03EditorActionsHoverRenameUI",
         "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing"
       ],
       "required_ui_assertions": {
@@ -6172,6 +6187,7 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
+        "CherriUITests/testE05EditorResponsivenessStaleEditsUI",
         "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits"
       ],
       "required_ui_assertions": {
@@ -6198,6 +6214,7 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
+        "CherriUITests/testE06BidirectionalHebrewEmojiUI",
         "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew"
       ],
       "required_ui_assertions": {
@@ -6224,6 +6241,7 @@
       ],
       "test_ids": [
         "tools/language-acceptance:runEditor",
+        "CherriUITests/testE07VisualParameterEditingCanvasUI",
         "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection"
       ],
       "required_ui_assertions": {
@@ -7614,10 +7632,11 @@
       "test_ids": [
         "tools/language-acceptance:runRepair",
         "tests/language-v2/repair:RP39",
+        "CherriUITests/testE03EditorActionsHoverRenameUI",
         "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics"
       ],
       "required_ui_assertions": {
-        "formatter_idempotent_comments": "true"
+        "scoped_rename": "true"
       },
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP39"
@@ -7641,10 +7660,11 @@
       "test_ids": [
         "tools/language-acceptance:runRepair",
         "tests/language-v2/repair:RP40",
-        "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition"
+        "CherriUITests/testE01CompletionDisplayAndInsertionUI",
+        "CherriCoreIntegrationTests/testRP40SwiftIntegrationService"
       ],
       "required_ui_assertions": {
-        "completion_hover_sig_def": "true"
+        "completion_contextual": "true"
       },
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP40"
@@ -7668,6 +7688,7 @@
       "test_ids": [
         "tools/language-acceptance:runRepair",
         "tests/language-v2/repair:RP41",
+        "CherriUITests/testE07VisualParameterEditingCanvasUI",
         "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection"
       ],
       "required_ui_assertions": {
@@ -8609,6 +8630,7 @@
         "tools/language-acceptance:runGates",
         "github.com/electrikmilk/cherri:ios_bridge:compileForMobile",
         "github.com/electrikmilk/cherri:signing:SignShortcutBytes",
+        "CherriUITests/testBRG27EditorRealWorldWorkflowUI",
         "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract"
       ],
       "required_ui_assertions": {
@@ -8666,9 +8688,10 @@
       "test_ids": [
         "tools/language-acceptance:runGates",
         "tests/language-v2/recovery:TestBackendRecovery27",
-        "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis"
+        "CherriUITests/testBRG27EditorRealWorldWorkflowUI"
       ],
       "required_ui_assertions": {
+        "completion_contextual": "true",
         "multi_diagnostics": "true"
       },
       "fixture_identities": [
@@ -8696,6 +8719,7 @@
         "github.com/electrikmilk/cherri:TestDecomp",
         "github.com/electrikmilk/cherri:TestDecompileTextPartsKeepsEmptyCustomSeparator",
         "github.com/electrikmilk/cherri:TestDecompIncludeReconstructionMultiCategory",
+        "CherriUITests/testE07VisualParameterEditingCanvasUI",
         "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection"
       ],
       "required_ui_assertions": {

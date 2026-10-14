@@ -103,7 +103,15 @@ load_compatibility_manifest() {
 
 load_compatibility_manifest
 
-: "${CHERRI_HOME:=/var/minis/cherri}"
+if [ -z "${CHERRI_HOME:-}" ]; then
+  if [ -d "/var/minis" ] && [ -w "/var/minis" ]; then
+    CHERRI_HOME="/var/minis/cherri"
+  elif mkdir -p /var/minis 2>/dev/null; then
+    CHERRI_HOME="/var/minis/cherri"
+  else
+    CHERRI_HOME="${HOME:-/tmp}/.cherri"
+  fi
+fi
 : "${CHERRI_REPO:=${MANIFEST_COMPILER_REPO:-https://github.com/davidpovarsky/cherri.git}}"
 : "${CHERRI_REF:=$MANIFEST_COMPILER_COMMIT}"
 : "${CHERRI_DOCS_REPO:=${MANIFEST_DOCS_REPO:-https://github.com/davidpovarsky/cherrilang.org.git}}"

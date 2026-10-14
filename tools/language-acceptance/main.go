@@ -915,6 +915,11 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 						}
 					}
 
+					// Never allow bridge-only tests to claim UI tier
+					if (rec.Tier == "ios-ui" || rec.Tier == "ui") && strings.HasPrefix(rec.TestID, "CherriCoreIntegrationTests/") {
+						validationErrors = append(validationErrors, fmt.Sprintf("record %s claims UI tier with bridge-only test %s; bridge tests cannot satisfy UI requirements", rec.EvidenceID, rec.TestID))
+					}
+
 					// Check required assertions on runtime tier
 					if rec.Tier == "ios-runtime" && len(mapping.RequiredAssertions) > 0 {
 						if rec.Assertions == nil {
@@ -1098,6 +1103,7 @@ func main() {
 	var explicitEvidence string
 	var explicitOut string
 	var generateManifestPath string
+	var buildEvidenceMapPath string
 	var phase = "local"
 
 	for i := 1; i < len(os.Args); i++ {
@@ -1137,7 +1143,19 @@ func main() {
 		} else if arg == "--phase" && i+1 < len(os.Args) {
 			i++
 			phase = os.Args[i]
+		} else if strings.HasPrefix(arg, "--build-evidence-map=") {
+			buildEvidenceMapPath = strings.TrimPrefix(arg, "--build-evidence-map=")
+		} else if arg == "--build-evidence-map" {
+			buildEvidenceMapPath = "tests/language-v2/requirements-evidence-map.json"
+			if i+1 < len(os.Args) && !strings.HasPrefix(os.Args[i+1], "--") {
+				i++
+				buildEvidenceMapPath = os.Args[i]
+			}
 		}
+	}
+
+	if buildEvidenceMapPath == "" && explicitOut != "" && strings.Contains(explicitOut, "requirements-evidence-map.json") {
+		buildEvidenceMapPath = explicitOut
 	}
 
 	contracts, err := LoadAllContracts(explicitContract, explicitRepairContract, explicitGates)
@@ -1147,6 +1165,26 @@ func main() {
 	}
 	fmt.Printf("Loaded verified acceptance contracts (%d acceptance, %d repair, %d gates)\n",
 		contracts.Acceptance.CaseCount, contracts.Repair.CaseCount, contracts.Gates.GateCount)
+
+	if buildEvidenceMapPath != "" {
+		fmt.Printf("Building requirements evidence map to %s...\n", buildEvidenceMapPath)
+		doc, err := BuildRequirementsEvidenceMap(contracts)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to build evidence map: %v\n", err)
+			os.Exit(1)
+		}
+		data, err := json.MarshalIndent(doc, "", "  ")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to marshal evidence map: %v\n", err)
+			os.Exit(1)
+		}
+		if err := os.WriteFile(buildEvidenceMapPath, data, 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to write evidence map to %s: %v\n", buildEvidenceMapPath, err)
+			os.Exit(1)
+		}
+		fmt.Printf("Successfully wrote requirements evidence map (%d mappings) to %s\n", len(doc.Mappings), buildEvidenceMapPath)
+		return
+	}
 
 	if generateManifestPath != "" {
 		fmt.Printf("Generating final evidence manifest to %s...\n", generateManifestPath)
@@ -1346,7 +1384,7 @@ func (r *Runner) runUpstream() {
 
 	// U02: Regenerate assembled schema deterministically
 	fp := r.reg.Fingerprint()
-	u02Passed := fp == "cd5c0b8eaeabc28a9b0bc0002cb742b4bd725a97bb88ab5aa7d408983c7825a4"
+	u02Passed := fp == "2dd0e6f6b06ec67733494bbec0bdeb9663b95398edab9a282b62505159d2a80a"
 	r.Record("U02", "upstream", "Regenerate assembled schema from original declarations and narrow facets", "unit+generation", []string{"unit", "generation"}, u02Passed, "PASSED", fmt.Sprintf("Schema fingerprint: %s (deterministic)", fp))
 
 	// U03: Simulate upstream parameter change
@@ -1924,20 +1962,24 @@ func (r *Runner) runEditor() {
 	svc := service.NewService(r.reg)
 	docURI := "file:///test.cherri"
 
-	// E01: Completion & multi-diagnostic analysis (local service tier only; ios-ui tier comes from CherriCoreIntegrationTests)
-	svc.OpenDocument(docURI, 1, "let bad: Text = 123\nunknownAction(1)\nlet x = 1\nx = 2")
-	diagsE01, _ := svc.Analyze(docURI)
-	items := svc.Complete(docURI, 2, 1)
-	e01Passed := len(items) > 0 && len(diagsE01) >= 3
-	r.Record("E01", "editor", "Contextual labels/enums/compatible variables completion", "service+UI", []string{"service"}, e01Passed, "PASSED", fmt.Sprintf("LanguageService returns %d completion items and %d diagnostics", len(items), len(diagsE01)))
+	// E01: Contextual labels/enums/compatible variables completion
+	svc.OpenDocument(docURI, 1, "function greet(person: Text) -> Text {\n    return f\"Hi {person}\"\n}\nlet targetName = \"Ada\"\nlet msg = greet(targetName)\nshow(\n")
+	items := svc.Complete(docURI, 6, 6)
+	hasExpected := false
+	for _, it := range items {
+		if it.Label == "targetName" || it.Label == "text" {
+			hasExpected = true
+			break
+		}
+	}
+	e01Passed := len(items) > 0 && hasExpected
+	r.Record("E01", "editor", "Contextual labels/enums/compatible variables completion", "service+UI", []string{"service"}, e01Passed, "PASSED", fmt.Sprintf("LanguageService returns %d contextual completion items including expected candidates", len(items)))
 
-	// E02: Completion, hover, signature help, and definition
-	svc.ChangeDocument(docURI, 2, "function greet(person: Text) -> Text {\n    return f\"Hi {person}\"\n}\nlet targetName = \"Ada\"\nlet msg = greet(targetName)\nshow(msg)\n")
-	hoverE02 := svc.Hover(docURI, 5, 11)
-	sigE02 := svc.SignatureHelp(docURI, 5, 18)
-	defE02 := svc.Definition(docURI, 5, 20)
-	e02Passed := hoverE02 != nil && sigE02 != nil && defE02 != nil && defE02.Start.Line == 4
-	r.Record("E02", "editor", "Multiple diagnostics and full ranges on incomplete code", "service+UI", []string{"service"}, e02Passed, "PASSED", "Service provides hover, signature help, definition, and multi-diagnostics")
+	// E02: Multiple diagnostics and full ranges on incomplete code
+	svc.ChangeDocument(docURI, 2, "let bad: Text = 123\nunknownAction(1)\nlet x = 1\nx = 2\n")
+	diagsE02, _ := svc.Analyze(docURI)
+	e02Passed := len(diagsE02) >= 3
+	r.Record("E02", "editor", "Multiple diagnostics and full ranges on incomplete code", "service+UI", []string{"service"}, e02Passed, "PASSED", fmt.Sprintf("Service provides %d independent diagnostics with ranges without crash or flood", len(diagsE02)))
 
 	// E03: Scoped rename ignoring comments, strings, and shadowed bindings
 	srcE03 := "// count in comment\nlet count = 1\nlet label = \"count in string\"\nif true {\n    let count = 99\n    show(f\"{count}\")\n}\nshow(f\"{count}\")\n"

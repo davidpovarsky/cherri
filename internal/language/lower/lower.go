@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"unicode/utf16"
 
@@ -56,6 +57,7 @@ type Lowerer struct {
 	importStack        []string
 	modules            map[string]string
 	virtualModules     map[string]string
+	baseFilePath       string
 	importedFunctions  []*syntax.FunctionDecl
 	WorkflowName       string
 	uuidCounter        int
@@ -99,6 +101,11 @@ func (l *Lowerer) SetVirtualModules(vm map[string]string) {
 	for k, v := range vm {
 		l.virtualModules[k] = v
 	}
+}
+
+// SetBaseFilePath sets the base file path used to resolve relative disk imports.
+func (l *Lowerer) SetBaseFilePath(path string) {
+	l.baseFilePath = path
 }
 
 // NewLowererWithSession creates a new AST lowerer connected to a backend session.
@@ -373,12 +380,16 @@ func (l *Lowerer) lowerImport(d *syntax.ImportDecl) error {
 
 	// 2. Resolve local module content
 	var content string
+	var resolvedPath string
 	if vmContent, ok := l.virtualModules[d.Path]; ok {
 		content = vmContent
 	} else if vmContent, ok := l.virtualModules[cleanPath]; ok {
 		content = vmContent
 	} else {
 		filePath := cleanPath
+		if l.baseFilePath != "" && !filepath.IsAbs(filePath) {
+			filePath = filepath.Join(filepath.Dir(l.baseFilePath), filePath)
+		}
 		if _, err := os.Stat(filePath); os.IsNotExist(err) {
 			if _, err2 := os.Stat(filePath + ".cherri"); err2 == nil {
 				filePath = filePath + ".cherri"
@@ -391,6 +402,7 @@ func (l *Lowerer) lowerImport(d *syntax.ImportDecl) error {
 			return fmt.Errorf("cannot read module %q: %w", d.Path, err)
 		}
 		content = string(data)
+		resolvedPath = filePath
 	}
 
 	// 3. Parse module
@@ -408,7 +420,12 @@ func (l *Lowerer) lowerImport(d *syntax.ImportDecl) error {
 
 	// 5. Register declarations
 	l.importStack = append(l.importStack, d.Path)
+	oldBase := l.baseFilePath
+	if resolvedPath != "" {
+		l.baseFilePath = resolvedPath
+	}
 	defer func() {
+		l.baseFilePath = oldBase
 		if len(l.importStack) > 0 {
 			l.importStack = l.importStack[:len(l.importStack)-1]
 		}
@@ -1895,6 +1912,17 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		case syntax.TokenString, syntax.TokenRawString:
 			return e.Value, nil
 		case syntax.TokenNumber:
+			if !strings.ContainsAny(e.Value, ".eE") {
+				if i, err := strconv.ParseInt(e.Value, 10, 64); err == nil {
+					return i, nil
+				}
+				if u, err := strconv.ParseUint(e.Value, 10, 64); err == nil {
+					return u, nil
+				}
+			}
+			if f, err := strconv.ParseFloat(e.Value, 64); err == nil {
+				return f, nil
+			}
 			var n float64
 			fmt.Sscanf(e.Value, "%f", &n)
 			return n, nil
@@ -2970,6 +2998,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			if kind == "" {
 				return nil, fmt.Errorf("native.ref requires a reference kind (e.g. ActionOutput, Variable, ShortcutInput)")
 			}
+			return nil, fmt.Errorf("unsupported or invalid native.ref kind: %q", kind)
 		}
 
 		tok := &ir.AttachmentToken{

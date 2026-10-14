@@ -25,17 +25,17 @@ func handleActionSearch() {
 		return
 	}
 
-	actionsSearch()
-
-	os.Exit(1)
+	if !actionsSearch() {
+		os.Exit(1)
+	}
 }
 
-func actionsSearch() {
+func actionsSearch() bool {
 	var identifier = args.Value("action")
 	if _, found := actions[identifier]; found {
 		setCurrentAction(identifier, actions[identifier])
 		fmt.Println(generateActionDefinition(parameterDefinition{}, true))
-		return
+		return true
 	}
 
 	fmt.Println(ansi(fmt.Sprintf("\nAction '%s(...)' does not exist or has not yet been defined.", identifier), red))
@@ -43,10 +43,10 @@ func actionsSearch() {
 	switch identifier {
 	case "text":
 		fmt.Print("\nText actions are abstracted into string statements. For example:\n\n@variable = \"Hello, Cherri!\"\n\n")
-		os.Exit(1)
+		return false
 	case "dictionary":
 		fmt.Print("\nDictionary actions are abstracted into JSON object statements. For example:\n\n@variable = {\"test\":5\", \"key\":\"value\"}\n\n")
-		os.Exit(1)
+		return false
 	}
 
 	var actionSearchResults strings.Builder
@@ -72,6 +72,7 @@ func actionsSearch() {
 		fmt.Println(ansi("\nThe closest actions are:", yellow, italic, bold))
 		fmt.Println(actionSearchResults.String())
 	}
+	return false
 }
 
 func handleGlyphSearch() {

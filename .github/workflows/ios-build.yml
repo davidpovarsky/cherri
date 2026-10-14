@@ -193,6 +193,11 @@ jobs:
       - name: Run CherriCore in iOS Simulator
         working-directory: ios
         run: |
+          if [ ! -d "CherriUITests" ]; then
+            echo "CRITICAL: ios/CherriUITests target missing!" >&2
+            exit 1
+          fi
+
           SIMULATOR_UDID="$(xcrun simctl list devices available -j | python3 -c 'import json,sys; data=json.load(sys.stdin); devices=[d for group in data["devices"].values() for d in group if d.get("isAvailable", True) and d.get("name", "").startswith("iPhone")]; print(devices[0]["udid"] if devices else "")')"
           if [ -z "$SIMULATOR_UDID" ]; then
             echo "No available iPhone Simulator was found." >&2
@@ -240,29 +245,67 @@ jobs:
           log_text = log_bytes.decode("utf-8", errors="replace")
 
           passed_tests = set()
-          for m in re.finditer(r"Test Case '-\[\w+\.(\w+)\s+(\w+)\]' passed", log_text):
-              passed_tests.add(f"{m.group(1)}/{m.group(2)}")
+          for m in re.finditer(r"Test Case '-\[(\w+)\.(\w+)\s+(\w+)\]' passed", log_text):
+              passed_tests.add(f"{m.group(2)}/{m.group(3)}")
+              passed_tests.add(f"{m.group(1)}/{m.group(3)}")
 
-          test_req_map = {
-              "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis": (["E01", "BRG27"], {"multi_diagnostics": "true"}),
-              "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition": (["E02", "RP40"], {"completion_hover_sig_def": "true"}),
+          # UI automation tests map to tier: "ios-ui"
+          ui_test_map = {
+              "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI": (["E01", "RP40"], {"completion_contextual": "true"}),
+              "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI": (["E02"], {"multi_diagnostics": "true"}),
+              "CherriEditorUITests/testE03EditorActionsHoverRenameUI": (["E03"], {"scoped_rename": "true"}),
+              "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI": (["E05"], {"versioned_edits_isolated": "true"}),
+              "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI": (["E06"], {"utf16_spans_exact": "true"}),
+              "CherriEditorUITests/testE07VisualParameterEditingCanvasUI": (["E07", "RP41", "BRG28"], {"visual_source_edit_bounded": "true"}),
+              "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI": (["BRG27"], {"multi_diagnostics": "true", "completion_contextual": "true"}),
+          }
+
+          # Service and bridge integration tests map to tier: "service" or "integration"
+          service_test_map = {
+              "CherriCoreIntegrationTests/testE01ContextualCompletionService": (["E01"], {"completion_contextual": "true"}),
+              "CherriCoreIntegrationTests/testE02MultiDiagnosticAnalysisService": (["E02"], {"multi_diagnostics": "true"}),
               "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing": (["E03"], {"scoped_rename": "true"}),
               "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics": (["E04", "RP39"], {"formatter_idempotent_comments": "true"}),
               "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits": (["E05"], {"versioned_edits_isolated": "true"}),
               "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew": (["E06"], {"utf16_spans_exact": "true"}),
               "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection": (["E07", "RP41", "BRG28"], {"visual_source_edit_bounded": "true"}),
+              "CherriCoreIntegrationTests/testRP40SwiftIntegrationService": (["RP40"], {"completion_contextual": "true"}),
               "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract": (["BRG25"], {"shared_analysis_bridge": "true"}),
               "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis": (["P05"], {"unicode_identifiers": "true"}),
           }
 
           records = []
-          for test_id, (reqs, assertions) in sorted(test_req_map.items()):
-              if test_id in passed_tests:
-                  safe_name = test_id.replace("/", "_")
+          for test_id, (reqs, assertions) in sorted(ui_test_map.items()):
+              method = test_id.split("/")[1]
+              if test_id in passed_tests or f"CherriUITests/{method}" in passed_tests:
+                  safe_name = method
+                  canonical_test_id = f"CherriUITests/{method}"
                   records.append({
                       "evidence_id": f"ev-ios-ui-{safe_name}",
                       "requirements": reqs,
                       "tier": "ios-ui",
+                      "implementation_sha": impl_sha,
+                      "test_id": canonical_test_id,
+                      "command": ["xcodebuild", "test", "-scheme", "Cherri"],
+                      "exit_code": 0,
+                      "result": "passed",
+                      "assertions": assertions,
+                      "artifacts": [{
+                          "path": "artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/xcodetest.log",
+                          "sha256": log_sha,
+                          "run_id": run_id,
+                      }],
+                      "detail": f"Executed and passed authentic UI automation test {canonical_test_id} in iOS Simulator",
+                  })
+
+          for test_id, (reqs, assertions) in sorted(service_test_map.items()):
+              method = test_id.split("/")[1]
+              if test_id in passed_tests or f"CherriTests/{method}" in passed_tests:
+                  safe_name = method
+                  records.append({
+                      "evidence_id": f"ev-ios-service-{safe_name}",
+                      "requirements": reqs,
+                      "tier": "service",
                       "implementation_sha": impl_sha,
                       "test_id": test_id,
                       "command": ["xcodebuild", "test", "-scheme", "Cherri"],
@@ -274,7 +317,7 @@ jobs:
                           "sha256": log_sha,
                           "run_id": run_id,
                       }],
-                      "detail": f"Executed and passed {test_id} in iOS Simulator",
+                      "detail": f"Executed and passed Swift service integration test {test_id} in iOS Simulator",
                   })
                   if test_id == "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract":
                       records.append({

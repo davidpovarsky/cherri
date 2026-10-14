@@ -2,7 +2,7 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `cd5c0b8eaeabc28a9b0bc0002cb742b4bd725a97bb88ab5aa7d408983c7825a4`  
+**Schema Fingerprint:** `2dd0e6f6b06ec67733494bbec0bdeb9663b95398edab9a282b62505159d2a80a`  
 **Total Actions:** 461  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
@@ -4706,8 +4706,9 @@ randomNumber(min: Number, max: Number) -> Number
 ### `rawAction`
 
 **Apple Identifier:** `is.workflow.actions.rawaction`  
+**Returns:** `AnyContent`  
 ```cherri
-rawAction(identifier: Text, parameters?: Map<Text, AnyContent>)
+rawAction(identifier: Text, parameters?: Map<Text, AnyContent>) -> AnyContent
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |

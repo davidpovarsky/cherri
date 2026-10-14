@@ -193,23 +193,7 @@ final class CherriCoreIntegrationTests: XCTestCase {
         XCTAssertFalse(actions.isEmpty)
     }
 
-    func testE01MultiDiagnosticAnalysis() async throws {
-        let source = """
-        let immutable = 10
-        immutable = 20
-        let wrongType: Text = 123
-        unknownActionCall("test")
-        """
-        let resp = try await CherriCompiler.analyze(source: source)
-        XCTAssertFalse(resp.valid)
-        XCTAssertGreaterThanOrEqual(resp.diagnostics.count, 3)
-        let codes = Set(resp.diagnostics.map(\.code))
-        XCTAssertTrue(codes.contains("E_ASSIGN_IMMUTABLE") || codes.contains("E_IMMUTABLE_ASSIGN"))
-        XCTAssertTrue(codes.contains("E_ARGUMENT_TYPE"))
-        XCTAssertTrue(codes.contains("E_UNKNOWN_ACTION"))
-    }
-
-    func testE02CompletionHoverSignatureDefinition() async throws {
+    func testE01ContextualCompletionService() async throws {
         let source = """
         function greet(person: Text) -> Text {
             return f"Hi {person}"
@@ -236,6 +220,38 @@ final class CherriCoreIntegrationTests: XCTestCase {
         XCTAssertTrue(defResp.ok)
         let defRange = try XCTUnwrap(defResp.range)
         XCTAssertEqual(defRange.start.line, 3)
+    }
+
+    func testE02MultiDiagnosticAnalysisService() async throws {
+        let source = """
+        let immutable = 10
+        immutable = 20
+        let wrongType: Text = 123
+        unknownActionCall("test")
+        """
+        let resp = try await CherriCompiler.analyze(source: source)
+        XCTAssertFalse(resp.valid)
+        XCTAssertGreaterThanOrEqual(resp.diagnostics.count, 3)
+        let codes = Set(resp.diagnostics.map(\.code))
+        XCTAssertTrue(codes.contains("E_ASSIGN_IMMUTABLE") || codes.contains("E_IMMUTABLE_ASSIGN"))
+        XCTAssertTrue(codes.contains("E_ARGUMENT_TYPE"))
+        XCTAssertTrue(codes.contains("E_UNKNOWN_ACTION"))
+    }
+
+    func testRP40SwiftIntegrationService() async throws {
+        let resp = try await CherriCompiler.analyze(source: "let valid = \"ok\"\nshow(valid)\n")
+        XCTAssertTrue(resp.valid)
+        let comp = try await CherriCompiler.complete(source: "show(", line: 1, column: 6)
+        XCTAssertFalse(comp.isEmpty)
+    }
+
+    // Deprecated forwarders for backward compatibility
+    func testE01MultiDiagnosticAnalysis() async throws {
+        try await testE02MultiDiagnosticAnalysisService()
+    }
+
+    func testE02CompletionHoverSignatureDefinition() async throws {
+        try await testE01ContextualCompletionService()
     }
 
     func testE03ScopedRenameIgnoresStringsCommentsAndShadowing() async throws {
