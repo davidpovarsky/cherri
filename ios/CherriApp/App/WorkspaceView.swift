@@ -218,6 +218,7 @@ struct WorkspaceView: View {
 
             Spacer()
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("statusBar")
         .font(.footnote)
         .padding(.horizontal, 12)

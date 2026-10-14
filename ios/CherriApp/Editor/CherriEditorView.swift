@@ -136,6 +136,7 @@ struct CherriEditorView: View {
         .padding(.vertical, 4)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.red.opacity(0.1))
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("diagnosticsBanner")
     }
 
