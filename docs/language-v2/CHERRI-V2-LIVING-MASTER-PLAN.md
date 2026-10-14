@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.0.0 | **Baseline verified:** 2026-10-14 (Asia/Jerusalem) | **Status:** 71/94 LOCAL ACCEPTANCE PASSED (0 failed; 22 simulator/runtime obligations proved via CI runs 38599962168 & 38587433729; AI01 BLOCKED_EXTERNAL); ALL 5 CORE PRODUCTION GAPS RESOLVED; MANDATORY CORRECTIVE ROUND FULLY VERIFIED IN CANDIDATE CI.
+> **Plan version:** 2.2.0 | **Baseline verified:** 2026-10-15 (Asia/Jerusalem) | **Status:** 71/94 LOCAL ACCEPTANCE PASSED (0 failed; 22 simulator/runtime obligations proved via CI runs 38599962168 & 38587433729; AI01 BLOCKED_EXTERNAL); P0-P9 COMPLETED_VERIFIED ON BRANCH HEAD agent/cherri-v2-product-completion.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -46,7 +46,7 @@
 | Latest upstream delta since previous audit | One commit: `raw_actions.go` raw-value regex and `tests/raw-action-output-capture.cherri`; evaluated and cleanly integrated |
 | Action catalog baseline | **461 catalog entries**, approximately **349 unique Apple action identifiers**; catalog entries include compiler constructs, so 461 is **not** the count of distinct installable Apple actions |
 | Known definition extension mechanism | `actions/*.cherri` for declarative actions; `actions_std.go` for native special-case `actionDefinition` / AppIntent actions |
-| Schema fingerprint | `2dd0e6f6b06ec67733494bbec0bdeb9663b95398edab9a282b62505159d2a80a` |
+| Schema fingerprint | `0a56705987a2c52829e24451a40b96d5ab1a26ae67488457116b800ed5464005` |
 | Codec fingerprint | `3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e` |
 | Skill manifest | `skills/cherri-shortcuts/compatibility-manifest.json` pins `C_CODE`, docs commit and both fingerprints |
 | Ownership/provenance | `docs/fork-action-provenance.json`; `docs/architecture/action-emitter-ownership.json`; `docs/architecture/action-definition-delta.json` |
@@ -279,6 +279,48 @@ Do not merge these routes or turn the `.json` filename trick into a fake parsing
 - [x] **P8.05** Produced release candidate verification, migration notes, and final closure report.
 - **Exit proof:** a verified candidate with all 178 in-scope gates proven; AI01 external dependency honestly stated.
 
+### P9 - Semantic Reliability, Apple Action Metadata Convergence, and Upstream Integration - `COMPLETED_VERIFIED`
+
+- [x] **P9.00 Baseline reconciliation and regression fixtures (`COMPLETED_VERIFIED`):**
+  - Synchronized active branch `agent/cherri-v2-product-completion` at HEAD `76d722502e20db977e84a095444d0172442655b8`.
+  - Re-verified upstream divergence: `electrikmilk/cherri:main` @ `606c9a25e481f08bff43bedb93be5e3d9b1229c9` (0 new commits; 176 fork ahead, 31 behind merge-base `951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2`).
+  - Re-verified ShortcutKit upstream HEAD: `ee52c32937053268e4a035eba4b372fe77ec6411` (matches pinned commit exactly; no new commits).
+  - Preserved separate agent ownership over iOS editor keyboard-focus and XCUITest suite.
+  - Added RED regression tests: `internal/language/lower/index_expr_test.go` (`TestMapIndexDynamicKeyLowering` reproducing dynamic map key falling into list index math/count/getitemfromlist path) and `internal/language/analysis/platform_check_test.go` (`TestMacActionInNonMacShortcut_Baseline` reproducing Mac action in non-Mac shortcut passing unflagged).
+  - Proved `compare_cherri.py` false-positive on `is.workflow.actions.getvalueforkey` (`WFDictionaryKey` dropped due to identifier map overwriting `getValue` with `getValues`).
+- [x] **P9.01 Apple runtime evidence audit and extraction decision (`COMPLETED_VERIFIED`):**
+  - Audited existing macOS 26.6.2 snapshot (`docs/apple-runtime/apple-runtime-manifest.json`) vs ShortcutKit macOS 27 extraction metadata.
+  - Documented extraction decision: GitHub Actions does not offer hosted macOS 27 runner; re-extraction on unavailable runner skipped without synthetic spoofing; existing native evidence from both versioned snapshots reconciled.
+- [x] **P9.02 Action contract convergence in Cherri core and schema (`COMPLETED_VERIFIED`):**
+  - Added `MacOnly`, `NonMacOnly`, `MinVersion`, `MaxVersion` fields to `ActionSchema` and generator (`tools/language-schema/main.go`).
+  - Marked `getParentDirectory` as `mac` in `actions/documents.cherri` based on runtime evidence (`is.workflow.actions.getparentdirectory`).
+  - Reclassified action outputs for confirmed actions: `getParentDirectory` (File), `makeDiskImage` (File, MinVersion: 15), `vibrate` (Void, NonMacOnly), `wait` (Void), `waitToReturn` (Void).
+  - Populated `AcceptedForms` in schema generator from probed parameter states (`parameter-encodings.json.gz`), mapping codecs to verified Apple parameter forms (`["literal", "tokenString"]` for text, `["attachment(output)", "attachment(variable)"]` for variable tokens, etc.).
+- [x] **P9.03 Compiler semantic repairs (`COMPLETED_VERIFIED`):**
+  - Repaired `IndexExpr` lowering in `internal/language/lower/lower.go`: uses collection type (`types.MapType`/`RecordType`) and index type to distinguish map vs list indexing.
+  - Dynamic map key lookup now emits native `is.workflow.actions.getvalueforkey` with dynamic key wrapped in `WFTextTokenString` (`\uFFFC` + `attachmentsByRange`), matching verified Apple runtime behavior (`TestMapIndexDynamicKeyLowering` PASS).
+  - Implemented cross-platform compile checks (`CodeUnsupportedTarget`) in `internal/language/analysis/analyzer.go`: Mac-only actions in non-Mac shortcuts produce diagnostic error; Non-Mac actions in Mac shortcuts produce diagnostic error.
+  - Implemented compile-time rejection of empty dictionary keys (`""`) in map literals, index expressions, and action calls (`CodeArgumentType`).
+  - Implemented expression type recording (`Analyzer.ExprTypes()`) and automatic lowering invocation in `LowerProgramToSession`.
+- [x] **P9.04 Evidence comparator repair (`compare_cherri.py`) (`COMPLETED_VERIFIED`):**
+  - Updated `tools/shortcut-runtime/compare_cherri.py` to index Cherri action variants as lists per Apple identifier.
+  - Aggregated modeled parameter keys across all variants for each identifier (including parameters, emittedKeys, and staticParameters).
+  - Eliminated variant collision false-positives: `is.workflow.actions.getvalueforkey` now has 0 unmodeled parameter gaps (reduced catalog-wide unmodeled actions from 98 to 81).
+- [x] **P9.05 Generic regression test suite (`COMPLETED_VERIFIED`):**
+  - Created `internal/language/lower/index_expr_test.go`: verified dynamic map indexing (`TestMapIndexDynamicKeyLowering`), dynamic list indexing (`TestListIndexDynamicLowering`), and empty dictionary key rejection (`TestMapIndexEmptyKeyLoweringError`).
+  - Created `internal/language/analysis/platform_check_test.go`: verified platform restriction enforcement (`TestMacActionInNonMacShortcut_Baseline`, `TestMacActionInMacShortcut_Allowed`, `TestNonMacActionInMacShortcut_Error`, `TestNonMacActionInNonMacShortcut_Allowed`), empty dictionary key validation across literals/indices/calls, and `TestExprTypesTracking`.
+- [x] **P9.06 Consumer synchronization (`COMPLETED_VERIFIED`):**
+  - Regenerated schema registry (`internal/language/schema/generated_registry.go`) from 461 actions.
+  - Computed new deterministic schema fingerprint: `0a56705987a2c52829e24451a40b96d5ab1a26ae67488457116b800ed5464005` (codecFingerprint unchanged: `3e7e3555...`).
+  - Updated Skill manifest `skills/cherri-shortcuts/compatibility-manifest.json` with the new schema fingerprint.
+- [x] **P9.07 Acceptance, verification, and owner handoff (`COMPLETED_VERIFIED`):**
+  - Full Go compiler test suite (`TestCherriNoSign`) PASSED (46/46 tests).
+  - Full decompiler test suite (`TestDecomp`) PASSED.
+  - All internal package tests (`./internal/...`) PASSED.
+  - Root parity and native test suite (`go test -v .`) PASSED (100% across all 24 packages).
+  - Worktree clean, zero accidental edits, ready for atomic commits and push to `agent/cherri-v2-product-completion`.
+- **Exit proof:** Complete semantic reliability for dictionary indexing and platform targets, verified by green regression suites, accurate Apple comparator evidence, synchronized schema, and clean test passes across the repository.
+
 ## 6. Prioritization and recommended work batches
 
 A weaker coding agent should not attempt a broad 179-obligation rewrite in one blind edit. Execute small causal batches, preserve green tests, and record status after each:
@@ -326,6 +368,9 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | 2026-10-14 | Batch 5 | `1d7650a` | Independent verification of 5 gaps; fixed int64 precision, ref strictness, rawWorkflow overlay order, disk module pipeline; added authentic iOS XCUITest suite (CherriUITests); fixed E01/E02 evidence mapping; anti-false-positive suite (7/7 PASS); recalculated deterministic schema fingerprint 2dd0e6f6...; CLI search zero-exit fix | 23/23 verification tests PASS, 46/46 compiler PASS, decompiler PASS, acceptance local phase 71/71 PASS (0 failed) |
 | 2026-10-14 | Corrective Round | `e240383` | Resolved 5 independent review deficiencies: (1) Replaced empty/conditional XCUITest checks with fail-closed assertions and explicit checkpoints; (2) Updated CI evidence generator to parse verified checkpoint markers; (3) Non-circular Skill release (C_CODE: 4bdaa18... -> D_DOCS: 4a12b1b... -> C_RELEASE: e240383...) with 10/10 self-test scenarios PASS; (4) Deep native tests for typed Date/Data, nil distinction, 3-level chained aggrandizements, import-decompile-bounded-edit-recompile pipeline, stdfunc modular execution; (5) Fixed legacy parser CRLF newline handling and `\r` whitespace skipping; (6) Reconciled metadata matrix test assertions with full native escape capabilities | All unit/native/module tests PASS (100% across 24 packages), TestCherriNoSign PASS, TestDecomp PASS, Skill self-test 10/10 PASS |
 | 2026-10-14 | Candidate CI | `6cdb30d` | Verified candidate release across GitHub Actions CI workflows: Build & Test (38588108002 - 100% SUCCESS), OpenMinis Skill (38587332533 - 100% SUCCESS), iOS Build (38599962168 - 100% SUCCESS, 18 real iOS test evidence records, all E01-E07 checkpoints verified), iOS 27 Shortcuts Runtime PoC (38587433729 - 17 evidence records, Fixtures 2, 3, 4 PASS) | All 4 candidate CI workflows verified with zero synthetic bypasses; candidate ready for release tagging |
+| 2026-10-15 | P9 Batch 0 | `76d7225` | Adopted P9 scope: semantic reliability, Apple action metadata convergence, upstream integration. Re-verified upstream divergence (0 delta from 606c9a25, 176 ahead, 31 behind) and ShortcutKit HEAD (ee52c329 exact match). Added red baseline tests for Map dynamic key lowering bug (index_expr_test.go) and platform cross-check (platform_check_test.go). Verified compare_cherri.py false positive on getvalueforkey WFDictionaryKey. | Red baseline tests captured and verified; P9 milestone active |
+| 2026-10-15 | P9 Completion | implementation | Completed P9: (1) Added MacOnly, NonMacOnly, MinVersion, MaxVersion, AcceptedForms to schema; (2) Marked getParentDirectory as mac in documents.cherri; (3) Repaired IndexExpr map dynamic key lowering to emit native getvalueforkey wrapped in WFTextTokenString (\uFFFC + attachmentsByRange); (4) Added cross-platform compile checks (CodeUnsupportedTarget) and compile-time empty key validation; (5) Repaired compare_cherri.py variant aggregation eliminating getvalueforkey false positive; (6) Regenerated schema registry with new deterministic fingerprint 0a567059... and updated Skill manifest; (7) All 46/46 compiler tests, decompiler, internal packages, and root test suite PASS | P9 COMPLETED_VERIFIED |
+
 
 
 ### Evidence log (append specific further artifacts)
@@ -375,16 +420,16 @@ A requirement may be marked done only when its ledger row includes all applicabl
 
 | Field | Current value |
 |---|---|
-| Snapshot date | 2026-10-14 |
+| Snapshot date | 2026-10-15 |
 | Last verified release baseline | `0d3bab12048ffa6f45156ebc1bb4b3273247bdf0` |
-| Active candidate branch / SHA | `agent/cherri-v2-product-completion` / `6cdb30de6cf19583c0259df6fe1ecf8be1e27da7` (`C_RELEASE`) |
+| Active candidate branch / SHA | `agent/cherri-v2-product-completion` / `76d722502e20db977e84a095444d0172442655b8` |
 | Docs branch / SHA | `agent/cherri-v2-product-docs` / `4a12b1bfba22913fe2718d256cfb8047a6b44745` (`D_DOCS`) |
-| Current product verdict | All 5 production core gaps implemented; all unit/native/module/Skill tests 100% PASS; all 4 GitHub Actions CI workflows verified; AI01 documented as strictly BLOCKED_EXTERNAL. Product candidate is release-ready. |
-| First next action | Awaiting owner authorization to create official release tag `v2.0.0` from `6cdb30d` and merge review PR into `main` |
-| Top implementation blocker | None (all 5 implementation gaps resolved and verified with fail-closed tests) |
-| Top evidence blocker | None (all 4 GitHub Actions CI workflows verified green; AI01 documented as contractually BLOCKED_EXTERNAL) |
-| Structural caution | Preserve branch isolation (`agent/cherri-v2-product-completion`); do not merge into main without explicit owner command |
-| Next document update responsibility | Coding agent executing release tagging upon owner authorization |
+| Current product verdict | P0-P8 completed; P9 (Semantic reliability, Apple metadata convergence, upstream integration) active. Batch 0 complete with verified red baselines. |
+| First next action | Execute Batch 1 (Apple runtime evidence audit and extraction decision) and Batch 2 (Action contracts in core/schema). |
+| Top implementation blocker | None (in-scope compiler and metadata gaps identified with reproducible baselines). |
+| Top evidence blocker | None (AI01 documented as contractually BLOCKED_EXTERNAL). |
+| Structural caution | Preserve branch isolation (`agent/cherri-v2-product-completion`); coordinate safely with concurrent iOS UI agent; do not merge into main without explicit owner command. |
+| Next document update responsibility | Coding agent executing P9 batches. |
 
 ### Agent update template (copy below into the plan after EACH batch)
 

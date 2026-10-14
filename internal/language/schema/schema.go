@@ -86,6 +86,10 @@ type ActionSchema struct {
 	CompilerConstruct  bool                 `json:"compilerConstruct,omitempty"`
 	EvidenceStatus     EvidenceStatus       `json:"evidenceStatus,omitempty"`
 	StaticParameters   map[string]any       `json:"staticParameters,omitempty"`
+	MacOnly            bool                 `json:"macOnly,omitempty"`
+	NonMacOnly         bool                 `json:"nonMacOnly,omitempty"`
+	MinVersion         float64              `json:"minVersion,omitempty"`
+	MaxVersion         float64              `json:"maxVersion,omitempty"`
 }
 
 // ParameterByLabel returns the parameter schema matching the given label.

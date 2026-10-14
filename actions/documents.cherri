@@ -59,7 +59,7 @@ action default 'documentpicker.open' getFile(text path: 'WFGetFilePath', &variab
 action 'openin' openFile(&variable file: 'WFInput', bool ?askWhenRun: 'WFOpenInAskWhenRun' = false)
 
 // [Doc]: [Files & Folders] Get Parent Directory: Get the parent directory of the input directory.
-action getParentDirectory(&variable input: 'WFInput')
+action mac 'getparentdirectory' getParentDirectory(&variable input: 'WFInput'): variable
 
 // [Doc]: [Files & Folders] File: Insert a `#ref` to a file.
 action file(&variable file: 'WFFile'): variable

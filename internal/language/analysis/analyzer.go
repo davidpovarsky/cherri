@@ -65,6 +65,8 @@ type Analyzer struct {
 	topLevelVars map[string]source.Span
 	yieldedTypes []types.Type
 	importStack  []string
+	isMacTarget  *bool
+	exprTypes    map[syntax.Expression]types.Type
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -75,7 +77,23 @@ func NewAnalyzer(registry *schema.Registry) *Analyzer {
 	return &Analyzer{
 		registry:     registry,
 		topLevelVars: make(map[string]source.Span),
+		exprTypes:    make(map[syntax.Expression]types.Type),
 	}
+}
+
+// ExprTypes returns the map of AST expression nodes to their inferred semantic types.
+func (a *Analyzer) ExprTypes() map[syntax.Expression]types.Type {
+	return a.exprTypes
+}
+
+// IsMacTarget returns whether the active target is Mac-only, non-Mac, or unconstrained (nil).
+func (a *Analyzer) IsMacTarget() *bool {
+	return a.isMacTarget
+}
+
+// SetIsMacTarget explicitly sets the active target platform constraint.
+func (a *Analyzer) SetIsMacTarget(isMac *bool) {
+	a.isMacTarget = isMac
 }
 
 // Diagnostics returns all diagnostics produced during analysis.
@@ -148,6 +166,8 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 			if !scope.Define(&Symbol{Name: d.Name, Type: types.Text, Initialized: true, Span: d.Span}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate enum declaration %q", d.Name))
 			}
+		case *syntax.ShortcutDecl:
+			a.analyzeShortcutDecl(d)
 		case *syntax.ImportDecl:
 			if strings.HasPrefix(d.Path, "http://") || strings.HasPrefix(d.Path, "https://") {
 				a.error(CodeWorkspaceAccess, d.Span, fmt.Sprintf("remote package imports not permitted: %q", d.Path))
@@ -178,6 +198,48 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	// Pass 3: Analyze top-level statements
 	for _, stmt := range prog.Statements {
 		a.analyzeStatement(stmt, scope)
+	}
+}
+
+func (a *Analyzer) analyzeShortcutDecl(sd *syntax.ShortcutDecl) {
+	if sd.Metadata == nil {
+		return
+	}
+	for _, f := range sd.Metadata.Fields {
+		switch f.Name {
+		case "mac":
+			if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+				val := lit.Value == "true"
+				a.isMacTarget = &val
+			}
+		case "target":
+			if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+				val := strings.ToLower(lit.Value) == "macos" || strings.ToLower(lit.Value) == "mac"
+				a.isMacTarget = &val
+			}
+		case "targets":
+			if list, ok := f.Value.(*syntax.ListExpr); ok {
+				hasMac := false
+				hasNonMac := false
+				for _, el := range list.Elements {
+					if lit, ok := el.(*syntax.LiteralExpr); ok {
+						v := strings.ToLower(lit.Value)
+						if v == "mac" || v == "macos" {
+							hasMac = true
+						} else if v == "ios" || v == "ipados" || v == "watchos" {
+							hasNonMac = true
+						}
+					}
+				}
+				if hasMac && !hasNonMac {
+					val := true
+					a.isMacTarget = &val
+				} else if hasNonMac && !hasMac {
+					val := false
+					a.isMacTarget = &val
+				}
+			}
+		}
 	}
 }
 
@@ -416,6 +478,14 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	if expr == nil {
 		return types.Unknown
 	}
+	t := a.analyzeExpressionInternal(expr, scope)
+	if a.exprTypes != nil {
+		a.exprTypes[expr] = t
+	}
+	return t
+}
+
+func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scope) types.Type {
 
 	switch e := expr.(type) {
 	case *syntax.LiteralExpr:
@@ -501,6 +571,9 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 	case *syntax.IndexExpr:
 		targetType := a.analyzeExpression(e.Target, scope)
 		idxType := a.analyzeExpression(e.Index, scope)
+		if litKey, ok := e.Index.(*syntax.LiteralExpr); ok && litKey.Value == "" {
+			a.error(CodeArgumentType, litKey.Span, "empty dictionary key is not allowed")
+		}
 		if mapType, ok := targetType.(types.MapType); ok {
 			if idxType != nil && !idxType.AssignableTo(mapType.Key) && idxType.Kind() != types.KindUnknown {
 				a.error(CodeArgumentType, e.Index.NodeSpan(), fmt.Sprintf("map index requires %s, got %s", mapType.Key, idxType))
@@ -591,6 +664,9 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 		seenKeys := make(map[string]bool)
 		for _, entry := range e.Entries {
 			if litKey, ok := entry.Key.(*syntax.LiteralExpr); ok {
+				if litKey.Value == "" {
+					a.error(CodeArgumentType, litKey.Span, "empty dictionary key is not allowed")
+				}
 				if seenKeys[litKey.Value] {
 					a.error("E_DUPLICATE_KEY", litKey.Span, fmt.Sprintf("duplicate key %q in map literal", litKey.Value))
 				}
@@ -729,6 +805,15 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return types.Unknown
 	}
 
+	if a.isMacTarget != nil {
+		if actionSchema.MacOnly && !*a.isMacTarget {
+			a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is only available on macOS", callName))
+		}
+		if actionSchema.NonMacOnly && *a.isMacTarget {
+			a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is not available on macOS", callName))
+		}
+	}
+
 	// Step-by-step argument binding algorithm per §7.2
 	boundParams := make(map[string]bool)
 
@@ -739,6 +824,11 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			a.error(CodePositionalArg, call.PrimaryArg.NodeSpan(), fmt.Sprintf("action %q does not accept an unlabeled primary argument; use named arguments", callName))
 		} else {
 			boundParams[primParam.ID] = true
+			if primParam.WireKey == "WFDictionaryKey" {
+				if lit, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit && lit.Value == "" {
+					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), "empty dictionary key is not allowed")
+				}
+			}
 			argType := a.analyzeExpression(call.PrimaryArg, scope)
 			if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
 				a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", primParam.Label, primParam.Type, argType))
@@ -773,6 +863,12 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			a.error(CodeDuplicateArgument, nArg.Span, fmt.Sprintf("duplicate argument for parameter %q in call to %q", nArg.Label, callName))
 		}
 		boundParams[param.ID] = true
+
+		if param.WireKey == "WFDictionaryKey" || nArg.Label == "key" {
+			if lit, isLit := nArg.Value.(*syntax.LiteralExpr); isLit && lit.Value == "" {
+				a.error(CodeArgumentType, nArg.Value.NodeSpan(), "empty dictionary key is not allowed")
+			}
+		}
 
 		argType := a.analyzeExpression(nArg.Value, scope)
 		if param.Type != nil && argType != nil && !argType.AssignableTo(param.Type) {

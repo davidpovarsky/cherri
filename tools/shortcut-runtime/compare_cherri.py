@@ -44,7 +44,9 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
     for a in cherri_actions:
         ident = a.get("shortcutIdentifier")
         if ident:
-            cherri_map[ident] = a
+            if ident not in cherri_map:
+                cherri_map[ident] = []
+            cherri_map[ident].append(a)
 
     cherri_ids = set(cherri_map.keys())
 
@@ -105,14 +107,21 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
 
     for ident in sorted(builtin_covered):
         apple_params = param_encodings_actions.get(ident, [])
-        cherri_action = cherri_map.get(ident, {})
+        cherri_variants = cherri_map.get(ident, [])
 
         cherri_param_keys = set()
-        for p in cherri_action.get("parameters", []):
-            if p.get("key"):
-                cherri_param_keys.add(p["key"])
-        for ek in cherri_action.get("emittedKeys", []):
-            cherri_param_keys.add(ek)
+        cherri_names = []
+        for variant in cherri_variants:
+            if variant.get("name"):
+                cherri_names.append(variant["name"])
+            for p in variant.get("parameters", []):
+                if p.get("key"):
+                    cherri_param_keys.add(p["key"])
+            for ek in variant.get("emittedKeys", []):
+                cherri_param_keys.add(ek)
+            if isinstance(variant.get("staticParameters"), dict):
+                for sk in variant["staticParameters"].keys():
+                    cherri_param_keys.add(sk)
 
         apple_keys = {p.get("key") for p in apple_params if p.get("key")}
         unmodeled_keys = apple_keys - cherri_param_keys
@@ -120,7 +129,7 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
         if unmodeled_keys:
             parameter_gaps.append({
                 "identifier": ident,
-                "cherriName": cherri_action.get("name"),
+                "cherriName": ", ".join(cherri_names) if cherri_names else "",
                 "unmodeledParameterKeys": sorted(unmodeled_keys),
                 "appleKeyCount": len(apple_keys),
                 "cherriKeyCount": len(cherri_param_keys)

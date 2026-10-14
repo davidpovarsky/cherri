@@ -31,6 +31,10 @@ type LegacyAction struct {
 	InsertionSnippet   string            `json:"insertionSnippet"`
 	AppIntent          *LegacyAppIntent  `json:"appIntent"`
 	StaticParameters   map[string]any    `json:"staticParameters,omitempty"`
+	MacOnly            bool              `json:"macOnly,omitempty"`
+	NonMacOnly         bool              `json:"nonMacOnly,omitempty"`
+	MinVersion         float64           `json:"minVersion,omitempty"`
+	MaxVersion         float64           `json:"maxVersion,omitempty"`
 }
 
 type LegacyParameter struct {
@@ -110,6 +114,65 @@ var facets = map[string]ActionFacet{
 		ParamTypeOverrides: map[string]string{
 			"date": "Date",
 		},
+	},
+	"getParentDirectory": {
+		PrimaryParameterID: "input",
+		OutputTypeOverride: "File",
+	},
+	"getFile": {
+		PrimaryParameterID: "path",
+		OutputTypeOverride: "File",
+	},
+	"selectFolder": {
+		OutputTypeOverride: "File",
+	},
+	"makeDiskImage": {
+		PrimaryParameterID: "name",
+		OutputTypeOverride: "File",
+	},
+	"makeSizedDiskImage": {
+		PrimaryParameterID: "name",
+		OutputTypeOverride: "File",
+	},
+	"takeInteractiveScreenshot": {
+		OutputTypeOverride: "Image",
+	},
+	"startScreensaver": {
+		OutputTypeOverride: "Void",
+	},
+	"sleep": {
+		OutputTypeOverride: "Void",
+	},
+	"displaySleep": {
+		OutputTypeOverride: "Void",
+	},
+	"vibrate": {
+		OutputTypeOverride: "Void",
+	},
+	"wait": {
+		PrimaryParameterID: "seconds",
+		OutputTypeOverride: "Void",
+	},
+	"waitToReturn": {
+		OutputTypeOverride: "Void",
+	},
+	"openFile": {
+		PrimaryParameterID: "file",
+		OutputTypeOverride: "Void",
+	},
+	"setSilentMode": {
+		OutputTypeOverride: "Void",
+	},
+	"stopStopwatch": {
+		OutputTypeOverride: "Void",
+	},
+	"playAudiobook": {
+		PrimaryParameterID: "target",
+		OutputTypeOverride: "Void",
+	},
+	"openBook": {
+		PrimaryParameterID: "target",
+		OutputTypeOverride: "Void",
 	},
 }
 
@@ -260,6 +323,20 @@ func mapType(legacyType string) string {
 		return "List<AnyContent>"
 	case "variable":
 		return "AnyContent"
+	case "file":
+		return "File"
+	case "url":
+		return "URL"
+	case "date":
+		return "Date"
+	case "image":
+		return "Image"
+	case "contact":
+		return "Contact"
+	case "calendarevent", "event":
+		return "CalendarEvent"
+	case "void", "none":
+		return "Void"
 	default:
 		return "Unknown"
 	}
@@ -281,6 +358,27 @@ func mapCodec(legacyType string) string {
 		return "token"
 	default:
 		return "token"
+	}
+}
+
+func determineAcceptedForms(p LegacyParameter, codec string) []string {
+	switch codec {
+	case "text":
+		return []string{"literal", "tokenString"}
+	case "number":
+		return []string{"literal", "attachment(output)", "attachment(variable)"}
+	case "bool":
+		return []string{"literal", "attachment(output)", "attachment(variable)"}
+	case "enum":
+		return []string{"literal", "attachment(output)", "attachment(variable)"}
+	case "dictionary":
+		return []string{"literal", "attachment(output)", "attachment(variable)"}
+	case "array":
+		return []string{"literal", "attachment(output)", "attachment(variable)"}
+	case "token":
+		return []string{"attachment(output)", "attachment(variable)"}
+	default:
+		return []string{"literal", "attachment(output)", "attachment(variable)"}
 	}
 }
 
@@ -346,6 +444,18 @@ func initDefaultRegistry() *Registry {
 		fmt.Fprintf(&b, "\t\t\tOutputTypeName: %q,\n", outTypeName)
 		fmt.Fprintf(&b, "\t\t\tCompilerConstruct: %t,\n", a.CompilerConstruct)
 		fmt.Fprintf(&b, "\t\t\tEvidenceStatus: EvidenceConfirmed,\n")
+		if a.MacOnly {
+			fmt.Fprintf(&b, "\t\t\tMacOnly: true,\n")
+		}
+		if a.NonMacOnly {
+			fmt.Fprintf(&b, "\t\t\tNonMacOnly: true,\n")
+		}
+		if a.MinVersion > 0 {
+			fmt.Fprintf(&b, "\t\t\tMinVersion: %v,\n", a.MinVersion)
+		}
+		if a.MaxVersion > 0 {
+			fmt.Fprintf(&b, "\t\t\tMaxVersion: %v,\n", a.MaxVersion)
+		}
 		b.WriteString("\t\t\tDocs: ActionDocs{\n")
 		fmt.Fprintf(&b, "\t\t\t\tTitle: %q,\n", a.Title)
 		fmt.Fprintf(&b, "\t\t\t\tDescription: %q,\n", escapeString(a.Description))
@@ -394,6 +504,8 @@ func initDefaultRegistry() *Registry {
 				}
 			}
 
+			forms := determineAcceptedForms(p, codec)
+
 			b.WriteString("\t\t\t\t{\n")
 			fmt.Fprintf(&b, "\t\t\t\t\tID: %q,\n", p.Name)
 			fmt.Fprintf(&b, "\t\t\t\t\tLabel: %q,\n", p.Name)
@@ -401,6 +513,16 @@ func initDefaultRegistry() *Registry {
 			fmt.Fprintf(&b, "\t\t\t\t\tType: %s,\n", mapGoType(pType))
 			fmt.Fprintf(&b, "\t\t\t\t\tTypeName: %q,\n", pType)
 			fmt.Fprintf(&b, "\t\t\t\t\tOptional: %t,\n", p.Optional)
+			if len(forms) > 0 {
+				b.WriteString("\t\t\t\t\tAcceptedForms: []string{")
+				for i, af := range forms {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					fmt.Fprintf(&b, "%q", af)
+				}
+				b.WriteString("},\n")
+			}
 			fmt.Fprintf(&b, "\t\t\t\t\tWireKey: %q,\n", p.Key)
 			fmt.Fprintf(&b, "\t\t\t\t\tCodec: %q,\n", codec)
 			if p.Default != "" {

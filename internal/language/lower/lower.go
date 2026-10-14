@@ -10,12 +10,14 @@ import (
 	"strings"
 	"unicode/utf16"
 
+	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/migrate"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 	"howett.net/plist"
 )
 
@@ -65,6 +67,8 @@ type Lowerer struct {
 	repeatDepth        int
 	currentBindingName string
 	emitErr            error
+	isMac              *bool
+	exprTypes          map[syntax.Expression]types.Type
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -107,6 +111,21 @@ func (l *Lowerer) SetVirtualModules(vm map[string]string) {
 // SetBaseFilePath sets the base file path used to resolve relative disk imports.
 func (l *Lowerer) SetBaseFilePath(path string) {
 	l.baseFilePath = path
+}
+
+// SetExprTypes sets the map of analyzed expression types.
+func (l *Lowerer) SetExprTypes(exprTypes map[syntax.Expression]types.Type) {
+	l.exprTypes = exprTypes
+}
+
+// SetIsMac sets the target platform constraint (macOS if true, non-Mac if false, unconstrained if nil).
+func (l *Lowerer) SetIsMac(isMac *bool) {
+	l.isMac = isMac
+}
+
+// IsMac returns whether the active lowering target is Mac-only, non-Mac, or unconstrained (nil).
+func (l *Lowerer) IsMac() *bool {
+	return l.isMac
 }
 
 // NewLowererWithSession creates a new AST lowerer connected to a backend session.
@@ -265,6 +284,16 @@ func (l *Lowerer) emitMenuEnd(groupUUID string, outputUUID string) *ir.NativeAct
 
 // LowerProgramToSession compiles an AST Program into the configured backend.Session.
 func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
+	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
+	if l.exprTypes == nil {
+		analyzer := analysis.NewAnalyzer(l.registry)
+		analyzer.Analyze(prog)
+		l.exprTypes = analyzer.ExprTypes()
+		if l.isMac == nil {
+			l.isMac = analyzer.IsMacTarget()
+		}
+	}
+
 	// 1. Process declarations (metadata, shortcut header, functions, setup, custom actions, enums, types)
 	for _, decl := range prog.Declarations {
 		switch d := decl.(type) {
@@ -517,16 +546,41 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 					fmt.Sscanf(lit.Value, "%d", &g)
 					l.workflow.IconGlyph = g
 				}
+			case "mac":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					val := lit.Value == "true"
+					l.isMac = &val
+				}
+			case "target":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					val := strings.ToLower(lit.Value) == "macos" || strings.ToLower(lit.Value) == "mac"
+					l.isMac = &val
+				}
 			case "targets":
 				if list, ok := f.Value.(*syntax.ListExpr); ok {
 					var targets []string
+					hasMac := false
+					hasNonMac := false
 					for _, el := range list.Elements {
 						if lit, ok := el.(*syntax.LiteralExpr); ok {
 							targets = append(targets, lit.Value)
+							v := strings.ToLower(lit.Value)
+							if v == "mac" || v == "macos" {
+								hasMac = true
+							} else if v == "ios" || v == "ipados" || v == "watchos" {
+								hasNonMac = true
+							}
 						}
 					}
 					if len(targets) > 0 {
 						l.workflow.WorkflowTypes = targets
+					}
+					if hasMac && !hasNonMac {
+						val := true
+						l.isMac = &val
+					} else if hasNonMac && !hasMac {
+						val := false
+						l.isMac = &val
 					}
 				}
 			case "from":
@@ -2081,22 +2135,114 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		if tok, ok := targetVal.(*ir.AttachmentToken); ok {
-			if strKey, ok := indexVal.(string); ok {
-				newTok := &ir.AttachmentToken{
-					Type:            tok.Type,
-					OutputUUID:      tok.OutputUUID,
-					OutputName:      tok.OutputName,
-					Aggrandizements: make([]map[string]interface{}, len(tok.Aggrandizements)),
-				}
-				copy(newTok.Aggrandizements, tok.Aggrandizements)
-				newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
-					"Type":          "WFDictionaryValueVariableAggrandizement",
-					"DictionaryKey": strKey,
-				})
-				return newTok, nil
+		var targetType types.Type
+		if l.exprTypes != nil {
+			targetType = l.exprTypes[e.Target]
+		}
+		var idxType types.Type
+		if l.exprTypes != nil {
+			idxType = l.exprTypes[e.Index]
+		}
+
+		isList := false
+		if targetType != nil && targetType.Kind() == types.KindList {
+			isList = true
+		}
+		if _, ok := e.Target.(*syntax.ListExpr); ok {
+			isList = true
+		}
+
+		isMap := false
+		if !isList {
+			if targetType != nil && (targetType.Kind() == types.KindMap || targetType.Kind() == types.KindRecord) {
+				isMap = true
+			} else if _, ok := e.Target.(*syntax.MapExpr); ok {
+				isMap = true
+			} else if idxType != nil && idxType.AssignableTo(types.Text) && !idxType.AssignableTo(types.Number) {
+				isMap = true
+			} else if _, ok := indexVal.(string); ok {
+				isMap = true
 			}
 		}
+
+		if isMap {
+			if strKey, ok := indexVal.(string); ok {
+				if strKey == "" {
+					return nil, fmt.Errorf("empty dictionary key is not allowed")
+				}
+				if tok, ok := targetVal.(*ir.AttachmentToken); ok {
+					newTok := &ir.AttachmentToken{
+						Type:            tok.Type,
+						OutputUUID:      tok.OutputUUID,
+						OutputName:      tok.OutputName,
+						Aggrandizements: make([]map[string]interface{}, len(tok.Aggrandizements)),
+					}
+					copy(newTok.Aggrandizements, tok.Aggrandizements)
+					newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+						"Type":          "WFDictionaryValueVariableAggrandizement",
+						"DictionaryKey": strKey,
+					})
+					return newTok, nil
+				}
+				targetInput := l.materializeToAttachment(targetVal)
+				uuid := l.GenerateUUID()
+				node := &ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.getvalueforkey",
+					OutputUUID:      uuid,
+					Parameters: map[string]interface{}{
+						"WFInput":                  targetInput,
+						"WFDictionaryKey":          strKey,
+						"WFGetDictionaryValueType": "Value",
+					},
+				}
+				l.emitAction(node)
+				return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+			}
+
+			// Dynamic map key: wrap in WFTextTokenString
+			var keyParam interface{}
+			if tok, ok := indexVal.(*ir.AttachmentToken); ok {
+				keyParam = map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string": "\uFFFC",
+						"attachmentsByRange": map[string]interface{}{
+							"{0, 1}": tok,
+						},
+					},
+				}
+			} else if m, ok := indexVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFTextTokenString" {
+				keyParam = m
+			} else {
+				tok := l.materializeToAttachment(indexVal)
+				keyParam = map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string": "\uFFFC",
+						"attachmentsByRange": map[string]interface{}{
+							"{0, 1}": tok,
+						},
+					},
+				}
+			}
+
+			targetInput := l.materializeToAttachment(targetVal)
+			uuid := l.GenerateUUID()
+			node := &ir.NativeActionNode{
+				NodeID:          uuid,
+				AppleIdentifier: "is.workflow.actions.getvalueforkey",
+				OutputUUID:      uuid,
+				Parameters: map[string]interface{}{
+					"WFInput":                  targetInput,
+					"WFDictionaryKey":          keyParam,
+					"WFGetDictionaryValueType": "Value",
+				},
+			}
+			l.emitAction(node)
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+		}
+
 		if n, ok := indexVal.(float64); ok {
 			// Safe 0-based indexing: negative or non-integer index produces nothing without unsafe native lookup
 			if n < 0 || n != math.Trunc(n) {
@@ -2147,22 +2293,8 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 
 			l.emitIfEnd(groupUUID, endUUID, "")
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
-		} else if strKey, ok := indexVal.(string); ok {
-			uuid := l.GenerateUUID()
-			node := &ir.NativeActionNode{
-				NodeID:          uuid,
-				AppleIdentifier: "is.workflow.actions.getvalueforkey",
-				OutputUUID:      uuid,
-				Parameters: map[string]interface{}{
-					"WFInput":                  targetVal,
-					"WFDictionaryKey":          strKey,
-					"WFGetDictionaryValueType": "Value",
-				},
-			}
-			l.emitAction(node)
-			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 		} else {
-			// Dynamic index: add 1 and guard 1 <= idx+1 <= count(list)
+			// Dynamic index for List: add 1 and guard 1 <= idx+1 <= count(list)
 			targetTok := l.materializeToAttachment(targetVal)
 			mathUUID := l.GenerateUUID()
 			mathNode := &ir.NativeActionNode{
@@ -3297,6 +3429,15 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	actionSchema, ok := l.registry.LookupAction(actionName)
 	if !ok {
 		return nil, fmt.Errorf("unknown action in lowering: %s", actionName)
+	}
+
+	if l.isMac != nil {
+		if actionSchema.MacOnly && !*l.isMac {
+			return nil, fmt.Errorf("action %q is only available on macOS", actionName)
+		}
+		if actionSchema.NonMacOnly && *l.isMac {
+			return nil, fmt.Errorf("action %q is not available on macOS", actionName)
+		}
 	}
 
 	uuid := l.GenerateUUID()
