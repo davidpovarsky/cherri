@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 1.0.0 | **Baseline verified:** 2026-10-14 (Asia/Jerusalem) | **Status:** 178/179 OBLIGATIONS COMPLETED_VERIFIED (AI01 BLOCKED_EXTERNAL); PRODUCT COMPLETION VERIFIED.
+> **Plan version:** 2.0.0 | **Baseline verified:** 2026-10-14 (Asia/Jerusalem) | **Status:** 71/94 LOCAL ACCEPTANCE PASSED (0 failed, 22 pending external simulator/AI tier; AI01 BLOCKED_EXTERNAL); ALL 5 CORE PRODUCTION GAPS RESOLVED; MANDATORY CORRECTIVE ROUND VERIFIED.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -34,15 +34,16 @@
 | Item | Verified value / meaning |
 |---|---|
 | Working source repository | `https://github.com/davidpovarsky/cherri` |
+| Active development branch | `agent/cherri-v2-product-completion` |
 | Last fully verified Round 3.1 branch | `agent/shared-shortcuts-engine-v2-round3-closure` |
 | **Last verified final release HEAD** | `0d3bab12048ffa6f45156ebc1bb4b3273247bdf0` |
-| Frozen compiler source `C_CODE` pinned by Skill | `1949d1dd0f2bd31d7cd2c1e95fb9943f9f058555` |
+| Candidate compiler source `C_CODE` pinned by Skill | `4bdaa18f12fda813c523764556865b086d389048` |
 | Baseline `main` (not merged) | `af7d7b8a8ce8ec85859fd261ad2c467aadfc1101` |
 | Previous Round 3 release | `e0bb44f4b8905229d30bce7163d2b73bbaee0c8c` |
-| Docs repository / pinned docs commit | `davidpovarsky/cherrilang.org` @ `cd8284c300cd3d169f022a3cdd8d65efaf7fe056` |
+| Docs repository / pinned docs commit `D_DOCS` | `davidpovarsky/cherrilang.org` @ `4a12b1bfba22913fe2718d256cfb8047a6b44745` (`agent/cherri-v2-product-docs`) |
 | Upstream | `https://github.com/electrikmilk/cherri` |
 | Last inspected upstream HEAD | `606c9a25e481f08bff43bedb93be5e3d9b1229c9` (2026-10-13); must refresh when working |
-| Latest upstream delta since previous audit | One commit: `raw_actions.go` raw-value regex and `tests/raw-action-output-capture.cherri`; evaluate, do not blindly merge |
+| Latest upstream delta since previous audit | One commit: `raw_actions.go` raw-value regex and `tests/raw-action-output-capture.cherri`; evaluated and cleanly integrated |
 | Action catalog baseline | **461 catalog entries**, approximately **349 unique Apple action identifiers**; catalog entries include compiler constructs, so 461 is **not** the count of distinct installable Apple actions |
 | Known definition extension mechanism | `actions/*.cherri` for declarative actions; `actions_std.go` for native special-case `actionDefinition` / AppIntent actions |
 | Schema fingerprint | `2dd0e6f6b06ec67733494bbec0bdeb9663b95398edab9a282b62505159d2a80a` |
@@ -322,19 +323,21 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | 2026-10-14 | Batches 1 & 2 | `51960b3` | Implemented native escapes: native.action, native.plist, native.ref, native.workflow, added native_test.go | 8/8 native escape tests PASS |
 | 2026-10-14 | Batch 3 | `f34e20a` | Resolved GAP-MODULE-LOWERING: modular imports with cycle detection, path traversal security, runtime init rejection | 8/8 modular import tests PASS |
 | 2026-10-14 | Batch 4 | `88e906e` | Integrated upstream delta 606c9a25 (raw_actions.go outputType: Variable), verified parity matrix | Upstream compat & 16-group parity PASS |
-| 2026-10-14 | Batch 5 | HEAD | Independent verification of 5 gaps; fixed int64 precision, ref strictness, rawWorkflow overlay order, disk module pipeline; added authentic iOS XCUITest suite (CherriUITests); fixed E01/E02 evidence mapping; anti-false-positive suite (7/7 PASS); recalculated deterministic schema fingerprint 2dd0e6f6...; CLI search zero-exit fix | 23/23 verification tests PASS, 46/46 compiler PASS, decompiler PASS, acceptance local phase 71/71 PASS (0 failed) |
+| 2026-10-14 | Batch 5 | `1d7650a` | Independent verification of 5 gaps; fixed int64 precision, ref strictness, rawWorkflow overlay order, disk module pipeline; added authentic iOS XCUITest suite (CherriUITests); fixed E01/E02 evidence mapping; anti-false-positive suite (7/7 PASS); recalculated deterministic schema fingerprint 2dd0e6f6...; CLI search zero-exit fix | 23/23 verification tests PASS, 46/46 compiler PASS, decompiler PASS, acceptance local phase 71/71 PASS (0 failed) |
+| 2026-10-14 | Corrective Round | `4bdaa18` | Resolved 5 independent review deficiencies: (1) Replaced empty/conditional XCUITest checks with fail-closed assertions and explicit checkpoints; (2) Updated CI evidence generator to parse verified checkpoint markers; (3) Non-circular Skill release (C_CODE: 4bdaa18... -> D_DOCS: 4a12b1b... -> C_RELEASE) with 10/10 self-test scenarios PASS; (4) Deep native tests for typed Date/Data, nil distinction, 3-level chained aggrandizements, import-decompile-bounded-edit-recompile pipeline, stdfunc modular execution; (5) Fixed legacy parser CRLF newline handling and `\r` whitespace skipping | All native/module tests PASS (100%), TestCherriNoSign PASS, TestDecomp PASS, Skill self-test 10/10 PASS |
 
 ### Evidence log (append specific further artifacts)
 
 | ID | GitHub / source | Scope proven | Limitation |
 |---|---|---|---|
-| EV-CI-CORE-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455786655 | Full build, Go tests, 44/44 discovery and regression, decompile, package | Does not exercise every Apple action on-device |
-| EV-IOS-BUILD-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455799363 | Swift/Go bridge app build and unsigned packaging | Build != editor functionality/hardware runtime |
-| EV-SKILL-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455805121 | Compatible Skill package/wrappers in CI | Not all user-environment variations |
-| EV-IOS-RUNTIME-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455809831 | Real iOS 27 simulator four fixtures, explicit Alpha/Beta taps, dictionaries, legacy If | Verified simulator run artifacts |
-| EV-IOS-UI-SIM-E01-E07 | https://github.com/davidpovarsky/cherri/actions/runs/38186566473 | Simulator XCTest UI coverage (E01-E07) with exact SHA256 in xcodetest.log | Simulator UI; physical device is future manual scope |
-| EV-ACCEPTANCE-LOCAL-B5 | `docs/language-v2/acceptance-results.json` | 71 passed / 0 failed / 23 pending across local contract runner; 7/7 anti-false-positive tests pass | Simulator/CI execution required for remaining 23 |
+| EV-CI-CORE-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455786655 | [Historical Baseline] Full build, Go tests, 44/44 discovery and regression, decompile, package | Historical R3.1 baseline on 0d3bab12 |
+| EV-IOS-BUILD-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455799363 | [Historical Baseline] Swift/Go bridge app build and unsigned packaging | Historical R3.1 baseline on 0d3bab12 |
+| EV-SKILL-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455805121 | [Historical Baseline] Compatible Skill package/wrappers in CI | Historical R3.1 baseline on 0d3bab12 |
+| EV-IOS-RUNTIME-R3.1 | https://github.com/davidpovarsky/cherri/actions/runs/38455809831 | [Historical Baseline] Real iOS 27 simulator four fixtures, explicit Alpha/Beta taps, dictionaries, legacy If | Historical R3.1 baseline on 0d3bab12 |
+| EV-IOS-UI-SIM-E01-E07 | https://github.com/davidpovarsky/cherri/actions/runs/38186566473 | [Historical Baseline] Simulator XCTest UI coverage (E01-E07) with exact SHA256 in xcodetest.log | Pre-corrective run; replaced with checkpoint-verified tests |
+| EV-ACCEPTANCE-LOCAL-B5 | `docs/language-v2/acceptance-results.json` | 71 passed / 0 failed / 23 pending across local contract runner; 7/7 anti-false-positive tests pass | Simulator/CI execution required for remaining 22+1 |
 | EV-UPSTREAM-2026-10-13 | https://github.com/electrikmilk/cherri/commit/606c9a25e481f08bff43bedb93be5e3d9b1229c9 | Upstream raw action output capture change integrated and verified | Integrated into fork with test coverage |
+| EV-CANDIDATE-SKILL-SELFTEST | `skills/cherri-shortcuts/scripts/self-test.sh` on candidate commit | Verified clean install, offline cache, stale cache rejection, and real Shortcut compilation across 10 scenarios | Local execution verified; awaiting candidate CI |
 
 ### Decisions (immutable rationale, supersede with explicit new entry)
 
@@ -345,6 +348,7 @@ A requirement may be marked done only when its ledger row includes all applicabl
 - **D005 Preserve legacy compatibility:** Do not break the original Cherri front-end or its action semantics without an explicit, tested contract change.
 - **D006 Do not confuse modular analysis with modular compilation:** A parser/analyzer can accept an `import` while the production lowerer rejects it; this remains a real open product gap.
 - **D007 Strict tier segregation for iOS evidence:** Direct Swift-to-Go bridge tests (`CherriCoreIntegrationTests`) belong strictly to the `service` tier (RP40) and are formally forbidden from satisfying `ios-ui` obligations (E01–E07). Authentic `ios-ui` evidence must come from genuine XCUITest automation (`CherriEditorUITests`). E01 represents completion and E02 represents multi-diagnostics; test IDs and evidence mapping must strictly reflect this specification.
+- **D008 Fail-closed UI checkpoint verification:** UI evidence generators must verify behavioral `[CHECKPOINT:...]` output in test execution logs rather than relying merely on passing method names. Missing elements or bypassed interactions must fail closed.
 
 ## 9. Source-of-truth links and docs reconciliation
 
@@ -366,14 +370,15 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | Field | Current value |
 |---|---|
 | Snapshot date | 2026-10-14 |
-| Last verified branch/HEAD | `agent/cherri-v2-product-completion` / `0d3bab12048ffa6f45156ebc1bb4b3273247bdf0` |
-| Current product verdict | Working v2 core, verified central repairs; **not complete product** |
-| First next action | Adopt living master plan, map 179 obligations, implement B1-B9 batches in order |
-| Top implementation blocker | `native.plist`, `native.ref`, `native.workflow`, production modular imports, unchecked native error propagation |
-| Top evidence blocker | 15 ios-runtime + 6 ios-ui + 1 AI-eval in existing local acceptance report, requiring actual specific evidence/mapping |
-| Structural caution | Preserve fixed shared control/menus/dictionaries, original Cherri definition workflow and current all-green Round 3.1 release |
-| New upstream change to assess | `606c9a25...` from `electrikmilk/cherri` (raw action handling) |
-| Next document update responsibility | Coding agent implementing the next batch; include exact commit/test/CI/evidence lines and update this card |
+| Last verified release baseline | `0d3bab12048ffa6f45156ebc1bb4b3273247bdf0` |
+| Active candidate branch / SHA | `agent/cherri-v2-product-completion` / `4bdaa18f12fda813c523764556865b086d389048` (`C_CODE`) |
+| Docs branch / SHA | `agent/cherri-v2-product-docs` / `4a12b1bfba22913fe2718d256cfb8047a6b44745` (`D_DOCS`) |
+| Current product verdict | All 5 production core gaps implemented; all local unit/native/module/Skill tests 100% PASS; ready for candidate CI execution |
+| First next action | Run GitHub Actions CI workflows for candidate release and verify with blocking watchers |
+| Top implementation blocker | None (all 5 implementation gaps resolved and verified with fail-closed tests) |
+| Top evidence blocker | Verification of candidate CI runs on GitHub Actions; AI01 remains contractually BLOCKED_EXTERNAL |
+| Structural caution | Preserve branch isolation (`agent/cherri-v2-product-completion`); do not merge into main |
+| Next document update responsibility | Coding agent executing CI verification |
 
 ### Agent update template (copy below into the plan after EACH batch)
 
