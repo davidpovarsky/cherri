@@ -21,6 +21,11 @@ import re
 import subprocess
 import sys
 
+try:
+    from action_dispositions import classify_parameter_disposition
+except ImportError:
+    from .action_dispositions import classify_parameter_disposition
+
 
 TAXONOMY_STATUSES = [
     "COVERED_VERIFIED",
@@ -81,7 +86,13 @@ def load_json_or_gz(path, default=None):
         if p.name.endswith(".gz"):
             with gzip.open(p, "rt", encoding="utf-8") as f:
                 return json.load(f)
-        return json.loads(p.read_text(encoding="utf-8-sig"))
+        raw_bytes = p.read_bytes()
+        for enc in ["utf-8-sig", "utf-8", "utf-16", "latin1"]:
+            try:
+                return json.loads(raw_bytes.decode(enc))
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                continue
+        return default
     except Exception as e:
         print(f"Warning: Failed to load {p}: {e}", file=sys.stderr)
         return default
@@ -187,6 +198,7 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
     ledger_rows = []
 
     for ident in sorted(all_known_ids):
+        is_new_in_27 = bool(snap26 and ident in actions27 and ident not in actions26)
         row = {
             "identifier": ident,
             "title": "",
@@ -195,12 +207,16 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
             "cherriCallables": [],
             "status": "OPEN_IMPLEMENTATION",
             "eligibility": "UNKNOWN",
+            "introducedIn": "macOS 27" if is_new_in_27 else "macOS 26",
+            "isNewIn27": is_new_in_27,
             "osAvailability": "all",
             "unmodeledKeys": [],
             "userSuppliedGaps": [],
             "nonUserKeys": [],
+            "parameterDispositions": [],
             "outputType": "Unknown",
             "cherriOutputType": "None",
+            "outputTypeConcordance": "UNASSESSED",
             "rationale": "",
         }
 
@@ -241,13 +257,42 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
             row["cherriCallables"] = [v.get("name") for v in variants]
             row["cherriOutputType"] = variants[0].get("outputType", "Unknown")
 
-            # Check parameter gaps
+            # Check output type concordance
+            if row["outputType"] != "Unknown" and row["cherriOutputType"] not in ("Unknown", "None", ""):
+                if row["outputType"].lower() in row["cherriOutputType"].lower() or row["cherriOutputType"].lower() in row["outputType"].lower() or row["cherriOutputType"] == "variable":
+                    row["outputTypeConcordance"] = "MATCH"
+                else:
+                    row["outputTypeConcordance"] = "DIFFERS"
+
+            # Check parameter gaps via auditable dispositions
             gaps_info = next((g for g in (gaps27 or gaps26 or []) if g.get("identifier") == ident), None)
             if gaps_info and gaps_info.get("unmodeledParameterKeys"):
                 unmodeled = gaps_info["unmodeledParameterKeys"]
                 row["unmodeledKeys"] = unmodeled
-                user_gaps = [k for k in unmodeled if k not in NON_USER_PARAMETER_KEYS]
-                non_user = [k for k in unmodeled if k in NON_USER_PARAMETER_KEYS]
+
+                cherri_declared = set()
+                cherri_emitted = set()
+                cherri_static = set()
+                for v in variants:
+                    for p in v.get("parameters", []):
+                        if p.get("key"): cherri_declared.add(p["key"])
+                    for ek in v.get("emittedKeys", []): cherri_emitted.add(ek)
+                    if isinstance(v.get("staticParameters"), dict):
+                        for sk in v["staticParameters"].keys(): cherri_static.add(sk)
+
+                is_filter = ident.startswith("is.workflow.actions.filter.") or any("filter" in (v.get("name") or "").lower() for v in variants)
+                disps = []
+                user_gaps = []
+                non_user = []
+                for k in unmodeled:
+                    d = classify_parameter_disposition(ident, k, cherri_declared, cherri_emitted, cherri_static, is_filter)
+                    disps.append(d)
+                    if d["disposition"] == "OPEN_USER_PARAMETER":
+                        user_gaps.append(k)
+                    else:
+                        non_user.append(k)
+
+                row["parameterDispositions"] = disps
                 row["userSuppliedGaps"] = user_gaps
                 row["nonUserKeys"] = non_user
 
@@ -256,7 +301,7 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
                     row["rationale"] = f"Action has {len(user_gaps)} unmodeled user parameters: {', '.join(user_gaps)}"
                 else:
                     row["status"] = "COVERED_VERIFIED"
-                    row["rationale"] = f"All {len(non_user)} unmodeled keys are verified non-user metadata keys ({', '.join(non_user)})"
+                    row["rationale"] = f"All {len(non_user)} unmodeled keys have verified non-user or builder dispositions ({', '.join(non_user)})"
             else:
                 row["status"] = "COVERED_VERIFIED"
                 row["rationale"] = "Fully covered in Cherri with all declared parameters mapped"
@@ -279,31 +324,21 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
                 row["status"] = "EXCLUDED_CONFIG_ONLY"
                 row["eligibility"] = "EXCLUDED_CONFIG_ONLY"
                 row["rationale"] = "Control Center / Lock Screen widget configuration intent, not a runnable shortcut action"
-            # 4. New in macOS 27
-            elif snap26 and ident in actions27 and ident not in actions26:
-                row["status"] = "NEW_IN_27"
-                row["eligibility"] = "ELIGIBLE_USER_FACING"
-                row["rationale"] = "Newly introduced native action in macOS 27"
-            # 5. Native built-in missing
+            # 4. Native built-in missing
             elif row["category"] == "builtin":
                 row["status"] = "NEW_NATIVE_ACTION"
                 row["eligibility"] = "ELIGIBLE_USER_FACING"
-                row["rationale"] = "Apple Shortcuts native built-in action missing from Cherri"
-            # 6. Discoverable App Intent
-            elif row["category"] == "app_intent":
+                row["rationale"] = "Apple Shortcuts native built-in action missing from Cherri" + (" (introduced in macOS 27)" if is_new_in_27 else "")
+            # 5. Discoverable App Intent or ToolKit runnable
+            elif row["category"] == "app_intent" or tk_meta.get("classification") == "apple_link_runnable":
                 if apple_meta.get("metadata", {}).get("discoverable", False) or tk_meta.get("classification") == "apple_link_runnable":
                     row["status"] = "MISSING_APP_INTENT_DESCRIPTOR"
                     row["eligibility"] = "ELIGIBLE_APP_INTENT"
-                    row["rationale"] = "First-party Apple App Intent runnable in Shortcuts"
+                    row["rationale"] = "First-party Apple App Intent runnable in Shortcuts" + (" (introduced in macOS 27)" if is_new_in_27 else "")
                 else:
                     row["status"] = "EXCLUDED_NONRUNNABLE"
                     row["eligibility"] = "EXCLUDED_NONRUNNABLE"
                     row["rationale"] = "Non-discoverable / internal App Intent"
-            # 7. ToolKit runnable
-            elif tk_meta.get("classification") == "apple_link_runnable":
-                row["status"] = "MISSING_APP_INTENT_DESCRIPTOR"
-                row["eligibility"] = "ELIGIBLE_APP_INTENT"
-                row["rationale"] = "Runnable Apple Link action in ToolKit"
             else:
                 row["status"] = "DEFERRED_NO_EVIDENCE"
                 row["eligibility"] = "DEFERRED"
@@ -348,8 +383,9 @@ def generate_coverage_report(ledger, delta_info, snap27_manifest, out_path):
     lines.append(f"| **Eligible User-Facing Actions** | {eligible_total} | {eligible_total/total_records*100:.1f}% | Excludes internal, config-only, non-runnable, third-party |")
     lines.append(f"| **Covered & Verified** | {covered_verified} | {covered_verified/eligible_total*100:.1f}% of eligible | Mapped in Cherri with verified parameter contracts |")
     lines.append(f"| **Missing Parameter Repairs** | {by_status.get('MISSING_PARAM', 0)} | {by_status.get('MISSING_PARAM', 0)/eligible_total*100:.1f}% | Covered actions needing parameter additions |")
+    new_in_27_count = sum(1 for r in ledger if r.get("isNewIn27"))
     lines.append(f"| **Missing Built-in Actions** | {by_status.get('NEW_NATIVE_ACTION', 0)} | {by_status.get('NEW_NATIVE_ACTION', 0)/eligible_total*100:.1f}% | Native built-ins needing Cherri definitions |")
-    lines.append(f"| **New in macOS 27** | {by_status.get('NEW_IN_27', 0)} | {by_status.get('NEW_IN_27', 0)/eligible_total*100:.1f}% | Introduced in macOS 27 runtime |")
+    lines.append(f"| **New in macOS 27 (Version Attribute)** | {new_in_27_count} | {new_in_27_count/total_records*100:.1f}% of total | Introduced in macOS 27 runtime across all categories |")
     lines.append(f"| **Missing App Intents** | {by_status.get('MISSING_APP_INTENT_DESCRIPTOR', 0)} | {by_status.get('MISSING_APP_INTENT_DESCRIPTOR', 0)/eligible_total*100:.1f}% | Apple first-party App Intent Link actions |")
     lines.append(f"| **Excluded / Internal / Config** | {total_records - eligible_total} | {(total_records - eligible_total)/total_records*100:.1f}% | Correctly excluded from denominator |")
     lines.append("")

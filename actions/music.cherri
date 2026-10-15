@@ -123,3 +123,11 @@ action 'createplaylist' createPlaylist(
     variable ?items: 'WFPlaylistItems'
 )
 
+// [Doc]: Filter Music: Filter music with various filters.
+action 'filter.music' filterMusic(
+    variable ?music: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+

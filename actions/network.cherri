@@ -92,3 +92,29 @@ action !mac 'personalhotspot.password.get' getHotspotPassword(): text
 
 // [Doc]: [HotSpot] Set Personal Hotspot Password: Update the password to your personal hotspot.
 action !mac 'personalhotspot.password.set' setHotspotPassword(text newPassword: 'WFInput')
+
+// [Doc]: [VPN] Filter VPNs: Filter VPN configurations.
+action 'filter.vpns' filterVPNs(
+    variable ?vpns: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: [VPN] Get Current VPN: Get the currently active VPN.
+action 'vpn.get' getVPN(): variable
+
+enum VPNOperation {
+    'Connect',
+    'Disconnect',
+    'Set On Demand',
+    'Toggle',
+    'Toggle On Demand',
+}
+
+// [Doc]: [VPN] Set VPN: Connect, disconnect, or toggle a VPN configuration.
+action 'vpn.set' setVPN(
+    VPNOperation operation: 'WFVPNOperation',
+    variable ?vpn: 'WFVPN',
+    bool ?onDemand: 'WFOnDemandValue'
+)

@@ -24,6 +24,8 @@ from extract_toolkit import extract_toolkit_registry, inspect_sqlite_database
 from compare_cherri import run_comparison
 from normalize_snapshot import build_snapshot, sanitize_paths
 from runtime_probe import probe_frameworks
+from action_dispositions import classify_parameter_disposition
+from generate_p10_ledger import build_ledger
 
 
 class TestRuntimeExtraction(unittest.TestCase):
@@ -104,7 +106,7 @@ class TestRuntimeExtraction(unittest.TestCase):
 action_id = sys.argv[1]
 out_file = sys.argv[2]
 if "hang" in action_id:
-    time.sleep(3.0)  # Will exceed timeout of 0.4s
+    time.sleep(12.0)  # Will exceed timeout of 6.0s
 data = {
     "identifier": action_id,
     "status": "success",
@@ -124,8 +126,8 @@ pathlib.Path(out_file).write_text(json.dumps(data))
                 actions_file=str(actions_file),
                 out_dir=td,
                 checkpoint_file=None,
-                action_timeout=0.4,
-                param_timeout=0.2,
+                action_timeout=6.0,
+                param_timeout=3.0,
                 resume=False,
                 mock_worker=str(mock_worker),
                 prelude_path=None,
@@ -738,6 +740,81 @@ pathlib.Path(out_file).write_text(json.dumps(data))
                 toolkit_summary_path=str(ev_dir / "toolkit-summary.json")
             )
             self.assertEqual(summary["toolkit"]["totalTools"], 42)
+
+    def test_23_action_parameter_dispositions_taxonomy(self):
+        """Test 23: Auditable disposition engine classifies parameters into exact taxonomy states."""
+        # 1. EXPOSED_PARAMETER
+        d1 = classify_parameter_disposition("test.action", "WFInput", {"WFInput"}, set(), set())
+        self.assertEqual(d1["disposition"], "EXPOSED_PARAMETER")
+
+        # 2. EMITTED_IMPLICIT_CONSTANT (ShowWhenRun)
+        d2 = classify_parameter_disposition("test.action", "ShowWhenRun", set(), set(), set())
+        self.assertEqual(d2["disposition"], "EMITTED_IMPLICIT_CONSTANT")
+        self.assertIn("compiler_actions.go", d2["codePath"])
+
+        # 3. IMPLEMENTED_BY_SHARED_BUILDER (IntentAppDefinition)
+        d3 = classify_parameter_disposition("test.action", "IntentAppDefinition", set(), set(), set())
+        self.assertEqual(d3["disposition"], "IMPLEMENTED_BY_SHARED_BUILDER")
+
+        # 4. INTENTIONALLY_UNREPRESENTABLE_UI_METADATA (ShowHeaders)
+        d4 = classify_parameter_disposition("test.action", "ShowHeaders", set(), set(), set())
+        self.assertEqual(d4["disposition"], "INTENTIONALLY_UNREPRESENTABLE_UI_METADATA")
+
+        # 5. NEEDS_RUNTIME_EVIDENCE (WFGetUpcomingItemCalendar)
+        d5 = classify_parameter_disposition("is.workflow.actions.getupcomingevents", "WFGetUpcomingItemCalendar", set(), set(), set())
+        self.assertEqual(d5["disposition"], "NEEDS_RUNTIME_EVIDENCE")
+
+        # 6. OPEN_USER_PARAMETER (unmodeled genuine parameter)
+        d6 = classify_parameter_disposition("test.action", "CustomUnmodeledField", set(), set(), set())
+        self.assertEqual(d6["disposition"], "OPEN_USER_PARAMETER")
+
+    def test_24_version_attribute_separation_not_status(self):
+        """Test 24: Newly introduced macOS 27 entities receive version attributes without masking functional status."""
+        cherri_catalog = {"actions": []}
+        snap26 = {"actions": {"is.workflow.actions.existing": {}}}
+        snap27 = {
+            "actions": {
+                "is.workflow.actions.existing": {},
+                "is.workflow.actions.newin27": {
+                    "sources": ["builtinDefinition"],
+                    "metadata": {"builtin": {"Name": "New 27 Action"}}
+                }
+            }
+        }
+
+        ledger = build_ledger(cherri_catalog, snap26, snap27, [], [], ["is.workflow.actions.newin27"], [], [])
+        new_row = next(r for r in ledger if r["identifier"] == "is.workflow.actions.newin27")
+
+        # Must record version attribute
+        self.assertTrue(new_row["isNewIn27"])
+        self.assertEqual(new_row["introducedIn"], "macOS 27")
+        # But functional status is NEW_NATIVE_ACTION, NOT NEW_IN_27
+        self.assertEqual(new_row["status"], "NEW_NATIVE_ACTION")
+        self.assertEqual(new_row["eligibility"], "ELIGIBLE_USER_FACING")
+
+    def test_25_filter_and_calendar_predicates_honest_reporting(self):
+        """Test 25: Filter predicates and calendar pickers are audited per action, not dropped via global exception."""
+        # For a filter action, WFContentItemFilter is classified as IMPLEMENTED_BY_SHARED_BUILDER
+        d_filter = classify_parameter_disposition(
+            "is.workflow.actions.filter.files",
+            "WFContentItemFilter",
+            set(),
+            {"WFContentItemLimitEnabled"},
+            set(),
+            is_filter_action=True
+        )
+        self.assertEqual(d_filter["disposition"], "IMPLEMENTED_BY_SHARED_BUILDER")
+
+        # For getupcomingevents, WFGetUpcomingItemCalendar must NEVER be labeled as ordinary non-user key
+        d_cal = classify_parameter_disposition(
+            "is.workflow.actions.getupcomingevents",
+            "WFGetUpcomingItemCalendar",
+            {"WFGetUpcomingItemCount"},
+            set(),
+            set()
+        )
+        self.assertEqual(d_cal["disposition"], "NEEDS_RUNTIME_EVIDENCE")
+        self.assertIn("calendar picker", d_cal["rationale"])
 
 
 if __name__ == "__main__":

@@ -201,3 +201,23 @@ action 'listeningmode.set' setNoiseControlMode(
 
 // [Doc]: [Voice Memos] Search Voice Memos
 action 'com.apple.VoiceMemos.SearchRecordings' searchVoiceMemos(text search: 'searchPhrase'): array
+
+// [Doc]: [Podcasts] Get Episodes of Podcast: Get episodes of a podcast show.
+action 'getepisodesforpodcast' getEpisodesForPodcast(variable podcast: 'WFInput'): array
+
+enum podcastEpisodeDetail {
+    'Artwork',
+    'Artwork URL',
+    'Author',
+    'Description',
+    'Duration',
+    'Genres',
+    'Name',
+    'Release Date',
+    'Store ID',
+    'Store URL',
+    'Title',
+}
+
+// [Doc]: [Podcasts] Get Details of Podcast Episode: Get a detail about a podcast episode.
+action 'properties.podcast' getPodcastEpisodeDetail(variable episode: 'WFInput', podcastEpisodeDetail detail: 'WFContentItemPropertyName')

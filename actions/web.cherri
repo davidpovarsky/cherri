@@ -141,3 +141,11 @@ action 'downloadurl' fileRequest(
 ) {
     "WFHTTPBodyType": "File"
 }
+
+// [Doc]: [Safari] Filter Articles: Filter articles with various filters.
+action 'filter.articles' filterArticles(
+    variable ?articles: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array

@@ -128,3 +128,11 @@ action mac 'logout' logOut()
 
 // [Doc]: [System] Lock App: Lock an application.
 action mac 'lock.app' lockApp(variable app: 'WFApp', text ?operation: 'WFLockAppOperation' = "Lock")
+
+// [Doc]: Filter Displays: Filter connected displays.
+action mac v18 'filter.displays' filterDisplays(
+    variable ?displays: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array

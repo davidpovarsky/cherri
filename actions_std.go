@@ -55,6 +55,14 @@ var openBookIntent = appleAppIntent("Books", "com.apple.iBooksX", "OpenBookInten
 
 var transcribeAudioIntent = appleAppIntent("ShortcutsActions", "com.apple.ShortcutsActions", "TranscribeAudioAction")
 
+var startNotesAudioRecordingIntent = appleAppIntent("Notes", "com.apple.Notes", "StartRecordingLinkAction")
+
+var recordVoiceMemoIntent = appleAppIntent("Voice Memos", "com.apple.VoiceMemos", "RecordVoiceMemoIntent")
+
+var stopVoiceMemoRecordingIntent = appleAppIntent("Voice Memos", "com.apple.VoiceMemos", "StopRecording")
+
+var playVoiceMemoIntent = appleAppIntent("Voice Memos", "com.apple.VoiceMemos", "PlaybackVoiceMemoIntent")
+
 // actionInstanceUUID mirrors real-device exports, which stamp every App Intent
 // action with a per-instance UUID parameter. Shortcuts regenerates these
 // freely; a generated placeholder keeps the emitted shape faithful without
@@ -347,6 +355,88 @@ var actions = map[string]*actionDefinition{
 		appIdentifier: "com.apple.clock",
 		identifier:    "StopStopwatchIntent",
 		appIntent:     stopStopwatchIntent,
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"startNotesAudioRecording": {
+		doc: selfDoc{
+			title:       "Start Audio Recording",
+			description: "Opens the audio details screen to record audio in Notes.",
+			category:    "documents",
+			subcategory: "Notes",
+		},
+		appIdentifier: "com.apple.Notes",
+		identifier:    "StartRecordingLinkAction",
+		appIntent:     startNotesAudioRecordingIntent,
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"recordVoiceMemo": {
+		doc: selfDoc{
+			title:       "Create Recording",
+			description: "Creates a new recording in Voice Memos.",
+			category:    "media",
+			subcategory: "Voice Memos",
+		},
+		appIdentifier: "com.apple.VoiceMemos",
+		identifier:    "RecordVoiceMemoIntent",
+		appIntent:     recordVoiceMemoIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "name",
+				validType: String,
+				key:       "name",
+				optional:  true,
+			},
+		},
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"stopVoiceMemoRecording": {
+		doc: selfDoc{
+			title:       "Stop Recording",
+			description: "Stops the current recording in Voice Memos.",
+			category:    "media",
+			subcategory: "Voice Memos",
+		},
+		appIdentifier: "com.apple.VoiceMemos",
+		identifier:    "StopRecording",
+		appIntent:     stopVoiceMemoRecordingIntent,
+		appendParamsFunc: func([]actionArgument) map[string]any {
+			return actionInstanceUUID()
+		},
+		emittedKeys: []string{"UUID"},
+	},
+	"playVoiceMemo": {
+		doc: selfDoc{
+			title:       "Play Recording",
+			description: "Plays a recording in Voice Memos.",
+			category:    "media",
+			subcategory: "Voice Memos",
+		},
+		appIdentifier: "com.apple.VoiceMemos",
+		identifier:    "PlaybackVoiceMemoIntent",
+		appIntent:     playVoiceMemoIntent,
+		parameters: []parameterDefinition{
+			{
+				name:      "playbackType",
+				validType: String,
+				key:       "playbackType",
+				optional:  true,
+			},
+			{
+				name:      "recording",
+				validType: Variable,
+				key:       "entity",
+				optional:  true,
+			},
+		},
 		appendParamsFunc: func([]actionArgument) map[string]any {
 			return actionInstanceUUID()
 		},
@@ -652,6 +742,90 @@ var actions = map[string]*actionDefinition{
 			"WFCalendarEventContentItemTitle",
 			"WFCalendarEventContentItemNotes",
 			"WFCalendarEventContentItemAttachments",
+		},
+	},
+	"editReminder": {
+		doc: selfDoc{
+			title:       "Edit Reminder",
+			description: "Edit a detail of a reminder. Provide a reminder, a detail to modify, and a new value for that detail.",
+			category:    "calendar",
+			subcategory: "Reminders",
+		},
+		identifier: "setters.reminders",
+		parameters: []parameterDefinition{
+			{
+				name:      "reminder",
+				validType: Variable,
+				key:       "WFInput",
+			},
+			{
+				name:      "detail",
+				validType: String,
+				key:       "WFContentItemPropertyName",
+				enum:      "editReminderDetail",
+			},
+			{
+				name:      "newValue",
+				validType: Variable,
+				key:       "WFReminderContentItemTitle",
+			},
+		},
+		appendParamsFunc: func(args []actionArgument) map[string]any {
+			params := map[string]any{
+				"Mode":       "Set",
+				"ValueLabel": true,
+			}
+			if len(args) < 3 {
+				return params
+			}
+			detail := fmt.Sprint(getArgValue(args[1]))
+			val := argumentValue(args, 2)
+			switch detail {
+			case "Title":
+				params["WFReminderContentItemTitle"] = val
+			case "List":
+				params["WFReminderContentItemList"] = val
+			case "Due Date":
+				params["WFReminderContentItemDueDate"] = val
+			case "Priority":
+				params["WFReminderContentItemPriority"] = val
+			case "Is Completed":
+				params["WFReminderContentItemIsCompleted"] = val
+			case "Notes":
+				params["WFReminderContentItemNotes"] = val
+			case "URL":
+				params["WFReminderContentItemURL"] = val
+			case "Is Flagged":
+				params["WFReminderContentItemIsFlagged"] = val
+			case "Images":
+				params["WFReminderContentItemImages"] = val
+			case "Parent Reminder":
+				params["WFReminderContentItemParentReminder"] = val
+			case "Tags":
+				params["WFReminderContentItemTags"] = val
+			case "When Messaging":
+				params["WFReminderContentItemWhenMessagingPerson"] = val
+			default:
+				params["WFReminderContentItemTitle"] = val
+			}
+			return params
+		},
+		emittedKeys: []string{
+			"Mode",
+			"ValueLabel",
+			"RemoveSpecifiedValue",
+			"WFReminderContentItemTitle",
+			"WFReminderContentItemList",
+			"WFReminderContentItemDueDate",
+			"WFReminderContentItemPriority",
+			"WFReminderContentItemIsCompleted",
+			"WFReminderContentItemNotes",
+			"WFReminderContentItemURL",
+			"WFReminderContentItemIsFlagged",
+			"WFReminderContentItemImages",
+			"WFReminderContentItemParentReminder",
+			"WFReminderContentItemTags",
+			"WFReminderContentItemWhenMessagingPerson",
 		},
 	},
 	"filterFiles": {

@@ -132,3 +132,33 @@ action 'getdistance' getDistance(
     text ?accuracy: 'Accuracy'
 )
 
+// [Doc]: [Location] Filter Locations: Filter locations with various filters.
+action 'filter.locations' filterLocations(
+    variable ?locations: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: [Maps] Get Parked Car Location: Get the location of your parked car.
+action 'getparkedcarlocation' getParkedCarLocation(): variable
+
+// [Doc]: [Maps] Set Parked Car: Set the location and notes for your parked car.
+action 'setparkedcar' setParkedCar(
+    variable location: 'WFLocation',
+    text ?notes: 'WFSetParkedCarNotes',
+    variable ?photo: 'WFSetParkedCarPhoto'
+): variable
+
+enum parkedCarDetail {
+    'Date',
+    'Location',
+    'Name',
+    'Notes',
+    'Photo',
+    'Was Location Set by User',
+}
+
+// [Doc]: [Maps] Get Details of Parked Car: Get a detail about a parked car.
+action 'properties.parkedcar' getParkedCarDetail(variable car: 'WFInput', parkedCarDetail detail: 'WFContentItemPropertyName')
+

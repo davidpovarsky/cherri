@@ -14,18 +14,10 @@ import os
 import pathlib
 import sys
 
-
-NON_USER_PARAMETER_KEYS = {
-    "ShowWhenRun",
-    "IntentAppDefinition",
-    "ShowHeaders",
-    "WFTakeScreenshotIgnoreContextualAssistanceLayers",
-    "WFCompoundType",
-    "WFContentItemFilter",
-    "WFContentItemLimitEnabled",
-    "WFContentItemInputParameter",
-    "WFGetUpcomingItemCalendar",
-}
+try:
+    from action_dispositions import classify_parameter_disposition
+except ImportError:
+    from .action_dispositions import classify_parameter_disposition
 
 
 def load_json(path, default=None):
@@ -44,7 +36,13 @@ def load_json(path, default=None):
             import gzip
             with gzip.open(actual_path, "rt", encoding="utf-8") as f:
                 return json.load(f)
-        return json.loads(pathlib.Path(actual_path).read_text(encoding="utf-8-sig"))
+        raw_bytes = pathlib.Path(actual_path).read_bytes()
+        for enc in ["utf-8-sig", "utf-8", "utf-16", "latin1"]:
+            try:
+                return json.loads(raw_bytes.decode(enc))
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                continue
+        return default
     except Exception as e:
         print(f"Warning: Failed to load {path}: {e}", file=sys.stderr)
         return default
@@ -74,7 +72,7 @@ def load_lines(path):
 
 def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=None,
                    app_intents_path=None, toolkit_registry_path=None, toolkit_summary_path=None,
-                   parameter_encodings_path=None):
+                   parameter_encodings_path=None, return_dispositions=False):
     cherri_data = load_json(cherri_actions_path, {})
     cherri_actions = cherri_data.get("actions", [])
     cherri_map = {}
@@ -137,39 +135,85 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
     apple_runnable_covered = apple_runnable_ids & cherri_ids
     apple_runnable_missing = apple_runnable_ids - cherri_ids
 
-    # 5. Parameter surface gaps
+    # 5. Parameter surface gaps & auditable dispositions
     param_encodings = load_json(parameter_encodings_path, {})
     param_encodings_actions = param_encodings.get("actionParameters", {})
     parameter_gaps = []
+    raw_parameter_gaps = []
+    all_dispositions = []
+    disposition_counts = {
+        "EXPOSED_PARAMETER": 0,
+        "EMITTED_IMPLICIT_CONSTANT": 0,
+        "IMPLEMENTED_BY_SHARED_BUILDER": 0,
+        "INTENTIONALLY_UNREPRESENTABLE_UI_METADATA": 0,
+        "NEEDS_RUNTIME_EVIDENCE": 0,
+        "OPEN_USER_PARAMETER": 0,
+        "UNSUPPORTED_TARGET": 0
+    }
 
     for ident in sorted(builtin_covered):
         apple_params = param_encodings_actions.get(ident, [])
         cherri_variants = cherri_map.get(ident, [])
 
-        cherri_param_keys = set()
+        cherri_declared_keys = set()
+        cherri_emitted_keys = set()
+        cherri_static_keys = set()
         cherri_names = []
+        is_filter_action = ident.startswith("is.workflow.actions.filter.") or any("filter" in (v.get("name") or "").lower() for v in cherri_variants)
+
         for variant in cherri_variants:
             if variant.get("name"):
                 cherri_names.append(variant["name"])
             for p in variant.get("parameters", []):
                 if p.get("key"):
-                    cherri_param_keys.add(p["key"])
+                    cherri_declared_keys.add(p["key"])
             for ek in variant.get("emittedKeys", []):
-                cherri_param_keys.add(ek)
+                cherri_emitted_keys.add(ek)
             if isinstance(variant.get("staticParameters"), dict):
                 for sk in variant["staticParameters"].keys():
-                    cherri_param_keys.add(sk)
+                    cherri_static_keys.add(sk)
 
+        cherri_all_keys = cherri_declared_keys | cherri_emitted_keys | cherri_static_keys
         apple_keys = {p.get("key") for p in apple_params if p.get("key")}
-        unmodeled_keys = apple_keys - cherri_param_keys - NON_USER_PARAMETER_KEYS
 
-        if unmodeled_keys:
+        raw_unmodeled = apple_keys - cherri_all_keys
+        if raw_unmodeled:
+            raw_parameter_gaps.append({
+                "identifier": ident,
+                "cherriName": ", ".join(cherri_names) if cherri_names else "",
+                "unmodeledParameterKeys": sorted(raw_unmodeled),
+                "appleKeyCount": len(apple_keys),
+                "cherriKeyCount": len(cherri_all_keys)
+            })
+
+        action_dispositions = []
+        open_user_params = []
+        for p in apple_params:
+            k = p.get("key")
+            if not k:
+                continue
+            disp = classify_parameter_disposition(
+                action_id=ident,
+                key=k,
+                cherri_declared_keys=cherri_declared_keys,
+                cherri_emitted_keys=cherri_emitted_keys,
+                cherri_static_keys=cherri_static_keys,
+                is_filter_action=is_filter_action
+            )
+            action_dispositions.append(disp)
+            all_dispositions.append(disp)
+            d_type = disp["disposition"]
+            disposition_counts[d_type] = disposition_counts.get(d_type, 0) + 1
+            if d_type == "OPEN_USER_PARAMETER":
+                open_user_params.append(k)
+
+        if open_user_params:
             parameter_gaps.append({
                 "identifier": ident,
                 "cherriName": ", ".join(cherri_names) if cherri_names else "",
-                "unmodeledParameterKeys": sorted(unmodeled_keys),
+                "unmodeledParameterKeys": sorted(open_user_params),
                 "appleKeyCount": len(apple_keys),
-                "cherriKeyCount": len(cherri_param_keys)
+                "cherriKeyCount": len(cherri_declared_keys)
             })
 
     summary = {
@@ -211,7 +255,10 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
             }
         },
         "parameterSurface": {
-            "actionsWithUnmodeledKeys": len(parameter_gaps)
+            "actionsWithUnmodeledKeys": len(parameter_gaps),
+            "actionsWithRawUnmodeledKeys": len(raw_parameter_gaps),
+            "totalEvaluatedParameters": len(all_dispositions),
+            "byDisposition": disposition_counts
         }
     }
 
@@ -219,6 +266,8 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
     missing_apple_intents_list = sorted(apple_intents_missing)
     missing_apple_runnable_list = sorted(apple_runnable_missing)
 
+    if return_dispositions:
+        return summary, missing_builtins_list, missing_apple_intents_list, missing_apple_runnable_list, parameter_gaps, all_dispositions
     return summary, missing_builtins_list, missing_apple_intents_list, missing_apple_runnable_list, parameter_gaps
 
 
@@ -302,14 +351,15 @@ def main():
                 args.parameter_encodings = str(pe_raw)
                 break
 
-    summary, missing_defs, missing_intents, missing_runnable, gaps = run_comparison(
+    summary, missing_defs, missing_intents, missing_runnable, gaps, dispositions = run_comparison(
         cherri_actions_path=args.cherri_actions,
         builtin_defs_path=builtin_defs,
         dyld_ids_path=dyld_ids,
         app_intents_path=app_intents,
         toolkit_registry_path=toolkit_registry,
         toolkit_summary_path=args.toolkit_summary,
-        parameter_encodings_path=args.parameter_encodings
+        parameter_encodings_path=args.parameter_encodings,
+        return_dispositions=True
     )
 
     (out_dir / "comparison-summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
@@ -317,6 +367,7 @@ def main():
     (out_dir / "missing-apple-app-intents.json").write_text(json.dumps(missing_intents, indent=2), encoding="utf-8")
     (out_dir / "missing-toolkit-apple-actions.json").write_text(json.dumps(missing_runnable, indent=2), encoding="utf-8")
     (out_dir / "parameter-surface-gaps.json").write_text(json.dumps(gaps, indent=2), encoding="utf-8")
+    (out_dir / "parameter-dispositions.json").write_text(json.dumps(dispositions, indent=2), encoding="utf-8")
 
     print("=== Cherri vs Apple Shortcuts Runtime Comparison ===")
     print(f"Cherri catalog: {summary['cherriActions']} actions ({summary['cherriUniqueIdentifiers']} unique identifiers)")

@@ -2,8 +2,8 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `facab8738e6bb75b7b591e2b17dc1144b24725a07b78929d8b23773fff2f3c87`  
-**Total Actions:** 482  
+**Schema Fingerprint:** `c5b92badb7162dbcd4f6fd777d2d34fe4125641803c3eeffbe01a47cd76d4259`  
+**Total Actions:** 504  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
 
@@ -11,15 +11,16 @@ This documentation is generated automatically from the canonical Cherri v2 Actio
 
 - [Basic](#module-basic) (2 actions)
 - [Builtin](#module-builtin) (2 actions)
-- [Calendar](#module-calendar) (9 actions)
+- [Calendar](#module-calendar) (10 actions)
 - [Contacts](#module-contacts) (4 actions)
 - [Controlflow](#module-controlflow) (7 actions)
 - [Device](#module-device) (9 actions)
-- [Documents](#module-documents) (5 actions)
-- [General](#module-general) (422 actions)
+- [Documents](#module-documents) (6 actions)
+- [General](#module-general) (439 actions)
 - [Intelligence](#module-intelligence) (1 actions)
 - [Mac](#module-mac) (1 actions)
 - [Math](#module-math) (3 actions)
+- [Media](#module-media) (3 actions)
 - [Pdf](#module-pdf) (1 actions)
 - [Settings](#module-settings) (5 actions)
 - [Shortcuts](#module-shortcuts) (4 actions)
@@ -178,6 +179,25 @@ editEvent(event: AnyContent, detail: Text, newValue: AnyContent)
 | `event` | `AnyContent` | Yes | - | `WFInput` | - |
 | `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Start Date, End Date, Is All Day, Location, Duration, My Status, Attendees, URL, Title, Notes, Attachments |
 | `newValue` | `AnyContent` | Yes | - | `WFCalendarEventContentItemStartDate` | - |
+
+---
+
+### `editReminder`
+
+**Title:** Edit Reminder  
+**Apple Identifier:** `is.workflow.actions.setters.reminders`  
+
+Edit a detail of a reminder. Provide a reminder, a detail to modify, and a new value for that detail.
+
+```cherri
+editReminder(reminder: AnyContent, detail: Text, newValue: AnyContent)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `reminder` | `AnyContent` | Yes | - | `WFInput` | - |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Title, List, Due Date, Priority, Is Completed, Notes, URL, Is Flagged, Images, Parent Reminder, Tags, When Messaging |
+| `newValue` | `AnyContent` | Yes | - | `WFReminderContentItemTitle` | - |
 
 ---
 
@@ -676,6 +696,21 @@ playAudiobook(target: AnyContent)
 | `target` | `AnyContent` | Yes | - | `target` | - |
 
 **App Intent:** `PlayAudiobookIntent` (Bundle: `com.apple.iBooksX`)
+
+---
+
+### `startNotesAudioRecording`
+
+**Title:** Start Audio Recording  
+**Apple Identifier:** `com.apple.Notes.StartRecordingLinkAction`  
+
+Opens the audio details screen to record audio in Notes.
+
+```cherri
+startNotesAudioRecording()
+```
+
+**App Intent:** `StartRecordingLinkAction` (Bundle: `com.apple.Notes`)
 
 ---
 
@@ -1998,6 +2033,27 @@ fileSize(file: Text, format: Text)
 
 ---
 
+### `filterArticles`
+
+**Title:** Filter Articles  
+**Apple Identifier:** `is.workflow.actions.filter.articles`  
+**Returns:** `List<AnyContent>`  
+
+Filter articles with various filters.
+
+```cherri
+filterArticles(articles: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `articles` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
 ### `filterContacts`
 
 **Title:** Filter Contacts  
@@ -2011,6 +2067,48 @@ filterContacts(contacts: AnyContent, sortBy?: Text, sortOrder?: Text = "A to Z",
 | `contacts` | `AnyContent` | Yes | - | `WFContentItemInputParameter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random |
 | `sortOrder` | `Text` | No | `A to Z` | `WFContentItemSortOrder` | A to Z, Z to A |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
+### `filterDisplays`
+
+**Title:** Filter Displays  
+**Apple Identifier:** `is.workflow.actions.filter.displays`  
+**Returns:** `List<AnyContent>`  
+
+Filter connected displays.
+
+```cherri
+filterDisplays(displays: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `displays` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
+### `filterEventAttendees`
+
+**Title:** Filter Event Attendees  
+**Apple Identifier:** `is.workflow.actions.filter.eventattendees`  
+**Returns:** `List<AnyContent>`  
+
+Filter event attendees with various filters.
+
+```cherri
+filterEventAttendees(attendees: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `attendees` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
 
 ---
@@ -2030,6 +2128,69 @@ filterEvents(events: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `events` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
+### `filterImages`
+
+**Title:** Filter Images  
+**Apple Identifier:** `is.workflow.actions.filter.images`  
+**Returns:** `List<AnyContent>`  
+
+Filter images with various filters.
+
+```cherri
+filterImages(images: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `images` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
+### `filterLocations`
+
+**Title:** Filter Locations  
+**Apple Identifier:** `is.workflow.actions.filter.locations`  
+**Returns:** `List<AnyContent>`  
+
+Filter locations with various filters.
+
+```cherri
+filterLocations(locations: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `locations` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
+### `filterMusic`
+
+**Title:** Filter Music  
+**Apple Identifier:** `is.workflow.actions.filter.music`  
+**Returns:** `List<AnyContent>`  
+
+Filter music with various filters.
+
+```cherri
+filterMusic(music: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `music` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2072,6 +2233,27 @@ filterReminders(reminders: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `reminders` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
+### `filterVPNs`
+
+**Title:** Filter VPNs  
+**Apple Identifier:** `is.workflow.actions.filter.vpns`  
+**Returns:** `List<AnyContent>`  
+
+Filter VPN configurations.
+
+```cherri
+filterVPNs(vpns: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `vpns` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2843,6 +3025,24 @@ getEmojiName(emoji: Text) -> Text
 
 ---
 
+### `getEpisodesForPodcast`
+
+**Title:** Get Episodes of Podcast  
+**Apple Identifier:** `is.workflow.actions.getepisodesforpodcast`  
+**Returns:** `List<AnyContent>`  
+
+Get episodes of a podcast show.
+
+```cherri
+getEpisodesForPodcast(podcast: AnyContent) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `podcast` | `AnyContent` | Yes | - | `WFInput` | - |
+
+---
+
 ### `getEthernetDetail`
 
 **Title:** Get Ethernet Detail  
@@ -2857,6 +3057,24 @@ getEthernetDetail(detail: Text)
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `detail` | `Text` | Yes | - | `WFEthernetDetail` | Network Name, BSSID, IPv4 Address, IPv6 Address, Subnet Mask, Router |
+
+---
+
+### `getEventAttendeeDetail`
+
+**Title:** Get Event Attendee Detail  
+**Apple Identifier:** `is.workflow.actions.properties.eventattendees`  
+
+Get a detail about an event attendee.
+
+```cherri
+getEventAttendeeDetail(attendee: AnyContent, detail: Text)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `attendee` | `AnyContent` | Yes | - | `WFInput` | - |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Email Address, Is Me, Name, Role, Status, Type |
 
 ---
 
@@ -3500,6 +3718,38 @@ getParentDirectory(input: AnyContent) -> File
 
 ---
 
+### `getParkedCarDetail`
+
+**Title:** Get Details of Parked Car  
+**Apple Identifier:** `is.workflow.actions.properties.parkedcar`  
+
+Get a detail about a parked car.
+
+```cherri
+getParkedCarDetail(car: AnyContent, detail: Text)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `car` | `AnyContent` | Yes | - | `WFInput` | - |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Date, Location, Name, Notes, Photo, Was Location Set by User |
+
+---
+
+### `getParkedCarLocation`
+
+**Title:** Get Parked Car Location  
+**Apple Identifier:** `is.workflow.actions.getparkedcarlocation`  
+**Returns:** `AnyContent`  
+
+Get the location of your parked car.
+
+```cherri
+getParkedCarLocation() -> AnyContent
+```
+
+---
+
 ### `getPhoneNumbers`
 
 **Title:** Get Phone Numbers  
@@ -3548,6 +3798,24 @@ getPodcastDetail(podcast: AnyContent, detail: Text)
 |-----------|------|----------|---------|----------|---------|
 | `podcast` | `AnyContent` | Yes | - | `WFInput` | - |
 | `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Feed URL, Genre, Episode Count, Artist, Store ID, Store URL, Artwork, Artwork URL, Name |
+
+---
+
+### `getPodcastEpisodeDetail`
+
+**Title:** Get Details of Podcast Episode  
+**Apple Identifier:** `is.workflow.actions.properties.podcast`  
+
+Get a detail about a podcast episode.
+
+```cherri
+getPodcastEpisodeDetail(episode: AnyContent, detail: Text)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `episode` | `AnyContent` | Yes | - | `WFInput` | - |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Artwork, Artwork URL, Author, Description, Duration, Genres, Name, Release Date, Store ID, Store URL, Title |
 
 ---
 
@@ -3614,6 +3882,24 @@ getRandomItem(list: AnyContent) -> AnyContent
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `list` | `AnyContent` | Yes | - | `WFInput` | - |
+
+---
+
+### `getReminderDetail`
+
+**Title:** Get Reminder Detail  
+**Apple Identifier:** `is.workflow.actions.properties.reminders`  
+
+Get a detail of a reminder.
+
+```cherri
+getReminderDetail(reminder: AnyContent, detail: Text)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `reminder` | `AnyContent` | Yes | - | `WFInput` | - |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Title, List, Due Date, Priority, Is Completed, Completion Date, Has Alarms, Notes, URL, Creation Date, Last Modified Date, Name |
 
 ---
 
@@ -3928,6 +4214,20 @@ getUpcomingReminders(list: AnyContent, count?: Number = "1") -> List<AnyContent>
 
 ---
 
+### `getVPN`
+
+**Title:** Get Current VPN  
+**Apple Identifier:** `is.workflow.actions.vpn.get`  
+**Returns:** `AnyContent`  
+
+Get the currently active VPN.
+
+```cherri
+getVPN() -> AnyContent
+```
+
+---
+
 ### `getValue`
 
 **Title:** Get Value from Dictionary  
@@ -4101,6 +4401,24 @@ hash(input: AnyContent, type?: Text = "MD5") -> Text
 |-----------|------|----------|---------|----------|---------|
 | `input` | `AnyContent` | Yes | - | `WFInput` | - |
 | `type` | `Text` | No | `MD5` | `WFHashType` | MD5, SHA1, SHA256, SHA512 |
+
+---
+
+### `intercom`
+
+**Title:** Intercom  
+**Apple Identifier:** `is.workflow.actions.intercom`  
+
+Broadcast a message to HomePod or other Home devices.
+
+```cherri
+intercom(message: Text, home?: AnyContent)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `message` | `Text` | Yes | - | `WFInput` | - |
+| `home` | `AnyContent` | No | - | `WFHome` | - |
 
 ---
 
@@ -6408,6 +6726,26 @@ setOrientationLock(status: Bool)
 
 ---
 
+### `setParkedCar`
+
+**Title:** Set Parked Car  
+**Apple Identifier:** `is.workflow.actions.setparkedcar`  
+**Returns:** `AnyContent`  
+
+Set the location and notes for your parked car.
+
+```cherri
+setParkedCar(location: AnyContent, notes?: Text, photo?: AnyContent) -> AnyContent
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `location` | `AnyContent` | Yes | - | `WFLocation` | - |
+| `notes` | `Text` | No | - | `WFSetParkedCarNotes` | - |
+| `photo` | `AnyContent` | No | - | `WFSetParkedCarPhoto` | - |
+
+---
+
 ### `setPlaybackDestination`
 
 **Title:** Set Playback Destination  
@@ -6557,6 +6895,25 @@ setTrueTone(status: Bool)
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `status` | `Bool` | Yes | - | `OnValue` | - |
+
+---
+
+### `setVPN`
+
+**Title:** Set VPN  
+**Apple Identifier:** `is.workflow.actions.vpn.set`  
+
+Connect, disconnect, or toggle a VPN configuration.
+
+```cherri
+setVPN(operation: Text, vpn?: AnyContent, onDemand?: Bool)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `operation` | `Text` | Yes | - | `WFVPNOperation` | Connect, Disconnect, Set On Demand, Toggle, Toggle On Demand |
+| `vpn` | `AnyContent` | No | - | `WFVPN` | - |
+| `onDemand` | `Bool` | No | - | `WFOnDemandValue` | - |
 
 ---
 
@@ -7774,6 +8131,62 @@ measurement(magnitude: Text, unitType: Text, unit: Text)
 | `magnitude` | `Text` | Yes | - | `` | - |
 | `unitType` | `Text` | Yes | - | `WFMeasurementUnitType` | Acceleration, Angle, Area, Concentration Mass, Dispersion, Duration, Electric Charge, Electric Current, Electric Potential Difference, V Electric Resistance, Energy, Frequency, Fuel Efficiency, Illuminance, Information Storage, Length, Mass, Power, Pressure, Speed, Temperature, Volume |
 | `unit` | `Text` | Yes | - | `` | - |
+
+---
+
+## Module: Media
+
+### `playVoiceMemo`
+
+**Title:** Play Recording  
+**Apple Identifier:** `com.apple.VoiceMemos.PlaybackVoiceMemoIntent`  
+
+Plays a recording in Voice Memos.
+
+```cherri
+playVoiceMemo(playbackType: Text, recording?: AnyContent)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `playbackType` | `Text` | No | - | `playbackType` | - |
+| `recording` | `AnyContent` | No | - | `entity` | - |
+
+**App Intent:** `PlaybackVoiceMemoIntent` (Bundle: `com.apple.VoiceMemos`)
+
+---
+
+### `recordVoiceMemo`
+
+**Title:** Create Recording  
+**Apple Identifier:** `com.apple.VoiceMemos.RecordVoiceMemoIntent`  
+
+Creates a new recording in Voice Memos.
+
+```cherri
+recordVoiceMemo(name: Text)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `name` | `Text` | No | - | `name` | - |
+
+**App Intent:** `RecordVoiceMemoIntent` (Bundle: `com.apple.VoiceMemos`)
+
+---
+
+### `stopVoiceMemoRecording`
+
+**Title:** Stop Recording  
+**Apple Identifier:** `com.apple.VoiceMemos.StopRecording`  
+
+Stops the current recording in Voice Memos.
+
+```cherri
+stopVoiceMemoRecording()
+```
+
+**App Intent:** `StopRecording` (Bundle: `com.apple.VoiceMemos`)
 
 ---
 

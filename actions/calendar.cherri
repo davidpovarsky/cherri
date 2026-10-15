@@ -300,3 +300,56 @@ action 'addnewreminder' addReminder(
     text ?notes: 'WFCalendarItemNotes'
 )
 
+enum reminderDetail {
+    'Title',
+    'List',
+    'Due Date',
+    'Priority',
+    'Is Completed',
+    'Completion Date',
+    'Has Alarms',
+    'Notes',
+    'URL',
+    'Creation Date',
+    'Last Modified Date',
+    'Name',
+}
+
+enum editReminderDetail {
+    'Title',
+    'List',
+    'Due Date',
+    'Priority',
+    'Is Completed',
+    'Notes',
+    'URL',
+    'Is Flagged',
+    'Images',
+    'Parent Reminder',
+    'Tags',
+    'When Messaging',
+}
+
+// [Doc]: [Reminders] Get Reminder Detail: Get a detail of a reminder.
+action 'properties.reminders' getReminderDetail(variable reminder: 'WFInput', reminderDetail detail: 'WFContentItemPropertyName')
+
+// [Doc]: [Calendars] Filter Event Attendees: Filter event attendees with various filters.
+action 'filter.eventattendees' filterEventAttendees(
+    variable ?attendees: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+enum eventAttendeeDetail {
+    'Email Address',
+    'Is Me',
+    'Name',
+    'Role',
+    'Status',
+    'Type',
+}
+
+// [Doc]: [Calendars] Get Event Attendee Detail: Get a detail about an event attendee.
+action 'properties.eventattendees' getEventAttendeeDetail(variable attendee: 'WFInput', eventAttendeeDetail detail: 'WFContentItemPropertyName')
+

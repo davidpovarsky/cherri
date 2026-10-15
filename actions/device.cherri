@@ -129,3 +129,6 @@ action dismissSiri()
 
 // [Doc]: [System] Return to Home Screen: Returns to the device home screen.
 action !mac returnToHomescreen()
+
+// [Doc]: [Intercom] Intercom: Broadcast a message to HomePod or other Home devices.
+action 'intercom' intercom(text message: 'WFInput', variable ?home: 'WFHome')

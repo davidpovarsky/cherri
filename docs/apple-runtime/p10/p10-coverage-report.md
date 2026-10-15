@@ -1,38 +1,38 @@
 # Cherri v2 P10 - Complete Apple Shortcuts Action Coverage Audit
 
-> **Generated:** 2026-10-15T10:15:02.586998+00:00 | **Host OS:** macOS 27.0.1 (26A434)
+> **Generated:** 2026-10-15T15:34:33.514458+00:00 | **Host OS:** macOS 27.0.1 (26A434)
 
 ## 1. Executive Coverage Summary
 
 | Metric | Count | Percentage | Notes |
 | --- | --- | --- | --- |
 | **Total Raw Discovered Records** | 2396 | 100% | Union of builtins, App Intents, and ToolKit |
-| **Eligible User-Facing Actions** | 1638 | 68.4% | Excludes internal, config-only, non-runnable, third-party |
-| **Covered & Verified** | 310 | 18.9% of eligible | Mapped in Cherri with verified parameter contracts |
-| **Missing Parameter Repairs** | 57 | 3.5% | Covered actions needing parameter additions |
-| **Missing Built-in Actions** | 134 | 8.2% | Native built-ins needing Cherri definitions |
-| **New in macOS 27** | 436 | 26.6% | Introduced in macOS 27 runtime |
-| **Missing App Intents** | 701 | 42.8% | Apple first-party App Intent Link actions |
-| **Excluded / Internal / Config** | 758 | 31.6% | Correctly excluded from denominator |
+| **Eligible User-Facing Actions** | 1549 | 64.6% | Excludes internal, config-only, non-runnable, third-party |
+| **Covered & Verified** | 386 | 24.9% of eligible | Mapped in Cherri with verified parameter contracts |
+| **Missing Parameter Repairs** | 3 | 0.2% | Covered actions needing parameter additions |
+| **Missing Built-in Actions** | 121 | 7.8% | Native built-ins needing Cherri definitions |
+| **New in macOS 27 (Version Attribute)** | 464 | 19.4% of total | Introduced in macOS 27 runtime across all categories |
+| **Missing App Intents** | 1039 | 67.1% | Apple first-party App Intent Link actions |
+| **Excluded / Internal / Config** | 847 | 35.4% | Correctly excluded from denominator |
 
 ## 2. Taxonomy Status Breakdown
 
 | Status | Count | Description |
 | --- | --- | --- |
-| `COVERED_VERIFIED` | 310 | |
+| `COVERED_VERIFIED` | 386 | |
 | `COVERED_PARTIAL` | 0 | |
-| `NEW_IN_27` | 436 | |
-| `NEW_NATIVE_ACTION` | 134 | |
-| `MISSING_PARAM` | 57 | |
+| `NEW_IN_27` | 0 | |
+| `NEW_NATIVE_ACTION` | 121 | |
+| `MISSING_PARAM` | 3 | |
 | `MISSING_TYPE` | 0 | |
 | `MISSING_VARIANT` | 0 | |
-| `MISSING_APP_INTENT_DESCRIPTOR` | 701 | |
+| `MISSING_APP_INTENT_DESCRIPTOR` | 1039 | |
 | `MISSING_SERIALIZER` | 0 | |
 | `NEEDS_TARGET_PROBE` | 0 | |
 | `DEFERRED_NO_EVIDENCE` | 64 | |
 | `EXCLUDED_HIDDEN_INTERNAL` | 131 | |
 | `EXCLUDED_CONFIG_ONLY` | 29 | |
-| `EXCLUDED_NONRUNNABLE` | 507 | |
+| `EXCLUDED_NONRUNNABLE` | 596 | |
 | `EXCLUDED_THIRD_PARTY_DEPENDENCY` | 27 | |
 | `EXCLUDED_UNSUPPORTED_TARGET` | 0 | |
 | `BLOCKED_EXTERNAL` | 0 | |
@@ -515,85 +515,6 @@
 
 | Identifier | Cherri Name | Missing Keys | Non-User Evaluated |
 | --- | --- | --- | --- |
-| `com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundIntent` | `setBackgroundSound` | *None (all metadata)* | `ShowWhenRun` |
-| `com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundsVolumeIntent` | `setBackgroundSoundsVolume` | *None (all metadata)* | `ShowWhenRun` |
-| `com.apple.facetime.facetime` | `facetimeCall` | *None (all metadata)* | `IntentAppDefinition` |
-| `com.apple.mobilephone.call` | `call` | *None (all metadata)* | `IntentAppDefinition` |
-| `is.workflow.actions.addnewcontact` | `newContact` | `WFContactPhoto` | *None* |
-| `is.workflow.actions.addnewevent` | `addEvent` | `WFAlertCustomTime`, `WFAlertTime`, `WFCalendarDescriptor`, `WFCalendarItemNotes` | `ShowWhenRun` |
-| `is.workflow.actions.addnewreminder` | `addReminder` | `WFAlertCondition`, `WFAlertCustomTime`, `WFAlertLocation`, `WFAlertLocationRadius`, `WFAlertPerson`, `WFCalendarDescriptor`, `WFCalendarItemNotes`, `WFFlag`, `WFImages`, `WFParentTask`, `WFPriority`, `WFTags`, `WFURL`, `WFUrgent` | *None* |
-| `is.workflow.actions.airplanemode.set` | `setAirplaneMode, toggleAirplaneMode` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.appearance` | `darkMode, lightMode, toggleAppearance` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.ask` | `prompt` | `WFAskActionDefaultAnswerDate`, `WFAskActionDefaultAnswerDateAndTime`, `WFAskActionDefaultAnswerTime`, `WFAskActionDefaultAnswerURL`, `urlAnswer` | `ShowWhenRun` |
-| `is.workflow.actions.bluetooth.set` | `setBluetooth, toggleBluetooth` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.cellulardata.set` | `setCellularData, toggleCellularData` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.correctspelling` | `correctSpelling` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.createplaylist` | `createPlaylist` | `WFPlaylistDescription`, `WFPlaylistItems` | *None* |
-| `is.workflow.actions.documentpicker.open` | `getFile, getFileFromFolder` | `WFGetFolderContents` | *None* |
-| `is.workflow.actions.downloadurl` | `downloadURL, fileRequest, formRequest, jsonRequest` | *None (all metadata)* | `ShowHeaders` |
-| `is.workflow.actions.encodemedia` | `encodeAudio, encodeVideo, setMetadata, stripMediaMetadata` | `WFMediaSpeed` | *None* |
-| `is.workflow.actions.file.append` | `appendToFile, prependToFile` | `WFAppendOnNewLine`, `WFFile` | *None* |
-| `is.workflow.actions.filter.apps` | `getApps` | `WFCompoundType`, `WFContentItemFilter`, `WFContentItemInputParameter`, `WFContentItemLimitEnabled`, `WFContentItemLimitNumber`, `WFContentItemSortOrder`, `WFContentItemSortProperty` | *None* |
-| `is.workflow.actions.filter.contacts` | `filterContacts` | `WFCompoundType`, `WFContentItemFilter`, `WFContentItemLimitEnabled` | *None* |
-| `is.workflow.actions.filter.files` | `filterFiles` | `WFCompoundType`, `WFContentItemFilter` | *None* |
-| `is.workflow.actions.filter.windows` | `getWindows` | `WFCompoundType`, `WFContentItemFilter`, `WFContentItemInputParameter` | *None* |
-| `is.workflow.actions.flashlight` | `flashlightOff, flashlightOn, toggleFlashlight` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.format.date` | `formatDate, formatTime, formatTimestamp` | `WFISO8601IncludeTime`, `WFLocale`, `WFRelativeDateFormatStyle` | *None* |
-| `is.workflow.actions.generatebarcode` | `makeQRCode` | `WFQRRounded` | *None* |
-| `is.workflow.actions.getcurrentlocation` | `getCurrentLocation` | `Accuracy` | *None* |
-| `is.workflow.actions.getcurrentsong` | `getCurrentSong` | `Subject` | *None* |
-| `is.workflow.actions.getdirections` | `getDirections` | `WFGetDirectionsActionApp`, `WFGetDirectionsActionMode`, `WFLocation` | *None* |
-| `is.workflow.actions.getdistance` | `getDistance` | `Accuracy`, `WFAvoidHighways`, `WFAvoidTolls`, `WFDistanceUnit`, `WFGetDirectionsCustomLocation` | *None* |
-| `is.workflow.actions.getitemname` | `getName` | `GetWebPageTitle` | *None* |
-| `is.workflow.actions.getmyworkflows` | `getShortcuts` | `Folder` | *None* |
-| `is.workflow.actions.gettraveltime` | `getTravelTime` | `WFAvoidHighways`, `WFAvoidTolls`, `WFGetDirectionsActionMode` | *None* |
-| `is.workflow.actions.getupcomingevents` | `getUpcomingEvents` | `WFGetUpcomingItemCalendar` | *None* |
-| `is.workflow.actions.getwifi` | `getCellularDetail, getEthernetDetail, getWifiDetail` | `WFEthernetDetail` | *None* |
-| `is.workflow.actions.giphy` | `getGifs, searchGiphy` | `WFGiphySelectMultiple` | *None* |
-| `is.workflow.actions.lowpowermode.set` | `setLowPowerMode, toggleLowPowerMode` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.makeimagefrompdfpage` | `makeImageFromPDFPage` | `WFMakeImageFromPDFPageImageFormat` | *None* |
-| `is.workflow.actions.makepdf` | `makePDF` | `WFPDFIncludedPages`, `WFPDFPageRangeEnd`, `WFPDFPageRangeStart`, `WFPDFSinglePage` | *None* |
-| `is.workflow.actions.makespokenaudiofromtext` | `makeSpokenAudio` | `WFSpeakTextLanguage`, `WFSpeakTextVoice` | *None* |
-| `is.workflow.actions.movewindow` | `moveWindow` | `Display`, `WFXCoordinate`, `WFYCoordinate` | *None* |
-| `is.workflow.actions.nightshift.set` | `setNightShift, toggleNightShift` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.openapp` | `openApp` | `WFAppName`, `WFWindowingFormat` | *None* |
-| `is.workflow.actions.openin` | `openFile` | `WFAppName`, `WFSelectedApp` | *None* |
-| `is.workflow.actions.orientationlock.set` | `setOrientationLock, toggleOrientationLock` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.pausemusic` | `pause, play, togglePlayPause` | `WFMediaRoute` | *None* |
-| `is.workflow.actions.personalhotspot.set` | `setHotspot, toggleHotspot` | `OnValue` | `ShowWhenRun` |
-| `is.workflow.actions.playpodcast` | `playPodcast` | `WFPodcastPlaybackOrder` | *None* |
-| `is.workflow.actions.previewdocument` | `quicklook` | `WFQuickLookActionFullScreen` | *None* |
-| `is.workflow.actions.recordaudio` | `recordAudio` | `WFRecordingEnd`, `WFRecordingTimeInterval` | *None* |
-| `is.workflow.actions.resizewindow` | `resizeWindow` | `WFBringToFront`, `WFHeight`, `WFWidth` | *None* |
-| `is.workflow.actions.round` | `ceil, floor, round` | `TenToThePowerOf` | *None* |
-| `is.workflow.actions.runshellscript` | `runShellScript` | `RunAsRoot` | *None* |
-| `is.workflow.actions.runsshscript` | `runSSHScript` | `WFSSHKey` | *None* |
-| `is.workflow.actions.searchappstore` | `searchAppStore` | `WFAttribute`, `WFCountry`, `WFEntity`, `WFItemLimit` | *None* |
-| `is.workflow.actions.searchitunes` | `searchiTunes` | `WFAttribute`, `WFCountry`, `WFEntity`, `WFMediaType` | *None* |
-| `is.workflow.actions.searchmaps` | `openInMaps` | `WFSearchMapsActionApp` | *None* |
-| `is.workflow.actions.searchpodcasts` | `searchPodcasts` | `WFAttribute`, `WFCountry`, `WFEntity`, `WFItemLimit` | *None* |
-| `is.workflow.actions.seek` | `seek` | `WFMediaRoute` | *None* |
-| `is.workflow.actions.selectphoto` | `selectPhotos` | `WFPhotoPickerTypes` | *None* |
-| `is.workflow.actions.sendemail` | `sendEmail` | `WFEmailAccountActionSelectedAccount`, `WFSendEmailActionBccRecipients`, `WFSendEmailActionCcRecipients` | *None* |
-| `is.workflow.actions.sendmessage` | `sendMessage` | `WFSendMessagePrefix` | `IntentAppDefinition` |
-| `is.workflow.actions.setbrightness` | `setBrightness` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.setters.calendarevents` | `editEvent` | `Mode`, `RemoveSpecifiedValue`, `ValueLabel`, `WFCalendarEventContentItemAttachments`, `WFCalendarEventContentItemAttendees`, `WFCalendarEventContentItemDuration`, `WFCalendarEventContentItemEndDate`, `WFCalendarEventContentItemIsAllDay`, `WFCalendarEventContentItemLocation`, `WFCalendarEventContentItemMyStatus`, `WFCalendarEventContentItemNotes`, `WFCalendarEventContentItemTitle`, `WFCalendarEventContentItemURL` | *None* |
-| `is.workflow.actions.setvolume` | `setVolume` | `WFVolumeSetting` | *None* |
-| `is.workflow.actions.skipback` | `skipBack` | `WFMediaRoute` | *None* |
-| `is.workflow.actions.skipforward` | `skipFwd` | `WFMediaRoute` | *None* |
-| `is.workflow.actions.speaktext` | `speak` | `WFSpeakTextPitch`, `WFSpeakTextRate`, `WFSpeakTextVoice` | *None* |
-| `is.workflow.actions.stagemanager.set` | `setStageManager, toggleStageManager` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.statistics` | `statistic` | `Input` | *None* |
-| `is.workflow.actions.takephoto` | `takePhoto` | `WFCameraCaptureDevice` | *None* |
-| `is.workflow.actions.takescreenshot` | `takeInteractiveScreenshot, takeScreenshot` | *None (all metadata)* | `WFTakeScreenshotIgnoreContextualAssistanceLayers` |
-| `is.workflow.actions.text.changecase` | `alternatingCase, capitalize, capitalizeAll, lowercase, titleCase, uppercase` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.text.combine` | `joinText` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.text.match` | `containsText, matchText` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.text.match.getgroup` | `getMatchGroup, getMatchGroups` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.text.split` | `splitText` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.timer.start` | `startTimer` | *None (all metadata)* | `IntentAppDefinition` |
-| `is.workflow.actions.truetone.set` | `setTrueTone, toggleTrueTone` | *None (all metadata)* | `ShowWhenRun` |
-| `is.workflow.actions.vibrate` | `vibrate` | `WFVibrateHapticType` | *None* |
-| `is.workflow.actions.wallpaper.set` | `setWallpaper` | `WFSelectedPoster`, `WFWallpaperLegibilityBlur`, `WFWallpaperLocation`, `WFWallpaperPerspectiveZoom`, `WFWallpaperShowPreview`, `WFWallpaperSmartCrop` | *None* |
-| `is.workflow.actions.weather.forecast` | `getWeatherForecast` | `WFWeatherCustomLocation` | *None* |
-| `is.workflow.actions.wifi.set` | `setWifi, toggleWifi` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.filter.windows` | `getWindows` | `WFContentItemInputParameter` | *None* |
+| `is.workflow.actions.setparkedcar` | `setParkedCar` | `WFImage` | *None* |
+| `is.workflow.actions.setters.reminders` | `editReminder` | `WFReminderContentItemSubtasks` | *None* |

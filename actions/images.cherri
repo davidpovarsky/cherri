@@ -199,3 +199,11 @@ action makeVideoFromGIF(variable gif: 'WFInputGIF', number ?loops: 'WFMakeVideoF
 
 // [Doc]: [GIFs] Get Image Frames: Get frames from a GIF.
 action 'getframesfromimage' getImageFrames(variable image: 'WFImage')
+
+// [Doc]: [Image Editing] Filter Images: Filter images with various filters.
+action 'filter.images' filterImages(
+    variable ?images: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array

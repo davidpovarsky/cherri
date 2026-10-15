@@ -530,6 +530,58 @@ func TestForkActionRoundTrips(t *testing.T) {
 			})
 	})
 
+	t.Run("editReminder/title", func(t *testing.T) {
+		r.runForkActionRoundTrip("edit-reminder",
+			"#include 'actions/calendar'\n\n@rem = \"My Task\"\n@newTitle = \"Updated Task\"\neditReminder(@rem, \"Title\", @newTitle)\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "editReminder(") {
+					t.Errorf("decompiled source lost editReminder call:\n%s", decompiled)
+				}
+			})
+	})
+
+	t.Run("getReminderDetail/due-date", func(t *testing.T) {
+		r.runForkActionRoundTrip("reminder-detail",
+			"#include 'actions/calendar'\n\n@rem = \"Task\"\n@due = getReminderDetail(@rem, \"Due Date\")\n",
+			func(decompiled string) {
+				if !strings.Contains(decompiled, "getReminderDetail(") {
+					t.Errorf("decompiled source lost getReminderDetail call:\n%s", decompiled)
+				}
+			})
+	})
+
+	t.Run("showQuickNote/no-params", func(t *testing.T) {
+		r.runForkActionRoundTrip("quicknote", "#include 'actions/documents'\n\nshowQuickNote()\n", nil)
+	})
+
+	t.Run("startNotesAudioRecording/no-params", func(t *testing.T) {
+		r.runForkActionRoundTrip("notes-audio-rec", "startNotesAudioRecording()\n", nil)
+	})
+
+	t.Run("recordVoiceMemo/name", func(t *testing.T) {
+		r.runForkActionRoundTrip("voice-memo-rec", "recordVoiceMemo(\"Interview\")\n", nil)
+	})
+
+	t.Run("stopVoiceMemoRecording/no-params", func(t *testing.T) {
+		r.runForkActionRoundTrip("voice-memo-stop", "stopVoiceMemoRecording()\n", nil)
+	})
+
+	t.Run("playVoiceMemo/playback-type", func(t *testing.T) {
+		r.runForkActionRoundTrip("voice-memo-play", "playVoiceMemo(\"mostRecent\")\n", nil)
+	})
+
+	t.Run("getParkedCarLocation/no-params", func(t *testing.T) {
+		r.runForkActionRoundTrip("parked-car-loc", "#include 'actions/location'\n\n@loc = getParkedCarLocation()\n", nil)
+	})
+
+	t.Run("getVPN/no-params", func(t *testing.T) {
+		r.runForkActionRoundTrip("vpn-get", "#include 'actions/network'\n\n@vpn = getVPN()\n", nil)
+	})
+
+	t.Run("getEpisodesForPodcast/podcast-input", func(t *testing.T) {
+		r.runForkActionRoundTrip("episodes-for-podcast", "#include 'actions/media'\n\n@pod = \"The Daily\"\n@episodes = getEpisodesForPodcast(@pod)\n", nil)
+	})
+
 	t.Run("getVariable/round-trip", func(t *testing.T) {
 		r.runForkActionRoundTrip("get-variable",
 			"@myVar = \"initial\"\n@val = getVariable(@myVar)\n",
