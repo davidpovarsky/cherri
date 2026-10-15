@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.2.0 | **Baseline verified:** 2026-10-15 (Asia/Jerusalem) | **Status:** 71/94 LOCAL ACCEPTANCE PASSED (0 failed; 22 simulator/runtime obligations proved via CI runs 38599962168 & 38587433729; AI01 BLOCKED_EXTERNAL); P0-P9 COMPLETED_VERIFIED ON BRANCH HEAD agent/cherri-v2-product-completion.
+> **Plan version:** 2.3.0 | **Baseline verified:** 2026-10-15 (Asia/Jerusalem) | **Status:** P0-P9 COMPLETED_VERIFIED; 71/94 LOCAL ACCEPTANCE PASSED (0 failed; 22 simulator/runtime obligations proved via CI; AI01 BLOCKED_EXTERNAL); Live Cherri Cloud Relay & iOS 27 Simulator Runtime Assertion PROVEN (Runs 38481419887 & 38481419846) on agent/cherri-v2-product-completion.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -327,7 +327,19 @@ Do not merge these routes or turn the `.json` filename trick into a fake parsing
   - **Schema Fingerprint Mutation Resistance:** Updated `Registry.computeFingerprint` in `internal/language/schema/schema.go` to deterministically hash `MacOnly`, `NonMacOnly`, `MinVersion`, `MaxVersion`, `Variant`, `OmissionPolicy`, and canonically sorted `AcceptedForms`. Added red-to-green mutation tests in `schema_matrix_test.go` (`TestGEN002_FingerprintDetectsMutations`). Deterministic fingerprint: `06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d`.
   - **Runtime Comparator Regeneration:** Updated `tools/shortcut-runtime/compare_cherri.py` with `.gz` loading and variant aggregation; added `test_19_compare_cherri_variant_aggregation_disjoint_keys` (all 19 tests PASS). Regenerated `comparison-summary.json` (actions with unmodeled keys reduced from 98 to 81) and `parameter-surface-gaps.json` from versioned evidence.
   - **Consumer & Acceptance Synchronization:** Regenerated registry (`generated_registry.go`) and docs (`actions-reference.md`). Updated U02 expected fingerprint and resolved C01 named argument validation. 70 acceptance tests pass locally.
-- **Exit proof:** Complete semantic reliability for dictionary indexing and platform targets, verified by green regression suites, accurate Apple comparator evidence, synchronized schema, and clean test passes across the repository.
+- [x] **P9.09 Final Closure: Live Cloud Relay, iOS Simulator Proof & Release Convergence (`COMPLETED_VERIFIED`):**
+  - **Deterministic Release Tuple Established:**
+    - `C_CODE`: `73fa4de75c782d8103378e9616ab90e7138984bc`
+    - `D_DOCS`: `727764c178388045e96ff4153f997e393be19a62`
+    - `C_RELEASE`: `d8d9438ec40bbb0e4dc9c27172838e9d9a6ea45c`
+    - `CLOUD_ROUTING`: `83389ecd8c3869736146a1842c9bc954956a18a9`
+    - Schema Fingerprint: `06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d`
+    - Codec Fingerprint: `3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e`
+  - **Live Cherri Cloud Sign Verification:** Executed request `r20261015-p9closure01sign` via PR #5 body relay against run `38481419887` (Attempt 8, Job `116189487489`). Validated artifact `11939438135` (`cherri-relay-r20261015-p9closure01sign-a8-sign`): `status.txt` verified `CHERRI_CLOUD_STATUS=PASS`, `check.json` `valid: true`, `capabilities.json` schema fingerprint matched `06e315d0...` across 461 actions. Signed output shortcut verified (AEA1 payload, 22,740 bytes). Unsigned shortcut plist confirmed native `getvalueforkey` with dynamic token `WFTextTokenString` (`\ufffc` + `attachmentsByRange` pointing to `selectedKey`, 0 list index/math fallback actions).
+  - **Live Cherri Cloud iOS 27 Simulator Runtime Assertion Proof:** Executed request `r20261015-p9closure02sim` against run `38481419846` (Attempt 3, Job `116190577637`). Validated artifact `11939584604` (`cherri-relay-r20261015-p9closure02sim-a3-simulate`): executed inside native iOS 27 Simulator (`873E667A-0545-43A3-8E8C-4E0AF64A7F5F`). `simulator-result.json` reported `status: "output_observed"`, `clipboard_changed: true`. `simulator-clipboard.txt` captured the authentic runtime assertion token: `CHERRI_P9_DYNAMIC_KEY_PASS`.
+  - **Local Test Gates:** `go test -run TestCherriNoSign .` PASS (46/46); `go test ./internal/...` PASS (100% across all 14 packages); `go run ./tools/language-acceptance` PASS (71 PASSED, 0 FAILED, 23 Skipped/Pending); `skills/cherri-shortcuts/scripts/doctor.sh` and `self-test.sh` PASS (10/10).
+  - **Scope Integrity:** Main branch untouched; iOS editor UI focus files untouched (`CherriEditorUITests.swift`, `CodeEditorView.swift`); 81 unmodeled action parameter keys cataloged in `comparison-summary.json` as tracked post-P9 backlog.
+- **Exit proof:** Complete semantic reliability for dictionary indexing and platform targets, verified by green regression suites, accurate Apple comparator evidence, synchronized schema, live Cherri Cloud signing relay, and verified iOS 27 simulator runtime execution proof.
 
 ## 6. Prioritization and recommended work batches
 
@@ -378,7 +390,9 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | 2026-10-14 | Candidate CI | `6cdb30d` | Verified candidate release across GitHub Actions CI workflows: Build & Test (38588108002 - 100% SUCCESS), OpenMinis Skill (38587332533 - 100% SUCCESS), iOS Build (38599962168 - 100% SUCCESS, 18 real iOS test evidence records, all E01-E07 checkpoints verified), iOS 27 Shortcuts Runtime PoC (38587433729 - 17 evidence records, Fixtures 2, 3, 4 PASS) | All 4 candidate CI workflows verified with zero synthetic bypasses; candidate ready for release tagging |
 | 2026-10-15 | P9 Batch 0 | `76d7225` | Adopted P9 scope: semantic reliability, Apple action metadata convergence, upstream integration. Re-verified upstream divergence (0 delta from 606c9a25, 176 ahead, 31 behind) and ShortcutKit HEAD (ee52c329 exact match). Added red baseline tests for Map dynamic key lowering bug (index_expr_test.go) and platform cross-check (platform_check_test.go). Verified compare_cherri.py false positive on getvalueforkey WFDictionaryKey. | Red baseline tests captured and verified; P9 milestone active |
 | 2026-10-15 | P9 Completion | `8c9be85` | Completed P9: (1) Added MacOnly, NonMacOnly, MinVersion, MaxVersion, AcceptedForms to schema; (2) Marked getParentDirectory as mac in documents.cherri; (3) Repaired IndexExpr map dynamic key lowering to emit native getvalueforkey wrapped in WFTextTokenString (\uFFFC + attachmentsByRange); (4) Added cross-platform compile checks (CodeUnsupportedTarget) and compile-time empty key validation; (5) Repaired compare_cherri.py variant aggregation eliminating getvalueforkey false positive; (6) Regenerated schema registry with new deterministic fingerprint 0a567059... and updated Skill manifest; (7) All 46/46 compiler tests, decompiler, internal packages, and root test suite PASS | P9 COMPLETED_VERIFIED |
-| 2026-10-15 | P9 Follow-up | `HEAD` | Completed P9 Follow-up: (1) Evidence-tiered AcceptedForms (555 Confirmed, 136 Inferred from parameter-encodings.json.gz); (2) Target availability & version bounds in analyzeCall (targets set, unspecified target warning, min/max version checking); (3) Parameter form validation (checkAcceptedForms with none/null sentinel handling); (4) Synthetic dynamic map lookup fixture plist proof; (5) Schema fingerprint mutation resistance (hashing platform/version/forms; red-to-green mutation tests; deterministic fingerprint 06e315d0...); (6) Regenerated comparison-summary.json (unmodeled keys 98 -> 81); (7) 70 acceptance tests PASS locally. | P9 Follow-Up COMPLETED_VERIFIED |
+| 2026-10-15 | P9 Follow-up | `73fa4de` | Completed P9 Follow-up: (1) Evidence-tiered AcceptedForms (555 Confirmed, 136 Inferred from parameter-encodings.json.gz); (2) Target availability & version bounds in analyzeCall (targets set, unspecified target warning, min/max version checking); (3) Parameter form validation (checkAcceptedForms with none/null sentinel handling); (4) Synthetic dynamic map lookup fixture plist proof; (5) Schema fingerprint mutation resistance (hashing platform/version/forms; red-to-green mutation tests; deterministic fingerprint 06e315d0...); (6) Regenerated comparison-summary.json (unmodeled keys 98 -> 81); (7) 70 acceptance tests PASS locally. | P9 Follow-Up COMPLETED_VERIFIED |
+| 2026-10-15 | P9 Release | `d8d9438` | Non-circular immutable release: pinned compilerCommit=73fa4de75c782d8103378e9616ab90e7138984bc, docsCommit=727764c178388045e96ff4153f997e393be19a62, schemaFingerprint=06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d. Skill compatibility manifest synchronized. | Release tuple established |
+| 2026-10-15 | P9 Final Closure | `HEAD` | P9 Final Closure: (1) Verified immutable release tuple (C_CODE 73fa4de..., D_DOCS 727764c..., C_RELEASE d8d9438..., CLOUD_ROUTING 83389ecd...); (2) Verified live Cherri Cloud sign relay on run 38481419887 attempt 8 (valid AEA1, schema 06e315d0..., 0 fallback actions); (3) Verified live Cherri Cloud iOS 27 simulator runtime proof on run 38481419846 attempt 3 (captured CHERRI_P9_DYNAMIC_KEY_PASS in simulator clipboard); (4) All local compiler, internal package, acceptance (71/71 local), and Skill doctor/self-test (10/10) suites PASS. | P0-P9 100% COMPLETED_VERIFIED |
 
 
 
@@ -398,6 +412,11 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | EV-CANDIDATE-CI-SKILL | https://github.com/davidpovarsky/cherri/actions/runs/38587332533 | Pinned non-circular release (C_CODE 4bdaa18... -> D_DOCS 4a12b1b... -> C_RELEASE 6cdb30d...), 10 self-test scenarios, Linux CLI, ARM64 Alpine emulation | 100% SUCCESS |
 | EV-CANDIDATE-CI-IOS-BUILD | https://github.com/davidpovarsky/cherri/actions/runs/38599962168 | Authentic XCUITest suite in iOS Simulator; 8/8 tests passed; 18 real evidence records; E01-E07 + negative checkpoints verified | 100% SUCCESS |
 | EV-CANDIDATE-CI-IOS-RUNTIME | https://github.com/davidpovarsky/cherri/actions/runs/38587433729 | Real iOS 27 simulator runtime: Fixture 2 (Dictionaries), Fixture 3 (Menus with Alpha/Beta taps), Fixture 4 (Legacy If); 17 evidence records | Gate PASS |
+| EV-CI-RELEASE-BUILD-TEST | https://github.com/davidpovarsky/cherri/actions/runs/38480436856 | Release matrix build & test (Ubuntu, macOS, Nix, 24 Go packages, discovery 44/44, decompiler, regression) | 100% SUCCESS |
+| EV-CI-RELEASE-SKILL | https://github.com/davidpovarsky/cherri/actions/runs/38480687704 | Pinned release verification (C_CODE 73fa4de... -> D_DOCS 727764c... -> C_RELEASE d8d9438...), 10 self-test scenarios, Linux CLI, ARM64 Alpine emulation | 100% SUCCESS |
+| EV-CLOUD-RELAY-SIGN-P9 | https://github.com/davidpovarsky/cherri/actions/runs/38481419887 | Live Cherri Cloud signing relay (attempt 8, job 116189487489, artifact 11939438135); AEA1 signed shortcut, schema 06e315d0..., WFTextTokenString dynamic dictionary key lowering | Verified PASS |
+| EV-CLOUD-RELAY-SIMULATE-P9 | https://github.com/davidpovarsky/cherri/actions/runs/38481419846 | Live Cherri Cloud iOS 27 simulator execution (attempt 3, job 116190577637, artifact 11939584604); output observed with simulator clipboard assertion CHERRI_P9_DYNAMIC_KEY_PASS | Verified PASS |
+
 
 ### Decisions (immutable rationale, supersede with explicit new entry)
 
@@ -431,14 +450,18 @@ A requirement may be marked done only when its ledger row includes all applicabl
 |---|---|
 | Snapshot date | 2026-10-15 |
 | Last verified release baseline | `0d3bab12048ffa6f45156ebc1bb4b3273247bdf0` |
-| Active candidate branch / SHA | `agent/cherri-v2-product-completion` |
-| Docs branch / SHA | `agent/cherri-v2-product-docs` |
-| Current product verdict | P9 Follow-Up complete: verified action contracts, target availability, AcceptedForms enforcement, schema mutation resistance, and runtime comparator reports regenerated. Executing immutable release sequence (C_CODE -> D_DOCS -> C_RELEASE). |
-| First next action | Execute immutable release sequence: (1) Commit C_CODE on Cherri; (2) Regenerate and commit D_DOCS on cherrilang.org; (3) Commit C_RELEASE on Cherri with updated manifest; (4) Verify Cloud routing and doctor tests. |
-| Top implementation blocker | None (all in-scope compiler, schema, test, and comparator items verified green). |
-| Top evidence blocker | AI01 documented as contractually BLOCKED_EXTERNAL. Concurrent iOS UI editor focus repairs maintained by separate agent. |
+| Active candidate branch / SHA | `agent/cherri-v2-product-completion` @ `d8d9438ec40bbb0e4dc9c27172838e9d9a6ea45c` (implementation) / HEAD closure commit |
+| Docs branch / SHA | `agent/cherri-v2-product-docs` @ `727764c178388045e96ff4153f997e393be19a62` |
+| Cloud routing ref / SHA | `origin/cloud-cherri-requests` @ `83389ecd8c3869736146a1842c9bc954956a18a9` |
+| Immutable Release Tuple | `C_CODE=73fa4de75c782d8103378e9616ab90e7138984bc`, `D_DOCS=727764c178388045e96ff4153f997e393be19a62`, `C_RELEASE=d8d9438ec40bbb0e4dc9c27172838e9d9a6ea45c` |
+| Schema Fingerprint | `06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d` (codecFingerprint: `3e7e3555...`) |
+| Current product verdict | **P0-P9 COMPLETED_VERIFIED** across all tiers. Live Cherri Cloud signing relay and real Apple Shortcuts iOS 27 simulator runtime assertion proven. Ready for final owner handoff. |
+| First next action | Deliver final technical report and handoff to repository owner for post-P9 tagging/merging decisions. |
+| Top implementation blocker | None (100% complete across P0-P9). |
+| Top evidence blocker | None. Live Cherri Cloud sign relay (`38481419887`) and iOS 27 simulator execution (`38481419846`) verified. |
 | Structural caution | Preserve branch isolation (`agent/cherri-v2-product-completion`); coordinate safely with concurrent iOS UI agent; do not merge into main without explicit owner command. |
-| Next document update responsibility | Coding agent executing release sequence and final owner report. |
+| Next document update responsibility | Repository owner upon post-P9 release tagging. |
+
 
 ### Agent update template (copy below into the plan after EACH batch)
 

@@ -1,7 +1,13 @@
-shortcut "V2DynamicMapLookup" {
+shortcut "Cherri P9 Cloud Runtime Proof" {
     mac: false
 }
-let dict = {"appName": "Cherri", "version": "2.0"}
-let keyName = "appName"
-let val = dict[keyName]
-show(val)
+let data = {"alpha": "EXPECTED_DYNAMIC_VALUE", "beta": "OTHER_VALUE"}
+let selectedKey = "alpha"
+let actual = data[selectedKey]
+if actual == "EXPECTED_DYNAMIC_VALUE" {
+    setClipboard("CHERRI_P9_DYNAMIC_KEY_PASS")
+    show("CHERRI_P9_DYNAMIC_KEY_PASS")
+} else {
+    setClipboard("CHERRI_P9_DYNAMIC_KEY_FAIL")
+    show("CHERRI_P9_DYNAMIC_KEY_FAIL")
+}
