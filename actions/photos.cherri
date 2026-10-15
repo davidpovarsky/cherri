@@ -39,4 +39,12 @@ action 'removefromalbum' removeFromAlbum(variable photo: 'WFInput', text album: 
 action 'savetocameraroll' savePhoto(variable image: 'WFInput', text ?album: 'WFCameraRollSelectedGroup' = "Recents")
 
 // [Doc]: Select Photos: Prompt the user to select from their photo library.
-action 'selectphoto' selectPhotos(bool ?selectMultiple: 'WFSelectMultiplePhotos' = false)
+action 'selectphoto' selectPhotos(bool ?selectMultiple: 'WFSelectMultiplePhotos' = false, text ?types: 'WFPhotoPickerTypes')
+
+// [Doc]: [Photos] Find Photos: Filter photos from library.
+action 'filter.photos' filterPhotos(
+    variable ?photos: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array

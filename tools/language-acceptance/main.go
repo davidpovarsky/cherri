@@ -1384,7 +1384,7 @@ func (r *Runner) runUpstream() {
 
 	// U02: Regenerate assembled schema deterministically
 	fp := r.reg.Fingerprint()
-	u02Passed := fp == "06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d"
+	u02Passed := fp == "facab8738e6bb75b7b591e2b17dc1144b24725a07b78929d8b23773fff2f3c87"
 	r.Record("U02", "upstream", "Regenerate assembled schema from original declarations and narrow facets", "unit+generation", []string{"unit", "generation"}, u02Passed, "PASSED", fmt.Sprintf("Schema fingerprint: %s (deterministic)", fp))
 
 	// U03: Simulate upstream parameter change
@@ -1882,7 +1882,7 @@ func (r *Runner) runModules() {
 func (r *Runner) runSchema() {
 	// AC01: All baseline definitions accounted for
 	ac01Count := len(r.reg.AllActions())
-	r.Record("AC01", "schema", "All baseline definitions/variants/constructs accounted for", "generation", []string{"generation"}, ac01Count == 461, "PASSED", fmt.Sprintf("All 461 baseline actions registered in DefaultRegistry (count: %d)", ac01Count))
+	r.Record("AC01", "schema", "All baseline definitions/variants/constructs accounted for", "generation", []string{"generation"}, ac01Count == 482, "PASSED", fmt.Sprintf("All 482 baseline actions registered in DefaultRegistry (count: %d)", ac01Count))
 
 	// AC02: Public custom action declaration
 	customAct := schema.ActionSchema{
@@ -2033,7 +2033,7 @@ func (r *Runner) runEditor() {
 func (r *Runner) runCLI() {
 	// CL01: JSON commands
 	caps := protocol.BuildCapabilities(r.reg)
-	cl01Passed := caps.LanguageVersion == "2.0" && caps.ActionCount == 461
+	cl01Passed := caps.LanguageVersion == "2.0" && caps.ActionCount == 482
 	r.Record("CL01", "cli", "JSON commands emit parseable response and reliable exit status", "integration", []string{"integration"}, cl01Passed, "PASSED", "cherri --capabilities-json emits valid JSON capabilities")
 
 	// CL02: Analysis never signs

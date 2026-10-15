@@ -61,7 +61,7 @@ action 'getclassaction' getObjectOfClass(text class: 'Class', variable from: 'In
 action 'showresult' show(text input: 'Text')
 
 // [Doc]: [Output] Quick Look: Preview `input` in Quick Look.
-action 'previewdocument' quicklook(variable input: 'WFInput')
+action 'previewdocument' quicklook(variable input: 'WFInput', bool ?fullScreen: 'WFQuickLookActionFullScreen' = false)
 
 // [Doc]: [Output] Stop and Output: Stop and output `output`. Do nothing if there is nowhere to output.
 action default output(text output: 'WFOutput')
@@ -153,10 +153,24 @@ action 'getvalueforkey' getValue(dictionary dictionary: 'WFInput', text key: 'WF
 action 'setvalueforkey' setValue(variable dictionary: 'WFDictionary', text key: 'WFDictionaryKey', text value: 'WFDictionaryValue'): dictionary
 
 // [Doc]: [Items] Get Name: Get the name of an item.
-action 'getitemname' getName(variable item: 'WFInput')
+action 'getitemname' getName(variable item: 'WFInput', bool ?getWebPageTitle: 'GetWebPageTitle' = false)
 
 // [Doc]: [Items] Set Name: Set the name of an item.
 action 'setitemname' setName(variable item: 'WFInput', text name: 'WFName', bool ?includeFileExtension: 'WFDontIncludeFileExtension' = false)
+
+enum insertListPosition {
+    'End',
+    'Beginning',
+    'Index',
+}
+
+// [Doc]: [Lists] Add to List: Add an item to a list or variable.
+action default 'additemtolist' addItemToList(
+    variable item: 'WFListItem',
+    variable list: 'WFListVariable',
+    insertListPosition ?position: 'WFInsertPosition' = "End",
+    number ?index: 'WFItemIndex'
+): variable
 
 // [Doc]: [Lists] Choose from List: Prompts the user to choose from a list.
 action chooseFromList(

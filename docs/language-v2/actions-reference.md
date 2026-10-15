@@ -2,8 +2,8 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d`  
-**Total Actions:** 461  
+**Schema Fingerprint:** `facab8738e6bb75b7b591e2b17dc1144b24725a07b78929d8b23773fff2f3c87`  
+**Total Actions:** 482  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
 
@@ -11,12 +11,12 @@ This documentation is generated automatically from the canonical Cherri v2 Actio
 
 - [Basic](#module-basic) (2 actions)
 - [Builtin](#module-builtin) (2 actions)
-- [Calendar](#module-calendar) (8 actions)
+- [Calendar](#module-calendar) (9 actions)
 - [Contacts](#module-contacts) (4 actions)
 - [Controlflow](#module-controlflow) (7 actions)
 - [Device](#module-device) (9 actions)
 - [Documents](#module-documents) (5 actions)
-- [General](#module-general) (402 actions)
+- [General](#module-general) (422 actions)
 - [Intelligence](#module-intelligence) (1 actions)
 - [Mac](#module-mac) (1 actions)
 - [Math](#module-math) (3 actions)
@@ -162,6 +162,25 @@ deleteAlarm(alarm: AnyContent)
 
 ---
 
+### `editEvent`
+
+**Title:** Edit Event  
+**Apple Identifier:** `is.workflow.actions.setters.calendarevents`  
+
+Edit a detail of an event. Provide an event, a detail to modify, and a new value for that detail.
+
+```cherri
+editEvent(event: AnyContent, detail: Text, newValue: AnyContent)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `event` | `AnyContent` | Yes | - | `WFInput` | - |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Start Date, End Date, Is All Day, Location, Duration, My Status, Attendees, URL, Title, Notes, Attachments |
+| `newValue` | `AnyContent` | Yes | - | `WFCalendarEventContentItemStartDate` | - |
+
+---
+
 ### `startStopwatch`
 
 **Title:** Start Stopwatch  
@@ -280,7 +299,7 @@ emailAddress(email: Text)
 Create a new contact.
 
 ```cherri
-newContact(firstName: Text, lastName: Text, phoneNumber: Text, emailAddress: Text, company: Text, notes: Text, prompt?: Bool = "false")
+newContact(firstName: Text, lastName: Text, phoneNumber: Text, emailAddress: Text, company: Text, notes: Text, prompt?: Bool = "false", photo?: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -292,6 +311,7 @@ newContact(firstName: Text, lastName: Text, phoneNumber: Text, emailAddress: Tex
 | `company` | `Text` | Yes | - | `WFContactCompany` | - |
 | `notes` | `Text` | Yes | - | `WFContactNotes` | - |
 | `prompt` | `Bool` | No | `false` | `ShowWhenRun` | - |
+| `photo` | `AnyContent` | No | - | `WFContactPhoto` | - |
 
 ---
 
@@ -706,7 +726,7 @@ addCalendar(name: Text)
 Add a new calendar event.
 
 ```cherri
-addEvent(title: Text, startDate?: AnyContent, endDate?: AnyContent, allDay?: Bool, location?: Text)
+addEvent(title: Text, startDate?: AnyContent, endDate?: AnyContent, allDay?: Bool, location?: Text, calendar?: AnyContent, notes?: Text, alertTime?: Text, alertCustomTime?: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -716,6 +736,31 @@ addEvent(title: Text, startDate?: AnyContent, endDate?: AnyContent, allDay?: Boo
 | `endDate` | `AnyContent` | No | - | `WFCalendarItemEndDate` | - |
 | `allDay` | `Bool` | No | - | `WFCalendarItemAllDay` | - |
 | `location` | `Text` | No | - | `WFCalendarItemLocation` | - |
+| `calendar` | `AnyContent` | No | - | `WFCalendarDescriptor` | - |
+| `notes` | `Text` | No | - | `WFCalendarItemNotes` | - |
+| `alertTime` | `Text` | No | - | `WFAlertTime` | - |
+| `alertCustomTime` | `AnyContent` | No | - | `WFAlertCustomTime` | - |
+
+---
+
+### `addItemToList`
+
+**Title:** Add to List  
+**Apple Identifier:** `is.workflow.actions.additemtolist`  
+**Returns:** `AnyContent`  
+
+Add an item to a list or variable.
+
+```cherri
+addItemToList(item: AnyContent, list: AnyContent, position?: Text = "End", index?: Number) -> AnyContent
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `item` | `AnyContent` | Yes | - | `WFListItem` | - |
+| `list` | `AnyContent` | Yes | - | `WFListVariable` | - |
+| `position` | `Text` | No | `End` | `WFInsertPosition` | End, Beginning, Index |
+| `index` | `Number` | No | - | `WFItemIndex` | - |
 
 ---
 
@@ -737,13 +782,27 @@ addQuickReminder()
 Add a new reminder.
 
 ```cherri
-addReminder(title: Text, alert?: Bool)
+addReminder(title: Text, alert?: Bool, list?: AnyContent, alertCondition?: Text, alertLocation?: AnyContent, alertPerson?: AnyContent, alertRadius?: Text, alertTime?: AnyContent, priority?: Text = "None", urgent?: Bool = "false", flagged?: Bool = "false", url?: Text, images?: AnyContent, parentTask?: AnyContent, tags?: Text, notes?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `title` | `Text` | Yes | - | `WFCalendarItemTitle` | - |
 | `alert` | `Bool` | No | - | `WFAlertEnabled` | - |
+| `list` | `AnyContent` | No | - | `WFCalendarDescriptor` | - |
+| `alertCondition` | `Text` | No | - | `WFAlertCondition` | At Time, When Arriving, When Leaving, When Messaging |
+| `alertLocation` | `AnyContent` | No | - | `WFAlertLocation` | - |
+| `alertPerson` | `AnyContent` | No | - | `WFAlertPerson` | - |
+| `alertRadius` | `Text` | No | - | `WFAlertLocationRadius` | - |
+| `alertTime` | `AnyContent` | No | - | `WFAlertCustomTime` | - |
+| `priority` | `Text` | No | `None` | `WFPriority` | None, Low, Medium, High |
+| `urgent` | `Bool` | No | `false` | `WFUrgent` | - |
+| `flagged` | `Bool` | No | `false` | `WFFlag` | - |
+| `url` | `Text` | No | - | `WFURL` | - |
+| `images` | `AnyContent` | No | - | `WFImages` | - |
+| `parentTask` | `AnyContent` | No | - | `WFParentTask` | - |
+| `tags` | `Text` | No | - | `WFTags` | - |
+| `notes` | `Text` | No | - | `WFCalendarItemNotes` | - |
 
 ---
 
@@ -954,13 +1013,15 @@ appendNote(note: Text, input: Text)
 Append text to a file.
 
 ```cherri
-appendToFile(filePath: Text, text: AnyContent)
+appendToFile(filePath: Text, text: AnyContent, newLine?: Bool = "true", targetFile?: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `filePath` | `Text` | Yes | - | `WFFilePath` | - |
 | `text` | `AnyContent` | Yes | - | `WFInput` | - |
+| `newLine` | `Bool` | No | `true` | `WFAppendOnNewLine` | - |
+| `targetFile` | `AnyContent` | No | - | `WFFile` | - |
 
 ---
 
@@ -1201,13 +1262,14 @@ capitalizeAll(text: Text) -> Text
 Always round a number up to a specified rounding place.
 
 ```cherri
-ceil(number: Number, roundTo?: Text = "Integer") -> Number
+ceil(number: Number, roundTo?: Text = "Integer", powerOfTen?: Number) -> Number
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `number` | `Number` | Yes | - | `WFInput` | - |
 | `roundTo` | `Text` | No | `Integer` | `WFRoundTo` | Millions, Hundred Thousands, Ten Thousands, Thousands, Hundreds, Tens, Integer, Tenths, Hundredths, Thousandths, Ten-Thousandths, Hundred-Thousandths, Millionths, Ten-Millionths, Hundred-Millionths, Billionths, 10^ |
+| `powerOfTen` | `Number` | No | - | `TenToThePowerOf` | - |
 
 ---
 
@@ -1364,6 +1426,26 @@ convertImage(image: Image, format: Text, quality?: Number, preserveMetadata?: Bo
 
 ---
 
+### `convertTimeZone`
+
+**Title:** Convert Time Zone  
+**Apple Identifier:** `is.workflow.actions.converttimezone`  
+**Returns:** `AnyContent`  
+
+Converts a date from one time zone to another.
+
+```cherri
+convertTimeZone(date: AnyContent, sourceTimeZone: Text, destinationTimeZone: Text) -> AnyContent
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `date` | `AnyContent` | Yes | - | `Date` | - |
+| `sourceTimeZone` | `Text` | Yes | - | `SourceTimeZone` | - |
+| `destinationTimeZone` | `Text` | Yes | - | `DestinationTimeZone` | - |
+
+---
+
 ### `convertToJPEG`
 
 **Title:** Convert to JPEG  
@@ -1475,13 +1557,15 @@ createFolder(path: Text, folder?: AnyContent)
 Create a new music playlist.
 
 ```cherri
-createPlaylist(name: Text, author?: Text)
+createPlaylist(name: Text, author?: Text, description?: Text, items?: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `name` | `Text` | Yes | - | `WFPlaylistName` | - |
 | `author` | `Text` | No | - | `WFPlaylistAuthor` | - |
+| `description` | `Text` | No | - | `WFPlaylistDescription` | - |
+| `items` | `AnyContent` | No | - | `WFPlaylistItems` | - |
 
 ---
 
@@ -1734,22 +1818,20 @@ downloadURL(url: Text, headers?: Map<Text, AnyContent>) -> AnyContent
 
 ---
 
-### `editEvent`
+### `ejectDisk`
 
-**Title:** Edit Event  
-**Apple Identifier:** `is.workflow.actions.setters.calendarevents`  
+**Title:** Eject Disk  
+**Apple Identifier:** `is.workflow.actions.ejectdisk`  
 
-Edit a detail of an event. Provide an event, a detail to modify, and a new value for that detail.
+Ejects a disk or mounted image.
 
 ```cherri
-editEvent(event: AnyContent, detail: Text, newValue: Text)
+ejectDisk(disk: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `event` | `AnyContent` | Yes | - | `WFInput` | - |
-| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Start Date, End Date, Is All Day, Location, Duration, My Status, Attendees, URL, Title, Notes, Attachments |
-| `newValue` | `Text` | Yes | - | `WFCalendarEventContentItemStartDate` | - |
+| `disk` | `AnyContent` | Yes | - | `WFInput` | - |
 
 ---
 
@@ -1780,7 +1862,7 @@ encodeAudio(audio: AnyContent, format?: Text = "M4A", speed?: Text = "Normal")
 Encode a video to a different format, size and/or speed.
 
 ```cherri
-encodeVideo(video: AnyContent, size?: Text = "Passthrough", speed?: Text = "Normal", preserveTransparency?: Bool = "false")
+encodeVideo(video: AnyContent, size?: Text = "Passthrough", speed?: Text = "Normal", preserveTransparency?: Bool = "false", mediaSpeed?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -1789,6 +1871,7 @@ encodeVideo(video: AnyContent, size?: Text = "Passthrough", speed?: Text = "Norm
 | `size` | `Text` | No | `Passthrough` | `WFMediaSize` | 640×480, 960×540, 1280×720, 1920×1080, 3840×2160, HEVC 1920×1080, HEVC 3840x2160, ProRes 422 |
 | `speed` | `Text` | No | `Normal` | `WFMediaCustomSpeed` | 0.5X, Normal, 2X |
 | `preserveTransparency` | `Bool` | No | `false` | `WFMediaPreserveTransparency` | - |
+| `mediaSpeed` | `Text` | No | - | `WFMediaSpeed` | - |
 
 ---
 
@@ -1932,6 +2015,69 @@ filterContacts(contacts: AnyContent, sortBy?: Text, sortOrder?: Text = "A to Z",
 
 ---
 
+### `filterEvents`
+
+**Title:** Find Events  
+**Apple Identifier:** `is.workflow.actions.filter.calendarevents`  
+**Returns:** `List<AnyContent>`  
+
+Filter events from calendars.
+
+```cherri
+filterEvents(events: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `events` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
+### `filterPhotos`
+
+**Title:** Find Photos  
+**Apple Identifier:** `is.workflow.actions.filter.photos`  
+**Returns:** `List<AnyContent>`  
+
+Filter photos from library.
+
+```cherri
+filterPhotos(photos: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `photos` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
+### `filterReminders`
+
+**Title:** Find Reminders  
+**Apple Identifier:** `is.workflow.actions.filter.reminders`  
+**Returns:** `List<AnyContent>`  
+
+Filter reminders from lists.
+
+```cherri
+filterReminders(reminders: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `reminders` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
+
+---
+
 ### `findConversation`
 
 **Title:** Find Conversation  
@@ -2037,13 +2183,14 @@ flipImage(image: AnyContent, direction: Text)
 Always round a number down to a specified rounding place.
 
 ```cherri
-floor(number: Number, roundTo?: Text = "Integer") -> Number
+floor(number: Number, roundTo?: Text = "Integer", powerOfTen?: Number) -> Number
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `number` | `Number` | Yes | - | `WFInput` | - |
 | `roundTo` | `Text` | No | `Integer` | `WFRoundTo` | Millions, Hundred Thousands, Ten Thousands, Thousands, Hundreds, Tens, Integer, Tenths, Hundredths, Thousandths, Ten-Thousandths, Hundred-Thousandths, Millionths, Ten-Millionths, Hundred-Millionths, Billionths, 10^ |
+| `powerOfTen` | `Number` | No | - | `TenToThePowerOf` | - |
 
 ---
 
@@ -2134,7 +2281,7 @@ formatTime(time: Text, timeFormat?: Text = "Short") -> Text
 Format a timestamp using standard formats and/or a custom date format.
 
 ```cherri
-formatTimestamp(date: Text, dateFormat?: Text = "Short", timeFormat?: Text = "Short", customDateFormat?: Text) -> Text
+formatTimestamp(date: Text, dateFormat?: Text = "Short", timeFormat?: Text = "Short", customDateFormat?: Text, iso8601IncludeTime?: Bool, locale?: Text, relativeStyle?: Text) -> Text
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -2143,6 +2290,9 @@ formatTimestamp(date: Text, dateFormat?: Text = "Short", timeFormat?: Text = "Sh
 | `dateFormat` | `Text` | No | `Short` | `WFDateFormatStyle` | None, Short, Medium, Long, Relative, RFC 2822, ISO 8601, Custom |
 | `timeFormat` | `Text` | No | `Short` | `WFTimeFormatStyle` | None, Short, Medium, Long, Relative |
 | `customDateFormat` | `Text` | No | - | `WFDateFormat` | - |
+| `iso8601IncludeTime` | `Bool` | No | - | `WFISO8601IncludeTime` | - |
+| `locale` | `Text` | No | - | `WFLocale` | - |
+| `relativeStyle` | `Text` | No | - | `WFRelativeDateFormatStyle` | - |
 
 ---
 
@@ -2325,8 +2475,15 @@ getAppStoreDetail(app: AnyContent, detail: Text)
 Get list of applications.
 
 ```cherri
-getApps() -> List<AnyContent>
+getApps(apps: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `apps` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
+| `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
+| `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
 
 ---
 
@@ -2458,13 +2615,35 @@ getContacts(input: AnyContent) -> List<AnyContent>
 
 ---
 
+### `getCurrentApp`
+
+**Title:** Get Current App  
+**Apple Identifier:** `is.workflow.actions.getcurrentapp`  
+**Returns:** `AnyContent`  
+
+Get the active/current application.
+
+```cherri
+getCurrentApp(scope: Text) -> AnyContent
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `scope` | `Text` | No | `Current` | `WFVisibleAppScope` | - |
+
+---
+
 ### `getCurrentLocation`
 
 **Title:** Get Current Location  
 **Apple Identifier:** `is.workflow.actions.getcurrentlocation`  
 ```cherri
-getCurrentLocation()
+getCurrentLocation(accuracy: Text)
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `accuracy` | `Text` | No | - | `Accuracy` | - |
 
 ---
 
@@ -2476,8 +2655,12 @@ getCurrentLocation()
 Gets the currently playing song.
 
 ```cherri
-getCurrentSong()
+getCurrentSong(subject: Text)
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `subject` | `Text` | No | - | `Subject` | - |
 
 ---
 
@@ -2589,12 +2772,15 @@ getDictionary(input: AnyContent) -> Map<Text, AnyContent>
 Get directions to a destination.
 
 ```cherri
-getDirections(destination: AnyContent)
+getDirections(destination: AnyContent, app?: Text, mode?: Text, startLocation?: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `destination` | `AnyContent` | No | - | `WFDestination` | - |
+| `app` | `Text` | No | - | `WFGetDirectionsActionApp` | - |
+| `mode` | `Text` | No | - | `WFGetDirectionsActionMode` | - |
+| `startLocation` | `AnyContent` | No | - | `WFLocation` | - |
 
 ---
 
@@ -2606,13 +2792,18 @@ getDirections(destination: AnyContent)
 Get distance to a destination.
 
 ```cherri
-getDistance(destination: AnyContent, mode?: Text)
+getDistance(destination: AnyContent, mode?: Text, unit?: Text, avoidHighways?: Bool = "false", avoidTolls?: Bool = "false", startLocation?: AnyContent, accuracy?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `destination` | `AnyContent` | No | - | `WFGetDistanceDestination` | - |
 | `mode` | `Text` | No | - | `WFGetDirectionsActionMode` | - |
+| `unit` | `Text` | No | - | `WFDistanceUnit` | - |
+| `avoidHighways` | `Bool` | No | `false` | `WFAvoidHighways` | - |
+| `avoidTolls` | `Bool` | No | `false` | `WFAvoidTolls` | - |
+| `startLocation` | `AnyContent` | No | - | `WFGetDirectionsCustomLocation` | - |
+| `accuracy` | `Text` | No | - | `Accuracy` | - |
 
 ---
 
@@ -2649,6 +2840,23 @@ getEmojiName(emoji: Text) -> Text
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `emoji` | `Text` | Yes | - | `WFInput` | - |
+
+---
+
+### `getEthernetDetail`
+
+**Title:** Get Ethernet Detail  
+**Apple Identifier:** `is.workflow.actions.getwifi`  
+
+Get a detail of the current Ethernet network.
+
+```cherri
+getEthernetDetail(detail: Text)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `detail` | `Text` | Yes | - | `WFEthernetDetail` | Network Name, BSSID, IPv4 Address, IPv6 Address, Subnet Mask, Router |
 
 ---
 
@@ -2697,7 +2905,7 @@ getExternalIP(type: Text) -> Text
 Get file from a path in the Shortcuts folder or within a `#ref` to a folder.
 
 ```cherri
-getFile(path: Text, folder?: AnyContent, errorIfNotFound?: Bool = "true") -> File
+getFile(path: Text, folder?: AnyContent, errorIfNotFound?: Bool = "true", getFolderContents?: Bool = "false") -> File
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -2705,6 +2913,7 @@ getFile(path: Text, folder?: AnyContent, errorIfNotFound?: Bool = "true") -> Fil
 | `path` | `Text` | Yes | - | `WFGetFilePath` | - |
 | `folder` | `AnyContent` | No | - | `WFFile` | - |
 | `errorIfNotFound` | `Bool` | No | `true` | `WFFileErrorIfNotFound` | - |
+| `getFolderContents` | `Bool` | No | `false` | `WFGetFolderContents` | - |
 
 ---
 
@@ -2800,13 +3009,14 @@ getFolderContents(folder: AnyContent, recursive?: Bool = "false")
 Gets a number of GIFs from Giphy for a search query.
 
 ```cherri
-getGifs(query: Text, gifs?: Number = "1")
+getGifs(query: Text, gifs?: Number = "1", selectMultiple?: Bool = "false")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `query` | `Text` | Yes | - | `WFGiphyQuery` | - |
 | `gifs` | `Number` | No | `1` | `WFGiphyLimit` | - |
+| `selectMultiple` | `Bool` | No | `false` | `WFGiphySelectMultiple` | - |
 
 ---
 
@@ -3199,12 +3409,13 @@ getMusicDetail(music: AnyContent, detail: Text)
 Get the name of an item.
 
 ```cherri
-getName(item: AnyContent)
+getName(item: AnyContent, getWebPageTitle?: Bool = "false")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `item` | `AnyContent` | Yes | - | `WFInput` | - |
+| `getWebPageTitle` | `Bool` | No | `false` | `GetWebPageTitle` | - |
 
 ---
 
@@ -3446,6 +3657,20 @@ getSelectedFiles()
 
 ---
 
+### `getSelectedText`
+
+**Title:** Get Selected Text  
+**Apple Identifier:** `is.workflow.actions.getselectedtext`  
+**Returns:** `Text`  
+
+Get currently selected text on macOS.
+
+```cherri
+getSelectedText() -> Text
+```
+
+---
+
 ### `getShazamDetail`
 
 **Title:** Get Shazam Detail  
@@ -3491,8 +3716,12 @@ getShortcutDetail(shortcut: AnyContent, detail: Text)
 Get all of the Shortcuts on the device.
 
 ```cherri
-getShortcuts() -> List<AnyContent>
+getShortcuts(folder: Text) -> List<AnyContent>
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `folder` | `Text` | No | - | `Folder` | - |
 
 ---
 
@@ -3575,13 +3804,16 @@ getTimeBetweenDates(startDate: AnyContent, endDate?: AnyContent, unit?: Text) ->
 Get travel time to a destination.
 
 ```cherri
-getTravelTime(destination: AnyContent, customLocation?: AnyContent)
+getTravelTime(destination: AnyContent, customLocation?: AnyContent, mode?: Text, avoidHighways?: Bool = "false", avoidTolls?: Bool = "false")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `destination` | `AnyContent` | No | - | `WFDestination` | - |
 | `customLocation` | `AnyContent` | No | - | `WFGetDirectionsCustomLocation` | - |
+| `mode` | `Text` | No | - | `WFGetDirectionsActionMode` | - |
+| `avoidHighways` | `Bool` | No | `false` | `WFAvoidHighways` | - |
+| `avoidTolls` | `Bool` | No | `false` | `WFAvoidTolls` | - |
 
 ---
 
@@ -3674,6 +3906,25 @@ getUpcomingEvents(count: Number, dateSpecifier?: Text, specifiedDate?: Text) -> 
 | `count` | `Number` | No | - | `WFGetUpcomingItemCount` | - |
 | `dateSpecifier` | `Text` | No | - | `WFDateSpecifier` | - |
 | `specifiedDate` | `Text` | No | - | `WFSpecifiedDate` | - |
+
+---
+
+### `getUpcomingReminders`
+
+**Title:** Get Upcoming Reminders  
+**Apple Identifier:** `is.workflow.actions.getupcomingreminders`  
+**Returns:** `List<AnyContent>`  
+
+Get upcoming reminders.
+
+```cherri
+getUpcomingReminders(list: AnyContent, count?: Number = "1") -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `list` | `AnyContent` | No | - | `WFGetUpcomingItemCalendar` | - |
+| `count` | `Number` | No | `1` | `WFGetUpcomingItemCount` | - |
 
 ---
 
@@ -3771,13 +4022,14 @@ getWeatherDetail(weather: AnyContent, detail: Text)
 Get various types of weather forecast for a location.
 
 ```cherri
-getWeatherForecast(type: Text, location?: Text = "Current Location")
+getWeatherForecast(type: Text, location?: Text = "Current Location", customLocation?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `type` | `Text` | No | `Daily` | `WFWeatherForecastType` | Daily, Hourly |
 | `location` | `Text` | No | `Current Location` | `WFInput` | - |
+| `customLocation` | `Text` | No | - | `WFWeatherCustomLocation` | - |
 
 ---
 
@@ -3945,6 +4197,24 @@ location(location: Text)
 
 ---
 
+### `lockApp`
+
+**Title:** Lock App  
+**Apple Identifier:** `is.workflow.actions.lock.app`  
+
+Lock an application.
+
+```cherri
+lockApp(app: AnyContent, operation?: Text = "Lock")
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `app` | `AnyContent` | Yes | - | `WFApp` | - |
+| `operation` | `Text` | No | `Lock` | `WFLockAppOperation` | - |
+
+---
+
 ### `lockScreen`
 
 **Title:** Lock Screen  
@@ -3954,6 +4224,19 @@ Lock the device screen.
 
 ```cherri
 lockScreen()
+```
+
+---
+
+### `logOut`
+
+**Title:** Log Out  
+**Apple Identifier:** `is.workflow.actions.logout`  
+
+Log out current user session.
+
+```cherri
+logOut()
 ```
 
 ---
@@ -4090,7 +4373,7 @@ makeHTML(input: Text, makeFullDocument?: Bool = "false") -> Text
 Returns an image of the provided PDF.
 
 ```cherri
-makeImageFromPDFPage(pdf: AnyContent, colorSpace?: Text = "RGB", pageResolution?: Text = "300")
+makeImageFromPDFPage(pdf: AnyContent, colorSpace?: Text = "RGB", pageResolution?: Text = "300", format?: Text = "public.png")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -4098,6 +4381,7 @@ makeImageFromPDFPage(pdf: AnyContent, colorSpace?: Text = "RGB", pageResolution?
 | `pdf` | `AnyContent` | Yes | - | `WFInput` | - |
 | `colorSpace` | `Text` | No | `RGB` | `WFMakeImageFromPDFPageColorspace` | RGB, Gray |
 | `pageResolution` | `Text` | No | `300` | `WFMakeImageFromPDFPageResolution` | - |
+| `format` | `Text` | No | `public.png` | `WFMakeImageFromPDFPageImageFormat` | - |
 
 ---
 
@@ -4143,7 +4427,7 @@ makeMarkdown(richText: Text) -> Text
 Make a PDF file using the provided input.
 
 ```cherri
-makePDF(input: AnyContent, includeMargin?: Bool = "false", mergeBehavior?: Text = "Append")
+makePDF(input: AnyContent, includeMargin?: Bool = "false", mergeBehavior?: Text = "Append", pages?: Text, singlePage?: Number, rangeStart?: Number, rangeEnd?: Number)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -4151,6 +4435,10 @@ makePDF(input: AnyContent, includeMargin?: Bool = "false", mergeBehavior?: Text 
 | `input` | `AnyContent` | Yes | - | `WFInput` | - |
 | `includeMargin` | `Bool` | No | `false` | `WFPDFIncludeMargin` | - |
 | `mergeBehavior` | `Text` | No | `Append` | `WFPDFDocumentMergeBehavior` | Append, Shuffle |
+| `pages` | `Text` | No | - | `WFPDFIncludedPages` | - |
+| `singlePage` | `Number` | No | - | `WFPDFSinglePage` | - |
+| `rangeStart` | `Number` | No | - | `WFPDFPageRangeStart` | - |
+| `rangeEnd` | `Number` | No | - | `WFPDFPageRangeEnd` | - |
 
 ---
 
@@ -4159,7 +4447,7 @@ makePDF(input: AnyContent, includeMargin?: Bool = "false", mergeBehavior?: Text 
 **Title:** Make QR Code  
 **Apple Identifier:** `is.workflow.actions.generatebarcode`  
 ```cherri
-makeQRCode(input: Text, errorCorrection?: Text = "Medium", foregroundColor?: Unknown = "[{float 0} {float 0} {float 0} {float 1}]", backgroundColor?: Unknown = "[{float 2} {float 2} {float 2} {float 1}]")
+makeQRCode(input: Text, errorCorrection?: Text = "Medium", foregroundColor?: Unknown = "[{float 0} {float 0} {float 0} {float 1}]", backgroundColor?: Unknown = "[{float 2} {float 2} {float 2} {float 1}]", rounded?: Bool = "false")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -4168,6 +4456,7 @@ makeQRCode(input: Text, errorCorrection?: Text = "Medium", foregroundColor?: Unk
 | `errorCorrection` | `Text` | No | `Medium` | `WFQRErrorCorrectionLevel` | Low, Medium, Quartile, High |
 | `foregroundColor` | `Unknown` | No | `[{float 0} {float 0} {float 0} {float 1}]` | `WFQRForegroundColor` | - |
 | `backgroundColor` | `Unknown` | No | `[{float 2} {float 2} {float 2} {float 1}]` | `WFQRBackgroundColor` | - |
+| `rounded` | `Bool` | No | `false` | `WFQRRounded` | - |
 
 ---
 
@@ -4218,7 +4507,7 @@ makeSizedDiskImage(name: Text, contents: AnyContent, diskSize?: Unknown = "[{num
 Creates custom spoken audio from text with controls for rate and pitch.
 
 ```cherri
-makeSpokenAudio(text: Text, rate?: Number, pitch?: Number)
+makeSpokenAudio(text: Text, rate?: Number, pitch?: Number, language?: Text, voice?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -4226,6 +4515,8 @@ makeSpokenAudio(text: Text, rate?: Number, pitch?: Number)
 | `text` | `Text` | Yes | - | `WFInput` | - |
 | `rate` | `Number` | No | - | `WFSpeakTextRate` | - |
 | `pitch` | `Number` | No | - | `WFSpeakTextPitch` | - |
+| `language` | `Text` | No | - | `WFSpeakTextLanguage` | - |
+| `voice` | `Text` | No | - | `WFSpeakTextVoice` | - |
 
 ---
 
@@ -4299,6 +4590,44 @@ matchText(regexPattern: Text, text: Text, caseSensitive?: Bool = "true")
 
 ---
 
+### `mountDiskImage`
+
+**Title:** Mount Disk Image  
+**Apple Identifier:** `is.workflow.actions.mountdiskimage`  
+**Returns:** `AnyContent`  
+
+Mounts a disk image.
+
+```cherri
+mountDiskImage(diskImage: AnyContent) -> AnyContent
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `diskImage` | `AnyContent` | Yes | - | `WFInput` | - |
+
+---
+
+### `moveFile`
+
+**Title:** Move File  
+**Apple Identifier:** `is.workflow.actions.file.move`  
+**Returns:** `AnyContent`  
+
+Move a file or folder to a new destination folder.
+
+```cherri
+moveFile(file: AnyContent, folder: AnyContent, replaceExisting?: Bool = "false") -> AnyContent
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `file` | `AnyContent` | Yes | - | `WFFile` | - |
+| `folder` | `AnyContent` | Yes | - | `WFFolder` | - |
+| `replaceExisting` | `Bool` | No | `false` | `WFReplaceExisting` | - |
+
+---
+
 ### `moveWindow`
 
 **Title:** Move Window  
@@ -4307,7 +4636,7 @@ matchText(regexPattern: Text, text: Text, caseSensitive?: Bool = "true")
 Move a window to a defined position.
 
 ```cherri
-moveWindow(window: AnyContent, position: Text, bringToFront?: Bool = "true")
+moveWindow(window: AnyContent, position: Text, bringToFront?: Bool = "true", display?: Text, x?: Number, y?: Number)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -4315,6 +4644,9 @@ moveWindow(window: AnyContent, position: Text, bringToFront?: Bool = "true")
 | `window` | `AnyContent` | Yes | - | `WFWindow` | - |
 | `position` | `Text` | Yes | - | `WFPosition` | Top Left, Top Center, Top Right, Middle Left, Center, Middle Right, Bottom Left, Bottom Center, Bottom Right, Coordinates |
 | `bringToFront` | `Bool` | No | `true` | `WFBringToFront` | - |
+| `display` | `Text` | No | - | `Display` | - |
+| `x` | `Number` | No | - | `WFXCoordinate` | - |
+| `y` | `Number` | No | - | `WFYCoordinate` | - |
 
 ---
 
@@ -4376,13 +4708,15 @@ number(number: AnyContent) -> Number
 Open a file.
 
 ```cherri
-openFile(file: AnyContent, askWhenRun?: Bool = "false")
+openFile(file: AnyContent, askWhenRun?: Bool = "false", app?: Text, selectedApp?: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `file` | `AnyContent` | Yes | - | `WFInput` | - |
 | `askWhenRun` | `Bool` | No | `false` | `WFOpenInAskWhenRun` | - |
+| `app` | `Text` | No | - | `WFAppName` | - |
+| `selectedApp` | `AnyContent` | No | - | `WFSelectedApp` | - |
 
 ---
 
@@ -4394,12 +4728,13 @@ openFile(file: AnyContent, askWhenRun?: Bool = "false")
 Open a location in maps.
 
 ```cherri
-openInMaps(location: AnyContent)
+openInMaps(location: AnyContent, app?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `location` | `AnyContent` | Yes | - | `WFInput` | - |
+| `app` | `Text` | No | - | `WFSearchMapsActionApp` | - |
 
 ---
 
@@ -4534,6 +4869,45 @@ overlayImage(image: AnyContent, overlayImage: AnyContent)
 
 ---
 
+### `overlayText`
+
+**Title:** Overlay Text  
+**Apple Identifier:** `is.workflow.actions.overlaytext`  
+**Returns:** `AnyContent`  
+
+Overlay text on top of an image.
+
+```cherri
+overlayText(image: AnyContent, text: Text, position?: Text = "Center", font?: Text, fontSize?: Number = "36", alignment?: Text = "Center", x?: Number, y?: Number, percentageX?: Number, percentageY?: Number, offset?: Number, percentageOffset?: Number, percentageFontSize?: Number, color?: AnyContent, rotation?: Number, outlineEnabled?: Bool, strokeWidth?: Number, percentageStrokeWidth?: Number, strokeColor?: AnyContent, boxWidth?: Number, percentageBoxWidth?: Number, sizingMethod?: Text) -> AnyContent
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `image` | `AnyContent` | Yes | - | `WFImage` | - |
+| `text` | `Text` | Yes | - | `WFText` | - |
+| `position` | `Text` | No | `Center` | `WFTextPosition` | Center, Top Left, Top Right, Bottom Left, Bottom Right, Custom |
+| `font` | `Text` | No | - | `WFFont` | - |
+| `fontSize` | `Number` | No | `36` | `WFFontSize` | - |
+| `alignment` | `Text` | No | `Center` | `WFTextAlignment` | - |
+| `x` | `Number` | No | - | `WFTextX` | - |
+| `y` | `Number` | No | - | `WFTextY` | - |
+| `percentageX` | `Number` | No | - | `WFPercentageTextX` | - |
+| `percentageY` | `Number` | No | - | `WFPercentageTextY` | - |
+| `offset` | `Number` | No | - | `WFTextOffset` | - |
+| `percentageOffset` | `Number` | No | - | `WFPercentageTextOffset` | - |
+| `percentageFontSize` | `Number` | No | - | `WFPercentageFontSize` | - |
+| `color` | `AnyContent` | No | - | `WFTextColor` | - |
+| `rotation` | `Number` | No | - | `WFTextRotation` | - |
+| `outlineEnabled` | `Bool` | No | - | `WFTextOutlineEnabled` | - |
+| `strokeWidth` | `Number` | No | - | `WFTextStrokeWidth` | - |
+| `percentageStrokeWidth` | `Number` | No | - | `WFPercentageTextStrokeWidth` | - |
+| `strokeColor` | `AnyContent` | No | - | `WFTextStrokeColor` | - |
+| `boxWidth` | `Number` | No | - | `WFTextBoxWidth` | - |
+| `percentageBoxWidth` | `Number` | No | - | `WFPercentageTextBoxWidth` | - |
+| `sizingMethod` | `Text` | No | - | `WFSizingMethod` | - |
+
+---
+
 ### `pause`
 
 **Title:** Pause  
@@ -4542,8 +4916,12 @@ overlayImage(image: AnyContent, overlayImage: AnyContent)
 Press pause.
 
 ```cherri
-pause()
+pause(route: AnyContent)
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `route` | `AnyContent` | No | - | `WFMediaRoute` | - |
 
 ---
 
@@ -4555,8 +4933,12 @@ pause()
 Press play.
 
 ```cherri
-play()
+play(route: AnyContent)
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `route` | `AnyContent` | No | - | `WFMediaRoute` | - |
 
 ---
 
@@ -4618,12 +5000,13 @@ playNext(music: AnyContent)
 **Title:** Play Podcast  
 **Apple Identifier:** `is.workflow.actions.playpodcast`  
 ```cherri
-playPodcast(podcast: AnyContent)
+playPodcast(podcast: AnyContent, order?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `podcast` | `AnyContent` | Yes | - | `WFPodcastShow` | - |
+| `order` | `Text` | No | - | `WFPodcastPlaybackOrder` | - |
 
 ---
 
@@ -4652,13 +5035,15 @@ playSound(input: AnyContent)
 Prepend text to a file.
 
 ```cherri
-prependToFile(filePath: Text, text: AnyContent)
+prependToFile(filePath: Text, text: AnyContent, newLine?: Bool = "true", targetFile?: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `filePath` | `Text` | Yes | - | `WFFilePath` | - |
 | `text` | `AnyContent` | Yes | - | `WFInput` | - |
+| `newLine` | `Bool` | No | `true` | `WFAppendOnNewLine` | - |
+| `targetFile` | `AnyContent` | No | - | `WFFile` | - |
 
 ---
 
@@ -4687,12 +5072,13 @@ print(input: AnyContent)
 Preview `input` in Quick Look.
 
 ```cherri
-quicklook(input: AnyContent)
+quicklook(input: AnyContent, fullScreen?: Bool = "false")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `input` | `AnyContent` | Yes | - | `WFInput` | - |
+| `fullScreen` | `Bool` | No | `false` | `WFQuickLookActionFullScreen` | - |
 
 ---
 
@@ -4751,13 +5137,15 @@ reboot()
 Prompt the user to record audio.
 
 ```cherri
-recordAudio(quality: Text, start?: Text = "On Tap")
+recordAudio(quality: Text, start?: Text = "On Tap", end?: Text, interval?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `quality` | `Text` | No | `Normal` | `WFRecordingCompression` | Normal, Very High |
 | `start` | `Text` | No | `On Tap` | `WFRecordingStart` | On Tap, Immediately |
+| `end` | `Text` | No | - | `WFRecordingEnd` | - |
+| `interval` | `Text` | No | - | `WFRecordingTimeInterval` | - |
 
 ---
 
@@ -4965,13 +5353,16 @@ resizeImageByPercent(image: AnyContent, percentage: Text)
 Resize a window to defined size.
 
 ```cherri
-resizeWindow(window: AnyContent, configuration: Text)
+resizeWindow(window: AnyContent, configuration: Text, bringToFront?: Bool = "true", width?: Number, height?: Number)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `window` | `AnyContent` | Yes | - | `WFWindow` | - |
 | `configuration` | `Text` | Yes | - | `WFConfiguration` | Fit Screen, Top Half, Bottom Half, Left Half, Right Half, Top Left Quarter, Top Right Quarter, Bottom Left Quarter, Bottom Right Quarter, Dimensions |
+| `bringToFront` | `Bool` | No | `true` | `WFBringToFront` | - |
+| `width` | `Number` | No | - | `WFWidth` | - |
+| `height` | `Number` | No | - | `WFHeight` | - |
 
 ---
 
@@ -5029,13 +5420,14 @@ rotateMedia(media: AnyContent, degrees: Text)
 Rounds number to specified rounding place.
 
 ```cherri
-round(number: Number, roundTo?: Text = "Integer") -> Number
+round(number: Number, roundTo?: Text = "Integer", powerOfTen?: Number) -> Number
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `number` | `Number` | Yes | - | `WFInput` | - |
 | `roundTo` | `Text` | No | `Integer` | `WFRoundTo` | Millions, Hundred Thousands, Ten Thousands, Thousands, Hundreds, Tens, Integer, Tenths, Hundredths, Thousandths, Ten-Thousandths, Hundred-Thousandths, Millionths, Ten-Millionths, Hundred-Millionths, Billionths, 10^ |
+| `powerOfTen` | `Number` | No | - | `TenToThePowerOf` | - |
 
 ---
 
@@ -5095,7 +5487,7 @@ runJavaScriptOnWebpage(javascript: Text, input?: AnyContent)
 Run an SSH script using connection details.
 
 ```cherri
-runSSHScript(script: Text, input: AnyContent, host: Text, port: Text, user: Text, authType: Text, password: Text)
+runSSHScript(script: Text, input: AnyContent, host: Text, port: Text, user: Text, authType: Text, password?: Text, key?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -5106,7 +5498,8 @@ runSSHScript(script: Text, input: AnyContent, host: Text, port: Text, user: Text
 | `port` | `Text` | Yes | - | `WFSSHPort` | - |
 | `user` | `Text` | Yes | - | `WFSSHUser` | - |
 | `authType` | `Text` | Yes | - | `WFSSHAuthenticationType` | Password, SSH Key |
-| `password` | `Text` | Yes | - | `WFSSHPassword` | - |
+| `password` | `Text` | No | - | `WFSSHPassword` | - |
+| `key` | `Text` | No | - | `WFSSHKey` | - |
 
 ---
 
@@ -5115,7 +5508,7 @@ runSSHScript(script: Text, input: AnyContent, host: Text, port: Text, user: Text
 **Title:** Run Shell Script  
 **Apple Identifier:** `is.workflow.actions.runshellscript`  
 ```cherri
-runShellScript(script: Text, input?: AnyContent, shell?: Text = "/bin/zsh", inputMode?: Text = "to stdin")
+runShellScript(script: Text, input?: AnyContent, shell?: Text = "/bin/zsh", inputMode?: Text = "to stdin", runAsRoot?: Bool = "false")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -5124,6 +5517,7 @@ runShellScript(script: Text, input?: AnyContent, shell?: Text = "/bin/zsh", inpu
 | `input` | `AnyContent` | No | - | `Input` | - |
 | `shell` | `Text` | No | `/bin/zsh` | `Shell` | - |
 | `inputMode` | `Text` | No | `to stdin` | `InputMode` | - |
+| `runAsRoot` | `Bool` | No | `false` | `RunAsRoot` | - |
 
 ---
 
@@ -5242,12 +5636,16 @@ search(query: Text, limit?: Number = "5", resultType?: List<AnyContent> = "[Cale
 **Title:** Search App Store  
 **Apple Identifier:** `is.workflow.actions.searchappstore`  
 ```cherri
-searchAppStore(query: Text)
+searchAppStore(query: Text, country?: Text, attribute?: Text, entity?: Text, limit?: Number)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `query` | `Text` | Yes | - | `WFSearchTerm` | - |
+| `country` | `Text` | No | - | `WFCountry` | - |
+| `attribute` | `Text` | No | - | `WFAttribute` | - |
+| `entity` | `Text` | No | - | `WFEntity` | - |
+| `limit` | `Number` | No | - | `WFItemLimit` | - |
 
 ---
 
@@ -5259,12 +5657,13 @@ searchAppStore(query: Text)
 Gets GIFs from Giphy for a search query.
 
 ```cherri
-searchGiphy(query: Text)
+searchGiphy(query: Text, selectMultiple?: Bool = "false")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `query` | `Text` | Yes | - | `WFGiphyQuery` | - |
+| `selectMultiple` | `Bool` | No | `false` | `WFGiphySelectMultiple` | - |
 
 ---
 
@@ -5305,12 +5704,16 @@ searchPhotos(criteria: Text) -> List<AnyContent>
 **Title:** Search Podcasts  
 **Apple Identifier:** `is.workflow.actions.searchpodcasts`  
 ```cherri
-searchPodcasts(query: Text)
+searchPodcasts(query: Text, country?: Text, attribute?: Text, entity?: Text, limit?: Number)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `query` | `Text` | Yes | - | `WFSearchTerm` | - |
+| `country` | `Text` | No | - | `WFCountry` | - |
+| `attribute` | `Text` | No | - | `WFAttribute` | - |
+| `entity` | `Text` | No | - | `WFEntity` | - |
+| `limit` | `Number` | No | - | `WFItemLimit` | - |
 
 ---
 
@@ -5372,13 +5775,17 @@ searchWeb(engine: Text, query: Text)
 Search for music or media on iTunes.
 
 ```cherri
-searchiTunes(query: Text, limit?: Number)
+searchiTunes(query: Text, limit?: Number, country?: Text, attribute?: Text, entity?: Text, mediaType?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `query` | `Text` | Yes | - | `WFSearchTerm` | - |
 | `limit` | `Number` | No | - | `WFItemLimit` | - |
+| `country` | `Text` | No | - | `WFCountry` | - |
+| `attribute` | `Text` | No | - | `WFAttribute` | - |
+| `entity` | `Text` | No | - | `WFEntity` | - |
+| `mediaType` | `Text` | No | - | `WFMediaType` | - |
 
 ---
 
@@ -5390,13 +5797,14 @@ searchiTunes(query: Text, limit?: Number)
 Seek the currently playing media.
 
 ```cherri
-seek(timeInterval: Unknown, behavior?: Text = "To Time")
+seek(timeInterval: Unknown, behavior?: Text = "To Time", route?: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `timeInterval` | `Unknown` | No | `[{number 0} {text sec}]` | `WFTimeInterval` | hr, min, sec |
 | `behavior` | `Text` | No | `To Time` | `WFSeekBehavior` | To Time, Forward By, Backward By |
+| `route` | `AnyContent` | No | - | `WFMediaRoute` | - |
 
 ---
 
@@ -5520,12 +5928,13 @@ selectPhoneNumber()
 Prompt the user to select from their photo library.
 
 ```cherri
-selectPhotos(selectMultiple: Bool)
+selectPhotos(selectMultiple: Bool, types?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `selectMultiple` | `Bool` | No | `false` | `WFSelectMultiplePhotos` | - |
+| `types` | `Text` | No | - | `WFPhotoPickerTypes` | - |
 
 ---
 
@@ -5537,7 +5946,7 @@ selectPhotos(selectMultiple: Bool)
 Send an email to a contact.
 
 ```cherri
-sendEmail(contact: AnyContent, from: Text, subject: Text, body: Text, prompt?: Bool = "true", draft?: Bool = "false")
+sendEmail(contact: AnyContent, from: Text, subject: Text, body: Text, prompt?: Bool = "true", draft?: Bool = "false", cc?: AnyContent, bcc?: AnyContent, account?: AnyContent)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -5548,6 +5957,9 @@ sendEmail(contact: AnyContent, from: Text, subject: Text, body: Text, prompt?: B
 | `body` | `Text` | Yes | - | `WFSendEmailActionInputAttachments` | - |
 | `prompt` | `Bool` | No | `true` | `WFSendEmailActionShowComposeSheet` | - |
 | `draft` | `Bool` | No | `false` | `WFSendEmailActionSaveAsDraft` | - |
+| `cc` | `AnyContent` | No | - | `WFSendEmailActionCcRecipients` | - |
+| `bcc` | `AnyContent` | No | - | `WFSendEmailActionBccRecipients` | - |
+| `account` | `AnyContent` | No | - | `WFEmailAccountActionSelectedAccount` | - |
 
 ---
 
@@ -5559,7 +5971,7 @@ sendEmail(contact: AnyContent, from: Text, subject: Text, body: Text, prompt?: B
 Send an SMS/iMessage to a contact.
 
 ```cherri
-sendMessage(contact: AnyContent, message: Text, prompt?: Bool = "true")
+sendMessage(contact: AnyContent, message: Text, prompt?: Bool = "true", prefix?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -5567,6 +5979,7 @@ sendMessage(contact: AnyContent, message: Text, prompt?: Bool = "true")
 | `contact` | `AnyContent` | Yes | - | `WFSendMessageActionRecipients` | - |
 | `message` | `Text` | Yes | - | `WFSendMessageContent` | - |
 | `prompt` | `Bool` | No | `true` | `ShowWhenRun` | - |
+| `prefix` | `Text` | No | - | `WFSendMessagePrefix` | - |
 
 ---
 
@@ -5593,6 +6006,23 @@ setAirdropReceiving(state: Text)
 **Apple Identifier:** `is.workflow.actions.airplanemode.set`  
 ```cherri
 setAirplaneMode(status: Bool)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `status` | `Bool` | Yes | - | `OnValue` | - |
+
+---
+
+### `setAnnounceNotifications`
+
+**Title:** Set Announce Notifications  
+**Apple Identifier:** `is.workflow.actions.announcenotifications.set`  
+
+Turn announce notifications on or off.
+
+```cherri
+setAnnounceNotifications(status: Bool)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -5787,7 +6217,7 @@ setHotspot(status: Bool)
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `status` | `Bool` | Yes | - | `state` | - |
+| `status` | `Bool` | Yes | - | `OnValue` | - |
 
 ---
 
@@ -5946,6 +6376,24 @@ setNightShift(status: Bool)
 
 ---
 
+### `setNoiseControlMode`
+
+**Title:** Set Noise Control Mode  
+**Apple Identifier:** `is.workflow.actions.listeningmode.set`  
+
+Set AirPods noise control / listening mode.
+
+```cherri
+setNoiseControlMode(mode: Text, route?: AnyContent)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `mode` | `Text` | Yes | - | `WFListeningMode` | - |
+| `route` | `AnyContent` | No | - | `WFRoute` | - |
+
+---
+
 ### `setOrientationLock`
 
 **Title:** Set Orientation Lock  
@@ -5957,6 +6405,24 @@ setOrientationLock(status: Bool)
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `status` | `Bool` | Yes | - | `OnValue` | - |
+
+---
+
+### `setPlaybackDestination`
+
+**Title:** Set Playback Destination  
+**Apple Identifier:** `is.workflow.actions.setplaybackdestination`  
+
+Route audio to a playback destination.
+
+```cherri
+setPlaybackDestination(route: AnyContent, operation?: Text = "Set")
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `route` | `AnyContent` | Yes | - | `WFMediaRoute` | - |
+| `operation` | `Text` | No | `Set` | `WFMediaRouteOperation` | - |
 
 ---
 
@@ -5985,6 +6451,23 @@ setReduceTransparency(status: Bool)
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `status` | `Bool` | Yes | - | `state` | - |
+
+---
+
+### `setSilenceUnknownCallers`
+
+**Title:** Set Silence Unknown Callers  
+**Apple Identifier:** `is.workflow.actions.silenceunknowncallers.set`  
+
+Turn silence unknown callers on or off.
+
+```cherri
+setSilenceUnknownCallers(status: Bool)
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `status` | `Bool` | Yes | - | `OnValue` | - |
 
 ---
 
@@ -6116,12 +6599,13 @@ setVoiceControl(status: Bool)
 **Title:** Set Volume  
 **Apple Identifier:** `is.workflow.actions.setvolume`  
 ```cherri
-setVolume(volume: Number)
+setVolume(volume: Number, setting?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `volume` | `Number` | Yes | - | `WFVolume` | - |
+| `setting` | `Text` | No | - | `WFVolumeSetting` | - |
 
 ---
 
@@ -6133,12 +6617,18 @@ setVolume(volume: Number)
 Sets the device wallpaper to `input`.
 
 ```cherri
-setWallpaper(input: AnyContent)
+setWallpaper(input: AnyContent, poster?: AnyContent, location?: Text, legibilityBlur?: Bool, perspectiveZoom?: Bool, showPreview?: Bool, smartCrop?: Bool)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `input` | `AnyContent` | Yes | - | `WFInput` | - |
+| `poster` | `AnyContent` | No | - | `WFSelectedPoster` | - |
+| `location` | `Text` | No | - | `WFWallpaperLocation` | - |
+| `legibilityBlur` | `Bool` | No | - | `WFWallpaperLegibilityBlur` | - |
+| `perspectiveZoom` | `Bool` | No | - | `WFWallpaperPerspectiveZoom` | - |
+| `showPreview` | `Bool` | No | - | `WFWallpaperShowPreview` | - |
+| `smartCrop` | `Bool` | No | - | `WFWallpaperSmartCrop` | - |
 
 ---
 
@@ -6335,8 +6825,12 @@ shutdown()
 Go to the previous song.
 
 ```cherri
-skipBack()
+skipBack(route: AnyContent)
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `route` | `AnyContent` | No | - | `WFMediaRoute` | - |
 
 ---
 
@@ -6348,8 +6842,12 @@ skipBack()
 Go to the next song.
 
 ```cherri
-skipFwd()
+skipFwd(route: AnyContent)
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `route` | `AnyContent` | No | - | `WFMediaRoute` | - |
 
 ---
 
@@ -6375,7 +6873,7 @@ sleep()
 Speaks the provided text, optionally in another language.
 
 ```cherri
-speak(prompt: Text, waitUntilFinished?: Bool = "true", language?: Text)
+speak(prompt: Text, waitUntilFinished?: Bool = "true", language?: Text, rate?: Number, pitch?: Number, voice?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -6383,6 +6881,9 @@ speak(prompt: Text, waitUntilFinished?: Bool = "true", language?: Text)
 | `prompt` | `Text` | Yes | - | `WFText` | - |
 | `waitUntilFinished` | `Bool` | No | `true` | `WFSpeakTextWait` | - |
 | `language` | `Text` | No | - | `WFSpeakTextLanguage` | - |
+| `rate` | `Number` | No | - | `WFSpeakTextRate` | - |
+| `pitch` | `Number` | No | - | `WFSpeakTextPitch` | - |
+| `voice` | `Text` | No | - | `WFSpeakTextVoice` | - |
 
 ---
 
@@ -6464,7 +6965,7 @@ statistic(operation: Text, input: AnyContent)
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `operation` | `Text` | Yes | - | `WFStatisticsOperation` | Average, Minimum, Maximum, Sum, Median, Mode, Range, Standard Deviation |
-| `input` | `AnyContent` | Yes | - | `WFInput` | - |
+| `input` | `AnyContent` | Yes | - | `Input` | - |
 
 ---
 
@@ -6573,13 +7074,14 @@ takeInteractiveScreenshot(selection: Text) -> Image
 Prompt the user to take one or more photos.
 
 ```cherri
-takePhoto(count: Number, showPreview?: Bool = "true")
+takePhoto(count: Number, showPreview?: Bool = "true", camera?: Text = "Back")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `count` | `Number` | No | `1` | `WFPhotoCount` | - |
 | `showPreview` | `Bool` | No | `true` | `WFCameraCaptureShowPreview` | - |
+| `camera` | `Text` | No | `Back` | `WFCameraCaptureDevice` | Front, Back |
 
 ---
 
@@ -6654,6 +7156,19 @@ titleCase(text: Text) -> Text
 **Apple Identifier:** `is.workflow.actions.airplanemode.set`  
 ```cherri
 toggleAirplaneMode()
+```
+
+---
+
+### `toggleAnnounceNotifications`
+
+**Title:** Toggle Announce Notifications  
+**Apple Identifier:** `is.workflow.actions.announcenotifications.set`  
+
+Turn announce notifications on or off.
+
+```cherri
+toggleAnnounceNotifications()
 ```
 
 ---
@@ -6874,8 +7389,12 @@ toggleOrientationLock()
 **Title:** Toggle Play/Pause  
 **Apple Identifier:** `is.workflow.actions.pausemusic`  
 ```cherri
-togglePlayPause()
+togglePlayPause(route: AnyContent)
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `route` | `AnyContent` | No | - | `WFMediaRoute` | - |
 
 ---
 
@@ -6895,6 +7414,19 @@ toggleReduceMotion()
 **Apple Identifier:** `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleTransparencyIntent`  
 ```cherri
 toggleReduceTransparency()
+```
+
+---
+
+### `toggleSilenceUnknownCallers`
+
+**Title:** Toggle Silence Unknown Callers  
+**Apple Identifier:** `is.workflow.actions.silenceunknowncallers.set`  
+
+Turn silence unknown callers on or off.
+
+```cherri
+toggleSilenceUnknownCallers()
 ```
 
 ---
@@ -7120,8 +7652,12 @@ urlEncode(input: Text) -> Text
 Vibrate the device. Only applies to Apple devices with the haptic engine.
 
 ```cherri
-vibrate()
+vibrate(hapticType: Text)
 ```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `hapticType` | `Text` | No | - | `WFVibrateHapticType` | - |
 
 ---
 

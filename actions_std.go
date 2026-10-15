@@ -510,6 +510,12 @@ var actions = map[string]*actionDefinition{
 				defaultValue: false,
 				optional:     true,
 			},
+			{
+				name:      "photo",
+				validType: Variable,
+				key:       "WFContactPhoto",
+				optional:  true,
+			},
 		},
 		appendParamsFunc: func(args []actionArgument) (params map[string]any) {
 			params = make(map[string]any)
@@ -566,6 +572,87 @@ var actions = map[string]*actionDefinition{
 			}
 		},
 		emittedKeys: []string{"WFLabelColorNumber"},
+	},
+	"editEvent": {
+		doc: selfDoc{
+			title:       "Edit Event",
+			description: "Edit a detail of an event. Provide an event, a detail to modify, and a new value for that detail.",
+			category:    "calendar",
+			subcategory: "Calendars",
+		},
+		identifier: "setters.calendarevents",
+		parameters: []parameterDefinition{
+			{
+				name:      "event",
+				validType: Variable,
+				key:       "WFInput",
+			},
+			{
+				name:      "detail",
+				validType: String,
+				key:       "WFContentItemPropertyName",
+				enum:      "editEventDetail",
+			},
+			{
+				name:      "newValue",
+				validType: Variable,
+				key:       "WFCalendarEventContentItemStartDate",
+			},
+		},
+		appendParamsFunc: func(args []actionArgument) map[string]any {
+			params := map[string]any{
+				"Mode":       "Set",
+				"ValueLabel": true,
+			}
+			if len(args) < 3 {
+				return params
+			}
+			detail := fmt.Sprint(getArgValue(args[1]))
+			val := argumentValue(args, 2)
+			switch detail {
+			case "Start Date":
+				params["WFCalendarEventContentItemStartDate"] = val
+			case "End Date":
+				params["WFCalendarEventContentItemEndDate"] = val
+			case "Is All Day":
+				params["WFCalendarEventContentItemIsAllDay"] = val
+			case "Location":
+				params["WFCalendarEventContentItemLocation"] = val
+			case "Duration":
+				params["WFCalendarEventContentItemDuration"] = val
+			case "My Status":
+				params["WFCalendarEventContentItemMyStatus"] = val
+			case "Attendees":
+				params["WFCalendarEventContentItemAttendees"] = val
+			case "URL":
+				params["WFCalendarEventContentItemURL"] = val
+			case "Title":
+				params["WFCalendarEventContentItemTitle"] = val
+			case "Notes":
+				params["WFCalendarEventContentItemNotes"] = val
+			case "Attachments":
+				params["WFCalendarEventContentItemAttachments"] = val
+			default:
+				params["WFCalendarEventContentItemStartDate"] = val
+			}
+			return params
+		},
+		emittedKeys: []string{
+			"Mode",
+			"ValueLabel",
+			"RemoveSpecifiedValue",
+			"WFCalendarEventContentItemStartDate",
+			"WFCalendarEventContentItemEndDate",
+			"WFCalendarEventContentItemIsAllDay",
+			"WFCalendarEventContentItemLocation",
+			"WFCalendarEventContentItemDuration",
+			"WFCalendarEventContentItemMyStatus",
+			"WFCalendarEventContentItemAttendees",
+			"WFCalendarEventContentItemURL",
+			"WFCalendarEventContentItemTitle",
+			"WFCalendarEventContentItemNotes",
+			"WFCalendarEventContentItemAttachments",
+		},
 	},
 	"filterFiles": {
 		doc: selfDoc{
@@ -929,16 +1016,35 @@ var actions = map[string]*actionDefinition{
 			if len(args) < 3 {
 				return map[string]any{}
 			}
+			val := argumentValue(args, 2)
 			var defaultAnswer = map[string]any{
-				"WFAskActionDefaultAnswer": argumentValue(args, 2),
+				"WFAskActionDefaultAnswer": val,
 			}
-			if getArgValue(args[1]) == "Number" {
+			switch getArgValue(args[1]) {
+			case "Number":
 				defaultAnswer["WFAskActionDefaultAnswerNumber"] = paramValue(args[2], Integer)
+			case "URL":
+				defaultAnswer["WFAskActionDefaultAnswerURL"] = val
+				defaultAnswer["urlAnswer"] = val
+			case "Date":
+				defaultAnswer["WFAskActionDefaultAnswerDate"] = val
+			case "Time":
+				defaultAnswer["WFAskActionDefaultAnswerTime"] = val
+			case "Date and Time":
+				defaultAnswer["WFAskActionDefaultAnswerDateAndTime"] = val
 			}
 
 			return defaultAnswer
 		},
-		emittedKeys: []string{"WFAskActionDefaultAnswer", "WFAskActionDefaultAnswerNumber"},
+		emittedKeys: []string{
+			"WFAskActionDefaultAnswer",
+			"WFAskActionDefaultAnswerNumber",
+			"WFAskActionDefaultAnswerURL",
+			"WFAskActionDefaultAnswerDate",
+			"WFAskActionDefaultAnswerTime",
+			"WFAskActionDefaultAnswerDateAndTime",
+			"urlAnswer",
+		},
 	},
 	"openApp": {
 		doc: selfDoc{
@@ -994,7 +1100,7 @@ var actions = map[string]*actionDefinition{
 			}
 			return appArguments
 		},
-		emittedKeys: []string{"WFSelectedApp"},
+		emittedKeys: []string{"WFSelectedApp", "WFAppName", "WFWindowingFormat"},
 	},
 	"hideApp": {
 		doc: selfDoc{

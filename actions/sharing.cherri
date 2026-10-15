@@ -22,14 +22,18 @@ action sendEmail(
     text subject: 'WFSendEmailActionSubject',
     text body: 'WFSendEmailActionInputAttachments',
     bool ?prompt: 'WFSendEmailActionShowComposeSheet' = true,
-    bool ?draft: 'WFSendEmailActionSaveAsDraft' = false
+    bool ?draft: 'WFSendEmailActionSaveAsDraft' = false,
+    variable ?cc: 'WFSendEmailActionCcRecipients',
+    variable ?bcc: 'WFSendEmailActionBccRecipients',
+    variable ?account: 'WFEmailAccountActionSelectedAccount'
 )
 
 // [Doc]: [Email & SMS Messaging] Send Message: Send an SMS/iMessage to a contact.
 action sendMessage(
     variable contact: 'WFSendMessageActionRecipients',
     text message: 'WFSendMessageContent',
-    bool ?prompt: 'ShowWhenRun' = true
+    bool ?prompt: 'ShowWhenRun' = true,
+    text ?prefix: 'WFSendMessagePrefix'
 )
 
 // [Doc]: [Email & SMS Messaging] Find Email: Find email.

@@ -81,12 +81,12 @@ action searchWeb(searchEngine engine: 'WFSearchWebDestination', text query: 'WFI
 action getWebpageContents(text url: 'WFInput')
 
 // [Doc]: [Giphy] Get GIFs from Giphy: Gets a number of GIFs from Giphy for a search query.
-action default 'giphy' getGifs(text query: 'WFGiphyQuery', number ?gifs: 'WFGiphyLimit' = 1) {
+action default 'giphy' getGifs(text query: 'WFGiphyQuery', number ?gifs: 'WFGiphyLimit' = 1, bool ?selectMultiple: 'WFGiphySelectMultiple' = false) {
 	"WFGiphyShowPicker": false
 }
 
 // [Doc]: [Giphy] Search Giphy: Gets GIFs from Giphy for a search query.
-action 'giphy' searchGiphy(text query: 'WFGiphyQuery')
+action 'giphy' searchGiphy(text query: 'WFGiphyQuery', bool ?selectMultiple: 'WFGiphySelectMultiple' = false)
 
 // [Doc]: [Articles] Get Article: Get article from webpage.
 action getArticle(text webpage: 'WFWebPage')

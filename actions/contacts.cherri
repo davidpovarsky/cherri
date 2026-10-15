@@ -42,7 +42,11 @@ action 'properties.contacts' getContactDetail(variable contact: 'WFInput', conta
 action 'selectcontacts' selectContact(bool ?multiple: 'WFSelectMultiple' = false)
 
 // [Doc]: [Phone] Call: Call a contact.
-action 'com.apple.mobilephone.call' call(variable contact: 'WFCallContact')
+action 'com.apple.mobilephone.call' call(variable contact: 'WFCallContact') {
+    "IntentAppDefinition": {
+        "BundleIdentifier": "com.apple.TelephonyUtilities.PhoneIntentHandler"
+    }
+}
 
 enum facetimeCallType {
  'Video',
@@ -51,7 +55,10 @@ enum facetimeCallType {
 
 // [Doc]: [Phone] FaceTime Call: Starts a FaceTime audio or video call with the contact.
 action 'com.apple.facetime.facetime' facetimeCall(variable contact: 'WFFaceTimeContact', facetimeCallType ?type: 'WFFaceTimeType' = "Video") {
-	"WFFaceTimeType": "Video"
+	"WFFaceTimeType": "Video",
+	"IntentAppDefinition": {
+		"BundleIdentifier": "com.apple.TelephonyUtilities.PhoneIntentHandler"
+	}
 }
 
 // [Doc]: [Phone] Get Phone Numbers: Get phone numbers from input.

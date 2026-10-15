@@ -33,13 +33,26 @@ action 'getnameofemoji' getEmojiName(text emoji: 'WFInput'): text
 action 'detect.text' getText(variable input: 'WFInput'): text
 
 // [Doc]: Make Spoken Audio: Creates custom spoken audio from text with controls for rate and pitch.
-action 'makespokenaudiofromtext' makeSpokenAudio(text text: 'WFInput', number ?rate: 'WFSpeakTextRate', number ?pitch: 'WFSpeakTextPitch')
+action 'makespokenaudiofromtext' makeSpokenAudio(
+    text text: 'WFInput',
+    number ?rate: 'WFSpeakTextRate',
+    number ?pitch: 'WFSpeakTextPitch',
+    text ?language: 'WFSpeakTextLanguage',
+    text ?voice: 'WFSpeakTextVoice'
+)
 
 // [Doc]: Define: Returns the definition of the word.
 action 'showdefinition' define(text word: 'Word'): text
 
 // [Doc]: Speak: Speaks the provided text, optionally in another language.
-action 'speaktext' speak(text prompt: 'WFText', bool ?waitUntilFinished: 'WFSpeakTextWait' = true, text ?language: 'WFSpeakTextLanguage')
+action 'speaktext' speak(
+    text prompt: 'WFText',
+    bool ?waitUntilFinished: 'WFSpeakTextWait' = true,
+    text ?language: 'WFSpeakTextLanguage',
+    number ?rate: 'WFSpeakTextRate',
+    number ?pitch: 'WFSpeakTextPitch',
+    text ?voice: 'WFSpeakTextVoice'
+)
 
 
 // [Doc]: [Text Editing] Uppercase: Transforms the text to all uppercase.

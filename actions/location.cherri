@@ -13,7 +13,7 @@ action 'location' currentLocation() {
 }
 
 // [Doc]: Get Current Location
-action 'getcurrentlocation' getCurrentLocation()
+action 'getcurrentlocation' getCurrentLocation(text ?accuracy: 'Accuracy')
 
 enum locationDetail {
     'Name',
@@ -47,7 +47,7 @@ action 'address' streetAddress(
 )
 
 // [Doc]: [Maps] Open in Maps: Open a location in maps.
-action 'searchmaps' openInMaps(variable location: 'WFInput')
+action 'searchmaps' openInMaps(variable location: 'WFInput', text ?app: 'WFSearchMapsActionApp')
 
 // [Doc]: [Maps] Get Maps Link: Get a link for a location.
 action getMapsLink(variable location: 'WFInput')
@@ -64,7 +64,11 @@ enum weatherForecastTypes {
 }
 
 // [Doc]: [Weather] Get Weather Forecast: Get various types of weather forecast for a location.
-action 'weather.forecast' getWeatherForecast(weatherForecastTypes ?type: 'WFWeatherForecastType' = "Daily", text ?location: 'WFInput' = "Current Location")
+action 'weather.forecast' getWeatherForecast(
+    weatherForecastTypes ?type: 'WFWeatherForecastType' = "Daily",
+    text ?location: 'WFInput' = "Current Location",
+    text ?customLocation: 'WFWeatherCustomLocation'
+)
 
 enum weatherDetail {
 	'Name',
@@ -101,11 +105,30 @@ action 'com.apple.weather.AddSavedLocationIntent' addWeatherLocation(variable lo
 action 'com.apple.weather.RemoveSavedLocationIntent' removeWeatherLocation(variable location: 'entities')
 
 // [Doc]: [Maps] Get Directions: Get directions to a destination.
-action 'getdirections' getDirections(variable ?destination: 'WFDestination')
+action 'getdirections' getDirections(
+    variable ?destination: 'WFDestination',
+    text ?app: 'WFGetDirectionsActionApp',
+    text ?mode: 'WFGetDirectionsActionMode',
+    variable ?startLocation: 'WFLocation'
+)
 
 // [Doc]: [Maps] Get Travel Time: Get travel time to a destination.
-action 'gettraveltime' getTravelTime(variable ?destination: 'WFDestination', variable ?customLocation: 'WFGetDirectionsCustomLocation')
+action 'gettraveltime' getTravelTime(
+    variable ?destination: 'WFDestination',
+    variable ?customLocation: 'WFGetDirectionsCustomLocation',
+    text ?mode: 'WFGetDirectionsActionMode',
+    bool ?avoidHighways: 'WFAvoidHighways' = false,
+    bool ?avoidTolls: 'WFAvoidTolls' = false
+)
 
 // [Doc]: [Maps] Get Distance: Get distance to a destination.
-action 'getdistance' getDistance(variable ?destination: 'WFGetDistanceDestination', text ?mode: 'WFGetDirectionsActionMode')
+action 'getdistance' getDistance(
+    variable ?destination: 'WFGetDistanceDestination',
+    text ?mode: 'WFGetDirectionsActionMode',
+    text ?unit: 'WFDistanceUnit',
+    bool ?avoidHighways: 'WFAvoidHighways' = false,
+    bool ?avoidTolls: 'WFAvoidTolls' = false,
+    variable ?startLocation: 'WFGetDirectionsCustomLocation',
+    text ?accuracy: 'Accuracy'
+)
 

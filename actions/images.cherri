@@ -73,6 +73,32 @@ action 'overlayimageonimage' customImageOverlay(
 	"WFShouldShowImageEditor": false
 }
 
+// [Doc]: [Image Editing] Overlay Text: Overlay text on top of an image.
+action 'overlaytext' overlayText(
+    variable image: 'WFImage',
+    text text: 'WFText',
+    customImageOverlayPosition ?position: 'WFTextPosition' = "Center",
+    text ?font: 'WFFont',
+    number ?fontSize: 'WFFontSize' = 36,
+    text ?alignment: 'WFTextAlignment' = "Center",
+    number ?x: 'WFTextX',
+    number ?y: 'WFTextY',
+    number ?percentageX: 'WFPercentageTextX',
+    number ?percentageY: 'WFPercentageTextY',
+    number ?offset: 'WFTextOffset',
+    number ?percentageOffset: 'WFPercentageTextOffset',
+    number ?percentageFontSize: 'WFPercentageFontSize',
+    variable ?color: 'WFTextColor',
+    number ?rotation: 'WFTextRotation',
+    bool ?outlineEnabled: 'WFTextOutlineEnabled',
+    number ?strokeWidth: 'WFTextStrokeWidth',
+    number ?percentageStrokeWidth: 'WFPercentageTextStrokeWidth',
+    variable ?strokeColor: 'WFTextStrokeColor',
+    number ?boxWidth: 'WFTextBoxWidth',
+    number ?percentageBoxWidth: 'WFPercentageTextBoxWidth',
+    text ?sizingMethod: 'WFSizingMethod'
+): variable
+
 // [Doc]: [Image Editing] Resize Image
 action 'image.resize' resizeImage(variable image: 'WFImage', text width: 'WFImageResizeWidth', text ?height: 'WFImageResizeHeight')
 

@@ -55,7 +55,15 @@ action default 'appearance' darkMode() {
 }
 
 // [Doc]: [Wallpaper] Set Wallpaper: Sets the device wallpaper to `input`.
-action 'wallpaper.set' setWallpaper(variable input: 'WFInput')
+action 'wallpaper.set' setWallpaper(
+    variable input: 'WFInput',
+    variable ?poster: 'WFSelectedPoster',
+    text ?location: 'WFWallpaperLocation',
+    bool ?legibilityBlur: 'WFWallpaperLegibilityBlur',
+    bool ?perspectiveZoom: 'WFWallpaperPerspectiveZoom',
+    bool ?showPreview: 'WFWallpaperShowPreview',
+    bool ?smartCrop: 'WFWallpaperSmartCrop'
+)
 
 // [Doc]: [Wallpaper] Get Wallpapers: Get device wallpapers.
 action default !mac v16.2 'posters.get' getAllWallpapers(): array
@@ -78,3 +86,9 @@ action toggleSet 'truetone.set' TrueTone 'OnValue'
 
 // [Doc]: Stage Manager
 action toggleSet 'stagemanager.set' StageManager(bool showDock: 'showDock' = true, bool showRecentApps: 'showRecentApps' = true)
+
+// [Doc]: [Notifications] Announce Notifications: Turn announce notifications on or off.
+action toggleSet !mac 'announcenotifications.set' AnnounceNotifications 'OnValue'
+
+// [Doc]: [Phone] Silence Unknown Callers: Turn silence unknown callers on or off.
+action toggleSet !mac 'silenceunknowncallers.set' SilenceUnknownCallers 'OnValue'

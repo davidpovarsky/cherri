@@ -1,0 +1,599 @@
+# Cherri v2 P10 - Complete Apple Shortcuts Action Coverage Audit
+
+> **Generated:** 2026-10-15T10:15:02.586998+00:00 | **Host OS:** macOS 27.0.1 (26A434)
+
+## 1. Executive Coverage Summary
+
+| Metric | Count | Percentage | Notes |
+| --- | --- | --- | --- |
+| **Total Raw Discovered Records** | 2396 | 100% | Union of builtins, App Intents, and ToolKit |
+| **Eligible User-Facing Actions** | 1638 | 68.4% | Excludes internal, config-only, non-runnable, third-party |
+| **Covered & Verified** | 310 | 18.9% of eligible | Mapped in Cherri with verified parameter contracts |
+| **Missing Parameter Repairs** | 57 | 3.5% | Covered actions needing parameter additions |
+| **Missing Built-in Actions** | 134 | 8.2% | Native built-ins needing Cherri definitions |
+| **New in macOS 27** | 436 | 26.6% | Introduced in macOS 27 runtime |
+| **Missing App Intents** | 701 | 42.8% | Apple first-party App Intent Link actions |
+| **Excluded / Internal / Config** | 758 | 31.6% | Correctly excluded from denominator |
+
+## 2. Taxonomy Status Breakdown
+
+| Status | Count | Description |
+| --- | --- | --- |
+| `COVERED_VERIFIED` | 310 | |
+| `COVERED_PARTIAL` | 0 | |
+| `NEW_IN_27` | 436 | |
+| `NEW_NATIVE_ACTION` | 134 | |
+| `MISSING_PARAM` | 57 | |
+| `MISSING_TYPE` | 0 | |
+| `MISSING_VARIANT` | 0 | |
+| `MISSING_APP_INTENT_DESCRIPTOR` | 701 | |
+| `MISSING_SERIALIZER` | 0 | |
+| `NEEDS_TARGET_PROBE` | 0 | |
+| `DEFERRED_NO_EVIDENCE` | 64 | |
+| `EXCLUDED_HIDDEN_INTERNAL` | 131 | |
+| `EXCLUDED_CONFIG_ONLY` | 29 | |
+| `EXCLUDED_NONRUNNABLE` | 507 | |
+| `EXCLUDED_THIRD_PARTY_DEPENDENCY` | 27 | |
+| `EXCLUDED_UNSUPPORTED_TARGET` | 0 | |
+| `BLOCKED_EXTERNAL` | 0 | |
+
+## 3. macOS 26 vs macOS 27 Delta
+
+- **Total Actions (macOS 26):** 1906
+- **Total Actions (macOS 27):** 2165
+- **Newly Discovered Actions in 27:** 464
+- **Removed/Deprecated Actions:** 205
+- **Modified Parameter/State Actions:** 54
+
+### Newly Added Action Identifiers in macOS 27:
+- `com.apple.AppKit.PresentWritingToolsResult`
+- `com.apple.AppKit.RequestEditingContext`
+- `com.apple.AppKit.WritingToolsCanPerformIntent`
+- `com.apple.AppKit.WritingToolsOpenEndedIntent`
+- `com.apple.AppKit.WritingToolsPartnerIntent`
+- `com.apple.AppKit.WritingToolsSummarizeIntent`
+- `com.apple.AppKit.WritingToolsTransformKeyPointsIntent`
+- `com.apple.AppKit.WritingToolsTransformListIntent`
+- `com.apple.AppKit.WritingToolsTransformTableIntent`
+- `com.apple.GenerativePlaygroundApp.CreateImageIntent`
+- `com.apple.Magnifier.AskVQAIntent`
+- `com.apple.Magnifier.FindSessionAppIntent`
+- `com.apple.Magnifier.FollowUpVQAAppIntent`
+- `com.apple.Magnifier.WhatColorIsThisIntent`
+- `com.apple.Maps.CalculateETAIntent`
+- `com.apple.Maps.CurrentLocationEntity`
+- `com.apple.Maps.MapsIntentsDebugDispatch`
+- `com.apple.Maps.MapsShowPlacesInAppIntent`
+- `com.apple.Maps.NavigationSessionEntity`
+- `com.apple.Maps.ParkingLocationDataEntity`
+- `com.apple.Maps.SearchPlacesIntent`
+- `com.apple.Maps.StartNavigationIntent`
+- `com.apple.Maps.TestStartNavigationIntent`
+- `com.apple.Maps.TestUpdateNavigationIntent`
+- `com.apple.Maps.UpdateNavigationIntent`
+- `com.apple.MobileSMS.DraftMessageIntent`
+- `com.apple.MobileSMS.EditSentMessageIntent`
+- `com.apple.MobileSMS.SearchMessagesIntent`
+- `com.apple.MobileSMS.SendCollaborationMessageIntent`
+- `com.apple.MobileSMS.SendMessageIntent`
+- `com.apple.MobileSMS.SetConversationReadStatusIntent`
+- `com.apple.MobileSMS.SetMessageReadStatusIntent`
+- `com.apple.MobileSMS.UnsendMessageIntent`
+- `com.apple.Music.AddMusicItemToLibrarySiriIntent`
+- `com.apple.Music.AddMusicItemToPlaylistSiriIntent`
+- `com.apple.Music.CreateStationSiriIntent`
+- `com.apple.Music.OpenMusicItemSiriIntent`
+- `com.apple.Music.PlayMusicItemSiriIntent`
+- `com.apple.Music.SearchMusicSiriIntent`
+- `com.apple.Music.UpdateMusicItemAffinitySiriIntent`
+- `com.apple.Music.WarmupMusicQueueSiriIntent`
+- `com.apple.Notes.CreateNoteIntent`
+- `com.apple.Notes.EmphasisLinkAction`
+- `com.apple.Notes.NoteAppendTextIntent`
+- `com.apple.Notes.UpdateNoteIntent`
+- `com.apple.Photos.CopyPasteEditsIntent`
+- `com.apple.Photos.MemoryEntity`
+- `com.apple.Photos.PersonEntity`
+- `com.apple.Photos.PhotosAttributedSearchMediaAssistantIntent`
+- `com.apple.Photos.PhotosEditAssetAssistantIntent`
+- `com.apple.Photos.PhotosEntityCollectionSearchAssistantIntent`
+- `com.apple.Photos.PhotosFavoriteMemoriesAssistantIntent`
+- `com.apple.Photos.PhotosMoveAssetsToPersonalLibraryAssistantIntent`
+- `com.apple.Photos.PhotosMoveAssetsToSharedLibraryAssistantIntent`
+- `com.apple.Photos.PhotosOpenMemoryCreationViewAssistantIntent`
+- `com.apple.Safari.AddHistoryItem`
+- `com.apple.Safari.CreateReadingListItem`
+- `com.apple.Safari.DeleteHistoryItems`
+- `com.apple.Safari.GetHistoryItems`
+- `com.apple.Safari.HistoryEntity`
+- `com.apple.Safari.NotifyUserForUpdatedPageIntent`
+- `com.apple.Safari.OpenHistoryItem`
+- `com.apple.Safari.OpenReadingListItem`
+- `com.apple.Safari.ReadingListItemEntity`
+- `com.apple.Safari.ReportNotifyMeWhenAutomationResult`
+- `com.apple.Safari.RequestWebPageContextIntent`
+- `com.apple.Settings.AccessibilitySettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.AppleAccountSettingsDeepLink`
+- `com.apple.Settings.ApplicationNotificationsSettings`
+- `com.apple.Settings.ApplicationNotificationsSettings-UpdatableEntity`
+- `com.apple.Settings.AutoDateTimeEntity`
+- `com.apple.Settings.AutoHideMenuBarOptionEntity`
+- `com.apple.Settings.AutoHideMenuBarOptionEntity-UpdatableEntity`
+- `com.apple.Settings.AutoTimeZoneEntity`
+- `com.apple.Settings.BluetoothPowerEntity`
+- `com.apple.Settings.BluetoothPowerEntity-UpdatableEntity`
+- `com.apple.Settings.BluetoothSettingsDeepLink`
+- `com.apple.Settings.CDsAndDvDsSettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.ChangeMouseTrackingSpeedIntent`
+- `com.apple.Settings.ChangeTrackpadTrackingSpeedIntent`
+- `com.apple.Settings.ClassKitSettingsSettingsDeepLink`
+- `com.apple.Settings.ClassroomDynamicDeepLinks`
+- `com.apple.Settings.ClockOptionsEntity-UpdatableEntity`
+- `com.apple.Settings.ControlCenterModule-UpdatableEntity`
+- `com.apple.Settings.ControlCenterSettingsSettingsDeepLink`
+- `com.apple.Settings.DateAndTimeExtensionSettingsDeepLink`
+- `com.apple.Settings.DateTimeEntity`
+- `com.apple.Settings.DesktopSettingsEntity`
+- `com.apple.Settings.DesktopSettingsEntity-UpdatableEntity`
+- `com.apple.Settings.DesktopSettingsSettingsDeepLink`
+- `com.apple.Settings.DeviceManagementSettingsDeepLink`
+- `com.apple.Settings.DockSettingsEntity`
+- `com.apple.Settings.DockSettingsEntity-UpdatableEntity`
+- `com.apple.Settings.FamilyMemberDetailsDeepLink`
+- `com.apple.Settings.FamilySettingsDeepLink`
+- `com.apple.Settings.FamilySettingsSettingsDeepLink`
+- `com.apple.Settings.FamilySubscriptionsDeepLink`
+- `com.apple.Settings.FocusEntity`
+- `com.apple.Settings.FullScreenSwipeEntity`
+- `com.apple.Settings.FullScreenSwipeEntity-UpdatableEntity`
+- `com.apple.Settings.GameCenterMacOsSettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.GameControllerMacSettingsSettingsDeepLink`
+- `com.apple.Settings.GetStartupDiskIntent`
+- `com.apple.Settings.HourFormatEntity`
+- `com.apple.Settings.HourFormatEntity-UpdatableEntity`
+- `com.apple.Settings.KeyboardSettingsSettingsDeepLink`
+- `com.apple.Settings.LocalizationSettingsDeepLink`
+- `com.apple.Settings.MissionControlEntity`
+- `com.apple.Settings.MissionControlEntity-UpdatableEntity`
+- `com.apple.Settings.MissionControlSettingsEntity`
+- `com.apple.Settings.MissionControlSettingsEntity-UpdatableEntity`
+- `com.apple.Settings.MouseExtensionSettingsDeepLink`
+- `com.apple.Settings.MouseTrackingSpeedEntity`
+- `com.apple.Settings.MouseTrackingSpeedEntity-UpdatableEntity`
+- `com.apple.Settings.NotificationCenterEntity`
+- `com.apple.Settings.NotificationCenterEntity-UpdatableEntity`
+- `com.apple.Settings.NotificationsSettingsSettingsDeepLink`
+- `com.apple.Settings.OpenAccessibilitySettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.OpenAppleAccountSettingsDeepLink`
+- `com.apple.Settings.OpenApplicationNotificationsSettings`
+- `com.apple.Settings.OpenAutomaticallySetDateTimeSetting`
+- `com.apple.Settings.OpenAutomaticallySetTimeZoneSetting`
+- `com.apple.Settings.OpenBiometricsAndPasswordSettingsEntityDeepLinks`
+- `com.apple.Settings.OpenBluetoothPowerDeepLink`
+- `com.apple.Settings.OpenBluetoothSettingsDeepLink`
+- `com.apple.Settings.OpenCDsAndDvDsSettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.OpenClassKitSettingsSettingsDeepLink`
+- `com.apple.Settings.OpenClassroomDynamicDeepLinks`
+- `com.apple.Settings.OpenClockOptionsEntity`
+- `com.apple.Settings.OpenConfiguredInternetAccountSettings`
+- `com.apple.Settings.OpenControlCenterModule`
+- `com.apple.Settings.OpenControlCenterSettingsSettingsDeepLink`
+- `com.apple.Settings.OpenCurrentTimeZoneSetting`
+- `com.apple.Settings.OpenDateAndTimeExtensionSettingsDeepLink`
+- `com.apple.Settings.OpenDesktopSettingsEntity`
+- `com.apple.Settings.OpenDesktopSettingsSettingsDeepLink`
+- `com.apple.Settings.OpenDeviceManagementSettingsDeepLink`
+- `com.apple.Settings.OpenDockSettingsEntity`
+- `com.apple.Settings.OpenFamilyMemberSettings`
+- `com.apple.Settings.OpenFamilySettings`
+- `com.apple.Settings.OpenFamilySettingsSettingsDeepLink`
+- `com.apple.Settings.OpenFamilySetup`
+- `com.apple.Settings.OpenFamilySubscriptions`
+- `com.apple.Settings.OpenFocusSettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.OpenGameCenterMacOsSettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.OpenGameControllerMacSettingsSettingsDeepLink`
+- `com.apple.Settings.OpenInternetAccountsSettings`
+- `com.apple.Settings.OpenKeyboardSettingsSettingsDeepLink`
+- `com.apple.Settings.OpenLocalizationSettingsDeepLink`
+- `com.apple.Settings.OpenMissionControlSettingsEntity`
+- `com.apple.Settings.OpenMouseExtensionSettingsDeepLink`
+- `com.apple.Settings.OpenNotificationCenterEntity`
+- `com.apple.Settings.OpenNotificationSummarizationEntity`
+- `com.apple.Settings.OpenNotificationsSettingsSettingsDeepLink`
+- `com.apple.Settings.OpenPasswordsSettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.OpenScreenTimeDeepLinksIntent`
+- `com.apple.Settings.OpenSiriSetupSettingsDeepLink`
+- `com.apple.Settings.OpenSoftwareUpdateSettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.OpenSpotlightSettingsDeepLinks`
+- `com.apple.Settings.OpenStartupDiskSettingsDeepLink`
+- `com.apple.Settings.OpenStartupDiskStaticDeepLinks`
+- `com.apple.Settings.OpenStorageSettingsDeepLink`
+- `com.apple.Settings.OpenTheCurrentDateTimeSetting`
+- `com.apple.Settings.OpenTimeMachineSettingsSettingsDeepLink`
+- `com.apple.Settings.OpenTrackpadExtensionSettingsDeepLink`
+- `com.apple.Settings.OpenTwentyFourHourTimeSetting`
+- `com.apple.Settings.OpenVpnSettingsDeepLink`
+- `com.apple.Settings.OpenWallpaperSettingsDeepLink`
+- `com.apple.Settings.OpenWiFiSettingsDeepLink`
+- `com.apple.Settings.OpenWidgetSettingsEntity`
+- `com.apple.Settings.OpenWindowsSettingsEntity`
+- `com.apple.Settings.PasswordsSettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.PlaceholderAboutExtensionSettingsDeepLink`
+- `com.apple.Settings.PlaceholderAirDropHandoffExtensionSettingsDeepLink`
+- `com.apple.Settings.PlaceholderAppearanceSettingsDeepLink`
+- `com.apple.Settings.PlaceholderDisplaysExtSettingsDeepLink`
+- `com.apple.Settings.PlaceholderLockScreenSettingsDeepLink`
+- `com.apple.Settings.PlaceholderLoginItemsSettingsDeepLink`
+- `com.apple.Settings.PlaceholderNetworkSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenAboutExtensionSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenAirDropHandoffExtensionSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenAppearanceSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenDisplaysExtSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenLockScreenSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenLoginItemsSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenNetworkSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenPrinterScannerSettingsSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenSecurityPrivacyExtensionSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenSharingSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenSoundSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenTransferResetExtensionSettingsDeepLink`
+- `com.apple.Settings.PlaceholderOpenUsersGroupsSettingsDeepLink`
+- `com.apple.Settings.PlaceholderPrinterScannerSettingsSettingsDeepLink`
+- `com.apple.Settings.PlaceholderSecurityPrivacyExtensionSettingsDeepLink`
+- `com.apple.Settings.PlaceholderSharingSettingsDeepLink`
+- `com.apple.Settings.PlaceholderSoundSettingsDeepLink`
+- `com.apple.Settings.PlaceholderTransferResetExtensionSettingsDeepLink`
+- `com.apple.Settings.PlaceholderUsersGroupsSettingsDeepLink`
+- `com.apple.Settings.PrefPanesDeepLink`
+- `com.apple.Settings.PrefPanesOpenDeepLink`
+- `com.apple.Settings.RecentDocumentsOptionEntity`
+- `com.apple.Settings.RecentDocumentsOptionEntity-UpdatableEntity`
+- `com.apple.Settings.ScreenSaverNameIntent`
+- `com.apple.Settings.ScreenTimeDeepLinks`
+- `com.apple.Settings.ScrollDirectionEntity`
+- `com.apple.Settings.ScrollDirectionEntity-UpdatableEntity`
+- `com.apple.Settings.SecondaryClickEntity`
+- `com.apple.Settings.SecondaryClickEntity-UpdatableEntity`
+- `com.apple.Settings.SetFocusState`
+- `com.apple.Settings.SettingsEntity`
+- `com.apple.Settings.SetupFamilyDeepLink`
+- `com.apple.Settings.ShowAsScreenSaverEntity`
+- `com.apple.Settings.ShowAsScreenSaverEntity-UpdatableEntity`
+- `com.apple.Settings.ShowAsWallpaperEntity`
+- `com.apple.Settings.ShowAsWallpaperEntity-UpdatableEntity`
+- `com.apple.Settings.ShowBatteryPercentageEntity`
+- `com.apple.Settings.ShowBatteryPercentageEntity-UpdatableEntity`
+- `com.apple.Settings.ShowMenuBarBackgroundEntity-UpdatableEntity`
+- `com.apple.Settings.ShowScreenSaverOnAllSpacesEntity`
+- `com.apple.Settings.ShowScreenSaverOnAllSpacesEntity-UpdatableEntity`
+- `com.apple.Settings.ShowWallpaperOnAllSpacesEntity`
+- `com.apple.Settings.ShowWallpaperOnAllSpacesEntity-UpdatableEntity`
+- `com.apple.Settings.SiriSetupSettingsDeepLink`
+- `com.apple.Settings.SmartZoomEntity`
+- `com.apple.Settings.SmartZoomEntity-UpdatableEntity`
+- `com.apple.Settings.SoftwareUpdateSettingsExtensionIntents`
+- `com.apple.Settings.SoftwareUpdateSettingsExtensionSettingsDeepLink`
+- `com.apple.Settings.SpotlightSettingsDeepLinks`
+- `com.apple.Settings.StartupDiskSettingsDeepLink`
+- `com.apple.Settings.StorageSettingsDeepLink`
+- `com.apple.Settings.SwipeBetweenPagesEntity`
+- `com.apple.Settings.SwipeBetweenPagesEntity-UpdatableEntity`
+- `com.apple.Settings.TimeMachineSettingsSettingsDeepLink`
+- `com.apple.Settings.TimeZoneEntity`
+- `com.apple.Settings.TrackpadAppExposeEntity`
+- `com.apple.Settings.TrackpadAppExposeEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadClickPressureEntity`
+- `com.apple.Settings.TrackpadClickPressureEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadExtensionSettingsDeepLink`
+- `com.apple.Settings.TrackpadForceClickEntity`
+- `com.apple.Settings.TrackpadForceClickEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadLaunchpadEntity`
+- `com.apple.Settings.TrackpadLaunchpadEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadLookUpAndDataDetectorsEntity`
+- `com.apple.Settings.TrackpadLookUpAndDataDetectorsEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadMissionControlEntity`
+- `com.apple.Settings.TrackpadMissionControlEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadNotificiationCenterEntity`
+- `com.apple.Settings.TrackpadNotificiationCenterEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadQuietClickEntity`
+- `com.apple.Settings.TrackpadQuietClickEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadRotateEntity`
+- `com.apple.Settings.TrackpadRotateEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadSecondaryClickEntity`
+- `com.apple.Settings.TrackpadSecondaryClickEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadShowDesktopEntity`
+- `com.apple.Settings.TrackpadShowDesktopEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadSmartZoomEntity`
+- `com.apple.Settings.TrackpadSmartZoomEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadSwipeBetweenAppsEntity`
+- `com.apple.Settings.TrackpadSwipeBetweenAppsEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadSwipeBetweenPagesEntity`
+- `com.apple.Settings.TrackpadSwipeBetweenPagesEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadTapToClickEntity`
+- `com.apple.Settings.TrackpadTapToClickEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadTrackingSpeedEntity`
+- `com.apple.Settings.TrackpadTrackingSpeedEntity-UpdatableEntity`
+- `com.apple.Settings.TrackpadZoomInOutEntity`
+- `com.apple.Settings.TrackpadZoomInOutEntity-UpdatableEntity`
+- `com.apple.Settings.UserSwitcherMenuStyleEntity-UpdatableEntity`
+- `com.apple.Settings.VpnSettingsDeepLink`
+- `com.apple.Settings.WallpaperSettingsDeepLink`
+- `com.apple.Settings.WiFiSettingsDeepLink`
+- `com.apple.Settings.WidgetSettingsEntity`
+- `com.apple.Settings.WidgetSettingsEntity-UpdatableEntity`
+- `com.apple.Settings.WindowsSettingsEntity`
+- `com.apple.Settings.WindowsSettingsEntity-UpdatableEntity`
+- `com.apple.SystemIntents.CloseApplicationIntent`
+- `com.apple.SystemIntents.LaunchApplicationIntent`
+- `com.apple.SystemIntents.ShowHomeScreenIntent`
+- `com.apple.TVRemoteUIService.LaunchScreenSaverIntent`
+- `com.apple.VisionAppIntents.DetectBarcodesIntent`
+- `com.apple.VisionAppIntents.FindSimilarImagesIntent`
+- `com.apple.VisionAppIntents.RecognizeDocumentIntent`
+- `com.apple.VisionAppIntents.RemoveBackgroundIntent`
+- `com.apple.WritingTools.WritingToolsAppIntentsExtension.ComposeIntent`
+- `com.apple.WritingTools.WritingToolsAppIntentsExtension.QuestionAnswerIntent`
+- `com.apple.calls.PhoneAppIntentsExtension.AnswerCallIntent`
+- `com.apple.calls.PhoneAppIntentsExtension.CallEmergencyDestination`
+- `com.apple.calls.PhoneAppIntentsExtension.CallMessage`
+- `com.apple.calls.PhoneAppIntentsExtension.CallRecord`
+- `com.apple.calls.PhoneAppIntentsExtension.CreateConferenceCallIntent`
+- `com.apple.calls.PhoneAppIntentsExtension.EndCallIntent`
+- `com.apple.calls.PhoneAppIntentsExtension.PrepareCallMessagesIntent`
+- `com.apple.calls.PhoneAppIntentsExtension.PrepareReadCallRecordsIntent`
+- `com.apple.calls.PhoneAppIntentsExtension.SetCallAudioRouteIntent`
+- `com.apple.calls.PhoneAppIntentsExtension.StartEmergencyCallIntent`
+- `com.apple.calls.PhoneAppIntentsExtension.StartFaceTimeCallIntent`
+- `com.apple.calls.PhoneAppIntentsExtension.StartTelephonyCallIntent`
+- `com.apple.campo.ClearSpotlightIntent`
+- `com.apple.campo.ResumeConversationIntent`
+- `com.apple.campo.SearchFieldEntity`
+- `com.apple.campo.SearchSpotlightIntent`
+- `com.apple.campo.SearchSpotlightIntentInternal`
+- `com.apple.campo.SearchUIContinuationIntent`
+- `com.apple.campo.SearchUIOpenKnowledgeIntent`
+- `com.apple.campo.ToggleSpotlightIntent`
+- `com.apple.clock.AssistantAlarmEntity`
+- `com.apple.clock.AssistantCancelTimerIntent`
+- `com.apple.clock.AssistantCreateAlarmIntent`
+- `com.apple.clock.AssistantCreateTimerIntent`
+- `com.apple.clock.AssistantDeleteAlarmIntent`
+- `com.apple.clock.AssistantLapStopwatchIntent`
+- `com.apple.clock.AssistantPauseTimerIntent`
+- `com.apple.clock.AssistantResetStopwatchIntent`
+- `com.apple.clock.AssistantResumeTimerIntent`
+- `com.apple.clock.AssistantStartStopwatchIntent`
+- `com.apple.clock.AssistantStopStopwatchIntent`
+- `com.apple.clock.DismissAlarmIntent`
+- `com.apple.clock.SnoozeAlarmIntent`
+- `com.apple.clock.TimerEntity`
+- `com.apple.clock.UpdateAlarmIntent`
+- `com.apple.clock.UpdateTimerIntent`
+- `com.apple.freeform.CRLBoardEntity`
+- `com.apple.gms.GenerativePartnerPrototypeExtension.GenerativePartnerPrototypeIntentChatGPT`
+- `com.apple.iBooksX.AudiobookEntity`
+- `com.apple.iBooksX.OpenAudioIntent`
+- `com.apple.iBooksX.PlayAudioIntent`
+- `com.apple.iCal.TestComposeEngineIntent`
+- `com.apple.intelligenceflow.GeoFlowTools.GeoFlowTools.StartNavigationFlowTool|com.apple.Maps`
+- `com.apple.intelligenceflow.GeoFlowTools.GeoFlowTools.UpdateWayPointsFlowTool|com.apple.Maps`
+- `com.apple.intelligenceflow.GetCurrentLocationFlowToolPlugin.GetCurrentLocationFlowToolPlugin.GetCurrentLocationTool`
+- `com.apple.journal.ShowWritingPromptsEntity`
+- `com.apple.journal.ShowWritingPromptsEntity-UpdatableEntity`
+- `com.apple.journal.ShowWritingPromptsIntent`
+- `com.apple.journal.widgets.ShowWritingPromptsIntent`
+- `com.apple.journal.widgets.UpdateShowWritingPromptsEntityValueIntent`
+- `com.apple.mail.CommitSearchSuggestionIntent`
+- `com.apple.mail.OpenDraftComposerIntent`
+- `com.apple.mail.OpenSmartMailboxIntent`
+- `com.apple.mail.SearchMailEntityIntent`
+- `com.apple.mail.SearchMailSuggestionsIntent`
+- `com.apple.musicrecognition.mac.RecognizeAudioIntent`
+- `com.apple.musicrecognition.mac.ShazamSongEntityOpenIntent`
+- `com.apple.podcasts.AddAudioToLibraryIntent`
+- `com.apple.podcasts.EpisodeEntity`
+- `com.apple.podcasts.OpenAudioAppIntent`
+- `com.apple.podcasts.PodcastCollectionEntity`
+- `com.apple.podcasts.ShowEntity`
+- `com.apple.podcasts.WarmupAudioQueueIntent`
+- `com.apple.reminders.GroupEntity`
+- `com.apple.reminders.ListEntity`
+- `com.apple.reminders.ReminderEntity`
+- `com.apple.reminders.SectionEntity`
+- `com.apple.reminders.SnoozeRemindersAppIntent`
+- `com.apple.reminders.UpdateListAutoCategorizeAppIntent`
+- `com.apple.reminders.UpdateListIsPinnedAppIntent`
+- `com.apple.reminders.UpdateListLayoutAppIntent`
+- `com.apple.reminders.UpdateListShowsCompletedAppIntent`
+- `com.apple.reminders.UpdateListSortingStyleAppIntent`
+- `com.apple.screenshot.launcher.CaptureSelectionWithVisualIntelligenceIntent`
+- `com.apple.screenshot.launcher.ScreenshotToolbarIntent`
+- `com.apple.shortcuts.GenerateShortcutAction`
+- `com.apple.siri.AudioAppIntentsExtension.SiriKitAddAudioToLibraryIntent`
+- `com.apple.siri.AudioAppIntentsExtension.SiriKitAddAudioToPlaylistIntent`
+- `com.apple.siri.AudioAppIntentsExtension.SiriKitPlayAudioIntent`
+- `com.apple.siri.AudioAppIntentsExtension.SiriKitUpdateAudioAffinityIntent`
+- `com.apple.siri.AudioAppIntentsExtension.WholeHouseAudioPlaceholderIntent`
+- `com.apple.siri.PhotosFlowTools.SiriPhotosFlowTools.EditPhotoWarmth|com.apple.Photos`
+- `com.apple.siri.SiriAppLaunchFlowTools.SiriAppLaunchFlowTools.InteractiveInstallApplicationTool`
+- `com.apple.siri.SiriAudioTools.SiriAudioTools.AddAudioToLibraryTool|com.apple.Music`
+- `com.apple.siri.SiriAudioTools.SiriAudioTools.AddAudioToLibraryTool|com.apple.podcasts`
+- `com.apple.siri.SiriAudioTools.SiriAudioTools.AddAudioToPlaylistTool|com.apple.Music`
+- `com.apple.siri.SiriAudioTools.SiriAudioTools.PlayAudioTool|com.apple.Music`
+- `com.apple.siri.SiriAudioTools.SiriAudioTools.PlayAudioTool|com.apple.iBooksX`
+- `com.apple.siri.SiriAudioTools.SiriAudioTools.PlayAudioTool|com.apple.podcasts`
+- `com.apple.siri.SiriAudioTools.SiriAudioTools.UpdateAudioAffinityTool|com.apple.Music`
+- `com.apple.siri.SiriCrisisAppIntentsExtension._SiriCrisisPlaceholderIntent`
+- `com.apple.siri.SiriCrisisFlowTools.SiriCrisisFlowTools.CrisisDialogFlowTool`
+- `com.apple.siri.SiriGeo.SiriGeoAppIntentExtension.CurrentLocationEntity`
+- `com.apple.siri.SiriGeo.SiriGeoAppIntentExtension.NavigationSessionEntity`
+- `com.apple.siri.SiriGeo.SiriGeoAppIntentExtension.SiriGeoAppIntent`
+- `com.apple.siri.SiriGeo.SiriGeoAppIntentExtension.ThirdPartyStartNavigationIntent`
+- `com.apple.siri.SiriIdentityInternal.SiriIdentityInternal.WhoAmITool`
+- `com.apple.siri.SiriMailFlowTools.SiriMailFlowTools.CreateDraftMailTool|com.apple.mail`
+- `com.apple.siri.SiriMailFlowTools.SiriMailFlowTools.ForwardDraftMailTool|com.apple.mail`
+- `com.apple.siri.SiriMailFlowTools.SiriMailFlowTools.ReplyDraftMailTool|com.apple.mail`
+- `com.apple.siri.SiriMailFlowTools.SiriMailFlowTools.SendDraftMailTool|com.apple.mail`
+- `com.apple.siri.SiriMailFlowTools.SiriMailFlowTools.UpdateDraftMailTool|com.apple.mail`
+- `com.apple.siri.SiriNotebookAppIntentsExtension.SiriNotebookAppIntentsExtension`
+- `com.apple.siri.SiriNotificationsAppIntentsExtension.PrepareNotificationsIntent`
+- `com.apple.siri.SiriNotificationsAppIntentsExtension.SiriNotificationsAppIntentsExtension`
+- `com.apple.siri.SiriNotificationsFlowTools.SiriNotificationsFlowTools.PrepareNotificationsTool`
+- `com.apple.siri.SiriPhoneAppIntentsExtension.ReadCallMessageIntent`
+- `com.apple.siri.SiriPhoneAppIntentsExtension.SiriKitStartCallIntent`
+- `com.apple.siri.SiriPhoneAppIntentsExtension.SiriPhonePunchoutIntent`
+- `com.apple.siri.SiriPhoneAppIntentsExtension.StartCrisisHelplineCallIntent`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.AnswerCallFlowTool|com.apple.calls.PhoneAppIntentsExtension`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.CallEmergencyContactFlowTool`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.CallbackFlowTool`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.PrepareCallMessagesFlowTool`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.PrepareReadCallRecordsFlowTool`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.ReadCallMessageFlowTool`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.RedialFlowTool`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.StartCallFlowTool|com.apple.FaceTime`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.StartCallFlowTool|com.apple.mobilephone`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.StartCrisisHelplineCallFlowTool`
+- `com.apple.siri.SiriPhoneFlowTools.SiriPhoneFlowTools.StartEmergencyCallFlowTool|com.apple.calls.PhoneAppIntentsExtension`
+- `com.apple.siri.SiriPhotosAppIntentsExtension.SiriPhotosAppIntentsExtension`
+- `com.apple.siri.SiriPhotosAppIntentsExtension.UpdatePhotoWarmthTool`
+- `com.apple.siri.SiriTimeFlowTools.SiriTimeFlowTools.CancelTimerFlowTool|com.apple.clock`
+- `com.apple.siri.SiriTimeFlowTools.SiriTimeFlowTools.DismissAlarmFlowTool|com.apple.clock`
+- `com.apple.siri.SiriTimeFlowTools.SiriTimeFlowTools.SnoozeAlarmFlowTool|com.apple.clock`
+- `com.apple.siri.SiriTranslationFlowTools.SiriTranslationFlowTools.TranslateTextFlowTool`
+- `com.apple.siri.SiriVideoAppIntents.CrossDevicePlaceholderIntent`
+- `com.apple.siri.SiriVideoAppIntents.InternalFindFreeformVideoIntent`
+- `com.apple.siri.SiriVideoAppIntents.InternalFindVideoIntent`
+- `com.apple.siri.SiriVideoAppIntents.InternalPlayContentIntent`
+- `com.apple.siri.SiriVideoFlowTools.SiriVideoFlowTools.FindVideoContentTool`
+- `com.apple.siri.messages.SiriMessagesAppIntentsExtension.MessagesPostReadActionAppIntent`
+- `com.apple.siri.messages.SiriMessagesAppIntentsExtension.PrepareToReadConversationAppIntent`
+- `com.apple.siri.messages.SiriMessagesAppIntentsExtension.SiriKitEditLastMessageIntent`
+- `com.apple.siri.messages.SiriMessagesAppIntentsExtension.SiriKitPrepareMessagesForReadingIntent`
+- `com.apple.siri.messages.SiriMessagesAppIntentsExtension.SiriKitSendMessageIntent`
+- `com.apple.siri.messages.SiriMessagesAppIntentsExtension.SiriKitUnsendLastMessageIntent`
+- `com.apple.siri.messages.SiriMessagesAppIntentsExtension.SiriMessagesAppIntent`
+- `com.apple.siri.messages.SiriMessagesAppIntentsExtension.UpdateDraftTool`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.CreateDraftMessageTool|com.apple.MobileSMS`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.EditLastMessageSentWithSiriTool`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.PerformMessagesPostReadActionFlowTool`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.PrepareToReadConversationTool|com.apple.MobileSMS`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.PrepareToReadConversationTool|com.apple.siri.messages.SiriMessagesAppIntentsExtension`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.PrepareToReadMessagesTool|com.apple.MobileSMS`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.SendDraftMessageTool|com.apple.MobileSMS`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.SendMessageReactionTool|com.apple.MobileSMS`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.UnsendLastMessageSentWithSiriTool`
+- `com.apple.siri.messages.SiriMessagesFlowTools.SiriMessagesFlowTools.UpdateDraftMessageTool|com.apple.MobileSMS`
+- `com.apple.siri.notebook.SiriNotebookFlowTools.SiriNotebookFlowTools.CreateListAddReminderFlowTool|com.apple.reminders`
+- `com.apple.siri.notebook.SiriNotebookFlowTools.SiriNotebookFlowTools.CreateReminderFlowTool|com.apple.reminders`
+- `com.apple.siri.notebook.SiriNotebookFlowTools.SiriNotebookFlowTools.PrepareReadRemindersFlowTool|com.apple.reminders`
+- `com.apple.siri.notebook.SiriNotebookFlowTools.SiriNotebookFlowTools.UpdateReminderFlowTool|com.apple.reminders`
+- `com.apple.sociallayerd.CollaborationIntent`
+- `com.apple.systempreferences.AxShowBordersEntity`
+- `com.apple.systempreferences.AxShowBordersEntity-UpdatableEntity`
+- `com.apple.systempreferences.AxZoomScreenShareEntity`
+- `com.apple.systempreferences.AxZoomScreenShareEntity-UpdatableEntity`
+- `com.apple.systempreferences.BatterySettingsDeepLink`
+- `com.apple.systempreferences.EnergySettingsDeepLink`
+- `com.apple.systempreferences.OpenAccessibilityNameRecognitionStaticDeepLinks`
+- `com.apple.systempreferences.OpenAccessibilitySubtitlesandCaptioningStaticDeepLinks`
+- `com.apple.systempreferences.OpenBatterSettingsDeepLink`
+- `com.apple.systempreferences.OpenEnergySettingsDeepLink`
+- `com.apple.systempreferences.SettingsNavigationEventDonationIntent`
+- `com.apple.usernotificationsd.PrepareUserNotificationIntent`
+- `com.apple.usernotificationsd.UserNotificationEntity`
+- `is.workflow.actions.additemtolist`
+- `is.workflow.actions.deletestoredcontent`
+- `is.workflow.actions.filter.vpns`
+- `is.workflow.actions.getdevicedetails.WFDeviceDetail`
+- `is.workflow.actions.getonscreencontext`
+- `is.workflow.actions.getselectedtext`
+- `is.workflow.actions.getstoredcontent`
+- `is.workflow.actions.setstoredcontent`
+- `is.workflow.actions.vpn.get`
+
+## 4. Parameter Repair Inventory (High-Impact Families)
+
+| Identifier | Cherri Name | Missing Keys | Non-User Evaluated |
+| --- | --- | --- | --- |
+| `com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundIntent` | `setBackgroundSound` | *None (all metadata)* | `ShowWhenRun` |
+| `com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundsVolumeIntent` | `setBackgroundSoundsVolume` | *None (all metadata)* | `ShowWhenRun` |
+| `com.apple.facetime.facetime` | `facetimeCall` | *None (all metadata)* | `IntentAppDefinition` |
+| `com.apple.mobilephone.call` | `call` | *None (all metadata)* | `IntentAppDefinition` |
+| `is.workflow.actions.addnewcontact` | `newContact` | `WFContactPhoto` | *None* |
+| `is.workflow.actions.addnewevent` | `addEvent` | `WFAlertCustomTime`, `WFAlertTime`, `WFCalendarDescriptor`, `WFCalendarItemNotes` | `ShowWhenRun` |
+| `is.workflow.actions.addnewreminder` | `addReminder` | `WFAlertCondition`, `WFAlertCustomTime`, `WFAlertLocation`, `WFAlertLocationRadius`, `WFAlertPerson`, `WFCalendarDescriptor`, `WFCalendarItemNotes`, `WFFlag`, `WFImages`, `WFParentTask`, `WFPriority`, `WFTags`, `WFURL`, `WFUrgent` | *None* |
+| `is.workflow.actions.airplanemode.set` | `setAirplaneMode, toggleAirplaneMode` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.appearance` | `darkMode, lightMode, toggleAppearance` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.ask` | `prompt` | `WFAskActionDefaultAnswerDate`, `WFAskActionDefaultAnswerDateAndTime`, `WFAskActionDefaultAnswerTime`, `WFAskActionDefaultAnswerURL`, `urlAnswer` | `ShowWhenRun` |
+| `is.workflow.actions.bluetooth.set` | `setBluetooth, toggleBluetooth` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.cellulardata.set` | `setCellularData, toggleCellularData` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.correctspelling` | `correctSpelling` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.createplaylist` | `createPlaylist` | `WFPlaylistDescription`, `WFPlaylistItems` | *None* |
+| `is.workflow.actions.documentpicker.open` | `getFile, getFileFromFolder` | `WFGetFolderContents` | *None* |
+| `is.workflow.actions.downloadurl` | `downloadURL, fileRequest, formRequest, jsonRequest` | *None (all metadata)* | `ShowHeaders` |
+| `is.workflow.actions.encodemedia` | `encodeAudio, encodeVideo, setMetadata, stripMediaMetadata` | `WFMediaSpeed` | *None* |
+| `is.workflow.actions.file.append` | `appendToFile, prependToFile` | `WFAppendOnNewLine`, `WFFile` | *None* |
+| `is.workflow.actions.filter.apps` | `getApps` | `WFCompoundType`, `WFContentItemFilter`, `WFContentItemInputParameter`, `WFContentItemLimitEnabled`, `WFContentItemLimitNumber`, `WFContentItemSortOrder`, `WFContentItemSortProperty` | *None* |
+| `is.workflow.actions.filter.contacts` | `filterContacts` | `WFCompoundType`, `WFContentItemFilter`, `WFContentItemLimitEnabled` | *None* |
+| `is.workflow.actions.filter.files` | `filterFiles` | `WFCompoundType`, `WFContentItemFilter` | *None* |
+| `is.workflow.actions.filter.windows` | `getWindows` | `WFCompoundType`, `WFContentItemFilter`, `WFContentItemInputParameter` | *None* |
+| `is.workflow.actions.flashlight` | `flashlightOff, flashlightOn, toggleFlashlight` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.format.date` | `formatDate, formatTime, formatTimestamp` | `WFISO8601IncludeTime`, `WFLocale`, `WFRelativeDateFormatStyle` | *None* |
+| `is.workflow.actions.generatebarcode` | `makeQRCode` | `WFQRRounded` | *None* |
+| `is.workflow.actions.getcurrentlocation` | `getCurrentLocation` | `Accuracy` | *None* |
+| `is.workflow.actions.getcurrentsong` | `getCurrentSong` | `Subject` | *None* |
+| `is.workflow.actions.getdirections` | `getDirections` | `WFGetDirectionsActionApp`, `WFGetDirectionsActionMode`, `WFLocation` | *None* |
+| `is.workflow.actions.getdistance` | `getDistance` | `Accuracy`, `WFAvoidHighways`, `WFAvoidTolls`, `WFDistanceUnit`, `WFGetDirectionsCustomLocation` | *None* |
+| `is.workflow.actions.getitemname` | `getName` | `GetWebPageTitle` | *None* |
+| `is.workflow.actions.getmyworkflows` | `getShortcuts` | `Folder` | *None* |
+| `is.workflow.actions.gettraveltime` | `getTravelTime` | `WFAvoidHighways`, `WFAvoidTolls`, `WFGetDirectionsActionMode` | *None* |
+| `is.workflow.actions.getupcomingevents` | `getUpcomingEvents` | `WFGetUpcomingItemCalendar` | *None* |
+| `is.workflow.actions.getwifi` | `getCellularDetail, getEthernetDetail, getWifiDetail` | `WFEthernetDetail` | *None* |
+| `is.workflow.actions.giphy` | `getGifs, searchGiphy` | `WFGiphySelectMultiple` | *None* |
+| `is.workflow.actions.lowpowermode.set` | `setLowPowerMode, toggleLowPowerMode` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.makeimagefrompdfpage` | `makeImageFromPDFPage` | `WFMakeImageFromPDFPageImageFormat` | *None* |
+| `is.workflow.actions.makepdf` | `makePDF` | `WFPDFIncludedPages`, `WFPDFPageRangeEnd`, `WFPDFPageRangeStart`, `WFPDFSinglePage` | *None* |
+| `is.workflow.actions.makespokenaudiofromtext` | `makeSpokenAudio` | `WFSpeakTextLanguage`, `WFSpeakTextVoice` | *None* |
+| `is.workflow.actions.movewindow` | `moveWindow` | `Display`, `WFXCoordinate`, `WFYCoordinate` | *None* |
+| `is.workflow.actions.nightshift.set` | `setNightShift, toggleNightShift` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.openapp` | `openApp` | `WFAppName`, `WFWindowingFormat` | *None* |
+| `is.workflow.actions.openin` | `openFile` | `WFAppName`, `WFSelectedApp` | *None* |
+| `is.workflow.actions.orientationlock.set` | `setOrientationLock, toggleOrientationLock` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.pausemusic` | `pause, play, togglePlayPause` | `WFMediaRoute` | *None* |
+| `is.workflow.actions.personalhotspot.set` | `setHotspot, toggleHotspot` | `OnValue` | `ShowWhenRun` |
+| `is.workflow.actions.playpodcast` | `playPodcast` | `WFPodcastPlaybackOrder` | *None* |
+| `is.workflow.actions.previewdocument` | `quicklook` | `WFQuickLookActionFullScreen` | *None* |
+| `is.workflow.actions.recordaudio` | `recordAudio` | `WFRecordingEnd`, `WFRecordingTimeInterval` | *None* |
+| `is.workflow.actions.resizewindow` | `resizeWindow` | `WFBringToFront`, `WFHeight`, `WFWidth` | *None* |
+| `is.workflow.actions.round` | `ceil, floor, round` | `TenToThePowerOf` | *None* |
+| `is.workflow.actions.runshellscript` | `runShellScript` | `RunAsRoot` | *None* |
+| `is.workflow.actions.runsshscript` | `runSSHScript` | `WFSSHKey` | *None* |
+| `is.workflow.actions.searchappstore` | `searchAppStore` | `WFAttribute`, `WFCountry`, `WFEntity`, `WFItemLimit` | *None* |
+| `is.workflow.actions.searchitunes` | `searchiTunes` | `WFAttribute`, `WFCountry`, `WFEntity`, `WFMediaType` | *None* |
+| `is.workflow.actions.searchmaps` | `openInMaps` | `WFSearchMapsActionApp` | *None* |
+| `is.workflow.actions.searchpodcasts` | `searchPodcasts` | `WFAttribute`, `WFCountry`, `WFEntity`, `WFItemLimit` | *None* |
+| `is.workflow.actions.seek` | `seek` | `WFMediaRoute` | *None* |
+| `is.workflow.actions.selectphoto` | `selectPhotos` | `WFPhotoPickerTypes` | *None* |
+| `is.workflow.actions.sendemail` | `sendEmail` | `WFEmailAccountActionSelectedAccount`, `WFSendEmailActionBccRecipients`, `WFSendEmailActionCcRecipients` | *None* |
+| `is.workflow.actions.sendmessage` | `sendMessage` | `WFSendMessagePrefix` | `IntentAppDefinition` |
+| `is.workflow.actions.setbrightness` | `setBrightness` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.setters.calendarevents` | `editEvent` | `Mode`, `RemoveSpecifiedValue`, `ValueLabel`, `WFCalendarEventContentItemAttachments`, `WFCalendarEventContentItemAttendees`, `WFCalendarEventContentItemDuration`, `WFCalendarEventContentItemEndDate`, `WFCalendarEventContentItemIsAllDay`, `WFCalendarEventContentItemLocation`, `WFCalendarEventContentItemMyStatus`, `WFCalendarEventContentItemNotes`, `WFCalendarEventContentItemTitle`, `WFCalendarEventContentItemURL` | *None* |
+| `is.workflow.actions.setvolume` | `setVolume` | `WFVolumeSetting` | *None* |
+| `is.workflow.actions.skipback` | `skipBack` | `WFMediaRoute` | *None* |
+| `is.workflow.actions.skipforward` | `skipFwd` | `WFMediaRoute` | *None* |
+| `is.workflow.actions.speaktext` | `speak` | `WFSpeakTextPitch`, `WFSpeakTextRate`, `WFSpeakTextVoice` | *None* |
+| `is.workflow.actions.stagemanager.set` | `setStageManager, toggleStageManager` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.statistics` | `statistic` | `Input` | *None* |
+| `is.workflow.actions.takephoto` | `takePhoto` | `WFCameraCaptureDevice` | *None* |
+| `is.workflow.actions.takescreenshot` | `takeInteractiveScreenshot, takeScreenshot` | *None (all metadata)* | `WFTakeScreenshotIgnoreContextualAssistanceLayers` |
+| `is.workflow.actions.text.changecase` | `alternatingCase, capitalize, capitalizeAll, lowercase, titleCase, uppercase` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.text.combine` | `joinText` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.text.match` | `containsText, matchText` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.text.match.getgroup` | `getMatchGroup, getMatchGroups` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.text.split` | `splitText` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.timer.start` | `startTimer` | *None (all metadata)* | `IntentAppDefinition` |
+| `is.workflow.actions.truetone.set` | `setTrueTone, toggleTrueTone` | *None (all metadata)* | `ShowWhenRun` |
+| `is.workflow.actions.vibrate` | `vibrate` | `WFVibrateHapticType` | *None* |
+| `is.workflow.actions.wallpaper.set` | `setWallpaper` | `WFSelectedPoster`, `WFWallpaperLegibilityBlur`, `WFWallpaperLocation`, `WFWallpaperPerspectiveZoom`, `WFWallpaperShowPreview`, `WFWallpaperSmartCrop` | *None* |
+| `is.workflow.actions.weather.forecast` | `getWeatherForecast` | `WFWeatherCustomLocation` | *None* |
+| `is.workflow.actions.wifi.set` | `setWifi, toggleWifi` | *None (all metadata)* | `ShowWhenRun` |

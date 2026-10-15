@@ -36,7 +36,7 @@ action v17 reboot() {
 }
 
 // [Doc]: Vibrate Device: Vibrate the device. Only applies to Apple devices with the haptic engine.
-action !mac vibrate()
+action !mac vibrate(text ?hapticType: 'WFVibrateHapticType')
 
 // [Doc]: Turn On Flashlight: Turn on the flashlight on the device with optional brightness setting.
 action !mac 'flashlight' flashlightOn(float brightness: 'WFFlashlightLevel' = 0.5) {
@@ -116,10 +116,10 @@ action setBrightness(float brightness: 'WFBrightness')
 action toggleSet !mac 'orientationlock.set' OrientationLock 'OnValue'
 
 // [Doc]: Set Volume
-action setVolume(float volume: 'WFVolume')
+action setVolume(float volume: 'WFVolume', text ?setting: 'WFVolumeSetting')
 
 // [Doc]: [Personal Hotspot] Personal Hotspot
-action toggleSet !mac 'personalhotspot.set' Hotspot
+action toggleSet !mac 'personalhotspot.set' Hotspot 'OnValue'
 
 // [Doc]: [Passwords] Search Passwords: Searches passwords in the Passwords app.
 action 'openpasswords' searchPasswords(text query: 'WFShowPasswordsSearchTerm')

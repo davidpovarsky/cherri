@@ -32,6 +32,20 @@ action 'getwifi' getCellularDetail(cellularDetail detail: 'WFCellularDetail') {
 	"WFNetworkDetailsNetwork": "Cellular"
 }
 
+enum ethernetDetail {
+	'Network Name',
+	'BSSID',
+	'IPv4 Address',
+	'IPv6 Address',
+	'Subnet Mask',
+	'Router',
+}
+
+// [Doc]: [Wireless] Get Ethernet Detail: Get a detail of the current Ethernet network.
+action 'getwifi' getEthernetDetail(ethernetDetail detail: 'WFEthernetDetail') {
+	"WFNetworkDetailsNetwork": "Ethernet"
+}
+
 // [Doc]: [Server] Connect to Server: Connect to file server at `url`.
 action 'connecttoservers' connectToServer(text url: 'WFInput')
 
@@ -41,7 +55,16 @@ enum SSHScriptAuthType {
 }
 
 // [Doc]: [Server] Run SSH Script: Run an SSH script using connection details.
-action runSSHScript(text script: 'WFSSHScript', variable input: 'WFInput', text host: 'WFSSHHost', text port: 'WFSSHPort', text user: 'WFSSHUser', SSHScriptAuthType authType: 'WFSSHAuthenticationType', text password: 'WFSSHPassword')
+action runSSHScript(
+    text script: 'WFSSHScript',
+    variable input: 'WFInput',
+    text host: 'WFSSHHost',
+    text port: 'WFSSHPort',
+    text user: 'WFSSHUser',
+    SSHScriptAuthType authType: 'WFSSHAuthenticationType',
+    text ?password: 'WFSSHPassword',
+    text ?key: 'WFSSHKey'
+)
 
 enum IPTypes {
  'IPv4',

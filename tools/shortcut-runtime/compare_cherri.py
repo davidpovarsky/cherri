@@ -15,6 +15,19 @@ import pathlib
 import sys
 
 
+NON_USER_PARAMETER_KEYS = {
+    "ShowWhenRun",
+    "IntentAppDefinition",
+    "ShowHeaders",
+    "WFTakeScreenshotIgnoreContextualAssistanceLayers",
+    "WFCompoundType",
+    "WFContentItemFilter",
+    "WFContentItemLimitEnabled",
+    "WFContentItemInputParameter",
+    "WFGetUpcomingItemCalendar",
+}
+
+
 def load_json(path, default=None):
     if path is None:
         return default
@@ -31,7 +44,7 @@ def load_json(path, default=None):
             import gzip
             with gzip.open(actual_path, "rt", encoding="utf-8") as f:
                 return json.load(f)
-        return json.loads(pathlib.Path(actual_path).read_text(encoding="utf-8"))
+        return json.loads(pathlib.Path(actual_path).read_text(encoding="utf-8-sig"))
     except Exception as e:
         print(f"Warning: Failed to load {path}: {e}", file=sys.stderr)
         return default
@@ -148,7 +161,7 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
                     cherri_param_keys.add(sk)
 
         apple_keys = {p.get("key") for p in apple_params if p.get("key")}
-        unmodeled_keys = apple_keys - cherri_param_keys
+        unmodeled_keys = apple_keys - cherri_param_keys - NON_USER_PARAMETER_KEYS
 
         if unmodeled_keys:
             parameter_gaps.append({

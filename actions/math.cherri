@@ -41,7 +41,7 @@ enum statisticOperations {
 }
 
 // [Doc]: Statistic: Perform a statistical operation on `input`.
-action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'WFInput')
+action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'Input')
 
 enum roundingPlace {
  'Millions'
@@ -64,16 +64,16 @@ enum roundingPlace {
 }
 
 // [Doc]: [Rounding] Round: Rounds number to specified rounding place.
-action default round(number number: 'WFInput', roundingPlace ?roundTo: 'WFRoundTo' = "Integer"): number {
+action default round(number number: 'WFInput', roundingPlace ?roundTo: 'WFRoundTo' = "Integer", number ?powerOfTen: 'TenToThePowerOf'): number {
 	"WFRoundMode": "Normal"
 }
 
 // [Doc]: [Rounding] Round Up: Always round a number up to a specified rounding place.
-action 'round' ceil(number number: 'WFInput', roundingPlace ?roundTo: 'WFRoundTo' = "Integer"): number {
+action 'round' ceil(number number: 'WFInput', roundingPlace ?roundTo: 'WFRoundTo' = "Integer", number ?powerOfTen: 'TenToThePowerOf'): number {
 	"WFRoundMode": "Always Round Up"
 }
 
 // [Doc]: [Rounding] Round Down: Always round a number down to a specified rounding place.
-action 'round' floor(number number: 'WFInput', roundingPlace ?roundTo: 'WFRoundTo' = "Integer"): number {
+action 'round' floor(number number: 'WFInput', roundingPlace ?roundTo: 'WFRoundTo' = "Integer", number ?powerOfTen: 'TenToThePowerOf'): number {
 	"WFRoundMode": "Always Round Down"
 }

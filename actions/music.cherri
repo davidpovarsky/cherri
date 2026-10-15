@@ -3,7 +3,7 @@ Music Actions
 */
 
 // [Doc]: Get Current Song: Gets the currently playing song.
-action getCurrentSong()
+action getCurrentSong(text ?subject: 'Subject')
 
 // [Doc]: Add to Music: Add music to library.
 action 'addtoplaylist' addToMusic(variable songs: 'WFInput')
@@ -55,27 +55,27 @@ enum musicDetail {
 action 'properties.music' getMusicDetail(variable music: 'WFInput', musicDetail detail: 'WFContentItemPropertyName')
 
 // [Doc]: [Playback] Play: Press play.
-action 'pausemusic' play() {
+action 'pausemusic' play(variable ?route: 'WFMediaRoute') {
 	"WFPlayPauseBehavior": "Play"
 }
 
 // [Doc]: [Playback] Pause: Press pause.
-action 'pausemusic' pause() {
+action 'pausemusic' pause(variable ?route: 'WFMediaRoute') {
 	"WFPlayPauseBehavior": "Pause"
 }
 
 // [Doc]: [Playback] Toggle Play/Pause
-action 'pausemusic' togglePlayPause() {
+action 'pausemusic' togglePlayPause(variable ?route: 'WFMediaRoute') {
 	"WFPlayPauseBehavior": "Play/Pause"
 }
 
 // [Doc]: [Playback] Skip Back: Go to the previous song.
-action skipBack() {
+action skipBack(variable ?route: 'WFMediaRoute') {
 	"WFSkipBackBehavior": "Previous Song"
 }
 
 // [Doc]: [Playback] Skip Forward: Go to the next song.
-action 'skipforward' skipFwd()
+action 'skipforward' skipFwd(variable ?route: 'WFMediaRoute')
 
 enum seekBehavior {
     'To Time',
@@ -84,7 +84,7 @@ enum seekBehavior {
 }
 
 // [Doc]: [Playback] Seek: Seek the currently playing media.
-action seek(#timeDuration timeInterval: 'WFTimeInterval' = qty(0, "sec"), seekBehavior behavior: 'WFSeekBehavior' = "To Time")
+action seek(#timeDuration timeInterval: 'WFTimeInterval' = qty(0, "sec"), seekBehavior behavior: 'WFSeekBehavior' = "To Time", variable ?route: 'WFMediaRoute')
 
 // [Doc]: [Playback] Play Next: Add music to play next in the queue.
 action 'addmusictoupnext' playNext(variable music: 'WFMusic') {
@@ -106,8 +106,20 @@ action addToPlaylist(text playlistName: 'WFPlaylistName', variable songs: 'WFInp
 action 'get.playlist' getPlaylistSongs(variable playlistName: 'WFPlaylistName'): array
 
 // [Doc]: Search iTunes: Search for music or media on iTunes.
-action 'searchitunes' searchiTunes(text query: 'WFSearchTerm', number ?limit: 'WFItemLimit')
+action 'searchitunes' searchiTunes(
+    text query: 'WFSearchTerm',
+    number ?limit: 'WFItemLimit',
+    text ?country: 'WFCountry',
+    text ?attribute: 'WFAttribute',
+    text ?entity: 'WFEntity',
+    text ?mediaType: 'WFMediaType'
+)
 
 // [Doc]: [Playlists] Create Playlist: Create a new music playlist.
-action 'createplaylist' createPlaylist(text name: 'WFPlaylistName', text ?author: 'WFPlaylistAuthor')
+action 'createplaylist' createPlaylist(
+    text name: 'WFPlaylistName',
+    text ?author: 'WFPlaylistAuthor',
+    text ?description: 'WFPlaylistDescription',
+    variable ?items: 'WFPlaylistItems'
+)
 

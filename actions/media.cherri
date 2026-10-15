@@ -3,7 +3,13 @@ Media Actions
 */
 
 // [Doc]: Search App Store
-action searchAppStore(text query: 'WFSearchTerm')
+action searchAppStore(
+    text query: 'WFSearchTerm',
+    text ?country: 'WFCountry',
+    text ?attribute: 'WFAttribute',
+    text ?entity: 'WFEntity',
+    number ?limit: 'WFItemLimit'
+)
 
 // [Doc]: Show In iTunes
 action 'showinstore' showIniTunes(variable product: 'WFProduct')
@@ -30,7 +36,12 @@ enum audioSpeeds {
 }
 
 // [Doc]: [Audio] Record Audio: Prompt the user to record audio.
-action recordAudio(audioQuality ?quality: 'WFRecordingCompression' = "Normal", audioStart ?start: 'WFRecordingStart' = "On Tap")
+action recordAudio(
+    audioQuality ?quality: 'WFRecordingCompression' = "Normal",
+    audioStart ?start: 'WFRecordingStart' = "On Tap",
+    text ?end: 'WFRecordingEnd',
+    text ?interval: 'WFRecordingTimeInterval'
+)
 
 // [Doc]: [Audio] Encode Audio: Encode audio to a different format and/or speed.
 action 'encodemedia' encodeAudio(
@@ -64,13 +75,17 @@ enum shazamDetail {
 // [Doc]: [Shazam] Get Shazam Detail: Get a detail about a Shazam result.
 action 'properties.shazam' getShazamDetail(variable input: 'WFInput', shazamDetail detail: 'WFContentItemPropertyName')
 
-// [Doc]: [Camera] Take Photo: Prompt the user to take one or more photos.
-action takePhoto(number count: 'WFPhotoCount' = 1, bool showPreview: 'WFCameraCaptureShowPreview' = true)
-
 enum cameraOrientation {
 	'Front',
 	'Back',
 }
+
+// [Doc]: [Camera] Take Photo: Prompt the user to take one or more photos.
+action takePhoto(
+    number count: 'WFPhotoCount' = 1,
+    bool showPreview: 'WFCameraCaptureShowPreview' = true,
+    cameraOrientation ?camera: 'WFCameraCaptureDevice' = "Back"
+)
 
 enum videoQuality {
 	'Low',
@@ -95,7 +110,13 @@ action takeScreenshot(bool ?mainMonitorOnly: 'WFTakeScreenshotMainMonitorOnly' =
 	"WFTakeScreenshotScreenshotType": "Full Screen"
 }
 // [Doc]: [Podcasts] Search Podcasts
-action searchPodcasts(text query: 'WFSearchTerm')
+action searchPodcasts(
+    text query: 'WFSearchTerm',
+    text ?country: 'WFCountry',
+    text ?attribute: 'WFAttribute',
+    text ?entity: 'WFEntity',
+    number ?limit: 'WFItemLimit'
+)
 
 enum podcastDetail {
 	'Feed URL',
@@ -116,7 +137,7 @@ action 'properties.podcastshow' getPodcastDetail(variable podcast: 'WFInput', po
 action 'getpodcastsfromlibrary' getPodcasts()
 
 // [Doc]: [Podcasts] Play Podcast
-action playPodcast(variable podcast: 'WFPodcastShow')
+action playPodcast(variable podcast: 'WFPodcastShow', text ?order: 'WFPodcastPlaybackOrder')
 
 
 // [Doc]: [Metadata] Strip Media Metadata
@@ -155,10 +176,28 @@ enum encodeVideoSpeeds {
 }
 
 // [Doc]: [Video Editing] Encode Video: Encode a video to a different format, size and/or speed.
-action 'encodemedia' encodeVideo(variable video: 'WFMedia', encodeVideoSizes ?size: 'WFMediaSize' = "Passthrough", encodeVideoSpeeds ?speed: 'WFMediaCustomSpeed' = "Normal", bool ?preserveTransparency: 'WFMediaPreserveTransparency' = false)
+action 'encodemedia' encodeVideo(
+    variable video: 'WFMedia',
+    encodeVideoSizes ?size: 'WFMediaSize' = "Passthrough",
+    encodeVideoSpeeds ?speed: 'WFMediaCustomSpeed' = "Normal",
+    bool ?preserveTransparency: 'WFMediaPreserveTransparency' = false,
+    text ?mediaSpeed: 'WFMediaSpeed'
+)
 
 // [Doc]: [Video Editing] Trim Video: Prompts the user to trim the video.
 action trimVideo(variable video: 'WFInputMedia')
+
+// [Doc]: [Playback] Set Playback Destination: Route audio to a playback destination.
+action 'setplaybackdestination' setPlaybackDestination(
+    variable route: 'WFMediaRoute',
+    text ?operation: 'WFMediaRouteOperation' = "Set"
+)
+
+// [Doc]: [Audio] Set Noise Control Mode: Set AirPods noise control / listening mode.
+action 'listeningmode.set' setNoiseControlMode(
+    text mode: 'WFListeningMode',
+    variable ?route: 'WFRoute'
+)
 
 // [Doc]: [Voice Memos] Search Voice Memos
 action 'com.apple.VoiceMemos.SearchRecordings' searchVoiceMemos(text search: 'searchPhrase'): array

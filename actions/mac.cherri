@@ -3,7 +3,12 @@ macOS-only actions
 */
 
 // [Doc]: Get Apps: Get list of applications.
-action mac v18 'filter.apps' getApps(): array
+action mac v18 'filter.apps' getApps(
+    variable ?apps: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
 
 // [Doc]: Make Disk Image: Create a new disk image.
 action mac v15 makeDiskImage(text name: 'VolumeName', variable contents: 'WFInput', bool ?encrypt: 'EncryptImage' = false) {
@@ -60,7 +65,14 @@ enum windowPosition {
 }
 
 // [Doc]: [Windows] Move Window: Move a window to a defined position.
-action mac moveWindow(variable window: 'WFWindow', windowPosition position: 'WFPosition', bool ?bringToFront: 'WFBringToFront' = true)
+action mac moveWindow(
+    variable window: 'WFWindow',
+    windowPosition position: 'WFPosition',
+    bool ?bringToFront: 'WFBringToFront' = true,
+    text ?display: 'Display',
+    number ?x: 'WFXCoordinate',
+    number ?y: 'WFYCoordinate'
+)
 
 enum windowSize {
  'Fit Screen',
@@ -76,13 +88,43 @@ enum windowSize {
 }
 
 // [Doc]: [Windows] Resize Window: Resize a window to defined size.
-action mac resizeWindow(variable window: 'WFWindow', windowSize configuration: 'WFConfiguration')
+action mac resizeWindow(
+    variable window: 'WFWindow',
+    windowSize configuration: 'WFConfiguration',
+    bool ?bringToFront: 'WFBringToFront' = true,
+    number ?width: 'WFWidth',
+    number ?height: 'WFHeight'
+)
 
 // [Doc]: [Scripts] Run Shell Script
-action mac runShellScript(text script: 'Script', variable ?input: 'Input', text ?shell: 'Shell' = "/bin/zsh", text ?inputMode: 'InputMode' = "to stdin")
+action mac runShellScript(
+    text script: 'Script',
+    variable ?input: 'Input',
+    text ?shell: 'Shell' = "/bin/zsh",
+    text ?inputMode: 'InputMode' = "to stdin",
+    bool ?runAsRoot: 'RunAsRoot' = false
+)
 
 // [Doc]: [Scripts] Run Apple Script
 action mac runAppleScript(rawtext script: 'Script', variable ?input: 'Input')
 
 // [Doc]: [Scripts] Run JavaScript for Automation
 action mac 'runjavascriptforautomation' runJSAutomation(text script: 'Script', variable ?input: 'Input')
+
+// [Doc]: [Disks] Mount Disk Image: Mounts a disk image.
+action mac 'mountdiskimage' mountDiskImage(variable diskImage: 'WFInput'): variable
+
+// [Doc]: [Disks] Eject Disk: Ejects a disk or mounted image.
+action mac 'ejectdisk' ejectDisk(variable disk: 'WFInput')
+
+// [Doc]: [Apps] Get Current App: Get the active/current application.
+action mac 'getcurrentapp' getCurrentApp(text ?scope: 'WFVisibleAppScope' = "Current"): variable
+
+// [Doc]: [Text] Get Selected Text: Get currently selected text on macOS.
+action mac 'getselectedtext' getSelectedText(): text
+
+// [Doc]: [System] Log Out: Log out current user session.
+action mac 'logout' logOut()
+
+// [Doc]: [System] Lock App: Lock an application.
+action mac 'lock.app' lockApp(variable app: 'WFApp', text ?operation: 'WFLockAppOperation' = "Lock")

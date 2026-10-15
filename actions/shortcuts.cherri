@@ -14,7 +14,7 @@ enum shortcutDetail {
 }
 
 // [Doc]: Get Shortcuts: Get all of the Shortcuts on the device.
-action 'getmyworkflows' getShortcuts(): array
+action 'getmyworkflows' getShortcuts(text ?folder: 'Folder'): array
 
 // [Doc]: Get Shortcut Detail: Get a detail about a Shortcut.
 action 'properties.workflow' getShortcutDetail(variable shortcut: 'WFInput', shortcutDetail detail: 'WFContentItemPropertyName')

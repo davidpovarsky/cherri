@@ -48,22 +48,43 @@ action 'addnewcalendar' addCalendar(text name: 'CalendarName')
 // [Doc]: [Calendars] Open Event in Calendar: Show `event` in the calendar app.
 action showInCalendar(variable event: 'WFEvent')
 
-// [Doc]: [Calendars] Edit Event: Edit a detail of an event. Provide an event, a detail to modify, and a new value for that detail.
-action 'setters.calendarevents' editEvent(variable event: 'WFInput', editEventDetail detail: 'WFContentItemPropertyName', text newValue: 'WFCalendarEventContentItemStartDate')
-
 // [Doc]: [Calendars] Get Event Detail: Get a detail of an event.
 action 'properties.calendarevents' getEventDetail(variable event: 'WFInput', eventDetail detail: 'WFContentItemPropertyName')
 
 // [Doc]: [Calendars] Remove Events: Remove an event.
 action removeEvents(variable events: 'WFInputEvents', bool ?includeFutureEvents: 'WFCalendarIncludeFutureEvents' = false)
 
-// dateSpecifier values observed in real exports: 'Today', 'Specified Day'.
-// When dateSpecifier is 'Specified Day', provide specifiedDate as a
-// locale-formatted date string. Calendar filtering is not yet supported:
-// the observed WFGetUpcomingItemCalendar payload embeds device-generated
-// picker data that cannot be reproduced from source alone.
 // [Doc]: [Calendars] Get Upcoming Events: Get upcoming events from the calendars on this device.
 action 'getupcomingevents' getUpcomingEvents(number ?count: 'WFGetUpcomingItemCount', text ?dateSpecifier: 'WFDateSpecifier', text ?specifiedDate: 'WFSpecifiedDate'): variable
+
+// [Doc]: [Dates] Convert Time Zone: Converts a date from one time zone to another.
+action 'converttimezone' convertTimeZone(
+    variable date: 'Date',
+    text sourceTimeZone: 'SourceTimeZone',
+    text destinationTimeZone: 'DestinationTimeZone'
+): variable
+
+// [Doc]: [Reminders] Get Upcoming Reminders: Get upcoming reminders.
+action 'getupcomingreminders' getUpcomingReminders(
+    variable ?list: 'WFGetUpcomingItemCalendar',
+    number ?count: 'WFGetUpcomingItemCount' = 1
+): array
+
+// [Doc]: [Calendars] Find Events: Filter events from calendars.
+action 'filter.calendarevents' filterEvents(
+    variable ?events: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: [Reminders] Find Reminders: Filter reminders from lists.
+action 'filter.reminders' filterReminders(
+    variable ?reminders: 'WFContentItemInputParameter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
 
 // [Doc]: [Reminders] Open Reminders List
 action 'showlist' openRemindersList(variable list: 'WFList')
@@ -209,7 +230,10 @@ action 'format.date' formatTimestamp(
     text date: 'WFDate',
     dateFormats ?dateFormat: 'WFDateFormatStyle' = "Short",
     timeFormats ?timeFormat: 'WFTimeFormatStyle' = "Short",
-    text ?customDateFormat: 'WFDateFormat'
+    text ?customDateFormat: 'WFDateFormat',
+    bool ?iso8601IncludeTime: 'WFISO8601IncludeTime',
+    text ?locale: 'WFLocale',
+    text ?relativeStyle: 'WFRelativeDateFormatStyle'
 ): text
 
 enum timeBetweenDatesUnit {
@@ -235,12 +259,44 @@ action 'addnewevent' addEvent(
     variable ?startDate: 'WFCalendarItemStartDate',
     variable ?endDate: 'WFCalendarItemEndDate',
     bool ?allDay: 'WFCalendarItemAllDay',
-    text ?location: 'WFCalendarItemLocation'
+    text ?location: 'WFCalendarItemLocation',
+    variable ?calendar: 'WFCalendarDescriptor',
+    text ?notes: 'WFCalendarItemNotes',
+    text ?alertTime: 'WFAlertTime',
+    variable ?alertCustomTime: 'WFAlertCustomTime'
 )
+
+enum alertCondition {
+    'At Time',
+    'When Arriving',
+    'When Leaving',
+    'When Messaging',
+}
+
+enum reminderPriority {
+    'None',
+    'Low',
+    'Medium',
+    'High',
+}
 
 // [Doc]: [Reminders] Add Reminder: Add a new reminder.
 action 'addnewreminder' addReminder(
     text title: 'WFCalendarItemTitle',
-    bool ?alert: 'WFAlertEnabled'
+    bool ?alert: 'WFAlertEnabled',
+    variable ?list: 'WFCalendarDescriptor',
+    alertCondition ?alertCondition: 'WFAlertCondition',
+    variable ?alertLocation: 'WFAlertLocation',
+    variable ?alertPerson: 'WFAlertPerson',
+    text ?alertRadius: 'WFAlertLocationRadius',
+    variable ?alertTime: 'WFAlertCustomTime',
+    reminderPriority ?priority: 'WFPriority' = "None",
+    bool ?urgent: 'WFUrgent' = false,
+    bool ?flagged: 'WFFlag' = false,
+    text ?url: 'WFURL',
+    variable ?images: 'WFImages',
+    variable ?parentTask: 'WFParentTask',
+    text ?tags: 'WFTags',
+    text ?notes: 'WFCalendarItemNotes'
 )
 

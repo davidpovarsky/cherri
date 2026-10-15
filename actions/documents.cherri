@@ -29,14 +29,31 @@ action 'avairyeditphoto' markup(variable document: 'WFDocument')
 action 'file.getlink' getFileLink(variable file: 'WFFile')
 
 // [Doc]: [Files & Folders] Append File: Append text to a file.
-action default 'file.append' appendToFile(text filePath: 'WFFilePath', &variable text: 'WFInput') {
+action default 'file.append' appendToFile(
+    text filePath: 'WFFilePath',
+    &variable text: 'WFInput',
+    bool ?newLine: 'WFAppendOnNewLine' = true,
+    variable ?targetFile: 'WFFile'
+) {
 	"WFAppendFileWriteMode": "Append"
 }
 
 // [Doc]: [Files & Folders] Prepend File: Prepend text to a file.
-action 'file.append' prependToFile(text filePath: 'WFFilePath', &variable text: 'WFInput') {
+action 'file.append' prependToFile(
+    text filePath: 'WFFilePath',
+    &variable text: 'WFInput',
+    bool ?newLine: 'WFAppendOnNewLine' = true,
+    variable ?targetFile: 'WFFile'
+) {
 	"WFAppendFileWriteMode": "Prepend"
 }
+
+// [Doc]: [Files & Folders] Move File: Move a file or folder to a new destination folder.
+action 'file.move' moveFile(
+    variable file: 'WFFile',
+    variable folder: 'WFFolder',
+    bool ?replaceExisting: 'WFReplaceExisting' = false
+): variable
 
 // [Doc]: [Files & Folders] Create Folder: Create a folder within the Shortcuts folder or within a `#ref` to a folder.
 action 'file.createfolder' createFolder(text path: 'WFFilePath', &variable ?folder: 'WFFolder')
@@ -53,10 +70,20 @@ action 'file.select' selectFolder(bool ?selectMultiple: 'SelectMultiple' = false
 }
 
 // [Doc]: [Files & Folders] Get File: Get file from a path in the Shortcuts folder or within a `#ref` to a folder.
-action default 'documentpicker.open' getFile(text path: 'WFGetFilePath', &variable ?folder: 'WFFile', bool ?errorIfNotFound: 'WFFileErrorIfNotFound' = true)
+action default 'documentpicker.open' getFile(
+    text path: 'WFGetFilePath',
+    &variable ?folder: 'WFFile',
+    bool ?errorIfNotFound: 'WFFileErrorIfNotFound' = true,
+    bool ?getFolderContents: 'WFGetFolderContents' = false
+)
 
 // [Doc]: [Files & Folders] Open File: Open a file.
-action 'openin' openFile(&variable file: 'WFInput', bool ?askWhenRun: 'WFOpenInAskWhenRun' = false)
+action 'openin' openFile(
+    &variable file: 'WFInput',
+    bool ?askWhenRun: 'WFOpenInAskWhenRun' = false,
+    text ?app: 'WFAppName',
+    variable ?selectedApp: 'WFSelectedApp'
+)
 
 // [Doc]: [Files & Folders] Get Parent Directory: Get the parent directory of the input directory.
 action mac 'getparentdirectory' getParentDirectory(&variable input: 'WFInput'): variable
@@ -135,7 +162,7 @@ enum QRCodeErrorCorrection {
 }
 
 // [Doc]: [QR Codes] Make QR Code
-action 'generatebarcode' makeQRCode(text input: 'WFText', QRCodeErrorCorrection ?errorCorrection: 'WFQRErrorCorrectionLevel' = "Medium", color foregroundColor: 'WFQRForegroundColor' = color(0.0,0.0,0.0,1.0), color backgroundColor: 'WFQRBackgroundColor' = color(2.0,2.0,2.0,1.0))
+action 'generatebarcode' makeQRCode(text input: 'WFText', QRCodeErrorCorrection ?errorCorrection: 'WFQRErrorCorrectionLevel' = "Medium", color foregroundColor: 'WFQRForegroundColor' = color(0.0,0.0,0.0,1.0), color backgroundColor: 'WFQRBackgroundColor' = color(2.0,2.0,2.0,1.0), bool ?rounded: 'WFQRRounded' = false)
 
 // [Doc]: Convert to USDZ
 action 'com.apple.HydraUSDAppIntents.ConvertToUSDZ' convertToUSDZ(variable file)
