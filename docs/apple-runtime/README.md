@@ -145,4 +145,66 @@ with gzip.open("docs/apple-runtime/toolkit-registry.json.gz", "rt", encoding="ut
 To reproduce or update this extraction:
 1. Trigger `.github/workflows/macos-shortcuts-deep-extract.yml` via GitHub Actions.
 2. The workflow runs the 4-shard probe, App Intent dump, ToolKit extractor (`tools/shortcut-runtime/extract_toolkit.py`), and normalizer (`tools/shortcut-runtime/normalize_snapshot.py`).
-3. Download artifacts and replace files in this directory.
+3. Download artifacts and place in the relevant runtime directory.
+
+---
+
+## 7. Artifact Hierarchy & Lineage (macOS 26 vs. 27 & P10 Ledger)
+
+To maintain rigorous evidence hygiene, raw runtime evidence is strictly distinguished from derived analytical artifacts:
+
+### 7.1 Raw Evidence vs. Derived Artifacts
+- **Raw Evidence (Untouched Extraction)**:
+  - `apple-runtime-snapshot.json.gz`: Complete unified extraction payload.
+  - `apple-runtime-manifest.json`: Cryptographic SHA-256 digests and environment metadata.
+  - `parameter-encodings.json.gz`: Per-action probe responses and serialized states.
+  - `toolkit-registry.json.gz`: Complete SQLite ToolKit database dump.
+  - `parameter-timeouts.json`, `parameter-errors.json`: Execution boundary records.
+- **Derived Artifacts (Deterministic Tool Outputs)**:
+  - `comparison-summary.json`: High-level concordance metrics between Cherri catalog and Apple runtime.
+  - `parameter-surface-gaps.json` & `parameter-dispositions.json`: Auditable triage of unmodeled parameters.
+  - `derived-comparison-manifest.json`: Verification digests computed from input evidence and Cherri binary.
+  - `p10/p10-action-ledger.json` & `p10/p10-coverage-report.md`: Multi-axis taxonomy classification across 2,396 discovered action records.
+
+### 7.2 Directory Layout & Lineage
+```text
+docs/apple-runtime/
+├── README.md                                  # This document
+├── apple-runtime-manifest.json                # macOS 26 (Darwin 26.6.2) baseline extraction manifest
+├── comparison-summary.json                    # macOS 26 comparison summary
+├── parameter-encodings.json.gz                # macOS 26 parameter encodings
+├── ...
+├── macos-27/                                  # macOS 27 (Darwin 27.x) extraction & derived comparisons
+│   ├── apple-runtime-manifest.json            # Host OS macOS 27 environment metadata
+│   ├── apple-runtime-snapshot.json.gz         # macOS 27 raw snapshot
+│   ├── comparison-summary.json                # Cherri catalog vs macOS 27 comparison
+│   ├── derived-comparison-manifest.json       # SHA-256 tracking of derived artifacts
+│   ├── parameter-dispositions.json            # Auditable parameter dispositions
+│   ├── parameter-surface-gaps.json            # Parameter gaps (0 unmodeled keys remaining)
+│   └── parameter-encodings.json.gz            # macOS 27 parameter encodings
+└── p10/                                       # Multi-axis action coverage accounting
+    ├── p10-action-ledger.json                 # Complete 2,396-record classification ledger
+    └── p10-coverage-report.md                 # Markdown summary with taxonomy breakdowns
+```
+
+### 7.3 Canonical Reproduction Commands
+All derived artifacts are reproducible via local CLI tooling:
+
+```bash
+# 1. Normalize snapshot (merges raw shards, ToolKit, and App Intents)
+python tools/shortcut-runtime/normalize_snapshot.py \
+  --builtins docs/apple-runtime/macos-27/builtins.json \
+  --encodings docs/apple-runtime/macos-27/parameter-encodings.json.gz \
+  --out docs/apple-runtime/macos-27/apple-runtime-snapshot.json.gz
+
+# 2. Run Cherri vs. Apple runtime comparison
+python tools/shortcut-runtime/compare_cherri.py \
+  --runtime-evidence-dir docs/apple-runtime/macos-27
+
+# 3. Generate multi-axis P10 action ledger & coverage report
+python tools/shortcut-runtime/generate_p10_ledger.py \
+  --runtime-evidence-dir docs/apple-runtime/macos-27 \
+  --out docs/apple-runtime/p10/p10-action-ledger.json \
+  --report docs/apple-runtime/p10/p10-coverage-report.md
+```
+

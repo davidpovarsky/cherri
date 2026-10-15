@@ -25,19 +25,19 @@ SHARED_BUILDER_KEYS = {
     },
     "WFContentItemFilter": {
         "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-        "codePath": "actions_std.go:buildContentItemFilter()",
+        "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
         "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
         "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
     },
     "WFCompoundType": {
         "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-        "codePath": "actions_std.go:buildContentItemFilter()",
+        "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
         "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
         "evidenceRef": "WorkflowKit WFCompoundType enum"
     },
     "WFContentItemLimitEnabled": {
         "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-        "codePath": "actions_std.go:appendParamsFunc",
+        "codePath": "action.go:makeActionParams",
         "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
         "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
     },
@@ -79,6 +79,12 @@ SPECIAL_EVIDENCE_KEYS = {
         "codePath": "actions/calendar.cherri:getUpcomingEvents",
         "rationale": "Device-specific calendar picker token requiring canonical Apple-exported dynamic calendar fixture; standard empty/count/specifier signatures supported without picker",
         "evidenceRef": "macOS 27 parameter-encodings.json: WFGetUpcomingItemCalendar"
+    },
+    ("is.workflow.actions.deletephotos", "ShowWhenRun"): {
+        "disposition": "EMITTED_IMPLICIT_CONSTANT",
+        "codePath": "WorkflowKit runtime runner / com.apple.Photos LinkActionProvider",
+        "rationale": "In macOS 26, is.workflow.actions.deletephotos was a WorkflowKit built-in with ShowWhenRun execution prompt. In macOS 27, photo deletion migrated to LinkActionProvider com.apple.Photos.DeleteAssetsAction with entities. Reconciled across OS versions as an implicit execution toggle.",
+        "evidenceRef": "macOS 26 / macOS 27 historical migration evidence"
     }
 }
 

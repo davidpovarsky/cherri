@@ -44,6 +44,7 @@ action 'selectphoto' selectPhotos(bool ?selectMultiple: 'WFSelectMultiplePhotos'
 // [Doc]: [Photos] Find Photos: Filter photos from library.
 action 'filter.photos' filterPhotos(
     variable ?photos: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'

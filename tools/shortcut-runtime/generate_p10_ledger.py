@@ -102,10 +102,14 @@ def extract_cherri_catalog():
     cmd = ["go", "run", ".", "--actions-json", "--no-ansi"]
     try:
         res = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        return json.loads(res.stdout)
+        data = json.loads(res.stdout)
+        if not data or not data.get("actions"):
+            print("Error: cherri --actions-json returned empty or invalid actions catalog", file=sys.stderr)
+            sys.exit(1)
+        return data
     except Exception as e:
-        print(f"Warning: Failed to run cherri --actions-json: {e}", file=sys.stderr)
-        return {"actions": []}
+        print(f"Error: Failed to run cherri --actions-json: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 def compute_delta_26_to_27(snap26, snap27):
@@ -199,6 +203,23 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
 
     for ident in sorted(all_known_ids):
         is_new_in_27 = bool(snap26 and ident in actions27 and ident not in actions26)
+        is_in_26 = bool(snap26 and ident in actions26)
+        introduced_in = "macOS 27" if is_new_in_27 else ("macOS 26" if is_in_26 else "unknown")
+
+        # Resolve Apple metadata
+        apple_meta = actions27.get(ident) or actions26.get(ident) or {}
+        meta_dict = apple_meta.get("metadata", {})
+        builtin_meta = meta_dict.get("builtin", {})
+        tk_meta = meta_dict.get("toolkit", {})
+
+        os_avail = "unknown"
+        if apple_meta.get("macOnly") or meta_dict.get("macOnly") or ident.startswith("is.workflow.actions.filter.windows"):
+            os_avail = "macOS-only"
+        elif "platforms" in apple_meta and apple_meta["platforms"]:
+            os_avail = ",".join(sorted(apple_meta["platforms"]))
+        elif "unsupportedEnvironments" in builtin_meta:
+            os_avail = "macOS" if "Memory" in str(builtin_meta["unsupportedEnvironments"]) else "unknown"
+
         row = {
             "identifier": ident,
             "title": "",
@@ -207,9 +228,9 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
             "cherriCallables": [],
             "status": "OPEN_IMPLEMENTATION",
             "eligibility": "UNKNOWN",
-            "introducedIn": "macOS 27" if is_new_in_27 else "macOS 26",
+            "introducedIn": introduced_in,
             "isNewIn27": is_new_in_27,
-            "osAvailability": "all",
+            "osAvailability": os_avail,
             "unmodeledKeys": [],
             "userSuppliedGaps": [],
             "nonUserKeys": [],
@@ -220,19 +241,15 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
             "rationale": "",
         }
 
-        # Resolve Apple metadata
-        apple_meta = actions27.get(ident) or actions26.get(ident) or {}
-        meta_dict = apple_meta.get("metadata", {})
-        builtin_meta = meta_dict.get("builtin", {})
-        tk_meta = meta_dict.get("toolkit", {})
-
         row["sources"] = apple_meta.get("sources", [])
-        if "builtinDefinition" in row["sources"] or ident.startswith("is.workflow.actions."):
+        if "builtinDefinition" in row["sources"]:
             row["category"] = "builtin"
         elif "appIntent" in row["sources"] or "WFLinkActionProvider" in str(tk_meta):
             row["category"] = "app_intent"
         elif "toolkit" in row["sources"]:
             row["category"] = "toolkit"
+        elif ident.startswith("is.workflow.actions."):
+            row["category"] = "builtin"
         else:
             row["category"] = "cherri_custom"
 
@@ -296,15 +313,26 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
                 row["userSuppliedGaps"] = user_gaps
                 row["nonUserKeys"] = non_user
 
+                has_needs_evidence = any(d.get("disposition") == "NEEDS_RUNTIME_EVIDENCE" for d in disps)
                 if user_gaps:
                     row["status"] = "MISSING_PARAM"
                     row["rationale"] = f"Action has {len(user_gaps)} unmodeled user parameters: {', '.join(user_gaps)}"
+                elif has_needs_evidence:
+                    row["status"] = "COVERED_PARTIAL"
+                    row["rationale"] = f"Action has parameter(s) requiring runtime evidence: {[d['parameterKey'] for d in disps if d.get('disposition') == 'NEEDS_RUNTIME_EVIDENCE']}"
+                elif row["outputTypeConcordance"] == "DIFFERS":
+                    row["status"] = "COVERED_PARTIAL"
+                    row["rationale"] = f"Parameter mapped but output type differs (Apple: {row['outputType']}, Cherri: {row['cherriOutputType']})"
                 else:
                     row["status"] = "COVERED_VERIFIED"
                     row["rationale"] = f"All {len(non_user)} unmodeled keys have verified non-user or builder dispositions ({', '.join(non_user)})"
             else:
-                row["status"] = "COVERED_VERIFIED"
-                row["rationale"] = "Fully covered in Cherri with all declared parameters mapped"
+                if row["outputTypeConcordance"] == "DIFFERS":
+                    row["status"] = "COVERED_PARTIAL"
+                    row["rationale"] = f"Action mapped but output type differs (Apple: {row['outputType']}, Cherri: {row['cherriOutputType']})"
+                else:
+                    row["status"] = "COVERED_VERIFIED"
+                    row["rationale"] = "Fully covered in Cherri with all declared parameters mapped"
 
             row["eligibility"] = "ELIGIBLE_USER_FACING"
         else:
@@ -325,7 +353,7 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
                 row["eligibility"] = "EXCLUDED_CONFIG_ONLY"
                 row["rationale"] = "Control Center / Lock Screen widget configuration intent, not a runnable shortcut action"
             # 4. Native built-in missing
-            elif row["category"] == "builtin":
+            elif row["category"] == "builtin" and ("builtinDefinition" in row["sources"] or (missing_builtins and ident in missing_builtins)):
                 row["status"] = "NEW_NATIVE_ACTION"
                 row["eligibility"] = "ELIGIBLE_USER_FACING"
                 row["rationale"] = "Apple Shortcuts native built-in action missing from Cherri" + (" (introduced in macOS 27)" if is_new_in_27 else "")
@@ -433,7 +461,7 @@ def generate_coverage_report(ledger, delta_info, snap27_manifest, out_path):
 def main():
     parser = argparse.ArgumentParser(description="P10 Apple Shortcuts coverage audit and ledger generator")
     parser.add_argument("--macos-26-dir", default="docs/apple-runtime/macos-26")
-    parser.add_argument("--macos-27-dir", default="docs/apple-runtime")
+    parser.add_argument("--macos-27-dir", default="docs/apple-runtime/macos-27")
     parser.add_argument("--cherri-actions", help="Path to cherri-actions.json")
     parser.add_argument("--out-dir", default="docs/apple-runtime/p10")
     args = parser.parse_args()
@@ -442,8 +470,15 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. Load Cherri Catalog
-    if args.cherri_actions and os.path.exists(args.cherri_actions):
-        cherri_catalog = load_json_or_gz(args.cherri_actions)
+    if args.cherri_actions:
+        p_act = pathlib.Path(args.cherri_actions)
+        if not p_act.exists():
+            print(f"Error: Specified cherri actions catalog does not exist: {p_act}", file=sys.stderr)
+            sys.exit(1)
+        cherri_catalog = load_json_or_gz(p_act)
+        if not cherri_catalog or not cherri_catalog.get("actions"):
+            print(f"Error: Invalid or corrupt cherri actions catalog in {p_act}", file=sys.stderr)
+            sys.exit(1)
     else:
         print("Extracting live Cherri catalog via 'cherri --actions-json'...")
         cherri_catalog = extract_cherri_catalog()
@@ -456,14 +491,27 @@ def main():
     missing_intents_26 = load_json_or_gz(d26 / "missing-apple-app-intents.json", [])
     missing_toolkit_26 = load_json_or_gz(d26 / "missing-toolkit-apple-actions.json", [])
 
-    # 3. Load macOS 27 evidence
+    # 3. Load macOS 27 evidence (fail-closed, no silent fallback to 26)
     d27 = pathlib.Path(args.macos_27_dir)
-    snap27 = load_json_or_gz(d27 / "apple-runtime-snapshot.json") or snap26
+    if not d27.exists():
+        raise FileNotFoundError(f"macOS 27 evidence directory does not exist: {d27}")
+    snap27_file = d27 / "apple-runtime-snapshot.json"
+    if not (snap27_file.exists() or snap27_file.with_suffix(".json.gz").exists()):
+        raise FileNotFoundError(f"macOS 27 snapshot file not found in {d27}")
+    snap27 = load_json_or_gz(snap27_file)
+    if not snap27:
+        raise ValueError(f"Failed to load macOS 27 snapshot from {snap27_file}")
+
     manifest27 = load_json_or_gz(d27 / "apple-runtime-manifest.json", {})
-    gaps27 = load_json_or_gz(d27 / "parameter-surface-gaps.json") or gaps26
-    missing_builtins_27 = load_json_or_gz(d27 / "missing-builtins.json") or missing_builtins_26
-    missing_intents_27 = load_json_or_gz(d27 / "missing-apple-app-intents.json") or missing_intents_26
-    missing_toolkit_27 = load_json_or_gz(d27 / "missing-toolkit-apple-actions.json") or missing_toolkit_26
+    if manifest27:
+        host_ver = str(manifest27.get("host", {}).get("osVersion") or manifest27.get("macOS") or manifest27.get("osVersion") or "")
+        if "26" in host_ver and "27" not in host_ver:
+            raise ValueError(f"macOS 26 manifest cannot be claimed as macOS 27: {host_ver}")
+
+    gaps27 = load_json_or_gz(d27 / "parameter-surface-gaps.json", [])
+    missing_builtins_27 = load_json_or_gz(d27 / "missing-builtins.json", [])
+    missing_intents_27 = load_json_or_gz(d27 / "missing-apple-app-intents.json", [])
+    missing_toolkit_27 = load_json_or_gz(d27 / "missing-toolkit-apple-actions.json", [])
 
     # 4. Compute 26 -> 27 delta
     delta = compute_delta_26_to_27(snap26, snap27)

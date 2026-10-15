@@ -5,6 +5,7 @@ macOS-only actions
 // [Doc]: Get Apps: Get list of applications.
 action mac v18 'filter.apps' getApps(
     variable ?apps: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'
@@ -132,6 +133,7 @@ action mac 'lock.app' lockApp(variable app: 'WFApp', text ?operation: 'WFLockApp
 // [Doc]: Filter Displays: Filter connected displays.
 action mac v18 'filter.displays' filterDisplays(
     variable ?displays: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'

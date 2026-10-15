@@ -51,6 +51,36 @@ def load_lines(path):
         return []
 
 
+def validate_shard_invariants(shard_summary, expected_count=None):
+    """Validates shard completion, counts, and invariants. Raises ValueError on corruption."""
+    if not isinstance(shard_summary, dict):
+        raise ValueError(f"Shard summary must be a dictionary, got {type(shard_summary)}")
+    shard_summaries = shard_summary.get("shardSummaries", [])
+    if not shard_summaries:
+        return
+    if expected_count is not None and len(shard_summaries) != expected_count:
+        raise ValueError(f"Expected {expected_count} shards, found {len(shard_summaries)}")
+    
+    total_assigned = 0
+    total_completed = 0
+    for idx, s in enumerate(shard_summaries):
+        if s.get("shardIndex") != idx:
+            raise ValueError(f"Shard index mismatch: expected {idx}, got {s.get('shardIndex')}")
+        assigned = s.get("totalAssigned", 0)
+        completed = s.get("completed", 0)
+        if assigned != completed:
+            raise ValueError(f"Shard {idx} incomplete: assigned={assigned}, completed={completed}")
+        parts = s.get("successes", 0) + s.get("timeouts", 0) + s.get("errors", 0) + s.get("unavailable", 0)
+        if completed != parts:
+            raise ValueError(f"Shard {idx} count mismatch: completed={completed} vs parts sum={parts}")
+        total_assigned += assigned
+        total_completed += completed
+        
+    discovered = shard_summary.get("totalActionsDiscovered", total_assigned)
+    if total_assigned != discovered:
+        raise ValueError(f"Total assigned {total_assigned} != totalActionsDiscovered {discovered}")
+
+
 def build_snapshot(
     builtin_defs_path=None,
     dyld_ids_path=None,
@@ -59,6 +89,7 @@ def build_snapshot(
     toolkit_summary_path=None,
     gallery_path=None,
     parameter_encodings_path=None,
+    parameter_encodings_summary_path=None,
     roundtrips_path=None,
     env_path=None,
     cherri_sha="unknown",
@@ -72,8 +103,17 @@ def build_snapshot(
     toolkit_registry = load_json(toolkit_registry_path, {})
     toolkit_summary = load_json(toolkit_summary_path, {})
     param_encodings = load_json(parameter_encodings_path, {})
+    param_encodings_summary = load_json(parameter_encodings_summary_path, {})
+    if not param_encodings_summary and parameter_encodings_path:
+        cand = pathlib.Path(parameter_encodings_path).parent / "parameter-encodings-summary.json"
+        if cand.exists():
+            param_encodings_summary = load_json(str(cand), {})
     roundtrips = load_json(roundtrips_path, {})
     gallery_raw = load_json(gallery_path, {})
+
+    shard_summary = param_encodings_summary if param_encodings_summary else param_encodings.get("summary", {})
+    if shard_summary:
+        validate_shard_invariants(shard_summary, expected_count=shard_count if shard_count and shard_count != 10 else None)
 
     actions_snapshot = {}
 
@@ -217,8 +257,8 @@ def build_snapshot(
         "toolkitDbSha256": toolkit_summary.get("provenance", {}).get("dbSha256") or toolkit_summary.get("dbSha256", "unknown"),
         "toolkitVersion": toolkit_summary.get("provenance", {}).get("toolkitVersion", "unknown"),
         "shortcutKitCommit": shortcutkit_commit,
-        "shardCount": shard_count,
-        "shardSummary": param_encodings.get("summary", {}),
+        "shardCount": len(shard_summary.get("shardSummaries", [])) if (shard_summary.get("shardSummaries")) else shard_count,
+        "shardSummary": shard_summary,
         "counts": {
             "totalUniqueActions": len(sanitized_snapshot),
             "builtinDefinitions": len(builtin_defs) if isinstance(builtin_defs, dict) else 0,
@@ -253,6 +293,30 @@ def build_snapshot(
     return snapshot_result, sanitized_manifest
 
 
+RAW_SNAPSHOT_FILES = {
+    "apple-runtime-snapshot.json",
+    "parameter-encodings.json",
+    "parameter-encodings-summary.json",
+    "parameter-errors.json",
+    "parameter-timeouts.json",
+    "toolkit-registry.json",
+    "toolkit-apple-actions.json",
+    "toolkit-names.json",
+    "toolkit-summary.json",
+    "encoding-roundtrips.json",
+    "encoding-table.json",
+    "app-provided-actions.json",
+    "app-provided-summary.json",
+    "builtin-actions.json",
+    "builtin-summary.json",
+    "environment.json",
+    "gallery-workflows.json",
+    "gallery-summary.json",
+    "private-framework-load.json",
+    "probe-summary.json",
+}
+
+
 def main():
     parser = argparse.ArgumentParser(description="Normalizes Apple Shortcuts runtime evidence into versioned snapshot")
     parser.add_argument("--builtin-defs", help="Path to builtin-actions.json")
@@ -262,6 +326,7 @@ def main():
     parser.add_argument("--toolkit-summary", help="Path to toolkit-summary.json")
     parser.add_argument("--gallery", help="Path to gallery-workflows.json")
     parser.add_argument("--parameter-encodings", help="Path to parameter-encodings.json")
+    parser.add_argument("--parameter-encodings-summary", help="Path to parameter-encodings-summary.json")
     parser.add_argument("--roundtrips", help="Path to encoding-roundtrips.json")
     parser.add_argument("--environment", help="Path to environment.json")
     parser.add_argument("--cherri-sha", default="unknown", help="Cherri git commit SHA")
@@ -281,6 +346,7 @@ def main():
         toolkit_summary_path=args.toolkit_summary,
         gallery_path=args.gallery,
         parameter_encodings_path=args.parameter_encodings,
+        parameter_encodings_summary_path=args.parameter_encodings_summary,
         roundtrips_path=args.roundtrips,
         env_path=args.environment,
         cherri_sha=args.cherri_sha,
@@ -290,14 +356,15 @@ def main():
 
     (out_dir / "apple-runtime-snapshot.json").write_text(json.dumps(snapshot, indent=2, sort_keys=True), encoding="utf-8")
 
-    # Compute SHA-256 of all output JSON files in out_dir
+    # Compute SHA-256 of raw snapshot files in out_dir (excluding derived comparison files)
     file_hashes = {}
     checksum_lines = []
-    for f in sorted(out_dir.glob("*.json")):
-        h = hashlib.sha256(f.read_bytes()).hexdigest()
-        file_hashes[f.name] = h
-        checksum_lines.append(f"{h}  {f.name}")
-    for f in sorted(out_dir.glob("*.json.gz")):
+    all_files = sorted(list(out_dir.glob("*.json")) + list(out_dir.glob("*.json.gz")))
+    for f in all_files:
+        base_name = f.name[:-3] if f.name.endswith(".gz") else f.name
+        is_raw = base_name in RAW_SNAPSHOT_FILES or base_name.startswith("parameter-encodings-shard-")
+        if not is_raw:
+            continue
         h = hashlib.sha256(f.read_bytes()).hexdigest()
         file_hashes[f.name] = h
         checksum_lines.append(f"{h}  {f.name}")

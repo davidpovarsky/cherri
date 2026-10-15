@@ -11,14 +11,15 @@ func TestDefaultRegistry(t *testing.T) {
 	}
 
 	actions := reg.AllActions()
-	if len(actions) != 504 {
-		t.Fatalf("expected 504 actions, got %d", len(actions))
+	if len(actions) != 505 {
+		t.Fatalf("expected 505 actions, got %d", len(actions))
 	}
 
 	fp := reg.Fingerprint()
 	if len(fp) != 64 {
 		t.Fatalf("expected 64-char hex fingerprint, got %q", fp)
 	}
+	t.Logf("CURRENT_FINGERPRINT: %s", fp)
 
 	// Verify resizeImage
 	resize, ok := reg.LookupAction("resizeImage")

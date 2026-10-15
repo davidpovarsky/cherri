@@ -1517,6 +1517,61 @@ func isActionRepresentable(action *ShortcutAction, def *actionDefinition) bool {
 		}
 	}
 
+	// Validate dynamic setter properties and modes
+	if action.WFWorkflowActionIdentifier == "is.workflow.actions.setters.reminders" {
+		if prop, ok := action.WFWorkflowActionParameters["WFContentItemPropertyName"].(string); ok {
+			validProps := map[string]bool{
+				"Title": true, "List": true, "Due Date": true, "Priority": true,
+				"Is Completed": true, "Notes": true, "URL": true, "Is Flagged": true,
+				"Images": true, "Parent Reminder": true, "Tags": true,
+				"When Messaging": true, "Subtasks": true,
+			}
+			if !validProps[prop] {
+				return false
+			}
+		}
+		if mode, ok := action.WFWorkflowActionParameters["Mode"].(string); ok {
+			if !strings.EqualFold(mode, "Set") && !strings.EqualFold(mode, "Remove") {
+				return false
+			}
+		}
+	}
+	if action.WFWorkflowActionIdentifier == "is.workflow.actions.setters.calendarevents" {
+		if prop, ok := action.WFWorkflowActionParameters["WFContentItemPropertyName"].(string); ok {
+			validProps := map[string]bool{
+				"Start Date": true, "End Date": true, "Is All Day": true,
+				"Location": true, "Duration": true, "My Status": true,
+				"Attendees": true, "URL": true, "Title": true, "Notes": true,
+				"Attachments": true,
+			}
+			if !validProps[prop] {
+				return false
+			}
+		}
+		if mode, ok := action.WFWorkflowActionParameters["Mode"].(string); ok {
+			if !strings.EqualFold(mode, "Set") && !strings.EqualFold(mode, "Remove") {
+				return false
+			}
+		}
+	}
+
+	// Filter structures cannot yet be decompiled into Cherri high-level filter expressions.
+	// Fall back to lossless rawAction so valid, re-compilable Cherri code is produced.
+	if filtVal, ok := action.WFWorkflowActionParameters["WFContentItemFilter"]; ok && filtVal != nil {
+		return false
+	}
+
+	// Reject unrepresentable custom serialized values to trigger lossless rawAction fallback
+	for _, v := range action.WFWorkflowActionParameters {
+		if m, isMap := v.(map[string]any); isMap && m != nil {
+			if serType, hasSer := m["WFSerializationType"].(string); hasSer {
+				if serType == "WFUnknownCustomSerializedType" || strings.HasPrefix(serType, "WFUnsupported") {
+					return false
+				}
+			}
+		}
+	}
+
 	return true
 }
 

@@ -149,6 +149,59 @@ func NewRegistry(actions []*ActionSchema, enums map[string][]string) *Registry {
 	return r
 }
 
+// CompareVersions compares two version strings (e.g., "27.10" vs "27.2", "16.4" vs "16.4.1") semantically.
+// Returns -1 if v1 < v2, 0 if v1 == v2, and 1 if v1 > v2.
+func CompareVersions(v1, v2 string) int {
+	parts1 := parseVersionParts(v1)
+	parts2 := parseVersionParts(v2)
+
+	maxLen := len(parts1)
+	if len(parts2) > maxLen {
+		maxLen = len(parts2)
+	}
+
+	for i := 0; i < maxLen; i++ {
+		p1 := 0
+		if i < len(parts1) {
+			p1 = parts1[i]
+		}
+		p2 := 0
+		if i < len(parts2) {
+			p2 = parts2[i]
+		}
+		if p1 < p2 {
+			return -1
+		}
+		if p1 > p2 {
+			return 1
+		}
+	}
+	return 0
+}
+
+func parseVersionParts(v string) []int {
+	v = strings.TrimSpace(v)
+	if v == "" {
+		return []int{0}
+	}
+	v = strings.TrimPrefix(v, "v")
+	v = strings.TrimPrefix(v, "V")
+	fields := strings.Split(v, ".")
+	parts := make([]int, 0, len(fields))
+	for _, f := range fields {
+		num := 0
+		for _, ch := range f {
+			if ch >= '0' && ch <= '9' {
+				num = num*10 + int(ch-'0')
+			} else {
+				break
+			}
+		}
+		parts = append(parts, num)
+	}
+	return parts
+}
+
 func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 	// Sort actions by CallableName + AppleIdentifier to ensure deterministic order
 	sorted := make([]*ActionSchema, len(actions))
@@ -162,9 +215,9 @@ func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 
 	h := sha256.New()
 	for _, a := range sorted {
-		fmt.Fprintf(h, "ACT:%s:%s:%s:%s:%s:%t:%t:%t:%.2f:%.2f\n",
+		fmt.Fprintf(h, "ACT:%s:%s:%s:%s:%s:%t:%t:%t:%.2f:%.2f:%s\n",
 			a.CallableName, a.AppleIdentifier, a.Variant, a.OutputTypeName, a.PrimaryParameterID,
-			a.CompilerConstruct, a.MacOnly, a.NonMacOnly, a.MinVersion, a.MaxVersion)
+			a.CompilerConstruct, a.MacOnly, a.NonMacOnly, a.MinVersion, a.MaxVersion, a.EvidenceStatus)
 		if a.AppIntent != nil {
 			fmt.Fprintf(h, "  INTENT:%s:%s:%s:%s\n", a.AppIntent.Name, a.AppIntent.BundleIdentifier, a.AppIntent.AppIntentIdentifier, a.AppIntent.TeamIdentifier)
 		}
@@ -179,8 +232,8 @@ func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 			}
 		}
 		for _, p := range a.Parameters {
-			fmt.Fprintf(h, "  P:%s:%s:%s:%t:%s:%s:%s:%t:%s\n",
-				p.ID, p.Label, p.TypeName, p.Optional, p.WireKey, p.Codec, p.DefaultValue, p.Variadic, p.OmissionPolicy)
+			fmt.Fprintf(h, "  P:%s:%s:%s:%t:%s:%s:%s:%t:%s:%s:%s\n",
+				p.ID, p.Label, p.TypeName, p.Optional, p.WireKey, p.Codec, p.DefaultValue, p.Variadic, p.OmissionPolicy, p.EnumName, p.EvidenceStatus)
 			if len(p.AcceptedForms) > 0 {
 				forms := make([]string, len(p.AcceptedForms))
 				copy(forms, p.AcceptedForms)

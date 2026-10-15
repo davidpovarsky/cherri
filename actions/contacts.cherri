@@ -29,7 +29,8 @@ action 'detect.contacts' getContacts(variable input: 'WFInput'): array
 
 // [Doc]: Filter Contacts
 action 'filter.contacts' filterContacts(
-    variable contacts: 'WFContentItemInputParameter',
+    variable ?contacts: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     contactDetail ?sortBy: 'WFContentItemSortProperty',
     abcSortOrder ?sortOrder: 'WFContentItemSortOrder' = "A to Z",
     number ?limit: 'WFContentItemLimitNumber'

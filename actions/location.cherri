@@ -135,6 +135,7 @@ action 'getdistance' getDistance(
 // [Doc]: [Location] Filter Locations: Filter locations with various filters.
 action 'filter.locations' filterLocations(
     variable ?locations: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'
@@ -147,7 +148,7 @@ action 'getparkedcarlocation' getParkedCarLocation(): variable
 action 'setparkedcar' setParkedCar(
     variable location: 'WFLocation',
     text ?notes: 'WFSetParkedCarNotes',
-    variable ?photo: 'WFSetParkedCarPhoto'
+    variable ?photo: 'WFImage'
 ): variable
 
 enum parkedCarDetail {

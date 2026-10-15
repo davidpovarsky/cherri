@@ -1770,10 +1770,10 @@
   {
     "identifier": "is.workflow.actions.filter.apps",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.apps",
@@ -1796,7 +1796,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -1812,7 +1812,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -1826,10 +1826,10 @@
   {
     "identifier": "is.workflow.actions.filter.articles",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.articles",
@@ -1852,7 +1852,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -1868,7 +1868,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -1882,10 +1882,10 @@
   {
     "identifier": "is.workflow.actions.filter.calendarevents",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.calendarevents",
@@ -1908,7 +1908,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -1924,7 +1924,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -1938,10 +1938,10 @@
   {
     "identifier": "is.workflow.actions.filter.contacts",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.contacts",
@@ -1964,7 +1964,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -1980,7 +1980,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -1994,10 +1994,10 @@
   {
     "identifier": "is.workflow.actions.filter.displays",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.displays",
@@ -2020,7 +2020,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -2036,7 +2036,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -2050,10 +2050,10 @@
   {
     "identifier": "is.workflow.actions.filter.eventattendees",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.eventattendees",
@@ -2076,7 +2076,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -2092,7 +2092,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -2106,10 +2106,10 @@
   {
     "identifier": "is.workflow.actions.filter.files",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.files",
@@ -2146,10 +2146,10 @@
   {
     "identifier": "is.workflow.actions.filter.files",
     "parameterKey": "WFCompoundType",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFCompoundType enum"
+    "disposition": "EMITTED_IMPLICIT_CONSTANT",
+    "rationale": "Emitted by action definition as static parameter or appendParamsFunc constant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri action definition"
   },
   {
     "identifier": "is.workflow.actions.filter.files",
@@ -2162,10 +2162,10 @@
   {
     "identifier": "is.workflow.actions.filter.images",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.images",
@@ -2188,7 +2188,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -2204,7 +2204,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -2218,10 +2218,10 @@
   {
     "identifier": "is.workflow.actions.filter.locations",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.locations",
@@ -2244,7 +2244,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -2260,7 +2260,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -2274,10 +2274,10 @@
   {
     "identifier": "is.workflow.actions.filter.music",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.music",
@@ -2300,7 +2300,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -2316,7 +2316,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -2330,10 +2330,10 @@
   {
     "identifier": "is.workflow.actions.filter.photos",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.photos",
@@ -2356,7 +2356,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -2372,7 +2372,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -2386,10 +2386,10 @@
   {
     "identifier": "is.workflow.actions.filter.reminders",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.reminders",
@@ -2412,7 +2412,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -2428,7 +2428,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -2442,10 +2442,10 @@
   {
     "identifier": "is.workflow.actions.filter.vpns",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.vpns",
@@ -2468,7 +2468,7 @@
     "parameterKey": "WFContentItemLimitEnabled",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Boolean flag indicating whether item limit number is applied; emitted when limit is provided",
-    "codePath": "actions_std.go:appendParamsFunc",
+    "codePath": "action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFContentItemLimitEnabled"
   },
   {
@@ -2484,7 +2484,7 @@
     "parameterKey": "WFCompoundType",
     "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
     "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
+    "codePath": "actions_std.go:buildContentItemFilter() / action.go:makeActionParams",
     "evidenceRef": "WorkflowKit WFCompoundType enum"
   },
   {
@@ -2498,10 +2498,10 @@
   {
     "identifier": "is.workflow.actions.filter.windows",
     "parameterKey": "WFContentItemFilter",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Content item predicate table template dictionary; emitted by shared filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFTableTemplateContentItemFilterParameter"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.filter.windows",
@@ -2538,18 +2538,18 @@
   {
     "identifier": "is.workflow.actions.filter.windows",
     "parameterKey": "WFCompoundType",
-    "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-    "rationale": "Compound predicate conjunction type ('0' for All/AND, '1' for Any/OR); emitted by filter builder",
-    "codePath": "actions_std.go:buildContentItemFilter()",
-    "evidenceRef": "WorkflowKit WFCompoundType enum"
+    "disposition": "EMITTED_IMPLICIT_CONSTANT",
+    "rationale": "Emitted by action definition as static parameter or appendParamsFunc constant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri action definition"
   },
   {
     "identifier": "is.workflow.actions.filter.windows",
     "parameterKey": "WFContentItemInputParameter",
-    "disposition": "OPEN_USER_PARAMETER",
-    "rationale": "Unmodeled parameter key 'WFContentItemInputParameter' requiring Cherri parameter modeling or evidence",
-    "codePath": "unimplemented",
-    "evidenceRef": "macOS 27 runtime extraction for is.workflow.actions.filter.windows"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.flashlight",
@@ -5954,10 +5954,10 @@
   {
     "identifier": "is.workflow.actions.setparkedcar",
     "parameterKey": "WFImage",
-    "disposition": "OPEN_USER_PARAMETER",
-    "rationale": "Unmodeled parameter key 'WFImage' requiring Cherri parameter modeling or evidence",
-    "codePath": "unimplemented",
-    "evidenceRef": "macOS 27 runtime extraction for is.workflow.actions.setparkedcar"
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.setplaybackdestination",
@@ -6010,10 +6010,10 @@
   {
     "identifier": "is.workflow.actions.setters.calendarevents",
     "parameterKey": "Mode",
-    "disposition": "EMITTED_IMPLICIT_CONSTANT",
-    "rationale": "Emitted by action definition as static parameter or appendParamsFunc constant",
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
     "codePath": "actions/*.cherri or actions_std.go",
-    "evidenceRef": "Cherri action definition"
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.setters.calendarevents",
@@ -6138,10 +6138,10 @@
   {
     "identifier": "is.workflow.actions.setters.reminders",
     "parameterKey": "Mode",
-    "disposition": "EMITTED_IMPLICIT_CONSTANT",
-    "rationale": "Emitted by action definition as static parameter or appendParamsFunc constant",
+    "disposition": "EXPOSED_PARAMETER",
+    "rationale": "Declared parameter in Cherri callable variant",
     "codePath": "actions/*.cherri or actions_std.go",
-    "evidenceRef": "Cherri action definition"
+    "evidenceRef": "Cherri actions catalog"
   },
   {
     "identifier": "is.workflow.actions.setters.reminders",
@@ -6234,10 +6234,10 @@
   {
     "identifier": "is.workflow.actions.setters.reminders",
     "parameterKey": "WFReminderContentItemSubtasks",
-    "disposition": "OPEN_USER_PARAMETER",
-    "rationale": "Unmodeled parameter key 'WFReminderContentItemSubtasks' requiring Cherri parameter modeling or evidence",
-    "codePath": "unimplemented",
-    "evidenceRef": "macOS 27 runtime extraction for is.workflow.actions.setters.reminders"
+    "disposition": "EMITTED_IMPLICIT_CONSTANT",
+    "rationale": "Emitted by action definition as static parameter or appendParamsFunc constant",
+    "codePath": "actions/*.cherri or actions_std.go",
+    "evidenceRef": "Cherri action definition"
   },
   {
     "identifier": "is.workflow.actions.setters.reminders",

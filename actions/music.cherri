@@ -126,6 +126,7 @@ action 'createplaylist' createPlaylist(
 // [Doc]: Filter Music: Filter music with various filters.
 action 'filter.music' filterMusic(
     variable ?music: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'

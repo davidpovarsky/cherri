@@ -687,6 +687,14 @@ var actions = map[string]*actionDefinition{
 				name:      "newValue",
 				validType: Variable,
 				key:       "WFCalendarEventContentItemStartDate",
+				optional:  true,
+			},
+			{
+				name:      "mode",
+				validType: String,
+				key:       "Mode",
+				enum:      "setterMode",
+				optional:  true,
 			},
 		},
 		appendParamsFunc: func(args []actionArgument) map[string]any {
@@ -694,11 +702,33 @@ var actions = map[string]*actionDefinition{
 				"Mode":       "Set",
 				"ValueLabel": true,
 			}
-			if len(args) < 3 {
+			if len(args) < 2 {
 				return params
 			}
 			detail := fmt.Sprint(getArgValue(args[1]))
-			val := argumentValue(args, 2)
+			mode := "Set"
+			if len(args) >= 4 && args[3].value != nil {
+				modeStr := fmt.Sprint(getArgValue(args[3]))
+				if strings.EqualFold(modeStr, "Remove") {
+					mode = "Remove"
+				}
+			} else if len(args) == 3 && strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") {
+				mode = "Remove"
+			}
+
+			if mode == "Remove" {
+				params["Mode"] = "Remove"
+				delete(params, "ValueLabel")
+				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil {
+					params["RemoveSpecifiedValue"] = getArgValue(args[2])
+				}
+				return params
+			}
+
+			var val any
+			if len(args) >= 3 {
+				val = getArgValue(args[2])
+			}
 			switch detail {
 			case "Start Date":
 				params["WFCalendarEventContentItemStartDate"] = val
@@ -723,7 +753,9 @@ var actions = map[string]*actionDefinition{
 			case "Attachments":
 				params["WFCalendarEventContentItemAttachments"] = val
 			default:
-				params["WFCalendarEventContentItemStartDate"] = val
+				if detail != "" && detail != "<nil>" {
+					panic(fmt.Sprintf("invalid detail property %q for editEvent; valid choices: Start Date, End Date, Is All Day, Location, Duration, My Status, Attendees, URL, Title, Notes, Attachments", detail))
+				}
 			}
 			return params
 		},
@@ -768,6 +800,14 @@ var actions = map[string]*actionDefinition{
 				name:      "newValue",
 				validType: Variable,
 				key:       "WFReminderContentItemTitle",
+				optional:  true,
+			},
+			{
+				name:      "mode",
+				validType: String,
+				key:       "Mode",
+				enum:      "setterMode",
+				optional:  true,
 			},
 		},
 		appendParamsFunc: func(args []actionArgument) map[string]any {
@@ -775,11 +815,33 @@ var actions = map[string]*actionDefinition{
 				"Mode":       "Set",
 				"ValueLabel": true,
 			}
-			if len(args) < 3 {
+			if len(args) < 2 {
 				return params
 			}
 			detail := fmt.Sprint(getArgValue(args[1]))
-			val := argumentValue(args, 2)
+			mode := "Set"
+			if len(args) >= 4 && args[3].value != nil {
+				modeStr := fmt.Sprint(getArgValue(args[3]))
+				if strings.EqualFold(modeStr, "Remove") {
+					mode = "Remove"
+				}
+			} else if len(args) == 3 && strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") {
+				mode = "Remove"
+			}
+
+			if mode == "Remove" {
+				params["Mode"] = "Remove"
+				delete(params, "ValueLabel")
+				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil {
+					params["RemoveSpecifiedValue"] = getArgValue(args[2])
+				}
+				return params
+			}
+
+			var val any
+			if len(args) >= 3 {
+				val = getArgValue(args[2])
+			}
 			switch detail {
 			case "Title":
 				params["WFReminderContentItemTitle"] = val
@@ -805,8 +867,12 @@ var actions = map[string]*actionDefinition{
 				params["WFReminderContentItemTags"] = val
 			case "When Messaging":
 				params["WFReminderContentItemWhenMessagingPerson"] = val
+			case "Subtasks":
+				params["WFReminderContentItemSubtasks"] = val
 			default:
-				params["WFReminderContentItemTitle"] = val
+				if detail != "" && detail != "<nil>" {
+					panic(fmt.Sprintf("invalid detail property %q for editReminder; valid choices: Title, List, Due Date, Priority, Is Completed, Notes, URL, Is Flagged, Images, Parent Reminder, Tags, When Messaging, Subtasks", detail))
+				}
 			}
 			return params
 		},
@@ -826,6 +892,7 @@ var actions = map[string]*actionDefinition{
 			"WFReminderContentItemParentReminder",
 			"WFReminderContentItemTags",
 			"WFReminderContentItemWhenMessagingPerson",
+			"WFReminderContentItemSubtasks",
 		},
 	},
 	"filterFiles": {
@@ -841,6 +908,12 @@ var actions = map[string]*actionDefinition{
 				name:      "files",
 				validType: Variable,
 				key:       "WFContentItemInputParameter",
+			},
+			{
+				name:      "filter",
+				validType: Variable,
+				key:       "WFContentItemFilter",
+				optional:  true,
 			},
 			{
 				name:      "limit",
@@ -864,19 +937,13 @@ var actions = map[string]*actionDefinition{
 			},
 		},
 		appendParamsFunc: func(args []actionArgument) (params map[string]any) {
-			if len(args) == 0 {
-				return map[string]any{}
+			params = make(map[string]any)
+			if len(args) > 2 && args[2].value != nil && args[2].valueType != Nil {
+				params["WFContentItemLimitEnabled"] = true
 			}
-
-			if len(args) != 1 {
-				return map[string]any{
-					"WFContentItemLimitEnabled": true,
-				}
-			}
-
-			return
+			return params
 		},
-		emittedKeys: []string{"WFContentItemLimitEnabled"},
+		emittedKeys: []string{"WFContentItemLimitEnabled", "WFCompoundType"},
 	},
 	"getPDFText": {
 		doc: selfDoc{
@@ -1742,7 +1809,20 @@ var actions = map[string]*actionDefinition{
 			subcategory: "Windows",
 		},
 		identifier: "filter.windows",
+		macOnly:    true,
 		parameters: []parameterDefinition{
+			{
+				name:      "windows",
+				validType: Variable,
+				key:       "WFContentItemInputParameter",
+				optional:  true,
+			},
+			{
+				name:      "filter",
+				validType: Variable,
+				key:       "WFContentItemFilter",
+				optional:  true,
+			},
 			{
 				name:      "sortBy",
 				validType: String,
@@ -1765,44 +1845,38 @@ var actions = map[string]*actionDefinition{
 			},
 		},
 		appendParamsFunc: func(args []actionArgument) (params map[string]any) {
-			if len(args) == 0 {
-				return map[string]any{}
+			params = make(map[string]any)
+			if len(args) > 4 && args[4].value != nil && args[4].valueType != Nil {
+				params["WFContentItemLimitEnabled"] = true
 			}
-
-			if args[2].value != nil {
-				params = map[string]any{
-					"WFContentItemLimitEnabled": true,
-				}
-			}
-			return
+			return params
 		},
-		emittedKeys: []string{"WFContentItemLimitEnabled"},
+		emittedKeys: []string{"WFContentItemLimitEnabled", "WFCompoundType"},
 		check: func(args []actionArgument, _ *actionDefinition) {
-			if args[1].value != nil {
+			if len(args) > 3 && args[2].value != nil && args[3].value != nil {
 				var alphabetic = []string{"Title", "App Name", "Name", "Random"}
 				var numeric = []string{"Width", "Height", "X Position", "Y Position", "Window Index"}
-				var sortBy = getArgValue(args[0]).(string)
-				var orderBy = getArgValue(args[1]).(string)
+				var sortBy, _ = getArgValue(args[2]).(string)
+				var orderBy, _ = getArgValue(args[3]).(string)
 				if sortBy != "Random" {
 					if slices.Contains(alphabetic, sortBy) {
 						switch orderBy {
 						case "asc":
-							args[1].value = "A to Z"
+							args[3].value = "A to Z"
 						case "desc":
-							args[1].value = "Z to A"
+							args[3].value = "Z to A"
 						}
 					} else if slices.Contains(numeric, sortBy) {
 						switch orderBy {
 						case "asc":
-							args[1].value = "Biggest First"
+							args[3].value = "Biggest First"
 						case "desc":
-							args[1].value = "Smallest First"
+							args[3].value = "Smallest First"
 						}
 					}
 				}
 			}
 		},
-		macOnly: true,
 	},
 	"convertMeasurement": {
 		doc: selfDoc{
@@ -2805,3 +2879,213 @@ func decompInfiniteURLAction(action *ShortcutAction) (arguments []string) {
 
 	return
 }
+
+// buildContentItemFilter constructs authentic Apple Shortcuts WFContentItemFilter and WFCompoundType
+// structures from user-provided filter specifications (arrays, dictionaries, or compound objects).
+func buildContentItemFilter(filterArg any) (map[string]any, string) {
+	if filterArg == nil {
+		return map[string]any{
+			"Value": map[string]any{
+				"WFActionParameterFilterPrefix":    1,
+				"WFActionParameterFilterTemplates": []any{},
+				"WFContentPredicateBoundedDate":    false,
+			},
+			"WFSerializationType": "WFContentPredicateTableTemplate",
+		}, "0"
+	}
+
+	// If already in serialized table template format, return as-is
+	if m, ok := filterArg.(map[string]any); ok {
+		if _, hasVal := m["Value"]; hasVal {
+			if ser, hasSer := m["WFSerializationType"]; hasSer && ser == "WFContentPredicateTableTemplate" {
+				compound := "0"
+				if c, hasComp := m["WFCompoundType"]; hasComp {
+					compound = fmt.Sprint(c)
+				}
+				return m, compound
+			}
+		}
+	}
+
+	var compoundType = "0" // 0: All/AND, 1: Any/OR
+	var rawTemplates []any
+
+	switch v := filterArg.(type) {
+	case []any:
+		rawTemplates = v
+	case []map[string]any:
+		for _, m := range v {
+			rawTemplates = append(rawTemplates, m)
+		}
+	case map[string]any:
+		if comp, hasComp := v["compound"]; hasComp {
+			s := strings.ToLower(fmt.Sprint(comp))
+			if s == "any" || s == "or" || s == "1" {
+				compoundType = "1"
+			}
+		}
+		if preds, hasPreds := v["predicates"]; hasPreds {
+			if pSlice, ok := preds.([]any); ok {
+				rawTemplates = pSlice
+			} else if pSliceMap, ok := preds.([]map[string]any); ok {
+				for _, m := range pSliceMap {
+					rawTemplates = append(rawTemplates, m)
+				}
+			}
+		} else {
+			// Property -> Value shorthand
+			for prop, val := range v {
+				if prop == "compound" {
+					continue
+				}
+				rawTemplates = append(rawTemplates, map[string]any{
+					"property": prop,
+					"operator": 4, // equals
+					"value":    val,
+				})
+			}
+		}
+	default:
+		rawTemplates = []any{}
+	}
+
+	templates := make([]any, 0, len(rawTemplates))
+	for _, rt := range rawTemplates {
+		tmap, ok := rt.(map[string]any)
+		if !ok {
+			continue
+		}
+		prop := ""
+		if p, found := tmap["property"]; found {
+			prop = fmt.Sprint(p)
+		} else if p, found := tmap["Property"]; found {
+			prop = fmt.Sprint(p)
+		}
+
+		opCode := 4
+		if op, found := tmap["operator"]; found {
+			opCode = parseFilterOperator(op)
+		} else if op, found := tmap["Operator"]; found {
+			opCode = parseFilterOperator(op)
+		}
+
+		val := tmap["value"]
+		if val == nil {
+			val = tmap["Values"]
+		}
+
+		isBounded := false
+		if b, found := tmap["bounded"]; found {
+			if bb, ok := b.(bool); ok {
+				isBounded = bb
+			}
+		} else if b, found := tmap["Bounded"]; found {
+			if bb, ok := b.(bool); ok {
+				isBounded = bb
+			}
+		}
+
+		removable := true
+		if r, found := tmap["removable"]; found {
+			if rb, ok := r.(bool); ok {
+				removable = rb
+			}
+		} else if r, found := tmap["Removable"]; found {
+			if rb, ok := r.(bool); ok {
+				removable = rb
+			}
+		}
+
+		valuesDict := formatFilterValues(val)
+
+		templateEntry := map[string]any{
+			"Property":  prop,
+			"Operator":  opCode,
+			"Values":    valuesDict,
+			"Removable": removable,
+		}
+		if isBounded || opCode == 1000 || opCode == 1001 {
+			templateEntry["Bounded"] = true
+		}
+		templates = append(templates, templateEntry)
+	}
+
+	result := map[string]any{
+		"Value": map[string]any{
+			"WFActionParameterFilterPrefix":    1,
+			"WFActionParameterFilterTemplates": templates,
+			"WFContentPredicateBoundedDate":    false,
+		},
+		"WFSerializationType": "WFContentPredicateTableTemplate",
+	}
+
+	return result, compoundType
+}
+
+func parseFilterOperator(op any) int {
+	switch v := op.(type) {
+	case int:
+		return v
+	case int64:
+		return int(v)
+	case float64:
+		return int(v)
+	case string:
+		s := strings.ToLower(strings.TrimSpace(v))
+		switch s {
+		case "is", "equals", "==", "=":
+			return 4
+		case "is not", "not equals", "!=":
+			return 5
+		case "contains":
+			return 99
+		case "does not contain", "!contains":
+			return 999
+		case "begins with", "startswith":
+			return 8
+		case "ends with", "endswith":
+			return 9
+		case "greater than", "greaterthan", ">":
+			return 2
+		case "greater than or equal to", ">=":
+			return 3
+		case "less than", "lessthan", "<":
+			return 0
+		case "less than or equal to", "<=":
+			return 1
+		case "in the last", "inthelast":
+			return 1000
+		case "in the next", "inthenext":
+			return 1001
+		case "is today", "today":
+			return 1002
+		case "between", "is between":
+			return 1003
+		default:
+			return 4
+		}
+	default:
+		return 4
+	}
+}
+
+func formatFilterValues(val any) map[string]any {
+	if m, ok := val.(map[string]any); ok {
+		return m
+	}
+	switch v := val.(type) {
+	case string:
+		return map[string]any{"String": v}
+	case int, int64, int32:
+		return map[string]any{"Number": fmt.Sprint(v)}
+	case float64, float32:
+		return map[string]any{"Number": fmt.Sprint(v)}
+	case bool:
+		return map[string]any{"Bool": v}
+	case nil:
+		return map[string]any{}
+	default:
+		return map[string]any{"String": fmt.Sprint(v)}
+	}
+}
+

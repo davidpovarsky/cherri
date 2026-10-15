@@ -96,6 +96,7 @@ action !mac 'personalhotspot.password.set' setHotspotPassword(text newPassword: 
 // [Doc]: [VPN] Filter VPNs: Filter VPN configurations.
 action 'filter.vpns' filterVPNs(
     variable ?vpns: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'

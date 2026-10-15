@@ -273,7 +273,7 @@ def run_comparison(cherri_actions_path, builtin_defs_path=None, dyld_ids_path=No
 
 def main():
     parser = argparse.ArgumentParser(description="Compares extracted Apple runtime surfaces against Cherri catalog")
-    parser.add_argument("--cherri-actions", required=True, help="Path to cherri-actions.json")
+    parser.add_argument("--cherri-actions", default=None, help="Path to cherri-actions.json (extracts live if omitted)")
     parser.add_argument("--snapshot", help="Path to apple-runtime-snapshot.json or .json.gz")
     parser.add_argument("--builtin-defs", help="Path to builtin-actions.json")
     parser.add_argument("--dyld-ids", help="Path to builtin-action-identifiers.txt")
@@ -285,25 +285,46 @@ def main():
     parser.add_argument("--out-dir", default="out", help="Output directory")
     args = parser.parse_args()
 
+    cherri_actions_input = args.cherri_actions
+    if not cherri_actions_input:
+        import subprocess
+        res = subprocess.run(["go", "run", ".", "--actions-json", "--no-ansi"], capture_output=True, text=True, check=True)
+        cherri_actions_input = json.loads(res.stdout)
+
     out_dir = pathlib.Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     evidence_candidates = []
     if args.runtime_evidence_dir:
-        evidence_candidates.append(pathlib.Path(args.runtime_evidence_dir))
-    evidence_candidates.extend([
-        pathlib.Path("docs/apple-runtime/macos-27"),
-        pathlib.Path("docs/apple-runtime"),
-        pathlib.Path("docs/apple-runtime/macos-26"),
-    ])
+        edir = pathlib.Path(args.runtime_evidence_dir)
+        if not edir.exists():
+            raise FileNotFoundError(f"Runtime evidence directory does not exist: {args.runtime_evidence_dir}")
+        evidence_candidates = [edir]
+    else:
+        evidence_candidates = [
+            pathlib.Path("docs/apple-runtime/macos-27"),
+            pathlib.Path("docs/apple-runtime"),
+        ]
 
     builtin_defs = args.builtin_defs
     dyld_ids = args.dyld_ids
     app_intents = args.app_intents
     toolkit_registry = args.toolkit_registry
 
-    if args.snapshot:
-        snap = load_json(args.snapshot, {})
+    snapshot_path = args.snapshot
+    if not snapshot_path:
+        for edir in evidence_candidates:
+            sp_gz = edir / "apple-runtime-snapshot.json.gz"
+            if sp_gz.exists():
+                snapshot_path = str(sp_gz)
+                break
+            sp_raw = edir / "apple-runtime-snapshot.json"
+            if sp_raw.exists():
+                snapshot_path = str(sp_raw)
+                break
+
+    if snapshot_path:
+        snap = load_json(snapshot_path, {})
         actions = snap.get("actions", {})
         if not builtin_defs:
             builtin_defs = {k: v.get("metadata", {}).get("builtin", {}) for k, v in actions.items() if "builtinDefinition" in v.get("sources", [])}
@@ -352,7 +373,7 @@ def main():
                 break
 
     summary, missing_defs, missing_intents, missing_runnable, gaps, dispositions = run_comparison(
-        cherri_actions_path=args.cherri_actions,
+        cherri_actions_path=cherri_actions_input,
         builtin_defs_path=builtin_defs,
         dyld_ids_path=dyld_ids,
         app_intents_path=app_intents,
@@ -368,6 +389,28 @@ def main():
     (out_dir / "missing-toolkit-apple-actions.json").write_text(json.dumps(missing_runnable, indent=2), encoding="utf-8")
     (out_dir / "parameter-surface-gaps.json").write_text(json.dumps(gaps, indent=2), encoding="utf-8")
     (out_dir / "parameter-dispositions.json").write_text(json.dumps(dispositions, indent=2), encoding="utf-8")
+
+    import hashlib
+    derived_manifest = {
+        "generator": "tools/shortcut-runtime/compare_cherri.py",
+        "runtimeEvidenceDir": str(args.runtime_evidence_dir) if args.runtime_evidence_dir else str(evidence_candidates[0]),
+        "outputFiles": {},
+        "summaryMetrics": {
+            "cherriActions": summary["cherriActions"],
+            "cherriUniqueIdentifiers": summary["cherriUniqueIdentifiers"],
+            "builtinsCovered": summary["builtins"]["covered"],
+            "builtinsMissing": summary["builtins"]["missing"],
+            "actionsWithUnmodeledKeys": summary["parameterSurface"]["actionsWithUnmodeledKeys"],
+        }
+    }
+    for fname in ["comparison-summary.json", "missing-builtins.json", "missing-apple-app-intents.json", "missing-toolkit-apple-actions.json", "parameter-surface-gaps.json", "parameter-dispositions.json"]:
+        p = out_dir / fname
+        if p.exists():
+            derived_manifest["outputFiles"][fname] = {
+                "bytes": p.stat().st_size,
+                "sha256": hashlib.sha256(p.read_bytes()).hexdigest()
+            }
+    (out_dir / "derived-comparison-manifest.json").write_text(json.dumps(derived_manifest, indent=2, sort_keys=True), encoding="utf-8")
 
     print("=== Cherri vs Apple Shortcuts Runtime Comparison ===")
     print(f"Cherri catalog: {summary['cherriActions']} actions ({summary['cherriUniqueIdentifiers']} unique identifiers)")

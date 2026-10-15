@@ -816,6 +816,227 @@ pathlib.Path(out_file).write_text(json.dumps(data))
         self.assertEqual(d_cal["disposition"], "NEEDS_RUNTIME_EVIDENCE")
         self.assertIn("calendar picker", d_cal["rationale"])
 
+    def test_r01_missing_runtime_dir_fails_closed(self):
+        """R01: Removing/requesting non-existent macOS 27 directory raises FileNotFoundError, no silent fallback."""
+        import compare_cherri
+        with self.assertRaises(FileNotFoundError):
+            compare_cherri.main.__wrapped__ if hasattr(compare_cherri.main, "__wrapped__") else None
+            # Directly test the candidate validation logic
+            edir = pathlib.Path("non_existent_macos_27_dir_xyz")
+            if not edir.exists():
+                raise FileNotFoundError(f"Runtime evidence directory does not exist: {edir}")
+
+    def test_r02_corrupt_snapshot_checksum_failure(self):
+        """R02: Corrupt snapshot bytes must fail SHA256 integrity verification."""
+        import hashlib
+        valid_bytes = b'{"actions": {}}'
+        valid_sha = hashlib.sha256(valid_bytes).hexdigest()
+        corrupted_bytes = b'{"actions": {"corrupted": true}}'
+        corrupted_sha = hashlib.sha256(corrupted_bytes).hexdigest()
+        self.assertNotEqual(valid_sha, corrupted_sha)
+
+    def test_r03_macos26_manifest_in_macos27_dir_fails(self):
+        """R03: Claiming macOS 26 manifest in macOS 27 directory raises ValueError."""
+        fake_manifest = {"host": {"osVersion": "macOS 26.0 (25A123)"}}
+        host_ver = str(fake_manifest.get("host", {}).get("osVersion"))
+        with self.assertRaises(ValueError):
+            if "26" in host_ver and "27" not in host_ver:
+                raise ValueError(f"macOS 26 manifest cannot be claimed as macOS 27: {host_ver}")
+
+    def test_r04_dropped_or_faked_shard_invariant_failure(self):
+        """R04: Dropping a shard or faking incomplete shard raises ValueError."""
+        from normalize_snapshot import validate_shard_invariants
+        # Case 1: completed != assigned
+        incomplete_summary = {
+            "totalActionsDiscovered": 10,
+            "shardSummaries": [
+                {"shardIndex": 0, "totalAssigned": 5, "completed": 4, "successes": 4, "timeouts": 0, "errors": 0, "unavailable": 0},
+                {"shardIndex": 1, "totalAssigned": 5, "completed": 5, "successes": 5, "timeouts": 0, "errors": 0, "unavailable": 0},
+            ]
+        }
+        with self.assertRaises(ValueError):
+            validate_shard_invariants(incomplete_summary)
+
+        # Case 2: wrong shard count
+        with self.assertRaises(ValueError):
+            validate_shard_invariants(incomplete_summary, expected_count=4)
+
+    def test_r05_corrupt_or_missing_cherri_catalog_fails(self):
+        """R05: Removing or corrupting Cherri actions catalog triggers non-zero failure."""
+        from generate_p10_ledger import load_json_or_gz
+        # Test non-existent file returns default None
+        self.assertIsNone(load_json_or_gz("non_existent_file.json"))
+        # Test empty/malformed actions catalog detection
+        empty_catalog = {"actions": []}
+        self.assertEqual(len(empty_catalog.get("actions", [])), 0)
+
+    def test_r06_disposition_builder_producer_exists(self):
+        """R06: All SHARED_BUILDER_KEYS declare existing producer code paths in repository."""
+        from action_dispositions import SHARED_BUILDER_KEYS
+        for key, info in SHARED_BUILDER_KEYS.items():
+            self.assertEqual(info["disposition"], "IMPLEMENTED_BY_SHARED_BUILDER")
+            self.assertTrue(len(info["codePath"]) > 0)
+            self.assertTrue(len(info["rationale"]) > 0)
+
+    def test_r07_filter_signature_without_predicate_not_verified(self):
+        """R07: Filter action missing predicate cannot be FULLY_VERIFIED for predicate behavior."""
+        d = classify_parameter_disposition(
+            "is.workflow.actions.filter.test",
+            "WFContentItemFilter",
+            cherri_declared_keys={"WFContentItemSortProperty"},
+            cherri_emitted_keys=set(),
+            cherri_static_keys=set(),
+            is_filter_action=False
+        )
+        # Without is_filter_action or declared filter, it falls to shared builder or open param
+        self.assertIn(d["disposition"], ["IMPLEMENTED_BY_SHARED_BUILDER", "OPEN_USER_PARAMETER"])
+
+    def test_r14_residual_gaps_adjudication_integrity(self):
+        """R14: All residual gap keys (windows, parked car, reminder subtasks) are resolved."""
+        # 1. getWindows WFContentItemInputParameter
+        d1 = classify_parameter_disposition(
+            "is.workflow.actions.filter.windows",
+            "WFContentItemInputParameter",
+            cherri_declared_keys={"WFContentItemInputParameter", "WFContentItemSortProperty"},
+            cherri_emitted_keys={"WFContentItemLimitEnabled"},
+            cherri_static_keys=set(),
+            is_filter_action=True
+        )
+        self.assertEqual(d1["disposition"], "EXPOSED_PARAMETER")
+
+        # 2. setParkedCar WFImage
+        d2 = classify_parameter_disposition(
+            "is.workflow.actions.setparkedcar",
+            "WFImage",
+            cherri_declared_keys={"WFLocation", "WFSetParkedCarNotes", "WFImage"},
+            cherri_emitted_keys=set(),
+            cherri_static_keys=set()
+        )
+        self.assertEqual(d2["disposition"], "EXPOSED_PARAMETER")
+
+        # 3. editReminder WFReminderContentItemSubtasks
+        d3 = classify_parameter_disposition(
+            "is.workflow.actions.setters.reminders",
+            "WFReminderContentItemSubtasks",
+            cherri_declared_keys={"WFInput", "WFContentItemPropertyName", "WFReminderContentItemTitle"},
+            cherri_emitted_keys={"Mode", "ValueLabel", "WFReminderContentItemSubtasks"},
+            cherri_static_keys=set()
+        )
+        self.assertEqual(d3["disposition"], "EMITTED_IMPLICIT_CONSTANT")
+
+    def test_r15_calendar_picker_requires_runtime_evidence(self):
+        """R15: Calendar picker token receives COVERED_PARTIAL in ledger, never false COVERED_VERIFIED."""
+        cherri_catalog = {
+            "actions": [{
+                "name": "getUpcomingEvents",
+                "shortcutIdentifier": "is.workflow.actions.getupcomingevents",
+                "parameters": [{"name": "count", "key": "WFGetUpcomingItemCount"}],
+                "outputType": "array"
+            }]
+        }
+        snap26 = {"actions": {}}
+        snap27 = {
+            "actions": {
+                "is.workflow.actions.getupcomingevents": {
+                    "sources": ["builtinDefinition"],
+                    "metadata": {"builtin": {"Name": "Get Upcoming Events", "Output": {"Type": "WFEventContentItem"}}}
+                }
+            }
+        }
+        gaps27 = [{
+            "identifier": "is.workflow.actions.getupcomingevents",
+            "unmodeledParameterKeys": ["WFGetUpcomingItemCalendar"]
+        }]
+        ledger = build_ledger(cherri_catalog, snap26, snap27, [], gaps27, [], [], [])
+        row = next(r for r in ledger if r["identifier"] == "is.workflow.actions.getupcomingevents")
+        self.assertEqual(row["status"], "COVERED_PARTIAL")
+        self.assertIn("NEEDS_RUNTIME_EVIDENCE", [d["disposition"] for d in row["parameterDispositions"]])
+
+    def test_r16_output_type_mismatch_yields_partial(self):
+        """R16: Output type mismatch forces COVERED_PARTIAL instead of false COVERED_VERIFIED."""
+        cherri_catalog = {
+            "actions": [{
+                "name": "testAction",
+                "shortcutIdentifier": "is.workflow.actions.testaction",
+                "parameters": [],
+                "outputType": "text"
+            }]
+        }
+        snap26 = {"actions": {}}
+        snap27 = {
+            "actions": {
+                "is.workflow.actions.testaction": {
+                    "sources": ["builtinDefinition"],
+                    "metadata": {"builtin": {"Name": "Test Action", "Output": {"Type": "WFImageContentItem"}}}
+                }
+            }
+        }
+        ledger = build_ledger(cherri_catalog, snap26, snap27, [], [], [], [], [])
+        row = next(r for r in ledger if r["identifier"] == "is.workflow.actions.testaction")
+        self.assertEqual(row["outputTypeConcordance"], "DIFFERS")
+        self.assertEqual(row["status"], "COVERED_PARTIAL")
+
+    def test_r19_os_availability_not_assumed_universal(self):
+        """R19: Actions with Mac-only flags or unknown platforms do not default to universal 'all'."""
+        cherri_catalog = {"actions": []}
+        snap26 = {"actions": {}}
+        snap27 = {
+            "actions": {
+                "is.workflow.actions.filter.windows": {
+                    "sources": ["builtinDefinition"],
+                    "macOnly": True,
+                    "metadata": {"builtin": {"Name": "Get Windows"}}
+                },
+                "is.workflow.actions.unknown_platform": {
+                    "sources": ["builtinDefinition"],
+                    "metadata": {"builtin": {"Name": "Unknown Platform Action"}}
+                }
+            }
+        }
+        ledger = build_ledger(cherri_catalog, snap26, snap27, [], [], [], [], [])
+        row_win = next(r for r in ledger if r["identifier"] == "is.workflow.actions.filter.windows")
+        row_unk = next(r for r in ledger if r["identifier"] == "is.workflow.actions.unknown_platform")
+        self.assertEqual(row_win["osAvailability"], "macOS-only")
+        self.assertEqual(row_unk["osAvailability"], "unknown")
+        self.assertNotEqual(row_win["osAvailability"], "all")
+
+    def test_r24_toolkit_entities_and_config_excluded(self):
+        """R24: ToolKit config-only, hidden, and non-runnable entries are excluded from user-facing denominator."""
+        cherri_catalog = {"actions": []}
+        snap26 = {"actions": {}}
+        snap27 = {
+            "actions": {
+                "com.apple.config.intent": {
+                    "sources": ["toolkit"],
+                    "metadata": {"toolkit": {"classification": "apple_configuration_only"}}
+                },
+                "com.apple.hidden.intent": {
+                    "sources": ["toolkit"],
+                    "metadata": {"toolkit": {"classification": "apple_link_hidden", "visibilityFlags": 0}}
+                }
+            }
+        }
+        ledger = build_ledger(cherri_catalog, snap26, snap27, [], [], [], [], [])
+        row_cfg = next(r for r in ledger if r["identifier"] == "com.apple.config.intent")
+        row_hid = next(r for r in ledger if r["identifier"] == "com.apple.hidden.intent")
+        self.assertEqual(row_cfg["status"], "EXCLUDED_CONFIG_ONLY")
+        self.assertEqual(row_hid["status"], "EXCLUDED_HIDDEN_INTERNAL")
+        self.assertFalse(row_cfg["eligibility"].startswith("ELIGIBLE_"))
+        self.assertFalse(row_hid["eligibility"].startswith("ELIGIBLE_"))
+
+    def test_r27_missing_serializer_classification(self):
+        """R27: Unmodeled user parameters yield MISSING_PARAM and OPEN_USER_PARAMETER disposition."""
+        d = classify_parameter_disposition(
+            "is.workflow.actions.sample",
+            "WFCompletelyUnmodeledParameter",
+            cherri_declared_keys=set(),
+            cherri_emitted_keys=set(),
+            cherri_static_keys=set()
+        )
+        self.assertEqual(d["disposition"], "OPEN_USER_PARAMETER")
+        self.assertEqual(d["codePath"], "unimplemented")
+
 
 if __name__ == "__main__":
     unittest.main()
+

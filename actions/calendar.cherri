@@ -73,6 +73,7 @@ action 'getupcomingreminders' getUpcomingReminders(
 // [Doc]: [Calendars] Find Events: Filter events from calendars.
 action 'filter.calendarevents' filterEvents(
     variable ?events: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'
@@ -81,6 +82,7 @@ action 'filter.calendarevents' filterEvents(
 // [Doc]: [Reminders] Find Reminders: Filter reminders from lists.
 action 'filter.reminders' filterReminders(
     variable ?reminders: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'
@@ -328,6 +330,12 @@ enum editReminderDetail {
     'Parent Reminder',
     'Tags',
     'When Messaging',
+    'Subtasks',
+}
+
+enum setterMode {
+    'Set',
+    'Remove',
 }
 
 // [Doc]: [Reminders] Get Reminder Detail: Get a detail of a reminder.
@@ -336,6 +344,7 @@ action 'properties.reminders' getReminderDetail(variable reminder: 'WFInput', re
 // [Doc]: [Calendars] Filter Event Attendees: Filter event attendees with various filters.
 action 'filter.eventattendees' filterEventAttendees(
     variable ?attendees: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'

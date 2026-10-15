@@ -203,7 +203,14 @@ action 'getframesfromimage' getImageFrames(variable image: 'WFImage')
 // [Doc]: [Image Editing] Filter Images: Filter images with various filters.
 action 'filter.images' filterImages(
     variable ?images: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
     text ?sortBy: 'WFContentItemSortProperty',
     text ?sortOrder: 'WFContentItemSortOrder',
     number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: [Image Editing] Scan Barcode: Scan or extract a barcode or QR code from an image or camera.
+action 'scanbarcode' scanBarcode(
+    bool ?extract: 'WFScanCodeActionMode' = false,
+    variable ?image: 'imageFile'
 ): array

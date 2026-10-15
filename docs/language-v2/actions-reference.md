@@ -2,8 +2,8 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `c5b92badb7162dbcd4f6fd777d2d34fe4125641803c3eeffbe01a47cd76d4259`  
-**Total Actions:** 504  
+**Schema Fingerprint:** `a0a82f83f1d1d3e09dc5512063abdcf817356ee5e9edb9ad38d8467eb8693974`  
+**Total Actions:** 505  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
 
@@ -16,7 +16,7 @@ This documentation is generated automatically from the canonical Cherri v2 Actio
 - [Controlflow](#module-controlflow) (7 actions)
 - [Device](#module-device) (9 actions)
 - [Documents](#module-documents) (6 actions)
-- [General](#module-general) (439 actions)
+- [General](#module-general) (440 actions)
 - [Intelligence](#module-intelligence) (1 actions)
 - [Mac](#module-mac) (1 actions)
 - [Math](#module-math) (3 actions)
@@ -171,14 +171,15 @@ deleteAlarm(alarm: AnyContent)
 Edit a detail of an event. Provide an event, a detail to modify, and a new value for that detail.
 
 ```cherri
-editEvent(event: AnyContent, detail: Text, newValue: AnyContent)
+editEvent(event: AnyContent, detail: Text, newValue?: AnyContent, mode?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `event` | `AnyContent` | Yes | - | `WFInput` | - |
 | `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Start Date, End Date, Is All Day, Location, Duration, My Status, Attendees, URL, Title, Notes, Attachments |
-| `newValue` | `AnyContent` | Yes | - | `WFCalendarEventContentItemStartDate` | - |
+| `newValue` | `AnyContent` | No | - | `WFCalendarEventContentItemStartDate` | - |
+| `mode` | `Text` | No | - | `Mode` | Set, Remove |
 
 ---
 
@@ -190,14 +191,15 @@ editEvent(event: AnyContent, detail: Text, newValue: AnyContent)
 Edit a detail of a reminder. Provide a reminder, a detail to modify, and a new value for that detail.
 
 ```cherri
-editReminder(reminder: AnyContent, detail: Text, newValue: AnyContent)
+editReminder(reminder: AnyContent, detail: Text, newValue?: AnyContent, mode?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `reminder` | `AnyContent` | Yes | - | `WFInput` | - |
-| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Title, List, Due Date, Priority, Is Completed, Notes, URL, Is Flagged, Images, Parent Reminder, Tags, When Messaging |
-| `newValue` | `AnyContent` | Yes | - | `WFReminderContentItemTitle` | - |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | Title, List, Due Date, Priority, Is Completed, Notes, URL, Is Flagged, Images, Parent Reminder, Tags, When Messaging, Subtasks |
+| `newValue` | `AnyContent` | No | - | `WFReminderContentItemTitle` | - |
+| `mode` | `Text` | No | - | `Mode` | Set, Remove |
 
 ---
 
@@ -610,12 +612,13 @@ splitApps(firstAppID: Text, secondAppID: Text, ratio?: Text = "half")
 Filter the provided files with various filters.
 
 ```cherri
-filterFiles(files: AnyContent, limit?: Number, sortBy?: Text, orderBy?: Text)
+filterFiles(files: AnyContent, filter?: AnyContent, limit?: Number, sortBy?: Text, orderBy?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `files` | `AnyContent` | Yes | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | File Size, File Extension, Creation Date, File Path, Last Modified Date, Name, Random |
 | `orderBy` | `Text` | No | - | `WFContentItemSortOrder` | Smallest First, Biggest First, Latest First, Oldest First, A to Z, Z to A |
@@ -2042,12 +2045,13 @@ fileSize(file: Text, format: Text)
 Filter articles with various filters.
 
 ```cherri
-filterArticles(articles: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterArticles(articles: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `articles` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2059,12 +2063,13 @@ filterArticles(articles: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Nu
 **Title:** Filter Contacts  
 **Apple Identifier:** `is.workflow.actions.filter.contacts`  
 ```cherri
-filterContacts(contacts: AnyContent, sortBy?: Text, sortOrder?: Text = "A to Z", limit?: Number)
+filterContacts(contacts: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text = "A to Z", limit?: Number)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `contacts` | `AnyContent` | Yes | - | `WFContentItemInputParameter` | - |
+| `contacts` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random |
 | `sortOrder` | `Text` | No | `A to Z` | `WFContentItemSortOrder` | A to Z, Z to A |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2080,12 +2085,13 @@ filterContacts(contacts: AnyContent, sortBy?: Text, sortOrder?: Text = "A to Z",
 Filter connected displays.
 
 ```cherri
-filterDisplays(displays: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterDisplays(displays: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `displays` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2101,12 +2107,13 @@ filterDisplays(displays: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Nu
 Filter event attendees with various filters.
 
 ```cherri
-filterEventAttendees(attendees: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterEventAttendees(attendees: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `attendees` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2122,12 +2129,13 @@ filterEventAttendees(attendees: AnyContent, sortBy?: Text, sortOrder?: Text, lim
 Filter events from calendars.
 
 ```cherri
-filterEvents(events: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterEvents(events: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `events` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2143,12 +2151,13 @@ filterEvents(events: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number
 Filter images with various filters.
 
 ```cherri
-filterImages(images: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterImages(images: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `images` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2164,12 +2173,13 @@ filterImages(images: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number
 Filter locations with various filters.
 
 ```cherri
-filterLocations(locations: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterLocations(locations: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `locations` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2185,12 +2195,13 @@ filterLocations(locations: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: 
 Filter music with various filters.
 
 ```cherri
-filterMusic(music: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterMusic(music: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `music` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2206,12 +2217,13 @@ filterMusic(music: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) 
 Filter photos from library.
 
 ```cherri
-filterPhotos(photos: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterPhotos(photos: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `photos` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2227,12 +2239,13 @@ filterPhotos(photos: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number
 Filter reminders from lists.
 
 ```cherri
-filterReminders(reminders: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterReminders(reminders: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `reminders` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2248,12 +2261,13 @@ filterReminders(reminders: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: 
 Filter VPN configurations.
 
 ```cherri
-filterVPNs(vpns: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+filterVPNs(vpns: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `vpns` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -2657,12 +2671,13 @@ getAppStoreDetail(app: AnyContent, detail: Text)
 Get list of applications.
 
 ```cherri
-getApps(apps: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
+getApps(apps: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrder?: Text, limit?: Number) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `apps` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | - |
 | `sortOrder` | `Text` | No | - | `WFContentItemSortOrder` | - |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
@@ -5929,6 +5944,25 @@ saveToDropboxPrompt(file: AnyContent, overwrite?: Bool = "false")
 
 ---
 
+### `scanBarcode`
+
+**Title:** Scan Barcode  
+**Apple Identifier:** `is.workflow.actions.scanbarcode`  
+**Returns:** `List<AnyContent>`  
+
+Scan or extract a barcode or QR code from an image or camera.
+
+```cherri
+scanBarcode(extract: Bool, image?: AnyContent) -> List<AnyContent>
+```
+
+| Parameter | Type | Required | Default | Wire Key | Choices |
+|-----------|------|----------|---------|----------|---------|
+| `extract` | `Bool` | No | `false` | `WFScanCodeActionMode` | - |
+| `image` | `AnyContent` | No | - | `imageFile` | - |
+
+---
+
 ### `search`
 
 **Title:** Search/Spotlight  
@@ -6742,7 +6776,7 @@ setParkedCar(location: AnyContent, notes?: Text, photo?: AnyContent) -> AnyConte
 |-----------|------|----------|---------|----------|---------|
 | `location` | `AnyContent` | Yes | - | `WFLocation` | - |
 | `notes` | `Text` | No | - | `WFSetParkedCarNotes` | - |
-| `photo` | `AnyContent` | No | - | `WFSetParkedCarPhoto` | - |
+| `photo` | `AnyContent` | No | - | `WFImage` | - |
 
 ---
 
@@ -8079,11 +8113,13 @@ generateImage(prompt: Text, image?: AnyContent, style?: Text = "animation", save
 **Title:** Get Windows  
 **Apple Identifier:** `is.workflow.actions.filter.windows`  
 ```cherri
-getWindows(sortBy: Text, orderBy?: Text, limit?: Number)
+getWindows(windows: AnyContent, filter?: AnyContent, sortBy?: Text, orderBy?: Text, limit?: Number)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
+| `windows` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
+| `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
 | `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | Title, App Name, Width, Height, X Position, Y Position, Window Index, Name, Random |
 | `orderBy` | `Text` | No | - | `WFContentItemSortOrder` | asc, desc |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |

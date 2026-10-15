@@ -439,7 +439,11 @@ func determineAcceptedFormsAndEvidence(a *LegacyAction, p LegacyParameter, codec
 		if params, ok := appleEnc.ActionParameters[a.ShortcutIdentifier]; ok {
 			for i := range params {
 				if params[i].Key == p.Key {
-					return determineConfirmedForms(&params[i], codec), "EvidenceConfirmed"
+					forms, confirmed := determineConfirmedForms(&params[i], codec)
+					if confirmed {
+						return forms, "EvidenceConfirmed"
+					}
+					return forms, "EvidenceObserved"
 				}
 			}
 		}
@@ -447,12 +451,12 @@ func determineAcceptedFormsAndEvidence(a *LegacyAction, p LegacyParameter, codec
 	return determineInferredForms(codec), "EvidenceInferred"
 }
 
-func determineConfirmedForms(ap *AppleParameterEncoding, codec string) []string {
+func determineConfirmedForms(ap *AppleParameterEncoding, codec string) ([]string, bool) {
 	if ap.Class == "WFVariablePickerParameter" || ap.SingleStateClass == "WFVariableParameterState" {
-		return []string{"attachment(output)", "attachment(variable)"}
+		return []string{"attachment(output)", "attachment(variable)"}, true
 	}
 	if ap.Class == "WFVariableFieldParameter" || ap.SingleStateClass == "WFStringParameterState" {
-		return []string{"literal"}
+		return []string{"literal"}, true
 	}
 	hasVar := false
 	for _, vt := range ap.VariableTypes {
@@ -464,23 +468,27 @@ func determineConfirmedForms(ap *AppleParameterEncoding, codec string) []string 
 
 	if ap.Class == "WFTextInputParameter" || ap.SingleStateClass == "WFVariableStringParameterState" {
 		if hasVar {
-			return []string{"literal", "tokenString", "attachment(output)", "attachment(variable)"}
+			return []string{"literal", "tokenString", "attachment(output)", "attachment(variable)"}, true
 		}
-		return []string{"literal", "tokenString"}
+		return []string{"literal", "tokenString"}, true
 	}
 
 	if !hasVar && len(ap.VariableTypes) > 0 {
-		return []string{"literal"}
+		return []string{"literal"}, true
 	}
 
-	switch codec {
-	case "text":
-		return []string{"literal", "tokenString"}
-	case "token":
-		return []string{"attachment(output)", "attachment(variable)"}
-	default:
-		return []string{"literal", "attachment(output)", "attachment(variable)"}
+	if ap.Class != "" || ap.SingleStateClass != "" {
+		switch codec {
+		case "text":
+			return []string{"literal", "tokenString"}, true
+		case "token":
+			return []string{"attachment(output)", "attachment(variable)"}, true
+		default:
+			return []string{"literal", "attachment(output)", "attachment(variable)"}, true
+		}
 	}
+
+	return determineInferredForms(codec), false
 }
 
 func determineInferredForms(codec string) []string {

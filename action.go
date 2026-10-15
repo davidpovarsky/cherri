@@ -305,6 +305,21 @@ func makeActionParams(arguments []actionArgument, params map[string]any) {
 			continue
 		}
 
+		if param.key == "WFContentItemFilter" {
+			filt, comp := buildContentItemFilter(argumentValue(arguments, i))
+			params["WFContentItemFilter"] = filt
+			if comp != "" {
+				params["WFCompoundType"] = comp
+			}
+			continue
+		}
+
+		if param.key == "WFContentItemLimitNumber" {
+			if arguments[i].value != nil && arguments[i].valueType != Nil {
+				params["WFContentItemLimitEnabled"] = true
+			}
+		}
+
 		if param.validType == Variable {
 			if vv, ok := arguments[i].value.(varValue); ok {
 				params[param.key] = variableValue(vv)

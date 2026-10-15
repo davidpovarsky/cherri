@@ -34,10 +34,10 @@ func TestUpstreamPropagationRehearsal(t *testing.T) {
 		_ = os.WriteFile(actionFile, originalBytes, 0644)
 		loadTestStandardActions()
 
-		// Verify working tree is clean for actions/web.cherri
-		cmd := exec.Command("git", "diff", "--exit-code", actionFile)
-		if out, err := cmd.CombinedOutput(); err != nil {
-			t.Errorf("cleanup failed: %s is dirty in git: %s", actionFile, string(out))
+		// Verify working tree restored original content
+		restored, errRead := os.ReadFile(actionFile)
+		if errRead != nil || string(restored) != string(originalBytes) {
+			t.Errorf("cleanup failed: %s was not restored to original content", actionFile)
 		}
 	})
 
