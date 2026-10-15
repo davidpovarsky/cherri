@@ -869,7 +869,14 @@
       "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
       "notes": [],
       "supersededByUpstream": null,
-      "history": []
+      "history": [
+        {
+          "commit": "9a5c1740089b06436a8f6da3d5b1b3094e71b18f",
+          "change": "Added Mode: Set/Remove support, RemoveSpecifiedValue encoding, and fail-closed validation on invalid properties.",
+          "reason": "P10R audit identified missing setter modes and silent default to Start Date.",
+          "evidence": "P10R acceptance tests R12, R13; macOS 27 runtime probe"
+        }
+      ]
     },
     {
       "name": "editReminder",
@@ -887,7 +894,14 @@
       "evidence": "macOS 27 ShortcutKit deep extraction parameter encodings and dynamic property setter mapping",
       "notes": [],
       "supersededByUpstream": null,
-      "history": []
+      "history": [
+        {
+          "commit": "9a5c1740089b06436a8f6da3d5b1b3094e71b18f",
+          "change": "Added Mode: Set/Remove support, RemoveSpecifiedValue encoding, Subtasks (WFReminderContentItemSubtasks) property, and fail-closed validation on invalid properties.",
+          "reason": "P10R audit identified missing setter modes and silent default to Title.",
+          "evidence": "P10R acceptance tests R11, R13, R27; macOS 27 runtime probe"
+        }
+      ]
     },
     {
       "name": "getReminderDetail",
@@ -1031,7 +1045,14 @@
       "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.setparkedcar)",
       "notes": [],
       "supersededByUpstream": null,
-      "history": []
+      "history": [
+        {
+          "commit": "9a5c1740089b06436a8f6da3d5b1b3094e71b18f",
+          "change": "Corrected photo parameter wire key from WFSetParkedCarPhoto to authentic Apple wire key WFImage.",
+          "reason": "Runtime probe confirmed Apple wire key is WFImage.",
+          "evidence": "macOS 27 runtime extraction parameter-encodings: is.workflow.actions.setparkedcar"
+        }
+      ]
     },
     {
       "name": "getParkedCarDetail",
@@ -1266,6 +1287,24 @@
       "notes": [],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "scanBarcode",
+      "identifier": "is.workflow.actions.scanbarcode",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/images.cherri",
+      "forkLocations": [
+        "actions/images.cherri"
+      ],
+      "firstForkCommit": "9a5c1740089b06436a8f6da3d5b1b3094e71b18f",
+      "change": "Added native Apple scanBarcode action wrapping is.workflow.actions.scanbarcode.",
+      "reason": "First-party Apple Shortcuts barcode scanning action in macOS 27 runtime.",
+      "evidence": "macOS 27 runtime snapshot: is.workflow.actions.scanbarcode",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
@@ -1468,6 +1507,28 @@
       "reason": "Milestone P10 complete action coverage requirement.",
       "evidence": "Live Xcode 27 workflow run 38710010250 and docs/apple-runtime/p10/p10-coverage-report.md",
       "note": "Milestone P10 provenance metadata."
+    },
+    {
+      "name": "P10R native filter predicates and decompiler representability hardening",
+      "locations": [
+        "actions_std.go",
+        "action.go",
+        "decompile.go",
+        "actions/calendar.cherri",
+        "actions/contacts.cherri",
+        "actions/images.cherri",
+        "actions/location.cherri",
+        "actions/mac.cherri",
+        "actions/music.cherri",
+        "actions/network.cherri",
+        "actions/photos.cherri",
+        "actions/web.cherri"
+      ],
+      "firstForkCommit": "9a5c1740089b06436a8f6da3d5b1b3094e71b18f",
+      "change": "Implemented buildContentItemFilter supporting authentic Apple WFContentItemFilter and WFCompoundType serialization for all filter actions, conditional WFContentItemLimitEnabled emission, fail-closed dynamic setter property validation, and hardened decompiler representability to safely fall back to rawAction for unmodeled/unrepresentable structures without data loss.",
+      "reason": "P10R audit findings F01-F08 and acceptance matrix R01-R28.",
+      "evidence": "p10r_acceptance_test.go (all 13 tests PASS), tools/shortcut-runtime/tests/test_runtime_extraction.py (all 38 tests PASS), and full acceptance suite.",
+      "note": "Milestone P10R compiler, decompiler, and standard action library repair."
     }
   ]
 }
