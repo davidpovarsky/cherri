@@ -510,6 +510,366 @@
       "notes": [],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "addItemToList",
+      "identifier": "is.workflow.actions.additemtolist",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/basic.cherri",
+      "forkLocations": [
+        "actions/basic.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added addItemToList / insertListPosition native action modeling WFInput, WFItem, WFInsertPosition, and WFIndex.",
+      "reason": "Supported by Shortcuts builtin runtime for inserting items at index/beginning/end of lists.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "overlayText",
+      "identifier": "is.workflow.actions.overlaytext",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/images.cherri",
+      "forkLocations": [
+        "actions/images.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added overlayText native image action with 22 parameter surface (position, font, size, percentage coordinates/stroke/width, outline, colors, alignment).",
+      "reason": "Shortcuts native image editing built-in with extensive overlay typography parameters.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "moveFile",
+      "identifier": "is.workflow.actions.file.move",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/documents.cherri",
+      "forkLocations": [
+        "actions/documents.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added moveFile action with WFFile, WFMoveFileDestination, and WFMoveFileOverwrite.",
+      "reason": "Native document file movement action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "convertTimeZone",
+      "identifier": "is.workflow.actions.converttimezone",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/calendar.cherri",
+      "forkLocations": [
+        "actions/calendar.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added convertTimeZone action with Date, SourceTimeZone, and DestinationTimeZone parameters.",
+      "reason": "Native date/calendar timezone conversion action in macOS 27 / iOS.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getUpcomingReminders",
+      "identifier": "is.workflow.actions.getupcomingreminders",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/calendar.cherri",
+      "forkLocations": [
+        "actions/calendar.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added getUpcomingReminders action with list and count parameters.",
+      "reason": "Native Reminders query action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterEvents",
+      "identifier": "is.workflow.actions.filter.calendarevents",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/calendar.cherri",
+      "forkLocations": [
+        "actions/calendar.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added filterEvents action with events, sortProperty, sortOrder, and limit parameters.",
+      "reason": "Native Calendar event filtering action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterReminders",
+      "identifier": "is.workflow.actions.filter.reminders",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/calendar.cherri",
+      "forkLocations": [
+        "actions/calendar.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added filterReminders action with reminders, sortProperty, sortOrder, and limit parameters.",
+      "reason": "Native Reminder filtering action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterPhotos",
+      "identifier": "is.workflow.actions.filter.photos",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/photos.cherri",
+      "forkLocations": [
+        "actions/photos.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added filterPhotos action with photos, sortProperty, sortOrder, and limit parameters.",
+      "reason": "Native Photos library filtering action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getApps",
+      "identifier": "is.workflow.actions.filter.apps",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/mac.cherri",
+      "forkLocations": [
+        "actions/mac.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added getApps action with apps, sortBy, sortOrder, and limit parameters.",
+      "reason": "macOS native application query/filter action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "mountDiskImage",
+      "identifier": "is.workflow.actions.mountdiskimage",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/mac.cherri",
+      "forkLocations": [
+        "actions/mac.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added mountDiskImage action with WFInput disk image parameter.",
+      "reason": "macOS native disk image mount action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "ejectDisk",
+      "identifier": "is.workflow.actions.ejectdisk",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/mac.cherri",
+      "forkLocations": [
+        "actions/mac.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added ejectDisk action with WFInput disk parameter.",
+      "reason": "macOS native disk ejection action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getCurrentApp",
+      "identifier": "is.workflow.actions.getcurrentapp",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/mac.cherri",
+      "forkLocations": [
+        "actions/mac.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added getCurrentApp action with WFVisibleAppScope parameter.",
+      "reason": "macOS native current application detection action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getSelectedText",
+      "identifier": "is.workflow.actions.getselectedtext",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/mac.cherri",
+      "forkLocations": [
+        "actions/mac.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added getSelectedText action returning active selection text on macOS.",
+      "reason": "macOS native active selection capture action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "logOut",
+      "identifier": "is.workflow.actions.logout",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/mac.cherri",
+      "forkLocations": [
+        "actions/mac.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added logOut macOS session termination action.",
+      "reason": "macOS native session management action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "lockApp",
+      "identifier": "is.workflow.actions.lock.app",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/mac.cherri",
+      "forkLocations": [
+        "actions/mac.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added lockApp action with WFApp and WFLockAppOperation parameters.",
+      "reason": "macOS native app locking action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "setPlaybackDestination",
+      "identifier": "is.workflow.actions.setplaybackdestination",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/media.cherri",
+      "forkLocations": [
+        "actions/media.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added setPlaybackDestination action with WFMediaRoute and WFMediaRouteOperation parameters.",
+      "reason": "Native audio playback route destination selection action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "setNoiseControlMode",
+      "identifier": "is.workflow.actions.listeningmode.set",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/media.cherri",
+      "forkLocations": [
+        "actions/media.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added setNoiseControlMode action with WFListeningMode and WFRoute parameters.",
+      "reason": "Native AirPods / Beats listening mode configuration action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "AnnounceNotifications",
+      "identifier": "is.workflow.actions.announcenotifications.set",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/settings.cherri",
+      "forkLocations": [
+        "actions/settings.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added AnnounceNotifications action with OnValue toggle parameter.",
+      "reason": "Native notification announce setting action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "SilenceUnknownCallers",
+      "identifier": "is.workflow.actions.silenceunknowncallers.set",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/settings.cherri",
+      "forkLocations": [
+        "actions/settings.cherri"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Added SilenceUnknownCallers action with OnValue toggle parameter.",
+      "reason": "Native telephony silence unknown callers setting action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "editEvent",
+      "identifier": "is.workflow.actions.setters.calendarevents",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions_std.go",
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Implemented rich dynamic property setter for editEvent covering all 11 content item properties, Mode, ValueLabel, and RemoveSpecifiedValue.",
+      "reason": "Calendar event property mutation action in Shortcuts standard library.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
@@ -677,6 +1037,41 @@
       "reason": "Keep fork synchronized with upstream improvements while preserving all fork-owned extensions (machine-readable catalog, App Intent metadata, UTF-16 offset handling, compiler state isolation, round-trip tests, Skill workflows, and iOS app).",
       "evidence": "All upstream tests and fork test suites pass (TestCherriNoSign, TestDecomp, TestForkActionRoundTrips, TestForkActionProvenanceRegistry, shortcut-corpus tool tests, and Skill self-test).",
       "note": "Synchronized upstream commits dc82114..a66db15."
+    },
+    {
+      "name": "macOS 27 ShortcutKit runtime extraction, parameter surface repairs, and multi-inventory ledger",
+      "locations": [
+        "actions/basic.cherri",
+        "actions/calendar.cherri",
+        "actions/contacts.cherri",
+        "actions/device.cherri",
+        "actions/documents.cherri",
+        "actions/images.cherri",
+        "actions/location.cherri",
+        "actions/mac.cherri",
+        "actions/math.cherri",
+        "actions/media.cherri",
+        "actions/music.cherri",
+        "actions/network.cherri",
+        "actions/pdf.cherri",
+        "actions/photos.cherri",
+        "actions/settings.cherri",
+        "actions/sharing.cherri",
+        "actions/shortcuts.cherri",
+        "actions/text.cherri",
+        "actions/web.cherri",
+        "actions_std.go",
+        "tools/shortcut-runtime/compare_cherri.py",
+        "tools/shortcut-runtime/generate_p10_ledger.py",
+        "docs/apple-runtime/",
+        "docs/apple-runtime/macos-27/",
+        "docs/apple-runtime/p10/"
+      ],
+      "firstForkCommit": "3079a9590d5771e01feaa79014076e7813bae9a0",
+      "change": "Complete Apple Shortcuts action coverage extraction from live macOS 27.0.1 (build 26A434) across 2,396 raw records, eliminated parameter gaps across all covered built-ins, expanded schema registry to 482 actions, and created machine-readable delta and taxonomy ledger.",
+      "reason": "Milestone P10 complete action coverage requirement.",
+      "evidence": "Live Xcode 27 workflow run 38710010250 and docs/apple-runtime/p10/p10-coverage-report.md",
+      "note": "Milestone P10 provenance metadata."
     }
   ]
 }
