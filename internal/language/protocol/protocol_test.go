@@ -15,8 +15,8 @@ func TestBuildCapabilities(t *testing.T) {
 	if caps.CatalogSchemaVersion != "3.0" {
 		t.Errorf("expected CatalogSchemaVersion 3.0, got %s", caps.CatalogSchemaVersion)
 	}
-	if caps.ActionCount != 482 {
-		t.Errorf("expected ActionCount 482, got %d", caps.ActionCount)
+	if caps.ActionCount != 504 {
+		t.Errorf("expected ActionCount 504, got %d", caps.ActionCount)
 	}
 	if len(caps.SchemaFingerprint) != 64 {
 		t.Errorf("expected 64-char fingerprint, got %s", caps.SchemaFingerprint)

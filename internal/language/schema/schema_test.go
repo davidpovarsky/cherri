@@ -11,8 +11,8 @@ func TestDefaultRegistry(t *testing.T) {
 	}
 
 	actions := reg.AllActions()
-	if len(actions) != 482 {
-		t.Fatalf("expected 482 actions, got %d", len(actions))
+	if len(actions) != 504 {
+		t.Fatalf("expected 504 actions, got %d", len(actions))
 	}
 
 	fp := reg.Fingerprint()
