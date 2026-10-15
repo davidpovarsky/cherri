@@ -658,8 +658,8 @@
     {
       "name": "getApps",
       "identifier": "is.workflow.actions.filter.apps",
-      "changeType": "added-by-fork",
-      "upstreamStatus": "absent-upstream",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-extended",
       "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
       "upstreamLocation": "actions/mac.cherri",
       "forkLocations": [
@@ -856,10 +856,10 @@
     {
       "name": "editEvent",
       "identifier": "is.workflow.actions.setters.calendarevents",
-      "changeType": "added-by-fork",
-      "upstreamStatus": "absent-upstream",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-extended",
       "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
-      "upstreamLocation": "actions_std.go",
+      "upstreamLocation": "actions/calendar.cherri",
       "forkLocations": [
         "actions_std.go"
       ],
@@ -867,6 +867,402 @@
       "change": "Implemented rich dynamic property setter for editEvent covering all 11 content item properties, Mode, ValueLabel, and RemoveSpecifiedValue.",
       "reason": "Calendar event property mutation action in Shortcuts standard library.",
       "evidence": "macOS 27 ShortcutKit deep extraction (host macOS 27.0.1, build 26A434, workflow 38710010250)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "editReminder",
+      "identifier": "is.workflow.actions.setters.reminders",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions_std.go",
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Implemented rich dynamic property setter for editReminder covering all 12 reminder content item properties, Mode, and RemoveSpecifiedValue.",
+      "reason": "Reminder property mutation action in Shortcuts standard library.",
+      "evidence": "macOS 27 ShortcutKit deep extraction parameter encodings and dynamic property setter mapping",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getReminderDetail",
+      "identifier": "is.workflow.actions.properties.reminders",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/calendar.cherri",
+      "forkLocations": [
+        "actions/calendar.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added getReminderDetail action and reminderDetail enum for reminder content properties.",
+      "reason": "Native Shortcuts reminder property extractor.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.properties.reminders)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterEventAttendees",
+      "identifier": "is.workflow.actions.filter.eventattendees",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/calendar.cherri",
+      "forkLocations": [
+        "actions/calendar.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added filterEventAttendees action with attendees, sortBy, sortOrder, and limit parameters.",
+      "reason": "Native calendar event attendee filter action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.filter.eventattendees)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getEventAttendeeDetail",
+      "identifier": "is.workflow.actions.properties.eventattendees",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/calendar.cherri",
+      "forkLocations": [
+        "actions/calendar.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added getEventAttendeeDetail action and eventAttendeeDetail enum for attendee property extraction.",
+      "reason": "Native calendar event attendee property extractor.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.properties.eventattendees)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterImages",
+      "identifier": "is.workflow.actions.filter.images",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/images.cherri",
+      "forkLocations": [
+        "actions/images.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added filterImages action with images, sortBy, sortOrder, and limit parameters.",
+      "reason": "Native image content filter action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.filter.images)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterArticles",
+      "identifier": "is.workflow.actions.filter.articles",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/web.cherri",
+      "forkLocations": [
+        "actions/web.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added filterArticles action with articles, sortBy, sortOrder, and limit parameters.",
+      "reason": "Native web article content filter action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.filter.articles)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterLocations",
+      "identifier": "is.workflow.actions.filter.locations",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/location.cherri",
+      "forkLocations": [
+        "actions/location.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added filterLocations action with locations, sortBy, sortOrder, and limit parameters.",
+      "reason": "Native geographic location content filter action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.filter.locations)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getParkedCarLocation",
+      "identifier": "is.workflow.actions.getparkedcarlocation",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/location.cherri",
+      "forkLocations": [
+        "actions/location.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added getParkedCarLocation action to retrieve parked car coordinates.",
+      "reason": "Native Maps/location parked car retrieval action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.getparkedcarlocation)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "setParkedCar",
+      "identifier": "is.workflow.actions.setparkedcar",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/location.cherri",
+      "forkLocations": [
+        "actions/location.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added setParkedCar action with location and photo parameters.",
+      "reason": "Native Maps/location set parked car action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.setparkedcar)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getParkedCarDetail",
+      "identifier": "is.workflow.actions.properties.parkedcar",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/location.cherri",
+      "forkLocations": [
+        "actions/location.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added getParkedCarDetail action and parkedCarDetail enum.",
+      "reason": "Native parked car property extractor.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.properties.parkedcar)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterMusic",
+      "identifier": "is.workflow.actions.filter.music",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/music.cherri",
+      "forkLocations": [
+        "actions/music.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added filterMusic action with music, sortBy, sortOrder, and limit parameters.",
+      "reason": "Native Apple Music media item filter action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.filter.music)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterDisplays",
+      "identifier": "is.workflow.actions.filter.displays",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/mac.cherri",
+      "forkLocations": [
+        "actions/mac.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added filterDisplays action for macOS display queries.",
+      "reason": "macOS native display filter action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.filter.displays)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "filterVPNs",
+      "identifier": "is.workflow.actions.filter.vpns",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/network.cherri",
+      "forkLocations": [
+        "actions/network.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added filterVPNs action for VPN configuration queries.",
+      "reason": "Native system VPN query/filter action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.filter.vpns)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getVPN",
+      "identifier": "is.workflow.actions.vpn.get",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/network.cherri",
+      "forkLocations": [
+        "actions/network.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added getVPN action to retrieve current VPN configurations.",
+      "reason": "Native network VPN getter action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.vpn.get)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "setVPN",
+      "identifier": "is.workflow.actions.vpn.set",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/network.cherri",
+      "forkLocations": [
+        "actions/network.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added setVPN action with vpn and operation parameters.",
+      "reason": "Native network VPN connection controller action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.vpn.set)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getEpisodesForPodcast",
+      "identifier": "is.workflow.actions.getepisodesforpodcast",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/media.cherri",
+      "forkLocations": [
+        "actions/media.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added getEpisodesForPodcast action to retrieve podcast episodes.",
+      "reason": "Native Apple Podcasts episode query action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.getepisodesforpodcast)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "getPodcastEpisodeDetail",
+      "identifier": "is.workflow.actions.properties.podcast",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/media.cherri",
+      "forkLocations": [
+        "actions/media.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added getPodcastEpisodeDetail action and podcastEpisodeDetail enum for podcast episode property extraction.",
+      "reason": "Native Apple Podcasts episode property extractor.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.properties.podcast)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "intercom",
+      "identifier": "is.workflow.actions.intercom",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/device.cherri",
+      "forkLocations": [
+        "actions/device.cherri"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added intercom action for sending HomePod intercom announcements.",
+      "reason": "Native HomeKit intercom announcement action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction (is.workflow.actions.intercom)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "startNotesAudioRecording",
+      "identifier": "com.apple.Notes.StartRecordingLinkAction",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions_std.go",
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added startNotesAudioRecording App Intent action for Apple Notes in-note audio capture.",
+      "reason": "First-party Apple Notes App Intent action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction App Intent discovery (com.apple.Notes.StartRecordingLinkAction)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "recordVoiceMemo",
+      "identifier": "com.apple.VoiceMemos.RecordVoiceMemoIntent",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions_std.go",
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added recordVoiceMemo App Intent action with name parameter.",
+      "reason": "First-party Apple Voice Memos recording App Intent action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction App Intent discovery (com.apple.VoiceMemos.RecordVoiceMemoIntent)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "stopVoiceMemoRecording",
+      "identifier": "com.apple.VoiceMemos.StopRecording",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions_std.go",
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added stopVoiceMemoRecording App Intent action.",
+      "reason": "First-party Apple Voice Memos stop recording App Intent action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction App Intent discovery (com.apple.VoiceMemos.StopRecording)",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "playVoiceMemo",
+      "identifier": "com.apple.VoiceMemos.PlaybackVoiceMemoIntent",
+      "changeType": "added-by-fork",
+      "upstreamStatus": "absent-upstream",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions_std.go",
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "a824fa784756b99f816b26e321b3327fa13c3166",
+      "change": "Added playVoiceMemo App Intent action with recording and playbackType parameters.",
+      "reason": "First-party Apple Voice Memos playback App Intent action.",
+      "evidence": "macOS 27 ShortcutKit deep extraction App Intent discovery (com.apple.VoiceMemos.PlaybackVoiceMemoIntent)",
       "notes": [],
       "supersededByUpstream": null,
       "history": []

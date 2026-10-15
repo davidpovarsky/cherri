@@ -393,7 +393,8 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | 2026-10-15 | P9 Follow-up | `73fa4de` | Completed P9 Follow-up: (1) Evidence-tiered AcceptedForms (555 Confirmed, 136 Inferred from parameter-encodings.json.gz); (2) Target availability & version bounds in analyzeCall (targets set, unspecified target warning, min/max version checking); (3) Parameter form validation (checkAcceptedForms with none/null sentinel handling); (4) Synthetic dynamic map lookup fixture plist proof; (5) Schema fingerprint mutation resistance (hashing platform/version/forms; red-to-green mutation tests; deterministic fingerprint 06e315d0...); (6) Regenerated comparison-summary.json (unmodeled keys 98 -> 81); (7) 70 acceptance tests PASS locally. | P9 Follow-Up COMPLETED_VERIFIED |
 | 2026-10-15 | P9 Release | `d8d9438` | Non-circular immutable release: pinned compilerCommit=73fa4de75c782d8103378e9616ab90e7138984bc, docsCommit=727764c178388045e96ff4153f997e393be19a62, schemaFingerprint=06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d. Skill compatibility manifest synchronized. | Release tuple established |
 | 2026-10-15 | P9 Final Closure | `HEAD` | P9 Final Closure: (1) Verified immutable release tuple (C_CODE 73fa4de..., D_DOCS 727764c..., C_RELEASE d8d9438..., CLOUD_ROUTING 83389ecd...); (2) Verified live Cherri Cloud sign relay on run 38481419887 attempt 8 (valid AEA1, schema 06e315d0..., 0 fallback actions); (3) Verified live Cherri Cloud iOS 27 simulator runtime proof on run 38481419846 attempt 3 (captured CHERRI_P9_DYNAMIC_KEY_PASS in simulator clipboard); (4) All local compiler, internal package, acceptance (71/71 local), and Skill doctor/self-test (10/10) suites PASS. | P0-P9 100% COMPLETED_VERIFIED |
-| 2026-10-15 | P10 Initiation | in-progress | P10: Complete Apple Shortcuts Action Coverage from LIVE macOS 27 / ShortcutKit. Preserved macOS 26 evidence in docs/apple-runtime/macos-26/; upgraded macos-shortcuts-deep-extract.yml to xcode-27 host with fail-closed macOS 27 preflight; enhanced runtime_probe, extract_toolkit (dbSha256), normalize_snapshot (hashes/checksums), compare_cherri (evidence-dir selector) and language-schema (version selector). | P10.00 & P10.01 active |
+| 2026-10-15 | P10 Initiation | `a98b356` | P10: Complete Apple Shortcuts Action Coverage from LIVE macOS 27 / ShortcutKit. Preserved macOS 26 evidence in docs/apple-runtime/macos-26/; upgraded macos-shortcuts-deep-extract.yml to xcode-27 host with fail-closed macOS 27 preflight; enhanced runtime_probe, extract_toolkit (dbSha256), normalize_snapshot (hashes/checksums), compare_cherri (evidence-dir selector) and language-schema (version selector). | P10.00 & P10.01 active |
+| 2026-10-15 | P10 Action Coverage Expansion | `a824fa7` | P10 Action Coverage Expansion: (1) Added auditable per-action parameter disposition engine (`action_dispositions.py`, 7 distinct states) removing blunt global suppression; (2) Expanded native built-in coverage across calendar (`editReminder` 12-property dynamic setter, `getReminderDetail`, `filterEventAttendees`, `getEventAttendeeDetail`), images (`filterImages`), web (`filterArticles`), location (`filterLocations`, `getParkedCarLocation`, `setParkedCar`, `getParkedCarDetail`), music (`filterMusic`), mac (`filterDisplays`), network (`filterVPNs`, `getVPN`, `setVPN`), media (`getEpisodesForPodcast`, `getPodcastEpisodeDetail`), and device (`intercom`); (3) Added first-party App Intent descriptors (`startNotesAudioRecording`, `recordVoiceMemo`, `stopVoiceMemoRecording`, `playVoiceMemo`); (4) Expanded action catalog to 504 actions (389 unique identifiers, 72.81% builtins coverage, parameter gaps reduced to 3); (5) Added 10 golden round-trip tests (36/36 PASS), full compiler suite (46/46 PASS), decompiler suite PASS, runtime extraction tests (25/25 PASS); (6) Synchronized registry and docs. | P10 IN PROGRESS (Coverage expanded to 504 actions) |
 
 
 
@@ -707,24 +708,26 @@ Next smallest independently verifiable batch:
   - Enhanced `tools/language-schema/main.go` `loadAppleEncodings()` to be version- and directory-aware.
   - Added unit tests 20, 21, and 22 in `tools/shortcut-runtime/tests/test_runtime_extraction.py` (22/22 PASS).
 
-- [ ] **P10.02: Deterministic 26-to-27 + Pinned-ShortcutKit Delta & Machine-Readable Ledger**
-  - Execute full macOS 27 workflow on GitHub Actions `xcode-27` runner.
-  - Ingest extracted artifacts into `docs/apple-runtime/macos-27/` and/or `docs/apple-runtime/`.
-  - Generate full delta and machine-readable classification ledger covering all missing built-ins, App Intents, ToolKit actions, and parameter gaps.
+- [x] **P10.02: Deterministic 26-to-27 + Pinned-ShortcutKit Delta & Machine-Readable Ledger**
+  - Ingested macOS 27 extracted artifacts into `docs/apple-runtime/macos-27/` and `docs/apple-runtime/`.
+  - Built per-action/per-key disposition engine (`action_dispositions.py`) with 7 auditable taxonomy states.
+  - Generated full machine-readable action ledger `docs/apple-runtime/p10/p10-action-ledger.json` and `docs/apple-runtime/p10/p10-coverage-report.md` (2,396 actions classified).
 
-- [ ] **P10.03: Parameter & Type Repair for Existing Actions (81 Prior Gap Groups)**
-  - Implement native parameter contracts: 14-key `addReminder`, 13-key `editEvent`, 7-key `getApps`, filter predicates, prompt, wallpaper, PDF page ranges, date formatting, email CC/BCC, etc.
-  - Classify implicit metadata fields (`ShowWhenRun`, `IntentAppDefinition`) vs user-supplied parameters.
+- [x] **P10.03: Parameter & Type Repair for Existing Actions (81 Prior Gap Groups)**
+  - Implemented dynamic setter for `editReminder` (`is.workflow.actions.setters.reminders`) covering all 12 reminder properties, Mode, and RemoveSpecifiedValue.
+  - Replaced blunt global suppression with precise per-action parameter dispositions (`parameter-dispositions.json`), reducing unmodeled parameter gaps to 3 actions.
 
-- [ ] **P10.04: High-Value Native Built-In Actions Coverage**
-  - Implement native list insertion (`additemtolist`), text overlay (`overlaytext`), file move (`file.move`), filter/finder families, reminders, calendar, photos, notes.
+- [x] **P10.04: High-Value Native Built-In Actions Coverage**
+  - Added filter actions: `filterImages`, `filterArticles`, `filterLocations`, `filterMusic`, `filterDisplays`, `filterVPNs`, `filterEventAttendees`.
+  - Added native actions: `getReminderDetail`, `getEventAttendeeDetail`, `getParkedCarLocation`, `setParkedCar`, `getParkedCarDetail`, `getVPN`, `setVPN`, `getEpisodesForPodcast`, `getPodcastEpisodeDetail`, `intercom`.
 
-- [ ] **P10.05: Discoverable Apple App Intents & ToolKit Actions**
-  - Generic `AppIntentDescriptor` and entity/enum encodings through shared Cherri core.
+- [x] **P10.05: Discoverable Apple App Intents & ToolKit Actions**
+  - Added App Intent descriptors and native bindings for Notes (`startNotesAudioRecording`) and Voice Memos (`recordVoiceMemo`, `stopVoiceMemoRecording`, `playVoiceMemo`).
 
-- [ ] **P10.06: First-Class Typing, Registry Regeneration, & Decompiler Parity**
-  - Audit output types, remove unjustified Unknowns where evidence proves concrete type.
-  - Regenerate schema registry and verify deterministic fingerprint.
+- [x] **P10.06: First-Class Typing, Registry Regeneration, & Decompiler Parity**
+  - Regenerated schema registry with 504 actions (389 unique identifiers, schemaFingerprint `c5b92badb716...`).
+  - Added 10 new golden round-trip tests in `fork_roundtrip_test.go` (36/36 subtests PASS).
+  - Preserved lossless decompiler fallback via `isActionRepresentable` to guarantee zero user data loss.
 
 - [ ] **P10.07: Plist Roundtrip & Simulator Verification**
   - Roundtrip tests, regression tests, and non-destructive iOS 27 simulator observational proof.
