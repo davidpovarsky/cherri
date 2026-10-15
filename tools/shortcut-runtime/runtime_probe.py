@@ -30,10 +30,12 @@ def get_command_output(cmd, default="unknown"):
 def collect_environment():
     env = {
         "runner": os.environ.get("RUNNER_NAME") or platform.system(),
+        "runnerImage": os.environ.get("ImageOS") or os.environ.get("RUNNER_OS") or "unknown",
         "platform": platform.system(),
         "arch": platform.machine(),
         "macOS": "unknown",
         "build": "unknown",
+        "xcodeVersion": "unknown",
         "shortcutsVersion": "unknown",
         "shortcutsBuild": "unknown",
         "workflowKitVersion": "unknown",
@@ -43,6 +45,7 @@ def collect_environment():
         env["macOS"] = get_command_output(["sw_vers", "-productVersion"])
         env["build"] = get_command_output(["sw_vers", "-buildVersion"])
         env["arch"] = get_command_output(["uname", "-m"])
+        env["xcodeVersion"] = get_command_output(["xcodebuild", "-version"]).replace("\n", " ")
         env["shortcutsVersion"] = get_command_output(
             ["defaults", "read", "/System/Applications/Shortcuts.app/Contents/Info.plist", "CFBundleShortVersionString"]
         )
@@ -117,7 +120,9 @@ def scan_dyld_identifiers(out_file):
 
     cache_dirs = [
         pathlib.Path("/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld"),
-        pathlib.Path("/System/Library/dyld")
+        pathlib.Path("/System/Cryptexes/OS/System/Library/dyld"),
+        pathlib.Path("/System/Library/dyld"),
+        pathlib.Path("/System/Library/Caches/com.apple.dyld")
     ]
 
     identifiers = set()

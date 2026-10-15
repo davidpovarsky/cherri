@@ -24,6 +24,7 @@ Classifies tools into distinct semantic categories without flattening:
 import argparse
 import datetime
 import glob
+import hashlib
 import json
 import os
 import pathlib
@@ -212,9 +213,20 @@ def extract_toolkit_registry(db_path):
         version_info = safe_parse_json(meta.get("VersionKey"))
         ls_info = safe_parse_json(meta.get("LaunchServicesDatabaseVersionKey"))
 
+        db_sha256 = "unknown"
+        try:
+            with open(db_path, "rb") as f:
+                h = hashlib.sha256()
+                while chunk := f.read(65536):
+                    h.update(chunk)
+                db_sha256 = h.hexdigest()
+        except Exception:
+            pass
+
         provenance = {
             "schemaVersion": "2.0.0",
             "dbFilename": os.path.basename(db_path),
+            "dbSha256": db_sha256,
             "osVersion": meta.get("OSVersion"),
             "indexerSource": meta.get("IndexerSource"),
             "toolkitVersion": version_info.get("uuid"),
@@ -466,6 +478,7 @@ def extract_toolkit_registry(db_path):
         summary = {
             "schemaVersion": "2.0.0",
             "toolkitDb": os.path.basename(db_path),
+            "dbSha256": db_sha256,
             "totalTools": len(tools),
             "uniqueIdentifiers": len({t["identifier"] for t in tools}),
             "duplicateIdentifiers": sorted([t_id for t_id in {t["identifier"] for t in tools} if sum(1 for x in tools if x["identifier"] == t_id) > 1]),

@@ -379,12 +379,27 @@ type AppleEncodingsData struct {
 }
 
 func loadAppleEncodings() *AppleEncodingsData {
-	paths := []string{
-		filepath.Join("docs", "apple-runtime", "parameter-encodings.json.gz"),
-		filepath.Join("..", "docs", "apple-runtime", "parameter-encodings.json.gz"),
-		filepath.Join("..", "..", "docs", "apple-runtime", "parameter-encodings.json.gz"),
-		filepath.Join("docs", "apple-runtime", "parameter-encodings.json"),
-		filepath.Join("..", "docs", "apple-runtime", "parameter-encodings.json"),
+	var searchDirs []string
+	if custom := os.Getenv("CHERRI_APPLE_RUNTIME_DIR"); custom != "" {
+		searchDirs = append(searchDirs, custom)
+	}
+	searchDirs = append(searchDirs,
+		filepath.Join("docs", "apple-runtime", "macos-27"),
+		filepath.Join("..", "docs", "apple-runtime", "macos-27"),
+		filepath.Join("..", "..", "docs", "apple-runtime", "macos-27"),
+		filepath.Join("docs", "apple-runtime"),
+		filepath.Join("..", "docs", "apple-runtime"),
+		filepath.Join("..", "..", "docs", "apple-runtime"),
+		filepath.Join("docs", "apple-runtime", "macos-26"),
+		filepath.Join("..", "docs", "apple-runtime", "macos-26"),
+		filepath.Join("..", "..", "docs", "apple-runtime", "macos-26"),
+	)
+	var paths []string
+	for _, dir := range searchDirs {
+		paths = append(paths,
+			filepath.Join(dir, "parameter-encodings.json.gz"),
+			filepath.Join(dir, "parameter-encodings.json"),
+		)
 	}
 	for _, p := range paths {
 		if strings.HasSuffix(p, ".gz") {

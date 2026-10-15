@@ -219,11 +219,21 @@ def main():
     parser.add_argument("--toolkit-registry", help="Path to toolkit-registry.json")
     parser.add_argument("--toolkit-summary", help="Path to toolkit-summary.json")
     parser.add_argument("--parameter-encodings", help="Path to parameter-encodings.json")
+    parser.add_argument("--runtime-evidence-dir", default=None, help="Directory containing Apple runtime evidence files")
     parser.add_argument("--out-dir", default="out", help="Output directory")
     args = parser.parse_args()
 
     out_dir = pathlib.Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    evidence_candidates = []
+    if args.runtime_evidence_dir:
+        evidence_candidates.append(pathlib.Path(args.runtime_evidence_dir))
+    evidence_candidates.extend([
+        pathlib.Path("docs/apple-runtime/macos-27"),
+        pathlib.Path("docs/apple-runtime"),
+        pathlib.Path("docs/apple-runtime/macos-26"),
+    ])
 
     builtin_defs = args.builtin_defs
     dyld_ids = args.dyld_ids
@@ -249,21 +259,35 @@ def main():
                     })
             app_intents = {"actions": app_intents_list}
         if not toolkit_registry:
-            tk_reg_path = pathlib.Path("docs/apple-runtime/toolkit-registry.json.gz")
-            if tk_reg_path.exists():
-                toolkit_registry = str(tk_reg_path)
-            else:
+            for edir in evidence_candidates:
+                tk_reg = edir / "toolkit-registry.json.gz"
+                if tk_reg.exists():
+                    toolkit_registry = str(tk_reg)
+                    break
+                tk_reg_raw = edir / "toolkit-registry.json"
+                if tk_reg_raw.exists():
+                    toolkit_registry = str(tk_reg_raw)
+                    break
+            if not toolkit_registry:
                 toolkit_registry = snap.get("toolkitEvidence", {})
 
     if not args.toolkit_summary:
-        tk_sum_path = pathlib.Path("docs/apple-runtime/toolkit-summary.json")
-        if tk_sum_path.exists():
-            args.toolkit_summary = str(tk_sum_path)
+        for edir in evidence_candidates:
+            tk_sum = edir / "toolkit-summary.json"
+            if tk_sum.exists():
+                args.toolkit_summary = str(tk_sum)
+                break
 
     if not args.parameter_encodings:
-        pe_path = pathlib.Path("docs/apple-runtime/parameter-encodings.json.gz")
-        if pe_path.exists():
-            args.parameter_encodings = str(pe_path)
+        for edir in evidence_candidates:
+            pe_gz = edir / "parameter-encodings.json.gz"
+            if pe_gz.exists():
+                args.parameter_encodings = str(pe_gz)
+                break
+            pe_raw = edir / "parameter-encodings.json"
+            if pe_raw.exists():
+                args.parameter_encodings = str(pe_raw)
+                break
 
     summary, missing_defs, missing_intents, missing_runnable, gaps = run_comparison(
         cherri_actions_path=args.cherri_actions,

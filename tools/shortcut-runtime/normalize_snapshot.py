@@ -11,6 +11,7 @@ Sanitizes runner-specific absolute paths.
 
 import argparse
 import datetime
+import hashlib
 import json
 import os
 import pathlib
@@ -202,14 +203,22 @@ def build_snapshot(
         "cherriGitSha": cherri_sha,
         "generatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "runner": env.get("runner", "unknown"),
+        "runnerImage": env.get("runnerImage", "unknown"),
+        "platform": env.get("platform", "unknown"),
+        "architecture": env.get("arch", "unknown"),
         "macOS": env.get("macOS", "unknown"),
         "build": env.get("build", "unknown"),
+        "xcodeVersion": env.get("xcodeVersion", "unknown"),
         "shortcutsVersion": env.get("shortcutsVersion", "unknown"),
         "shortcutsBuild": env.get("shortcutsBuild", "unknown"),
         "workflowKitVersion": env.get("workflowKitVersion", "unknown"),
         "actionKitVersion": env.get("actionKitVersion", "unknown"),
+        "toolkitDb": toolkit_summary.get("toolkitDb"),
+        "toolkitDbSha256": toolkit_summary.get("provenance", {}).get("dbSha256") or toolkit_summary.get("dbSha256", "unknown"),
+        "toolkitVersion": toolkit_summary.get("provenance", {}).get("toolkitVersion", "unknown"),
         "shortcutKitCommit": shortcutkit_commit,
         "shardCount": shard_count,
+        "shardSummary": param_encodings.get("summary", {}),
         "counts": {
             "totalUniqueActions": len(sanitized_snapshot),
             "builtinDefinitions": len(builtin_defs) if isinstance(builtin_defs, dict) else 0,
@@ -280,12 +289,34 @@ def main():
     )
 
     (out_dir / "apple-runtime-snapshot.json").write_text(json.dumps(snapshot, indent=2, sort_keys=True), encoding="utf-8")
+
+    # Compute SHA-256 of all output JSON files in out_dir
+    file_hashes = {}
+    checksum_lines = []
+    for f in sorted(out_dir.glob("*.json")):
+        h = hashlib.sha256(f.read_bytes()).hexdigest()
+        file_hashes[f.name] = h
+        checksum_lines.append(f"{h}  {f.name}")
+    for f in sorted(out_dir.glob("*.json.gz")):
+        h = hashlib.sha256(f.read_bytes()).hexdigest()
+        file_hashes[f.name] = h
+        checksum_lines.append(f"{h}  {f.name}")
+
+    manifest["outputSha256"] = file_hashes
     (out_dir / "apple-runtime-manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    
+    # Update manifest hash in file_hashes
+    manifest_hash = hashlib.sha256((out_dir / "apple-runtime-manifest.json").read_bytes()).hexdigest()
+    file_hashes["apple-runtime-manifest.json"] = manifest_hash
+    checksum_lines = [line for line in checksum_lines if not line.endswith("  apple-runtime-manifest.json")]
+    checksum_lines.append(f"{manifest_hash}  apple-runtime-manifest.json")
+    (out_dir / "checksums.sha256").write_text("\n".join(sorted(checksum_lines)) + "\n", encoding="utf-8")
 
     print(f"Generated Apple Runtime Snapshot (schema v{snapshot['schemaVersion']}):")
     print(f"  Actions: {snapshot['actionCount']}")
     print(f"  Runner: {manifest['runner']} macOS {manifest['macOS']} ({manifest['build']})")
     print(f"  ShortcutKit pinned: {manifest['shortcutKitCommit']}")
+    print(f"  Hashed {len(file_hashes)} output files in {out_dir}")
 
 
 if __name__ == "__main__":

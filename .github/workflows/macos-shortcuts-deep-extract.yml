@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - agent/apple-runtime-extraction-v2
+      - agent/cherri-p10-apple-actions-coverage
   workflow_dispatch:
 
 permissions:
@@ -19,9 +20,71 @@ env:
   SHORTCUTKIT_COMMIT: ee52c32937053268e4a035eba4b372fe77ec6411
 
 jobs:
+  preflight:
+    name: Host preflight verification (macOS 27)
+    runs-on: xcode-27
+    timeout-minutes: 5
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - uses: actions/checkout@v6
+
+      - name: Verify macOS 27 host environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Host OS Verification ==="
+          SW_PRODUCT=$(sw_vers -productVersion)
+          SW_BUILD=$(sw_vers -buildVersion)
+          ARCH=$(uname -m)
+          echo "ProductVersion: $SW_PRODUCT"
+          echo "BuildVersion: $SW_BUILD"
+          echo "Architecture: $ARCH"
+          echo "Xcode: $(xcodebuild -version | tr '\n' ' ')"
+          echo "Runner Image: ${ImageOS:-unknown}"
+
+          MAJOR_VERSION=$(echo "$SW_PRODUCT" | cut -d. -f1)
+          if [ "$MAJOR_VERSION" != "27" ]; then
+            echo "FATAL: Expected macOS major version 27, got $SW_PRODUCT" >&2
+            exit 1
+          fi
+          echo "CONFIRMED: Live macOS 27 host ($SW_PRODUCT, build $SW_BUILD, arch $ARCH)"
+
+          echo "=== Shortcuts & Frameworks ==="
+          SHORTCUTS_PLIST="/System/Applications/Shortcuts.app/Contents/Info.plist"
+          if [ -f "$SHORTCUTS_PLIST" ]; then
+            echo "Shortcuts: $(defaults read "$SHORTCUTS_PLIST" CFBundleShortVersionString) ($(defaults read "$SHORTCUTS_PLIST" CFBundleVersion))"
+          else
+            echo "WARNING: Shortcuts.app plist not found at $SHORTCUTS_PLIST"
+          fi
+
+          WK_PLIST="/System/Library/PrivateFrameworks/WorkflowKit.framework/Versions/A/Resources/Info.plist"
+          if [ -f "$WK_PLIST" ]; then
+            echo "WorkflowKit: $(defaults read "$WK_PLIST" CFBundleShortVersionString)"
+          fi
+
+          AK_PLIST="/System/Library/PrivateFrameworks/ActionKit.framework/Versions/A/Resources/Info.plist"
+          if [ -f "$AK_PLIST" ]; then
+            echo "ActionKit: $(defaults read "$AK_PLIST" CFBundleShortVersionString)"
+          fi
+
+          echo "=== ToolKit DB Locations ==="
+          ls -la ~/Library/Shortcuts/ToolKit/ 2>/dev/null || true
+          find ~/Library/Shortcuts/ -name "*.sqlite" 2>/dev/null || true
+
+          echo "=== Pinned ShortcutKit SHA ==="
+          echo "Pinned SHA: $SHORTCUTKIT_COMMIT"
+
   discovery:
-    name: Discovery and engine surfaces (macOS 26)
-    runs-on: macos-26
+    name: Discovery and engine surfaces (macOS 27)
+    needs: preflight
+    runs-on: xcode-27
     timeout-minutes: 20
     steps:
       - name: Live Activity · refresh
@@ -200,14 +263,14 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: deep-extract-discovery-macos-26
+          name: deep-extract-discovery-macos-27
           path: out/data/
           if-no-files-found: error
 
   parameter-shard:
-    name: Parameter shard ${{ matrix.shard }} of ${{ matrix.total_shards }} (macOS 26)
+    name: Parameter shard ${{ matrix.shard }} of ${{ matrix.total_shards }} (macOS 27)
     needs: discovery
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -236,7 +299,7 @@ jobs:
       - name: Download discovery definitions
         uses: actions/download-artifact@v4
         with:
-          name: deep-extract-discovery-macos-26
+          name: deep-extract-discovery-macos-27
           path: out/data
 
       - name: Live Activity · refresh
@@ -280,14 +343,14 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: deep-extract-parameter-shard-${{ matrix.shard }}-macos-26
+          name: deep-extract-parameter-shard-${{ matrix.shard }}-macos-27
           path: out/data/parameter-*-shard-${{ matrix.shard }}.*
           if-no-files-found: error
 
   merge-parameters:
-    name: Merge parameter shards (macOS 26)
+    name: Merge parameter shards (macOS 27)
     needs: parameter-shard
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 15
     steps:
       - name: Live Activity · refresh
@@ -311,7 +374,7 @@ jobs:
       - name: Download all shard artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: deep-extract-parameter-shard-*-macos-26
+          pattern: deep-extract-parameter-shard-*-macos-27
           merge-multiple: true
           path: out/shards
 
@@ -346,14 +409,14 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: deep-extract-merged-parameters-macos-26
+          name: deep-extract-merged-parameters-macos-27
           path: out/data/parameter-*.json
           if-no-files-found: error
 
   encoding-table:
-    name: Encoding table (macOS 26)
+    name: Encoding table (macOS 27)
     needs: merge-parameters
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 20
     steps:
       - name: Live Activity · refresh
@@ -377,7 +440,7 @@ jobs:
       - name: Download merged parameters
         uses: actions/download-artifact@v4
         with:
-          name: deep-extract-merged-parameters-macos-26
+          name: deep-extract-merged-parameters-macos-27
           path: out/data
 
       - name: Live Activity · refresh
@@ -410,14 +473,14 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: deep-extract-encoding-table-macos-26
+          name: deep-extract-encoding-table-macos-27
           path: out/data/encoding-table.json
           if-no-files-found: error
 
   roundtrips:
-    name: Encoding round trips (macOS 26)
+    name: Encoding round trips (macOS 27)
     needs: [encoding-table, merge-parameters]
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 20
     steps:
       - name: Live Activity · refresh
@@ -441,7 +504,7 @@ jobs:
       - name: Download all input artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: deep-extract-*-macos-26
+          pattern: deep-extract-*-macos-27
           merge-multiple: true
           path: out/data
 
@@ -475,14 +538,14 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: deep-extract-roundtrips-macos-26
+          name: deep-extract-roundtrips-macos-27
           path: out/data/encoding-roundtrips.json
           if-no-files-found: error
 
   compare-and-snapshot:
-    name: Cherri comparison and snapshot (macOS 26)
+    name: Cherri comparison and snapshot (macOS 27)
     needs: [discovery, merge-parameters, encoding-table, roundtrips]
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 20
     steps:
       - name: Live Activity · refresh
@@ -518,7 +581,7 @@ jobs:
       - name: Download all extraction artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: deep-extract-*-macos-26
+          pattern: deep-extract-*-macos-27
           merge-multiple: true
           path: out/data
 
@@ -608,8 +671,8 @@ jobs:
           param = json.load(open(d/'parameter-encodings-summary.json')) if (d/'parameter-encodings-summary.json').exists() else {}
           manifest = json.load(open(d/'apple-runtime-manifest.json')) if (d/'apple-runtime-manifest.json').exists() else {}
 
-          print("# Apple Shortcuts Runtime Extraction v2 Summary\n")
-          print(f"**macOS:** {manifest.get('macOS', 'unknown')} ({manifest.get('build', 'unknown')}) | **Shortcuts:** {manifest.get('shortcutsVersion', 'unknown')} | **WorkflowKit:** {manifest.get('workflowKitVersion', 'unknown')}\n")
+          print("# Apple Shortcuts Runtime Extraction v2 Summary (macOS 27)\n")
+          print(f"**macOS:** {manifest.get('macOS', 'unknown')} ({manifest.get('build', 'unknown')}) | **Architecture:** {manifest.get('architecture', 'unknown')} | **Shortcuts:** {manifest.get('shortcutsVersion', 'unknown')} | **WorkflowKit:** {manifest.get('workflowKitVersion', 'unknown')}\n")
 
           print("## Extraction Surfaces")
           print("| Surface | Extracted | Notes |")
@@ -643,10 +706,11 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: apple-runtime-snapshot-macos-26
+          name: apple-runtime-snapshot-macos-27
           path: |
             out/data/apple-runtime-snapshot.json
             out/data/apple-runtime-manifest.json
+            out/data/checksums.sha256
             out/data/comparison-summary.json
             out/data/missing-builtins.json
             out/data/missing-apple-app-intents.json

@@ -393,6 +393,7 @@ A requirement may be marked done only when its ledger row includes all applicabl
 | 2026-10-15 | P9 Follow-up | `73fa4de` | Completed P9 Follow-up: (1) Evidence-tiered AcceptedForms (555 Confirmed, 136 Inferred from parameter-encodings.json.gz); (2) Target availability & version bounds in analyzeCall (targets set, unspecified target warning, min/max version checking); (3) Parameter form validation (checkAcceptedForms with none/null sentinel handling); (4) Synthetic dynamic map lookup fixture plist proof; (5) Schema fingerprint mutation resistance (hashing platform/version/forms; red-to-green mutation tests; deterministic fingerprint 06e315d0...); (6) Regenerated comparison-summary.json (unmodeled keys 98 -> 81); (7) 70 acceptance tests PASS locally. | P9 Follow-Up COMPLETED_VERIFIED |
 | 2026-10-15 | P9 Release | `d8d9438` | Non-circular immutable release: pinned compilerCommit=73fa4de75c782d8103378e9616ab90e7138984bc, docsCommit=727764c178388045e96ff4153f997e393be19a62, schemaFingerprint=06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d. Skill compatibility manifest synchronized. | Release tuple established |
 | 2026-10-15 | P9 Final Closure | `HEAD` | P9 Final Closure: (1) Verified immutable release tuple (C_CODE 73fa4de..., D_DOCS 727764c..., C_RELEASE d8d9438..., CLOUD_ROUTING 83389ecd...); (2) Verified live Cherri Cloud sign relay on run 38481419887 attempt 8 (valid AEA1, schema 06e315d0..., 0 fallback actions); (3) Verified live Cherri Cloud iOS 27 simulator runtime proof on run 38481419846 attempt 3 (captured CHERRI_P9_DYNAMIC_KEY_PASS in simulator clipboard); (4) All local compiler, internal package, acceptance (71/71 local), and Skill doctor/self-test (10/10) suites PASS. | P0-P9 100% COMPLETED_VERIFIED |
+| 2026-10-15 | P10 Initiation | in-progress | P10: Complete Apple Shortcuts Action Coverage from LIVE macOS 27 / ShortcutKit. Preserved macOS 26 evidence in docs/apple-runtime/macos-26/; upgraded macos-shortcuts-deep-extract.yml to xcode-27 host with fail-closed macOS 27 preflight; enhanced runtime_probe, extract_toolkit (dbSha256), normalize_snapshot (hashes/checksums), compare_cherri (evidence-dir selector) and language-schema (version selector). | P10.00 & P10.01 active |
 
 
 
@@ -450,17 +451,17 @@ A requirement may be marked done only when its ledger row includes all applicabl
 |---|---|
 | Snapshot date | 2026-10-15 |
 | Last verified release baseline | `0d3bab12048ffa6f45156ebc1bb4b3273247bdf0` |
-| Active candidate branch / SHA | `agent/cherri-v2-product-completion` @ `d8d9438ec40bbb0e4dc9c27172838e9d9a6ea45c` (implementation) / HEAD closure commit |
+| Active candidate branch / SHA | `agent/cherri-p10-apple-actions-coverage` @ isolated feature branch |
 | Docs branch / SHA | `agent/cherri-v2-product-docs` @ `727764c178388045e96ff4153f997e393be19a62` |
 | Cloud routing ref / SHA | `origin/cloud-cherri-requests` @ `83389ecd8c3869736146a1842c9bc954956a18a9` |
 | Immutable Release Tuple | `C_CODE=73fa4de75c782d8103378e9616ab90e7138984bc`, `D_DOCS=727764c178388045e96ff4153f997e393be19a62`, `C_RELEASE=d8d9438ec40bbb0e4dc9c27172838e9d9a6ea45c` |
 | Schema Fingerprint | `06e315d07d6dfca5107edb9d705a7b4d20b95e37bf510a4b177ab498b8e3678d` (codecFingerprint: `3e7e3555...`) |
-| Current product verdict | **P0-P9 COMPLETED_VERIFIED** across all tiers. Live Cherri Cloud signing relay and real Apple Shortcuts iOS 27 simulator runtime assertion proven. Ready for final owner handoff. |
-| First next action | Deliver final technical report and handoff to repository owner for post-P9 tagging/merging decisions. |
-| Top implementation blocker | None (100% complete across P0-P9). |
-| Top evidence blocker | None. Live Cherri Cloud sign relay (`38481419887`) and iOS 27 simulator execution (`38481419846`) verified. |
-| Structural caution | Preserve branch isolation (`agent/cherri-v2-product-completion`); coordinate safely with concurrent iOS UI agent; do not merge into main without explicit owner command. |
-| Next document update responsibility | Repository owner upon post-P9 release tagging. |
+| Current product verdict | **P0-P9 COMPLETED_VERIFIED**; **P10 IN PROGRESS** (macOS 27 full re-extraction & action coverage). |
+| First next action | Execute LIVE macOS 27 full extraction workflow on `runs-on: xcode-27`, collect evidence and delta, implement missing native actions/parameters. |
+| Top implementation blocker | Awaiting live macOS 27 extraction execution to collect new 27 runtime evidence. |
+| Top evidence blocker | None. GitHub Actions `runs-on: xcode-27` available and active. |
+| Structural caution | Preserve branch isolation (`agent/cherri-p10-apple-actions-coverage`); do not touch `ios/CherriUITests/CherriEditorUITests.swift` or `ios/CherriApp/Views/CodeEditorView.swift` assigned to parallel iOS agent; do not merge to main without explicit owner command. |
+| Next document update responsibility | Coding agent following macOS 27 extraction execution. |
 
 
 ### Agent update template (copy below into the plan after EACH batch)
@@ -681,3 +682,53 @@ Next smallest independently verifiable batch:
 | BRG31 | Native negative CI and exact-SHA runs | P7,P8 |
 | BRG32 | Full obligation accounting and AI harness | P0,P7 |
 | BRG33 | Approved frontend semantics | P2,P5 |
+
+---
+
+## 11. Milestone P10 - Complete Apple Shortcuts Action Coverage from LIVE macOS 27 / ShortcutKit
+
+> **Purpose:** Expose and model native Apple Shortcuts actions, parameters, types, variants, outputs, encodings, availability, and App Intents using verified LIVE Apple runtime evidence (macOS 27 on `xcode-27` hosted runner).
+
+### P10 Execution Batches
+
+- [x] **P10.00: Branch isolation & baseline provenance**
+  - Feature branch `agent/cherri-p10-apple-actions-coverage` isolated from concurrent iOS UI agent.
+  - Baseline tests verified (`TestCherriNoSign`, `TestDecomp`, `test_runtime_extraction`).
+  - Master plan updated with P10 milestone and resumption card.
+
+- [x] **P10.01: macOS 27 Extraction Pipeline Upgrade & Runtime Tooling Hardening**
+  - Preserved complete macOS 26 evidence baseline in `docs/apple-runtime/macos-26/` (18 files).
+  - Added fail-closed `preflight` job to `.github/workflows/macos-shortcuts-deep-extract.yml` running on `runs-on: xcode-27` verifying OS major version 27.
+  - Upgraded all 9 downstream extraction jobs to `runs-on: xcode-27` and updated artifact names/patterns to `macos-27`.
+  - Enhanced `runtime_probe.py` with `runnerImage`, `xcodeVersion`, and expanded dyld search paths.
+  - Enhanced `extract_toolkit.py` with `dbSha256` hashing and provenance recording.
+  - Enhanced `normalize_snapshot.py` with extended manifest metadata, file SHA-256 computation, and `checksums.sha256` generation.
+  - Enhanced `compare_cherri.py` with `--runtime-evidence-dir` and versioned directory resolution.
+  - Enhanced `tools/language-schema/main.go` `loadAppleEncodings()` to be version- and directory-aware.
+  - Added unit tests 20, 21, and 22 in `tools/shortcut-runtime/tests/test_runtime_extraction.py` (22/22 PASS).
+
+- [ ] **P10.02: Deterministic 26-to-27 + Pinned-ShortcutKit Delta & Machine-Readable Ledger**
+  - Execute full macOS 27 workflow on GitHub Actions `xcode-27` runner.
+  - Ingest extracted artifacts into `docs/apple-runtime/macos-27/` and/or `docs/apple-runtime/`.
+  - Generate full delta and machine-readable classification ledger covering all missing built-ins, App Intents, ToolKit actions, and parameter gaps.
+
+- [ ] **P10.03: Parameter & Type Repair for Existing Actions (81 Prior Gap Groups)**
+  - Implement native parameter contracts: 14-key `addReminder`, 13-key `editEvent`, 7-key `getApps`, filter predicates, prompt, wallpaper, PDF page ranges, date formatting, email CC/BCC, etc.
+  - Classify implicit metadata fields (`ShowWhenRun`, `IntentAppDefinition`) vs user-supplied parameters.
+
+- [ ] **P10.04: High-Value Native Built-In Actions Coverage**
+  - Implement native list insertion (`additemtolist`), text overlay (`overlaytext`), file move (`file.move`), filter/finder families, reminders, calendar, photos, notes.
+
+- [ ] **P10.05: Discoverable Apple App Intents & ToolKit Actions**
+  - Generic `AppIntentDescriptor` and entity/enum encodings through shared Cherri core.
+
+- [ ] **P10.06: First-Class Typing, Registry Regeneration, & Decompiler Parity**
+  - Audit output types, remove unjustified Unknowns where evidence proves concrete type.
+  - Regenerate schema registry and verify deterministic fingerprint.
+
+- [ ] **P10.07: Plist Roundtrip & Simulator Verification**
+  - Roundtrip tests, regression tests, and non-destructive iOS 27 simulator observational proof.
+
+- [ ] **P10.08: Generated Documentation, Skill Convergence, & Final Release Tuple**
+  - Synchronize docs fork, OpenMinis Skill manifest, and final Hebrew completion report.
+

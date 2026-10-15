@@ -668,6 +668,77 @@ pathlib.Path(out_file).write_text(json.dumps(data))
             self.assertEqual(summary["parameterSurface"]["actionsWithUnmodeledKeys"], 0)
             self.assertEqual(len(gaps), 0)
 
+    def test_20_toolkit_db_sha256_provenance(self):
+        """Test 20: ToolKit extraction records SHA-256 hash of the SQLite database in provenance and summary."""
+        with tempfile.TemporaryDirectory() as td:
+            db_path = pathlib.Path(td) / "Tools-prod.v67-sha.sqlite"
+            con = sqlite3.connect(str(db_path))
+            con.execute("CREATE TABLE Metadata (key TEXT PRIMARY KEY, value TEXT)")
+            con.execute("INSERT INTO Metadata VALUES ('OSVersion', '27.0.0')")
+            con.close()
+
+            _, _, _, summary = extract_toolkit_registry(str(db_path))
+            self.assertIn("dbSha256", summary)
+            self.assertIn("dbSha256", summary["provenance"])
+            self.assertEqual(len(summary["dbSha256"]), 64)
+            self.assertEqual(summary["dbSha256"], summary["provenance"]["dbSha256"])
+
+    def test_21_manifest_extended_fields(self):
+        """Test 21: Normalized snapshot manifest records architecture, runnerImage, xcodeVersion, and DB hashes."""
+        with tempfile.TemporaryDirectory() as td:
+            env_file = pathlib.Path(td) / "env.json"
+            env_file.write_text(json.dumps({
+                "runner": "GitHub Actions",
+                "runnerImage": "xcode-27-arm64/20261012.0260",
+                "platform": "Darwin",
+                "arch": "arm64",
+                "macOS": "27.0.0",
+                "build": "26A123",
+                "xcodeVersion": "Xcode 27.0 Build 27A123"
+            }))
+
+            tk_sum_file = pathlib.Path(td) / "tk_sum.json"
+            tk_sum_file.write_text(json.dumps({
+                "toolkitDb": "Tools-prod.v67-test.sqlite",
+                "provenance": {"dbSha256": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890", "toolkitVersion": "UUID-123"},
+                "totalTools": 10
+            }))
+
+            snapshot, manifest = build_snapshot(
+                env_path=str(env_file),
+                toolkit_summary_path=str(tk_sum_file),
+                cherri_sha="test_sha"
+            )
+
+            self.assertEqual(manifest["architecture"], "arm64")
+            self.assertEqual(manifest["runnerImage"], "xcode-27-arm64/20261012.0260")
+            self.assertEqual(manifest["xcodeVersion"], "Xcode 27.0 Build 27A123")
+            self.assertEqual(manifest["toolkitDbSha256"], "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890")
+            self.assertEqual(manifest["toolkitVersion"], "UUID-123")
+
+    def test_22_compare_cherri_evidence_dir_selector(self):
+        """Test 22: compare_cherri respects custom --runtime-evidence-dir and finds versioned files."""
+        with tempfile.TemporaryDirectory() as td:
+            cherri_file = pathlib.Path(td) / "cherri.json"
+            cherri_file.write_text(json.dumps({"actions": []}))
+
+            ev_dir = pathlib.Path(td) / "macos-27-evidence"
+            ev_dir.mkdir()
+            (ev_dir / "toolkit-summary.json").write_text(json.dumps({
+                "totalTools": 42,
+                "visible": 40,
+                "appleContainers": 5,
+                "containers": 10,
+                "classifications": {"apple_link_runnable": 25},
+                "providers": {}
+            }))
+
+            summary, _, _, _, _ = run_comparison(
+                cherri_actions_path=str(cherri_file),
+                toolkit_summary_path=str(ev_dir / "toolkit-summary.json")
+            )
+            self.assertEqual(summary["toolkit"]["totalTools"], 42)
+
 
 if __name__ == "__main__":
     unittest.main()
