@@ -1050,7 +1050,7 @@ func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.
 				a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q does not accept literal values; an attachment (variable or action output) is required", param.Label, callName))
 			}
 		case *syntax.ListExpr, *syntax.MapExpr:
-			if param.WireKey == "WFInput" {
+			if param.WireKey == "WFInput" || param.WireKey == "WFContentItemFilter" {
 				return
 			}
 			if !hasLiteral && !hasTokenString {

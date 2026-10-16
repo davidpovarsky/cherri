@@ -6,7 +6,25 @@ It forms the canonical foundation for Cherri's action definitions, serialization
 
 ---
 
-## 1. Extraction Environment & Provenance
+## 1. Extraction Environments & Provenance
+
+### 1.1 Current Canonical Baseline: macOS 27 (Run 38812506774)
+
+| Property | Value |
+| --- | --- |
+| **Schema Version** | `2.0.0` |
+| **Extraction Date** | 2026-10-15T22:38:00Z |
+| **Host OS** | macOS `27.0.1` (`build 26A434`, Apple Silicon `arm64`) |
+| **Shortcuts Version** | `10.0` (`build 5037.0.19`) |
+| **WorkflowKit Version** | `10.0` |
+| **ActionKit Version** | `1.0` |
+| **ToolKit Database** | `Tools-prod.v67-17A37C68-36FE-47B4-B3D8-935CEE4548D5.sqlite` (Schema v67) |
+| **Reference GitHub Actions Run** | [`38812506774`](https://github.com/davidpovarsky/cherri/actions/runs/38812506774) (10/10 jobs green) |
+| **Source Commit SHA** | `4fca2c3b9023d8de6c4a70d5d86827b92f9e9626` |
+| **4-Shard Extraction** | 424 probed successfully across 4 shards (0,1,2,3), 1 timeout, 9 unavailable |
+| **Checksum Integrity** | 25/25 artifacts verified against `docs/apple-runtime/macos-27/checksums.sha256` |
+
+### 1.2 Historical Baseline: macOS 26 (Run 37388046421)
 
 | Property | Value |
 | --- | --- |
@@ -17,9 +35,9 @@ It forms the canonical foundation for Cherri's action definitions, serialization
 | **WorkflowKit Version** | 7.0 |
 | **ActionKit Version** | 1.0 |
 | **ToolKit Database** | `Tools-prod.v67-17A37C68-36FE-47B4-B3D8-935CEE4548D5.sqlite` (Schema v67) |
-| **ToolKit Version** | `77106E4A-25AC-4B5A-9A42-58BC95B1A856` |
 | **Reference GitHub Actions Run** | [`37388046421`](https://github.com/davidpovarsky/cherri/actions/runs/37388046421) |
 | **Verified Commit SHA** | `7868d2c751f72e6b62ae44e9f7410e5e470d16f4` |
+| **Preserved Location** | `docs/apple-runtime/macos-26/` (18 files preserved) |
 
 ---
 

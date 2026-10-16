@@ -1,0 +1,6313 @@
+{
+  "actionDefaults": {},
+  "actionOutputNames": {
+    "com.apple.NanoSettings.NPRFSetFlashLightIntent": "Set Flashlight",
+    "com.apple.NanoSettings.NPRFSetWakeOnWristRaiseIntent": "Set Wake on Wrist Raise",
+    "com.apple.TVRemoteUIService.LaunchRemoteIntent": "Unknown Action",
+    "com.apple.TVRemoteUIService.SkipContentIntent": "Unknown Action",
+    "com.apple.TVRemoteUIService.ToggleSystemAppearanceIntent": "Set Appearance on Apple TV",
+    "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundsVolumeIntent": "Set Background Sounds Volume",
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleBackgroundSoundsIntent": "Toggle Background Sounds",
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleContrastIntent": "Set Increase Contrast",
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleHoverTypingIntent": "Set Hover Typing",
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleMotionCuesIntent": "Set Motion Cues",
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleSmartInvertIntent": "Set Smart Invert",
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleVoiceControlIntent": "Set Voice Control",
+    "com.apple.mobilephone.call": "Call",
+    "com.apple.news.TodayIntent": "Show Today Feed",
+    "is.workflow.actions.additemtolist": "List",
+    "is.workflow.actions.addnewevent": "New Event",
+    "is.workflow.actions.addtoplaylist": "Updated Playlist",
+    "is.workflow.actions.alert": "Show Alert",
+    "is.workflow.actions.ask": "Provided Input",
+    "is.workflow.actions.bluetooth.set": "Set Bluetooth",
+    "is.workflow.actions.choosefrommenu": "Menu Result",
+    "is.workflow.actions.compresspdf": "Optimized PDF",
+    "is.workflow.actions.converttimezone": "Converted Date",
+    "is.workflow.actions.date": "Date",
+    "is.workflow.actions.deskconnect.send": "Send via DeskConnect",
+    "is.workflow.actions.detect.dictionary": "Dictionary",
+    "is.workflow.actions.detect.number": "Numbers",
+    "is.workflow.actions.dictatetext": "Dictated Text",
+    "is.workflow.actions.displaysleep": "Put Display to Sleep",
+    "is.workflow.actions.documentpicker.save": "Saved File",
+    "is.workflow.actions.dropbox.open": "File",
+    "is.workflow.actions.encodemedia": "Encoded Media",
+    "is.workflow.actions.evernote.getlink": "Note Link",
+    "is.workflow.actions.facebook.messenger.send": "Send via Messenger",
+    "is.workflow.actions.file.delete": "Delete Files",
+    "is.workflow.actions.file.move": "File",
+    "is.workflow.actions.filter.apps": "Apps",
+    "is.workflow.actions.filter.displays": "Displays",
+    "is.workflow.actions.filter.images": "Images",
+    "is.workflow.actions.filter.reminders": "Reminders",
+    "is.workflow.actions.flashlight": "Set Flashlight",
+    "is.workflow.actions.generatebarcode": "QR Code",
+    "is.workflow.actions.getclassaction": "Object of Class",
+    "is.workflow.actions.getcurrentsong": "Current Song",
+    "is.workflow.actions.getepisodesforpodcast": "Episodes",
+    "is.workflow.actions.gethtmlfromrichtext": "HTML from Rich Text",
+    "is.workflow.actions.getitemtype": "Type",
+    "is.workflow.actions.getlatestbursts": "Latest Bursts",
+    "is.workflow.actions.getmarkdownfromrichtext": "Markdown from Rich Text",
+    "is.workflow.actions.getonscreencontext": "On-Screen Images",
+    "is.workflow.actions.getrichtextfromhtml": "Rich Text from HTML",
+    "is.workflow.actions.gettext": "Text",
+    "is.workflow.actions.gettypeaction": "File of Type",
+    "is.workflow.actions.getvalueforkey": "Dictionary Value",
+    "is.workflow.actions.giphy": "GIFs",
+    "is.workflow.actions.hash": "Hash",
+    "is.workflow.actions.homeaccessory": "Control Home",
+    "is.workflow.actions.image.crop": "Cropped Image",
+    "is.workflow.actions.image.rotate": "Rotated Image/Video",
+    "is.workflow.actions.instapaper.add": "Add to Instapaper",
+    "is.workflow.actions.list": "List",
+    "is.workflow.actions.lockscreen": "Lock Screen",
+    "is.workflow.actions.makegif": "GIF",
+    "is.workflow.actions.makespokenaudiofromtext": "Spoken Audio",
+    "is.workflow.actions.measurement.convert": "Converted Measurement",
+    "is.workflow.actions.nightshift.set": "Set Night Shift",
+    "is.workflow.actions.number.random": "Random Number",
+    "is.workflow.actions.openurl": "Open URLs",
+    "is.workflow.actions.overlayimageonimage": "Overlaid Image",
+    "is.workflow.actions.personalhotspot.password.set": "Set Hotspot Password",
+    "is.workflow.actions.pinboard.add": "Add to Pinboard",
+    "is.workflow.actions.playsound": "Play Sound",
+    "is.workflow.actions.posters.get": "Wallpapers",
+    "is.workflow.actions.print": "Print",
+    "is.workflow.actions.properties.calendarevents": "Details of Calendar Events",
+    "is.workflow.actions.properties.health.quantity": "Get Details of Health Sample",
+    "is.workflow.actions.properties.locations": "Details of Locations",
+    "is.workflow.actions.properties.podcastshow": "Details of Podcasts",
+    "is.workflow.actions.properties.shazam": "Details of Shazam Media",
+    "is.workflow.actions.properties.workflow": "Details of Shortcuts",
+    "is.workflow.actions.recordaudio": "Recorded Audio",
+    "is.workflow.actions.removereminders": "Remove Reminders",
+    "is.workflow.actions.returntohomescreen": "Go to Home Screen",
+    "is.workflow.actions.rss.extract": "RSS Feeds from Page",
+    "is.workflow.actions.runjavascriptonwebpage": "JavaScript Result",
+    "is.workflow.actions.safari.geturl": "Web Page",
+    "is.workflow.actions.searchlocalbusinesses": "Local Businesses",
+    "is.workflow.actions.seek": "Seek",
+    "is.workflow.actions.selectphoto": "Photos",
+    "is.workflow.actions.setbrightness": "Set Brightness",
+    "is.workflow.actions.setplaybackdestination": "Change Playback Destination",
+    "is.workflow.actions.setters.reminders": "Edited Reminder",
+    "is.workflow.actions.share": "Share",
+    "is.workflow.actions.showincalendar": "Open in Calendar",
+    "is.workflow.actions.silenceunknowncallers.set": "Set Silence Unknown Callers",
+    "is.workflow.actions.slack.send": "Post to Slack",
+    "is.workflow.actions.splitscreen": "Split Screen Apps",
+    "is.workflow.actions.statistics": "Average",
+    "is.workflow.actions.text.changecase": "Updated Text",
+    "is.workflow.actions.text.replace": "Updated Text",
+    "is.workflow.actions.timer.start": "Start Timer",
+    "is.workflow.actions.trello.add.list": "Trello List",
+    "is.workflow.actions.tumblr.post": "Tumblr Post URL",
+    "is.workflow.actions.url.expand": "Expanded URL",
+    "is.workflow.actions.venmo.pay": "Send Payment",
+    "is.workflow.actions.vpn.get": "Current VPN",
+    "is.workflow.actions.watchmedo": "Watch Me Do",
+    "is.workflow.actions.wordpress.post": "WordPress Post URL"
+  },
+  "actionParameters": {
+    "com.apple.NanoSettings.NPRFSetFlashLightIntent": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "set",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "on",
+        "key": "state",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.NanoSettings.NPRFSetWakeOnWristRaiseIntent": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "set",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "on",
+        "key": "state",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.TVRemoteUIService.LaunchRemoteIntent": [
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.TVRemoteUIService.SkipContentIntent": [
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.TVRemoteUIService.ToggleSystemAppearanceIntent": [
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundsVolumeIntent": [
+      {
+        "class": "WFSliderParameter",
+        "default": 10,
+        "key": "volumeValue",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleBackgroundSoundsIntent": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "turn",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": 0,
+        "key": "state",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleContrastIntent": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "turn",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": 1,
+        "key": "state",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleHoverTypingIntent": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "turn",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": 0,
+        "key": "state",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleMotionCuesIntent": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "turn",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": 0,
+        "key": "state",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleSmartInvertIntent": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "turn",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": 1,
+        "key": "state",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleVoiceControlIntent": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "turn",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": 1,
+        "key": "state",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.mobilephone.call": [
+      {
+        "class": "WFIntentAppPickerParameter",
+        "default": {
+          "BundleIdentifier": "com.apple.TelephonyUtilities.PhoneIntentHandler"
+        },
+        "key": "IntentAppDefinition",
+        "singleStateClass": "WFIntentDescriptorParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFPhoneNumberFieldParameter",
+        "default": null,
+        "key": "WFCallContact",
+        "singleStateClass": "WFContactFieldEntry",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "com.apple.news.TodayIntent": [
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.additemtolist": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFListItem",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "End",
+        "key": "WFInsertPosition",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFItemIndex",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFListVariable",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.addnewevent": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFCalendarItemTitle",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFCalendarItemLocation",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFCalendarPickerParameter",
+        "default": null,
+        "key": "WFCalendarDescriptor",
+        "singleStateClass": "WFCalendarSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDateFieldParameter",
+        "default": null,
+        "key": "WFCalendarItemStartDate",
+        "singleStateClass": "WFDateFieldParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDateFieldParameter",
+        "default": null,
+        "key": "WFCalendarItemEndDate",
+        "singleStateClass": "WFDateFieldParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFCalendarItemAllDay",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFAlertTime",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFAlertCustomTime",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFCalendarItemNotes",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.addtoplaylist": [
+      {
+        "class": "WFPlaylistPickerParameter",
+        "default": {
+          "EntireMusicLibrary": true
+        },
+        "key": "WFPlaylistName",
+        "singleStateClass": "WFPlaylistSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.alert": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFAlertActionTitle",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": "Do you want to continue?",
+        "key": "WFAlertActionMessage",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFAlertActionCancelButtonShown",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.ask": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFAskActionPrompt",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "Text",
+        "key": "WFInputType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFAskActionDefaultAnswer",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFAskActionDefaultAnswerNumber",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFURLParameter",
+        "default": null,
+        "key": "urlAnswer",
+        "singleStateClass": "WFURLStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFAskActionDefaultAnswerURL",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDateFieldParameter",
+        "default": null,
+        "key": "WFAskActionDefaultAnswerDate",
+        "singleStateClass": "WFDateFieldParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDateFieldParameter",
+        "default": null,
+        "key": "WFAskActionDefaultAnswerTime",
+        "singleStateClass": "WFDateFieldParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDateFieldParameter",
+        "default": null,
+        "key": "WFAskActionDefaultAnswerDateAndTime",
+        "singleStateClass": "WFDateFieldParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFAskActionAllowsDecimalNumbers",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFAskActionAllowsNegativeNumbers",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFAllowsMultilineText",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.bluetooth.set": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "set",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "OnValue",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.choosefrommenu": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFMenuPrompt",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFChooseFromMenuArrayParameter",
+        "default": [
+          "One",
+          "Two"
+        ],
+        "key": "WFMenuItems",
+        "singleStateClass": null,
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.compresspdf": [
+      {
+        "class": "WFFilePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFFileParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.converttimezone": [
+      {
+        "class": "WFDateFieldParameter",
+        "default": null,
+        "key": "Date",
+        "singleStateClass": "WFDateFieldParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTimeZonePickerParameter",
+        "default": null,
+        "key": "SourceTimeZone",
+        "singleStateClass": "WFTimeZonePickerParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTimeZonePickerParameter",
+        "default": null,
+        "key": "DestinationTimeZone",
+        "singleStateClass": "WFTimeZonePickerParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.date": [
+      {
+        "class": "WFDateActionPickerModeParameter",
+        "default": "Current Date",
+        "key": "WFDateActionMode",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDateFieldParameter",
+        "default": null,
+        "key": "WFDateActionDate",
+        "singleStateClass": "WFDateFieldParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Next Occurrence",
+        "key": "WFEventOccurrenceMode",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDateActionYearPickerParameter",
+        "default": null,
+        "key": "WFEventOccurrenceSpecifiedYear",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.deskconnect.send": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.detect.dictionary": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.detect.number": [
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.dictatetext": [
+      {
+        "class": "WFDictateTextLanguagePickerParameter",
+        "default": "en-US",
+        "key": "WFSpeechLanguage",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "After Pause",
+        "key": "WFDictateTextStopListening",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.documentpicker.save": [
+      {
+        "class": "WFFilePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFFileParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFFilePickerParameter",
+        "default": {
+          "displayName": "Shortcuts",
+          "fileLocation": {
+            "WFFileLocationType": "Shortcuts",
+            "relativeSubpath": ""
+          },
+          "filename": "Documents"
+        },
+        "key": "WFFolder",
+        "singleStateClass": "WFFileParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFAskWhereToSave",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFFileDestinationPath",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFSaveFileOverwrite",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.dropbox.open": [
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFShowFilePicker",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "SelectMultiple",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFGetFilePath",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFGetFileInitialDirectoryPath",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFFileErrorIfNotFound",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.encodemedia": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFMedia",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFMediaAudioOnly",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "M4A",
+        "key": "WFMediaAudioFormat",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Passthrough",
+        "key": "WFMediaSize",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Normal",
+        "key": "WFMediaSpeed",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFMediaPreserveTransparency",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFMediaCustomSpeed",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFExpandingParameter",
+        "default": null,
+        "key": "Metadata",
+        "singleStateClass": "WFNumberParameterState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFMetadataTitle",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFMetadataArtist",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFMetadataAlbum",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFMetadataGenre",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFMetadataYear",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFMetadataArtwork",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.evernote.getlink": [
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFEvernoteShareInAppLink",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.file.delete": [
+      {
+        "class": "WFFilePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFFileParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFDeleteImmediatelyDelete",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.file.move": [
+      {
+        "class": "WFFilePickerParameter",
+        "default": null,
+        "key": "WFFile",
+        "singleStateClass": "WFFileParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFFilePickerParameter",
+        "default": {
+          "displayName": "Shortcuts",
+          "fileLocation": {
+            "WFFileLocationType": "Shortcuts",
+            "relativeSubpath": ""
+          },
+          "filename": "Documents"
+        },
+        "key": "WFFolder",
+        "singleStateClass": "WFFileParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFReplaceExisting",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.filter.apps": [
+      {
+        "class": "WFTableTemplateContentItemFilterParameter",
+        "default": {
+          "Value": {
+            "WFActionParameterFilterPrefix": 1,
+            "WFActionParameterFilterTemplates": [],
+            "WFContentPredicateBoundedDate": false
+          },
+          "WFSerializationType": "WFContentPredicateTableTemplate"
+        },
+        "key": "WFContentItemFilter",
+        "singleStateClass": "_TtGC11WorkflowKitP10$2a995e34038_SwiftVariableSupportingParameterStateGVS_27TableTemplateParameterStateVS_35RowTemplateFindFilterParameterState__",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemSortProperty",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemSortOrder",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFContentItemLimitEnabled",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFStepperParameter",
+        "default": 5,
+        "key": "WFContentItemLimitNumber",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "0",
+        "key": "WFCompoundType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFContentItemFilterEnumerationParameter",
+        "default": "Library",
+        "key": "WFContentItemInputParameter",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.filter.displays": [
+      {
+        "class": "WFTableTemplateContentItemFilterParameter",
+        "default": {
+          "Value": {
+            "WFActionParameterFilterPrefix": 1,
+            "WFActionParameterFilterTemplates": [],
+            "WFContentPredicateBoundedDate": false
+          },
+          "WFSerializationType": "WFContentPredicateTableTemplate"
+        },
+        "key": "WFContentItemFilter",
+        "singleStateClass": "_TtGC11WorkflowKitP10$2a995e34038_SwiftVariableSupportingParameterStateGVS_27TableTemplateParameterStateVS_35RowTemplateFindFilterParameterState__",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemSortProperty",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemSortOrder",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFContentItemLimitEnabled",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFStepperParameter",
+        "default": 5,
+        "key": "WFContentItemLimitNumber",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "0",
+        "key": "WFCompoundType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFContentItemFilterEnumerationParameter",
+        "default": "Library",
+        "key": "WFContentItemInputParameter",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.filter.images": [
+      {
+        "class": "WFTableTemplateContentItemFilterParameter",
+        "default": {
+          "Value": {
+            "WFActionParameterFilterPrefix": 1,
+            "WFActionParameterFilterTemplates": [],
+            "WFContentPredicateBoundedDate": false
+          },
+          "WFSerializationType": "WFContentPredicateTableTemplate"
+        },
+        "key": "WFContentItemFilter",
+        "singleStateClass": "_TtGC11WorkflowKitP10$2a995e34038_SwiftVariableSupportingParameterStateGVS_27TableTemplateParameterStateVS_35RowTemplateFindFilterParameterState__",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemSortProperty",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemSortOrder",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFContentItemLimitEnabled",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFStepperParameter",
+        "default": 5,
+        "key": "WFContentItemLimitNumber",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "0",
+        "key": "WFCompoundType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFContentItemInputParameter",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.filter.reminders": [
+      {
+        "class": "WFTableTemplateContentItemFilterParameter",
+        "default": {
+          "Value": {
+            "WFActionParameterFilterPrefix": 1,
+            "WFActionParameterFilterTemplates": [],
+            "WFContentPredicateBoundedDate": false
+          },
+          "WFSerializationType": "WFContentPredicateTableTemplate"
+        },
+        "key": "WFContentItemFilter",
+        "singleStateClass": "_TtGC11WorkflowKitP10$2a995e34038_SwiftVariableSupportingParameterStateGVS_27TableTemplateParameterStateVS_35RowTemplateFindFilterParameterState__",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemSortProperty",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemSortOrder",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFContentItemLimitEnabled",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFStepperParameter",
+        "default": 5,
+        "key": "WFContentItemLimitNumber",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "0",
+        "key": "WFCompoundType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFContentItemFilterEnumerationParameter",
+        "default": "Library",
+        "key": "WFContentItemInputParameter",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.flashlight": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "set",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "state",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSliderParameter",
+        "default": 0.5,
+        "key": "WFFlashlightLevel",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.generatebarcode": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFText",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFColorPickerParameter",
+        "default": {
+          "WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
+          "alphaComponent": 1,
+          "blueComponent": 0,
+          "greenComponent": 0,
+          "redComponent": 0
+        },
+        "key": "WFQRForegroundColor",
+        "singleStateClass": "WFColorParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFColorPickerParameter",
+        "default": {
+          "WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
+          "alphaComponent": 1,
+          "blueComponent": 1,
+          "greenComponent": 1,
+          "redComponent": 1
+        },
+        "key": "WFQRBackgroundColor",
+        "singleStateClass": "WFColorParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFQRRounded",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Medium",
+        "key": "WFQRErrorCorrectionLevel",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.getclassaction": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "Class",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "Input",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.getcurrentsong": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Current Song",
+        "key": "Subject",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.getepisodesforpodcast": [
+      {
+        "class": "WFPodcastPickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFPodcastSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.gethtmlfromrichtext": [
+      {
+        "class": "WFSwitchParameter",
+        "default": null,
+        "key": "WFMakeFullDocument",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.getitemtype": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.getlatestbursts": [
+      {
+        "class": "WFStepperParameter",
+        "default": 1,
+        "key": "WFGetLatestPhotoCount",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.getmarkdownfromrichtext": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.getonscreencontext": [
+      {
+        "class": "WFOnScreenContextResultTypePickerParameter",
+        "default": "Images",
+        "key": "WFOnScreenContextResultType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "All Visible",
+        "key": "WFOnScreenContextScope",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFOnScreenContextLimitEnabled",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFStepperParameter",
+        "default": 5,
+        "key": "WFOnScreenContextLimit",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": []
+      }
+    ],
+    "is.workflow.actions.getrichtextfromhtml": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFHTML",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.gettext": [
+      {
+        "class": "WFTextInputParameter",
+        "default": "",
+        "key": "WFTextActionText",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.gettypeaction": [
+      {
+        "class": "WFTextInputParameter",
+        "default": "public.rtf",
+        "key": "WFFileType",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.getvalueforkey": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Value",
+        "key": "WFGetDictionaryValueType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFDictionaryKey",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.giphy": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFGiphyQuery",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFGiphyShowPicker",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFStepperParameter",
+        "default": 1,
+        "key": "WFGiphyLimit",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": null,
+        "key": "WFGiphySelectMultiple",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.hash": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": "MD5",
+        "key": "WFHashType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.homeaccessory": [
+      {
+        "class": "WFHomePickerParameter",
+        "default": null,
+        "key": "WFHome",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFHomeAccessoryPickerParameter",
+        "default": null,
+        "key": "WFHomeTriggerActionSets",
+        "singleStateClass": "WFHFTriggerActionSetsBuilderParameterState",
+        "variableTypes": [
+          "Ask"
+        ]
+      }
+    ],
+    "is.workflow.actions.image.crop": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Center",
+        "key": "WFImageCropPosition",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFImageCropX",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFImageCropY",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": 100,
+        "key": "WFImageCropWidth",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": 100,
+        "key": "WFImageCropHeight",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.image.rotate": [
+      {
+        "class": "WFNumberFieldParameter",
+        "default": 90,
+        "key": "WFImageRotateAmount",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFImage",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.instapaper.add": [
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "WFInstapaperFolder",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFInputURL",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.list": [
+      {
+        "class": "WFContentArrayParameter",
+        "default": [
+          "One",
+          "Two"
+        ],
+        "key": "WFItems",
+        "singleStateClass": null,
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.makegif": [
+      {
+        "class": "WFNumberFieldParameter",
+        "default": 0.2,
+        "key": "WFMakeGIFActionDelayTime",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFMakeGIFActionLoopEnabled",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFStepperParameter",
+        "default": 1,
+        "key": "WFMakeGIFActionLoopCount",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFMakeGIFActionAutoSize",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFMakeGIFActionManualSizeWidth",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFMakeGIFActionManualSizeHeight",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.makespokenaudiofromtext": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSliderParameter",
+        "default": 0.5,
+        "key": "WFSpeakTextRate",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSliderParameter",
+        "default": 1,
+        "key": "WFSpeakTextPitch",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSpeakTextLanguagePickerParameter",
+        "default": null,
+        "key": "WFSpeakTextLanguage",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSpeakTextVoicePickerParameter",
+        "default": null,
+        "key": "WFSpeakTextVoice",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      }
+    ],
+    "is.workflow.actions.measurement.convert": [
+      {
+        "class": "WFUnitTypePickerParameter",
+        "default": "Length",
+        "key": "WFMeasurementUnitType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFMeasurementUnitPickerParameter",
+        "default": {
+          "WFNSUnitSymbol": "ft",
+          "WFNSUnitType": "Length"
+        },
+        "key": "WFMeasurementUnit",
+        "singleStateClass": "WFNSUnitSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.nightshift.set": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "set",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "OnValue",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.number.random": [
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFRandomNumberMinimum",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFRandomNumberMaximum",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.openurl": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.overlayimageonimage": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFImage",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFShouldShowImageEditor",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Center",
+        "key": "WFImagePosition",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFImageWidth",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFImageHeight",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFImageX",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": null,
+        "key": "WFImageY",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": 0,
+        "key": "WFRotation",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFNumberFieldParameter",
+        "default": 100,
+        "key": "WFOverlayImageOpacity",
+        "singleStateClass": "WFNumberStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.personalhotspot.password.set": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.pinboard.add": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFPinTitle",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFPinTags",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFPinPublic",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFPinUnread",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFPinDescription",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFPinboardURL",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.playsound": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.posters.get": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": "All",
+        "key": "WFPosterType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.print": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.properties.calendarevents": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemPropertyName",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.properties.locations": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemPropertyName",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.properties.podcastshow": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemPropertyName",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.properties.shazam": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemPropertyName",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.properties.workflow": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemPropertyName",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.recordaudio": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Normal",
+        "key": "WFRecordingCompression",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "On Tap",
+        "key": "WFRecordingStart",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "On Tap",
+        "key": "WFRecordingEnd",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDurationQuantityFieldParameter",
+        "default": {
+          "Value": {
+            "Unit": "min"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        "key": "WFRecordingTimeInterval",
+        "singleStateClass": "WFQuantityParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.removereminders": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInputReminders",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.rss.extract": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFURLs",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.runjavascriptonwebpage": [
+      {
+        "class": "WFTextInputParameter",
+        "default": "var result = [];\n// Get all links from the page\nvar elements = document.querySelectorAll(\"a\");\nfor (let element of elements) {\n    result.push({\n        \"url\": element.href,\n        \"text\": element.innerText\n    });\n}\n\n// Call completion to finish\ncompletion(result);",
+        "key": "WFJavaScript",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.searchlocalbusinesses": [
+      {
+        "class": "WFLocationParameter",
+        "default": {
+          "isCurrentLocation": true
+        },
+        "key": "WFInput",
+        "singleStateClass": "WFLocationParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFSearchQuery",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSearchLocalBusinessesRadiusParameter",
+        "default": {
+          "Value": {
+            "Magnitude": "1",
+            "Unit": "mi"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        "key": "WFSearchRadius",
+        "singleStateClass": "WFQuantityParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Relevance",
+        "key": "WFSearchSortOrder",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      }
+    ],
+    "is.workflow.actions.seek": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": "To Time",
+        "key": "WFSeekBehavior",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDurationQuantityFieldParameter",
+        "default": {
+          "Value": {
+            "Unit": "sec"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        "key": "WFTimeInterval",
+        "singleStateClass": "WFQuantityParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFMediaRoutePickerParameter",
+        "default": {
+          "isLocalDevice": true,
+          "routeUID": "Speaker"
+        },
+        "key": "WFMediaRoute",
+        "singleStateClass": "WFMediaRouteState",
+        "variableTypes": [
+          "Ask"
+        ]
+      }
+    ],
+    "is.workflow.actions.selectphoto": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": [
+          "Images",
+          "Live Photos",
+          "Videos"
+        ],
+        "key": "WFPhotoPickerTypes",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFSelectMultiplePhotos",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.setbrightness": [
+      {
+        "class": "WFSliderParameter",
+        "default": 0.5,
+        "key": "WFBrightness",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.setplaybackdestination": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Set",
+        "key": "WFMediaRouteOperation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFMediaRoutePickerParameter",
+        "default": {
+          "isLocalDevice": true,
+          "routeUID": "Speaker"
+        },
+        "key": "WFMediaRoute",
+        "singleStateClass": "WFMediaRouteState",
+        "variableTypes": [
+          "Ask"
+        ]
+      }
+    ],
+    "is.workflow.actions.setters.reminders": [
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "WFContentItemPropertyName",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": "Set",
+        "key": "Mode",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "RemoveSpecifiedValue",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFReminderContentItemPriority",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFContactFieldParameter",
+        "default": null,
+        "key": "WFReminderContentItemWhenMessagingPerson",
+        "singleStateClass": "WFContactFieldEntry",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": null,
+        "key": "WFReminderContentItemIsCompleted",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFReminderContentItemImages",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFReminderContentItemParentReminder",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDateFieldParameter",
+        "default": null,
+        "key": "WFReminderContentItemDueDate",
+        "singleStateClass": "WFDateFieldParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": null,
+        "key": "WFReminderContentItemList",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFReminderContentItemTags",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFReminderContentItemTitle",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFReminderContentItemSubtasks",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFURLParameter",
+        "default": null,
+        "key": "WFReminderContentItemURL",
+        "singleStateClass": "WFURLStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": null,
+        "key": "WFReminderContentItemIsFlagged",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFReminderContentItemNotes",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.share": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.showincalendar": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFEvent",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.silenceunknowncallers.set": [
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "set",
+        "key": "operation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "OnValue",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.slack.send": [
+      {
+        "class": "WFAccountPickerParameter",
+        "default": null,
+        "key": "WFAccount",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFSlackInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.splitscreen": [
+      {
+        "class": "WFAppPickerParameter",
+        "default": null,
+        "key": "WFPrimaryAppIdentifier",
+        "singleStateClass": "WFAppDescriptorParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFAppPickerParameter",
+        "default": null,
+        "key": "WFSecondaryAppIdentifier",
+        "singleStateClass": "WFAppDescriptorParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "\u00bd + \u00bd",
+        "key": "WFAppRatio",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.statistics": [
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Average",
+        "key": "WFStatisticsOperation",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "Input",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.text.changecase": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "text",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFCustomIntentEnumerationParameter",
+        "default": "UPPERCASE",
+        "key": "WFCaseType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "Ask"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "ShowWhenRun",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.text.replace": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFReplaceTextFind",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFReplaceTextReplace",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": true,
+        "key": "WFReplaceTextCaseSensitive",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFReplaceTextRegularExpression",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.timer.start": [
+      {
+        "class": "WFIntentAppPickerParameter",
+        "default": {
+          "BundleIdentifier": "com.apple.mobiletimer-framework.MobileTimerIntents"
+        },
+        "key": "IntentAppDefinition",
+        "singleStateClass": "WFIntentDescriptorParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDurationQuantityFieldParameter",
+        "default": {
+          "Value": {
+            "Unit": "min"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        "key": "WFDuration",
+        "singleStateClass": "WFQuantityParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.trello.add.list": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFTrelloName",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTrelloBoardPickerParameter",
+        "default": null,
+        "key": "WFTrelloBoard",
+        "singleStateClass": "WFTrelloBoardSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Top",
+        "key": "WFTrelloPosition",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.tumblr.post": [
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTumblrComposeInAppParameter",
+        "default": false,
+        "key": "WFComposeInApp",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTumblrBlogPickerParameter",
+        "default": null,
+        "key": "WFBlogName",
+        "singleStateClass": "WFTumblrBlogSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": "Text",
+        "key": "WFPostType",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFEnumerationParameter",
+        "default": "Post Now",
+        "key": "WFPostState",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFPostTitle",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFPostSource",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFPostCaption",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFPostTags",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFPostDescription",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.url.expand": [
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "URL",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.venmo.pay": [
+      {
+        "class": "WFIntentAppPickerParameter",
+        "default": {
+          "BundleIdentifier": "com.apple.PassKit.PassKitIntentsExtension"
+        },
+        "key": "IntentAppDefinition",
+        "singleStateClass": "WFIntentDescriptorParameterState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFContactHandleFieldParameter",
+        "default": null,
+        "key": "WFVenmoActionRecipients",
+        "singleStateClass": "WFContactFieldEntry",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFCurrencyQuantityFieldParameter",
+        "default": {
+          "Value": {
+            "Unit": "USD"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        "key": "WFVenmoActionAmount",
+        "singleStateClass": "WFQuantityParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": false,
+        "key": "WFVenmoActionAppSwitch",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "WFVenmoActionNote",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.watchmedo": [
+      {
+        "class": "WFUIRecordingEventParameter",
+        "default": {},
+        "key": "WFUserEvent",
+        "singleStateClass": "WFUIRecordingEventState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFSliderParameter",
+        "default": 1,
+        "key": "WFPlaybackSpeed",
+        "singleStateClass": "WFNumberSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ],
+    "is.workflow.actions.wordpress.post": [
+      {
+        "class": "WFAccountPickerParameter",
+        "default": null,
+        "key": "WFAccount",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "Blog",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "Title",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "Type",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "Format",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "Status",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDynamicTagFieldParameter",
+        "default": null,
+        "key": "Categories",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDynamicTagFieldParameter",
+        "default": null,
+        "key": "Tags",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFExpandingParameter",
+        "default": null,
+        "key": "Advanced",
+        "singleStateClass": "WFNumberParameterState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFSwitchParameter",
+        "default": null,
+        "key": "AllowComments",
+        "singleStateClass": "WFBooleanSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "Slug",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFTextInputParameter",
+        "default": null,
+        "key": "Excerpt",
+        "singleStateClass": "WFVariableStringParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDateFieldParameter",
+        "default": null,
+        "key": "Date",
+        "singleStateClass": "WFDateFieldParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFDynamicEnumerationParameter",
+        "default": null,
+        "key": "Template",
+        "singleStateClass": "WFStringSubstitutableState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "ThumbnailImage",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFExpandingParameter",
+        "default": null,
+        "key": "ShowCustomFields",
+        "singleStateClass": "WFNumberParameterState",
+        "variableTypes": []
+      },
+      {
+        "class": "WFDictionaryParameter",
+        "default": null,
+        "key": "CustomFields",
+        "singleStateClass": "WFDictionaryParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Ask",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      },
+      {
+        "class": "WFVariablePickerParameter",
+        "default": null,
+        "key": "WFInput",
+        "singleStateClass": "WFVariableParameterState",
+        "variableTypes": [
+          "ActionOutput",
+          "Clipboard",
+          "CurrentApp",
+          "CurrentDate",
+          "DeviceDetails",
+          "ExtensionInput",
+          "TriggerOutput",
+          "Variable"
+        ]
+      }
+    ]
+  },
+  "actionStatuses": {
+    "com.apple.NanoSettings.NPRFSetFlashLightIntent": {
+      "elapsedSeconds": 2.293480157852173,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "com.apple.NanoSettings.NPRFSetWakeOnWristRaiseIntent": {
+      "elapsedSeconds": 1.3460159301757812,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "com.apple.TVRemoteUIService.LaunchRemoteIntent": {
+      "elapsedSeconds": 0.589777946472168,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "com.apple.TVRemoteUIService.SkipContentIntent": {
+      "elapsedSeconds": 0.6003818511962891,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "com.apple.TVRemoteUIService.ToggleSystemAppearanceIntent": {
+      "elapsedSeconds": 0.6084611415863037,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundsVolumeIntent": {
+      "elapsedSeconds": 1.3209669589996338,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleBackgroundSoundsIntent": {
+      "elapsedSeconds": 1.2788770198822021,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleContrastIntent": {
+      "elapsedSeconds": 1.4049060344696045,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleHoverTypingIntent": {
+      "elapsedSeconds": 1.5498580932617188,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleMotionCuesIntent": {
+      "elapsedSeconds": 1.2672648429870605,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleSmartInvertIntent": {
+      "elapsedSeconds": 1.4266138076782227,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleVoiceControlIntent": {
+      "elapsedSeconds": 1.2742412090301514,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "com.apple.mobilephone.call": {
+      "elapsedSeconds": 0.47266292572021484,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "com.apple.news.TodayIntent": {
+      "elapsedSeconds": 1.1989398002624512,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.additemtolist": {
+      "elapsedSeconds": 0.5249621868133545,
+      "error": null,
+      "parametersCount": 4,
+      "status": "success"
+    },
+    "is.workflow.actions.addnewevent": {
+      "elapsedSeconds": 0.5415089130401611,
+      "error": null,
+      "parametersCount": 10,
+      "status": "success"
+    },
+    "is.workflow.actions.addtoplaylist": {
+      "elapsedSeconds": 0.4167189598083496,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.alert": {
+      "elapsedSeconds": 0.53481125831604,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.ask": {
+      "elapsedSeconds": 0.47173309326171875,
+      "error": null,
+      "parametersCount": 13,
+      "status": "success"
+    },
+    "is.workflow.actions.bluetooth.set": {
+      "elapsedSeconds": 0.4731581211090088,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.choosefrommenu": {
+      "elapsedSeconds": 0.5231919288635254,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.compresspdf": {
+      "elapsedSeconds": 0.5488259792327881,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.converttimezone": {
+      "elapsedSeconds": 0.4877157211303711,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.date": {
+      "elapsedSeconds": 0.46036291122436523,
+      "error": null,
+      "parametersCount": 4,
+      "status": "success"
+    },
+    "is.workflow.actions.deskconnect.send": {
+      "elapsedSeconds": 0.35949277877807617,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.detect.dictionary": {
+      "elapsedSeconds": 0.340972900390625,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.detect.number": {
+      "elapsedSeconds": 0.38667893409729004,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.dictatetext": {
+      "elapsedSeconds": 0.3772468566894531,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.displaysleep": {
+      "elapsedSeconds": 0.4495120048522949,
+      "error": null,
+      "parametersCount": 0,
+      "status": "success"
+    },
+    "is.workflow.actions.documentpicker.save": {
+      "elapsedSeconds": 0.39650416374206543,
+      "error": null,
+      "parametersCount": 5,
+      "status": "success"
+    },
+    "is.workflow.actions.dropbox.open": {
+      "elapsedSeconds": 0.4339609146118164,
+      "error": null,
+      "parametersCount": 5,
+      "status": "success"
+    },
+    "is.workflow.actions.encodemedia": {
+      "elapsedSeconds": 0.5602641105651855,
+      "error": null,
+      "parametersCount": 14,
+      "status": "success"
+    },
+    "is.workflow.actions.evernote.getlink": {
+      "elapsedSeconds": 0.48650407791137695,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.facebook.messenger.send": {
+      "elapsedSeconds": 0.40959620475769043,
+      "error": null,
+      "parametersCount": 0,
+      "status": "unavailable"
+    },
+    "is.workflow.actions.file.delete": {
+      "elapsedSeconds": 0.4041767120361328,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.file.move": {
+      "elapsedSeconds": 0.4497978687286377,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.filter.apps": {
+      "elapsedSeconds": 0.5418910980224609,
+      "error": null,
+      "parametersCount": 7,
+      "status": "success"
+    },
+    "is.workflow.actions.filter.displays": {
+      "elapsedSeconds": 0.45783209800720215,
+      "error": null,
+      "parametersCount": 7,
+      "status": "success"
+    },
+    "is.workflow.actions.filter.images": {
+      "elapsedSeconds": 0.45728158950805664,
+      "error": null,
+      "parametersCount": 7,
+      "status": "success"
+    },
+    "is.workflow.actions.filter.reminders": {
+      "elapsedSeconds": 0.4334299564361572,
+      "error": null,
+      "parametersCount": 7,
+      "status": "success"
+    },
+    "is.workflow.actions.flashlight": {
+      "elapsedSeconds": 0.43027687072753906,
+      "error": null,
+      "parametersCount": 4,
+      "status": "success"
+    },
+    "is.workflow.actions.generatebarcode": {
+      "elapsedSeconds": 0.4443519115447998,
+      "error": null,
+      "parametersCount": 5,
+      "status": "success"
+    },
+    "is.workflow.actions.getclassaction": {
+      "elapsedSeconds": 0.4086179733276367,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.getcurrentsong": {
+      "elapsedSeconds": 0.38982200622558594,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.getepisodesforpodcast": {
+      "elapsedSeconds": 0.49358582496643066,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.gethtmlfromrichtext": {
+      "elapsedSeconds": 0.48604679107666016,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.getitemtype": {
+      "elapsedSeconds": 0.4764111042022705,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.getlatestbursts": {
+      "elapsedSeconds": 0.43804121017456055,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.getmarkdownfromrichtext": {
+      "elapsedSeconds": 0.42641592025756836,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.getonscreencontext": {
+      "elapsedSeconds": 0.43162083625793457,
+      "error": null,
+      "parametersCount": 4,
+      "status": "success"
+    },
+    "is.workflow.actions.getrichtextfromhtml": {
+      "elapsedSeconds": 0.3583340644836426,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.gettext": {
+      "elapsedSeconds": 0.3632690906524658,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.gettypeaction": {
+      "elapsedSeconds": 0.38592004776000977,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.getvalueforkey": {
+      "elapsedSeconds": 0.43788886070251465,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.giphy": {
+      "elapsedSeconds": 0.5309169292449951,
+      "error": null,
+      "parametersCount": 4,
+      "status": "success"
+    },
+    "is.workflow.actions.hash": {
+      "elapsedSeconds": 0.47034335136413574,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.homeaccessory": {
+      "elapsedSeconds": 0.458942174911499,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.image.crop": {
+      "elapsedSeconds": 0.5031168460845947,
+      "error": null,
+      "parametersCount": 6,
+      "status": "success"
+    },
+    "is.workflow.actions.image.rotate": {
+      "elapsedSeconds": 0.4391138553619385,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.instapaper.add": {
+      "elapsedSeconds": 0.435136079788208,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.list": {
+      "elapsedSeconds": 0.4079740047454834,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.lockscreen": {
+      "elapsedSeconds": 0.36619019508361816,
+      "error": null,
+      "parametersCount": 0,
+      "status": "success"
+    },
+    "is.workflow.actions.makegif": {
+      "elapsedSeconds": 0.391185998916626,
+      "error": null,
+      "parametersCount": 7,
+      "status": "success"
+    },
+    "is.workflow.actions.makespokenaudiofromtext": {
+      "elapsedSeconds": 0.48732900619506836,
+      "error": null,
+      "parametersCount": 5,
+      "status": "success"
+    },
+    "is.workflow.actions.measurement.convert": {
+      "elapsedSeconds": 0.5070939064025879,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.nightshift.set": {
+      "elapsedSeconds": 0.43060302734375,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.number.random": {
+      "elapsedSeconds": 0.4383888244628906,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.openurl": {
+      "elapsedSeconds": 0.38982605934143066,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.overlayimageonimage": {
+      "elapsedSeconds": 0.44744205474853516,
+      "error": null,
+      "parametersCount": 10,
+      "status": "success"
+    },
+    "is.workflow.actions.personalhotspot.password.set": {
+      "elapsedSeconds": 0.40004897117614746,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.pinboard.add": {
+      "elapsedSeconds": 0.40532994270324707,
+      "error": null,
+      "parametersCount": 6,
+      "status": "success"
+    },
+    "is.workflow.actions.playsound": {
+      "elapsedSeconds": 0.4330270290374756,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.posters.get": {
+      "elapsedSeconds": 0.5451147556304932,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.print": {
+      "elapsedSeconds": 0.5039160251617432,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.properties.calendarevents": {
+      "elapsedSeconds": 0.4739539623260498,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.properties.health.quantity": {
+      "elapsedSeconds": 0.5090487003326416,
+      "error": null,
+      "parametersCount": 0,
+      "status": "unavailable"
+    },
+    "is.workflow.actions.properties.locations": {
+      "elapsedSeconds": 0.4580221176147461,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.properties.podcastshow": {
+      "elapsedSeconds": 0.39437198638916016,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.properties.shazam": {
+      "elapsedSeconds": 0.3892512321472168,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.properties.workflow": {
+      "elapsedSeconds": 0.48076725006103516,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.recordaudio": {
+      "elapsedSeconds": 0.4085712432861328,
+      "error": null,
+      "parametersCount": 4,
+      "status": "success"
+    },
+    "is.workflow.actions.removereminders": {
+      "elapsedSeconds": 0.45889997482299805,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.returntohomescreen": {
+      "elapsedSeconds": 0.3554069995880127,
+      "error": null,
+      "parametersCount": 0,
+      "status": "success"
+    },
+    "is.workflow.actions.rss.extract": {
+      "elapsedSeconds": 0.34031105041503906,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.runjavascriptonwebpage": {
+      "elapsedSeconds": 0.3476598262786865,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.safari.geturl": {
+      "elapsedSeconds": 0.348052978515625,
+      "error": null,
+      "parametersCount": 0,
+      "status": "success"
+    },
+    "is.workflow.actions.searchlocalbusinesses": {
+      "elapsedSeconds": 0.3848559856414795,
+      "error": null,
+      "parametersCount": 4,
+      "status": "success"
+    },
+    "is.workflow.actions.seek": {
+      "elapsedSeconds": 0.3399627208709717,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.selectphoto": {
+      "elapsedSeconds": 0.3210771083831787,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.setbrightness": {
+      "elapsedSeconds": 0.32846903800964355,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.setplaybackdestination": {
+      "elapsedSeconds": 0.3490722179412842,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.setters.reminders": {
+      "elapsedSeconds": 0.4191770553588867,
+      "error": null,
+      "parametersCount": 17,
+      "status": "success"
+    },
+    "is.workflow.actions.share": {
+      "elapsedSeconds": 0.3510410785675049,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.showincalendar": {
+      "elapsedSeconds": 0.3384268283843994,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.silenceunknowncallers.set": {
+      "elapsedSeconds": 0.4310300350189209,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.slack.send": {
+      "elapsedSeconds": 0.35594916343688965,
+      "error": null,
+      "parametersCount": 2,
+      "status": "unavailable"
+    },
+    "is.workflow.actions.splitscreen": {
+      "elapsedSeconds": 0.3463571071624756,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.statistics": {
+      "elapsedSeconds": 0.32271575927734375,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.text.changecase": {
+      "elapsedSeconds": 0.335953950881958,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.text.replace": {
+      "elapsedSeconds": 0.324908971786499,
+      "error": null,
+      "parametersCount": 5,
+      "status": "success"
+    },
+    "is.workflow.actions.timer.start": {
+      "elapsedSeconds": 0.324174165725708,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.trello.add.list": {
+      "elapsedSeconds": 0.33985209465026855,
+      "error": null,
+      "parametersCount": 3,
+      "status": "success"
+    },
+    "is.workflow.actions.tumblr.post": {
+      "elapsedSeconds": 0.3624610900878906,
+      "error": null,
+      "parametersCount": 10,
+      "status": "success"
+    },
+    "is.workflow.actions.url.expand": {
+      "elapsedSeconds": 0.3334629535675049,
+      "error": null,
+      "parametersCount": 1,
+      "status": "success"
+    },
+    "is.workflow.actions.venmo.pay": {
+      "elapsedSeconds": 0.35280418395996094,
+      "error": null,
+      "parametersCount": 5,
+      "status": "success"
+    },
+    "is.workflow.actions.vpn.get": {
+      "elapsedSeconds": 0.3051156997680664,
+      "error": null,
+      "parametersCount": 0,
+      "status": "success"
+    },
+    "is.workflow.actions.watchmedo": {
+      "elapsedSeconds": 0.31436896324157715,
+      "error": null,
+      "parametersCount": 2,
+      "status": "success"
+    },
+    "is.workflow.actions.wordpress.post": {
+      "elapsedSeconds": 0.3639092445373535,
+      "error": null,
+      "parametersCount": 18,
+      "status": "success"
+    }
+  },
+  "actionsAttempted": 108,
+  "errors": [],
+  "parameterClasses": {
+    "WFAccountPickerParameter": {
+      "count": 2,
+      "defaultExamples": [],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.slack.send",
+        "is.workflow.actions.wordpress.post"
+      ]
+    },
+    "WFAppPickerParameter": {
+      "count": 2,
+      "defaultExamples": [],
+      "stateClass": "WFAppDescriptorParameterState",
+      "usedBy": [
+        "is.workflow.actions.splitscreen"
+      ]
+    },
+    "WFCalendarPickerParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFCalendarSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.addnewevent"
+      ]
+    },
+    "WFChooseFromMenuArrayParameter": {
+      "count": 1,
+      "defaultExamples": [
+        [
+          "One",
+          "Two"
+        ]
+      ],
+      "stateClass": null,
+      "usedBy": [
+        "is.workflow.actions.choosefrommenu"
+      ]
+    },
+    "WFColorPickerParameter": {
+      "count": 2,
+      "defaultExamples": [
+        {
+          "WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
+          "alphaComponent": 1,
+          "blueComponent": 0,
+          "greenComponent": 0,
+          "redComponent": 0
+        },
+        {
+          "WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
+          "alphaComponent": 1,
+          "blueComponent": 1,
+          "greenComponent": 1,
+          "redComponent": 1
+        }
+      ],
+      "stateClass": "WFColorParameterState",
+      "usedBy": [
+        "is.workflow.actions.generatebarcode"
+      ]
+    },
+    "WFContactFieldParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFContactFieldEntry",
+      "usedBy": [
+        "is.workflow.actions.setters.reminders"
+      ]
+    },
+    "WFContactHandleFieldParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFContactFieldEntry",
+      "usedBy": [
+        "is.workflow.actions.venmo.pay"
+      ]
+    },
+    "WFContentArrayParameter": {
+      "count": 1,
+      "defaultExamples": [
+        [
+          "One",
+          "Two"
+        ]
+      ],
+      "stateClass": null,
+      "usedBy": [
+        "is.workflow.actions.list"
+      ]
+    },
+    "WFContentItemFilterEnumerationParameter": {
+      "count": 3,
+      "defaultExamples": [
+        "Library"
+      ],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.filter.apps",
+        "is.workflow.actions.filter.displays",
+        "is.workflow.actions.filter.reminders"
+      ]
+    },
+    "WFCurrencyQuantityFieldParameter": {
+      "count": 1,
+      "defaultExamples": [
+        {
+          "Value": {
+            "Unit": "USD"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        }
+      ],
+      "stateClass": "WFQuantityParameterState",
+      "usedBy": [
+        "is.workflow.actions.venmo.pay"
+      ]
+    },
+    "WFCustomIntentEnumerationParameter": {
+      "count": 16,
+      "defaultExamples": [
+        "set",
+        "on",
+        "turn"
+      ],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "com.apple.NanoSettings.NPRFSetFlashLightIntent",
+        "com.apple.NanoSettings.NPRFSetWakeOnWristRaiseIntent",
+        "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleBackgroundSoundsIntent",
+        "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleContrastIntent",
+        "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleHoverTypingIntent"
+      ]
+    },
+    "WFDateActionPickerModeParameter": {
+      "count": 1,
+      "defaultExamples": [
+        "Current Date"
+      ],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.date"
+      ]
+    },
+    "WFDateActionYearPickerParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.date"
+      ]
+    },
+    "WFDateFieldParameter": {
+      "count": 9,
+      "defaultExamples": [],
+      "stateClass": "WFDateFieldParameterState",
+      "usedBy": [
+        "is.workflow.actions.addnewevent",
+        "is.workflow.actions.ask",
+        "is.workflow.actions.converttimezone",
+        "is.workflow.actions.date",
+        "is.workflow.actions.setters.reminders"
+      ]
+    },
+    "WFDictateTextLanguagePickerParameter": {
+      "count": 1,
+      "defaultExamples": [
+        "en-US"
+      ],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.dictatetext"
+      ]
+    },
+    "WFDictionaryParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFDictionaryParameterState",
+      "usedBy": [
+        "is.workflow.actions.wordpress.post"
+      ]
+    },
+    "WFDurationQuantityFieldParameter": {
+      "count": 3,
+      "defaultExamples": [
+        {
+          "Value": {
+            "Unit": "min"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        },
+        {
+          "Value": {
+            "Unit": "sec"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        }
+      ],
+      "stateClass": "WFQuantityParameterState",
+      "usedBy": [
+        "is.workflow.actions.recordaudio",
+        "is.workflow.actions.seek",
+        "is.workflow.actions.timer.start"
+      ]
+    },
+    "WFDynamicEnumerationParameter": {
+      "count": 13,
+      "defaultExamples": [
+        "Set",
+        "Text"
+      ],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.filter.apps",
+        "is.workflow.actions.filter.displays",
+        "is.workflow.actions.filter.images",
+        "is.workflow.actions.filter.reminders",
+        "is.workflow.actions.instapaper.add"
+      ]
+    },
+    "WFDynamicTagFieldParameter": {
+      "count": 2,
+      "defaultExamples": [],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.wordpress.post"
+      ]
+    },
+    "WFEnumerationParameter": {
+      "count": 41,
+      "defaultExamples": [
+        "End",
+        "Next Occurrence",
+        "After Pause"
+      ],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.additemtolist",
+        "is.workflow.actions.addnewevent",
+        "is.workflow.actions.date",
+        "is.workflow.actions.dictatetext",
+        "is.workflow.actions.encodemedia"
+      ]
+    },
+    "WFExpandingParameter": {
+      "count": 3,
+      "defaultExamples": [],
+      "stateClass": "WFNumberParameterState",
+      "usedBy": [
+        "is.workflow.actions.encodemedia",
+        "is.workflow.actions.wordpress.post"
+      ]
+    },
+    "WFFilePickerParameter": {
+      "count": 6,
+      "defaultExamples": [
+        {
+          "displayName": "Shortcuts",
+          "fileLocation": {
+            "WFFileLocationType": "Shortcuts",
+            "relativeSubpath": ""
+          },
+          "filename": "Documents"
+        }
+      ],
+      "stateClass": "WFFileParameterState",
+      "usedBy": [
+        "is.workflow.actions.compresspdf",
+        "is.workflow.actions.documentpicker.save",
+        "is.workflow.actions.file.delete",
+        "is.workflow.actions.file.move"
+      ]
+    },
+    "WFHomeAccessoryPickerParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFHFTriggerActionSetsBuilderParameterState",
+      "usedBy": [
+        "is.workflow.actions.homeaccessory"
+      ]
+    },
+    "WFHomePickerParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.homeaccessory"
+      ]
+    },
+    "WFIntentAppPickerParameter": {
+      "count": 3,
+      "defaultExamples": [
+        {
+          "BundleIdentifier": "com.apple.TelephonyUtilities.PhoneIntentHandler"
+        },
+        {
+          "BundleIdentifier": "com.apple.mobiletimer-framework.MobileTimerIntents"
+        },
+        {
+          "BundleIdentifier": "com.apple.PassKit.PassKitIntentsExtension"
+        }
+      ],
+      "stateClass": "WFIntentDescriptorParameterState",
+      "usedBy": [
+        "com.apple.mobilephone.call",
+        "is.workflow.actions.timer.start",
+        "is.workflow.actions.venmo.pay"
+      ]
+    },
+    "WFLocationParameter": {
+      "count": 1,
+      "defaultExamples": [
+        {
+          "isCurrentLocation": true
+        }
+      ],
+      "stateClass": "WFLocationParameterState",
+      "usedBy": [
+        "is.workflow.actions.searchlocalbusinesses"
+      ]
+    },
+    "WFMeasurementUnitPickerParameter": {
+      "count": 1,
+      "defaultExamples": [
+        {
+          "WFNSUnitSymbol": "ft",
+          "WFNSUnitType": "Length"
+        }
+      ],
+      "stateClass": "WFNSUnitSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.measurement.convert"
+      ]
+    },
+    "WFMediaRoutePickerParameter": {
+      "count": 2,
+      "defaultExamples": [
+        {
+          "isLocalDevice": true,
+          "routeUID": "Speaker"
+        }
+      ],
+      "stateClass": "WFMediaRouteState",
+      "usedBy": [
+        "is.workflow.actions.seek",
+        "is.workflow.actions.setplaybackdestination"
+      ]
+    },
+    "WFNumberFieldParameter": {
+      "count": 20,
+      "defaultExamples": [
+        100,
+        90,
+        0.2
+      ],
+      "stateClass": "WFNumberStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.additemtolist",
+        "is.workflow.actions.ask",
+        "is.workflow.actions.detect.number",
+        "is.workflow.actions.encodemedia",
+        "is.workflow.actions.image.crop"
+      ]
+    },
+    "WFOnScreenContextResultTypePickerParameter": {
+      "count": 1,
+      "defaultExamples": [
+        "Images"
+      ],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.getonscreencontext"
+      ]
+    },
+    "WFPhoneNumberFieldParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFContactFieldEntry",
+      "usedBy": [
+        "com.apple.mobilephone.call"
+      ]
+    },
+    "WFPlaylistPickerParameter": {
+      "count": 1,
+      "defaultExamples": [
+        {
+          "EntireMusicLibrary": true
+        }
+      ],
+      "stateClass": "WFPlaylistSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.addtoplaylist"
+      ]
+    },
+    "WFPodcastPickerParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFPodcastSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.getepisodesforpodcast"
+      ]
+    },
+    "WFSearchLocalBusinessesRadiusParameter": {
+      "count": 1,
+      "defaultExamples": [
+        {
+          "Value": {
+            "Magnitude": "1",
+            "Unit": "mi"
+          },
+          "WFSerializationType": "WFQuantityFieldValue"
+        }
+      ],
+      "stateClass": "WFQuantityParameterState",
+      "usedBy": [
+        "is.workflow.actions.searchlocalbusinesses"
+      ]
+    },
+    "WFSliderParameter": {
+      "count": 6,
+      "defaultExamples": [
+        10,
+        0.5,
+        1
+      ],
+      "stateClass": "WFNumberSubstitutableState",
+      "usedBy": [
+        "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundsVolumeIntent",
+        "is.workflow.actions.flashlight",
+        "is.workflow.actions.makespokenaudiofromtext",
+        "is.workflow.actions.setbrightness",
+        "is.workflow.actions.watchmedo"
+      ]
+    },
+    "WFSpeakTextLanguagePickerParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.makespokenaudiofromtext"
+      ]
+    },
+    "WFSpeakTextVoicePickerParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.makespokenaudiofromtext"
+      ]
+    },
+    "WFStepperParameter": {
+      "count": 8,
+      "defaultExamples": [
+        5,
+        1
+      ],
+      "stateClass": "WFNumberSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.filter.apps",
+        "is.workflow.actions.filter.displays",
+        "is.workflow.actions.filter.images",
+        "is.workflow.actions.filter.reminders",
+        "is.workflow.actions.getlatestbursts"
+      ]
+    },
+    "WFSwitchParameter": {
+      "count": 67,
+      "defaultExamples": [
+        true,
+        0,
+        1
+      ],
+      "stateClass": "WFBooleanSubstitutableState",
+      "usedBy": [
+        "com.apple.NanoSettings.NPRFSetFlashLightIntent",
+        "com.apple.NanoSettings.NPRFSetWakeOnWristRaiseIntent",
+        "com.apple.TVRemoteUIService.LaunchRemoteIntent",
+        "com.apple.TVRemoteUIService.SkipContentIntent",
+        "com.apple.TVRemoteUIService.ToggleSystemAppearanceIntent"
+      ]
+    },
+    "WFTableTemplateContentItemFilterParameter": {
+      "count": 4,
+      "defaultExamples": [
+        {
+          "Value": {
+            "WFActionParameterFilterPrefix": 1,
+            "WFActionParameterFilterTemplates": [],
+            "WFContentPredicateBoundedDate": false
+          },
+          "WFSerializationType": "WFContentPredicateTableTemplate"
+        }
+      ],
+      "stateClass": "_TtGC11WorkflowKitP10$2a995e34038_SwiftVariableSupportingParameterStateGVS_27TableTemplateParameterStateVS_35RowTemplateFindFilterParameterState__",
+      "usedBy": [
+        "is.workflow.actions.filter.apps",
+        "is.workflow.actions.filter.displays",
+        "is.workflow.actions.filter.images",
+        "is.workflow.actions.filter.reminders"
+      ]
+    },
+    "WFTextInputParameter": {
+      "count": 54,
+      "defaultExamples": [
+        "Do you want to continue?",
+        "",
+        "public.rtf"
+      ],
+      "stateClass": "WFVariableStringParameterState",
+      "usedBy": [
+        "is.workflow.actions.additemtolist",
+        "is.workflow.actions.addnewevent",
+        "is.workflow.actions.alert",
+        "is.workflow.actions.ask",
+        "is.workflow.actions.choosefrommenu"
+      ]
+    },
+    "WFTimeZonePickerParameter": {
+      "count": 2,
+      "defaultExamples": [],
+      "stateClass": "WFTimeZonePickerParameterState",
+      "usedBy": [
+        "is.workflow.actions.converttimezone"
+      ]
+    },
+    "WFTrelloBoardPickerParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFTrelloBoardSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.trello.add.list"
+      ]
+    },
+    "WFTumblrBlogPickerParameter": {
+      "count": 1,
+      "defaultExamples": [],
+      "stateClass": "WFTumblrBlogSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.tumblr.post"
+      ]
+    },
+    "WFTumblrComposeInAppParameter": {
+      "count": 1,
+      "defaultExamples": [
+        false
+      ],
+      "stateClass": "WFBooleanSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.tumblr.post"
+      ]
+    },
+    "WFUIRecordingEventParameter": {
+      "count": 1,
+      "defaultExamples": [
+        {}
+      ],
+      "stateClass": "WFUIRecordingEventState",
+      "usedBy": [
+        "is.workflow.actions.watchmedo"
+      ]
+    },
+    "WFURLParameter": {
+      "count": 2,
+      "defaultExamples": [],
+      "stateClass": "WFURLStringParameterState",
+      "usedBy": [
+        "is.workflow.actions.ask",
+        "is.workflow.actions.setters.reminders"
+      ]
+    },
+    "WFUnitTypePickerParameter": {
+      "count": 1,
+      "defaultExamples": [
+        "Length"
+      ],
+      "stateClass": "WFStringSubstitutableState",
+      "usedBy": [
+        "is.workflow.actions.measurement.convert"
+      ]
+    },
+    "WFVariablePickerParameter": {
+      "count": 43,
+      "defaultExamples": [],
+      "stateClass": "WFVariableParameterState",
+      "usedBy": [
+        "is.workflow.actions.additemtolist",
+        "is.workflow.actions.addtoplaylist",
+        "is.workflow.actions.deskconnect.send",
+        "is.workflow.actions.detect.dictionary",
+        "is.workflow.actions.encodemedia"
+      ]
+    }
+  },
+  "shardCount": 4,
+  "shardIndex": 3,
+  "summary": {
+    "completed": 108,
+    "elapsedSeconds": 56.19,
+    "errors": 0,
+    "parameterClasses": 49,
+    "shardCount": 4,
+    "shardIndex": 3,
+    "successes": 105,
+    "timeouts": 0,
+    "totalAssigned": 108,
+    "unavailable": 3
+  },
+  "timeouts": [],
+  "unavailableActions": [
+    "is.workflow.actions.facebook.messenger.send",
+    "is.workflow.actions.properties.health.quantity",
+    "is.workflow.actions.slack.send"
+  ]
+}

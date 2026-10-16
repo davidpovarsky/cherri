@@ -306,6 +306,8 @@ var definedQuickActions []string
 /* Versions */
 
 var versions = map[string]string{
+	"27.10":  "5037.0.25",
+	"27.2":   "5037.0.18",
 	"27":     "5037.0.17",
 	"26.4":   "4528.0.4.2",
 	"26":     "4033.0.4.3",
@@ -325,6 +327,7 @@ var versions = map[string]string{
 }
 var clientVersion = versions["27"]
 var iosVersion = 27.0
+var iosVersionString = "27"
 
 /* Conditionals */
 

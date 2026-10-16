@@ -706,11 +706,26 @@ var actions = map[string]*actionDefinition{
 				return params
 			}
 			detail := fmt.Sprint(getArgValue(args[1]))
+
+			// Detail validation must happen before Set/Remove mode branching
+			switch detail {
+			case "Start Date", "End Date", "Is All Day", "Location", "Duration", "My Status", "Attendees", "URL", "Title", "Notes", "Attachments":
+				params["WFContentItemPropertyName"] = detail
+			default:
+				if detail != "" && detail != "<nil>" {
+					panic(fmt.Sprintf("invalid detail property %q for editEvent; valid choices: Start Date, End Date, Is All Day, Location, Duration, My Status, Attendees, URL, Title, Notes, Attachments", detail))
+				}
+			}
+
 			mode := "Set"
-			if len(args) >= 4 && args[3].value != nil {
+			if len(args) >= 4 && args[3].value != nil && args[3].valueType != Nil {
 				modeStr := fmt.Sprint(getArgValue(args[3]))
 				if strings.EqualFold(modeStr, "Remove") {
 					mode = "Remove"
+				} else if strings.EqualFold(modeStr, "Set") {
+					mode = "Set"
+				} else {
+					panic(fmt.Sprintf("invalid setter mode %q for editEvent; valid choices: Set, Remove", modeStr))
 				}
 			} else if len(args) == 3 && strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") {
 				mode = "Remove"
@@ -719,7 +734,7 @@ var actions = map[string]*actionDefinition{
 			if mode == "Remove" {
 				params["Mode"] = "Remove"
 				delete(params, "ValueLabel")
-				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil {
+				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil && args[2].valueType != Nil {
 					params["RemoveSpecifiedValue"] = getArgValue(args[2])
 				}
 				return params
@@ -752,10 +767,6 @@ var actions = map[string]*actionDefinition{
 				params["WFCalendarEventContentItemNotes"] = val
 			case "Attachments":
 				params["WFCalendarEventContentItemAttachments"] = val
-			default:
-				if detail != "" && detail != "<nil>" {
-					panic(fmt.Sprintf("invalid detail property %q for editEvent; valid choices: Start Date, End Date, Is All Day, Location, Duration, My Status, Attendees, URL, Title, Notes, Attachments", detail))
-				}
 			}
 			return params
 		},
@@ -819,11 +830,26 @@ var actions = map[string]*actionDefinition{
 				return params
 			}
 			detail := fmt.Sprint(getArgValue(args[1]))
+
+			// Detail validation must happen before Set/Remove mode branching
+			switch detail {
+			case "Title", "List", "Due Date", "Priority", "Is Completed", "Notes", "URL", "Is Flagged", "Images", "Parent Reminder", "Tags", "When Messaging", "Subtasks":
+				params["WFContentItemPropertyName"] = detail
+			default:
+				if detail != "" && detail != "<nil>" {
+					panic(fmt.Sprintf("invalid detail property %q for editReminder; valid choices: Title, List, Due Date, Priority, Is Completed, Notes, URL, Is Flagged, Images, Parent Reminder, Tags, When Messaging, Subtasks", detail))
+				}
+			}
+
 			mode := "Set"
-			if len(args) >= 4 && args[3].value != nil {
+			if len(args) >= 4 && args[3].value != nil && args[3].valueType != Nil {
 				modeStr := fmt.Sprint(getArgValue(args[3]))
 				if strings.EqualFold(modeStr, "Remove") {
 					mode = "Remove"
+				} else if strings.EqualFold(modeStr, "Set") {
+					mode = "Set"
+				} else {
+					panic(fmt.Sprintf("invalid setter mode %q for editReminder; valid choices: Set, Remove", modeStr))
 				}
 			} else if len(args) == 3 && strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") {
 				mode = "Remove"
@@ -832,7 +858,7 @@ var actions = map[string]*actionDefinition{
 			if mode == "Remove" {
 				params["Mode"] = "Remove"
 				delete(params, "ValueLabel")
-				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil {
+				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil && args[2].valueType != Nil {
 					params["RemoveSpecifiedValue"] = getArgValue(args[2])
 				}
 				return params
@@ -869,10 +895,6 @@ var actions = map[string]*actionDefinition{
 				params["WFReminderContentItemWhenMessagingPerson"] = val
 			case "Subtasks":
 				params["WFReminderContentItemSubtasks"] = val
-			default:
-				if detail != "" && detail != "<nil>" {
-					panic(fmt.Sprintf("invalid detail property %q for editReminder; valid choices: Title, List, Due Date, Priority, Is Completed, Notes, URL, Is Flagged, Images, Parent Reminder, Tags, When Messaging, Subtasks", detail))
-				}
 			}
 			return params
 		},
@@ -2894,10 +2916,17 @@ func buildContentItemFilter(filterArg any) (map[string]any, string) {
 		}, "0"
 	}
 
-	// If already in serialized table template format, return as-is
+	// If already in serialized table template format, validate structure and return
 	if m, ok := filterArg.(map[string]any); ok {
-		if _, hasVal := m["Value"]; hasVal {
+		if valObj, hasVal := m["Value"]; hasVal {
 			if ser, hasSer := m["WFSerializationType"]; hasSer && ser == "WFContentPredicateTableTemplate" {
+				valMap, isMap := valObj.(map[string]any)
+				if !isMap {
+					panic(fmt.Sprintf("malformed WFContentPredicateTableTemplate: Value must be a map, got %T", valObj))
+				}
+				if _, hasTemplates := valMap["WFActionParameterFilterTemplates"]; !hasTemplates {
+					panic("malformed WFContentPredicateTableTemplate: missing WFActionParameterFilterTemplates")
+				}
 				compound := "0"
 				if c, hasComp := m["WFCompoundType"]; hasComp {
 					compound = fmt.Sprint(c)
@@ -2931,35 +2960,44 @@ func buildContentItemFilter(filterArg any) (map[string]any, string) {
 				for _, m := range pSliceMap {
 					rawTemplates = append(rawTemplates, m)
 				}
+			} else {
+				panic(fmt.Sprintf("invalid predicates specification: expected slice, got %T", preds))
 			}
 		} else {
-			// Property -> Value shorthand
-			for prop, val := range v {
-				if prop == "compound" {
-					continue
+			// Property -> Value shorthand with deterministic alphabetical key order
+			var props []string
+			for prop := range v {
+				if prop != "compound" {
+					props = append(props, prop)
 				}
+			}
+			slices.Sort(props)
+			for _, prop := range props {
 				rawTemplates = append(rawTemplates, map[string]any{
 					"property": prop,
 					"operator": 4, // equals
-					"value":    val,
+					"value":    v[prop],
 				})
 			}
 		}
 	default:
-		rawTemplates = []any{}
+		panic(fmt.Sprintf("invalid filter specification of type %T; expected array of predicates or map with compound/predicates", filterArg))
 	}
 
 	templates := make([]any, 0, len(rawTemplates))
 	for _, rt := range rawTemplates {
 		tmap, ok := rt.(map[string]any)
 		if !ok {
-			continue
+			panic(fmt.Sprintf("invalid filter predicate item of type %T; expected map with property, operator, value", rt))
 		}
 		prop := ""
 		if p, found := tmap["property"]; found {
-			prop = fmt.Sprint(p)
+			prop = strings.TrimSpace(fmt.Sprint(p))
 		} else if p, found := tmap["Property"]; found {
-			prop = fmt.Sprint(p)
+			prop = strings.TrimSpace(fmt.Sprint(p))
+		}
+		if prop == "" {
+			panic("filter predicate missing required 'property'")
 		}
 
 		opCode := 4
@@ -2972,6 +3010,24 @@ func buildContentItemFilter(filterArg any) (map[string]any, string) {
 		val := tmap["value"]
 		if val == nil {
 			val = tmap["Values"]
+		}
+
+		// Validation for 'between' operator (1003)
+		if opCode == 1003 {
+			switch bVal := val.(type) {
+			case []any:
+				if len(bVal) != 2 {
+					panic(fmt.Sprintf("filter operator 'between' requires exactly two bounds (lower and upper), got %d elements", len(bVal)))
+				}
+			case map[string]any:
+				if len(bVal) < 2 {
+					panic(fmt.Sprintf("filter operator 'between' requires lower and upper bound keys, got %v", bVal))
+				}
+			default:
+				if val == nil {
+					panic("filter operator 'between' requires bound values, got nil")
+				}
+			}
 		}
 
 		isBounded := false
@@ -3004,7 +3060,7 @@ func buildContentItemFilter(filterArg any) (map[string]any, string) {
 			"Values":    valuesDict,
 			"Removable": removable,
 		}
-		if isBounded || opCode == 1000 || opCode == 1001 {
+		if isBounded || opCode == 1000 || opCode == 1001 || opCode == 1003 {
 			templateEntry["Bounded"] = true
 		}
 		templates = append(templates, templateEntry)
@@ -3062,10 +3118,10 @@ func parseFilterOperator(op any) int {
 		case "between", "is between":
 			return 1003
 		default:
-			return 4
+			panic(fmt.Sprintf("unrecognized filter operator %q; valid operators: is/equals/==, is not/!=, contains, does not contain, begins with, ends with, greater than/>, greater than or equal to/>=, less than/<, less than or equal to/<=, in the last, in the next, is today, between", v))
 		}
 	default:
-		return 4
+		panic(fmt.Sprintf("invalid filter operator type %T (%v); expected string or operator code", op, op))
 	}
 }
 

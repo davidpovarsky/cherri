@@ -19,7 +19,7 @@ from typing import Dict, Any, List, Optional, Tuple
 SHARED_BUILDER_KEYS = {
     "IntentAppDefinition": {
         "disposition": "IMPLEMENTED_BY_SHARED_BUILDER",
-        "codePath": "compiler_actions.go:appIntentDescriptor()",
+        "codePath": "action.go:appIntentDescriptor()",
         "rationale": "AppIntent transport descriptor identifying target application bundle; emitted automatically from actionDefinition.appIntent",
         "evidenceRef": "WorkflowKit WFIntentAppDefinition / AppIntentDescriptor"
     },
@@ -52,7 +52,7 @@ SHARED_BUILDER_KEYS = {
 IMPLICIT_CONSTANT_KEYS = {
     "ShowWhenRun": {
         "disposition": "EMITTED_IMPLICIT_CONSTANT",
-        "codePath": "compiler_actions.go (runtime property)",
+        "codePath": "actions_std.go (ShowWhenRun parameter)",
         "rationale": "Runtime UI execution toggle (Show when run) managed implicitly by Shortcuts runner",
         "evidenceRef": "WorkflowKit ShowWhenRun parameter"
     },

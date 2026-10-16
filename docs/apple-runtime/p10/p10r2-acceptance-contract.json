@@ -1,0 +1,543 @@
+{
+  "contractVersion": "2.0.0",
+  "milestone": "P10R2",
+  "generatedAt": "2026-10-16T03:40:00Z",
+  "compilerRepo": "https://github.com/davidpovarsky/cherri",
+  "targetEvidence": "docs/apple-runtime/macos-27",
+  "requirements": [
+    {
+      "id": "R01",
+      "intent": "Request or rename away 27 evidence directory/file in isolated fixture; real loader fails closed without silent 26 fallback",
+      "producerEntryPoint": "tools/shortcut-runtime/compare_cherri.py:load_runtime_evidence() / tools/language-schema/main.go:loadAppleEncodings()",
+      "positiveFixture": "docs/apple-runtime/macos-27 valid directory",
+      "negativeFixture": "nonexistent / corrupted runtime directory",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r01_missing_runtime_dir_fails_closed",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R02",
+      "intent": "Tamper with one byte of real checked manifest-owned file while preserving declared SHA; integrity verifier fails checksum",
+      "producerEntryPoint": "tools/shortcut-runtime/tests/test_runtime_extraction.py:verify_manifest_integrity()",
+      "positiveFixture": "docs/apple-runtime/macos-27/checksums.sha256 matching raw files",
+      "negativeFixture": "corrupted snapshot file byte with unaltered checksum",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r02_corrupt_snapshot_checksum_failure",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R03",
+      "intent": "macOS 26 manifest in macOS 27 directory fails closed; macOS 27 with build 26A434 passes",
+      "producerEntryPoint": "tools/shortcut-runtime/compare_cherri.py / tools/language-schema/main.go",
+      "positiveFixture": "manifest with macOS=27.0.1, build=26A434",
+      "negativeFixture": "manifest with macOS=26.2 in 27 dir",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r03_macos26_manifest_in_macos27_dir_fails",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R04",
+      "intent": "Drop one of 4 parameter shards or forge completed > assigned; shard normalization raises error",
+      "producerEntryPoint": "tools/shortcut-runtime/normalize_snapshot.py:validate_shard_completeness()",
+      "positiveFixture": "4 complete shards (0,1,2,3) totaling 424 actions",
+      "negativeFixture": "dropped shard 2 or faked completion count",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r04_dropped_or_faked_shard_invariant_failure",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R05",
+      "intent": "Corrupt cherri --actions-json catalog input; generator fails closed",
+      "producerEntryPoint": "tools/language-schema/main.go",
+      "positiveFixture": "valid actions-json catalog",
+      "negativeFixture": "missing or malformed catalog json",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r05_corrupt_or_missing_cherri_catalog_fails",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R06",
+      "intent": "SHARED_BUILDER and EMITTED_IMPLICIT_CONSTANT dispositions declare verified existing producer paths in repo",
+      "producerEntryPoint": "tools/shortcut-runtime/action_dispositions.py:SHARED_BUILDER_KEYS",
+      "positiveFixture": "repo path existence check for every declared producer",
+      "negativeFixture": "bogus code path in disposition",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r06_disposition_builder_producer_exists",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R07",
+      "intent": "Filter missing predicate implementation cannot be marked COVERED_VERIFIED for predicate behavior",
+      "producerEntryPoint": "tools/shortcut-runtime/generate_p10_ledger.py",
+      "positiveFixture": "predicate-complete filter action",
+      "negativeFixture": "filter with only sort/limit parameters",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r07_filter_signature_without_predicate_not_verified",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R08",
+      "intent": "Two-level AND/OR filter round-trips through compilation, decompiler rawAction fallback, and structural comparison",
+      "producerEntryPoint": "actions_std.go:buildContentItemFilter / decompile.go:decompStructuredValue",
+      "positiveFixture": "cherri source with filterFiles compound filter",
+      "negativeFixture": "malformed predicate dictionary",
+      "executableCommand": "go test -run TestP10R_R08_FilterTwoLevelAndOrRoundTrip . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R09",
+      "intent": "Exact filter operator parsing fails closed on unrecognized operator, never defaulting to equals (4)",
+      "producerEntryPoint": "actions_std.go:parseFilterOperator",
+      "positiveFixture": "valid operators (equals, contains, between, etc.)",
+      "negativeFixture": "bogus operator 'nonsense_operator'",
+      "executableCommand": "go test -run TestP10R_R09_FilterOperatorParsing . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R10",
+      "intent": "Sorting alone without explicit limit does not emit WFContentItemLimitEnabled",
+      "producerEntryPoint": "actions_std.go:buildContentItemFilter",
+      "positiveFixture": "filterFiles with sortBy only vs with explicit limit",
+      "negativeFixture": "limit omission emitting LimitEnabled=true",
+      "executableCommand": "go test -run TestP10R_R10_LimitAbsentSortOnly . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R11",
+      "intent": "Unknown editReminder detail fails closed before branching on Set or Remove mode",
+      "producerEntryPoint": "actions_std.go:editReminder",
+      "positiveFixture": "valid reminder details (Title, Due Date, Priority, etc.)",
+      "negativeFixture": "invalid reminder detail 'NonExistentDetail'",
+      "executableCommand": "go test -run TestP10R_R11_EditReminderInvalidDetail . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R12",
+      "intent": "Unknown editEvent detail fails closed before branching on Set or Remove mode",
+      "producerEntryPoint": "actions_std.go:editEvent",
+      "positiveFixture": "valid calendar details (Title, Start Date, Location, etc.)",
+      "negativeFixture": "invalid event detail 'BogusEventProperty'",
+      "executableCommand": "go test -run TestP10R_R12_EditEventInvalidDetail . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R13",
+      "intent": "Setter modes Set vs Remove, absent/explicit value, and RemoveSpecifiedValue emission verified",
+      "producerEntryPoint": "actions_std.go:appendParamsFunc for editReminder/editEvent",
+      "positiveFixture": "editReminder with Set, Remove, and RemoveSpecifiedValue",
+      "negativeFixture": "unsupported setter mode",
+      "executableCommand": "go test -run TestP10R_R13_SetterModesAndDecompile . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R14",
+      "intent": "All residual gap keys (getWindows, setParkedCar, reminder subtasks) adjudicated with exact producer proof",
+      "producerEntryPoint": "tools/shortcut-runtime/action_dispositions.py",
+      "positiveFixture": "disposition entries with verified code paths",
+      "negativeFixture": "unmapped residual gap key",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r14_residual_gaps_adjudication_integrity",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R15",
+      "intent": "WFGetUpcomingItemCalendar receives COVERED_PARTIAL until canonical Apple picker runtime evidence is acquired",
+      "producerEntryPoint": "tools/shortcut-runtime/generate_p10_ledger.py",
+      "positiveFixture": "ledger record for getUpcomingEvents calendar token",
+      "negativeFixture": "false COVERED_VERIFIED claim without evidence",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r15_calendar_picker_requires_runtime_evidence",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R16",
+      "intent": "Output type mismatch between Apple runtime and Cherri catalog forces COVERED_PARTIAL instead of false COVERED_VERIFIED",
+      "producerEntryPoint": "tools/shortcut-runtime/generate_p10_ledger.py",
+      "positiveFixture": "concordant output types (e.g. WFStringContentItem -> String)",
+      "negativeFixture": "mismatched types without justification",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r16_output_type_mismatch_yields_partial",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R17",
+      "intent": "Mutating action/parameter EvidenceStatus visibly alters schema fingerprint",
+      "producerEntryPoint": "internal/language/schema/schema.go:computeFingerprint",
+      "positiveFixture": "DefaultRegistry fingerprint",
+      "negativeFixture": "mutated EvidenceStatus in cloned action schema",
+      "executableCommand": "go test -run TestP10R_R17_FingerprintDriftOnEvidenceStatus . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R18",
+      "intent": "Lossless semantic versioning (27.10 > 27.2) connected end-to-end to compiler action availability check",
+      "producerEntryPoint": "action.go:checkActionVersion / internal/language/schema/schema.go:CompareVersions",
+      "positiveFixture": "iosVersion=27.10 allows action with minVersion=27.2",
+      "negativeFixture": "iosVersion=27.2 rejects action with minVersion=27.10",
+      "executableCommand": "go test -run TestP10R_R18_SemanticVersionComparison . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R19",
+      "intent": "macOS-only and iOS-only flags preserved; macOS-27 evidence does not infer universal platform support",
+      "producerEntryPoint": "tools/shortcut-runtime/generate_p10_ledger.py:derive_platform_availability",
+      "positiveFixture": "Mac-only action tagged 'macOS'",
+      "negativeFixture": "Mac-only action defaulting to universal 'all'",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r19_os_availability_not_assumed_universal",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R20",
+      "intent": "Unrepresentable structured filter values fall back cleanly to rawAction preserving full nested dictionary",
+      "producerEntryPoint": "decompile.go:decompStructuredValue / decompile.go:isActionRepresentable",
+      "positiveFixture": "decompilation of complex WFContentItemFilter produces valid rawAction",
+      "negativeFixture": "empty string emission or lossy flattening",
+      "executableCommand": "go test -run TestP10R_R20_UnrepresentableValueRawActionFallback . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R21",
+      "intent": "Hebrew, emoji, and token interpolations measure exact UTF-16 code unit offsets in emitted plist",
+      "producerEntryPoint": "shortcut.go:buildInterpolatedStringDictionary",
+      "positiveFixture": "string with Hebrew and emoji (surrogate pairs) checking plist Token ranges",
+      "negativeFixture": "byte-offset or unicode-codepoint offset calculation",
+      "executableCommand": "go test -run TestP10R_R21_HebrewEmojiUtf16Tokens . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R22",
+      "intent": "Safe real Apple Shortcuts runtime smoke in iOS 27 simulator; simulator unavailability recorded as BLOCKED_EXTERNAL",
+      "producerEntryPoint": "scripts/ios27_runtime_poc.sh / .github/workflows/ios27-shortcuts-runtime-poc.yml",
+      "positiveFixture": "read-only non-destructive shortcut execution in iOS 27 simulator",
+      "negativeFixture": "device/account mutating operations prohibited",
+      "executableCommand": "gh run view 38812506736 --json jobs",
+      "expectedStatus": "BLOCKED_EXTERNAL_LOCAL_PASS_CI",
+      "proofSource": "CI run 38812506736 / docs/apple-runtime/README.md"
+    },
+    {
+      "id": "R23",
+      "intent": "Protected parallel iOS files remain completely untouched relative to merge base",
+      "producerEntryPoint": "git diff merge-base against protected paths",
+      "positiveFixture": "0 diff lines on ios/CherriUITests/CherriEditorUITests.swift and ios/CherriApp/Views/CodeEditorView.swift",
+      "negativeFixture": "any modification to protected iOS files",
+      "executableCommand": "git diff origin/main...HEAD -- ios/CherriUITests/CherriEditorUITests.swift ios/CherriApp/Views/CodeEditorView.swift",
+      "expectedStatus": "PASS",
+      "proofSource": "git diff"
+    },
+    {
+      "id": "R24",
+      "intent": "ToolKit config-only, hidden, and non-runnable entries are excluded from user-facing denominator",
+      "producerEntryPoint": "tools/shortcut-runtime/generate_p10_ledger.py",
+      "positiveFixture": "2,396 raw records filtered to 1,527 eligible candidates",
+      "negativeFixture": "inserting internal/hidden tool into user denominator",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r24_toolkit_entities_and_config_excluded",
+      "expectedStatus": "PASS",
+      "proofSource": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
+    },
+    {
+      "id": "R25",
+      "intent": "Every action definition flows from source through --actions-json, schema, Go bridge, palette, and docs",
+      "producerEntryPoint": "action.go:buildActionCatalog / internal/language/schema / internal/language/service",
+      "positiveFixture": "all 505 callable actions present in DefaultRegistry",
+      "negativeFixture": "action defined in Go but missing from schema",
+      "executableCommand": "go test -run TestP10R_R25_ActionCatalogAndGoBridgeExport . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R26",
+      "intent": "Provenance registry integrity verifies firstForkCommit exists in git ancestry and is not future/unrelated",
+      "producerEntryPoint": "fork_roundtrip_test.go:TestForkActionProvenanceRegistry",
+      "positiveFixture": "docs/fork-action-provenance.json with valid ancestor SHAs",
+      "negativeFixture": "bogus or non-existent git SHA in provenance registry",
+      "executableCommand": "go test -run TestP10R_R26_ProvenanceRegistryIntegrity . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    },
+    {
+      "id": "R27",
+      "intent": "Real Skill setup and doctor verify compatibility manifest against actual Git commit refs",
+      "producerEntryPoint": "skills/cherri-shortcuts/scripts/setup.sh / doctor.sh",
+      "positiveFixture": "manifest pointing to valid immutable commits",
+      "negativeFixture": "manifest pointing to nonexistent SHA 5201dbf664a7...",
+      "executableCommand": "python -m unittest tools.shortcut-runtime.tests.test_runtime_extraction.TestRuntimeExtraction.test_r27_missing_serializer_classification",
+      "expectedStatus": "PASS",
+      "proofSource": "skills/cherri-shortcuts/scripts/real-release-integration.sh"
+    },
+    {
+      "id": "R28",
+      "intent": "Aggregate gate verifies all 28 acceptance tests and fails if any single test is skipped or removed",
+      "producerEntryPoint": "p10r_acceptance_test.go:TestP10R_R28_AcceptanceSuiteCompleteness",
+      "positiveFixture": "complete list of 28 verified gates",
+      "negativeFixture": "missing test definition",
+      "executableCommand": "go test -run TestP10R_R28_AcceptanceSuiteCompleteness . -v",
+      "expectedStatus": "PASS",
+      "proofSource": "p10r_acceptance_test.go"
+    }
+  ],
+  "adversarialGates": [
+    {
+      "id": "A01",
+      "description": "Manifest compiler SHA exists syntactically but not as Git object/ref: rejects",
+      "productionSymbol": "git cat-file -e ${sha}^{commit}",
+      "testFunction": "TestP10R2_A01_ManifestCompilerShaNonExistentInGitFails",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A01 -v"
+    },
+    {
+      "id": "A02",
+      "description": "Docs at pinned SHA contain old fingerprint/461 actions: rejected",
+      "productionSymbol": "internal/language/schema:DefaultRegistry().Fingerprint()",
+      "testFunction": "TestP10R2_A02_StaleDocsFingerprintRejected",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A02 -v"
+    },
+    {
+      "id": "A03",
+      "description": "Source selector requests 27 while only 26 snapshot present: errors, no fallback",
+      "productionSymbol": "tools/language-schema/main.go:loadAppleEncodings",
+      "testFunction": "TestP10R2_A03_SourceSelectorFailsClosedOnMissing27",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A03 -v"
+    },
+    {
+      "id": "A04",
+      "description": "Selected 27 parameter-surface-gaps is legitimate []: no accidental import of 26 gaps",
+      "productionSymbol": "tools/shortcut-runtime/generate_p10_ledger.py",
+      "testFunction": "TestP10R2_A04_LegitimateEmpty27GapsPreserved",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A04 -v"
+    },
+    {
+      "id": "A05",
+      "description": "Selected 27 manifest claims version 26: rejects; version 27 build 26A434 passes",
+      "productionSymbol": "tools/shortcut-runtime/compare_cherri.py:load_runtime_evidence",
+      "testFunction": "TestP10R2_A05_ManifestVersionCheckRejectsMismatch",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A05 -v"
+    },
+    {
+      "id": "A06",
+      "description": "Shard summary removed/empty, duplicated index, wrong completed count: fails",
+      "productionSymbol": "tools/shortcut-runtime/normalize_snapshot.py:validate_shard_completeness",
+      "testFunction": "TestP10R2_A06_ShardSummaryIntegrity",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A06 -v"
+    },
+    {
+      "id": "A07",
+      "description": "COVERED_VERIFIED row has output Unknown/UNASSESSED: downgraded to COVERED_PARTIAL",
+      "productionSymbol": "tools/shortcut-runtime/generate_p10_ledger.py:evaluate_action_coverage",
+      "testFunction": "TestP10R2_A07_UnassessedOutputDowngradesVerifiedStatus",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A07 -v"
+    },
+    {
+      "id": "A08",
+      "description": "Disposition points at missing codePath: gate fails",
+      "productionSymbol": "tools/shortcut-runtime/action_dispositions.py:SHARED_BUILDER_KEYS",
+      "testFunction": "TestP10R2_A08_DispositionCodePathVerification",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A08 -v"
+    },
+    {
+      "id": "A09",
+      "description": "Unknown predicate operator fails closed; neither equals default nor omission",
+      "productionSymbol": "actions_std.go:parseFilterOperator",
+      "testFunction": "TestP10R2_A09_UnknownPredicateOperatorFailsClosed",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A09 -v"
+    },
+    {
+      "id": "A10",
+      "description": "Bad filter object rejected fail-closed, never silently flattened or empty",
+      "productionSymbol": "actions_std.go:buildContentItemFilter",
+      "testFunction": "TestP10R2_A10_MalformedFilterPredicatesFailsClosed",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A10 -v"
+    },
+    {
+      "id": "A11",
+      "description": "Invalid Reminder detail under Remove fails closed exactly like under Set",
+      "productionSymbol": "actions_std.go:editReminder",
+      "testFunction": "TestP10R2_A11_InvalidReminderDetailFailsUnderRemoveAndSet",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A11 -v"
+    },
+    {
+      "id": "A12",
+      "description": "Invalid Event detail under Remove fails closed exactly like under Set",
+      "productionSymbol": "actions_std.go:editEvent",
+      "testFunction": "TestP10R2_A12_InvalidEventDetailFailsUnderRemoveAndSet",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A12 -v"
+    },
+    {
+      "id": "A13",
+      "description": "Unknown setter mode fails closed; does not become Set silently",
+      "productionSymbol": "actions_std.go:editReminder / editEvent",
+      "testFunction": "TestP10R2_A13_UnknownSetterModeFailsClosed",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A13 -v"
+    },
+    {
+      "id": "A14",
+      "description": "RemoveSpecifiedValue exact Apple type/presence checked for removal variants",
+      "productionSymbol": "actions_std.go:editReminder",
+      "testFunction": "TestP10R2_A14_RemoveSpecifiedValueEmission",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A14 -v"
+    },
+    {
+      "id": "A15",
+      "description": "Action min/max version 27.10 vs 27.2 tested by actual compiler check",
+      "productionSymbol": "action.go:checkActionVersion",
+      "testFunction": "TestP10R2_A15_SemanticVersionCompilerCheck",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A15 -v"
+    },
+    {
+      "id": "A16",
+      "description": "Real source token interpolation with Hebrew+emoji measures UTF-16 offsets",
+      "productionSymbol": "shortcut.go:buildInterpolatedStringDictionary",
+      "testFunction": "TestP10R2_A16_HebrewEmojiUtf16Offset",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A16 -v"
+    },
+    {
+      "id": "A17",
+      "description": "isActionRepresentable(false) produces real valid rawAction and structurally equivalent recompilation",
+      "productionSymbol": "decompile.go:isActionRepresentable / decompStructuredValue",
+      "testFunction": "TestP10R2_A17_RawActionFallbackLossless",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A17 -v"
+    },
+    {
+      "id": "A18",
+      "description": "Fake firstForkCommit from future/unrelated SHA breaks provenance validator",
+      "productionSymbol": "fork_roundtrip_test.go:TestForkActionProvenanceRegistry",
+      "testFunction": "TestP10R2_A18_FakeFirstForkCommitDetected",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A18 -v"
+    },
+    {
+      "id": "A19",
+      "description": "One required acceptance test removed/disabled makes aggregate release gate fail",
+      "productionSymbol": "p10r_acceptance_test.go:TestP10R_R28_AcceptanceSuiteCompleteness",
+      "testFunction": "TestP10R2_A19_AggregateGateFailsOnMissingTest",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A19 -v"
+    },
+    {
+      "id": "A20",
+      "description": "iOS palette consumer catches missing newly supported native action",
+      "productionSymbol": "internal/language/schema:DefaultRegistry",
+      "testFunction": "TestP10R2_A20_IOSPaletteActionCoverage",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A20 -v"
+    },
+    {
+      "id": "A21",
+      "description": "Altering derived artifact without altering manifest causes integrity check failure",
+      "productionSymbol": "tools/shortcut-runtime/tests/test_runtime_extraction.py:verify_manifest_integrity",
+      "testFunction": "TestP10R2_A21_DerivedArtifactTamperingFails",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A21 -v"
+    },
+    {
+      "id": "A22",
+      "description": "Raw current-run snapshot carrying empty shardSummary while declaring complete extraction fails",
+      "productionSymbol": "tools/shortcut-runtime/normalize_snapshot.py:validate_shard_completeness",
+      "testFunction": "TestP10R2_A22_EmptyShardSummaryRejection",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A22 -v"
+    },
+    {
+      "id": "A23",
+      "description": "Metadata source proves feature on macOS only: iPadOS/iOS availability cannot be marked universal",
+      "productionSymbol": "tools/shortcut-runtime/generate_p10_ledger.py",
+      "testFunction": "TestP10R2_A23_MacOnlyFlagPreserved",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A23 -v"
+    },
+    {
+      "id": "A24",
+      "description": "ToolKit entity/config/hidden record inserted into user-action inventory: eligibility gate rejects",
+      "productionSymbol": "tools/shortcut-runtime/generate_p10_ledger.py:filter_eligible_inventory",
+      "testFunction": "TestP10R2_A24_ToolKitConfigExcludedFromUserActions",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A24 -v"
+    },
+    {
+      "id": "A25",
+      "description": "Update meaningful schema field with same action total: schema fingerprint detects drift",
+      "productionSymbol": "internal/language/schema/schema.go:computeFingerprint",
+      "testFunction": "TestP10R2_A25_SchemaFingerprintDriftDetection",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A25 -v"
+    },
+    {
+      "id": "A26",
+      "description": "New action belongs to third-party app: manifest/target eligibility remains conditional",
+      "productionSymbol": "internal/language/schema:ActionSchema.AppIntent",
+      "testFunction": "TestP10R2_A26_ThirdPartyAppIntentConditional",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A26 -v"
+    },
+    {
+      "id": "A27",
+      "description": "Existing legal Cherri v1/v2 fixtures and fork round trips still pass after filter/setter changes",
+      "productionSymbol": "fork_roundtrip_test.go:TestForkActionRoundTrips",
+      "testFunction": "TestP10R2_A27_ExistingFixturesUnbroken",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A27 -v"
+    },
+    {
+      "id": "A28",
+      "description": "Full release tuple structure validates compilerCommit, docsCommit, and schema/codec fingerprints",
+      "productionSymbol": "skills/cherri-shortcuts/compatibility-manifest.json",
+      "testFunction": "TestP10R2_A28_FullReleaseTupleStructure",
+      "testFile": "p10r2_adversarial_test.go",
+      "expectedExit": "FAIL_MUTATION_PASS_TEST",
+      "proofSource": "go test -run TestP10R2_A28 -v"
+    }
+  ]
+}

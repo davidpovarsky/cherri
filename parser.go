@@ -994,6 +994,7 @@ func collectVersionDefinition() {
 	if version, found := versions[collectVersion]; found {
 		clientVersion = version
 		iosVersion, _ = strconv.ParseFloat(collectVersion, 32)
+		iosVersionString = collectVersion
 	} else {
 		var list = makeKeyList("Available versions:", versions, collectVersion)
 		parserError(fmt.Sprintf("Invalid minimum version '%s'\n\n%s", collectVersion, list))

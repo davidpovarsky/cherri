@@ -378,56 +378,59 @@ type AppleEncodingsData struct {
 	ActionParameters map[string][]AppleParameterEncoding `json:"actionParameters"`
 }
 
-func loadAppleEncodings() *AppleEncodingsData {
-	var searchDirs []string
-	if custom := os.Getenv("CHERRI_APPLE_RUNTIME_DIR"); custom != "" {
-		searchDirs = append(searchDirs, custom)
+func readEncodingsFromPath(p string) (*AppleEncodingsData, error) {
+	if strings.HasSuffix(p, ".gz") {
+		f, err := os.Open(p)
+		if err != nil {
+			return nil, err
+		}
+		defer f.Close()
+		gz, err := gzip.NewReader(f)
+		if err != nil {
+			return nil, err
+		}
+		defer gz.Close()
+		data, err := io.ReadAll(gz)
+		if err != nil {
+			return nil, err
+		}
+		var res AppleEncodingsData
+		if err := json.Unmarshal(data, &res); err != nil {
+			return nil, err
+		}
+		return &res, nil
 	}
-	searchDirs = append(searchDirs,
+	data, err := os.ReadFile(p)
+	if err != nil {
+		return nil, err
+	}
+	var res AppleEncodingsData
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func loadAppleEncodings() *AppleEncodingsData {
+	if custom := os.Getenv("CHERRI_APPLE_RUNTIME_DIR"); custom != "" {
+		for _, name := range []string{"parameter-encodings.json.gz", "parameter-encodings.json"} {
+			p := filepath.Join(custom, name)
+			if res, err := readEncodingsFromPath(p); err == nil && res != nil {
+				return res
+			}
+		}
+		panic(fmt.Sprintf("CHERRI_APPLE_RUNTIME_DIR explicitly set to %q, but failed to load valid parameter encodings from it", custom))
+	}
+	searchDirs := []string{
 		filepath.Join("docs", "apple-runtime", "macos-27"),
 		filepath.Join("..", "docs", "apple-runtime", "macos-27"),
 		filepath.Join("..", "..", "docs", "apple-runtime", "macos-27"),
-		filepath.Join("docs", "apple-runtime"),
-		filepath.Join("..", "docs", "apple-runtime"),
-		filepath.Join("..", "..", "docs", "apple-runtime"),
-		filepath.Join("docs", "apple-runtime", "macos-26"),
-		filepath.Join("..", "docs", "apple-runtime", "macos-26"),
-		filepath.Join("..", "..", "docs", "apple-runtime", "macos-26"),
-	)
-	var paths []string
-	for _, dir := range searchDirs {
-		paths = append(paths,
-			filepath.Join(dir, "parameter-encodings.json.gz"),
-			filepath.Join(dir, "parameter-encodings.json"),
-		)
 	}
-	for _, p := range paths {
-		if strings.HasSuffix(p, ".gz") {
-			f, err := os.Open(p)
-			if err != nil {
-				continue
-			}
-			gz, err := gzip.NewReader(f)
-			if err != nil {
-				f.Close()
-				continue
-			}
-			data, err := io.ReadAll(gz)
-			gz.Close()
-			f.Close()
-			if err == nil && len(data) > 0 {
-				var res AppleEncodingsData
-				if json.Unmarshal(data, &res) == nil {
-					return &res
-				}
-			}
-		} else {
-			data, err := os.ReadFile(p)
-			if err == nil && len(data) > 0 {
-				var res AppleEncodingsData
-				if json.Unmarshal(data, &res) == nil {
-					return &res
-				}
+	for _, dir := range searchDirs {
+		for _, name := range []string{"parameter-encodings.json.gz", "parameter-encodings.json"} {
+			p := filepath.Join(dir, name)
+			if res, err := readEncodingsFromPath(p); err == nil && res != nil {
+				return res
 			}
 		}
 	}

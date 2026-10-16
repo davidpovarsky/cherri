@@ -709,35 +709,16 @@ Next smallest independently verifiable batch:
   - Enhanced `tools/language-schema/main.go` `loadAppleEncodings()` to be version- and directory-aware.
   - Added unit tests 20, 21, and 22 in `tools/shortcut-runtime/tests/test_runtime_extraction.py` (22/22 PASS).
 
-- [x] **P10.01: macOS 27 Extraction Pipeline Upgrade & Runtime Tooling Hardening**
-  - Preserved complete macOS 26 evidence baseline in `docs/apple-runtime/macos-26/` (18 files).
-  - Added fail-closed `preflight` job to `.github/workflows/macos-shortcuts-deep-extract.yml` running on `runs-on: xcode-27` verifying OS major version 27.
-  - Upgraded all 9 downstream extraction jobs to `runs-on: xcode-27` and updated artifact names/patterns to `macos-27`.
-  - Enhanced `runtime_probe.py` with `runnerImage`, `xcodeVersion`, and expanded dyld search paths.
-  - Enhanced `extract_toolkit.py` with `dbSha256` hashing and provenance recording.
-  - Enhanced `normalize_snapshot.py` with extended manifest metadata, file SHA-256 computation, and `checksums.sha256` generation.
-  - Enhanced `compare_cherri.py` with `--runtime-evidence-dir` and versioned directory resolution.
-  - Enhanced `tools/language-schema/main.go` `loadAppleEncodings()` to be version- and directory-aware.
-  - Added unit tests 20, 21, and 22 in `tools/shortcut-runtime/tests/test_runtime_extraction.py` (22/22 PASS).
-
-- [x] **P10.02: Deterministic 26-to-27 + Pinned-ShortcutKit Delta & Machine-Readable Ledger (P10R Corrective Repair)**
-  - Raw evidence preserved from run 38772164728 on macOS 27.0.1 (Build 26A434, Xcode 27.0, WorkflowKit 10.0, ActionKit 1.0).
-  - P10R Audit: Repaired ledger generator to prevent superficial COVERED_VERIFIED flags without parameter/output concordance. Reconciled 118 vs 121 missing built-in count, separated non-runnable ToolKit entries, and established multi-axis taxonomy across 2,396 records.
-  - Derived artifacts tracked deterministically via `derived-comparison-manifest.json`.
-
-- [x] **P10.03: Parameter & Type Repair for Existing Actions (81 Prior Gap Groups - P10R Corrective Repair)**
-  - Implemented authentic `buildContentItemFilter()` in `actions_std.go` supporting table template serialization (`WFContentItemFilter`, `WFCompoundType`, AND/OR, operators).
-  - Repaired dynamic setters (`editReminder`, `editEvent`) with authentic Mode: Set/Remove, RemoveSpecifiedValue, fail-closed property name validation (eliminating silent default to Title/StartDate).
-  - Adjudicated remaining gaps: `getWindows` (WFContentItemInputParameter), `setParkedCar` (WFImage wire key), `editReminder` (WFReminderContentItemSubtasks), `getUpcomingEvents` (WFGetUpcomingItemCalendar kept as NEEDS_RUNTIME_EVIDENCE), and historical `deletePhotos` (ShowWhenRun). Parameter gaps reduced to 0 unmodeled keys!
-
-- [x] **P10.04: High-Value Native Built-In Actions Coverage (P10R Corrective Repair)**
+- [ ] **P10.04: High-Value Native Built-In Actions Coverage (316/434 covered, 118 open in backlog)**
   - Filter actions (`filterImages`, `filterArticles`, `filterLocations`, `filterMusic`, `filterDisplays`, `filterVPNs`, `filterEventAttendees`, `filterFiles`, `getApps`, `getWindows`, `filterPhotos`, `filterReminders`, `filterEvents`, `filterContacts`) backed by authentic native predicate tree serialization, not merely sort/limit arguments.
   - Added native `is.workflow.actions.scanbarcode` as `scanBarcode` in `actions/images.cherri`.
   - Corrected `WFContentItemLimitEnabled` conditional emission logic across filter actions.
+  - Backlog of 118 built-ins remains open for future P10 batches.
 
-- [x] **P10.05: Discoverable Apple App Intents & ToolKit Actions (P10R Corrective Repair)**
+- [ ] **P10.05: Discoverable Apple App Intents & ToolKit Actions (11/258 covered, 173 discoverable in backlog)**
   - Preserved verified App Intent bindings for Notes and Voice Memos with canonical descriptors.
   - Enforced strict provenance and evidence boundaries: no unverified bulk registration of ToolKit candidates without verified runner contracts.
+  - 173 discoverable App Intents remain in backlog.
 
 - [x] **P10.06: First-Class Typing, Registry Regeneration, & Decompiler Parity (P10R Corrective Repair)**
   - Schema fingerprint hardened to include EvidenceStatus, parameter enum metadata, and semantic version comparison (`27.10` > `27.2`).
@@ -796,5 +777,51 @@ Next smallest independently verifiable batch:
 | **R26** | Provenance | Registry integrity & non-circularity | **PASS** (`p10r_acceptance_test.go`) |
 | **R27** | Dispositions | reminderSubtasks disposition | **PASS** (`test_runtime_extraction.py`) |
 | **R28** | Acceptance | Acceptance suite completeness | **PASS** (`p10r_acceptance_test.go`) |
+
+### P10R2 Adversarial Acceptance Matrix (A01–A28)
+
+| Gate | Target / Mutation Sabotage | Result | Proof Source |
+| :--- | :--- | :--- | :--- |
+| **A01** | Manifest compiler SHA non-existent in git | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A02** | Stale docs fingerprint rejected | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A03** | Missing macOS 27 evidence fails closed | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A04** | Legitimate empty 27 gaps preserved (no 26 leak) | **PASS** (integrity verified) | `p10r2_adversarial_test.go` |
+| **A05** | Manifest version mismatch rejected (26A434 passes) | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A06** | Shard summary integrity / missing shard | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A07** | UNASSESSED output downgrades to COVERED_PARTIAL | **PASS** (downgrade verified) | `p10r2_adversarial_test.go` |
+| **A08** | Disposition codePath existence check | **PASS** (verification passed) | `p10r2_adversarial_test.go` |
+| **A09** | Unknown predicate operator fails closed | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A10** | Malformed filter predicate fails closed | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A11** | Invalid Reminder detail fails under Set & Remove | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A12** | Invalid Event detail fails under Set & Remove | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A13** | Unknown setter mode fails closed | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A14** | RemoveSpecifiedValue native type emission | **PASS** (emission verified) | `p10r2_adversarial_test.go` |
+| **A15** | Lossless semantic version check (27.10 > 27.2) | **PASS** (compiler check verified) | `p10r2_adversarial_test.go` |
+| **A16** | Hebrew/emoji UTF-16 offset measurement | **PASS** (offsets verified) | `p10r2_adversarial_test.go` |
+| **A17** | Unrepresentable fallback to lossless rawAction | **PASS** (lossless roundtrip verified) | `p10r2_adversarial_test.go` |
+| **A18** | Fake firstForkCommit breaks provenance validator | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A19** | Missing required test fails aggregate gate | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A20** | iOS palette catches missing action | **PASS** (registry check verified) | `p10r2_adversarial_test.go` |
+| **A21** | Derived artifact tampering fails digest check | **PASS** (tampering rejected) | `p10r2_adversarial_test.go` |
+| **A22** | Empty shardSummary rejected on full extraction | **PASS** (rejection verified) | `p10r2_adversarial_test.go` |
+| **A23** | macOS-only flag preserved (not assumed universal) | **PASS** (platform flags verified) | `p10r2_adversarial_test.go` |
+| **A24** | ToolKit config excluded from user actions | **PASS** (filtering verified) | `p10r2_adversarial_test.go` |
+| **A25** | Schema fingerprint detects metadata drift | **PASS** (drift detection verified) | `p10r2_adversarial_test.go` |
+| **A26** | Third-party App Intent conditional availability | **PASS** (conditionality verified) | `p10r2_adversarial_test.go` |
+| **A27** | Existing legal v1/v2 fixtures unbroken | **PASS** (35 roundtrips verified) | `p10r2_adversarial_test.go` |
+| **A28** | Full release tuple structural validation | **PASS** (acyclic tuple verified) | `p10r2_adversarial_test.go` |
+
+### P10R2 Hand-off Card & Milestone Status
+
+- **Status:** **P10R2_CORRECTIVE_VERIFIED** (Corrective release phase verified) / **P10_IN_PROGRESS** (118 built-in definitions and 173 discoverable App Intents remain open).
+- **Handoff Date:** 2026-10-16
+- **Branch:** `agent/cherri-p10-apple-actions-coverage`
+- **Protected Files:** `ios/CherriUITests/CherriEditorUITests.swift` and `ios/CherriApp/Views/CodeEditorView.swift` remain 100% untouched (0 diff lines).
+- **Next P10 Action Batch:**
+  1. High-value Files/Finder actions (`file.move`, `getFolderContents`, `createFolder`).
+  2. Safari/Web reader and tab actions.
+  3. Notes rich-text and folder manipulation native actions.
+  4. Photos album search and asset management native actions.
+
 
 

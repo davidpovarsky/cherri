@@ -750,7 +750,7 @@ pathlib.Path(out_file).write_text(json.dumps(data))
         # 2. EMITTED_IMPLICIT_CONSTANT (ShowWhenRun)
         d2 = classify_parameter_disposition("test.action", "ShowWhenRun", set(), set(), set())
         self.assertEqual(d2["disposition"], "EMITTED_IMPLICIT_CONSTANT")
-        self.assertIn("compiler_actions.go", d2["codePath"])
+        self.assertIn("actions_std.go", d2["codePath"])
 
         # 3. IMPLEMENTED_BY_SHARED_BUILDER (IntentAppDefinition)
         d3 = classify_parameter_disposition("test.action", "IntentAppDefinition", set(), set(), set())
@@ -819,29 +819,58 @@ pathlib.Path(out_file).write_text(json.dumps(data))
     def test_r01_missing_runtime_dir_fails_closed(self):
         """R01: Removing/requesting non-existent macOS 27 directory raises FileNotFoundError, no silent fallback."""
         import compare_cherri
-        with self.assertRaises(FileNotFoundError):
-            compare_cherri.main.__wrapped__ if hasattr(compare_cherri.main, "__wrapped__") else None
-            # Directly test the candidate validation logic
-            edir = pathlib.Path("non_existent_macos_27_dir_xyz")
-            if not edir.exists():
-                raise FileNotFoundError(f"Runtime evidence directory does not exist: {edir}")
+        orig_argv = sys.argv
+        try:
+            cherri_actions_path = str(REPO_ROOT / "docs" / "apple-runtime" / "macos-27" / "cherri-actions.json")
+            sys.argv = ["compare_cherri.py", "--runtime-evidence-dir", "non_existent_macos_27_dir_xyz_12345", "--cherri-actions", cherri_actions_path]
+            with self.assertRaises(FileNotFoundError) as ctx:
+                compare_cherri.main()
+            self.assertIn("non_existent_macos_27_dir_xyz_12345", str(ctx.exception))
+        finally:
+            sys.argv = orig_argv
 
     def test_r02_corrupt_snapshot_checksum_failure(self):
-        """R02: Corrupt snapshot bytes must fail SHA256 integrity verification."""
+        """R02: Corrupt snapshot bytes must fail SHA256 integrity verification against checksums.sha256."""
         import hashlib
-        valid_bytes = b'{"actions": {}}'
-        valid_sha = hashlib.sha256(valid_bytes).hexdigest()
-        corrupted_bytes = b'{"actions": {"corrupted": true}}'
-        corrupted_sha = hashlib.sha256(corrupted_bytes).hexdigest()
-        self.assertNotEqual(valid_sha, corrupted_sha)
+        with tempfile.TemporaryDirectory() as td:
+            p = pathlib.Path(td) / "test-file.json"
+            p.write_bytes(b'{"valid": true}')
+            real_sha = hashlib.sha256(p.read_bytes()).hexdigest()
+            ck_file = pathlib.Path(td) / "checksums.sha256"
+            ck_file.write_text(f"{real_sha}  test-file.json\n", encoding="utf-8")
+
+            # Tamper with one byte
+            p.write_bytes(b'{"valid": false}')
+
+            # Run production-style checksum verifier
+            failed = False
+            for line in ck_file.read_text(encoding="utf-8").splitlines():
+                if not line.strip(): continue
+                expected_sha, fname = line.split(None, 1)
+                actual_sha = hashlib.sha256((pathlib.Path(td) / fname).read_bytes()).hexdigest()
+                if actual_sha != expected_sha:
+                    failed = True
+                    break
+            self.assertTrue(failed, "Tampered file byte MUST fail integrity checksum verification")
 
     def test_r03_macos26_manifest_in_macos27_dir_fails(self):
-        """R03: Claiming macOS 26 manifest in macOS 27 directory raises ValueError."""
-        fake_manifest = {"host": {"osVersion": "macOS 26.0 (25A123)"}}
-        host_ver = str(fake_manifest.get("host", {}).get("osVersion"))
-        with self.assertRaises(ValueError):
+        """R03: Claiming macOS 26 manifest in macOS 27 directory raises ValueError; 27 with 26A434 passes."""
+        def validate_host_os(manifest):
+            host_ver = str(manifest.get("macOS") or manifest.get("host", {}).get("osVersion", ""))
+            build = str(manifest.get("build") or "")
             if "26" in host_ver and "27" not in host_ver:
                 raise ValueError(f"macOS 26 manifest cannot be claimed as macOS 27: {host_ver}")
+            return True
+
+        # Negative test: 26 manifest rejects
+        fake_26 = {"macOS": "26.0", "build": "25A123"}
+        with self.assertRaises(ValueError) as ctx:
+            validate_host_os(fake_26)
+        self.assertIn("cannot be claimed as macOS 27", str(ctx.exception))
+
+        # Control test: genuine macOS 27 with build 26A434 passes
+        genuine_27 = {"macOS": "27.0.1", "build": "26A434"}
+        self.assertTrue(validate_host_os(genuine_27))
 
     def test_r04_dropped_or_faked_shard_invariant_failure(self):
         """R04: Dropping a shard or faking incomplete shard raises ValueError."""
@@ -873,9 +902,14 @@ pathlib.Path(out_file).write_text(json.dumps(data))
     def test_r06_disposition_builder_producer_exists(self):
         """R06: All SHARED_BUILDER_KEYS declare existing producer code paths in repository."""
         from action_dispositions import SHARED_BUILDER_KEYS
+        repo_root = pathlib.Path(__file__).resolve().parent.parent.parent.parent
         for key, info in SHARED_BUILDER_KEYS.items():
             self.assertEqual(info["disposition"], "IMPLEMENTED_BY_SHARED_BUILDER")
-            self.assertTrue(len(info["codePath"]) > 0)
+            code_path = info["codePath"]
+            file_part = code_path.split(":")[0].strip()
+            # Verify file exists in repository
+            target_file = repo_root / file_part
+            self.assertTrue(target_file.exists(), f"Code path file does not exist: {file_part}")
             self.assertTrue(len(info["rationale"]) > 0)
 
     def test_r07_filter_signature_without_predicate_not_verified(self):

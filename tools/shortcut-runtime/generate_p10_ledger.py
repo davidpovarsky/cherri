@@ -262,11 +262,16 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
         )
 
         # Output type
-        row["outputType"] = (
-            builtin_meta.get("Output", {}).get("Type")
-            or tk_meta.get("outputType")
-            or "Unknown"
-        )
+        out_meta = builtin_meta.get("Output")
+        if isinstance(out_meta, dict):
+            row["outputType"] = out_meta.get("Type") or "Unknown"
+        elif out_meta is None and "builtinDefinition" in row["sources"]:
+            row["outputType"] = "None"
+        else:
+            row["outputType"] = (
+                tk_meta.get("outputType")
+                or "Unknown"
+            )
 
         # Check Cherri coverage
         if ident in cherri_map:
@@ -275,14 +280,38 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
             row["cherriOutputType"] = variants[0].get("outputType", "Unknown")
 
             # Check output type concordance
-            if row["outputType"] != "Unknown" and row["cherriOutputType"] not in ("Unknown", "None", ""):
-                if row["outputType"].lower() in row["cherriOutputType"].lower() or row["cherriOutputType"].lower() in row["outputType"].lower() or row["cherriOutputType"] == "variable":
+            apple_out = (row["outputType"] or "").strip()
+            cherri_out = (row["cherriOutputType"] or "").strip()
+
+            if apple_out in ("None", "Void", "") and cherri_out in ("None", "Void", ""):
+                row["outputTypeConcordance"] = "MATCH"
+            elif apple_out in ("Unknown", "") or cherri_out in ("Unknown", "None", ""):
+                row["outputTypeConcordance"] = "UNASSESSED"
+            else:
+                a_low = apple_out.lower()
+                c_low = cherri_out.lower()
+                if a_low == c_low:
+                    row["outputTypeConcordance"] = "MATCH"
+                elif a_low in ("wfstringcontentitem", "string", "text") and c_low in ("string", "text"):
+                    row["outputTypeConcordance"] = "MATCH"
+                elif a_low in ("wfnumbercontentitem", "number", "integer", "float") and c_low in ("number", "integer", "float"):
+                    row["outputTypeConcordance"] = "MATCH"
+                elif a_low in ("wfbooleancontentitem", "boolean", "bool") and c_low in ("boolean", "bool"):
+                    row["outputTypeConcordance"] = "MATCH"
+                elif a_low in ("wfdatecontentitem", "date") and c_low in ("date",):
+                    row["outputTypeConcordance"] = "MATCH"
+                elif a_low in ("wfurlcontentitem", "url") and c_low in ("url",):
+                    row["outputTypeConcordance"] = "MATCH"
+                elif a_low in ("wfdictionarycontentitem", "dictionary") and c_low in ("dictionary", "map"):
+                    row["outputTypeConcordance"] = "MATCH"
+                elif a_low in ("wffilecontentitem", "file") and c_low in ("file", "variable"):
                     row["outputTypeConcordance"] = "MATCH"
                 else:
                     row["outputTypeConcordance"] = "DIFFERS"
 
             # Check parameter gaps via auditable dispositions
-            gaps_info = next((g for g in (gaps27 or gaps26 or []) if g.get("identifier") == ident), None)
+            gaps_source = gaps27 if gaps27 is not None else (gaps26 if gaps26 is not None else [])
+            gaps_info = next((g for g in gaps_source if g.get("identifier") == ident), None)
             if gaps_info and gaps_info.get("unmodeledParameterKeys"):
                 unmodeled = gaps_info["unmodeledParameterKeys"]
                 row["unmodeledKeys"] = unmodeled
@@ -323,6 +352,9 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
                 elif row["outputTypeConcordance"] == "DIFFERS":
                     row["status"] = "COVERED_PARTIAL"
                     row["rationale"] = f"Parameter mapped but output type differs (Apple: {row['outputType']}, Cherri: {row['cherriOutputType']})"
+                elif row["outputTypeConcordance"] == "UNASSESSED":
+                    row["status"] = "COVERED_PARTIAL"
+                    row["rationale"] = f"Parameter mapped but output type concordance is UNASSESSED (Apple: {row['outputType']}, Cherri: {row['cherriOutputType']})"
                 else:
                     row["status"] = "COVERED_VERIFIED"
                     row["rationale"] = f"All {len(non_user)} unmodeled keys have verified non-user or builder dispositions ({', '.join(non_user)})"
@@ -330,9 +362,12 @@ def build_ledger(cherri_catalog, snap26, snap27, gaps26, gaps27, missing_builtin
                 if row["outputTypeConcordance"] == "DIFFERS":
                     row["status"] = "COVERED_PARTIAL"
                     row["rationale"] = f"Action mapped but output type differs (Apple: {row['outputType']}, Cherri: {row['cherriOutputType']})"
+                elif row["outputTypeConcordance"] == "UNASSESSED":
+                    row["status"] = "COVERED_PARTIAL"
+                    row["rationale"] = f"Action mapped but output type concordance is UNASSESSED (Apple: {row['outputType']}, Cherri: {row['cherriOutputType']})"
                 else:
                     row["status"] = "COVERED_VERIFIED"
-                    row["rationale"] = "Fully covered in Cherri with all declared parameters mapped"
+                    row["rationale"] = "Fully covered in Cherri with all declared parameters mapped and output verified"
 
             row["eligibility"] = "ELIGIBLE_USER_FACING"
         else:

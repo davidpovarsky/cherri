@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"maps"
-	"math"
 	"reflect"
 	"regexp"
 	"slices"
@@ -17,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/electrikmilk/args-parser"
+	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
 //go:embed stdfunc.cherri
@@ -142,7 +142,9 @@ type actionDefinition struct {
 	macOnly            bool
 	nonMacOnly         bool
 	minVersion         float64
+	minVersionString   string
 	maxVersion         float64
+	maxVersionString   string
 	builtin            bool // builtin is based on if the action was in the actions map when it was first initialized.
 	includeCategory    string // Standard action include category ('actions/<cat>') that declared this definition; "" for builtin/Go-defined actions and basic actions that never require an include.
 }
@@ -306,7 +308,17 @@ func makeActionParams(arguments []actionArgument, params map[string]any) {
 		}
 
 		if param.key == "WFContentItemFilter" {
-			filt, comp := buildContentItemFilter(argumentValue(arguments, i))
+			val := arguments[i].value
+			if vv, ok := val.(varValue); ok {
+				if vMap, isMap := vv.value.(map[string]any); isMap {
+					val = vMap
+				} else if strIdent, isStr := vv.value.(string); isStr {
+					if realVar, found := variables[strIdent]; found {
+						val = realVar.value
+					}
+				}
+			}
+			filt, comp := buildContentItemFilter(val)
 			params["WFContentItemFilter"] = filt
 			if comp != "" {
 				params["WFCompoundType"] = comp
@@ -367,15 +379,29 @@ func checkAction() {
 }
 
 func checkActionVersion() {
-	if currentAction.definition.minVersion != 0 && currentAction.definition.minVersion > iosVersion {
+	targetVer := iosVersionString
+	if targetVer == "" {
+		targetVer = fmt.Sprintf("%g", iosVersion)
+	}
+
+	minVer := currentAction.definition.minVersionString
+	if minVer == "" && currentAction.definition.minVersion != 0 {
+		minVer = fmt.Sprintf("%g", currentAction.definition.minVersion)
+	}
+	if minVer != "" && schema.CompareVersions(minVer, targetVer) > 0 {
 		parserError(
-			fmt.Sprintf("Action '%s()' is not available in set minimum version '%.1f'", currentAction.identifier, math.Ceil(iosVersion)),
+			fmt.Sprintf("Action '%s()' is not available in set minimum version '%s'", currentAction.identifier, targetVer),
 		)
 	}
-	if currentAction.definition.maxVersion != 0 {
-		if currentAction.definition.maxVersion < iosVersion {
+
+	maxVer := currentAction.definition.maxVersionString
+	if maxVer == "" && currentAction.definition.maxVersion != 0 {
+		maxVer = fmt.Sprintf("%g", currentAction.definition.maxVersion)
+	}
+	if maxVer != "" {
+		if schema.CompareVersions(maxVer, targetVer) < 0 {
 			parserError(
-				fmt.Sprintf("Action '%s()' is not available in set minimum version '%.1f'", currentAction.identifier, math.Ceil(iosVersion)),
+				fmt.Sprintf("Action '%s()' is not available in set minimum version '%s'", currentAction.identifier, targetVer),
 			)
 		} else {
 			parserWarning(fmt.Sprintf("Action '%s()' has been deprecated as it was removed or significantly modified.", currentAction.identifier))
@@ -532,6 +558,7 @@ func typeCheck(param *parameterDefinition, argument *actionArgument) {
 	case argValueType == Nil:
 	case argValueType == Reference:
 	case param.validType == String && argument.valueType == RawString:
+	case param.key == "WFContentItemFilter" && (argument.valueType == Dict || argument.valueType == Arr):
 	case argValueType != param.validType:
 		if argValueType == Float && param.validType == Integer {
 			return

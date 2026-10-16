@@ -15,7 +15,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
 
-var interpolationRegex = regexp.MustCompile(`"([^"\\]*\{[^"\\]*\}[^"\\]*)"`)
+var interpolationRegex = regexp.MustCompile(`(^|[^a-zA-Z0-9_])"([^"\\]*\{[^"\\]*\}[^"\\]*)"`)
 
 // MigrateSource converts legacy Cherri syntax into canonical Cherri v2.0 syntax.
 func MigrateSource(input string) string {
@@ -179,12 +179,25 @@ func MigrateSource(input string) string {
 		line = sb.String()
 
 		// 5. Upgrade legacy string interpolation "Hello {var}" -> f"Hello {var}"
-		line = interpolationRegex.ReplaceAllStringFunc(line, func(match string) string {
-			if strings.HasPrefix(match, `f"`) {
-				return match
+		if !strings.Contains(line, "rawAction(") {
+			var sb strings.Builder
+			lastIdx := 0
+			for _, loc := range interpolationRegex.FindAllStringSubmatchIndex(line, -1) {
+				prefix := line[loc[2]:loc[3]]
+				matchedStr := line[loc[3]:loc[1]]
+				sb.WriteString(line[lastIdx:loc[2]])
+				if prefix == "f" || prefix == "$" || strings.HasPrefix(matchedStr, `"${`) {
+					sb.WriteString(prefix)
+					sb.WriteString(matchedStr)
+				} else {
+					sb.WriteString(prefix)
+					sb.WriteString("f" + matchedStr)
+				}
+				lastIdx = loc[1]
 			}
-			return "f" + match
-		})
+			sb.WriteString(line[lastIdx:])
+			line = sb.String()
+		}
 
 		// 6. Label positional arguments for known action schemas
 		line = labelCallArguments(line, reg)

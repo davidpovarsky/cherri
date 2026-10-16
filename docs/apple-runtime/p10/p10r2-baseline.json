@@ -1,0 +1,104 @@
+{
+  "compatibilityManifest": {
+    "catalogSchemaVersion": "3.0",
+    "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+    "compilerCommit": "5201dbf664a7c06eb6134b22588e1e793910c2c3",
+    "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+    "docsCommit": "727764c178388045e96ff4153f997e393be19a62",
+    "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+    "languageVersion": "2.0",
+    "schemaFingerprint": "a0a82f83f1d1d3e09dc5512063abdcf817356ee5e9edb9ad38d8467eb8693974",
+    "skillVersion": "2.0.0"
+  },
+  "forensicIssues": {
+    "FR-01": {
+      "status": "OPEN",
+      "title": "BROKEN immutable release tuple (release-blocker)"
+    },
+    "FR-02": {
+      "status": "OPEN",
+      "title": "INVALID acceptance proofs (release-blocker)"
+    },
+    "FR-03": {
+      "status": "OPEN",
+      "title": "FILTERS still silently alter requested behavior"
+    },
+    "FR-04": {
+      "status": "OPEN",
+      "title": "Dynamic setter Remove bypasses safety"
+    },
+    "FR-05": {
+      "status": "OPEN",
+      "title": "LEDGER has false-positive COVERED_VERIFIED paths"
+    },
+    "FR-06": {
+      "status": "OPEN",
+      "title": "MACOS EVIDENCE SOURCE LEAKS"
+    },
+    "FR-07": {
+      "status": "OPEN",
+      "title": "VERSION FIX NOT CONNECTED TO COMPILER"
+    },
+    "FR-08": {
+      "status": "OPEN",
+      "title": "EVIDENCE CONFIDENCE IS OVERSTATED"
+    },
+    "FR-09": {
+      "status": "OPEN",
+      "title": "LOSSLESS DECOMPILATION NEEDS EXECUTABLE PROOF"
+    },
+    "FR-10": {
+      "status": "OPEN",
+      "title": "RUNTIME & MANIFEST PROVENANCE MISMATCH"
+    },
+    "FR-11": {
+      "status": "OPEN",
+      "title": "SKILL SELF-TEST IS NOT LIVE RELEASE VALIDATION"
+    },
+    "FR-12": {
+      "status": "OPEN",
+      "title": "iOS BRIDGE / SIMULATOR SCOPE IS UNPROVEN"
+    },
+    "FR-13": {
+      "status": "OPEN",
+      "title": "P10 COVERAGE IS STILL OPEN"
+    },
+    "FR-14": {
+      "status": "OPEN",
+      "title": "MASTER PLAN MISREPORTS COMPLETION"
+    }
+  },
+  "git": {
+    "branch": "agent/cherri-p10-apple-actions-coverage",
+    "c_implement_sha": "9a5c1740089b06436a8f6da3d5b1b3094e71b18f",
+    "c_provenance_sha": "5201dbfc01b437b48c0ae386baf581dcf936eb67",
+    "c_provenance_valid": true,
+    "corrupted_manifest_compiler_sha": "5201dbf664a7c06eb6134b22588e1e793910c2c3",
+    "corrupted_manifest_compiler_sha_cat_file_err": "fatal: git cat-file: could not get object info",
+    "corrupted_manifest_compiler_sha_cat_file_exit": 128,
+    "current_manifest_docs_sha": "727764c178388045e96ff4153f997e393be19a62",
+    "docs_repo_local_branch": "agent/cherri-v2-product-docs",
+    "docs_repo_local_head": "727764c178388045e96ff4153f997e393be19a62",
+    "headSha": "4fca2c3b9023d8de6c4a70d5d86827b92f9e9626"
+  },
+  "repository": "https://github.com/davidpovarsky/cherri",
+  "runtimeEvidence": {
+    "artifactMacos27Manifest": {
+      "build": "26A434",
+      "cherriGitSha": "4fca2c3b9023d8de6c4a70d5d86827b92f9e9626",
+      "macOS": "27.0.1",
+      "runId": 38812506774,
+      "shardCount": 4,
+      "shardSummaryIsEmpty": false
+    },
+    "checkedInMacos27Manifest": {
+      "build": "26A434",
+      "cherriGitSha": "a98b356e4a84ddd358380fc412d8957f22829fca",
+      "macOS": "27.0.1",
+      "shardCount": 4,
+      "shardSummaryIsEmpty": true
+    }
+  },
+  "schemaVersion": "2.0.0",
+  "timestamp": "2026-10-15T23:10:56.091001+00:00"
+}

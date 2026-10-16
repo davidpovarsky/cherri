@@ -108,6 +108,7 @@ func resetCompilerState() {
 	iconGlyph = 61440
 	clientVersion = versions["27"]
 	iosVersion = 27.0
+	iosVersionString = "27"
 	hasShortcutInputVariables = false
 	definedWorkflowTypes = []string{}
 	definedQuickActions = []string{}

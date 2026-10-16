@@ -1214,7 +1214,10 @@ func decompStructuredValue(value any) any {
 	switch typed := value.(type) {
 	case map[string]interface{}:
 		if isReferenceValue(typed) {
-			return fmt.Sprintf("{%s}", decompValueObject(typed))
+			return fmt.Sprintf("${%s}", decompValueObject(typed))
+		}
+		if serType, ok := typed["WFSerializationType"].(string); ok && serType == "WFTextTokenString" {
+			return decompValueObject(typed)
 		}
 		if isPlainDictionaryValue(typed) {
 			return decompPlainDictionaryTree(typed)
@@ -1222,7 +1225,10 @@ func decompStructuredValue(value any) any {
 		if items, ok := serializedDictionaryItems(typed); ok {
 			return decompDictionaryItems(items)
 		}
-		return decompValueObject(typed)
+		if _, hasAtt := typed["attachmentsByRange"]; hasAtt {
+			return decompValueObject(typed)
+		}
+		return decompPlainDictionaryTree(typed)
 	case []interface{}:
 		var rendered = make([]any, len(typed))
 		for i, element := range typed {
