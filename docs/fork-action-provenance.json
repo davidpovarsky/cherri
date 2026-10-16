@@ -875,6 +875,12 @@
           "change": "Added Mode: Set/Remove support, RemoveSpecifiedValue encoding, and fail-closed validation on invalid properties.",
           "reason": "P10R audit identified missing setter modes and silent default to Start Date.",
           "evidence": "P10R acceptance tests R12, R13; macOS 27 runtime probe"
+        },
+        {
+          "commit": "1809af1b5d227de0e463cf7c2fc5a21ab4e54d64",
+          "change": "P10R2 corrective repair: property validation executed prior to Set/Remove branching, typed native RemoveSpecifiedValue emission, fail-closed unknown operator/mode handling.",
+          "reason": "P10R2 forensic audit findings FR-03 and FR-04.",
+          "evidence": "P10R2 adversarial tests A11, A12, A13, A14 and R11, R12, R13"
         }
       ]
     },
@@ -900,6 +906,12 @@
           "change": "Added Mode: Set/Remove support, RemoveSpecifiedValue encoding, Subtasks (WFReminderContentItemSubtasks) property, and fail-closed validation on invalid properties.",
           "reason": "P10R audit identified missing setter modes and silent default to Title.",
           "evidence": "P10R acceptance tests R11, R13, R27; macOS 27 runtime probe"
+        },
+        {
+          "commit": "1809af1b5d227de0e463cf7c2fc5a21ab4e54d64",
+          "change": "P10R2 corrective repair: property validation executed prior to Set/Remove branching, typed native RemoveSpecifiedValue emission, fail-closed unknown operator/mode handling.",
+          "reason": "P10R2 forensic audit findings FR-03 and FR-04.",
+          "evidence": "P10R2 adversarial tests A11, A12, A13, A14 and R11, R12, R13"
         }
       ]
     },
