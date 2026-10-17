@@ -11,11 +11,79 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
-// R08: Native nested two-level AND/OR filter with valid types produces correct structural plist
+func maskVolatileUUIDs(val any) any {
+	switch v := val.(type) {
+	case map[string]any:
+		res := make(map[string]any, len(v))
+		for k, valChild := range v {
+			if k == "UUID" || k == "GroupingIdentifier" || k == "OutputUUID" {
+				res[k] = "<MASKED_UUID>"
+			} else {
+				res[k] = maskVolatileUUIDs(valChild)
+			}
+		}
+		return res
+	case []any:
+		res := make([]any, len(v))
+		for i, item := range v {
+			res[i] = maskVolatileUUIDs(item)
+		}
+		return res
+	default:
+		return v
+	}
+}
+
+func assertActionsStructurallyEqual(t *testing.T, expectedDoc, actualDoc map[string]any, ignoredKeys ...string) {
+	t.Helper()
+	expActions, ok1 := expectedDoc["WFWorkflowActions"].([]any)
+	actActions, ok2 := actualDoc["WFWorkflowActions"].([]any)
+	if !ok1 || !ok2 {
+		t.Fatalf("missing WFWorkflowActions in expected or actual doc")
+	}
+	if len(expActions) != len(actActions) {
+		t.Fatalf("action count mismatch: expected %d, got %d", len(expActions), len(actActions))
+	}
+
+	ignoreMap := make(map[string]bool)
+	for _, k := range ignoredKeys {
+		ignoreMap[k] = true
+	}
+
+	for i := range expActions {
+		expMap := expActions[i].(map[string]any)
+		actMap := actActions[i].(map[string]any)
+
+		if expMap["WFWorkflowActionIdentifier"] != actMap["WFWorkflowActionIdentifier"] {
+			t.Fatalf("action %d identifier mismatch: expected %s, got %s", i, expMap["WFWorkflowActionIdentifier"], actMap["WFWorkflowActionIdentifier"])
+		}
+
+		expParams := expMap["WFWorkflowActionParameters"].(map[string]any)
+		actParams := actMap["WFWorkflowActionParameters"].(map[string]any)
+
+		for k, vExp := range expParams {
+			if ignoreMap[k] || k == "UUID" || k == "GroupingIdentifier" {
+				continue
+			}
+			vAct, found := actParams[k]
+			if !found {
+				t.Fatalf("action %d parameter %q missing in actual", i, k)
+			}
+			expJson, _ := json.Marshal(maskVolatileUUIDs(vExp))
+			actJson, _ := json.Marshal(maskVolatileUUIDs(vAct))
+			if string(expJson) != string(actJson) {
+				t.Fatalf("action %d parameter %q mismatch:\nexpected: %s\nactual:   %s", i, k, expJson, actJson)
+			}
+		}
+	}
+}
+
+// R08: Native compound AND/OR filter produces correct structural plist, decompile-recompile structural equality,
+// and fails closed on invalid nested compound filters (which are unsupported by Apple Shortcuts WFContentItemFilter).
 func TestP10R_R08_FilterTwoLevelAndOrRoundTrip(t *testing.T) {
 	r := newRoundTripRunner(t)
 
-	// Real compilation of Cherri source
+	// Real compilation of Cherri source with flat compound filter
 	src := `let input_files = "files"
 let res = filterFiles(input_files, filter: { "compound": "or", "predicates": [ { "property": "File Size", "operator": "greater than", "value": 1024 }, { "property": "File Extension", "operator": "equals", "value": "png" } ] })
 show(res)
@@ -67,11 +135,33 @@ show(res)
 		t.Errorf("expected rawAction fallback for unrepresentable filter table, got:\n%s", decomp)
 	}
 
-	// Recompile decompiled code
+	// Recompile decompiled code and verify structural equality
 	recompiledPlist := r.compileSource("r08_recompiled", decomp)
 	recompiledDoc := loadRoundTripDocument(t, recompiledPlist)
-	if len(recompiledDoc["WFWorkflowActions"].([]any)) == 0 {
-		t.Fatalf("recompiled document has no actions")
+	assertActionsStructurallyEqual(t, doc, recompiledDoc, "WFContentItemInputParameter")
+
+	// Adversarial: nested compound filter must fail closed
+	nestedPanicked := false
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				nestedPanicked = true
+			}
+		}()
+		buildContentItemFilter(map[string]any{
+			"compound": "or",
+			"predicates": []any{
+				map[string]any{
+					"compound": "and",
+					"predicates": []any{
+						map[string]any{"property": "Name", "operator": "equals", "value": "test"},
+					},
+				},
+			},
+		})
+	}()
+	if !nestedPanicked {
+		t.Fatalf("expected nested compound filter to fail closed with panic, but succeeded")
 	}
 }
 
@@ -562,12 +652,10 @@ func TestP10R_R20_UnrepresentableValueRawActionFallback(t *testing.T) {
 		t.Errorf("decompiled rawAction lost custom serialization type:\n%s", decomp)
 	}
 
-	// Recompile: succeeds structurally
+	// Recompile: succeeds structurally and matches original actions
 	recompiledPlist := r.compileSource("r20_recompiled", decomp)
 	recompiledDoc := loadRoundTripDocument(t, recompiledPlist)
-	if len(recompiledDoc["WFWorkflowActions"].([]any)) == 0 {
-		t.Fatalf("recompiled document has no actions")
-	}
+	assertActionsStructurallyEqual(t, doc, recompiledDoc)
 }
 
 // R21: Real token-string interpolation encode/decode with Hebrew + emoji measures UTF-16 code units
@@ -619,19 +707,41 @@ show("שלום {name}!")
 		t.Fatalf("attachmentsByRange is empty")
 	}
 
-	foundValidRange := false
-	for rangeKey := range ranges {
-		if strings.HasPrefix(rangeKey, "{5,") || strings.HasPrefix(rangeKey, "{") {
-			foundValidRange = true
+	// Exact UTF-16 code units offset verification:
+	// "שלום " in UTF-16 has 5 code units ('ש', 'ל', 'ו', 'ם', ' '), attachment is 1 unit.
+	// Exact range key MUST BE "{5, 1}"
+	if _, ok := ranges["{5, 1}"]; !ok {
+		t.Fatalf("expected exact attachment range key '{5, 1}' for Hebrew prefix 'שלום ', got: %v", ranges)
+	}
+
+	// Case 2: Emoji surrogate pair verification
+	srcEmoji := `let fruit = "תפוח"
+show("🍎 {fruit}!")
+`
+	plistPathEmoji := r.compileSource("r21_emoji_tokens", srcEmoji)
+	docEmoji := loadRoundTripDocument(t, plistPathEmoji)
+	var showActEmoji map[string]any
+	for _, a := range docEmoji["WFWorkflowActions"].([]any) {
+		m := a.(map[string]any)
+		if m["WFWorkflowActionIdentifier"] == "is.workflow.actions.showresult" {
+			showActEmoji = m
 			break
 		}
 	}
-	if !foundValidRange {
-		t.Errorf("expected valid attachment range for 'שלום ', got: %v", ranges)
+	if showActEmoji == nil {
+		t.Fatalf("show action missing for emoji token test")
+	}
+	paramsEmoji := showActEmoji["WFWorkflowActionParameters"].(map[string]any)
+	textValEmoji := paramsEmoji["Text"].(map[string]any)["Value"].(map[string]any)
+	rangesEmoji := textValEmoji["attachmentsByRange"].(map[string]any)
+	// 🍎 is a surrogate pair (2 UTF-16 units) + ' ' (1 unit) = 3 code units.
+	// Exact range key MUST BE "{3, 1}"
+	if _, ok := rangesEmoji["{3, 1}"]; !ok {
+		t.Fatalf("expected exact attachment range key '{3, 1}' for emoji prefix '🍎 ', got: %v", rangesEmoji)
 	}
 }
 
-// R25: New native actions (such as scanBarcode) are present in the catalog and schema registry
+// R25: Action catalog and consumer export contract (STATIC_CONTRACT tier)
 func TestP10R_R25_ActionCatalogAndGoBridgeExport(t *testing.T) {
 	reg := schema.DefaultRegistry()
 	if reg == nil {
@@ -650,6 +760,28 @@ func TestP10R_R25_ActionCatalogAndGoBridgeExport(t *testing.T) {
 	if len(scan.Parameters) != 2 {
 		t.Errorf("expected 2 parameters for scanBarcode, got %d", len(scan.Parameters))
 	}
+
+	// Full compiler end-to-end compilation of scanBarcode
+	r := newRoundTripRunner(t)
+	src := `let b = scanBarcode()
+show(b)
+`
+	plist := r.compileSource("r25_scan_barcode", src)
+	doc := loadRoundTripDocument(t, plist)
+	actionsList := doc["WFWorkflowActions"].([]any)
+	foundScan := false
+	for _, a := range actionsList {
+		m := a.(map[string]any)
+		if m["WFWorkflowActionIdentifier"] == "is.workflow.actions.scanbarcode" {
+			foundScan = true
+			break
+		}
+	}
+	if !foundScan {
+		t.Fatalf("R25: compiled plist missing is.workflow.actions.scanbarcode")
+	}
+
+	t.Log("R25 contract verified across Schema DefaultRegistry, compiler end-to-end, and action catalog [STATIC_CONTRACT]")
 }
 
 // R26: Provenance registry enforces valid immutable commit SHAs in docs/fork-action-provenance.json
@@ -668,7 +800,8 @@ func TestP10R_R26_ProvenanceRegistryIntegrity(t *testing.T) {
 		t.Fatalf("provenance actions list is empty or missing")
 	}
 
-	// Verify every firstForkCommit exists as a real git commit
+	// Deduplicate unique SHAs to verify quickly and reliably
+	uniqueShas := make(map[string]string)
 	for _, infoObj := range actionsList {
 		info := infoObj.(map[string]any)
 		actName := info["name"].(string)
@@ -676,9 +809,17 @@ func TestP10R_R26_ProvenanceRegistryIntegrity(t *testing.T) {
 		if !ok || len(sha) != 40 {
 			t.Fatalf("action %q has invalid firstForkCommit: %v", actName, info["firstForkCommit"])
 		}
+		uniqueShas[sha] = actName
+	}
+
+	for sha, actName := range uniqueShas {
 		cmd := exec.Command("git", "cat-file", "-e", sha+"^{commit}")
 		if err := cmd.Run(); err != nil {
 			t.Errorf("action %q references non-existent git commit %s: %v", actName, sha, err)
+		}
+		cmdAncestor := exec.Command("git", "merge-base", "--is-ancestor", sha, "HEAD")
+		if err := cmdAncestor.Run(); err != nil {
+			t.Errorf("action %q firstForkCommit %s is not an ancestor of HEAD: %v", actName, sha, err)
 		}
 	}
 
@@ -688,26 +829,31 @@ func TestP10R_R26_ProvenanceRegistryIntegrity(t *testing.T) {
 	if err := cmd.Run(); err == nil {
 		t.Fatalf("adversarial check failed: forged SHA %s unexpectedly exists as commit!", forgedSha)
 	}
+	cmdAnc := exec.Command("git", "merge-base", "--is-ancestor", forgedSha, "HEAD")
+	if err := cmdAnc.Run(); err == nil {
+		t.Fatalf("adversarial check failed: forged SHA %s unexpectedly validated as ancestor!", forgedSha)
+	}
 }
 
-// R28: Acceptance suite completeness: all critical gate scenarios verified
+// R28: Acceptance suite completeness: all 56 gates verified via executable runner
 func TestP10R_R28_AcceptanceSuiteCompleteness(t *testing.T) {
-	gates := []string{
-		"R01", "R02", "R03", "R04", "R05", "R06", "R07",
-		"R08", "R09", "R10", "R11", "R12", "R13", "R14",
-		"R15", "R16", "R17", "R18", "R19", "R20", "R21",
-		"R22", "R23", "R24", "R25", "R26", "R27", "R28",
+	// Execute the authoritative Python gate runner in verify-registry mode
+	cmd := exec.Command("python", "tools/p10r3/run_release_gates.py", "--verify-registry")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("gate runner verify-registry failed:\n%s", out)
 	}
-	if len(gates) != 28 {
-		t.Fatalf("expected 28 acceptance gates, got %d", len(gates))
+	if !strings.Contains(string(out), "SUCCESS: All 56 required gates registered correctly") {
+		t.Fatalf("expected confirmation of 56 registered gates, got:\n%s", out)
 	}
 
-	// Meta-verification: removing any gate causes aggregate gate failure
-	verifyGates := func(gList []string) bool {
-		return len(gList) == 28
+	// Meta-verification / mutation test: running gate runner with --mutate-missing MUST fail with exit code 1
+	mutCmd := exec.Command("python", "tools/p10r3/run_release_gates.py", "--mutate-missing", "R05")
+	mutOut, mutErr := mutCmd.CombinedOutput()
+	if mutErr == nil {
+		t.Fatalf("meta-test failed: gate runner with missing gate unexpectedly passed:\n%s", mutOut)
 	}
-	corruptGates := gates[:27] // 27 gates instead of 28
-	if verifyGates(corruptGates) {
-		t.Fatalf("meta-test failed: incomplete gates array unexpectedly passed!")
+	if !strings.Contains(strings.ToLower(string(mutOut)), "missing required gate") {
+		t.Fatalf("expected missing gate diagnostic in gate runner output, got:\n%s", mutOut)
 	}
 }

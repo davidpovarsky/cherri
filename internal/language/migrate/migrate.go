@@ -124,6 +124,18 @@ func MigrateSource(input string) string {
 			trimmed = strings.TrimSpace(line)
 		}
 
+		// 2d. Convert legacy if legacy ... -> if ...
+		if strings.HasPrefix(trimmed, "if legacy ") {
+			line = strings.Replace(line, "if legacy ", "if ", 1)
+			trimmed = strings.TrimSpace(line)
+		}
+
+		// 2e. Convert legacy repeat _ for N -> repeat N
+		if strings.HasPrefix(trimmed, "repeat _ for ") {
+			line = strings.Replace(line, "repeat _ for ", "repeat ", 1)
+			trimmed = strings.TrimSpace(line)
+		}
+
 		// 3. Convert @var = val -> let/var var = val
 		if strings.HasPrefix(trimmed, "@") {
 			// Check if +=, -=, *=, /=

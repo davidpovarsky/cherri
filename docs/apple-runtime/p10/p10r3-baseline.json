@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-10-18T00:10:00+03:00",
+  "baseCommit": "5152550b73cbeff09848fdf8f4a132bc4e74ba9a",
+  "branch": "agent/cherri-p10-apple-actions-coverage",
+  "scope": "Cherri P10R3: Truthful Release Closure",
+  "verifiedFindings": {
+    "C01": {
+      "finding": "Skill integration test negative mutation causal isolation failure",
+      "rootCause": "real-release-integration.sh Test 3 set CHERRI_HOME to MUTATED_HOME where no compiler binary existed, causing doctor.sh to fail with 'cherri CLI not found' instead of testing the schema fingerprint mismatch.",
+      "remediation": "Test 3 updated to retain verified compiler in TMP_HOME, point CHERRI_DOCS_DIR to isolated STALE_DOCS_DIR with corrupted schema fingerprint in fork-language/actions.md, verify specific diagnostic 'Schema Fingerprint mismatch', and execute positive control."
+    },
+    "C02": {
+      "finding": "Adversarial test A19 used toy slice check rather than executable aggregate gate runner",
+      "rootCause": "p10r2_adversarial_test.go TestP10R2_A19 checked len(registered) == 28 on an in-memory slice of 27 strings without invoking any gate runner.",
+      "remediation": "Replaced with executable gate runner mutation test: executes tools/p10r3/run_release_gates.py --mutate-missing R12 and asserts fail-closed non-zero exit and diagnostic."
+    },
+    "C03": {
+      "finding": "Adversarial test A26 passed unconditionally on third-party actions without asserting ledger exclusions",
+      "rootCause": "TestP10R2_A26 looped with t.Logf without asserting that third-party dependencies are excluded from user-facing eligible actions.",
+      "remediation": "Replaced with real ledger verification: asserts that third-party dependency actions not in Cherri have status EXCLUDED_THIRD_PARTY_DEPENDENCY, eligibility EXCLUDED_THIRD_PARTY, and eligibility != ELIGIBLE_USER_FACING."
+    },
+    "C04": {
+      "finding": "Ledger and validation results count discrepancy (389 partial / 1 verified claimed vs 390 partial / 0 verified in ledger)",
+      "rootCause": "Previous agent hand-wrote 389 partial and 1 verified in p10r2-validation-results.json without ledger backing. In p10-action-ledger.json, 313 actions have outputTypeConcordance: UNASSESSED and 77 have DIFFERS, meaning COVERED_VERIFIED is 0 and COVERED_PARTIAL is 390.",
+      "remediation": "Synchronized p10r2-validation-results.json and all reports to truthful authoritative ledger numbers: ledgerTotalRecords=2396, ledgerEligibleCandidates=1527, ledgerCoveredVerified=0, ledgerCoveredPartial=390. Created tools/p10r3/verify_ledger_consistency.py to enforce mathematical consistency."
+    },
+    "C05": {
+      "finding": "macOS 27 parameter extraction timeout attributed to hang_action unit test fixture",
+      "rootCause": "Agent cited is.workflow.actions.hang_action from test_03_timeout_status_preserved_and_isolated instead of inspecting real extraction artifact parameter-timeouts.json.",
+      "remediation": "Attributed to real macOS 27 extraction evidence in parameter-timeouts.json: is.workflow.actions.setters.contacts timed out after 20.02s in GitHub run 38812506774 (macOS 27.0.1 26A434). Total probed: 424 successes, 1 timeout, 9 unavailable, 0 unexpected errors (434 total)."
+    },
+    "C06": {
+      "finding": "iOS 27 simulator execution status claimed without local reproduction capability",
+      "rootCause": "Local environment is Windows where xcrun simctl and iOS simulator are unavailable. Past PoC ran on remote macOS runner in run 38631323549.",
+      "remediation": "Explicitly documented R22 as BLOCKED_EXTERNAL with static verification tier. No false PASS claim made."
+    },
+    "C07": {
+      "finding": "Release gates lacked unified executable aggregate runner with mutation testing",
+      "rootCause": "P10R2 had separate partial scripts without a single aggregate runner that executes all 56 gates and validates registry completeness.",
+      "remediation": "Created tools/p10r3/run_release_gates.py registering all 56 gates (28 acceptance, 28 adversarial), supporting --run-all, --verify-registry, and --mutate-missing."
+    },
+    "C08": {
+      "finding": "Native WFContentItemFilter serialization and token interpolation lacked deep fail-closed checks",
+      "rootCause": "Apple Shortcuts wire format WFContentItemFilter uses a flat WFActionParameterFilterTemplates array under WFCompoundType and does not support nested compound filters.",
+      "remediation": "Added fail-closed panic in buildContentItemFilter() for nested predicates/compound. Tested exact UTF-16 code unit offset calculations for Hebrew and emoji token attachments."
+    }
+  }
+}

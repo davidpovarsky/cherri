@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -11,6 +12,18 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
 )
+
+func findActionParams(doc map[string]any, ident string) map[string]any {
+	for _, a := range doc["WFWorkflowActions"].([]any) {
+		m := a.(map[string]any)
+		if m["WFWorkflowActionIdentifier"] == ident {
+			if p, ok := m["WFWorkflowActionParameters"].(map[string]any); ok {
+				return p
+			}
+		}
+	}
+	return nil
+}
 
 // P10R2 Adversarial Battery: A01 - A28
 
@@ -349,18 +362,45 @@ func TestP10R2_A13_UnknownSetterModeFailsClosed(t *testing.T) {
 
 // A14: RemoveSpecifiedValue exact Apple type/presence checked for removal variants.
 func TestP10R2_A14_RemoveSpecifiedValueEmission(t *testing.T) {
-	def := actions["editReminder"]
-	params := def.appendParamsFunc([]actionArgument{
-		{valueType: Variable, value: "reminder"},
-		{valueType: String, value: "Tags"},
-		{valueType: String, value: "OldTag"},
-		{valueType: String, value: "Remove"},
-	})
+	r := newRoundTripRunner(t)
+
+	// 1. Full compilation check: Remove mode with explicit value emits Mode: Remove and RemoveSpecifiedValue: OldTag
+	src := `let rem = "myReminder"
+editReminder(rem, "Tags", "OldTag", "Remove")
+`
+	plist := r.compileSource("a14_remove_specific", src)
+	doc := loadRoundTripDocument(t, plist)
+	params := findActionParams(doc, "is.workflow.actions.setters.reminders")
+	if params == nil {
+		t.Fatalf("A14 failure: setters.reminders action not found in plist")
+	}
 	if params["Mode"] != "Remove" {
 		t.Fatalf("A14 failure: expected Mode: Remove, got %v", params["Mode"])
 	}
 	if params["RemoveSpecifiedValue"] != "OldTag" {
 		t.Fatalf("A14 failure: expected RemoveSpecifiedValue: OldTag, got %v", params["RemoveSpecifiedValue"])
+	}
+
+	// 2. Set mode must NOT emit RemoveSpecifiedValue
+	srcSet := `let rem2 = "myReminder2"
+editReminder(rem2, "Title", "NewTitle", "Set")
+`
+	plistSet := r.compileSource("a14_set_no_remove_specific", srcSet)
+	docSet := loadRoundTripDocument(t, plistSet)
+	paramsSet := findActionParams(docSet, "is.workflow.actions.setters.reminders")
+	if _, ok := paramsSet["RemoveSpecifiedValue"]; ok {
+		t.Fatalf("A14 failure: RemoveSpecifiedValue unexpectedly emitted under Set mode: %v", paramsSet)
+	}
+
+	// 3. Remove mode without value (clearing property) must NOT emit RemoveSpecifiedValue
+	srcRemoveNoVal := `let rem3 = "myReminder3"
+editReminder(rem3, "Due Date", "Remove")
+`
+	plistRemoveNoVal := r.compileSource("a14_remove_no_val", srcRemoveNoVal)
+	docRemoveNoVal := loadRoundTripDocument(t, plistRemoveNoVal)
+	paramsRemoveNoVal := findActionParams(docRemoveNoVal, "is.workflow.actions.setters.reminders")
+	if _, ok := paramsRemoveNoVal["RemoveSpecifiedValue"]; ok {
+		t.Fatalf("A14 failure: RemoveSpecifiedValue unexpectedly emitted when removing property entirely: %v", paramsRemoveNoVal)
 	}
 }
 
@@ -407,40 +447,56 @@ func TestP10R2_A15_SemanticVersionCompilerCheck(t *testing.T) {
 
 // A16: Real source token interpolation with Hebrew+emoji measures UTF-16 code units.
 func TestP10R2_A16_HebrewEmojiUtf16Offset(t *testing.T) {
-	// "שלום " in UTF-16 is 5 code units
-	hebrewText := "שלום "
-	runes := []rune(hebrewText)
-	utf16Units := 0
-	for _, r := range runes {
-		if r >= utf16BMPThreshold {
-			utf16Units += 2
-		} else {
-			utf16Units += 1
-		}
+	r := newRoundTripRunner(t)
+
+	// 1. Hebrew text token interpolation: "שלום " is 5 UTF-16 code units (and 9 UTF-8 bytes)
+	srcHebrew := `let user = "דוד"
+show("שלום {user}!")
+`
+	plistHebrew := r.compileSource("a16_hebrew", srcHebrew)
+	docHebrew := loadRoundTripDocument(t, plistHebrew)
+	paramsHebrew := findActionParams(docHebrew, "is.workflow.actions.showresult")
+	if paramsHebrew == nil {
+		t.Fatalf("A16 failure: showresult action not found in plist for Hebrew test")
 	}
-	if utf16Units != 5 {
-		t.Fatalf("A16 failure: expected 5 UTF-16 code units for %q, got %d", hebrewText, utf16Units)
+	textTokenH, ok := paramsHebrew["Text"].(map[string]any)
+	if !ok || textTokenH["WFSerializationType"] != "WFTextTokenString" {
+		t.Fatalf("A16 failure: expected WFTextTokenString for Hebrew text, got: %v", paramsHebrew["Text"])
+	}
+	valH := textTokenH["Value"].(map[string]any)
+	rangesH := valH["attachmentsByRange"].(map[string]any)
+	// Exact range key for 5 UTF-16 units ('ש', 'ל', 'ו', 'ם', ' ') must be "{5, 1}"
+	if _, ok := rangesH["{5, 1}"]; !ok {
+		t.Fatalf("A16 failure: expected exact attachment range key '{5, 1}', got: %v", rangesH)
+	}
+	// Adversarial: ensure UTF-8 byte offset (10 bytes: 4 Hebrew chars * 2 + 1 space + 1) was NOT used
+	for k := range rangesH {
+		if strings.HasPrefix(k, "{10,") || strings.HasPrefix(k, "{9,") {
+			t.Fatalf("A16 failure: detected incorrect UTF-8 byte offset in attachmentsByRange: %s", k)
+		}
 	}
 
-	// Emoji 🍎 is a surrogate pair (2 UTF-16 units, 1 rune, 4 UTF-8 bytes)
-	emoji := "🍎"
-	emojiRunes := []rune(emoji)
-	if len(emojiRunes) != 1 {
-		t.Fatalf("expected 1 rune for apple emoji")
+	// 2. Emoji surrogate pair: 🍎 is 2 UTF-16 code units + 1 space = 3 code units (1 rune, 4 UTF-8 bytes)
+	srcEmoji := `let item = "תפוח"
+show("🍎 {item}!")
+`
+	plistEmoji := r.compileSource("a16_emoji", srcEmoji)
+	docEmoji := loadRoundTripDocument(t, plistEmoji)
+	paramsEmoji := findActionParams(docEmoji, "is.workflow.actions.showresult")
+	if paramsEmoji == nil {
+		t.Fatalf("A16 failure: showresult action not found in plist for emoji test")
 	}
-	if len(emoji) != 4 {
-		t.Fatalf("expected 4 UTF-8 bytes for apple emoji")
+	textTokenE := paramsEmoji["Text"].(map[string]any)
+	valE := textTokenE["Value"].(map[string]any)
+	rangesE := valE["attachmentsByRange"].(map[string]any)
+	if _, ok := rangesE["{3, 1}"]; !ok {
+		t.Fatalf("A16 failure: expected exact attachment range key '{3, 1}' for emoji surrogate pair, got: %v", rangesE)
 	}
-	appleUnits := 0
-	for _, r := range emojiRunes {
-		if r >= utf16BMPThreshold {
-			appleUnits += 2
-		} else {
-			appleUnits += 1
+	// Adversarial: ensure 1 rune / 4 byte offset was NOT used
+	for k := range rangesE {
+		if strings.HasPrefix(k, "{2,") || strings.HasPrefix(k, "{5,") {
+			t.Fatalf("A16 failure: detected incorrect rune/byte offset for emoji: %s", k)
 		}
-	}
-	if appleUnits != 2 {
-		t.Fatalf("A16 failure: expected 2 UTF-16 code units for apple emoji, got %d", appleUnits)
 	}
 }
 
@@ -456,6 +512,8 @@ func TestP10R2_A17_RawActionFallbackLossless(t *testing.T) {
 })
 `
 	plist := r.compileSource("a17_test", src)
+	docOrig := loadRoundTripDocument(t, plist)
+
 	decomp := r.decompileShortcut("a17_test", plist)
 	if !strings.Contains(decomp, "rawAction(\"is.workflow.actions.filter.files\"") {
 		t.Fatalf("A17 failure: decompiled output did not use rawAction fallback:\n%s", decomp)
@@ -463,28 +521,83 @@ func TestP10R2_A17_RawActionFallbackLossless(t *testing.T) {
 	if !strings.Contains(decomp, "WFUnknownCustomSerializedType") {
 		t.Fatalf("A17 failure: custom serialization was lost in rawAction:\n%s", decomp)
 	}
+
+	// Recompile and verify structural equivalence
+	recompiledPlist := r.compileSource("a17_recompiled", decomp)
+	docRecompiled := loadRoundTripDocument(t, recompiledPlist)
+	assertActionsStructurallyEqual(t, docOrig, docRecompiled)
 }
 
 // A18: Fake firstForkCommit from a future/unrelated SHA breaks provenance validator.
 func TestP10R2_A18_FakeFirstForkCommitDetected(t *testing.T) {
+	// 1. A forged commit SHA must fail git ancestry check
 	forgedSha := "1111111111111111111111111111111111111111"
-	cmd := exec.Command("git", "cat-file", "-e", forgedSha+"^{commit}")
+	cmd := exec.Command("git", "merge-base", "--is-ancestor", forgedSha, "HEAD")
 	if err := cmd.Run(); err == nil {
-		t.Fatalf("A18 failure: forged SHA %s unexpectedly exists!", forgedSha)
+		t.Fatalf("A18 failure: forged SHA %s unexpectedly passed git ancestor check!", forgedSha)
+	}
+
+	// 2. All real commits recorded in fork-action-provenance.json must pass git ancestry check
+	provPath := filepath.Join("docs", "fork-action-provenance.json")
+	data, err := os.ReadFile(provPath)
+	if err != nil {
+		t.Fatalf("failed to read fork-action-provenance.json: %v", err)
+	}
+	var prov struct {
+		Actions []struct {
+			Name            string `json:"name"`
+			FirstForkCommit string `json:"firstForkCommit"`
+		} `json:"actions"`
+	}
+	if err := json.Unmarshal(data, &prov); err != nil {
+		t.Fatalf("failed to unmarshal fork-action-provenance.json: %v", err)
+	}
+
+	uniqueShas := make(map[string]string)
+	for _, act := range prov.Actions {
+		sha := strings.TrimSpace(act.FirstForkCommit)
+		if len(sha) == 40 && !strings.Contains(sha, " ") {
+			uniqueShas[sha] = act.Name
+		}
+	}
+	if len(uniqueShas) == 0 {
+		t.Fatalf("A18 failure: no 40-char commit SHAs found in fork-action-provenance.json to check")
+	}
+
+	for sha, name := range uniqueShas {
+		cmdCheck := exec.Command("git", "merge-base", "--is-ancestor", sha, "HEAD")
+		if err := cmdCheck.Run(); err != nil {
+			t.Fatalf("A18 failure: provenance commit %s for action %s is not an ancestor of HEAD: %v", sha, name, err)
+		}
 	}
 }
 
 // A19: One required acceptance test removed/disabled/skipped makes aggregate release gate fail.
 func TestP10R2_A19_AggregateGateFailsOnMissingTest(t *testing.T) {
-	totalRequired := 28
-	registered := make([]string, 27) // Missing 1 test!
-	for i := 0; i < 27; i++ {
-		registered[i] = fmt.Sprintf("R%02d", i+1)
+	runnerPath := filepath.Join("tools", "p10r3", "run_release_gates.py")
+
+	// 1. Verify complete registry passes
+	cmdVerify := exec.Command("python", runnerPath, "--verify-registry")
+	outVerify, errVerify := cmdVerify.CombinedOutput()
+	if errVerify != nil {
+		t.Fatalf("A19 failure: verify-registry failed unexpectedly: %v\n%s", errVerify, string(outVerify))
 	}
 
-	gatePasses := (len(registered) == totalRequired)
-	if gatePasses {
-		t.Fatalf("A19 failure: aggregate release gate passed with missing test (27/28)!")
+	// 2. Mutate missing acceptance gate R12: runner must fail closed (non-zero exit)
+	cmdMutateR := exec.Command("python", runnerPath, "--mutate-missing", "R12")
+	outMutateR, errMutateR := cmdMutateR.CombinedOutput()
+	if errMutateR == nil {
+		t.Fatalf("A19 failure: runner passed with missing acceptance gate R12!\nOutput: %s", string(outMutateR))
+	}
+	if !strings.Contains(strings.ToLower(string(outMutateR)), "missing required gate") {
+		t.Fatalf("A19 failure: expected 'missing required gate' in error output, got:\n%s", string(outMutateR))
+	}
+
+	// 3. Mutate missing adversarial gate A05: runner must fail closed (non-zero exit)
+	cmdMutateA := exec.Command("python", runnerPath, "--mutate-missing", "A05")
+	outMutateA, errMutateA := cmdMutateA.CombinedOutput()
+	if errMutateA == nil {
+		t.Fatalf("A19 failure: runner passed with missing adversarial gate A05!\nOutput: %s", string(outMutateA))
 	}
 }
 
@@ -501,6 +614,17 @@ func TestP10R2_A20_IOSPaletteActionCoverage(t *testing.T) {
 		if actionObj.AppleIdentifier == "" {
 			t.Fatalf("A20 failure: action %s in DefaultRegistry missing AppleIdentifier!", act)
 		}
+		if len(actionObj.Parameters) == 0 {
+			t.Fatalf("A20 failure: action %s has no parameters in DefaultRegistry", act)
+		}
+		if actionObj.Docs.Description == "" {
+			t.Fatalf("A20 failure: action %s has empty description in DefaultRegistry", act)
+		}
+	}
+
+	// Adversarial: non-existent action must return false
+	if _, ok := reg.LookupAction("nonExistentActionXYZ123"); ok {
+		t.Fatalf("A20 failure: non-existent action was unexpectedly found in DefaultRegistry")
 	}
 }
 
@@ -521,13 +645,40 @@ func TestP10R2_A21_DerivedArtifactTamperingFails(t *testing.T) {
 		t.Fatalf("failed to unmarshal derived manifest: %v", err)
 	}
 
-	// Tamper with bytes of an output file in memory
-	tamperedBytes := []byte("tampered content")
-	tamperedSha := fmt.Sprintf("%x", tamperedBytes)
-
+	// 1. Verify all files match disk exactly
+	baseDir := filepath.Join("docs", "apple-runtime", "macos-27")
+	checked := 0
 	for fname, meta := range manifest.OutputFiles {
-		if meta.Sha256 == tamperedSha {
-			t.Fatalf("A21 failure: tampered SHA unexpectedly matched manifest for %s", fname)
+		fpath := filepath.Join(baseDir, fname)
+		content, err := os.ReadFile(fpath)
+		if err != nil {
+			t.Fatalf("A21: missing derived output file %s: %v", fname, err)
+		}
+		if len(content) != meta.Bytes {
+			t.Fatalf("A21: byte mismatch for %s: manifest %d, disk %d", fname, meta.Bytes, len(content))
+		}
+		computedSha := fmt.Sprintf("%x", sha256.Sum256(content))
+		if computedSha != meta.Sha256 {
+			t.Fatalf("A21: sha256 mismatch for %s: manifest %s, computed %s", fname, meta.Sha256, computedSha)
+		}
+		checked++
+	}
+	if checked == 0 {
+		t.Fatalf("A21: no output files checked")
+	}
+
+	// 2. Tamper simulation: flip 1 byte of in-memory content of first file and assert failure
+	for fname, meta := range manifest.OutputFiles {
+		fpath := filepath.Join(baseDir, fname)
+		content, _ := os.ReadFile(fpath)
+		tampered := make([]byte, len(content))
+		copy(tampered, content)
+		if len(tampered) > 0 {
+			tampered[0] ^= 0xFF
+		}
+		tamperedSha := fmt.Sprintf("%x", sha256.Sum256(tampered))
+		if tamperedSha == meta.Sha256 {
+			t.Fatalf("A21 failure: tampered content for %s unexpectedly produced matching sha256!", fname)
 		}
 		break
 	}
@@ -610,24 +761,112 @@ func TestP10R2_A25_SchemaFingerprintDriftDetection(t *testing.T) {
 
 // A26: New action belongs to third-party/uninstalled app: target eligibility remains conditional.
 func TestP10R2_A26_ThirdPartyAppIntentConditional(t *testing.T) {
-	reg := schema.DefaultRegistry()
-	for _, act := range reg.AllActions() {
-		if act.AppIntent != nil && act.AppIntent.BundleIdentifier != "" {
-			bundleID := act.AppIntent.BundleIdentifier
-			if !strings.HasPrefix(bundleID, "com.apple.") {
-				if act.AppleIdentifier == "" && !act.MacOnly && !act.NonMacOnly {
-					t.Logf("Third-party app intent: %s (bundle: %s)", act.CallableName, bundleID)
-				}
+	ledgerPath := filepath.Join("docs", "apple-runtime", "p10", "p10-action-ledger.json")
+	data, err := os.ReadFile(ledgerPath)
+	if err != nil {
+		t.Fatalf("failed to read p10-action-ledger.json: %v", err)
+	}
+	var ledger []map[string]any
+	if err := json.Unmarshal(data, &ledger); err != nil {
+		t.Fatalf("failed to parse ledger: %v", err)
+	}
+
+	thirdPartyPrefixes := []string{
+		"is.workflow.actions.dropbox.",
+		"is.workflow.actions.pocket.",
+		"is.workflow.actions.evernote.",
+		"is.workflow.actions.tumblr.",
+		"is.workflow.actions.wordpress.",
+	}
+
+	thirdPartyFound := 0
+	for _, row := range ledger {
+		ident, _ := row["identifier"].(string)
+		isThirdParty := false
+		for _, pfx := range thirdPartyPrefixes {
+			if strings.HasPrefix(ident, pfx) {
+				isThirdParty = true
+				break
 			}
 		}
+
+		callables, _ := row["cherriCallables"].([]any)
+		if isThirdParty && len(callables) == 0 {
+			thirdPartyFound++
+			status, _ := row["status"].(string)
+			eligibility, _ := row["eligibility"].(string)
+
+			if status != "EXCLUDED_THIRD_PARTY_DEPENDENCY" {
+				t.Fatalf("A26 failure: third-party action %s has status %q, expected EXCLUDED_THIRD_PARTY_DEPENDENCY", ident, status)
+			}
+			if eligibility != "EXCLUDED_THIRD_PARTY" {
+				t.Fatalf("A26 failure: third-party action %s has eligibility %q, expected EXCLUDED_THIRD_PARTY", ident, eligibility)
+			}
+			if eligibility == "ELIGIBLE_USER_FACING" {
+				t.Fatalf("A26 failure: third-party action %s must not be ELIGIBLE_USER_FACING", ident)
+			}
+		}
+	}
+
+	if thirdPartyFound == 0 {
+		t.Fatalf("A26 failure: no third-party actions found in ledger to verify")
 	}
 }
 
 // A27: Existing legal Cherri v1/v2 fixtures and fork round trips still pass.
 func TestP10R2_A27_ExistingFixturesUnbroken(t *testing.T) {
-	// Verified by TestCherriNoSign passing all 46 suites and TestDecomp passing
-	if testing.Short() {
-		t.Skip("skipping full regression in short mode")
+	r := newRoundTripRunner(t)
+
+	fixtures := []struct {
+		name string
+		src  string
+	}{
+		{
+			name: "arithmetic_and_variables",
+			src: `let x = 10 + 5
+let y = x * 2
+show(y)
+`,
+		},
+		{
+			name: "conditional_branching",
+			src: `@x = "hello"
+if @x == "hello" {
+    show("yes")
+} else {
+    show("no")
+}
+`,
+		},
+		{
+			name: "dictionary",
+			src: `let map = {"greeting": "hello", "target": "world"}
+show(map)
+`,
+		},
+		{
+			name: "repeat_loop",
+			src: `repeat(3) {
+    show("iter")
+}
+`,
+		},
+	}
+
+	for _, fix := range fixtures {
+		plist := r.compileSource("a27_"+fix.name, fix.src)
+		doc := loadRoundTripDocument(t, plist)
+		actionsList, ok := doc["WFWorkflowActions"].([]any)
+		if !ok || len(actionsList) == 0 {
+			t.Fatalf("A27 failure: compiled plist for %s has no actions", fix.name)
+		}
+		decomp := r.decompileShortcut("a27_"+fix.name, plist)
+		if len(strings.TrimSpace(decomp)) == 0 {
+			t.Fatalf("A27 failure: decompile produced empty output for %s", fix.name)
+		}
+		recompiledPlist := r.compileSource("a27_re_"+fix.name, decomp)
+		recompiledDoc := loadRoundTripDocument(t, recompiledPlist)
+		assertActionsStructurallyEqual(t, doc, recompiledDoc)
 	}
 }
 
@@ -649,5 +888,26 @@ func TestP10R2_A28_FullReleaseTupleStructure(t *testing.T) {
 		if !ok || val == "" {
 			t.Fatalf("A28 failure: manifest missing required key %s", k)
 		}
+	}
+
+	// 1. Verify schema fingerprint matches DefaultRegistry
+	reg := schema.DefaultRegistry()
+	expectedFp := reg.Fingerprint()
+	if manifest["schemaFingerprint"] != expectedFp {
+		t.Fatalf("A28 failure: schemaFingerprint mismatch: manifest %s vs registry %s", manifest["schemaFingerprint"], expectedFp)
+	}
+
+	// 2. Verify compilerCommit is a valid Git commit object and ancestor of HEAD
+	compilerCommit := manifest["compilerCommit"]
+	cmdAncestor := exec.Command("git", "merge-base", "--is-ancestor", compilerCommit, "HEAD")
+	if err := cmdAncestor.Run(); err != nil {
+		t.Fatalf("A28 failure: compilerCommit %s is not an ancestor of HEAD: %v", compilerCommit, err)
+	}
+
+	// 3. Verify non-circularity: compilerCommit is an existing historical commit, not an uncommitted or future SHA
+	cmdCat := exec.Command("git", "cat-file", "-t", compilerCommit)
+	outCat, errCat := cmdCat.Output()
+	if errCat != nil || strings.TrimSpace(string(outCat)) != "commit" {
+		t.Fatalf("A28 failure: compilerCommit %s is not a valid git commit object: %v", compilerCommit, errCat)
 	}
 }

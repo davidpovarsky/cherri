@@ -2990,6 +2990,12 @@ func buildContentItemFilter(filterArg any) (map[string]any, string) {
 		if !ok {
 			panic(fmt.Sprintf("invalid filter predicate item of type %T; expected map with property, operator, value", rt))
 		}
+		if _, hasNested := tmap["predicates"]; hasNested {
+			panic("nested compound filters are not supported by Apple Shortcuts WFContentItemFilter; use flat predicates")
+		}
+		if _, hasCompound := tmap["compound"]; hasCompound {
+			panic("nested compound filters are not supported by Apple Shortcuts WFContentItemFilter; use flat predicates")
+		}
 		prop := ""
 		if p, found := tmap["property"]; found {
 			prop = strings.TrimSpace(fmt.Sprint(p))

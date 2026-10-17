@@ -69,7 +69,8 @@ fi
 # Test 2: Negative Mutation - Corrupted / Non-existent compiler SHA fails closed
 echo "Testing negative mutation: invalid compiler SHA..."
 MUTATED_HOME=$(mktemp -d 2>/dev/null || mktemp -d -t 'cherri-bad-sha')
-trap 'rm -rf "$TMP_HOME" "$MUTATED_HOME"' EXIT INT TERM
+STALE_DOCS_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'cherri-stale-docs')
+trap 'rm -rf "$TMP_HOME" "$MUTATED_HOME" "$STALE_DOCS_DIR"' EXIT INT TERM
 
 if CHERRI_HOME="$MUTATED_HOME" CHERRI_REF="0000000000000000000000000000000000000000" sh "$SCRIPT_DIR/setup.sh" 2>/dev/null; then
   echo "ERROR: setup.sh succeeded with non-existent compiler SHA!" >&2
@@ -78,13 +79,31 @@ else
   echo "PASS: Non-existent compiler SHA correctly rejected fail-closed."
 fi
 
-# Test 3: Negative Mutation - Stale docs fingerprint fails closed
+# Test 3: Negative Mutation - Stale docs fingerprint fails closed with verified compiler
 echo "Testing negative mutation: stale docs fingerprint..."
-if CHERRI_HOME="$MUTATED_HOME" CHERRI_DOCS_DIR="$TMP_HOME/docs" MANIFEST_SCHEMA_FP="0000000000000000000000000000000000000000000000000000000000000000" sh "$SCRIPT_DIR/doctor.sh" 2>/dev/null; then
-  echo "ERROR: doctor.sh succeeded with mismatched schema fingerprint!" >&2
-  exit 1
+# Copy valid docs to isolated temp dir and tamper with schema fingerprint in fork-language/actions.md
+cp -R "$TMP_HOME/docs"/* "$STALE_DOCS_DIR/" 2>/dev/null || cp -r "$TMP_HOME/docs"/* "$STALE_DOCS_DIR/"
+if [ -f "$STALE_DOCS_DIR/fork-language/actions.md" ]; then
+  sed -i 's/schema-fingerprint: [a-f0-9]*/schema-fingerprint: 0000000000000000000000000000000000000000000000000000000000000000/' "$STALE_DOCS_DIR/fork-language/actions.md" 2>/dev/null || true
+fi
+
+# Use the verified compiler installed in $TMP_HOME but point to the mutated docs
+DOCTOR_OUTPUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" 2>&1 || true)
+if echo "$DOCTOR_OUTPUT" | grep -qi "Schema Fingerprint mismatch"; then
+  echo "PASS: Causal isolation verified: doctor.sh failed specifically on docs fingerprint mismatch."
 else
-  echo "PASS: Mismatched schema fingerprint correctly rejected fail-closed."
+  echo "ERROR: doctor.sh did not fail with schema fingerprint mismatch! Output:" >&2
+  echo "$DOCTOR_OUTPUT" >&2
+  exit 1
+fi
+
+# Positive Control: doctor.sh must pass with verified compiler and verified docs
+echo "Running positive control verification..."
+if CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$TMP_HOME/docs" sh "$SCRIPT_DIR/doctor.sh" >/dev/null 2>&1; then
+  echo "PASS: Positive control doctor.sh passed with verified artifacts."
+else
+  echo "ERROR: Positive control doctor.sh failed unexpectedly!" >&2
+  exit 1
 fi
 
 echo "=== ALL REAL RELEASE INTEGRATION TESTS PASSED ==="
