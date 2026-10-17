@@ -1,0 +1,70 @@
+name: Cherri Cloud Relay - Sign
+
+# Permanent single-job relay. Subsequent builds only update the draft PR and
+# re-run this job. No per-request branch, commit, or workflow_dispatch token.
+on:
+  push:
+    branches:
+      - cloud-cherri-relay
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: cherri-cloud-v2-sign
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Cherri Cloud (sign)
+    runs-on: macos-latest
+    timeout-minutes: 55
+    steps:
+      - name: Checkout the fixed relay branch
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Load source Git blob and pinned Cherri Skill
+        id: request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHERRI_TARGET_MODE: sign
+        run: python3 relay/prepare.py
+
+      - name: Configure Go
+        if: steps.request.outputs.ready == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: false
+
+      - name: Restore verified compiler / docs cache
+        if: steps.request.outputs.ready == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/cherri-cloud-home
+          key: cherri-relay-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.request.outputs.compiler_sha }}-${{ steps.request.outputs.docs_sha }}
+
+      - name: Prepare iOS 27 simulator
+        if: steps.request.outputs.ready == 'true' && 'sign' == 'simulate'
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+          if ! command -v xcodegen >/dev/null 2>&1; then brew install xcodegen; fi
+
+      - name: Compile with canonical Skill
+        if: steps.request.outputs.ready == 'true'
+        run: bash relay/build.sh
+
+      - name: Upload matching request artifact
+        if: always() && steps.request.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-relay-${{ steps.request.outputs.request_id }}-a${{ github.run_attempt }}-sign
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 14
