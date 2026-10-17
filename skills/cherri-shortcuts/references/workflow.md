@@ -90,7 +90,7 @@ Never invent Apple Shortcuts plist keys from memory when the compiler can genera
 
 ## Signing
 
-On Open Minis/iSH, signed output uses Cherri's HubSign integration. Signing sends the generated Shortcut plist and name to RoutineHub's remote signing service. Do not sign automatically if the user explicitly requests local-only/no-network output; return the unsigned result instead.
+On Open Minis/iSH (and non-macOS platforms), signed output uses Cherri's remote signing integration (Shortcuty Sign / HubSign). Signing sends the generated Shortcut plist to the remote signing service. Do not sign automatically if the user explicitly requests local-only/no-network output; return the unsigned result instead.
 
 A successful signed Shortcut must begin with `AEA1`. `scripts/build.sh --signed` validates this.
 

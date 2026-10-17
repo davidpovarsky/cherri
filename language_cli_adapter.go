@@ -69,15 +69,17 @@ func HandleLanguageV2CLI() bool {
 				}
 			} else if arg == "--skip-sign" {
 				skipSign = true
+			} else if arg == "--hubsign" {
+				skipSign = false
 			} else if !strings.HasPrefix(arg, "-") && compPath == "" {
 				compPath = arg
 			}
 		}
 		if compPath == "" {
-			fmt.Fprintf(os.Stderr, "Usage: cherri compile <file.cherri> [--output <path>] [--skip-sign]\n")
+			fmt.Fprintf(os.Stderr, "Usage: cherri compile <file.cherri> [--output <path>] [--skip-sign] [--hubsign]\n")
 			os.Exit(1)
 		}
-		if !darwin {
+		if !darwin && !strings.Contains(strings.Join(os.Args, " "), "--hubsign") && !args.Using("signing-server") {
 			skipSign = true
 		}
 		if err := CompileFileV2(compPath, outPath, skipSign); err != nil {

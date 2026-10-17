@@ -65,7 +65,7 @@ sh "$SKILL_DIR/scripts/build.sh" source.cherri output.shortcut --unsigned
 ```
 
 7. If compilation fails, read the compiler diagnostic code (e.g. `E_UNKNOWN_ARGUMENT`, `E_ARGUMENT_TYPE`, `E_MISSING_ARGUMENT`), search the relevant action/docs, edit the source, and retry. Never claim success without a successful compiler exit.
-8. For final delivery, sign explicitly through Cherri/HubSign unless the user asks for unsigned output:
+8. For final delivery, sign explicitly through Cherri remote signing (Shortcuty Sign / HubSign) unless the user asks for unsigned output:
 ```sh
 sh "$SKILL_DIR/scripts/build.sh" source.cherri output.shortcut --signed
 ```

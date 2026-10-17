@@ -83,7 +83,7 @@ the primary behavior.
 ## Limitations
 
 
-- macOS native `shortcuts sign` is unavailable; the default signed path uses HubSign.
+- macOS native `shortcuts sign` is unavailable; the default signed path uses Cherri's remote signing service (Shortcuty Sign / HubSign).
 - The macOS Shortcuts Toolkit SQLite database is not automatically available inside iSH. Decompile uses `--no-toolkit` by default. A user-supplied Toolkit DB can be used manually with Cherri's `--toolkit` option.
 - Third-party app actions depend on Cherri definitions, packages, raw actions, or a supplied Toolkit database.
-- Network is required for first source setup/docs cloning, package installation, Git packages, iCloud imports, and HubSign signing.
+- Network is required for first source setup/docs cloning, package installation, Git packages, iCloud imports, and remote signing.

@@ -46,7 +46,7 @@ func main() {
 			if args.Using("output") {
 				outPath = args.Value("output")
 			}
-			skipSign := args.Using("skip-sign") || !darwin
+			skipSign := args.Using("skip-sign") || (!darwin && !args.Using("hubsign") && !args.Using("signing-server"))
 			if err := CompileFileV2(filePath, outPath, skipSign); err != nil {
 				fmt.Fprintf(os.Stderr, "Compilation error: %v\n", err)
 				os.Exit(1)

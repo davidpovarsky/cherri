@@ -115,7 +115,7 @@ func init() {
 	})
 	args.Register(args.Argument{
 		Name:        "hubsign",
-		Description: "Sign the compiled Shortcut using RoutineHub's remote signing service.",
+		Description: "Sign the compiled Shortcut using the remote signing service (Shortcuty Sign / HubSign).",
 	})
 	args.Register(args.Argument{
 		Name:        "no-ansi",

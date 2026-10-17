@@ -6,9 +6,11 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"os/exec"
@@ -37,7 +39,7 @@ func SignShortcut(inPath, outPath, mode string) error {
 	inputPath = inPath
 	outputPath = outPath
 
-	if darwin {
+	if darwin && !args.Using("hubsign") && !args.Using("signing-server") {
 		if args.Using("debug") {
 			fmt.Printf("Signing %s to %s...", inPath, outPath)
 		}
@@ -66,6 +68,14 @@ func SignShortcut(inPath, outPath, mode string) error {
 			fmt.Print(ansi("Failed!\n", red))
 		}
 		fmt.Printf("%s\n%s\n", ansi("Failed to sign Shortcut using macOS :(", orange, bold), ansi(stdErr.String(), orange))
+	}
+
+	if args.Using("signing-server") {
+		var custom = SigningService{
+			name: "Custom Signing Server URL",
+			url:  args.Value("signing-server"),
+		}
+		return useSigningServiceExplicit(&custom, inPath, outPath)
 	}
 
 	var hub = hubSign()
@@ -185,12 +195,104 @@ func requestSignedShortcutExplicit(service *SigningService, inPath, outPath stri
 	return SignShortcutBytes(service, name, xmlData)
 }
 
-// SignShortcutBytes signs explicit plist XML bytes using a remote signing service.
+/// SignShortcutBytes signs explicit plist XML bytes using a remote signing service.
 func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]byte, error) {
 	if name == "" {
 		name = "Shortcut"
 	}
 
+	// 1. If service is Shortcuty Sign or supports multipart file upload:
+	if strings.Contains(service.url, "shortcuty.app") || strings.Contains(service.url, "sign?response=json") {
+		var b bytes.Buffer
+		w := multipart.NewWriter(&b)
+		part, err := w.CreateFormFile("file", name+".shortcut")
+		if err != nil {
+			return nil, fmt.Errorf("failed to create multipart form file: %w", err)
+		}
+		if _, err := part.Write(xmlData); err != nil {
+			return nil, fmt.Errorf("failed to write multipart payload: %w", err)
+		}
+		if err := w.Close(); err != nil {
+			return nil, fmt.Errorf("failed to close multipart writer: %w", err)
+		}
+
+		request, httpErr := http.NewRequest("POST", service.url, &b)
+		if httpErr != nil {
+			return nil, fmt.Errorf("failed to create http request: %w", httpErr)
+		}
+		request.Header.Set("Content-Type", w.FormDataContentType())
+		request.Header.Set("User-Agent", fmt.Sprintf("Shortcuts/5037.111 cherri/%s", version))
+
+		client := &http.Client{
+			Timeout: time.Second * 45,
+		}
+		response, resErr := client.Do(request)
+		if resErr != nil {
+			return nil, fmt.Errorf("signing request error: %w", resErr)
+		}
+		defer response.Body.Close()
+
+		body, readErr := io.ReadAll(response.Body)
+		if readErr != nil {
+			return nil, fmt.Errorf("failed to read response body: %w", readErr)
+		}
+
+		if response.StatusCode != http.StatusOK {
+			signingServiceFailed = true
+			backoff += 10
+			return nil, fmt.Errorf("signing service failed (%s): %s", response.Status, string(body))
+		}
+
+		signingServiceFailed = false
+		if backoff > 10 {
+			backoff -= 10
+		} else {
+			backoff = 10
+		}
+
+		contentType := response.Header.Get("Content-Type")
+		if strings.Contains(contentType, "application/json") {
+			var jsonRes struct {
+				Success bool `json:"success"`
+				File    struct {
+					Format        string `json:"format"`
+					ContentBase64 string `json:"content_base64"`
+					SignedSHA256  string `json:"signed_sha256"`
+				} `json:"file"`
+				Error struct {
+					Message string `json:"message"`
+					Code    string `json:"code"`
+				} `json:"error"`
+				Message string `json:"message"`
+			}
+			if err := json.Unmarshal(body, &jsonRes); err == nil {
+				if jsonRes.Success && jsonRes.File.ContentBase64 != "" {
+					decoded, err := base64.StdEncoding.DecodeString(jsonRes.File.ContentBase64)
+					if err != nil {
+						return nil, fmt.Errorf("failed to decode base64 signed payload: %w", err)
+					}
+					if looksLikeSignedShortcut(decoded) {
+						return decoded, nil
+					}
+					return nil, fmt.Errorf("decoded signing payload missing AEA1 header")
+				}
+				if jsonRes.Error.Message != "" {
+					return nil, fmt.Errorf("signing server error: %s (%s)", jsonRes.Error.Message, jsonRes.Error.Code)
+				}
+				if jsonRes.Message != "" {
+					return nil, fmt.Errorf("signing server error: %s", jsonRes.Message)
+				}
+			}
+		}
+
+		if looksLikeSignedShortcut(body) {
+			return body, nil
+		}
+
+		return nil, fmt.Errorf("unexpected signing service response: %s", string(body))
+	}
+
+	// 2. Legacy scaxyz/shortcut-signing-server JSON payload:
 	var payload = map[string]string{
 		"shortcutName": name,
 		"shortcut":     string(xmlData),
@@ -205,7 +307,7 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 		return nil, fmt.Errorf("failed to create http request: %w", httpErr)
 	}
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("User-Agent", fmt.Sprintf("cherri/%s", version))
+	request.Header.Set("User-Agent", fmt.Sprintf("Shortcuts/5037.111 cherri/%s", version))
 
 	var client = &http.Client{
 		Timeout: time.Second * 30,
@@ -229,7 +331,6 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 	}
 
 	signingServiceFailed = false
-
 	if backoff > 10 {
 		backoff -= 10
 	} else {
@@ -274,13 +375,13 @@ func removeUnsigned() {
 	}
 }
 
-// Sign the Shortcut using RoutineHub's signing service.
+// Sign the Shortcut using the active remote signing service.
 func hubSign() SigningService {
 	return SigningService{
-		name: "HubSign",
-		url:  "https://hubsign.routinehub.services/sign",
+		name: "Shortcuty Sign",
+		url:  "https://sign.shortcuty.app/api/v1/sign?response=json",
 		info: func() string {
-			return fmt.Sprintf("Shortcut Signing Powered By %s", ansi("RoutineHub", red))
+			return fmt.Sprintf("Shortcut Signing Powered By %s", ansi("Shortcuty Sign", red))
 		},
 	}
 }
