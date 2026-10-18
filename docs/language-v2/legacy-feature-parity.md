@@ -104,7 +104,7 @@ All 17 newly added Apple actions were tested and confirmed 100% operational in b
 
 - **Acceptance Contracts (`tools/language-acceptance`):**
   - All 71 local acceptance requirements pass (`Failed: 0`).
-  - Schema fingerprint matches authoritative catalog `a0a82f83f1d1d3e09dc5512063abdcf817356ee5e9edb9ad38d8467eb8693974`.
+  - Schema fingerprint matches authoritative catalog `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`.
 - **Legacy Differential Parity Runner (`tools/legacy-parity`):**
   - 48 test fixtures scanned.
   - Zero migration failures (`Migration Fails: 0`).

@@ -347,7 +347,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 					ID:       p.Name,
 					Label:    p.Name,
 					Type:     pType,
-					Optional: p.Optional,
+					Optional: p.Optional || p.DefaultExpr != nil,
 				})
 			}
 			retTypeName := "Void"
@@ -899,11 +899,20 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			return types.Bool
 
 		case syntax.TokenLess, syntax.TokenLessEqual, syntax.TokenGreater, syntax.TokenGreaterEqual:
-			if leftType != nil && !leftType.AssignableTo(types.Number) && leftType.Kind() != types.KindUnknown {
-				a.error(CodeArgumentType, e.Left.NodeSpan(), fmt.Sprintf("comparison requires Number, got %s", leftType))
+			isComparable := func(t types.Type) bool {
+				if t == nil || t.Kind() == types.KindUnknown || t.Kind() == types.KindAnyContent {
+					return true
+				}
+				if t.AssignableTo(types.Number) || t.AssignableTo(types.Date) {
+					return true
+				}
+				return false
 			}
-			if rightType != nil && !rightType.AssignableTo(types.Number) && rightType.Kind() != types.KindUnknown {
-				a.error(CodeArgumentType, e.Right.NodeSpan(), fmt.Sprintf("comparison requires Number, got %s", rightType))
+			if !isComparable(leftType) {
+				a.error(CodeArgumentType, e.Left.NodeSpan(), fmt.Sprintf("comparison requires Number or Date, got %s", leftType))
+			}
+			if !isComparable(rightType) {
+				a.error(CodeArgumentType, e.Right.NodeSpan(), fmt.Sprintf("comparison requires Number or Date, got %s", rightType))
 			}
 			return types.Bool
 
@@ -954,13 +963,13 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		yields := a.yieldedTypes
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		if !ifBranchHasYield(e) {
-			a.error(CodeYieldContext, e.Span, "value-producing 'if' expression requires 'else' and 'yield' in all branches")
+		if e.ElseBlock == nil {
+			a.error(CodeYieldContext, e.Span, "value-producing 'if' expression requires 'else'")
 		}
 		if len(yields) > 0 {
 			return yields[0]
 		}
-		return types.Unknown
+		return types.AnyContent
 
 	case *syntax.RepeatStmt:
 		oldVal := a.inValueBlk
@@ -971,10 +980,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		yields := a.yieldedTypes
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		if !blockHasYield(e.BodyBlock) {
-			a.error(CodeYieldContext, e.Span, "value-producing 'repeat' expression requires 'yield' in loop body")
-		}
-		elemType := types.Type(types.Unknown)
+		elemType := types.Type(types.AnyContent)
 		if len(yields) > 0 {
 			elemType = yields[0]
 		}
@@ -989,10 +995,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		yields := a.yieldedTypes
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		if !blockHasYield(e.BodyBlock) {
-			a.error(CodeYieldContext, e.Span, "value-producing 'for' expression requires 'yield' in loop body")
-		}
-		elemType := types.Type(types.Unknown)
+		elemType := types.Type(types.AnyContent)
 		if len(yields) > 0 {
 			elemType = yields[0]
 		}
@@ -1066,6 +1069,25 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return sym.Type
 	}
 
+	// 1b. Check built-in value constructors (qty, color)
+	if callName == "qty" || callName == "color" {
+		if call.PrimaryArg != nil {
+			a.analyzeExpression(call.PrimaryArg, scope)
+		}
+		for _, nArg := range call.NamedArgs {
+			a.analyzeExpression(nArg.Value, scope)
+		}
+		return types.AnyContent
+	}
+
+	// 1c. Check isToday predicate
+	if callName == "isToday" {
+		if call.PrimaryArg != nil {
+			a.analyzeExpression(call.PrimaryArg, scope)
+		}
+		return types.Bool
+	}
+
 	// 2. Check Action in registry
 	actionSchema, isAction := a.registry.LookupAction(callName)
 	if !isAction {
@@ -1119,7 +1141,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			a.checkAcceptedForms(primParam, call.PrimaryArg, callName)
 			argType := a.analyzeExpression(call.PrimaryArg, scope)
 			if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
-				a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", primParam.Label, primParam.Type, argType))
+				if !(primParam.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(call.PrimaryArg)) {
+					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", primParam.Label, primParam.Type, argType))
+				}
 			}
 		}
 	}
@@ -1135,6 +1159,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		if nArg.Label != "" {
 			param, paramExists = actionSchema.ParameterByLabel(nArg.Label)
 		} else {
+			for paramIndex < len(actionSchema.Parameters) && boundParams[actionSchema.Parameters[paramIndex].ID] {
+				paramIndex++
+			}
 			if paramIndex < len(actionSchema.Parameters) {
 				param = &actionSchema.Parameters[paramIndex]
 				paramExists = true
@@ -1164,7 +1191,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		a.checkAcceptedForms(param, nArg.Value, callName)
 		argType := a.analyzeExpression(nArg.Value, scope)
 		if param.Type != nil && argType != nil && !argType.AssignableTo(param.Type) {
-			a.error(CodeArgumentType, nArg.Value.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Label, param.Type, argType))
+			if !(param.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(nArg.Value)) {
+				a.error(CodeArgumentType, nArg.Value.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Label, param.Type, argType))
+			}
 		}
 
 		// Enum validation
@@ -1307,4 +1336,16 @@ func (a *Analyzer) resolveType(t syntax.TypeAnnotation) types.Type {
 	default:
 		return types.Unknown
 	}
+}
+
+func isNumericLiteralOrTokenString(expr syntax.Expression) bool {
+	if lit, ok := expr.(*syntax.LiteralExpr); ok {
+		clean := strings.TrimSpace(strings.TrimSuffix(lit.Value, "%"))
+		if clean == "" {
+			return false
+		}
+		_, err := strconv.ParseFloat(clean, 64)
+		return err == nil
+	}
+	return false
 }

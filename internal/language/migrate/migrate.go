@@ -434,8 +434,13 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 			trimmed = strings.TrimSpace(line)
 		}
 		if strings.Contains(line, " <> ") {
-			re := regexp.MustCompile(`(\s*if\s+)(.+?)\s+<>\s+([0-9.]+)\s+([0-9.]+)(\s*\{)`)
+			re := regexp.MustCompile(`(\s*if\s+)(.+?)\s+<>\s+(\S+)\s+(\S+)(\s*\{)`)
 			line = re.ReplaceAllString(line, "${1}${2} >= ${3} && ${2} <= ${4}${5}")
+			trimmed = strings.TrimSpace(line)
+		}
+		if strings.Contains(line, " isToday") {
+			re := regexp.MustCompile(`(\s*if\s+)(.+?)\s+isToday(\s*\{)`)
+			line = re.ReplaceAllString(line, "${1}isToday(${2})${3}")
 			trimmed = strings.TrimSpace(line)
 		}
 

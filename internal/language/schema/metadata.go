@@ -6,6 +6,7 @@
 package schema
 
 import (
+	"sort"
 	"strings"
 )
 
@@ -714,4 +715,23 @@ func LookupVersionValue(name string) string {
 func LookupTriggerFamilyValue(family string) string {
 	v, _ := LookupTriggerFamily(family)
 	return v
+}
+
+// DefaultInputContentItemClasses returns the canonical sorted list of all 21 WFContentItem classes.
+func DefaultInputContentItemClasses() []string {
+	seen := make(map[string]bool)
+	classes := make([]string, 0, len(ContentItemClasses))
+	for _, cls := range ContentItemClasses {
+		if !seen[cls] {
+			seen[cls] = true
+			classes = append(classes, cls)
+		}
+	}
+	sort.Strings(classes)
+	return classes
+}
+
+// DefaultWorkflowTypes returns the canonical default workflow types.
+func DefaultWorkflowTypes() []string {
+	return []string{"Watch", "WFWorkflowTypeShowInSearch"}
 }

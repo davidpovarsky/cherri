@@ -54,6 +54,10 @@ func main() {
 			return
 		}
 
+		if args.Using("load-all-actions") {
+			loadStandardActions()
+		}
+
 		handleFile()
 
 		initParse()

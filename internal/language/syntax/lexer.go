@@ -23,10 +23,14 @@ type Lexer struct {
 
 // NewLexer creates a new Lexer for a source file.
 func NewLexer(file *source.File) *Lexer {
+	pos := 0
+	if strings.HasPrefix(file.Content, "\xef\xbb\xbf") {
+		pos = 3
+	}
 	return &Lexer{
 		file: file,
 		src:  file.Content,
-		pos:  0,
+		pos:  pos,
 	}
 }
 

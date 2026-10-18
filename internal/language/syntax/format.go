@@ -2,6 +2,7 @@ package syntax
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/source"
@@ -220,6 +221,10 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 				f.buf.WriteString(", ")
 			}
 			fmt.Fprintf(&f.buf, "%s: %s", p.Name, formatTypeAnnotation(p.TypeExpr))
+			if p.DefaultExpr != nil {
+				f.buf.WriteString(" = ")
+				f.formatExpression(p.DefaultExpr)
+			}
 		}
 		f.buf.WriteString(")")
 		if d.ReturnType != nil {
@@ -234,6 +239,36 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		if d.PrimaryParam != "" {
 			f.writeIndent()
 			fmt.Fprintf(&f.buf, "primary: %q\n", d.PrimaryParam)
+		}
+		if len(d.Bindings) > 0 {
+			f.writeIndent()
+			f.buf.WriteString("bindings: {\n")
+			f.indent++
+			bindingKeys := make([]string, 0, len(d.Bindings))
+			for k := range d.Bindings {
+				bindingKeys = append(bindingKeys, k)
+			}
+			sort.Strings(bindingKeys)
+			for _, k := range bindingKeys {
+				b := d.Bindings[k]
+				f.writeIndent()
+				fmt.Fprintf(&f.buf, "%s: {\n", k)
+				f.indent++
+				if b.WireKey != "" {
+					f.writeIndent()
+					fmt.Fprintf(&f.buf, "key: %q\n", b.WireKey)
+				}
+				if b.Codec != "" {
+					f.writeIndent()
+					fmt.Fprintf(&f.buf, "codec: %q\n", b.Codec)
+				}
+				f.indent--
+				f.writeIndent()
+				f.buf.WriteString("},\n")
+			}
+			f.indent--
+			f.writeIndent()
+			f.buf.WriteString("}\n")
 		}
 		f.indent--
 		f.writeIndent()

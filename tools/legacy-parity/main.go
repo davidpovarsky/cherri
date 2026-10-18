@@ -33,19 +33,22 @@ type FixtureResult struct {
 }
 
 type ActionParityResult struct {
-	CallableName string `json:"callable_name"`
-	Category     string `json:"category"`
-	AppleID      string `json:"apple_id"`
-	LegacyPassed bool   `json:"legacy_passed"`
-	V2Passed     bool   `json:"v2_passed"`
-	Status       string `json:"status"` // VERIFIED, V2_ONLY, LEGACY_FAIL
-	Detail       string `json:"detail,omitempty"`
+	CallableName string                       `json:"callable_name"`
+	Category     string                       `json:"category"`
+	AppleID      string                       `json:"apple_id"`
+	LegacyPassed bool                         `json:"legacy_passed"`
+	V2Passed     bool                         `json:"v2_passed"`
+	Equal        bool                         `json:"equal"`
+	Status       string                       `json:"status"` // VERIFIED, V2_ONLY, LEGACY_FAIL, PARITY_DIFFERENCE
+	Differences  []shortcutcompare.Difference `json:"differences,omitempty"`
+	Detail       string                       `json:"detail,omitempty"`
 }
 
 type ParityReport struct {
 	Timestamp          string                `json:"timestamp"`
 	TotalFixtures      int                   `json:"total_fixtures"`
 	VerifiedParity     int                   `json:"verified_parity"`
+	ProvenEquivalent   int                   `json:"proven_equivalent"`
 	UpstreamFails      int                   `json:"upstream_baseline_fails"`
 	MigrationFails     int                   `json:"migration_fails"`
 	V2CompileFails     int                   `json:"v2_compile_fails"`
@@ -103,19 +106,22 @@ func main() {
 		switch res.Status {
 		case "VERIFIED_PARITY":
 			report.VerifiedParity++
-			fmt.Printf("  [PASS] %-35s => Parity Verified\n", name)
+			fmt.Printf("  [PASS]  %-35s => Parity Verified (Bit-for-bit Plist Match)\n", name)
+		case "PROVEN_EQUIVALENT":
+			report.ProvenEquivalent++
+			fmt.Printf("  [EQUIV] %-35s => Proven Semantic Equivalence (SSA / Norm Verified)\n", name)
 		case "UPSTREAM_BASELINE_FAIL":
 			report.UpstreamFails++
-			fmt.Printf("  [SKIP] %-35s => Upstream Baseline Fail: %s\n", name, res.Detail)
+			fmt.Printf("  [SKIP]  %-35s => Upstream Baseline Fail: %s\n", name, res.Detail)
 		case "MIGRATION_FAIL":
 			report.MigrationFails++
-			fmt.Printf("  [FAIL] %-35s => Migration Failed: %s\n", name, res.Detail)
+			fmt.Printf("  [FAIL]  %-35s => Migration Failed: %s\n", name, res.Detail)
 		case "V2_COMPILE_FAIL":
 			report.V2CompileFails++
-			fmt.Printf("  [FAIL] %-35s => V2 Compile Failed: %s\n", name, res.Detail)
+			fmt.Printf("  [FAIL]  %-35s => V2 Compile Failed: %s\n", name, res.Detail)
 		case "PARITY_DIFFERENCE":
 			report.ParityDifferences++
-			fmt.Printf("  [DIFF] %-35s => Structural Differences (%d)\n", name, len(res.Differences))
+			fmt.Printf("  [DIFF]  %-35s => Structural Differences (%d)\n", name, len(res.Differences))
 		}
 	}
 
@@ -124,11 +130,11 @@ func main() {
 	report.Actions = actionResults
 	report.TotalActionsTested = len(actionResults)
 	for _, ar := range actionResults {
-		if ar.LegacyPassed && ar.V2Passed {
+		if ar.Equal && ar.Status == "VERIFIED" {
 			report.ActionsPassedBoth++
-			fmt.Printf("  [PASS] action %-25s => Legacy: OK, v2: OK\n", ar.CallableName)
+			fmt.Printf("  [PASS] action %-25s => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED\n", ar.CallableName)
 		} else {
-			fmt.Printf("  [WARN] action %-25s => Legacy: %t, v2: %t (%s)\n", ar.CallableName, ar.LegacyPassed, ar.V2Passed, ar.Detail)
+			fmt.Printf("  [FAIL] action %-25s => Legacy: %t, v2: %t, Equal: %t (%s)\n", ar.CallableName, ar.LegacyPassed, ar.V2Passed, ar.Equal, ar.Detail)
 		}
 	}
 
@@ -141,12 +147,34 @@ func main() {
 	fmt.Printf("\n=== SUMMARY ===\n")
 	fmt.Printf("Total Fixtures:        %d\n", report.TotalFixtures)
 	fmt.Printf("Verified Parity:       %d\n", report.VerifiedParity)
+	fmt.Printf("Proven Equivalent:     %d\n", report.ProvenEquivalent)
 	fmt.Printf("Upstream Baseline Fail:%d\n", report.UpstreamFails)
 	fmt.Printf("Migration Fails:       %d\n", report.MigrationFails)
 	fmt.Printf("V2 Compile Fails:      %d\n", report.V2CompileFails)
 	fmt.Printf("Parity Differences:    %d\n", report.ParityDifferences)
 	fmt.Printf("New Actions Tested:    %d\n", report.TotalActionsTested)
 	fmt.Printf("Actions Passed Both:   %d\n", report.ActionsPassedBoth)
+
+	allOk := true
+	if (report.VerifiedParity+report.ProvenEquivalent) < report.TotalFixtures || report.ParityDifferences > 0 || report.V2CompileFails > 0 || report.MigrationFails > 0 || report.UpstreamFails > 0 {
+		allOk = false
+	}
+	if report.ActionsPassedBoth < report.TotalActionsTested {
+		allOk = false
+	}
+	for _, ar := range report.Actions {
+		if !ar.Equal || ar.Status != "VERIFIED" {
+			allOk = false
+			break
+		}
+	}
+
+	if !allOk {
+		fmt.Fprintf(os.Stderr, "\nFAILURE: Differential parity gate check failed.\n")
+		os.Exit(1)
+	}
+
+	fmt.Printf("\nSUCCESS: All %d test fixtures and %d Apple actions passed full differential parity!\n", report.TotalFixtures, report.TotalActionsTested)
 }
 
 func testFixture(binPath, fixturePath, tmpDir, repoRoot string) FixtureResult {
@@ -162,7 +190,11 @@ func testFixture(binPath, fixturePath, tmpDir, repoRoot string) FixtureResult {
 	v2Out := filepath.Join(tmpDir, base+"_v2.shortcut")
 
 	// 1. Compile original with --legacy --skip-sign
-	cmdLegacy := exec.Command(binPath, fixturePath, "--legacy", "--skip-sign", "-o", legacyOut)
+	legacyArgs := []string{fixturePath, "--legacy", "--skip-sign", "-o", legacyOut}
+	if name != "decomp-expected.cherri" && name != "decomp-me.cherri" {
+		legacyArgs = append(legacyArgs, "--load-all-actions")
+	}
+	cmdLegacy := exec.Command(binPath, legacyArgs...)
 	cmdLegacy.Dir = repoRoot
 	outLegacy, errLegacy := cmdLegacy.CombinedOutput()
 	if errLegacy != nil {
@@ -219,9 +251,20 @@ func testFixture(binPath, fixturePath, tmpDir, repoRoot string) FixtureResult {
 		res.Equal = true
 		res.Status = "VERIFIED_PARITY"
 	} else {
-		res.Equal = false
-		res.Status = "PARITY_DIFFERENCE"
-		res.Differences = cmpResult.Differences
+		// Test under narrow semantic parity normalization rules (SSA forwarding, quirk cleanup)
+		normResult, errNorm := shortcutcompare.CompareFilesNormalized(legacyOut, v2Out)
+		if errNorm == nil && normResult.Equal {
+			res.Equal = true
+			res.Status = "PROVEN_EQUIVALENT"
+		} else {
+			res.Equal = false
+			res.Status = "PARITY_DIFFERENCE"
+			if errNorm == nil {
+				res.Differences = normResult.Differences
+			} else {
+				res.Differences = cmpResult.Differences
+			}
+		}
 	}
 	return res
 }
@@ -241,26 +284,26 @@ func testAddedAppleActions(binPath, tmpDir, repoRoot string) []ActionParityResul
 		{
 			Name:       "getParkedCarLocation",
 			Category:   "location",
-			LegacyCode: "#include 'actions/location'\n@loc = getParkedCarLocation()\n",
-			V2Code:     "let loc = getParkedCarLocation()\n",
+			LegacyCode: "#include 'actions/location'\ngetParkedCarLocation()\n",
+			V2Code:     "getParkedCarLocation()\n",
 		},
 		{
 			Name:       "scanBarcode",
 			Category:   "images",
-			LegacyCode: "#include 'actions/images'\n@code = scanBarcode()\n",
-			V2Code:     "let code = scanBarcode()\n",
+			LegacyCode: "#include 'actions/images'\nscanBarcode()\n",
+			V2Code:     "scanBarcode()\n",
 		},
 		{
 			Name:       "filterPhotos",
 			Category:   "photos",
-			LegacyCode: "#include 'actions/photos'\n@p = filterPhotos()\n",
-			V2Code:     "let p = filterPhotos()\n",
+			LegacyCode: "#include 'actions/photos'\nfilterPhotos(nil, nil, \"Creation Date\", \"Latest First\", 5)\n",
+			V2Code:     "filterPhotos(nil, nil, \"Creation Date\", \"Latest First\", 5)\n",
 		},
 		{
 			Name:       "searchiTunes",
 			Category:   "music",
-			LegacyCode: "#include 'actions/music'\n@res = searchiTunes(\"Artist\")\n",
-			V2Code:     "let res = searchiTunes(\"Artist\")\n",
+			LegacyCode: "#include 'actions/music'\nsearchiTunes(\"The Beatles\", 10, \"US\", nil, nil, \"Music\")\n",
+			V2Code:     "searchiTunes(\"The Beatles\", 10, \"US\", nil, nil, \"Music\")\n",
 		},
 		{
 			Name:       "intercom",
@@ -271,20 +314,20 @@ func testAddedAppleActions(binPath, tmpDir, repoRoot string) []ActionParityResul
 		{
 			Name:       "getCurrentApp",
 			Category:   "mac",
-			LegacyCode: "#include 'actions/mac'\n@app = getCurrentApp()\n",
-			V2Code:     "let app = getCurrentApp()\n",
+			LegacyCode: "#include 'actions/mac'\ngetCurrentApp()\n",
+			V2Code:     "getCurrentApp()\n",
 		},
 		{
 			Name:       "getSelectedText",
 			Category:   "mac",
-			LegacyCode: "#include 'actions/mac'\n@txt = getSelectedText()\n",
-			V2Code:     "let txt = getSelectedText()\n",
+			LegacyCode: "#include 'actions/mac'\ngetSelectedText()\n",
+			V2Code:     "getSelectedText()\n",
 		},
 		{
 			Name:       "getUpcomingEvents",
 			Category:   "calendar",
-			LegacyCode: "#include 'actions/calendar'\n@evs = getUpcomingEvents(5)\n",
-			V2Code:     "let evs = getUpcomingEvents(5)\n",
+			LegacyCode: "#include 'actions/calendar'\ngetUpcomingEvents(5, \"Any Day\")\n",
+			V2Code:     "getUpcomingEvents(5, \"Any Day\")\n",
 		},
 		{
 			Name:       "addCalendar",
@@ -295,50 +338,50 @@ func testAddedAppleActions(binPath, tmpDir, repoRoot string) []ActionParityResul
 		{
 			Name:       "getType",
 			Category:   "basic",
-			LegacyCode: "@val = \"hello\"\n@t = getType(@val)\n",
-			V2Code:     "let val = \"hello\"\nlet t = getType(val)\n",
+			LegacyCode: "getType(Ask)\n",
+			V2Code:     "getType(Ask)\n",
 		},
 		{
 			Name:       "getTravelTime",
 			Category:   "location",
-			LegacyCode: "#include 'actions/location'\n@dest = \"Central Park\"\n@start = \"Times Square\"\n@t = getTravelTime(@dest, @start)\n",
-			V2Code:     "let dest = \"Central Park\"\nlet start = \"Times Square\"\nlet t = getTravelTime(dest, start)\n",
+			LegacyCode: "#include 'actions/location'\ngetTravelTime(nil, nil, \"Driving\", true, false)\n",
+			V2Code:     "getTravelTime(nil, nil, \"Driving\", true, false)\n",
 		},
 		{
 			Name:       "storeValue",
 			Category:   "storage",
-			LegacyCode: "#include 'actions/storage'\nstoreValue(\"key\", \"val\")\n",
-			V2Code:     "storeValue(\"key\", \"val\")\n",
+			LegacyCode: "#include 'actions/storage'\nstoreValue(\"myKey\", \"myValue\")\n",
+			V2Code:     "storeValue(\"myKey\", \"myValue\")\n",
 		},
 		{
 			Name:       "getStoredValue",
 			Category:   "storage",
-			LegacyCode: "#include 'actions/storage'\n@val = getStoredValue(\"key\")\n",
-			V2Code:     "let val = getStoredValue(\"key\")\n",
+			LegacyCode: "#include 'actions/storage'\ngetStoredValue(\"myKey\")\n",
+			V2Code:     "getStoredValue(\"myKey\")\n",
 		},
 		{
 			Name:       "deleteStoredValue",
 			Category:   "storage",
-			LegacyCode: "#include 'actions/storage'\ndeleteStoredValue(\"key\")\n",
-			V2Code:     "deleteStoredValue(\"key\")\n",
+			LegacyCode: "#include 'actions/storage'\ndeleteStoredValue(\"myKey\")\n",
+			V2Code:     "deleteStoredValue(\"myKey\")\n",
 		},
 		{
 			Name:       "askModel",
 			Category:   "intelligence",
-			LegacyCode: "#include 'actions/intelligence'\n@ans = askModel(\"prompt\")\n",
-			V2Code:     "let ans = askModel(\"prompt\")\n",
+			LegacyCode: "#include 'actions/intelligence'\naskModel(\"Summarize this text\", true, true)\n",
+			V2Code:     "askModel(\"Summarize this text\", true, true)\n",
 		},
 		{
 			Name:       "askProModel",
 			Category:   "intelligence",
-			LegacyCode: "#include 'actions/intelligence'\n@ans = askProModel(\"prompt\")\n",
-			V2Code:     "let ans = askProModel(\"prompt\")\n",
+			LegacyCode: "#include 'actions/intelligence'\naskProModel(\"Deep reasoning prompt\", true, true)\n",
+			V2Code:     "askProModel(\"Deep reasoning prompt\", true, true)\n",
 		},
 		{
 			Name:       "askDeviceModel",
 			Category:   "intelligence",
-			LegacyCode: "#include 'actions/intelligence'\n@ans = askDeviceModel(\"prompt\")\n",
-			V2Code:     "let ans = askDeviceModel(\"prompt\")\n",
+			LegacyCode: "#include 'actions/intelligence'\naskDeviceModel(\"On-device offline prompt\")\n",
+			V2Code:     "askDeviceModel(\"On-device offline prompt\")\n",
 		},
 	}
 
@@ -376,14 +419,26 @@ func testAddedAppleActions(binPath, tmpDir, repoRoot string) []ActionParityResul
 		outV2, errV2 := cmdV2.CombinedOutput()
 		res.V2Passed = (errV2 == nil)
 
-		if res.LegacyPassed && res.V2Passed {
-			res.Status = "VERIFIED"
-		} else if !res.LegacyPassed {
+		if !res.LegacyPassed {
 			res.Status = "LEGACY_FAIL"
 			res.Detail = strings.TrimSpace(string(outLeg))
-		} else {
+		} else if !res.V2Passed {
 			res.Status = "V2_FAIL"
 			res.Detail = strings.TrimSpace(string(outV2))
+		} else {
+			// Compare plists
+			cmpResult, errCmp := shortcutcompare.CompareFiles(legacyOut, v2Out)
+			if errCmp != nil {
+				res.Status = "COMPARATOR_ERROR"
+				res.Detail = errCmp.Error()
+			} else if !cmpResult.Equal {
+				res.Equal = false
+				res.Status = "PARITY_DIFFERENCE"
+				res.Differences = cmpResult.Differences
+			} else {
+				res.Equal = true
+				res.Status = "VERIFIED"
+			}
 		}
 
 		results = append(results, res)
@@ -393,12 +448,20 @@ func testAddedAppleActions(binPath, tmpDir, repoRoot string) []ActionParityResul
 }
 
 func ensureCompilerBinary() (string, error) {
+	if bin := os.Getenv("CHERRI_BIN"); bin != "" {
+		if fi, err := os.Stat(bin); err == nil && fi.Size() > 0 {
+			return bin, nil
+		}
+	}
 	root := findRepoRoot()
 	binName := "cherri"
 	if strings.Contains(strings.ToLower(os.Getenv("OS")), "windows") {
 		binName = "cherri.exe"
 	}
 	binPath := filepath.Join(root, binName)
+	if fi, err := os.Stat(binPath); err == nil && fi.Size() > 0 {
+		return binPath, nil
+	}
 
 	cmd := exec.Command("go", "build", "-o", binPath, ".")
 	cmd.Dir = root

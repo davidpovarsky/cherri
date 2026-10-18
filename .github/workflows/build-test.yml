@@ -43,6 +43,9 @@ jobs:
     - name: Package Manager Test
       run: go test -run TestPackages -v ./...
 
+    - name: Differential Legacy Parity Gate
+      run: go test -v ./tools/legacy-parity/...
+
   build-test-macos:
     runs-on: macos-latest
     steps:
@@ -72,6 +75,9 @@ jobs:
 
     - name: Package Manager Test
       run: go test -run TestPackages -v ./...
+
+    - name: Differential Legacy Parity Gate
+      run: go test -v ./tools/legacy-parity/...
 
   build-test-nix:
     runs-on: ubuntu-latest

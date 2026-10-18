@@ -16,7 +16,7 @@ import (
 	"howett.net/plist"
 )
 
-const maxDifferences = 50
+const maxDifferences = 0 // 0 means unlimited diff reporting without truncation
 
 type Difference struct {
 	Path string `json:"path"`
@@ -83,6 +83,24 @@ func CompareFiles(pathA, pathB string) (*ComparisonResult, error) {
 		return nil, err
 	}
 	return CompareDocuments(docA, docB), nil
+}
+
+func CompareDocumentsNormalized(docA, docB map[string]any) *ComparisonResult {
+	normA := NormalizeDocumentForParity(docA)
+	normB := NormalizeDocumentForParity(docB)
+	return CompareDocuments(normA, normB)
+}
+
+func CompareFilesNormalized(pathA, pathB string) (*ComparisonResult, error) {
+	docA, err := LoadShortcutDocument(pathA)
+	if err != nil {
+		return nil, err
+	}
+	docB, err := LoadShortcutDocument(pathB)
+	if err != nil {
+		return nil, err
+	}
+	return CompareDocumentsNormalized(docA, docB), nil
 }
 
 func BuildDocumentScope(docA, docB map[string]any) *Scope {
@@ -192,7 +210,7 @@ func CompareActionParameters(legacyParams, v2Params map[string]any, scope *Scope
 }
 
 func compareDict(a, b map[string]any, path string, scope *Scope, ignoredKeys map[string]bool, res *ComparisonResult) {
-	if len(res.Differences) >= maxDifferences {
+	if maxDifferences > 0 && len(res.Differences) >= maxDifferences {
 		res.Truncated = true
 		return
 	}
@@ -299,7 +317,7 @@ func isActionParametersContext(path string) bool {
 }
 
 func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
-	if len(res.Differences) >= maxDifferences {
+	if maxDifferences > 0 && len(res.Differences) >= maxDifferences {
 		res.Truncated = true
 		return
 	}
@@ -445,7 +463,7 @@ func toNumeric(v any) (float64, bool) {
 }
 
 func addDiff(res *ComparisonResult, path, kind string, a, b any) {
-	if len(res.Differences) >= maxDifferences {
+	if maxDifferences > 0 && len(res.Differences) >= maxDifferences {
 		res.Truncated = true
 		return
 	}

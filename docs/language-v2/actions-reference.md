@@ -2,7 +2,7 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `a0a82f83f1d1d3e09dc5512063abdcf817356ee5e9edb9ad38d8467eb8693974`  
+**Schema Fingerprint:** `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`  
 **Total Actions:** 505  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
@@ -39,7 +39,7 @@ This documentation is generated automatically from the canonical Cherri v2 Actio
 Create an immutable array of text.
 
 ```cherri
-list(listItem: Text)
+list(listItem: Text, listItem: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -304,7 +304,7 @@ turnOnAlarm(alarm: AnyContent, showWhenRun?: Bool = "true")
 Create an email address value.
 
 ```cherri
-emailAddress(email: Text)
+emailAddress(email: Text, email: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -345,7 +345,7 @@ newContact(firstName: Text, lastName: Text, phoneNumber: Text, emailAddress: Tex
 Create a phone number value.
 
 ```cherri
-phoneNumber(number: Text)
+phoneNumber(number: Text, number: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -452,7 +452,7 @@ setVariable()
 Hide multiple apps. Allows exception.
 
 ```cherri
-hideAllApps(except?: Text)
+hideAllApps(except: Text, except?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -486,7 +486,7 @@ hideApp(appID: Text)
 Kills all apps. Allows exceptions.
 
 ```cherri
-killAllApps(except?: Text)
+killAllApps(except: Text, except?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -538,7 +538,7 @@ openApp(appID: Text, slideOver?: Bool)
 Quits all apps. Allows exceptions.
 
 ```cherri
-quitAllApps(except?: Text)
+quitAllApps(except: Text, except?: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -941,12 +941,12 @@ addWeatherLocation(location: AnyContent)
 Adjust a date or get the start of a time period.
 
 ```cherri
-adjustDate(date: Text, operation: Text, unit?: Unknown) -> Date
+adjustDate(date: Date, operation: Text, unit?: Unknown) -> Date
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `date` | `Text` | Yes | - | `WFDate` | - |
+| `date` | `Date` | Yes | - | `WFDate` | - |
 | `operation` | `Text` | Yes | - | `WFAdjustOperation` | Add, Subtract, Get Start of Minute, Get Start of Hour, Get Start of Day, Get Start of Week, Get Start of Month, Get Start of Year |
 | `unit` | `Unknown` | No | - | `WFDuration` | sec, min, hr, days, weeks, months, yr |
 
@@ -8508,7 +8508,7 @@ transcribeText(audio: AnyContent) -> Text
 Add a link to the reading list.
 
 ```cherri
-addToReadingList(url: Text)
+addToReadingList(url: Text, url: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -8543,7 +8543,7 @@ openCustomXCallbackURL(url: Text, successKey?: Text, cancelKey?: Text, errorKey?
 Create a URL value.
 
 ```cherri
-url(url: Text)
+url(url: Text, url: Text)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |

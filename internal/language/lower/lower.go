@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"unicode/utf16"
@@ -72,6 +73,7 @@ type Lowerer struct {
 	emitErr            error
 	isMac              *bool
 	exprTypes          map[syntax.Expression]types.Type
+	inExprStmt         bool
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -374,6 +376,17 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		}
 	}
 
+	if len(l.workflow.WorkflowTypes) == 0 {
+		l.workflow.WorkflowTypes = schema.DefaultWorkflowTypes()
+	}
+	if len(l.workflow.InputContentItemClasses) == 0 {
+		l.workflow.InputContentItemClasses = schema.DefaultInputContentItemClasses()
+	}
+	if l.session != nil {
+		l.session.SetMetadata("workflowTypes", l.workflow.WorkflowTypes)
+		l.session.SetMetadata("inputContentItemClasses", l.workflow.InputContentItemClasses)
+	}
+
 	return l.emitErr
 }
 
@@ -559,6 +572,9 @@ func (l *Lowerer) lowerTrigger(trig *syntax.TriggerDecl) error {
 		}
 	}
 	for k, v := range trig.Parameters {
+		if k == "event" || k == "level" || k == "locations" {
+			continue
+		}
 		if _, exists := params[k]; !exists {
 			params[k] = v
 		}
@@ -612,7 +628,26 @@ func (l *Lowerer) lowerImport(d *syntax.ImportDecl) error {
 	// 2. Resolve local module content
 	var content string
 	var resolvedPath string
-	if vmContent, ok := l.virtualModules[d.Path]; ok {
+	if d.Path == "stdfunc" || d.Path == "stdlib" || cleanPath == "stdfunc" || cleanPath == "stdlib" {
+		content = `function runJS(script: Text) {
+    let ios17bug = replaceText("#", "\u0023", script)
+    let uri = url(f"data:text/html;charset=utf-8,<body/><script>{ios17bug}</script>")
+    let richURI = uri.richtext
+    let decoded = urlDecode(richURI)
+
+    output(f"{decoded}")
+}
+
+function chooseFromVCard(items: List, prompt: Text) {
+    let menuItems = f"{items}"
+    let vcf = setName(menuItems, "cherri_chooseFromVCard.vcf")
+    let contact = vcf.contact
+    let chosenItem = chooseFromList(contact, prompt)
+
+    output(f"{chosenItem}")
+}`
+		resolvedPath = "stdfunc.cherri"
+	} else if vmContent, ok := l.virtualModules[d.Path]; ok {
 		content = vmContent
 	} else if vmContent, ok := l.virtualModules[cleanPath]; ok {
 		content = vmContent
@@ -707,8 +742,8 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 		l.workflow.Name = d.Name
 	}
 	// Defaults
-	l.workflow.IconGlyph = 59789
-	l.workflow.IconColor = 4282601983
+	l.workflow.IconGlyph = 61440
+	l.workflow.IconColor = 3031607807
 
 	if d.Metadata != nil {
 		for _, f := range d.Metadata.Fields {
@@ -1394,7 +1429,10 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 	case *syntax.AssignStmt:
 		return l.lowerAssign(s)
 	case *syntax.ExprStmt:
+		prev := l.inExprStmt
+		l.inExprStmt = true
 		_, err := l.lowerExpression(s.Expr)
+		l.inExprStmt = prev
 		return err
 	case *syntax.IfStmt:
 		return l.lowerIf(s)
@@ -1473,6 +1511,16 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			IsVariable:   true,
 			VariableName: b.Name,
 		}
+		if b.Mutable {
+			node := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.setvariable",
+				Parameters: map[string]interface{}{
+					"WFVariableName": b.Name,
+				},
+			}
+			l.emitAction(node)
+		}
 		return nil
 	}
 
@@ -1487,13 +1535,16 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 
 	if b.Mutable {
 		// Emit is.workflow.actions.setvariable
+		params := map[string]interface{}{
+			"WFVariableName": b.Name,
+		}
+		if att := l.materializeToAttachment(val); att != nil {
+			params["WFInput"] = att
+		}
 		node := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
 			AppleIdentifier: "is.workflow.actions.setvariable",
-			Parameters: map[string]interface{}{
-				"WFVariableName": b.Name,
-				"WFInput":        l.materializeToAttachment(val),
-			},
+			Parameters:      params,
 		}
 		l.emitAction(node)
 		l.bindings[b.Name] = BindingRef{
@@ -1574,6 +1625,40 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 					OutputName:      b.Name,
 					Parameters: map[string]interface{}{
 						"WFNumberActionNumber": v,
+					},
+				}
+				l.emitAction(node)
+			case int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8:
+				var n float64
+				switch num := v.(type) {
+				case int:
+					n = float64(num)
+				case int64:
+					n = float64(num)
+				case int32:
+					n = float64(num)
+				case int16:
+					n = float64(num)
+				case int8:
+					n = float64(num)
+				case uint:
+					n = float64(num)
+				case uint64:
+					n = float64(num)
+				case uint32:
+					n = float64(num)
+				case uint16:
+					n = float64(num)
+				case uint8:
+					n = float64(num)
+				}
+				node := &ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.number",
+					OutputUUID:      uuid,
+					OutputName:      b.Name,
+					Parameters: map[string]interface{}{
+						"WFNumberActionNumber": n,
 					},
 				}
 				l.emitAction(node)
@@ -1745,19 +1830,25 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 		}
 	}
 
-	node := &ir.NativeActionNode{
-		NodeID:          l.GenerateUUID(),
-		AppleIdentifier: "is.workflow.actions.setvariable",
-		Parameters: map[string]interface{}{
+		params := map[string]interface{}{
 			"WFVariableName": a.Name,
-			"WFInput":        l.materializeToAttachment(finalVal),
-		},
+		}
+		if att := l.materializeToAttachment(finalVal); att != nil {
+			params["WFInput"] = att
+		}
+		node := &ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.setvariable",
+			Parameters:      params,
+		}
+		l.emitAction(node)
+		return nil
 	}
-	l.emitAction(node)
-	return nil
-}
 
 func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
+	if val == nil {
+		return nil
+	}
 	if tok, ok := val.(*ir.AttachmentToken); ok {
 		return tok
 	}
@@ -1981,6 +2072,24 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			}
 			input = l.materializeToAttachment(condVal)
 			condCode = 100
+			compareVal = nil
+		}
+	} else if call, ok := stmt.Condition.(*syntax.CallExpr); ok {
+		if id, ok := call.Callee.(*syntax.IdentExpr); ok && id.Name == "isToday" {
+			argVal, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(argVal)
+			condCode = 1002
+			compareVal = nil
+		} else {
+			condVal, err := l.lowerExpression(stmt.Condition)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(condVal)
+			condCode = 100 // Has any value
 			compareVal = nil
 		}
 	} else if unaryExpr, ok := stmt.Condition.(*syntax.UnaryExpr); ok && unaryExpr.Op == syntax.TokenBang {
@@ -2341,6 +2450,10 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			return &ir.AttachmentToken{Type: "Variable", OutputName: "Repeat Item"}, nil
 		}
 		if e.Name == "ShortcutInput" {
+			l.workflow.HasShortcutInputVariables = true
+			if l.session != nil {
+				l.session.SetMetadata("hasShortcutInputVariables", true)
+			}
 			if len(l.functions) > 0 {
 				return &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"}, nil
 			}
@@ -3251,6 +3364,12 @@ func (l *Lowerer) toSemanticValue(val interface{}) backend.SemanticValue {
 		}
 		return backend.SemanticValue{Kind: backend.ValList, ListVal: items}
 	case map[string]interface{}:
+		if _, hasSer := v["WFSerializationType"]; hasSer {
+			return backend.SemanticValue{Kind: backend.ValRawNative, RawNativeVal: v}
+		}
+		if _, hasColor := v["WFColorRepresentationType"]; hasColor {
+			return backend.SemanticValue{Kind: backend.ValRawNative, RawNativeVal: v}
+		}
 		entries := make([]backend.DictEntry, 0, len(v))
 		for k, el := range v {
 			entries = append(entries, backend.DictEntry{Key: k, Value: l.toSemanticValue(el)})
@@ -3283,6 +3402,97 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 	default:
 		return nil, fmt.Errorf("complex callee not supported in lowering")
+	}
+
+	// Built-in value constructors (qty, color)
+	if actionName == "qty" {
+		var args []interface{}
+		if call.PrimaryArg != nil {
+			v, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, v)
+		}
+		for _, a := range call.NamedArgs {
+			v, err := l.lowerExpression(a.Value)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, v)
+		}
+		mag := ""
+		unit := ""
+		if len(args) > 0 {
+			mag = fmt.Sprintf("%v", args[0])
+		}
+		if len(args) > 1 {
+			unit = fmt.Sprintf("%v", args[1])
+		}
+		return map[string]interface{}{
+			"WFSerializationType": "WFQuantityFieldValue",
+			"Value": map[string]interface{}{
+				"Magnitude": mag,
+				"Unit":      unit,
+			},
+		}, nil
+	}
+
+	if actionName == "color" {
+		var args []interface{}
+		if call.PrimaryArg != nil {
+			v, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, v)
+		}
+		for _, a := range call.NamedArgs {
+			v, err := l.lowerExpression(a.Value)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, v)
+		}
+		r := 0.0
+		g := 0.0
+		b := 0.0
+		alpha := 1.0
+		toFloat := func(val interface{}) float64 {
+			switch v := val.(type) {
+			case float64:
+				return v
+			case float32:
+				return float64(v)
+			case int:
+				return float64(v)
+			case int64:
+				return float64(v)
+			default:
+				var f float64
+				fmt.Sscanf(fmt.Sprintf("%v", val), "%f", &f)
+				return f
+			}
+		}
+		if len(args) > 0 {
+			r = toFloat(args[0])
+		}
+		if len(args) > 1 {
+			g = toFloat(args[1])
+		}
+		if len(args) > 2 {
+			b = toFloat(args[2])
+		}
+		if len(args) > 3 {
+			alpha = toFloat(args[3])
+		}
+		return map[string]interface{}{
+			"WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
+			"redComponent":              r,
+			"greenComponent":            g,
+			"blueComponent":             b,
+			"alphaComponent":            alpha,
+		}, nil
 	}
 
 	// Check native escape: native.action, action, rawAction
@@ -3327,11 +3537,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				}
 				if m, ok := val.(map[string]interface{}); ok {
 					for k, v := range m {
-						node.Parameters[k] = v
+						node.Parameters[k] = l.normalizeRawActionParamValue(v)
 					}
 				} else if m, ok := val.(map[string]any); ok {
 					for k, v := range m {
-						node.Parameters[k] = v
+						node.Parameters[k] = l.normalizeRawActionParamValue(v)
 					}
 				} else {
 					return nil, fmt.Errorf("parameters argument to %s must be a dictionary, got %T", actionName, val)
@@ -3359,7 +3569,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if err != nil {
 					return nil, fmt.Errorf("failed to lower parameter %s: %w", arg.Label, err)
 				}
-				node.Parameters[arg.Label] = val
+				node.Parameters[arg.Label] = l.normalizeRawActionParamValue(val)
 			}
 		}
 		if strings.TrimSpace(node.AppleIdentifier) == "" {
@@ -3597,28 +3807,85 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			outputUUID = uuid
 		}
 		params := make(map[string]interface{})
-		if call.PrimaryArg != nil && actDecl.PrimaryParam != "" {
-			val, err := l.lowerExpression(call.PrimaryArg)
-			if err != nil {
-				return nil, err
+
+		getWireKey := func(param syntax.ParameterDecl) string {
+			if b, hasB := actDecl.Bindings[param.Name]; hasB && b.WireKey != "" {
+				return b.WireKey
 			}
-			wireKey := actDecl.PrimaryParam
-			if b, hasB := actDecl.Bindings[actDecl.PrimaryParam]; hasB && b.WireKey != "" {
-				wireKey = b.WireKey
-			}
-			params[wireKey] = val
+			return param.Name
 		}
+
+		providedParams := make(map[string]bool)
+		posIdx := 0
+
+		// Positional primary arg
+		if call.PrimaryArg != nil {
+			if actDecl.PrimaryParam != "" {
+				val, err := l.lowerExpression(call.PrimaryArg)
+				if err != nil {
+					return nil, err
+				}
+				wireKey := actDecl.PrimaryParam
+				if b, hasB := actDecl.Bindings[actDecl.PrimaryParam]; hasB && b.WireKey != "" {
+					wireKey = b.WireKey
+				}
+				params[wireKey] = val
+				providedParams[actDecl.PrimaryParam] = true
+			} else if len(actDecl.Parameters) > 0 {
+				param := actDecl.Parameters[0]
+				val, err := l.lowerExpression(call.PrimaryArg)
+				if err != nil {
+					return nil, err
+				}
+				params[getWireKey(param)] = val
+				providedParams[param.Name] = true
+				posIdx = 1
+			}
+		}
+
+		// Named or subsequent positional args
 		for _, arg := range call.NamedArgs {
-			val, err := l.lowerExpression(arg.Value)
-			if err != nil {
-				return nil, err
+			if arg.Label != "" {
+				val, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				wireKey := arg.Label
+				if b, hasB := actDecl.Bindings[arg.Label]; hasB && b.WireKey != "" {
+					wireKey = b.WireKey
+				}
+				params[wireKey] = val
+				providedParams[arg.Label] = true
+			} else {
+				// Positional arg
+				if posIdx < len(actDecl.Parameters) {
+					param := actDecl.Parameters[posIdx]
+					posIdx++
+					val, err := l.lowerExpression(arg.Value)
+					if err != nil {
+						return nil, err
+					}
+					params[getWireKey(param)] = val
+					providedParams[param.Name] = true
+				} else {
+					return nil, fmt.Errorf("action %q takes at most %d arguments, but more were provided", actionName, len(actDecl.Parameters))
+				}
 			}
-			wireKey := arg.Label
-			if b, hasB := actDecl.Bindings[arg.Label]; hasB && b.WireKey != "" {
-				wireKey = b.WireKey
-			}
-			params[wireKey] = val
 		}
+
+		// Apply default values for unprovided parameters
+		for _, param := range actDecl.Parameters {
+			if !providedParams[param.Name] {
+				if param.DefaultExpr != nil {
+					val, err := l.lowerExpression(param.DefaultExpr)
+					if err != nil {
+						return nil, err
+					}
+					params[getWireKey(param)] = val
+				}
+			}
+		}
+
 		node := &ir.NativeActionNode{
 			NodeID:          uuid,
 			AppleIdentifier: actDecl.AppleIdentifier,
@@ -3783,16 +4050,18 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	}
 
 	uuid := l.GenerateUUID()
+	prevInExprStmt := l.inExprStmt
+	l.inExprStmt = false
 
 	if l.session != nil {
 		callArgs := make([]backend.CallArgument, 0, len(call.NamedArgs)+1)
 		if call.PrimaryArg != nil {
 			if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
 				var primVal backend.SemanticValue
-				if primParam.WireKey == "WFInput" || primParam.Codec == "token" {
-					if _, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit {
+				if (primParam.WireKey == "WFInput" && primParam.Codec != "text") || primParam.Codec == "token" {
+					if lit, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit && lit.Type != syntax.TokenNone && lit.Type != syntax.TokenNull {
 						rawVal, err := l.lowerExpression(call.PrimaryArg)
-						if err == nil {
+						if err == nil && rawVal != nil {
 							att := l.materializeToAttachment(rawVal)
 							primVal = backend.SemanticValue{
 								Kind: backend.ValReference,
@@ -3850,6 +4119,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			if nArg.Label != "" {
 				param, exists = actionSchema.ParameterByLabel(nArg.Label)
 			} else {
+				for paramIndex < len(actionSchema.Parameters) && seenParams[actionSchema.Parameters[paramIndex].ID] {
+					paramIndex++
+				}
 				if paramIndex < len(actionSchema.Parameters) {
 					param = &actionSchema.Parameters[paramIndex]
 					exists = true
@@ -3906,7 +4178,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 
 		outputName := l.currentBindingName
 		var outputUUID string
-		if outputName != "" || (actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void") {
+		if outputName != "" || (!prevInExprStmt && actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void") {
 			outputUUID = uuid
 		}
 
@@ -3957,7 +4229,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			"TeamIdentifier":      actionSchema.AppIntent.TeamIdentifier,
 		}
 	}
-	if actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void" {
+	if l.currentBindingName != "" || (!prevInExprStmt && actionSchema.OutputTypeName != "" && actionSchema.OutputTypeName != "Void") {
 		node.OutputUUID = uuid
 	}
 
@@ -4125,3 +4397,102 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	}
 	return nil, nil
 }
+
+var rawActionVarRegex = regexp.MustCompile(`^\$\{@?([a-zA-Z0-9_]+)\}$|^\{@?([a-zA-Z0-9_]+)\}$`)
+var rawActionInterpolationRegex = regexp.MustCompile(`\{@?([a-zA-Z0-9_]+)\}`)
+
+func (l *Lowerer) normalizeRawActionParamValue(v any) any {
+	if v == nil {
+		return nil
+	}
+	switch typed := v.(type) {
+	case string:
+		if !strings.ContainsAny(typed, "{}") {
+			return typed
+		}
+		resolveVar := func(varName string) *ir.AttachmentToken {
+			if ref, found := l.bindings[varName]; found {
+				if ref.IsVariable {
+					return &ir.AttachmentToken{
+						Type:       "Variable",
+						OutputName: ref.VariableName,
+					}
+				}
+				return &ir.AttachmentToken{
+					Type:       "ActionOutput",
+					OutputUUID: ref.OutputUUID,
+					OutputName: ref.OutputName,
+				}
+			}
+			return &ir.AttachmentToken{
+				Type:       "Variable",
+				OutputName: varName,
+			}
+		}
+
+		if m := rawActionVarRegex.FindStringSubmatch(typed); len(m) > 0 {
+			varName := m[1]
+			if varName == "" {
+				varName = m[2]
+			}
+			return resolveVar(varName)
+		}
+		if strings.Contains(typed, "{") && strings.Contains(typed, "}") {
+			var fullText strings.Builder
+			attachmentsByRange := make(map[string]interface{})
+			lastIdx := 0
+			matches := rawActionInterpolationRegex.FindAllStringSubmatchIndex(typed, -1)
+			if len(matches) > 0 {
+				for _, loc := range matches {
+					prefixText := typed[lastIdx:loc[0]]
+					fullText.WriteString(prefixText)
+					varName := typed[loc[2]:loc[3]]
+					tok := resolveVar(varName)
+					startUTF16 := len(utf16.Encode([]rune(fullText.String())))
+					fullText.WriteString("\uFFFC")
+					rangeKey := fmt.Sprintf("{%d, 1}", startUTF16)
+					att := map[string]interface{}{
+						"Type": tok.Type,
+					}
+					if tok.OutputUUID != "" {
+						att["OutputUUID"] = tok.OutputUUID
+					}
+					if tok.Type == "Variable" {
+						att["VariableName"] = tok.OutputName
+					} else if tok.OutputName != "" {
+						att["OutputName"] = tok.OutputName
+					}
+					attachmentsByRange[rangeKey] = att
+					lastIdx = loc[1]
+				}
+				fullText.WriteString(typed[lastIdx:])
+				return map[string]interface{}{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]interface{}{
+						"string":             fullText.String(),
+						"attachmentsByRange": attachmentsByRange,
+					},
+				}
+			}
+		}
+		return typed
+	case map[string]interface{}:
+		if _, hasType := typed["WFSerializationType"]; hasType {
+			return typed
+		}
+		res := make(map[string]interface{}, len(typed))
+		for k, val := range typed {
+			res[k] = l.normalizeRawActionParamValue(val)
+		}
+		return res
+	case []interface{}:
+		res := make([]interface{}, len(typed))
+		for i, val := range typed {
+			res[i] = l.normalizeRawActionParamValue(val)
+		}
+		return res
+	default:
+		return v
+	}
+}
+

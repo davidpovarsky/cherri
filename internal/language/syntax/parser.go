@@ -572,10 +572,19 @@ func (p *Parser) parseActionDecl() *ActionDecl {
 	if p.curr.Type == TokenString {
 		idTok := p.advance()
 		appleIdent = strings.Trim(idTok.Text, `"'`)
+		parts := strings.Split(appleIdent, ".")
+		if len(parts) < 3 || (len(parts) == 3 && appleIdent == strings.ToLower(appleIdent)) {
+			if !strings.HasPrefix(appleIdent, "is.workflow.actions.") {
+				appleIdent = "is.workflow.actions." + appleIdent
+			}
+		}
 	}
 	nameTok, ok := p.expect(TokenIdent)
 	if !ok {
 		return nil
+	}
+	if appleIdent == "" {
+		appleIdent = "is.workflow.actions." + strings.ToLower(nameTok.Text)
 	}
 	p.expect(TokenLParen)
 
@@ -681,7 +690,16 @@ func (p *Parser) parseActionDecl() *ActionDecl {
 				} else if field == "bindings" {
 					p.expect(TokenLBrace)
 					for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
-						paramNameTok, _ := p.expect(TokenIdent)
+						var paramNameTok Token
+						if p.curr.Type == TokenIdent || p.curr.Type == TokenTypeKW || p.curr.Type == TokenVar {
+							paramNameTok = p.advance()
+						} else {
+							tok, ok := p.expect(TokenIdent)
+							if !ok {
+								break
+							}
+							paramNameTok = tok
+						}
 						p.expect(TokenColon)
 						p.expect(TokenLBrace)
 						var b ActionBinding
@@ -1091,17 +1109,22 @@ func (p *Parser) parseForStmt() *ForStmt {
 	indexVar := ""
 	itemVar := ""
 
+	expectVar := func() string {
+		if p.curr.Type == TokenIdent || p.curr.Type == TokenNull {
+			return p.advance().Text
+		}
+		tok, _ := p.expect(TokenIdent)
+		return tok.Text
+	}
+
 	if p.match(TokenLParen) {
 		// (index, item)
-		idxTok, _ := p.expect(TokenIdent)
-		indexVar = idxTok.Text
+		indexVar = expectVar()
 		p.expect(TokenComma)
-		itTok, _ := p.expect(TokenIdent)
-		itemVar = itTok.Text
+		itemVar = expectVar()
 		p.expect(TokenRParen)
 	} else {
-		itTok, _ := p.expect(TokenIdent)
-		itemVar = itTok.Text
+		itemVar = expectVar()
 	}
 
 	p.expect(TokenIn)
@@ -1119,11 +1142,19 @@ func (p *Parser) parseForStmt() *ForStmt {
 
 func (p *Parser) parseRepeatStmt() *RepeatStmt {
 	startTok := p.advance() // repeat
-	count := p.parseExpression(precNone)
+	var count Expression
 	idxVar := ""
-	if p.match(TokenAs) {
-		idxTok, _ := p.expect(TokenIdent)
+	if p.curr.Type == TokenIdent && p.peek.Type == TokenFor {
+		idxTok := p.advance()
 		idxVar = idxTok.Text
+		p.advance() // consume "for"
+		count = p.parseExpression(precNone)
+	} else {
+		count = p.parseExpression(precNone)
+		if p.match(TokenAs) {
+			idxTok, _ := p.expect(TokenIdent)
+			idxVar = idxTok.Text
+		}
 	}
 	body := p.parseBlockStmt()
 
@@ -1148,27 +1179,89 @@ func (p *Parser) parseMenuStmt() *MenuStmt {
 			Type:  promptTok.Type,
 			Value: promptTok.Text,
 		}
+	} else if p.curr.Type == TokenNone {
+		promptTok := p.advance()
+		prompt = &LiteralExpr{
+			Span:  promptTok.Span,
+			Type:  promptTok.Type,
+			Value: "",
+		}
 	}
 	p.expect(TokenLBrace)
 
 	var cases []MenuCase
+	parseCaseBody := func() *BlockStmt {
+		if p.curr.Type == TokenLBrace {
+			return p.parseBlockStmt()
+		}
+		startSpan := p.curr.Span
+		var stmts []Statement
+		for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && p.curr.Type != TokenCase && !(p.curr.Type == TokenIdent && p.curr.Text == "item") {
+			if p.curr.Type == TokenSemicolon {
+				p.advance()
+				continue
+			}
+			s := p.parseStatement()
+			if s != nil {
+				stmts = append(stmts, s)
+			}
+		}
+		endSpan := startSpan
+		if len(stmts) > 0 {
+			endSpan = stmts[len(stmts)-1].NodeSpan()
+		}
+		return &BlockStmt{
+			Span:       startSpan.Merge(endSpan),
+			Statements: stmts,
+		}
+	}
+
 	for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
 		if p.match(TokenCase) {
-			labelTok, _ := p.expect(TokenString)
-			body := p.parseBlockStmt()
+			label := ""
+			labelSpan := p.curr.Span
+			if p.curr.Type == TokenString {
+				tok, _ := p.expect(TokenString)
+				label = tok.Text
+				labelSpan = tok.Span
+			} else if p.curr.Type == TokenNone || p.curr.Type == TokenNull {
+				tok := p.advance()
+				label = ""
+				labelSpan = tok.Span
+			} else if p.curr.Type == TokenIdent || p.curr.Type == TokenNumber {
+				tok := p.advance()
+				label = tok.Text
+				labelSpan = tok.Span
+			}
+			p.match(TokenColon)
+			body := parseCaseBody()
 			cases = append(cases, MenuCase{
-				Span:      labelTok.Span.Merge(body.Span),
-				Label:     labelTok.Text,
+				Span:      labelSpan.Merge(body.Span),
+				Label:     label,
 				BodyBlock: body,
 			})
 		} else if p.curr.Type == TokenIdent && p.curr.Text == "item" {
 			p.advance() // item
-			labelTok, _ := p.expect(TokenString)
+			label := ""
+			labelSpan := p.curr.Span
+			if p.curr.Type == TokenString {
+				tok, _ := p.expect(TokenString)
+				label = tok.Text
+				labelSpan = tok.Span
+			} else if p.curr.Type == TokenNone || p.curr.Type == TokenNull {
+				tok := p.advance()
+				label = ""
+				labelSpan = tok.Span
+			} else if p.curr.Type == TokenIdent || p.curr.Type == TokenNumber {
+				tok := p.advance()
+				label = tok.Text
+				labelSpan = tok.Span
+			}
 			p.match(TokenColon)
-			body := p.parseBlockStmt()
+			body := parseCaseBody()
 			cases = append(cases, MenuCase{
-				Span:      labelTok.Span.Merge(body.Span),
-				Label:     labelTok.Text,
+				Span:      labelSpan.Merge(body.Span),
+				Label:     label,
 				BodyBlock: body,
 			})
 		} else {
@@ -1480,8 +1573,8 @@ func (p *Parser) parseCallExpr(callee Expression) *CallExpr {
 		}
 
 		// Named argument: label: val
-		if p.curr.Type == TokenIdent && p.peek.Type == TokenColon {
-			labelTok, _ := p.expect(TokenIdent)
+		if (p.curr.Type == TokenIdent || (p.curr.Type >= TokenLet && p.curr.Type <= TokenDirective)) && p.peek.Type == TokenColon {
+			labelTok := p.advance()
 			p.expect(TokenColon)
 			val := p.parseExpression(precNone)
 			if val == nil {

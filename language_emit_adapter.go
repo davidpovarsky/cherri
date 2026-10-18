@@ -36,16 +36,18 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 	}
 
 	if sc.WFWorkflowIcon.WFWorkflowIconGlyphNumber == 0 {
-		sc.WFWorkflowIcon.WFWorkflowIconGlyphNumber = 59789
+		sc.WFWorkflowIcon.WFWorkflowIconGlyphNumber = 61440
 	}
 	if sc.WFWorkflowIcon.WFWorkflowIconStartColor == 0 {
-		sc.WFWorkflowIcon.WFWorkflowIconStartColor = 4282601983
+		sc.WFWorkflowIcon.WFWorkflowIconStartColor = 3031607807
 	}
 	if len(sc.WFWorkflowTypes) == 0 {
-		sc.WFWorkflowTypes = []string{"Watch", "WFWorkflowTypeShowInSearch"}
+		sc.WFWorkflowTypes = schema.DefaultWorkflowTypes()
 	}
 	if len(wf.InputContentItemClasses) > 0 {
 		sc.WFWorkflowInputContentItemClasses = wf.InputContentItemClasses
+	} else {
+		sc.WFWorkflowInputContentItemClasses = schema.DefaultInputContentItemClasses()
 	}
 
 	for _, node := range wf.Actions {
@@ -73,6 +75,9 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 		}
 		if node.GroupingIdentifier != "" {
 			action.WFWorkflowActionParameters["GroupingIdentifier"] = node.GroupingIdentifier
+		}
+		if _, hasLimit := action.WFWorkflowActionParameters["WFContentItemLimitNumber"]; hasLimit {
+			action.WFWorkflowActionParameters["WFContentItemLimitEnabled"] = true
 		}
 		if action.WFWorkflowActionIdentifier == "is.workflow.actions.conditional" {
 			if att, ok := action.WFWorkflowActionParameters["WFInput"].(WFTextTokenAttachment); ok {
