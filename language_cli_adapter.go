@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/electrikmilk/args-parser"
@@ -150,7 +151,14 @@ func HandleLanguageV2CLI() bool {
 			fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", migPath, err)
 			os.Exit(1)
 		}
-		migrated := migrate.MigrateSource(string(content))
+		migrated, diags, err := migrate.MigrateSourceWithDiagnostics(string(content))
+		if err != nil {
+			for _, d := range diags {
+				fmt.Fprintf(os.Stderr, "Migration error: %s\n", d)
+			}
+			fmt.Fprintf(os.Stderr, "Migration failed: %v\n", err)
+			os.Exit(1)
+		}
 		if checkFlag {
 			file := source.NewFile(source.DocumentID(migPath), migPath, 1, migrated)
 			p := syntax.NewParser(file)
@@ -163,7 +171,7 @@ func HandleLanguageV2CLI() bool {
 			return true
 		}
 		if writeFlag {
-			if err := os.WriteFile(migPath, []byte(migrated), 0644); err != nil {
+			if err := atomicWriteFile(migPath, []byte(migrated), 0644); err != nil {
 				fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", migPath, err)
 				os.Exit(1)
 			}
@@ -345,4 +353,38 @@ func HandleLanguageV2CLI() bool {
 	}
 
 	return false
+}
+
+func atomicWriteFile(filePath string, data []byte, perm os.FileMode) error {
+	dir := filepath.Dir(filePath)
+	tmpFile, err := os.CreateTemp(dir, "cherri-atomic-*.tmp")
+	if err != nil {
+		return fmt.Errorf("failed to create temporary file: %w", err)
+	}
+	tmpPath := tmpFile.Name()
+	defer func() {
+		if tmpPath != "" {
+			_ = os.Remove(tmpPath)
+		}
+	}()
+
+	if _, err := tmpFile.Write(data); err != nil {
+		_ = tmpFile.Close()
+		return fmt.Errorf("failed to write data: %w", err)
+	}
+	if err := tmpFile.Sync(); err != nil {
+		_ = tmpFile.Close()
+		return fmt.Errorf("failed to sync data: %w", err)
+	}
+	if err := tmpFile.Close(); err != nil {
+		return fmt.Errorf("failed to close temporary file: %w", err)
+	}
+	if err := os.Chmod(tmpPath, perm); err != nil {
+		return fmt.Errorf("failed to set permissions: %w", err)
+	}
+	if err := os.Rename(tmpPath, filePath); err != nil {
+		return fmt.Errorf("failed to atomically rename %s to %s: %w", tmpPath, filePath, err)
+	}
+	tmpPath = ""
+	return nil
 }

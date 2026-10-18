@@ -100,8 +100,22 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		}
 		for _, trig := range d.Triggers {
 			f.writeIndent()
+			var args []string
 			if trig.Event != "" {
-				fmt.Fprintf(&f.buf, "trigger %s(event: .%s)\n", trig.Family, trig.Event)
+				args = append(args, fmt.Sprintf("event: .%s", trig.Event))
+			}
+			if trig.HasLevel {
+				args = append(args, fmt.Sprintf("level: %g", trig.Level))
+			}
+			if len(trig.Locations) > 0 {
+				var locStrs []string
+				for _, loc := range trig.Locations {
+					locStrs = append(locStrs, fmt.Sprintf("%q", loc))
+				}
+				args = append(args, fmt.Sprintf("locations: [%s]", strings.Join(locStrs, ", ")))
+			}
+			if len(args) > 0 {
+				fmt.Fprintf(&f.buf, "trigger %s(%s)\n", trig.Family, strings.Join(args, ", "))
 			} else {
 				fmt.Fprintf(&f.buf, "trigger %s\n", trig.Family)
 			}
@@ -109,6 +123,31 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		f.indent--
 		f.writeIndent()
 		f.buf.WriteString("}")
+	case *TriggerDecl:
+		f.writeIndent()
+		var args []string
+		if d.Event != "" {
+			args = append(args, fmt.Sprintf("event: .%s", d.Event))
+		}
+		if d.HasLevel {
+			args = append(args, fmt.Sprintf("level: %g", d.Level))
+		}
+		if len(d.Locations) > 0 {
+			var locStrs []string
+			for _, loc := range d.Locations {
+				locStrs = append(locStrs, fmt.Sprintf("%q", loc))
+			}
+			args = append(args, fmt.Sprintf("locations: [%s]", strings.Join(locStrs, ", ")))
+		}
+		if len(args) > 0 {
+			fmt.Fprintf(&f.buf, "trigger %s(%s)", d.Family, strings.Join(args, ", "))
+		} else {
+			fmt.Fprintf(&f.buf, "trigger %s", d.Family)
+		}
+	case *CopyBlockStmt:
+		f.writeIndent()
+		fmt.Fprintf(&f.buf, "copy %s ", d.Name)
+		f.formatBlockStmt(d.Body, false)
 	case *SetupDecl:
 		f.writeIndent()
 		tStr := ""
@@ -289,6 +328,13 @@ func (f *Formatter) formatStatement(stmt Statement) {
 		f.indent--
 		f.writeIndent()
 		f.buf.WriteString("}")
+	case *CopyBlockStmt:
+		f.writeIndent()
+		fmt.Fprintf(&f.buf, "copy %s ", s.Name)
+		f.formatBlockStmt(s.Body, false)
+	case *PasteStmt:
+		f.writeIndent()
+		fmt.Fprintf(&f.buf, "paste %s", s.Name)
 	}
 }
 
@@ -425,6 +471,12 @@ func (f *Formatter) formatExpression(expr Expression) {
 			opStr = "&&"
 		case TokenOr:
 			opStr = "||"
+		case TokenContains:
+			opStr = "contains"
+		case TokenBeginsWith:
+			opStr = "beginsWith"
+		case TokenEndsWith:
+			opStr = "endsWith"
 		}
 		f.buf.WriteString(opStr)
 		f.buf.WriteString(" ")

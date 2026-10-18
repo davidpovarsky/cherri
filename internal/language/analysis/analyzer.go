@@ -72,6 +72,8 @@ type Analyzer struct {
 	hasExplicitTarget bool
 	minTargetVersion  float64
 	maxTargetVersion  float64
+	userFunctions     map[string]bool
+	loopDepth         int
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -80,9 +82,10 @@ func NewAnalyzer(registry *schema.Registry) *Analyzer {
 		registry = schema.DefaultRegistry()
 	}
 	return &Analyzer{
-		registry:     registry,
-		topLevelVars: make(map[string]source.Span),
-		exprTypes:    make(map[syntax.Expression]types.Type),
+		registry:      registry,
+		topLevelVars:  make(map[string]source.Span),
+		exprTypes:     make(map[syntax.Expression]types.Type),
+		userFunctions: make(map[string]bool),
 	}
 }
 
@@ -190,18 +193,118 @@ func (a *Analyzer) warn(code string, span source.Span, msg string) {
 	})
 }
 
+func cloneStatements(stmts []syntax.Statement) []syntax.Statement {
+	res := make([]syntax.Statement, len(stmts))
+	copy(res, stmts)
+	return res
+}
+
+func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
+	copyBlocks := make(map[string]*syntax.BlockStmt)
+
+	var filteredDecls []syntax.Declaration
+	for _, decl := range prog.Declarations {
+		if cp, ok := decl.(*syntax.CopyBlockStmt); ok {
+			if _, exists := copyBlocks[cp.Name]; exists {
+				a.error("E_DUPLICATE_DECLARATION", cp.Span, fmt.Sprintf("Duplicate declaration of copy/paste '%s'", cp.Name))
+			} else {
+				copyBlocks[cp.Name] = cp.Body
+			}
+		} else {
+			filteredDecls = append(filteredDecls, decl)
+		}
+	}
+	prog.Declarations = filteredDecls
+
+	var expandStatements func(stmts []syntax.Statement) []syntax.Statement
+	expandStatements = func(stmts []syntax.Statement) []syntax.Statement {
+		var result []syntax.Statement
+		for _, stmt := range stmts {
+			switch s := stmt.(type) {
+			case *syntax.CopyBlockStmt:
+				if _, exists := copyBlocks[s.Name]; exists {
+					a.error("E_DUPLICATE_DECLARATION", s.Span, fmt.Sprintf("Duplicate declaration of copy/paste '%s'", s.Name))
+				} else {
+					copyBlocks[s.Name] = s.Body
+				}
+			case *syntax.PasteStmt:
+				block, exists := copyBlocks[s.Name]
+				if !exists {
+					a.error("E_UNDEFINED_COPY", s.Span, fmt.Sprintf("Unable to paste undefined copy '%s'", s.Name))
+				} else {
+					cloned := cloneStatements(block.Statements)
+					result = append(result, expandStatements(cloned)...)
+				}
+			case *syntax.BlockStmt:
+				s.Statements = expandStatements(s.Statements)
+				result = append(result, s)
+			case *syntax.IfStmt:
+				if s.ThenBlock != nil {
+					s.ThenBlock.Statements = expandStatements(s.ThenBlock.Statements)
+				}
+				if s.ElseBlock != nil {
+					if blk, ok := s.ElseBlock.(*syntax.BlockStmt); ok {
+						blk.Statements = expandStatements(blk.Statements)
+					} else if ifBlk, ok := s.ElseBlock.(*syntax.IfStmt); ok {
+						sub := expandStatements([]syntax.Statement{ifBlk})
+						if len(sub) > 0 {
+							s.ElseBlock = sub[0]
+						}
+					}
+				}
+				result = append(result, s)
+			case *syntax.ForStmt:
+				if s.BodyBlock != nil {
+					s.BodyBlock.Statements = expandStatements(s.BodyBlock.Statements)
+				}
+				result = append(result, s)
+			case *syntax.RepeatStmt:
+				if s.BodyBlock != nil {
+					s.BodyBlock.Statements = expandStatements(s.BodyBlock.Statements)
+				}
+				result = append(result, s)
+			case *syntax.MenuStmt:
+				for i := range s.Cases {
+					if s.Cases[i].BodyBlock != nil {
+						s.Cases[i].BodyBlock.Statements = expandStatements(s.Cases[i].BodyBlock.Statements)
+					}
+				}
+				result = append(result, s)
+			default:
+				result = append(result, s)
+			}
+		}
+		return result
+	}
+
+	prog.Statements = expandStatements(prog.Statements)
+
+	for _, decl := range prog.Declarations {
+		if fn, ok := decl.(*syntax.FunctionDecl); ok && fn.Body != nil {
+			fn.Body.Statements = expandStatements(fn.Body.Statements)
+		}
+	}
+}
+
 // Analyze performs full semantic verification of a Program.
 func (a *Analyzer) Analyze(prog *syntax.Program) {
+	a.expandCopyPaste(prog)
+
 	scope := NewScope(nil)
 	a.topLevelVars = make(map[string]source.Span)
+	a.userFunctions = make(map[string]bool)
 
 	// Builtin namespace symbols
 	scope.Define(&Symbol{Name: "system", Type: types.Unknown, Initialized: true})
 	scope.Define(&Symbol{Name: "native", Type: types.Unknown, Initialized: true})
 	scope.Define(&Symbol{Name: "builtin", Type: types.Unknown, Initialized: true})
-	scope.Define(&Symbol{Name: "clipboard", Type: types.AnyContent, Initialized: true})
+	scope.Define(&Symbol{Name: "Clipboard", Type: types.AnyContent, Initialized: true})
 	scope.Define(&Symbol{Name: "ShortcutInput", Type: types.AnyContent, Initialized: true})
 	scope.Define(&Symbol{Name: "Ask", Type: types.Unknown, Initialized: true})
+	scope.Define(&Symbol{Name: "Device", Type: types.NewMap(types.Text, types.AnyContent), Initialized: true})
+	scope.Define(&Symbol{Name: "CurrentDate", Type: types.Date, Initialized: true})
+	scope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true})
+	scope.Define(&Symbol{Name: "RepeatItem", Type: types.AnyContent, Initialized: true})
 
 	for _, stmt := range prog.Statements {
 		if b, ok := stmt.(*syntax.BindingStmt); ok {
@@ -213,6 +316,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	for _, decl := range prog.Declarations {
 		switch d := decl.(type) {
 		case *syntax.FunctionDecl:
+			a.userFunctions[d.Name] = true
 			var fnType types.Type = types.Unknown
 			if d.ReturnType != nil {
 				fnType = a.resolveType(d.ReturnType)
@@ -232,6 +336,38 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 			if !scope.Define(&Symbol{Name: d.Name, Type: types.Text, Initialized: true, Span: d.Span}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate enum declaration %q", d.Name))
 			}
+		case *syntax.ActionDecl:
+			var actParams []schema.ParameterSchema
+			for _, p := range d.Parameters {
+				var pType types.Type = types.Unknown
+				if p.TypeExpr != nil {
+					pType = a.resolveType(p.TypeExpr)
+				}
+				actParams = append(actParams, schema.ParameterSchema{
+					ID:       p.Name,
+					Label:    p.Name,
+					Type:     pType,
+					Optional: p.Optional,
+				})
+			}
+			retTypeName := "Void"
+			if d.ReturnType != nil {
+				retTypeName = a.resolveType(d.ReturnType).Name()
+			}
+			primaryParam := d.PrimaryParam
+			if primaryParam == "" && len(d.Parameters) > 0 {
+				primaryParam = d.Parameters[0].Name
+			}
+			if a.registry != nil {
+				a.registry.RegisterCustomAction(&schema.ActionSchema{
+					ID:                 d.Name,
+					CallableName:       d.Name,
+					AppleIdentifier:    d.AppleIdentifier,
+					Parameters:         actParams,
+					PrimaryParameterID: primaryParam,
+					OutputTypeName:     retTypeName,
+				})
+			}
 		case *syntax.ShortcutDecl:
 			a.analyzeShortcutDecl(d)
 		case *syntax.ImportDecl:
@@ -250,6 +386,10 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 			}
 			if !scope.Define(&Symbol{Name: d.Alias, Type: types.Unknown, Initialized: true, Span: d.Span}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate import alias %q", d.Alias))
+			}
+			if d.Path == "stdfunc" || d.Alias == "stdfunc" {
+				scope.Define(&Symbol{Name: "runJS", Type: types.Unknown, Initialized: true, Span: d.Span})
+				scope.Define(&Symbol{Name: "chooseFromVCard", Type: types.Unknown, Initialized: true, Span: d.Span})
 			}
 		}
 	}
@@ -364,6 +504,24 @@ func (a *Analyzer) analyzeFunction(fn *syntax.FunctionDecl, parentScope *Scope) 
 	a.currentFn = nil
 }
 
+func isConditionTypeAllowed(t types.Type) bool {
+	if t == nil {
+		return true
+	}
+	if t.AssignableTo(types.Bool) {
+		return true
+	}
+	if t.Equals(types.Text) || t.AssignableTo(types.Text) {
+		return true
+	}
+	switch t.Kind() {
+	case types.KindUnknown, types.KindAnyContent, types.KindList, types.KindMap, types.KindOptional, types.KindContent, types.KindRecord:
+		return true
+	default:
+		return false
+	}
+}
+
 func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 	switch s := stmt.(type) {
 	case *syntax.BindingStmt:
@@ -423,8 +581,18 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		}
 
 		valType := a.analyzeExpression(s.Value, scope)
-		if valType != nil && sym.Type != nil && !valType.AssignableTo(sym.Type) {
-			a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
+		if valType != nil && sym.Type != nil {
+			if s.Op == syntax.TokenPlusAssign {
+				if listType, ok := sym.Type.(types.ListType); ok {
+					if !valType.AssignableTo(listType.Element) && !valType.AssignableTo(sym.Type) && valType.Kind() != types.KindUnknown {
+						a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to list element of type %s", valType, listType.Element))
+					}
+				} else if !valType.AssignableTo(sym.Type) {
+					a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
+				}
+			} else if !valType.AssignableTo(sym.Type) {
+				a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
+			}
 		}
 		sym.Initialized = true
 
@@ -460,7 +628,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 
 	case *syntax.IfStmt:
 		condType := a.analyzeExpression(s.Condition, scope)
-		if condType != nil && !condType.AssignableTo(types.Bool) && condType.Kind() != types.KindUnknown {
+		if condType != nil && !isConditionTypeAllowed(condType) {
 			a.error(CodeArgumentType, s.Condition.NodeSpan(), fmt.Sprintf("if condition requires Bool, got %s", condType))
 		}
 		thenScope := NewScope(scope)
@@ -484,9 +652,13 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if s.ItemVar != "" {
 			forScope.Define(&Symbol{Name: s.ItemVar, Type: elemType, Initialized: true, Span: s.Span})
 		}
+		forScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, Span: s.Span})
+		forScope.Define(&Symbol{Name: "RepeatItem", Type: elemType, Initialized: true, Span: s.Span})
+		a.loopDepth++
 		for _, bs := range s.BodyBlock.Statements {
 			a.analyzeStatement(bs, forScope)
 		}
+		a.loopDepth--
 
 	case *syntax.RepeatStmt:
 		repScope := NewScope(scope)
@@ -497,9 +669,12 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if s.IndexVar != "" {
 			repScope.Define(&Symbol{Name: s.IndexVar, Type: types.Number, Initialized: true, Span: s.Span})
 		}
+		repScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, Span: s.Span})
+		a.loopDepth++
 		for _, bs := range s.BodyBlock.Statements {
 			a.analyzeStatement(bs, repScope)
 		}
+		a.loopDepth--
 
 	case *syntax.MenuStmt:
 		a.analyzeExpression(s.Prompt, scope)
@@ -690,9 +865,6 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 	case *syntax.UnaryExpr:
 		opType := a.analyzeExpression(e.Operand, scope)
 		if e.Op == syntax.TokenBang {
-			if opType != nil && !opType.AssignableTo(types.Bool) && opType.Kind() != types.KindUnknown {
-				a.error(CodeArgumentType, e.Operand.NodeSpan(), fmt.Sprintf("unary '!' requires Bool, got %s", opType))
-			}
 			return types.Bool
 		}
 		if e.Op == syntax.TokenMinus || e.Op == syntax.TokenPlus {
@@ -709,6 +881,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 
 		switch e.Op {
 		case syntax.TokenPlus, syntax.TokenMinus, syntax.TokenStar, syntax.TokenSlash, syntax.TokenPercent:
+			if e.Op == syntax.TokenPlus && leftType != nil && rightType != nil && leftType.AssignableTo(types.Text) && rightType.AssignableTo(types.Text) {
+				return types.Text
+			}
 			if leftType != nil && !leftType.AssignableTo(types.Number) && leftType.Kind() != types.KindUnknown {
 				a.error(CodeArgumentType, e.Left.NodeSpan(), fmt.Sprintf("numeric operator requires Number, got %s", leftType))
 			}
@@ -733,12 +908,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			return types.Bool
 
 		case syntax.TokenAnd, syntax.TokenOr:
-			if leftType != nil && !leftType.AssignableTo(types.Bool) && leftType.Kind() != types.KindUnknown {
-				a.error(CodeArgumentType, e.Left.NodeSpan(), fmt.Sprintf("logical operator requires Bool, got %s", leftType))
-			}
-			if rightType != nil && !rightType.AssignableTo(types.Bool) && rightType.Kind() != types.KindUnknown {
-				a.error(CodeArgumentType, e.Right.NodeSpan(), fmt.Sprintf("logical operator requires Bool, got %s", rightType))
-			}
+			return types.Bool
+
+		case syntax.TokenContains, syntax.TokenBeginsWith, syntax.TokenEndsWith:
 			return types.Bool
 		}
 
@@ -881,6 +1053,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 
 	// 1. Check user-defined function in scope
 	if sym, found := scope.Lookup(callName); found && sym.Type != nil {
+		if a.loopDepth > 0 && a.userFunctions[callName] {
+			a.warn("W_PERF", call.Span, fmt.Sprintf("calling user-defined function %q inside a loop incurs 'Run Shortcut' overhead; consider inlining or restructuring if performance is critical", callName))
+		}
 		// Evaluate arguments
 		if call.PrimaryArg != nil {
 			a.analyzeExpression(call.PrimaryArg, scope)
@@ -964,6 +1139,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 				param = &actionSchema.Parameters[paramIndex]
 				paramExists = true
 				paramIndex++
+			} else if len(actionSchema.Parameters) > 0 && actionSchema.Parameters[len(actionSchema.Parameters)-1].Variadic {
+				param = &actionSchema.Parameters[len(actionSchema.Parameters)-1]
+				paramExists = true
 			}
 		}
 		if !paramExists {
@@ -972,7 +1150,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			continue
 		}
 
-		if boundParams[param.ID] {
+		if boundParams[param.ID] && !param.Variadic {
 			a.error(CodeDuplicateArgument, nArg.Span, fmt.Sprintf("duplicate argument for parameter %q in call to %q", nArg.Label, callName))
 		}
 		boundParams[param.ID] = true

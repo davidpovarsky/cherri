@@ -190,6 +190,13 @@ func transformIRParamValue(v any) any {
 }
 
 func transformIRParamValueContext(v any, inAttachmentsByRange bool) any {
+	if raw, ok := v.(*ir.RawPlistValue); ok {
+		return transformIRParamValueContext(raw.Data, inAttachmentsByRange)
+	}
+	if raw, ok := v.(ir.RawPlistValue); ok {
+		return transformIRParamValueContext(raw.Data, inAttachmentsByRange)
+	}
+
 	if tok, ok := v.(*ir.AttachmentToken); ok {
 		valMap := map[string]any{
 			"Type": tok.Type,
@@ -265,6 +272,7 @@ func CompileSourceToPlistWithModules(filePath string, content string, virtualMod
 	if virtualModules != nil {
 		lowerer.SetVirtualModules(virtualModules)
 	}
+	lowerer.SetExprTypes(analyzer.ExprTypes())
 	if err := lowerer.LowerProgramToSession(prog); err != nil {
 		return nil, fmt.Errorf("lowering error: %w", err)
 	}

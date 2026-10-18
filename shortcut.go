@@ -4,6 +4,10 @@
 
 package main
 
+import (
+	"github.com/electrikmilk/cherri/internal/language/schema"
+)
+
 /*
  Shortcut File Format Data Structures
 */
@@ -201,68 +205,14 @@ var definitions map[string]any
 
 /* Colors */
 
-var colors = map[string]int{
-	"red":        4282601983,
-	"darkorange": 4251333119,
-	"orange":     4271458815,
-	"yellow":     4274264319,
-	"green":      4292093695,
-	"teal":       431817727,
-	"lightblue":  1440408063,
-	"blue":       463140863,
-	"darkblue":   946986751,
-	"violet":     2071128575,
-	"purple":     3679049983,
-	"pink":       3980825855,
-	"darkgray":   255,
-	"gray":       3031607807,
-	"taupe":      2846468607,
-}
+var colors = schema.Colors
 var iconColor = 3031607807
 
-var altColors = map[string]int{
-	"red":        -12365313,
-	"darkorange": -43634177,
-	"orange":     -23508481,
-	"yellow":     -20702977,
-	"green":      -2873601,
-	"teal":       -3863149569,
-	"lightblue":  -2854559233,
-	"blue":       -3831826433,
-	"darkblue":   -3347980545,
-	"violet":     -2223838721,
-	"purple":     -615917313,
-	"pink":       -314141441,
-	"darkgray":   -4294967041,
-	"gray":       -1263359489,
-	"taupe":      -1448498689,
-}
+var altColors = schema.AltColors
 
 /* Inputs */
 
-var contentItems = map[string]string{
-	"installedapp": "WFAppContentItem",
-	"app":          "WFAppStoreAppContentItem",
-	"article":      "WFArticleContentItem",
-	"contact":      "WFContactContentItem",
-	"date":         "WFDateContentItem",
-	"email":        "WFEmailAddressContentItem",
-	"folder":       "WFFolderContentItem",
-	"file":         "WFGenericFileContentItem",
-	"image":        "WFImageContentItem",
-	"itunes":       "WFiTunesProductContentItem",
-	"location":     "WFLocationContentItem",
-	"maplink":      "WFDCMapsLinkContentItem",
-	"media":        "WFAVAssetContentItem",
-	"pdf":          "WFPDFContentItem",
-	"phonenumber":  "WFPhoneNumberContentItem",
-	"richtext":     "WFRichTextContentItem",
-	"webpage":      "WFSafariWebPageContentItem",
-	"text":         "WFStringContentItem",
-	"dictionary":   "WFDictionaryContentItem",
-	"number":       "WFNumberContentItem",
-	"url":          "WFURLContentItem",
-}
+var contentItems = schema.ContentItemClasses
 
 var revContentItems map[string]string
 
@@ -282,17 +232,7 @@ var outputs []string
 
 /* Workflow Types */
 
-var workflowTypes = map[string]string{
-	"menubar":       "MenuBar",
-	"quickactions":  "QuickActions",
-	"sharesheet":    "ActionExtension",
-	"notifications": "NCWidget",
-	"sleepmode":     "Sleep",
-	"watch":         "Watch",
-	"onscreen":      "ReceivesOnScreenContent",
-	"search":        "WFWorkflowTypeShowInSearch",
-	"spotlight":     "WFWorkflowTypeReceivesInputFromSearch",
-}
+var workflowTypes = schema.WorkflowTypes
 var definedWorkflowTypes []string
 
 /* Quick Actions */
@@ -305,26 +245,7 @@ var definedQuickActions []string
 
 /* Versions */
 
-var versions = map[string]string{
-	"27.10":  "5037.0.25",
-	"27.2":   "5037.0.18",
-	"27":     "5037.0.17",
-	"26.4":   "4528.0.4.2",
-	"26":     "4033.0.4.3",
-	"18.4":   "3218.0.4.100",
-	"18":     "3036.0.4.2",
-	"17":     "2106.0.3",
-	"16.5":   "900",
-	"16.4":   "900",
-	"16.3":   "900",
-	"16.2":   "900",
-	"16":     "900",
-	"15.7.2": "800",
-	"15":     "800",
-	"14":     "700",
-	"13":     "600",
-	"12":     "500",
-}
+var versions = schema.Versions
 var clientVersion = versions["27"]
 var iosVersion = 27.0
 var iosVersionString = "27"

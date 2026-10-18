@@ -1,0 +1,5156 @@
+{
+  "timestamp": "2026-10-18T01:20:13Z",
+  "total_fixtures": 48,
+  "verified_parity": 0,
+  "upstream_baseline_fails": 20,
+  "migration_fails": 0,
+  "v2_compile_fails": 0,
+  "parity_differences": 28,
+  "total_actions_tested": 17,
+  "actions_passed_both": 17,
+  "fixtures": [
+    {
+      "name": "a11y.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\a11y.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'setBackgroundSound()' requires include:\n\n#include 'actions/a11y'\n\u001b[0m"
+    },
+    {
+      "name": "ai.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\ai.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'askModel()' requires include:\n\n#include 'actions/intelligence'\n\u001b[0m"
+    },
+    {
+      "name": "arrays.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\arrays.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 61,
+          "b": 40
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "List",
+          "b": "items"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFItems[0].WFItemType",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFItems[0].WFValue",
+          "kind": "type",
+          "a": "alpha",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFItems[1].WFItemType",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFItems[1].WFValue",
+          "kind": "type",
+          "a": "beta",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFItems[2].WFItemType",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFItems[2].WFValue",
+          "kind": "type",
+          "a": "gamma",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFItems[3].WFItemType",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFItems[3].WFValue",
+          "kind": "type",
+          "a": "delta",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.getitemfromlist"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "first"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "42819334-61A1-400D-A914-80041CC4D7E7"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "value",
+          "a": "List",
+          "b": "items"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFItemSpecifier",
+          "kind": "missing-in-a",
+          "b": "First Item"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "items"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.getitemfromlist",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "first"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "A482AE33-89D0-4E6F-93EF-08F063550973"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "c0bc976f-612a-463b-9088-356b6d392d2b"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-a",
+          "b": "alpha"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Type",
+          "kind": "missing-in-a",
+          "b": "Variable"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Value",
+          "kind": "missing-in-b",
+          "a": "object{Type,VariableName}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Variable",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFItemSpecifier",
+          "kind": "missing-in-b",
+          "a": "First Item"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "2dfae7cc-ff69-4d7f-9852-d6115f33aa5f"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "8A20631A-EC65-4E85-80EA-E9AAD98BB304"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 5
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-b",
+          "a": "alpha"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-a",
+          "b": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.output",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "A482AE33-89D0-4E6F-93EF-08F063550973"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-b",
+          "a": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.getitemfromlist"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFInput,WFItemSpecifier}"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "9c6dbcd8-f5fe-4130-91cd-ac2f7c7c3178"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 5
+        }
+      ]
+    },
+    {
+      "name": "automations.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\automations.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowIcon.WFWorkflowIconGlyphNumber",
+          "kind": "value",
+          "a": 61440,
+          "b": 59789
+        },
+        {
+          "path": "WFWorkflowIcon.WFWorkflowIconStartColor",
+          "kind": "value",
+          "a": 3031607807,
+          "b": 4282601983
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTriggers[0].WFTriggerSerializedParameters.event",
+          "kind": "missing-in-a",
+          "b": "joined"
+        },
+        {
+          "path": "WFWorkflowTriggers[0].WFTriggerUUID",
+          "kind": "value",
+          "a": "bac6f047-98ac-4517-9bc6-a92aa4224c53",
+          "b": "B205FA08-E7E1-4329-9B70-A7E6F105C322"
+        },
+        {
+          "path": "WFWorkflowTriggers[1].WFTriggerSerializedParameters.level",
+          "kind": "missing-in-a",
+          "b": 50
+        },
+        {
+          "path": "WFWorkflowTriggers[1].WFTriggerUUID",
+          "kind": "value",
+          "a": "9bae5574-2387-470d-9e9a-fd43ef33e369",
+          "b": "67FE6A3E-6334-4B41-B423-2F69655F8FBB"
+        },
+        {
+          "path": "WFWorkflowTriggers[2].WFTriggerSerializedParameters.event",
+          "kind": "missing-in-a",
+          "b": "connect"
+        },
+        {
+          "path": "WFWorkflowTriggers[2].WFTriggerUUID",
+          "kind": "value",
+          "a": "3b9994ef-e382-4b50-a5d2-21e566fc7118",
+          "b": "F21D38DC-B97A-499D-A620-38395977A7C3"
+        },
+        {
+          "path": "WFWorkflowTriggers[3].WFTriggerSerializedParameters.event",
+          "kind": "missing-in-a",
+          "b": "on"
+        },
+        {
+          "path": "WFWorkflowTriggers[3].WFTriggerUUID",
+          "kind": "value",
+          "a": "948e4226-f0c2-4fe4-9ff2-800ff061aacc",
+          "b": "0AAFD853-34FF-4A1D-9329-E05C528B307C"
+        },
+        {
+          "path": "WFWorkflowTriggers[4].WFTriggerSerializedParameters.event",
+          "kind": "missing-in-a",
+          "b": "connect"
+        },
+        {
+          "path": "WFWorkflowTriggers[4].WFTriggerUUID",
+          "kind": "value",
+          "a": "11151aae-0d81-4c81-b48c-d1a8a41615f1",
+          "b": "D42EA7F8-9E44-45FD-AFF1-D16443ED5751"
+        },
+        {
+          "path": "WFWorkflowTriggers[5].WFTriggerSerializedParameters.event",
+          "kind": "missing-in-a",
+          "b": "connect"
+        },
+        {
+          "path": "WFWorkflowTriggers[5].WFTriggerUUID",
+          "kind": "value",
+          "a": "0f5fb641-c62b-4329-b05d-d710238ffff3",
+          "b": "953A0D4A-D7C6-44D2-AC0D-082AB7B2E9C5"
+        },
+        {
+          "path": "WFWorkflowTriggers[6].WFTriggerSerializedParameters.locations",
+          "kind": "missing-in-a",
+          "b": "array(2)"
+        },
+        {
+          "path": "WFWorkflowTriggers[6].WFTriggerUUID",
+          "kind": "value",
+          "a": "bf00bb13-69b5-4032-82ba-abea129418c7",
+          "b": "E417FFAF-9649-42B1-80DD-579A506F2C55"
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "calendar.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\calendar.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'getUpcomingEvents()' requires include:\n\n#include 'actions/calendar'\n\u001b[0m"
+    },
+    {
+      "name": "conditionals.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\conditionals.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 272,
+          "b": 232
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.number",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Number",
+          "b": "five"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "missing-in-b",
+          "a": 5
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "Text"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "8A291527-333B-4D15-8FA6-40EDF318F80B"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "wrong"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "five"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.gettext",
+          "b": "is.workflow.actions.setvariable"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Text"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "83d7887c-fe7a-4ec4-a122-59bc80300e0c"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-b",
+          "a": "wrong"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-a",
+          "b": "r"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "4E58CD65-E98D-494B-AD6C-7E12B3D115C8"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 4
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Type",
+          "kind": "missing-in-a",
+          "b": "Variable"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Value",
+          "kind": "missing-in-b",
+          "a": "object{OutputName,OutputUUID,Type}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Variable",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFNumberValue",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "r"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "Text"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "0e89b522-21bd-497f-a867-4a7ad33b84c8"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "9586FF8D-8951-42CF-92E3-0A0D5D16413B"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 4
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFNumberValue",
+          "kind": "missing-in-b",
+          "a": 5
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "right"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.gettext",
+          "b": "is.workflow.actions.setvariable"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Text 1"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "03878898-8df9-4601-a709-1ae8997ad472"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-b",
+          "a": "right"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-a",
+          "b": "r"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "4E58CD65-E98D-494B-AD6C-7E12B3D115C8"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        }
+      ]
+    },
+    {
+      "name": "control-flow-output.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\control-flow-output.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'getCellularDetail()' requires include:\n\n#include 'actions/network'\n\u001b[0m"
+    },
+    {
+      "name": "copy-paste.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\copy-paste.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'setClipboard()' requires include:\n\n#include 'actions/sharing'\n\u001b[0m"
+    },
+    {
+      "name": "corpus-batch001.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\corpus-batch001.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'saveFile()' requires include:\n\n#include 'actions/documents'\n\u001b[0m"
+    },
+    {
+      "name": "crypto.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\crypto.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'hash()' requires include:\n\n#include 'actions/crypto'\n\u001b[0m"
+    },
+    {
+      "name": "date-comparisons.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\date-comparisons.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'date()' requires include:\n\n#include 'actions/calendar'\n\u001b[0m"
+    },
+    {
+      "name": "decomp-expected.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\decomp-expected.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 52,
+          "b": 44
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Prompt",
+          "b": "confirm"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.location"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "location"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "8C513816-DF68-46FF-8119-E27E2C4F802B"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFLocation",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "confirm"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.location",
+          "b": "is.workflow.actions.url"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "location",
+          "b": "urls"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.Show-WFURLActionURL",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFLocation",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFURLActionURL",
+          "kind": "missing-in-a",
+          "b": "array(1)"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.url",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Url",
+          "b": "int"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.Show-WFURLActionURL",
+          "kind": "missing-in-b",
+          "a": true
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": 42
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFURLActionURL",
+          "kind": "missing-in-b",
+          "a": "array(3)"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.dictionary"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "dict"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "8810EE71-BBA0-4941-A6E4-B4740197EAF6"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFItems",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "urls"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.number",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Number",
+          "b": "str"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "missing-in-b",
+          "a": 42
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "me"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "var"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "7C7DBE48-34CC-47F3-B397-28CD7EFD70CC"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "int"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.dictionary",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Dictionary"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "45F193CB-C7CB-433D-86B5-08DDA9488FD9"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "3f89d82b-62c8-46b3-85e5-3d2b9e48c0c7"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 4
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFItems",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFNumberValue",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.alert"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFAlertActionCancelButtonShown",
+          "kind": "missing-in-a",
+          "b": false
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFAlertActionMessage",
+          "kind": "missing-in-a",
+          "b": "Title"
+        }
+      ]
+    },
+    {
+      "name": "decomp-me.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\decomp-me.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 52,
+          "b": 44
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Prompt",
+          "b": "confirm"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.location"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "location"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "369F231F-1674-4C6A-AE39-229D4B36F0A3"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFLocation",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "confirm"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.location",
+          "b": "is.workflow.actions.url"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "location",
+          "b": "urls"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.Show-WFURLActionURL",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFLocation",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFURLActionURL",
+          "kind": "missing-in-a",
+          "b": "array(1)"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.url",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Url",
+          "b": "int"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.Show-WFURLActionURL",
+          "kind": "missing-in-b",
+          "a": true
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": 42
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFURLActionURL",
+          "kind": "missing-in-b",
+          "a": "array(3)"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.dictionary"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "dict"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "CED2454C-2F1D-43DA-B43A-EEB3CA9ABA1C"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFItems",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "urls"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.number",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Number",
+          "b": "str"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "missing-in-b",
+          "a": 42
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "me"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "var"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "D5BA63E8-75B8-4CF9-9647-117EAF8A45F0"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "int"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.dictionary",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Dictionary"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "06912C14-3D1F-4B5A-9C63-7D703D8EA43C"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "41fd7b76-6dd4-4ddf-b7dc-334924f5bd7b"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 4
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFItems",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFNumberValue",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.alert"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFAlertActionCancelButtonShown",
+          "kind": "missing-in-a",
+          "b": false
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFAlertActionMessage",
+          "kind": "missing-in-a",
+          "b": "Title"
+        }
+      ]
+    },
+    {
+      "name": "definitions.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\definitions.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowIcon.WFWorkflowIconGlyphNumber",
+          "kind": "value",
+          "a": 59740,
+          "b": 59789
+        },
+        {
+          "path": "WFWorkflowNoInputBehavior.Name",
+          "kind": "value",
+          "a": "WFWorkflowNoInputBehaviorGetClipboard",
+          "b": "getclipboard"
+        }
+      ]
+    },
+    {
+      "name": "dictionary.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\dictionary.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 70,
+          "b": 46
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Dictionary",
+          "b": "dict"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.getvalueforkey"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "name"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "C65503ED-5EF4-4067-A928-36750A696B58"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFDictionaryKey",
+          "kind": "missing-in-a",
+          "b": "name"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFGetDictionaryValueType",
+          "kind": "missing-in-a",
+          "b": "Value"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "value",
+          "a": "Dictionary",
+          "b": "dict"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "dict"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.getvalueforkey",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "name"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "D95F489C-8270-463E-A884-1694D7D0ACAE"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "1f5f2379-2f23-4494-9a08-6ac257614bb1"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-a",
+          "b": "Alice"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFDictionaryKey",
+          "kind": "missing-in-b",
+          "a": "name"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFGetDictionaryValueType",
+          "kind": "missing-in-b",
+          "a": "Value"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Type",
+          "kind": "missing-in-a",
+          "b": "Variable"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Value",
+          "kind": "missing-in-b",
+          "a": "object{Type,VariableName}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Variable",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "e64d9326-1df8-49ef-9781-6743e784b726"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "3E1D4FBE-C5AC-49BA-B092-F807A907C753"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 5
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-b",
+          "a": "Alice"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-a",
+          "b": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.output",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "D95F489C-8270-463E-A884-1694D7D0ACAE"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-b",
+          "a": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFTextActionText}"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "d473d990-e164-47aa-8722-7f67fcfb021a"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-a",
+          "b": "Alice"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 2,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{UUID,WFNoOutputSurfaceBehavior,WFOutput,WFResponse}"
+        }
+      ]
+    },
+    {
+      "name": "empty-types.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\empty-types.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 17,
+          "b": 16
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.list"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFItems}"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[14].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Dictionary 1",
+          "b": "Dictionary"
+        },
+        {
+          "path": "WFWorkflowActions[15].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.setvariable"
+        },
+        {
+          "path": "WFWorkflowActions[15].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{WFInput,WFVariableName}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Text 1",
+          "b": "Text"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "value",
+          "a": "Text 1",
+          "b": "Text"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "type",
+          "a": "0",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Number 1",
+          "b": "Number"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "value",
+          "a": "Number 1",
+          "b": "Number"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.list"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFItems}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "enum.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\enum.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.",
+          "kind": "missing-in-a",
+          "b": "Audio"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFFaceTimeContact",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFFaceTimeType",
+          "kind": "missing-in-b",
+          "a": "Audio"
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "functions.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\functions.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 229,
+          "b": 147
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "cd1ed443-3f41-4893-9707-62f75590ffec"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "8B43041D-F3AE-42CE-AB57-B4EAF19DE7CE"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 100
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "0"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.dictionary",
+          "b": "is.workflow.actions.setvariable"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "_cherri_empty_dictionary"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "6dcbabbe-9550-4993-8564-e728b4bdff4f"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFItems",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-a",
+          "b": "_cherri_is_fn"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.getitemtype",
+          "b": "is.workflow.actions.setvariable"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "_cherri_dictionary_type_name"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "79b2951c-d914-427d-a9fb-c837ae601a4f"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "missing-in-b",
+          "a": "_cherri_empty_dictionary"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Value.OutputUUID",
+          "kind": "missing-in-b",
+          "a": "6dcbabbe-9550-4993-8564-e728b4bdff4f"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Value.Type",
+          "kind": "value",
+          "a": "ActionOutput",
+          "b": "ExtensionInput"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput.Value.VariableName",
+          "kind": "missing-in-a",
+          "b": "ShortcutInput"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-a",
+          "b": "_cherri_caller_input"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.getitemtype",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "_cherri_inputType"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "1B136887-CCCF-4E7B-A88C-632B5D0DE294"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "141f7b2f-5eae-46d4-9f35-84f39ed4f842"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 100
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Type",
+          "kind": "missing-in-a",
+          "b": "Variable"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Value",
+          "kind": "missing-in-b",
+          "a": "object{Type,VariableName}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Variable",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.detect.dictionary"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "aa836721-9b2a-49d7-b36a-3a32cacef750"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "1EF8110D-D281-4426-A321-ADB6F63DA8D7"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 4
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFInput.Type",
+          "kind": "missing-in-b",
+          "a": "Variable"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFInput.Value",
+          "kind": "missing-in-a",
+          "b": "object{Type,VariableName}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFInput.Variable",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFInput.WFSerializationType",
+          "kind": "missing-in-a",
+          "b": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.detect.dictionary",
+          "b": "is.workflow.actions.getvalueforkey"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "_cherri_input"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFDictionaryKey",
+          "kind": "missing-in-a",
+          "b": "cherri_functions"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFGetDictionaryValueType",
+          "kind": "missing-in-a",
+          "b": "Value"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput.Value.OutputUUID",
+          "kind": "missing-in-a",
+          "b": "1EF8110D-D281-4426-A321-ADB6F63DA8D7"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput.Value.Type",
+          "kind": "value",
+          "a": "ExtensionInput",
+          "b": "ActionOutput"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput.Value.VariableName",
+          "kind": "missing-in-b",
+          "a": "ShortcutInput"
+        }
+      ]
+    },
+    {
+      "name": "getas-typecast.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\getas-typecast.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 34,
+          "b": 23
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.number",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Number",
+          "b": "num"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "missing-in-b",
+          "a": 42
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": 42
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "Text"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "7FAA7019-86DF-433F-A2F4-122632AC7DFC"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "num"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.gettext",
+          "b": "is.workflow.actions.setvariable"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Text"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "9e317ec1-610d-4e9c-bab6-101d92cb5732"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-a",
+          "b": "asText"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "D96A7269-52AA-4E88-94E0-83F427C8A86C"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-a",
+          "b": "42"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Type",
+          "kind": "missing-in-a",
+          "b": "Variable"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Value",
+          "kind": "missing-in-b",
+          "a": "object{OutputName,OutputUUID,Type}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Variable",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "asText"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "cc7d5aea-ba6b-4fc6-8430-3e53949e2839"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "63B68951-1375-46D4-BE13-7FF097E4AC8C"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 5
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-b",
+          "a": "42"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 0
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-a",
+          "b": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.output",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "D96A7269-52AA-4E88-94E0-83F427C8A86C"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-b",
+          "a": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFTextActionText}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "result"
+        }
+      ]
+    },
+    {
+      "name": "globals.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\globals.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 15,
+          "b": 10
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFInput.Variable.Value.Type",
+          "kind": "value",
+          "a": "Variable",
+          "b": "DeviceDetails"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFInput.Variable.Value.VariableName",
+          "kind": "missing-in-b",
+          "a": "Device"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "62BA6807-3EAD-4A54-BBFE-EA926EB48CA3"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFControlFlowMode}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "grouping-identifier-mismatch",
+          "a": "dae2b7d6-33f5-4af4-acad-bf97f2a4e3e3",
+          "b": "2B600BF8-1FB3-4AB6-AF1F-16218454A1F5"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "0c2bc2f9-dac5-45fa-8cf1-67e390e6cadb"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 101
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 2,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{UUID,WFNoOutputSurfaceBehavior,WFOutput,WFResponse}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 101
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 0,
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.output",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "input"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "CC118FE3-6AE8-4AB6-B7CF-B48B2BB5420A"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-b",
+          "a": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-b",
+          "a": "❌ FAIL: CurrentDate global — no value"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-b",
+          "a": "❌ FAIL: CurrentDate global — no value"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.getclipboard"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID}"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "shortcutInput"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "588847ca-bfdd-4112-a2cf-032ae5d1b0b2"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 2
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.showresult"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{Text}"
+        },
+        {
+          "path": "WFWorkflowHasShortcutInputVariables",
+          "kind": "value",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "hello-world.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\hello-world.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 5,
+          "b": 3
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Text",
+          "b": "message"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "title"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "30D1F386-9AF3-4DE6-B01D-ACAE625B6701"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "Alert"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "message"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.gettext",
+          "b": "is.workflow.actions.alert"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Text 1"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "37b3bff1-5c91-4f70-b7b1-cc289dd9e96d"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFAlertActionCancelButtonShown",
+          "kind": "missing-in-a",
+          "b": false
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFAlertActionMessage",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFAlertActionTitle",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-b",
+          "a": "Alert"
+        },
+        {
+          "path": "WFWorkflowIcon.WFWorkflowIconGlyphNumber",
+          "kind": "value",
+          "a": 59834,
+          "b": 59789
+        },
+        {
+          "path": "WFWorkflowIcon.WFWorkflowIconStartColor",
+          "kind": "value",
+          "a": 4274264319,
+          "b": 4282601983
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "images.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\images.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'selectPhotos()' requires include:\n\n#include 'actions/photos'\n\u001b[0m"
+    },
+    {
+      "name": "import-questions.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\import-questions.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowImportQuestions[0].ActionIndex",
+          "kind": "value",
+          "a": 1,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowImportQuestions[0].DefaultValue",
+          "kind": "value",
+          "a": "24",
+          "b": "Brandon"
+        },
+        {
+          "path": "WFWorkflowImportQuestions[0].Text",
+          "kind": "value",
+          "a": "What is your age?",
+          "b": "What is your name?"
+        },
+        {
+          "path": "WFWorkflowImportQuestions[1].ActionIndex",
+          "kind": "value",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "path": "WFWorkflowImportQuestions[1].DefaultValue",
+          "kind": "value",
+          "a": "Brandon",
+          "b": "24"
+        },
+        {
+          "path": "WFWorkflowImportQuestions[1].Text",
+          "kind": "value",
+          "a": "What is your name?",
+          "b": "What is your age?"
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "include-actions.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\include-actions.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'selectFile()' requires include:\n\n#include 'actions/documents'\n\u001b[0m"
+    },
+    {
+      "name": "include.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\include.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 2,
+          "b": 1
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Text",
+          "b": "textVar"
+        },
+        {
+          "path": "WFWorkflowIcon.WFWorkflowIconGlyphNumber",
+          "kind": "value",
+          "a": 59740,
+          "b": 59789
+        },
+        {
+          "path": "WFWorkflowNoInputBehavior.Name",
+          "kind": "value",
+          "a": "WFWorkflowNoInputBehaviorGetClipboard",
+          "b": "getclipboard"
+        }
+      ]
+    },
+    {
+      "name": "includes.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\includes.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 3,
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Text",
+          "b": "textVar"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.alert"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFAlertActionCancelButtonShown",
+          "kind": "missing-in-a",
+          "b": false
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFAlertActionMessage",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFAlertActionTitle",
+          "kind": "missing-in-a",
+          "b": "Alert"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "textVar"
+        },
+        {
+          "path": "WFWorkflowIcon.WFWorkflowIconGlyphNumber",
+          "kind": "value",
+          "a": 59740,
+          "b": 59789
+        },
+        {
+          "path": "WFWorkflowNoInputBehavior.Name",
+          "kind": "value",
+          "a": "WFWorkflowNoInputBehaviorGetClipboard",
+          "b": "getclipboard"
+        }
+      ]
+    },
+    {
+      "name": "math.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\math.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'round()' requires include:\n\n#include 'actions/math'\n\u001b[0m"
+    },
+    {
+      "name": "measurements.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\measurements.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 5,
+          "b": 3
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Measurement",
+          "b": "bytes"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.measurement.convert"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "MB"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "83B01F0A-9997-4152-BFA5-0CEB0328C8CA"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "value",
+          "a": "Measurement",
+          "b": "bytes"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFMeasurementUnit",
+          "kind": "missing-in-a",
+          "b": "object{WFNSUnitSymbol,WFNSUnitType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFMeasurementUnitType",
+          "kind": "missing-in-a",
+          "b": "Information Storage"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "bytes"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.measurement.convert",
+          "b": "is.workflow.actions.alert"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "ConvertMeasurement"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "9a4167e9-16b0-495b-be08-15a21873a033"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFAlertActionCancelButtonShown",
+          "kind": "missing-in-a",
+          "b": false
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFAlertActionMessage",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFAlertActionTitle",
+          "kind": "missing-in-a",
+          "b": "Result"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFMeasurementUnit",
+          "kind": "missing-in-b",
+          "a": "object{WFNSUnitSymbol,WFNSUnitType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFMeasurementUnitType",
+          "kind": "missing-in-b",
+          "a": "Information Storage"
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "menus.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\menus.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 31,
+          "b": 23
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.gettext",
+          "b": "is.workflow.actions.choosefromlist"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "menuItems"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFChooseFromListActionPrompt",
+          "kind": "missing-in-a",
+          "b": "Prompt"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setitemname",
+          "b": "is.workflow.actions.setvariable"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "SetName"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "3a0e2bbd-e8a5-40b6-8b91-3afa59d68d00"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "value",
+          "a": "menuItems",
+          "b": "Choose from List"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFName",
+          "kind": "missing-in-b",
+          "a": "menu.vcf"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-a",
+          "b": "chosenItem"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.alert"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFAlertActionCancelButtonShown",
+          "kind": "missing-in-a",
+          "b": false
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFAlertActionMessage",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFAlertActionTitle",
+          "kind": "missing-in-a",
+          "b": "You chose:"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "vcf"
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.choosefrommenu"
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "779E4E0A-DB2A-47A8-AB73-BBBADBF9A6B1"
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.list"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFItems}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.math"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "i"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "2DA735C3-FC96-4EA9-831B-B5298E4A6833"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFMathOperand",
+          "kind": "missing-in-a",
+          "b": 1
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFMathOperation",
+          "kind": "missing-in-a",
+          "b": "-"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "i"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "MakeVCard"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFTextActionText.Value.attachmentsByRange.{46, 1}.OutputName",
+          "kind": "missing-in-a",
+          "b": "cherri_icon"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFTextActionText.Value.attachmentsByRange.{46, 1}.OutputUUID",
+          "kind": "missing-in-a",
+          "b": "30927FE0-03C8-434B-AEA6-2F4DA6D3398C"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFTextActionText.Value.attachmentsByRange.{46, 1}.Type",
+          "kind": "value",
+          "a": "Variable",
+          "b": "ActionOutput"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFTextActionText.Value.attachmentsByRange.{46, 1}.VariableName",
+          "kind": "missing-in-b",
+          "a": "i"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFTextActionText.Value.attachmentsByRange.{61, 1}",
+          "kind": "missing-in-b",
+          "a": "object{Type,VariableName}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFTextActionText.Value.attachmentsByRange.{80, 1}",
+          "kind": "missing-in-b",
+          "a": "object{OutputName,OutputUUID,Type}"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "value",
+          "a": "MakeVCard",
+          "b": "Make VCard"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.repeat.count"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFControlFlowMode}"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.repeat.count",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "menuItems"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "8955f61f-e8d8-4063-937d-b84fec6e63b5"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 2
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.setitemname"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFInput,WFName}"
+        }
+      ]
+    },
+    {
+      "name": "nil.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\nil.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'getFile()' requires include:\n\n#include 'actions/documents'\n\u001b[0m"
+    },
+    {
+      "name": "numbers.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\numbers.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 43,
+          "b": 28
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFInput",
+          "kind": "type",
+          "a": "5",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.WFMathOperand",
+          "kind": "type",
+          "a": "3",
+          "b": 3
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "71ea778f-28cc-479b-be8d-6927559b2b11"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 2
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-a",
+          "b": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFControlFlowMode}"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "product",
+          "b": "quotient"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFInput",
+          "kind": "type",
+          "a": "3",
+          "b": 10
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFMathOperand",
+          "kind": "type",
+          "a": "4",
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "3A25645F-6DB4-427E-A64A-9D1AE4B22521"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFControlFlowMode}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.math"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "diff"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "eae63814-2e75-46ec-9b40-2d0eead5131a"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 2
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": 10
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFMathOperand",
+          "kind": "missing-in-a",
+          "b": 4
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFMathOperation",
+          "kind": "missing-in-a",
+          "b": "-"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFCondition,WFConditionalLegacyComparisonBehavior,WFControlFlowMode,WFInput,WFNumberValue}"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.math",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "diff"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "10"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFMathOperand",
+          "kind": "missing-in-b",
+          "a": "4"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFMathOperation",
+          "kind": "missing-in-b",
+          "a": "-"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-a",
+          "b": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 5
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 0,
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFNumberValue",
+          "kind": "missing-in-b",
+          "a": 6
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.output",
+          "b": "is.workflow.actions.math"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "product"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "38F497A2-734B-4DF1-BBE5-E86B957D93C9"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": 3
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFMathOperand",
+          "kind": "missing-in-a",
+          "b": 4
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFMathOperation",
+          "kind": "missing-in-a",
+          "b": "×"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-b",
+          "a": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFCondition,WFConditionalLegacyComparisonBehavior,WFControlFlowMode,WFInput,WFNumberValue}"
+        }
+      ]
+    },
+    {
+      "name": "qty-color.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\qty-color.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'startTimer()' requires include:\n\n#include 'actions/calendar'\n\u001b[0m"
+    },
+    {
+      "name": "raw-action-output-capture.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\raw-action-output-capture.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 7,
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFControlFlowMode}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.showresult"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "e0e85045-9d5d-4943-8325-e8f3fdd4b1cb"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.Text",
+          "kind": "missing-in-a",
+          "b": "✅ All tests passed"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "973ecced-76fa-469e-bdeb-dfc3a62337af"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 2
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "raw-action-variable-values.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\raw-action-variable-values.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 8,
+          "b": 6
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Text",
+          "b": "msg"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.notification"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFNotificationActionBody",
+          "kind": "missing-in-a",
+          "b": "body"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFNotificationActionTitle",
+          "kind": "missing-in-a",
+          "b": "${msg}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "msg"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.notification",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "markdown"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "F71F6483-137B-4C83-90B1-1E29DEA66509"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFNotificationActionBody",
+          "kind": "missing-in-b",
+          "a": "body"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFNotificationActionTitle",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "hello"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "markdown",
+          "b": "token"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "value",
+          "a": "hello",
+          "b": "Egr3efFge2ef424t..."
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.gettext",
+          "b": "is.workflow.actions.downloadurl"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Text 1"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "82be291d-7ad4-4930-bf48-84b126c8ae25"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFHTTPHeaders",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFHTTPMethod",
+          "kind": "missing-in-a",
+          "b": "GET"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-b",
+          "a": "Egr3efFge2ef424t..."
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFURL",
+          "kind": "missing-in-a",
+          "b": "https://example.com"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.downloadurl"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFHTTPBodyType",
+          "kind": "missing-in-a",
+          "b": "File"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFHTTPMethod",
+          "kind": "missing-in-a",
+          "b": "POST"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFRequestVariable",
+          "kind": "missing-in-a",
+          "b": "${markdown}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFURL",
+          "kind": "missing-in-a",
+          "b": "https://example.com"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "token"
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "raw-action.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\raw-action.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "repeats.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\repeats.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 163,
+          "b": 115
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.output",
+          "b": "is.workflow.actions.number"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "Number"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "EF71E064-F8E0-41EB-8A3B-6ECE599AA28C"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-b",
+          "a": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.setvariable"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{WFInput,WFVariableName}"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.repeat.count"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "grouping-identifier-mismatch",
+          "a": "940b7801-baa8-450e-a08c-13308825243d",
+          "b": "758322C7-F2DC-4D29-B843-4D4DC5538CFA"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "80b700dc-3042-42ed-9e65-5cf2fb9723d9"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 2,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFRepeatCount",
+          "kind": "missing-in-a",
+          "b": 3
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.math"
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFInput,WFMathOperand,WFMathOperation}"
+        },
+        {
+          "path": "WFWorkflowActions[14].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.number",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[14].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Number 2"
+        },
+        {
+          "path": "WFWorkflowActions[14].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "4076E118-59B1-4614-9C51-009F5A469428"
+        },
+        {
+          "path": "WFWorkflowActions[14].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "b72f6f81-1edd-4130-b711-8255f0ebd2ae"
+        },
+        {
+          "path": "WFWorkflowActions[14].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 4
+        },
+        {
+          "path": "WFWorkflowActions[14].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.math"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "i"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "C607C090-1A51-4BC6-9738-8FA8E39AE8E8"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFMathOperand",
+          "kind": "missing-in-a",
+          "b": 1
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFMathOperation",
+          "kind": "missing-in-a",
+          "b": "-"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "i"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Number 1"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "missing-in-b",
+          "a": "Number 1"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.repeat.count"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFControlFlowMode}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.repeat.count",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "grouping-identifier-mismatch",
+          "a": "9b716629-955d-4614-a22a-4a70ac5a86d4",
+          "b": "9EE26027-A775-4095-A49F-634DD4A270FD"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "73f90513-7707-47c4-afcf-48259c552cdf"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 2,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFNumberValue",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{UUID,WFNoOutputSurfaceBehavior,WFOutput,WFResponse}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 5
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 0,
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFNumberValue",
+          "kind": "missing-in-b",
+          "a": 5
+        }
+      ]
+    },
+    {
+      "name": "shortcuts.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\shortcuts.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'getShortcuts()' requires include:\n\n#include 'actions/shortcuts'\n\u001b[0m"
+    },
+    {
+      "name": "smol.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\smol.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'downloadURL()' requires include:\n\n#include 'actions/web'\n\u001b[0m"
+    },
+    {
+      "name": "split-screen.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\split-screen.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 11,
+          "b": 8
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "F94643C9-1D99-41DB-AFD9-8B0E7778585E"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.choosefrommenu"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFControlFlowMode,WFMenuItemAttributedTitle,WFMenuItemTitle}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.choosefrommenu",
+          "b": "is.workflow.actions.openapp"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "f3d019d1-ecca-4cd1-8594-b777facdd447"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "9DFC75FC-EF28-4C78-BF23-4076ECFFDC7E"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFAppIdentifier",
+          "kind": "missing-in-a",
+          "b": "com.apple.Maps"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 1
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFMenuItemAttributedTitle",
+          "kind": "missing-in-b",
+          "a": "Maps"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFMenuItemTitle",
+          "kind": "missing-in-b",
+          "a": "Maps"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFSelectedApp",
+          "kind": "missing-in-a",
+          "b": "object{BundleIdentifier}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.openapp",
+          "b": "is.workflow.actions.choosefrommenu"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "DEC7A234-46E7-4378-8FD1-245550EF93CD"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFAppIdentifier",
+          "kind": "missing-in-b",
+          "a": "com.apple.Maps"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFSelectedApp",
+          "kind": "missing-in-b",
+          "a": "object{BundleIdentifier}"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.alert"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{WFAlertActionCancelButtonShown,WFAlertActionMessage,WFAlertActionTitle}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.choosefrommenu",
+          "b": "is.workflow.actions.splitscreen"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "f3d019d1-ecca-4cd1-8594-b777facdd447"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFAppRatio",
+          "kind": "missing-in-a",
+          "b": "â…“ + â…”"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 2
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFPrimaryAppIdentifier",
+          "kind": "missing-in-a",
+          "b": "object{BundleIdentifier}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFSecondaryAppIdentifier",
+          "kind": "missing-in-a",
+          "b": "object{BundleIdentifier}"
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "standard.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\standard.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'replaceText()' requires include:\n\n#include 'actions/text'\n\u001b[0m"
+    },
+    {
+      "name": "storage.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\storage.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'storeValue()' requires include:\n\n#include 'actions/storage'\n\u001b[0m"
+    },
+    {
+      "name": "text.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\text.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'uppercase()' requires include:\n\n#include 'actions/text'\n\u001b[0m"
+    },
+    {
+      "name": "toggle-set.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\toggle-set.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'setNightShift()' requires include:\n\n#include 'actions/settings'\n\u001b[0m"
+    },
+    {
+      "name": "types.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\types.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 14,
+          "b": 12
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.number"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFNumberActionNumber}"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFVariableName",
+          "kind": "value",
+          "a": "ref",
+          "b": "real"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "type",
+          "a": "0",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Bool",
+          "b": "Number"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "type",
+          "a": "0",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "value",
+          "a": "Bool",
+          "b": "Number"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.list"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFItems}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    },
+    {
+      "name": "variable-interpolation-utf16.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\variable-interpolation-utf16.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 57,
+          "b": 32
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "value",
+          "a": "Text",
+          "b": "v1"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "r1"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "D293771D-86AD-442A-BFB7-1D0D1CBA38D6"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "v1"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.gettext",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Text 1"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "508B0A8A-13F8-44D1-B14B-34B7B1DFF168"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "41485616-abca-45c0-9111-6f22d6a279f4"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-a",
+          "b": "✅ Emoji before: value1"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "0CB5935C-93E2-4D8F-BD03-7F06B01550AB"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-a",
+          "b": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "r1"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 5
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-b",
+          "a": "✅ Emoji before: value1"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 0,
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.output",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "v2"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "2A049747-A585-48EA-8D0B-6B615E05F345"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-b",
+          "a": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "b": "value2"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{CustomOutputName,UUID,WFTextActionText}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "grouping-identifier-mismatch",
+          "a": "0a9c052f-153e-4019-9f22-b690aef502a0",
+          "b": "166E355C-879E-4E15-8166-EFF72C013D64"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "5d38d063-ea5f-4f4c-8e39-6cee175a84ce"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFConditionalActionString",
+          "kind": "missing-in-a",
+          "b": "✅ 📝 🎉 Multiple emojis: value2"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 2,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{UUID,WFNoOutputSurfaceBehavior,WFOutput,WFResponse}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.gettext",
+          "b": "is.workflow.actions.conditional"
+        }
+      ]
+    },
+    {
+      "name": "variables.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\variables.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 87,
+          "b": 58
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "missing-in-b",
+          "a": "Number 2"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.math",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Number 3"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-a",
+          "b": "82CA615A-BD9E-4A1E-AAA0-677C764A81DA"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-b",
+          "a": "6e267d85-bef0-42cf-8762-1c47cfe99ed7"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-a",
+          "b": 5
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-a",
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFInput.Type",
+          "kind": "missing-in-a",
+          "b": "Variable"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFInput.Value",
+          "kind": "missing-in-b",
+          "a": "object{Type,VariableName}"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFInput.Variable",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFInput.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFMathOperand",
+          "kind": "missing-in-b",
+          "a": 4
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFMathOperation",
+          "kind": "missing-in-b",
+          "a": "-"
+        },
+        {
+          "path": "WFWorkflowActions[11].WFWorkflowActionParameters.WFNumberValue",
+          "kind": "missing-in-a",
+          "b": 6
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.setvariable",
+          "b": "is.workflow.actions.output"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "44DF2A0A-97AF-4F5B-AE98-42F236A88B91"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFNoOutputSurfaceBehavior",
+          "kind": "missing-in-a",
+          "b": "Respond"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFOutput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFResponse",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[12].WFWorkflowActionParameters.WFVariableName",
+          "kind": "missing-in-b",
+          "a": "x"
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionParameters.WFCondition",
+          "kind": "missing-in-b",
+          "a": 5
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "value",
+          "a": 0,
+          "b": 2
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-b",
+          "a": "object{Type,Variable}"
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionParameters.WFNumberValue",
+          "kind": "missing-in-b",
+          "a": 6
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Number 1"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFInput.Value.OutputName",
+          "kind": "missing-in-b",
+          "a": "Number 1"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters.WFSerializationType",
+          "kind": "missing-in-b",
+          "a": "WFTextTokenAttachment"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFConditionalLegacyComparisonBehavior",
+          "kind": "missing-in-a",
+          "b": true
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.UUID",
+          "kind": "missing-in-a",
+          "b": "EAAE9103-D1B8-4439-B7E6-3C713B0DCF3E"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.conditional"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{GroupingIdentifier,WFControlFlowMode}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.conditional",
+          "b": "is.workflow.actions.number"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-a",
+          "b": "Number"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.GroupingIdentifier",
+          "kind": "missing-in-b",
+          "a": "daa0cb5b-85fd-4168-9b1a-3defd06b0f33"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFControlFlowMode",
+          "kind": "missing-in-b",
+          "a": 2
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "missing-in-a",
+          "b": 10
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.nothing",
+          "b": "is.workflow.actions.setvariable"
+        },
+        {
+          "path": "WFWorkflowActions[8].WFWorkflowActionParameters",
+          "kind": "missing-in-a",
+          "b": "object{WFInput,WFVariableName}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.number",
+          "b": "is.workflow.actions.math"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.CustomOutputName",
+          "kind": "missing-in-b",
+          "a": "Number 2"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFInput",
+          "kind": "missing-in-a",
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFMathOperand",
+          "kind": "missing-in-a",
+          "b": 4
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFMathOperation",
+          "kind": "missing-in-a",
+          "b": "-"
+        },
+        {
+          "path": "WFWorkflowActions[9].WFWorkflowActionParameters.WFNumberActionNumber",
+          "kind": "missing-in-b",
+          "a": 10
+        }
+      ]
+    },
+    {
+      "name": "web.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\web.cherri",
+      "status": "UPSTREAM_BASELINE_FAIL",
+      "legacy_ok": false,
+      "migrated_ok": false,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "\u001b[31m\nError: Action 'downloadURL()' requires include:\n\n#include 'actions/web'\n\u001b[0m"
+    },
+    {
+      "name": "zz-action-identifiers.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri\\tests\\zz-action-identifiers.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.shortid",
+          "b": "shortid"
+        },
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters",
+          "kind": "missing-in-b",
+          "a": "object{WFInput}"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.two.parts",
+          "b": "two.parts"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters",
+          "kind": "missing-in-b",
+          "a": "object{WFInput}"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.text.match.getgroup",
+          "b": "text.match.getgroup"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters",
+          "kind": "missing-in-b",
+          "a": "object{WFInput}"
+        },
+        {
+          "path": "WFWorkflowActions[3].WFWorkflowActionParameters",
+          "kind": "missing-in-b",
+          "a": "object{WFInput}"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters",
+          "kind": "missing-in-b",
+          "a": "object{WFInput}"
+        },
+        {
+          "path": "WFWorkflowInputContentItemClasses.length",
+          "kind": "length",
+          "a": 21,
+          "b": 0
+        },
+        {
+          "path": "WFWorkflowTypes.length",
+          "kind": "length",
+          "a": 2,
+          "b": 0
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "callable_name": "getParkedCarLocation",
+      "category": "location",
+      "apple_id": "is.workflow.actions.getparkedcarlocation",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "scanBarcode",
+      "category": "images",
+      "apple_id": "is.workflow.actions.scanbarcode",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "filterPhotos",
+      "category": "photos",
+      "apple_id": "is.workflow.actions.filter.photos",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "searchiTunes",
+      "category": "music",
+      "apple_id": "is.workflow.actions.searchitunes",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "intercom",
+      "category": "device",
+      "apple_id": "is.workflow.actions.intercom",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getCurrentApp",
+      "category": "mac",
+      "apple_id": "is.workflow.actions.getcurrentapp",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getSelectedText",
+      "category": "mac",
+      "apple_id": "is.workflow.actions.getselectedtext",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getUpcomingEvents",
+      "category": "calendar",
+      "apple_id": "is.workflow.actions.getupcomingevents",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "addCalendar",
+      "category": "calendar",
+      "apple_id": "is.workflow.actions.addnewcalendar",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getType",
+      "category": "basic",
+      "apple_id": "is.workflow.actions.gettypeaction",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getTravelTime",
+      "category": "location",
+      "apple_id": "is.workflow.actions.gettraveltime",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "storeValue",
+      "category": "storage",
+      "apple_id": "is.workflow.actions.setstoredcontent",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getStoredValue",
+      "category": "storage",
+      "apple_id": "is.workflow.actions.getstoredcontent",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "deleteStoredValue",
+      "category": "storage",
+      "apple_id": "is.workflow.actions.deletestoredcontent",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "askModel",
+      "category": "intelligence",
+      "apple_id": "is.workflow.actions.askllm",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "askProModel",
+      "category": "intelligence",
+      "apple_id": "is.workflow.actions.askllm",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "askDeviceModel",
+      "category": "intelligence",
+      "apple_id": "is.workflow.actions.askllm",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "status": "VERIFIED"
+    }
+  ]
+}

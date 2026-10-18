@@ -129,3 +129,84 @@ show(greeting)
 		}
 	}
 }
+
+func TestAnalyzerCopyPaste(t *testing.T) {
+	code := `copy blockA {
+    let x = 10
+}
+paste blockA
+`
+	diags := parseAndAnalyze(code)
+	for _, d := range diags {
+		if d.Severity == SeverityError {
+			t.Fatalf("unexpected error: %v", d)
+		}
+	}
+
+	badCode := `paste undefinedBlock`
+	badDiags := parseAndAnalyze(badCode)
+	if !hasErrorCode(badDiags, "E_UNDEFINED_COPY") {
+		t.Fatalf("expected E_UNDEFINED_COPY, got %v", badDiags)
+	}
+}
+
+func TestAnalyzerTruthiness(t *testing.T) {
+	code := `let str = "hello"
+if str {
+    show("has value")
+}
+`
+	diags := parseAndAnalyze(code)
+	for _, d := range diags {
+		if d.Severity == SeverityError {
+			t.Fatalf("unexpected error on truthiness: %v", d)
+		}
+	}
+}
+
+func TestAnalyzerHotLoopWarning(t *testing.T) {
+	code := `function helper() -> Text {
+    return "ok"
+}
+
+repeat 5 {
+    helper()
+}
+`
+	diags := parseAndAnalyze(code)
+	foundWarning := false
+	for _, d := range diags {
+		if d.Code == "W_PERF" && d.Severity == SeverityWarning {
+			foundWarning = true
+			break
+		}
+	}
+	if !foundWarning {
+		t.Fatalf("expected W_PERF warning inside loop, got %v", diags)
+	}
+}
+
+func TestAnalyzerGlobals(t *testing.T) {
+	code := `let d = Device['OS']
+let c = Clipboard
+let cd = CurrentDate
+`
+	diags := parseAndAnalyze(code)
+	for _, d := range diags {
+		if d.Severity == SeverityError {
+			t.Fatalf("unexpected error on globals: %v", d)
+		}
+	}
+}
+
+func TestAnalyzerListPlusAssign(t *testing.T) {
+	code := `var items = ["a", "b"]
+items += "c"
+`
+	diags := parseAndAnalyze(code)
+	for _, d := range diags {
+		if d.Severity == SeverityError {
+			t.Fatalf("unexpected error on list +=: %v", d)
+		}
+	}
+}

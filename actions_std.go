@@ -2057,8 +2057,22 @@ var actions = map[string]*actionDefinition{
 			},
 		},
 		makeParams: func(args []actionArgument) map[string]any {
-			var title = args[0].value.(string)
-			var subtitle = args[1].value.(string)
+			var title string
+			if s, ok := args[0].value.(string); ok {
+				title = s
+			} else if tok, ok := args[0].value.(WFTextTokenString); ok {
+				title = tok.Value.String
+			} else {
+				title = fmt.Sprint(args[0].value)
+			}
+			var subtitle string
+			if s, ok := args[1].value.(string); ok {
+				subtitle = s
+			} else if tok, ok := args[1].value.(WFTextTokenString); ok {
+				subtitle = tok.Value.String
+			} else {
+				subtitle = fmt.Sprint(args[1].value)
+			}
 			wrapVariableReference(&title)
 			wrapVariableReference(&subtitle)
 
@@ -2070,8 +2084,12 @@ var actions = map[string]*actionDefinition{
 				var image = getArgValue(args[2])
 				if reflect.TypeOf(image).Kind() != reflect.String && args[2].valueType == Variable {
 					photo = fmt.Sprintf("{%s}", makeVariableReferenceString(args[2].value.(varValue)))
+				} else if s, ok := getArgValue(args[2]).(string); ok {
+					photo = s
+				} else if tok, ok := getArgValue(args[2]).(WFTextTokenString); ok {
+					photo = tok.Value.String
 				} else {
-					photo = getArgValue(args[2]).(string)
+					photo = fmt.Sprint(getArgValue(args[2]))
 				}
 
 				if photo != "" {

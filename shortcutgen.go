@@ -514,7 +514,19 @@ func makeAttachmentValues() {
 	for _, inlineVar := range inlineVariables {
 		var varValue, found = getVariableValue(inlineVar.identifier)
 		if !found {
-			exit(fmt.Sprintf("Undefined reference '%s'", inlineVar.identifier))
+			if u, ok := uuids[inlineVar.identifier]; ok {
+				varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(ReferenceDescriptor{
+					Kind:       "ActionOutput",
+					OutputName: inlineVar.identifier,
+					OutputUUID: u,
+				})
+				continue
+			}
+			varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(ReferenceDescriptor{
+				Kind:         "Variable",
+				VariableName: inlineVar.identifier,
+			})
+			continue
 		}
 
 		var aggrandizements []Aggrandizement
@@ -589,13 +601,15 @@ func mapInlineVariables(noVarString *string) {
 
 	for _, r := range *noVarString {
 		if r == ObjectReplaceChar {
-			inlineVariables = append(inlineVariables, inlineVariable{
-				identifier: varIndex[variableIdx].identifier,
-				col:        charPos,
-				getAs:      varIndex[variableIdx].getAs,
-				coerce:     varIndex[variableIdx].coerce,
-			})
-			variableIdx++
+			if variableIdx < len(varIndex) {
+				inlineVariables = append(inlineVariables, inlineVariable{
+					identifier: varIndex[variableIdx].identifier,
+					col:        charPos,
+					getAs:      varIndex[variableIdx].getAs,
+					coerce:     varIndex[variableIdx].coerce,
+				})
+				variableIdx++
+			}
 		}
 
 		if r >= utf16BMPThreshold {

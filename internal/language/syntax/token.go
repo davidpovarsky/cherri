@@ -45,6 +45,11 @@ const (
 	TokenEnum
 	TokenAction
 	TokenTrigger
+	TokenCopy
+	TokenPaste
+	TokenContains
+	TokenBeginsWith
+	TokenEndsWith
 	TokenWhile
 	TokenBreak
 	TokenContinue
@@ -96,34 +101,40 @@ const (
 )
 
 var keywords = map[string]TokenType{
-	"let":      TokenLet,
-	"var":      TokenVar,
-	"function": TokenFunction,
-	"return":   TokenReturn,
-	"yield":    TokenYield,
-	"if":       TokenIf,
-	"else":     TokenElse,
-	"for":      TokenFor,
-	"in":       TokenIn,
-	"repeat":   TokenRepeat,
-	"as":       TokenAs,
-	"menu":     TokenMenu,
-	"case":     TokenCase,
-	"import":   TokenImport,
-	"shortcut": TokenShortcut,
-	"setup":    TokenSetup,
-	"type":     TokenTypeKW,
-	"enum":     TokenEnum,
-	"action":   TokenAction,
-	"trigger":  TokenTrigger,
-	"while":    TokenWhile,
-	"break":    TokenBreak,
-	"continue": TokenContinue,
-	"const":    TokenConst,
-	"true":     TokenTrue,
-	"false":    TokenFalse,
-	"none":     TokenNone,
-	"null":     TokenNull,
+	"let":        TokenLet,
+	"var":        TokenVar,
+	"function":   TokenFunction,
+	"return":     TokenReturn,
+	"yield":      TokenYield,
+	"if":         TokenIf,
+	"else":       TokenElse,
+	"for":        TokenFor,
+	"in":         TokenIn,
+	"repeat":     TokenRepeat,
+	"as":         TokenAs,
+	"menu":       TokenMenu,
+	"case":       TokenCase,
+	"import":     TokenImport,
+	"shortcut":   TokenShortcut,
+	"setup":      TokenSetup,
+	"type":       TokenTypeKW,
+	"enum":       TokenEnum,
+	"action":     TokenAction,
+	"trigger":    TokenTrigger,
+	"copy":       TokenCopy,
+	"paste":      TokenPaste,
+	"contains":   TokenContains,
+	"beginsWith": TokenBeginsWith,
+	"endsWith":   TokenEndsWith,
+	"while":      TokenWhile,
+	"break":      TokenBreak,
+	"continue":   TokenContinue,
+	"const":      TokenConst,
+	"true":       TokenTrue,
+	"false":      TokenFalse,
+	"none":       TokenNone,
+	"nil":        TokenNone,
+	"null":       TokenNull,
 }
 
 // Token represents a lexical token with its text and source span.

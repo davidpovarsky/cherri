@@ -134,6 +134,9 @@ func (l *Lexer) NextToken() Token {
 	if r == '"' {
 		return l.scanNormalString(startPos, leadingTrivia)
 	}
+	if r == '\'' {
+		return l.scanSingleQuoteString(startPos, leadingTrivia)
+	}
 
 	// Operators and punctuation
 	switch r {
@@ -369,6 +372,34 @@ func (l *Lexer) scanNormalString(startPos int, leadingTrivia []source.Trivia) To
 	return Token{Type: TokenString, Text: sb.String(), Span: span, Leading: leadingTrivia}
 }
 
+func (l *Lexer) scanSingleQuoteString(startPos int, leadingTrivia []source.Trivia) Token {
+	var sb strings.Builder
+	for {
+		if l.pos >= len(l.src) {
+			span := l.file.SpanForOffsets(startPos, l.pos)
+			return Token{Type: TokenError, Text: "Unterminated single-quote string literal", Span: span, Leading: leadingTrivia}
+		}
+
+		r := l.nextRune()
+		if r == '\'' {
+			break
+		}
+		if r == '\n' {
+			span := l.file.SpanForOffsets(startPos, l.pos)
+			return Token{Type: TokenError, Text: "Unterminated single-line string literal", Span: span, Leading: leadingTrivia}
+		}
+		if r == '\\' {
+			esc := l.scanEscapeSequence()
+			sb.WriteString(esc)
+		} else {
+			sb.WriteRune(r)
+		}
+	}
+
+	span := l.file.SpanForOffsets(startPos, l.pos)
+	return Token{Type: TokenString, Text: sb.String(), Span: span, Leading: leadingTrivia}
+}
+
 func (l *Lexer) scanRawString(startPos int, leadingTrivia []source.Trivia) Token {
 	l.nextRune() // consume '"'
 	isTriple := false
@@ -414,6 +445,8 @@ func (l *Lexer) scanEscapeSequence() string {
 		return "\\"
 	case '"':
 		return "\""
+	case '\'':
+		return "'"
 	case 'n':
 		return "\n"
 	case 'r':

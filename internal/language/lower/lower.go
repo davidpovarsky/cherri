@@ -2,6 +2,7 @@ package lower
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"math"
 	"os"
@@ -28,6 +29,7 @@ type BindingRef struct {
 	OutputName      string
 	VariableName    string // for setvariable
 	Aggrandizements []map[string]interface{}
+	Type            types.Type
 }
 
 var contentItemClasses = map[string]string{
@@ -340,13 +342,19 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 			if err := l.lowerImport(d); err != nil {
 				return err
 			}
+		case *syntax.CopyBlockStmt:
+			continue
+		case *syntax.TriggerDecl:
+			if err := l.lowerTrigger(d); err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("unhandled declaration %T: declarations must not be silently dropped", decl)
 		}
 	}
 
-	// 2. If functions are declared, isolate dispatcher in Mode 0 and main statements in Mode 1 (Otherwise)
-	if len(l.functions) > 0 {
+	// 2. If functions are declared and called, isolate dispatcher in Mode 0 and main statements in Mode 1 (Otherwise)
+	if len(l.functions) > 0 && hasFunctionCalls(prog, l.functions) {
 		_, err := l.lowerProgramWithFunctions(prog)
 		if err != nil {
 			return err
@@ -373,6 +381,184 @@ func (l *Lowerer) LowerProgram(prog *syntax.Program) (*ir.NativeWorkflow, error)
 		return nil, err
 	}
 	return l.workflow, nil
+}
+
+func hasFunctionCalls(prog *syntax.Program, fns map[string]*syntax.FunctionDecl) bool {
+	if len(fns) == 0 {
+		return false
+	}
+	var checkExpr func(e syntax.Expression) bool
+	var checkStmt func(s syntax.Statement) bool
+
+	checkExpr = func(e syntax.Expression) bool {
+		if e == nil {
+			return false
+		}
+		switch ex := e.(type) {
+		case *syntax.CallExpr:
+			if id, ok := ex.Callee.(*syntax.IdentExpr); ok {
+				if _, exists := fns[id.Name]; exists {
+					return true
+				}
+			}
+			if ex.PrimaryArg != nil && checkExpr(ex.PrimaryArg) {
+				return true
+			}
+			for _, na := range ex.NamedArgs {
+				if checkExpr(na.Value) {
+					return true
+				}
+			}
+		case *syntax.BinaryExpr:
+			return checkExpr(ex.Left) || checkExpr(ex.Right)
+		case *syntax.UnaryExpr:
+			return checkExpr(ex.Operand)
+		case *syntax.IndexExpr:
+			return checkExpr(ex.Target) || checkExpr(ex.Index)
+		case *syntax.MemberExpr:
+			return checkExpr(ex.Target)
+		case *syntax.ListExpr:
+			for _, el := range ex.Elements {
+				if checkExpr(el) {
+					return true
+				}
+			}
+		case *syntax.MapExpr:
+			for _, ent := range ex.Entries {
+				if checkExpr(ent.Key) || checkExpr(ent.Value) {
+					return true
+				}
+			}
+		case *syntax.FStringExpr:
+			for _, p := range ex.Parts {
+				if p.IsExpr && checkExpr(p.Expr) {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	checkStmt = func(s syntax.Statement) bool {
+		if s == nil {
+			return false
+		}
+		switch st := s.(type) {
+		case *syntax.ExprStmt:
+			return checkExpr(st.Expr)
+		case *syntax.BindingStmt:
+			return checkExpr(st.Value)
+		case *syntax.AssignStmt:
+			return checkExpr(st.Value)
+		case *syntax.ReturnStmt:
+			return checkExpr(st.Value)
+		case *syntax.YieldStmt:
+			return checkExpr(st.Value)
+		case *syntax.BlockStmt:
+			for _, sub := range st.Statements {
+				if checkStmt(sub) {
+					return true
+				}
+			}
+		case *syntax.IfStmt:
+			if checkExpr(st.Condition) {
+				return true
+			}
+			if checkStmt(st.ThenBlock) {
+				return true
+			}
+			if st.ElseBlock != nil && checkStmt(st.ElseBlock) {
+				return true
+			}
+		case *syntax.ForStmt:
+			if checkExpr(st.Iterable) || checkStmt(st.BodyBlock) {
+				return true
+			}
+		case *syntax.RepeatStmt:
+			if checkExpr(st.Count) || checkStmt(st.BodyBlock) {
+				return true
+			}
+		case *syntax.MenuStmt:
+			if checkExpr(st.Prompt) {
+				return true
+			}
+			for _, c := range st.Cases {
+				if checkStmt(c.BodyBlock) {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	for _, stmt := range prog.Statements {
+		if checkStmt(stmt) {
+			return true
+		}
+	}
+	return false
+}
+
+func (l *Lowerer) lowerTrigger(trig *syntax.TriggerDecl) error {
+	appleID := schema.LookupTriggerFamilyValue(trig.Family)
+	if appleID == "" {
+		return fmt.Errorf("unsupported trigger family %q; supported triggers are: bluetooth, wifi, stageManager, display, screenshot, battery, charging", trig.Family)
+	}
+	params := make(map[string]any)
+	switch trig.Family {
+	case "bluetooth":
+		connType := trig.Event
+		if connType == "" {
+			connType = "connect"
+		}
+		params["WFBluetoothConnectionType"] = connType
+	case "wifi":
+		connType := trig.Event
+		if connType == "" {
+			connType = "joined"
+		}
+		params["WFConnectionType"] = connType
+	case "charging", "display":
+		connType := trig.Event
+		if connType == "" {
+			connType = "connect"
+		}
+		params["WFConnectionType"] = connType
+	case "stageManager":
+		smType := trig.Event
+		if smType == "" {
+			smType = "on"
+		}
+		params["WFStageManagerType"] = smType
+	case "screenshot":
+		if len(trig.Locations) > 0 {
+			params["ScreenshotLocations"] = trig.Locations
+		} else {
+			params["ScreenshotLocations"] = []string{"photos"}
+		}
+	case "battery":
+		if trig.HasLevel {
+			params["WFBatteryLevel"] = trig.Level - 0.01
+		} else {
+			params["WFBatteryLevel"] = 0.5
+		}
+	}
+	for k, v := range trig.Parameters {
+		if _, exists := params[k]; !exists {
+			params[k] = v
+		}
+	}
+	triggerUUID := l.GenerateUUID()
+	triggerData := map[string]any{
+		"Identifier": appleID,
+		"Parameters": params,
+		"UUID":       triggerUUID,
+	}
+	l.workflow.Triggers = append(l.workflow.Triggers, triggerData)
+	if l.session != nil {
+		l.session.SetMetadata("trigger", triggerData)
+	}
+	return nil
 }
 
 func (l *Lowerer) lowerImport(d *syntax.ImportDecl) error {
@@ -519,32 +705,57 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 							if lit, ok := rf.Value.(*syntax.LiteralExpr); ok {
 								var c int
 								fmt.Sscanf(lit.Value, "%d", &c)
+								if c == 0 {
+									c = schema.LookupColorValue(lit.Value)
+								}
 								l.workflow.IconColor = c
+							} else if ident, ok := rf.Value.(*syntax.IdentExpr); ok {
+								l.workflow.IconColor = schema.LookupColorValue(ident.Name)
 							}
 						} else if rf.Name == "glyph" {
 							if lit, ok := rf.Value.(*syntax.LiteralExpr); ok {
 								var g int
 								fmt.Sscanf(lit.Value, "%d", &g)
+								if g == 0 {
+									g = schema.LookupGlyphValue(lit.Value)
+								}
 								l.workflow.IconGlyph = g
+							} else if ident, ok := rf.Value.(*syntax.IdentExpr); ok {
+								l.workflow.IconGlyph = schema.LookupGlyphValue(ident.Name)
 							}
 						}
 					}
 				} else if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
 					var g int
 					fmt.Sscanf(lit.Value, "%d", &g)
+					if g == 0 {
+						g = schema.LookupGlyphValue(lit.Value)
+					}
 					l.workflow.IconGlyph = g
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					l.workflow.IconGlyph = schema.LookupGlyphValue(ident.Name)
 				}
 			case "color":
 				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
 					var c int
 					fmt.Sscanf(lit.Value, "%d", &c)
+					if c == 0 {
+						c = schema.LookupColorValue(lit.Value)
+					}
 					l.workflow.IconColor = c
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					l.workflow.IconColor = schema.LookupColorValue(ident.Name)
 				}
 			case "glyph":
 				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
 					var g int
 					fmt.Sscanf(lit.Value, "%d", &g)
+					if g == 0 {
+						g = schema.LookupGlyphValue(lit.Value)
+					}
 					l.workflow.IconGlyph = g
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					l.workflow.IconGlyph = schema.LookupGlyphValue(ident.Name)
 				}
 			case "mac":
 				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
@@ -639,16 +850,10 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 				}
 				l.workflow.InputContentItemClasses = nil
 				for _, item := range inputList {
-					switch item {
-					case "text":
-						l.workflow.InputContentItemClasses = append(l.workflow.InputContentItemClasses, "WFStringContentItem")
-					case "url":
-						l.workflow.InputContentItemClasses = append(l.workflow.InputContentItemClasses, "WFURLContentItem")
-					case "file":
-						l.workflow.InputContentItemClasses = append(l.workflow.InputContentItemClasses, "WFGenericFileContentItem")
-					case "image":
-						l.workflow.InputContentItemClasses = append(l.workflow.InputContentItemClasses, "WFImageContentItem")
-					default:
+					class := schema.LookupContentItemClassValue(item)
+					if class != "" {
+						l.workflow.InputContentItemClasses = append(l.workflow.InputContentItemClasses, class)
+					} else {
 						l.workflow.InputContentItemClasses = append(l.workflow.InputContentItemClasses, item)
 					}
 				}
@@ -669,24 +874,34 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 				}
 				l.workflow.OutputContentItemClasses = nil
 				for _, item := range outputList {
-					switch item {
-					case "text":
-						l.workflow.OutputContentItemClasses = append(l.workflow.OutputContentItemClasses, "WFStringContentItem")
-					case "url":
-						l.workflow.OutputContentItemClasses = append(l.workflow.OutputContentItemClasses, "WFURLContentItem")
-					case "file":
-						l.workflow.OutputContentItemClasses = append(l.workflow.OutputContentItemClasses, "WFGenericFileContentItem")
-					case "image":
-						l.workflow.OutputContentItemClasses = append(l.workflow.OutputContentItemClasses, "WFImageContentItem")
-					default:
+					class := schema.LookupContentItemClassValue(item)
+					if class != "" {
+						l.workflow.OutputContentItemClasses = append(l.workflow.OutputContentItemClasses, class)
+					} else {
 						l.workflow.OutputContentItemClasses = append(l.workflow.OutputContentItemClasses, item)
 					}
 				}
-			case "noInput":
+			case "noInput", "noinput":
 				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
 					l.workflow.NoInputBehavior = lit.Value
 				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
 					l.workflow.NoInputBehavior = ident.Name
+				}
+			case "version":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
+					v := schema.LookupVersionValue(lit.Value)
+					if v != "" {
+						l.workflow.ClientVersion = v
+					} else {
+						l.workflow.ClientVersion = lit.Value
+					}
+				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
+					v := schema.LookupVersionValue(ident.Name)
+					if v != "" {
+						l.workflow.ClientVersion = v
+					} else {
+						l.workflow.ClientVersion = ident.Name
+					}
 				}
 			case "quickActions", "quickactions":
 				l.workflow.QuickActionSurfaces = []string{"Finder", "Services"}
@@ -697,63 +912,8 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 	}
 
 	for _, trig := range d.Triggers {
-		var appleID string
-		switch trig.Family {
-		case "bluetooth":
-			appleID = "WFBluetoothTrigger"
-		case "wifi":
-			appleID = "WFWifiTrigger"
-		case "stageManager":
-			appleID = "WFStageManagerTrigger"
-		case "display":
-			appleID = "WFExternalDisplayTrigger"
-		case "screenshot":
-			appleID = "WFScreenshotTrigger"
-		case "battery":
-			appleID = "WFBatteryLevelTrigger"
-		case "charging":
-			appleID = "WFPlugInTrigger"
-		default:
-			return fmt.Errorf("unsupported trigger family %q; supported triggers are: bluetooth, wifi, stageManager, display, screenshot, battery, charging", trig.Family)
-		}
-		params := make(map[string]any)
-		switch trig.Family {
-		case "bluetooth":
-			connType := trig.Event
-			if connType == "" {
-				connType = "connect"
-			}
-			params["WFBluetoothConnectionType"] = connType
-		case "wifi":
-			connType := trig.Event
-			if connType == "" {
-				connType = "joined"
-			}
-			params["WFConnectionType"] = connType
-		case "charging", "display":
-			connType := trig.Event
-			if connType == "" {
-				connType = "connect"
-			}
-			params["WFConnectionType"] = connType
-		case "stageManager":
-			smType := trig.Event
-			if smType == "" {
-				smType = "on"
-			}
-			params["WFStageManagerType"] = smType
-		case "screenshot":
-			params["ScreenshotLocations"] = []string{"photos"}
-		case "battery":
-			params["WFBatteryLevel"] = 0.5
-		}
-		triggerUUID := l.GenerateUUID()
-		if l.session != nil {
-			l.session.SetMetadata("trigger", map[string]any{
-				"Identifier": appleID,
-				"Parameters": params,
-				"UUID":       triggerUUID,
-			})
+		if err := l.lowerTrigger(&trig); err != nil {
+			return err
 		}
 	}
 
@@ -778,6 +938,9 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 		}
 		if len(l.workflow.QuickActionSurfaces) > 0 {
 			l.session.SetMetadata("quickActionSurfaces", l.workflow.QuickActionSurfaces)
+		}
+		if l.workflow.ClientVersion != "" {
+			l.session.SetMetadata("clientVersion", l.workflow.ClientVersion)
 		}
 	}
 	return nil
@@ -1422,6 +1585,21 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			}
 		}
 	}
+
+	var varType types.Type
+	if b.Value != nil && l.exprTypes != nil {
+		varType = l.exprTypes[b.Value]
+	}
+	if varType == nil {
+		if _, ok := b.Value.(*syntax.ListExpr); ok {
+			varType = types.NewList(types.Unknown)
+		}
+	}
+	if ref, ok := l.bindings[b.Name]; ok {
+		ref.Type = varType
+		l.bindings[b.Name] = ref
+	}
+
 	return nil
 }
 
@@ -1429,6 +1607,45 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 	val, err := l.lowerExpression(a.Value)
 	if err != nil {
 		return err
+	}
+
+	binding, isBound := l.bindings[a.Name]
+	isList := false
+	if isBound && binding.Type != nil && binding.Type.Kind() == types.KindList {
+		isList = true
+	} else if a.Value != nil {
+		if _, ok := a.Value.(*syntax.ListExpr); ok && a.Op == syntax.TokenAssign {
+			isList = true
+		}
+	}
+
+	if a.Op == syntax.TokenPlusAssign && isList {
+		node := &ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.appendvariable",
+			Parameters: map[string]interface{}{
+				"WFVariableName": a.Name,
+				"WFInput":        l.materializeToAttachment(val),
+			},
+		}
+		l.emitAction(node)
+		return nil
+	}
+
+	if a.Op == syntax.TokenAssign {
+		var newType types.Type
+		if l.exprTypes != nil && a.Value != nil {
+			newType = l.exprTypes[a.Value]
+		}
+		if newType == nil {
+			if _, ok := a.Value.(*syntax.ListExpr); ok {
+				newType = types.NewList(types.Unknown)
+			}
+		}
+		if newType != nil && isBound {
+			binding.Type = newType
+			l.bindings[a.Name] = binding
+		}
 	}
 
 	finalVal := val
@@ -1673,6 +1890,12 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			code = 0 // Less Than
 		case syntax.TokenLessEqual:
 			code = 1 // Less Than Or Equal
+		case syntax.TokenContains:
+			code = 99 // Contains
+		case syntax.TokenBeginsWith:
+			code = 8 // Begins With
+		case syntax.TokenEndsWith:
+			code = 9 // Ends With
 		default:
 			isComp = false
 		}
@@ -1696,13 +1919,25 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 				return nil, err
 			}
 			input = l.materializeToAttachment(condVal)
+			condCode = 100
+			compareVal = nil
 		}
+	} else if unaryExpr, ok := stmt.Condition.(*syntax.UnaryExpr); ok && unaryExpr.Op == syntax.TokenBang {
+		operandVal, err := l.lowerExpression(unaryExpr.Operand)
+		if err != nil {
+			return nil, err
+		}
+		input = l.materializeToAttachment(operandVal)
+		condCode = 101 // Does not have any value (Empty)
+		compareVal = nil
 	} else {
 		condVal, err := l.lowerExpression(stmt.Condition)
 		if err != nil {
 			return nil, err
 		}
 		input = l.materializeToAttachment(condVal)
+		condCode = 100 // Has any value
+		compareVal = nil
 	}
 
 	// 1. Begin block (Mode 0)
@@ -2029,8 +2264,20 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			return q.DefaultValue, nil
 		}
 		// Built-in / system checks
-		if e.Name == "clipboard" {
+		if e.Name == "clipboard" || e.Name == "Clipboard" {
 			return &ir.AttachmentToken{Type: "Clipboard"}, nil
+		}
+		if e.Name == "CurrentDate" {
+			return &ir.AttachmentToken{Type: "CurrentDate"}, nil
+		}
+		if e.Name == "Device" {
+			return &ir.AttachmentToken{Type: "DeviceDetails"}, nil
+		}
+		if e.Name == "RepeatIndex" {
+			return &ir.AttachmentToken{Type: "Variable", OutputName: "Repeat Index"}, nil
+		}
+		if e.Name == "RepeatItem" {
+			return &ir.AttachmentToken{Type: "Variable", OutputName: "Repeat Item"}, nil
 		}
 		if e.Name == "ShortcutInput" {
 			if len(l.functions) > 0 {
@@ -2178,10 +2425,36 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 						Aggrandizements: make([]map[string]interface{}, len(tok.Aggrandizements)),
 					}
 					copy(newTok.Aggrandizements, tok.Aggrandizements)
-					newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
-						"Type":          "WFDictionaryValueVariableAggrandizement",
-						"DictionaryKey": strKey,
-					})
+					if tok.Type == "DeviceDetails" {
+						propName := strKey
+						switch strings.ToLower(strKey) {
+						case "os", "system version":
+							propName = "System Version"
+						case "name", "device name":
+							propName = "Device Name"
+						case "model", "device model":
+							propName = "Device Model"
+						case "screen width":
+							propName = "Screen Width"
+						case "screen height":
+							propName = "Screen Height"
+						case "volume", "current volume":
+							propName = "Current Volume"
+						case "brightness", "current brightness":
+							propName = "Current Brightness"
+						case "appearance", "current appearance":
+							propName = "Current Appearance"
+						}
+						newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+							"Type":         "WFPropertyVariableAggrandizement",
+							"PropertyName": propName,
+						})
+					} else {
+						newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+							"Type":          "WFDictionaryValueVariableAggrandizement",
+							"DictionaryKey": strKey,
+						})
+					}
 					return newTok, nil
 				}
 				targetInput := l.materializeToAttachment(targetVal)
@@ -3056,12 +3329,20 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to lower native.plist data: %w", err)
 		}
-		if str, ok := val.(string); ok && (strings.HasPrefix(strings.TrimSpace(str), "<?xml") || strings.HasPrefix(strings.TrimSpace(str), "<plist")) {
-			var parsed any
-			if _, err := plist.Unmarshal([]byte(str), &parsed); err != nil {
-				return nil, fmt.Errorf("native.plist failed to parse XML plist: %w", err)
+		if str, ok := val.(string); ok {
+			trimmed := strings.TrimSpace(str)
+			if strings.HasPrefix(trimmed, "<?xml") || strings.HasPrefix(trimmed, "<plist") {
+				var parsed any
+				if _, err := plist.Unmarshal([]byte(str), &parsed); err != nil {
+					return nil, fmt.Errorf("native.plist failed to parse XML plist: %w", err)
+				}
+				return &ir.RawPlistValue{Data: parsed}, nil
+			} else if strings.HasPrefix(trimmed, "{") || strings.HasPrefix(trimmed, "[") {
+				var parsed any
+				if err := json.Unmarshal([]byte(str), &parsed); err == nil {
+					return &ir.RawPlistValue{Data: parsed}, nil
+				}
 			}
-			return &ir.RawPlistValue{Data: parsed}, nil
 		}
 		return &ir.RawPlistValue{Data: val}, nil
 	}
@@ -3471,8 +3752,12 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					}
 				}
 				wireKey := primParam.WireKey
-				if wireKey == "" {
-					wireKey = primParam.Label
+				if wireKey == "" || wireKey == "url" {
+					if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
+						wireKey = "WFURLActionURL"
+					} else {
+						wireKey = primParam.Label
+					}
 				}
 				if ident, isIdent := call.PrimaryArg.(*syntax.IdentExpr); isIdent {
 					if _, isSetup := l.setupQuestions[ident.Name]; isSetup {
@@ -3508,10 +3793,13 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					param = &actionSchema.Parameters[paramIndex]
 					exists = true
 					paramIndex++
+				} else if len(actionSchema.Parameters) > 0 && actionSchema.Parameters[len(actionSchema.Parameters)-1].Variadic {
+					param = &actionSchema.Parameters[len(actionSchema.Parameters)-1]
+					exists = true
 				}
 			}
 			if exists && param != nil {
-				if seenParams[param.ID] {
+				if seenParams[param.ID] && !param.Variadic {
 					return nil, fmt.Errorf("duplicate parameter %q for action %q", param.Label, actionName)
 				}
 				seenParams[param.ID] = true
@@ -3521,8 +3809,12 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					return nil, err
 				}
 				wireKey := param.WireKey
-				if wireKey == "" {
-					wireKey = param.Label
+				if wireKey == "" || wireKey == "url" {
+					if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
+						wireKey = "WFURLActionURL"
+					} else {
+						wireKey = param.Label
+					}
 				}
 				if ident, isIdent := nArg.Value.(*syntax.IdentExpr); isIdent {
 					if _, isSetup := l.setupQuestions[ident.Name]; isSetup {
@@ -3616,8 +3908,13 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				return nil, err
 			}
 			wireKey := primParam.WireKey
-			if wireKey == "" {
-				wireKey = "WFInput"
+			if wireKey == "" || wireKey == "url" {
+				if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
+					wireKey = "WFURLActionURL"
+					node.Parameters["Show-WFURLActionURL"] = true
+				} else {
+					wireKey = "WFInput"
+				}
 			}
 			if primParam.TypeName == "Text" || primParam.TypeName == "String" || (primParam.Type != nil && (primParam.Type.Name() == "Text" || primParam.Type.Name() == "String")) {
 				if tok, isTok := primVal.(*ir.AttachmentToken); isTok {
@@ -3632,7 +3929,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					}
 				}
 			}
-			node.Parameters[wireKey] = primVal
+			if primParam.Variadic {
+				node.Parameters[wireKey] = []interface{}{primVal}
+			} else {
+				node.Parameters[wireKey] = primVal
+			}
 
 			if ident, isIdent := call.PrimaryArg.(*syntax.IdentExpr); isIdent {
 				if setupQ, isSetup := l.setupQuestions[ident.Name]; isSetup {
@@ -3678,6 +3979,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				param = &actionSchema.Parameters[paramIndex]
 				exists = true
 				paramIndex++
+			} else if len(actionSchema.Parameters) > 0 && actionSchema.Parameters[len(actionSchema.Parameters)-1].Variadic {
+				param = &actionSchema.Parameters[len(actionSchema.Parameters)-1]
+				exists = true
 			}
 		}
 		if exists && param != nil {
@@ -3686,8 +3990,13 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				return nil, err
 			}
 			wireKey := param.WireKey
-			if wireKey == "" {
-				wireKey = param.Label
+			if wireKey == "" || wireKey == "url" {
+				if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
+					wireKey = "WFURLActionURL"
+					node.Parameters["Show-WFURLActionURL"] = true
+				} else {
+					wireKey = param.Label
+				}
 			}
 			if param.TypeName == "Text" || param.TypeName == "String" || (param.Type != nil && (param.Type.Name() == "Text" || param.Type.Name() == "String")) {
 				if tok, isTok := val.(*ir.AttachmentToken); isTok {
@@ -3702,7 +4011,19 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					}
 				}
 			}
-			node.Parameters[wireKey] = val
+			if param.Variadic {
+				if existing, has := node.Parameters[wireKey]; has {
+					if slice, isSlice := existing.([]interface{}); isSlice {
+						node.Parameters[wireKey] = append(slice, val)
+					} else {
+						node.Parameters[wireKey] = []interface{}{existing, val}
+					}
+				} else {
+					node.Parameters[wireKey] = []interface{}{val}
+				}
+			} else {
+				node.Parameters[wireKey] = val
+			}
 
 			if ident, isIdent := nArg.Value.(*syntax.IdentExpr); isIdent {
 				if setupQ, isSetup := l.setupQuestions[ident.Name]; isSetup {

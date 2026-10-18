@@ -37,6 +37,7 @@ type NativeWorkflow struct {
 	IconColor                 int                      `json:"iconColor,omitempty"`
 	Actions                   []*NativeActionNode      `json:"actions"`
 	ImportQuestions           []map[string]interface{} `json:"importQuestions,omitempty"`
+	Triggers                  []map[string]interface{} `json:"triggers,omitempty"`
 	HasExplicitReturn         bool                     `json:"hasExplicitReturn"`
 	HasShortcutInputVariables bool                     `json:"hasShortcutInputVariables"`
 	IsFullNativePass          bool                     `json:"isFullNativePass"`

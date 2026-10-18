@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
 type AutomationTrigger struct {
@@ -14,15 +16,7 @@ type AutomationTrigger struct {
 
 var automationTriggers []AutomationTrigger
 
-var triggerIdentifiers = map[string]string{
-	"bluetooth":    "WFBluetoothTrigger",
-	"wifi":         "WFWifiTrigger",
-	"stageManager": "WFStageManagerTrigger",
-	"display":      "WFExternalDisplayTrigger",
-	"screenshot":   "WFScreenshotTrigger",
-	"battery":      "WFBatteryLevelTrigger",
-	"charging":     "WFPlugInTrigger",
-}
+var triggerIdentifiers = schema.TriggerFamilies
 
 var validScreenshotLocations = []string{"photos", "files", "clipboard"}
 var validStageManagerTypes = []string{"on", "off", "both"}

@@ -105,13 +105,20 @@ func (a *ActionSchema) ParameterByLabel(label string) (*ParameterSchema, bool) {
 
 // PrimaryParameter returns the primary parameter schema if defined.
 func (a *ActionSchema) PrimaryParameter() (*ParameterSchema, bool) {
-	if a.PrimaryParameterID == "" {
-		return nil, false
+	if a.PrimaryParameterID != "" {
+		for i := range a.Parameters {
+			if a.Parameters[i].ID == a.PrimaryParameterID {
+				return &a.Parameters[i], true
+			}
+		}
 	}
 	for i := range a.Parameters {
-		if a.Parameters[i].ID == a.PrimaryParameterID {
+		if strings.EqualFold(a.Parameters[i].ID, a.CallableName) || strings.EqualFold(a.Parameters[i].Label, a.CallableName) {
 			return &a.Parameters[i], true
 		}
+	}
+	if len(a.Parameters) == 1 {
+		return &a.Parameters[0], true
 	}
 	return nil, false
 }
@@ -147,6 +154,23 @@ func NewRegistry(actions []*ActionSchema, enums map[string][]string) *Registry {
 
 	r.fingerprint = r.computeFingerprint(actions)
 	return r
+}
+
+// RegisterCustomAction dynamically adds or overrides an action schema in the registry.
+func (r *Registry) RegisterCustomAction(a *ActionSchema) {
+	if a == nil || a.CallableName == "" {
+		return
+	}
+	if r.actionsByName == nil {
+		r.actionsByName = make(map[string]*ActionSchema)
+	}
+	r.actionsByName[a.CallableName] = a
+	if a.AppleIdentifier != "" {
+		if r.actionsByIdentifier == nil {
+			r.actionsByIdentifier = make(map[string][]*ActionSchema)
+		}
+		r.actionsByIdentifier[a.AppleIdentifier] = append(r.actionsByIdentifier[a.AppleIdentifier], a)
+	}
 }
 
 // CompareVersions compares two version strings (e.g., "27.10" vs "27.2", "16.4" vs "16.4.1") semantically.
