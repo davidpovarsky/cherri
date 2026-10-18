@@ -59,6 +59,7 @@ type Lowerer struct {
 	enums              map[string]*syntax.EnumDecl
 	types              map[string]*syntax.TypeDecl
 	actions            map[string]*syntax.ActionDecl
+	copyBlocks         map[string]*syntax.CopyBlockStmt
 	importStack        []string
 	modules            map[string]string
 	virtualModules     map[string]string
@@ -87,6 +88,7 @@ func NewLowerer(registry *schema.Registry) *Lowerer {
 		enums:          make(map[string]*syntax.EnumDecl),
 		types:          make(map[string]*syntax.TypeDecl),
 		actions:        make(map[string]*syntax.ActionDecl),
+		copyBlocks:     make(map[string]*syntax.CopyBlockStmt),
 		modules:        make(map[string]string),
 		virtualModules: make(map[string]string),
 	}
@@ -343,7 +345,7 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 				return err
 			}
 		case *syntax.CopyBlockStmt:
-			continue
+			l.copyBlocks[d.Name] = d
 		case *syntax.TriggerDecl:
 			if err := l.lowerTrigger(d); err != nil {
 				return err
@@ -400,6 +402,19 @@ func hasFunctionCalls(prog *syntax.Program, fns map[string]*syntax.FunctionDecl)
 				if _, exists := fns[id.Name]; exists {
 					return true
 				}
+			} else if mem, ok := ex.Callee.(*syntax.MemberExpr); ok {
+				if targetIdent, ok := mem.Target.(*syntax.IdentExpr); ok {
+					fullName := targetIdent.Name + "." + mem.Property
+					if _, exists := fns[fullName]; exists {
+						return true
+					}
+					if _, exists := fns[mem.Property]; exists {
+						return true
+					}
+				}
+			}
+			if checkExpr(ex.Callee) {
+				return true
 			}
 			if ex.PrimaryArg != nil && checkExpr(ex.PrimaryArg) {
 				return true
@@ -721,6 +736,38 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 								}
 								l.workflow.IconGlyph = g
 							} else if ident, ok := rf.Value.(*syntax.IdentExpr); ok {
+								l.workflow.IconGlyph = schema.LookupGlyphValue(ident.Name)
+							}
+						}
+					}
+				} else if m, ok := f.Value.(*syntax.MapExpr); ok {
+					for _, ent := range m.Entries {
+						keyName := ""
+						if kIdent, ok := ent.Key.(*syntax.IdentExpr); ok {
+							keyName = kIdent.Name
+						} else if kLit, ok := ent.Key.(*syntax.LiteralExpr); ok {
+							keyName = kLit.Value
+						}
+						if keyName == "color" {
+							if lit, ok := ent.Value.(*syntax.LiteralExpr); ok {
+								var c int
+								fmt.Sscanf(lit.Value, "%d", &c)
+								if c == 0 {
+									c = schema.LookupColorValue(lit.Value)
+								}
+								l.workflow.IconColor = c
+							} else if ident, ok := ent.Value.(*syntax.IdentExpr); ok {
+								l.workflow.IconColor = schema.LookupColorValue(ident.Name)
+							}
+						} else if keyName == "glyph" {
+							if lit, ok := ent.Value.(*syntax.LiteralExpr); ok {
+								var g int
+								fmt.Sscanf(lit.Value, "%d", &g)
+								if g == 0 {
+									g = schema.LookupGlyphValue(lit.Value)
+								}
+								l.workflow.IconGlyph = g
+							} else if ident, ok := ent.Value.(*syntax.IdentExpr); ok {
 								l.workflow.IconGlyph = schema.LookupGlyphValue(ident.Name)
 							}
 						}
@@ -1395,6 +1442,20 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 		return nil
 	case *syntax.BlockStmt:
 		for _, bs := range s.Statements {
+			if err := l.lowerStatement(bs); err != nil {
+				return err
+			}
+		}
+		return nil
+	case *syntax.CopyBlockStmt:
+		l.copyBlocks[s.Name] = s
+		return nil
+	case *syntax.PasteStmt:
+		cb, ok := l.copyBlocks[s.Name]
+		if !ok {
+			return fmt.Errorf("unable to paste undefined copy %q", s.Name)
+		}
+		for _, bs := range cb.Body.Statements {
 			if err := l.lowerStatement(bs); err != nil {
 				return err
 			}

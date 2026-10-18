@@ -668,16 +668,16 @@ func (s *CanonicalBackendSession) SetMetadata(name string, value any) {
 		if m, ok := value.(map[string]any); ok {
 			s.shortcut.WFWorkflowNoInputBehavior = m
 		} else if str, ok := value.(string); ok {
-			switch str {
-			case "clipboard", "getClipboard":
+			switch strings.ToLower(str) {
+			case "clipboard", "getclipboard":
 				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
 					"Name": "WFWorkflowNoInputBehaviorGetClipboard",
 				}
-			case "ask", "askForInput":
+			case "ask", "askforinput":
 				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
 					"Name": "WFWorkflowNoInputBehaviorAskForInput",
 				}
-			case "error", "showError":
+			case "error", "showerror":
 				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
 					"Name": "WFWorkflowNoInputBehaviorShowError",
 				}
