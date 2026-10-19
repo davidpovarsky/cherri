@@ -646,10 +646,10 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if listType, ok := iterType.(types.ListType); ok {
 			elemType = listType.Element
 		}
-		if s.IndexVar != "" {
+		if s.IndexVar != "" && s.IndexVar != "_" {
 			forScope.Define(&Symbol{Name: s.IndexVar, Type: types.Number, Initialized: true, Span: s.Span})
 		}
-		if s.ItemVar != "" {
+		if s.ItemVar != "" && s.ItemVar != "_" {
 			forScope.Define(&Symbol{Name: s.ItemVar, Type: elemType, Initialized: true, Span: s.Span})
 		}
 		forScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, Span: s.Span})
@@ -666,7 +666,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if cntType != nil && !cntType.AssignableTo(types.Number) && cntType.Kind() != types.KindUnknown {
 			a.error(CodeArgumentType, s.Count.NodeSpan(), fmt.Sprintf("repeat count requires Number, got %s", cntType))
 		}
-		if s.IndexVar != "" {
+		if s.IndexVar != "" && s.IndexVar != "_" {
 			repScope.Define(&Symbol{Name: s.IndexVar, Type: types.Number, Initialized: true, Span: s.Span})
 		}
 		repScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, Span: s.Span})
@@ -1084,6 +1084,17 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	if callName == "isToday" {
 		if call.PrimaryArg != nil {
 			a.analyzeExpression(call.PrimaryArg, scope)
+		}
+		return types.Bool
+	}
+
+	// 1d. Check isBetween predicate
+	if callName == "isBetween" || callName == "between" {
+		if call.PrimaryArg != nil {
+			a.analyzeExpression(call.PrimaryArg, scope)
+		}
+		for _, nArg := range call.NamedArgs {
+			a.analyzeExpression(nArg.Value, scope)
 		}
 		return types.Bool
 	}

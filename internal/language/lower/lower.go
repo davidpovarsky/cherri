@@ -26,6 +26,7 @@ import (
 // BindingRef represents how a variable is stored and referenced in Shortcuts.
 type BindingRef struct {
 	IsVariable      bool   // true = setvariable/getvariable, false = direct action output token
+	TokenType       string // attachment token type (ActionOutput, DeviceDetails, ExtensionInput, etc.)
 	OutputUUID      string // for action output
 	OutputName      string
 	VariableName    string // for setvariable
@@ -161,12 +162,16 @@ func (l *Lowerer) emitAction(node *ir.NativeActionNode) {
 }
 
 func (l *Lowerer) emitIfStart(groupUUID string, input any, condCode int, compareVal any, isLegacy bool) *ir.NativeActionNode {
+	return l.emitIfStartTyped(groupUUID, input, condCode, compareVal, nil, backend.OperandDefault, isLegacy)
+}
+
+func (l *Lowerer) emitIfStartTyped(groupUUID string, input any, condCode int, compareVal any, compareVal2 any, opType backend.ConditionOperandType, isLegacy bool) *ir.NativeActionNode {
 	node := &ir.NativeActionNode{
 		NodeID:             l.GenerateUUID(),
 		AppleIdentifier:    "is.workflow.actions.conditional",
 		GroupingIdentifier: groupUUID,
 		ControlFlowMode:    0,
-		Parameters:         backend.BuildIfStart(groupUUID, input, condCode, compareVal, isLegacy),
+		Parameters:         backend.BuildIfStartTyped(groupUUID, input, condCode, compareVal, compareVal2, opType, isLegacy),
 	}
 	l.emitAction(node)
 	return node
@@ -1547,9 +1552,21 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			Parameters:      params,
 		}
 		l.emitAction(node)
+		var bType types.Type
+		if l.exprTypes != nil && b.Value != nil {
+			bType = l.exprTypes[b.Value]
+		}
+		if bType == nil {
+			if _, ok := val.([]interface{}); ok {
+				bType = types.NewList(types.Unknown)
+			} else if _, ok := b.Value.(*syntax.ListExpr); ok {
+				bType = types.NewList(types.Unknown)
+			}
+		}
 		l.bindings[b.Name] = BindingRef{
 			IsVariable:   true,
 			VariableName: b.Name,
+			Type:         bType,
 		}
 	} else {
 		// let captures the value at this source point.
@@ -1597,20 +1614,12 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 				OutputName:      b.Name,
 				Aggrandizements: ref.Aggrandizements,
 			}
-		} else if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "Clipboard" {
-			uuid := l.GenerateUUID()
-			node := &ir.NativeActionNode{
-				NodeID:          uuid,
-				AppleIdentifier: "is.workflow.actions.getclipboard",
-				OutputUUID:      uuid,
-				OutputName:      b.Name,
-				Parameters:      map[string]interface{}{},
-			}
-			l.emitAction(node)
+		} else if ref, ok := val.(*ir.AttachmentToken); ok && (ref.Type == "Clipboard" || ref.Type == "DeviceDetails" || ref.Type == "CurrentDate" || ref.Type == "ExtensionInput" || ref.Type == "Ask") {
 			l.bindings[b.Name] = BindingRef{
 				IsVariable:      false,
-				OutputUUID:      uuid,
-				OutputName:      b.Name,
+				TokenType:       ref.Type,
+				OutputUUID:      ref.OutputUUID,
+				OutputName:      ref.OutputName,
 				Aggrandizements: ref.Aggrandizements,
 			}
 		} else {
@@ -1693,7 +1702,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 					OutputUUID:      uuid,
 					OutputName:      b.Name,
 					Parameters: map[string]interface{}{
-						"WFItems": v,
+						"WFItems": formatWFListItems(v),
 					},
 				}
 				l.emitAction(node)
@@ -1712,6 +1721,22 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 					},
 				}
 				l.emitAction(node)
+			case nil:
+				node := &ir.NativeActionNode{
+					NodeID:          uuid,
+					AppleIdentifier: "is.workflow.actions.setvariable",
+					Parameters: map[string]interface{}{
+						"WFVariableName": b.Name,
+					},
+				}
+				l.emitAction(node)
+				l.bindings[b.Name] = BindingRef{
+					IsVariable:   true,
+					TokenType:    "Variable",
+					VariableName: b.Name,
+					OutputName:   b.Name,
+				}
+				return nil
 			default:
 				node := &ir.NativeActionNode{
 					NodeID:          uuid,
@@ -1985,7 +2010,7 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 			OutputUUID:      uuid,
 			OutputName:      "List",
 			Parameters: map[string]interface{}{
-				"WFItems": v,
+				"WFItems": formatWFListItems(v),
 			},
 		}
 		l.emitAction(node)
@@ -2014,6 +2039,182 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 	}
 }
 
+func formatWFListItems(items []interface{}) []interface{} {
+	formatted := make([]interface{}, len(items))
+	for i, it := range items {
+		if m, ok := it.(map[string]interface{}); ok && m["WFItemType"] != nil {
+			formatted[i] = it
+		} else {
+			formatted[i] = map[string]interface{}{
+				"WFItemType": 0,
+				"WFValue":    it,
+			}
+		}
+	}
+	return formatted
+}
+
+func (l *Lowerer) isDateExpr(expr syntax.Expression) bool {
+	if expr == nil {
+		return false
+	}
+	if l.exprTypes != nil {
+		if t, ok := l.exprTypes[expr]; ok && t != nil {
+			if t.Equals(types.Date) || t.Name() == "Date" {
+				return true
+			}
+		}
+	}
+	switch e := expr.(type) {
+	case *syntax.IdentExpr:
+		if e.Name == "CurrentDate" {
+			return true
+		}
+		if ref, ok := l.bindings[e.Name]; ok {
+			if ref.TokenType == "CurrentDate" {
+				return true
+			}
+			if ref.Type != nil && (ref.Type.Equals(types.Date) || ref.Type.Name() == "Date") {
+				return true
+			}
+		}
+	case *syntax.CallExpr:
+		if id, ok := e.Callee.(*syntax.IdentExpr); ok {
+			switch id.Name {
+			case "date", "currentDate", "adjustDate", "formatDate", "getHolidayDate":
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (l *Lowerer) isNumberExpr(expr syntax.Expression) bool {
+	if expr == nil {
+		return false
+	}
+	if l.exprTypes != nil {
+		if t, ok := l.exprTypes[expr]; ok && t != nil {
+			if t.Equals(types.Number) || t.Name() == "Number" || t.Name() == "Int" || t.Name() == "Float" ||
+				t.Equals(types.Bool) || t.Name() == "Bool" || t.Name() == "Boolean" {
+				return true
+			}
+		}
+	}
+	switch e := expr.(type) {
+	case *syntax.LiteralExpr:
+		return e.Type == syntax.TokenNumber || e.Type == syntax.TokenTrue || e.Type == syntax.TokenFalse
+	case *syntax.IdentExpr:
+		if ref, ok := l.bindings[e.Name]; ok && ref.Type != nil {
+			if ref.Type.Equals(types.Number) || ref.Type.Name() == "Number" || ref.Type.Name() == "Int" || ref.Type.Name() == "Float" ||
+				ref.Type.Equals(types.Bool) || ref.Type.Name() == "Bool" || ref.Type.Name() == "Boolean" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func flattenCompoundCondition(expr syntax.Expression, op syntax.TokenType) []syntax.Expression {
+	if bin, ok := expr.(*syntax.BinaryExpr); ok && bin.Op == op {
+		return append(flattenCompoundCondition(bin.Left, op), flattenCompoundCondition(bin.Right, op)...)
+	}
+	return []syntax.Expression{expr}
+}
+
+func (l *Lowerer) lowerConditionClause(expr syntax.Expression) (map[string]any, error) {
+	if binExpr, ok := expr.(*syntax.BinaryExpr); ok {
+		var code int
+		switch binExpr.Op {
+		case syntax.TokenEqual:
+			code = 4
+		case syntax.TokenNotEqual:
+			code = 5
+		case syntax.TokenGreater:
+			code = 2
+		case syntax.TokenGreaterEqual:
+			code = 3
+		case syntax.TokenLess:
+			code = 0
+		case syntax.TokenLessEqual:
+			code = 1
+		case syntax.TokenContains:
+			code = 99
+		case syntax.TokenBeginsWith:
+			code = 8
+		case syntax.TokenEndsWith:
+			code = 9
+		default:
+			return nil, fmt.Errorf("unsupported operator in compound condition: %v", binExpr.Op)
+		}
+
+		leftVal, err := l.lowerExpression(binExpr.Left)
+		if err != nil {
+			return nil, err
+		}
+		rightVal, err := l.lowerExpression(binExpr.Right)
+		if err != nil {
+			return nil, err
+		}
+
+		inputTok := l.materializeToAttachment(leftVal)
+		tmpl := map[string]any{
+			"WFCondition": code,
+			"WFInput": map[string]any{
+				"Type":     "Variable",
+				"Variable": inputTok,
+			},
+		}
+
+		isDate := l.isDateExpr(binExpr.Left) || l.isDateExpr(binExpr.Right)
+		if isDate {
+			if m, ok := rightVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+				tmpl["WFDuration"] = rightVal
+				if code == 2 {
+					tmpl["WFCondition"] = 1000
+				} else if code == 0 {
+					tmpl["WFCondition"] = 1001
+				}
+			} else {
+				tmpl["WFDate"] = rightVal
+			}
+		} else {
+			switch v := rightVal.(type) {
+			case float64:
+				tmpl["WFNumberValue"] = v
+			case int, int64, int32:
+				tmpl["WFNumberValue"] = v
+			case bool:
+				bNum := 0
+				if v {
+					bNum = 1
+				}
+				tmpl["WFNumberValue"] = bNum
+			case string:
+				tmpl["WFConditionalActionString"] = v
+			case *ir.AttachmentToken:
+				if l.isNumberExpr(binExpr.Left) || l.isNumberExpr(binExpr.Right) {
+					tmpl["WFNumberValue"] = v
+				} else {
+					tmpl["WFConditionalActionString"] = map[string]any{
+						"Value": map[string]any{
+							"string": "\uFFFC",
+							"attachmentsByRange": map[string]any{
+								"{0, 1}": v,
+							},
+						},
+						"WFSerializationType": "WFTextTokenString",
+					}
+				}
+			default:
+				tmpl["WFNumberValue"] = v
+			}
+		}
+		return tmpl, nil
+	}
+	return nil, fmt.Errorf("unsupported expression in compound condition: %T", expr)
+}
+
 func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 	_, err := l.lowerIfWithOutput(stmt, false)
 	return err
@@ -2021,9 +2222,79 @@ func (l *Lowerer) lowerIf(stmt *syntax.IfStmt) error {
 
 func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.AttachmentToken, error) {
 	groupUUID := l.GenerateUUID()
+
+	// Check if Condition is a compound BinaryExpr (&& or ||)
+	if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok && (binExpr.Op == syntax.TokenAnd || binExpr.Op == syntax.TokenOr) {
+		op := binExpr.Op
+		clauses := flattenCompoundCondition(stmt.Condition, op)
+		var templates []any
+		canUseWFConditions := true
+		for _, c := range clauses {
+			tmpl, err := l.lowerConditionClause(c)
+			if err != nil {
+				canUseWFConditions = false
+				break
+			}
+			templates = append(templates, tmpl)
+		}
+		if canUseWFConditions && len(templates) > 0 {
+			prefix := 0
+			if op == syntax.TokenAnd {
+				prefix = 1
+			}
+			conditionsMap := map[string]any{
+				"Value": map[string]any{
+					"WFActionParameterFilterPrefix":    prefix,
+					"WFActionParameterFilterTemplates": templates,
+				},
+				"WFSerializationType": "WFContentPredicateTableTemplate",
+			}
+			spec := backend.ConditionSpec{
+				GroupingIdentifier: groupUUID,
+				Conditions:         conditionsMap,
+			}
+			node := &ir.NativeActionNode{
+				NodeID:             l.GenerateUUID(),
+				AppleIdentifier:    "is.workflow.actions.conditional",
+				GroupingIdentifier: groupUUID,
+				ControlFlowMode:    0,
+				Parameters:         backend.BuildConditionalStart(spec),
+			}
+			l.emitAction(node)
+
+			// Then block statements
+			for _, ts := range stmt.ThenBlock.Statements {
+				if err := l.lowerStatement(ts); err != nil {
+					return nil, err
+				}
+			}
+
+			// Else block
+			if stmt.ElseBlock != nil {
+				l.emitIfElse(groupUUID)
+				if err := l.lowerStatement(stmt.ElseBlock); err != nil {
+					return nil, err
+				}
+			}
+
+			// End block
+			endUUID := ""
+			if withOutput {
+				endUUID = l.GenerateUUID()
+			}
+			endNode := l.emitIfEnd(groupUUID, endUUID, "")
+			if withOutput {
+				return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endNode.OutputUUID}, nil
+			}
+			return nil, nil
+		}
+	}
+
 	var input any
 	var condCode int = 4
 	var compareVal any = 1.0
+	var compareVal2 any
+	var opType backend.ConditionOperandType = backend.OperandDefault
 
 	// Check if Condition is a comparison BinaryExpr
 	if binExpr, ok := stmt.Condition.(*syntax.BinaryExpr); ok {
@@ -2065,6 +2336,23 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			input = l.materializeToAttachment(leftVal)
 			condCode = code
 			compareVal = rightVal
+
+			if l.isDateExpr(binExpr.Left) || l.isDateExpr(binExpr.Right) {
+				if m, ok := rightVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+					opType = backend.OperandQuantity
+					if condCode == 2 { // GreaterThan
+						condCode = 1000
+					} else if condCode == 0 { // LessThan
+						condCode = 1001
+					}
+				} else {
+					opType = backend.OperandDate
+				}
+			} else if l.isNumberExpr(binExpr.Left) || l.isNumberExpr(binExpr.Right) {
+				opType = backend.OperandNumber
+			} else {
+				opType = backend.OperandString
+			}
 		} else {
 			condVal, err := l.lowerExpression(stmt.Condition)
 			if err != nil {
@@ -2083,6 +2371,26 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			input = l.materializeToAttachment(argVal)
 			condCode = 1002
 			compareVal = nil
+		} else if id, ok := call.Callee.(*syntax.IdentExpr); ok && (id.Name == "isBetween" || id.Name == "between") {
+			targetVal, err := l.lowerExpression(call.PrimaryArg)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(targetVal)
+			condCode = 1003
+			if len(call.NamedArgs) >= 2 {
+				val1, err1 := l.lowerExpression(call.NamedArgs[0].Value)
+				val2, err2 := l.lowerExpression(call.NamedArgs[1].Value)
+				if err1 == nil && err2 == nil {
+					compareVal = val1
+					compareVal2 = val2
+				}
+			}
+			if l.isDateExpr(call.PrimaryArg) {
+				opType = backend.OperandDate
+			} else {
+				opType = backend.OperandNumber
+			}
 		} else {
 			condVal, err := l.lowerExpression(stmt.Condition)
 			if err != nil {
@@ -2093,13 +2401,64 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			compareVal = nil
 		}
 	} else if unaryExpr, ok := stmt.Condition.(*syntax.UnaryExpr); ok && unaryExpr.Op == syntax.TokenBang {
-		operandVal, err := l.lowerExpression(unaryExpr.Operand)
-		if err != nil {
-			return nil, err
+		if binExpr, ok := unaryExpr.Operand.(*syntax.BinaryExpr); ok {
+			var code int
+			isComp := true
+			switch binExpr.Op {
+			case syntax.TokenContains:
+				code = 999 // Does Not Contain
+			case syntax.TokenEqual:
+				code = 5 // Not
+			case syntax.TokenNotEqual:
+				code = 4 // Is
+			case syntax.TokenGreater:
+				code = 1 // Less Than Or Equal
+			case syntax.TokenGreaterEqual:
+				code = 0 // Less Than
+			case syntax.TokenLess:
+				code = 3 // Greater Than Or Equal
+			case syntax.TokenLessEqual:
+				code = 2 // Greater Than
+			default:
+				isComp = false
+			}
+			if isComp {
+				leftVal, err := l.lowerExpression(binExpr.Left)
+				if err != nil {
+					return nil, err
+				}
+				rightVal, err := l.lowerExpression(binExpr.Right)
+				if err != nil {
+					return nil, err
+				}
+				input = l.materializeToAttachment(leftVal)
+				condCode = code
+				compareVal = rightVal
+				if l.isDateExpr(binExpr.Left) || l.isDateExpr(binExpr.Right) {
+					opType = backend.OperandDate
+				} else if l.isNumberExpr(binExpr.Left) || l.isNumberExpr(binExpr.Right) {
+					opType = backend.OperandNumber
+				} else {
+					opType = backend.OperandString
+				}
+			} else {
+				operandVal, err := l.lowerExpression(unaryExpr.Operand)
+				if err != nil {
+					return nil, err
+				}
+				input = l.materializeToAttachment(operandVal)
+				condCode = 101 // Does not have any value (Empty)
+				compareVal = nil
+			}
+		} else {
+			operandVal, err := l.lowerExpression(unaryExpr.Operand)
+			if err != nil {
+				return nil, err
+			}
+			input = l.materializeToAttachment(operandVal)
+			condCode = 101 // Does not have any value (Empty)
+			compareVal = nil
 		}
-		input = l.materializeToAttachment(operandVal)
-		condCode = 101 // Does not have any value (Empty)
-		compareVal = nil
 	} else {
 		condVal, err := l.lowerExpression(stmt.Condition)
 		if err != nil {
@@ -2111,7 +2470,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 	}
 
 	// 1. Begin block (Mode 0)
-	l.emitIfStart(groupUUID, input, condCode, compareVal, false)
+	l.emitIfStartTyped(groupUUID, input, condCode, compareVal, compareVal2, opType, false)
 
 	// 2. Then block statements
 	for _, ts := range stmt.ThenBlock.Statements {
@@ -2165,28 +2524,23 @@ func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool
 
 	var prevBinding BindingRef
 	var hadBinding bool
-	if stmt.IndexVar != "" {
+	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
 		prevBinding, hadBinding = l.bindings[stmt.IndexVar]
-		mathUUID := l.GenerateUUID()
-		mathNode := &ir.NativeActionNode{
-			NodeID:          mathUUID,
-			AppleIdentifier: "is.workflow.actions.math",
-			OutputUUID:      mathUUID,
-			OutputName:      stmt.IndexVar,
+		setVarNode := &ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.setvariable",
 			Parameters: map[string]interface{}{
-				"WFMathOperation": "-",
+				"WFVariableName": stmt.IndexVar,
 				"WFInput": &ir.AttachmentToken{
 					Type:       "Variable",
 					OutputName: repeatIndexName,
 				},
-				"WFMathOperand": 1.0,
 			},
 		}
-		l.emitAction(mathNode)
+		l.emitAction(setVarNode)
 		l.bindings[stmt.IndexVar] = BindingRef{
-			IsVariable: false,
-			OutputUUID: mathUUID,
-			OutputName: stmt.IndexVar,
+			IsVariable:   true,
+			VariableName: stmt.IndexVar,
 		}
 	}
 
@@ -2196,7 +2550,7 @@ func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool
 		}
 	}
 
-	if stmt.IndexVar != "" {
+	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
 		if hadBinding {
 			l.bindings[stmt.IndexVar] = prevBinding
 		} else {
@@ -2243,7 +2597,7 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 
 	var prevItemBinding BindingRef
 	var hadItemBinding bool
-	if stmt.ItemVar != "" {
+	if stmt.ItemVar != "" && stmt.ItemVar != "_" {
 		prevItemBinding, hadItemBinding = l.bindings[stmt.ItemVar]
 		setVarNode := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
@@ -2265,28 +2619,23 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 
 	var prevIndexBinding BindingRef
 	var hadIndexBinding bool
-	if stmt.IndexVar != "" {
+	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
 		prevIndexBinding, hadIndexBinding = l.bindings[stmt.IndexVar]
-		mathUUID := l.GenerateUUID()
-		mathNode := &ir.NativeActionNode{
-			NodeID:          mathUUID,
-			AppleIdentifier: "is.workflow.actions.math",
-			OutputUUID:      mathUUID,
-			OutputName:      stmt.IndexVar,
+		setVarNode := &ir.NativeActionNode{
+			NodeID:          l.GenerateUUID(),
+			AppleIdentifier: "is.workflow.actions.setvariable",
 			Parameters: map[string]interface{}{
-				"WFMathOperation": "-",
+				"WFVariableName": stmt.IndexVar,
 				"WFInput": &ir.AttachmentToken{
 					Type:       "Variable",
 					OutputName: repeatIndexName,
 				},
-				"WFMathOperand": 1.0,
 			},
 		}
-		l.emitAction(mathNode)
+		l.emitAction(setVarNode)
 		l.bindings[stmt.IndexVar] = BindingRef{
-			IsVariable: false,
-			OutputUUID: mathUUID,
-			OutputName: stmt.IndexVar,
+			IsVariable:   true,
+			VariableName: stmt.IndexVar,
 		}
 	}
 
@@ -2296,14 +2645,14 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 		}
 	}
 
-	if stmt.ItemVar != "" {
+	if stmt.ItemVar != "" && stmt.ItemVar != "_" {
 		if hadItemBinding {
 			l.bindings[stmt.ItemVar] = prevItemBinding
 		} else {
 			delete(l.bindings, stmt.ItemVar)
 		}
 	}
-	if stmt.IndexVar != "" {
+	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
 		if hadIndexBinding {
 			l.bindings[stmt.IndexVar] = prevIndexBinding
 		} else {
@@ -2419,8 +2768,12 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				}
 				return tok, nil
 			}
+			tokType := ref.TokenType
+			if tokType == "" {
+				tokType = "ActionOutput"
+			}
 			tok := &ir.AttachmentToken{
-				Type:       "ActionOutput",
+				Type:       tokType,
 				OutputUUID: ref.OutputUUID,
 				OutputName: ref.OutputName,
 			}
@@ -3906,6 +4259,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			"function":             fn.Name,
 			"_cherri_caller_input": &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"},
 		}
+		unnamedArgIdx := 0
 		for i, param := range fn.Parameters {
 			var argVal interface{}
 			supplied := false
@@ -3919,7 +4273,22 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			}
 			if !supplied {
 				for _, nArg := range call.NamedArgs {
-					if nArg.Label == param.Name {
+					if nArg.Label != "" && (nArg.Label == param.Name || strings.TrimPrefix(param.Name, "_") == nArg.Label) {
+						v, err := l.lowerExpression(nArg.Value)
+						if err != nil {
+							return nil, err
+						}
+						argVal = v
+						supplied = true
+						break
+					}
+				}
+			}
+			if !supplied {
+				for unnamedArgIdx < len(call.NamedArgs) {
+					nArg := call.NamedArgs[unnamedArgIdx]
+					unnamedArgIdx++
+					if nArg.Label == "" {
 						v, err := l.lowerExpression(nArg.Value)
 						if err != nil {
 							return nil, err
@@ -4058,7 +4427,14 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		if call.PrimaryArg != nil {
 			if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
 				var primVal backend.SemanticValue
-				if (primParam.WireKey == "WFInput" && primParam.Codec != "text") || primParam.Codec == "token" {
+				acceptsLit := false
+				for _, form := range primParam.AcceptedForms {
+					if form == "literal" {
+						acceptsLit = true
+						break
+					}
+				}
+				if !acceptsLit && ((primParam.WireKey == "WFInput" && primParam.Codec != "text") || primParam.Codec == "token") {
 					if lit, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit && lit.Type != syntax.TokenNone && lit.Type != syntax.TokenNull {
 						rawVal, err := l.lowerExpression(call.PrimaryArg)
 						if err == nil && rawVal != nil {

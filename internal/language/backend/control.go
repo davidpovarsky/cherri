@@ -14,7 +14,7 @@ const (
 
 // WFMenuItem represents an item in an Apple Shortcuts Choose from Menu action.
 type WFMenuItem struct {
-	WFItemType int `plist:",omitempty"`
+	WFItemType int `plist:"WFItemType"`
 	WFValue    any `plist:",omitempty"`
 }
 
@@ -60,10 +60,22 @@ func (s *ConditionSpec) RouteComparisonValue(val any, opType ConditionOperandTyp
 			s.AnotherDate = val
 		}
 	case OperandNumber:
-		if s.NumberValue == nil {
-			s.NumberValue = val
+		if b, isBool := val.(bool); isBool {
+			bNum := 0
+			if b {
+				bNum = 1
+			}
+			if s.NumberValue == nil {
+				s.NumberValue = bNum
+			} else {
+				s.AnotherNumber = bNum
+			}
 		} else {
-			s.AnotherNumber = val
+			if s.NumberValue == nil {
+				s.NumberValue = val
+			} else {
+				s.AnotherNumber = val
+			}
 		}
 	case OperandQuantity:
 		s.DurationValue = val
@@ -113,8 +125,8 @@ func BuildConditionalStart(spec ConditionSpec) map[string]any {
 	return params
 }
 
-// BuildIfStart constructs the beginning action parameters for a conditional block.
-func BuildIfStart(groupingID string, input any, conditionCode int, compareVal any, isLegacy bool) map[string]any {
+// BuildIfStartTyped constructs the beginning action parameters for a conditional block with explicit operand typing.
+func BuildIfStartTyped(groupingID string, input any, conditionCode int, compareVal any, compareVal2 any, opType ConditionOperandType, isLegacy bool) map[string]any {
 	spec := ConditionSpec{
 		GroupingIdentifier: groupingID,
 		Input:              input,
@@ -123,25 +135,49 @@ func BuildIfStart(groupingID string, input any, conditionCode int, compareVal an
 	}
 	if compareVal != nil {
 		switch v := compareVal.(type) {
-		case float64:
-			spec.NumberValue = v
 		case int:
-			spec.NumberValue = float64(v)
+			compareVal = float64(v)
 		case int64:
-			spec.NumberValue = float64(v)
+			compareVal = float64(v)
 		case bool:
 			bNum := 0.0
 			if v {
 				bNum = 1.0
 			}
-			spec.NumberValue = bNum
-		case string:
-			spec.StringValue = v
-		default:
-			spec.NumberValue = v
+			compareVal = bNum
+		}
+		if opType != OperandDefault {
+			spec.RouteComparisonValue(compareVal, opType)
+		} else {
+			switch v := compareVal.(type) {
+			case float64:
+				spec.NumberValue = v
+			case string:
+				spec.StringValue = v
+			default:
+				spec.NumberValue = v
+			}
+		}
+	}
+	if compareVal2 != nil {
+		switch v := compareVal2.(type) {
+		case int:
+			compareVal2 = float64(v)
+		case int64:
+			compareVal2 = float64(v)
+		}
+		if opType != OperandDefault {
+			spec.RouteComparisonValue(compareVal2, opType)
+		} else {
+			spec.NumberValue = compareVal2
 		}
 	}
 	return BuildConditionalStart(spec)
+}
+
+// BuildIfStart constructs the beginning action parameters for a conditional block.
+func BuildIfStart(groupingID string, input any, conditionCode int, compareVal any, isLegacy bool) map[string]any {
+	return BuildIfStartTyped(groupingID, input, conditionCode, compareVal, nil, OperandDefault, isLegacy)
 }
 
 // BuildIfElse constructs the else branch action parameters.

@@ -474,7 +474,13 @@ func (f *Formatter) formatExpression(expr Expression) {
 			opStr = "+"
 		}
 		f.buf.WriteString(opStr)
-		f.formatExpression(e.Operand)
+		if _, isBin := e.Operand.(*BinaryExpr); isBin {
+			f.buf.WriteString("(")
+			f.formatExpression(e.Operand)
+			f.buf.WriteString(")")
+		} else {
+			f.formatExpression(e.Operand)
+		}
 	case *BinaryExpr:
 		f.formatExpression(e.Left)
 		f.buf.WriteString(" ")

@@ -65,6 +65,20 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 					continue
 				}
 			}
+			if node.AppleIdentifier == "is.workflow.actions.conditional" && k == "WFConditionalActionString" {
+				if _, ok := v.(*ir.AttachmentToken); ok {
+					action.WFWorkflowActionParameters[k] = map[string]any{
+						"WFSerializationType": "WFTextTokenString",
+						"Value": map[string]any{
+							"string": "\uFFFC",
+							"attachmentsByRange": map[string]any{
+								"{0, 1}": transformIRParamValueContext(v, true),
+							},
+						},
+					}
+					continue
+				}
+			}
 			action.WFWorkflowActionParameters[k] = transformIRParamValue(v)
 		}
 		if node.OutputUUID != "" {
@@ -156,6 +170,29 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 				for _, item := range items {
 					if dItem, ok := item.(WFDictionaryFieldValueItem); ok {
 						dictItems = append(dictItems, dItem)
+					} else if m, ok := item.(map[string]any); ok && m["WFItemType"] != nil {
+						itemType := 0
+						if t, ok := m["WFItemType"].(int); ok {
+							itemType = t
+						}
+						dictItems = append(dictItems, WFDictionaryFieldValueItem{
+							WFItemType: itemType,
+							WFValue:    m["WFValue"],
+						})
+					} else if m, ok := item.(map[string]interface{}); ok && m["WFItemType"] != nil {
+						itemType := 0
+						if t, ok := m["WFItemType"].(int); ok {
+							itemType = t
+						}
+						dictItems = append(dictItems, WFDictionaryFieldValueItem{
+							WFItemType: itemType,
+							WFValue:    m["WFValue"],
+						})
+					} else if s, ok := item.(string); ok {
+						dictItems = append(dictItems, WFDictionaryFieldValueItem{
+							WFItemType: 0,
+							WFValue:    s,
+						})
 					} else {
 						dictItems = append(dictItems, makeDictionaryItem("", item))
 					}

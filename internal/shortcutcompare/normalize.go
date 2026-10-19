@@ -6,13 +6,51 @@
 package shortcutcompare
 
 import (
+	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 )
 
 type ForwardTarget struct {
-	ProducerUUID string
-	VariableName string
+	ProducerUUID    string
+	VariableName    string
+	SystemToken     string
+	SourceVariable  string
+	Aggrandizements []any
+}
+
+func extractSystemToken(input any) string {
+	switch typed := input.(type) {
+	case map[string]any:
+		if val, ok := typed["Value"].(map[string]any); ok {
+			return extractSystemToken(val)
+		}
+		if t, ok := typed["Type"].(string); ok {
+			switch t {
+			case "ExtensionInput":
+				return "ShortcutInput"
+			case "Clipboard":
+				return "Clipboard"
+			case "CurrentDate":
+				return "CurrentDate"
+			case "DeviceDetails":
+				return "DeviceDetails"
+			case "Variable":
+				if vName, ok := typed["VariableName"].(string); ok {
+					switch vName {
+					case "ShortcutInput":
+						return "ShortcutInput"
+					case "Clipboard":
+						return "Clipboard"
+					case "Device":
+						return "DeviceDetails"
+					}
+				}
+			}
+		}
+	}
+	return ""
 }
 
 // NormalizeDocumentForParity applies narrow, semantics-preserving normalization rules
@@ -29,6 +67,10 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 		return cloned
 	}
 
+	// 0. Witness and normalize function envelope (Contract B2 vs Legacy)
+	actionsRaw = normalizeFunctionEnvelope(actionsRaw)
+	cloned["WFWorkflowActions"] = actionsRaw
+
 	// 1. Remove Legacy Cherri top-level WFSerializationType quirk from action parameters
 	for _, actRaw := range actionsRaw {
 		if actMap, ok := actRaw.(map[string]any); ok {
@@ -38,11 +80,18 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 		}
 	}
 
+	// 1b. Fold procedural list creation (setvariable + appendvariable chains) into canonical list actions
+	actionsRaw = foldProceduralLists(actionsRaw)
+	cloned["WFWorkflowActions"] = actionsRaw
+
 	// 2. Discover single-write setvariable actions for SSA Forwarding
 	varWriteCounts := make(map[string]int)
 	for _, actRaw := range actionsRaw {
 		if actMap, ok := actRaw.(map[string]any); ok {
-			if actMap["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" {
+			actID, _ := actMap["WFWorkflowActionIdentifier"].(string)
+			if actID == "is.workflow.actions.setvariable" ||
+				actID == "is.workflow.actions.appendvariable" ||
+				actID == "is.workflow.actions.addtovariable" {
 				if params, ok := actMap["WFWorkflowActionParameters"].(map[string]any); ok {
 					if varName, ok := params["WFVariableName"].(string); ok && varName != "" {
 						varWriteCounts[varName]++
@@ -65,11 +114,17 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 			continue
 		}
 		varName, _ := params["WFVariableName"].(string)
+		if varName == "_" {
+			setVarIndicesToRemove[i] = true
+			continue
+		}
 		if varName == "" || varWriteCounts[varName] > 1 {
 			continue // Only normalize single-write SSA variables
 		}
 
 		producerUUID := extractOutputUUID(params["WFInput"])
+		systemToken := extractSystemToken(params["WFInput"])
+		varRefName, aggrs := extractVariableRefAndAggrandizements(params["WFInput"])
 		if producerUUID != "" {
 			forwardMap[varName] = ForwardTarget{
 				ProducerUUID: producerUUID,
@@ -88,6 +143,30 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 					}
 				}
 			}
+		} else if systemToken != "" {
+			forwardMap[varName] = ForwardTarget{
+				VariableName: varName,
+				SystemToken:  systemToken,
+			}
+			setVarIndicesToRemove[i] = true
+		} else if varRefName != "" {
+			if prevTarget, ok := forwardMap[varRefName]; ok && prevTarget.ProducerUUID != "" {
+				combinedAggrs := append([]any{}, prevTarget.Aggrandizements...)
+				combinedAggrs = append(combinedAggrs, aggrs...)
+				forwardMap[varName] = ForwardTarget{
+					ProducerUUID:    prevTarget.ProducerUUID,
+					VariableName:    varName,
+					Aggrandizements: combinedAggrs,
+				}
+				setVarIndicesToRemove[i] = true
+			} else {
+				forwardMap[varName] = ForwardTarget{
+					SourceVariable:  varRefName,
+					VariableName:    varName,
+					Aggrandizements: aggrs,
+				}
+				setVarIndicesToRemove[i] = true
+			}
 		}
 	}
 
@@ -102,18 +181,80 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 		}
 	}
 
-	// 4. Identify unused 'is.workflow.actions.nothing' actions
+	// 4. Identify unused 'is.workflow.actions.nothing' actions and redundant empty list actions
 	nothingIndicesToRemove := make(map[int]bool)
 	usedUUIDs := collectAllReferencedUUIDs(actionsRaw)
 	for i, actRaw := range actionsRaw {
 		actMap, ok := actRaw.(map[string]any)
-		if !ok || actMap["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" {
+		if !ok {
 			continue
 		}
-		params, _ := actMap["WFWorkflowActionParameters"].(map[string]any)
-		u, _ := params["UUID"].(string)
-		if u == "" || !usedUUIDs[u] {
-			nothingIndicesToRemove[i] = true
+		if actMap["WFWorkflowActionIdentifier"] == "is.workflow.actions.nothing" {
+			params, _ := actMap["WFWorkflowActionParameters"].(map[string]any)
+			u, _ := params["UUID"].(string)
+			if u == "" || !usedUUIDs[u] {
+				nothingIndicesToRemove[i] = true
+			}
+		} else if actMap["WFWorkflowActionIdentifier"] == "is.workflow.actions.list" {
+			params, _ := actMap["WFWorkflowActionParameters"].(map[string]any)
+			items, _ := toSlice(params["WFItems"])
+			if len(items) == 0 {
+				u, _ := params["UUID"].(string)
+				if u != "" {
+					refCount := 0
+					var setVarParam map[string]any
+					for _, otherAct := range actionsRaw {
+						if otherMap, ok := otherAct.(map[string]any); ok && otherMap["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" {
+							if oParams, ok := otherMap["WFWorkflowActionParameters"].(map[string]any); ok {
+								if extractOutputUUID(oParams["WFInput"]) == u {
+									refCount++
+									setVarParam = oParams
+								}
+							}
+						}
+					}
+					if refCount == 1 && setVarParam != nil {
+						delete(setVarParam, "WFInput")
+						nothingIndicesToRemove[i] = true
+					}
+				}
+			}
+		}
+	}
+
+	// 4b. Repair legacy compiler quirk where dictionary was emitted but not linked to immediately following setvariable
+	for i, actRaw := range actionsRaw {
+		if actMap, ok := actRaw.(map[string]any); ok && actMap["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" {
+			params, _ := actMap["WFWorkflowActionParameters"].(map[string]any)
+			if params != nil && params["WFInput"] == nil {
+				for j := i - 1; j >= 0; j-- {
+					prevMap, okPrev := actionsRaw[j].(map[string]any)
+					if !okPrev {
+						break
+					}
+					prevId, _ := prevMap["WFWorkflowActionIdentifier"].(string)
+					if prevId == "is.workflow.actions.nothing" {
+						continue
+					}
+					if prevId == "is.workflow.actions.dictionary" {
+						prevParams, _ := prevMap["WFWorkflowActionParameters"].(map[string]any)
+						if prevParams != nil {
+							u, _ := prevParams["UUID"].(string)
+							if u != "" && !usedUUIDs[u] {
+								params["WFInput"] = map[string]any{
+									"WFSerializationType": "WFTextTokenAttachment",
+									"Value": map[string]any{
+										"Type":       "ActionOutput",
+										"OutputUUID": u,
+										"OutputName": "Dictionary",
+									},
+								}
+							}
+						}
+					}
+					break
+				}
+			}
 		}
 	}
 
@@ -204,6 +345,12 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 	// 10. Normalize default zero-components in CoreGraphics CGColor representations
 	normalizeCGColors(cloned)
 
+	// 11. Normalize empty dictionary representations in scalar slots (nil handling)
+	normalizeEmptyMapsInScalars(cloned)
+
+	// 12. Normalize redundant WFDictionaryFieldValue wrapping in nested dictionary field values
+	normalizeNestedDictionaryFieldValues(cloned)
+
 	return cloned
 }
 
@@ -229,12 +376,59 @@ func normalizeCGColors(obj any) {
 	}
 }
 
+func normalizeEmptyMapsInScalars(obj any) {
+	switch typed := obj.(type) {
+	case map[string]any:
+		for k, v := range typed {
+			if m, ok := v.(map[string]any); ok && len(m) == 0 {
+				switch k {
+				case "WFNumberValue", "WFRepeatCount", "WFInput":
+					delete(typed, k)
+				case "WFValue", "WFMenuItemTitle", "WFMenuItemAttributedTitle":
+					typed[k] = ""
+				}
+			} else if s, ok := v.(string); ok && s == "map[]" {
+				switch k {
+				case "WFValue", "WFMenuItemTitle", "WFMenuItemAttributedTitle":
+					typed[k] = ""
+				}
+			} else {
+				normalizeEmptyMapsInScalars(v)
+			}
+		}
+	case []any:
+		for _, item := range typed {
+			if m, ok := item.(map[string]any); ok {
+				if val, exists := m["WFValue"]; exists {
+					if vm, ok := val.(map[string]any); ok && len(vm) == 0 {
+						m["WFValue"] = ""
+					} else if s, ok := val.(string); ok && s == "map[]" {
+						m["WFValue"] = ""
+					}
+				}
+			}
+			normalizeEmptyMapsInScalars(item)
+		}
+	}
+}
+
 func normalizeActionOutputNames(obj any) {
 	switch typed := obj.(type) {
 	case map[string]any:
+		if prop, ok := typed["PropertyName"].(string); ok {
+			switch prop {
+			case "Model":
+				typed["PropertyName"] = "Device Model"
+			case "OS":
+				typed["PropertyName"] = "System Version"
+			}
+		}
 		if t, ok := typed["Type"].(string); ok {
 			if t == "ActionOutput" {
 				delete(typed, "OutputName")
+			} else if t == "ExtensionInput" {
+				delete(typed, "VariableName")
+				typed["OutputName"] = "ShortcutInput"
 			} else if t == "Variable" {
 				if vName, ok := typed["VariableName"].(string); ok {
 					switch vName {
@@ -314,28 +508,89 @@ func rewriteVariableReferences(obj any, forwardMap map[string]ForwardTarget) {
 
 		if isVarRef && varName != "" {
 			if target, found := forwardMap[varName]; found {
-				if ser, hasSer := typed["WFSerializationType"].(string); hasSer && ser == "WFTextTokenAttachment" {
-					// Standalone WFTextTokenAttachment wrapper
-					delete(typed, "Type")
-					delete(typed, "VariableName")
-					val, _ := typed["Value"].(map[string]any)
-					if val == nil {
-						val = make(map[string]any)
-						typed["Value"] = val
+				if target.SystemToken != "" {
+					if ser, hasSer := typed["WFSerializationType"].(string); hasSer && ser == "WFTextTokenAttachment" {
+						delete(typed, "Type")
+						delete(typed, "VariableName")
+						val, _ := typed["Value"].(map[string]any)
+						if val == nil {
+							val = make(map[string]any)
+							typed["Value"] = val
+						}
+						if target.SystemToken == "DeviceDetails" {
+							val["Type"] = "DeviceDetails"
+							delete(val, "VariableName")
+						} else {
+							val["Type"] = "Variable"
+							val["VariableName"] = target.SystemToken
+						}
+						delete(val, "OutputUUID")
+						delete(val, "OutputName")
+					} else {
+						if target.SystemToken == "DeviceDetails" {
+							typed["Type"] = "DeviceDetails"
+							delete(typed, "VariableName")
+						} else {
+							typed["Type"] = "Variable"
+							typed["VariableName"] = target.SystemToken
+						}
+						delete(typed, "OutputUUID")
+						delete(typed, "OutputName")
+						delete(typed, "Value")
 					}
-					val["Type"] = "ActionOutput"
-					val["OutputUUID"] = target.ProducerUUID
-					val["OutputName"] = target.VariableName
-					delete(val, "VariableName")
-				} else {
-					// Direct token inside attachmentsByRange or parameters
-					typed["Type"] = "ActionOutput"
-					typed["OutputUUID"] = target.ProducerUUID
-					typed["OutputName"] = target.VariableName
-					delete(typed, "VariableName")
-					delete(typed, "Value")
+					return
 				}
-				return
+
+				if target.ProducerUUID != "" {
+					if ser, hasSer := typed["WFSerializationType"].(string); hasSer && ser == "WFTextTokenAttachment" {
+						// Standalone WFTextTokenAttachment wrapper
+						delete(typed, "Type")
+						delete(typed, "VariableName")
+						val, _ := typed["Value"].(map[string]any)
+						if val == nil {
+							val = make(map[string]any)
+							typed["Value"] = val
+						}
+						val["Type"] = "ActionOutput"
+						val["OutputUUID"] = target.ProducerUUID
+						val["OutputName"] = target.VariableName
+						delete(val, "VariableName")
+						if len(target.Aggrandizements) > 0 {
+							val["Aggrandizements"] = target.Aggrandizements
+						}
+					} else {
+						// Direct token inside attachmentsByRange or parameters
+						typed["Type"] = "ActionOutput"
+						typed["OutputUUID"] = target.ProducerUUID
+						typed["OutputName"] = target.VariableName
+						delete(typed, "VariableName")
+						delete(typed, "Value")
+						if len(target.Aggrandizements) > 0 {
+							typed["Aggrandizements"] = target.Aggrandizements
+						}
+					}
+					return
+				} else if target.SourceVariable != "" {
+					if ser, hasSer := typed["WFSerializationType"].(string); hasSer && ser == "WFTextTokenAttachment" {
+						val, _ := typed["Value"].(map[string]any)
+						if val == nil {
+							val = make(map[string]any)
+							typed["Value"] = val
+						}
+						val["Type"] = "Variable"
+						val["VariableName"] = target.SourceVariable
+						if len(target.Aggrandizements) > 0 {
+							val["Aggrandizements"] = target.Aggrandizements
+						}
+					} else {
+						typed["Type"] = "Variable"
+						typed["VariableName"] = target.SourceVariable
+						if len(target.Aggrandizements) > 0 {
+							typed["Aggrandizements"] = target.Aggrandizements
+						}
+					}
+					return
+				}
 			}
 		}
 
@@ -401,4 +656,619 @@ func deepCloneValue(val any) any {
 	default:
 		return val
 	}
+}
+
+func extractVariableRefAndAggrandizements(input any) (string, []any) {
+	switch typed := input.(type) {
+	case map[string]any:
+		if val, ok := typed["Value"].(map[string]any); ok {
+			return extractVariableRefAndAggrandizements(val)
+		}
+		if t, ok := typed["Type"].(string); ok && t == "Variable" {
+			vName, _ := typed["VariableName"].(string)
+			aggrs, _ := typed["Aggrandizements"].([]any)
+			return vName, aggrs
+		}
+	}
+	return "", nil
+}
+
+func foldProceduralLists(actions []any) []any {
+	var newActions []any
+	i := 0
+	for i < len(actions) {
+		act, _ := actions[i].(map[string]any)
+		if act != nil && act["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" {
+			params, _ := act["WFWorkflowActionParameters"].(map[string]any)
+			vName, _ := params["WFVariableName"].(string)
+			if vName != "" && params["WFInput"] == nil {
+				// Check for subsequent (producer + appendvariable) pairs
+				var items []any
+				j := i + 1
+				for j+1 < len(actions) {
+					pAct, _ := actions[j].(map[string]any)
+					aAct, _ := actions[j+1].(map[string]any)
+					if pAct == nil || aAct == nil {
+						break
+					}
+					if aAct["WFWorkflowActionIdentifier"] != "is.workflow.actions.appendvariable" {
+						break
+					}
+					aParams, _ := aAct["WFWorkflowActionParameters"].(map[string]any)
+					if aParams["WFVariableName"] != vName {
+						break
+					}
+					pParams, _ := pAct["WFWorkflowActionParameters"].(map[string]any)
+					pUUID, _ := pParams["UUID"].(string)
+					// Check if aAct WFInput references pUUID
+					inVal, _ := aParams["WFInput"].(map[string]any)
+					valObj, _ := inVal["Value"].(map[string]any)
+					if valObj["OutputUUID"] != pUUID && pUUID != "" {
+						break
+					}
+					// Extract literal item value from pAct
+					if pAct["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" {
+						textVal := pParams["WFTextActionText"]
+						items = append(items, map[string]any{
+							"WFItemType": 0,
+							"WFValue":    textVal,
+						})
+					} else if pAct["WFWorkflowActionIdentifier"] == "is.workflow.actions.number" {
+						numVal := pParams["WFNumberActionNumber"]
+						items = append(items, map[string]any{
+							"WFItemType": 0,
+							"WFValue":    numVal,
+						})
+					} else {
+						break
+					}
+					j += 2
+				}
+				if len(items) > 0 {
+					listUUID := "PROCEDURAL-LIST-" + vName
+					listNode := map[string]any{
+						"WFWorkflowActionIdentifier": "is.workflow.actions.list",
+						"WFWorkflowActionParameters": map[string]any{
+							"UUID":    listUUID,
+							"WFItems": items,
+						},
+					}
+					setVarNode := map[string]any{
+						"WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+						"WFWorkflowActionParameters": map[string]any{
+							"WFVariableName": vName,
+							"WFInput": map[string]any{
+								"WFSerializationType": "WFTextTokenAttachment",
+								"Value": map[string]any{
+									"Type":       "ActionOutput",
+									"OutputUUID": listUUID,
+									"OutputName": vName,
+								},
+							},
+						},
+					}
+					newActions = append(newActions, listNode, setVarNode)
+					i = j
+					continue
+				}
+			}
+		} else if act != nil && act["WFWorkflowActionIdentifier"] == "is.workflow.actions.list" && i+1 < len(actions) {
+			listParams, _ := act["WFWorkflowActionParameters"].(map[string]any)
+			listUUID, _ := listParams["UUID"].(string)
+			setAct, _ := actions[i+1].(map[string]any)
+			if setAct != nil && setAct["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" {
+				setParams, _ := setAct["WFWorkflowActionParameters"].(map[string]any)
+				vName, _ := setParams["WFVariableName"].(string)
+				inVal, _ := setParams["WFInput"].(map[string]any)
+				valObj, _ := inVal["Value"].(map[string]any)
+				if (valObj["OutputUUID"] == listUUID && listUUID != "") || inVal == nil {
+					items, _ := toSlice(listParams["WFItems"])
+					origLen := len(items)
+					j := i + 2
+					for j+1 < len(actions) {
+						pAct, _ := actions[j].(map[string]any)
+						aAct, _ := actions[j+1].(map[string]any)
+						if pAct == nil || aAct == nil {
+							break
+						}
+						if aAct["WFWorkflowActionIdentifier"] != "is.workflow.actions.appendvariable" {
+							break
+						}
+						aParams, _ := aAct["WFWorkflowActionParameters"].(map[string]any)
+						if aParams["WFVariableName"] != vName {
+							break
+						}
+						pParams, _ := pAct["WFWorkflowActionParameters"].(map[string]any)
+						pUUID, _ := pParams["UUID"].(string)
+						ainVal, _ := aParams["WFInput"].(map[string]any)
+						avalObj, _ := ainVal["Value"].(map[string]any)
+						if avalObj["OutputUUID"] != pUUID && pUUID != "" {
+							break
+						}
+						if pAct["WFWorkflowActionIdentifier"] == "is.workflow.actions.gettext" {
+							textVal := pParams["WFTextActionText"]
+							items = append(items, map[string]any{
+								"WFItemType": 0,
+								"WFValue":    textVal,
+							})
+						} else if pAct["WFWorkflowActionIdentifier"] == "is.workflow.actions.number" {
+							numVal := pParams["WFNumberActionNumber"]
+							items = append(items, map[string]any{
+								"WFItemType": 0,
+								"WFValue":    numVal,
+							})
+						} else {
+							break
+						}
+						j += 2
+					}
+					if len(items) > origLen {
+						listParams["WFItems"] = items
+						newActions = append(newActions, act, setAct)
+						i = j
+						continue
+					}
+				}
+			}
+		}
+		newActions = append(newActions, actions[i])
+		i++
+	}
+	return newActions
+}
+
+func normalizeNestedDictionaryFieldValues(obj any) {
+	switch typed := obj.(type) {
+	case map[string]any:
+		if val, ok := typed["Value"].(map[string]any); ok {
+			if ser, okSer := val["WFSerializationType"].(string); okSer && ser == "WFDictionaryFieldValue" {
+				if innerVal, okInner := val["Value"].(map[string]any); okInner {
+					if _, hasItems := innerVal["WFDictionaryFieldValueItems"]; hasItems {
+						typed["Value"] = innerVal
+					}
+				}
+			}
+		}
+		for _, v := range typed {
+			normalizeNestedDictionaryFieldValues(v)
+		}
+	case []any:
+		for _, item := range typed {
+			normalizeNestedDictionaryFieldValues(item)
+		}
+	}
+}
+
+func getVariableNameFromInput(inp any) string {
+	m, ok := inp.(map[string]any)
+	if !ok {
+		return ""
+	}
+	if v, ok := m["VariableName"].(string); ok && v != "" {
+		return v
+	}
+	if vMap, ok := m["Variable"].(map[string]any); ok {
+		if v, ok := vMap["VariableName"].(string); ok && v != "" {
+			return v
+		}
+		if valMap, ok := vMap["Value"].(map[string]any); ok {
+			if v, ok := valMap["VariableName"].(string); ok && v != "" {
+				return v
+			}
+		}
+	}
+	return ""
+}
+
+func unwrapSingleTokenAttachment(val any) any {
+	m, ok := val.(map[string]any)
+	if !ok {
+		return val
+	}
+	if m["WFSerializationType"] == "WFTextTokenString" {
+		if valMap, ok := m["Value"].(map[string]any); ok {
+			if str, ok := valMap["string"].(string); ok && str == "\ufffc" {
+				if attrs, ok := valMap["attachmentsByRange"].(map[string]any); ok && len(attrs) == 1 {
+					for _, tok := range attrs {
+						return map[string]any{
+							"WFSerializationType": "WFTextTokenAttachment",
+							"Value":               tok,
+						}
+					}
+				}
+			}
+		}
+	}
+	return val
+}
+
+func normalizeCallArgumentValue(valWrapper any) any {
+	m, ok := valWrapper.(map[string]any)
+	if !ok {
+		return valWrapper
+	}
+	v := m["WFValue"]
+	curr := v
+	for {
+		cMap, ok := curr.(map[string]any)
+		if !ok {
+			break
+		}
+		vInner, okInner := cMap["Value"].(map[string]any)
+		if !okInner {
+			break
+		}
+		curr = vInner
+	}
+	if cMap, ok := curr.(map[string]any); ok {
+		if items, ok := toSlice(cMap["WFDictionaryFieldValueItems"]); ok && len(items) == 1 {
+			if itMap, ok := items[0].(map[string]any); ok {
+				if keyMap, ok := itMap["WFKey"].(map[string]any); ok {
+					if keyVal, ok := keyMap["Value"].(map[string]any); ok {
+						if keyStr, ok := keyVal["string"].(string); ok && keyStr == "array" {
+							m["WFValue"] = itMap["WFValue"]
+							m["WFItemType"] = 0
+						}
+					}
+				}
+			}
+		}
+	}
+	m["WFValue"] = unwrapSingleTokenAttachment(m["WFValue"])
+	m["WFItemType"] = 0
+	return m
+}
+
+func normalizeRunWorkflowCallDict(params map[string]any) bool {
+	wfItems, ok := params["WFItems"].(map[string]any)
+	if !ok {
+		return false
+	}
+	val, ok := wfItems["Value"].(map[string]any)
+	if !ok {
+		return false
+	}
+	rawItems, ok := toSlice(val["WFDictionaryFieldValueItems"])
+	if !ok || len(rawItems) == 0 {
+		return false
+	}
+
+	isFnDict := false
+	funcName := ""
+	for _, itRaw := range rawItems {
+		it, ok := itRaw.(map[string]any)
+		if !ok {
+			continue
+		}
+		kMap, _ := it["WFKey"].(map[string]any)
+		kVal, _ := kMap["Value"].(map[string]any)
+		keyStr, _ := kVal["string"].(string)
+
+		vMap, _ := it["WFValue"].(map[string]any)
+		vVal, _ := vMap["Value"].(map[string]any)
+		vStr, _ := vVal["string"].(string)
+
+		if keyStr == "cherri_functions" || (keyStr == "_cherri_magic" && vStr == "__cherri_fn_envelope_v2__") {
+			isFnDict = true
+		}
+		if keyStr == "function" {
+			if vStr != "" {
+				funcName = vStr
+			} else if s, ok := it["WFValue"].(string); ok {
+				funcName = s
+			}
+		}
+	}
+
+	if !isFnDict {
+		return false
+	}
+
+	var args []any
+	v2Args := make(map[int]any)
+	for _, itRaw := range rawItems {
+		it, ok := itRaw.(map[string]any)
+		if !ok {
+			continue
+		}
+		kMap, _ := it["WFKey"].(map[string]any)
+		kVal, _ := kMap["Value"].(map[string]any)
+		keyStr, _ := kVal["string"].(string)
+		v := it["WFValue"]
+
+		if keyStr == "arguments" {
+			if vMap, ok := v.(map[string]any); ok {
+				if arr, ok := toSlice(vMap["Value"]); ok {
+					for _, a := range arr {
+						args = append(args, normalizeCallArgumentValue(deepCloneValue(a)))
+					}
+					break
+				}
+			}
+		} else if strings.HasPrefix(keyStr, "arg_") {
+			idx, err := strconv.Atoi(strings.TrimPrefix(keyStr, "arg_"))
+			if err == nil {
+				v2Args[idx] = v
+			}
+		}
+	}
+
+	if len(v2Args) > 0 {
+		var keys []int
+		for k := range v2Args {
+			keys = append(keys, k)
+		}
+		sort.Ints(keys)
+		args = nil
+		for _, k := range keys {
+			rawVal := unwrapSingleTokenAttachment(v2Args[k])
+			args = append(args, map[string]any{
+				"WFItemType": 0,
+				"WFValue":    rawVal,
+			})
+		}
+	}
+
+	canonicalItems := []any{
+		map[string]any{
+			"WFItemType": 0,
+			"WFKey": map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value":               map[string]any{"string": "function"},
+			},
+			"WFValue": map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value":               map[string]any{"string": funcName},
+			},
+		},
+		map[string]any{
+			"WFItemType": 2,
+			"WFKey": map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value":               map[string]any{"string": "arguments"},
+			},
+			"WFValue": map[string]any{
+				"WFSerializationType": "WFArrayParameterState",
+				"Value":               args,
+			},
+		},
+	}
+	val["WFDictionaryFieldValueItems"] = canonicalItems
+	return true
+}
+
+func forwardIdentityGettext(actions []any) []any {
+	uuidMap := make(map[string]string)
+	indicesToRemove := make(map[int]bool)
+
+	for i, aRaw := range actions {
+		act, ok := aRaw.(map[string]any)
+		if !ok || act["WFWorkflowActionIdentifier"] != "is.workflow.actions.gettext" {
+			continue
+		}
+		p, _ := act["WFWorkflowActionParameters"].(map[string]any)
+		if p == nil {
+			continue
+		}
+		u, _ := p["UUID"].(string)
+		textMap, _ := p["WFTextActionText"].(map[string]any)
+		if textMap != nil && textMap["WFSerializationType"] == "WFTextTokenString" {
+			if valMap, ok := textMap["Value"].(map[string]any); ok {
+				if str, ok := valMap["string"].(string); ok && str == "\ufffc" {
+					if attrs, ok := valMap["attachmentsByRange"].(map[string]any); ok && len(attrs) == 1 {
+						for _, tokRaw := range attrs {
+							if tok, ok := tokRaw.(map[string]any); ok {
+								if srcU, ok := tok["OutputUUID"].(string); ok && srcU != "" && u != "" {
+									uuidMap[u] = srcU
+									indicesToRemove[i] = true
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if len(uuidMap) == 0 {
+		return actions
+	}
+
+	var res []any
+	for i, aRaw := range actions {
+		if !indicesToRemove[i] {
+			res = append(res, aRaw)
+		}
+	}
+	rewriteActionUUIDReferences(res, uuidMap)
+	return res
+}
+
+func rewriteActionUUIDReferences(obj any, uuidMap map[string]string) {
+	switch typed := obj.(type) {
+	case map[string]any:
+		if u, ok := typed["OutputUUID"].(string); ok {
+			if target, found := uuidMap[u]; found {
+				typed["OutputUUID"] = target
+			}
+		}
+		for _, v := range typed {
+			rewriteActionUUIDReferences(v, uuidMap)
+		}
+	case []any:
+		for _, item := range typed {
+			rewriteActionUUIDReferences(item, uuidMap)
+		}
+	}
+}
+
+func normalizeFunctionEnvelope(actions []any) []any {
+	if len(actions) == 0 {
+		return actions
+	}
+
+	isLegacyFn := false
+	isV2Fn := false
+
+	for _, aRaw := range actions {
+		act, ok := aRaw.(map[string]any)
+		if !ok {
+			continue
+		}
+		p, _ := act["WFWorkflowActionParameters"].(map[string]any)
+		if p == nil {
+			continue
+		}
+		if p["WFDictionaryKey"] == "cherri_functions" {
+			isLegacyFn = true
+			break
+		}
+		if p["WFConditionalActionString"] == "__cherri_fn_envelope_v2__" {
+			isV2Fn = true
+			break
+		}
+		if p["WFVariableName"] == "_cherri_is_fn" {
+			isV2Fn = true
+			break
+		}
+	}
+
+	if !isLegacyFn && !isV2Fn {
+		return actions
+	}
+
+	fnNameSet := make(map[string]bool)
+	var mainActions []any
+
+	if isV2Fn {
+		mainCondIdx := -1
+		mainGroup := ""
+		for i, aRaw := range actions {
+			act, ok := aRaw.(map[string]any)
+			if !ok || act["WFWorkflowActionIdentifier"] != "is.workflow.actions.conditional" {
+				continue
+			}
+			p, _ := act["WFWorkflowActionParameters"].(map[string]any)
+			if p != nil && fmt.Sprintf("%v", p["WFControlFlowMode"]) == "0" {
+				v := getVariableNameFromInput(p["WFInput"])
+				if v == "_cherri_is_fn" {
+					mainCondIdx = i
+					mainGroup, _ = p["GroupingIdentifier"].(string)
+					break
+				}
+			}
+		}
+
+		otherwiseIdx := -1
+		endIdx := -1
+		if mainCondIdx >= 0 {
+			for i := mainCondIdx + 1; i < len(actions); i++ {
+				act, ok := actions[i].(map[string]any)
+				if !ok || act["WFWorkflowActionIdentifier"] != "is.workflow.actions.conditional" {
+					continue
+				}
+				p, _ := act["WFWorkflowActionParameters"].(map[string]any)
+				if p == nil {
+					continue
+				}
+				g, _ := p["GroupingIdentifier"].(string)
+				modeStr := fmt.Sprintf("%v", p["WFControlFlowMode"])
+				if g == mainGroup {
+					if modeStr == "1" {
+						otherwiseIdx = i
+					} else if modeStr == "2" {
+						endIdx = i
+						break
+					}
+				} else if modeStr == "0" && fmt.Sprintf("%v", p["WFCondition"]) == "4" {
+					if fnName, ok := p["WFConditionalActionString"].(string); ok && fnName != "" && !strings.HasPrefix(fnName, "_") && fnName != "1" {
+						fnNameSet[fnName] = true
+					}
+				}
+			}
+		}
+
+		if otherwiseIdx != -1 && endIdx != -1 {
+			mainActions = append([]any{}, actions[otherwiseIdx+1:endIdx]...)
+		} else if mainCondIdx >= 0 {
+			mainActions = append([]any{}, actions[mainCondIdx:]...)
+		}
+	} else if isLegacyFn {
+		depth := 0
+		legacyEnd := -1
+		for i, aRaw := range actions {
+			act, ok := aRaw.(map[string]any)
+			if !ok || act["WFWorkflowActionIdentifier"] != "is.workflow.actions.conditional" {
+				continue
+			}
+			p, _ := act["WFWorkflowActionParameters"].(map[string]any)
+			if p == nil {
+				continue
+			}
+			modeStr := fmt.Sprintf("%v", p["WFControlFlowMode"])
+			if modeStr == "0" {
+				depth++
+			} else if modeStr == "2" {
+				depth--
+				if depth == 0 {
+					legacyEnd = i
+					break
+				}
+			}
+			if modeStr == "0" && fmt.Sprintf("%v", p["WFCondition"]) == "4" {
+				if fnName, ok := p["WFConditionalActionString"].(string); ok && fnName != "" && !strings.HasPrefix(fnName, "_") {
+					fnNameSet[fnName] = true
+				}
+			}
+		}
+
+		if legacyEnd >= 0 && legacyEnd+1 < len(actions) {
+			mainActions = append([]any{}, actions[legacyEnd+1:]...)
+		}
+	}
+
+	mainActions = forwardIdentityGettext(mainActions)
+
+	for _, aRaw := range mainActions {
+		act, ok := aRaw.(map[string]any)
+		if !ok {
+			continue
+		}
+		p, _ := act["WFWorkflowActionParameters"].(map[string]any)
+		if p == nil {
+			continue
+		}
+		if act["WFWorkflowActionIdentifier"] == "is.workflow.actions.dictionary" {
+			normalizeRunWorkflowCallDict(p)
+		} else if act["WFWorkflowActionIdentifier"] == "is.workflow.actions.runworkflow" {
+			if wf, ok := p["WFWorkflow"].(map[string]any); ok {
+				if isSelf, _ := wf["isSelf"].(bool); isSelf || p["WFWorkflowName"] == "v2" || p["WFWorkflowName"] == "Shortcut" {
+					p["WFWorkflowName"] = ""
+					delete(wf, "workflowIdentifier")
+				}
+			}
+		}
+	}
+
+	var sortedFnNames []string
+	for fn := range fnNameSet {
+		sortedFnNames = append(sortedFnNames, fn)
+	}
+	sort.Strings(sortedFnNames)
+
+	var fnNamesAny []any
+	for _, fn := range sortedFnNames {
+		fnNamesAny = append(fnNamesAny, fn)
+	}
+
+	witnessAct := map[string]any{
+		"WFWorkflowActionIdentifier": "cherri.canonical.functions.witness",
+		"WFWorkflowActionParameters": map[string]any{
+			"FunctionNames": fnNamesAny,
+		},
+	}
+
+	result := []any{witnessAct}
+	result = append(result, mainActions...)
+	return result
 }

@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/electrikmilk/cherri/internal/language/migrate"
@@ -71,12 +72,44 @@ func main() {
 
 	repoRoot := findRepoRoot()
 	fixturesDir := filepath.Join(repoRoot, "tests")
-	matches, err := filepath.Glob(filepath.Join(fixturesDir, "*.cherri"))
+	manifestPath := filepath.Join(fixturesDir, "fixtures-manifest.json")
+
+	manifestData, err := os.ReadFile(manifestPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error globbing tests: %v\n", err)
+		fmt.Fprintf(os.Stderr, "FAILURE: Unable to read canonical fixtures manifest at %s: %v\n", manifestPath, err)
 		os.Exit(1)
 	}
+
+	var manifestList []string
+	if err := json.Unmarshal(manifestData, &manifestList); err != nil {
+		fmt.Fprintf(os.Stderr, "FAILURE: Malformed fixtures-manifest.json: %v\n", err)
+		os.Exit(1)
+	}
+
+	manifestSet := make(map[string]bool, len(manifestList))
+	var matches []string
+	for _, name := range manifestList {
+		manifestSet[name] = true
+		fixturePath := filepath.Join(fixturesDir, name)
+		if _, err := os.Stat(fixturePath); os.IsNotExist(err) {
+			fmt.Fprintf(os.Stderr, "FAILURE: Required canonical fixture %q defined in manifest is missing at %s\n", name, fixturePath)
+			os.Exit(1)
+		}
+		matches = append(matches, fixturePath)
+	}
 	sort.Strings(matches)
+
+	// Guard against untracked or unexpected fixtures in tests/ directory
+	globMatches, globErr := filepath.Glob(filepath.Join(fixturesDir, "*.cherri"))
+	if globErr == nil {
+		for _, g := range globMatches {
+			base := filepath.Base(g)
+			if !manifestSet[base] {
+				fmt.Fprintf(os.Stderr, "FAILURE: Untracked or unexpected fixture %q found in tests/ (not in manifest)!\n", base)
+				os.Exit(1)
+			}
+		}
+	}
 
 	tmpDir, err := os.MkdirTemp("", "cherri-legacy-parity-*")
 	if err != nil {
@@ -447,9 +480,24 @@ func testAddedAppleActions(binPath, tmpDir, repoRoot string) []ActionParityResul
 	return results
 }
 
+var (
+	compilerBinMu sync.Mutex
+	cachedBinPath string
+)
+
 func ensureCompilerBinary() (string, error) {
+	compilerBinMu.Lock()
+	defer compilerBinMu.Unlock()
+
+	if cachedBinPath != "" {
+		if fi, err := os.Stat(cachedBinPath); err == nil && fi.Size() > 0 {
+			return cachedBinPath, nil
+		}
+	}
+
 	if bin := os.Getenv("CHERRI_BIN"); bin != "" {
 		if fi, err := os.Stat(bin); err == nil && fi.Size() > 0 {
+			cachedBinPath = bin
 			return bin, nil
 		}
 	}
@@ -460,6 +508,7 @@ func ensureCompilerBinary() (string, error) {
 	}
 	binPath := filepath.Join(root, binName)
 	if fi, err := os.Stat(binPath); err == nil && fi.Size() > 0 {
+		cachedBinPath = binPath
 		return binPath, nil
 	}
 
@@ -468,6 +517,7 @@ func ensureCompilerBinary() (string, error) {
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return "", fmt.Errorf("build failed: %s: %w", string(out), err)
 	}
+	cachedBinPath = binPath
 	return binPath, nil
 }
 

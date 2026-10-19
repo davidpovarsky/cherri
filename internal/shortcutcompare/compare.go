@@ -11,6 +11,7 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	"howett.net/plist"
@@ -316,6 +317,18 @@ func isActionParametersContext(path string) bool {
 	return strings.HasSuffix(path, "WFWorkflowActionParameters") || strings.Contains(path, "WFWorkflowActionParameters")
 }
 
+func isNumericActionKey(path string) bool {
+	parts := strings.Split(path, ".")
+	key := parts[len(parts)-1]
+	switch key {
+	case "WFMathOperand", "WFScientificMathOperand", "WFNumberActionNumber", "WFRepeatCount", "WFItemIndex", "WFAnotherNumber", "WFNumberValue":
+		return true
+	case "WFInput":
+		return true
+	}
+	return false
+}
+
 func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
 	if maxDifferences > 0 && len(res.Differences) >= maxDifferences {
 		res.Truncated = true
@@ -371,6 +384,21 @@ func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
 	// Numeric comparisons
 	numA, isNumA := toNumeric(a)
 	numB, isNumB := toNumeric(b)
+	if !isNumA && isNumB && isNumericActionKey(path) {
+		if s, ok := a.(string); ok {
+			if f, err := strconv.ParseFloat(s, 64); err == nil {
+				numA = f
+				isNumA = true
+			}
+		}
+	} else if isNumA && !isNumB && isNumericActionKey(path) {
+		if s, ok := b.(string); ok {
+			if f, err := strconv.ParseFloat(s, 64); err == nil {
+				numB = f
+				isNumB = true
+			}
+		}
+	}
 	if isNumA && isNumB {
 		if numA != numB {
 			addDiff(res, path, "value", a, b)

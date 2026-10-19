@@ -366,7 +366,7 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 			case "dictionary", "dict", "map":
 				defVal = " = {}"
 			case "array", "list":
-				defVal = " = []"
+				defVal = ""
 			case "text", "string":
 				defVal = ` = ""`
 			case "number", "int", "float":
@@ -383,14 +383,7 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 			indent := m[1]
 			varName := m[2]
 			count := strings.TrimSpace(m[3])
-			if varName == "_" {
-				line = fmt.Sprintf("%srepeat %s {", indent, count)
-			} else {
-				line = fmt.Sprintf("%srepeat %s as %s {", indent, count, varName)
-			}
-			trimmed = strings.TrimSpace(line)
-		} else if strings.HasPrefix(trimmed, "repeat _ for ") {
-			line = strings.Replace(line, "repeat _ for ", "repeat ", 1)
+			line = fmt.Sprintf("%srepeat %s as %s {", indent, count, varName)
 			trimmed = strings.TrimSpace(line)
 		}
 
@@ -435,7 +428,7 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 		}
 		if strings.Contains(line, " <> ") {
 			re := regexp.MustCompile(`(\s*if\s+)(.+?)\s+<>\s+(\S+)\s+(\S+)(\s*\{)`)
-			line = re.ReplaceAllString(line, "${1}${2} >= ${3} && ${2} <= ${4}${5}")
+			line = re.ReplaceAllString(line, "${1}isBetween(${2}, ${3}, ${4})${5}")
 			trimmed = strings.TrimSpace(line)
 		}
 		if strings.Contains(line, " isToday") {

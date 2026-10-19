@@ -77,11 +77,23 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 					}
 				}
 				if !matched {
+					lastIdx := len(def.parameters) - 1
+					if lastIdx >= 0 && def.parameters[lastIdx].infinite {
+						pos = lastIdx
+						matched = true
+					}
+				}
+				if !matched {
 					return "", fmt.Errorf("unknown parameter %q for canonical action %q", callArg.ParameterID, ident)
 				}
 			}
-			args[pos] = convertCallArgToActionArg(callArg)
-			providedIndices[pos] = true
+			if pos < len(def.parameters) && def.parameters[pos].infinite && providedIndices[pos] {
+				args = append(args, convertCallArgToActionArg(callArg))
+				providedIndices[len(args)-1] = true
+			} else {
+				args[pos] = convertCallArgToActionArg(callArg)
+				providedIndices[pos] = true
+			}
 		}
 	} else {
 		args = make([]actionArgument, len(call.Arguments))
@@ -448,7 +460,7 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 		cleanParams[k] = sanitizeRawParamValue(v)
 	}
 	for k, v := range cleanParams {
-		if k == "WFWorkflow" {
+		if k == "WFWorkflow" || (appleIdentifier == "is.workflow.actions.list" && k == "WFItems") {
 			continue
 		}
 		cleanParams[k] = normalizeV2RawParamValue(v)
@@ -502,6 +514,29 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 				cleanParams["WFInput"] = map[string]any{
 					"Type":     "Variable",
 					"Variable": input,
+				}
+			}
+		}
+		if att, ok := cleanParams["WFConditionalActionString"].(WFTextTokenAttachment); ok {
+			cleanParams["WFConditionalActionString"] = map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value": map[string]any{
+					"string": "\uFFFC",
+					"attachmentsByRange": map[string]any{
+						"{0, 1}": att.Value,
+					},
+				},
+			}
+		} else if strMap, ok := cleanParams["WFConditionalActionString"].(map[string]any); ok {
+			if strMap["WFSerializationType"] == "WFTextTokenAttachment" {
+				cleanParams["WFConditionalActionString"] = map[string]any{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]any{
+						"string": "\uFFFC",
+						"attachmentsByRange": map[string]any{
+							"{0, 1}": strMap["Value"],
+						},
+					},
 				}
 			}
 		}
@@ -568,6 +603,29 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 			for _, item := range items {
 				if dItem, ok := item.(WFDictionaryFieldValueItem); ok {
 					dictItems = append(dictItems, dItem)
+				} else if m, ok := item.(map[string]any); ok && m["WFItemType"] != nil {
+					itemType := 0
+					if t, ok := m["WFItemType"].(int); ok {
+						itemType = t
+					}
+					dictItems = append(dictItems, WFDictionaryFieldValueItem{
+						WFItemType: itemType,
+						WFValue:    m["WFValue"],
+					})
+				} else if m, ok := item.(map[string]interface{}); ok && m["WFItemType"] != nil {
+					itemType := 0
+					if t, ok := m["WFItemType"].(int); ok {
+						itemType = t
+					}
+					dictItems = append(dictItems, WFDictionaryFieldValueItem{
+						WFItemType: itemType,
+						WFValue:    m["WFValue"],
+					})
+				} else if s, ok := item.(string); ok {
+					dictItems = append(dictItems, WFDictionaryFieldValueItem{
+						WFItemType: 0,
+						WFValue:    s,
+					})
 				} else {
 					dictItems = append(dictItems, makeDictionaryItem("", item))
 				}
