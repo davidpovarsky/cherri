@@ -838,7 +838,7 @@ func TestP10R_R26_ProvenanceRegistryIntegrity(t *testing.T) {
 // R28: Acceptance suite completeness: all 56 gates verified via executable runner
 func TestP10R_R28_AcceptanceSuiteCompleteness(t *testing.T) {
 	// Execute the authoritative Python gate runner in verify-registry mode
-	cmd := exec.Command("python", "tools/p10r3/run_release_gates.py", "--verify-registry")
+	cmd := exec.Command(resolvePythonCommand(), "tools/p10r3/run_release_gates.py", "--verify-registry")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("gate runner verify-registry failed:\n%s", out)
@@ -848,7 +848,7 @@ func TestP10R_R28_AcceptanceSuiteCompleteness(t *testing.T) {
 	}
 
 	// Meta-verification / mutation test: running gate runner with --mutate-missing MUST fail with exit code 1
-	mutCmd := exec.Command("python", "tools/p10r3/run_release_gates.py", "--mutate-missing", "R05")
+	mutCmd := exec.Command(resolvePythonCommand(), "tools/p10r3/run_release_gates.py", "--mutate-missing", "R05")
 	mutOut, mutErr := mutCmd.CombinedOutput()
 	if mutErr == nil {
 		t.Fatalf("meta-test failed: gate runner with missing gate unexpectedly passed:\n%s", mutOut)

@@ -97,6 +97,7 @@ if [ "$SIGN" -eq 1 ]; then
 fi
 
 printf 'Testing 10 Skill Pinning, Compatibility, Offline, and Atomic Update Scenarios...\n'
+unset CHERRI_DOCS_DIR || true
 
 # Verify manifest does not reference moving branches or stale d2e7506 commit
 if grep -q 'agent/language-redesign\|agent/language-v2-docs' "$SKILL_DIR/scripts/common.sh" "$SKILL_DIR/compatibility-manifest.json"; then
