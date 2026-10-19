@@ -64,6 +64,9 @@ func (p PrimitiveType) AssignableTo(target Type) bool {
 		}
 		return false
 	}
+	if p.Equals(Text) && target.Equals(Date) {
+		return true
+	}
 	return p.Equals(target)
 }
 
@@ -102,6 +105,9 @@ func (c ContentType) AssignableTo(target Type) bool {
 		}
 		return false
 	}
+	if c.Equals(Date) && target.Equals(Text) {
+		return true
+	}
 	return c.Equals(target)
 }
 
@@ -122,7 +128,7 @@ func (anyContentType) Name() string                   { return "AnyContent" }
 func (anyContentType) String() string                 { return "AnyContent" }
 func (anyContentType) Equals(other Type) bool         { return other.Kind() == KindAnyContent }
 func (anyContentType) AssignableTo(target Type) bool {
-	return target.Kind() == KindAnyContent || target.Kind() == KindUnknown
+	return true
 }
 
 var AnyContent = anyContentType{}

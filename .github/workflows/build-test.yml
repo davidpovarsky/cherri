@@ -20,13 +20,20 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
         go-version: 1.24
 
     - name: Build
-      run: go build -v ./...
+      run: |
+        go build -v ./...
+        go build -o cherri .
 
     - name: Full Go Test Suite
       run: go test -count=1 -timeout=15m -v ./...
@@ -42,6 +49,11 @@ jobs:
 
     - name: Package Manager Test
       run: go test -run TestPackages -v ./...
+
+    - name: Differential Legacy Parity Gate
+      run: |
+        go test -v ./tools/legacy-parity/...
+        go run ./tools/legacy-parity
 
   build-test-macos:
     runs-on: macos-latest
@@ -50,13 +62,20 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
         go-version: 1.24
 
     - name: Build
-      run: go build -v ./...
+      run: |
+        go build -v ./...
+        go build -o cherri .
 
     - name: Full Go Test Suite
       run: go test -count=1 -timeout=15m -v ./...
@@ -72,6 +91,11 @@ jobs:
 
     - name: Package Manager Test
       run: go test -run TestPackages -v ./...
+
+    - name: Differential Legacy Parity Gate
+      run: |
+        go test -v ./tools/legacy-parity/...
+        go run ./tools/legacy-parity
 
   build-test-nix:
     runs-on: ubuntu-latest

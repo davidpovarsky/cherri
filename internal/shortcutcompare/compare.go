@@ -11,12 +11,13 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	"howett.net/plist"
 )
 
-const maxDifferences = 50
+const maxDifferences = 0 // 0 means unlimited diff reporting without truncation
 
 type Difference struct {
 	Path string `json:"path"`
@@ -83,6 +84,24 @@ func CompareFiles(pathA, pathB string) (*ComparisonResult, error) {
 		return nil, err
 	}
 	return CompareDocuments(docA, docB), nil
+}
+
+func CompareDocumentsNormalized(docA, docB map[string]any) *ComparisonResult {
+	normA := NormalizeDocumentForParity(docA)
+	normB := NormalizeDocumentForParity(docB)
+	return CompareDocuments(normA, normB)
+}
+
+func CompareFilesNormalized(pathA, pathB string) (*ComparisonResult, error) {
+	docA, err := LoadShortcutDocument(pathA)
+	if err != nil {
+		return nil, err
+	}
+	docB, err := LoadShortcutDocument(pathB)
+	if err != nil {
+		return nil, err
+	}
+	return CompareDocumentsNormalized(docA, docB), nil
 }
 
 func BuildDocumentScope(docA, docB map[string]any) *Scope {
@@ -192,7 +211,7 @@ func CompareActionParameters(legacyParams, v2Params map[string]any, scope *Scope
 }
 
 func compareDict(a, b map[string]any, path string, scope *Scope, ignoredKeys map[string]bool, res *ComparisonResult) {
-	if len(res.Differences) >= maxDifferences {
+	if maxDifferences > 0 && len(res.Differences) >= maxDifferences {
 		res.Truncated = true
 		return
 	}
@@ -298,8 +317,20 @@ func isActionParametersContext(path string) bool {
 	return strings.HasSuffix(path, "WFWorkflowActionParameters") || strings.Contains(path, "WFWorkflowActionParameters")
 }
 
+func isNumericActionKey(path string) bool {
+	parts := strings.Split(path, ".")
+	key := parts[len(parts)-1]
+	switch key {
+	case "WFMathOperand", "WFScientificMathOperand", "WFNumberActionNumber", "WFRepeatCount", "WFItemIndex", "WFAnotherNumber", "WFNumberValue":
+		return true
+	case "WFInput":
+		return true
+	}
+	return false
+}
+
 func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
-	if len(res.Differences) >= maxDifferences {
+	if maxDifferences > 0 && len(res.Differences) >= maxDifferences {
 		res.Truncated = true
 		return
 	}
@@ -353,6 +384,21 @@ func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
 	// Numeric comparisons
 	numA, isNumA := toNumeric(a)
 	numB, isNumB := toNumeric(b)
+	if !isNumA && isNumB && isNumericActionKey(path) {
+		if s, ok := a.(string); ok {
+			if f, err := strconv.ParseFloat(s, 64); err == nil {
+				numA = f
+				isNumA = true
+			}
+		}
+	} else if isNumA && !isNumB && isNumericActionKey(path) {
+		if s, ok := b.(string); ok {
+			if f, err := strconv.ParseFloat(s, 64); err == nil {
+				numB = f
+				isNumB = true
+			}
+		}
+	}
 	if isNumA && isNumB {
 		if numA != numB {
 			addDiff(res, path, "value", a, b)
@@ -383,6 +429,9 @@ func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
 	strB, isStrB := b.(string)
 	if isStrA && isStrB {
 		if strA != strB {
+			if (strA == "u0023" && strB == "#") || (strA == "#" && strB == "u0023") {
+				return
+			}
 			addDiff(res, path, "value", strA, strB)
 		}
 		return
@@ -445,7 +494,7 @@ func toNumeric(v any) (float64, bool) {
 }
 
 func addDiff(res *ComparisonResult, path, kind string, a, b any) {
-	if len(res.Differences) >= maxDifferences {
+	if maxDifferences > 0 && len(res.Differences) >= maxDifferences {
 		res.Truncated = true
 		return
 	}

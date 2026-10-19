@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"unicode/utf16"
 
 	"github.com/electrikmilk/args-parser"
 	"github.com/google/uuid"
@@ -2057,36 +2058,139 @@ var actions = map[string]*actionDefinition{
 			},
 		},
 		makeParams: func(args []actionArgument) map[string]any {
-			var title = args[0].value.(string)
-			var subtitle = args[1].value.(string)
+			var title string
+			var titleTok *WFTextTokenString
+			if tok, ok := args[0].value.(WFTextTokenString); ok {
+				title = tok.Value.String
+				titleTok = &tok
+			} else if s, ok := args[0].value.(string); ok {
+				title = s
+			} else {
+				title = fmt.Sprint(args[0].value)
+			}
+			var subtitle string
+			var subtitleTok *WFTextTokenString
+			if tok, ok := args[1].value.(WFTextTokenString); ok {
+				subtitle = tok.Value.String
+				subtitleTok = &tok
+			} else if s, ok := args[1].value.(string); ok {
+				subtitle = s
+			} else {
+				subtitle = fmt.Sprint(args[1].value)
+			}
 			wrapVariableReference(&title)
 			wrapVariableReference(&subtitle)
 
+			prefix := "BEGIN:VCARD\nVERSION:3.0\nN;CHARSET=utf-8:"
+			orgPrefix := "\nORG:"
 			var vcard strings.Builder
-			vcard.WriteString(fmt.Sprintf("BEGIN:VCARD\nVERSION:3.0\nN;CHARSET=utf-8:%s\nORG:%s\n", title, subtitle))
+			vcard.WriteString(prefix)
+			vcard.WriteString(title)
+			vcard.WriteString(orgPrefix)
+			vcard.WriteString(subtitle)
+			vcard.WriteString("\n")
 
+			allAttachments := make(map[string]Value)
+
+			// 1. Title attachments
+			if titleTok != nil {
+				prefixLen := len(utf16.Encode([]rune(prefix)))
+				for k, v := range titleTok.Value.AttachmentsByRange {
+					var off, length int
+					if _, err := fmt.Sscanf(k, "{%d, %d}", &off, &length); err == nil {
+						allAttachments[fmt.Sprintf("{%d, %d}", prefixLen+off, length)] = v
+					}
+				}
+			}
+
+			// 2. Subtitle attachments
+			if subtitleTok != nil {
+				subLen := len(utf16.Encode([]rune(prefix + title + orgPrefix)))
+				for k, v := range subtitleTok.Value.AttachmentsByRange {
+					var off, length int
+					if _, err := fmt.Sscanf(k, "{%d, %d}", &off, &length); err == nil {
+						allAttachments[fmt.Sprintf("{%d, %d}", subLen+off, length)] = v
+					}
+				}
+			}
+
+			if titleTok == nil && subtitleTok == nil {
+				if len(args) > 2 {
+					var photo string
+					var image = getArgValue(args[2])
+					if reflect.TypeOf(image).Kind() != reflect.String && args[2].valueType == Variable {
+						photo = fmt.Sprintf("{%s}", makeVariableReferenceString(args[2].value.(varValue)))
+					} else if s, ok := getArgValue(args[2]).(string); ok {
+						photo = s
+					} else if tok, ok := getArgValue(args[2]).(WFTextTokenString); ok {
+						photo = tok.Value.String
+					} else {
+						photo = fmt.Sprint(getArgValue(args[2]))
+					}
+
+					if photo != "" {
+						vcard.WriteString(fmt.Sprintf("PHOTO;ENCODING=b:%s\n", photo))
+					}
+				}
+				vcard.WriteString("END:VCARD")
+				args[0] = actionArgument{
+					valueType: String,
+					value:     vcard.String(),
+				}
+				return map[string]any{
+					"WFTextActionText": argumentValue(args, 0),
+				}
+			}
+
+			// V2 path: titleTok or subtitleTok provided
 			if len(args) > 2 {
-				var photo string
-				var image = getArgValue(args[2])
-				if reflect.TypeOf(image).Kind() != reflect.String && args[2].valueType == Variable {
-					photo = fmt.Sprintf("{%s}", makeVariableReferenceString(args[2].value.(varValue)))
-				} else {
-					photo = getArgValue(args[2]).(string)
+				photoPrefix := "PHOTO;ENCODING=b:"
+				photoOffset := len(utf16.Encode([]rune(vcard.String() + photoPrefix)))
+				var photoVal Value
+				hasPhoto := false
+
+				if args[2].valueType == Variable {
+					if varRef, ok := args[2].value.(varValue); ok {
+						hasPhoto = true
+						varType := "Variable"
+						if varRef.variableType != "" {
+							varType = varRef.variableType
+						}
+						u := uuids[varRef.value.(string)]
+						if u == "" {
+							u = varRef.value.(string)
+						}
+						photoVal = Value{
+							Type:       varType,
+							OutputUUID: u,
+							OutputName: varRef.value.(string),
+						}
+					}
+				} else if s, ok := getArgValue(args[2]).(string); ok && s != "" {
+					vcard.WriteString(fmt.Sprintf("%s%s\n", photoPrefix, s))
 				}
 
-				if photo != "" {
-					vcard.WriteString(fmt.Sprintf("PHOTO;ENCODING=b:%s\n", photo))
+				if hasPhoto {
+					vcard.WriteString(fmt.Sprintf("%s\uFFFC\n", photoPrefix))
+					allAttachments[fmt.Sprintf("{%d, 1}", photoOffset)] = photoVal
 				}
 			}
 
 			vcard.WriteString("END:VCARD")
-			args[0] = actionArgument{
-				valueType: String,
-				value:     vcard.String(),
-			}
 
+			if len(allAttachments) > 0 {
+				return map[string]any{
+					"WFTextActionText": WFTextTokenString{
+						WFSerializationType: "WFTextTokenString",
+						Value: WFTextTokenStringValue{
+							String:             vcard.String(),
+							AttachmentsByRange: allAttachments,
+						},
+					},
+				}
+			}
 			return map[string]any{
-				"WFTextActionText": argumentValue(args, 0),
+				"WFTextActionText": vcard.String(),
 			}
 		},
 		emittedKeys: []string{"WFTextActionText"},

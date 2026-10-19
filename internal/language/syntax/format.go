@@ -2,6 +2,7 @@ package syntax
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/source"
@@ -100,8 +101,22 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		}
 		for _, trig := range d.Triggers {
 			f.writeIndent()
+			var args []string
 			if trig.Event != "" {
-				fmt.Fprintf(&f.buf, "trigger %s(event: .%s)\n", trig.Family, trig.Event)
+				args = append(args, fmt.Sprintf("event: .%s", trig.Event))
+			}
+			if trig.HasLevel {
+				args = append(args, fmt.Sprintf("level: %g", trig.Level))
+			}
+			if len(trig.Locations) > 0 {
+				var locStrs []string
+				for _, loc := range trig.Locations {
+					locStrs = append(locStrs, fmt.Sprintf("%q", loc))
+				}
+				args = append(args, fmt.Sprintf("locations: [%s]", strings.Join(locStrs, ", ")))
+			}
+			if len(args) > 0 {
+				fmt.Fprintf(&f.buf, "trigger %s(%s)\n", trig.Family, strings.Join(args, ", "))
 			} else {
 				fmt.Fprintf(&f.buf, "trigger %s\n", trig.Family)
 			}
@@ -109,6 +124,31 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		f.indent--
 		f.writeIndent()
 		f.buf.WriteString("}")
+	case *TriggerDecl:
+		f.writeIndent()
+		var args []string
+		if d.Event != "" {
+			args = append(args, fmt.Sprintf("event: .%s", d.Event))
+		}
+		if d.HasLevel {
+			args = append(args, fmt.Sprintf("level: %g", d.Level))
+		}
+		if len(d.Locations) > 0 {
+			var locStrs []string
+			for _, loc := range d.Locations {
+				locStrs = append(locStrs, fmt.Sprintf("%q", loc))
+			}
+			args = append(args, fmt.Sprintf("locations: [%s]", strings.Join(locStrs, ", ")))
+		}
+		if len(args) > 0 {
+			fmt.Fprintf(&f.buf, "trigger %s(%s)", d.Family, strings.Join(args, ", "))
+		} else {
+			fmt.Fprintf(&f.buf, "trigger %s", d.Family)
+		}
+	case *CopyBlockStmt:
+		f.writeIndent()
+		fmt.Fprintf(&f.buf, "copy %s ", d.Name)
+		f.formatBlockStmt(d.Body, false)
 	case *SetupDecl:
 		f.writeIndent()
 		tStr := ""
@@ -181,6 +221,10 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 				f.buf.WriteString(", ")
 			}
 			fmt.Fprintf(&f.buf, "%s: %s", p.Name, formatTypeAnnotation(p.TypeExpr))
+			if p.DefaultExpr != nil {
+				f.buf.WriteString(" = ")
+				f.formatExpression(p.DefaultExpr)
+			}
 		}
 		f.buf.WriteString(")")
 		if d.ReturnType != nil {
@@ -195,6 +239,36 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		if d.PrimaryParam != "" {
 			f.writeIndent()
 			fmt.Fprintf(&f.buf, "primary: %q\n", d.PrimaryParam)
+		}
+		if len(d.Bindings) > 0 {
+			f.writeIndent()
+			f.buf.WriteString("bindings: {\n")
+			f.indent++
+			bindingKeys := make([]string, 0, len(d.Bindings))
+			for k := range d.Bindings {
+				bindingKeys = append(bindingKeys, k)
+			}
+			sort.Strings(bindingKeys)
+			for _, k := range bindingKeys {
+				b := d.Bindings[k]
+				f.writeIndent()
+				fmt.Fprintf(&f.buf, "%s: {\n", k)
+				f.indent++
+				if b.WireKey != "" {
+					f.writeIndent()
+					fmt.Fprintf(&f.buf, "key: %q\n", b.WireKey)
+				}
+				if b.Codec != "" {
+					f.writeIndent()
+					fmt.Fprintf(&f.buf, "codec: %q\n", b.Codec)
+				}
+				f.indent--
+				f.writeIndent()
+				f.buf.WriteString("},\n")
+			}
+			f.indent--
+			f.writeIndent()
+			f.buf.WriteString("}\n")
 		}
 		f.indent--
 		f.writeIndent()
@@ -289,6 +363,13 @@ func (f *Formatter) formatStatement(stmt Statement) {
 		f.indent--
 		f.writeIndent()
 		f.buf.WriteString("}")
+	case *CopyBlockStmt:
+		f.writeIndent()
+		fmt.Fprintf(&f.buf, "copy %s ", s.Name)
+		f.formatBlockStmt(s.Body, false)
+	case *PasteStmt:
+		f.writeIndent()
+		fmt.Fprintf(&f.buf, "paste %s", s.Name)
 	}
 }
 
@@ -393,7 +474,13 @@ func (f *Formatter) formatExpression(expr Expression) {
 			opStr = "+"
 		}
 		f.buf.WriteString(opStr)
-		f.formatExpression(e.Operand)
+		if _, isBin := e.Operand.(*BinaryExpr); isBin {
+			f.buf.WriteString("(")
+			f.formatExpression(e.Operand)
+			f.buf.WriteString(")")
+		} else {
+			f.formatExpression(e.Operand)
+		}
 	case *BinaryExpr:
 		f.formatExpression(e.Left)
 		f.buf.WriteString(" ")
@@ -425,6 +512,12 @@ func (f *Formatter) formatExpression(expr Expression) {
 			opStr = "&&"
 		case TokenOr:
 			opStr = "||"
+		case TokenContains:
+			opStr = "contains"
+		case TokenBeginsWith:
+			opStr = "beginsWith"
+		case TokenEndsWith:
+			opStr = "endsWith"
 		}
 		f.buf.WriteString(opStr)
 		f.buf.WriteString(" ")

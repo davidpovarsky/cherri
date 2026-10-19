@@ -132,7 +132,7 @@ func (p *Parser) ParseProgram() *Program {
 
 func (p *Parser) isDeclarationStart() bool {
 	switch p.curr.Type {
-	case TokenImport, TokenShortcut, TokenSetup, TokenTypeKW, TokenEnum, TokenAction, TokenFunction:
+	case TokenImport, TokenShortcut, TokenSetup, TokenTypeKW, TokenEnum, TokenAction, TokenFunction, TokenCopy, TokenTrigger:
 		return true
 	default:
 		return false
@@ -179,6 +179,18 @@ func (p *Parser) parseDeclaration() Declaration {
 		return d
 	case TokenFunction:
 		d := p.parseFunctionDecl()
+		if d == nil {
+			return nil
+		}
+		return d
+	case TokenCopy:
+		d := p.parseCopyBlockStmt()
+		if d == nil {
+			return nil
+		}
+		return d
+	case TokenTrigger:
+		d := p.parseTriggerDecl()
 		if d == nil {
 			return nil
 		}
@@ -295,23 +307,100 @@ func (p *Parser) parseTriggerDecl() *TriggerDecl {
 	if !ok {
 		return nil
 	}
-	event := ""
+	trig := &TriggerDecl{
+		Span:       startTok.Span.Merge(familyTok.Span),
+		Family:     familyTok.Text,
+		Parameters: make(map[string]any),
+	}
 	if p.match(TokenLParen) {
-		if p.curr.Type == TokenIdent && p.curr.Text == "event" {
-			p.advance()
-			p.expect(TokenColon)
-			if p.match(TokenDot) {
+		for p.curr.Type != TokenRParen && p.curr.Type != TokenEOF {
+			if p.curr.Type == TokenIdent && p.peek.Type == TokenColon {
+				paramNameTok := p.advance()
+				p.advance() // colon
+				paramName := paramNameTok.Text
+				switch paramName {
+				case "event":
+					if p.match(TokenDot) {
+						evTok, _ := p.expect(TokenIdent)
+						trig.Event = evTok.Text
+						trig.Parameters["event"] = evTok.Text
+					} else if p.curr.Type == TokenIdent || p.curr.Type == TokenString {
+						evTok := p.advance()
+						trig.Event = evTok.Text
+						trig.Parameters["event"] = evTok.Text
+					}
+				case "level":
+					if p.curr.Type == TokenNumber {
+						numTok := p.advance()
+						var lvl float64
+						fmt.Sscanf(numTok.Text, "%f", &lvl)
+						trig.Level = lvl
+						trig.HasLevel = true
+						trig.Parameters["level"] = lvl
+					}
+				case "locations":
+					if p.match(TokenLBracket) {
+						for p.curr.Type != TokenRBracket && p.curr.Type != TokenEOF {
+							if p.curr.Type == TokenString || p.curr.Type == TokenIdent {
+								locTok := p.advance()
+								trig.Locations = append(trig.Locations, locTok.Text)
+							}
+							if !p.match(TokenComma) {
+								break
+							}
+						}
+						p.expect(TokenRBracket)
+						trig.Parameters["locations"] = trig.Locations
+					}
+				default:
+					val := p.parseExpression(precNone)
+					trig.Parameters[paramName] = val
+				}
+			} else if p.match(TokenDot) {
 				evTok, _ := p.expect(TokenIdent)
-				event = evTok.Text
+				trig.Event = evTok.Text
+				trig.Parameters["event"] = evTok.Text
+			} else if p.curr.Type == TokenNumber {
+				numTok := p.advance()
+				var lvl float64
+				fmt.Sscanf(numTok.Text, "%f", &lvl)
+				trig.Level = lvl
+				trig.HasLevel = true
+				trig.Parameters["level"] = lvl
+			} else if p.curr.Type == TokenLBracket {
+				p.advance()
+				for p.curr.Type != TokenRBracket && p.curr.Type != TokenEOF {
+					if p.curr.Type == TokenString || p.curr.Type == TokenIdent {
+						locTok := p.advance()
+						trig.Locations = append(trig.Locations, locTok.Text)
+					}
+					if !p.match(TokenComma) {
+						break
+					}
+				}
+				p.expect(TokenRBracket)
+				trig.Parameters["locations"] = trig.Locations
+			} else if p.curr.Type == TokenIdent || p.curr.Type == TokenString {
+				tok := p.advance()
+				if trig.Family == "screenshot" {
+					trig.Locations = append(trig.Locations, tok.Text)
+					trig.Parameters["locations"] = trig.Locations
+				} else {
+					trig.Event = tok.Text
+					trig.Parameters["event"] = tok.Text
+				}
+			} else {
+				p.advance()
+			}
+
+			if !p.match(TokenComma) {
+				break
 			}
 		}
-		p.expect(TokenRParen)
+		endTok, _ := p.expect(TokenRParen)
+		trig.Span = startTok.Span.Merge(endTok.Span)
 	}
-	return &TriggerDecl{
-		Span:   startTok.Span.Merge(familyTok.Span),
-		Family: familyTok.Text,
-		Event:  event,
-	}
+	return trig
 }
 
 func (p *Parser) parseSetupDecl() *SetupDecl {
@@ -382,18 +471,28 @@ func (p *Parser) parseEnumDecl() *EnumDecl {
 
 	var members []EnumMember
 	for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
-		mTok, ok := p.expect(TokenIdent)
-		if !ok {
-			break
+		var name string
+		var span source.Span
+		if p.curr.Type == TokenString {
+			sTok := p.advance()
+			name = strings.Trim(sTok.Text, `"'`)
+			span = sTok.Span
+		} else {
+			mTok, ok := p.expect(TokenIdent)
+			if !ok {
+				break
+			}
+			name = mTok.Text
+			span = mTok.Span
 		}
-		wire := mTok.Text
+		wire := name
 		if p.match(TokenAssign) {
 			wireTok, _ := p.expect(TokenString)
-			wire = wireTok.Text
+			wire = strings.Trim(wireTok.Text, `"'`)
 		}
 		members = append(members, EnumMember{
-			Span:      mTok.Span,
-			Name:      mTok.Text,
+			Span:      span,
+			Name:      name,
 			WireValue: wire,
 		})
 		if !p.match(TokenComma) {
@@ -419,9 +518,15 @@ func (p *Parser) parseFunctionDecl() *FunctionDecl {
 
 	var params []ParameterDecl
 	for p.curr.Type != TokenRParen && p.curr.Type != TokenEOF {
-		pTok, ok := p.expect(TokenIdent)
-		if !ok {
-			break
+		var pTok Token
+		if p.curr.Type == TokenIdent || p.curr.Type == TokenTypeKW || p.curr.Type == TokenVar {
+			pTok = p.advance()
+		} else {
+			tok, ok := p.expect(TokenIdent)
+			if !ok {
+				break
+			}
+			pTok = tok
 		}
 		opt := p.match(TokenQuestion)
 		p.expect(TokenColon)
@@ -444,7 +549,7 @@ func (p *Parser) parseFunctionDecl() *FunctionDecl {
 	p.expect(TokenRParen)
 
 	var retType TypeAnnotation
-	if p.match(TokenArrow) {
+	if p.match(TokenArrow) || p.match(TokenColon) {
 		retType = p.parseTypeAnnotation()
 	}
 
@@ -460,83 +565,172 @@ func (p *Parser) parseFunctionDecl() *FunctionDecl {
 
 func (p *Parser) parseActionDecl() *ActionDecl {
 	startTok := p.advance() // action
+	if p.curr.Type == TokenIdent && p.curr.Text == "mac" {
+		p.advance()
+	}
+	var appleIdent string
+	if p.curr.Type == TokenString {
+		idTok := p.advance()
+		appleIdent = strings.Trim(idTok.Text, `"'`)
+		parts := strings.Split(appleIdent, ".")
+		if len(parts) < 3 || (len(parts) == 3 && appleIdent == strings.ToLower(appleIdent)) {
+			if !strings.HasPrefix(appleIdent, "is.workflow.actions.") {
+				appleIdent = "is.workflow.actions." + appleIdent
+			}
+		}
+	}
 	nameTok, ok := p.expect(TokenIdent)
 	if !ok {
 		return nil
 	}
+	if appleIdent == "" {
+		appleIdent = "is.workflow.actions." + strings.ToLower(nameTok.Text)
+	}
 	p.expect(TokenLParen)
 
 	var params []ParameterDecl
+	bindings := make(map[string]ActionBinding)
+
 	for p.curr.Type != TokenRParen && p.curr.Type != TokenEOF {
-		pTok, ok := p.expect(TokenIdent)
-		if !ok {
-			break
+		var firstTok Token
+		if p.curr.Type == TokenIdent || p.curr.Type == TokenTypeKW || p.curr.Type == TokenVar {
+			firstTok = p.advance()
+		} else {
+			tok, ok := p.expect(TokenIdent)
+			if !ok {
+				break
+			}
+			firstTok = tok
 		}
-		p.expect(TokenColon)
-		tAnno := p.parseTypeAnnotation()
+		var paramName string
+		var paramType TypeAnnotation
+		var wireKey string
+		var opt bool
+		var defExpr Expression
+
+		if p.curr.Type == TokenIdent || p.curr.Type == TokenTypeKW || (p.curr.Type == TokenQuestion && (p.peek.Type == TokenIdent || p.peek.Type == TokenTypeKW)) {
+			// Legacy syntax: typeName [?]paramName: 'WireKey'
+			typeName := firstTok.Text
+			opt = p.match(TokenQuestion)
+			var pTok Token
+			if p.curr.Type == TokenTypeKW || p.curr.Type == TokenIdent || p.curr.Type == TokenVar {
+				pTok = p.advance()
+			} else {
+				pTok, _ = p.expect(TokenIdent)
+			}
+			paramName = pTok.Text
+			r := []rune(typeName)
+			r[0] = unicode.ToUpper(r[0])
+			paramType = &NamedTypeAnnotation{
+				Span: firstTok.Span,
+				Name: string(r),
+			}
+			if p.match(TokenColon) {
+				if p.curr.Type == TokenString {
+					wTok := p.advance()
+					wireKey = strings.Trim(wTok.Text, `"'`)
+				} else {
+					paramType = p.parseTypeAnnotation()
+				}
+			}
+		} else {
+			// Standard v2: paramName: Type
+			paramName = firstTok.Text
+			opt = p.match(TokenQuestion)
+			p.expect(TokenColon)
+			paramType = p.parseTypeAnnotation()
+			if p.curr.Type == TokenColon {
+				p.advance()
+				if p.curr.Type == TokenString {
+					wTok := p.advance()
+					wireKey = strings.Trim(wTok.Text, `"'`)
+				}
+			}
+		}
+
+		if p.match(TokenAssign) {
+			defExpr = p.parseExpression(precNone)
+		}
+
 		params = append(params, ParameterDecl{
-			Span:     pTok.Span,
-			Name:     pTok.Text,
-			TypeExpr: tAnno,
+			Span:        firstTok.Span,
+			Name:        paramName,
+			Optional:    opt,
+			TypeExpr:    paramType,
+			DefaultExpr: defExpr,
 		})
+		if wireKey != "" {
+			bindings[paramName] = ActionBinding{WireKey: wireKey}
+		}
 		if !p.match(TokenComma) {
 			break
 		}
 	}
+	endSpan := p.curr.Span
 	p.expect(TokenRParen)
 
 	var retType TypeAnnotation
-	if p.match(TokenArrow) {
+	if p.match(TokenArrow) || p.match(TokenColon) {
 		retType = p.parseTypeAnnotation()
 	}
 
-	p.expect(TokenLBrace)
-	appleIdent := ""
 	primary := ""
-	bindings := make(map[string]ActionBinding)
-
-	for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
-		if p.curr.Type == TokenIdent {
-			field := p.advance().Text
-			p.expect(TokenColon)
-			if field == "identifier" {
-				idTok, _ := p.expect(TokenString)
-				appleIdent = idTok.Text
-			} else if field == "primary" {
-				primTok, _ := p.expect(TokenString)
-				primary = primTok.Text
-			} else if field == "bindings" {
-				p.expect(TokenLBrace)
-				for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
-					paramNameTok, _ := p.expect(TokenIdent)
-					p.expect(TokenColon)
+	if p.curr.Type == TokenLBrace {
+		p.advance()
+		for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
+			if p.curr.Type == TokenIdent {
+				field := p.advance().Text
+				p.expect(TokenColon)
+				if field == "identifier" {
+					idTok, _ := p.expect(TokenString)
+					appleIdent = idTok.Text
+				} else if field == "primary" {
+					primTok, _ := p.expect(TokenString)
+					primary = primTok.Text
+				} else if field == "bindings" {
 					p.expect(TokenLBrace)
-					var b ActionBinding
 					for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
-						bField := p.advance().Text
-						p.expect(TokenColon)
-						bVal, _ := p.expect(TokenString)
-						if bField == "key" {
-							b.WireKey = bVal.Text
-						} else if bField == "codec" {
-							b.Codec = bVal.Text
+						var paramNameTok Token
+						if p.curr.Type == TokenIdent || p.curr.Type == TokenTypeKW || p.curr.Type == TokenVar {
+							paramNameTok = p.advance()
+						} else {
+							tok, ok := p.expect(TokenIdent)
+							if !ok {
+								break
+							}
+							paramNameTok = tok
 						}
+						p.expect(TokenColon)
+						p.expect(TokenLBrace)
+						var b ActionBinding
+						for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
+							bField := p.advance().Text
+							p.expect(TokenColon)
+							bVal, _ := p.expect(TokenString)
+							if bField == "key" {
+								b.WireKey = bVal.Text
+							} else if bField == "codec" {
+								b.Codec = bVal.Text
+							}
+							p.match(TokenComma)
+						}
+						p.expect(TokenRBrace)
+						bindings[paramNameTok.Text] = b
 						p.match(TokenComma)
 					}
 					p.expect(TokenRBrace)
-					bindings[paramNameTok.Text] = b
-					p.match(TokenComma)
 				}
-				p.expect(TokenRBrace)
+			} else {
+				p.advance()
 			}
-		} else {
-			p.advance()
+			p.match(TokenComma)
 		}
+		endTok, _ := p.expect(TokenRBrace)
+		endSpan = endTok.Span
 	}
-	endTok, _ := p.expect(TokenRBrace)
 
 	return &ActionDecl{
-		Span:            startTok.Span.Merge(endTok.Span),
+		Span:            startTok.Span.Merge(endSpan),
 		Name:            nameTok.Text,
 		Parameters:      params,
 		ReturnType:      retType,
@@ -639,6 +833,9 @@ func (p *Parser) parsePrimaryTypeAnnotation() TypeAnnotation {
 func (p *Parser) parseStatement() Statement {
 	switch p.curr.Type {
 	case TokenLet, TokenVar:
+		if p.curr.Type == TokenVar && (p.peek.Type == TokenAssign || p.peek.Type == TokenPlusAssign || p.peek.Type == TokenMinusAssign || p.peek.Type == TokenStarAssign || p.peek.Type == TokenSlashAssign) {
+			return p.parseAssignStmt()
+		}
 		b := p.parseBindingStmt()
 		if b == nil {
 			return nil
@@ -680,6 +877,18 @@ func (p *Parser) parseStatement() Statement {
 			return nil
 		}
 		return m
+	case TokenCopy:
+		c := p.parseCopyBlockStmt()
+		if c == nil {
+			return nil
+		}
+		return c
+	case TokenPaste:
+		pst := p.parsePasteStmt()
+		if pst == nil {
+			return nil
+		}
+		return pst
 	case TokenWhile, TokenBreak, TokenContinue:
 		kwTok := p.advance()
 		p.errorAt(kwTok.Span, fmt.Sprintf("unsupported keyword '%s': while, break, and continue are reserved unsupported future keywords in Cherri v2.0", kwTok.Text))
@@ -741,12 +950,45 @@ func (p *Parser) parseStatement() Statement {
 	}
 }
 
-func (p *Parser) parseBindingStmt() *BindingStmt {
-	startTok := p.advance() // let or var
-	isVar := startTok.Type == TokenVar
+func (p *Parser) parseCopyBlockStmt() *CopyBlockStmt {
+	startTok := p.advance() // copy
 	nameTok, ok := p.expect(TokenIdent)
 	if !ok {
 		return nil
+	}
+	body := p.parseBlockStmt()
+	return &CopyBlockStmt{
+		Span: startTok.Span.Merge(body.Span),
+		Name: nameTok.Text,
+		Body: body,
+	}
+}
+
+func (p *Parser) parsePasteStmt() *PasteStmt {
+	startTok := p.advance() // paste
+	nameTok, ok := p.expect(TokenIdent)
+	if !ok {
+		return nil
+	}
+	p.match(TokenSemicolon)
+	return &PasteStmt{
+		Span: startTok.Span.Merge(nameTok.Span),
+		Name: nameTok.Text,
+	}
+}
+
+func (p *Parser) parseBindingStmt() *BindingStmt {
+	startTok := p.advance() // let or var
+	isVar := startTok.Type == TokenVar
+	var nameTok Token
+	if p.curr.Type == TokenIdent || (p.curr.Type >= TokenLet && p.curr.Type <= TokenContinue) {
+		nameTok = p.advance()
+	} else {
+		var ok bool
+		nameTok, ok = p.expect(TokenIdent)
+		if !ok {
+			return nil
+		}
 	}
 
 	var typeAnno TypeAnnotation
@@ -867,17 +1109,22 @@ func (p *Parser) parseForStmt() *ForStmt {
 	indexVar := ""
 	itemVar := ""
 
+	expectVar := func() string {
+		if p.curr.Type == TokenIdent || p.curr.Type == TokenNull {
+			return p.advance().Text
+		}
+		tok, _ := p.expect(TokenIdent)
+		return tok.Text
+	}
+
 	if p.match(TokenLParen) {
 		// (index, item)
-		idxTok, _ := p.expect(TokenIdent)
-		indexVar = idxTok.Text
+		indexVar = expectVar()
 		p.expect(TokenComma)
-		itTok, _ := p.expect(TokenIdent)
-		itemVar = itTok.Text
+		itemVar = expectVar()
 		p.expect(TokenRParen)
 	} else {
-		itTok, _ := p.expect(TokenIdent)
-		itemVar = itTok.Text
+		itemVar = expectVar()
 	}
 
 	p.expect(TokenIn)
@@ -895,11 +1142,19 @@ func (p *Parser) parseForStmt() *ForStmt {
 
 func (p *Parser) parseRepeatStmt() *RepeatStmt {
 	startTok := p.advance() // repeat
-	count := p.parseExpression(precNone)
+	var count Expression
 	idxVar := ""
-	if p.match(TokenAs) {
-		idxTok, _ := p.expect(TokenIdent)
+	if p.curr.Type == TokenIdent && p.peek.Type == TokenFor {
+		idxTok := p.advance()
 		idxVar = idxTok.Text
+		p.advance() // consume "for"
+		count = p.parseExpression(precNone)
+	} else {
+		count = p.parseExpression(precNone)
+		if p.match(TokenAs) {
+			idxTok, _ := p.expect(TokenIdent)
+			idxVar = idxTok.Text
+		}
 	}
 	body := p.parseBlockStmt()
 
@@ -913,19 +1168,100 @@ func (p *Parser) parseRepeatStmt() *RepeatStmt {
 
 func (p *Parser) parseMenuStmt() *MenuStmt {
 	startTok := p.advance() // menu
-	p.expect(TokenLParen)
-	prompt := p.parseExpression(precNone)
-	p.expect(TokenRParen)
+	var prompt Expression
+	if p.match(TokenLParen) {
+		prompt = p.parseExpression(precNone)
+		p.expect(TokenRParen)
+	} else if p.curr.Type == TokenString {
+		promptTok := p.advance()
+		prompt = &LiteralExpr{
+			Span:  promptTok.Span,
+			Type:  promptTok.Type,
+			Value: promptTok.Text,
+		}
+	} else if p.curr.Type == TokenNone {
+		promptTok := p.advance()
+		prompt = &LiteralExpr{
+			Span:  promptTok.Span,
+			Type:  promptTok.Type,
+			Value: "",
+		}
+	}
 	p.expect(TokenLBrace)
 
 	var cases []MenuCase
+	parseCaseBody := func() *BlockStmt {
+		if p.curr.Type == TokenLBrace {
+			return p.parseBlockStmt()
+		}
+		startSpan := p.curr.Span
+		var stmts []Statement
+		for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && p.curr.Type != TokenCase && !(p.curr.Type == TokenIdent && p.curr.Text == "item") {
+			if p.curr.Type == TokenSemicolon {
+				p.advance()
+				continue
+			}
+			s := p.parseStatement()
+			if s != nil {
+				stmts = append(stmts, s)
+			}
+		}
+		endSpan := startSpan
+		if len(stmts) > 0 {
+			endSpan = stmts[len(stmts)-1].NodeSpan()
+		}
+		return &BlockStmt{
+			Span:       startSpan.Merge(endSpan),
+			Statements: stmts,
+		}
+	}
+
 	for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
 		if p.match(TokenCase) {
-			labelTok, _ := p.expect(TokenString)
-			body := p.parseBlockStmt()
+			label := ""
+			labelSpan := p.curr.Span
+			if p.curr.Type == TokenString {
+				tok, _ := p.expect(TokenString)
+				label = tok.Text
+				labelSpan = tok.Span
+			} else if p.curr.Type == TokenNone || p.curr.Type == TokenNull {
+				tok := p.advance()
+				label = ""
+				labelSpan = tok.Span
+			} else if p.curr.Type == TokenIdent || p.curr.Type == TokenNumber {
+				tok := p.advance()
+				label = tok.Text
+				labelSpan = tok.Span
+			}
+			p.match(TokenColon)
+			body := parseCaseBody()
 			cases = append(cases, MenuCase{
-				Span:      labelTok.Span.Merge(body.Span),
-				Label:     labelTok.Text,
+				Span:      labelSpan.Merge(body.Span),
+				Label:     label,
+				BodyBlock: body,
+			})
+		} else if p.curr.Type == TokenIdent && p.curr.Text == "item" {
+			p.advance() // item
+			label := ""
+			labelSpan := p.curr.Span
+			if p.curr.Type == TokenString {
+				tok, _ := p.expect(TokenString)
+				label = tok.Text
+				labelSpan = tok.Span
+			} else if p.curr.Type == TokenNone || p.curr.Type == TokenNull {
+				tok := p.advance()
+				label = ""
+				labelSpan = tok.Span
+			} else if p.curr.Type == TokenIdent || p.curr.Type == TokenNumber {
+				tok := p.advance()
+				label = tok.Text
+				labelSpan = tok.Span
+			}
+			p.match(TokenColon)
+			body := parseCaseBody()
+			cases = append(cases, MenuCase{
+				Span:      labelSpan.Merge(body.Span),
+				Label:     label,
 				BodyBlock: body,
 			})
 		} else {
@@ -980,7 +1316,7 @@ func (p *Parser) parsePrefix() Expression {
 			Value: tok.Text,
 		}
 
-	case TokenIdent:
+	case TokenIdent, TokenVar, TokenTypeKW:
 		p.advance()
 		return &IdentExpr{
 			Span: tok.Span,
@@ -1010,6 +1346,9 @@ func (p *Parser) parsePrefix() Expression {
 	case TokenBang, TokenMinus, TokenPlus:
 		p.advance()
 		operand := p.parseExpression(precUnary)
+		if operand == nil {
+			return nil
+		}
 		return &UnaryExpr{
 			Span:    tok.Span.Merge(operand.NodeSpan()),
 			Op:      tok.Type,
@@ -1141,7 +1480,7 @@ func (p *Parser) getInfixPrecedence(tt TokenType) int {
 		return precAnd
 	case TokenEqual, TokenNotEqual:
 		return precEquality
-	case TokenLess, TokenLessEqual, TokenGreater, TokenGreaterEqual:
+	case TokenLess, TokenLessEqual, TokenGreater, TokenGreaterEqual, TokenContains, TokenBeginsWith, TokenEndsWith:
 		return precRelational
 	case TokenPlus, TokenMinus:
 		return precAdditive
@@ -1234,8 +1573,8 @@ func (p *Parser) parseCallExpr(callee Expression) *CallExpr {
 		}
 
 		// Named argument: label: val
-		if p.curr.Type == TokenIdent && p.peek.Type == TokenColon {
-			labelTok, _ := p.expect(TokenIdent)
+		if (p.curr.Type == TokenIdent || (p.curr.Type >= TokenLet && p.curr.Type <= TokenDirective)) && p.peek.Type == TokenColon {
+			labelTok := p.advance()
 			p.expect(TokenColon)
 			val := p.parseExpression(precNone)
 			if val == nil {

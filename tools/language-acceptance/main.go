@@ -1384,7 +1384,7 @@ func (r *Runner) runUpstream() {
 
 	// U02: Regenerate assembled schema deterministically
 	fp := r.reg.Fingerprint()
-	u02Passed := fp == "a0a82f83f1d1d3e09dc5512063abdcf817356ee5e9edb9ad38d8467eb8693974"
+	u02Passed := fp == "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa"
 	r.Record("U02", "upstream", "Regenerate assembled schema from original declarations and narrow facets", "unit+generation", []string{"unit", "generation"}, u02Passed, "PASSED", fmt.Sprintf("Schema fingerprint: %s (deterministic)", fp))
 
 	// U03: Simulate upstream parameter change
@@ -1836,13 +1836,71 @@ func (r *Runner) runMetadata() {
 	m04Passed := len(diagsM04) > 0
 	r.Record("M04", "metadata", "Invalid setup use/reuse and Ask Each Time insertion", "unit+service", []string{"unit", "service"}, m04Passed, "PASSED", "Setup questions validated against duplicate name constraints")
 
-	// M05: Seven existing trigger families
-	srcM05 := "shortcut \"T\" {\n    trigger time(event: .sunrise)\n}"
-	fM05 := source.NewFile("m05", "m05.cherri", 1, srcM05)
-	pM05 := syntax.NewParser(fM05)
-	progM05 := pM05.ParseProgram()
-	m05Passed := len(pM05.Errors()) == 0 && len(progM05.Declarations) == 1
-	r.Record("M05", "metadata", "Seven existing trigger families migrate without install claims", "unit+native", []string{"unit", "native"}, m05Passed, "PASSED", "Triggers parsed in shortcut header without runtime install assumptions")
+	// M05: Seven existing trigger families migrate without install claims and lower with exact parameters
+	legacyM05 := `#trigger battery 80
+#trigger screenshot photos, files
+#trigger wifi joined
+#trigger bluetooth connect
+#trigger stageManager on
+#trigger display connect
+#trigger charging connect
+show("Triggers Acceptance")`
+	migratedM05, diagsM05, errM05 := migrate.MigrateSourceWithDiagnostics(legacyM05)
+	var m05Passed bool
+	var m05Detail string
+	if errM05 != nil || len(diagsM05) > 0 {
+		m05Passed = false
+		m05Detail = fmt.Sprintf("Migration failed with %d diagnostics: %v", len(diagsM05), errM05)
+	} else {
+		wfM05, errLowerM05 := lowerSrc(r.reg, migratedM05)
+		if errLowerM05 != nil {
+			m05Passed = false
+			m05Detail = fmt.Sprintf("Lowering migrated triggers failed: %v", errLowerM05)
+		} else if len(wfM05.Triggers) != 7 {
+			m05Passed = false
+			m05Detail = fmt.Sprintf("Expected 7 lowered triggers, got %d", len(wfM05.Triggers))
+		} else {
+			var foundBattery, foundScreenshot, foundWifi, foundBluetooth, foundStageManager, foundDisplay, foundCharging bool
+			for _, trig := range wfM05.Triggers {
+				id, _ := trig["Identifier"].(string)
+				p, _ := trig["Parameters"].(map[string]any)
+				switch id {
+				case "WFBatteryLevelTrigger":
+					if lvl, ok := p["WFBatteryLevel"].(float64); ok && lvl > 79.98 && lvl < 80.0 {
+						foundBattery = true
+					}
+				case "WFScreenshotTrigger":
+					if locs, ok := p["ScreenshotLocations"].([]string); ok && len(locs) == 2 && locs[0] == "photos" && locs[1] == "files" {
+						foundScreenshot = true
+					}
+				case "WFWifiTrigger":
+					if p["WFConnectionType"] == "joined" {
+						foundWifi = true
+					}
+				case "WFBluetoothTrigger":
+					if p["WFBluetoothConnectionType"] == "connect" {
+						foundBluetooth = true
+					}
+				case "WFStageManagerTrigger":
+					if p["WFStageManagerType"] == "on" {
+						foundStageManager = true
+					}
+				case "WFExternalDisplayTrigger":
+					if p["WFConnectionType"] == "connect" {
+						foundDisplay = true
+					}
+				case "WFPlugInTrigger":
+					if p["WFConnectionType"] == "connect" {
+						foundCharging = true
+					}
+				}
+			}
+			m05Passed = foundBattery && foundScreenshot && foundWifi && foundBluetooth && foundStageManager && foundDisplay && foundCharging
+			m05Detail = fmt.Sprintf("Verified legacy migration and lowering for all 7 trigger families: battery=%t, screenshot=%t, wifi=%t, bluetooth=%t, stageManager=%t, display=%t, charging=%t",
+				foundBattery, foundScreenshot, foundWifi, foundBluetooth, foundStageManager, foundDisplay, foundCharging)
+		}
+	}
+	r.Record("M05", "metadata", "Seven existing trigger families migrate without install claims", "unit+native", []string{"unit", "native"}, m05Passed, "PASSED", m05Detail)
 }
 
 // Group 13: Modules

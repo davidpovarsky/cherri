@@ -36,16 +36,18 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 	}
 
 	if sc.WFWorkflowIcon.WFWorkflowIconGlyphNumber == 0 {
-		sc.WFWorkflowIcon.WFWorkflowIconGlyphNumber = 59789
+		sc.WFWorkflowIcon.WFWorkflowIconGlyphNumber = 61440
 	}
 	if sc.WFWorkflowIcon.WFWorkflowIconStartColor == 0 {
-		sc.WFWorkflowIcon.WFWorkflowIconStartColor = 4282601983
+		sc.WFWorkflowIcon.WFWorkflowIconStartColor = 3031607807
 	}
 	if len(sc.WFWorkflowTypes) == 0 {
-		sc.WFWorkflowTypes = []string{"Watch", "WFWorkflowTypeShowInSearch"}
+		sc.WFWorkflowTypes = schema.DefaultWorkflowTypes()
 	}
 	if len(wf.InputContentItemClasses) > 0 {
 		sc.WFWorkflowInputContentItemClasses = wf.InputContentItemClasses
+	} else {
+		sc.WFWorkflowInputContentItemClasses = schema.DefaultInputContentItemClasses()
 	}
 
 	for _, node := range wf.Actions {
@@ -63,6 +65,20 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 					continue
 				}
 			}
+			if node.AppleIdentifier == "is.workflow.actions.conditional" && k == "WFConditionalActionString" {
+				if _, ok := v.(*ir.AttachmentToken); ok {
+					action.WFWorkflowActionParameters[k] = map[string]any{
+						"WFSerializationType": "WFTextTokenString",
+						"Value": map[string]any{
+							"string": "\uFFFC",
+							"attachmentsByRange": map[string]any{
+								"{0, 1}": transformIRParamValueContext(v, true),
+							},
+						},
+					}
+					continue
+				}
+			}
 			action.WFWorkflowActionParameters[k] = transformIRParamValue(v)
 		}
 		if node.OutputUUID != "" {
@@ -73,6 +89,9 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 		}
 		if node.GroupingIdentifier != "" {
 			action.WFWorkflowActionParameters["GroupingIdentifier"] = node.GroupingIdentifier
+		}
+		if _, hasLimit := action.WFWorkflowActionParameters["WFContentItemLimitNumber"]; hasLimit {
+			action.WFWorkflowActionParameters["WFContentItemLimitEnabled"] = true
 		}
 		if action.WFWorkflowActionIdentifier == "is.workflow.actions.conditional" {
 			if att, ok := action.WFWorkflowActionParameters["WFInput"].(WFTextTokenAttachment); ok {
@@ -151,6 +170,29 @@ func EmitNativeWorkflow(wf *ir.NativeWorkflow) Shortcut {
 				for _, item := range items {
 					if dItem, ok := item.(WFDictionaryFieldValueItem); ok {
 						dictItems = append(dictItems, dItem)
+					} else if m, ok := item.(map[string]any); ok && m["WFItemType"] != nil {
+						itemType := 0
+						if t, ok := m["WFItemType"].(int); ok {
+							itemType = t
+						}
+						dictItems = append(dictItems, WFDictionaryFieldValueItem{
+							WFItemType: itemType,
+							WFValue:    m["WFValue"],
+						})
+					} else if m, ok := item.(map[string]interface{}); ok && m["WFItemType"] != nil {
+						itemType := 0
+						if t, ok := m["WFItemType"].(int); ok {
+							itemType = t
+						}
+						dictItems = append(dictItems, WFDictionaryFieldValueItem{
+							WFItemType: itemType,
+							WFValue:    m["WFValue"],
+						})
+					} else if s, ok := item.(string); ok {
+						dictItems = append(dictItems, WFDictionaryFieldValueItem{
+							WFItemType: 0,
+							WFValue:    s,
+						})
 					} else {
 						dictItems = append(dictItems, makeDictionaryItem("", item))
 					}
@@ -190,6 +232,13 @@ func transformIRParamValue(v any) any {
 }
 
 func transformIRParamValueContext(v any, inAttachmentsByRange bool) any {
+	if raw, ok := v.(*ir.RawPlistValue); ok {
+		return transformIRParamValueContext(raw.Data, inAttachmentsByRange)
+	}
+	if raw, ok := v.(ir.RawPlistValue); ok {
+		return transformIRParamValueContext(raw.Data, inAttachmentsByRange)
+	}
+
 	if tok, ok := v.(*ir.AttachmentToken); ok {
 		valMap := map[string]any{
 			"Type": tok.Type,
@@ -265,6 +314,7 @@ func CompileSourceToPlistWithModules(filePath string, content string, virtualMod
 	if virtualModules != nil {
 		lowerer.SetVirtualModules(virtualModules)
 	}
+	lowerer.SetExprTypes(analyzer.ExprTypes())
 	if err := lowerer.LowerProgramToSession(prog); err != nil {
 		return nil, fmt.Errorf("lowering error: %w", err)
 	}

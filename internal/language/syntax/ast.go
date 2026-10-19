@@ -57,11 +57,16 @@ func (d *ShortcutDecl) NodeSpan() source.Span { return d.Span }
 func (d *ShortcutDecl) declarationNode()      {}
 
 type TriggerDecl struct {
-	Span   source.Span
-	Family string
-	Event  string
+	Span       source.Span
+	Family     string
+	Event      string
+	Level      float64
+	HasLevel   bool
+	Locations  []string
+	Parameters map[string]any
 }
 func (d *TriggerDecl) NodeSpan() source.Span { return d.Span }
+func (d *TriggerDecl) declarationNode()      {}
 
 type SetupDecl struct {
 	Span         source.Span
@@ -274,6 +279,22 @@ type MenuCase struct {
 	Label     string
 	BodyBlock *BlockStmt
 }
+
+type CopyBlockStmt struct {
+	Span source.Span
+	Name string
+	Body *BlockStmt
+}
+func (s *CopyBlockStmt) NodeSpan() source.Span { return s.Span }
+func (s *CopyBlockStmt) statementNode()        {}
+func (s *CopyBlockStmt) declarationNode()      {}
+
+type PasteStmt struct {
+	Span source.Span
+	Name string
+}
+func (s *PasteStmt) NodeSpan() source.Span { return s.Span }
+func (s *PasteStmt) statementNode()        {}
 
 // --- Expressions ---
 

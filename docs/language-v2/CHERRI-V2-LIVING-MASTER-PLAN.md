@@ -722,7 +722,7 @@ Next smallest independently verifiable batch:
 
 - [x] **P10.06: First-Class Typing, Registry Regeneration, & Decompiler Parity (P10R Corrective Repair)**
   - Schema fingerprint hardened to include EvidenceStatus, parameter enum metadata, and semantic version comparison (`27.10` > `27.2`).
-  - ActionSchema registry regenerated to 505 actions with updated schema fingerprint `a0a82f83f1d1d3e09dc5512063abdcf817356ee5e9edb9ad38d8467eb8693974`.
+  - ActionSchema registry regenerated to 505 actions with updated schema fingerprint `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`.
   - Decompiler representability hardened to inspect values, setter modes, and complex structures, falling back safely to rawAction without data loss.
 
 - [x] **P10.07: Plist Roundtrip & Simulator Verification**

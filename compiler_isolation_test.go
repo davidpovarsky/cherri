@@ -108,6 +108,9 @@ func TestCompileStateIsolation(t *testing.T) {
 // returns the generated Cherri source.
 func isoDecompileOnce(t *testing.T, plistPath string) string {
 	t.Helper()
+	tempCherri := filepath.Join(t.TempDir(), "decomp-me.cherri")
+	args.Args["output"] = tempCherri
+	defer delete(args.Args, "output")
 	decompile(importShortcut(plistPath))
 	var output = code.String()
 	code.Reset()

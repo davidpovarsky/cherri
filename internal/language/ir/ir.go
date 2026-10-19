@@ -1,5 +1,7 @@
 package ir
 
+import "github.com/electrikmilk/cherri/internal/language/schema"
+
 // NativeActionNode represents a single physical Apple Shortcut action in the pipeline.
 type NativeActionNode struct {
 	NodeID             string                 `json:"nodeId"`
@@ -37,6 +39,7 @@ type NativeWorkflow struct {
 	IconColor                 int                      `json:"iconColor,omitempty"`
 	Actions                   []*NativeActionNode      `json:"actions"`
 	ImportQuestions           []map[string]interface{} `json:"importQuestions,omitempty"`
+	Triggers                  []map[string]interface{} `json:"triggers,omitempty"`
 	HasExplicitReturn         bool                     `json:"hasExplicitReturn"`
 	HasShortcutInputVariables bool                     `json:"hasShortcutInputVariables"`
 	IsFullNativePass          bool                     `json:"isFullNativePass"`
@@ -46,7 +49,7 @@ type NativeWorkflow struct {
 // NewNativeWorkflow creates an initialized NativeWorkflow.
 func NewNativeWorkflow() *NativeWorkflow {
 	return &NativeWorkflow{
-		ClientVersion: "4711",
+		ClientVersion: schema.Versions["27"],
 		Actions:       make([]*NativeActionNode, 0),
 	}
 }

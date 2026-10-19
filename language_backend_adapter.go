@@ -12,6 +12,7 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
+	"github.com/electrikmilk/cherri/internal/language/schema"
 	"howett.net/plist"
 )
 
@@ -26,6 +27,8 @@ func NewCanonicalBackendSession() *CanonicalBackendSession {
 	tx, cleanup := BeginBackendTransaction()
 	sc := BuildWorkflowHeader()
 	sc.WFWorkflowImportQuestions = make([]WFQuestion, 0)
+	sc.WFWorkflowTypes = schema.DefaultWorkflowTypes()
+	sc.WFWorkflowInputContentItemClasses = schema.DefaultInputContentItemClasses()
 	return &CanonicalBackendSession{
 		tx:       tx,
 		cleanup:  cleanup,
@@ -56,6 +59,7 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 
 	// Prepare arguments for canonical action matching definition parameters
 	var args []actionArgument
+	providedIndices := make(map[int]bool)
 	if len(def.parameters) > 0 {
 		args = make([]actionArgument, len(def.parameters))
 		for i := range args {
@@ -73,20 +77,34 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 					}
 				}
 				if !matched {
+					lastIdx := len(def.parameters) - 1
+					if lastIdx >= 0 && def.parameters[lastIdx].infinite {
+						pos = lastIdx
+						matched = true
+					}
+				}
+				if !matched {
 					return "", fmt.Errorf("unknown parameter %q for canonical action %q", callArg.ParameterID, ident)
 				}
 			}
-			args[pos] = convertCallArgToActionArg(callArg)
+			if pos < len(def.parameters) && def.parameters[pos].infinite && providedIndices[pos] {
+				args = append(args, convertCallArgToActionArg(callArg))
+				providedIndices[len(args)-1] = true
+			} else {
+				args[pos] = convertCallArgToActionArg(callArg)
+				providedIndices[pos] = true
+			}
 		}
 	} else {
 		args = make([]actionArgument, len(call.Arguments))
 		for i, callArg := range call.Arguments {
 			args[i] = convertCallArgToActionArg(callArg)
+			providedIndices[i] = true
 		}
 	}
 
-	// Trim trailing omitted/nil arguments so len(args) reflects passed arguments
-	for len(args) > 0 && args[len(args)-1].valueType == Nil {
+	// Trim trailing unprovided parameters so len(args) reflects passed arguments
+	for len(args) > 0 && !providedIndices[len(args)-1] {
 		args = args[:len(args)-1]
 	}
 
@@ -286,6 +304,9 @@ func sanitizeRawParamValue(v any) any {
 
 func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
 	if tok, ok := v.(*ir.AttachmentToken); ok {
+		if tok == nil {
+			return nil
+		}
 		desc := ReferenceDescriptor{
 			Kind:       tok.Type,
 			OutputUUID: tok.OutputUUID,
@@ -407,6 +428,9 @@ func normalizeV2RawParamValue(value any) any {
 		if _, hasType := v["WFSerializationType"]; hasType {
 			return v
 		}
+		if _, hasColor := v["WFColorRepresentationType"]; hasColor {
+			return v
+		}
 		normalized := make(map[string]any, len(v))
 		for key, item := range v {
 			normalized[key] = normalizeV2RawParamValue(item)
@@ -436,7 +460,7 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 		cleanParams[k] = sanitizeRawParamValue(v)
 	}
 	for k, v := range cleanParams {
-		if k == "WFWorkflow" {
+		if k == "WFWorkflow" || (appleIdentifier == "is.workflow.actions.list" && k == "WFItems") {
 			continue
 		}
 		cleanParams[k] = normalizeV2RawParamValue(v)
@@ -490,6 +514,29 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 				cleanParams["WFInput"] = map[string]any{
 					"Type":     "Variable",
 					"Variable": input,
+				}
+			}
+		}
+		if att, ok := cleanParams["WFConditionalActionString"].(WFTextTokenAttachment); ok {
+			cleanParams["WFConditionalActionString"] = map[string]any{
+				"WFSerializationType": "WFTextTokenString",
+				"Value": map[string]any{
+					"string": "\uFFFC",
+					"attachmentsByRange": map[string]any{
+						"{0, 1}": att.Value,
+					},
+				},
+			}
+		} else if strMap, ok := cleanParams["WFConditionalActionString"].(map[string]any); ok {
+			if strMap["WFSerializationType"] == "WFTextTokenAttachment" {
+				cleanParams["WFConditionalActionString"] = map[string]any{
+					"WFSerializationType": "WFTextTokenString",
+					"Value": map[string]any{
+						"string": "\uFFFC",
+						"attachmentsByRange": map[string]any{
+							"{0, 1}": strMap["Value"],
+						},
+					},
 				}
 			}
 		}
@@ -556,6 +603,29 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 			for _, item := range items {
 				if dItem, ok := item.(WFDictionaryFieldValueItem); ok {
 					dictItems = append(dictItems, dItem)
+				} else if m, ok := item.(map[string]any); ok && m["WFItemType"] != nil {
+					itemType := 0
+					if t, ok := m["WFItemType"].(int); ok {
+						itemType = t
+					}
+					dictItems = append(dictItems, WFDictionaryFieldValueItem{
+						WFItemType: itemType,
+						WFValue:    m["WFValue"],
+					})
+				} else if m, ok := item.(map[string]interface{}); ok && m["WFItemType"] != nil {
+					itemType := 0
+					if t, ok := m["WFItemType"].(int); ok {
+						itemType = t
+					}
+					dictItems = append(dictItems, WFDictionaryFieldValueItem{
+						WFItemType: itemType,
+						WFValue:    m["WFValue"],
+					})
+				} else if s, ok := item.(string); ok {
+					dictItems = append(dictItems, WFDictionaryFieldValueItem{
+						WFItemType: 0,
+						WFValue:    s,
+					})
 				} else {
 					dictItems = append(dictItems, makeDictionaryItem("", item))
 				}
@@ -627,6 +697,9 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 			}
 		}
 	}
+	if _, hasLimit := cleanParams["WFContentItemLimitNumber"]; hasLimit {
+		cleanParams["WFContentItemLimitEnabled"] = true
+	}
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
 		WFWorkflowActionIdentifier: appleIdentifier,
 		WFWorkflowActionParameters: cleanParams,
@@ -668,16 +741,16 @@ func (s *CanonicalBackendSession) SetMetadata(name string, value any) {
 		if m, ok := value.(map[string]any); ok {
 			s.shortcut.WFWorkflowNoInputBehavior = m
 		} else if str, ok := value.(string); ok {
-			switch str {
-			case "clipboard", "getClipboard":
+			switch strings.ToLower(str) {
+			case "clipboard", "getclipboard":
 				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
 					"Name": "WFWorkflowNoInputBehaviorGetClipboard",
 				}
-			case "ask", "askForInput":
+			case "ask", "askforinput":
 				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
 					"Name": "WFWorkflowNoInputBehaviorAskForInput",
 				}
-			case "error", "showError":
+			case "error", "showerror":
 				s.shortcut.WFWorkflowNoInputBehavior = map[string]any{
 					"Name": "WFWorkflowNoInputBehaviorShowError",
 				}
@@ -765,6 +838,13 @@ func (s *CanonicalBackendSession) BindImportQuestion(questionName string, wireKe
 }
 
 func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
+	if len(s.shortcut.WFWorkflowTypes) == 0 {
+		s.shortcut.WFWorkflowTypes = schema.DefaultWorkflowTypes()
+	}
+	if len(s.shortcut.WFWorkflowInputContentItemClasses) == 0 {
+		s.shortcut.WFWorkflowInputContentItemClasses = schema.DefaultInputContentItemClasses()
+	}
+
 	if len(s.rawWorkflow) > 0 {
 		merged := make(map[string]any, len(s.rawWorkflow)+10)
 		var sBuf bytes.Buffer
@@ -778,6 +858,16 @@ func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
 		}
 		for k, v := range s.rawWorkflow {
 			merged[k] = v
+		}
+		if inputs, ok := merged["WFWorkflowInputContentItemClasses"].([]any); !ok || len(inputs) == 0 {
+			if _, has := merged["WFWorkflowInputContentItemClasses"]; !has {
+				merged["WFWorkflowInputContentItemClasses"] = s.shortcut.WFWorkflowInputContentItemClasses
+			}
+		}
+		if types, ok := merged["WFWorkflowTypes"].([]any); !ok || len(types) == 0 {
+			if _, has := merged["WFWorkflowTypes"]; !has {
+				merged["WFWorkflowTypes"] = s.shortcut.WFWorkflowTypes
+			}
 		}
 		var buf bytes.Buffer
 		enc := plist.NewEncoder(&buf)

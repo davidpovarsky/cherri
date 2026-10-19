@@ -15,9 +15,30 @@ import (
 	"howett.net/plist"
 )
 
-func getOutputPath(name string) string {
+func hasExplicitOutput() bool {
 	if args.Using("output") && args.Value("output") != "" {
-		var outputPathArg = args.Value("output")
+		return true
+	}
+	for i, a := range os.Args {
+		if (a == "-o" || a == "--output" || a == "-output") && i+1 < len(os.Args) {
+			return true
+		}
+	}
+	return false
+}
+
+func getOutputPath(name string) string {
+	val := args.Value("output")
+	if val == "" {
+		for i, a := range os.Args {
+			if (a == "-o" || a == "--output" || a == "-output") && i+1 < len(os.Args) {
+				val = os.Args[i+1]
+				break
+			}
+		}
+	}
+	if val != "" {
+		var outputPathArg = val
 		var outputPathEnding = filepath.Base(outputPathArg)
 
 		if !strings.Contains(outputPathEnding, ".") {
@@ -26,15 +47,15 @@ func getOutputPath(name string) string {
 				exit(fmt.Sprintf("Output path '%s' does not exist!", outputPathArg))
 			}
 			if outputPathInfo.IsDir() {
-				if outputPathArg[len(outputPathArg)-1] != '/' {
+				if outputPathArg[len(outputPathArg)-1] != '/' && outputPathArg[len(outputPathArg)-1] != '\\' {
 					outputPathArg = fmt.Sprintf("%s/", outputPathArg)
 				}
 				return fmt.Sprintf("%s%s", outputPathArg, name)
 			}
 		}
 
-		var relativeOutputPath = strings.Replace(outputPathArg, outputPathEnding, "", 1)
-		if relativeOutputPath != "" {
+		var relativeOutputPath = filepath.Dir(outputPathArg)
+		if relativeOutputPath != "" && relativeOutputPath != "." {
 			if _, err := os.Stat(relativeOutputPath); os.IsNotExist(err) {
 				exit(fmt.Sprintf("Output path '%s' does not exist!", relativeOutputPath))
 			}
@@ -78,6 +99,13 @@ func createShortcut() {
 
 		if args.Using("open") {
 			openShortcut()
+		}
+	} else if hasExplicitOutput() && outputPath != inputPath {
+		if err := os.Rename(inputPath, outputPath); err != nil {
+			if data, errRead := os.ReadFile(inputPath); errRead == nil {
+				_ = os.WriteFile(outputPath, data, 0644)
+				_ = os.Remove(inputPath)
+			}
 		}
 	}
 }

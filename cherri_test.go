@@ -145,6 +145,10 @@ func TestDecomp(t *testing.T) {
 	resetParser()
 	defer resetParser()
 
+	tempCherri := filepath.Join(t.TempDir(), "decomp-me.cherri")
+	args.Args["output"] = tempCherri
+	defer delete(args.Args, "output")
+
 	fmt.Println("Decompiling...")
 	args.Args["import"] = "tests/decomp-me.plist"
 	decompile(importShortcut(args.Value("import")))

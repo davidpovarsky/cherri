@@ -79,7 +79,7 @@ func TestP10R2_A02_StaleDocsFingerprintRejected(t *testing.T) {
 // A03: Source selector explicitly requests macos-27 while only macos-26 snapshot is present:
 // errors fail-closed, no fallback.
 func TestP10R2_A03_SourceSelectorFailsClosedOnMissing27(t *testing.T) {
-	cmd := exec.Command("python", "tools/shortcut-runtime/compare_cherri.py",
+	cmd := exec.Command(resolvePythonCommand(), "tools/shortcut-runtime/compare_cherri.py",
 		"--runtime-evidence-dir", "docs/apple-runtime/nonexistent-27",
 		"--out-dir", t.TempDir())
 	out, err := cmd.CombinedOutput()
@@ -577,14 +577,14 @@ func TestP10R2_A19_AggregateGateFailsOnMissingTest(t *testing.T) {
 	runnerPath := filepath.Join("tools", "p10r3", "run_release_gates.py")
 
 	// 1. Verify complete registry passes
-	cmdVerify := exec.Command("python", runnerPath, "--verify-registry")
+	cmdVerify := exec.Command(resolvePythonCommand(), runnerPath, "--verify-registry")
 	outVerify, errVerify := cmdVerify.CombinedOutput()
 	if errVerify != nil {
 		t.Fatalf("A19 failure: verify-registry failed unexpectedly: %v\n%s", errVerify, string(outVerify))
 	}
 
 	// 2. Mutate missing acceptance gate R12: runner must fail closed (non-zero exit)
-	cmdMutateR := exec.Command("python", runnerPath, "--mutate-missing", "R12")
+	cmdMutateR := exec.Command(resolvePythonCommand(), runnerPath, "--mutate-missing", "R12")
 	outMutateR, errMutateR := cmdMutateR.CombinedOutput()
 	if errMutateR == nil {
 		t.Fatalf("A19 failure: runner passed with missing acceptance gate R12!\nOutput: %s", string(outMutateR))
@@ -594,7 +594,7 @@ func TestP10R2_A19_AggregateGateFailsOnMissingTest(t *testing.T) {
 	}
 
 	// 3. Mutate missing adversarial gate A05: runner must fail closed (non-zero exit)
-	cmdMutateA := exec.Command("python", runnerPath, "--mutate-missing", "A05")
+	cmdMutateA := exec.Command(resolvePythonCommand(), runnerPath, "--mutate-missing", "A05")
 	outMutateA, errMutateA := cmdMutateA.CombinedOutput()
 	if errMutateA == nil {
 		t.Fatalf("A19 failure: runner passed with missing adversarial gate A05!\nOutput: %s", string(outMutateA))
