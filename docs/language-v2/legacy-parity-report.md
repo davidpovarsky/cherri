@@ -3,7 +3,7 @@
 **Date:** 2026-10-19  
 **Branch:** `agent/cherri-v2-legacy-parity`  
 **Base Commit:** `883d56bddcf7c9ac00a50c8a738e6f1df6f2387a`  
-**Verified Compiler Commit:** `883d56bddcf7c9ac00a50c8a738e6f1df6f2387a`  
+**Verified Compiler Commit:** `96dc1036dc8b222f0954933a22d8d698dba95931`  
 **Verified Docs Commit:** `8daeebc33b55b691493dfe75ff823c24dce44c21`  
 **Schema Fingerprint:** `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`  
 **Codec Fingerprint:** `3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e`  
@@ -48,6 +48,8 @@ The differential normalizer (`shortcutcompare`) was updated with strict, evidenc
 - **DeviceDetails Enums:** Normalized legacy shorthand tokens (`Model` -> `Device Model`, `OS` -> `System Version`).
 - **Single-System Token Attachments:** Allowed transparent token unwrapping for single-variable system attachments where the underlying Apple runtime receives identical token UUID bindings.
 - **Empty Scalar Dictionaries:** Handled empty serialization wrappers as semantic no-ops when identical values are assigned.
+- **Canonical Function Extraction & False-Positive Elimination:** Replaced hollow function witnesses with deep canonical function representation (`cherri.canonical.function.decl` ... `cherri.canonical.function.end`). Normalizes function bodies, typed parameters, default values, internal SSA variable bindings, conditions, math, recursion, outputs, and side-effects. Validated via mandatory regression test `TestFunctionBodyMutation_DetectedByNormalizedComparator` proving that body mutations in default arguments, math operators, and condition thresholds strictly fail equivalence.
+- **Non-Dirtying Parity Gate:** Updated `tools/legacy-parity/main.go` with `-write-report` flag (default false) ensuring standard gate test execution never dirties managed Git workspace files.
 
 ### Category 2: Compiler Engine Remediation (`lower.go`, `migrate.go`)
 - **1-Based Loop Indexing:** Eliminated the legacy `- 1` synthetic math action in `repeat i for N`. Cherri language semantics require 1-based indexing (`@firstIndex == 1`), binding directly to Apple's native `Repeat Index`.
@@ -152,7 +154,7 @@ The Open Minis Skill, compatibility manifest, documentation, and compiler are pi
   "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa",
   "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
   "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
-  "compilerCommit": "883d56bddcf7c9ac00a50c8a738e6f1df6f2387a",
+  "compilerCommit": "96dc1036dc8b222f0954933a22d8d698dba95931",
   "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
   "docsCommit": "8daeebc33b55b691493dfe75ff823c24dce44c21"
 }
@@ -160,7 +162,7 @@ The Open Minis Skill, compatibility manifest, documentation, and compiler are pi
 
 ### Verification Proof
 - `skills/cherri-shortcuts/scripts/doctor.sh` exits **0**:
-  - Compiler verified against `883d56bddcf7c9ac00a50c8a738e6f1df6f2387a`
+  - Compiler verified against `96dc1036dc8b222f0954933a22d8d698dba95931`
   - Docs verified against `8daeebc33b55b691493dfe75ff823c24dce44c21`
   - Schema fingerprint verified: `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`
   - Codec fingerprint verified: `3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e`
