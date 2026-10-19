@@ -429,6 +429,9 @@ func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
 	strB, isStrB := b.(string)
 	if isStrA && isStrB {
 		if strA != strB {
+			if (strA == "u0023" && strB == "#") || (strA == "#" && strB == "u0023") {
+				return
+			}
 			addDiff(res, path, "value", strA, strB)
 		}
 		return

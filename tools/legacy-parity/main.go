@@ -7,6 +7,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -61,6 +62,12 @@ type ParityReport struct {
 }
 
 func main() {
+	var (
+		writeReport = flag.Bool("write-report", false, "Write legacy-parity-results.json report to docs/language-v2/")
+		outputPath  = flag.String("output", "", "Custom path to write machine-readable parity report JSON")
+	)
+	flag.Parse()
+
 	fmt.Println("=== Cherri Legacy <-> v2 Differential Parity Runner ===")
 
 	// Ensure compiler binary is available
@@ -171,11 +178,19 @@ func main() {
 		}
 	}
 
-	// Write machine-readable report
-	outJSONPath := filepath.Join(repoRoot, "docs", "language-v2", "legacy-parity-results.json")
-	reportBytes, _ := json.MarshalIndent(report, "", "  ")
-	_ = os.WriteFile(outJSONPath, reportBytes, 0644)
-	fmt.Printf("\nSaved machine-readable parity report to: %s\n", outJSONPath)
+	// Write machine-readable report only when explicitly requested
+	if *writeReport || *outputPath != "" {
+		outJSONPath := *outputPath
+		if outJSONPath == "" {
+			outJSONPath = filepath.Join(repoRoot, "docs", "language-v2", "legacy-parity-results.json")
+		}
+		reportBytes, _ := json.MarshalIndent(report, "", "  ")
+		if err := os.WriteFile(outJSONPath, reportBytes, 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Error writing report to %s: %v\n", outJSONPath, err)
+		} else {
+			fmt.Printf("\nSaved machine-readable parity report to: %s\n", outJSONPath)
+		}
+	}
 
 	fmt.Printf("\n=== SUMMARY ===\n")
 	fmt.Printf("Total Fixtures:        %d\n", report.TotalFixtures)

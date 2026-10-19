@@ -30,6 +30,7 @@ func TestGate_PositiveEndToEnd(t *testing.T) {
 	}
 }
 
+
 func TestGate_Negative_MissingRequiredParameterFailsGate(t *testing.T) {
 	binPath, err := ensureCompilerBinary()
 	if err != nil {
