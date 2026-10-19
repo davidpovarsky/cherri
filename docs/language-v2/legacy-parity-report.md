@@ -1,9 +1,9 @@
 # Cherri v2 Legacy Differential Parity Final Report
 
-**Date:** 2026-10-19  
-**Branch:** `agent/cherri-v2-legacy-parity`  
-**Base Commit:** `883d56bddcf7c9ac00a50c8a738e6f1df6f2387a`  
-**Verified Compiler Commit:** `96dc1036dc8b222f0954933a22d8d698dba95931`  
+**Date:** 2026-10-20  
+**Branch:** `agent/cherri-p10-apple-actions-coverage`  
+**Base Commit:** `15c22783e85dd26f9a1ddb45c542d17e67fb7cc0`  
+**Verified Compiler Commit:** `15f29066e627a1776b8cb17405117e99263171d3`  
 **Verified Docs Commit:** `8daeebc33b55b691493dfe75ff823c24dce44c21`  
 **Schema Fingerprint:** `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`  
 **Codec Fingerprint:** `3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e`  
@@ -154,7 +154,7 @@ The Open Minis Skill, compatibility manifest, documentation, and compiler are pi
   "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa",
   "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
   "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
-  "compilerCommit": "96dc1036dc8b222f0954933a22d8d698dba95931",
+  "compilerCommit": "15f29066e627a1776b8cb17405117e99263171d3",
   "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
   "docsCommit": "8daeebc33b55b691493dfe75ff823c24dce44c21"
 }
@@ -162,7 +162,7 @@ The Open Minis Skill, compatibility manifest, documentation, and compiler are pi
 
 ### Verification Proof
 - `skills/cherri-shortcuts/scripts/doctor.sh` exits **0**:
-  - Compiler verified against `96dc1036dc8b222f0954933a22d8d698dba95931`
+  - Compiler verified against `15f29066e627a1776b8cb17405117e99263171d3`
   - Docs verified against `8daeebc33b55b691493dfe75ff823c24dce44c21`
   - Schema fingerprint verified: `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`
   - Codec fingerprint verified: `3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e`
