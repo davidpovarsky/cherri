@@ -1,0 +1,26 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/pdf'
+
+// Advanced alias makeImageFromPDFPageAdvanced for makeImageFromPDFPage
+action 'makeimagefrompdfpage' makeImageFromPDFPageAdvanced(
+    variable pdf: 'WFInput',
+    colorSpace ?colorSpace: 'WFMakeImageFromPDFPageColorspace' = "RGB",
+    text ?pageResolution: 'WFMakeImageFromPDFPageResolution' = "300",
+    text ?format: 'WFMakeImageFromPDFPageImageFormat' = "public.png"
+)
+
+// Advanced alias makePDFAdvanced for makePDF
+action 'makepdf' makePDFAdvanced(
+    variable input: 'WFInput',
+    bool ?includeMargin: 'WFPDFIncludeMargin' = false,
+    PDFMergeBehaviors ?mergeBehavior: 'WFPDFDocumentMergeBehavior' = "Append",
+    text ?pages: 'WFPDFIncludedPages',
+    number ?singlePage: 'WFPDFSinglePage',
+    number ?rangeStart: 'WFPDFPageRangeStart',
+    number ?rangeEnd: 'WFPDFPageRangeEnd'
+)
+
+// [Doc]: Optimize PDF: Returns a compressed version of the PDF.
+

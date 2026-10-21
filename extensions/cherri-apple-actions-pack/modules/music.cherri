@@ -1,0 +1,77 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/music'
+
+// New action createPlaylist
+action 'createplaylist' createPlaylist(
+    text name: 'WFPlaylistName',
+    text ?author: 'WFPlaylistAuthor',
+    text ?description: 'WFPlaylistDescription',
+    variable ?items: 'WFPlaylistItems'
+)
+
+// [Doc]: Filter Music: Filter music with various filters.
+
+// New action filterMusic
+action 'filter.music' filterMusic(
+    variable ?music: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// Advanced alias getCurrentSongAdvanced for getCurrentSong
+action 'getcurrentsong' getCurrentSongAdvanced(text ?subject: 'Subject')
+
+// [Doc]: Add to Music: Add music to library.
+
+// Advanced alias pauseAdvanced for pause
+action 'pausemusic' pauseAdvanced(variable ?route: 'WFMediaRoute') {
+	"WFPlayPauseBehavior": "Pause"
+}
+
+// [Doc]: [Playback] Toggle Play/Pause
+
+// Advanced alias playAdvanced for play
+action 'pausemusic' playAdvanced(variable ?route: 'WFMediaRoute') {
+	"WFPlayPauseBehavior": "Play"
+}
+
+// [Doc]: [Playback] Pause: Press pause.
+
+// New action searchiTunes
+action 'searchitunes' searchiTunes(
+    text query: 'WFSearchTerm',
+    number ?limit: 'WFItemLimit',
+    text ?country: 'WFCountry',
+    text ?attribute: 'WFAttribute',
+    text ?entity: 'WFEntity',
+    text ?mediaType: 'WFMediaType'
+)
+
+// [Doc]: [Playlists] Create Playlist: Create a new music playlist.
+
+// Advanced alias seekAdvanced for seek
+action 'seek' seekAdvanced(#timeDuration timeInterval: 'WFTimeInterval' = qty(0, "sec"), seekBehavior behavior: 'WFSeekBehavior' = "To Time", variable ?route: 'WFMediaRoute')
+
+// [Doc]: [Playback] Play Next: Add music to play next in the queue.
+
+// Advanced alias skipBackAdvanced for skipBack
+action 'skipback' skipBackAdvanced(variable ?route: 'WFMediaRoute') {
+	"WFSkipBackBehavior": "Previous Song"
+}
+
+// [Doc]: [Playback] Skip Forward: Go to the next song.
+
+// Advanced alias skipFwdAdvanced for skipFwd
+action 'skipforward' skipFwdAdvanced(variable ?route: 'WFMediaRoute')
+
+// Advanced alias togglePlayPauseAdvanced for togglePlayPause
+action 'pausemusic' togglePlayPauseAdvanced(variable ?route: 'WFMediaRoute') {
+	"WFPlayPauseBehavior": "Play/Pause"
+}
+
+// [Doc]: [Playback] Skip Back: Go to the previous song.
+

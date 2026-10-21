@@ -1,0 +1,53 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/images'
+
+// Advanced alias combineImagesAdvanced for combineImages
+action 'image.combine' combineImagesAdvanced(variable images: 'WFInput', imageCombineMode ?mode: 'WFImageCombineMode' = "Vertically", number ?spacing: 'WFImageCombineSpacing' = 1)
+
+// New action filterImages
+action 'filter.images' filterImages(
+    variable ?images: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: [Image Editing] Scan Barcode: Scan or extract a barcode or QR code from an image or camera.
+
+// New action overlayText
+action 'overlaytext' overlayText(
+    variable image: 'WFImage',
+    text text: 'WFText',
+    customImageOverlayPosition ?position: 'WFTextPosition' = "Center",
+    text ?font: 'WFFont',
+    number ?fontSize: 'WFFontSize' = 36,
+    text ?alignment: 'WFTextAlignment' = "Center",
+    number ?x: 'WFTextX',
+    number ?y: 'WFTextY',
+    number ?percentageX: 'WFPercentageTextX',
+    number ?percentageY: 'WFPercentageTextY',
+    number ?offset: 'WFTextOffset',
+    number ?percentageOffset: 'WFPercentageTextOffset',
+    number ?percentageFontSize: 'WFPercentageFontSize',
+    variable ?color: 'WFTextColor',
+    number ?rotation: 'WFTextRotation',
+    bool ?outlineEnabled: 'WFTextOutlineEnabled',
+    number ?strokeWidth: 'WFTextStrokeWidth',
+    number ?percentageStrokeWidth: 'WFPercentageTextStrokeWidth',
+    variable ?strokeColor: 'WFTextStrokeColor',
+    number ?boxWidth: 'WFTextBoxWidth',
+    number ?percentageBoxWidth: 'WFPercentageTextBoxWidth',
+    text ?sizingMethod: 'WFSizingMethod'
+): variable
+
+// [Doc]: [Image Editing] Resize Image
+
+// New action scanBarcode
+action 'scanbarcode' scanBarcode(
+    bool ?extract: 'WFScanCodeActionMode' = false,
+    variable ?image: 'imageFile'
+): array
+

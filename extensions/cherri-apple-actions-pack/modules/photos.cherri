@@ -1,0 +1,19 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/photos'
+
+// New action filterPhotos
+action 'filter.photos' filterPhotos(
+    variable ?photos: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// Advanced alias selectPhotosAdvanced for selectPhotos
+action 'selectphoto' selectPhotosAdvanced(bool ?selectMultiple: 'WFSelectMultiplePhotos' = false, text ?types: 'WFPhotoPickerTypes')
+
+// [Doc]: [Photos] Find Photos: Filter photos from library.
+

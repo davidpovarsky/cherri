@@ -1,0 +1,30 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/sharing'
+
+// Advanced alias sendEmailAdvanced for sendEmail
+action 'sendemail' sendEmailAdvanced(
+    variable contact: 'WFSendEmailActionToRecipients',
+    text from: 'WFSendEmailActionFrom',
+    text subject: 'WFSendEmailActionSubject',
+    text body: 'WFSendEmailActionInputAttachments',
+    bool ?prompt: 'WFSendEmailActionShowComposeSheet' = true,
+    bool ?draft: 'WFSendEmailActionSaveAsDraft' = false,
+    variable ?cc: 'WFSendEmailActionCcRecipients',
+    variable ?bcc: 'WFSendEmailActionBccRecipients',
+    variable ?account: 'WFEmailAccountActionSelectedAccount'
+)
+
+// [Doc]: [Email & SMS Messaging] Send Message: Send an SMS/iMessage to a contact.
+
+// Advanced alias sendMessageAdvanced for sendMessage
+action 'sendmessage' sendMessageAdvanced(
+    variable contact: 'WFSendMessageActionRecipients',
+    text message: 'WFSendMessageContent',
+    bool ?prompt: 'ShowWhenRun' = true,
+    text ?prefix: 'WFSendMessagePrefix'
+)
+
+// [Doc]: [Email & SMS Messaging] Find Email: Find email.
+

@@ -1,0 +1,92 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/location'
+
+// New enum parkedCarDetail
+enum parkedCarDetail {
+    'Date',
+    'Location',
+    'Name',
+    'Notes',
+    'Photo',
+    'Was Location Set by User',
+}
+
+// [Doc]: [Maps] Get Details of Parked Car: Get a detail about a parked car.
+
+// New action filterLocations
+action 'filter.locations' filterLocations(
+    variable ?locations: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: [Maps] Get Parked Car Location: Get the location of your parked car.
+
+// Advanced alias getCurrentLocationAdvanced for getCurrentLocation
+action 'getcurrentlocation' getCurrentLocationAdvanced(text ?accuracy: 'Accuracy')
+
+// New action getDirections
+action 'getdirections' getDirections(
+    variable ?destination: 'WFDestination',
+    text ?app: 'WFGetDirectionsActionApp',
+    text ?mode: 'WFGetDirectionsActionMode',
+    variable ?startLocation: 'WFLocation'
+)
+
+// [Doc]: [Maps] Get Travel Time: Get travel time to a destination.
+
+// New action getDistance
+action 'getdistance' getDistance(
+    variable ?destination: 'WFGetDistanceDestination',
+    text ?mode: 'WFGetDirectionsActionMode',
+    text ?unit: 'WFDistanceUnit',
+    bool ?avoidHighways: 'WFAvoidHighways' = false,
+    bool ?avoidTolls: 'WFAvoidTolls' = false,
+    variable ?startLocation: 'WFGetDirectionsCustomLocation',
+    text ?accuracy: 'Accuracy'
+)
+
+// [Doc]: [Location] Filter Locations: Filter locations with various filters.
+
+// New action getParkedCarDetail
+action 'properties.parkedcar' getParkedCarDetail(variable car: 'WFInput', parkedCarDetail detail: 'WFContentItemPropertyName')
+
+// New action getParkedCarLocation
+action 'getparkedcarlocation' getParkedCarLocation(): variable
+
+// [Doc]: [Maps] Set Parked Car: Set the location and notes for your parked car.
+
+// New action getTravelTime
+action 'gettraveltime' getTravelTime(
+    variable ?destination: 'WFDestination',
+    variable ?customLocation: 'WFGetDirectionsCustomLocation',
+    text ?mode: 'WFGetDirectionsActionMode',
+    bool ?avoidHighways: 'WFAvoidHighways' = false,
+    bool ?avoidTolls: 'WFAvoidTolls' = false
+)
+
+// [Doc]: [Maps] Get Distance: Get distance to a destination.
+
+// Advanced alias getWeatherForecastAdvanced for getWeatherForecast
+action 'weather.forecast' getWeatherForecastAdvanced(
+    weatherForecastTypes ?type: 'WFWeatherForecastType' = "Daily",
+    text ?location: 'WFInput' = "Current Location",
+    text ?customLocation: 'WFWeatherCustomLocation'
+)
+
+// Advanced alias openInMapsAdvanced for openInMaps
+action 'searchmaps' openInMapsAdvanced(variable location: 'WFInput', text ?app: 'WFSearchMapsActionApp')
+
+// [Doc]: [Maps] Get Maps Link: Get a link for a location.
+
+// New action setParkedCar
+action 'setparkedcar' setParkedCar(
+    variable location: 'WFLocation',
+    text ?notes: 'WFSetParkedCarNotes',
+    variable ?photo: 'WFImage'
+): variable
+

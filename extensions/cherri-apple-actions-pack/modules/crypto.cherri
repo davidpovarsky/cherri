@@ -1,0 +1,18 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/crypto'
+
+// Advanced alias base64DecodeAdvanced for base64Decode
+action 'base64encode' base64DecodeAdvanced(variable input: 'WFInput', text ?lineBreakMode: 'WFBase64LineBreakMode'): variable {
+	"WFEncodeMode": "Decode"
+}
+
+// Advanced alias base64EncodeAdvanced for base64Encode
+action default 'base64encode' base64EncodeAdvanced(variable encodeInput: 'WFInput', text ?lineBreakMode: 'WFBase64LineBreakMode'): text {
+	"input": "Encode",
+	"WFEncodeMode": "Encode"
+}
+
+// [Doc]: Base 64 Decode: Base 64 decodes input.
+

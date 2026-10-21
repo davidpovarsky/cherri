@@ -1,0 +1,73 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/documents'
+
+// Advanced alias appendToFileAdvanced for appendToFile
+action default 'file.append' appendToFileAdvanced(
+    text filePath: 'WFFilePath',
+    &variable text: 'WFInput',
+    bool ?newLine: 'WFAppendOnNewLine' = true,
+    variable ?targetFile: 'WFFile'
+) {
+	"WFAppendFileWriteMode": "Append"
+}
+
+// [Doc]: [Files & Folders] Prepend File: Prepend text to a file.
+
+// Advanced alias getFileAdvanced for getFile
+action default 'documentpicker.open' getFileAdvanced(
+    text path: 'WFGetFilePath',
+    &variable ?folder: 'WFFile',
+    bool ?errorIfNotFound: 'WFFileErrorIfNotFound' = true,
+    bool ?getFolderContents: 'WFGetFolderContents' = false
+)
+
+// [Doc]: [Files & Folders] Open File: Open a file.
+
+// Advanced alias getParentDirectoryAdvanced for getParentDirectory
+action mac 'getparentdirectory' getParentDirectoryAdvanced(&variable input: 'WFInput'): variable
+
+// [Doc]: [Files & Folders] File: Insert a `#ref` to a file.
+
+// Advanced alias makeQRCodeAdvanced for makeQRCode
+action 'generatebarcode' makeQRCodeAdvanced(text input: 'WFText', QRCodeErrorCorrection ?errorCorrection: 'WFQRErrorCorrectionLevel' = "Medium", color foregroundColor: 'WFQRForegroundColor' = color(0.0,0.0,0.0,1.0), color backgroundColor: 'WFQRBackgroundColor' = color(2.0,2.0,2.0,1.0), bool ?rounded: 'WFQRRounded' = false)
+
+// [Doc]: Convert to USDZ
+
+// New action moveFile
+action 'file.move' moveFile(
+    variable file: 'WFFile',
+    variable folder: 'WFFolder',
+    bool ?replaceExisting: 'WFReplaceExisting' = false
+): variable
+
+// [Doc]: [Files & Folders] Create Folder: Create a folder within the Shortcuts folder or within a `#ref` to a folder.
+
+// Advanced alias openFileAdvanced for openFile
+action 'openin' openFileAdvanced(
+    &variable file: 'WFInput',
+    bool ?askWhenRun: 'WFOpenInAskWhenRun' = false,
+    text ?app: 'WFAppName',
+    variable ?selectedApp: 'WFSelectedApp'
+)
+
+// [Doc]: [Files & Folders] Get Parent Directory: Get the parent directory of the input directory.
+
+// Advanced alias prependToFileAdvanced for prependToFile
+action 'file.append' prependToFileAdvanced(
+    text filePath: 'WFFilePath',
+    &variable text: 'WFInput',
+    bool ?newLine: 'WFAppendOnNewLine' = true,
+    variable ?targetFile: 'WFFile'
+) {
+	"WFAppendFileWriteMode": "Prepend"
+}
+
+// [Doc]: [Files & Folders] Move File: Move a file or folder to a new destination folder.
+
+// Advanced alias saveFileAdvanced for saveFile
+action 'documentpicker.save' saveFileAdvanced(text path: 'WFFileDestinationPath', &variable content: 'WFInput', bool ?overwrite: 'WFSaveFileOverwrite' = false, &variable ?folder: 'WFFolder') {
+	"WFAskWhereToSave": false
+}
+

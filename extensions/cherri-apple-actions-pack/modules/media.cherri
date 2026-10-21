@@ -1,0 +1,98 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/media'
+
+// New enum podcastEpisodeDetail
+enum podcastEpisodeDetail {
+    'Artwork',
+    'Artwork URL',
+    'Author',
+    'Description',
+    'Duration',
+    'Genres',
+    'Name',
+    'Release Date',
+    'Store ID',
+    'Store URL',
+    'Title',
+}
+
+// [Doc]: [Podcasts] Get Details of Podcast Episode: Get a detail about a podcast episode.
+
+// Advanced alias encodeVideoAdvanced for encodeVideo
+action 'encodemedia' encodeVideoAdvanced(
+    variable video: 'WFMedia',
+    encodeVideoSizes ?size: 'WFMediaSize' = "Passthrough",
+    encodeVideoSpeeds ?speed: 'WFMediaCustomSpeed' = "Normal",
+    bool ?preserveTransparency: 'WFMediaPreserveTransparency' = false,
+    text ?mediaSpeed: 'WFMediaSpeed'
+)
+
+// [Doc]: [Video Editing] Trim Video: Prompts the user to trim the video.
+
+// New action getEpisodesForPodcast
+action 'getepisodesforpodcast' getEpisodesForPodcast(variable podcast: 'WFInput'): array
+
+// New action getPodcastEpisodeDetail
+action 'properties.podcast' getPodcastEpisodeDetail(variable episode: 'WFInput', podcastEpisodeDetail detail: 'WFContentItemPropertyName')
+
+// Advanced alias playPodcastAdvanced for playPodcast
+action 'playpodcast' playPodcastAdvanced(variable podcast: 'WFPodcastShow', text ?order: 'WFPodcastPlaybackOrder')
+
+
+// [Doc]: [Metadata] Strip Media Metadata
+
+// Advanced alias recordAudioAdvanced for recordAudio
+action 'recordaudio' recordAudioAdvanced(
+    audioQuality ?quality: 'WFRecordingCompression' = "Normal",
+    audioStart ?start: 'WFRecordingStart' = "On Tap",
+    text ?end: 'WFRecordingEnd',
+    text ?interval: 'WFRecordingTimeInterval'
+)
+
+// [Doc]: [Audio] Encode Audio: Encode audio to a different format and/or speed.
+
+// Advanced alias searchAppStoreAdvanced for searchAppStore
+action 'searchappstore' searchAppStoreAdvanced(
+    text query: 'WFSearchTerm',
+    text ?country: 'WFCountry',
+    text ?attribute: 'WFAttribute',
+    text ?entity: 'WFEntity',
+    number ?limit: 'WFItemLimit'
+)
+
+// [Doc]: Show In iTunes
+
+// Advanced alias searchPodcastsAdvanced for searchPodcasts
+action 'searchpodcasts' searchPodcastsAdvanced(
+    text query: 'WFSearchTerm',
+    text ?country: 'WFCountry',
+    text ?attribute: 'WFAttribute',
+    text ?entity: 'WFEntity',
+    number ?limit: 'WFItemLimit'
+)
+
+// New action setNoiseControlMode
+action 'listeningmode.set' setNoiseControlMode(
+    text mode: 'WFListeningMode',
+    variable ?route: 'WFRoute'
+)
+
+// [Doc]: [Voice Memos] Search Voice Memos
+
+// New action setPlaybackDestination
+action 'setplaybackdestination' setPlaybackDestination(
+    variable route: 'WFMediaRoute',
+    text ?operation: 'WFMediaRouteOperation' = "Set"
+)
+
+// [Doc]: [Audio] Set Noise Control Mode: Set AirPods noise control / listening mode.
+
+// Advanced alias takePhotoAdvanced for takePhoto
+action 'takephoto' takePhotoAdvanced(
+    number count: 'WFPhotoCount' = 1,
+    bool showPreview: 'WFCameraCaptureShowPreview' = true,
+    cameraOrientation ?camera: 'WFCameraCaptureDevice' = "Back"
+)
+

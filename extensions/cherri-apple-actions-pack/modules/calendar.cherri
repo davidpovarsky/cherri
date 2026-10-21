@@ -1,0 +1,203 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/calendar'
+
+// New enum alertCondition
+enum alertCondition {
+    'At Time',
+    'When Arriving',
+    'When Leaving',
+    'When Messaging',
+}
+
+// New enum editReminderDetail
+enum editReminderDetail {
+    'Title',
+    'List',
+    'Due Date',
+    'Priority',
+    'Is Completed',
+    'Notes',
+    'URL',
+    'Is Flagged',
+    'Images',
+    'Parent Reminder',
+    'Tags',
+    'When Messaging',
+    'Subtasks',
+}
+
+// New enum eventAttendeeDetail
+enum eventAttendeeDetail {
+    'Email Address',
+    'Is Me',
+    'Name',
+    'Role',
+    'Status',
+    'Type',
+}
+
+// [Doc]: [Calendars] Get Event Attendee Detail: Get a detail about an event attendee.
+
+// New enum reminderDetail
+enum reminderDetail {
+    'Title',
+    'List',
+    'Due Date',
+    'Priority',
+    'Is Completed',
+    'Completion Date',
+    'Has Alarms',
+    'Notes',
+    'URL',
+    'Creation Date',
+    'Last Modified Date',
+    'Name',
+}
+
+// New enum reminderPriority
+enum reminderPriority {
+    'None',
+    'Low',
+    'Medium',
+    'High',
+}
+
+// [Doc]: [Reminders] Add Reminder: Add a new reminder.
+
+// New enum setterMode
+enum setterMode {
+    'Set',
+    'Remove',
+}
+
+// [Doc]: [Reminders] Get Reminder Detail: Get a detail of a reminder.
+
+// New enum timeBetweenDatesUnit
+enum timeBetweenDatesUnit {
+    'Minutes',
+    'Hours',
+    'Days',
+    'Weeks',
+    'Months',
+    'Years',
+    'Seconds',
+}
+
+// [Doc]: [Dates] Get Time Between Dates: Get the time between two dates.
+
+// New action addEvent
+action 'addnewevent' addEvent(
+    text title: 'WFCalendarItemTitle',
+    variable ?startDate: 'WFCalendarItemStartDate',
+    variable ?endDate: 'WFCalendarItemEndDate',
+    bool ?allDay: 'WFCalendarItemAllDay',
+    text ?location: 'WFCalendarItemLocation',
+    variable ?calendar: 'WFCalendarDescriptor',
+    text ?notes: 'WFCalendarItemNotes',
+    text ?alertTime: 'WFAlertTime',
+    variable ?alertCustomTime: 'WFAlertCustomTime'
+)
+
+// New action addReminder
+action 'addnewreminder' addReminder(
+    text title: 'WFCalendarItemTitle',
+    bool ?alert: 'WFAlertEnabled',
+    variable ?list: 'WFCalendarDescriptor',
+    alertCondition ?alertCondition: 'WFAlertCondition',
+    variable ?alertLocation: 'WFAlertLocation',
+    variable ?alertPerson: 'WFAlertPerson',
+    text ?alertRadius: 'WFAlertLocationRadius',
+    variable ?alertTime: 'WFAlertCustomTime',
+    reminderPriority ?priority: 'WFPriority' = "None",
+    bool ?urgent: 'WFUrgent' = false,
+    bool ?flagged: 'WFFlag' = false,
+    text ?url: 'WFURL',
+    variable ?images: 'WFImages',
+    variable ?parentTask: 'WFParentTask',
+    text ?tags: 'WFTags',
+    text ?notes: 'WFCalendarItemNotes'
+)
+
+// New action convertTimeZone
+action 'converttimezone' convertTimeZone(
+    variable date: 'Date',
+    text sourceTimeZone: 'SourceTimeZone',
+    text destinationTimeZone: 'DestinationTimeZone'
+): variable
+
+// [Doc]: [Reminders] Get Upcoming Reminders: Get upcoming reminders.
+
+// New action filterEventAttendees
+action 'filter.eventattendees' filterEventAttendees(
+    variable ?attendees: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// New action filterEvents
+action 'filter.calendarevents' filterEvents(
+    variable ?events: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: [Reminders] Find Reminders: Filter reminders from lists.
+
+// New action filterReminders
+action 'filter.reminders' filterReminders(
+    variable ?reminders: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: [Reminders] Open Reminders List
+
+// Advanced alias formatTimestampAdvanced for formatTimestamp
+action 'format.date' formatTimestampAdvanced(
+    text date: 'WFDate',
+    dateFormats ?dateFormat: 'WFDateFormatStyle' = "Short",
+    timeFormats ?timeFormat: 'WFTimeFormatStyle' = "Short",
+    text ?customDateFormat: 'WFDateFormat',
+    bool ?iso8601IncludeTime: 'WFISO8601IncludeTime',
+    text ?locale: 'WFLocale',
+    text ?relativeStyle: 'WFRelativeDateFormatStyle'
+): text
+
+// New action getEventAttendeeDetail
+action 'properties.eventattendees' getEventAttendeeDetail(variable attendee: 'WFInput', eventAttendeeDetail detail: 'WFContentItemPropertyName')
+
+// New action getReminderDetail
+action 'properties.reminders' getReminderDetail(variable reminder: 'WFInput', reminderDetail detail: 'WFContentItemPropertyName')
+
+// [Doc]: [Calendars] Filter Event Attendees: Filter event attendees with various filters.
+
+// New action getTimeBetweenDates
+action 'gettimebetweendates' getTimeBetweenDates(
+    variable ?startDate: 'WFTimeUntilFromDate',
+    variable ?endDate: 'WFInput',
+    timeBetweenDatesUnit ?unit: 'WFTimeUntilUnit'
+): number
+
+// [Doc]: [Calendars] Add Event: Add a new calendar event.
+
+// New action getUpcomingEvents
+action 'getupcomingevents' getUpcomingEvents(number ?count: 'WFGetUpcomingItemCount', text ?dateSpecifier: 'WFDateSpecifier', text ?specifiedDate: 'WFSpecifiedDate'): variable
+
+// [Doc]: [Dates] Convert Time Zone: Converts a date from one time zone to another.
+
+// New action getUpcomingReminders
+action 'getupcomingreminders' getUpcomingReminders(
+    variable ?list: 'WFGetUpcomingItemCalendar',
+    number ?count: 'WFGetUpcomingItemCount' = 1
+): array
+
+// [Doc]: [Calendars] Find Events: Filter events from calendars.
+

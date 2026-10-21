@@ -1,0 +1,29 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/text'
+
+// Advanced alias makeSpokenAudioAdvanced for makeSpokenAudio
+action 'makespokenaudiofromtext' makeSpokenAudioAdvanced(
+    text text: 'WFInput',
+    number ?rate: 'WFSpeakTextRate',
+    number ?pitch: 'WFSpeakTextPitch',
+    text ?language: 'WFSpeakTextLanguage',
+    text ?voice: 'WFSpeakTextVoice'
+)
+
+// [Doc]: Define: Returns the definition of the word.
+
+// Advanced alias speakAdvanced for speak
+action 'speaktext' speakAdvanced(
+    text prompt: 'WFText',
+    bool ?waitUntilFinished: 'WFSpeakTextWait' = true,
+    text ?language: 'WFSpeakTextLanguage',
+    number ?rate: 'WFSpeakTextRate',
+    number ?pitch: 'WFSpeakTextPitch',
+    text ?voice: 'WFSpeakTextVoice'
+)
+
+
+// [Doc]: [Text Editing] Uppercase: Transforms the text to all uppercase.
+

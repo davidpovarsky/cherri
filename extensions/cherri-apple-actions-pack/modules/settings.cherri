@@ -1,0 +1,18 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/settings'
+
+// Advanced alias setWallpaperAdvanced for setWallpaper
+action 'wallpaper.set' setWallpaperAdvanced(
+    variable input: 'WFInput',
+    variable ?poster: 'WFSelectedPoster',
+    text ?location: 'WFWallpaperLocation',
+    bool ?legibilityBlur: 'WFWallpaperLegibilityBlur',
+    bool ?perspectiveZoom: 'WFWallpaperPerspectiveZoom',
+    bool ?showPreview: 'WFWallpaperShowPreview',
+    bool ?smartCrop: 'WFWallpaperSmartCrop'
+)
+
+// [Doc]: [Wallpaper] Get Wallpapers: Get device wallpapers.
+

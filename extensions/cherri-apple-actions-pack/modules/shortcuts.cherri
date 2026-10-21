@@ -1,0 +1,13 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/shortcuts'
+
+// New action getAppStoreDetail
+action 'properties.appstore' getAppStoreDetail(variable app: 'WFInput', text detail: 'WFContentItemPropertyName')
+
+// Advanced alias getShortcutsAdvanced for getShortcuts
+action 'getmyworkflows' getShortcutsAdvanced(text ?folder: 'Folder'): array
+
+// [Doc]: Get Shortcut Detail: Get a detail about a Shortcut.
+

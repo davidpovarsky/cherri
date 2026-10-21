@@ -1,0 +1,87 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/mac'
+
+// New action ejectDisk
+action mac 'ejectdisk' ejectDisk(variable disk: 'WFInput')
+
+// [Doc]: [Apps] Get Current App: Get the active/current application.
+
+// New action filterDisplays
+action mac v18 'filter.displays' filterDisplays(
+    variable ?displays: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// Advanced alias getAppsAdvanced for getApps
+action mac v18 'filter.apps' getAppsAdvanced(
+    variable ?apps: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: Make Disk Image: Create a new disk image.
+
+// New action getCurrentApp
+action mac 'getcurrentapp' getCurrentApp(text ?scope: 'WFVisibleAppScope' = "Current"): variable
+
+// [Doc]: [Text] Get Selected Text: Get currently selected text on macOS.
+
+// New action getSelectedText
+action mac 'getselectedtext' getSelectedText(): text
+
+// [Doc]: [System] Log Out: Log out current user session.
+
+// New action lockApp
+action mac 'lock.app' lockApp(variable app: 'WFApp', text ?operation: 'WFLockAppOperation' = "Lock")
+
+// [Doc]: Filter Displays: Filter connected displays.
+
+// New action logOut
+action mac 'logout' logOut()
+
+// [Doc]: [System] Lock App: Lock an application.
+
+// New action mountDiskImage
+action mac 'mountdiskimage' mountDiskImage(variable diskImage: 'WFInput'): variable
+
+// [Doc]: [Disks] Eject Disk: Ejects a disk or mounted image.
+
+// Advanced alias moveWindowAdvanced for moveWindow
+action mac 'movewindow' moveWindowAdvanced(
+    variable window: 'WFWindow',
+    windowPosition position: 'WFPosition',
+    bool ?bringToFront: 'WFBringToFront' = true,
+    text ?display: 'Display',
+    number ?x: 'WFXCoordinate',
+    number ?y: 'WFYCoordinate'
+)
+
+// Advanced alias resizeWindowAdvanced for resizeWindow
+action mac 'resizewindow' resizeWindowAdvanced(
+    variable window: 'WFWindow',
+    windowSize configuration: 'WFConfiguration',
+    bool ?bringToFront: 'WFBringToFront' = true,
+    number ?width: 'WFWidth',
+    number ?height: 'WFHeight'
+)
+
+// [Doc]: [Scripts] Run Shell Script
+
+// Advanced alias runShellScriptAdvanced for runShellScript
+action mac 'runshellscript' runShellScriptAdvanced(
+    text script: 'Script',
+    variable ?input: 'Input',
+    text ?shell: 'Shell' = "/bin/zsh",
+    text ?inputMode: 'InputMode' = "to stdin",
+    bool ?runAsRoot: 'RunAsRoot' = false
+)
+
+// [Doc]: [Scripts] Run Apple Script
+

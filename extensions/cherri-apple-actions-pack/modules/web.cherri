@@ -1,0 +1,29 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/web'
+
+// New action filterArticles
+action 'filter.articles' filterArticles(
+    variable ?articles: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// Advanced alias getGifsAdvanced for getGifs
+action default 'giphy' getGifsAdvanced(text query: 'WFGiphyQuery', number ?gifs: 'WFGiphyLimit' = 1, bool ?selectMultiple: 'WFGiphySelectMultiple' = false) {
+	"WFGiphyShowPicker": false
+}
+
+// [Doc]: [Giphy] Search Giphy: Gets GIFs from Giphy for a search query.
+
+// Advanced alias runJavaScriptOnWebpageAdvanced for runJavaScriptOnWebpage
+action 'runjavascriptonwebpage' runJavaScriptOnWebpageAdvanced(text javascript: 'WFJavaScript', &variable ?input: 'WFInput')
+
+// Advanced alias searchGiphyAdvanced for searchGiphy
+action 'giphy' searchGiphyAdvanced(text query: 'WFGiphyQuery', bool ?selectMultiple: 'WFGiphySelectMultiple' = false)
+
+// [Doc]: [Articles] Get Article: Get article from webpage.
+

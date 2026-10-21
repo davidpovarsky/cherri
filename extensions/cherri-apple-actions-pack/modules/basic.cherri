@@ -1,0 +1,45 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+// basic action category is implicitly included by Cherri
+
+// New enum insertListPosition
+enum insertListPosition {
+    'End',
+    'Beginning',
+    'Index',
+}
+
+// [Doc]: [Lists] Add to List: Add an item to a list or variable.
+
+// New action addItemToList
+action default 'additemtolist' addItemToList(
+    variable item: 'WFListItem',
+    variable list: 'WFListVariable',
+    insertListPosition ?position: 'WFInsertPosition' = "End",
+    number ?index: 'WFItemIndex'
+): variable
+
+// [Doc]: [Lists] Choose from List: Prompts the user to choose from a list.
+
+// Advanced alias getNameAdvanced for getName
+action 'getitemname' getNameAdvanced(variable item: 'WFInput', bool ?getWebPageTitle: 'GetWebPageTitle' = false)
+
+// [Doc]: [Items] Set Name: Set the name of an item.
+
+// New action getType
+action 'gettypeaction' getType(variable input: 'WFInput', text ?fileType: 'WFFileType'): text
+
+
+// [Doc]: Get Object of Class: Get the object of `class` from a variable.
+
+// New action getVariable
+action 'getvariable' getVariable(variable variable: 'WFVariable'): variable
+
+// [Doc]: Get Type: Get the type of input.
+
+// Advanced alias quicklookAdvanced for quicklook
+action 'previewdocument' quicklookAdvanced(variable input: 'WFInput', bool ?fullScreen: 'WFQuickLookActionFullScreen' = false)
+
+// [Doc]: [Output] Stop and Output: Stop and output `output`. Do nothing if there is nowhere to output.
+

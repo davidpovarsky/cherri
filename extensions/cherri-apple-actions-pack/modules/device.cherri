@@ -1,0 +1,18 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/device'
+
+// New action intercom
+action 'intercom' intercom(text message: 'WFInput', variable ?home: 'WFHome')
+
+// Advanced alias setVolumeAdvanced for setVolume
+action 'setvolume' setVolumeAdvanced(float volume: 'WFVolume', text ?setting: 'WFVolumeSetting')
+
+// [Doc]: [Personal Hotspot] Personal Hotspot
+
+// Advanced alias vibrateAdvanced for vibrate
+action !mac 'vibrate' vibrateAdvanced(text ?hapticType: 'WFVibrateHapticType')
+
+// [Doc]: Turn On Flashlight: Turn on the flashlight on the device with optional brightness setting.
+

@@ -1,0 +1,68 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/network'
+
+// New enum VPNOperation
+enum VPNOperation {
+    'Connect',
+    'Disconnect',
+    'Set On Demand',
+    'Toggle',
+    'Toggle On Demand',
+}
+
+// [Doc]: [VPN] Set VPN: Connect, disconnect, or toggle a VPN configuration.
+
+// New enum ethernetDetail
+enum ethernetDetail {
+	'Network Name',
+	'BSSID',
+	'IPv4 Address',
+	'IPv6 Address',
+	'Subnet Mask',
+	'Router',
+}
+
+// [Doc]: [Wireless] Get Ethernet Detail: Get a detail of the current Ethernet network.
+
+// New action filterVPNs
+action 'filter.vpns' filterVPNs(
+    variable ?vpns: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    text ?sortBy: 'WFContentItemSortProperty',
+    text ?sortOrder: 'WFContentItemSortOrder',
+    number ?limit: 'WFContentItemLimitNumber'
+): array
+
+// [Doc]: [VPN] Get Current VPN: Get the currently active VPN.
+
+// New action getEthernetDetail
+action 'getwifi' getEthernetDetail(ethernetDetail detail: 'WFEthernetDetail') {
+	"WFNetworkDetailsNetwork": "Ethernet"
+}
+
+// [Doc]: [Server] Connect to Server: Connect to file server at `url`.
+
+// New action getVPN
+action 'vpn.get' getVPN(): variable
+
+// Advanced alias runSSHScriptAdvanced for runSSHScript
+action 'runsshscript' runSSHScriptAdvanced(
+    text script: 'WFSSHScript',
+    variable input: 'WFInput',
+    text host: 'WFSSHHost',
+    text port: 'WFSSHPort',
+    text user: 'WFSSHUser',
+    SSHScriptAuthType authType: 'WFSSHAuthenticationType',
+    text ?password: 'WFSSHPassword',
+    text ?key: 'WFSSHKey'
+)
+
+// New action setVPN
+action 'vpn.set' setVPN(
+    VPNOperation operation: 'WFVPNOperation',
+    variable ?vpn: 'WFVPN',
+    bool ?onDemand: 'WFOnDemandValue'
+)
+

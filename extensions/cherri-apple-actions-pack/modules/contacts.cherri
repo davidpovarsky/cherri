@@ -1,0 +1,36 @@
+// EXTERNAL opt-in Cherri Apple Actions Pack — no modifications to original compiler.
+// Existing functions stay original; additional optional parameters use Advanced aliases.
+// Source declarations: P10 action DSL. Load original category's enums and metadata.
+#include 'actions/contacts'
+
+// Advanced alias callAdvanced for call
+action 'com.apple.mobilephone.call' callAdvanced(variable contact: 'WFCallContact') {
+    "IntentAppDefinition": {
+        "BundleIdentifier": "com.apple.TelephonyUtilities.PhoneIntentHandler"
+    }
+}
+
+// Advanced alias facetimeCallAdvanced for facetimeCall
+action 'com.apple.facetime.facetime' facetimeCallAdvanced(variable contact: 'WFFaceTimeContact', facetimeCallType ?type: 'WFFaceTimeType' = "Video") {
+	"WFFaceTimeType": "Video",
+	"IntentAppDefinition": {
+		"BundleIdentifier": "com.apple.TelephonyUtilities.PhoneIntentHandler"
+	}
+}
+
+// [Doc]: [Phone] Get Phone Numbers: Get phone numbers from input.
+
+// Advanced alias filterContactsAdvanced for filterContacts
+action 'filter.contacts' filterContactsAdvanced(
+    variable ?contacts: 'WFContentItemInputParameter',
+    variable ?filter: 'WFContentItemFilter',
+    contactDetail ?sortBy: 'WFContentItemSortProperty',
+    abcSortOrder ?sortOrder: 'WFContentItemSortOrder' = "A to Z",
+    number ?limit: 'WFContentItemLimitNumber'
+)
+
+// [Doc]: Get Detail of Contact: Get a detail about a contact.
+
+// New action selectContacts
+action 'contacts' selectContacts(variable ?contact: 'WFContact')
+
