@@ -92,7 +92,7 @@ for module,defs in sorted(by_module.items()):
  for kind,name,block,alias in sorted(defs,key=lambda x: 0 if x[0]=='enum' else 1):
   lines+=['// '+('New '+kind+' '+name if not alias else 'Advanced alias '+alias+' for '+name),block,'']
  (MODULES/(module+'.cherri')).write_text('\n'.join(lines)+'\n')
-manifest={'name':'cherri-apple-actions-pack','version':'0.1.0',
+manifest={'name':'cherri-apple-actions-pack','version':'0.1.1',
  'pure_source_sha':'bcc0095754e2cc0baaeb4d93dae172b8153b4716',
  'pure_source_tree':'4fe9fbc8c742aaf01d6ec8193d9be708fb1de7b5',
  'definition_source_branch':'agent/cherri-p10-apple-actions-coverage',

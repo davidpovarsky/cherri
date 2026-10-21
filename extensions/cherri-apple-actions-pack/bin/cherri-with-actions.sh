@@ -18,7 +18,7 @@ status() {
   echo "ORIGINAL_COMPILER=VERIFIED"
   echo "UPSTREAM_SHA=bcc0095754e2cc0baaeb4d93dae172b8153b4716"
   echo "PACK=VERIFIED"
-  echo "PACK_VERSION=0.1.0"
+  echo "PACK_VERSION=0.1.1"
   echo "PACK_DIR=$PACK"
   echo "MODULE_COUNT=20"
   echo "ORIGINAL_SERVICE=$PURE"
@@ -48,6 +48,10 @@ enhanced() {
   done
   idx="$stage/apple-actions-pack-index.cherri"
   : > "$idx"
+  # Complete the upstream original standard-library imports not covered by pack modules.
+  for category in a11y dropbox intelligence storage translation; do
+    printf "#include 'actions/%s'\n" "$category" >> "$idx"
+  done
   for f in "$PACK"/modules/*.cherri; do
     printf "#include '%s'\n" "$(basename "$f")" >> "$idx"
   done
@@ -73,7 +77,7 @@ PYSOURCE
   fi
   echo "COMPILER=PURE_UPSTREAM"
   echo "MODE=PURE_UPSTREAM_WITH_EXTERNAL_PACK"
-  echo "ACTION_PACK_VERSION=0.1.0"
+  echo "ACTION_PACK_VERSION=0.1.1"
   "$PURE" "$action" "$stage/$name"
 }
 mode=help

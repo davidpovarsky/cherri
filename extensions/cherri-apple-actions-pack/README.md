@@ -1,4 +1,4 @@
-# Cherri Apple Actions Pack — opt-in, no compiler patches
+# Cherri Apple Actions Pack 0.1.1 — opt-in, no compiler patches
 
 This external action-definition pack uses the **unmodified original Cherri compiler** from
 [electrikmilk/cherri](https://github.com/electrikmilk/cherri), pinned to
@@ -26,6 +26,7 @@ RUN="$ROOT/apple-actions-pack/bin/cherri-with-actions.sh"
 
 Source files remain unchanged. Enhanced mode creates a temporary copy, copies 20 action
 modules, and adds `#include 'apple-actions-pack-index.cherri'` to that temporary copy.
+Enhanced mode also imports five unchanged upstream standard-library categories (a11y, dropbox, intelligence, storage, translation) so their already-supported actions are immediately usable without manual includes.
 The source checkout, its binary, upstream action files and upstream documentation are
 never edited. Running `original` does not load any external modules.
 
