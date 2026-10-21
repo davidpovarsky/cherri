@@ -1,0 +1,3493 @@
+[
+  {
+    "name": "addItemToList",
+    "alias": null,
+    "module": "basic",
+    "variant": "minimum",
+    "call": "addItemToList(Ask, Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.additemtolist",
+    "expectedActionId": "is.workflow.actions.additemtolist",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFListItem",
+      "WFListVariable"
+    ],
+    "ok": true
+  },
+  {
+    "name": "addItemToList",
+    "alias": null,
+    "module": "basic",
+    "variant": "full",
+    "call": "addItemToList(Ask, Ask, \"End\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.additemtolist",
+    "expectedActionId": "is.workflow.actions.additemtolist",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInsertPosition",
+      "WFItemIndex",
+      "WFListItem",
+      "WFListVariable"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getName",
+    "alias": "getNameAdvanced",
+    "module": "basic",
+    "variant": "minimum",
+    "call": "getNameAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getitemname",
+    "expectedActionId": "is.workflow.actions.getitemname",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getName",
+    "alias": "getNameAdvanced",
+    "module": "basic",
+    "variant": "full",
+    "call": "getNameAdvanced(Ask, true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getitemname",
+    "expectedActionId": "is.workflow.actions.getitemname",
+    "missingKeys": [],
+    "nativeKeys": [
+      "GetWebPageTitle",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getType",
+    "alias": null,
+    "module": "basic",
+    "variant": "minimum",
+    "call": "getType(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.gettypeaction",
+    "expectedActionId": "is.workflow.actions.gettypeaction",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getType",
+    "alias": null,
+    "module": "basic",
+    "variant": "full",
+    "call": "getType(Ask, \"public.text\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.gettypeaction",
+    "expectedActionId": "is.workflow.actions.gettypeaction",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFFileType",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getVariable",
+    "alias": null,
+    "module": "basic",
+    "variant": "minimum",
+    "call": "getVariable(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getvariable",
+    "expectedActionId": "is.workflow.actions.getvariable",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFVariable"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getVariable",
+    "alias": null,
+    "module": "basic",
+    "variant": "full",
+    "call": "getVariable(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getvariable",
+    "expectedActionId": "is.workflow.actions.getvariable",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFVariable"
+    ],
+    "ok": true
+  },
+  {
+    "name": "quicklook",
+    "alias": "quicklookAdvanced",
+    "module": "basic",
+    "variant": "minimum",
+    "call": "quicklookAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.previewdocument",
+    "expectedActionId": "is.workflow.actions.previewdocument",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "quicklook",
+    "alias": "quicklookAdvanced",
+    "module": "basic",
+    "variant": "full",
+    "call": "quicklookAdvanced(Ask, true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.previewdocument",
+    "expectedActionId": "is.workflow.actions.previewdocument",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFQuickLookActionFullScreen"
+    ],
+    "ok": true
+  },
+  {
+    "name": "addEvent",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "addEvent(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.addnewevent",
+    "expectedActionId": "is.workflow.actions.addnewevent",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFCalendarItemTitle"
+    ],
+    "ok": true
+  },
+  {
+    "name": "addEvent",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "addEvent(\"sample\", Ask, Ask, true, \"sample\", Ask, \"sample\", \"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.addnewevent",
+    "expectedActionId": "is.workflow.actions.addnewevent",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAlertCustomTime",
+      "WFAlertTime",
+      "WFCalendarDescriptor",
+      "WFCalendarItemAllDay",
+      "WFCalendarItemEndDate",
+      "WFCalendarItemLocation",
+      "WFCalendarItemNotes",
+      "WFCalendarItemStartDate",
+      "WFCalendarItemTitle"
+    ],
+    "ok": true
+  },
+  {
+    "name": "addReminder",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "addReminder(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.addnewreminder",
+    "expectedActionId": "is.workflow.actions.addnewreminder",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFCalendarItemTitle"
+    ],
+    "ok": true
+  },
+  {
+    "name": "addReminder",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "addReminder(\"sample\", true, Ask, \"At Time\", Ask, Ask, \"sample\", Ask, \"None\", true, true, \"sample\", Ask, Ask, \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.addnewreminder",
+    "expectedActionId": "is.workflow.actions.addnewreminder",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAlertCondition",
+      "WFAlertCustomTime",
+      "WFAlertEnabled",
+      "WFAlertLocation",
+      "WFAlertLocationRadius",
+      "WFAlertPerson",
+      "WFCalendarDescriptor",
+      "WFCalendarItemNotes",
+      "WFCalendarItemTitle",
+      "WFFlag",
+      "WFImages",
+      "WFParentTask",
+      "WFPriority",
+      "WFTags",
+      "WFURL",
+      "WFUrgent"
+    ],
+    "ok": true
+  },
+  {
+    "name": "convertTimeZone",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "convertTimeZone(Ask, \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.converttimezone",
+    "expectedActionId": "is.workflow.actions.converttimezone",
+    "missingKeys": [],
+    "nativeKeys": [
+      "Date",
+      "DestinationTimeZone",
+      "SourceTimeZone"
+    ],
+    "ok": true
+  },
+  {
+    "name": "convertTimeZone",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "convertTimeZone(Ask, \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.converttimezone",
+    "expectedActionId": "is.workflow.actions.converttimezone",
+    "missingKeys": [],
+    "nativeKeys": [
+      "Date",
+      "DestinationTimeZone",
+      "SourceTimeZone"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterEventAttendees",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "filterEventAttendees()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.eventattendees",
+    "expectedActionId": "is.workflow.actions.filter.eventattendees",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterEventAttendees",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "filterEventAttendees(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.eventattendees",
+    "expectedActionId": "is.workflow.actions.filter.eventattendees",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterEvents",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "filterEvents()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.calendarevents",
+    "expectedActionId": "is.workflow.actions.filter.calendarevents",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterEvents",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "filterEvents(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.calendarevents",
+    "expectedActionId": "is.workflow.actions.filter.calendarevents",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterReminders",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "filterReminders()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.reminders",
+    "expectedActionId": "is.workflow.actions.filter.reminders",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterReminders",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "filterReminders(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.reminders",
+    "expectedActionId": "is.workflow.actions.filter.reminders",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "formatTimestamp",
+    "alias": "formatTimestampAdvanced",
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "formatTimestampAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.format.date",
+    "expectedActionId": "is.workflow.actions.format.date",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFDate"
+    ],
+    "ok": true
+  },
+  {
+    "name": "formatTimestamp",
+    "alias": "formatTimestampAdvanced",
+    "module": "calendar",
+    "variant": "full",
+    "call": "formatTimestampAdvanced(\"sample\", \"None\", \"None\", \"sample\", true, \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.format.date",
+    "expectedActionId": "is.workflow.actions.format.date",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFDate",
+      "WFDateFormat",
+      "WFDateFormatStyle",
+      "WFISO8601IncludeTime",
+      "WFLocale",
+      "WFRelativeDateFormatStyle",
+      "WFTimeFormatStyle"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getEventAttendeeDetail",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "getEventAttendeeDetail(Ask, \"Email Address\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.eventattendees",
+    "expectedActionId": "is.workflow.actions.properties.eventattendees",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getEventAttendeeDetail",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "getEventAttendeeDetail(Ask, \"Email Address\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.eventattendees",
+    "expectedActionId": "is.workflow.actions.properties.eventattendees",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getReminderDetail",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "getReminderDetail(Ask, \"Title\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.reminders",
+    "expectedActionId": "is.workflow.actions.properties.reminders",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getReminderDetail",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "getReminderDetail(Ask, \"Title\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.reminders",
+    "expectedActionId": "is.workflow.actions.properties.reminders",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getTimeBetweenDates",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "getTimeBetweenDates()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.gettimebetweendates",
+    "expectedActionId": "is.workflow.actions.gettimebetweendates",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getTimeBetweenDates",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "getTimeBetweenDates(Ask, Ask, \"Minutes\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.gettimebetweendates",
+    "expectedActionId": "is.workflow.actions.gettimebetweendates",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFTimeUntilFromDate",
+      "WFTimeUntilUnit"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getUpcomingEvents",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "getUpcomingEvents()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getupcomingevents",
+    "expectedActionId": "is.workflow.actions.getupcomingevents",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getUpcomingEvents",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "getUpcomingEvents(1, \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getupcomingevents",
+    "expectedActionId": "is.workflow.actions.getupcomingevents",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFDateSpecifier",
+      "WFGetUpcomingItemCount",
+      "WFSpecifiedDate"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getUpcomingReminders",
+    "alias": null,
+    "module": "calendar",
+    "variant": "minimum",
+    "call": "getUpcomingReminders()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getupcomingreminders",
+    "expectedActionId": "is.workflow.actions.getupcomingreminders",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getUpcomingReminders",
+    "alias": null,
+    "module": "calendar",
+    "variant": "full",
+    "call": "getUpcomingReminders(Ask, 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getupcomingreminders",
+    "expectedActionId": "is.workflow.actions.getupcomingreminders",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFGetUpcomingItemCalendar",
+      "WFGetUpcomingItemCount"
+    ],
+    "ok": true
+  },
+  {
+    "name": "call",
+    "alias": "callAdvanced",
+    "module": "contacts",
+    "variant": "minimum",
+    "call": "callAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "com.apple.mobilephone.call",
+    "expectedActionId": "com.apple.mobilephone.call",
+    "missingKeys": [],
+    "nativeKeys": [
+      "IntentAppDefinition",
+      "WFCallContact"
+    ],
+    "ok": true
+  },
+  {
+    "name": "call",
+    "alias": "callAdvanced",
+    "module": "contacts",
+    "variant": "full",
+    "call": "callAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "com.apple.mobilephone.call",
+    "expectedActionId": "com.apple.mobilephone.call",
+    "missingKeys": [],
+    "nativeKeys": [
+      "IntentAppDefinition",
+      "WFCallContact"
+    ],
+    "ok": true
+  },
+  {
+    "name": "facetimeCall",
+    "alias": "facetimeCallAdvanced",
+    "module": "contacts",
+    "variant": "minimum",
+    "call": "facetimeCallAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "com.apple.facetime.facetime",
+    "expectedActionId": "com.apple.facetime.facetime",
+    "missingKeys": [],
+    "nativeKeys": [
+      "IntentAppDefinition",
+      "WFFaceTimeContact",
+      "WFFaceTimeType"
+    ],
+    "ok": true
+  },
+  {
+    "name": "facetimeCall",
+    "alias": "facetimeCallAdvanced",
+    "module": "contacts",
+    "variant": "full",
+    "call": "facetimeCallAdvanced(Ask, \"Video\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "com.apple.facetime.facetime",
+    "expectedActionId": "com.apple.facetime.facetime",
+    "missingKeys": [],
+    "nativeKeys": [
+      "IntentAppDefinition",
+      "WFFaceTimeContact",
+      "WFFaceTimeType"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterContacts",
+    "alias": "filterContactsAdvanced",
+    "module": "contacts",
+    "variant": "minimum",
+    "call": "filterContactsAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.contacts",
+    "expectedActionId": "is.workflow.actions.filter.contacts",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterContacts",
+    "alias": "filterContactsAdvanced",
+    "module": "contacts",
+    "variant": "full",
+    "call": "filterContactsAdvanced(Ask, nil, \"First Name\", \"A to Z\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.contacts",
+    "expectedActionId": "is.workflow.actions.filter.contacts",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "selectContacts",
+    "alias": null,
+    "module": "contacts",
+    "variant": "minimum",
+    "call": "selectContacts()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.contacts",
+    "expectedActionId": "is.workflow.actions.contacts",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "selectContacts",
+    "alias": null,
+    "module": "contacts",
+    "variant": "full",
+    "call": "selectContacts(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.contacts",
+    "expectedActionId": "is.workflow.actions.contacts",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContact"
+    ],
+    "ok": true
+  },
+  {
+    "name": "base64Decode",
+    "alias": "base64DecodeAdvanced",
+    "module": "crypto",
+    "variant": "minimum",
+    "call": "base64DecodeAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.base64encode",
+    "expectedActionId": "is.workflow.actions.base64encode",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFEncodeMode",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "base64Decode",
+    "alias": "base64DecodeAdvanced",
+    "module": "crypto",
+    "variant": "full",
+    "call": "base64DecodeAdvanced(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.base64encode",
+    "expectedActionId": "is.workflow.actions.base64encode",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFBase64LineBreakMode",
+      "WFEncodeMode",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "base64Encode",
+    "alias": "base64EncodeAdvanced",
+    "module": "crypto",
+    "variant": "minimum",
+    "call": "base64EncodeAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.base64encode",
+    "expectedActionId": "is.workflow.actions.base64encode",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFEncodeMode",
+      "WFInput",
+      "input"
+    ],
+    "ok": true
+  },
+  {
+    "name": "base64Encode",
+    "alias": "base64EncodeAdvanced",
+    "module": "crypto",
+    "variant": "full",
+    "call": "base64EncodeAdvanced(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.base64encode",
+    "expectedActionId": "is.workflow.actions.base64encode",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFBase64LineBreakMode",
+      "WFEncodeMode",
+      "WFInput",
+      "input"
+    ],
+    "ok": true
+  },
+  {
+    "name": "intercom",
+    "alias": null,
+    "module": "device",
+    "variant": "minimum",
+    "call": "intercom(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.intercom",
+    "expectedActionId": "is.workflow.actions.intercom",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "intercom",
+    "alias": null,
+    "module": "device",
+    "variant": "full",
+    "call": "intercom(\"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.intercom",
+    "expectedActionId": "is.workflow.actions.intercom",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFHome",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setVolume",
+    "alias": "setVolumeAdvanced",
+    "module": "device",
+    "variant": "minimum",
+    "call": "setVolumeAdvanced(0.5)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.setvolume",
+    "expectedActionId": "is.workflow.actions.setvolume",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFVolume"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setVolume",
+    "alias": "setVolumeAdvanced",
+    "module": "device",
+    "variant": "full",
+    "call": "setVolumeAdvanced(0.5, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.setvolume",
+    "expectedActionId": "is.workflow.actions.setvolume",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFVolume",
+      "WFVolumeSetting"
+    ],
+    "ok": true
+  },
+  {
+    "name": "vibrate",
+    "alias": "vibrateAdvanced",
+    "module": "device",
+    "variant": "minimum",
+    "call": "vibrateAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.vibrate",
+    "expectedActionId": "is.workflow.actions.vibrate",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "vibrate",
+    "alias": "vibrateAdvanced",
+    "module": "device",
+    "variant": "full",
+    "call": "vibrateAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.vibrate",
+    "expectedActionId": "is.workflow.actions.vibrate",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFVibrateHapticType"
+    ],
+    "ok": true
+  },
+  {
+    "name": "appendToFile",
+    "alias": "appendToFileAdvanced",
+    "module": "documents",
+    "variant": "minimum",
+    "call": "appendToFileAdvanced(\"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.file.append",
+    "expectedActionId": "is.workflow.actions.file.append",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAppendFileWriteMode",
+      "WFFilePath",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "appendToFile",
+    "alias": "appendToFileAdvanced",
+    "module": "documents",
+    "variant": "full",
+    "call": "appendToFileAdvanced(\"sample\", Ask, true, Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.file.append",
+    "expectedActionId": "is.workflow.actions.file.append",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAppendFileWriteMode",
+      "WFAppendOnNewLine",
+      "WFFile",
+      "WFFilePath",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getFile",
+    "alias": "getFileAdvanced",
+    "module": "documents",
+    "variant": "minimum",
+    "call": "getFileAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.documentpicker.open",
+    "expectedActionId": "is.workflow.actions.documentpicker.open",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFGetFilePath"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getFile",
+    "alias": "getFileAdvanced",
+    "module": "documents",
+    "variant": "full",
+    "call": "getFileAdvanced(\"sample\", Ask, true, true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.documentpicker.open",
+    "expectedActionId": "is.workflow.actions.documentpicker.open",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFFile",
+      "WFFileErrorIfNotFound",
+      "WFGetFilePath",
+      "WFGetFolderContents"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getParentDirectory",
+    "alias": "getParentDirectoryAdvanced",
+    "module": "documents",
+    "variant": "minimum",
+    "call": "getParentDirectoryAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getparentdirectory",
+    "expectedActionId": "is.workflow.actions.getparentdirectory",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getParentDirectory",
+    "alias": "getParentDirectoryAdvanced",
+    "module": "documents",
+    "variant": "full",
+    "call": "getParentDirectoryAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getparentdirectory",
+    "expectedActionId": "is.workflow.actions.getparentdirectory",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "makeQRCode",
+    "alias": "makeQRCodeAdvanced",
+    "module": "documents",
+    "variant": "minimum",
+    "call": "makeQRCodeAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.generatebarcode",
+    "expectedActionId": "is.workflow.actions.generatebarcode",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFText"
+    ],
+    "ok": true
+  },
+  {
+    "name": "makeQRCode",
+    "alias": "makeQRCodeAdvanced",
+    "module": "documents",
+    "variant": "full",
+    "call": "makeQRCodeAdvanced(\"sample\", \"Low\", color(0.0,0.0,0.0,1.0), color(0.0,0.0,0.0,1.0), true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.generatebarcode",
+    "expectedActionId": "is.workflow.actions.generatebarcode",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFQRBackgroundColor",
+      "WFQRErrorCorrectionLevel",
+      "WFQRForegroundColor",
+      "WFQRRounded",
+      "WFText"
+    ],
+    "ok": true
+  },
+  {
+    "name": "moveFile",
+    "alias": null,
+    "module": "documents",
+    "variant": "minimum",
+    "call": "moveFile(Ask, Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.file.move",
+    "expectedActionId": "is.workflow.actions.file.move",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFFile",
+      "WFFolder"
+    ],
+    "ok": true
+  },
+  {
+    "name": "moveFile",
+    "alias": null,
+    "module": "documents",
+    "variant": "full",
+    "call": "moveFile(Ask, Ask, true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.file.move",
+    "expectedActionId": "is.workflow.actions.file.move",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFFile",
+      "WFFolder",
+      "WFReplaceExisting"
+    ],
+    "ok": true
+  },
+  {
+    "name": "openFile",
+    "alias": "openFileAdvanced",
+    "module": "documents",
+    "variant": "minimum",
+    "call": "openFileAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.openin",
+    "expectedActionId": "is.workflow.actions.openin",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "openFile",
+    "alias": "openFileAdvanced",
+    "module": "documents",
+    "variant": "full",
+    "call": "openFileAdvanced(Ask, true, \"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.openin",
+    "expectedActionId": "is.workflow.actions.openin",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAppName",
+      "WFInput",
+      "WFOpenInAskWhenRun",
+      "WFSelectedApp"
+    ],
+    "ok": true
+  },
+  {
+    "name": "prependToFile",
+    "alias": "prependToFileAdvanced",
+    "module": "documents",
+    "variant": "minimum",
+    "call": "prependToFileAdvanced(\"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.file.append",
+    "expectedActionId": "is.workflow.actions.file.append",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAppendFileWriteMode",
+      "WFFilePath",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "prependToFile",
+    "alias": "prependToFileAdvanced",
+    "module": "documents",
+    "variant": "full",
+    "call": "prependToFileAdvanced(\"sample\", Ask, true, Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.file.append",
+    "expectedActionId": "is.workflow.actions.file.append",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAppendFileWriteMode",
+      "WFAppendOnNewLine",
+      "WFFile",
+      "WFFilePath",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "saveFile",
+    "alias": "saveFileAdvanced",
+    "module": "documents",
+    "variant": "minimum",
+    "call": "saveFileAdvanced(\"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.documentpicker.save",
+    "expectedActionId": "is.workflow.actions.documentpicker.save",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAskWhereToSave",
+      "WFFileDestinationPath",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "saveFile",
+    "alias": "saveFileAdvanced",
+    "module": "documents",
+    "variant": "full",
+    "call": "saveFileAdvanced(\"sample\", Ask, true, Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.documentpicker.save",
+    "expectedActionId": "is.workflow.actions.documentpicker.save",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAskWhereToSave",
+      "WFFileDestinationPath",
+      "WFFolder",
+      "WFInput",
+      "WFSaveFileOverwrite"
+    ],
+    "ok": true
+  },
+  {
+    "name": "combineImages",
+    "alias": "combineImagesAdvanced",
+    "module": "images",
+    "variant": "minimum",
+    "call": "combineImagesAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.image.combine",
+    "expectedActionId": "is.workflow.actions.image.combine",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "combineImages",
+    "alias": "combineImagesAdvanced",
+    "module": "images",
+    "variant": "full",
+    "call": "combineImagesAdvanced(Ask, \"Vertically\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.image.combine",
+    "expectedActionId": "is.workflow.actions.image.combine",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFImageCombineMode",
+      "WFImageCombineSpacing",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterImages",
+    "alias": null,
+    "module": "images",
+    "variant": "minimum",
+    "call": "filterImages()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.images",
+    "expectedActionId": "is.workflow.actions.filter.images",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterImages",
+    "alias": null,
+    "module": "images",
+    "variant": "full",
+    "call": "filterImages(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.images",
+    "expectedActionId": "is.workflow.actions.filter.images",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "overlayText",
+    "alias": null,
+    "module": "images",
+    "variant": "minimum",
+    "call": "overlayText(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.overlaytext",
+    "expectedActionId": "is.workflow.actions.overlaytext",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFImage",
+      "WFText"
+    ],
+    "ok": true
+  },
+  {
+    "name": "overlayText",
+    "alias": null,
+    "module": "images",
+    "variant": "full",
+    "call": "overlayText(Ask, \"sample\", \"Center\", \"sample\", 1, \"sample\", 1, 1, 1, 1, 1, 1, 1, Ask, 1, true, 1, 1, Ask, 1, 1, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.overlaytext",
+    "expectedActionId": "is.workflow.actions.overlaytext",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFFont",
+      "WFFontSize",
+      "WFImage",
+      "WFPercentageFontSize",
+      "WFPercentageTextBoxWidth",
+      "WFPercentageTextOffset",
+      "WFPercentageTextStrokeWidth",
+      "WFPercentageTextX",
+      "WFPercentageTextY",
+      "WFSizingMethod",
+      "WFText",
+      "WFTextAlignment",
+      "WFTextBoxWidth",
+      "WFTextColor",
+      "WFTextOffset",
+      "WFTextOutlineEnabled",
+      "WFTextPosition",
+      "WFTextRotation",
+      "WFTextStrokeColor",
+      "WFTextStrokeWidth",
+      "WFTextX",
+      "WFTextY"
+    ],
+    "ok": true
+  },
+  {
+    "name": "scanBarcode",
+    "alias": null,
+    "module": "images",
+    "variant": "minimum",
+    "call": "scanBarcode()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.scanbarcode",
+    "expectedActionId": "is.workflow.actions.scanbarcode",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "scanBarcode",
+    "alias": null,
+    "module": "images",
+    "variant": "full",
+    "call": "scanBarcode(true, Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.scanbarcode",
+    "expectedActionId": "is.workflow.actions.scanbarcode",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFScanCodeActionMode",
+      "imageFile"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterLocations",
+    "alias": null,
+    "module": "location",
+    "variant": "minimum",
+    "call": "filterLocations()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.locations",
+    "expectedActionId": "is.workflow.actions.filter.locations",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterLocations",
+    "alias": null,
+    "module": "location",
+    "variant": "full",
+    "call": "filterLocations(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.locations",
+    "expectedActionId": "is.workflow.actions.filter.locations",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getCurrentLocation",
+    "alias": "getCurrentLocationAdvanced",
+    "module": "location",
+    "variant": "minimum",
+    "call": "getCurrentLocationAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getcurrentlocation",
+    "expectedActionId": "is.workflow.actions.getcurrentlocation",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getCurrentLocation",
+    "alias": "getCurrentLocationAdvanced",
+    "module": "location",
+    "variant": "full",
+    "call": "getCurrentLocationAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getcurrentlocation",
+    "expectedActionId": "is.workflow.actions.getcurrentlocation",
+    "missingKeys": [],
+    "nativeKeys": [
+      "Accuracy"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getDirections",
+    "alias": null,
+    "module": "location",
+    "variant": "minimum",
+    "call": "getDirections()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getdirections",
+    "expectedActionId": "is.workflow.actions.getdirections",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getDirections",
+    "alias": null,
+    "module": "location",
+    "variant": "full",
+    "call": "getDirections(Ask, \"sample\", \"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getdirections",
+    "expectedActionId": "is.workflow.actions.getdirections",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFDestination",
+      "WFGetDirectionsActionApp",
+      "WFGetDirectionsActionMode",
+      "WFLocation"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getDistance",
+    "alias": null,
+    "module": "location",
+    "variant": "minimum",
+    "call": "getDistance()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getdistance",
+    "expectedActionId": "is.workflow.actions.getdistance",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getDistance",
+    "alias": null,
+    "module": "location",
+    "variant": "full",
+    "call": "getDistance(Ask, \"sample\", \"sample\", true, true, Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getdistance",
+    "expectedActionId": "is.workflow.actions.getdistance",
+    "missingKeys": [],
+    "nativeKeys": [
+      "Accuracy",
+      "WFAvoidHighways",
+      "WFAvoidTolls",
+      "WFDistanceUnit",
+      "WFGetDirectionsActionMode",
+      "WFGetDirectionsCustomLocation",
+      "WFGetDistanceDestination"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getParkedCarDetail",
+    "alias": null,
+    "module": "location",
+    "variant": "minimum",
+    "call": "getParkedCarDetail(Ask, \"Date\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.parkedcar",
+    "expectedActionId": "is.workflow.actions.properties.parkedcar",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getParkedCarDetail",
+    "alias": null,
+    "module": "location",
+    "variant": "full",
+    "call": "getParkedCarDetail(Ask, \"Date\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.parkedcar",
+    "expectedActionId": "is.workflow.actions.properties.parkedcar",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getParkedCarLocation",
+    "alias": null,
+    "module": "location",
+    "variant": "minimum",
+    "call": "getParkedCarLocation()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getparkedcarlocation",
+    "expectedActionId": "is.workflow.actions.getparkedcarlocation",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getParkedCarLocation",
+    "alias": null,
+    "module": "location",
+    "variant": "full",
+    "call": "getParkedCarLocation()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getparkedcarlocation",
+    "expectedActionId": "is.workflow.actions.getparkedcarlocation",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getTravelTime",
+    "alias": null,
+    "module": "location",
+    "variant": "minimum",
+    "call": "getTravelTime()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.gettraveltime",
+    "expectedActionId": "is.workflow.actions.gettraveltime",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getTravelTime",
+    "alias": null,
+    "module": "location",
+    "variant": "full",
+    "call": "getTravelTime(Ask, Ask, \"sample\", true, true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.gettraveltime",
+    "expectedActionId": "is.workflow.actions.gettraveltime",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAvoidHighways",
+      "WFAvoidTolls",
+      "WFDestination",
+      "WFGetDirectionsActionMode",
+      "WFGetDirectionsCustomLocation"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getWeatherForecast",
+    "alias": "getWeatherForecastAdvanced",
+    "module": "location",
+    "variant": "minimum",
+    "call": "getWeatherForecastAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.weather.forecast",
+    "expectedActionId": "is.workflow.actions.weather.forecast",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getWeatherForecast",
+    "alias": "getWeatherForecastAdvanced",
+    "module": "location",
+    "variant": "full",
+    "call": "getWeatherForecastAdvanced(\"Daily\", \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.weather.forecast",
+    "expectedActionId": "is.workflow.actions.weather.forecast",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFWeatherCustomLocation",
+      "WFWeatherForecastType"
+    ],
+    "ok": true
+  },
+  {
+    "name": "openInMaps",
+    "alias": "openInMapsAdvanced",
+    "module": "location",
+    "variant": "minimum",
+    "call": "openInMapsAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.searchmaps",
+    "expectedActionId": "is.workflow.actions.searchmaps",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "openInMaps",
+    "alias": "openInMapsAdvanced",
+    "module": "location",
+    "variant": "full",
+    "call": "openInMapsAdvanced(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.searchmaps",
+    "expectedActionId": "is.workflow.actions.searchmaps",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFSearchMapsActionApp"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setParkedCar",
+    "alias": null,
+    "module": "location",
+    "variant": "minimum",
+    "call": "setParkedCar(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.setparkedcar",
+    "expectedActionId": "is.workflow.actions.setparkedcar",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFLocation"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setParkedCar",
+    "alias": null,
+    "module": "location",
+    "variant": "full",
+    "call": "setParkedCar(Ask, \"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.setparkedcar",
+    "expectedActionId": "is.workflow.actions.setparkedcar",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFImage",
+      "WFLocation",
+      "WFSetParkedCarNotes"
+    ],
+    "ok": true
+  },
+  {
+    "name": "ejectDisk",
+    "alias": null,
+    "module": "mac",
+    "variant": "minimum",
+    "call": "ejectDisk(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.ejectdisk",
+    "expectedActionId": "is.workflow.actions.ejectdisk",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "ejectDisk",
+    "alias": null,
+    "module": "mac",
+    "variant": "full",
+    "call": "ejectDisk(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.ejectdisk",
+    "expectedActionId": "is.workflow.actions.ejectdisk",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterDisplays",
+    "alias": null,
+    "module": "mac",
+    "variant": "minimum",
+    "call": "filterDisplays()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.displays",
+    "expectedActionId": "is.workflow.actions.filter.displays",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterDisplays",
+    "alias": null,
+    "module": "mac",
+    "variant": "full",
+    "call": "filterDisplays(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.displays",
+    "expectedActionId": "is.workflow.actions.filter.displays",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getApps",
+    "alias": "getAppsAdvanced",
+    "module": "mac",
+    "variant": "minimum",
+    "call": "getAppsAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.apps",
+    "expectedActionId": "is.workflow.actions.filter.apps",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getApps",
+    "alias": "getAppsAdvanced",
+    "module": "mac",
+    "variant": "full",
+    "call": "getAppsAdvanced(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.apps",
+    "expectedActionId": "is.workflow.actions.filter.apps",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getCurrentApp",
+    "alias": null,
+    "module": "mac",
+    "variant": "minimum",
+    "call": "getCurrentApp()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getcurrentapp",
+    "expectedActionId": "is.workflow.actions.getcurrentapp",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getCurrentApp",
+    "alias": null,
+    "module": "mac",
+    "variant": "full",
+    "call": "getCurrentApp(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getcurrentapp",
+    "expectedActionId": "is.workflow.actions.getcurrentapp",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFVisibleAppScope"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getSelectedText",
+    "alias": null,
+    "module": "mac",
+    "variant": "minimum",
+    "call": "getSelectedText()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getselectedtext",
+    "expectedActionId": "is.workflow.actions.getselectedtext",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getSelectedText",
+    "alias": null,
+    "module": "mac",
+    "variant": "full",
+    "call": "getSelectedText()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getselectedtext",
+    "expectedActionId": "is.workflow.actions.getselectedtext",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "lockApp",
+    "alias": null,
+    "module": "mac",
+    "variant": "minimum",
+    "call": "lockApp(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.lock.app",
+    "expectedActionId": "is.workflow.actions.lock.app",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFApp"
+    ],
+    "ok": true
+  },
+  {
+    "name": "lockApp",
+    "alias": null,
+    "module": "mac",
+    "variant": "full",
+    "call": "lockApp(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.lock.app",
+    "expectedActionId": "is.workflow.actions.lock.app",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFApp",
+      "WFLockAppOperation"
+    ],
+    "ok": true
+  },
+  {
+    "name": "logOut",
+    "alias": null,
+    "module": "mac",
+    "variant": "minimum",
+    "call": "logOut()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.logout",
+    "expectedActionId": "is.workflow.actions.logout",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "logOut",
+    "alias": null,
+    "module": "mac",
+    "variant": "full",
+    "call": "logOut()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.logout",
+    "expectedActionId": "is.workflow.actions.logout",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "mountDiskImage",
+    "alias": null,
+    "module": "mac",
+    "variant": "minimum",
+    "call": "mountDiskImage(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.mountdiskimage",
+    "expectedActionId": "is.workflow.actions.mountdiskimage",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "mountDiskImage",
+    "alias": null,
+    "module": "mac",
+    "variant": "full",
+    "call": "mountDiskImage(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.mountdiskimage",
+    "expectedActionId": "is.workflow.actions.mountdiskimage",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "moveWindow",
+    "alias": "moveWindowAdvanced",
+    "module": "mac",
+    "variant": "minimum",
+    "call": "moveWindowAdvanced(Ask, \"Top Left\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.movewindow",
+    "expectedActionId": "is.workflow.actions.movewindow",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFPosition",
+      "WFWindow"
+    ],
+    "ok": true
+  },
+  {
+    "name": "moveWindow",
+    "alias": "moveWindowAdvanced",
+    "module": "mac",
+    "variant": "full",
+    "call": "moveWindowAdvanced(Ask, \"Top Left\", true, \"sample\", 1, 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.movewindow",
+    "expectedActionId": "is.workflow.actions.movewindow",
+    "missingKeys": [],
+    "nativeKeys": [
+      "Display",
+      "WFBringToFront",
+      "WFPosition",
+      "WFWindow",
+      "WFXCoordinate",
+      "WFYCoordinate"
+    ],
+    "ok": true
+  },
+  {
+    "name": "resizeWindow",
+    "alias": "resizeWindowAdvanced",
+    "module": "mac",
+    "variant": "minimum",
+    "call": "resizeWindowAdvanced(Ask, \"Fit Screen\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.resizewindow",
+    "expectedActionId": "is.workflow.actions.resizewindow",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFConfiguration",
+      "WFWindow"
+    ],
+    "ok": true
+  },
+  {
+    "name": "resizeWindow",
+    "alias": "resizeWindowAdvanced",
+    "module": "mac",
+    "variant": "full",
+    "call": "resizeWindowAdvanced(Ask, \"Fit Screen\", true, 1, 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.resizewindow",
+    "expectedActionId": "is.workflow.actions.resizewindow",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFBringToFront",
+      "WFConfiguration",
+      "WFHeight",
+      "WFWidth",
+      "WFWindow"
+    ],
+    "ok": true
+  },
+  {
+    "name": "runShellScript",
+    "alias": "runShellScriptAdvanced",
+    "module": "mac",
+    "variant": "minimum",
+    "call": "runShellScriptAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.runshellscript",
+    "expectedActionId": "is.workflow.actions.runshellscript",
+    "missingKeys": [],
+    "nativeKeys": [
+      "Script"
+    ],
+    "ok": true
+  },
+  {
+    "name": "runShellScript",
+    "alias": "runShellScriptAdvanced",
+    "module": "mac",
+    "variant": "full",
+    "call": "runShellScriptAdvanced(\"sample\", Ask, \"sample\", \"sample\", true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.runshellscript",
+    "expectedActionId": "is.workflow.actions.runshellscript",
+    "missingKeys": [],
+    "nativeKeys": [
+      "Input",
+      "InputMode",
+      "RunAsRoot",
+      "Script",
+      "Shell"
+    ],
+    "ok": true
+  },
+  {
+    "name": "ceil",
+    "alias": "ceilAdvanced",
+    "module": "math",
+    "variant": "minimum",
+    "call": "ceilAdvanced(1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.round",
+    "expectedActionId": "is.workflow.actions.round",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFRoundMode"
+    ],
+    "ok": true
+  },
+  {
+    "name": "ceil",
+    "alias": "ceilAdvanced",
+    "module": "math",
+    "variant": "full",
+    "call": "ceilAdvanced(1, \"Millions\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.round",
+    "expectedActionId": "is.workflow.actions.round",
+    "missingKeys": [],
+    "nativeKeys": [
+      "TenToThePowerOf",
+      "WFInput",
+      "WFRoundMode",
+      "WFRoundTo"
+    ],
+    "ok": true
+  },
+  {
+    "name": "floor",
+    "alias": "floorAdvanced",
+    "module": "math",
+    "variant": "minimum",
+    "call": "floorAdvanced(1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.round",
+    "expectedActionId": "is.workflow.actions.round",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFRoundMode"
+    ],
+    "ok": true
+  },
+  {
+    "name": "floor",
+    "alias": "floorAdvanced",
+    "module": "math",
+    "variant": "full",
+    "call": "floorAdvanced(1, \"Millions\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.round",
+    "expectedActionId": "is.workflow.actions.round",
+    "missingKeys": [],
+    "nativeKeys": [
+      "TenToThePowerOf",
+      "WFInput",
+      "WFRoundMode",
+      "WFRoundTo"
+    ],
+    "ok": true
+  },
+  {
+    "name": "round",
+    "alias": "roundAdvanced",
+    "module": "math",
+    "variant": "minimum",
+    "call": "roundAdvanced(1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.round",
+    "expectedActionId": "is.workflow.actions.round",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFRoundMode"
+    ],
+    "ok": true
+  },
+  {
+    "name": "round",
+    "alias": "roundAdvanced",
+    "module": "math",
+    "variant": "full",
+    "call": "roundAdvanced(1, \"Millions\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.round",
+    "expectedActionId": "is.workflow.actions.round",
+    "missingKeys": [],
+    "nativeKeys": [
+      "TenToThePowerOf",
+      "WFInput",
+      "WFRoundMode",
+      "WFRoundTo"
+    ],
+    "ok": true
+  },
+  {
+    "name": "encodeVideo",
+    "alias": "encodeVideoAdvanced",
+    "module": "media",
+    "variant": "minimum",
+    "call": "encodeVideoAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.encodemedia",
+    "expectedActionId": "is.workflow.actions.encodemedia",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMedia"
+    ],
+    "ok": true
+  },
+  {
+    "name": "encodeVideo",
+    "alias": "encodeVideoAdvanced",
+    "module": "media",
+    "variant": "full",
+    "call": "encodeVideoAdvanced(Ask, \"640×480\", \"0.5X\", true, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.encodemedia",
+    "expectedActionId": "is.workflow.actions.encodemedia",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMedia",
+      "WFMediaCustomSpeed",
+      "WFMediaPreserveTransparency",
+      "WFMediaSize",
+      "WFMediaSpeed"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getEpisodesForPodcast",
+    "alias": null,
+    "module": "media",
+    "variant": "minimum",
+    "call": "getEpisodesForPodcast(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getepisodesforpodcast",
+    "expectedActionId": "is.workflow.actions.getepisodesforpodcast",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getEpisodesForPodcast",
+    "alias": null,
+    "module": "media",
+    "variant": "full",
+    "call": "getEpisodesForPodcast(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getepisodesforpodcast",
+    "expectedActionId": "is.workflow.actions.getepisodesforpodcast",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getPodcastEpisodeDetail",
+    "alias": null,
+    "module": "media",
+    "variant": "minimum",
+    "call": "getPodcastEpisodeDetail(Ask, \"Artwork\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.podcast",
+    "expectedActionId": "is.workflow.actions.properties.podcast",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getPodcastEpisodeDetail",
+    "alias": null,
+    "module": "media",
+    "variant": "full",
+    "call": "getPodcastEpisodeDetail(Ask, \"Artwork\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.podcast",
+    "expectedActionId": "is.workflow.actions.properties.podcast",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "playPodcast",
+    "alias": "playPodcastAdvanced",
+    "module": "media",
+    "variant": "minimum",
+    "call": "playPodcastAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.playpodcast",
+    "expectedActionId": "is.workflow.actions.playpodcast",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFPodcastShow"
+    ],
+    "ok": true
+  },
+  {
+    "name": "playPodcast",
+    "alias": "playPodcastAdvanced",
+    "module": "media",
+    "variant": "full",
+    "call": "playPodcastAdvanced(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.playpodcast",
+    "expectedActionId": "is.workflow.actions.playpodcast",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFPodcastPlaybackOrder",
+      "WFPodcastShow"
+    ],
+    "ok": true
+  },
+  {
+    "name": "recordAudio",
+    "alias": "recordAudioAdvanced",
+    "module": "media",
+    "variant": "minimum",
+    "call": "recordAudioAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.recordaudio",
+    "expectedActionId": "is.workflow.actions.recordaudio",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "recordAudio",
+    "alias": "recordAudioAdvanced",
+    "module": "media",
+    "variant": "full",
+    "call": "recordAudioAdvanced(\"Normal\", \"On Tap\", \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.recordaudio",
+    "expectedActionId": "is.workflow.actions.recordaudio",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFRecordingCompression",
+      "WFRecordingEnd",
+      "WFRecordingStart",
+      "WFRecordingTimeInterval"
+    ],
+    "ok": true
+  },
+  {
+    "name": "searchAppStore",
+    "alias": "searchAppStoreAdvanced",
+    "module": "media",
+    "variant": "minimum",
+    "call": "searchAppStoreAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.searchappstore",
+    "expectedActionId": "is.workflow.actions.searchappstore",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFSearchTerm"
+    ],
+    "ok": true
+  },
+  {
+    "name": "searchAppStore",
+    "alias": "searchAppStoreAdvanced",
+    "module": "media",
+    "variant": "full",
+    "call": "searchAppStoreAdvanced(\"sample\", \"sample\", \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.searchappstore",
+    "expectedActionId": "is.workflow.actions.searchappstore",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAttribute",
+      "WFCountry",
+      "WFEntity",
+      "WFItemLimit",
+      "WFSearchTerm"
+    ],
+    "ok": true
+  },
+  {
+    "name": "searchPodcasts",
+    "alias": "searchPodcastsAdvanced",
+    "module": "media",
+    "variant": "minimum",
+    "call": "searchPodcastsAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.searchpodcasts",
+    "expectedActionId": "is.workflow.actions.searchpodcasts",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFSearchTerm"
+    ],
+    "ok": true
+  },
+  {
+    "name": "searchPodcasts",
+    "alias": "searchPodcastsAdvanced",
+    "module": "media",
+    "variant": "full",
+    "call": "searchPodcastsAdvanced(\"sample\", \"sample\", \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.searchpodcasts",
+    "expectedActionId": "is.workflow.actions.searchpodcasts",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAttribute",
+      "WFCountry",
+      "WFEntity",
+      "WFItemLimit",
+      "WFSearchTerm"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setNoiseControlMode",
+    "alias": null,
+    "module": "media",
+    "variant": "minimum",
+    "call": "setNoiseControlMode(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.listeningmode.set",
+    "expectedActionId": "is.workflow.actions.listeningmode.set",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFListeningMode"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setNoiseControlMode",
+    "alias": null,
+    "module": "media",
+    "variant": "full",
+    "call": "setNoiseControlMode(\"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.listeningmode.set",
+    "expectedActionId": "is.workflow.actions.listeningmode.set",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFListeningMode",
+      "WFRoute"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setPlaybackDestination",
+    "alias": null,
+    "module": "media",
+    "variant": "minimum",
+    "call": "setPlaybackDestination(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.setplaybackdestination",
+    "expectedActionId": "is.workflow.actions.setplaybackdestination",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMediaRoute"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setPlaybackDestination",
+    "alias": null,
+    "module": "media",
+    "variant": "full",
+    "call": "setPlaybackDestination(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.setplaybackdestination",
+    "expectedActionId": "is.workflow.actions.setplaybackdestination",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMediaRoute",
+      "WFMediaRouteOperation"
+    ],
+    "ok": true
+  },
+  {
+    "name": "takePhoto",
+    "alias": "takePhotoAdvanced",
+    "module": "media",
+    "variant": "minimum",
+    "call": "takePhotoAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.takephoto",
+    "expectedActionId": "is.workflow.actions.takephoto",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "takePhoto",
+    "alias": "takePhotoAdvanced",
+    "module": "media",
+    "variant": "full",
+    "call": "takePhotoAdvanced(1, true, \"Front\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.takephoto",
+    "expectedActionId": "is.workflow.actions.takephoto",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFCameraCaptureDevice",
+      "WFCameraCaptureShowPreview",
+      "WFPhotoCount"
+    ],
+    "ok": true
+  },
+  {
+    "name": "createPlaylist",
+    "alias": null,
+    "module": "music",
+    "variant": "minimum",
+    "call": "createPlaylist(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.createplaylist",
+    "expectedActionId": "is.workflow.actions.createplaylist",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFPlaylistName"
+    ],
+    "ok": true
+  },
+  {
+    "name": "createPlaylist",
+    "alias": null,
+    "module": "music",
+    "variant": "full",
+    "call": "createPlaylist(\"sample\", \"sample\", \"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.createplaylist",
+    "expectedActionId": "is.workflow.actions.createplaylist",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFPlaylistAuthor",
+      "WFPlaylistDescription",
+      "WFPlaylistItems",
+      "WFPlaylistName"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterMusic",
+    "alias": null,
+    "module": "music",
+    "variant": "minimum",
+    "call": "filterMusic()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.music",
+    "expectedActionId": "is.workflow.actions.filter.music",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterMusic",
+    "alias": null,
+    "module": "music",
+    "variant": "full",
+    "call": "filterMusic(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.music",
+    "expectedActionId": "is.workflow.actions.filter.music",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getCurrentSong",
+    "alias": "getCurrentSongAdvanced",
+    "module": "music",
+    "variant": "minimum",
+    "call": "getCurrentSongAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getcurrentsong",
+    "expectedActionId": "is.workflow.actions.getcurrentsong",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getCurrentSong",
+    "alias": "getCurrentSongAdvanced",
+    "module": "music",
+    "variant": "full",
+    "call": "getCurrentSongAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getcurrentsong",
+    "expectedActionId": "is.workflow.actions.getcurrentsong",
+    "missingKeys": [],
+    "nativeKeys": [
+      "Subject"
+    ],
+    "ok": true
+  },
+  {
+    "name": "pause",
+    "alias": "pauseAdvanced",
+    "module": "music",
+    "variant": "minimum",
+    "call": "pauseAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.pausemusic",
+    "expectedActionId": "is.workflow.actions.pausemusic",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFPlayPauseBehavior"
+    ],
+    "ok": true
+  },
+  {
+    "name": "pause",
+    "alias": "pauseAdvanced",
+    "module": "music",
+    "variant": "full",
+    "call": "pauseAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.pausemusic",
+    "expectedActionId": "is.workflow.actions.pausemusic",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMediaRoute",
+      "WFPlayPauseBehavior"
+    ],
+    "ok": true
+  },
+  {
+    "name": "play",
+    "alias": "playAdvanced",
+    "module": "music",
+    "variant": "minimum",
+    "call": "playAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.pausemusic",
+    "expectedActionId": "is.workflow.actions.pausemusic",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFPlayPauseBehavior"
+    ],
+    "ok": true
+  },
+  {
+    "name": "play",
+    "alias": "playAdvanced",
+    "module": "music",
+    "variant": "full",
+    "call": "playAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.pausemusic",
+    "expectedActionId": "is.workflow.actions.pausemusic",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMediaRoute",
+      "WFPlayPauseBehavior"
+    ],
+    "ok": true
+  },
+  {
+    "name": "searchiTunes",
+    "alias": null,
+    "module": "music",
+    "variant": "minimum",
+    "call": "searchiTunes(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.searchitunes",
+    "expectedActionId": "is.workflow.actions.searchitunes",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFSearchTerm"
+    ],
+    "ok": true
+  },
+  {
+    "name": "searchiTunes",
+    "alias": null,
+    "module": "music",
+    "variant": "full",
+    "call": "searchiTunes(\"sample\", 1, \"sample\", \"sample\", \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.searchitunes",
+    "expectedActionId": "is.workflow.actions.searchitunes",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFAttribute",
+      "WFCountry",
+      "WFEntity",
+      "WFItemLimit",
+      "WFMediaType",
+      "WFSearchTerm"
+    ],
+    "ok": true
+  },
+  {
+    "name": "seek",
+    "alias": "seekAdvanced",
+    "module": "music",
+    "variant": "minimum",
+    "call": "seekAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.seek",
+    "expectedActionId": "is.workflow.actions.seek",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "seek",
+    "alias": "seekAdvanced",
+    "module": "music",
+    "variant": "full",
+    "call": "seekAdvanced(qty(1, \"sec\"), \"To Time\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.seek",
+    "expectedActionId": "is.workflow.actions.seek",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMediaRoute",
+      "WFSeekBehavior",
+      "WFTimeInterval"
+    ],
+    "ok": true
+  },
+  {
+    "name": "skipBack",
+    "alias": "skipBackAdvanced",
+    "module": "music",
+    "variant": "minimum",
+    "call": "skipBackAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.skipback",
+    "expectedActionId": "is.workflow.actions.skipback",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFSkipBackBehavior"
+    ],
+    "ok": true
+  },
+  {
+    "name": "skipBack",
+    "alias": "skipBackAdvanced",
+    "module": "music",
+    "variant": "full",
+    "call": "skipBackAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.skipback",
+    "expectedActionId": "is.workflow.actions.skipback",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMediaRoute",
+      "WFSkipBackBehavior"
+    ],
+    "ok": true
+  },
+  {
+    "name": "skipFwd",
+    "alias": "skipFwdAdvanced",
+    "module": "music",
+    "variant": "minimum",
+    "call": "skipFwdAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.skipforward",
+    "expectedActionId": "is.workflow.actions.skipforward",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "skipFwd",
+    "alias": "skipFwdAdvanced",
+    "module": "music",
+    "variant": "full",
+    "call": "skipFwdAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.skipforward",
+    "expectedActionId": "is.workflow.actions.skipforward",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMediaRoute"
+    ],
+    "ok": true
+  },
+  {
+    "name": "togglePlayPause",
+    "alias": "togglePlayPauseAdvanced",
+    "module": "music",
+    "variant": "minimum",
+    "call": "togglePlayPauseAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.pausemusic",
+    "expectedActionId": "is.workflow.actions.pausemusic",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFPlayPauseBehavior"
+    ],
+    "ok": true
+  },
+  {
+    "name": "togglePlayPause",
+    "alias": "togglePlayPauseAdvanced",
+    "module": "music",
+    "variant": "full",
+    "call": "togglePlayPauseAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.pausemusic",
+    "expectedActionId": "is.workflow.actions.pausemusic",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFMediaRoute",
+      "WFPlayPauseBehavior"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterVPNs",
+    "alias": null,
+    "module": "network",
+    "variant": "minimum",
+    "call": "filterVPNs()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.vpns",
+    "expectedActionId": "is.workflow.actions.filter.vpns",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterVPNs",
+    "alias": null,
+    "module": "network",
+    "variant": "full",
+    "call": "filterVPNs(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.vpns",
+    "expectedActionId": "is.workflow.actions.filter.vpns",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getEthernetDetail",
+    "alias": null,
+    "module": "network",
+    "variant": "minimum",
+    "call": "getEthernetDetail(\"Network Name\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getwifi",
+    "expectedActionId": "is.workflow.actions.getwifi",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFEthernetDetail",
+      "WFNetworkDetailsNetwork"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getEthernetDetail",
+    "alias": null,
+    "module": "network",
+    "variant": "full",
+    "call": "getEthernetDetail(\"Network Name\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getwifi",
+    "expectedActionId": "is.workflow.actions.getwifi",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFEthernetDetail",
+      "WFNetworkDetailsNetwork"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getVPN",
+    "alias": null,
+    "module": "network",
+    "variant": "minimum",
+    "call": "getVPN()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.vpn.get",
+    "expectedActionId": "is.workflow.actions.vpn.get",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getVPN",
+    "alias": null,
+    "module": "network",
+    "variant": "full",
+    "call": "getVPN()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.vpn.get",
+    "expectedActionId": "is.workflow.actions.vpn.get",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "runSSHScript",
+    "alias": "runSSHScriptAdvanced",
+    "module": "network",
+    "variant": "minimum",
+    "call": "runSSHScriptAdvanced(\"sample\", Ask, \"example.com\", \"22\", \"example.com\", \"Password\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.runsshscript",
+    "expectedActionId": "is.workflow.actions.runsshscript",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFSSHAuthenticationType",
+      "WFSSHHost",
+      "WFSSHPort",
+      "WFSSHScript",
+      "WFSSHUser"
+    ],
+    "ok": true
+  },
+  {
+    "name": "runSSHScript",
+    "alias": "runSSHScriptAdvanced",
+    "module": "network",
+    "variant": "full",
+    "call": "runSSHScriptAdvanced(\"sample\", Ask, \"example.com\", \"22\", \"example.com\", \"Password\", \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.runsshscript",
+    "expectedActionId": "is.workflow.actions.runsshscript",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFSSHAuthenticationType",
+      "WFSSHHost",
+      "WFSSHKey",
+      "WFSSHPassword",
+      "WFSSHPort",
+      "WFSSHScript",
+      "WFSSHUser"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setVPN",
+    "alias": null,
+    "module": "network",
+    "variant": "minimum",
+    "call": "setVPN(\"Connect\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.vpn.set",
+    "expectedActionId": "is.workflow.actions.vpn.set",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFVPNOperation"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setVPN",
+    "alias": null,
+    "module": "network",
+    "variant": "full",
+    "call": "setVPN(\"Connect\", Ask, true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.vpn.set",
+    "expectedActionId": "is.workflow.actions.vpn.set",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFOnDemandValue",
+      "WFVPN",
+      "WFVPNOperation"
+    ],
+    "ok": true
+  },
+  {
+    "name": "makeImageFromPDFPage",
+    "alias": "makeImageFromPDFPageAdvanced",
+    "module": "pdf",
+    "variant": "minimum",
+    "call": "makeImageFromPDFPageAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.makeimagefrompdfpage",
+    "expectedActionId": "is.workflow.actions.makeimagefrompdfpage",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "makeImageFromPDFPage",
+    "alias": "makeImageFromPDFPageAdvanced",
+    "module": "pdf",
+    "variant": "full",
+    "call": "makeImageFromPDFPageAdvanced(Ask, \"RGB\", \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.makeimagefrompdfpage",
+    "expectedActionId": "is.workflow.actions.makeimagefrompdfpage",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFMakeImageFromPDFPageColorspace",
+      "WFMakeImageFromPDFPageImageFormat",
+      "WFMakeImageFromPDFPageResolution"
+    ],
+    "ok": true
+  },
+  {
+    "name": "makePDF",
+    "alias": "makePDFAdvanced",
+    "module": "pdf",
+    "variant": "minimum",
+    "call": "makePDFAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.makepdf",
+    "expectedActionId": "is.workflow.actions.makepdf",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "makePDF",
+    "alias": "makePDFAdvanced",
+    "module": "pdf",
+    "variant": "full",
+    "call": "makePDFAdvanced(Ask, true, \"Append\", \"sample\", 1, 1, 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.makepdf",
+    "expectedActionId": "is.workflow.actions.makepdf",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFPDFDocumentMergeBehavior",
+      "WFPDFIncludeMargin",
+      "WFPDFIncludedPages",
+      "WFPDFPageRangeEnd",
+      "WFPDFPageRangeStart",
+      "WFPDFSinglePage"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterPhotos",
+    "alias": null,
+    "module": "photos",
+    "variant": "minimum",
+    "call": "filterPhotos()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.photos",
+    "expectedActionId": "is.workflow.actions.filter.photos",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterPhotos",
+    "alias": null,
+    "module": "photos",
+    "variant": "full",
+    "call": "filterPhotos(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.photos",
+    "expectedActionId": "is.workflow.actions.filter.photos",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "selectPhotos",
+    "alias": "selectPhotosAdvanced",
+    "module": "photos",
+    "variant": "minimum",
+    "call": "selectPhotosAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.selectphoto",
+    "expectedActionId": "is.workflow.actions.selectphoto",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "selectPhotos",
+    "alias": "selectPhotosAdvanced",
+    "module": "photos",
+    "variant": "full",
+    "call": "selectPhotosAdvanced(true, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.selectphoto",
+    "expectedActionId": "is.workflow.actions.selectphoto",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFPhotoPickerTypes",
+      "WFSelectMultiplePhotos"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setWallpaper",
+    "alias": "setWallpaperAdvanced",
+    "module": "settings",
+    "variant": "minimum",
+    "call": "setWallpaperAdvanced(Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.wallpaper.set",
+    "expectedActionId": "is.workflow.actions.wallpaper.set",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "setWallpaper",
+    "alias": "setWallpaperAdvanced",
+    "module": "settings",
+    "variant": "full",
+    "call": "setWallpaperAdvanced(Ask, Ask, \"sample\", true, true, true, true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.wallpaper.set",
+    "expectedActionId": "is.workflow.actions.wallpaper.set",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFSelectedPoster",
+      "WFWallpaperLegibilityBlur",
+      "WFWallpaperLocation",
+      "WFWallpaperPerspectiveZoom",
+      "WFWallpaperShowPreview",
+      "WFWallpaperSmartCrop"
+    ],
+    "ok": true
+  },
+  {
+    "name": "sendEmail",
+    "alias": "sendEmailAdvanced",
+    "module": "sharing",
+    "variant": "minimum",
+    "call": "sendEmailAdvanced(Ask, \"sample\", \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.sendemail",
+    "expectedActionId": "is.workflow.actions.sendemail",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFSendEmailActionFrom",
+      "WFSendEmailActionInputAttachments",
+      "WFSendEmailActionSubject",
+      "WFSendEmailActionToRecipients"
+    ],
+    "ok": true
+  },
+  {
+    "name": "sendEmail",
+    "alias": "sendEmailAdvanced",
+    "module": "sharing",
+    "variant": "full",
+    "call": "sendEmailAdvanced(Ask, \"sample\", \"sample\", \"sample\", true, true, Ask, Ask, Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.sendemail",
+    "expectedActionId": "is.workflow.actions.sendemail",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFEmailAccountActionSelectedAccount",
+      "WFSendEmailActionBccRecipients",
+      "WFSendEmailActionCcRecipients",
+      "WFSendEmailActionFrom",
+      "WFSendEmailActionInputAttachments",
+      "WFSendEmailActionSaveAsDraft",
+      "WFSendEmailActionShowComposeSheet",
+      "WFSendEmailActionSubject",
+      "WFSendEmailActionToRecipients"
+    ],
+    "ok": true
+  },
+  {
+    "name": "sendMessage",
+    "alias": "sendMessageAdvanced",
+    "module": "sharing",
+    "variant": "minimum",
+    "call": "sendMessageAdvanced(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.sendmessage",
+    "expectedActionId": "is.workflow.actions.sendmessage",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFSendMessageActionRecipients",
+      "WFSendMessageContent"
+    ],
+    "ok": true
+  },
+  {
+    "name": "sendMessage",
+    "alias": "sendMessageAdvanced",
+    "module": "sharing",
+    "variant": "full",
+    "call": "sendMessageAdvanced(Ask, \"sample\", true, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.sendmessage",
+    "expectedActionId": "is.workflow.actions.sendmessage",
+    "missingKeys": [],
+    "nativeKeys": [
+      "ShowWhenRun",
+      "WFSendMessageActionRecipients",
+      "WFSendMessageContent",
+      "WFSendMessagePrefix"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getAppStoreDetail",
+    "alias": null,
+    "module": "shortcuts",
+    "variant": "minimum",
+    "call": "getAppStoreDetail(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.appstore",
+    "expectedActionId": "is.workflow.actions.properties.appstore",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getAppStoreDetail",
+    "alias": null,
+    "module": "shortcuts",
+    "variant": "full",
+    "call": "getAppStoreDetail(Ask, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.properties.appstore",
+    "expectedActionId": "is.workflow.actions.properties.appstore",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemPropertyName",
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getShortcuts",
+    "alias": "getShortcutsAdvanced",
+    "module": "shortcuts",
+    "variant": "minimum",
+    "call": "getShortcutsAdvanced()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getmyworkflows",
+    "expectedActionId": "is.workflow.actions.getmyworkflows",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "getShortcuts",
+    "alias": "getShortcutsAdvanced",
+    "module": "shortcuts",
+    "variant": "full",
+    "call": "getShortcutsAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.getmyworkflows",
+    "expectedActionId": "is.workflow.actions.getmyworkflows",
+    "missingKeys": [],
+    "nativeKeys": [
+      "Folder"
+    ],
+    "ok": true
+  },
+  {
+    "name": "makeSpokenAudio",
+    "alias": "makeSpokenAudioAdvanced",
+    "module": "text",
+    "variant": "minimum",
+    "call": "makeSpokenAudioAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.makespokenaudiofromtext",
+    "expectedActionId": "is.workflow.actions.makespokenaudiofromtext",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput"
+    ],
+    "ok": true
+  },
+  {
+    "name": "makeSpokenAudio",
+    "alias": "makeSpokenAudioAdvanced",
+    "module": "text",
+    "variant": "full",
+    "call": "makeSpokenAudioAdvanced(\"sample\", 1, 1, \"sample\", \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.makespokenaudiofromtext",
+    "expectedActionId": "is.workflow.actions.makespokenaudiofromtext",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFSpeakTextLanguage",
+      "WFSpeakTextPitch",
+      "WFSpeakTextRate",
+      "WFSpeakTextVoice"
+    ],
+    "ok": true
+  },
+  {
+    "name": "speak",
+    "alias": "speakAdvanced",
+    "module": "text",
+    "variant": "minimum",
+    "call": "speakAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.speaktext",
+    "expectedActionId": "is.workflow.actions.speaktext",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFText"
+    ],
+    "ok": true
+  },
+  {
+    "name": "speak",
+    "alias": "speakAdvanced",
+    "module": "text",
+    "variant": "full",
+    "call": "speakAdvanced(\"sample\", true, \"sample\", 1, 1, \"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.speaktext",
+    "expectedActionId": "is.workflow.actions.speaktext",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFSpeakTextLanguage",
+      "WFSpeakTextPitch",
+      "WFSpeakTextRate",
+      "WFSpeakTextVoice",
+      "WFSpeakTextWait",
+      "WFText"
+    ],
+    "ok": true
+  },
+  {
+    "name": "filterArticles",
+    "alias": null,
+    "module": "web",
+    "variant": "minimum",
+    "call": "filterArticles()",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.articles",
+    "expectedActionId": "is.workflow.actions.filter.articles",
+    "missingKeys": [],
+    "nativeKeys": [],
+    "ok": true
+  },
+  {
+    "name": "filterArticles",
+    "alias": null,
+    "module": "web",
+    "variant": "full",
+    "call": "filterArticles(Ask, nil, \"sample\", \"sample\", 1)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.filter.articles",
+    "expectedActionId": "is.workflow.actions.filter.articles",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFContentItemInputParameter",
+      "WFContentItemLimitNumber",
+      "WFContentItemSortOrder",
+      "WFContentItemSortProperty"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getGifs",
+    "alias": "getGifsAdvanced",
+    "module": "web",
+    "variant": "minimum",
+    "call": "getGifsAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.giphy",
+    "expectedActionId": "is.workflow.actions.giphy",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFGiphyQuery",
+      "WFGiphyShowPicker"
+    ],
+    "ok": true
+  },
+  {
+    "name": "getGifs",
+    "alias": "getGifsAdvanced",
+    "module": "web",
+    "variant": "full",
+    "call": "getGifsAdvanced(\"sample\", 1, true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.giphy",
+    "expectedActionId": "is.workflow.actions.giphy",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFGiphyLimit",
+      "WFGiphyQuery",
+      "WFGiphySelectMultiple",
+      "WFGiphyShowPicker"
+    ],
+    "ok": true
+  },
+  {
+    "name": "runJavaScriptOnWebpage",
+    "alias": "runJavaScriptOnWebpageAdvanced",
+    "module": "web",
+    "variant": "minimum",
+    "call": "runJavaScriptOnWebpageAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.runjavascriptonwebpage",
+    "expectedActionId": "is.workflow.actions.runjavascriptonwebpage",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFJavaScript"
+    ],
+    "ok": true
+  },
+  {
+    "name": "runJavaScriptOnWebpage",
+    "alias": "runJavaScriptOnWebpageAdvanced",
+    "module": "web",
+    "variant": "full",
+    "call": "runJavaScriptOnWebpageAdvanced(\"sample\", Ask)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.runjavascriptonwebpage",
+    "expectedActionId": "is.workflow.actions.runjavascriptonwebpage",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFInput",
+      "WFJavaScript"
+    ],
+    "ok": true
+  },
+  {
+    "name": "searchGiphy",
+    "alias": "searchGiphyAdvanced",
+    "module": "web",
+    "variant": "minimum",
+    "call": "searchGiphyAdvanced(\"sample\")",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.giphy",
+    "expectedActionId": "is.workflow.actions.giphy",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFGiphyQuery"
+    ],
+    "ok": true
+  },
+  {
+    "name": "searchGiphy",
+    "alias": "searchGiphyAdvanced",
+    "module": "web",
+    "variant": "full",
+    "call": "searchGiphyAdvanced(\"sample\", true)",
+    "exit": 0,
+    "actions": 1,
+    "actualActionId": "is.workflow.actions.giphy",
+    "expectedActionId": "is.workflow.actions.giphy",
+    "missingKeys": [],
+    "nativeKeys": [
+      "WFGiphyQuery",
+      "WFGiphySelectMultiple"
+    ],
+    "ok": true
+  }
+]

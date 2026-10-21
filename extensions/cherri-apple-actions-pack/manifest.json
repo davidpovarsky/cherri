@@ -1,0 +1,7677 @@
+{
+  "name": "cherri-apple-actions-pack",
+  "version": "0.1.0",
+  "pure_source_sha": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+  "pure_source_tree": "4fe9fbc8c742aaf01d6ec8193d9be708fb1de7b5",
+  "definition_source_branch": "agent/cherri-p10-apple-actions-coverage",
+  "definition_source_sha": "2456327cc941f6ae89c870833d3d5f70109d693c",
+  "status": "EXTERNAL_DEFINITIONS_NOT_RUNTIME_VERIFIED",
+  "module_sha256": {
+    "text.cherri": "5f7feef9c5ba146dd2abcca6943f77829f2d861452985fd449eab0fcdf1d0131",
+    "basic.cherri": "c935331e3304d467d258cf139d8e779344db54d8be717964f89683848896d6e8",
+    "calendar.cherri": "698f4f676fb213288719a3a03a0edf0fab35951615f85e8ba86a553a248cf97c",
+    "shortcuts.cherri": "d6b37d7cb8a6f2944923015e184298ef586259fb049a6acb2f335915db6a1ae7",
+    "sharing.cherri": "ca9c98aebe373e66e44cb6ea1131d6cea9cc22a5b42bdde7ae524856689f5cec",
+    "contacts.cherri": "00ddcfb5070c90852555c7e562a895bfd29c513c80a80bd2e42fc3636c6fc43d",
+    "media.cherri": "fc28dcfc2c14aad24599c4c9d280c528c1b1e05fc4b845298f14ef795e29d664",
+    "music.cherri": "6757da8066753e23f89e4817d94e6829fa04291eab00c3ddb7eadc251e63df29",
+    "settings.cherri": "d2ea31465a10335264d7790af7d08fa8359039d0adc09e58ed65e29993d0eb82",
+    "documents.cherri": "f0532b930c7e553b5b3c828dc713d80a91d9b35ee8d2362034a93aa42240b571",
+    "math.cherri": "d6c777f354f357401abea1a587ae568ef44ca8c8c86341880ea25dd694a0c035",
+    "pdf.cherri": "ed4ec12722141019210716c3f7f2afa2b1a42661e784a6469f97ddc088420d00",
+    "web.cherri": "63af70a85de2bef5def6adde72fce95e93eb21801f2ad55503b4fabeda545138",
+    "crypto.cherri": "3751b4d4e6a06ce246470db230863c6247e83177a26503ba206ca68cd3612085",
+    "location.cherri": "873b4ac57983c8c855dbc1f7181f956882f7faac360620b6d9cf357a4d787c51",
+    "images.cherri": "127b21b9e26d3498aa812646cca1d64bb2d896cddb47d321088b1510ae83ebd4",
+    "photos.cherri": "b0938c40cafb7ddd5e1fc23436d77613a5fb4d6702a5e975740e561b42dc461d",
+    "network.cherri": "7fe03ef6a3092b3c0fa17c2461a1997e346479233a588bb0e7060979f274380d",
+    "device.cherri": "f0fa46bb46142b40635f42a8ee587d09b0ff2a5cf9be5a6fe203352308e1cdb5",
+    "mac.cherri": "7b884f39b4caa005f9a4acf142aa5314b9681254254d780326676ee57b61f95e"
+  },
+  "summary": {
+    "unchanged": 352,
+    "added": 60,
+    "extended_alias": 54,
+    "original_preserved": 4
+  },
+  "modules": {
+    "basic": [
+      {
+        "name": "addItemToList",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getName",
+        "alias": "getNameAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "getType",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getVariable",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "quicklook",
+        "alias": "quicklookAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "insertListPosition",
+        "alias": null,
+        "kind": "enum"
+      }
+    ],
+    "calendar": [
+      {
+        "name": "addEvent",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "addReminder",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "convertTimeZone",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "filterEventAttendees",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "filterEvents",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "filterReminders",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "formatTimestamp",
+        "alias": "formatTimestampAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "getEventAttendeeDetail",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getReminderDetail",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getTimeBetweenDates",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getUpcomingEvents",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getUpcomingReminders",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "alertCondition",
+        "alias": null,
+        "kind": "enum"
+      },
+      {
+        "name": "editReminderDetail",
+        "alias": null,
+        "kind": "enum"
+      },
+      {
+        "name": "eventAttendeeDetail",
+        "alias": null,
+        "kind": "enum"
+      },
+      {
+        "name": "reminderDetail",
+        "alias": null,
+        "kind": "enum"
+      },
+      {
+        "name": "reminderPriority",
+        "alias": null,
+        "kind": "enum"
+      },
+      {
+        "name": "setterMode",
+        "alias": null,
+        "kind": "enum"
+      },
+      {
+        "name": "timeBetweenDatesUnit",
+        "alias": null,
+        "kind": "enum"
+      }
+    ],
+    "contacts": [
+      {
+        "name": "call",
+        "alias": "callAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "facetimeCall",
+        "alias": "facetimeCallAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "filterContacts",
+        "alias": "filterContactsAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "selectContacts",
+        "alias": null,
+        "kind": "action"
+      }
+    ],
+    "crypto": [
+      {
+        "name": "base64Decode",
+        "alias": "base64DecodeAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "base64Encode",
+        "alias": "base64EncodeAdvanced",
+        "kind": "action"
+      }
+    ],
+    "device": [
+      {
+        "name": "intercom",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "setVolume",
+        "alias": "setVolumeAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "vibrate",
+        "alias": "vibrateAdvanced",
+        "kind": "action"
+      }
+    ],
+    "documents": [
+      {
+        "name": "appendToFile",
+        "alias": "appendToFileAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "getFile",
+        "alias": "getFileAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "getParentDirectory",
+        "alias": "getParentDirectoryAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "makeQRCode",
+        "alias": "makeQRCodeAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "moveFile",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "openFile",
+        "alias": "openFileAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "prependToFile",
+        "alias": "prependToFileAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "saveFile",
+        "alias": "saveFileAdvanced",
+        "kind": "action"
+      }
+    ],
+    "images": [
+      {
+        "name": "combineImages",
+        "alias": "combineImagesAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "filterImages",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "overlayText",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "scanBarcode",
+        "alias": null,
+        "kind": "action"
+      }
+    ],
+    "location": [
+      {
+        "name": "filterLocations",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getCurrentLocation",
+        "alias": "getCurrentLocationAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "getDirections",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getDistance",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getParkedCarDetail",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getParkedCarLocation",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getTravelTime",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getWeatherForecast",
+        "alias": "getWeatherForecastAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "openInMaps",
+        "alias": "openInMapsAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "setParkedCar",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "parkedCarDetail",
+        "alias": null,
+        "kind": "enum"
+      }
+    ],
+    "mac": [
+      {
+        "name": "ejectDisk",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "filterDisplays",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getApps",
+        "alias": "getAppsAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "getCurrentApp",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getSelectedText",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "lockApp",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "logOut",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "mountDiskImage",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "moveWindow",
+        "alias": "moveWindowAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "resizeWindow",
+        "alias": "resizeWindowAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "runShellScript",
+        "alias": "runShellScriptAdvanced",
+        "kind": "action"
+      }
+    ],
+    "math": [
+      {
+        "name": "ceil",
+        "alias": "ceilAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "floor",
+        "alias": "floorAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "round",
+        "alias": "roundAdvanced",
+        "kind": "action"
+      }
+    ],
+    "media": [
+      {
+        "name": "encodeVideo",
+        "alias": "encodeVideoAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "getEpisodesForPodcast",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getPodcastEpisodeDetail",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "playPodcast",
+        "alias": "playPodcastAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "recordAudio",
+        "alias": "recordAudioAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "searchAppStore",
+        "alias": "searchAppStoreAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "searchPodcasts",
+        "alias": "searchPodcastsAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "setNoiseControlMode",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "setPlaybackDestination",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "takePhoto",
+        "alias": "takePhotoAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "podcastEpisodeDetail",
+        "alias": null,
+        "kind": "enum"
+      }
+    ],
+    "music": [
+      {
+        "name": "createPlaylist",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "filterMusic",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getCurrentSong",
+        "alias": "getCurrentSongAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "pause",
+        "alias": "pauseAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "play",
+        "alias": "playAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "searchiTunes",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "seek",
+        "alias": "seekAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "skipBack",
+        "alias": "skipBackAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "skipFwd",
+        "alias": "skipFwdAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "togglePlayPause",
+        "alias": "togglePlayPauseAdvanced",
+        "kind": "action"
+      }
+    ],
+    "network": [
+      {
+        "name": "filterVPNs",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getEthernetDetail",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getVPN",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "runSSHScript",
+        "alias": "runSSHScriptAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "setVPN",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "VPNOperation",
+        "alias": null,
+        "kind": "enum"
+      },
+      {
+        "name": "ethernetDetail",
+        "alias": null,
+        "kind": "enum"
+      }
+    ],
+    "pdf": [
+      {
+        "name": "makeImageFromPDFPage",
+        "alias": "makeImageFromPDFPageAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "makePDF",
+        "alias": "makePDFAdvanced",
+        "kind": "action"
+      }
+    ],
+    "photos": [
+      {
+        "name": "filterPhotos",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "selectPhotos",
+        "alias": "selectPhotosAdvanced",
+        "kind": "action"
+      }
+    ],
+    "settings": [
+      {
+        "name": "setWallpaper",
+        "alias": "setWallpaperAdvanced",
+        "kind": "action"
+      }
+    ],
+    "sharing": [
+      {
+        "name": "sendEmail",
+        "alias": "sendEmailAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "sendMessage",
+        "alias": "sendMessageAdvanced",
+        "kind": "action"
+      }
+    ],
+    "shortcuts": [
+      {
+        "name": "getAppStoreDetail",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getShortcuts",
+        "alias": "getShortcutsAdvanced",
+        "kind": "action"
+      }
+    ],
+    "text": [
+      {
+        "name": "makeSpokenAudio",
+        "alias": "makeSpokenAudioAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "speak",
+        "alias": "speakAdvanced",
+        "kind": "action"
+      }
+    ],
+    "web": [
+      {
+        "name": "filterArticles",
+        "alias": null,
+        "kind": "action"
+      },
+      {
+        "name": "getGifs",
+        "alias": "getGifsAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "runJavaScriptOnWebpage",
+        "alias": "runJavaScriptOnWebpageAdvanced",
+        "kind": "action"
+      },
+      {
+        "name": "searchGiphy",
+        "alias": "searchGiphyAdvanced",
+        "kind": "action"
+      }
+    ]
+  },
+  "special_handlers": [
+    "WFContentItemFilter predicates require native conversion; simple nil filters do not prove complex filters",
+    "P10 Go-only app intents and system actions need native descriptors/UUID mapping and separate validation",
+    "Original Cherri builtin run()/statistic() are NOT replaced"
+  ],
+  "decisions": [
+    {
+      "kind": "action",
+      "name": "LeftRightBalance",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": [
+        "value"
+      ],
+      "newKeys": [
+        "value"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "magnifierDescribe",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "magnifierPointAndSpeak",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "magnifierReader",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "setBackgroundSound",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": [
+        "backgroundSound"
+      ],
+      "newKeys": [
+        "backgroundSound"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setBackgroundSoundsVolume",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": [
+        "volumeValue"
+      ],
+      "newKeys": [
+        "volumeValue"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setSoundRecognition",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "setTextSize",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": [
+        "textSize"
+      ],
+      "newKeys": [
+        "textSize"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "backgroundSound",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "soundRecognitionOperations",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "textSizes",
+      "alias": null,
+      "module": "a11y",
+      "status": "unchanged",
+      "old_file": "a11y",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "addItemToList",
+      "alias": null,
+      "module": "basic",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFListItem",
+        "WFListVariable",
+        "WFInsertPosition",
+        "WFItemIndex"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "alert",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFAlertActionMessage",
+        "WFAlertActionTitle"
+      ],
+      "newKeys": [
+        "WFAlertActionMessage",
+        "WFAlertActionTitle"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "chooseFromList",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFChooseFromListActionPrompt",
+        "WFChooseFromListActionSelectMultiple",
+        "WFChooseFromListActionSelectAll"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFChooseFromListActionPrompt",
+        "WFChooseFromListActionSelectMultiple",
+        "WFChooseFromListActionSelectAll"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "comment",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFCommentActionText"
+      ],
+      "newKeys": [
+        "WFCommentActionText"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "confirm",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFAlertActionMessage",
+        "WFAlertActionTitle"
+      ],
+      "newKeys": [
+        "WFAlertActionMessage",
+        "WFAlertActionTitle"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "contentGraph",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "count",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "Input",
+        "WFCountType"
+      ],
+      "newKeys": [
+        "Input",
+        "WFCountType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "formatNumber",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFNumber",
+        "WFNumberFormatDecimalPlaces"
+      ],
+      "newKeys": [
+        "WFNumber",
+        "WFNumberFormatDecimalPlaces"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getDictionary",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getFirstItem",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getKeys",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getLastItem",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getListItem",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFItemIndex"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFItemIndex"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getListItems",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFItemRangeStart",
+        "WFItemRangeEnd"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFItemRangeStart",
+        "WFItemRangeEnd"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getName",
+      "alias": "getNameAdvanced",
+      "module": "basic",
+      "status": "extended_alias",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput",
+        "GetWebPageTitle"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getNumbers",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getObjectOfClass",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "Class",
+        "Input"
+      ],
+      "newKeys": [
+        "Class",
+        "Input"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getRandomItem",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getType",
+      "alias": null,
+      "module": "basic",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput",
+        "WFFileType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getValue",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFDictionaryKey"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFDictionaryKey"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getValues",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getVariable",
+      "alias": null,
+      "module": "basic",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFVariable"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "mustOutput",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFOutput",
+        "WFResponse"
+      ],
+      "newKeys": [
+        "WFOutput",
+        "WFResponse"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "nothing",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "number",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFNumberActionNumber"
+      ],
+      "newKeys": [
+        "WFNumberActionNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "output",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFOutput"
+      ],
+      "newKeys": [
+        "WFOutput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "outputOrClipboard",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFOutput"
+      ],
+      "newKeys": [
+        "WFOutput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "quicklook",
+      "alias": "quicklookAdvanced",
+      "module": "basic",
+      "status": "extended_alias",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFQuickLookActionFullScreen"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "randomNumber",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFRandomNumberMinimum",
+        "WFRandomNumberMaximum"
+      ],
+      "newKeys": [
+        "WFRandomNumberMinimum",
+        "WFRandomNumberMaximum"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "search",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInputText",
+        "WFSpotlightSearchLimit",
+        "WFSpotlightSearchResultType"
+      ],
+      "newKeys": [
+        "WFInputText",
+        "WFSpotlightSearchLimit",
+        "WFSpotlightSearchResultType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setName",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFName",
+        "WFDontIncludeFileExtension"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFName",
+        "WFDontIncludeFileExtension"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setValue",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFDictionary",
+        "WFDictionaryKey",
+        "WFDictionaryValue"
+      ],
+      "newKeys": [
+        "WFDictionary",
+        "WFDictionaryKey",
+        "WFDictionaryValue"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "show",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "Text"
+      ],
+      "newKeys": [
+        "Text"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "showNotification",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFNotificationActionBody",
+        "WFNotificationActionTitle",
+        "WFNotificationActionSound",
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFNotificationActionBody",
+        "WFNotificationActionTitle",
+        "WFNotificationActionSound",
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "stop",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "text",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFTextActionText"
+      ],
+      "newKeys": [
+        "WFTextActionText"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "typeOf",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "wait",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [
+        "WFDelayTime"
+      ],
+      "newKeys": [
+        "WFDelayTime"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "waitToReturn",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "enum",
+      "name": "abcSortOrder",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "countType",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "insertListPosition",
+      "alias": null,
+      "module": "basic",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "language",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "timeDuration",
+      "alias": null,
+      "module": "basic",
+      "status": "unchanged",
+      "old_file": "basic",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "addCalendar",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "CalendarName"
+      ],
+      "newKeys": [
+        "CalendarName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "addEvent",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFCalendarItemTitle",
+        "WFCalendarItemStartDate",
+        "WFCalendarItemEndDate",
+        "WFCalendarItemAllDay",
+        "WFCalendarItemLocation",
+        "WFCalendarDescriptor",
+        "WFCalendarItemNotes",
+        "WFAlertTime",
+        "WFAlertCustomTime"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "addQuickReminder",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "addReminder",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFCalendarItemTitle",
+        "WFAlertEnabled",
+        "WFCalendarDescriptor",
+        "WFAlertCondition",
+        "WFAlertLocation",
+        "WFAlertPerson",
+        "WFAlertLocationRadius",
+        "WFAlertCustomTime",
+        "WFPriority",
+        "WFUrgent",
+        "WFFlag",
+        "WFURL",
+        "WFImages",
+        "WFParentTask",
+        "WFTags",
+        "WFCalendarItemNotes"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "adjustDate",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFDate",
+        "WFAdjustOperation",
+        "WFDuration"
+      ],
+      "newKeys": [
+        "WFDate",
+        "WFAdjustOperation",
+        "WFDuration"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "convertTimeZone",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "Date",
+        "SourceTimeZone",
+        "DestinationTimeZone"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "currentDate",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "date",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFDateActionDate"
+      ],
+      "newKeys": [
+        "WFDateActionDate"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "filterEventAttendees",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "filterEvents",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "filterReminders",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "formatDate",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFDate",
+        "WFDateFormatStyle",
+        "WFDateFormat"
+      ],
+      "newKeys": [
+        "WFDate",
+        "WFDateFormatStyle",
+        "WFDateFormat"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "formatTime",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFDate",
+        "WFTimeFormatStyle"
+      ],
+      "newKeys": [
+        "WFDate",
+        "WFTimeFormatStyle"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "formatTimestamp",
+      "alias": "formatTimestampAdvanced",
+      "module": "calendar",
+      "status": "extended_alias",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFDate",
+        "WFDateFormatStyle",
+        "WFTimeFormatStyle",
+        "WFDateFormat"
+      ],
+      "newKeys": [
+        "WFDate",
+        "WFDateFormatStyle",
+        "WFTimeFormatStyle",
+        "WFDateFormat",
+        "WFISO8601IncludeTime",
+        "WFLocale",
+        "WFRelativeDateFormatStyle"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getAlarms",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getDates",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getEventAttendeeDetail",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getEventDetail",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getHolidayDate",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFDateActionMode",
+        "WFEventOccurrenceMode",
+        "WFEventOccurrenceSpecifiedYear"
+      ],
+      "newKeys": [
+        "WFDateActionMode",
+        "WFEventOccurrenceMode",
+        "WFEventOccurrenceSpecifiedYear"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getReminderDetail",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getTimeBetweenDates",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFTimeUntilFromDate",
+        "WFInput",
+        "WFTimeUntilUnit"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getUpcomingEvents",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFGetUpcomingItemCount",
+        "WFDateSpecifier",
+        "WFSpecifiedDate"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getUpcomingReminders",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFGetUpcomingItemCalendar",
+        "WFGetUpcomingItemCount"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "openRemindersList",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFList"
+      ],
+      "newKeys": [
+        "WFList"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "removeEvents",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFInputEvents",
+        "WFCalendarIncludeFutureEvents"
+      ],
+      "newKeys": [
+        "WFInputEvents",
+        "WFCalendarIncludeFutureEvents"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "removeReminders",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFInputReminders"
+      ],
+      "newKeys": [
+        "WFInputReminders"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "showInCalendar",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFEvent"
+      ],
+      "newKeys": [
+        "WFEvent"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "startTimer",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": [
+        "WFDuration"
+      ],
+      "newKeys": [
+        "WFDuration"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "alertCondition",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "dateAdjustOperation",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "dateFormats",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "dateUnit",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "editEventDetail",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "editReminderDetail",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "eventAttendeeDetail",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "eventDetail",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "eventOccurrenceMode",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "holiday",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "holidayYear",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "reminderDetail",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "reminderPriority",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "setterMode",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "timeBetweenDatesUnit",
+      "alias": null,
+      "module": "calendar",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "timeFormats",
+      "alias": null,
+      "module": "calendar",
+      "status": "unchanged",
+      "old_file": "calendar",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "call",
+      "alias": "callAdvanced",
+      "module": "contacts",
+      "status": "extended_alias",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [
+        "WFCallContact"
+      ],
+      "newKeys": [
+        "WFCallContact"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "facetimeCall",
+      "alias": "facetimeCallAdvanced",
+      "module": "contacts",
+      "status": "extended_alias",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [
+        "WFFaceTimeContact",
+        "WFFaceTimeType"
+      ],
+      "newKeys": [
+        "WFFaceTimeContact",
+        "WFFaceTimeType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "filterContacts",
+      "alias": "filterContactsAdvanced",
+      "module": "contacts",
+      "status": "extended_alias",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ],
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getContactDetail",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getContacts",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getEmails",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getPhoneNumbers",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "removeContactDetail",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "selectContact",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [
+        "WFSelectMultiple"
+      ],
+      "newKeys": [
+        "WFSelectMultiple"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "selectContacts",
+      "alias": null,
+      "module": "contacts",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContact"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "selectEmailAddress",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "selectPhoneNumber",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "enum",
+      "name": "contactDetail",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "facetimeCallType",
+      "alias": null,
+      "module": "contacts",
+      "status": "unchanged",
+      "old_file": "contacts",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "base64Decode",
+      "alias": "base64DecodeAdvanced",
+      "module": "crypto",
+      "status": "extended_alias",
+      "old_file": "crypto",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFBase64LineBreakMode"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "base64Encode",
+      "alias": "base64EncodeAdvanced",
+      "module": "crypto",
+      "status": "extended_alias",
+      "old_file": "crypto",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFBase64LineBreakMode"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "hash",
+      "alias": null,
+      "module": "crypto",
+      "status": "unchanged",
+      "old_file": "crypto",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFHashType"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFHashType"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "hashType",
+      "alias": null,
+      "module": "crypto",
+      "status": "unchanged",
+      "old_file": "crypto",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "connectedToCharger",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "dismissSiri",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "flashlightOff",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "flashlightOn",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [
+        "WFFlashlightLevel"
+      ],
+      "newKeys": [
+        "WFFlashlightLevel"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getBatteryLevel",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getChargeLimit",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getDeviceDetail",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [
+        "WFDeviceDetail"
+      ],
+      "newKeys": [
+        "WFDeviceDetail"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getDeviceUsage",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [
+        "activityType",
+        "selectedDevice",
+        "during",
+        "startTime",
+        "endTime"
+      ],
+      "newKeys": [
+        "activityType",
+        "selectedDevice",
+        "during",
+        "startTime",
+        "endTime"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getOnScreenContent",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getOrientation",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "intercom",
+      "alias": null,
+      "module": "device",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput",
+        "WFHome"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "isCharging",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "lockScreen",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "reboot",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "returnToHomescreen",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "searchPasswords",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [
+        "WFShowPasswordsSearchTerm"
+      ],
+      "newKeys": [
+        "WFShowPasswordsSearchTerm"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setBrightness",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [
+        "WFBrightness"
+      ],
+      "newKeys": [
+        "WFBrightness"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setVolume",
+      "alias": "setVolumeAdvanced",
+      "module": "device",
+      "status": "extended_alias",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [
+        "WFVolume"
+      ],
+      "newKeys": [
+        "WFVolume",
+        "WFVolumeSetting"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "showControlCenter",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "shutdown",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "toggleFlashlight",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [
+        "WFFlashlightLevel"
+      ],
+      "newKeys": [
+        "WFFlashlightLevel"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "vibrate",
+      "alias": "vibrateAdvanced",
+      "module": "device",
+      "status": "extended_alias",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "WFVibrateHapticType"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "deviceDetail",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "deviceUsageType",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "usageDuration",
+      "alias": null,
+      "module": "device",
+      "status": "unchanged",
+      "old_file": "device",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "addToBooks",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "BooksInput"
+      ],
+      "newKeys": [
+        "BooksInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "appendNote",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFNote",
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFNote",
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "appendToFile",
+      "alias": "appendToFileAdvanced",
+      "module": "documents",
+      "status": "extended_alias",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFilePath",
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFFilePath",
+        "WFInput",
+        "WFAppendOnNewLine",
+        "WFFile"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "convertToUSDZ",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "createFolder",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFilePath",
+        "WFFolder"
+      ],
+      "newKeys": [
+        "WFFilePath",
+        "WFFolder"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "deleteFiles",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFDeleteImmediatelyDelete"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFDeleteImmediatelyDelete"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "extractArchive",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFArchive"
+      ],
+      "newKeys": [
+        "WFArchive"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "file",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFile"
+      ],
+      "newKeys": [
+        "WFFile"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "fileSize",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFileSize",
+        "WFFileSizeFormat"
+      ],
+      "newKeys": [
+        "WFFileSize",
+        "WFFileSizeFormat"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getFile",
+      "alias": "getFileAdvanced",
+      "module": "documents",
+      "status": "extended_alias",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFGetFilePath",
+        "WFFile",
+        "WFFileErrorIfNotFound"
+      ],
+      "newKeys": [
+        "WFGetFilePath",
+        "WFFile",
+        "WFFileErrorIfNotFound",
+        "WFGetFolderContents"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getFileDetail",
+      "alias": null,
+      "module": "documents",
+      "status": "original_preserved",
+      "old_file": "documents",
+      "reason": "replacement/removal/reordering of original native param keys",
+      "originalKeys": [
+        "WFFolder",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getFileLink",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFile"
+      ],
+      "newKeys": [
+        "WFFile"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getFolderContents",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFolder",
+        "Recursive"
+      ],
+      "newKeys": [
+        "WFFolder",
+        "Recursive"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getParentDirectory",
+      "alias": "getParentDirectoryAdvanced",
+      "module": "documents",
+      "status": "extended_alias",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getSelectedFiles",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "makeArchive",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFArchiveFormat",
+        "WFZIPName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFArchiveFormat",
+        "WFZIPName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "makeQRCode",
+      "alias": "makeQRCodeAdvanced",
+      "module": "documents",
+      "status": "extended_alias",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFText",
+        "WFQRErrorCorrectionLevel",
+        "WFQRForegroundColor",
+        "WFQRBackgroundColor"
+      ],
+      "newKeys": [
+        "WFText",
+        "WFQRErrorCorrectionLevel",
+        "WFQRForegroundColor",
+        "WFQRBackgroundColor",
+        "WFQRRounded"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "markup",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFDocument"
+      ],
+      "newKeys": [
+        "WFDocument"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "moveFile",
+      "alias": null,
+      "module": "documents",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFFile",
+        "WFFolder",
+        "WFReplaceExisting"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "openFile",
+      "alias": "openFileAdvanced",
+      "module": "documents",
+      "status": "extended_alias",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFOpenInAskWhenRun"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFOpenInAskWhenRun",
+        "WFAppName",
+        "WFSelectedApp"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "openNote",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "prependToFile",
+      "alias": "prependToFileAdvanced",
+      "module": "documents",
+      "status": "extended_alias",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFilePath",
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFFilePath",
+        "WFInput",
+        "WFAppendOnNewLine",
+        "WFFile"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "print",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "rename",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFile",
+        "WFNewFilename"
+      ],
+      "newKeys": [
+        "WFFile",
+        "WFNewFilename"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "reveal",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFile"
+      ],
+      "newKeys": [
+        "WFFile"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "saveFile",
+      "alias": "saveFileAdvanced",
+      "module": "documents",
+      "status": "extended_alias",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFFileDestinationPath",
+        "WFInput",
+        "WFSaveFileOverwrite"
+      ],
+      "newKeys": [
+        "WFFileDestinationPath",
+        "WFInput",
+        "WFSaveFileOverwrite",
+        "WFFolder"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "saveFilePrompt",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFSaveFileOverwrite"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFSaveFileOverwrite"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "selectFile",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "SelectMultiple"
+      ],
+      "newKeys": [
+        "SelectMultiple"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "selectFolder",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [
+        "SelectMultiple"
+      ],
+      "newKeys": [
+        "SelectMultiple"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "showQuickNote",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "enum",
+      "name": "QRCodeErrorCorrection",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "archiveFormat",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "fileDetail",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "fileSizeFormat",
+      "alias": null,
+      "module": "documents",
+      "status": "unchanged",
+      "old_file": "documents",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "saveToDropbox",
+      "alias": null,
+      "module": "dropbox",
+      "status": "unchanged",
+      "old_file": "dropbox",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFFileDestinationPath",
+        "WFSaveFileOverwrite"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFFileDestinationPath",
+        "WFSaveFileOverwrite"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "saveToDropboxPrompt",
+      "alias": null,
+      "module": "dropbox",
+      "status": "unchanged",
+      "old_file": "dropbox",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFSaveFileOverwrite"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFSaveFileOverwrite"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "addToGIF",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFImage",
+        "WFInputGIF",
+        "WFGIFDelayTime",
+        "WFGIFAutoSize",
+        "WFGIFManualSizeWidth",
+        "WFGIFManualSizeHeight"
+      ],
+      "newKeys": [
+        "WFImage",
+        "WFInputGIF",
+        "WFGIFDelayTime",
+        "WFGIFAutoSize",
+        "WFGIFManualSizeWidth",
+        "WFGIFManualSizeHeight"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "combineImages",
+      "alias": "combineImagesAdvanced",
+      "module": "images",
+      "status": "extended_alias",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFImageCombineMode",
+        "WFImageCombineSpacing"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFImageCombineMode",
+        "WFImageCombineSpacing"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "convertImage",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFImageFormat",
+        "WFImageCompressionQuality",
+        "WFImagePreserveMetadata"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFImageFormat",
+        "WFImageCompressionQuality",
+        "WFImagePreserveMetadata"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "convertToJPEG",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFImageCompressionQuality",
+        "WFImagePreserveMetadata"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFImageCompressionQuality",
+        "WFImagePreserveMetadata"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "cropImage",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFImageCropWidth",
+        "WFImageCropHeight",
+        "WFImageCropPosition",
+        "WFImageCropX",
+        "WFImageCropY"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFImageCropWidth",
+        "WFImageCropHeight",
+        "WFImageCropPosition",
+        "WFImageCropX",
+        "WFImageCropY"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "customImageMask",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFCustomMaskImage"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFCustomMaskImage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "customImageOverlay",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFImage",
+        "WFImageWidth",
+        "WFImageHeight",
+        "WFRotation",
+        "WFOverlayImageOpacity",
+        "WFImagePosition",
+        "WFImageX",
+        "WFImageY"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFImage",
+        "WFImageWidth",
+        "WFImageHeight",
+        "WFRotation",
+        "WFOverlayImageOpacity",
+        "WFImagePosition",
+        "WFImageX",
+        "WFImageY"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "extractImageText",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFImage"
+      ],
+      "newKeys": [
+        "WFImage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "filterImages",
+      "alias": null,
+      "module": "images",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "flipImage",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFImageFlipDirection"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFImageFlipDirection"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getImageDetail",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getImageFrames",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFImage"
+      ],
+      "newKeys": [
+        "WFImage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getImages",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "makeGIF",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFMakeGIFActionDelayTime",
+        "WFMakeGIFActionLoopCount",
+        "WFMakeGIFActionManualSizeWidth",
+        "WFMakeGIFActionManualSizeHeight"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFMakeGIFActionDelayTime",
+        "WFMakeGIFActionLoopCount",
+        "WFMakeGIFActionManualSizeWidth",
+        "WFMakeGIFActionManualSizeHeight"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "makeImageFromRichText",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFWidth",
+        "WFHeight"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFWidth",
+        "WFHeight"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "makeVideoFromGIF",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInputGIF",
+        "WFMakeVideoFromGIFActionLoopCount"
+      ],
+      "newKeys": [
+        "WFInputGIF",
+        "WFMakeVideoFromGIFActionLoopCount"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "maskImage",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFMaskType",
+        "WFMaskCornerRadius"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFMaskType",
+        "WFMaskCornerRadius"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "overlayImage",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFImage"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFImage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "overlayText",
+      "alias": null,
+      "module": "images",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFImage",
+        "WFText",
+        "WFTextPosition",
+        "WFFont",
+        "WFFontSize",
+        "WFTextAlignment",
+        "WFTextX",
+        "WFTextY",
+        "WFPercentageTextX",
+        "WFPercentageTextY",
+        "WFTextOffset",
+        "WFPercentageTextOffset",
+        "WFPercentageFontSize",
+        "WFTextColor",
+        "WFTextRotation",
+        "WFTextOutlineEnabled",
+        "WFTextStrokeWidth",
+        "WFPercentageTextStrokeWidth",
+        "WFTextStrokeColor",
+        "WFTextBoxWidth",
+        "WFPercentageTextBoxWidth",
+        "WFSizingMethod"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "removeBackground",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFCropToBounds"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFCropToBounds"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "resizeImage",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFImage",
+        "WFImageResizeWidth",
+        "WFImageResizeHeight"
+      ],
+      "newKeys": [
+        "WFImage",
+        "WFImageResizeWidth",
+        "WFImageResizeHeight"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "resizeImageByLongestEdge",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFImage",
+        "WFImageResizeLength"
+      ],
+      "newKeys": [
+        "WFImage",
+        "WFImageResizeLength"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "resizeImageByPercent",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFImage",
+        "WFImageResizePercentage"
+      ],
+      "newKeys": [
+        "WFImage",
+        "WFImageResizePercentage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "rotateMedia",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFImage",
+        "WFImageRotateAmount"
+      ],
+      "newKeys": [
+        "WFImage",
+        "WFImageRotateAmount"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "scanBarcode",
+      "alias": null,
+      "module": "images",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFScanCodeActionMode",
+        "imageFile"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "stripImageMetadata",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "convertImageFormats",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "cropImagePosition",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "customImageOverlayPosition",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "flipImageDirection",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "imageCombineMode",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "imageDetail",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "maskImageType",
+      "alias": null,
+      "module": "images",
+      "status": "unchanged",
+      "old_file": "images",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "adjustTextTone",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "text"
+      ],
+      "newKeys": [
+        "text"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "askChatGPT",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFGenerativeResultType"
+      ],
+      "newKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFGenerativeResultType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "askCloudLLM",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFGenerativeResultType"
+      ],
+      "newKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFGenerativeResultType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "askDeviceModel",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFGenerativeResultType"
+      ],
+      "newKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFGenerativeResultType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "askLLM",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "WFLLMPrompt",
+        "WFLLMModel",
+        "FollowUp",
+        "WFGenerativeResultType"
+      ],
+      "newKeys": [
+        "WFLLMPrompt",
+        "WFLLMModel",
+        "FollowUp",
+        "WFGenerativeResultType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "askModel",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFAllowWebSearch",
+        "WFGenerativeResultType"
+      ],
+      "newKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFAllowWebSearch",
+        "WFGenerativeResultType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "askProModel",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFAllowWebSearch",
+        "WFGenerativeResultType"
+      ],
+      "newKeys": [
+        "WFLLMPrompt",
+        "FollowUp",
+        "WFAllowWebSearch",
+        "WFGenerativeResultType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "generateKeyPoints",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "text"
+      ],
+      "newKeys": [
+        "text"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "generateList",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "text"
+      ],
+      "newKeys": [
+        "text"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "generateProofread",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "text"
+      ],
+      "newKeys": [
+        "text"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "generateRewrite",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "text"
+      ],
+      "newKeys": [
+        "text"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "generateSummary",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "text"
+      ],
+      "newKeys": [
+        "text"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "generateTable",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": [
+        "text"
+      ],
+      "newKeys": [
+        "text"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "LLMModel",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "Model",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "generativeResultType",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "textTone",
+      "alias": null,
+      "module": "intelligence",
+      "status": "unchanged",
+      "old_file": "intelligence",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "addWeatherLocation",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "placemark"
+      ],
+      "newKeys": [
+        "placemark"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "currentLocation",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "filterLocations",
+      "alias": null,
+      "module": "location",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getAddresses",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getCurrentLocation",
+      "alias": "getCurrentLocationAdvanced",
+      "module": "location",
+      "status": "extended_alias",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "Accuracy"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getCurrentWeather",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFWeatherCustomLocation"
+      ],
+      "newKeys": [
+        "WFWeatherCustomLocation"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getDirections",
+      "alias": null,
+      "module": "location",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFDestination",
+        "WFGetDirectionsActionApp",
+        "WFGetDirectionsActionMode",
+        "WFLocation"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getDistance",
+      "alias": null,
+      "module": "location",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFGetDistanceDestination",
+        "WFGetDirectionsActionMode",
+        "WFDistanceUnit",
+        "WFAvoidHighways",
+        "WFAvoidTolls",
+        "WFGetDirectionsCustomLocation",
+        "Accuracy"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getHalfwayPoint",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFGetHalfwayPointFirstLocation",
+        "WFGetHalfwayPointSecondLocation"
+      ],
+      "newKeys": [
+        "WFGetHalfwayPointFirstLocation",
+        "WFGetHalfwayPointSecondLocation"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getLocationDetail",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getMapsLink",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getParkedCarDetail",
+      "alias": null,
+      "module": "location",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getParkedCarLocation",
+      "alias": null,
+      "module": "location",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getTravelTime",
+      "alias": null,
+      "module": "location",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFDestination",
+        "WFGetDirectionsCustomLocation",
+        "WFGetDirectionsActionMode",
+        "WFAvoidHighways",
+        "WFAvoidTolls"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getWeatherDetail",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getWeatherForecast",
+      "alias": "getWeatherForecastAdvanced",
+      "module": "location",
+      "status": "extended_alias",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFWeatherForecastType",
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFWeatherForecastType",
+        "WFInput",
+        "WFWeatherCustomLocation"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "location",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFLocation"
+      ],
+      "newKeys": [
+        "WFLocation"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "openInMaps",
+      "alias": "openInMapsAdvanced",
+      "module": "location",
+      "status": "extended_alias",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFSearchMapsActionApp"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "removeWeatherLocation",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "entities"
+      ],
+      "newKeys": [
+        "entities"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setParkedCar",
+      "alias": null,
+      "module": "location",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFLocation",
+        "WFSetParkedCarNotes",
+        "WFImage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "streetAddress",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": [
+        "WFAddressLine1",
+        "WFAddressLine2",
+        "WFCity",
+        "WFState",
+        "WFCountry",
+        "WFPostalCode"
+      ],
+      "newKeys": [
+        "WFAddressLine1",
+        "WFAddressLine2",
+        "WFCity",
+        "WFState",
+        "WFCountry",
+        "WFPostalCode"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "locationDetail",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "parkedCarDetail",
+      "alias": null,
+      "module": "location",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "weatherDetail",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "weatherForecastTypes",
+      "alias": null,
+      "module": "location",
+      "status": "unchanged",
+      "old_file": "location",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "displaySleep",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "ejectDisk",
+      "alias": null,
+      "module": "mac",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "filterDisplays",
+      "alias": null,
+      "module": "mac",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getApps",
+      "alias": "getAppsAdvanced",
+      "module": "mac",
+      "status": "extended_alias",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getCurrentApp",
+      "alias": null,
+      "module": "mac",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFVisibleAppScope"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getSelectedText",
+      "alias": null,
+      "module": "mac",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "lockApp",
+      "alias": null,
+      "module": "mac",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFApp",
+        "WFLockAppOperation"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "logOut",
+      "alias": null,
+      "module": "mac",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "makeDiskImage",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [
+        "VolumeName",
+        "WFInput",
+        "EncryptImage"
+      ],
+      "newKeys": [
+        "VolumeName",
+        "WFInput",
+        "EncryptImage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "makeSizedDiskImage",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [
+        "VolumeName",
+        "WFInput",
+        "ImageSize",
+        "EncryptImage"
+      ],
+      "newKeys": [
+        "VolumeName",
+        "WFInput",
+        "ImageSize",
+        "EncryptImage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "mountDiskImage",
+      "alias": null,
+      "module": "mac",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "moveWindow",
+      "alias": "moveWindowAdvanced",
+      "module": "mac",
+      "status": "extended_alias",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [
+        "WFWindow",
+        "WFPosition",
+        "WFBringToFront"
+      ],
+      "newKeys": [
+        "WFWindow",
+        "WFPosition",
+        "WFBringToFront",
+        "Display",
+        "WFXCoordinate",
+        "WFYCoordinate"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "resizeWindow",
+      "alias": "resizeWindowAdvanced",
+      "module": "mac",
+      "status": "extended_alias",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [
+        "WFWindow",
+        "WFConfiguration"
+      ],
+      "newKeys": [
+        "WFWindow",
+        "WFConfiguration",
+        "WFBringToFront",
+        "WFWidth",
+        "WFHeight"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "runAppleScript",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [
+        "Script",
+        "Input"
+      ],
+      "newKeys": [
+        "Script",
+        "Input"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "runJSAutomation",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [
+        "Script",
+        "Input"
+      ],
+      "newKeys": [
+        "Script",
+        "Input"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "runShellScript",
+      "alias": "runShellScriptAdvanced",
+      "module": "mac",
+      "status": "extended_alias",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [
+        "Script",
+        "Input",
+        "Shell",
+        "InputMode"
+      ],
+      "newKeys": [
+        "Script",
+        "Input",
+        "Shell",
+        "InputMode",
+        "RunAsRoot"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "sleep",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "startScreensaver",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "takeInteractiveScreenshot",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": [
+        "WFTakeScreenshotActionInteractiveSelectionType"
+      ],
+      "newKeys": [
+        "WFTakeScreenshotActionInteractiveSelectionType"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "screenshotSelection",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "storageUnit",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "windowPosition",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "windowSize",
+      "alias": null,
+      "module": "mac",
+      "status": "unchanged",
+      "old_file": "mac",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "calculate",
+      "alias": null,
+      "module": "math",
+      "status": "original_preserved",
+      "old_file": "math",
+      "reason": "replacement/removal/reordering of original native param keys",
+      "originalKeys": [
+        "WFScientificMathOperation",
+        "WFInput",
+        "WFMathOperand"
+      ],
+      "newKeys": [
+        "WFScientificMathOperation",
+        "WFInput",
+        "WFScientificMathOperand"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "ceil",
+      "alias": "ceilAdvanced",
+      "module": "math",
+      "status": "extended_alias",
+      "old_file": "math",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFRoundTo"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFRoundTo",
+        "TenToThePowerOf"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "floor",
+      "alias": "floorAdvanced",
+      "module": "math",
+      "status": "extended_alias",
+      "old_file": "math",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFRoundTo"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFRoundTo",
+        "TenToThePowerOf"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "round",
+      "alias": "roundAdvanced",
+      "module": "math",
+      "status": "extended_alias",
+      "old_file": "math",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFRoundTo"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFRoundTo",
+        "TenToThePowerOf"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "statistic",
+      "alias": null,
+      "module": "math",
+      "status": "original_preserved",
+      "old_file": "math",
+      "reason": "fork has demonstrably wrong native key",
+      "originalKeys": [
+        "WFStatisticsOperation",
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFStatisticsOperation",
+        "Input"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "calculationOperation",
+      "alias": null,
+      "module": "math",
+      "status": "original_preserved",
+      "old_file": "math",
+      "reason": "changed original enum requires manual audit",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "roundingPlace",
+      "alias": null,
+      "module": "math",
+      "status": "unchanged",
+      "old_file": "math",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "statisticOperations",
+      "alias": null,
+      "module": "math",
+      "status": "unchanged",
+      "old_file": "math",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "encodeAudio",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFMedia",
+        "WFMediaAudioFormat",
+        "WFMediaCustomSpeed"
+      ],
+      "newKeys": [
+        "WFMedia",
+        "WFMediaAudioFormat",
+        "WFMediaCustomSpeed"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "encodeVideo",
+      "alias": "encodeVideoAdvanced",
+      "module": "media",
+      "status": "extended_alias",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFMedia",
+        "WFMediaSize",
+        "WFMediaCustomSpeed",
+        "WFMediaPreserveTransparency"
+      ],
+      "newKeys": [
+        "WFMedia",
+        "WFMediaSize",
+        "WFMediaCustomSpeed",
+        "WFMediaPreserveTransparency",
+        "WFMediaSpeed"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getEpisodesForPodcast",
+      "alias": null,
+      "module": "media",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getPodcastDetail",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getPodcastEpisodeDetail",
+      "alias": null,
+      "module": "media",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getPodcasts",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getShazamDetail",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "playPodcast",
+      "alias": "playPodcastAdvanced",
+      "module": "media",
+      "status": "extended_alias",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFPodcastShow"
+      ],
+      "newKeys": [
+        "WFPodcastShow",
+        "WFPodcastPlaybackOrder"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "playSound",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "recordAudio",
+      "alias": "recordAudioAdvanced",
+      "module": "media",
+      "status": "extended_alias",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFRecordingCompression",
+        "WFRecordingStart"
+      ],
+      "newKeys": [
+        "WFRecordingCompression",
+        "WFRecordingStart",
+        "WFRecordingEnd",
+        "WFRecordingTimeInterval"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "searchAppStore",
+      "alias": "searchAppStoreAdvanced",
+      "module": "media",
+      "status": "extended_alias",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFSearchTerm"
+      ],
+      "newKeys": [
+        "WFSearchTerm",
+        "WFCountry",
+        "WFAttribute",
+        "WFEntity",
+        "WFItemLimit"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "searchPodcasts",
+      "alias": "searchPodcastsAdvanced",
+      "module": "media",
+      "status": "extended_alias",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFSearchTerm"
+      ],
+      "newKeys": [
+        "WFSearchTerm",
+        "WFCountry",
+        "WFAttribute",
+        "WFEntity",
+        "WFItemLimit"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "searchVoiceMemos",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "searchPhrase"
+      ],
+      "newKeys": [
+        "searchPhrase"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setMetadata",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFMedia",
+        "WFMetadataArtwork",
+        "WFMetadataTitle",
+        "WFMetadataArtist",
+        "WFMetadataAlbum",
+        "WFMetadataGenre",
+        "WFMetadataYear"
+      ],
+      "newKeys": [
+        "WFMedia",
+        "WFMetadataArtwork",
+        "WFMetadataTitle",
+        "WFMetadataArtist",
+        "WFMetadataAlbum",
+        "WFMetadataGenre",
+        "WFMetadataYear"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setNoiseControlMode",
+      "alias": null,
+      "module": "media",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFListeningMode",
+        "WFRoute"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setPlaybackDestination",
+      "alias": null,
+      "module": "media",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFMediaRoute",
+        "WFMediaRouteOperation"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "showIniTunes",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFProduct"
+      ],
+      "newKeys": [
+        "WFProduct"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "startShazam",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFShazamMediaActionShowWhenRun",
+        "WFShazamMediaActionErrorIfNotRecognized"
+      ],
+      "newKeys": [
+        "WFShazamMediaActionShowWhenRun",
+        "WFShazamMediaActionErrorIfNotRecognized"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "stripMediaMetadata",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFMedia"
+      ],
+      "newKeys": [
+        "WFMedia"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "takePhoto",
+      "alias": "takePhotoAdvanced",
+      "module": "media",
+      "status": "extended_alias",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFPhotoCount",
+        "WFCameraCaptureShowPreview"
+      ],
+      "newKeys": [
+        "WFPhotoCount",
+        "WFCameraCaptureShowPreview",
+        "WFCameraCaptureDevice"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "takeScreenshot",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFTakeScreenshotMainMonitorOnly"
+      ],
+      "newKeys": [
+        "WFTakeScreenshotMainMonitorOnly"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "takeVideo",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFCameraCaptureDevice",
+        "WFCameraCaptureQuality",
+        "WFRecordingStart"
+      ],
+      "newKeys": [
+        "WFCameraCaptureDevice",
+        "WFCameraCaptureQuality",
+        "WFRecordingStart"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "trimVideo",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": [
+        "WFInputMedia"
+      ],
+      "newKeys": [
+        "WFInputMedia"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "audioFormats",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "audioQuality",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "audioSpeeds",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "audioStart",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "cameraOrientation",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "encodeVideoSizes",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "encodeVideoSpeeds",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "podcastDetail",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "podcastEpisodeDetail",
+      "alias": null,
+      "module": "media",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "recordingStart",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "shazamDetail",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "videoQuality",
+      "alias": null,
+      "module": "media",
+      "status": "unchanged",
+      "old_file": "media",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "addToMusic",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "addToPlaylist",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [
+        "WFPlaylistName",
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFPlaylistName",
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "clearUpNext",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "createPlaylist",
+      "alias": null,
+      "module": "music",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFPlaylistName",
+        "WFPlaylistAuthor",
+        "WFPlaylistDescription",
+        "WFPlaylistItems"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "filterMusic",
+      "alias": null,
+      "module": "music",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getCurrentSong",
+      "alias": "getCurrentSongAdvanced",
+      "module": "music",
+      "status": "extended_alias",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "Subject"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getMusicDetail",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getPlaylistSongs",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [
+        "WFPlaylistName"
+      ],
+      "newKeys": [
+        "WFPlaylistName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "pause",
+      "alias": "pauseAdvanced",
+      "module": "music",
+      "status": "extended_alias",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "WFMediaRoute"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "play",
+      "alias": "playAdvanced",
+      "module": "music",
+      "status": "extended_alias",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "WFMediaRoute"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "playLater",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [
+        "WFMusic"
+      ],
+      "newKeys": [
+        "WFMusic"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "playMusic",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [
+        "WFMediaItems",
+        "WFPlayMusicActionShuffle",
+        "WFPlayMusicActionRepeat"
+      ],
+      "newKeys": [
+        "WFMediaItems",
+        "WFPlayMusicActionShuffle",
+        "WFPlayMusicActionRepeat"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "playNext",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [
+        "WFMusic"
+      ],
+      "newKeys": [
+        "WFMusic"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "searchiTunes",
+      "alias": null,
+      "module": "music",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFSearchTerm",
+        "WFItemLimit",
+        "WFCountry",
+        "WFAttribute",
+        "WFEntity",
+        "WFMediaType"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "seek",
+      "alias": "seekAdvanced",
+      "module": "music",
+      "status": "extended_alias",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [
+        "WFTimeInterval",
+        "WFSeekBehavior"
+      ],
+      "newKeys": [
+        "WFTimeInterval",
+        "WFSeekBehavior",
+        "WFMediaRoute"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "selectMusic",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [
+        "WFExportSongActionSelectMultiple"
+      ],
+      "newKeys": [
+        "WFExportSongActionSelectMultiple"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "skipBack",
+      "alias": "skipBackAdvanced",
+      "module": "music",
+      "status": "extended_alias",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "WFMediaRoute"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "skipFwd",
+      "alias": "skipFwdAdvanced",
+      "module": "music",
+      "status": "extended_alias",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "WFMediaRoute"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "togglePlayPause",
+      "alias": "togglePlayPauseAdvanced",
+      "module": "music",
+      "status": "extended_alias",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "WFMediaRoute"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "musicDetail",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "repeatMode",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "seekBehavior",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "shuffleMode",
+      "alias": null,
+      "module": "music",
+      "status": "unchanged",
+      "old_file": "music",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "connectToServer",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "filterVPNs",
+      "alias": null,
+      "module": "network",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getCellularDetail",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": [
+        "WFCellularDetail"
+      ],
+      "newKeys": [
+        "WFCellularDetail"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getEthernetDetail",
+      "alias": null,
+      "module": "network",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFEthernetDetail"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getExternalIP",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": [
+        "WFIPAddressTypeOption"
+      ],
+      "newKeys": [
+        "WFIPAddressTypeOption"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getHotspotPassword",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getLocalIP",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": [
+        "WFIPAddressTypeOption"
+      ],
+      "newKeys": [
+        "WFIPAddressTypeOption"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getVPN",
+      "alias": null,
+      "module": "network",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getWifiDetail",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": [
+        "WFWiFiDetail"
+      ],
+      "newKeys": [
+        "WFWiFiDetail"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "isOnline",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "runSSHScript",
+      "alias": "runSSHScriptAdvanced",
+      "module": "network",
+      "status": "extended_alias",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": [
+        "WFSSHScript",
+        "WFInput",
+        "WFSSHHost",
+        "WFSSHPort",
+        "WFSSHUser",
+        "WFSSHAuthenticationType",
+        "WFSSHPassword"
+      ],
+      "newKeys": [
+        "WFSSHScript",
+        "WFInput",
+        "WFSSHHost",
+        "WFSSHPort",
+        "WFSSHUser",
+        "WFSSHAuthenticationType",
+        "WFSSHPassword",
+        "WFSSHKey"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setHotspotPassword",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setVPN",
+      "alias": null,
+      "module": "network",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFVPNOperation",
+        "WFVPN",
+        "WFOnDemandValue"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "IPTypes",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "SSHScriptAuthType",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "VPNOperation",
+      "alias": null,
+      "module": "network",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "cellularDetail",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "ethernetDetail",
+      "alias": null,
+      "module": "network",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "wifiDetail",
+      "alias": null,
+      "module": "network",
+      "status": "unchanged",
+      "old_file": "network",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "makeImageFromPDFPage",
+      "alias": "makeImageFromPDFPageAdvanced",
+      "module": "pdf",
+      "status": "extended_alias",
+      "old_file": "pdf",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFMakeImageFromPDFPageColorspace",
+        "WFMakeImageFromPDFPageResolution"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFMakeImageFromPDFPageColorspace",
+        "WFMakeImageFromPDFPageResolution",
+        "WFMakeImageFromPDFPageImageFormat"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "makePDF",
+      "alias": "makePDFAdvanced",
+      "module": "pdf",
+      "status": "extended_alias",
+      "old_file": "pdf",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFPDFIncludeMargin",
+        "WFPDFDocumentMergeBehavior"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFPDFIncludeMargin",
+        "WFPDFDocumentMergeBehavior",
+        "WFPDFIncludedPages",
+        "WFPDFSinglePage",
+        "WFPDFPageRangeStart",
+        "WFPDFPageRangeEnd"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "optimizePDF",
+      "alias": null,
+      "module": "pdf",
+      "status": "unchanged",
+      "old_file": "pdf",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "splitPDF",
+      "alias": null,
+      "module": "pdf",
+      "status": "unchanged",
+      "old_file": "pdf",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "PDFMergeBehaviors",
+      "alias": null,
+      "module": "pdf",
+      "status": "unchanged",
+      "old_file": "pdf",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "colorSpace",
+      "alias": null,
+      "module": "pdf",
+      "status": "unchanged",
+      "old_file": "pdf",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "createAlbum",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "AlbumName",
+        "WFInput"
+      ],
+      "newKeys": [
+        "AlbumName",
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "deletePhotos",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "filterPhotos",
+      "alias": null,
+      "module": "photos",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getLastImport",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getLatestBursts",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "WFGetLatestPhotoCount"
+      ],
+      "newKeys": [
+        "WFGetLatestPhotoCount"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getLatestLivePhotos",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "WFGetLatestPhotoCount"
+      ],
+      "newKeys": [
+        "WFGetLatestPhotoCount"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getLatestPhotos",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "WFGetLatestPhotoCount",
+        "WFGetLatestPhotosActionIncludeScreenshots"
+      ],
+      "newKeys": [
+        "WFGetLatestPhotoCount",
+        "WFGetLatestPhotosActionIncludeScreenshots"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getLatestScreenshots",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "WFGetLatestPhotoCount"
+      ],
+      "newKeys": [
+        "WFGetLatestPhotoCount"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getLatestVideos",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "WFGetLatestPhotoCount"
+      ],
+      "newKeys": [
+        "WFGetLatestPhotoCount"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "removeFromAlbum",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFRemoveAlbumSelectedGroup"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFRemoveAlbumSelectedGroup"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "renameAlbum",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "album",
+        "title"
+      ],
+      "newKeys": [
+        "album",
+        "title"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "savePhoto",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFCameraRollSelectedGroup"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFCameraRollSelectedGroup"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "searchPhotos",
+      "alias": null,
+      "module": "photos",
+      "status": "unchanged",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "criteria"
+      ],
+      "newKeys": [
+        "criteria"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "selectPhotos",
+      "alias": "selectPhotosAdvanced",
+      "module": "photos",
+      "status": "extended_alias",
+      "old_file": "photos",
+      "reason": "",
+      "originalKeys": [
+        "WFSelectMultiplePhotos"
+      ],
+      "newKeys": [
+        "WFSelectMultiplePhotos",
+        "WFPhotoPickerTypes"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "DNDOff",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "DNDOn",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "StageManager",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [
+        "showDock",
+        "showRecentApps"
+      ],
+      "newKeys": [
+        "showDock",
+        "showRecentApps"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "darkMode",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getAllWallpapers",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getFocusMode",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getMultitaskingMode",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getWallpaper",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "lightMode",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "setWallpaper",
+      "alias": "setWallpaperAdvanced",
+      "module": "settings",
+      "status": "extended_alias",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFSelectedPoster",
+        "WFWallpaperLocation",
+        "WFWallpaperLegibilityBlur",
+        "WFWallpaperPerspectiveZoom",
+        "WFWallpaperShowPreview",
+        "WFWallpaperSmartCrop"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "toggleAppearance",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "toggleDND",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "enum",
+      "name": "FocusUntil",
+      "alias": null,
+      "module": "settings",
+      "status": "unchanged",
+      "old_file": "settings",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "airdrop",
+      "alias": null,
+      "module": "sharing",
+      "status": "unchanged",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "findConversation",
+      "alias": null,
+      "module": "sharing",
+      "status": "unchanged",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [
+        "WFContentItemInputParameter"
+      ],
+      "newKeys": [
+        "WFContentItemInputParameter"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "findEmail",
+      "alias": null,
+      "module": "sharing",
+      "status": "unchanged",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [
+        "WFContentItemInputParameter"
+      ],
+      "newKeys": [
+        "WFContentItemInputParameter"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "findMessage",
+      "alias": null,
+      "module": "sharing",
+      "status": "unchanged",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [
+        "WFContentItemInputParameter"
+      ],
+      "newKeys": [
+        "WFContentItemInputParameter"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getClipboard",
+      "alias": null,
+      "module": "sharing",
+      "status": "unchanged",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "sendEmail",
+      "alias": "sendEmailAdvanced",
+      "module": "sharing",
+      "status": "extended_alias",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [
+        "WFSendEmailActionToRecipients",
+        "WFSendEmailActionFrom",
+        "WFSendEmailActionSubject",
+        "WFSendEmailActionInputAttachments",
+        "WFSendEmailActionShowComposeSheet",
+        "WFSendEmailActionSaveAsDraft"
+      ],
+      "newKeys": [
+        "WFSendEmailActionToRecipients",
+        "WFSendEmailActionFrom",
+        "WFSendEmailActionSubject",
+        "WFSendEmailActionInputAttachments",
+        "WFSendEmailActionShowComposeSheet",
+        "WFSendEmailActionSaveAsDraft",
+        "WFSendEmailActionCcRecipients",
+        "WFSendEmailActionBccRecipients",
+        "WFEmailAccountActionSelectedAccount"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "sendMessage",
+      "alias": "sendMessageAdvanced",
+      "module": "sharing",
+      "status": "extended_alias",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [
+        "WFSendMessageActionRecipients",
+        "WFSendMessageContent",
+        "ShowWhenRun"
+      ],
+      "newKeys": [
+        "WFSendMessageActionRecipients",
+        "WFSendMessageContent",
+        "ShowWhenRun",
+        "WFSendMessagePrefix"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setAirdropReceiving",
+      "alias": null,
+      "module": "sharing",
+      "status": "unchanged",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [
+        "WFAirDropState"
+      ],
+      "newKeys": [
+        "WFAirDropState"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "setClipboard",
+      "alias": null,
+      "module": "sharing",
+      "status": "unchanged",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFLocalOnly",
+        "WFExpirationDate"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFLocalOnly",
+        "WFExpirationDate"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "share",
+      "alias": null,
+      "module": "sharing",
+      "status": "unchanged",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "airdropReceivingStates",
+      "alias": null,
+      "module": "sharing",
+      "status": "unchanged",
+      "old_file": "sharing",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "getAppStoreDetail",
+      "alias": null,
+      "module": "shortcuts",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getShortcutDetail",
+      "alias": null,
+      "module": "shortcuts",
+      "status": "unchanged",
+      "old_file": "shortcuts",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getShortcuts",
+      "alias": "getShortcutsAdvanced",
+      "module": "shortcuts",
+      "status": "extended_alias",
+      "old_file": "shortcuts",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": [
+        "Folder"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "makeShortcut",
+      "alias": null,
+      "module": "shortcuts",
+      "status": "unchanged",
+      "old_file": "shortcuts",
+      "reason": "",
+      "originalKeys": [
+        "OpenWhenRun"
+      ],
+      "newKeys": [
+        "OpenWhenRun"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "searchShortcuts",
+      "alias": null,
+      "module": "shortcuts",
+      "status": "unchanged",
+      "old_file": "shortcuts",
+      "reason": "",
+      "originalKeys": [
+        "searchPhrase"
+      ],
+      "newKeys": [
+        "searchPhrase"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "shortcutDetail",
+      "alias": null,
+      "module": "shortcuts",
+      "status": "unchanged",
+      "old_file": "shortcuts",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "deleteStoredValue",
+      "alias": null,
+      "module": "storage",
+      "status": "unchanged",
+      "old_file": "storage",
+      "reason": "",
+      "originalKeys": [
+        "WFStoredContentKey",
+        "WFStoredContentGlobalValue"
+      ],
+      "newKeys": [
+        "WFStoredContentKey",
+        "WFStoredContentGlobalValue"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getStoredValue",
+      "alias": null,
+      "module": "storage",
+      "status": "unchanged",
+      "old_file": "storage",
+      "reason": "",
+      "originalKeys": [
+        "WFStoredContentKey",
+        "WFStoredContentGlobalValue"
+      ],
+      "newKeys": [
+        "WFStoredContentKey",
+        "WFStoredContentGlobalValue"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "storeValue",
+      "alias": null,
+      "module": "storage",
+      "status": "unchanged",
+      "old_file": "storage",
+      "reason": "",
+      "originalKeys": [
+        "WFStoredContentKey",
+        "WFInput",
+        "WFStoredContentGlobalValue"
+      ],
+      "newKeys": [
+        "WFStoredContentKey",
+        "WFInput",
+        "WFStoredContentGlobalValue"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "alternatingCase",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "capitalize",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "capitalizeAll",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "correctSpelling",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "define",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "Word"
+      ],
+      "newKeys": [
+        "Word"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getEmojiName",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getMatchGroup",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFGroupIndex"
+      ],
+      "newKeys": [
+        "WFGroupIndex"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getMatchGroups",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getRichTextFromHTML",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFHTML"
+      ],
+      "newKeys": [
+        "WFHTML"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getRichTextFromMarkdown",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getText",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getTextFromImage",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFImage"
+      ],
+      "newKeys": [
+        "WFImage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "listen",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFDictateTextStopListening",
+        "WFSpeechLanguage"
+      ],
+      "newKeys": [
+        "WFDictateTextStopListening",
+        "WFSpeechLanguage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "lowercase",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "makeHTML",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFMakeFullDocument"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFMakeFullDocument"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "makeMarkdown",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "makeSpokenAudio",
+      "alias": "makeSpokenAudioAdvanced",
+      "module": "text",
+      "status": "extended_alias",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFSpeakTextRate",
+        "WFSpeakTextPitch"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFSpeakTextRate",
+        "WFSpeakTextPitch",
+        "WFSpeakTextLanguage",
+        "WFSpeakTextVoice"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "matchText",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFMatchTextPattern",
+        "WFMatchTextCaseSensitive"
+      ],
+      "newKeys": [
+        "WFMatchTextPattern",
+        "WFMatchTextCaseSensitive"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "replaceText",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFReplaceTextFind",
+        "WFReplaceTextReplace",
+        "WFInput",
+        "WFReplaceTextCaseSensitive",
+        "WFReplaceTextRegularExpression"
+      ],
+      "newKeys": [
+        "WFReplaceTextFind",
+        "WFReplaceTextReplace",
+        "WFInput",
+        "WFReplaceTextCaseSensitive",
+        "WFReplaceTextRegularExpression"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "speak",
+      "alias": "speakAdvanced",
+      "module": "text",
+      "status": "extended_alias",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFText",
+        "WFSpeakTextWait",
+        "WFSpeakTextLanguage"
+      ],
+      "newKeys": [
+        "WFText",
+        "WFSpeakTextWait",
+        "WFSpeakTextLanguage",
+        "WFSpeakTextRate",
+        "WFSpeakTextPitch",
+        "WFSpeakTextVoice"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "titleCase",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "trimWhitespace",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "uppercase",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "enum",
+      "name": "stopListeningTrigger",
+      "alias": null,
+      "module": "text",
+      "status": "unchanged",
+      "old_file": "text",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "detectLanguage",
+      "alias": null,
+      "module": "translation",
+      "status": "unchanged",
+      "old_file": "translation",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "translate",
+      "alias": null,
+      "module": "translation",
+      "status": "unchanged",
+      "old_file": "translation",
+      "reason": "",
+      "originalKeys": [
+        "WFInputText",
+        "WFSelectedLanguage",
+        "WFSelectedFromLanguage"
+      ],
+      "newKeys": [
+        "WFInputText",
+        "WFSelectedLanguage",
+        "WFSelectedFromLanguage"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "translationLanguage",
+      "alias": null,
+      "module": "translation",
+      "status": "unchanged",
+      "old_file": "translation",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "action",
+      "name": "downloadURL",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFURL",
+        "WFHTTPHeaders"
+      ],
+      "newKeys": [
+        "WFURL",
+        "WFHTTPHeaders"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "expandURL",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "URL"
+      ],
+      "newKeys": [
+        "URL"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "fileRequest",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFURL",
+        "WFHTTPMethod",
+        "WFRequestVariable",
+        "WFHTTPHeaders"
+      ],
+      "newKeys": [
+        "WFURL",
+        "WFHTTPMethod",
+        "WFRequestVariable",
+        "WFHTTPHeaders"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "filterArticles",
+      "alias": null,
+      "module": "web",
+      "status": "added",
+      "old_file": null,
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": [
+        "WFContentItemInputParameter",
+        "WFContentItemFilter",
+        "WFContentItemSortProperty",
+        "WFContentItemSortOrder",
+        "WFContentItemLimitNumber"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "formRequest",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFURL",
+        "WFHTTPMethod",
+        "WFFormValues",
+        "WFHTTPHeaders"
+      ],
+      "newKeys": [
+        "WFURL",
+        "WFHTTPMethod",
+        "WFFormValues",
+        "WFHTTPHeaders"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getArticle",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFWebPage"
+      ],
+      "newKeys": [
+        "WFWebPage"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getArticleDetail",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getCurrentURL",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [],
+      "newKeys": []
+    },
+    {
+      "kind": "action",
+      "name": "getGifs",
+      "alias": "getGifsAdvanced",
+      "module": "web",
+      "status": "extended_alias",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFGiphyQuery",
+        "WFGiphyLimit"
+      ],
+      "newKeys": [
+        "WFGiphyQuery",
+        "WFGiphyLimit",
+        "WFGiphySelectMultiple"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getRSS",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFRSSItemQuantity",
+        "WFRSSFeedURL"
+      ],
+      "newKeys": [
+        "WFRSSItemQuantity",
+        "WFRSSFeedURL"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getRSSFeeds",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFURLs"
+      ],
+      "newKeys": [
+        "WFURLs"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getURLDetail",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFURL",
+        "WFURLComponent"
+      ],
+      "newKeys": [
+        "WFURL",
+        "WFURLComponent"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getURLHeaders",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getURLs",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getWebPageDetail",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ],
+      "newKeys": [
+        "WFInput",
+        "WFContentItemPropertyName"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "getWebpageContents",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "jsonRequest",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFURL",
+        "WFHTTPMethod",
+        "WFJSONValues",
+        "WFHTTPHeaders"
+      ],
+      "newKeys": [
+        "WFURL",
+        "WFHTTPMethod",
+        "WFJSONValues",
+        "WFHTTPHeaders"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "openURL",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "openXCallbackURL",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFXCallbackURL"
+      ],
+      "newKeys": [
+        "WFXCallbackURL"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "runJavaScriptOnWebpage",
+      "alias": "runJavaScriptOnWebpageAdvanced",
+      "module": "web",
+      "status": "extended_alias",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFJavaScript"
+      ],
+      "newKeys": [
+        "WFJavaScript",
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "searchGiphy",
+      "alias": "searchGiphyAdvanced",
+      "module": "web",
+      "status": "extended_alias",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFGiphyQuery"
+      ],
+      "newKeys": [
+        "WFGiphyQuery",
+        "WFGiphySelectMultiple"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "searchWeb",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFSearchWebDestination",
+        "WFInputText"
+      ],
+      "newKeys": [
+        "WFSearchWebDestination",
+        "WFInputText"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "showWebpage",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFURL",
+        "WFEnterSafariReader"
+      ],
+      "newKeys": [
+        "WFURL",
+        "WFEnterSafariReader"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "urlDecode",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "action",
+      "name": "urlEncode",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": [
+        "WFInput"
+      ],
+      "newKeys": [
+        "WFInput"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "HTTPMethod",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "URLDetail",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "searchEngine",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    },
+    {
+      "kind": "enum",
+      "name": "webpageDetail",
+      "alias": null,
+      "module": "web",
+      "status": "unchanged",
+      "old_file": "web",
+      "reason": "",
+      "originalKeys": null,
+      "newKeys": null
+    }
+  ]
+}

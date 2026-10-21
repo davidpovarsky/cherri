@@ -51,6 +51,19 @@ enhanced() {
   for f in "$PACK"/modules/*.cherri; do
     printf "#include '%s'\n" "$(basename "$f")" >> "$idx"
   done
+  # Remove duplicate core action includes from the temporary staging copy only.
+  # Every opt-in module already loads its original category, so duplicate includes
+  # would otherwise fail compilation in unmodified upstream Cherri.
+  python3 - "$stage/$name" <<'PYSOURCE'
+import pathlib, re, sys
+p=pathlib.Path(sys.argv[1])
+t=p.read_text(encoding='utf8')
+categories='basic calendar contacts crypto device documents images location mac math media music network pdf photos settings sharing shortcuts text web'
+for category in categories.split():
+    pat=r"(?m)^[ \\t]*#include[ \\t]+['\\\"]actions/"+re.escape(category)+r"['\\\"][ \\t]*(?=\\n|$)"
+    t=re.sub(pat,'// Included by Apple Actions Pack: '+category,t)
+p.write_text(t,encoding='utf8')
+PYSOURCE
   if ! grep -q 'apple-actions-pack-index.cherri' "$stage/$name"; then
     {
       printf "#include 'apple-actions-pack-index.cherri'\n"
