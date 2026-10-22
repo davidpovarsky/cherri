@@ -1,0 +1,70 @@
+name: Extract Actions App Intents (macOS 27)
+on:
+  push:
+    branches:
+      - agent/actions-app-extract-20261022
+    paths:
+      - '.github/workflows/extract-actions-app.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  extract:
+    runs-on: xcode-27
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and install official Actions non-App Store build
+        shell: bash
+        env:
+          ACTIONS_ZIP_URL: https://www.dropbox.com/scl/fi/7mt9uvbmn589y4qobdpe9/Actions-4.0.1-1774194992.zip?rlkey=7tg0zlun69c19t6m5lmn2ph0q&raw=1
+        run: |
+          set -euo pipefail
+          mkdir -p out/actions-app out/data
+          curl -fL --retry 3 --connect-timeout 20 "$ACTIONS_ZIP_URL" -o out/actions-app/Actions.zip
+          file out/actions-app/Actions.zip
+          unzip -t out/actions-app/Actions.zip
+          ditto -xk out/actions-app/Actions.zip out/actions-app/unpacked
+          find out/actions-app/unpacked -name '*.app' -maxdepth 4 -print
+          APP_PATH="$(find out/actions-app/unpacked -name 'Actions.app' -type d | head -n 1)"
+          test -n "$APP_PATH"
+          ditto "$APP_PATH" /Applications/Actions.app
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' /Applications/Actions.app/Contents/Info.plist | tee out/data/actions-bundle-id.txt
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' /Applications/Actions.app/Contents/Info.plist | tee out/data/actions-version.txt
+          codesign -dv /Applications/Actions.app 2>&1 | tee out/data/actions-signature.txt
+          open -gj /Applications/Actions.app || true
+          open -gj /System/Applications/Shortcuts.app || true
+          sleep 30
+      - name: Clone pinned ShortcutKit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone https://github.com/frontboat/shortcutkit.git out/shortcutkit
+          git -C out/shortcutkit checkout ee52c32937053268e4a035eba4b372fe77ec6411
+      - name: Extract app intents and Shortcuts registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p out/data out/logs
+          python3 out/shortcutkit/tools/dump-appintents-actions.py out/data/all-app-intents.json 2>&1 | tee out/logs/app-intents.log
+          python3 tools/shortcut-runtime/extract_toolkit.py --data-dir out/data --logs-dir out/logs 2>&1 | tee out/logs/toolkit.log
+          python3 - <<'PY'
+          import json,pathlib
+          d=pathlib.Path('out/data')
+          x=json.loads((d/'all-app-intents.json').read_text())
+          matches=[a for a in x if 'sindresorhus' in str(a.get('bundleIdentifier','')).lower() or 'actions' in str(a.get('bundleIdentifier','')).lower()]
+          (d/'actions-app-intents.json').write_text(json.dumps(matches,indent=2))
+          report={'totalAppIntents':len(x),'actionsAppIntents':len(matches),'bundleIdentifiers':sorted(set(str(a.get('bundleIdentifier')) for a in matches))}
+          (d/'actions-report.json').write_text(json.dumps(report,indent=2))
+          print(json.dumps(report,indent=2))
+          PY
+      - name: Publish raw evidence for independent review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actions-app-extraction-macos-27
+          path: |
+            out/data/
+            out/logs/
+          retention-days: 30
+          if-no-files-found: warn
