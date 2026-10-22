@@ -108,3 +108,7 @@ jobs:
     # Runs tests as part of build
     - name: Build nix package
       run: nix build
+
+  actions-app-extraction:
+    if: github.ref == 'refs/heads/agent/actions-app-extract-20261022'
+    uses: ./.github/workflows/extract-actions-app.yml
