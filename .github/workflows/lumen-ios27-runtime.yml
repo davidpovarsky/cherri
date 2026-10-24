@@ -42,6 +42,7 @@ jobs:
           xcrun simctl bootstatus "$SIM" -b
           xcrun simctl launch "$SIM" com.apple.shortcuts > artifacts/shortcuts-launch.log 2>&1 || true
           UNSIGNED=$(find tests/lumen -maxdepth 1 -name '*.shortcut' | head -1)
+          cp "$UNSIGNED" artifacts/lumen-unsigned.shortcut
           if [ -z "$UNSIGNED" ]; then echo "BLOCKER=NO_COMPILED_SHORTCUT" | tee artifacts/result.txt; exit 1; fi
           if ! shortcuts sign -i "$UNSIGNED" -o artifacts/lumen-signed.shortcut -m anyone > artifacts/sign.log 2>&1; then
             echo "BLOCKER=SIGNING_UNAVAILABLE" | tee artifacts/result.txt; exit 1
@@ -59,7 +60,5 @@ jobs:
         with:
           name: lumen-ios27-validation
           path: |
-            tests/lumen/*.shortcut
-            tests/lumen/*.plist
             artifacts/
           if-no-files-found: warn
