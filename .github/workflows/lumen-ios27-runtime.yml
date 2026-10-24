@@ -41,16 +41,17 @@ jobs:
           xcrun simctl boot "$SIM" || true
           xcrun simctl bootstatus "$SIM" -b
           xcrun simctl launch "$SIM" com.apple.shortcuts > artifacts/shortcuts-launch.log 2>&1 || true
-          UNSIGNED=$(find tests/lumen -maxdepth 1 -name '*.shortcut' | head -1)
-          cp "$UNSIGNED" artifacts/lumen-unsigned.shortcut
-          if [ -z "$UNSIGNED" ]; then echo "BLOCKER=NO_COMPILED_SHORTCUT" | tee artifacts/result.txt; exit 1; fi
-          if ! shortcuts sign -i "$UNSIGNED" -o artifacts/lumen-signed.shortcut -m anyone > artifacts/sign.log 2>&1; then
-            echo "BLOCKER=SIGNING_UNAVAILABLE" | tee artifacts/result.txt; exit 1
-          fi
-          xcrun simctl openurl "$SIM" "file://$PWD/artifacts/lumen-signed.shortcut" > artifacts/import.log 2>&1 || true
+          SIGNED=tests/lumen/lumen-signed.shortcut
+          test -s "$SIGNED" || { echo "BLOCKER=SIGNED_SHORTCUT_MISSING" | tee artifacts/result.txt; exit 1; }
+          EXPECTED=0bf66b589144b1aca3065e5af77352289b21d6ec48ae33c3ce365294cbe4b13f
+          ACTUAL=$(shasum -a 256 "$SIGNED" | cut -d' ' -f1)
+          test "$ACTUAL" = "$EXPECTED" || { echo "BLOCKER=SIGNED_SHORTCUT_HASH_MISMATCH" | tee artifacts/result.txt; exit 1; }
+          cp "$SIGNED" artifacts/lumen-signed.shortcut
+          echo "SIGNED_SHORTCUT=VERIFIED sha256=$ACTUAL" | tee artifacts/sign.log
+          xcrun simctl openurl "$SIM" "file://$PWD/artifacts/lumen-signed.shortcut" > artifacts/import.log 2>&1 || { echo "BLOCKER=IMPORT_OPENURL_FAILED" | tee artifacts/result.txt; exit 1; }
           sleep 8
           xcrun simctl io "$SIM" screenshot artifacts/import-screen.png || true
-          xcrun simctl openurl "$SIM" "shortcuts://run-shortcut?name=Lumen%20Agent" > artifacts/run.log 2>&1 || true
+          xcrun simctl openurl "$SIM" "shortcuts://run-shortcut?name=Lumen%20Agent" > artifacts/run.log 2>&1 || { echo "BLOCKER=RUN_OPENURL_FAILED" | tee artifacts/result.txt; exit 1; }
           sleep 12
           xcrun simctl io "$SIM" screenshot artifacts/run-screen.png || true
           echo "ATTEMPTED_IMPORT_AND_RUN=YES; RESULT=UNVERIFIED_REQUIRES_UI_CONFIRMATION" | tee artifacts/result.txt
