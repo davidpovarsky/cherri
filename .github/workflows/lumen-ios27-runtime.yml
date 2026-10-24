@@ -11,6 +11,9 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
       - name: Install original upstream Cherri
         run: |
           git clone https://github.com/electrikmilk/cherri.git /tmp/cherri-upstream
