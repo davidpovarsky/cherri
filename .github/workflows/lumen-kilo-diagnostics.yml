@@ -1,0 +1,22 @@
+name: Lumen Kilo Diagnostics
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test Kilo models with repository secret
+        env:
+          KILO_API_KEY: ${{ secrets.LUMEN_KILO_API_KEY }}
+        run: python3 tests/lumen/kilo_compare.py
+      - name: Upload sanitized report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumen-kilo-diagnostics
+          path: artifacts/lumen-kilo-diagnostics.json
+          if-no-files-found: warn
