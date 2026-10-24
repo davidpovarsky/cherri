@@ -1,0 +1,29 @@
+name: Lumen Kilo API Smoke Test
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: Kilo model identifier
+        required: true
+        default: nvidia/nemotron-3-super-120b-a12b:free
+        type: string
+permissions:
+  contents: read
+jobs:
+  api-smoke:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Kilo endpoint and authenticated completion
+        env:
+          KILO_API_KEY: ${{ secrets.LUMEN_KILO_API_KEY }}
+          KILO_MODEL: ${{ inputs.model }}
+        run: python3 tests/lumen/kilo_smoke.py
+      - name: Upload redacted evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumen-kilo-api-smoke
+          path: artifacts/lumen-api-result.json
+          if-no-files-found: warn
