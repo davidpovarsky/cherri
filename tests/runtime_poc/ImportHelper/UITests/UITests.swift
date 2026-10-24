@@ -113,7 +113,7 @@ class ImportHelperUITests: XCTestCase {
         }
 
         // 1. If in IMPORT mode, prioritize tapping Add Shortcut / Replace / Set Up
-        if stage.contains("import") {
+        if stage.contains("import") || app.buttons["Add Shortcut"].exists {
             let importCandidates = [
                 "Add Shortcut",
                 "+ Add Shortcut",
