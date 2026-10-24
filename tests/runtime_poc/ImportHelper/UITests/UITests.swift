@@ -26,6 +26,24 @@ class ImportHelperUITests: XCTestCase {
         var tapped = false
         let targets = [("SpringBoard", springboard), ("Shortcuts", app)]
 
+        // Strict Lumen import: generic onboarding clicks must never count as success.
+        if stage == "lumen_import_strict" {
+            let addButton = app.buttons["Add Shortcut"]
+            guard addButton.waitForExistence(timeout: 20) else {
+                XCTFail("LUMEN_IMPORT_FAILED: exact Add Shortcut button is missing")
+                return
+            }
+            addButton.tap()
+            print("LUMEN_IMPORT_EXACT_ADD_TAPPED")
+            let gone = NSPredicate(format: "exists == false")
+            let disappeared = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: gone, object: addButton)], timeout: 15)
+            guard disappeared == .completed else {
+                XCTFail("LUMEN_IMPORT_FAILED: Add Shortcut sheet remained after tap")
+                return
+            }
+            print("LUMEN_IMPORT_ADD_SHEET_DISMISSED")
+            return
+        }
         // 0. STRICT MENU SELECTION STAGE
         // Must locate and tap the exact requested menu item (Alpha or Beta).
         // Never fall through to Allow, Run, Add, or generic buttons.

@@ -56,13 +56,13 @@ jobs:
           (
             cd tests/runtime_poc/ImportHelper
             xcodegen generate
-            CHERRI_STAGE=import xcodebuild test -project ImportHelper.xcodeproj -scheme ImportHelper -destination "platform=iOS Simulator,id=$SIM" -only-testing:ImportHelperUITests/ImportHelperUITests/testInteractWithShortcuts CODE_SIGNING_ALLOWED=NO > ../../../artifacts/import-ui-test.log 2>&1
+            CHERRI_STAGE=lumen_import_strict xcodebuild test -project ImportHelper.xcodeproj -scheme ImportHelper -destination "platform=iOS Simulator,id=$SIM" -only-testing:ImportHelperUITests/ImportHelperUITests/testInteractWithShortcuts CODE_SIGNING_ALLOWED=NO > ../../../artifacts/import-ui-test.log 2>&1
           ) || { echo "BLOCKER=IMPORT_UI_TEST_FAILED" | tee artifacts/result.txt; exit 1; }
           xcrun simctl io "$SIM" screenshot artifacts/after-add.png || true
           xcrun simctl openurl "$SIM" "shortcuts://run-shortcut?name=Lumen%20Agent" > artifacts/run.log 2>&1 || { echo "BLOCKER=RUN_OPENURL_FAILED" | tee artifacts/result.txt; exit 1; }
           sleep 12
           xcrun simctl io "$SIM" screenshot artifacts/run-screen.png || true
-          echo "IMPORT_UI_TEST=COMPLETED; RUN_URL=OPENED; RESULT=UNVERIFIED_REQUIRES_RUNTIME_ASSERTION" | tee artifacts/result.txt
+          echo "EXACT_ADD_TAPPED=YES; RUN_URL=OPENED; RESULT=UNVERIFIED_REQUIRES_RUNTIME_ASSERTION" | tee artifacts/result.txt
       - name: Upload Lumen build and logs
         if: always()
         uses: actions/upload-artifact@v4
