@@ -1,0 +1,60 @@
+name: Lumen iOS 27 Runtime Validation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lumen-ios27:
+    runs-on: xcode-27
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install original upstream Cherri
+        run: |
+          git clone https://github.com/electrikmilk/cherri.git /tmp/cherri-upstream
+          cd /tmp/cherri-upstream
+          git checkout bcc0095754e2cc0baaeb4d93dae172b8153b4716
+          go build -o /tmp/cherri-pure .
+      - name: Compile actual Lumen Agent
+        run: |
+          /tmp/cherri-pure tests/lumen/Lumen_Agent_MainTextFix_20261025.cherri --skip-sign -d
+          find tests/lumen -maxdepth 1 -name '*.shortcut' -ls
+      - name: Boot iOS 27 and inspect Shortcuts availability
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices available
+          xcrun simctl list runtimes
+          command -v shortcuts || true
+      - name: Attempt signed import and execution in iOS 27 simulator
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p artifacts
+          xcrun simctl list devices available > artifacts/devices.txt
+          SIM=$(xcrun simctl list devices available | grep -E 'iPhone.*\(.*\)' | head -1 | sed -E 's/.*\(([A-F0-9-]{36})\).*/\1/' || true)
+          if [[ ! "$SIM" =~ ^[A-F0-9-]{36}$ ]]; then echo "BLOCKER=NO_SIMULATOR" | tee artifacts/result.txt; exit 1; fi
+          xcrun simctl boot "$SIM" || true
+          xcrun simctl bootstatus "$SIM" -b
+          xcrun simctl launch "$SIM" com.apple.shortcuts > artifacts/shortcuts-launch.log 2>&1 || true
+          UNSIGNED=$(find tests/lumen -maxdepth 1 -name '*.shortcut' | head -1)
+          if [ -z "$UNSIGNED" ]; then echo "BLOCKER=NO_COMPILED_SHORTCUT" | tee artifacts/result.txt; exit 1; fi
+          if ! shortcuts sign -i "$UNSIGNED" -o artifacts/lumen-signed.shortcut -m anyone > artifacts/sign.log 2>&1; then
+            echo "BLOCKER=SIGNING_UNAVAILABLE" | tee artifacts/result.txt; exit 1
+          fi
+          xcrun simctl openurl "$SIM" "file://$PWD/artifacts/lumen-signed.shortcut" > artifacts/import.log 2>&1 || true
+          sleep 8
+          xcrun simctl io "$SIM" screenshot artifacts/import-screen.png || true
+          xcrun simctl openurl "$SIM" "shortcuts://run-shortcut?name=Lumen%20Agent" > artifacts/run.log 2>&1 || true
+          sleep 12
+          xcrun simctl io "$SIM" screenshot artifacts/run-screen.png || true
+          echo "ATTEMPTED_IMPORT_AND_RUN=YES; RESULT=UNVERIFIED_REQUIRES_UI_CONFIRMATION" | tee artifacts/result.txt
+      - name: Upload Lumen build and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumen-ios27-validation
+          path: |
+            tests/lumen/*.shortcut
+            tests/lumen/*.plist
+            artifacts/
+          if-no-files-found: warn
