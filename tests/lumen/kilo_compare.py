@@ -26,12 +26,13 @@ target="nvidia/nemotron-3-super-120b-a12b:free"
 # Prefer published zero-priced chat models from different providers.
 models=[target]
 for prefix in ("google/","meta-llama/","qwen/","deepseek/","openai/"):
-    choices=[m for m in catalog if isinstance(m,dict) and str(m.get("id","")).startswith(prefix) and str(m.get("id","")).endswith(":free")]
+    choices=[m for m in catalog if isinstance(m,dict) and str(m.get("id","")).startswith(prefix)]
     if choices:
         models.append(choices[0]["id"])
     if len(models)>=5:
         break
 print("catalog_models="+str(len(ids)))
+print("selected_models="+str(len(models)))
 for model in models:
     row={"model":model,"listed":model in ids,"status":None,"response_kind":None}
     result["models"].append(row)
