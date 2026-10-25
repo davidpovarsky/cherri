@@ -31,7 +31,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import glob,plistlib
-          files=glob.glob('tests/storage27/*.shortcut')
+          files=glob.glob('tests/storage27/*_unsigned.shortcut')
           assert len(files)==1,files
           actions=plistlib.load(open(files[0],'rb'))['WFWorkflowActions']
           assert len(actions)==3,len(actions)
@@ -42,7 +42,7 @@ jobs:
               assert p['WFStoredContentKey']=='lumen.probe.20261025'
               assert p['WFStoredContentGlobalValue'] is True
           assert actions[0]['WFWorkflowActionParameters']['WFInput']=='LUMEN_STORAGE_OK'
-          full=glob.glob('**/Lumen Agent.shortcut',recursive=True)
+          full=glob.glob('tests/lumen/*Lumen Agent*_unsigned.shortcut')
           assert len(full)==1,(full,glob.glob('**/*.shortcut',recursive=True))
           main=plistlib.load(open(full[0],'rb'))['WFWorkflowActions']
           ids=[a['WFWorkflowActionIdentifier'] for a in main]
