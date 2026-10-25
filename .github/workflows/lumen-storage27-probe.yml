@@ -82,9 +82,36 @@ jobs:
           xcrun simctl io "$SIM" screenshot artifacts/storage27/run.png || true
           xcodebuild test -project tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj -scheme ImportHelper -destination "platform=iOS Simulator,id=$SIM" -only-testing:ImportHelperUITests/ImportHelperUITests/testStorageProbeNoRuntimeError CODE_SIGNING_ALLOWED=NO > artifacts/storage27/runtime-test.log 2>&1 || { tail -n 80 artifacts/storage27/runtime-test.log; exit 1; }
           echo "STORAGE_SIMULATOR_NO_VISIBLE_ERROR; PERSISTENCE_NOT_PROVEN"
+      - name: Sign separate storage writer and reader
+        run: |
+          set -euo pipefail
+          for part in Writer Reader; do
+            /tmp/cherri-pure "tests/storage27/Lumen_Storage_V27_${part}.cherri" --skip-sign
+            unsigned=$(find tests/storage27 -maxdepth 1 -name "*${part}*_unsigned.shortcut" -print -quit)
+            test -s "$unsigned"
+            shortcuts sign --input "$unsigned" --output "tests/storage27/persistence-${part,,}.shortcut" --mode anyone
+            test "$(head -c 4 "tests/storage27/persistence-${part,,}.shortcut")" = AEA1
+          done
+      - name: Prove persistent value across independent shortcut runs
+        run: |
+          set -euo pipefail
+          SIM=$(xcrun simctl list devices available | grep -E 'iPhone.*\(.*\)' | head -1 | sed -E 's/.*\(([A-F0-9-]{36})\).*/\1/')
+          for part in writer reader; do
+            xcrun simctl openurl "$SIM" "file://$PWD/tests/storage27/persistence-$part.shortcut"
+            sleep 7
+            xcodebuild test -project tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj -scheme ImportHelper -destination "platform=iOS Simulator,id=$SIM" -only-testing:ImportHelperUITests/ImportHelperUITests/testStorageProbeImportStrict CODE_SIGNING_ALLOWED=NO > "artifacts/storage27/$part-import.log" 2>&1 || { tail -n 80 "artifacts/storage27/$part-import.log"; exit 1; }
+            xcrun simctl openurl "$SIM" "shortcuts://run-shortcut?name=persistence-$part"
+            sleep 6
+            if [ "$part" = writer ]; then test_name=testStorageWriterValue; else test_name=testStorageReaderValue; fi
+            xcodebuild test -project tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj -scheme ImportHelper -destination "platform=iOS Simulator,id=$SIM" "-only-testing:ImportHelperUITests/ImportHelperUITests/$test_name" CODE_SIGNING_ALLOWED=NO > "artifacts/storage27/$part-runtime.log" 2>&1 || { tail -n 80 "artifacts/storage27/$part-runtime.log"; exit 1; }
+            xcrun simctl io "$SIM" screenshot "artifacts/storage27/$part-result.png"
+          done
+          echo "STORAGE_PERSISTENCE_PASS: independent writer and reader"
       - name: Upload storage probe screenshots and logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lumen-storage27-runtime
           path: artifacts/storage27/
+
+[executed on device: torah-social (51681856-e924-469f-877b-26cf72ed588e)]
