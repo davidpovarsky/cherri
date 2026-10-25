@@ -89,8 +89,8 @@ jobs:
             /tmp/cherri-pure "tests/storage27/Lumen_Storage_V27_${part}.cherri" --skip-sign
             unsigned=$(find tests/storage27 -maxdepth 1 -name "*${part}*_unsigned.shortcut" -print -quit)
             test -s "$unsigned"
-            shortcuts sign --input "$unsigned" --output "tests/storage27/persistence-${part,,}.shortcut" --mode anyone
-            test "$(head -c 4 "tests/storage27/persistence-${part,,}.shortcut")" = AEA1
+            shortcuts sign --input "$unsigned" --output "tests/storage27/persistence-$(printf %s "$part" | tr "[:upper:]" "[:lower:]").shortcut" --mode anyone
+            test "$(head -c 4 "tests/storage27/persistence-$(printf %s "$part" | tr "[:upper:]" "[:lower:]").shortcut")" = AEA1
           done
       - name: Prove persistent value across independent shortcut runs
         run: |
