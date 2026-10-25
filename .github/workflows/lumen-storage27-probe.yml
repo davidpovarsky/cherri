@@ -21,9 +21,12 @@ jobs:
           git checkout bcc0095754e2cc0baaeb4d93dae172b8153b4716
           go build -o /tmp/cherri-pure .
           cd "$GITHUB_WORKSPACE"
+          python3 -c "from pathlib import Path; p=Path('tests/storage27/Lumen_Storage_V27_Probe.cherri'); p.write_bytes(p.read_bytes().replace(bytes([13,10]),bytes([10])))"
           /tmp/cherri-pure tests/storage27/Lumen_Storage_V27_Probe.cherri --skip-sign
       - name: Compile full Lumen Storage27 variant
-        run: /tmp/cherri-pure tests/lumen/Lumen_Agent_Storage27_20261025.cherri --skip-sign
+        run: |
+          python3 -c "from pathlib import Path; p=Path('tests/lumen/Lumen_Agent_Storage27_20261025.cherri'); p.write_bytes(p.read_bytes().replace(bytes([13,10]),bytes([10])))"
+          /tmp/cherri-pure tests/lumen/Lumen_Agent_Storage27_20261025.cherri --skip-sign
       - name: Verify native storage action IDs and parameters
         run: |
           python3 - <<'PY'
