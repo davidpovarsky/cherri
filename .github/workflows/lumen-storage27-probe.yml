@@ -1,4 +1,4 @@
-﻿name: Lumen iOS 27 Storage Probe
+name: Lumen iOS 27 Storage Probe
 on:
   push:
     branches: [agent/lumen-ios27-storage-20261025]
@@ -21,7 +21,9 @@ jobs:
           git checkout bcc0095754e2cc0baaeb4d93dae172b8153b4716
           go build -o /tmp/cherri-pure .
           cd "$GITHUB_WORKSPACE"
-          /tmp/cherri-pure tests/storage27/Lumen_Storage_V27_Probe.cherri --skip-sign -d
+          /tmp/cherri-pure tests/storage27/Lumen_Storage_V27_Probe.cherri --skip-sign
+      - name: Compile full Lumen Storage27 variant
+        run: /tmp/cherri-pure tests/lumen/Lumen_Agent_Storage27_20261025.cherri --skip-sign
       - name: Verify native storage action IDs and parameters
         run: |
           python3 - <<'PY'
@@ -37,7 +39,15 @@ jobs:
               assert p['WFStoredContentKey']=='lumen.probe.20261025'
               assert p['WFStoredContentGlobalValue'] is True
           assert actions[0]['WFWorkflowActionParameters']['WFInput']=='LUMEN_STORAGE_OK'
-          print('STORAGE_STRUCTURE_PASS; RUNTIME_NOT_TESTED')
+          full=glob.glob('tests/lumen/Lumen_Agent_Storage27_20261025.shortcut')
+          assert len(full)==1,full
+          main=plistlib.load(open(full[0],'rb'))['WFWorkflowActions']
+          ids=[a['WFWorkflowActionIdentifier'] for a in main]
+          assert ids.count('is.workflow.actions.getstoredcontent')>=20
+          assert ids.count('is.workflow.actions.setstoredcontent')>=20
+          assert ids.count('is.workflow.actions.deletestoredcontent')>=16
+          assert 'is.workflow.actions.getfile' not in ids
+          print('STORAGE_STRUCTURE_PASS; MAIN_ACTIONS=',len(main),'RUNTIME_NOT_TESTED')
           PY
       - name: Verify iOS 27 simulator exists
         run: |
