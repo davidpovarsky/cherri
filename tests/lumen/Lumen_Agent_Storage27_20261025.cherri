@@ -1,0 +1,1022 @@
+#include 'actions/storage'
+#include 'actions/shortcuts'
+#include 'actions/documents'
+#include 'actions/text'
+#include 'actions/crypto'
+#include 'actions/images'
+#include 'actions/web'
+#include 'actions/calendar'
+#include 'actions/pdf'
+#define name "Lumen Agent"
+#define color blue
+
+// Lumen Agent for pure upstream Cherri 2.3.0.
+// Provider traffic lives in the three Lumen Provider shortcuts.
+// Dynamic dictionary values use the documented Set Dictionary Value action so
+// nested arrays, tool arguments, tool results, and history remain structured.
+action 'setvalueforkey' setAny(variable dictionary: 'WFDictionary', text key: 'WFDictionaryKey', variable value: 'WFDictionaryValue'): dictionary
+
+comment('Lumen Agent modular provider build. Commands: /OPTIONS, /NEW, /RESCAN. Tool calls are bounded to eight provider turns.')
+
+@lumenJsonEmptySeed1 = '{}'
+
+@lumenSetup = getDictionary(@lumenJsonEmptySeed1)
+const lumenSetupFile = getStoredValue("lumen.setup.v27",true)
+if !lumenSetupFile {
+    alert("Welcome to Lumen. Complete the initial provider setup.","Lumen")
+    const lumenInitialProviderChoice = menu "Choose your AI provider" {
+        item "Gemini":
+            text("gemini")
+        item "OpenAI / Compatible":
+            text("openai-compatible")
+        item "Anthropic":
+            text("anthropic")
+    }
+    @lumenSelectedProvider = "{lumenInitialProviderChoice}"
+    @lumenInitialDefaultModel: text
+    if @lumenSelectedProvider == "gemini" {
+        @lumenInitialDefaultModel = "gemini-2.5-flash"
+    }
+    const lumenInitialApiKey = prompt("Enter the API key for the selected provider")
+    const lumenInitialModel = prompt("Enter the exact model identifier","Text","{@lumenInitialDefaultModel}")
+    @lumenInitialEndpoint: text
+    if @lumenSelectedProvider == "openai-compatible" {
+        const lumenInitialEndpointInput = prompt("Enter the complete Chat Completions endpoint","Text","https://api.openai.com/v1/chat/completions")
+        @lumenInitialEndpoint = "{lumenInitialEndpointInput}"
+    }
+    if @lumenSelectedProvider == "gemini" {
+        @lumenInitialEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/{lumenInitialModel}:generateContent"
+    }
+    if @lumenSelectedProvider == "anthropic" {
+        @lumenInitialEndpoint = "https://api.anthropic.com/v1/messages"
+    }
+    const lumenInitialName = prompt("What should Lumen call you?")
+    const lumenInitialInstructions = prompt("Any custom instructions for Lumen?")
+    const lumenInitialInteraction = menu "What will be your main way of interacting?" {
+        item "Typing":
+            text("Typing")
+        item "Speaking":
+            text("Speaking")
+    }
+    const lumenInitialAudible = menu "Should Lumen respond audibly?" {
+        item "Yes":
+            text("Yes")
+        item "No":
+            text("No")
+    }
+
+    @lumenJsonEmptySeed2 = '{}'
+
+    @lumenGeminiProfile = getDictionary(@lumenJsonEmptySeed2)
+    @lumenGeminiProfile = setValue(@lumenGeminiProfile,"apiKey","")
+    @lumenGeminiProfile = setValue(@lumenGeminiProfile,"model","gemini-2.5-flash")
+    @lumenGeminiProfile = setValue(@lumenGeminiProfile,"endpoint","https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent")
+    @lumenGeminiProfileRepairScalar1 = 2048
+    @lumenGeminiProfile = setValue(@lumenGeminiProfile,"maxTokens","{@lumenGeminiProfileRepairScalar1}")
+    @lumenJsonEmptySeed3 = '{}'
+    @lumenGeminiProfileRepairDictionary2 = getDictionary(@lumenJsonEmptySeed3)
+    @lumenGeminiProfile = setValue(@lumenGeminiProfile,"extraHeaders","{@lumenGeminiProfileRepairDictionary2}")
+    @lumenJsonEmptySeed4 = '{}'
+    @lumenOpenAIProfile = getDictionary(@lumenJsonEmptySeed4)
+    @lumenOpenAIProfile = setValue(@lumenOpenAIProfile,"apiKey","")
+    @lumenOpenAIProfile = setValue(@lumenOpenAIProfile,"model","")
+    @lumenOpenAIProfile = setValue(@lumenOpenAIProfile,"endpoint","https://api.openai.com/v1/chat/completions")
+    @lumenOpenAIProfile = setValue(@lumenOpenAIProfile,"apiMode","chat-completions")
+    @lumenOpenAIProfileRepairScalar1 = 2048
+    @lumenOpenAIProfile = setValue(@lumenOpenAIProfile,"maxTokens","{@lumenOpenAIProfileRepairScalar1}")
+    @lumenJsonEmptySeed5 = '{}'
+    @lumenOpenAIProfileRepairDictionary2 = getDictionary(@lumenJsonEmptySeed5)
+    @lumenOpenAIProfile = setValue(@lumenOpenAIProfile,"extraHeaders","{@lumenOpenAIProfileRepairDictionary2}")
+    @lumenJsonEmptySeed6 = '{}'
+    @lumenAnthropicProfile = getDictionary(@lumenJsonEmptySeed6)
+    @lumenAnthropicProfile = setValue(@lumenAnthropicProfile,"apiKey","")
+    @lumenAnthropicProfile = setValue(@lumenAnthropicProfile,"model","")
+    @lumenAnthropicProfile = setValue(@lumenAnthropicProfile,"endpoint","https://api.anthropic.com/v1/messages")
+    @lumenAnthropicProfileRepairScalar1 = 2048
+    @lumenAnthropicProfile = setValue(@lumenAnthropicProfile,"maxTokens","{@lumenAnthropicProfileRepairScalar1}")
+    @lumenJsonEmptySeed7 = '{}'
+    @lumenAnthropicProfileRepairDictionary2 = getDictionary(@lumenJsonEmptySeed7)
+    @lumenAnthropicProfile = setValue(@lumenAnthropicProfile,"extraHeaders","{@lumenAnthropicProfileRepairDictionary2}")
+    @lumenJsonEmptySeed8 = '{}'
+    @lumenInitialChosenProfile = getDictionary(@lumenJsonEmptySeed8)
+    if @lumenSelectedProvider == "gemini" {
+        @lumenInitialChosenProfile = @lumenGeminiProfile
+    }
+    if @lumenSelectedProvider == "openai-compatible" {
+        @lumenInitialChosenProfile = @lumenOpenAIProfile
+    }
+    if @lumenSelectedProvider == "anthropic" {
+        @lumenInitialChosenProfile = @lumenAnthropicProfile
+    }
+    @lumenInitialChosenProfile = setValue(@lumenInitialChosenProfile,"apiKey","{lumenInitialApiKey}")
+    @lumenInitialChosenProfile = setValue(@lumenInitialChosenProfile,"model","{lumenInitialModel}")
+    @lumenInitialChosenProfile = setValue(@lumenInitialChosenProfile,"endpoint","{@lumenInitialEndpoint}")
+    @lumenJsonEmptySeed9 = '{}'
+    @lumenProfiles = getDictionary(@lumenJsonEmptySeed9)
+    @lumenJsonEmptySeed10 = '{}'
+    @lumenProfilesRepairDictionary1 = getDictionary(@lumenJsonEmptySeed10)
+    @lumenProfiles = setValue(@lumenProfiles,"gemini","{@lumenProfilesRepairDictionary1}")
+    @lumenProfiles = setValue(@lumenProfiles,"gemini","{@lumenGeminiProfile}")
+    @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenOpenAIProfile}")
+    @lumenProfiles = setValue(@lumenProfiles,"anthropic","{@lumenAnthropicProfile}")
+    @lumenProfiles = setValue(@lumenProfiles,"{@lumenSelectedProvider}","{@lumenInitialChosenProfile}")
+    @lumenJsonEmptySeed11 = '{}'
+    @lumenSetup = getDictionary(@lumenJsonEmptySeed11)
+    @lumenSetup = setValue(@lumenSetup,"name","{lumenInitialName}")
+    @lumenSetup = setValue(@lumenSetup,"instructions","{lumenInitialInstructions}")
+    @lumenSetup = setValue(@lumenSetup,"interaction","{lumenInitialInteraction}")
+    @lumenSetup = setValue(@lumenSetup,"audibleResponse","{lumenInitialAudible}")
+    @lumenSetup = setValue(@lumenSetup,"selectedProvider","{@lumenSelectedProvider}")
+    @lumenInitialHistoryMinutes = 1440
+    @lumenSetup = setValue(@lumenSetup,"historyMinutes","{@lumenInitialHistoryMinutes}")
+    @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+    storeValue("lumen.setup.v27",@lumenSetup,true)
+    alert("Setup is complete.","Lumen")
+
+} else {
+    const lumenSetupText = getText(lumenSetupFile)
+    const lumenLoadedSetup = getDictionary(lumenSetupText)
+    @lumenSetup = lumenLoadedSetup
+}
+
+// One-time migration from the original Gemini-only Setup.json schema.
+const lumenExistingProfiles = getValue(@lumenSetup,"providers")
+if !lumenExistingProfiles {
+    const lumenLegacyApiKey = getValue(@lumenSetup,"apiKey")
+    @lumenJsonEmptySeed12 = '{}'
+    @lumenMigratedGeminiProfile = getDictionary(@lumenJsonEmptySeed12)
+    @lumenMigratedGeminiProfile = setValue(@lumenMigratedGeminiProfile,"apiKey","{lumenLegacyApiKey}")
+    @lumenMigratedGeminiProfile = setValue(@lumenMigratedGeminiProfile,"model","gemini-2.5-flash")
+    @lumenMigratedGeminiProfile = setValue(@lumenMigratedGeminiProfile,"endpoint","https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent")
+    @lumenMigratedGeminiProfileRepairScalar1 = 2048
+    @lumenMigratedGeminiProfile = setValue(@lumenMigratedGeminiProfile,"maxTokens","{@lumenMigratedGeminiProfileRepairScalar1}")
+    @lumenJsonEmptySeed13 = '{}'
+    @lumenMigratedGeminiProfileRepairDictionary2 = getDictionary(@lumenJsonEmptySeed13)
+    @lumenMigratedGeminiProfile = setValue(@lumenMigratedGeminiProfile,"extraHeaders","{@lumenMigratedGeminiProfileRepairDictionary2}")
+    @lumenJsonEmptySeed14 = '{}'
+    @lumenMigratedOpenAIProfile = getDictionary(@lumenJsonEmptySeed14)
+    @lumenMigratedOpenAIProfile = setValue(@lumenMigratedOpenAIProfile,"apiKey","")
+    @lumenMigratedOpenAIProfile = setValue(@lumenMigratedOpenAIProfile,"model","")
+    @lumenMigratedOpenAIProfile = setValue(@lumenMigratedOpenAIProfile,"endpoint","https://api.openai.com/v1/chat/completions")
+    @lumenMigratedOpenAIProfile = setValue(@lumenMigratedOpenAIProfile,"apiMode","chat-completions")
+    @lumenMigratedOpenAIProfileRepairScalar1 = 2048
+    @lumenMigratedOpenAIProfile = setValue(@lumenMigratedOpenAIProfile,"maxTokens","{@lumenMigratedOpenAIProfileRepairScalar1}")
+    @lumenJsonEmptySeed15 = '{}'
+    @lumenMigratedOpenAIProfileRepairDictionary2 = getDictionary(@lumenJsonEmptySeed15)
+    @lumenMigratedOpenAIProfile = setValue(@lumenMigratedOpenAIProfile,"extraHeaders","{@lumenMigratedOpenAIProfileRepairDictionary2}")
+    @lumenJsonEmptySeed16 = '{}'
+    @lumenMigratedAnthropicProfile = getDictionary(@lumenJsonEmptySeed16)
+    @lumenMigratedAnthropicProfile = setValue(@lumenMigratedAnthropicProfile,"apiKey","")
+    @lumenMigratedAnthropicProfile = setValue(@lumenMigratedAnthropicProfile,"model","")
+    @lumenMigratedAnthropicProfile = setValue(@lumenMigratedAnthropicProfile,"endpoint","https://api.anthropic.com/v1/messages")
+    @lumenMigratedAnthropicProfileRepairScalar1 = 2048
+    @lumenMigratedAnthropicProfile = setValue(@lumenMigratedAnthropicProfile,"maxTokens","{@lumenMigratedAnthropicProfileRepairScalar1}")
+    @lumenJsonEmptySeed17 = '{}'
+    @lumenMigratedAnthropicProfileRepairDictionary2 = getDictionary(@lumenJsonEmptySeed17)
+    @lumenMigratedAnthropicProfile = setValue(@lumenMigratedAnthropicProfile,"extraHeaders","{@lumenMigratedAnthropicProfileRepairDictionary2}")
+    @lumenJsonEmptySeed18 = '{}'
+    @lumenProfiles = getDictionary(@lumenJsonEmptySeed18)
+    @lumenJsonEmptySeed19 = '{}'
+    @lumenProfilesRepairDictionary1 = getDictionary(@lumenJsonEmptySeed19)
+    @lumenProfiles = setValue(@lumenProfiles,"gemini","{@lumenProfilesRepairDictionary1}")
+    @lumenProfiles = setValue(@lumenProfiles,"gemini","{@lumenMigratedGeminiProfile}")
+    @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenMigratedOpenAIProfile}")
+    @lumenProfiles = setValue(@lumenProfiles,"anthropic","{@lumenMigratedAnthropicProfile}")
+    @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+    @lumenSetup = setValue(@lumenSetup,"selectedProvider","gemini")
+    storeValue("lumen.setup.v27",@lumenSetup,true)
+} else {
+    @lumenProfiles = lumenExistingProfiles
+}
+
+// Additive Setup.json migration. Existing keys and secrets are preserved.
+const lumenOpenAIProfileMigrationValue = getValue(@lumenProfiles,"openai-compatible")
+if lumenOpenAIProfileMigrationValue {
+    @lumenOpenAIProfileMigration = getDictionary(lumenOpenAIProfileMigrationValue)
+    const lumenOpenAIModeMigrationValue = getValue(@lumenOpenAIProfileMigration,"apiMode")
+    if !lumenOpenAIModeMigrationValue {
+        @lumenOpenAIProfileMigration = setValue(@lumenOpenAIProfileMigration,"apiMode","chat-completions")
+        @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenOpenAIProfileMigration}")
+        @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+        storeValue("lumen.setup.v27",@lumenSetup,true)
+    }
+}
+
+@lumenHistoryMinutes = 1440
+const lumenHistoryMinutesValue = getValue(@lumenSetup,"historyMinutes")
+if lumenHistoryMinutesValue {
+    const lumenParsedHistoryMinutes = getNumbers(lumenHistoryMinutesValue)
+    if lumenParsedHistoryMinutes >= 1 && lumenParsedHistoryMinutes <= 10080 {
+        @lumenHistoryMinutes = lumenParsedHistoryMinutes
+    }
+} else {
+    @lumenSetup = setValue(@lumenSetup,"historyMinutes","{@lumenHistoryMinutes}")
+    storeValue("lumen.setup.v27",@lumenSetup,true)
+}
+
+const lumenSelectedProviderValue = getValue(@lumenSetup,"selectedProvider")
+@lumenSelectedProvider = "{lumenSelectedProviderValue}"
+if !@lumenSelectedProvider {
+    @lumenSelectedProvider = "gemini"
+    @lumenSetup = setValue(@lumenSetup,"selectedProvider","gemini")
+    storeValue("lumen.setup.v27",@lumenSetup,true)
+}
+const lumenUserName = getValue(@lumenSetup,"name")
+const lumenInstructions = getValue(@lumenSetup,"instructions")
+const lumenInteractionValue = getValue(@lumenSetup,"interaction")
+const lumenAudibleValue = getValue(@lumenSetup,"audibleResponse")
+@lumenInteraction = "{lumenInteractionValue}"
+@lumenAudible = "{lumenAudibleValue}"
+
+// Accept direct text, share-sheet content, or an interactive prompt.
+@lumenUserMessage: text
+@lumenInputType: text
+@lumenHasAttachment = false
+if ShortcutInput {
+    const lumenShortcutInputType = typeOf(ShortcutInput)
+    @lumenInputType = "{lumenShortcutInputType}"
+    if @lumenInputType == "Text" {
+        const lumenDirectText = getText(ShortcutInput)
+        @lumenUserMessage = "{lumenDirectText}"
+    } else {
+        const lumenAttachmentQuestion = prompt("What should I do with this {@lumenInputType}?")
+        @lumenUserMessage = "{lumenAttachmentQuestion}"
+        @lumenHasAttachment = true
+    }
+} else {
+    if @lumenInteraction == "Speaking" {
+        const lumenDictatedText = listen()
+        @lumenUserMessage = "{lumenDictatedText}"
+    } else {
+        const lumenTypedText = prompt("Ask Lumen")
+        @lumenUserMessage = "{lumenTypedText}"
+    }
+}
+if !@lumenUserMessage {
+    alert("No question was entered. Ask Lumen something to continue.","Lumen")
+    stop()
+}
+
+if @lumenUserMessage == "/NEW" {
+    const lumenChatFileForNew = getStoredValue("lumen.recentchat.v27",true)
+    if lumenChatFileForNew {
+        deleteFiles(lumenChatFileForNew,true)
+    }
+
+    show("A new Lumen conversation will start next time.")
+    stop()
+}
+if @lumenUserMessage == "/RESCAN" {
+    const lumenServersFileForRescan = getStoredValue("lumen.servers.v27",true)
+    const lumenToolsFileForRescan = getStoredValue("lumen.tools.v27",true)
+    const lumenMapFileForRescan = getStoredValue("lumen.functionmap.v27",true)
+    const lumenMetaFileForRescan = getStoredValue("lumen.registrymeta.v27",true)
+    if lumenServersFileForRescan {
+        deleteFiles(lumenServersFileForRescan,true)
+    }
+    if lumenToolsFileForRescan { deleteFiles(lumenToolsFileForRescan,true) }
+    if lumenMapFileForRescan { deleteFiles(lumenMapFileForRescan,true) }
+    if lumenMetaFileForRescan { deleteFiles(lumenMetaFileForRescan,true) }
+    show("The Lumen tool registry will be rebuilt next time.")
+    stop()
+}
+
+if @lumenUserMessage == "/OPTIONS" {
+    menu "Settings for Lumen" {
+        item "Provider":
+            const lumenSettingsProviderChoice = menu "Select AI provider" {
+                item "Gemini":
+                    text("gemini")
+                item "OpenAI / Compatible":
+                    text("openai-compatible")
+                item "Anthropic":
+                    text("anthropic")
+            }
+            @lumenSelectedProvider = "{lumenSettingsProviderChoice}"
+            @lumenSetup = setValue(@lumenSetup,"selectedProvider","{@lumenSelectedProvider}")
+            @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+            storeValue("lumen.setup.v27",@lumenSetup,true)
+            const lumenProviderSwitchChatFile = getStoredValue("lumen.recentchat.v27",true)
+            if lumenProviderSwitchChatFile {
+                deleteFiles(lumenProviderSwitchChatFile,true)
+            }
+            show("Provider saved. Conversation history was reset to protect provider tool-call IDs.")
+            stop()
+        item "Model":
+            const lumenSettingsModelProfileValue = getValue(@lumenProfiles,"{@lumenSelectedProvider}")
+            @lumenSettingsModelProfile = getDictionary(lumenSettingsModelProfileValue)
+            const lumenCurrentModel = getValue(@lumenSettingsModelProfile,"model")
+            const lumenNewModel = prompt("Enter the exact model identifier","Text","{lumenCurrentModel}")
+            @lumenSettingsModelProfile = setValue(@lumenSettingsModelProfile,"model","{lumenNewModel}")
+            @lumenProfiles = setValue(@lumenProfiles,"{@lumenSelectedProvider}","{@lumenSettingsModelProfile}")
+            @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+            storeValue("lumen.setup.v27",@lumenSetup,true)
+            show("Model saved.")
+            stop()
+        item "API Key":
+            const lumenSettingsKeyProfileValue = getValue(@lumenProfiles,"{@lumenSelectedProvider}")
+            @lumenSettingsKeyProfile = getDictionary(lumenSettingsKeyProfileValue)
+            const lumenNewApiKey = prompt("Enter the API key for the selected provider")
+            @lumenSettingsKeyProfile = setValue(@lumenSettingsKeyProfile,"apiKey","{lumenNewApiKey}")
+            @lumenProfiles = setValue(@lumenProfiles,"{@lumenSelectedProvider}","{@lumenSettingsKeyProfile}")
+            @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+            storeValue("lumen.setup.v27",@lumenSetup,true)
+            show("API key saved.")
+            stop()
+        item "API Endpoint":
+            if @lumenSelectedProvider == "openai-compatible" {
+                const lumenSettingsEndpointProfileValue = getValue(@lumenProfiles,"{@lumenSelectedProvider}")
+                @lumenSettingsEndpointProfile = getDictionary(lumenSettingsEndpointProfileValue)
+                const lumenCurrentEndpoint = getValue(@lumenSettingsEndpointProfile,"endpoint")
+                const lumenNewEndpoint = prompt("Enter the complete endpoint for the selected OpenAI API mode","Text","{lumenCurrentEndpoint}")
+                @lumenSettingsEndpointProfile = setValue(@lumenSettingsEndpointProfile,"endpoint","{lumenNewEndpoint}")
+                @lumenProfiles = setValue(@lumenProfiles,"{@lumenSelectedProvider}","{@lumenSettingsEndpointProfile}")
+                @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+                storeValue("lumen.setup.v27",@lumenSetup,true)
+                show("Endpoint saved.")
+            } else {
+                alert("Gemini and Anthropic use their official endpoints by default.","Endpoint")
+            }
+            stop()
+        item "OpenAI API Mode":
+            if @lumenSelectedProvider == "openai-compatible" {
+                const lumenModeProfileValue = getValue(@lumenProfiles,"openai-compatible")
+                @lumenModeProfile = getDictionary(lumenModeProfileValue)
+                const lumenNewOpenAIMode = menu "Choose an explicit API contract" {
+                    item "Chat Completions":
+                        text("chat-completions")
+                    item "Responses API":
+                        text("responses")
+                }
+                @lumenModeProfile = setValue(@lumenModeProfile,"apiMode","{lumenNewOpenAIMode}")
+                @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenModeProfile}")
+                @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+                storeValue("lumen.setup.v27",@lumenSetup,true)
+                show("API mode saved. Confirm that API Endpoint matches the selected contract.")
+            } else {
+                alert("This setting applies only to OpenAI-compatible profiles.","API Mode")
+            }
+            stop()
+        item "OpenAI Extra Headers":
+            if @lumenSelectedProvider == "openai-compatible" {
+                const lumenHeadersProfileValue = getValue(@lumenProfiles,"openai-compatible")
+                @lumenHeadersProfile = getDictionary(lumenHeadersProfileValue)
+                const lumenHeadersJSON = prompt("Enter a JSON object of additional headers. Leave blank for none. Authorization and Content-Type are controlled by Lumen.")
+                @lumenJsonEmptySeed20 = '{}'
+                @lumenExtraHeaders = getDictionary(@lumenJsonEmptySeed20)
+                if lumenHeadersJSON {
+                    const lumenParsedExtraHeaders = getDictionary(lumenHeadersJSON)
+                    if !lumenParsedExtraHeaders {
+                        alert("The value must be a JSON object.","Extra Headers")
+                        stop()
+                    }
+                    @lumenExtraHeaders = lumenParsedExtraHeaders
+                }
+                @lumenHeadersProfile = setValue(@lumenHeadersProfile,"extraHeaders","{@lumenExtraHeaders}")
+                @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenHeadersProfile}")
+                @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+                storeValue("lumen.setup.v27",@lumenSetup,true)
+                show("Extra headers saved. Header values are not displayed by Lumen.")
+            } else {
+                alert("This setting applies only to OpenAI-compatible profiles.","Extra Headers")
+            }
+            stop()
+        item "Kilo AI Test Profile":
+            const lumenKiloConfirmation = menu "Configure the requested Kilo AI endpoint and model? The API key remains unchanged and must be entered on this device." {
+                item "Configure":
+
+                    text("configure")
+                item "Cancel":
+                    text("cancel")
+            }
+            @lumenKiloConfirmationValue = "{lumenKiloConfirmation}"
+            if @lumenKiloConfirmationValue == "configure" {
+                const lumenKiloProfileValue = getValue(@lumenProfiles,"openai-compatible")
+                @lumenKiloProfile = getDictionary(lumenKiloProfileValue)
+                @lumenKiloProfile = setValue(@lumenKiloProfile,"apiMode","chat-completions")
+                @lumenKiloProfile = setValue(@lumenKiloProfile,"endpoint","https://ai-gateway.kilo.ai/api/v1/chat/completions")
+                @lumenKiloProfile = setValue(@lumenKiloProfile,"model","nvidia/nemotron-3-super-120b-a12b:free")
+                @lumenKiloMaxTokens = 2048
+                @lumenKiloProfile = setValue(@lumenKiloProfile,"maxTokens","{@lumenKiloMaxTokens}")
+                @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenKiloProfile}")
+                @lumenSetup = setValue(@lumenSetup,"selectedProvider","openai-compatible")
+                @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
+                storeValue("lumen.setup.v27",@lumenSetup,true)
+                show("Kilo profile saved. Endpoint/model availability is not yet verified; enter the secret API key with API Key and run a live device test.")
+            }
+            stop()
+        item "Name":
+            const lumenCurrentName = getValue(@lumenSetup,"name")
+            const lumenNewName = prompt("What should Lumen call you?","Text","{lumenCurrentName}")
+            @lumenSetup = setValue(@lumenSetup,"name","{lumenNewName}")
+            storeValue("lumen.setup.v27",@lumenSetup,true)
+            show("Name saved.")
+            stop()
+        item "Custom Instructions":
+            const lumenCurrentInstructions = getValue(@lumenSetup,"instructions")
+            const lumenNewInstructions = prompt("Custom instructions for Lumen","Text","{lumenCurrentInstructions}")
+            @lumenSetup = setValue(@lumenSetup,"instructions","{lumenNewInstructions}")
+            storeValue("lumen.setup.v27",@lumenSetup,true)
+            show("Instructions saved.")
+            stop()
+        item "Interaction":
+            const lumenNewInteraction = menu "Input method" {
+                item "Typing":
+                    text("Typing")
+                item "Speaking":
+                    text("Speaking")
+            }
+            @lumenSetup = setValue(@lumenSetup,"interaction","{lumenNewInteraction}")
+            storeValue("lumen.setup.v27",@lumenSetup,true)
+            show("Interaction mode saved.")
+            stop()
+        item "Audible Responses":
+            const lumenNewAudible = menu "Speak responses?" {
+                item "Yes":
+                    text("Yes")
+                item "No":
+                    text("No")
+            }
+            @lumenSetup = setValue(@lumenSetup,"audibleResponse","{lumenNewAudible}")
+            storeValue("lumen.setup.v27",@lumenSetup,true)
+            show("Audible-response setting saved.")
+            stop()
+        item "History Window":
+            const lumenHistoryInput = prompt("Keep provider-specific history for how many minutes? (1-10080)","Number","{@lumenHistoryMinutes}")
+            const lumenNewHistoryMinutes = getNumbers(lumenHistoryInput)
+            if lumenNewHistoryMinutes < 1 || lumenNewHistoryMinutes > 10080 {
+                alert("Choose a value from 1 to 10080 minutes.","History")
+                stop()
+            }
+            @lumenHistoryMinutes = lumenNewHistoryMinutes
+            @lumenSetup = setValue(@lumenSetup,"historyMinutes","{@lumenHistoryMinutes}")
+            storeValue("lumen.setup.v27",@lumenSetup,true)
+            show("History window saved. /NEW still erases the active conversation immediately.")
+            stop()
+        item "Server Catalog":
+            const lumenCatalogURLValue = menu "Choose a server from Lumen's original catalog" {
+                item "General Context Server":
+                    text("https://www.icloud.com/shortcuts/63004ce594734b58b15dcf125b3f319e")
+                item "Websearch Server":
+                    text("https://www.icloud.com/shortcuts/b762b9eaf9544dd8bb88134cebd1f34e")
+                item "Calendar Server":
+                    text("https://www.icloud.com/shortcuts/3c8565b5f0834cda98a8a52115a80277")
+                item "Reminder Server":
+                    text("https://www.icloud.com/shortcuts/429f40d3eb6f48a29c7b71fbe4f74d3e")
+                item "Weather Server":
+                    text("https://www.icloud.com/shortcuts/9abf53576e2b4af7a739ccc099a5d734")
+                item "Mail Server":
+                    text("https://www.icloud.com/shortcuts/063a8de0198f4ba5be7ec12461383ed1")
+                item "Message Server":
+                    text("https://www.icloud.com/shortcuts/2f945344d3db4b8b927df884c8561aad")
+                item "Contacts Server":
+                    text("https://www.icloud.com/shortcuts/b418d84869c4498db1a7d3748627e70a")
+                item "Maps Server":
+                    text("https://www.icloud.com/shortcuts/7653a0bacf944e559625f63d7862191c")
+                item "Alarm and Timer Server":
+                    text("https://www.icloud.com/shortcuts/13eec20ba7c34741a7e85d0b9c050a6a")
+                item "Note Server":
+                    text("https://www.icloud.com/shortcuts/53fb09b4481f4cb6afe1d29f5837d2f9")
+            }
+            @lumenCatalogURL = "{lumenCatalogURLValue}"
+            const lumenCatalogConfirmation = menu "Open this trusted iCloud import page? Shortcuts will require you to review and add it manually." {
+                item "Open Import Page":
+                    text("open")
+                item "Cancel":
+                    text("cancel")
+            }
+            @lumenCatalogConfirmationValue = "{lumenCatalogConfirmation}"
+            if @lumenCatalogConfirmationValue == "open" {
+                openURL("{@lumenCatalogURL}")
+            }
+            stop()
+        item "Force Rescan":
+            const lumenSettingsServersFile = getStoredValue("lumen.servers.v27",true)
+            const lumenSettingsToolsFile = getStoredValue("lumen.tools.v27",true)
+            const lumenSettingsMapFile = getStoredValue("lumen.functionmap.v27",true)
+            const lumenSettingsMetaFile = getStoredValue("lumen.registrymeta.v27",true)
+            if lumenSettingsServersFile {
+                deleteFiles(lumenSettingsServersFile,true)
+            }
+            if lumenSettingsToolsFile { deleteFiles(lumenSettingsToolsFile,true) }
+            if lumenSettingsMapFile { deleteFiles(lumenSettingsMapFile,true) }
+            if lumenSettingsMetaFile { deleteFiles(lumenSettingsMetaFile,true) }
+            show("Tool registry invalidated. Run Lumen again to rescan.")
+            stop()
+        item "Check for Updates":
+            const lumenLatestVersionRaw = downloadURL("https://gist.githubusercontent.com/Nyvo2010/008544bca032371146146d7be5444e85/raw/Lumen%20Version")
+
+            const lumenLatestVersionText = getText(lumenLatestVersionRaw)
+            const lumenLatestManifest = getDictionary(lumenLatestVersionText)
+            if !lumenLatestManifest {
+                alert("The update manifest was not valid JSON.","Lumen Update")
+                stop()
+            }
+            const lumenLatestVersionValue = getValue(lumenLatestManifest,"latestVersion")
+            const lumenInstallURLValue = getValue(lumenLatestManifest,"installUrl")
+            const lumenVersionDetails = getValue(lumenLatestManifest,"versionDetails")
+            @lumenLatestVersion = "{lumenLatestVersionValue}"
+            @lumenInstallURL = "{lumenInstallURLValue}"
+            const lumenLatestVersionNumber = getNumbers(lumenLatestVersionValue)
+            @lumenInstallURLTrusted = false
+            if @lumenInstallURL beginsWith "https://www.icloud.com/shortcuts/" {
+                @lumenInstallURLTrusted = true
+            }
+            if !@lumenLatestVersion || !@lumenInstallURL || @lumenInstallURLTrusted == false {
+                alert("The update manifest failed source or field validation.","Lumen Update")
+                stop()
+            }
+            if lumenLatestVersionNumber <= 1 {
+                show("Lumen is up to date (local version 1).\n{lumenVersionDetails}")
+                stop()
+            }
+            const lumenUpdateConfirmation = menu "Version {@lumenLatestVersion} is available. Open Apple's import page? Existing shortcuts will not be replaced silently." {
+                item "Review Update":
+                    text("open")
+                item "Cancel":
+                    text("cancel")
+            }
+            @lumenUpdateConfirmationValue = "{lumenUpdateConfirmation}"
+            if @lumenUpdateConfirmationValue == "open" {
+                openURL("{@lumenInstallURL}")
+            }
+            stop()
+        item "Show Configuration":
+            const lumenConfigProfileValue = getValue(@lumenProfiles,"{@lumenSelectedProvider}")
+            const lumenConfigProfile = getDictionary(lumenConfigProfileValue)
+            const lumenConfigModel = getValue(lumenConfigProfile,"model")
+            const lumenConfigEndpoint = getValue(lumenConfigProfile,"endpoint")
+            const lumenConfigMode = getValue(lumenConfigProfile,"apiMode")
+            show("Provider: {@lumenSelectedProvider}\nModel: {lumenConfigModel}\nEndpoint: {lumenConfigEndpoint}\nAPI mode: {lumenConfigMode}\nHistory: {@lumenHistoryMinutes} minutes\nAPI key: hidden")
+            stop()
+        item "Reset":
+            const lumenResetSetupFile = getStoredValue("lumen.setup.v27",true)
+            const lumenResetRecentFile = getStoredValue("lumen.recentchat.v27",true)
+            const lumenResetServersFile = getStoredValue("lumen.servers.v27",true)
+            const lumenResetToolsFile = getStoredValue("lumen.tools.v27",true)
+            const lumenResetMapFile = getStoredValue("lumen.functionmap.v27",true)
+            const lumenResetMetaFile = getStoredValue("lumen.registrymeta.v27",true)
+            if lumenResetSetupFile { deleteFiles(lumenResetSetupFile,true) }
+            if lumenResetRecentFile { deleteFiles(lumenResetRecentFile,true) }
+            if lumenResetServersFile { deleteFiles(lumenResetServersFile,true) }
+            if lumenResetToolsFile { deleteFiles(lumenResetToolsFile,true) }
+            if lumenResetMapFile { deleteFiles(lumenResetMapFile,true) }
+            if lumenResetMetaFile { deleteFiles(lumenResetMetaFile,true) }
+            alert("Lumen settings, registry, and chat history were reset.","Lumen")
+            stop()
+        item "Back":
+            stop()
+    }
+}
+
+// Load only provider-matching history inside the configured retention window.
+// The default is 24 hours; /NEW remains the explicit privacy boundary.
+@lumenChatHistory: array
+const lumenRecentChatFile = getStoredValue("lumen.recentchat.v27",true)
+if lumenRecentChatFile {
+    const lumenRecentChatText = getText(lumenRecentChatFile)
+    const lumenRecentChatDictionary = getDictionary(lumenRecentChatText)
+    const lumenRecentProviderValue = getValue(lumenRecentChatDictionary,"provider")
+    @lumenRecentProvider = "{lumenRecentProviderValue}"
+    if @lumenRecentProvider == @lumenSelectedProvider {
+        const lumenRecentDateValue = getValue(lumenRecentChatDictionary,"date")
+        if lumenRecentDateValue {
+            const lumenRecentExpiry = adjustDate("{lumenRecentDateValue}","Add",qty(@lumenHistoryMinutes,"min"))
+            const lumenHistoryNow = currentDate()
+            if lumenHistoryNow <= lumenRecentExpiry {
+                const lumenSavedHistory = getValue(lumenRecentChatDictionary,"chatHistory")
+                if lumenSavedHistory {
+                    @lumenChatHistory = lumenSavedHistory
+                }
+            }
+        }
+    }
+}
+
+// Enumerate installed servers on every run so newly installed tools invalidate
+// the cache. Server registration shortcuts run only when the fingerprint changes.
+@lumenServerNames: array
+@lumenServerShortcuts: array
+action 'getmyworkflows' getLumenServerShortcuts(): array {
+    "Folder": {"Identifier":"C47B635C-70A6-40C6-8BBE-25E64CB6619F","DisplayString":"Lumen Servers"}
+}
+const lumenInstalledShortcuts = getLumenServerShortcuts()
+for lumenInstalledShortcut in lumenInstalledShortcuts {
+    const lumenInstalledShortcutNameValue = getShortcutDetail(@lumenInstalledShortcut,"Name")
+    @lumenInstalledShortcutName = "{lumenInstalledShortcutNameValue}"
+    if @lumenInstalledShortcutName endsWith " Server" {
+        @lumenServerNames += "{@lumenInstalledShortcutName}"
+        @lumenServerShortcuts += @lumenInstalledShortcut
+    }
+}
+const lumenServerNamesText = joinText(@lumenServerNames,"\n")
+// An empty server folder is valid: a blank magic variable cannot be written into a Dictionary Value.
+@lumenServerFingerprint = "lumen-servers-none-v3"
+if lumenServerNamesText {
+    @lumenServerFingerprint = "lumen-servers-v3:{lumenServerNamesText}"
+}
+
+@lumenUseRegistryCache = false
+@lumenTools: array
+@lumenJsonEmptySeed21 = '{}'
+@lumenFunctionToServer = getDictionary(@lumenJsonEmptySeed21)
+const lumenRegistryMetaFile = getStoredValue("lumen.registrymeta.v27",true)
+const lumenRegistryToolsFile = getStoredValue("lumen.tools.v27",true)
+const lumenRegistryMapFile = getStoredValue("lumen.functionmap.v27",true)
+if lumenRegistryMetaFile && lumenRegistryToolsFile && lumenRegistryMapFile {
+    const lumenRegistryMetaText = getText(lumenRegistryMetaFile)
+    const lumenRegistryMeta = getDictionary(lumenRegistryMetaText)
+    const lumenRegistrySchemaValue = getValue(lumenRegistryMeta,"schemaVersion")
+    const lumenRegistryFingerprintValue = getValue(lumenRegistryMeta,"serverFingerprint")
+    @lumenRegistrySchema = "{lumenRegistrySchemaValue}"
+    @lumenRegistryFingerprint = "{lumenRegistryFingerprintValue}"
+    if @lumenRegistrySchema == "3" && @lumenRegistryFingerprint == @lumenServerFingerprint {
+        const lumenCachedToolsText = getText(lumenRegistryToolsFile)
+        const lumenCachedToolsDictionary = getDictionary(lumenCachedToolsText)
+        const lumenCachedToolsValue = getValue(lumenCachedToolsDictionary,"tools")
+        const lumenCachedMapText = getText(lumenRegistryMapFile)
+
+        const lumenCachedMap = getDictionary(lumenCachedMapText)
+        if lumenCachedToolsValue {
+            if lumenServerNamesText {
+                if lumenCachedMap {
+                    @lumenTools = lumenCachedToolsValue
+                    @lumenFunctionToServer = lumenCachedMap
+                    @lumenUseRegistryCache = true
+                }
+            } else {
+                @lumenTools = lumenCachedToolsValue
+                @lumenFunctionToServer = lumenCachedMap
+                @lumenUseRegistryCache = true
+            }
+        }
+    }
+}
+
+if @lumenUseRegistryCache == false {
+    @lumenDeclarations: array
+    @lumenShowLargeTextDeclarationJson = '{"name":"show_large_text","description":"Show a long generated document to the user. Do not repeat the body in the normal reply.","parameters":{"type":"object","properties":{"title":{"type":"string"},"body":{"type":"string","description":"Markdown body text."}},"required":["title","body"]}}'
+    @lumenShowLargeTextDeclaration = getDictionary(@lumenShowLargeTextDeclarationJson)
+    @lumenAskNicelyDeclarationJson = '{"name":"ask_nicely","description":"Ask the user for a list item, text, number, date, time, or date and time.","parameters":{"type":"object","properties":{"inputType":{"type":"string"},"question":{"type":"string"},"defaultValue":{"type":"string"},"listItems":{"type":"array","items":{"type":"string"}},"selectMultiple":{"type":"boolean"}},"required":["inputType","question"]}}'
+    @lumenAskNicelyDeclaration = getDictionary(@lumenAskNicelyDeclarationJson)
+    @lumenDeclarations += @lumenShowLargeTextDeclaration
+    @lumenDeclarations += @lumenAskNicelyDeclaration
+
+    for lumenServerShortcut in @lumenServerShortcuts {
+        const lumenServerShortcutNameValue = getShortcutDetail(@lumenServerShortcut,"Name")
+        @lumenServerShortcutName = "{lumenServerShortcutNameValue}"
+        const lumenServerRegistration = run("{@lumenServerShortcutName}",nil)
+        for lumenServerDeclarationEntry in lumenServerRegistration {
+            const lumenServerDeclaration = getDictionary(@lumenServerDeclarationEntry)
+            @lumenDeclarations += lumenServerDeclaration
+            const lumenServerFunctionNameValue = getValue(lumenServerDeclaration,"name")
+            @lumenServerFunctionName = "{lumenServerFunctionNameValue}"
+            @lumenFunctionToServer = setValue(@lumenFunctionToServer,"{@lumenServerFunctionName}","{@lumenServerShortcutName}")
+        }
+    }
+
+    @lumenJsonEmptySeed36 = '{"function_declarations":[]}'
+
+    @lumenToolGroup = getDictionary(@lumenJsonEmptySeed36)
+    @lumenToolGroup = setValue(@lumenToolGroup,"function_declarations","{@lumenDeclarations}")
+    @lumenTools += @lumenToolGroup
+    @lumenJsonEmptySeed37 = '{}'
+    @lumenToolsCache = getDictionary(@lumenJsonEmptySeed37)
+    @lumenToolsCache = setValue(@lumenToolsCache,"tools","{@lumenTools}")
+    storeValue("lumen.tools.v27",@lumenToolsCache,true)
+    storeValue("lumen.functionmap.v27",@lumenFunctionToServer,true)
+    storeValue("lumen.servers.v27",lumenServerNamesText,true)
+    @lumenJsonEmptySeed38 = '{}'
+    @lumenRegistryMetaPayload = getDictionary(@lumenJsonEmptySeed38)
+    @lumenRegistrySchemaNumber = 3
+    @lumenRegistryMetaPayload = setValue(@lumenRegistryMetaPayload,"schemaVersion","{@lumenRegistrySchemaNumber}")
+    @lumenRegistryMetaPayload = setValue(@lumenRegistryMetaPayload,"serverFingerprint","{@lumenServerFingerprint}")
+    @lumenRegistryBuildTimestamp = "unknown"
+    const lumenRegistryBuildDate = currentDate()
+    if lumenRegistryBuildDate {
+        @lumenRegistryBuildTimestamp = "{lumenRegistryBuildDate}"
+    }
+    @lumenRegistryMetaPayload = setValue(@lumenRegistryMetaPayload,"builtAt","{@lumenRegistryBuildTimestamp}")
+    storeValue("lumen.registrymeta.v27",@lumenRegistryMetaPayload,true)
+}
+
+// Build the new user message, preserving attachments as structured inlineData.
+@lumenUserParts: array
+@lumenJsonEmptySeed39 = '{}'
+@lumenTextPart = getDictionary(@lumenJsonEmptySeed39)
+@lumenTextPart = setValue(@lumenTextPart,"text","{@lumenUserMessage}")
+@lumenUserParts += @lumenTextPart
+if @lumenHasAttachment == true {
+    @lumenAttachmentMime = "text/plain"
+    @lumenAttachmentSourceMime = "text/plain"
+    const lumenAttachmentNameValue = getName(ShortcutInput)
+    @lumenAttachmentName = "{lumenAttachmentNameValue}"
+    @lumenAttachmentContent
+    if @lumenInputType == "Image" || @lumenInputType == "Photo media" {
+        const lumenJPEGAttachment = convertToJPEG(ShortcutInput,nil,false)
+        @lumenAttachmentContent = lumenJPEGAttachment
+        @lumenAttachmentMime = "image/jpeg"
+        @lumenAttachmentSourceMime = "image/jpeg"
+    } else {
+        if @lumenInputType == "PDF" {
+            const lumenPDFText = getPDFText(ShortcutInput,false,true)
+            @lumenAttachmentContent = lumenPDFText
+
+            @lumenAttachmentSourceMime = "application/pdf"
+        } else {
+            if @lumenInputType == "URL" || @lumenInputType == "Safari web page" {
+                const lumenArticle = getArticle(ShortcutInput)
+                const lumenArticleText = getText(lumenArticle)
+                @lumenAttachmentContent = lumenArticleText
+                @lumenAttachmentSourceMime = "text/html"
+            } else {
+                const lumenTextAttachment = getText(ShortcutInput)
+                @lumenAttachmentContent = lumenTextAttachment
+                @lumenAttachmentSourceMime = "application/octet-stream"
+            }
+        }
+    }
+    if !@lumenAttachmentContent {
+        alert("The shared item was empty or could not be converted safely.","Attachment")
+        stop()
+    }
+    const lumenAttachmentBase64 = base64Encode(@lumenAttachmentContent)
+    @lumenJsonEmptySeed40 = '{}'
+    @lumenInlineData = getDictionary(@lumenJsonEmptySeed40)
+    @lumenInlineData = setValue(@lumenInlineData,"mimeType","{@lumenAttachmentMime}")
+    @lumenInlineData = setValue(@lumenInlineData,"sourceMimeType","{@lumenAttachmentSourceMime}")
+    @lumenInlineData = setValue(@lumenInlineData,"name","{@lumenAttachmentName}")
+    @lumenInlineData = setValue(@lumenInlineData,"sourceType","{@lumenInputType}")
+    @lumenInlineData = setValue(@lumenInlineData,"encoding","base64")
+    @lumenInlineData = setValue(@lumenInlineData,"data","{lumenAttachmentBase64}")
+    @lumenJsonEmptySeed41 = '{}'
+    @lumenInlinePart = getDictionary(@lumenJsonEmptySeed41)
+    @lumenInlinePart = setValue(@lumenInlinePart,"inlineData","{@lumenInlineData}")
+    @lumenUserParts += @lumenInlinePart
+}
+@lumenJsonEmptySeed42 = '{}'
+@lumenUserHistoryMessage = getDictionary(@lumenJsonEmptySeed42)
+@lumenUserHistoryMessage = setValue(@lumenUserHistoryMessage,"role","user")
+@lumenUserHistoryMessage = setValue(@lumenUserHistoryMessage,"parts","{@lumenUserParts}")
+@lumenChatHistory += @lumenUserHistoryMessage
+
+const lumenActiveProfileValue = getValue(@lumenProfiles,"{@lumenSelectedProvider}")
+@lumenActiveProfile = getDictionary(lumenActiveProfileValue)
+const lumenActiveApiKey = getValue(@lumenActiveProfile,"apiKey")
+const lumenActiveModel = getValue(@lumenActiveProfile,"model")
+if !lumenActiveApiKey {
+    alert("Configure an API key with /OPTIONS first.","Lumen")
+    stop()
+}
+if !lumenActiveModel {
+    alert("Configure an exact model identifier with /OPTIONS first.","Lumen")
+    stop()
+}
+
+@lumenSystemPrompt = "You are Lumen, a modular assistant on the user's Apple device. User: {lumenUserName}. Date: {CurrentDate}. Keep ordinary replies concise. Use show_large_text for long documents. Never invent facts. Use multiple independent tools in the same turn when helpful. User instructions: {lumenInstructions}"
+
+repeat lumenProviderTurn for 8 {
+    @lumenJsonEmptySeed43 = '{}'
+    @lumenProviderRequest = getDictionary(@lumenJsonEmptySeed43)
+    @lumenProviderRequestRepairScalar1 = 1
+    @lumenProviderRequest = setValue(@lumenProviderRequest,"contractVersion","{@lumenProviderRequestRepairScalar1}")
+    @lumenProviderRequest = setValue(@lumenProviderRequest,"provider","{@lumenSelectedProvider}")
+    @lumenProviderRequest = setValue(@lumenProviderRequest,"config","{@lumenActiveProfile}")
+    @lumenProviderRequest = setValue(@lumenProviderRequest,"systemPrompt","{@lumenSystemPrompt}")
+    @lumenProviderRequest = setValue(@lumenProviderRequest,"chatHistory","{@lumenChatHistory}")
+    @lumenProviderRequest = setValue(@lumenProviderRequest,"tools","{@lumenTools}")
+    @lumenProviderResponseValue
+    @lumenProviderCallExecuted = false
+    if @lumenSelectedProvider == "gemini" {
+        const lumenGeminiReply = run("Lumen Provider Gemini",@lumenProviderRequest)
+        @lumenProviderResponseValue = lumenGeminiReply
+        @lumenProviderCallExecuted = true
+    }
+    if @lumenSelectedProvider == "openai-compatible" {
+        const lumenOpenAIReply = run("Lumen Provider OpenAI",@lumenProviderRequest)
+        @lumenProviderResponseValue = lumenOpenAIReply
+        @lumenProviderCallExecuted = true
+    }
+    if @lumenSelectedProvider == "anthropic" {
+        const lumenAnthropicReply = run("Lumen Provider Anthropic",@lumenProviderRequest)
+        @lumenProviderResponseValue = lumenAnthropicReply
+        @lumenProviderCallExecuted = true
+    }
+    if @lumenProviderCallExecuted == false {
+        alert("Unknown provider selected in Setup.json. Select gemini, openai-compatible or anthropic.","Lumen: provider configuration")
+        stop()
+    }
+    if !@lumenProviderResponseValue {
+        alert("The provider shortcut returned no data. Ensure its installed shortcut name exactly matches Lumen Provider OpenAI, Lumen Provider Gemini or Lumen Provider Anthropic.","Lumen: provider returned nothing")
+        stop()
+    }
+    const lumenProviderResponse = getDictionary(@lumenProviderResponseValue)
+    const lumenProviderOK = getValue(lumenProviderResponse,"ok")
+    if !lumenProviderOK {
+        @lumenSafeProviderError = "The provider failed without an error message."
+        const lumenProviderErrorValue = getValue(lumenProviderResponse,"error")
+        if lumenProviderErrorValue {
+            const lumenProviderErrorDictionary = getDictionary(lumenProviderErrorValue)
+            const lumenProviderErrorMessage = getValue(lumenProviderErrorDictionary,"message")
+            if lumenProviderErrorMessage {
+                @lumenSafeProviderError = "{lumenProviderErrorMessage}"
+            }
+        }
+        alert("{@lumenSafeProviderError}","Lumen: provider error")
+        stop()
+    }
+    const lumenAssistantValue = getValue(lumenProviderResponse,"assistant")
+    const lumenAssistant = getDictionary(lumenAssistantValue)
+    const lumenAssistantParts = getValue(lumenAssistant,"parts")
+    const lumenToolCalls = getValue(lumenProviderResponse,"toolCalls")
+    const lumenProviderPlainTextValue = getValue(lumenProviderResponse,"plainText")
+
+    // Lumen DEBUG 3/3: inspect the cross-shortcut envelope, not a secret or
+    // raw response. Compare counts from debug stage 2 in the provider.
+    @lumenDebugMainPartCount = 0
+    @lumenDebugMainToolCount = 0
+    @lumenDebugMainPlainChars = 0
+    @lumenDebugAssistantType = "missing"
+    if lumenAssistantValue {
+        @lumenDebugAssistantType = typeOf(lumenAssistantValue)
+    }
+    if lumenAssistantParts {
+        @lumenDebugMainPartCount = count(lumenAssistantParts,"Items")
+    }
+    if lumenToolCalls {
+        @lumenDebugMainToolCount = count(lumenToolCalls,"Items")
+    }
+    if lumenProviderPlainTextValue {
+        const lumenDebugFallbackText = getText(lumenProviderPlainTextValue)
+        @lumenDebugMainPlainChars = count(lumenDebugFallbackText,"Characters")
+    }
+    const lumenDebugProviderKeys = getKeys(lumenProviderResponse)
+    const lumenDebugProviderKeyNames = joinText(lumenDebugProviderKeys,", ")
+    alert("Provider keys: {lumenDebugProviderKeyNames}\nAssistant value type: {@lumenDebugAssistantType}\nAssistant parts received: {@lumenDebugMainPartCount}\nFlat plainText chars: {@lumenDebugMainPlainChars}\nTool calls received: {@lumenDebugMainToolCount}","Lumen DEBUG 3/3 - MAIN")
+    @lumenChatHistory += lumenAssistant
+
+    // Explicit item count: an empty Shortcuts list is not reliably false.
+    @lumenActualToolCallCount = 0
+    if lumenToolCalls {
+        @lumenActualToolCallCount = count(lumenToolCalls,"Items")
+    }
+    if @lumenActualToolCallCount < 1 {
+        // The provider has already normalized text and verified its length.
+        // Do not rely on a Shortcuts text variable created in a nested loop.
+        @lumenFinalAnswer = ""
+        @lumenFinalAnswerLength = 0
+        if lumenProviderPlainTextValue {
+            const lumenTrustedPlainText = getText(lumenProviderPlainTextValue)
+            const lumenTrustedPlainLength = count(lumenTrustedPlainText,"Characters")
+            if lumenTrustedPlainLength > 0 {
+                @lumenFinalAnswer = lumenTrustedPlainText
+                @lumenFinalAnswerLength = lumenTrustedPlainLength
+            }
+        }
+        if @lumenFinalAnswerLength < 1 {
+            // Fallback for providers that return only assistant.parts.
+            @lumenFinalTextParts: array
+            for lumenFinalPartEntry in lumenAssistantParts {
+                const lumenFinalPart = getDictionary(@lumenFinalPartEntry)
+                const lumenFinalTextValue = getValue(lumenFinalPart,"text")
+                if lumenFinalTextValue {
+                    const lumenFinalPartPlain = getText(lumenFinalTextValue)
+                    const lumenPartLength = count(lumenFinalPartPlain,"Characters")
+                    if lumenPartLength > 0 {
+                        @lumenFinalTextParts += lumenFinalPartPlain
+                    }
+                }
+            }
+            const lumenJoinedFallback = joinText(@lumenFinalTextParts,"\n")
+            const lumenJoinedFallbackLength = count(lumenJoinedFallback,"Characters")
+            if lumenJoinedFallbackLength > 0 {
+                @lumenFinalAnswer = lumenJoinedFallback
+                @lumenFinalAnswerLength = lumenJoinedFallbackLength
+            }
+        }
+        if @lumenFinalAnswerLength < 1 {
+            alert("Provider returned no usable text or tool calls.","Lumen: empty model response")
+            stop()
+        }
+        @lumenJsonEmptySeed44 = '{}'
+        @lumenRecentPayload = getDictionary(@lumenJsonEmptySeed44)
+        @lumenRecentPayload = setValue(@lumenRecentPayload,"provider","{@lumenSelectedProvider}")
+        @lumenRecentPayload = setValue(@lumenRecentPayload,"chatHistory","{@lumenChatHistory}")
+        @lumenRecentPayload = setValue(@lumenRecentPayload,"date","{CurrentDate}")
+        storeValue("lumen.recentchat.v27",@lumenRecentPayload,true)
+        // Quick Look actually renders content when run from the Shortcuts editor.
+        // Default output() can silently do nothing when no output surface is attached.
+        const lumenFinalDisplayText = getText(@lumenFinalAnswer)
+        quicklook(lumenFinalDisplayText)
+        if @lumenAudible == "Yes" {
+            speak("{@lumenFinalAnswer}")
+        }
+        mustOutput("{@lumenFinalAnswer}","{@lumenFinalAnswer}")
+    }
+
+    @lumenToolResultParts: array
+    for lumenToolCallEntry in lumenToolCalls {
+        const lumenToolCall = getDictionary(@lumenToolCallEntry)
+        const lumenToolCallId = getValue(lumenToolCall,"id")
+        const lumenToolCallNameValue = getValue(lumenToolCall,"name")
+        const lumenToolCallArgsValue = getValue(lumenToolCall,"args")
+        const lumenToolCallArgs = getDictionary(lumenToolCallArgsValue)
+        @lumenToolCallName = "{lumenToolCallNameValue}"
+        @lumenJsonEmptySeed45 = '{}'
+        @lumenToolResult = getDictionary(@lumenJsonEmptySeed45)
+        if @lumenToolCallName == "show_large_text" {
+            const lumenLargeTitle = getValue(lumenToolCallArgs,"title")
+            const lumenLargeBody = getValue(lumenToolCallArgs,"body")
+            @lumenLargeMarkdown = "# {lumenLargeTitle}\n\n{lumenLargeBody}\n\nMade by Lumen"
+            const lumenLargeRichText = getRichTextFromMarkdown(@lumenLargeMarkdown)
+            const lumenNamedLargeText = setName(lumenLargeRichText,"{lumenLargeTitle}")
+            quicklook(lumenNamedLargeText)
+            @lumenJsonEmptySeed46 = '{}'
+            @lumenToolResult = getDictionary(@lumenJsonEmptySeed46)
+            @lumenToolResultRepairScalar1 = true
+            @lumenToolResult = setValue(@lumenToolResult,"success","{@lumenToolResultRepairScalar1}")
+        } else {
+            if @lumenToolCallName == "ask_nicely" {
+                const lumenAskTypeValue = getValue(lumenToolCallArgs,"inputType")
+                const lumenAskQuestion = getValue(lumenToolCallArgs,"question")
+                const lumenAskDefault = getValue(lumenToolCallArgs,"defaultValue")
+                const lumenAskListItems = getValue(lumenToolCallArgs,"listItems")
+                const lumenAskMultiple = getValue(lumenToolCallArgs,"selectMultiple")
+                @lumenAskType = "{lumenAskTypeValue}"
+                @lumenAskAnswer
+                if @lumenAskType == "list" {
+                    if lumenAskMultiple {
+                        const lumenMultiListAnswer = chooseFromList(lumenAskListItems,"{lumenAskQuestion}",true)
+                        @lumenAskAnswer = lumenMultiListAnswer
+                    } else {
+                        const lumenSingleListAnswer = chooseFromList(lumenAskListItems,"{lumenAskQuestion}",false)
+                        @lumenAskAnswer = lumenSingleListAnswer
+                    }
+                }
+                if @lumenAskType == "number" {
+                    const lumenNumberAnswer = prompt("{lumenAskQuestion}","Number","{lumenAskDefault}")
+                    @lumenAskAnswer = lumenNumberAnswer
+                }
+                if @lumenAskType == "date" {
+                    const lumenDateAnswer = prompt("{lumenAskQuestion}","Date","{lumenAskDefault}")
+                    @lumenAskAnswer = lumenDateAnswer
+                }
+                if @lumenAskType == "time" {
+                    const lumenTimeAnswer = prompt("{lumenAskQuestion}","Time","{lumenAskDefault}")
+                    @lumenAskAnswer = lumenTimeAnswer
+                }
+                if @lumenAskType == "dateTime" {
+                    const lumenDateTimeAnswer = prompt("{lumenAskQuestion}","Date and Time","{lumenAskDefault}")
+                    @lumenAskAnswer = lumenDateTimeAnswer
+                }
+                if !@lumenAskAnswer {
+                    const lumenTextAnswer = prompt("{lumenAskQuestion}","Text","{lumenAskDefault}")
+                    @lumenAskAnswer = lumenTextAnswer
+                }
+                @lumenJsonEmptySeed47 = '{}'
+                @lumenToolResult = getDictionary(@lumenJsonEmptySeed47)
+                @lumenToolResult = setValue(@lumenToolResult,"answer","{@lumenAskAnswer}")
+            } else {
+                const lumenServerNameValue = getValue(@lumenFunctionToServer,"{@lumenToolCallName}")
+                @lumenServerName = "{lumenServerNameValue}"
+                if @lumenServerName {
+                    const lumenServerToolResult = run("{@lumenServerName}",lumenToolCall)
+                    @lumenToolResult = lumenServerToolResult
+                } else {
+                    @lumenJsonEmptySeed48 = '{}'
+                    @lumenToolResult = getDictionary(@lumenJsonEmptySeed48)
+                    @lumenToolResult = setValue(@lumenToolResult,"error","Tool not registered")
+                    @lumenToolResult = setValue(@lumenToolResult,"tool","{@lumenToolCallName}")
+                }
+            }
+        }
+
+        @lumenJsonEmptySeed49 = '{}'
+
+        @lumenFunctionResponse = getDictionary(@lumenJsonEmptySeed49)
+        @lumenFunctionResponse = setValue(@lumenFunctionResponse,"name","{@lumenToolCallName}")
+        if lumenToolCallId {
+            @lumenFunctionResponse = setValue(@lumenFunctionResponse,"id","{lumenToolCallId}")
+        }
+        @lumenFunctionResponse = setValue(@lumenFunctionResponse,"response","{@lumenToolResult}")
+        @lumenJsonEmptySeed50 = '{}'
+        @lumenFunctionResponsePart = getDictionary(@lumenJsonEmptySeed50)
+        @lumenFunctionResponsePart = setValue(@lumenFunctionResponsePart,"functionResponse","{@lumenFunctionResponse}")
+        @lumenToolResultParts += @lumenFunctionResponsePart
+    }
+    @lumenJsonEmptySeed51 = '{}'
+    @lumenFunctionHistoryMessage = getDictionary(@lumenJsonEmptySeed51)
+    @lumenFunctionHistoryMessage = setValue(@lumenFunctionHistoryMessage,"role","function")
+    @lumenFunctionHistoryMessage = setValue(@lumenFunctionHistoryMessage,"parts","{@lumenToolResultParts}")
+    @lumenChatHistory += @lumenFunctionHistoryMessage
+}
+
+@lumenJsonEmptySeed52 = '{}'
+
+@lumenLimitPayload = getDictionary(@lumenJsonEmptySeed52)
+@lumenLimitPayload = setValue(@lumenLimitPayload,"provider","{@lumenSelectedProvider}")
+@lumenLimitPayload = setValue(@lumenLimitPayload,"chatHistory","{@lumenChatHistory}")
+@lumenLimitPayload = setValue(@lumenLimitPayload,"date","{CurrentDate}")
+storeValue("lumen.recentchat.v27",@lumenLimitPayload,true)
+alert("The eight-turn tool limit was reached. The conversation was saved.","Lumen")
+
