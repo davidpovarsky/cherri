@@ -288,6 +288,17 @@ class ImportHelperUITests: XCTestCase {
         XCTAssertEqual(result, .completed, "STORAGE_IMPORT_FAIL: import sheet did not close")
         print("STORAGE_PROBE_IMPORT_PASS")
     }
+    func testStorageWriterValue() {
+        let app = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
+        app.activate()
+        XCTAssertTrue(app.staticTexts["WRITER_DONE"].waitForExistence(timeout: 30), "WRITER_CONFIRMATION_MISSING")
+    }
+    func testStorageReaderValue() {
+        let app = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
+        app.activate()
+        XCTAssertTrue(app.staticTexts["LUMEN_PERSISTENCE_20261025"].waitForExistence(timeout: 30), "PERSISTENCE_READBACK_MISMATCH")
+        print("STORAGE_PERSISTENCE_PASS")
+    }
     func testStorageProbeNoRuntimeError() {
         let app = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
         app.activate()
@@ -301,3 +312,5 @@ class ImportHelperUITests: XCTestCase {
         XCTAssertFalse(dump.localizedCaseInsensitiveContains("The action failed"), "STORAGE_RUNTIME_FAIL: action error")
         print("STORAGE_PROBE_NO_VISIBLE_ERROR")
     }}
+
+[executed on device: torah-social (51681856-e924-469f-877b-26cf72ed588e)]
