@@ -312,5 +312,3 @@ class ImportHelperUITests: XCTestCase {
         XCTAssertFalse(dump.localizedCaseInsensitiveContains("The action failed"), "STORAGE_RUNTIME_FAIL: action error")
         print("STORAGE_PROBE_NO_VISIBLE_ERROR")
     }}
-
-[executed on device: torah-social (51681856-e924-469f-877b-26cf72ed588e)]
