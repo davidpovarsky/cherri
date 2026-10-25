@@ -57,3 +57,34 @@ jobs:
           xcodebuild -version
           xcrun simctl list runtimes | grep 'iOS 27'
           echo 'SIMULATOR_AVAILABLE; STORAGE_RUNTIME_NOT_TESTED'
+      - name: Import and run signed storage probe on iOS 27
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/storage27
+          SIM=$(xcrun simctl list devices available | grep -E 'iPhone.*\(.*\)' | head -1 | sed -E 's/.*\(([A-F0-9-]{36})\).*/\1/')
+          test -n "$SIM"
+          xcrun simctl boot "$SIM" || true
+          xcrun simctl bootstatus "$SIM" -b
+          xcrun simctl launch "$SIM" com.apple.shortcuts || true
+          if ! command -v xcodegen >/dev/null; then brew install xcodegen; fi
+          cd tests/runtime_poc/ImportHelper
+          xcodegen generate
+          cd "$GITHUB_WORKSPACE"
+          PROBE="$PWD/tests/storage27/probe-signed.shortcut"
+          test -s "$PROBE"
+          xcrun simctl openurl "$SIM" "file://$PROBE"
+          sleep 7
+          xcrun simctl io "$SIM" screenshot artifacts/storage27/import-before.png || true
+          xcodebuild test -project tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj -scheme ImportHelper -destination "platform=iOS Simulator,id=$SIM" -only-testing:ImportHelperUITests/ImportHelperUITests/testStorageProbeImportStrict CODE_SIGNING_ALLOWED=NO > artifacts/storage27/import-test.log 2>&1 || { tail -n 80 artifacts/storage27/import-test.log; exit 1; }
+          xcrun simctl openurl "$SIM" "shortcuts://run-shortcut?name=Lumen%20Storage%20V27%20Probe"
+          sleep 10
+          xcrun simctl io "$SIM" screenshot artifacts/storage27/run.png || true
+          xcodebuild test -project tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj -scheme ImportHelper -destination "platform=iOS Simulator,id=$SIM" -only-testing:ImportHelperUITests/ImportHelperUITests/testStorageProbeNoRuntimeError CODE_SIGNING_ALLOWED=NO > artifacts/storage27/runtime-test.log 2>&1 || { tail -n 80 artifacts/storage27/runtime-test.log; exit 1; }
+          echo "STORAGE_SIMULATOR_NO_VISIBLE_ERROR; PERSISTENCE_NOT_PROVEN"
+      - name: Upload storage probe screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumen-storage27-runtime
+          path: artifacts/storage27/
