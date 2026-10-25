@@ -77,7 +77,7 @@ jobs:
           sleep 7
           xcrun simctl io "$SIM" screenshot artifacts/storage27/import-before.png || true
           xcodebuild test -project tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj -scheme ImportHelper -destination "platform=iOS Simulator,id=$SIM" -only-testing:ImportHelperUITests/ImportHelperUITests/testStorageProbeImportStrict CODE_SIGNING_ALLOWED=NO > artifacts/storage27/import-test.log 2>&1 || { tail -n 80 artifacts/storage27/import-test.log; exit 1; }
-          xcrun simctl openurl "$SIM" "shortcuts://run-shortcut?name=Lumen%20Storage%20V27%20Probe"
+          xcrun simctl openurl "$SIM" "shortcuts://run-shortcut?name=probe-signed"
           sleep 10
           xcrun simctl io "$SIM" screenshot artifacts/storage27/run.png || true
           xcodebuild test -project tests/runtime_poc/ImportHelper/ImportHelper.xcodeproj -scheme ImportHelper -destination "platform=iOS Simulator,id=$SIM" -only-testing:ImportHelperUITests/ImportHelperUITests/testStorageProbeNoRuntimeError CODE_SIGNING_ALLOWED=NO > artifacts/storage27/runtime-test.log 2>&1 || { tail -n 80 artifacts/storage27/runtime-test.log; exit 1; }
