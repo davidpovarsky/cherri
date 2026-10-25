@@ -130,7 +130,7 @@ if !lumenSetupFile {
     @lumenInitialHistoryMinutes = 1440
     @lumenSetup = setValue(@lumenSetup,"historyMinutes","{@lumenInitialHistoryMinutes}")
     @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
-    storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+    storeValue("lumen.setup.v27","{@lumenSetup}",true)
     alert("Setup is complete.","Lumen")
 
 } else {
@@ -184,7 +184,7 @@ if !lumenExistingProfiles {
     @lumenProfiles = setValue(@lumenProfiles,"anthropic","{@lumenMigratedAnthropicProfile}")
     @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
     @lumenSetup = setValue(@lumenSetup,"selectedProvider","gemini")
-    storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+    storeValue("lumen.setup.v27","{@lumenSetup}",true)
 } else {
     @lumenProfiles = lumenExistingProfiles
 }
@@ -198,7 +198,7 @@ if lumenOpenAIProfileMigrationValue {
         @lumenOpenAIProfileMigration = setValue(@lumenOpenAIProfileMigration,"apiMode","chat-completions")
         @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenOpenAIProfileMigration}")
         @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
-        storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+        storeValue("lumen.setup.v27","{@lumenSetup}",true)
     }
 }
 
@@ -211,7 +211,7 @@ if lumenHistoryMinutesValue {
     }
 } else {
     @lumenSetup = setValue(@lumenSetup,"historyMinutes","{@lumenHistoryMinutes}")
-    storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+    storeValue("lumen.setup.v27","{@lumenSetup}",true)
 }
 
 const lumenSelectedProviderValue = getValue(@lumenSetup,"selectedProvider")
@@ -219,7 +219,7 @@ const lumenSelectedProviderValue = getValue(@lumenSetup,"selectedProvider")
 if !@lumenSelectedProvider {
     @lumenSelectedProvider = "gemini"
     @lumenSetup = setValue(@lumenSetup,"selectedProvider","gemini")
-    storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+    storeValue("lumen.setup.v27","{@lumenSetup}",true)
 }
 const lumenUserName = getValue(@lumenSetup,"name")
 const lumenInstructions = getValue(@lumenSetup,"instructions")
@@ -295,7 +295,7 @@ if @lumenUserMessage == "/OPTIONS" {
             @lumenSelectedProvider = "{lumenSettingsProviderChoice}"
             @lumenSetup = setValue(@lumenSetup,"selectedProvider","{@lumenSelectedProvider}")
             @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
-            storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+            storeValue("lumen.setup.v27","{@lumenSetup}",true)
             const lumenProviderSwitchChatFile = getStoredValue("lumen.recentchat.v27",true)
             if lumenProviderSwitchChatFile {
                 deleteStoredValue("lumen.recentchat.v27",true)
@@ -310,7 +310,7 @@ if @lumenUserMessage == "/OPTIONS" {
             @lumenSettingsModelProfile = setValue(@lumenSettingsModelProfile,"model","{lumenNewModel}")
             @lumenProfiles = setValue(@lumenProfiles,"{@lumenSelectedProvider}","{@lumenSettingsModelProfile}")
             @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
-            storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+            storeValue("lumen.setup.v27","{@lumenSetup}",true)
             show("Model saved.")
             stop()
         item "API Key":
@@ -320,7 +320,7 @@ if @lumenUserMessage == "/OPTIONS" {
             @lumenSettingsKeyProfile = setValue(@lumenSettingsKeyProfile,"apiKey","{lumenNewApiKey}")
             @lumenProfiles = setValue(@lumenProfiles,"{@lumenSelectedProvider}","{@lumenSettingsKeyProfile}")
             @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
-            storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+            storeValue("lumen.setup.v27","{@lumenSetup}",true)
             show("API key saved.")
             stop()
         item "API Endpoint":
@@ -332,7 +332,7 @@ if @lumenUserMessage == "/OPTIONS" {
                 @lumenSettingsEndpointProfile = setValue(@lumenSettingsEndpointProfile,"endpoint","{lumenNewEndpoint}")
                 @lumenProfiles = setValue(@lumenProfiles,"{@lumenSelectedProvider}","{@lumenSettingsEndpointProfile}")
                 @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
-                storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+                storeValue("lumen.setup.v27","{@lumenSetup}",true)
                 show("Endpoint saved.")
             } else {
                 alert("Gemini and Anthropic use their official endpoints by default.","Endpoint")
@@ -351,7 +351,7 @@ if @lumenUserMessage == "/OPTIONS" {
                 @lumenModeProfile = setValue(@lumenModeProfile,"apiMode","{lumenNewOpenAIMode}")
                 @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenModeProfile}")
                 @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
-                storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+                storeValue("lumen.setup.v27","{@lumenSetup}",true)
                 show("API mode saved. Confirm that API Endpoint matches the selected contract.")
             } else {
                 alert("This setting applies only to OpenAI-compatible profiles.","API Mode")
@@ -375,7 +375,7 @@ if @lumenUserMessage == "/OPTIONS" {
                 @lumenHeadersProfile = setValue(@lumenHeadersProfile,"extraHeaders","{@lumenExtraHeaders}")
                 @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenHeadersProfile}")
                 @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
-                storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+                storeValue("lumen.setup.v27","{@lumenSetup}",true)
                 show("Extra headers saved. Header values are not displayed by Lumen.")
             } else {
                 alert("This setting applies only to OpenAI-compatible profiles.","Extra Headers")
@@ -401,7 +401,7 @@ if @lumenUserMessage == "/OPTIONS" {
                 @lumenProfiles = setValue(@lumenProfiles,"openai-compatible","{@lumenKiloProfile}")
                 @lumenSetup = setValue(@lumenSetup,"selectedProvider","openai-compatible")
                 @lumenSetup = setValue(@lumenSetup,"providers","{@lumenProfiles}")
-                storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+                storeValue("lumen.setup.v27","{@lumenSetup}",true)
                 show("Kilo profile saved. Endpoint/model availability is not yet verified; enter the secret API key with API Key and run a live device test.")
             }
             stop()
@@ -409,14 +409,14 @@ if @lumenUserMessage == "/OPTIONS" {
             const lumenCurrentName = getValue(@lumenSetup,"name")
             const lumenNewName = prompt("What should Lumen call you?","Text","{lumenCurrentName}")
             @lumenSetup = setValue(@lumenSetup,"name","{lumenNewName}")
-            storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+            storeValue("lumen.setup.v27","{@lumenSetup}",true)
             show("Name saved.")
             stop()
         item "Custom Instructions":
             const lumenCurrentInstructions = getValue(@lumenSetup,"instructions")
             const lumenNewInstructions = prompt("Custom instructions for Lumen","Text","{lumenCurrentInstructions}")
             @lumenSetup = setValue(@lumenSetup,"instructions","{lumenNewInstructions}")
-            storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+            storeValue("lumen.setup.v27","{@lumenSetup}",true)
             show("Instructions saved.")
             stop()
         item "Interaction":
@@ -427,7 +427,7 @@ if @lumenUserMessage == "/OPTIONS" {
                     text("Speaking")
             }
             @lumenSetup = setValue(@lumenSetup,"interaction","{lumenNewInteraction}")
-            storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+            storeValue("lumen.setup.v27","{@lumenSetup}",true)
             show("Interaction mode saved.")
             stop()
         item "Audible Responses":
@@ -438,7 +438,7 @@ if @lumenUserMessage == "/OPTIONS" {
                     text("No")
             }
             @lumenSetup = setValue(@lumenSetup,"audibleResponse","{lumenNewAudible}")
-            storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+            storeValue("lumen.setup.v27","{@lumenSetup}",true)
             show("Audible-response setting saved.")
             stop()
         item "History Window":
@@ -450,7 +450,7 @@ if @lumenUserMessage == "/OPTIONS" {
             }
             @lumenHistoryMinutes = lumenNewHistoryMinutes
             @lumenSetup = setValue(@lumenSetup,"historyMinutes","{@lumenHistoryMinutes}")
-            storeValue("lumen.setup.v27",getText(@lumenSetup),true)
+            storeValue("lumen.setup.v27","{@lumenSetup}",true)
             show("History window saved. /NEW still erases the active conversation immediately.")
             stop()
         item "Server Catalog":
@@ -683,8 +683,8 @@ if @lumenUseRegistryCache == false {
     @lumenJsonEmptySeed37 = '{}'
     @lumenToolsCache = getDictionary(@lumenJsonEmptySeed37)
     @lumenToolsCache = setValue(@lumenToolsCache,"tools","{@lumenTools}")
-    storeValue("lumen.tools.v27",getText(@lumenToolsCache),true)
-    storeValue("lumen.functionmap.v27",getText(@lumenFunctionToServer),true)
+    storeValue("lumen.tools.v27","{@lumenToolsCache}",true)
+    storeValue("lumen.functionmap.v27","{@lumenFunctionToServer}",true)
     storeValue("lumen.servers.v27",lumenServerNamesText,true)
     @lumenJsonEmptySeed38 = '{}'
     @lumenRegistryMetaPayload = getDictionary(@lumenJsonEmptySeed38)
@@ -697,7 +697,7 @@ if @lumenUseRegistryCache == false {
         @lumenRegistryBuildTimestamp = "{lumenRegistryBuildDate}"
     }
     @lumenRegistryMetaPayload = setValue(@lumenRegistryMetaPayload,"builtAt","{@lumenRegistryBuildTimestamp}")
-    storeValue("lumen.registrymeta.v27",getText(@lumenRegistryMetaPayload),true)
+    storeValue("lumen.registrymeta.v27","{@lumenRegistryMetaPayload}",true)
 }
 
 // Build the new user message, preserving attachments as structured inlineData.
@@ -903,7 +903,7 @@ repeat lumenProviderTurn for 8 {
         @lumenRecentPayload = setValue(@lumenRecentPayload,"provider","{@lumenSelectedProvider}")
         @lumenRecentPayload = setValue(@lumenRecentPayload,"chatHistory","{@lumenChatHistory}")
         @lumenRecentPayload = setValue(@lumenRecentPayload,"date","{CurrentDate}")
-        storeValue("lumen.recentchat.v27",getText(@lumenRecentPayload),true)
+        storeValue("lumen.recentchat.v27","{@lumenRecentPayload}",true)
         // Quick Look actually renders content when run from the Shortcuts editor.
         // Default output() can silently do nothing when no output surface is attached.
         const lumenFinalDisplayText = getText(@lumenFinalAnswer)
@@ -1017,6 +1017,6 @@ repeat lumenProviderTurn for 8 {
 @lumenLimitPayload = setValue(@lumenLimitPayload,"provider","{@lumenSelectedProvider}")
 @lumenLimitPayload = setValue(@lumenLimitPayload,"chatHistory","{@lumenChatHistory}")
 @lumenLimitPayload = setValue(@lumenLimitPayload,"date","{CurrentDate}")
-storeValue("lumen.recentchat.v27",getText(@lumenLimitPayload),true)
+storeValue("lumen.recentchat.v27","{@lumenLimitPayload}",true)
 alert("The eight-turn tool limit was reached. The conversation was saved.","Lumen")
 
