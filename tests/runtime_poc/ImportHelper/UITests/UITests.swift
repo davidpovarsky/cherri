@@ -277,4 +277,27 @@ class ImportHelperUITests: XCTestCase {
 
         print("UI Test Helper finished. Tapped button: \(tapped)")
     }
-}
+    func testStorageProbeImportStrict() {
+        let app = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
+        app.activate()
+        let add = app.buttons["Add Shortcut"]
+        XCTAssertTrue(add.waitForExistence(timeout: 25), "STORAGE_IMPORT_FAIL: exact Add Shortcut not visible")
+        add.tap()
+        let gone = NSPredicate(format: "exists == false")
+        let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: gone, object: add)], timeout: 20)
+        XCTAssertEqual(result, .completed, "STORAGE_IMPORT_FAIL: import sheet did not close")
+        print("STORAGE_PROBE_IMPORT_PASS")
+    }
+    func testStorageProbeNoRuntimeError() {
+        let app = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
+        app.activate()
+        sleep(5)
+        let dump = app.debugDescription
+        print("STORAGE_RUNTIME_HIERARCHY_START")
+        print(dump)
+        print("STORAGE_RUNTIME_HIERARCHY_END")
+        XCTAssertFalse(dump.localizedCaseInsensitiveContains("Location Doesn't Exist"), "STORAGE_RUNTIME_FAIL: missing location")
+        XCTAssertFalse(dump.localizedCaseInsensitiveContains("Could not find the shortcut"), "STORAGE_RUNTIME_FAIL: shortcut missing")
+        XCTAssertFalse(dump.localizedCaseInsensitiveContains("The action failed"), "STORAGE_RUNTIME_FAIL: action error")
+        print("STORAGE_PROBE_NO_VISIBLE_ERROR")
+    }}
