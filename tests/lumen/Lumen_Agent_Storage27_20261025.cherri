@@ -260,7 +260,7 @@ if !@lumenUserMessage {
 if @lumenUserMessage == "/NEW" {
     const lumenChatFileForNew = getStoredValue("lumen.recentchat.v27",true)
     if lumenChatFileForNew {
-        deleteFiles(lumenChatFileForNew,true)
+        deleteStoredValue("lumen.recentchat.v27",true)
     }
 
     show("A new Lumen conversation will start next time.")
@@ -272,11 +272,11 @@ if @lumenUserMessage == "/RESCAN" {
     const lumenMapFileForRescan = getStoredValue("lumen.functionmap.v27",true)
     const lumenMetaFileForRescan = getStoredValue("lumen.registrymeta.v27",true)
     if lumenServersFileForRescan {
-        deleteFiles(lumenServersFileForRescan,true)
+        deleteStoredValue("lumen.servers.v27",true)
     }
-    if lumenToolsFileForRescan { deleteFiles(lumenToolsFileForRescan,true) }
-    if lumenMapFileForRescan { deleteFiles(lumenMapFileForRescan,true) }
-    if lumenMetaFileForRescan { deleteFiles(lumenMetaFileForRescan,true) }
+    if lumenToolsFileForRescan { deleteStoredValue("lumen.tools.v27",true) }
+    if lumenMapFileForRescan { deleteStoredValue("lumen.functionmap.v27",true) }
+    if lumenMetaFileForRescan { deleteStoredValue("lumen.registrymeta.v27",true) }
     show("The Lumen tool registry will be rebuilt next time.")
     stop()
 }
@@ -298,7 +298,7 @@ if @lumenUserMessage == "/OPTIONS" {
             storeValue("lumen.setup.v27",@lumenSetup,true)
             const lumenProviderSwitchChatFile = getStoredValue("lumen.recentchat.v27",true)
             if lumenProviderSwitchChatFile {
-                deleteFiles(lumenProviderSwitchChatFile,true)
+                deleteStoredValue("lumen.recentchat.v27",true)
             }
             show("Provider saved. Conversation history was reset to protect provider tool-call IDs.")
             stop()
@@ -496,11 +496,11 @@ if @lumenUserMessage == "/OPTIONS" {
             const lumenSettingsMapFile = getStoredValue("lumen.functionmap.v27",true)
             const lumenSettingsMetaFile = getStoredValue("lumen.registrymeta.v27",true)
             if lumenSettingsServersFile {
-                deleteFiles(lumenSettingsServersFile,true)
+                deleteStoredValue("lumen.servers.v27",true)
             }
-            if lumenSettingsToolsFile { deleteFiles(lumenSettingsToolsFile,true) }
-            if lumenSettingsMapFile { deleteFiles(lumenSettingsMapFile,true) }
-            if lumenSettingsMetaFile { deleteFiles(lumenSettingsMetaFile,true) }
+            if lumenSettingsToolsFile { deleteStoredValue("lumen.tools.v27",true) }
+            if lumenSettingsMapFile { deleteStoredValue("lumen.functionmap.v27",true) }
+            if lumenSettingsMetaFile { deleteStoredValue("lumen.registrymeta.v27",true) }
             show("Tool registry invalidated. Run Lumen again to rescan.")
             stop()
         item "Check for Updates":
@@ -556,12 +556,12 @@ if @lumenUserMessage == "/OPTIONS" {
             const lumenResetToolsFile = getStoredValue("lumen.tools.v27",true)
             const lumenResetMapFile = getStoredValue("lumen.functionmap.v27",true)
             const lumenResetMetaFile = getStoredValue("lumen.registrymeta.v27",true)
-            if lumenResetSetupFile { deleteFiles(lumenResetSetupFile,true) }
-            if lumenResetRecentFile { deleteFiles(lumenResetRecentFile,true) }
-            if lumenResetServersFile { deleteFiles(lumenResetServersFile,true) }
-            if lumenResetToolsFile { deleteFiles(lumenResetToolsFile,true) }
-            if lumenResetMapFile { deleteFiles(lumenResetMapFile,true) }
-            if lumenResetMetaFile { deleteFiles(lumenResetMetaFile,true) }
+            if lumenResetSetupFile { deleteStoredValue("lumen.setup.v27",true) }
+            if lumenResetRecentFile { deleteStoredValue("lumen.recentchat.v27",true) }
+            if lumenResetServersFile { deleteStoredValue("lumen.servers.v27",true) }
+            if lumenResetToolsFile { deleteStoredValue("lumen.tools.v27",true) }
+            if lumenResetMapFile { deleteStoredValue("lumen.functionmap.v27",true) }
+            if lumenResetMetaFile { deleteStoredValue("lumen.registrymeta.v27",true) }
             alert("Lumen settings, registry, and chat history were reset.","Lumen")
             stop()
         item "Back":
