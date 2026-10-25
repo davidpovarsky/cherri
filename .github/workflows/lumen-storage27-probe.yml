@@ -42,7 +42,7 @@ jobs:
               assert p['WFStoredContentKey']=='lumen.probe.20261025'
               assert p['WFStoredContentGlobalValue'] is True
           assert actions[0]['WFWorkflowActionParameters']['WFInput']=='LUMEN_STORAGE_OK'
-          full=glob.glob('tests/lumen/Lumen_Agent_Storage27_20261025.shortcut')
+          full=glob.glob('tests/lumen/Lumen Agent.shortcut')
           assert len(full)==1,full
           main=plistlib.load(open(full[0],'rb'))['WFWorkflowActions']
           ids=[a['WFWorkflowActionIdentifier'] for a in main]
