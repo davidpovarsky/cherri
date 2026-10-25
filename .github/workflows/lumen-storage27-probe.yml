@@ -1,0 +1,46 @@
+﻿name: Lumen iOS 27 Storage Probe
+on:
+  push:
+    branches: [agent/lumen-ios27-storage-20261025]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  storage-structure:
+    runs-on: xcode-27
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      - name: Compile with pinned pure upstream Cherri
+        run: |
+          git clone https://github.com/electrikmilk/cherri.git /tmp/cherri-upstream
+          cd /tmp/cherri-upstream
+          git checkout bcc0095754e2cc0baaeb4d93dae172b8153b4716
+          go build -o /tmp/cherri-pure .
+          cd "$GITHUB_WORKSPACE"
+          /tmp/cherri-pure tests/storage27/Lumen_Storage_V27_Probe.cherri --skip-sign -d
+      - name: Verify native storage action IDs and parameters
+        run: |
+          python3 - <<'PY'
+          import glob,plistlib
+          files=glob.glob('tests/storage27/*.shortcut')
+          assert len(files)==1,files
+          actions=plistlib.load(open(files[0],'rb'))['WFWorkflowActions']
+          assert len(actions)==3,len(actions)
+          expected=['is.workflow.actions.setstoredcontent','is.workflow.actions.getstoredcontent']
+          assert [a['WFWorkflowActionIdentifier'] for a in actions[:2]]==expected
+          for a in actions[:2]:
+              p=a['WFWorkflowActionParameters']
+              assert p['WFStoredContentKey']=='lumen.probe.20261025'
+              assert p['WFStoredContentGlobalValue'] is True
+          assert actions[0]['WFWorkflowActionParameters']['WFInput']=='LUMEN_STORAGE_OK'
+          print('STORAGE_STRUCTURE_PASS; RUNTIME_NOT_TESTED')
+          PY
+      - name: Verify iOS 27 simulator exists
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes | grep 'iOS 27'
+          echo 'SIMULATOR_AVAILABLE; STORAGE_RUNTIME_NOT_TESTED'
