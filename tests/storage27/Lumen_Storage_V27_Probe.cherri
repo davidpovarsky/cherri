@@ -1,0 +1,5 @@
+﻿#include 'actions/storage'
+#define name "Lumen Storage V27 Probe"
+storeValue("lumen.probe.20261025", "LUMEN_STORAGE_OK", true)
+const result = getStoredValue("lumen.probe.20261025", true)
+text(result)
