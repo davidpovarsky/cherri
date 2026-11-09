@@ -135,7 +135,7 @@ if matches == [] {
 // 4. Task 1219750434313969 (C): regex quantifiers {8}, {4}, {12} must not turn into variable tokens
 func TestP10_RegexQuantifiersPreserved(t *testing.T) {
 	v2Code := `let pattern = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}"
-matchText(pattern, text: "abc")
+matchText("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}", text: pattern)
 `
 	session, err := compileV2Helper(t, "test_regex", v2Code)
 	if err != nil {
@@ -144,31 +144,54 @@ matchText(pattern, text: "abc")
 	defer session.Close()
 
 	actions := session.shortcut.WFWorkflowActions
+	var textAct *ShortcutAction
 	var matchAct *ShortcutAction
-	for _, act := range actions {
-		if act.WFWorkflowActionIdentifier == "is.workflow.actions.text.match" {
-			matchAct = &act
-			break
+	for i := range actions {
+		act := &actions[i]
+		switch act.WFWorkflowActionIdentifier {
+		case "is.workflow.actions.gettext":
+			textAct = act
+		case "is.workflow.actions.text.match":
+			matchAct = act
 		}
+	}
+	if textAct == nil {
+		t.Fatalf("expected gettext action not found")
 	}
 	if matchAct == nil {
 		t.Fatalf("expected text.match action not found")
 	}
 
-	params := matchAct.WFWorkflowActionParameters
-	rawPat, ok := params["WFMatchTextPattern"]
-	if !ok {
-		t.Fatalf("expected WFMatchTextPattern in matchText action, got %v", params)
-	}
-	// Verify that pattern is NOT turned into an attachment token pointing to a variable named "8"
-	if tokenMap, isMap := rawPat.(map[string]any); isMap {
-		if ser, hasSer := tokenMap["WFSerializationType"]; hasSer && ser == "WFTextTokenString" {
-			val := tokenMap["Value"].(map[string]any)
-			if atts, hasAtts := val["attachmentsByRange"].(map[string]any); hasAtts && len(atts) > 0 {
-				t.Fatalf("CRITICAL BUG: regex quantifier turned into variable attachments: %v", atts)
+	assertUnadulteratedRegex := func(label string, rawVal any) {
+		switch v := rawVal.(type) {
+		case string:
+			if v != "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}" {
+				t.Fatalf("CRITICAL BUG (%s): regex pattern string corrupted: got %q", label, v)
 			}
+		case map[string]any:
+			if ser, hasSer := v["WFSerializationType"]; hasSer && ser == "WFTextTokenString" {
+				val := v["Value"].(map[string]any)
+				if s, ok := val["string"].(string); ok && s != "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}" {
+					t.Fatalf("CRITICAL BUG (%s): regex WFTextTokenString corrupted: got %q", label, s)
+				}
+				if atts, hasAtts := val["attachmentsByRange"].(map[string]any); hasAtts && len(atts) > 0 {
+					t.Fatalf("CRITICAL BUG (%s): regex quantifier turned into variable attachments: %v", label, atts)
+				}
+			}
+		case WFTextTokenString:
+			if v.Value.String != "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}" {
+				t.Fatalf("CRITICAL BUG (%s): regex WFTextTokenString struct corrupted: got %q", label, v.Value.String)
+			}
+			if len(v.Value.AttachmentsByRange) > 0 {
+				t.Fatalf("CRITICAL BUG (%s): regex quantifier turned into variable attachments: %v", label, v.Value.AttachmentsByRange)
+			}
+		default:
+			t.Fatalf("unexpected type for %s: %T (%v)", label, rawVal, rawVal)
 		}
 	}
+
+	assertUnadulteratedRegex("gettext.WFTextActionText", textAct.WFWorkflowActionParameters["WFTextActionText"])
+	assertUnadulteratedRegex("matchText.WFMatchTextPattern", matchAct.WFWorkflowActionParameters["WFMatchTextPattern"])
 }
 
 // 5. Task 1219800392994574: JSON braces in string must not be parsed as inline variables

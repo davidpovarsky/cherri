@@ -4,17 +4,150 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/fs"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
+	"runtime"
+	"sort"
 	"strings"
 	"testing"
 )
 
 const PinnedUpstreamCommit = "bcc0095754e2cc0baaeb4d93dae172b8153b4716"
 
-// Independent Oracle: Compares action definitions and wire behavior against
-// original pinned upstream Cherri (electrikmilk/cherri@bcc0095754e2cc0baaeb4d93dae172b8153b4716).
+// normalizeOracleValue normalizes volatile UUIDs and canonicalizes WFDictionaryFieldValueItems
+// (sorting dictionary items by key and normalizing omitted WFItemType -> uint64(0), since
+// upstream iterates a Go map in non-deterministic order and uses omitempty on WFItemType=0).
+func normalizeOracleValue(v any) any {
+	masked := maskVolatileUUIDs(v)
+	return canonicalizeDictItems(masked)
+}
+
+func canonicalizeDictItems(v any) any {
+	switch val := v.(type) {
+	case map[string]any:
+		res := make(map[string]any, len(val))
+		for k, elem := range val {
+			if k == "WFDictionaryFieldValueItems" {
+				if slice, ok := elem.([]any); ok {
+					normSlice := make([]any, len(slice))
+					for i, rawItem := range slice {
+						itemMap, isMap := rawItem.(map[string]any)
+						if !isMap {
+							normSlice[i] = rawItem
+							continue
+						}
+						cp := make(map[string]any, len(itemMap)+1)
+						for ik, iv := range itemMap {
+							cp[ik] = canonicalizeDictItems(iv)
+						}
+						if _, hasType := cp["WFItemType"]; !hasType {
+							cp["WFItemType"] = uint64(0)
+						}
+						normSlice[i] = cp
+					}
+					sort.Slice(normSlice, func(i, j int) bool {
+						mi, _ := normSlice[i].(map[string]any)
+						mj, _ := normSlice[j].(map[string]any)
+						ki, _ := mi["WFKey"].(map[string]any)["Value"].(map[string]any)["string"].(string)
+						kj, _ := mj["WFKey"].(map[string]any)["Value"].(map[string]any)["string"].(string)
+						return ki < kj
+					})
+					res[k] = normSlice
+					continue
+				}
+			}
+			res[k] = canonicalizeDictItems(elem)
+		}
+		return res
+	case []any:
+		res := make([]any, len(val))
+		for i, elem := range val {
+			res[i] = canonicalizeDictItems(elem)
+		}
+		return res
+	default:
+		return v
+	}
+}
+
+// assertOracleDocsEqual compares two parsed .shortcut plist documents produced by
+// the upstream binary and our fork's binary, comparing action identifiers, parameter
+// keys, and normalized values while safely handling actions with empty/nil parameter maps.
+func assertOracleDocsEqual(t *testing.T, upstreamDoc, forkDoc map[string]any, ignoredKeys ...string) {
+	t.Helper()
+	upActions, ok1 := upstreamDoc["WFWorkflowActions"].([]any)
+	forkActions, ok2 := forkDoc["WFWorkflowActions"].([]any)
+	if !ok1 || !ok2 {
+		t.Fatalf("missing WFWorkflowActions in upstream (%v) or fork (%v) plist", ok1, ok2)
+	}
+	if len(upActions) != len(forkActions) {
+		t.Fatalf("action count mismatch: upstream=%d vs fork=%d", len(upActions), len(forkActions))
+	}
+
+	ignoreMap := map[string]bool{
+		"UUID":               true,
+		"GroupingIdentifier": true,
+		"CustomOutputName":   true,
+	}
+	for _, k := range ignoredKeys {
+		ignoreMap[k] = true
+	}
+
+	for i := range upActions {
+		upMap := upActions[i].(map[string]any)
+		forkMap := forkActions[i].(map[string]any)
+
+		if upMap["WFWorkflowActionIdentifier"] != forkMap["WFWorkflowActionIdentifier"] {
+			t.Fatalf("action[%d] identifier mismatch: upstream=%v vs fork=%v",
+				i, upMap["WFWorkflowActionIdentifier"], forkMap["WFWorkflowActionIdentifier"])
+		}
+
+		upParams, _ := upMap["WFWorkflowActionParameters"].(map[string]any)
+		if upParams == nil {
+			upParams = map[string]any{}
+		}
+		forkParams, _ := forkMap["WFWorkflowActionParameters"].(map[string]any)
+		if forkParams == nil {
+			forkParams = map[string]any{}
+		}
+
+		for k, vUp := range upParams {
+			if ignoreMap[k] {
+				continue
+			}
+			vFork, found := forkParams[k]
+			if !found {
+				t.Fatalf("action[%d] (%v): upstream parameter %q missing in fork plist (fork params: %v)",
+					i, upMap["WFWorkflowActionIdentifier"], k, forkParams)
+			}
+			upJSON, _ := json.Marshal(normalizeOracleValue(vUp))
+			forkJSON, _ := json.Marshal(normalizeOracleValue(vFork))
+			if string(upJSON) != string(forkJSON) {
+				t.Fatalf("action[%d] (%v) parameter %q mismatch:\nupstream: %s\nfork:     %s",
+					i, upMap["WFWorkflowActionIdentifier"], k, upJSON, forkJSON)
+			}
+		}
+
+		for k := range forkParams {
+			if ignoreMap[k] {
+				continue
+			}
+			if _, found := upParams[k]; !found {
+				t.Fatalf("action[%d] (%v): fork emitted unexpected parameter %q not present in upstream",
+					i, forkMap["WFWorkflowActionIdentifier"], k)
+			}
+		}
+	}
+}
+
+// Independent Oracle (Static + Behavioral): Compares action definitions and wire
+// plist output against original pinned upstream Cherri
+// (electrikmilk/cherri@bcc0095754e2cc0baaeb4d93dae172b8153b4716).
 // This is an external, independent oracle check, not internal legacy parity.
 func TestP10_IndependentOracle_UpstreamPinnedCommitComparison(t *testing.T) {
 	// 1. Verify that the pinned upstream commit exists in the local Git object store
@@ -75,157 +208,466 @@ func TestP10_IndependentOracle_UpstreamPinnedCommitComparison(t *testing.T) {
 	t.Logf("Independent Oracle verified: Upstream runworkflow uses WFInput serialization standard")
 }
 
-// Negative Mutation Test 1: Proves that if WFInput is omitted from run action parameters,
-// the verification pipeline unequivocally detects the regression and fails.
-func TestP10_NegativeMutation_MissingWFInputInRunAction_Fails(t *testing.T) {
-	validateRunActionParams := func(params map[string]any) error {
-		if params == nil {
-			return fmt.Errorf("params map is nil")
-		}
-		if _, hasName := params["WFWorkflowName"]; !hasName {
-			return fmt.Errorf("missing WFWorkflowName")
-		}
-		if _, hasInput := params["WFInput"]; !hasInput || params["WFInput"] == nil {
-			return fmt.Errorf("CRITICAL REGRESSION: run action is missing required wire key 'WFInput'")
-		}
-		return nil
+// buildUpstreamOracleBinary checks out PinnedUpstreamCommit into an isolated detached
+// git worktree, builds the real upstream compiler binary, and returns its executable path.
+func buildUpstreamOracleBinary(t *testing.T) string {
+	t.Helper()
+
+	cmdCheck := exec.Command("git", "cat-file", "-e", PinnedUpstreamCommit+"^{commit}")
+	if out, err := cmdCheck.CombinedOutput(); err != nil {
+		t.Fatalf("independent oracle: pinned upstream commit %s missing from git object store: %v\n%s",
+			PinnedUpstreamCommit, err, string(out))
 	}
 
-	// 1. Valid parameters pass
-	validParams := map[string]any{
-		"WFWorkflowName": "TestTarget",
-		"WFWorkflow":     map[string]any{"workflowName": "TestTarget"},
-		"WFInput":        "data_payload",
-	}
-	if err := validateRunActionParams(validParams); err != nil {
-		t.Fatalf("expected valid params to pass validation, got: %v", err)
-	}
+	tmpBase := t.TempDir()
+	worktreeDir := filepath.Join(tmpBase, "upstream-worktree")
 
-	// 2. Mutated parameters (missing WFInput, the original Task 1219750185341254 bug)
-	mutatedParams := map[string]any{
-		"WFWorkflowName": "TestTarget",
-		"WFWorkflow":     map[string]any{"workflowName": "TestTarget"},
-		// WFInput intentionally dropped by mutation
+	cmdAdd := exec.Command("git", "worktree", "add", "--detach", worktreeDir, PinnedUpstreamCommit)
+	if out, err := cmdAdd.CombinedOutput(); err != nil {
+		t.Fatalf("independent oracle: failed to create detached worktree for %s: %v\n%s",
+			PinnedUpstreamCommit, err, string(out))
 	}
-	err := validateRunActionParams(mutatedParams)
-	if err == nil {
-		t.Fatalf("NEGATIVE TEST FAILED: validator accepted run action without WFInput!")
+	t.Cleanup(func() {
+		_ = exec.Command("git", "worktree", "remove", "--force", worktreeDir).Run()
+		_ = exec.Command("git", "worktree", "prune").Run()
+	})
+
+	exeExt := ""
+	if runtime.GOOS == "windows" {
+		exeExt = ".exe"
 	}
-	if !strings.Contains(err.Error(), "missing required wire key 'WFInput'") {
-		t.Fatalf("unexpected error message: %v", err)
+	upstreamBin := filepath.Join(tmpBase, "upstream-cherri"+exeExt)
+
+	cmdBuild := exec.Command("go", "build", "-o", upstreamBin, ".")
+	cmdBuild.Dir = worktreeDir
+	if out, err := cmdBuild.CombinedOutput(); err != nil {
+		t.Fatalf("independent oracle: failed to build upstream binary at %s: %v\n%s",
+			PinnedUpstreamCommit, err, string(out))
 	}
-	t.Logf("Negative mutation caught as expected: %v", err)
+	return upstreamBin
 }
 
-// Negative Mutation Test 2: Proves that if statistic action emits 'Input' instead of 'WFInput',
-// the verification pipeline unequivocally detects the regression and fails.
-func TestP10_NegativeMutation_StatisticInputWireKeyRegression_Fails(t *testing.T) {
-	validateStatisticParams := func(params map[string]any) error {
-		if params == nil {
-			return fmt.Errorf("params is nil")
+func compileWithBinary(t *testing.T, binPath, workDir, name, source string, extraArgs ...string) string {
+	t.Helper()
+	srcPath := filepath.Join(workDir, name+".cherri")
+	if err := os.WriteFile(srcPath, []byte(source), 0o600); err != nil {
+		t.Fatalf("write %s: %v", srcPath, err)
+	}
+	args := []string{srcPath, "--skip-sign", "--no-ansi"}
+	args = append(args, extraArgs...)
+	cmd := exec.Command(binPath, args...)
+	cmd.Dir = workDir
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("%s (%s): compilation failed: %v\n%s", name, filepath.Base(binPath), err, string(out))
+	}
+	outPath := filepath.Join(workDir, name+"_unsigned.shortcut")
+	if _, err := os.Stat(outPath); err != nil {
+		altPath := filepath.Join(workDir, name+".shortcut")
+		if _, altErr := os.Stat(altPath); altErr == nil {
+			return altPath
 		}
-		if _, hasDeprecated := params["Input"]; hasDeprecated {
-			return fmt.Errorf("CRITICAL REGRESSION: statistic action emitted deprecated wire key 'Input'")
-		}
-		if _, hasWFInput := params["WFInput"]; !hasWFInput || params["WFInput"] == nil {
-			return fmt.Errorf("CRITICAL REGRESSION: statistic action missing wire key 'WFInput'")
-		}
-		return nil
+		t.Fatalf("%s: expected output shortcut %s missing: %v", name, outPath, err)
 	}
-
-	// 1. Valid params pass
-	validParams := map[string]any{
-		"WFStatisticsOperation": "Sum",
-		"WFInput":               []any{1, 2, 3},
-	}
-	if err := validateStatisticParams(validParams); err != nil {
-		t.Fatalf("valid statistic params failed: %v", err)
-	}
-
-	// 2. Mutated params (emitting 'Input' instead of 'WFInput', the Task 1219750250211915 bug)
-	mutatedParams := map[string]any{
-		"WFStatisticsOperation": "Sum",
-		"Input":                 []any{1, 2, 3},
-	}
-	err := validateStatisticParams(mutatedParams)
-	if err == nil {
-		t.Fatalf("NEGATIVE TEST FAILED: validator accepted statistic action with 'Input' key!")
-	}
-	if !strings.Contains(err.Error(), "deprecated wire key 'Input'") {
-		t.Fatalf("unexpected error message: %v", err)
-	}
-	t.Logf("Negative mutation caught as expected: %v", err)
+	return outPath
 }
 
-// Negative Mutation Test 3: Proves that if regex quantifiers {8}, {4}, {12} are turned
-// into variable token attachments, the verification pipeline detects the regression and fails.
-func TestP10_NegativeMutation_RegexQuantifiersAsAttachments_Fails(t *testing.T) {
-	validateRegexPattern := func(patternParam any) error {
-		tokenMap, isMap := patternParam.(map[string]any)
-		if !isMap {
-			return nil // Raw string literal is safe
-		}
-		if ser, hasSer := tokenMap["WFSerializationType"]; hasSer && ser == "WFTextTokenString" {
-			val, ok := tokenMap["Value"].(map[string]any)
-			if !ok {
+func compileWithBinaryExpectError(t *testing.T, binPath, workDir, name, source string, extraArgs ...string) (string, error) {
+	t.Helper()
+	srcPath := filepath.Join(workDir, name+".cherri")
+	if err := os.WriteFile(srcPath, []byte(source), 0o600); err != nil {
+		t.Fatalf("write %s: %v", srcPath, err)
+	}
+	args := []string{srcPath, "--skip-sign", "--no-ansi"}
+	args = append(args, extraArgs...)
+	cmd := exec.Command(binPath, args...)
+	cmd.Dir = workDir
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
+// Behavioral Independent Oracle: Builds the locked upstream Cherri binary at
+// PinnedUpstreamCommit (bcc0095754e2cc0baaeb4d93dae172b8153b4716) and runs both
+// the upstream binary and our fork's binary on shared supported cases, comparing
+// the resulting plist structure, action identifiers, fields, and values.
+func TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison(t *testing.T) {
+	upstreamBin := buildUpstreamOracleBinary(t)
+	forkBin := roundTripBinary(t)
+	workDir := t.TempDir()
+
+	// 1. Behavioral Oracle: statistic action across operations (Average, Sum, Minimum, Maximum)
+	t.Run("statistic-plist-equality", func(t *testing.T) {
+		for _, op := range []string{"Average", "Sum", "Minimum", "Maximum"} {
+			src := fmt.Sprintf("#include 'actions/math'\n@nums = [10, 20, 30]\n@res = statistic('%s', @nums)\n", op)
+			upPlist := compileWithBinary(t, upstreamBin, workDir, "up_stat_"+op, src)
+			forkLegacyPlist := compileWithBinary(t, forkBin, workDir, "fork_legacy_stat_"+op, src, "--legacy")
+
+			upDoc := loadRoundTripDocument(t, upPlist)
+			forkLegacyDoc := loadRoundTripDocument(t, forkLegacyPlist)
+
+			// Full structural comparison of WFWorkflowActions between upstream binary and fork binary
+			assertOracleDocsEqual(t, upDoc, forkLegacyDoc, "WFWorkflow")
+
+			// Also compile V2 syntax with fork binary and compare the statistics action parameters against upstream
+			v2Src := fmt.Sprintf("let nums = [10, 20, 30]\nlet res = statistic(%q, input: nums)\n", op)
+			forkV2Plist := compileWithBinary(t, forkBin, workDir, "fork_v2_stat_"+op, v2Src)
+			forkV2Doc := loadRoundTripDocument(t, forkV2Plist)
+
+			findStatParams := func(doc map[string]any, label string) map[string]any {
+				acts, _ := doc["WFWorkflowActions"].([]any)
+				for _, a := range acts {
+					m := a.(map[string]any)
+					if m["WFWorkflowActionIdentifier"] == "is.workflow.actions.statistics" {
+						return m["WFWorkflowActionParameters"].(map[string]any)
+					}
+				}
+				t.Fatalf("%s: missing is.workflow.actions.statistics action", label)
 				return nil
 			}
-			if atts, hasAtts := val["attachmentsByRange"].(map[string]any); hasAtts && len(atts) > 0 {
-				return fmt.Errorf("CRITICAL REGRESSION: regex string contains variable attachments: %v", atts)
+
+			upParams := findStatParams(upDoc, "upstream")
+			v2Params := findStatParams(forkV2Doc, "fork-v2")
+
+			if upParams["WFStatisticsOperation"] != v2Params["WFStatisticsOperation"] {
+				t.Errorf("statistic(%s): WFStatisticsOperation mismatch: upstream=%v vs fork-v2=%v",
+					op, upParams["WFStatisticsOperation"], v2Params["WFStatisticsOperation"])
+			}
+			if _, hasDeprecated := v2Params["Input"]; hasDeprecated {
+				t.Errorf("statistic(%s): fork-v2 emitted deprecated 'Input' wire key", op)
+			}
+			upInput, ok1 := upParams["WFInput"].(map[string]any)
+			v2Input, ok2 := v2Params["WFInput"].(map[string]any)
+			if !ok1 || !ok2 {
+				t.Fatalf("statistic(%s): expected WFInput map in both upstream (%T) and fork-v2 (%T)", op, upParams["WFInput"], v2Params["WFInput"])
+			}
+			if upInput["WFSerializationType"] != v2Input["WFSerializationType"] {
+				t.Errorf("statistic(%s): WFInput.WFSerializationType mismatch: upstream=%v vs fork-v2=%v",
+					op, upInput["WFSerializationType"], v2Input["WFSerializationType"])
 			}
 		}
-		return nil
-	}
+	})
 
-	// 1. Valid regex string passes
-	validPattern := map[string]any{
-		"WFSerializationType": "WFTextTokenString",
-		"Value": map[string]any{
-			"string":             "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{12}",
-			"attachmentsByRange": map[string]any{},
-		},
-	}
-	if err := validateRegexPattern(validPattern); err != nil {
-		t.Fatalf("valid regex pattern failed: %v", err)
-	}
+	// 2. Behavioral Oracle: runworkflow with dictionary payload (shared runSelf(@payload) + fork run("Target", payload))
+	t.Run("runworkflow-dictionary-payload-plist-equality", func(t *testing.T) {
+		sharedSrc := `@payload = {"model": "gpt-4", "count": 2}
+runSelf(@payload)
+`
+		upPlist := compileWithBinary(t, upstreamBin, workDir, "up_runself_dict", sharedSrc)
+		forkLegacyPlist := compileWithBinary(t, forkBin, workDir, "fork_runself_dict", sharedSrc, "--legacy")
 
-	// 2. Mutated regex pattern (attachments created for {8})
-	mutatedPattern := map[string]any{
-		"WFSerializationType": "WFTextTokenString",
-		"Value": map[string]any{
-			"string": "\uFFFC-[0-9a-f]{4}",
-			"attachmentsByRange": map[string]any{
-				"{0, 1}": map[string]any{
-					"Type":         "Variable",
-					"VariableName": "8",
-				},
-			},
-		},
-	}
-	err := validateRegexPattern(mutatedPattern)
-	if err == nil {
-		t.Fatalf("NEGATIVE TEST FAILED: validator accepted regex string with quantifier attachment!")
-	}
-	if !strings.Contains(err.Error(), "regex string contains variable attachments") {
-		t.Fatalf("unexpected error message: %v", err)
-	}
-	t.Logf("Negative mutation caught as expected: %v", err)
-}
+		upDoc := loadRoundTripDocument(t, upPlist)
+		forkLegacyDoc := loadRoundTripDocument(t, forkLegacyPlist)
 
-// Negative Mutation Test 4: Proves that invalid array equality conditionals
-// cannot compile and will fail the build if accepted.
-func TestP10_NegativeMutation_ArrayEqualityNotRejected_Fails(t *testing.T) {
-	src := `let matches = ["item1", "item2"]
-if matches == [] {
-    alert(alert: "Should not compile")
+		// Exact structural equality on WFWorkflowActions (including WFDictionaryFieldValueItems and WFInput attachment)
+		assertOracleDocsEqual(t, upDoc, forkLegacyDoc, "WFWorkflow")
+
+		// Also compare upstream's dictionary items and WFInput token structure against our fork's 2-arg run("Target", payload)
+		forkRunV2Src := `let payload = {"model": "gpt-4", "count": 2}
+run("Target", input: payload)
+`
+		forkRunV2Plist := compileWithBinary(t, forkBin, workDir, "fork_run_v2_dict", forkRunV2Src)
+		forkRunV2Doc := loadRoundTripDocument(t, forkRunV2Plist)
+
+		extractDictAndRun := func(doc map[string]any, label string) (map[string]any, map[string]any) {
+			var dictAct, runAct map[string]any
+			for _, a := range doc["WFWorkflowActions"].([]any) {
+				m := a.(map[string]any)
+				switch m["WFWorkflowActionIdentifier"] {
+				case "is.workflow.actions.dictionary":
+					dictAct = m
+				case "is.workflow.actions.runworkflow":
+					runAct = m
+				}
+			}
+			if dictAct == nil || runAct == nil {
+				t.Fatalf("%s: expected both dictionary and runworkflow actions", label)
+			}
+			return dictAct, runAct
+		}
+
+		upDictAct, upRunAct := extractDictAndRun(upDoc, "upstream-runSelf")
+		v2DictAct, v2RunAct := extractDictAndRun(forkRunV2Doc, "fork-v2-run")
+
+		upDictItems := extractDictItems(t, upDictAct)
+		v2DictItems := extractDictItems(t, v2DictAct)
+
+		if len(upDictItems) != len(v2DictItems) {
+			t.Fatalf("dictionary payload item count mismatch: upstream=%d vs fork-v2=%d", len(upDictItems), len(v2DictItems))
+		}
+		for k, upItem := range upDictItems {
+			v2Item, ok := v2DictItems[k]
+			if !ok {
+				t.Errorf("fork-v2 dictionary payload missing key %q present in upstream", k)
+				continue
+			}
+			if upItem.itemType != v2Item.itemType || upItem.val != v2Item.val {
+				t.Errorf("dictionary payload key %q mismatch: upstream=%+v vs fork-v2=%+v", k, upItem, v2Item)
+			}
+		}
+
+		upWFInput := upRunAct["WFWorkflowActionParameters"].(map[string]any)["WFInput"].(map[string]any)
+		v2WFInput := v2RunAct["WFWorkflowActionParameters"].(map[string]any)["WFInput"].(map[string]any)
+		if upWFInput["WFSerializationType"] != v2WFInput["WFSerializationType"] {
+			t.Errorf("runworkflow WFInput.WFSerializationType mismatch: upstream=%v vs fork-v2=%v",
+				upWFInput["WFSerializationType"], v2WFInput["WFSerializationType"])
+		}
+	})
+
+	// 3. Behavioral Oracle: Regex quantifiers and JSON braces in strings
+	t.Run("regex-quantifiers-and-json-strings-plist-equality", func(t *testing.T) {
+		// Upstream uses single-quoted raw strings for regex/JSON with braces; our fork supports both single-quoted and double-quoted
+		upSrc := `#include 'actions/text'
+@m = matchText('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}', "550e8400-e29b")
+@j = '{"model":"gpt-4","count":2}'
+`
+		forkDoubleQuoteSrc := `#include 'actions/text'
+@m = matchText("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}", "550e8400-e29b")
+@j = "{\"model\":\"gpt-4\",\"count\":2}"
+`
+		upPlist := compileWithBinary(t, upstreamBin, workDir, "up_regex_json", upSrc)
+		forkSinglePlist := compileWithBinary(t, forkBin, workDir, "fork_single_regex_json", upSrc, "--legacy")
+		forkDoublePlist := compileWithBinary(t, forkBin, workDir, "fork_double_regex_json", forkDoubleQuoteSrc, "--legacy")
+
+		upDoc := loadRoundTripDocument(t, upPlist)
+		forkSingleDoc := loadRoundTripDocument(t, forkSinglePlist)
+		forkDoubleDoc := loadRoundTripDocument(t, forkDoublePlist)
+
+		assertOracleDocsEqual(t, upDoc, forkSingleDoc, "WFWorkflow")
+
+		// For double-quoted regex and JSON strings in our fork, verify the emitted matchText and gettext
+		// actions match upstream's single-quoted raw string actions (ignoring only the OutputName Rawtext vs Text label on setvariable)
+		assertOracleDocsEqual(t, upDoc, forkDoubleDoc, "WFWorkflow", "WFInput")
+		upTextParam := upDoc["WFWorkflowActions"].([]any)[2].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)["WFTextActionText"]
+		dblTextParam := forkDoubleDoc["WFWorkflowActions"].([]any)[2].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)["WFTextActionText"]
+		if upTextParam != dblTextParam || dblTextParam != `{"model":"gpt-4","count":2}` {
+			t.Fatalf("gettext WFTextActionText mismatch: upstream=%v vs fork-double=%v", upTextParam, dblTextParam)
+		}
+	})
+
+	// 4. Behavioral Oracle: Variable interpolation (WFTextTokenString)
+	t.Run("variable-interpolation-plist-equality", func(t *testing.T) {
+		src := `@name = "Ada"
+show("Hello {@name}!")
+`
+		upPlist := compileWithBinary(t, upstreamBin, workDir, "up_interp", src)
+		forkLegacyPlist := compileWithBinary(t, forkBin, workDir, "fork_interp", src, "--legacy")
+
+		upDoc := loadRoundTripDocument(t, upPlist)
+		forkLegacyDoc := loadRoundTripDocument(t, forkLegacyPlist)
+
+		assertOracleDocsEqual(t, upDoc, forkLegacyDoc, "WFWorkflow")
+	})
+
+	// 5. Behavioral Oracle: Invalid array equality conditional fails closed on both compilers
+	t.Run("invalid-array-equality-conditional-fails-closed", func(t *testing.T) {
+		legacySrc := `@matches = ["a", "b"]
+if @matches == [] {
+    alert("bad")
 }
 `
-	_, err := compileV2Helper(t, "neg_array_cond", src)
-	if err == nil {
-		t.Fatalf("NEGATIVE TEST FAILED: compiler accepted invalid array comparison 'matches == []'!")
+		upOut, upErr := compileWithBinaryExpectError(t, upstreamBin, workDir, "up_bad_cond", legacySrc)
+		if upErr == nil {
+			t.Fatalf("expected upstream binary to reject '@matches == []', but compilation succeeded")
+		}
+		if !strings.Contains(upOut, "Invalid type 'array' for conditional '=='") {
+			t.Fatalf("unexpected upstream error output: %s", upOut)
+		}
+
+		forkLegacyOut, forkLegacyErr := compileWithBinaryExpectError(t, forkBin, workDir, "fork_legacy_bad_cond", legacySrc, "--legacy")
+		if forkLegacyErr == nil {
+			t.Fatalf("expected fork binary (--legacy) to reject '@matches == []', but compilation succeeded")
+		}
+		if !strings.Contains(forkLegacyOut, "Invalid type 'array' for conditional '=='") {
+			t.Fatalf("unexpected fork (--legacy) error output: %s", forkLegacyOut)
+		}
+
+		v2Src := `let matches = ["a", "b"]
+if matches == [] {
+    alert(alert: "bad")
+}
+`
+		forkV2Out, forkV2Err := compileWithBinaryExpectError(t, forkBin, workDir, "fork_v2_bad_cond", v2Src)
+		if forkV2Err == nil {
+			t.Fatalf("expected fork binary (v2) to reject 'matches == []', but compilation succeeded")
+		}
+		if !strings.Contains(forkV2Out, "Invalid type 'array' for conditional '=='") {
+			t.Fatalf("unexpected fork (v2) error output: %s", forkV2Out)
+		}
+	})
+}
+
+// copyCompilerWorkspaceForMutation copies the minimal compiler source tree needed
+// to compile and run Go tests into an isolated temporary directory so real source
+// mutations can be injected and verified without touching the working tree.
+func copyCompilerWorkspaceForMutation(t *testing.T) string {
+	t.Helper()
+	dstRoot := t.TempDir()
+
+	copyFile := func(relPath string) {
+		data, err := os.ReadFile(relPath)
+		if err != nil {
+			t.Fatalf("mutation gate: read %s: %v", relPath, err)
+		}
+		dstPath := filepath.Join(dstRoot, relPath)
+		if err := os.MkdirAll(filepath.Dir(dstPath), 0o755); err != nil {
+			t.Fatalf("mutation gate: mkdir %s: %v", filepath.Dir(dstPath), err)
+		}
+		if err := os.WriteFile(dstPath, data, 0o600); err != nil {
+			t.Fatalf("mutation gate: write %s: %v", dstPath, err)
+		}
 	}
-	if !strings.Contains(err.Error(), "Invalid type 'array' for conditional '=='") {
-		t.Fatalf("unexpected error message: %v", err)
+
+	copyDir := func(relDir string) {
+		err := filepath.WalkDir(relDir, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if d.IsDir() {
+				return nil
+			}
+			copyFile(path)
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("mutation gate: walk %s: %v", relDir, err)
+		}
 	}
-	t.Logf("Negative compilation failure confirmed: %v", err)
+
+	// Copy root Go files (excluding p10_independent_oracle_test.go to avoid recursive execution),
+	// go.mod, go.sum, stdfunc.cherri, actions/, and internal/.
+	entries, err := os.ReadDir(".")
+	if err != nil {
+		t.Fatalf("mutation gate: readdir .: %v", err)
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		name := entry.Name()
+		if name == "p10_independent_oracle_test.go" {
+			continue
+		}
+		if strings.HasSuffix(name, ".go") || name == "go.mod" || name == "go.sum" || name == "stdfunc.cherri" {
+			copyFile(name)
+		}
+	}
+	copyDir("actions")
+	copyDir("internal")
+
+	return dstRoot
+}
+
+// Isolated Compiler Mutation Gate: Copies the real compiler source tree into an
+// isolated temporary workspace, verifies the unmutated baseline passes, and then
+// injects each of the 4 original P10 compiler bugs into the actual source files
+// one at a time, asserting that `go test` fails on the mutated compiler.
+func TestP10_IsolatedCompilerMutationGate(t *testing.T) {
+	mutDir := copyCompilerWorkspaceForMutation(t)
+
+	runMutatedTests := func(testPattern string) (string, error) {
+		cmd := exec.Command("go", "test", "-run", testPattern, ".")
+		cmd.Dir = mutDir
+		out, err := cmd.CombinedOutput()
+		return string(out), err
+	}
+
+	// 0. Baseline verification: unmutated copy must pass all P10 bugfix tests
+	baselinePattern := "^(TestP10_RunActionPreservesWFInput|TestP10_StatisticActionEmitsWFInputNotInput|TestP10_ArrayEqualityComparison_FailsClosed|TestP10_RegexQuantifiersPreserved|TestP10_JSONBracesInStringNotParsedAsInlineVars)$"
+	if out, err := runMutatedTests(baselinePattern); err != nil {
+		t.Fatalf("mutation gate baseline failed on unmutated source copy: %v\n%s", err, out)
+	}
+
+	mutateAndVerifyFailure := func(
+		subtestName string,
+		relFile string,
+		target string,
+		replacement string,
+		testPattern string,
+		expectedFailureSubstring string,
+	) {
+		t.Run(subtestName, func(t *testing.T) {
+			filePath := filepath.Join(mutDir, relFile)
+			origBytes, err := os.ReadFile(filePath)
+			if err != nil {
+				t.Fatalf("read %s: %v", filePath, err)
+			}
+			origContent := string(origBytes)
+			if !strings.Contains(origContent, target) {
+				t.Fatalf("mutation target snippet not found in %s:\n%s", relFile, target)
+			}
+
+			mutatedContent := strings.Replace(origContent, target, replacement, 1)
+			if err := os.WriteFile(filePath, []byte(mutatedContent), 0o600); err != nil {
+				t.Fatalf("write mutated %s: %v", filePath, err)
+			}
+			defer func() {
+				_ = os.WriteFile(filePath, origBytes, 0o600)
+			}()
+
+			out, testErr := runMutatedTests(testPattern)
+			if testErr == nil {
+				t.Fatalf("MUTATION GATE ESCAPE (%s): go test -run %s PASSED when %s was mutated!\nOutput:\n%s",
+					subtestName, testPattern, relFile, out)
+			}
+			if !strings.Contains(out, expectedFailureSubstring) {
+				t.Fatalf("mutation %s failed as expected, but output did not contain %q:\n%s",
+					subtestName, expectedFailureSubstring, out)
+			}
+			t.Logf("Mutation %s caught by test suite as required (%s)", subtestName, expectedFailureSubstring)
+		})
+	}
+
+	// 1. Real Compiler Mutation 1: Revert `run` in actions_std.go from `appendParamsFunc` to `makeParams`
+	// (the original bug that dropped WFInput when a payload was passed to `run`).
+	mutateAndVerifyFailure(
+		"mutation-1-run-makeParams-drops-WFInput",
+		"actions_std.go",
+		"appendParamsFunc: func(args []actionArgument) map[string]any {\n\t\t\tif len(args) == 0 {\n\t\t\t\treturn map[string]any{}\n\t\t\t}\n\t\t\tvar name = argumentValue(args, 0)",
+		"makeParams: func(args []actionArgument) map[string]any {\n\t\t\tif len(args) == 0 {\n\t\t\t\treturn map[string]any{}\n\t\t\t}\n\t\t\tvar name = argumentValue(args, 0)",
+		"^TestP10_RunActionPreservesWFInput$",
+		"WFInput parameter is nil/missing in run action",
+	)
+
+	// 2. Real Compiler Mutation 2: Revert `statistic` in actions/math.cherri from `'WFInput'` to `'Input'`
+	// (the original bug that emitted the wrong wire parameter key).
+	mutateAndVerifyFailure(
+		"mutation-2-statistic-emits-Input-instead-of-WFInput",
+		filepath.Join("actions", "math.cherri"),
+		"action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'WFInput')",
+		"action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'Input')",
+		"^TestP10_StatisticActionEmitsWFInputNotInput$",
+		"statistic action missing WFInput wire key",
+	)
+
+	// 3. Real Compiler Mutation 3: Revert `checkInlineVarRegex` in parser.go to greedy `\{(.*?)...}`
+	// (the original bug that treated JSON braces `{"model":"test"}` and regex quantifiers as inline variables).
+	mutateAndVerifyFailure(
+		"mutation-3a-parser-greedy-inline-var-regex-on-json-braces",
+		"parser.go",
+		"var checkInlineVarRegex = regexp.MustCompile(`\\{(@?[a-zA-Z_][a-zA-Z0-9_]*)(?:\\['(.*?)'])?(?:\\.(.*?))?}`)",
+		"var checkInlineVarRegex = regexp.MustCompile(`\\{(.*?)(?:\\['(.*?)'])?(?:\\.(.*?))?}`)",
+		"^TestP10_JSONBracesInStringNotParsedAsInlineVars$",
+		"FAIL",
+	)
+
+	// 3b. Real Compiler Mutation 3b: Revert `collectInlineVarRegex` and `replaceVarRegex` in shortcutgen.go
+	// so regex quantifiers `{8}` are replaced with ObjectReplaceChar (\uFFFC).
+	mutateAndVerifyFailure(
+		"mutation-3b-shortcutgen-greedy-inline-var-regex-on-quantifiers",
+		"shortcutgen.go",
+		"var collectInlineVarRegex = regexp.MustCompile(`\\{@?([a-zA-Z_][a-zA-Z0-9_]*)(?:\\['(.*?)'])?(?:\\.(.*?))?}`)\nvar replaceVarRegex = regexp.MustCompile(`\\{@?[a-zA-Z_][a-zA-Z0-9_]*(?:\\['.*?'])?(?:\\..*?)?}`)",
+		"var collectInlineVarRegex = regexp.MustCompile(`\\{@?(.*?)(?:\\['(.*?)'])?(?:\\.(.*?))?}`)\nvar replaceVarRegex = regexp.MustCompile(`(\\{@?.*?})`)",
+		"^TestP10_RegexQuantifiersPreserved$",
+		"regex WFTextTokenString struct corrupted",
+	)
+
+	// 4. Real Compiler Mutation 4: Disable the array equality check in internal/language/lower/lower.go
+	// (the original bug that allowed `if matches == []` to compile instead of failing closed).
+	mutateAndVerifyFailure(
+		"mutation-4-lower-array-equality-conditional-accepted",
+		filepath.Join("internal", "language", "lower", "lower.go"),
+		"func (l *Lowerer) isArrayExpr(expr syntax.Expression) bool {",
+		"func (l *Lowerer) isArrayExpr(expr syntax.Expression) bool {\n\treturn false",
+		"^TestP10_ArrayEqualityComparison_FailsClosed$",
+		"expected compilation to fail for array == [] comparison, but succeeded",
+	)
 }
