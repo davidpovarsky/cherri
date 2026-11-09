@@ -174,17 +174,20 @@ GATE_DEFINITIONS = {
         "sourceFile": "p10r_acceptance_test.go",
     },
     "R22": {
-        "name": "iOS 27 Simulator runtime execution",
-        "isBlocked": True,
+        "name": "iOS 27 Simulator runtime execution (platform-aware vs Physical iPad BLOCKED_DEVICE)",
+        "isPlatformSimulatorCheck": True,
         "tier": "BLOCKED_EXTERNAL",
-        "blockerReason": "iOS 27 Simulator execution is unavailable on non-macOS/Windows runner. Static runtime contracts and iOS bridge verified; live simulator execution blocked by external platform.",
+        "blockerReason": "iOS 27 Simulator execution requires macOS + Xcode iOS 27 Simulator runtime (BLOCKED_PLATFORM on Windows/Linux). Physical iPadOS 27 execution is tracked separately as BLOCKED_DEVICE in docs/apple-runtime/p10/device-acceptance-manifest.json.",
         "sourceFile": "scripts/ios27_runtime_poc.sh",
     },
     "R23": {
-        "name": "Protected parallel iOS files remain untouched",
-        "command": ["git", "diff", "HEAD", "--", "ios/CherriUITests/CherriEditorUITests.swift", "ios/CherriApp/Views/CodeEditorView.swift"],
+        "name": "Protected parallel iOS files remain untouched across P10 baseline 76d7225..HEAD and working tree",
+        "checkProtectedIOSFiles": [
+            "ios/CherriUITests/CherriEditorUITests.swift",
+            "ios/CherriApp/Views/CodeEditorView.swift",
+        ],
+        "upstreamBase": "76d722502e20db977e84a095444d0172442655b8",
         "tier": "PRODUCTION_PATH",
-        "checkEmptyDiff": True,
         "sourceFile": "git",
     },
     "R24": {
@@ -442,7 +445,90 @@ def validate_gate_registry(active_gates):
 def execute_gate(gate_id, defn):
     """Executes a single gate command, returns result dictionary."""
     t0 = time.time()
-    
+
+    if defn.get("isPlatformSimulatorCheck"):
+        if sys.platform == "darwin":
+            sim_check = subprocess.run(
+                ["xcrun", "simctl", "list", "runtimes"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            )
+            if sim_check.returncode == 0 and "iOS 27" in (sim_check.stdout or ""):
+                proc = subprocess.run(
+                    ["bash", "scripts/ios27_runtime_poc.sh"],
+                    cwd=REPO_ROOT,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                )
+                dur = round(time.time() - t0, 3)
+                out_hash = hashlib.sha256(((proc.stdout or "") + (proc.stderr or "")).encode("utf-8")).hexdigest()
+                return {
+                    "id": gate_id,
+                    "name": defn["name"],
+                    "status": "PASS" if proc.returncode == 0 else "FAIL",
+                    "tier": "PRODUCTION_PATH",
+                    "command": "bash scripts/ios27_runtime_poc.sh",
+                    "exitCode": proc.returncode,
+                    "durationSeconds": dur,
+                    "outputSha256": out_hash,
+                    "sourceFile": defn["sourceFile"],
+                }
+        return {
+            "id": gate_id,
+            "name": defn["name"],
+            "status": "BLOCKED_EXTERNAL",
+            "blockerClass": "BLOCKED_PLATFORM",
+            "physicalDeviceBlockerClass": "BLOCKED_DEVICE",
+            "tier": defn["tier"],
+            "command": f"platform={sys.platform} (requires darwin + iOS 27 Simulator runtime; physical iPad tracked as BLOCKED_DEVICE)",
+            "exitCode": 0,
+            "durationSeconds": round(time.time() - t0, 3),
+            "outputSha256": hashlib.sha256(b"BLOCKED_PLATFORM_AND_BLOCKED_DEVICE").hexdigest(),
+            "sourceFile": defn["sourceFile"],
+            "rationale": defn.get("blockerReason", ""),
+        }
+
+    if defn.get("checkProtectedIOSFiles"):
+        files = defn["checkProtectedIOSFiles"]
+        base = defn.get("upstreamBase", "bcc0095754e2cc0baaeb4d93dae172b8153b4716")
+        cmd_diff = ["git", "diff", f"{base}..HEAD", "--"] + files
+        cmd_status = ["git", "status", "--porcelain", "--"] + files
+        p_diff = subprocess.run(cmd_diff, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        p_stat = subprocess.run(cmd_status, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        dur = round(time.time() - t0, 3)
+        combined = f"DIFF:\n{p_diff.stdout}\nSTATUS:\n{p_stat.stdout}"
+        out_hash = hashlib.sha256(combined.encode("utf-8")).hexdigest()
+        cmd_str = f"{' '.join(cmd_diff)} && {' '.join(cmd_status)}"
+        if p_diff.returncode == 0 and p_stat.returncode == 0 and len(p_diff.stdout.strip()) == 0 and len(p_stat.stdout.strip()) == 0:
+            return {
+                "id": gate_id,
+                "name": defn["name"],
+                "status": "PASS",
+                "tier": defn["tier"],
+                "command": cmd_str,
+                "exitCode": 0,
+                "durationSeconds": dur,
+                "outputSha256": out_hash,
+                "sourceFile": defn["sourceFile"],
+            }
+        return {
+            "id": gate_id,
+            "name": defn["name"],
+            "status": "FAIL",
+            "tier": defn["tier"],
+            "command": cmd_str,
+            "exitCode": 1,
+            "durationSeconds": dur,
+            "outputSha256": out_hash,
+            "sourceFile": defn["sourceFile"],
+            "error": f"Protected iOS files modified since {base} or in working tree:\n{combined[:300]}",
+        }
+
     if defn.get("isBlocked"):
         return {
             "id": gate_id,
@@ -552,10 +638,35 @@ def main():
     parser.add_argument("--run-all", action="store_true", help="Execute all 56 gates sequentially")
     parser.add_argument("--gate", type=str, help="Execute a single gate by ID")
     parser.add_argument("--verify-registry", action="store_true", help="Verify completeness of gate registry")
+    parser.add_argument("--verify-commit", action="store_true", help="Verify recorded sourceCommit in gate results and ledgers is an ancestor of or equal to HEAD")
     parser.add_argument("--mutate-missing", type=str, help="Simulate missing a gate to verify fail-closed behavior")
     parser.add_argument("--out-results", type=str, default="docs/apple-runtime/p10/p10r3-gate-results.json",
                         help="Path to write JSON results")
     args = parser.parse_args()
+
+    if args.verify_commit:
+        head_sha = get_current_git_sha()
+        for rel in (
+            args.out_results,
+            "docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json",
+            "docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json",
+            "docs/apple-runtime/p10/baseline-state.json",
+        ):
+            p = REPO_ROOT / rel
+            if not p.exists():
+                print(f"ERROR: Missing artifact for commit check: {rel}", file=sys.stderr)
+                sys.exit(1)
+            data = json.loads(p.read_text(encoding="utf-8"))
+            sc = data.get("sourceCommit", "")
+            if not sc or len(sc) != 40:
+                print(f"ERROR: Invalid sourceCommit '{sc}' in {rel}", file=sys.stderr)
+                sys.exit(1)
+            anc = subprocess.run(["git", "merge-base", "--is-ancestor", sc, head_sha], cwd=REPO_ROOT)
+            if anc.returncode != 0:
+                print(f"ERROR: sourceCommit {sc} in {rel} is not an ancestor of HEAD {head_sha}", file=sys.stderr)
+                sys.exit(1)
+        print(f"SUCCESS: All P10 artifact sourceCommit values verified against HEAD ({head_sha}).")
+        sys.exit(0)
 
     # Mutation test verification
     if args.mutate_missing:
@@ -614,13 +725,19 @@ def main():
         print(f"Failing:           {failing}")
 
         head_sha = get_current_git_sha()
-        verdict = "P10R3_CORRECTIVE_PARTIAL_VERIFIED" if failing == 0 else "P10R3_GATE_FAILURE"
+        if failing > 0:
+            verdict = "NOT_READY"
+        elif blocked > 0:
+            verdict = "PARTIAL_WITH_EXTERNAL_BLOCKERS"
+        else:
+            verdict = "READY"
 
         payload = {
             "milestone": "P10R3",
             "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "sourceCommit": head_sha,
             "verdict": verdict,
+            "legacyVerdict": "P10R3_CORRECTIVE_PARTIAL_VERIFIED" if failing == 0 else "P10R3_GATE_FAILURE",
             "summary": {
                 "totalGates": len(ALL_REQUIRED_GATES),
                 "passingGates": passing,

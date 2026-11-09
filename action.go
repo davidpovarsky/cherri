@@ -546,7 +546,7 @@ func typeCheck(param *parameterDefinition, argument *actionArgument) {
 			if argValueType == Date && param.validType == String {
 				return
 			}
-			if argValueType == Float && param.validType == Integer {
+			if (argValueType == Float && param.validType == Integer) || (argValueType == Integer && param.validType == Float) {
 				return
 			}
 			parserError(fmt.Sprintf("Invalid variable value %v (%s) for argument '%s' (%s).\n%s",
@@ -563,7 +563,7 @@ func typeCheck(param *parameterDefinition, argument *actionArgument) {
 	case param.validType == String && argument.valueType == RawString:
 	case param.key == "WFContentItemFilter" && (argument.valueType == Dict || argument.valueType == Arr):
 	case argValueType != param.validType:
-		if argValueType == Float && param.validType == Integer {
+		if (argValueType == Float && param.validType == Integer) || (argValueType == Integer && param.validType == Float) {
 			return
 		}
 		if argValueType == String {

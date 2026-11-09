@@ -254,6 +254,30 @@ func TestP10_A1_RemoteSigningContractAndFailureInjection(t *testing.T) {
 			expectedErrSub: "missing AEA1 magic",
 		},
 		{
+			name:           "TruncatedAEA1_HeaderOnly4Bytes_Legacy",
+			urlSuffix:      "/sign",
+			statusCode:     http.StatusOK,
+			contentType:    "application/octet-stream",
+			body:           []byte("AEA1"),
+			expectedErrSub: "truncated AEA1 archive",
+		},
+		{
+			name:           "TruncatedAEA1_HeaderOnly4Bytes_ShortcutyJSON",
+			urlSuffix:      "/api/v1/sign?response=json",
+			statusCode:     http.StatusOK,
+			contentType:    "application/json",
+			body:           []byte(`{"success":true,"file":{"format":"signed","content_base64":"` + base64.StdEncoding.EncodeToString([]byte("AEA1")) + `"}}`),
+			expectedErrSub: "truncated AEA1 archive",
+		},
+		{
+			name:           "CorruptedAEA1_AllZeroPayloadAfterMagic_Legacy",
+			urlSuffix:      "/sign",
+			statusCode:     http.StatusOK,
+			contentType:    "application/octet-stream",
+			body:           append([]byte("AEA1"), make([]byte, 32)...),
+			expectedErrSub: "corrupted AEA1 archive",
+		},
+		{
 			name:           "Timeout_Shortcuty",
 			urlSuffix:      "/api/v1/sign?response=json",
 			statusCode:     http.StatusOK,
@@ -368,4 +392,38 @@ func TestP10_A1_RemoteSigningContractAndFailureInjection(t *testing.T) {
 			t.Fatalf("signed output is not AEA1: %q", string(written))
 		}
 	})
+}
+
+func TestP10_F05_SigningVerificationTiersAndTruncatedAEA1Rejection(t *testing.T) {
+	// 1. 4-byte "AEA1" header-only must fail closed
+	if looksLikeSignedShortcut([]byte("AEA1")) {
+		t.Fatal("4-byte header-only 'AEA1' must NOT pass looksLikeSignedShortcut")
+	}
+	if _, err := ValidateSignedShortcutBytes([]byte("AEA1")); err == nil || !strings.Contains(err.Error(), "truncated AEA1 archive") {
+		t.Fatalf("expected truncated AEA1 archive error for 4-byte header, got: %v", err)
+	}
+
+	// 2. 10-byte truncated AEA1 must fail closed
+	if _, err := ValidateSignedShortcutBytes([]byte("AEA1\x01\x02\x03\x04\x05\x06")); err == nil || !strings.Contains(err.Error(), "truncated AEA1 archive") {
+		t.Fatalf("expected truncated AEA1 archive error for 10-byte payload, got: %v", err)
+	}
+
+	// 3. Zero-filled payload after AEA1 magic must fail closed
+	zeroPayload := append([]byte("AEA1"), make([]byte, 24)...)
+	if _, err := ValidateSignedShortcutBytes(zeroPayload); err == nil || !strings.Contains(err.Error(), "corrupted AEA1 archive") {
+		t.Fatalf("expected corrupted AEA1 archive error for zero-filled payload, got: %v", err)
+	}
+
+	// 4. Valid non-truncated AEA1 returns TierAEA1HeaderPass and NEVER claims live Apple cryptographic validation or import/execution
+	validPayload := append([]byte("AEA1"), []byte("non-zero-archive-header-and-body")...)
+	tier, err := ValidateSignedShortcutBytes(validPayload)
+	if err != nil {
+		t.Fatalf("expected valid AEA1 payload to pass structural check, got: %v", err)
+	}
+	if tier != TierAEA1HeaderPass {
+		t.Fatalf("expected TierAEA1HeaderPass (%q), got %q", TierAEA1HeaderPass, tier)
+	}
+	if tier == TierAppleSignatureValidated || tier == TierShortcutImported || tier == TierShortcutExecuted {
+		t.Fatalf("structural check must never claim live Apple signature/import/execution tier: %q", tier)
+	}
 }

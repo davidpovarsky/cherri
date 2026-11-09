@@ -628,6 +628,35 @@ var actions = map[string]*actionDefinition{
 
 			return
 		},
+		decomp: func(action *ShortcutAction) (arguments []string) {
+			params := action.WFWorkflowActionParameters
+			arguments = append(arguments, decompValue(params["WFContactFirstName"]))
+			arguments = append(arguments, decompValue(params["WFContactLastName"]))
+			phoneArgs := decompContactValue(action, "WFContactPhoneNumbers", phoneNumber)
+			if len(phoneArgs) > 0 {
+				arguments = append(arguments, phoneArgs[0])
+			} else {
+				arguments = append(arguments, `""`)
+			}
+			emailArgs := decompContactValue(action, "WFContactEmails", emailAddress)
+			if len(emailArgs) > 0 {
+				arguments = append(arguments, emailArgs[0])
+			} else {
+				arguments = append(arguments, `""`)
+			}
+			arguments = append(arguments, decompValue(params["WFContactCompany"]))
+			arguments = append(arguments, decompValue(params["WFContactNotes"]))
+			if params["ShowWhenRun"] != nil {
+				arguments = append(arguments, decompValue(params["ShowWhenRun"]))
+			}
+			if params["WFContactPhoto"] != nil {
+				if params["ShowWhenRun"] == nil {
+					arguments = append(arguments, "false")
+				}
+				arguments = append(arguments, decompValue(params["WFContactPhoto"]))
+			}
+			return
+		},
 		emittedKeys: []string{"WFContactPhoneNumbers", "WFContactEmails"},
 	},
 	"labelFile": {
@@ -661,6 +690,19 @@ var actions = map[string]*actionDefinition{
 			return map[string]any{
 				"WFLabelColorNumber": fileLabelsMap[color],
 			}
+		},
+		decomp: func(action *ShortcutAction) (arguments []string) {
+			arguments = append(arguments, decompValue(action.WFWorkflowActionParameters["WFInput"]))
+			colorNum := action.WFWorkflowActionParameters["WFLabelColorNumber"]
+			colorName := "red"
+			for k, v := range fileLabelsMap {
+				if fmt.Sprint(v) == fmt.Sprint(colorNum) {
+					colorName = k
+					break
+				}
+			}
+			arguments = append(arguments, fmt.Sprintf("%q", colorName))
+			return
 		},
 		emittedKeys: []string{"WFLabelColorNumber"},
 	},
@@ -802,7 +844,7 @@ var actions = map[string]*actionDefinition{
 					arguments = append(arguments, decompValue(val))
 				}
 			}
-			if mode != "" {
+			if mode != "" && (len(arguments) >= 3 || !strings.EqualFold(mode, "Set")) {
 				arguments = append(arguments, fmt.Sprintf("%q", mode))
 			}
 			return
@@ -968,7 +1010,7 @@ var actions = map[string]*actionDefinition{
 					arguments = append(arguments, decompValue(val))
 				}
 			}
-			if mode != "" {
+			if mode != "" && (len(arguments) >= 3 || !strings.EqualFold(mode, "Set")) {
 				arguments = append(arguments, fmt.Sprintf("%q", mode))
 			}
 			return
@@ -1191,6 +1233,36 @@ var actions = map[string]*actionDefinition{
 					"displayName":  filename,
 				},
 			}
+		},
+		decomp: func(action *ShortcutAction) (arguments []string) {
+			params := action.WFWorkflowActionParameters
+			folder := ""
+			if wfFile, ok := params["WFFile"].(map[string]any); ok {
+				fn, _ := wfFile["filename"].(string)
+				var sub string
+				var locType string
+				if fl, ok := wfFile["fileLocation"].(map[string]any); ok {
+					sub, _ = fl["relativeSubpath"].(string)
+					locType, _ = fl["WFFileLocationType"].(string)
+				}
+				var parts []string
+				if locType == "Home" {
+					parts = append(parts, "~")
+				}
+				if sub != "" {
+					parts = append(parts, sub)
+				}
+				if fn != "" {
+					parts = append(parts, fn)
+				}
+				folder = strings.Join(parts, "/")
+			}
+			arguments = append(arguments, fmt.Sprintf("%q", folder))
+			arguments = append(arguments, decompValue(params["WFGetFilePath"]))
+			if params["WFFileErrorIfNotFound"] != nil {
+				arguments = append(arguments, decompValue(params["WFFileErrorIfNotFound"]))
+			}
+			return
 		},
 		emittedKeys: []string{"WFFile"},
 	},
@@ -1689,30 +1761,33 @@ var actions = map[string]*actionDefinition{
 				}
 			}
 
-			if args[0].valueType == Variable {
-				params["WFSecondaryAppIdentifier"] = argumentValue(args, 0)
-			} else {
-				params["WFSecondaryAppIdentifier"] = map[string]any{
-					"BundleIdentifier": argumentValue(args, 0),
+			if len(args) > 1 {
+				if args[1].valueType == Variable {
+					params["WFSecondaryAppIdentifier"] = argumentValue(args, 1)
+				} else {
+					params["WFSecondaryAppIdentifier"] = map[string]any{
+						"BundleIdentifier": argumentValue(args, 1),
+					}
 				}
 			}
 
 			return params
 		},
 		decomp: func(action *ShortcutAction) (arguments []string) {
-			var splitRatio = decompValue(action.WFWorkflowActionParameters["WFAppRatio"])
-
-			var ratio = "half"
-			switch splitRatio {
-			case "Â½ + Â½":
-				ratio = "half"
-			case "â…“ + â…”":
-				ratio = "thirdByTwo"
-			}
-
-			arguments = append(arguments, fmt.Sprintf("\"%s\"", ratio))
 			arguments = append(arguments, decompAppAction("WFPrimaryAppIdentifier", action)...)
 			arguments = append(arguments, decompAppAction("WFSecondaryAppIdentifier", action)...)
+
+			if action.WFWorkflowActionParameters["WFAppRatio"] != nil {
+				var splitRatio = strings.Trim(decompValue(action.WFWorkflowActionParameters["WFAppRatio"]), "\"")
+				var ratio = "half"
+				switch splitRatio {
+				case "Â½ + Â½", "½ + ½", "half":
+					ratio = "half"
+				case "â…“ + â…”", "⅓ + ⅔", "thirdByTwo":
+					ratio = "thirdByTwo"
+				}
+				arguments = append(arguments, fmt.Sprintf("\"%s\"", ratio))
+			}
 
 			return
 		},
@@ -1741,9 +1816,13 @@ var actions = map[string]*actionDefinition{
 		},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			if action.WFWorkflowActionParameters["target"] != nil {
-				var workflow = action.WFWorkflowActionParameters["target"].(map[string]interface{})
-				var title = workflow["title"].(map[string]interface{})
-				arguments = append(arguments, decompValue(title["key"]))
+				if workflow, ok := action.WFWorkflowActionParameters["target"].(map[string]interface{}); ok {
+					if titleMap, ok := workflow["title"].(map[string]interface{}); ok {
+						arguments = append(arguments, decompValue(titleMap["key"]))
+					} else if workflow["title"] != nil {
+						arguments = append(arguments, decompValue(workflow["title"]))
+					}
+				}
 			}
 			return
 		},
@@ -2330,7 +2409,19 @@ var actions = map[string]*actionDefinition{
 		check: func(args []actionArgument, _ *actionDefinition) {
 			var contactDetail = args[1].value.(string)
 			var contactDetailKey = strings.ReplaceAll(contactDetail, " ", "")
+			currentAction.definition.parameters = slices.Clone(currentAction.definition.parameters)
 			currentAction.definition.parameters[2].key = "WFContactContentItem" + contactDetailKey
+		},
+		decomp: func(action *ShortcutAction) (arguments []string) {
+			params := action.WFWorkflowActionParameters
+			arguments = append(arguments, decompValue(params["WFInput"]))
+			detail, _ := params["WFContentItemPropertyName"].(string)
+			arguments = append(arguments, fmt.Sprintf("%q", detail))
+			detailKey := "WFContactContentItem" + strings.ReplaceAll(detail, " ", "")
+			if val, ok := params[detailKey]; ok && val != nil {
+				arguments = append(arguments, decompValue(val))
+			}
+			return
 		},
 		appendParams: map[string]any{
 			"Mode": "Set",
@@ -2898,7 +2989,10 @@ func textParts(args []actionArgument) map[string]any {
 		"Show-text": true,
 	}
 
-	var separator = getArgValue(args[1])
+	var separator any = "\n"
+	if len(args) >= 2 && args[1].value != nil && args[1].valueType != Nil {
+		separator = getArgValue(args[1])
+	}
 	switch {
 	case separator == " ":
 		data["WFTextSeparator"] = "Spaces"
@@ -3069,14 +3163,22 @@ func decompAppAction(key string, action *ShortcutAction) (arguments []string) {
 }
 
 func decompInfiniteURLAction(action *ShortcutAction) (arguments []string) {
-	var urlValueType = reflect.TypeOf(action.WFWorkflowActionParameters["WFURLActionURL"]).Kind()
+	rawURL := action.WFWorkflowActionParameters["WFURLActionURL"]
+	if rawURL == nil {
+		rawURL = action.WFWorkflowActionParameters["WFURL"]
+	}
+	if rawURL == nil {
+		return
+	}
+	var urlValueType = reflect.TypeOf(rawURL).Kind()
 	if urlValueType == reflect.Map || urlValueType == reflect.String {
-		return append(arguments, decompValue(action.WFWorkflowActionParameters["WFURLActionURL"]))
+		return append(arguments, decompValue(rawURL))
 	}
 
-	var urls = action.WFWorkflowActionParameters["WFURLActionURL"].([]interface{})
-	for _, url := range urls {
-		arguments = append(arguments, decompValue(url))
+	if urls, ok := rawURL.([]interface{}); ok {
+		for _, url := range urls {
+			arguments = append(arguments, decompValue(url))
+		}
 	}
 
 	return

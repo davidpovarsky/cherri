@@ -1135,7 +1135,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	}
 
 	// Step-by-step argument binding algorithm per §7.2
-	boundParams := make(map[string]bool)
+	boundIndices := make(map[int]bool)
 
 	// Step 2: Primary argument binding
 	if call.PrimaryArg != nil {
@@ -1143,7 +1143,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		if !hasPrim {
 			a.error(CodePositionalArg, call.PrimaryArg.NodeSpan(), fmt.Sprintf("action %q does not accept an unlabeled primary argument; use named arguments", callName))
 		} else {
-			boundParams[primParam.ID] = true
+			boundIndices[0] = true
 			if primParam.WireKey == "WFDictionaryKey" {
 				if lit, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit && lit.Value == "" {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), "empty dictionary key is not allowed")
@@ -1181,19 +1181,37 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	}
 	for _, nArg := range call.NamedArgs {
 		var param *schema.ParameterSchema
+		var matchedIdx = -1
 		var paramExists bool
 		if nArg.Label != "" {
-			param, paramExists = actionSchema.ParameterByLabel(nArg.Label)
+			for pIdx := range actionSchema.Parameters {
+				p := &actionSchema.Parameters[pIdx]
+				if p.Label == nArg.Label || p.ID == nArg.Label {
+					if matchedIdx == -1 {
+						matchedIdx = pIdx
+						param = p
+						paramExists = true
+					}
+					if !boundIndices[pIdx] {
+						matchedIdx = pIdx
+						param = p
+						paramExists = true
+						break
+					}
+				}
+			}
 		} else {
-			for paramIndex < len(actionSchema.Parameters) && boundParams[actionSchema.Parameters[paramIndex].ID] {
+			for paramIndex < len(actionSchema.Parameters) && boundIndices[paramIndex] {
 				paramIndex++
 			}
 			if paramIndex < len(actionSchema.Parameters) {
+				matchedIdx = paramIndex
 				param = &actionSchema.Parameters[paramIndex]
 				paramExists = true
 				paramIndex++
 			} else if len(actionSchema.Parameters) > 0 && actionSchema.Parameters[len(actionSchema.Parameters)-1].Variadic {
-				param = &actionSchema.Parameters[len(actionSchema.Parameters)-1]
+				matchedIdx = len(actionSchema.Parameters) - 1
+				param = &actionSchema.Parameters[matchedIdx]
 				paramExists = true
 			}
 		}
@@ -1203,10 +1221,10 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			continue
 		}
 
-		if boundParams[param.ID] && !param.Variadic {
+		if boundIndices[matchedIdx] && !param.Variadic {
 			a.error(CodeDuplicateArgument, nArg.Span, fmt.Sprintf("duplicate argument for parameter %q in call to %q", nArg.Label, callName))
 		}
-		boundParams[param.ID] = true
+		boundIndices[matchedIdx] = true
 
 		if param.WireKey == "WFDictionaryKey" || nArg.Label == "key" {
 			if lit, isLit := nArg.Value.(*syntax.LiteralExpr); isLit && lit.Value == "" {
@@ -1240,8 +1258,8 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	}
 
 	// Step 6: Validate requiredness
-	for _, p := range actionSchema.Parameters {
-		if !p.Optional && !boundParams[p.ID] {
+	for pIdx, p := range actionSchema.Parameters {
+		if !p.Optional && !boundIndices[pIdx] {
 			a.error(CodeMissingArgument, call.Span, fmt.Sprintf("missing required argument %q in call to %q", p.Label, callName))
 		}
 	}

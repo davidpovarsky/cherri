@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -554,29 +556,94 @@ func TestP10_IPadAcceptanceKit_CompileAndStructure(t *testing.T) {
 		t.Fatalf("expected at least 9 iPad acceptance fixtures in tests/ipad_acceptance/, found %d", len(files))
 	}
 
+	safeguards := map[string]string{
+		"01_run_fixed_and_dynamic_dict": "Calls synthetic target shortcut P10EchoTarget with in-memory dictionary; zero user data mutation.",
+		"02_conditional_getvalue_string": "Pure in-memory dictionary string coercion conditional check; zero external state mutation.",
+		"03_lumen_storage27_roundtrip":   "Uses synthetic key prefix p10_test_key and deletes temporary key at end of run.",
+		"04_jsonrequest_dynamic_fields":  "Posts synthetic JSON payload to echo endpoint https://httpbin.org/post; zero local device mutation.",
+		"05_filerequest_raw_vs_chained":  "Posts synthetic UTF-8 file payload to echo endpoint https://httpbin.org/post; zero local device mutation.",
+		"06_html_preview_hebrew":         "Renders read-only QuickLook/WebView preview of synthetic Hebrew HTML card; zero persistence.",
+		"07_content_item_filters":        "Read-only filter query restricted to synthetic title substring 'CherriTest' with limit 5.",
+		"08_edit_reminder_and_event":     "Restricted by filter 'Title contains CherriTest' and limit: 1 so real user Reminders/Calendar items are never modified.",
+		"09_app_intents_suite":           "Uses explicit synthetic label 'Cherri P10 Test Alarm' and read-only Spotlight query 'Cherri P10'.",
+	}
+
+	type fixtureManifestEntry struct {
+		FixtureID                string   `json:"fixtureId"`
+		SourcePath               string   `json:"sourcePath"`
+		SourceSHA256             string   `json:"sourceSha256"`
+		ActionCount              int      `json:"actionCount"`
+		EmittedActionIdentifiers []string `json:"emittedActionIdentifiers"`
+		RoundTripVerified        bool     `json:"roundTripVerified"`
+		NonDestructiveSafeguard  string   `json:"nonDestructiveSafeguard"`
+		ExecutionStatus          string   `json:"executionStatus"`
+		DeviceBlocker            string   `json:"deviceBlocker"`
+	}
+
+	var manifestEntries []fixtureManifestEntry
+
 	for _, fpath := range files {
 		base := strings.TrimSuffix(filepath.Base(fpath), ".cherri")
-		t.Run(base, func(t *testing.T) {
-			srcBytes, err := os.ReadFile(fpath)
-			if err != nil {
-				t.Fatalf("read %s: %v", fpath, err)
+		srcBytes, err := os.ReadFile(fpath)
+		if err != nil {
+			t.Fatalf("read %s: %v", fpath, err)
+		}
+		sum := sha256.Sum256(srcBytes)
+		srcHash := hex.EncodeToString(sum[:])
+
+		plistPath := r.compileSource("ipad_"+base, string(srcBytes))
+		doc := loadRoundTripDocument(t, plistPath)
+		acts, ok := doc["WFWorkflowActions"].([]any)
+		if !ok || len(acts) == 0 {
+			t.Fatalf("%s: compiled plist has no WFWorkflowActions", base)
+		}
+		var idents []string
+		for _, a := range acts {
+			if m, ok := a.(map[string]any); ok {
+				if id, ok := m["WFWorkflowActionIdentifier"].(string); ok {
+					idents = append(idents, id)
+				}
 			}
-			plistPath := r.compileSource("ipad_"+base, string(srcBytes))
-			doc := loadRoundTripDocument(t, plistPath)
-			acts, ok := doc["WFWorkflowActions"].([]any)
-			if !ok || len(acts) == 0 {
-				t.Fatalf("%s: compiled plist has no WFWorkflowActions", base)
-			}
-			decomp := r.decompileShortcut("ipad_decomp_"+base, plistPath)
-			if len(strings.TrimSpace(decomp)) == 0 {
-				t.Fatalf("%s: decompiled output is empty", base)
-			}
-			recompPlist := r.compileSource("ipad_recomp_"+base, decomp)
-			recompDoc := loadRoundTripDocument(t, recompPlist)
-			recompActs, ok := recompDoc["WFWorkflowActions"].([]any)
-			if !ok || len(recompActs) != len(acts) {
-				t.Fatalf("%s: recompiled action count %d != original %d", base, len(recompActs), len(acts))
-			}
+		}
+		decomp := r.decompileShortcut("ipad_decomp_"+base, plistPath)
+		if len(strings.TrimSpace(decomp)) == 0 {
+			t.Fatalf("%s: decompiled output is empty", base)
+		}
+		recompPlist := r.compileSource("ipad_recomp_"+base, decomp)
+		recompDoc := loadRoundTripDocument(t, recompPlist)
+		recompActs, ok := recompDoc["WFWorkflowActions"].([]any)
+		if !ok || len(recompActs) != len(acts) {
+			t.Fatalf("%s: recompiled action count %d != original %d", base, len(recompActs), len(acts))
+		}
+
+		manifestEntries = append(manifestEntries, fixtureManifestEntry{
+			FixtureID:                base,
+			SourcePath:               filepath.ToSlash(fpath),
+			SourceSHA256:             srcHash,
+			ActionCount:              len(acts),
+			EmittedActionIdentifiers: idents,
+			RoundTripVerified:        true,
+			NonDestructiveSafeguard:  safeguards[base],
+			ExecutionStatus:          "COMPILED_UNSIGNED_PENDING_DEVICE",
+			DeviceBlocker:            "BLOCKED_DEVICE",
 		})
+	}
+
+	manifest := map[string]any{
+		"schemaVersion":       "1.0",
+		"totalFixtures":       len(manifestEntries),
+		"overallStatus":       "COMPILED_UNSIGNED_PENDING_DEVICE",
+		"hardwareRequirement": "Physical iPadOS 27 / iOS 27 device required for live Shortcuts runtime execution (BLOCKED_DEVICE on Windows/Linux CI)",
+		"fixtures":            manifestEntries,
+	}
+	manifestBytes, err := json.MarshalIndent(manifest, "", "  ")
+	if err != nil {
+		t.Fatalf("marshal device-acceptance-manifest.json: %v", err)
+	}
+	outPath := filepath.Join("docs", "apple-runtime", "p10", "device-acceptance-manifest.json")
+	if err := os.WriteFile(outPath, append(manifestBytes, '\n'), 0644); err != nil {
+		if _, gitErr := os.Stat(".git"); gitErr == nil {
+			t.Fatalf("write %s: %v", outPath, err)
+		}
 	}
 }

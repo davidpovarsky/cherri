@@ -98,6 +98,9 @@ func compileForMobileMode(src string, requestedName string, mode string, sign bo
 	embeddedCompilerMode = true
 	previousArgs := args.Args
 	args.Args = map[string]string{"no-ansi": ""}
+	if val, ok := previousArgs["comments"]; ok {
+		args.Args["comments"] = val
+	}
 
 	defer func() {
 		embeddedCompilerMode = false
@@ -243,6 +246,9 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 	embeddedCompilerMode = true
 	previousArgs := args.Args
 	args.Args = map[string]string{"no-ansi": ""}
+	if val, ok := previousArgs["comments"]; ok {
+		args.Args["comments"] = val
+	}
 
 	defer func() {
 		embeddedCompilerMode = false
@@ -298,14 +304,25 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 func currentMobileActionCatalog() []mobileActionInfo {
 	reg := schema.DefaultRegistry()
 	var catalog []mobileActionInfo
+	var constructs []mobileActionInfo
 	for _, act := range reg.AllActions() {
 		var params []catalogParameter
+		if !act.CompilerConstruct || len(act.Parameters) > 0 {
+			params = make([]catalogParameter, 0, len(act.Parameters))
+		}
 		for _, p := range act.Parameters {
+			paramType := p.RawType
+			if paramType == "" {
+				paramType = strings.ToLower(p.TypeName)
+			}
 			params = append(params, catalogParameter{
 				Name:       p.Label,
 				Key:        p.WireKey,
-				Type:       p.TypeName,
+				Type:       paramType,
 				Optional:   p.Optional,
+				Infinite:   p.Variadic,
+				Reference:  p.Reference,
+				Literal:    p.Literal,
 				Enum:       p.EnumName,
 				EnumValues: p.EnumValues,
 				Default:    p.DefaultValue,
@@ -314,13 +331,14 @@ func currentMobileActionCatalog() []mobileActionInfo {
 		var intent *catalogAppIntent
 		if act.AppIntent != nil {
 			intent = &catalogAppIntent{
-				Name:                act.AppIntent.Name,
-				BundleIdentifier:    act.AppIntent.BundleIdentifier,
-				AppIntentIdentifier: act.AppIntent.AppIntentIdentifier,
-				TeamIdentifier:      act.AppIntent.TeamIdentifier,
+				Name:                    act.AppIntent.Name,
+				BundleIdentifier:        act.AppIntent.BundleIdentifier,
+				AppIntentIdentifier:     act.AppIntent.AppIntentIdentifier,
+				TeamIdentifier:          act.AppIntent.TeamIdentifier,
+				RequiresAppInstallation: act.AppIntent.RequiresAppInstallation,
 			}
 		}
-		catalog = append(catalog, catalogActionInfo{
+		info := catalogActionInfo{
 			Name:               act.CallableName,
 			ShortcutIdentifier: act.AppleIdentifier,
 			Title:              act.Docs.Title,
@@ -328,12 +346,26 @@ func currentMobileActionCatalog() []mobileActionInfo {
 			Category:           act.Docs.Category,
 			Subcategory:        act.Docs.Subcategory,
 			Parameters:         params,
-			OutputType:         act.OutputTypeName,
+			EmittedKeys:        act.EmittedKeys,
+			OutputType:         act.RawOutputType,
+			MacOnly:            act.MacOnly,
+			NonMacOnly:         act.NonMacOnly,
+			MinVersion:         act.MinVersion,
+			MaxVersion:         act.MaxVersion,
+			Builtin:            act.Builtin,
+			Custom:             act.Custom,
 			CompilerConstruct:  act.CompilerConstruct,
 			InsertionSnippet:   act.Docs.InsertionSnippet,
 			AppIntent:          intent,
-		})
+			StaticParameters:   act.StaticParameters,
+		}
+		if act.CompilerConstruct {
+			constructs = append(constructs, info)
+		} else {
+			catalog = append(catalog, info)
+		}
 	}
+	catalog = append(catalog, constructs...)
 	return catalog
 }
 
@@ -390,6 +422,8 @@ func embeddedErrorMessage(recovered any) string {
 func resetMobileDecompileState() {
 	code.Reset()
 	decompiledIncludes = nil
+	macDefinition = false
+	setMacDefinition = false
 	actionIndex = 0
 	tabLevel = 0
 	groupingIdx = 0

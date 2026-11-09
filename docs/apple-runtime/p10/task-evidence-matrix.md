@@ -1,0 +1,39 @@
+# Cherri P10 — Complete Task-by-Task Evidence & Release Track Matrix
+
+## 1. Audit Findings Remediation Summary (`F-01` .. `F-08`)
+
+| Finding ID | Scope | Corrective Implementation | Verification Command / Test | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **`F-01`** | `505` Catalog Matrix Anti-Tautology | Removed all hardcoded `True` booleans, fallback `sourceFile: "actions_std.go"`, fallback `unitTestRef`, and heuristic `decompileMode`. Every row in `docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json` is populated from real executed Legacy compile, V2 compile, Decompile, and Recompile verification (`docs/apple-runtime/p10/p10-505-execution-evidence.json`) and validated against `docs/apple-runtime/p10/coverage-evidence.schema.json`. | `go test -v -run TestP10_VerifyAndRecord505CatalogExecution .` & `python tools/p10r3/test_coverage_and_gates.py` | **VERIFIED (`505/505`)** |
+| **`F-02`** | Denominator Crosswalk (`2396 -> 1527 -> 390 -> 505`) | Generated `docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json` and 3 truthful reports (`catalog-supported-by-compiler.md`, `apple-discovered-not-supported.md`, `pure-pack-portability.md`) reconciling `2,396` raw discovered Apple records = `1,527` eligible user-facing + `869` excluded; `390` covered Apple identifiers vs `1,137` uncovered; `505` Cherri catalog entries (`497` callables + `8` compiler constructs). | `python tools/p10r3/generate_catalog_and_pack_ledgers.py` & `python tools/p10r3/test_coverage_and_gates.py` | **VERIFIED** |
+| **`F-03`** | `56` Release Gates (`R01..R28`, `A01..A28`) & CI Provenance | Updated `tools/p10r3/run_release_gates.py`: `R22` distinguishes platform-aware Simulator runtime check (`BLOCKED_PLATFORM` on non-macOS) from physical iPad (`BLOCKED_DEVICE`); `R23` checks both `git diff 76d722502e20db977e84a095444d0172442655b8..HEAD` and `git status --porcelain` on `ios/CherriUITests/CherriEditorUITests.swift` and `ios/CherriApp/Views/CodeEditorView.swift`; `--verify-commit` checks `sourceCommit` ancestry against `HEAD`; wired into `.github/workflows/build-test.yml`. | `python tools/p10r3/run_release_gates.py --run-all` & `--verify-commit` | **VERIFIED (`55 PASS`, `1 BLOCKED_EXTERNAL`)** |
+| **`F-04`** | `15` Go-Only Actions Consistency | Unified the exact 15 Go-only action names and explicit `"classification"` (`1 ALREADY_UPSTREAM`: `run`; `2 P10_ONLY_GO_REQUIRED`: `editEvent`, `editReminder`; `12 REQUIRES_APPINTENT_DESCRIPTOR`) across `docs/apple-runtime/p10/p10-pack-15-go-only-audit.json`, `p10-505-catalog-coverage-matrix.json`, and `tools/p10r3/verify_or_generate_pack.py`. | `python tools/p10r3/verify_or_generate_pack.py` | **VERIFIED (`15/15`)** |
+| **`F-05`** | Signing Verification Tiers & Truncated `AEA1` Rejection | Added `SigningVerificationTier` (`SIGNING_PROTOCOL_CONTRACT_PASS`, `AEA1_HEADER_PASS`, `APPLE_SIGNATURE_VALIDATED`, `SHORTCUT_IMPORTED`, `SHORTCUT_EXECUTED`) and `ValidateSignedShortcutBytes` (`MinAEA1ArchiveLength = 16` + non-zero payload check) in `signing.go`; added negative tests rejecting 4-byte `"AEA1"` header-only archives and zero-filled payloads in `signing_test.go`. | `go test -v -run "TestP10_A1_RemoteSigningContractAndFailureInjection\|TestP10_F05_SigningVerificationTiersAndTruncatedAEA1Rejection" .` | **VERIFIED (Local Protocol & Header Tiers); Live External Signing = `BLOCKED_EXTERNAL_SIGNING`** |
+| **`F-06`** | iPadOS 27 Acceptance Kit (`01..09.cherri`) | Generated `docs/apple-runtime/p10/device-acceptance-manifest.json` with source SHA-256, emitted `WFWorkflowActionIdentifier` lists, round-trip verification, non-destructive synthetic markers (`Title contains CherriTest`, `limit: 1`), and honest `COMPILED_UNSIGNED_PENDING_DEVICE` / `BLOCKED_DEVICE` state. | `go test -v -run TestP10_IPadAcceptanceKit_CompileAndStructure .` | **COMPILED & ROUND-TRIP VERIFIED; Physical Device = `BLOCKED_DEVICE`** |
+| **`F-07`** | Release Tracks & Compatibility Tuple | Documented and verified versioned compatibility across P10 Native, Docs (`cherrilang.org`), Open Minis Skill (`skills/cherri-shortcuts/compatibility-manifest.json`), iOS App (`mobile_compiler.go`), Preview (`preview-shortcut`), and Pure+Pack (`141b9cc`). | `go test -v -run "TestP10R_R25\|TestP10R2_A28\|TestP10_CatalogCLIAndMobileRegistryParity" .` | **VERIFIED** |
+| **`F-08`** | Authoring Patterns ZIP & Owner Gate | Recorded `1219604109827689` (`cherri-authoring-patterns-research.zip`) as `BLOCKED_MISSING_ARTIFACT` (confirmed absent on disk) and `1219611682706483` as `OWNER_APPROVAL_REQUIRED` in `docs/apple-runtime/p10/baseline-state.json`. | `python tools/p10r3/test_coverage_and_gates.py` | **HONEST BLOCKER RECORDED** |
+
+---
+
+## 2. Single Source of Truth (SSoT) Consolidation Verification
+
+| Component | Authoritative Source | Verification Test | Result |
+| :--- | :--- | :--- | :--- |
+| Schema Generator (`tools/language-schema/main.go`) | Extracts all 497 callables + 8 compiler constructs from `buildActionCatalog()` with fail-closed validation and zero double-escaping | `go test -v ./tools/language-schema/...` & `go run ./tools/language-schema --verify-generated` | **PASS (Zero Drift)** |
+| V2 Registry (`internal/language/schema/generated_registry.go`) | 100% field parity with `buildActionCatalog()` (`AppIntent`, `EmittedKeys`, `MacOnly`, `NonMacOnly`, `MinVersion`, `MaxVersion`, `CompilerConstruct`, `Parameters`) | `go test -v -run TestP10_CatalogCLIAndMobileRegistryParity .` | **PASS (`505/505`)** |
+| Mobile/iOS Bridge (`mobile_compiler.go`) | `currentMobileActionCatalog()` consumes `schema.DefaultRegistry()` directly | `go test -v -run TestP10_CatalogCLIAndMobileRegistryParity .` | **PASS (`505/505`)** |
+| Action Emitter Ownership (`docs/architecture/action-emitter-ownership.json`) | Maps all 505 catalog entries + quarantined internal/V2 emitters | `go test -v -run TestP10_ActionEmitterOwnershipAndQuarantine .` | **PASS** |
+| Automatic Action Propagation (`p10_ssot_propagation_test.go`) | Scenarios 1..4: new `.cherri` action, parameter update, AppIntent action, complex setter action propagate automatically across CLI, V2, Mobile, Docs, and Decompiler | `go test -v -run TestP10_AutomaticActionPropagation_Scenarios1To4 .` | **PASS** |
+
+---
+
+## 3. Release Track Compatibility Matrix (`F-07`)
+
+| Track | Branch / Commit / Artifact | Action Catalog Size | Upstream Diff Footprint | Verification Status |
+| :--- | :--- | :---: | :--- | :--- |
+| **1. Upstream Pure Baseline** | `bcc0095754e2cc0baaeb4d93dae172b8153b4716` | `441` (`433` callables + `8` constructs) | `0` files | Baseline Reference |
+| **2. Pure + External Pack** | `origin/apple-actions-pack-pure-core-20261022` (`141b9cc96cf1df3f9d1593548dc49ae8a46a256a`) | `441` core + `102` Pack entries (`48` added + `54` `*Advanced` aliases) | `0` compiler files modified (`extensions/cherri-apple-actions-pack/` only) | Verified by `tools/p10r3/verify_or_generate_pack.py` (`204/204` Pack tests) |
+| **3. P10 Native Compiler** | `agent/cherri-p10-apple-actions-coverage` (`HEAD`) | `505` (`497` callables + `8` constructs) | Full native compiler, V2 schema, decompiler, iOS bridge | Verified (`505/505` Legacy, V2, Decompile, Round-Trip) |
+| **4. Open Minis Skill** | `skills/cherri-shortcuts/compatibility-manifest.json` | Queries live CLI (`505` entries) | Synchronized via `compatibility-manifest.json` | Verified by `TestP10R_R25` & `TestP10R2_A28` |
+| **5. iOS / iPadOS App** | `ios/` + `mobile_compiler.go` | `505` entries via `schema.DefaultRegistry()` | Protected UI files (`CherriEditorUITests.swift`, `CodeEditorView.swift`) untouched (`R23 PASS`) | Verified by `TestP10_CatalogCLIAndMobileRegistryParity` & `TestP10R2_A20` |
+| **6. Preview (`preview-shortcut`)** | `preview-shortcut` pinned integration | Generic metadata + `505` catalog | Consumes shared action catalog | Verified by `TestP10R_R25` |

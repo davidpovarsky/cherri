@@ -251,6 +251,11 @@ func classifyNonAEA1Payload(contentType string, body []byte) error {
 	if len(body) == 0 {
 		return fmt.Errorf("signing service returned empty response")
 	}
+	if len(body) >= 4 && string(body[:4]) == "AEA1" {
+		if _, err := ValidateSignedShortcutBytes(body); err != nil {
+			return fmt.Errorf("signing service returned invalid AEA1 payload (%v, Content-Type: %s)", err, contentType)
+		}
+	}
 	if strings.Contains(lowerCT, "text/html") || strings.HasPrefix(lowerTrimmed, "<!doctype html") || strings.HasPrefix(lowerTrimmed, "<html") {
 		return fmt.Errorf("signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: %s)", contentType)
 	}
@@ -435,12 +440,51 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 	return body, nil
 }
 
-// looksLikeSignedShortcut performs quick checks to make sure response is a signed Shortcut.
-func looksLikeSignedShortcut(buffer []byte) bool {
-	if len(buffer) >= 4 && string(buffer[:4]) == "AEA1" {
-		return true
+// SigningVerificationTier distinguishes local/mock protocol checks from live Apple cryptographic signing and device execution.
+type SigningVerificationTier string
+
+const (
+	TierSigningProtocolContractPass SigningVerificationTier = "SIGNING_PROTOCOL_CONTRACT_PASS"
+	TierAEA1HeaderPass              SigningVerificationTier = "AEA1_HEADER_PASS"
+	TierAppleSignatureValidated     SigningVerificationTier = "APPLE_SIGNATURE_VALIDATED"
+	TierShortcutImported            SigningVerificationTier = "SHORTCUT_IMPORTED"
+	TierShortcutExecuted            SigningVerificationTier = "SHORTCUT_EXECUTED"
+)
+
+// MinAEA1ArchiveLength is the minimum byte length for a non-truncated AEA1 archive
+// (4-byte "AEA1" magic + 4-byte profile/scrypt field + 4-byte root header length + payload bytes).
+// A 4-byte "AEA1" header-only response is a truncated archive and must fail closed.
+const MinAEA1ArchiveLength = 16
+
+// ValidateSignedShortcutBytes verifies that buffer has a non-truncated AEA1 header and non-zero archive body.
+// It returns TierAEA1HeaderPass (structural container check only; never claims live Apple cryptographic validation).
+func ValidateSignedShortcutBytes(buffer []byte) (SigningVerificationTier, error) {
+	if len(buffer) == 0 {
+		return "", fmt.Errorf("empty signed shortcut buffer")
 	}
-	return false
+	if len(buffer) < 4 || string(buffer[:4]) != "AEA1" {
+		return "", fmt.Errorf("missing AEA1 magic header")
+	}
+	if len(buffer) < MinAEA1ArchiveLength {
+		return "", fmt.Errorf("truncated AEA1 archive: got %d bytes, minimum required is %d bytes", len(buffer), MinAEA1ArchiveLength)
+	}
+	hasNonZeroPayload := false
+	for _, b := range buffer[4:] {
+		if b != 0 {
+			hasNonZeroPayload = true
+			break
+		}
+	}
+	if !hasNonZeroPayload {
+		return "", fmt.Errorf("corrupted AEA1 archive: payload bytes after AEA1 magic are all zero")
+	}
+	return TierAEA1HeaderPass, nil
+}
+
+// looksLikeSignedShortcut performs structural checks to make sure response is a non-truncated AEA1 signed Shortcut.
+func looksLikeSignedShortcut(buffer []byte) bool {
+	_, err := ValidateSignedShortcutBytes(buffer)
+	return err == nil
 }
 
 func removeUnsigned() {

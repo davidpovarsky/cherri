@@ -1,0 +1,187 @@
+{
+  "fixtures": [
+    {
+      "fixtureId": "01_run_fixed_and_dynamic_dict",
+      "sourcePath": "tests/ipad_acceptance/01_run_fixed_and_dynamic_dict.cherri",
+      "sourceSha256": "36b94371f8c9e7642275c2f71b3774429e3d0180a3c702dc9976a87aeeafde9b",
+      "actionCount": 6,
+      "emittedActionIdentifiers": [
+        "is.workflow.actions.dictionary",
+        "is.workflow.actions.runworkflow",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.runworkflow",
+        "is.workflow.actions.showresult"
+      ],
+      "roundTripVerified": true,
+      "nonDestructiveSafeguard": "Calls synthetic target shortcut P10EchoTarget with in-memory dictionary; zero user data mutation.",
+      "executionStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+      "deviceBlocker": "BLOCKED_DEVICE"
+    },
+    {
+      "fixtureId": "02_conditional_getvalue_string",
+      "sourcePath": "tests/ipad_acceptance/02_conditional_getvalue_string.cherri",
+      "sourceSha256": "198353cd79b0d92d70220cbb17ef698e3094b482fa8acea23f08e3250f966a72",
+      "actionCount": 16,
+      "emittedActionIdentifiers": [
+        "is.workflow.actions.dictionary",
+        "is.workflow.actions.getvalueforkey",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.conditional"
+      ],
+      "roundTripVerified": true,
+      "nonDestructiveSafeguard": "Pure in-memory dictionary string coercion conditional check; zero external state mutation.",
+      "executionStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+      "deviceBlocker": "BLOCKED_DEVICE"
+    },
+    {
+      "fixtureId": "03_lumen_storage27_roundtrip",
+      "sourcePath": "tests/ipad_acceptance/03_lumen_storage27_roundtrip.cherri",
+      "sourceSha256": "264a9e5aa6ceb43cc7d63a22ef724dd1a0ba7c7b09adadc8f7432c7ce8458877",
+      "actionCount": 14,
+      "emittedActionIdentifiers": [
+        "is.workflow.actions.setstoredcontent",
+        "is.workflow.actions.getstoredcontent",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.getstoredcontent",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.setstoredcontent",
+        "is.workflow.actions.setstoredcontent",
+        "is.workflow.actions.deletestoredcontent",
+        "is.workflow.actions.getstoredcontent",
+        "is.workflow.actions.showresult"
+      ],
+      "roundTripVerified": true,
+      "nonDestructiveSafeguard": "Uses synthetic key prefix p10_test_key and deletes temporary key at end of run.",
+      "executionStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+      "deviceBlocker": "BLOCKED_DEVICE"
+    },
+    {
+      "fixtureId": "04_jsonrequest_dynamic_fields",
+      "sourcePath": "tests/ipad_acceptance/04_jsonrequest_dynamic_fields.cherri",
+      "sourceSha256": "019352b9f4a403e52082ece87c586ae3ff9e1151b71c48653d18a841ca6a2399",
+      "actionCount": 5,
+      "emittedActionIdentifiers": [
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.number",
+        "is.workflow.actions.number",
+        "is.workflow.actions.downloadurl",
+        "is.workflow.actions.showresult"
+      ],
+      "roundTripVerified": true,
+      "nonDestructiveSafeguard": "Posts synthetic JSON payload to echo endpoint https://httpbin.org/post; zero local device mutation.",
+      "executionStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+      "deviceBlocker": "BLOCKED_DEVICE"
+    },
+    {
+      "fixtureId": "05_filerequest_raw_vs_chained",
+      "sourcePath": "tests/ipad_acceptance/05_filerequest_raw_vs_chained.cherri",
+      "sourceSha256": "f7cd1df14d039dd4f2b7e9d0a6f0a6072c74d4a0a5560fc66de25596974e12a4",
+      "actionCount": 8,
+      "emittedActionIdentifiers": [
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.downloadurl",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.text.replace",
+        "is.workflow.actions.text.replace",
+        "is.workflow.actions.downloadurl",
+        "is.workflow.actions.showresult"
+      ],
+      "roundTripVerified": true,
+      "nonDestructiveSafeguard": "Posts synthetic UTF-8 file payload to echo endpoint https://httpbin.org/post; zero local device mutation.",
+      "executionStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+      "deviceBlocker": "BLOCKED_DEVICE"
+    },
+    {
+      "fixtureId": "06_html_preview_hebrew",
+      "sourcePath": "tests/ipad_acceptance/06_html_preview_hebrew.cherri",
+      "sourceSha256": "8605cba938dedcb099f1af574ecb9fe77bf36642d8a51fd6b9ae4a215b65e6fd",
+      "actionCount": 4,
+      "emittedActionIdentifiers": [
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setitemname",
+        "is.workflow.actions.showwebpage"
+      ],
+      "roundTripVerified": true,
+      "nonDestructiveSafeguard": "Renders read-only QuickLook/WebView preview of synthetic Hebrew HTML card; zero persistence.",
+      "executionStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+      "deviceBlocker": "BLOCKED_DEVICE"
+    },
+    {
+      "fixtureId": "07_content_item_filters",
+      "sourcePath": "tests/ipad_acceptance/07_content_item_filters.cherri",
+      "sourceSha256": "d15bb4701303907c1f2b7f79ee930de7243c3bffb513ad0c9866a81d61a9d512",
+      "actionCount": 4,
+      "emittedActionIdentifiers": [
+        "is.workflow.actions.filter.reminders",
+        "is.workflow.actions.showresult",
+        "is.workflow.actions.filter.calendarevents",
+        "is.workflow.actions.showresult"
+      ],
+      "roundTripVerified": true,
+      "nonDestructiveSafeguard": "Read-only filter query restricted to synthetic title substring 'CherriTest' with limit 5.",
+      "executionStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+      "deviceBlocker": "BLOCKED_DEVICE"
+    },
+    {
+      "fixtureId": "08_edit_reminder_and_event",
+      "sourcePath": "tests/ipad_acceptance/08_edit_reminder_and_event.cherri",
+      "sourceSha256": "218ff2686126c18e7c6b6713413dcd4e8337f71ba474c4e0820ec3f76c1d4096",
+      "actionCount": 9,
+      "emittedActionIdentifiers": [
+        "is.workflow.actions.filter.reminders",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setters.reminders",
+        "is.workflow.actions.setters.reminders",
+        "is.workflow.actions.filter.calendarevents",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setters.calendarevents",
+        "is.workflow.actions.setters.calendarevents"
+      ],
+      "roundTripVerified": true,
+      "nonDestructiveSafeguard": "Restricted by filter 'Title contains CherriTest' and limit: 1 so real user Reminders/Calendar items are never modified.",
+      "executionStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+      "deviceBlocker": "BLOCKED_DEVICE"
+    },
+    {
+      "fixtureId": "09_app_intents_suite",
+      "sourcePath": "tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "sourceSha256": "8c9d9f1fdaf8b2610bd00a739d4241b259d0bfcc35b9202cf46d2a913ad2573b",
+      "actionCount": 5,
+      "emittedActionIdentifiers": [
+        "com.apple.mobiletimer-framework.MobileTimerIntents.MTCreateAlarmIntent",
+        "com.apple.clock.StartStopwatchIntent",
+        "com.apple.clock.StopStopwatchIntent",
+        "com.apple.reminders.TTRCreateListAppIntent",
+        "com.apple.Spotlight.SearchSpotlightIntent"
+      ],
+      "roundTripVerified": true,
+      "nonDestructiveSafeguard": "Uses explicit synthetic label 'Cherri P10 Test Alarm' and read-only Spotlight query 'Cherri P10'.",
+      "executionStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+      "deviceBlocker": "BLOCKED_DEVICE"
+    }
+  ],
+  "hardwareRequirement": "Physical iPadOS 27 / iOS 27 device required for live Shortcuts runtime execution (BLOCKED_DEVICE on Windows/Linux CI)",
+  "overallStatus": "COMPILED_UNSIGNED_PENDING_DEVICE",
+  "schemaVersion": "1.0",
+  "totalFixtures": 9
+}

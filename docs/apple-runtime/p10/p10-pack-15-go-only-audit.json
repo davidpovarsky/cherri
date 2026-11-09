@@ -14,6 +14,7 @@
     {
       "actionName": "createRemindersList",
       "appleIdentifier": "com.apple.reminders.TTRCreateListAppIntent",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Reminders', 'com.apple.reminders', 'TTRCreateListAppIntent') + per-instance UUID + static parameter emission",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (requires rawAction or manual AppIntentDescriptor + static UUID in .cherri module, losing dynamic per-instance UUID generation)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with createRemindersListIntent and automatic AppIntentDescriptor + UUID emission",
@@ -26,6 +27,7 @@
     {
       "actionName": "editEvent",
       "appleIdentifier": "is.workflow.actions.setters.calendarevents",
+      "classification": "P10_ONLY_GO_REQUIRED",
       "1_requiredGoMechanism": "Custom check + appendParamsFunc in actions_std.go mapping 11 editEventDetail properties to distinct WFCalendarEventContentItem* keys, ValueLabel, Mode (Set/Remove), and RemoveSpecifiedValue",
       "2_pureCherriRepresentable": "NO (a single plain .cherri action declaration cannot dynamically switch target plist parameter keys based on the property argument or fail closed on invalid detail under Remove mode)",
       "3_p10Implementation": "Full native implementation in actions_std.go with strict fail-closed validation on both Set and Remove modes (R12, A12)",
@@ -38,6 +40,7 @@
     {
       "actionName": "editReminder",
       "appleIdentifier": "is.workflow.actions.setters.reminders",
+      "classification": "P10_ONLY_GO_REQUIRED",
       "1_requiredGoMechanism": "Custom check + appendParamsFunc in actions_std.go mapping 13 editReminderDetail properties to WFReminderContentItem* keys, ValueLabel, Mode (Set/Remove), and RemoveSpecifiedValue",
       "2_pureCherriRepresentable": "NO (cannot dynamically dispatch plist parameter key by property name or enforce RemoveSpecifiedValue semantics in plain .cherri DSL)",
       "3_p10Implementation": "Full native implementation in actions_std.go with strict fail-closed validation on Set/Remove and RemoveSpecifiedValue emission (R11, R13, A11, A13, A14)",
@@ -50,6 +53,7 @@
     {
       "actionName": "openBook",
       "appleIdentifier": "com.apple.iBooksX.OpenBookIntent",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Books', 'com.apple.iBooksX', 'OpenBookIntent') + AppIntentDescriptor + per-instance UUID",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with openBookIntent",
@@ -62,6 +66,7 @@
     {
       "actionName": "playAudiobook",
       "appleIdentifier": "com.apple.iBooksX.PlayAudiobookIntent",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Books', 'com.apple.iBooksX', 'PlayAudiobookIntent') + AppIntentDescriptor + per-instance UUID",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with playAudiobookIntent",
@@ -74,6 +79,7 @@
     {
       "actionName": "playVoiceMemo",
       "appleIdentifier": "com.apple.VoiceMemos.PlaybackVoiceMemoIntent",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Voice Memos', 'com.apple.VoiceMemos', 'PlaybackVoiceMemoIntent') + AppIntentDescriptor + per-instance UUID",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with playVoiceMemoIntent",
@@ -86,6 +92,7 @@
     {
       "actionName": "recordVoiceMemo",
       "appleIdentifier": "com.apple.VoiceMemos.RecordVoiceMemoIntent",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Voice Memos', 'com.apple.VoiceMemos', 'RecordVoiceMemoIntent') + AppIntentDescriptor + per-instance UUID",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with recordVoiceMemoIntent",
@@ -98,6 +105,7 @@
     {
       "actionName": "run",
       "appleIdentifier": "is.workflow.actions.runworkflow",
+      "classification": "ALREADY_UPSTREAM",
       "1_requiredGoMechanism": "appendParamsFunc in actions_std.go constructing WFWorkflow descriptor map {workflowIdentifier, workflowName, isSelf: false} alongside WFWorkflowName and WFInput",
       "2_pureCherriRepresentable": "ALREADY_NATIVE_IN_UPSTREAM (upstream electrikmilk/cherri bcc0095 already defines run() natively in actions_std.go!)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go + V2 backend lowering; 100% behavioral parity with upstream bcc0095 proven in TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison",
@@ -110,6 +118,7 @@
     {
       "actionName": "searchSpotlight",
       "appleIdentifier": "com.apple.Spotlight.SearchSpotlightIntent",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Spotlight', 'com.apple.Spotlight', 'SearchSpotlightIntent') + AppIntentDescriptor + per-instance UUID",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with searchSpotlightIntent",
@@ -122,6 +131,7 @@
     {
       "actionName": "setSilentMode",
       "appleIdentifier": "com.apple.ShortcutsActions.SetSilentModeAction",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('ShortcutsActions', 'com.apple.ShortcutsActions', 'SetSilentModeAction') + state toggle/set parameter mapping",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with setSilentModeIntent",
@@ -134,6 +144,7 @@
     {
       "actionName": "startNotesAudioRecording",
       "appleIdentifier": "com.apple.Notes.StartRecordingLinkAction",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Notes', 'com.apple.Notes', 'StartRecordingLinkAction') + AppIntentDescriptor + per-instance UUID",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with startNotesAudioRecordingIntent",
@@ -146,6 +157,7 @@
     {
       "actionName": "startStopwatch",
       "appleIdentifier": "com.apple.clock.StartStopwatchIntent",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Clock', 'com.apple.clock', 'StartStopwatchIntent') + AppIntentDescriptor + per-instance UUID",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with startStopwatchIntent",
@@ -158,6 +170,7 @@
     {
       "actionName": "stopStopwatch",
       "appleIdentifier": "com.apple.clock.StopStopwatchIntent",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Clock', 'com.apple.clock', 'StopStopwatchIntent') + AppIntentDescriptor + per-instance UUID",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with stopStopwatchIntent",
@@ -170,6 +183,7 @@
     {
       "actionName": "stopVoiceMemoRecording",
       "appleIdentifier": "com.apple.VoiceMemos.StopRecording",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('Voice Memos', 'com.apple.VoiceMemos', 'StopRecording') + AppIntentDescriptor + per-instance UUID",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with stopVoiceMemoRecordingIntent",
@@ -182,6 +196,7 @@
     {
       "actionName": "transcribeText",
       "appleIdentifier": "com.apple.ShortcutsActions.TranscribeAudioAction",
+      "classification": "REQUIRES_APPINTENT_DESCRIPTOR",
       "1_requiredGoMechanism": "appleAppIntent('ShortcutsActions', 'com.apple.ShortcutsActions', 'TranscribeAudioAction') + audioFile parameter + String outputType",
       "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
       "3_p10Implementation": "Native Go actionDefinition in actions_std.go with transcribeAudioIntent",

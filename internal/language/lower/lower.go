@@ -975,13 +975,16 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
 					l.workflow.NoInputBehavior = ident.Name
 				}
-			case "version":
+			case "version", "minVersion", "iosVersion", "clientVersion":
 				if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
 					v := schema.LookupVersionValue(lit.Value)
 					if v != "" {
 						l.workflow.ClientVersion = v
 					} else {
 						l.workflow.ClientVersion = lit.Value
+					}
+					if l.session != nil {
+						l.session.SetMetadata("iosVersion", lit.Value)
 					}
 				} else if ident, ok := f.Value.(*syntax.IdentExpr); ok {
 					v := schema.LookupVersionValue(ident.Name)
@@ -990,6 +993,13 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 					} else {
 						l.workflow.ClientVersion = ident.Name
 					}
+					if l.session != nil {
+						l.session.SetMetadata("iosVersion", ident.Name)
+					}
+				}
+			case "maxVersion":
+				if lit, ok := f.Value.(*syntax.LiteralExpr); ok && l.session != nil {
+					l.session.SetMetadata("iosVersion", lit.Value)
 				}
 			case "quickActions", "quickactions":
 				l.workflow.QuickActionSurfaces = []string{"Finder", "Services"}
@@ -1006,6 +1016,9 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 	}
 
 	if l.session != nil {
+		if l.isMac != nil {
+			l.session.SetMetadata("mac", *l.isMac)
+		}
 		if len(l.workflow.WorkflowTypes) > 0 {
 			l.session.SetMetadata("workflowTypes", l.workflow.WorkflowTypes)
 		}
@@ -4706,10 +4719,10 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			}
 		}
 
-		seenParams := make(map[string]bool)
+		seenIndices := make(map[int]bool)
 		if call.PrimaryArg != nil {
-			if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
-				seenParams[primParam.ID] = true
+			if _, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
+				seenIndices[0] = true
 			}
 		}
 
@@ -4719,27 +4732,45 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 		for _, nArg := range call.NamedArgs {
 			var param *schema.ParameterSchema
+			var matchedIdx = -1
 			var exists bool
 			if nArg.Label != "" {
-				param, exists = actionSchema.ParameterByLabel(nArg.Label)
+				for pIdx := range actionSchema.Parameters {
+					p := &actionSchema.Parameters[pIdx]
+					if p.Label == nArg.Label || p.ID == nArg.Label {
+						if matchedIdx == -1 {
+							matchedIdx = pIdx
+							param = p
+							exists = true
+						}
+						if !seenIndices[pIdx] {
+							matchedIdx = pIdx
+							param = p
+							exists = true
+							break
+						}
+					}
+				}
 			} else {
-				for paramIndex < len(actionSchema.Parameters) && seenParams[actionSchema.Parameters[paramIndex].ID] {
+				for paramIndex < len(actionSchema.Parameters) && seenIndices[paramIndex] {
 					paramIndex++
 				}
 				if paramIndex < len(actionSchema.Parameters) {
+					matchedIdx = paramIndex
 					param = &actionSchema.Parameters[paramIndex]
 					exists = true
 					paramIndex++
 				} else if len(actionSchema.Parameters) > 0 && actionSchema.Parameters[len(actionSchema.Parameters)-1].Variadic {
-					param = &actionSchema.Parameters[len(actionSchema.Parameters)-1]
+					matchedIdx = len(actionSchema.Parameters) - 1
+					param = &actionSchema.Parameters[matchedIdx]
 					exists = true
 				}
 			}
 			if exists && param != nil {
-				if seenParams[param.ID] && !param.Variadic {
+				if seenIndices[matchedIdx] && !param.Variadic {
 					return nil, fmt.Errorf("duplicate parameter %q for action %q", param.Label, actionName)
 				}
-				seenParams[param.ID] = true
+				seenIndices[matchedIdx] = true
 
 				val, err := l.lowerSemanticValue(nArg.Value)
 				if err != nil {
@@ -4758,13 +4789,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 						l.bindSetupQuestion(ident.Name, wireKey)
 					}
 				}
-				pos := -1
-				for pIdx, p := range actionSchema.Parameters {
-					if p.ID == param.ID || p.Label == param.Label {
-						pos = pIdx
-						break
-					}
-				}
+				pos := matchedIdx
 				if pos < 0 {
 					pos = paramIndex
 				}

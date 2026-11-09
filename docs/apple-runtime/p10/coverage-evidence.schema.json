@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cherri P10 505 Catalog Coverage Matrix Schema",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "sourceCommit",
+    "totalCatalogEntries",
+    "summary",
+    "entries"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "2.0"
+    },
+    "sourceCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "totalCatalogEntries": {
+      "type": "integer",
+      "const": 505
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "totalEntries",
+        "callableActions",
+        "compilerConstructs",
+        "legacySupportedCount",
+        "v2SupportedCount",
+        "decompileSupportedCount",
+        "roundTripVerifiedCount",
+        "pureOriginalSupportedCount",
+        "purePlusPackSupportedCount",
+        "p10OnlyGoRequiredCount",
+        "requiresAppIntentDescriptorCount",
+        "evidenceTierCounts",
+        "decompileModeCounts"
+      ],
+      "properties": {
+        "totalEntries": { "type": "integer", "const": 505 },
+        "callableActions": { "type": "integer", "const": 497 },
+        "compilerConstructs": { "type": "integer", "const": 8 },
+        "legacySupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "v2SupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "decompileSupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "roundTripVerifiedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "pureOriginalSupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "purePlusPackSupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "p10OnlyGoRequiredCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "requiresAppIntentDescriptorCount": { "type": "integer", "minimum": 0, "maximum": 505 }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 505,
+      "maxItems": 505,
+      "items": {
+        "type": "object",
+        "required": [
+          "cherriName",
+          "shortcutIdentifier",
+          "entryKind",
+          "sourceFile",
+          "sourceLine",
+          "osAvailability",
+          "legacySupported",
+          "v2Supported",
+          "decompileSupported",
+          "decompileMode",
+          "roundTripVerified",
+          "pureOriginalSupported",
+          "purePlusPackSupported",
+          "packSupportKind",
+          "evidenceTier",
+          "runtimeVerificationState",
+          "unitTestRef",
+          "emittedParameterKeys",
+          "knownLimitations"
+        ],
+        "properties": {
+          "cherriName": { "type": "string", "minLength": 1 },
+          "shortcutIdentifier": { "type": "string", "minLength": 1 },
+          "entryKind": { "type": "string", "enum": ["action", "compilerConstruct"] },
+          "sourceFile": { "type": "string", "minLength": 1 },
+          "sourceLine": { "type": "integer", "minimum": 1 },
+          "osAvailability": {
+            "type": "object",
+            "required": ["macOnly", "nonMacOnly", "minVersion", "maxVersion", "targetSummary"],
+            "properties": {
+              "macOnly": { "type": "boolean" },
+              "nonMacOnly": { "type": "boolean" },
+              "minVersion": { "type": "number" },
+              "maxVersion": { "type": "number" },
+              "targetSummary": { "type": "string", "minLength": 1 }
+            }
+          },
+          "legacySupported": { "type": "boolean" },
+          "v2Supported": { "type": "boolean" },
+          "decompileSupported": { "type": "boolean" },
+          "decompileMode": {
+            "type": "string",
+            "enum": [
+              "native_cherri_call",
+              "rawAction_lossless_fallback",
+              "native_control_flow",
+              "UNSUPPORTED"
+            ]
+          },
+          "roundTripVerified": { "type": "boolean" },
+          "pureOriginalSupported": { "type": "boolean" },
+          "purePlusPackSupported": { "type": "boolean" },
+          "packSupportKind": {
+            "type": "string",
+            "enum": [
+              "UPSTREAM_CORE",
+              "PACK_DECLARATIVE_MODULE",
+              "REQUIRES_APPINTENT_DESCRIPTOR",
+              "P10_ONLY_GO_REQUIRED"
+            ]
+          },
+          "evidenceTier": {
+            "type": "string",
+            "enum": [
+              "INFERRED",
+              "OBSERVED",
+              "CONFIRMED_NATIVE",
+              "CONFIRMED_RUNTIME"
+            ]
+          },
+          "runtimeVerificationState": {
+            "type": "string",
+            "enum": [
+              "COMPILE_AND_ROUNDTRIP_VERIFIED",
+              "COMPILE_VERIFIED_ONLY",
+              "MACOS27_RUNTIME_EXTRACTED_AND_COMPILED",
+              "PHYSICAL_IPAD_PENDING"
+            ]
+          },
+          "unitTestRef": { "type": "string", "minLength": 1 },
+          "emittedParameterKeys": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "knownLimitations": { "type": "string" }
+        }
+      }
+    }
+  }
+}

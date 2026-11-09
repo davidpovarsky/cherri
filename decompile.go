@@ -7,7 +7,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"maps"
 	"os"
 	"reflect"
 	"regexp"
@@ -307,9 +306,7 @@ var identifierMap map[string][]actionValue
 
 // mapSplitActions creates a map of actions that have been split into a few actions to reduce the number of arguments.
 func mapSplitActions() {
-	if identifierMap == nil {
-		identifierMap = make(map[string][]actionValue)
-	}
+	identifierMap = make(map[string][]actionValue)
 	for identifier, action := range actions {
 		var ident = action.identifier
 		if action.identifier == "" {
@@ -599,7 +596,12 @@ func decompComment(action *ShortcutAction) {
 		}
 	}
 
-	var commentText = action.WFWorkflowActionParameters["WFCommentActionText"].(string)
+	var commentText string
+	if s, ok := action.WFWorkflowActionParameters["WFCommentActionText"].(string); ok {
+		commentText = s
+	} else if action.WFWorkflowActionParameters["WFCommentActionText"] != nil {
+		commentText = strings.Trim(decompValue(action.WFWorkflowActionParameters["WFCommentActionText"]), "\"")
+	}
 	if args.Using("comments") {
 		if strings.Contains(commentText, "\n") {
 			newCodeLine(fmt.Sprintf("comment('\n%s\n')\n\n", commentText))
@@ -643,6 +645,21 @@ func decompTextValue(action *ShortcutAction) {
 		currentVariableValue = fmt.Sprintf("\"%s\"", strings.Trim(currentVariableValue, "\""))
 	}
 	checkConstantLiteral(action)
+	if currentVariableValue != "" {
+		actionUUID, _ := action.WFWorkflowActionParameters[UUID].(string)
+		consumedByVar := actionUUID != "" && slices.Contains(varUUIDs, actionUUID)
+		followedBySetVar := false
+		if actionIndex+1 < len(shortcut.WFWorkflowActions) {
+			nextIdent := shortcut.WFWorkflowActions[actionIndex+1].WFWorkflowActionIdentifier
+			if nextIdent == SetVariableIdentifier || nextIdent == AppendVariableIdentifier {
+				followedBySetVar = true
+			}
+		}
+		if !consumedByVar && !followedBySetVar {
+			newCodeLine(fmt.Sprintf("text(%s)\n", currentVariableValue))
+			currentVariableValue = ""
+		}
+	}
 	decompilingText = false
 }
 
@@ -1132,6 +1149,9 @@ func decompValueObject(value map[string]interface{}) string {
 			sanitizeIdentifier(&variableName)
 
 			if value["Aggrandizements"] == nil {
+				if _, isGlobal := globals[variableName]; isGlobal {
+					return variableName
+				}
 				return fmt.Sprintf("@%s", variableName)
 			}
 		} else if value["Variable"] != nil {
@@ -1354,7 +1374,7 @@ func decompAttachmentString(attachmentString *string, attachments map[string]int
 					variableName = name
 				}
 			}
-		} else {
+		} else if _, isGlobal := globals[variableName]; !isGlobal {
 			variableName = fmt.Sprintf("@%s", variableName)
 		}
 
@@ -1451,6 +1471,17 @@ func makeActionCallCode(action *ShortcutAction) string {
 			actionCallCode.WriteString(makeRawAction(action))
 			return actionCallCode.String()
 		}
+	} else if matchedAction.includeCategory == "" && matchedAction.doc.category != "" &&
+		slices.Contains(actionIncludes, matchedAction.doc.category) &&
+		!slices.Contains(included, "actions/"+matchedAction.doc.category) {
+		lines = []string{fmt.Sprintf("#include 'actions/%s'\n", matchedAction.doc.category)}
+		resetParse()
+		handleIncludes()
+		currentCategory = matchedAction.doc.category
+		handleActionDefinitions()
+		currentCategory = ""
+		mapSplitActions()
+		matchedIdentifier, matchedAction = matchAction(action)
 	}
 
 	if !isActionRepresentable(action, &matchedAction) {
@@ -1465,6 +1496,9 @@ func makeActionCallCode(action *ShortcutAction) string {
 	// covers actions that matched from categories loaded as a side effect of
 	// an earlier probe.
 	emitDecompiledInclude(matchedAction.includeCategory)
+	if matchedAction.includeCategory == "" && (matchedIdentifier == "editEvent" || matchedIdentifier == "editReminder" || matchedIdentifier == "updateContact") {
+		emitDecompiledInclude(matchedAction.doc.category)
+	}
 
 	if (matchedAction.macOnly || matchedAction.nonMacOnly) && !setMacDefinition {
 		macDefinition = matchedAction.macOnly && !matchedAction.nonMacOnly
@@ -1528,6 +1562,9 @@ func isActionRepresentable(action *ShortcutAction, def *actionDefinition) bool {
 
 	for k := range action.WFWorkflowActionParameters {
 		if !knownKeys[k] {
+			if action.WFWorkflowActionIdentifier == "is.workflow.actions.setters.contacts" && strings.HasPrefix(k, "WFContactContentItem") {
+				continue
+			}
 			return false
 		}
 	}
@@ -1622,7 +1659,7 @@ func checkOutputType(action *ShortcutAction) (isConstant bool, isVariableValue b
 // skipDecompAction skips actions we don't support or when necessary.
 func skipDecompAction(action *ShortcutAction) bool {
 	var identifier = actionIdentifierEnd(action.WFWorkflowActionIdentifier)
-	if identifier == "nothing" {
+	if identifier == "nothing" && actionIndex+1 < len(shortcut.WFWorkflowActions) {
 		var nextAction = peekActions(1)
 		var controlflowActionIdentifiers = []string{"conditional", "repeat.each", "repeat.count", "choosefrommenu"}
 		var nextActionIdentifier = actionIdentifierEnd(nextAction.WFWorkflowActionIdentifier)
@@ -1642,6 +1679,7 @@ func actionIdentifierEnd(identifier string) string {
 }
 
 func decompActionArguments(actionCallCode *strings.Builder, matchedAction *actionDefinition, action *ShortcutAction) {
+	wroteAny := false
 	for i, param := range matchedAction.parameters {
 		if param.key == "" {
 			continue
@@ -1656,8 +1694,20 @@ func decompActionArguments(actionCallCode *strings.Builder, matchedAction *actio
 		if argValue == "" {
 			if value, found := action.WFWorkflowActionParameters[param.key]; found {
 				argValue = decompValue(value)
-			} else if !param.optional {
-				argValue = makeDefaultValue(param)
+			} else {
+				hasLaterProvided := false
+				for j := i + 1; j < len(matchedAction.parameters); j++ {
+					laterKey := matchedAction.parameters[j].key
+					if laterKey != "" {
+						if _, ok := action.WFWorkflowActionParameters[laterKey]; ok {
+							hasLaterProvided = true
+							break
+						}
+					}
+				}
+				if (!param.optional && param.defaultValue == nil) || (hasLaterProvided && !param.optional) {
+					argValue = makeDefaultValue(param)
+				}
 			}
 		}
 
@@ -1670,8 +1720,9 @@ func decompActionArguments(actionCallCode *strings.Builder, matchedAction *actio
 		}
 
 		if argValue != "" {
-			if i == 0 {
+			if !wroteAny {
 				actionCallCode.WriteString(argValue)
+				wroteAny = true
 			} else {
 				actionCallCode.WriteString(fmt.Sprintf(", %s", argValue))
 			}
@@ -1754,6 +1805,16 @@ func matchAction(action *ShortcutAction) (name string, definition actionDefiniti
 
 		if splitActions, found := identifierMap[identifier]; found {
 			matchSplitAction(&splitActions, action.WFWorkflowActionParameters, &name, &definition)
+			if identifier == "documentpicker.open" {
+				if wfFile, ok := action.WFWorkflowActionParameters["WFFile"].(map[string]interface{}); ok && wfFile["fileLocation"] != nil {
+					name = "getFileFromFolder"
+					definition = *actions["getFileFromFolder"]
+				} else if actions["getFile"] != nil {
+					name = "getFile"
+					definition = *actions["getFile"]
+				}
+				return
+			}
 			if name != "run" && name != "runSelf" {
 				return
 			}
@@ -1863,6 +1924,9 @@ func getSplitActionMatches(splitActions *[]actionValue, parameters map[string]an
 
 // competingMatches determines if the matches for this identifier have more values than 1 matching this action.
 func competingMatches(matches []actionMatch) bool {
+	if len(matches) >= 2 && matches[0].values > matches[1].values {
+		return true
+	}
 	var hasCompetingValues bool
 	for _, match := range matches {
 		if match.values > 1 {
@@ -1945,10 +2009,16 @@ func scoreActionAddParams(splitActionAddParams *[]parameterDefinition, parameter
 			var defaultValueType = reflect.TypeOf(param.defaultValue).Kind()
 			var valueType = reflect.TypeOf(value).Kind()
 			if defaultValueType == reflect.Map && valueType == reflect.Map {
-				if maps.Equal(param.defaultValue.(map[string]interface{}), value.(map[string]interface{})) {
+				if reflect.DeepEqual(param.defaultValue, value) || decompValue(param.defaultValue) == decompValue(value) {
 					matchedValues++
 				}
-			} else if param.defaultValue == value {
+			} else if defaultValueType == reflect.Struct && valueType == reflect.Map {
+				var defMap map[string]any
+				mapToStruct(param.defaultValue, &defMap)
+				if reflect.DeepEqual(defMap, value) || decompValue(defMap) == decompValue(value) {
+					matchedValues++
+				}
+			} else if fmt.Sprintf("%v", param.defaultValue) == fmt.Sprintf("%v", value) {
 				matchedValues++
 			}
 		}

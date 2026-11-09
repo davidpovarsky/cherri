@@ -36,29 +36,33 @@ const (
 
 // AppIntentDescriptor describes an App Intent binding.
 type AppIntentDescriptor struct {
-	Name                string `json:"name,omitempty"`
-	BundleIdentifier    string `json:"bundleIdentifier,omitempty"`
-	AppIntentIdentifier string `json:"appIntentIdentifier,omitempty"`
-	TeamIdentifier      string `json:"teamIdentifier,omitempty"`
+	Name                    string `json:"name,omitempty"`
+	BundleIdentifier        string `json:"bundleIdentifier,omitempty"`
+	AppIntentIdentifier     string `json:"appIntentIdentifier,omitempty"`
+	TeamIdentifier          string `json:"teamIdentifier,omitempty"`
+	RequiresAppInstallation *bool  `json:"requiresAppInstallation,omitempty"`
 }
 
 // ParameterSchema defines an argument accepted by an action.
 type ParameterSchema struct {
-	ID             string            `json:"id"`
-	Label          string            `json:"label"`          // Public named argument label
-	DisplayName    string            `json:"displayName"`    // Human title
-	Type           types.Type        `json:"-"`
-	TypeName       string            `json:"type"`
-	Optional       bool              `json:"optional"`       // Whether argument may be omitted
-	AcceptedForms  []string          `json:"acceptedForms,omitempty"`
-	DefaultValue   string            `json:"default,omitempty"`
-	OmissionPolicy OmissionPolicy    `json:"omissionPolicy,omitempty"`
-	WireKey        string            `json:"wireKey,omitempty"`
-	Codec          string            `json:"codec,omitempty"`
-	EnumValues     []string          `json:"enumValues,omitempty"`
-	EnumName       string            `json:"enumName,omitempty"`
-	Variadic       bool              `json:"variadic,omitempty"`
-	EvidenceStatus EvidenceStatus    `json:"evidenceStatus,omitempty"`
+	ID             string         `json:"id"`
+	Label          string         `json:"label"`       // Public named argument label
+	DisplayName    string         `json:"displayName"` // Human title
+	Type           types.Type     `json:"-"`
+	TypeName       string         `json:"type"`
+	RawType        string         `json:"rawType,omitempty"`
+	Optional       bool           `json:"optional"` // Whether argument may be omitted
+	Reference      bool           `json:"reference,omitempty"`
+	Literal        bool           `json:"literal,omitempty"`
+	AcceptedForms  []string       `json:"acceptedForms,omitempty"`
+	DefaultValue   string         `json:"default,omitempty"`
+	OmissionPolicy OmissionPolicy `json:"omissionPolicy,omitempty"`
+	WireKey        string         `json:"wireKey,omitempty"`
+	Codec          string         `json:"codec,omitempty"`
+	EnumValues     []string       `json:"enumValues,omitempty"`
+	EnumName       string         `json:"enumName,omitempty"`
+	Variadic       bool           `json:"variadic,omitempty"`
+	EvidenceStatus EvidenceStatus `json:"evidenceStatus,omitempty"`
 }
 
 // ActionDocs contains user documentation metadata for an action.
@@ -73,17 +77,21 @@ type ActionDocs struct {
 
 // ActionSchema is the authoritative definition of an Apple Shortcut action.
 type ActionSchema struct {
-	ID                 string               `json:"id"`                 // Unique stable ID
-	CallableName       string               `json:"callableName"`       // Cherri v2 function/action name
-	Module             string               `json:"module"`             // Category or module
-	AppleIdentifier    string               `json:"appleIdentifier"`    // is.workflow.actions.*
+	ID                 string               `json:"id"`              // Unique stable ID
+	CallableName       string               `json:"callableName"`    // Cherri v2 function/action name
+	Module             string               `json:"module"`          // Category or module
+	AppleIdentifier    string               `json:"appleIdentifier"` // is.workflow.actions.*
 	Variant            string               `json:"variant,omitempty"`
 	PrimaryParameterID string               `json:"primaryParameterId,omitempty"`
 	Parameters         []ParameterSchema    `json:"parameters"`
+	EmittedKeys        []string             `json:"emittedKeys,omitempty"`
 	OutputType         types.Type           `json:"-"`
 	OutputTypeName     string               `json:"outputType,omitempty"`
+	RawOutputType      string               `json:"rawOutputType,omitempty"`
 	AppIntent          *AppIntentDescriptor `json:"appIntent,omitempty"`
 	Docs               ActionDocs           `json:"docs"`
+	Builtin            bool                 `json:"builtin,omitempty"`
+	Custom             bool                 `json:"custom,omitempty"`
 	CompilerConstruct  bool                 `json:"compilerConstruct,omitempty"`
 	EvidenceStatus     EvidenceStatus       `json:"evidenceStatus,omitempty"`
 	StaticParameters   map[string]any       `json:"staticParameters,omitempty"`

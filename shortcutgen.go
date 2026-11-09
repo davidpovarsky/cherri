@@ -130,6 +130,22 @@ func makeCommentAction(comment string) {
 	}
 }
 
+func isArrayVariable(ident string) bool {
+	v, found := variables[ident]
+	if !found {
+		return false
+	}
+	if v.valueType == Arr {
+		return true
+	}
+	if v.valueType == Action {
+		if act, ok := v.value.(action); ok && (act.ident == "list" || (act.def != nil && act.def.outputType == Arr)) {
+			return true
+		}
+	}
+	return false
+}
+
 func makeVariableAction(t *token) {
 	var setVariableParams = map[string]any{
 		"WFVariableName": t.ident,
@@ -138,7 +154,7 @@ func makeVariableAction(t *token) {
 	makeVariableInput(t, setVariableParams)
 
 	if t.typeof != Variable {
-		if variables[t.ident].valueType != Arr {
+		if !isArrayVariable(t.ident) {
 			addStdAction("setvariable", setVariableParams)
 			return
 		}
@@ -193,7 +209,7 @@ func makeVariableValueAction(token *token, customOutputName *string, varUUID *st
 
 	if (token.typeof == AddTo || token.typeof == SubFrom || token.typeof == MultiplyBy || token.typeof == DivideBy) &&
 		token.valueType != Arr &&
-		variables[token.ident].valueType != Arr {
+		!isArrayVariable(token.ident) {
 		variableValueModifier(token, &reference)
 		return
 	}

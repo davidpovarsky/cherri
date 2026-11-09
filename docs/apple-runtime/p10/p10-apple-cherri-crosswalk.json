@@ -1,0 +1,396 @@
+{
+  "schemaVersion": "1.0",
+  "sourceCommit": "55d7800dc01cd52ca3d6a5a17b3159ffe5a28089",
+  "denominators": {
+    "appleRuntimeDiscoveredTotal": 2396,
+    "appleEligibleUserFacingTotal": 1527,
+    "appleExcludedInternalOrNonRunnableTotal": 869,
+    "appleCoveredUniqueIdentifiers": 390,
+    "appleUncoveredEligibleIdentifiers": 1137,
+    "cherriCatalogTotalEntries": 505,
+    "cherriCallableActions": 497,
+    "cherriCompilerConstructs": 8,
+    "uniqueIdentifiersInCherriCatalog": 390,
+    "cherriPureOriginalEntries": 441,
+    "cherriPurePlusPackEntries": 487,
+    "cherriPackDeclarativeAddedOrAliasedEntries": 46,
+    "cherriP10OnlyGoRequiredEntries": 2,
+    "cherriRequiresAppIntentDescriptorEntries": 12
+  },
+  "reconciliationFormula": {
+    "appleDiscoveryEquation": "2396 discovered = 1527 eligible user-facing (303 builtin + 1224 first-party AppIntents) + 869 excluded (750 internal/config-only + 57 conditional third-party + 50 non-runnable definitions + 12 legacy deprecated)",
+    "appleCoverageEquation": "1527 eligible user-facing = 390 COVERED_VERIFIED unique Apple identifiers + 1137 uncovered eligible Apple identifiers (0 COVERED_PARTIAL, 100 MISSING_HIGH_PRIORITY, 1037 MISSING_LOW_PRIORITY)",
+    "cherriToAppleMappingEquation": "505 Cherri catalog entries (497 callable actions + 8 compiler constructs) map to 381 unique ShortcutIdentifiers in the CLI catalog (plus 9 identifier aliases covered in the 390 runtime ledger = 390 covered Apple identifiers) because multiple Cherri split/variant actions target a single Apple identifier with distinct constant parameter presets (e.g. setWiFi/toggleWiFi -> is.workflow.actions.wifi.set).",
+    "pureToPackToP10Equation": "505 P10 catalog entries = 441 Pure Original names at bcc0095 (433 callables + 8 constructs, of which 54 also have *Advanced aliases in 141b9cc and 2 [editEvent, transcribeText] were upgraded to Go in P10) + 48 Pure+Pack new declarative actions at 141b9cc + 4 declarative toggleSet actions in actions/settings.cherri (AnnounceNotifications, SilenceUnknownCallers) + 12 net-new Go-only actions in actions_std.go (editReminder + 11 AppIntent actions)."
+  },
+  "ledgerStatusBreakdown": {
+    "DEFERRED_NO_EVIDENCE": 86,
+    "EXCLUDED_HIDDEN_INTERNAL": 131,
+    "COVERED_PARTIAL": 390,
+    "MISSING_APP_INTENT_DESCRIPTOR": 1040,
+    "EXCLUDED_CONFIG_ONLY": 29,
+    "EXCLUDED_NONRUNNABLE": 596,
+    "NEW_NATIVE_ACTION": 97,
+    "EXCLUDED_THIRD_PARTY_DEPENDENCY": 27
+  },
+  "ledgerEligibilityBreakdown": {
+    "DEFERRED": 86,
+    "EXCLUDED_INTERNAL": 131,
+    "ELIGIBLE_USER_FACING": 487,
+    "ELIGIBLE_APP_INTENT": 1040,
+    "EXCLUDED_CONFIG_ONLY": 29,
+    "EXCLUDED_NONRUNNABLE": 596,
+    "EXCLUDED_THIRD_PARTY": 27
+  },
+  "multiActionAppleIdentifiers": {
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXSetLeftRightBalanceIntent": [
+      "setLeftRightBalance",
+      "toggleLeftRightBalance"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleAutoAnswerCallsIntent": [
+      "setAutoAnswerCalls",
+      "toggleAutoAnswerCalls"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleCaptionsIntent": [
+      "setClosedCaptionsSDH",
+      "toggleClosedCaptionsSDH"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleClassicInvertIntent": [
+      "setClassicInvert",
+      "toggleClassicInvert"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleColorFiltersIntent": [
+      "setColorFilters",
+      "toggleColorFilters"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleContrastIntent": [
+      "setContrast",
+      "toggleContrast"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleLEDFlashIntent": [
+      "setLEDFlash",
+      "toggleLEDFlash"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleLiveCaptionsIntent": [
+      "setLiveCaptions",
+      "toggleLiveCaptions"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleMonoAudioIntent": [
+      "setMonoAudio",
+      "toggleMonoAudio"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleReduceMotionIntent": [
+      "setReduceMotion",
+      "toggleReduceMotion"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSmartInvertIntent": [
+      "setSmartInvert",
+      "toggleSmartInvert"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSwitchControlIntent": [
+      "setSwitchControl",
+      "toggleSwitchControl"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleTransparencyIntent": [
+      "setReduceTransparency",
+      "toggleReduceTransparency"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleVoiceControlIntent": [
+      "setVoiceControl",
+      "toggleVoiceControl"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleWhitePointIntent": [
+      "setWhitePoint",
+      "toggleWhitePoint"
+    ],
+    "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleZoomIntent": [
+      "setZoom",
+      "toggleZoom"
+    ],
+    "com.apple.ShortcutsActions.SetMultitaskingModeAction": [
+      "setStageManagerMultitasking",
+      "setWindowedMultitasking"
+    ],
+    "com.apple.UniversalAccess.AXSettingsShortcuts.AXToggleBackgroundSoundsIntent": [
+      "setBackgroundSounds",
+      "setMediaBackgroundSounds",
+      "toggleBackgroundSounds",
+      "toggleMediaBackgroundSounds"
+    ],
+    "com.apple.WritingTools.WritingToolsAppIntentsExtension.SummarizeTextIntent": [
+      "generateKeyPoints",
+      "generateSummary"
+    ],
+    "com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent": [
+      "turnOffAlarm",
+      "turnOnAlarm"
+    ],
+    "is.workflow.actions.addmusictoupnext": [
+      "playLater",
+      "playNext"
+    ],
+    "is.workflow.actions.addtoplaylist": [
+      "addToMusic",
+      "addToPlaylist"
+    ],
+    "is.workflow.actions.airplanemode.set": [
+      "setAirplaneMode",
+      "toggleAirplaneMode"
+    ],
+    "is.workflow.actions.alert": [
+      "alert",
+      "confirm"
+    ],
+    "is.workflow.actions.announcenotifications.set": [
+      "setAnnounceNotifications",
+      "toggleAnnounceNotifications"
+    ],
+    "is.workflow.actions.appearance": [
+      "darkMode",
+      "lightMode",
+      "toggleAppearance"
+    ],
+    "is.workflow.actions.askllm": [
+      "askChatGPT",
+      "askCloudLLM",
+      "askDeviceModel",
+      "askLLM",
+      "askModel",
+      "askProModel"
+    ],
+    "is.workflow.actions.base64encode": [
+      "base64Decode",
+      "base64Encode"
+    ],
+    "is.workflow.actions.bluetooth.set": [
+      "setBluetooth",
+      "toggleBluetooth"
+    ],
+    "is.workflow.actions.cellulardata.set": [
+      "setCellularData",
+      "toggleCellularData"
+    ],
+    "is.workflow.actions.date": [
+      "currentDate",
+      "date",
+      "getHolidayDate"
+    ],
+    "is.workflow.actions.dnd.set": [
+      "DNDOff",
+      "DNDOn",
+      "setFocusMode",
+      "toggleDND",
+      "toggleFocusMode"
+    ],
+    "is.workflow.actions.documentpicker.open": [
+      "getFile",
+      "getFileFromFolder"
+    ],
+    "is.workflow.actions.documentpicker.save": [
+      "saveFile",
+      "saveFilePrompt"
+    ],
+    "is.workflow.actions.downloadurl": [
+      "downloadURL",
+      "fileRequest",
+      "formRequest",
+      "jsonRequest"
+    ],
+    "is.workflow.actions.dropbox.savefile": [
+      "saveToDropbox",
+      "saveToDropboxPrompt"
+    ],
+    "is.workflow.actions.encodemedia": [
+      "encodeAudio",
+      "encodeVideo",
+      "setMetadata",
+      "stripMediaMetadata"
+    ],
+    "is.workflow.actions.extracttextfromimage": [
+      "extractImageText",
+      "getTextFromImage"
+    ],
+    "is.workflow.actions.file.append": [
+      "appendToFile",
+      "prependToFile"
+    ],
+    "is.workflow.actions.file.select": [
+      "selectFile",
+      "selectFolder"
+    ],
+    "is.workflow.actions.flashlight": [
+      "flashlightOff",
+      "flashlightOn",
+      "toggleFlashlight"
+    ],
+    "is.workflow.actions.format.date": [
+      "formatDate",
+      "formatTime",
+      "formatTimestamp"
+    ],
+    "is.workflow.actions.getbatterylevel": [
+      "connectedToCharger",
+      "getBatteryLevel",
+      "getChargeLimit",
+      "isCharging"
+    ],
+    "is.workflow.actions.getipaddress": [
+      "getExternalIP",
+      "getLocalIP",
+      "isOnline"
+    ],
+    "is.workflow.actions.getitemfromlist": [
+      "getFirstItem",
+      "getLastItem",
+      "getListItem",
+      "getListItems",
+      "getRandomItem"
+    ],
+    "is.workflow.actions.gettext": [
+      "embedFile",
+      "makeVCard",
+      "text"
+    ],
+    "is.workflow.actions.getvalueforkey": [
+      "getKeys",
+      "getValue",
+      "getValues"
+    ],
+    "is.workflow.actions.getwifi": [
+      "getCellularDetail",
+      "getEthernetDetail",
+      "getWifiDetail"
+    ],
+    "is.workflow.actions.giphy": [
+      "getGifs",
+      "searchGiphy"
+    ],
+    "is.workflow.actions.hide.app": [
+      "hideAllApps",
+      "hideApp"
+    ],
+    "is.workflow.actions.image.convert": [
+      "convertImage",
+      "convertToJPEG",
+      "stripImageMetadata"
+    ],
+    "is.workflow.actions.image.mask": [
+      "customImageMask",
+      "maskImage"
+    ],
+    "is.workflow.actions.image.resize": [
+      "resizeImage",
+      "resizeImageByLongestEdge",
+      "resizeImageByPercent"
+    ],
+    "is.workflow.actions.location": [
+      "currentLocation",
+      "location"
+    ],
+    "is.workflow.actions.lowpowermode.set": [
+      "setLowPowerMode",
+      "toggleLowPowerMode"
+    ],
+    "is.workflow.actions.makediskimage": [
+      "makeDiskImage",
+      "makeSizedDiskImage"
+    ],
+    "is.workflow.actions.nightshift.set": [
+      "setNightShift",
+      "toggleNightShift"
+    ],
+    "is.workflow.actions.openxcallbackurl": [
+      "openCustomXCallbackURL",
+      "openXCallbackURL"
+    ],
+    "is.workflow.actions.orientationlock.set": [
+      "setOrientationLock",
+      "toggleOrientationLock"
+    ],
+    "is.workflow.actions.output": [
+      "mustOutput",
+      "output",
+      "outputOrClipboard"
+    ],
+    "is.workflow.actions.overlayimageonimage": [
+      "customImageOverlay",
+      "overlayImage"
+    ],
+    "is.workflow.actions.pausemusic": [
+      "pause",
+      "play",
+      "togglePlayPause"
+    ],
+    "is.workflow.actions.personalhotspot.set": [
+      "setHotspot",
+      "toggleHotspot"
+    ],
+    "is.workflow.actions.posters.get": [
+      "getAllWallpapers",
+      "getWallpaper"
+    ],
+    "is.workflow.actions.quit.app": [
+      "killAllApps",
+      "killApp",
+      "quitAllApps",
+      "quitApp"
+    ],
+    "is.workflow.actions.reboot": [
+      "reboot",
+      "shutdown"
+    ],
+    "is.workflow.actions.round": [
+      "ceil",
+      "floor",
+      "round"
+    ],
+    "is.workflow.actions.runworkflow": [
+      "run",
+      "runSelf"
+    ],
+    "is.workflow.actions.setters.contacts": [
+      "removeContactDetail",
+      "updateContact"
+    ],
+    "is.workflow.actions.silenceunknowncallers.set": [
+      "setSilenceUnknownCallers",
+      "toggleSilenceUnknownCallers"
+    ],
+    "is.workflow.actions.stagemanager.set": [
+      "setStageManager",
+      "toggleStageManager"
+    ],
+    "is.workflow.actions.takescreenshot": [
+      "takeInteractiveScreenshot",
+      "takeScreenshot"
+    ],
+    "is.workflow.actions.text.changecase": [
+      "alternatingCase",
+      "capitalize",
+      "capitalizeAll",
+      "lowercase",
+      "titleCase",
+      "uppercase"
+    ],
+    "is.workflow.actions.text.match": [
+      "containsText",
+      "matchText"
+    ],
+    "is.workflow.actions.text.match.getgroup": [
+      "getMatchGroup",
+      "getMatchGroups"
+    ],
+    "is.workflow.actions.truetone.set": [
+      "setTrueTone",
+      "toggleTrueTone"
+    ],
+    "is.workflow.actions.urlencode": [
+      "urlDecode",
+      "urlEncode"
+    ],
+    "is.workflow.actions.wifi.set": [
+      "setWifi",
+      "toggleWifi"
+    ]
+  }
+}

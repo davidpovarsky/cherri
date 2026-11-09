@@ -55,6 +55,17 @@ jobs:
         go test -v ./tools/legacy-parity/...
         go run ./tools/legacy-parity
 
+    - name: P10 SSoT, Coverage Ledgers, Pack & Release Gates
+      run: |
+        git fetch origin apple-actions-pack-pure-core-20261022
+        go run ./tools/language-schema --verify-generated
+        python3 tools/p10r3/verify_or_generate_pack.py
+        python3 tools/p10r3/verify_ledger_consistency.py
+        python3 tools/p10r3/verify_ledger_consistency.py --mutate-check
+        python3 tools/p10r3/test_coverage_and_gates.py -v
+        python3 tools/p10r3/run_release_gates.py --verify-registry
+        python3 tools/p10r3/run_release_gates.py --verify-commit
+
   build-test-macos:
     runs-on: macos-latest
     steps:
@@ -96,6 +107,17 @@ jobs:
       run: |
         go test -v ./tools/legacy-parity/...
         go run ./tools/legacy-parity
+
+    - name: P10 SSoT, Coverage Ledgers, Pack & Release Gates
+      run: |
+        git fetch origin apple-actions-pack-pure-core-20261022
+        go run ./tools/language-schema --verify-generated
+        python3 tools/p10r3/verify_or_generate_pack.py
+        python3 tools/p10r3/verify_ledger_consistency.py
+        python3 tools/p10r3/verify_ledger_consistency.py --mutate-check
+        python3 tools/p10r3/test_coverage_and_gates.py -v
+        python3 tools/p10r3/run_release_gates.py --verify-registry
+        python3 tools/p10r3/run_release_gates.py --verify-commit
 
   build-test-nix:
     runs-on: ubuntu-latest

@@ -81,13 +81,13 @@
     "appleIdentifier": "is.workflow.actions.conditional",
     "sourceKind": "control-flow",
     "owner": "shared-core",
-    "sharedEncoder": "shared control flow builder (extracted)",
-    "legacyPath": "shortcutgen.go:makeConditionalAction",
-    "v2Path": "lower.go:lowerIfWithOutput -\u003e shared control builder",
+    "sharedEncoder": "shared_control.go:BuildConditionalStart / BuildIfElse / BuildIfEnd",
+    "legacyPath": "shortcutgen.go:makeConditionalAction -> shared_control.go",
+    "v2Path": "lower.go:lowerIfWithOutput -> backend.BuildConditionalStart / BuildIfElse / BuildIfEnd",
     "decision": "B",
     "evidence": "WFControlFlowMode 0/1/2, WFConditions/WFCondition, GroupingIdentifier",
-    "tests": "CTRL-001, CTRL-002",
-    "status": "TARGET_CONSOLIDATION"
+    "tests": "CTRL-001, CTRL-002, TestP10_ActionEmitterOwnershipAndQuarantine",
+    "status": "SHARED_DELEGATED"
   },
   {
     "file": "shortcutgen.go",
@@ -96,13 +96,13 @@
     "appleIdentifier": "is.workflow.actions.choosefrommenu",
     "sourceKind": "control-flow",
     "owner": "shared-core",
-    "sharedEncoder": "shared menu builder (extracted)",
-    "legacyPath": "shortcutgen.go:makeMenuAction",
-    "v2Path": "lower.go:lowerMenuWithOutput -\u003e shared menu builder",
+    "sharedEncoder": "shared_control.go:BuildMenuStart / BuildMenuCase / BuildMenuEnd",
+    "legacyPath": "shortcutgen.go:makeMenuAction -> shared_control.go",
+    "v2Path": "lower.go:lowerMenuWithOutput -> backend.BuildMenuStart / BuildMenuCase / BuildMenuEnd",
     "decision": "B",
     "evidence": "WFMenuItems as typed WFMenuItem, AttributedTitle, GroupingIdentifier",
-    "tests": "CTRL-005",
-    "status": "TARGET_CONSOLIDATION"
+    "tests": "CTRL-005, TestP10_ActionEmitterOwnershipAndQuarantine",
+    "status": "SHARED_DELEGATED"
   },
   {
     "file": "shortcutgen.go",
@@ -111,13 +111,13 @@
     "appleIdentifier": "is.workflow.actions.repeat.count / repeat.each",
     "sourceKind": "control-flow",
     "owner": "shared-core",
-    "sharedEncoder": "shared repeat builder (extracted)",
-    "legacyPath": "shortcutgen.go:makeRepeatAction / makeRepeatEachAction",
-    "v2Path": "lower.go:lowerRepeatWithOutput / lowerForWithOutput -\u003e shared builder",
+    "sharedEncoder": "shared_control.go:BuildRepeatCountStart / BuildRepeatEachStart / BuildLoopEnd",
+    "legacyPath": "shortcutgen.go:makeRepeatAction / makeRepeatEachAction -> shared_control.go",
+    "v2Path": "lower.go:lowerRepeatWithOutput / lowerForWithOutput -> backend.BuildRepeat* / BuildLoopEnd",
     "decision": "B",
     "evidence": "GroupingIdentifier, RepeatCount, RepeatEach item/index",
-    "tests": "CTRL-003, CTRL-004",
-    "status": "TARGET_CONSOLIDATION"
+    "tests": "CTRL-003, CTRL-004, TestP10_ActionEmitterOwnershipAndQuarantine",
+    "status": "SHARED_DELEGATED"
   },
   {
     "file": "language_backend_adapter.go",
@@ -126,13 +126,13 @@
     "appleIdentifier": "is.workflow.actions.conditional/repeat.count/repeat.each/choosefrommenu",
     "sourceKind": "control-flow",
     "owner": "shared-core",
-    "sharedEncoder": "shared control builder",
-    "legacyPath": "shortcutgen.go",
-    "v2Path": "language_backend_adapter.go:BeginControl",
+    "sharedEncoder": "internal/language/backend/control.go + language_backend_adapter.go",
+    "legacyPath": "shortcutgen.go -> shared_control.go",
+    "v2Path": "language_backend_adapter.go:BeginControl / EndControl",
     "decision": "B",
     "evidence": "Consolidated backend session control flow segment emission",
-    "tests": "CTRL-001..CTRL-006",
-    "status": "TARGET_CONSOLIDATION"
+    "tests": "CTRL-001..CTRL-006, TestP10_ActionEmitterOwnershipAndQuarantine",
+    "status": "CANONICAL_OWNER"
   },
   {
     "file": "internal/language/lower/lower.go",
@@ -171,13 +171,13 @@
     "appleIdentifier": "is.workflow.actions.setvariable, dictionary, gettext",
     "sourceKind": "binding-materialization",
     "owner": "v2-lowering",
-    "sharedEncoder": "Shared dictionary/text encoders + SetVariable",
-    "legacyPath": "shortcutgen.go:makeVariableValueAction",
-    "v2Path": "lower.go:lowerBinding",
+    "sharedEncoder": "shared_codec.go:EncodeDictionaryItemShared / EncodeTextSegmentsShared + EmitResolvedCall",
+    "legacyPath": "shortcutgen.go:makeVariableValueAction -> shared_codec.go",
+    "v2Path": "lower.go:lowerBinding -> CanonicalBackendSession",
     "decision": "B",
-    "evidence": "Dictionary literals for let/var emitted as native Dictionary action",
-    "tests": "CODE-003, CODE-004",
-    "status": "TARGET_CONSOLIDATION"
+    "evidence": "Dictionary literals for let/var emitted via shared dictionary/text codec + canonical session",
+    "tests": "CODE-003, CODE-004, TestP10_ActionEmitterOwnershipAndQuarantine",
+    "status": "SHARED_DELEGATED"
   },
   {
     "file": "language_backend_adapter.go",
@@ -186,13 +186,13 @@
     "appleIdentifier": "WorkflowHeader",
     "sourceKind": "workflow-header",
     "owner": "shared-core",
-    "sharedEncoder": "shared workflow header initializer (extracted)",
-    "legacyPath": "shortcutgen.go:generateShortcut",
-    "v2Path": "language_backend_adapter.go:NewCanonicalBackendSession -\u003e SetMetadata",
+    "sharedEncoder": "shared_control.go:BuildWorkflowHeader",
+    "legacyPath": "shortcutgen.go:generateShortcut -> BuildWorkflowHeader",
+    "v2Path": "language_backend_adapter.go:NewCanonicalBackendSession -> BuildWorkflowHeader -> SetMetadata",
     "decision": "B",
     "evidence": "Unification of client version, QuickActions, input/output classes, questions",
-    "tests": "META-001..META-003",
-    "status": "TARGET_CONSOLIDATION"
+    "tests": "META-001..META-003, TestP10_ActionEmitterOwnershipAndQuarantine",
+    "status": "CANONICAL_OWNER"
   },
   {
     "file": "language_emit_adapter.go",

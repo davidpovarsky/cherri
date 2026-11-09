@@ -725,6 +725,21 @@ func (s *CanonicalBackendSession) SetMetadata(name string, value any) {
 		if str, ok := value.(string); ok {
 			s.shortcut.WFWorkflowClientVersion = str
 		}
+	case "iosVersion":
+		if str, ok := value.(string); ok {
+			iosVersionString = str
+			var parsed float64
+			if _, err := fmt.Sscanf(str, "%f", &parsed); err == nil && parsed > 0 {
+				iosVersion = parsed
+			}
+		}
+	case "mac":
+		if b, ok := value.(bool); ok {
+			if definitions == nil {
+				definitions = make(map[string]any)
+			}
+			definitions["mac"] = b
+		}
 	case "workflowTypes":
 		if types, ok := value.([]string); ok {
 			s.shortcut.WFWorkflowTypes = types

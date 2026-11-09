@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "timestamp": "2026-11-09T21:04:06.329333+00:00",
+  "branch": "agent/cherri-p10-apple-actions-coverage",
+  "sourceCommit": "55d7800dc01cd52ca3d6a5a17b3159ffe5a28089",
+  "upstreamBaselineCommit": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+  "purePackCommit": "141b9cc96cf1df3f9d1593548dc49ae8a46a256a",
+  "counts": {
+    "appleRuntimeDiscoveredTotal": 2396,
+    "appleEligibleUserFacingTotal": 1527,
+    "appleExcludedInternalOrNonRunnableTotal": 869,
+    "appleCoveredUniqueIdentifiers": 390,
+    "appleUncoveredEligibleIdentifiers": 1137,
+    "cherriCatalogTotalEntries": 505,
+    "cherriCallableActions": 497,
+    "cherriCompilerConstructs": 8,
+    "uniqueIdentifiersInCherriCatalog": 390,
+    "cherriPureOriginalEntries": 441,
+    "cherriPurePlusPackEntries": 487,
+    "cherriPackDeclarativeAddedOrAliasedEntries": 46,
+    "cherriP10OnlyGoRequiredEntries": 2,
+    "cherriRequiresAppIntentDescriptorEntries": 12
+  },
+  "goOnly15Summary": {
+    "total": 15,
+    "ALREADY_UPSTREAM": [
+      "run"
+    ],
+    "P10_ONLY_GO_REQUIRED": [
+      "editEvent",
+      "editReminder"
+    ],
+    "REQUIRES_APPINTENT_DESCRIPTOR": [
+      "createRemindersList",
+      "openBook",
+      "playAudiobook",
+      "playVoiceMemo",
+      "recordVoiceMemo",
+      "searchSpotlight",
+      "setSilentMode",
+      "startNotesAudioRecording",
+      "startStopwatch",
+      "stopStopwatch",
+      "stopVoiceMemoRecording",
+      "transcribeText"
+    ]
+  },
+  "externalBlockers": {
+    "physicalIPadOS27": "BLOCKED_DEVICE",
+    "liveAppleServerSigning": "BLOCKED_EXTERNAL_SIGNING",
+    "authoringPatternsZip_1219604109827689": "BLOCKED_MISSING_ARTIFACT",
+    "ownerReleaseGate_1219611682706483": "OWNER_APPROVAL_REQUIRED"
+  }
+}
