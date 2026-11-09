@@ -20,7 +20,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
 
-var interpolationRegex = regexp.MustCompile(`(^|[^a-zA-Z0-9_])"([^"\\]*\{[^"\\]*\}[^"\\]*)"`)
+var interpolationRegex = regexp.MustCompile(`(^|[^a-zA-Z0-9_])"([^"\\]*\{@?[a-zA-Z_][^"\\]*\}[^"\\]*)"`)
 
 // MigrationDiagnostic represents an error or warning encountered during migration.
 type MigrationDiagnostic struct {
