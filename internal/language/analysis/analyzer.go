@@ -1106,6 +1106,12 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return types.Unknown
 	}
 
+	if a.minTargetVersion > 0 && actionSchema.MinVersion > 0 && actionSchema.MinVersion > a.minTargetVersion {
+		a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q requires minimum version %v, but shortcut target version is %v", callName, actionSchema.MinVersion, a.minTargetVersion))
+	}
+	if a.maxTargetVersion > 0 && actionSchema.MaxVersion > 0 && actionSchema.MaxVersion < a.maxTargetVersion {
+		a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is unsupported above version %v (shortcut target version is %v)", callName, actionSchema.MaxVersion, a.maxTargetVersion))
+	}
 	if a.hasExplicitTarget {
 		for _, target := range a.targets {
 			tl := strings.ToLower(target)
@@ -1118,12 +1124,6 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 					a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is only available on macOS (cannot target %s)", callName, target))
 				}
 			}
-		}
-		if a.minTargetVersion > 0 && actionSchema.MinVersion > 0 && actionSchema.MinVersion > a.minTargetVersion {
-			a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q requires minimum version %v, but shortcut target version is %v", callName, actionSchema.MinVersion, a.minTargetVersion))
-		}
-		if a.maxTargetVersion > 0 && actionSchema.MaxVersion > 0 && actionSchema.MaxVersion < a.maxTargetVersion {
-			a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is unsupported above version %v (shortcut target version is %v)", callName, actionSchema.MaxVersion, a.maxTargetVersion))
 		}
 	} else {
 		if actionSchema.MacOnly {
@@ -1154,6 +1154,21 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
 				if !(primParam.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(call.PrimaryArg)) {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", primParam.Label, primParam.Type, argType))
+				}
+			}
+			// Enum validation for primary argument
+			if primParam.Codec == "enum" && len(primParam.EnumValues) > 0 {
+				if lit, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit {
+					foundVal := false
+					for _, ev := range primParam.EnumValues {
+						if ev == lit.Value {
+							foundVal = true
+							break
+						}
+					}
+					if !foundVal {
+						a.error(CodeEnumMember, call.PrimaryArg.NodeSpan(), fmt.Sprintf("invalid enum value %q for parameter %q; valid choices: %s", lit.Value, primParam.Label, strings.Join(primParam.EnumValues, ", ")))
+					}
 				}
 			}
 		}
@@ -1254,8 +1269,19 @@ func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.
 			hasAttachment = true
 		}
 	}
+	if (callName == "editEvent" || callName == "editReminder") && param.ID == "newValue" {
+		hasLiteral = true
+		hasTokenString = true
+		hasAttachment = true
+	}
+	if param.WireKey == "WFJSONValues" || param.WireKey == "WFFormValues" || param.WireKey == "WFHTTPHeaders" {
+		hasLiteral = true
+		hasTokenString = false
+		hasAttachment = false
+	}
+	isDictLiteralOnlyWireKey := param.WireKey == "WFJSONValues" || param.WireKey == "WFFormValues" || param.WireKey == "WFHTTPHeaders"
 
-	if param.EvidenceStatus == schema.EvidenceConfirmed {
+	if param.EvidenceStatus == schema.EvidenceConfirmed || isDictLiteralOnlyWireKey {
 		switch expr := arg.(type) {
 		case *syntax.LiteralExpr:
 			if expr.Type == syntax.TokenNone || expr.Type == syntax.TokenNull {
@@ -1280,7 +1306,11 @@ func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.
 			}
 		case *syntax.IdentExpr, *syntax.MemberExpr, *syntax.CallExpr, *syntax.IndexExpr:
 			if !hasAttachment && !hasTokenString {
-				a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q requires a literal value, got dynamic variable/attachment", param.Label, callName))
+				if param.WireKey == "WFJSONValues" || param.WireKey == "WFFormValues" || param.WireKey == "WFHTTPHeaders" {
+					a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q (%s) in call to %q requires a dictionary literal {...} (which may contain dynamic variable references inside its field values); to send a dynamic dictionary/JSON variable as the request body, use fileRequest(...) (WFHTTPBodyType=File, WFRequestVariable)", param.Label, param.WireKey, callName))
+				} else {
+					a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q requires a literal value, got dynamic variable/attachment", param.Label, callName))
+				}
 			}
 		}
 	} else {

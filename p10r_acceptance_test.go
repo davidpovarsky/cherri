@@ -163,6 +163,65 @@ show(res)
 	if !nestedPanicked {
 		t.Fatalf("expected nested compound filter to fail closed with panic, but succeeded")
 	}
+
+	// Verify all 14 filter.* actions compile WFContentPredicateTableTemplate, decompile losslessly via rawAction, and recompile to structurally equal plists
+	allFilterActions := []struct {
+		call       string
+		ident      string
+		needsMac   bool
+		prop       string
+		op         string
+		valExpr    string
+		expectedOp string
+	}{
+		{call: "filterFiles", ident: "is.workflow.actions.filter.files", prop: "Name", op: "contains", valExpr: `"report"`, expectedOp: "99"},
+		{call: "filterPhotos", ident: "is.workflow.actions.filter.photos", prop: "Is A Screenshot", op: "equals", valExpr: `true`, expectedOp: "4"},
+		{call: "filterImages", ident: "is.workflow.actions.filter.images", prop: "Width", op: "greater than", valExpr: `800`, expectedOp: "2"},
+		{call: "filterEvents", ident: "is.workflow.actions.filter.calendarevents", prop: "Start Date", op: "is today", valExpr: `true`, expectedOp: "1002"},
+		{call: "filterContacts", ident: "is.workflow.actions.filter.contacts", prop: "First Name", op: "begins with", valExpr: `"A"`, expectedOp: "8"},
+		{call: "filterArticles", ident: "is.workflow.actions.filter.articles", prop: "Author", op: "is not", valExpr: `"Bot"`, expectedOp: "5"},
+		{call: "filterReminders", ident: "is.workflow.actions.filter.reminders", prop: "Is Completed", op: "equals", valExpr: `false`, expectedOp: "4"},
+		{call: "getWindows", ident: "is.workflow.actions.filter.windows", needsMac: true, prop: "App Name", op: "equals", valExpr: `"Finder"`, expectedOp: "4"},
+		{call: "filterEventAttendees", ident: "is.workflow.actions.filter.eventattendees", prop: "Is Me", op: "equals", valExpr: `false`, expectedOp: "4"},
+		{call: "filterLocations", ident: "is.workflow.actions.filter.locations", prop: "City", op: "equals", valExpr: `"Jerusalem"`, expectedOp: "4"},
+		{call: "filterMusic", ident: "is.workflow.actions.filter.music", prop: "Artist", op: "contains", valExpr: `"Mozart"`, expectedOp: "99"},
+		{call: "filterVPNs", ident: "is.workflow.actions.filter.vpns", prop: "Is Connected", op: "equals", valExpr: `true`, expectedOp: "4"},
+		{call: "getApps", ident: "is.workflow.actions.filter.apps", needsMac: true, prop: "Is Running", op: "equals", valExpr: `true`, expectedOp: "4"},
+		{call: "filterDisplays", ident: "is.workflow.actions.filter.displays", needsMac: true, prop: "Is Main Display", op: "equals", valExpr: `true`, expectedOp: "4"},
+	}
+
+	for _, fa := range allFilterActions {
+		header := ""
+		if fa.needsMac {
+			header = "shortcut \"MacFilter\" {\n    mac: true\n}\n"
+		}
+		faSrc := fmt.Sprintf(`%slet items = "source_items"
+let out = %s(items, filter: { "compound": "and", "predicates": [ { "property": "%s", "operator": "%s", "value": %s } ] })
+show(out)
+`, header, fa.call, fa.prop, fa.op, fa.valExpr)
+		faPlist := r.compileSource("r08_"+fa.call, faSrc)
+		faDoc := loadRoundTripDocument(t, faPlist)
+		faParams := findActionParams(faDoc, fa.ident)
+		if faParams == nil {
+			t.Fatalf("R08 all-filters: %s (%s) missing from compiled plist", fa.call, fa.ident)
+		}
+		faFilt, ok := faParams["WFContentItemFilter"].(map[string]any)
+		if !ok || faFilt["WFSerializationType"] != "WFContentPredicateTableTemplate" {
+			t.Fatalf("R08 all-filters: %s missing WFContentPredicateTableTemplate: %v", fa.call, faParams["WFContentItemFilter"])
+		}
+		faTemplates := faFilt["Value"].(map[string]any)["WFActionParameterFilterTemplates"].([]any)
+		if len(faTemplates) != 1 {
+			t.Fatalf("R08 all-filters: %s expected 1 template, got %d", fa.call, len(faTemplates))
+		}
+		tmpl := faTemplates[0].(map[string]any)
+		if tmpl["Property"] != fa.prop || fmt.Sprint(tmpl["Operator"]) != fa.expectedOp {
+			t.Fatalf("R08 all-filters: %s template mismatch: %v", fa.call, tmpl)
+		}
+		faDecomp := r.decompileShortcut("r08_decomp_"+fa.call, faPlist)
+		faRecomp := r.compileSource("r08_recomp_"+fa.call, faDecomp)
+		faRecompDoc := loadRoundTripDocument(t, faRecomp)
+		assertActionsStructurallyEqual(t, faDoc, faRecompDoc, "WFContentItemInputParameter")
+	}
 }
 
 // R09: Filter operator parsing behaves deterministically and fails closed on invalid operators

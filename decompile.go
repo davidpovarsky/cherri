@@ -223,13 +223,13 @@ func mapDictionaryValueIdentifiers(items []WFDictionaryFieldValueItem) {
 
 		var valueKind = reflect.TypeOf(wfValue["Value"]).Kind()
 		if valueKind == reflect.Map {
-			var valueTwo = wfValue["Value"].(map[string]interface{})
-			if valueTwo != nil && valueTwo["Value"] != nil && reflect.TypeOf(valueTwo["Value"]).Kind() == reflect.Map {
-				var itemsValue = valueTwo["Value"].(map[string]interface{})
-
-				var dictionaryItems []WFDictionaryFieldValueItem
-				mapToStruct(itemsValue["WFDictionaryFieldValueItems"], &dictionaryItems)
+			if dictionaryItems, ok := serializedDictionaryItems(wfValue); ok {
 				mapDictionaryValueIdentifiers(dictionaryItems)
+			} else {
+				var valueTwo = wfValue["Value"].(map[string]interface{})
+				if dictionaryItems, ok2 := serializedDictionaryItems(valueTwo); ok2 {
+					mapDictionaryValueIdentifiers(dictionaryItems)
+				}
 			}
 		} else if valueKind == reflect.Slice {
 			var dictionaryItems = mapDictionaryItems(wfValue["Value"].([]interface{}))
@@ -635,11 +635,12 @@ func decompTextValue(action *ShortcutAction) {
 	}
 
 	decompilingText = true
-	currentVariableValue = decompValue(action.WFWorkflowActionParameters["WFTextActionText"])
+	rawText := action.WFWorkflowActionParameters["WFTextActionText"]
+	currentVariableValue = decompValue(rawText)
 	if currentVariableValue == "" {
 		currentVariableValue = "\"\""
-	} else {
-		currentVariableValue = fmt.Sprintf("\"%s\"", escapeString(strings.Trim(currentVariableValue, "\"")))
+	} else if _, isStr := rawText.(string); !isStr {
+		currentVariableValue = fmt.Sprintf("\"%s\"", strings.Trim(currentVariableValue, "\""))
 	}
 	checkConstantLiteral(action)
 	decompilingText = false
@@ -1047,8 +1048,13 @@ func decompDictionaryItem(item WFDictionaryFieldValueItem) any {
 		itemValue = decompArray(itemValueMap["Value"].([]interface{}))
 	case itemTypeDict:
 		var dictionaryItems []WFDictionaryFieldValueItem
-		var value = itemValueMap["Value"].(map[string]interface{})
-		mapToStruct(value["Value"].(map[string]interface{})["WFDictionaryFieldValueItems"], &dictionaryItems)
+		if items, ok := serializedDictionaryItems(itemValueMap); ok {
+			dictionaryItems = items
+		} else if value, ok2 := itemValueMap["Value"].(map[string]interface{}); ok2 {
+			if inner, ok3 := value["Value"].(map[string]interface{}); ok3 {
+				mapToStruct(inner["WFDictionaryFieldValueItems"], &dictionaryItems)
+			}
+		}
 		itemValue = decompDictionaryItems(dictionaryItems)
 	default:
 		itemValue = itemStringValue
@@ -1125,11 +1131,14 @@ func decompValueObject(value map[string]interface{}) string {
 			var variableName = value["VariableName"].(string)
 			sanitizeIdentifier(&variableName)
 
-			return fmt.Sprintf("@%s", variableName)
+			if value["Aggrandizements"] == nil {
+				return fmt.Sprintf("@%s", variableName)
+			}
+		} else if value["Variable"] != nil {
+			var variableValue = value["Variable"].(map[string]interface{})
+			return decompValue(variableValue["Value"])
 		}
-
-		var variableValue = value["Variable"].(map[string]interface{})
-		return decompValue(variableValue["Value"])
+		break
 	case "ActionOutput":
 		if _, found := value["OutputUUID"]; found {
 			var outputName = uuids[value["OutputUUID"].(string)]
@@ -1384,8 +1393,8 @@ func decompAggrandizements(reference *string, aggrs []Aggrandizement) {
 	for _, aggr := range aggrs {
 		switch aggr.Type {
 		case "WFCoercionVariableAggrandizement":
-			if _, found := revContentItems[aggr.CoercionItemClass]; found {
-				coerce = revContentItems[coerce]
+			if c, found := revContentItems[aggr.CoercionItemClass]; found {
+				coerce = c
 			}
 		case "WFDictionaryValueVariableAggrandizement":
 			index = aggr.DictionaryKey
@@ -1397,7 +1406,7 @@ func decompAggrandizements(reference *string, aggrs []Aggrandizement) {
 	if index != "" {
 		*reference = fmt.Sprintf("%s['%s']", *reference, index)
 	}
-	if index != "" && coerce != "" {
+	if coerce != "" {
 		*reference = fmt.Sprintf("%s.%s", *reference, coerce)
 	}
 }

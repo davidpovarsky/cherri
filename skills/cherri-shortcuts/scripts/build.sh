@@ -44,12 +44,45 @@ mkdir -p "$(dirname -- "$OUTPUT_ABS")"
 rm -f "$OUTPUT_ABS"
 
 if [ "$MODE" = signed ]; then
-  # Signed output honors --output because the signing service writes to
-  # Cherri's outputPath. Cherri cleans up the intermediary unsigned file.
-  "$CHERRI_BIN_RESOLVED" "$SOURCE_ABS" --output="$OUTPUT_ABS" --hubsign --share="$SHARE" --no-ansi
-  [ -s "$OUTPUT_ABS" ] || { echo "Compiler did not create: $OUTPUT_ABS" >&2; exit 1; }
+  # Step 1: Preflight unsigned plist compilation with the verified Cherri binary
+  # so we confirm the source compiles cleanly to a valid XML/binary plist with
+  # the exact pinned compiler before invoking the signing path.
+  PREFLIGHT_PLIST="${TMPDIR:-/tmp}/cherri-preflight-$$.shortcut"
+  rm -f "$PREFLIGHT_PLIST"
+  "$CHERRI_BIN_RESOLVED" "$SOURCE_ABS" --output="$PREFLIGHT_PLIST" --skip-sign --no-ansi
+  if [ ! -s "$PREFLIGHT_PLIST" ]; then
+    rm -f "$PREFLIGHT_PLIST"
+    echo "Unsigned preflight compilation failed to produce plist: $SOURCE_ABS" >&2
+    exit 1
+  fi
+  if ! grep -q "WFWorkflowActions" "$PREFLIGHT_PLIST" 2>/dev/null; then
+    rm -f "$PREFLIGHT_PLIST"
+    echo "Unsigned preflight output is not a valid Shortcut plist: $SOURCE_ABS" >&2
+    exit 1
+  fi
+  rm -f "$PREFLIGHT_PLIST"
+
+  # Step 2: Signed compilation using the exact same verified compiler binary.
+  SIGN_FLAGS="--hubsign"
+  if [ -n "${CHERRI_SIGNING_SERVER:-}" ]; then
+    SIGN_FLAGS="--signing-server=$CHERRI_SIGNING_SERVER"
+  fi
+  if ! "$CHERRI_BIN_RESOLVED" "$SOURCE_ABS" --output="$OUTPUT_ABS" $SIGN_FLAGS --share="$SHARE" --no-ansi; then
+    rm -f "$OUTPUT_ABS"
+    echo "Signed compilation failed for: $SOURCE_ABS" >&2
+    exit 1
+  fi
+  if [ ! -s "$OUTPUT_ABS" ]; then
+    rm -f "$OUTPUT_ABS"
+    echo "Compiler did not create signed Shortcut: $OUTPUT_ABS" >&2
+    exit 1
+  fi
   HEADER=$(dd if="$OUTPUT_ABS" bs=1 count=4 2>/dev/null || true)
-  [ "$HEADER" = "AEA1" ] || { echo "Signing result is not an AEA1 Shortcut: $OUTPUT_ABS" >&2; exit 1; }
+  if [ "$HEADER" != "AEA1" ]; then
+    rm -f "$OUTPUT_ABS"
+    echo "Signing result is not an AEA1 Shortcut (got header '$HEADER'): $OUTPUT_ABS" >&2
+    exit 1
+  fi
 else
   # Cherri deliberately writes skip-sign output beside the source as
   # <workflowName>_unsigned.shortcut; --output only applies to the signed

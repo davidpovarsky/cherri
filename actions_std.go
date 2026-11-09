@@ -736,14 +736,14 @@ var actions = map[string]*actionDefinition{
 				params["Mode"] = "Remove"
 				delete(params, "ValueLabel")
 				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil && args[2].valueType != Nil {
-					params["RemoveSpecifiedValue"] = getArgValue(args[2])
+					params["RemoveSpecifiedValue"] = setterArgValue(args[2])
 				}
 				return params
 			}
 
 			var val any
 			if len(args) >= 3 {
-				val = getArgValue(args[2])
+				val = setterArgValue(args[2])
 			}
 			switch detail {
 			case "Start Date":
@@ -770,6 +770,42 @@ var actions = map[string]*actionDefinition{
 				params["WFCalendarEventContentItemAttachments"] = val
 			}
 			return params
+		},
+		decomp: func(action *ShortcutAction) (arguments []string) {
+			params := action.WFWorkflowActionParameters
+			arguments = append(arguments, decompValue(params["WFInput"]))
+			detail, _ := params["WFContentItemPropertyName"].(string)
+			arguments = append(arguments, fmt.Sprintf("%q", detail))
+			mode, _ := params["Mode"].(string)
+			if strings.EqualFold(mode, "Remove") {
+				if remVal, ok := params["RemoveSpecifiedValue"]; ok && remVal != nil {
+					arguments = append(arguments, decompValue(remVal))
+				}
+				arguments = append(arguments, `"Remove"`)
+				return
+			}
+			keyMap := map[string]string{
+				"Start Date":  "WFCalendarEventContentItemStartDate",
+				"End Date":    "WFCalendarEventContentItemEndDate",
+				"Is All Day":  "WFCalendarEventContentItemIsAllDay",
+				"Location":    "WFCalendarEventContentItemLocation",
+				"Duration":    "WFCalendarEventContentItemDuration",
+				"My Status":   "WFCalendarEventContentItemMyStatus",
+				"Attendees":   "WFCalendarEventContentItemAttendees",
+				"URL":         "WFCalendarEventContentItemURL",
+				"Title":       "WFCalendarEventContentItemTitle",
+				"Notes":       "WFCalendarEventContentItemNotes",
+				"Attachments": "WFCalendarEventContentItemAttachments",
+			}
+			if valKey, ok := keyMap[detail]; ok {
+				if val, exists := params[valKey]; exists && val != nil {
+					arguments = append(arguments, decompValue(val))
+				}
+			}
+			if mode != "" {
+				arguments = append(arguments, fmt.Sprintf("%q", mode))
+			}
+			return
 		},
 		emittedKeys: []string{
 			"Mode",
@@ -860,14 +896,14 @@ var actions = map[string]*actionDefinition{
 				params["Mode"] = "Remove"
 				delete(params, "ValueLabel")
 				if len(args) >= 3 && !strings.EqualFold(fmt.Sprint(getArgValue(args[2])), "Remove") && args[2].value != nil && args[2].valueType != Nil {
-					params["RemoveSpecifiedValue"] = getArgValue(args[2])
+					params["RemoveSpecifiedValue"] = setterArgValue(args[2])
 				}
 				return params
 			}
 
 			var val any
 			if len(args) >= 3 {
-				val = getArgValue(args[2])
+				val = setterArgValue(args[2])
 			}
 			switch detail {
 			case "Title":
@@ -898,6 +934,44 @@ var actions = map[string]*actionDefinition{
 				params["WFReminderContentItemSubtasks"] = val
 			}
 			return params
+		},
+		decomp: func(action *ShortcutAction) (arguments []string) {
+			params := action.WFWorkflowActionParameters
+			arguments = append(arguments, decompValue(params["WFInput"]))
+			detail, _ := params["WFContentItemPropertyName"].(string)
+			arguments = append(arguments, fmt.Sprintf("%q", detail))
+			mode, _ := params["Mode"].(string)
+			if strings.EqualFold(mode, "Remove") {
+				if remVal, ok := params["RemoveSpecifiedValue"]; ok && remVal != nil {
+					arguments = append(arguments, decompValue(remVal))
+				}
+				arguments = append(arguments, `"Remove"`)
+				return
+			}
+			keyMap := map[string]string{
+				"Title":           "WFReminderContentItemTitle",
+				"List":            "WFReminderContentItemList",
+				"Due Date":        "WFReminderContentItemDueDate",
+				"Priority":        "WFReminderContentItemPriority",
+				"Is Completed":    "WFReminderContentItemIsCompleted",
+				"Notes":           "WFReminderContentItemNotes",
+				"URL":             "WFReminderContentItemURL",
+				"Is Flagged":      "WFReminderContentItemIsFlagged",
+				"Images":          "WFReminderContentItemImages",
+				"Parent Reminder": "WFReminderContentItemParentReminder",
+				"Tags":            "WFReminderContentItemTags",
+				"When Messaging":  "WFReminderContentItemWhenMessagingPerson",
+				"Subtasks":        "WFReminderContentItemSubtasks",
+			}
+			if valKey, ok := keyMap[detail]; ok {
+				if val, exists := params[valKey]; exists && val != nil {
+					arguments = append(arguments, decompValue(val))
+				}
+			}
+			if mode != "" {
+				arguments = append(arguments, fmt.Sprintf("%q", mode))
+			}
+			return
 		},
 		emittedKeys: []string{
 			"Mode",
@@ -3256,4 +3330,14 @@ func formatFilterValues(val any) map[string]any {
 		return map[string]any{"String": fmt.Sprint(v)}
 	}
 }
+
+func setterArgValue(arg actionArgument) any {
+	if arg.valueType == Variable {
+		if vv, ok := arg.value.(varValue); ok {
+			return variableValue(vv)
+		}
+	}
+	return getArgValue(arg)
+}
+
 

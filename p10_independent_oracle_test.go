@@ -346,8 +346,98 @@ func TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison(t *testing.T) 
 		}
 	})
 
-	// 2. Behavioral Oracle: runworkflow with dictionary payload (shared runSelf(@payload) + fork run("Target", payload))
+	// 2. Behavioral Oracle: runworkflow with dictionary payload (direct upstream `run` via `#include 'actions/shortcuts'` + shared `runSelf(@payload)` + fork V2 `run("Target", input: payload)`)
 	t.Run("runworkflow-dictionary-payload-plist-equality", func(t *testing.T) {
+		// 2a. Direct 3-way behavioral oracle on `run("Target", payload)` across fixed target, dynamic target, text payload, dictionary payload, nested dictionary payload, and output capture!
+		// In upstream bcc0095, `run` is defined in `actions/shortcuts.cherri` as:
+		// `action 'runworkflow' run(text shortcutName: 'WFWorkflowName', variable input: 'WFInput')`
+		directRunLegacySrc := `#include 'actions/shortcuts'
+@targetName = "DynamicServer"
+@textPayload = "hello-server"
+@dictPayload = {"model": "gpt-4", "count": 2, "nested": {"env": "prod", "active": true}}
+@out1 = run("FixedServer", @textPayload)
+@out2 = run("FixedServer", @dictPayload)
+@out3 = run(@targetName, @dictPayload)
+`
+		directRunV2Src := `let targetName = "DynamicServer"
+let textPayload = "hello-server"
+let dictPayload = {"model": "gpt-4", "count": 2, "nested": {"env": "prod", "active": true}}
+let out1 = run("FixedServer", input: textPayload)
+let out2 = run("FixedServer", input: dictPayload)
+let out3 = run(targetName, input: dictPayload)
+`
+		upDirectRunPlist := compileWithBinary(t, upstreamBin, workDir, "up_direct_run", directRunLegacySrc)
+		forkLegacyDirectRunPlist := compileWithBinary(t, forkBin, workDir, "fork_legacy_direct_run", directRunLegacySrc, "--legacy")
+		forkV2DirectRunPlist := compileWithBinary(t, forkBin, workDir, "fork_v2_direct_run", directRunV2Src)
+
+		upDirectDoc := loadRoundTripDocument(t, upDirectRunPlist)
+		forkLegacyDirectDoc := loadRoundTripDocument(t, forkLegacyDirectRunPlist)
+		forkV2DirectDoc := loadRoundTripDocument(t, forkV2DirectRunPlist)
+
+		// Compare Upstream bcc0095 vs Fork Legacy on `run(...)`: every action and parameter must match
+		// except our fork's intentional addition of `WFWorkflow` descriptor dictionary alongside `WFWorkflowName`.
+		assertOracleDocsEqual(t, upDirectDoc, forkLegacyDirectDoc, "WFWorkflow")
+
+		// Verify all 3 `runworkflow` actions in Fork Legacy and Fork V2 have both `WFWorkflowName`, `WFInput`, and `WFWorkflow` descriptor
+		collectRunActions := func(doc map[string]any, label string) []map[string]any {
+			var runs []map[string]any
+			for _, a := range doc["WFWorkflowActions"].([]any) {
+				m := a.(map[string]any)
+				if m["WFWorkflowActionIdentifier"] == "is.workflow.actions.runworkflow" {
+					runs = append(runs, m)
+				}
+			}
+			if len(runs) != 3 {
+				t.Fatalf("%s: expected 3 runworkflow actions, got %d", label, len(runs))
+			}
+			return runs
+		}
+		upRuns := collectRunActions(upDirectDoc, "upstream-direct-run")
+		legRuns := collectRunActions(forkLegacyDirectDoc, "fork-legacy-direct-run")
+		v2Runs := collectRunActions(forkV2DirectDoc, "fork-v2-direct-run")
+
+		for i := 0; i < 3; i++ {
+			upP := upRuns[i]["WFWorkflowActionParameters"].(map[string]any)
+			legP := legRuns[i]["WFWorkflowActionParameters"].(map[string]any)
+			v2P := v2Runs[i]["WFWorkflowActionParameters"].(map[string]any)
+
+			// Verify WFInput presence and serialization parity across all 3 compilers
+			upIn, ok1 := upP["WFInput"].(map[string]any)
+			legIn, ok2 := legP["WFInput"].(map[string]any)
+			v2In, ok3 := v2P["WFInput"].(map[string]any)
+			if !ok1 || !ok2 || !ok3 {
+				t.Fatalf("run[%d]: missing WFInput in upstream(%v), legacy(%v), or v2(%v)", i, ok1, ok2, ok3)
+			}
+			if upIn["WFSerializationType"] != "WFTextTokenAttachment" || legIn["WFSerializationType"] != "WFTextTokenAttachment" || v2In["WFSerializationType"] != "WFTextTokenAttachment" {
+				t.Errorf("run[%d]: expected WFInput.WFSerializationType == WFTextTokenAttachment across all 3 compilers", i)
+			}
+
+			// Verify Fork Legacy & V2 emit WFWorkflow descriptor with isSelf=false and workflowName matching WFWorkflowName
+			for modeLabel, p := range map[string]map[string]any{"legacy": legP, "v2": v2P} {
+				wfDesc, ok := p["WFWorkflow"].(map[string]any)
+				if !ok {
+					t.Fatalf("run[%d] (%s): missing WFWorkflow descriptor map", i, modeLabel)
+				}
+				if wfDesc["isSelf"] != false {
+					t.Errorf("run[%d] (%s): expected WFWorkflow.isSelf == false, got %v", i, modeLabel, wfDesc["isSelf"])
+				}
+				nameJSON, _ := json.Marshal(normalizeOracleValue(p["WFWorkflowName"]))
+				descNameJSON, _ := json.Marshal(normalizeOracleValue(wfDesc["workflowName"]))
+				if string(nameJSON) != string(descNameJSON) {
+					t.Errorf("run[%d] (%s): WFWorkflowName (%s) != WFWorkflow.workflowName (%s)", i, modeLabel, nameJSON, descNameJSON)
+				}
+				if v2P["UUID"] == nil {
+					t.Errorf("run[%d] (v2): expected output UUID on captured run() call", i)
+				}
+			}
+		}
+
+		// Also verify optional input in Fork Legacy & V2 (`run("NoInputTarget")`)
+		noInLegPlist := compileWithBinary(t, forkBin, workDir, "fork_leg_run_noin", `run("NoInputTarget")`+"\n", "--legacy")
+		noInV2Plist := compileWithBinary(t, forkBin, workDir, "fork_v2_run_noin", `run("NoInputTarget")`+"\n")
+		assertOracleDocsEqual(t, loadRoundTripDocument(t, noInLegPlist), loadRoundTripDocument(t, noInV2Plist), "WFWorkflow")
+
+		// 2b. Shared `runSelf(@payload)` comparison (documented separately from `run("Target", payload)` since `runSelf` sets `isSelf: true`)
 		sharedSrc := `@payload = {"model": "gpt-4", "count": 2}
 runSelf(@payload)
 `
@@ -491,6 +581,34 @@ if matches == [] {
 		}
 		if !strings.Contains(forkV2Out, "Invalid type 'array' for conditional '=='") {
 			t.Fatalf("unexpected fork (v2) error output: %s", forkV2Out)
+		}
+	})
+
+	// 6. Behavioral Oracle: Negative fail-closed tests for invalid enums, missing required parameters, and macOnly guards
+	t.Run("negative-fail-closed-enums-missing-args-and-platform-guards", func(t *testing.T) {
+		// 6a. Invalid enum value in statistic
+		badEnumLeg := "#include 'actions/math'\n@nums = [1, 2]\nstatistic('NotAnOperation', @nums)\n"
+		if _, err := compileWithBinaryExpectError(t, upstreamBin, workDir, "up_bad_enum", badEnumLeg); err == nil {
+			t.Fatalf("expected upstream binary to reject invalid statistic enum")
+		}
+		if _, err := compileWithBinaryExpectError(t, forkBin, workDir, "fork_leg_bad_enum", badEnumLeg, "--legacy"); err == nil {
+			t.Fatalf("expected fork --legacy binary to reject invalid statistic enum")
+		}
+		badEnumV2 := "let nums = [1, 2]\nstatistic(\"NotAnOperation\", input: nums)\n"
+		if out, err := compileWithBinaryExpectError(t, forkBin, workDir, "fork_v2_bad_enum", badEnumV2); err == nil || !strings.Contains(out, "invalid enum value") {
+			t.Fatalf("expected fork v2 binary to reject invalid statistic enum with 'invalid enum value', got err=%v, out=%s", err, out)
+		}
+
+		// 6b. Missing required parameter
+		missingArgV2 := "getValue({\"a\": 1})\n"
+		if out, err := compileWithBinaryExpectError(t, forkBin, workDir, "fork_v2_missing_arg", missingArgV2); err == nil || !strings.Contains(out, "missing required argument") {
+			t.Fatalf("expected fork v2 binary to reject missing required argument, got err=%v, out=%s", err, out)
+		}
+
+		// 6c. macOnly guard when targeting non-Mac (iOS/iPadOS)
+		macOnlyLeg := "#define mac false\n#include 'actions/mac'\nsleep()\n"
+		if out, err := compileWithBinaryExpectError(t, forkBin, workDir, "fork_leg_maconly", macOnlyLeg, "--legacy"); err == nil {
+			t.Fatalf("expected fork --legacy binary to reject macOnly action when mac=false, got success: %s", out)
 		}
 	})
 }
@@ -646,7 +764,7 @@ func TestP10_IsolatedCompilerMutationGate(t *testing.T) {
 		"var checkInlineVarRegex = regexp.MustCompile(`\\{(@?[a-zA-Z_][a-zA-Z0-9_]*)(?:\\['(.*?)'])?(?:\\.(.*?))?}`)",
 		"var checkInlineVarRegex = regexp.MustCompile(`\\{(.*?)(?:\\['(.*?)'])?(?:\\.(.*?))?}`)",
 		"^TestP10_JSONBracesInStringNotParsedAsInlineVars$",
-		"FAIL",
+		"Undefined inline reference",
 	)
 
 	// 3b. Real Compiler Mutation 3b: Revert `collectInlineVarRegex` and `replaceVarRegex` in shortcutgen.go

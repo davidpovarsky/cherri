@@ -25,13 +25,14 @@ import (
 
 // BindingRef represents how a variable is stored and referenced in Shortcuts.
 type BindingRef struct {
-	IsVariable      bool   // true = setvariable/getvariable, false = direct action output token
-	TokenType       string // attachment token type (ActionOutput, DeviceDetails, ExtensionInput, etc.)
-	OutputUUID      string // for action output
-	OutputName      string
-	VariableName    string // for setvariable
-	Aggrandizements []map[string]interface{}
-	Type            types.Type
+	IsVariable        bool   // true = setvariable/getvariable, false = direct action output token
+	TokenType         string // attachment token type (ActionOutput, DeviceDetails, ExtensionInput, etc.)
+	OutputUUID        string // for action output
+	OutputName        string
+	VariableName      string // for setvariable
+	Aggrandizements   []map[string]interface{}
+	Type              types.Type
+	PolymorphicLookup bool
 }
 
 var contentItemClasses = map[string]string{
@@ -1768,6 +1769,9 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	}
 	if ref, ok := l.bindings[b.Name]; ok {
 		ref.Type = varType
+		if l.isPolymorphicContainerLookupExpr(b.Value) {
+			ref.PolymorphicLookup = true
+		}
 		l.bindings[b.Name] = ref
 	}
 
@@ -1813,8 +1817,11 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 				newType = types.NewList(types.Unknown)
 			}
 		}
-		if newType != nil && isBound {
-			binding.Type = newType
+		if isBound {
+			if newType != nil {
+				binding.Type = newType
+			}
+			binding.PolymorphicLookup = l.isPolymorphicContainerLookupExpr(a.Value)
 			l.bindings[a.Name] = binding
 		}
 	}
@@ -2146,6 +2153,109 @@ func flattenCompoundCondition(expr syntax.Expression, op syntax.TokenType) []syn
 	return []syntax.Expression{expr}
 }
 
+func (l *Lowerer) isPolymorphicContainerLookupExpr(expr syntax.Expression) bool {
+	if expr == nil {
+		return false
+	}
+	switch e := expr.(type) {
+	case *syntax.CallExpr:
+		if id, ok := e.Callee.(*syntax.IdentExpr); ok {
+			switch id.Name {
+			case "getValue", "getFirstItem", "getLastItem", "getListItem", "getRandomItem", "base64Decode", "downloadURL", "getStoredValue":
+				return true
+			}
+		}
+	case *syntax.IndexExpr:
+		return true
+	case *syntax.MemberExpr:
+		if _, isCoercion := contentItemClasses[strings.ToLower(e.Property)]; isCoercion {
+			return false
+		}
+		return true
+	case *syntax.IdentExpr:
+		if ref, ok := l.bindings[e.Name]; ok {
+			if ref.PolymorphicLookup {
+				return true
+			}
+			if len(ref.Aggrandizements) > 0 {
+				for _, ag := range ref.Aggrandizements {
+					if ag["Type"] == "WFDictionaryValueVariableAggrandizement" {
+						return true
+					}
+				}
+			}
+			if ref.OutputUUID != "" {
+				for _, act := range l.workflow.Actions {
+					if act.NodeID == ref.OutputUUID || act.OutputUUID == ref.OutputUUID {
+						switch act.AppleIdentifier {
+						case "is.workflow.actions.getvalueforkey", "is.workflow.actions.getitemfromlist", "is.workflow.actions.base64encode", "is.workflow.actions.downloadurl", "com.Scripting.Lumen.GetStoredValueIntent":
+							return true
+						}
+					}
+				}
+			}
+			for idx, act := range l.workflow.Actions {
+				if act.AppleIdentifier == "is.workflow.actions.setvariable" && act.Parameters["WFVariableName"] == e.Name && idx > 0 {
+					switch l.workflow.Actions[idx-1].AppleIdentifier {
+					case "is.workflow.actions.getvalueforkey", "is.workflow.actions.getitemfromlist", "is.workflow.actions.base64encode", "is.workflow.actions.downloadurl", "com.Scripting.Lumen.GetStoredValueIntent":
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+// ensureConditionalInputCoercion ensures that when a conditional comparison's LHS is an
+// untyped/polymorphic lookup (such as getValue(dict, "key") or dict["key"]), the attachment
+// carries an explicit WFCoercionVariableAggrandizement matching the comparison operand type
+// (e.g., WFStringContentItem for string equality) so Apple Shortcuts' iPadOS UI and runtime
+// do not default WFCondition=4/5 to a numeric comparison.
+func (l *Lowerer) ensureConditionalInputCoercion(expr syntax.Expression, inputTok *ir.AttachmentToken, opType backend.ConditionOperandType) *ir.AttachmentToken {
+	if inputTok == nil {
+		return nil
+	}
+	for _, ag := range inputTok.Aggrandizements {
+		if ag["Type"] == "WFCoercionVariableAggrandizement" {
+			return inputTok
+		}
+	}
+	hasDictAggr := false
+	for _, ag := range inputTok.Aggrandizements {
+		if ag["Type"] == "WFDictionaryValueVariableAggrandizement" {
+			hasDictAggr = true
+			break
+		}
+	}
+	if !hasDictAggr && !l.isPolymorphicContainerLookupExpr(expr) {
+		return inputTok
+	}
+	var itemClass string
+	switch opType {
+	case backend.OperandString:
+		itemClass = "WFStringContentItem"
+	case backend.OperandNumber:
+		itemClass = "WFNumberContentItem"
+	case backend.OperandDate:
+		itemClass = "WFDateContentItem"
+	default:
+		return inputTok
+	}
+	cloned := &ir.AttachmentToken{
+		Type:            inputTok.Type,
+		OutputUUID:      inputTok.OutputUUID,
+		OutputName:      inputTok.OutputName,
+		Aggrandizements: make([]map[string]interface{}, len(inputTok.Aggrandizements), len(inputTok.Aggrandizements)+1),
+	}
+	copy(cloned.Aggrandizements, inputTok.Aggrandizements)
+	cloned.Aggrandizements = append(cloned.Aggrandizements, map[string]interface{}{
+		"Type":              "WFCoercionVariableAggrandizement",
+		"CoercionItemClass": itemClass,
+	})
+	return cloned
+}
+
 func (l *Lowerer) lowerConditionClause(expr syntax.Expression) (map[string]any, error) {
 	if binExpr, ok := expr.(*syntax.BinaryExpr); ok {
 		var code int
@@ -2191,6 +2301,15 @@ func (l *Lowerer) lowerConditionClause(expr syntax.Expression) (map[string]any, 
 		}
 
 		inputTok := l.materializeToAttachment(leftVal)
+		isDate := l.isDateExpr(binExpr.Left) || l.isDateExpr(binExpr.Right)
+		isNum := !isDate && (l.isNumberExpr(binExpr.Left) || l.isNumberExpr(binExpr.Right))
+		clauseOpType := backend.OperandString
+		if isDate {
+			clauseOpType = backend.OperandDate
+		} else if isNum {
+			clauseOpType = backend.OperandNumber
+		}
+		inputTok = l.ensureConditionalInputCoercion(binExpr.Left, inputTok, clauseOpType)
 		tmpl := map[string]any{
 			"WFCondition": code,
 			"WFInput": map[string]any{
@@ -2199,7 +2318,6 @@ func (l *Lowerer) lowerConditionClause(expr syntax.Expression) (map[string]any, 
 			},
 		}
 
-		isDate := l.isDateExpr(binExpr.Left) || l.isDateExpr(binExpr.Right)
 		if isDate {
 			if m, ok := rightVal.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
 				tmpl["WFDuration"] = rightVal
@@ -2226,7 +2344,7 @@ func (l *Lowerer) lowerConditionClause(expr syntax.Expression) (map[string]any, 
 			case string:
 				tmpl["WFConditionalActionString"] = v
 			case *ir.AttachmentToken:
-				if l.isNumberExpr(binExpr.Left) || l.isNumberExpr(binExpr.Right) {
+				if isNum {
 					tmpl["WFNumberValue"] = v
 				} else {
 					tmpl["WFConditionalActionString"] = map[string]any{
@@ -2238,6 +2356,12 @@ func (l *Lowerer) lowerConditionClause(expr syntax.Expression) (map[string]any, 
 						},
 						"WFSerializationType": "WFTextTokenString",
 					}
+				}
+			case map[string]interface{}:
+				if v["WFSerializationType"] == "WFTextTokenString" {
+					tmpl["WFConditionalActionString"] = v
+				} else {
+					tmpl["WFNumberValue"] = v
 				}
 			default:
 				tmpl["WFNumberValue"] = v
@@ -2375,7 +2499,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 				return nil, err
 			}
 
-			input = l.materializeToAttachment(leftVal)
+			inputTok := l.materializeToAttachment(leftVal)
 			condCode = code
 			compareVal = rightVal
 
@@ -2395,6 +2519,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			} else {
 				opType = backend.OperandString
 			}
+			input = l.ensureConditionalInputCoercion(binExpr.Left, inputTok, opType)
 		} else {
 			condVal, err := l.lowerExpression(stmt.Condition)
 			if err != nil {
@@ -2482,7 +2607,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 				if err != nil {
 					return nil, err
 				}
-				input = l.materializeToAttachment(leftVal)
+				inputTok := l.materializeToAttachment(leftVal)
 				condCode = code
 				compareVal = rightVal
 				if l.isDateExpr(binExpr.Left) || l.isDateExpr(binExpr.Right) {
@@ -2492,6 +2617,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 				} else {
 					opType = backend.OperandString
 				}
+				input = l.ensureConditionalInputCoercion(binExpr.Left, inputTok, opType)
 			} else {
 				operandVal, err := l.lowerExpression(unaryExpr.Operand)
 				if err != nil {
@@ -3282,10 +3408,34 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 					"CoercionItemClass": itemClass,
 				})
 			} else {
-				newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
-					"Type":         "WFPropertyVariableAggrandizement",
-					"PropertyName": e.Property,
-				})
+				isDictTarget := false
+				if l.exprTypes != nil {
+					if targetType, hasType := l.exprTypes[e.Target]; hasType && targetType != nil {
+						if targetType.Kind() == types.KindMap || targetType.Kind() == types.KindRecord {
+							isDictTarget = true
+						}
+					}
+				}
+				if !isDictTarget {
+					if targetIdent, ok := e.Target.(*syntax.IdentExpr); ok {
+						if ref, hasRef := l.bindings[targetIdent.Name]; hasRef && ref.Type != nil {
+							if ref.Type.Kind() == types.KindMap || ref.Type.Kind() == types.KindRecord {
+								isDictTarget = true
+							}
+						}
+					}
+				}
+				if isDictTarget && tok.Type != "DeviceDetails" {
+					newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+						"Type":          "WFDictionaryValueVariableAggrandizement",
+						"DictionaryKey": e.Property,
+					})
+				} else {
+					newTok.Aggrandizements = append(newTok.Aggrandizements, map[string]interface{}{
+						"Type":         "WFPropertyVariableAggrandizement",
+						"PropertyName": e.Property,
+					})
+				}
 			}
 			return newTok, nil
 		}
@@ -3452,9 +3602,36 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		}
 
 		if isComp {
+			if (e.Op == syntax.TokenEqual || e.Op == syntax.TokenNotEqual) &&
+				(l.isArrayExpr(e.Left) || l.isArrayExpr(e.Right)) {
+				opStr := "=="
+				if e.Op == syntax.TokenNotEqual {
+					opStr = "!="
+				}
+				return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
+			}
 			groupUUID := l.GenerateUUID()
 			uuid := l.GenerateUUID()
-			l.emitIfStart(groupUUID, left, condCode, right, false)
+			inputTok := l.materializeToAttachment(left)
+			var opType backend.ConditionOperandType
+			if l.isDateExpr(e.Left) || l.isDateExpr(e.Right) {
+				if m, ok := right.(map[string]interface{}); ok && m["WFSerializationType"] == "WFQuantityFieldValue" {
+					opType = backend.OperandQuantity
+					if condCode == 2 {
+						condCode = 1000
+					} else if condCode == 0 {
+						condCode = 1001
+					}
+				} else {
+					opType = backend.OperandDate
+				}
+			} else if l.isNumberExpr(e.Left) || l.isNumberExpr(e.Right) {
+				opType = backend.OperandNumber
+			} else {
+				opType = backend.OperandString
+			}
+			inputTok = l.ensureConditionalInputCoercion(e.Left, inputTok, opType)
+			l.emitIfStartTyped(groupUUID, inputTok, condCode, right, nil, opType, false)
 
 			// Then branch: 1.0 (true)
 			tNode := &ir.NativeActionNode{

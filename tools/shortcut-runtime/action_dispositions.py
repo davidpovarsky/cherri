@@ -85,6 +85,12 @@ SPECIAL_EVIDENCE_KEYS = {
         "codePath": "WorkflowKit runtime runner / com.apple.Photos LinkActionProvider",
         "rationale": "In macOS 26, is.workflow.actions.deletephotos was a WorkflowKit built-in with ShowWhenRun execution prompt. In macOS 27, photo deletion migrated to LinkActionProvider com.apple.Photos.DeleteAssetsAction with entities. Reconciled across OS versions as an implicit execution toggle.",
         "evidenceRef": "macOS 26 / macOS 27 historical migration evidence"
+    },
+    ("is.workflow.actions.statistics", "Input"): {
+        "disposition": "EXPOSED_PARAMETER",
+        "codePath": "actions/math.cherri:statistic (WFInput)",
+        "rationale": "WorkflowKit parameter table names the input slot 'Input' while serialized Shortcut plists and upstream Cherri bcc0095 emit wire key 'WFInput'",
+        "evidenceRef": "Upstream electrikmilk/cherri bcc0095 actions/math.cherri:statistic"
     }
 }
 

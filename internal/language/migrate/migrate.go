@@ -477,6 +477,7 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 
 		var sb strings.Builder
 		inStr := false
+		escaped := false
 		inComment := false
 		runes := []rune(line)
 		for i := 0; i < len(runes); i++ {
@@ -484,12 +485,23 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 				inComment = true
 			}
 			r := runes[i]
-			if r == '"' && (i == 0 || runes[i-1] != '\\') {
-				inStr = !inStr
+			if inStr {
+				sb.WriteRune(r)
+				if escaped {
+					escaped = false
+				} else if r == '\\' {
+					escaped = true
+				} else if r == '"' {
+					inStr = false
+				}
+				continue
+			}
+			if r == '"' && !inComment {
+				inStr = true
 				sb.WriteRune(r)
 				continue
 			}
-			if !inStr && !inComment && r == '@' {
+			if !inComment && r == '@' {
 				continue
 			}
 			sb.WriteRune(r)
@@ -757,7 +769,11 @@ func labelCallArguments(line string, reg *schema.Registry) string {
 		}
 
 		if i > 0 && !isLabeled && i < len(actionSchema.Parameters) && actionSchema.Parameters[i].Label != "" && !strings.HasPrefix(trimmed, "{") {
-			param := actionSchema.Parameters[i]
+			paramIdx := i
+			if (callee == "editReminder" || callee == "editEvent") && len(rawArgs) == 3 && (trimmed == `"Remove"` || trimmed == `"Set"`) {
+				paramIdx = 3
+			}
+			param := actionSchema.Parameters[paramIdx]
 			newArgs = append(newArgs, param.Label+": "+trimmed)
 		} else {
 			newArgs = append(newArgs, trimmed)
@@ -772,13 +788,18 @@ func splitCallArgs(s string) []string {
 	var current strings.Builder
 	inQuote := false
 	quoteChar := byte(0)
+	escaped := false
 	depth := 0
 
 	for i := 0; i < len(s); i++ {
 		ch := s[i]
 		if inQuote {
 			current.WriteByte(ch)
-			if ch == quoteChar && (i == 0 || s[i-1] != '\\') {
+			if escaped {
+				escaped = false
+			} else if ch == '\\' {
+				escaped = true
+			} else if ch == quoteChar {
 				inQuote = false
 			}
 			continue

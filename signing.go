@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -61,13 +62,21 @@ func SignShortcut(inPath, outPath, mode string) error {
 				}
 				return nil
 			}
+			_ = os.Remove(outPath)
+			return fmt.Errorf("macOS shortcuts sign did not produce a valid AEA1 signed Shortcut at %s", outPath)
 		}
 
 		signFailed = true
+		_ = os.Remove(outPath)
 		if args.Using("debug") {
 			fmt.Print(ansi("Failed!\n", red))
 		}
-		fmt.Printf("%s\n%s\n", ansi("Failed to sign Shortcut using macOS :(", orange, bold), ansi(stdErr.String(), orange))
+		errMsg := strings.TrimSpace(stdErr.String())
+		if errMsg == "" {
+			errMsg = signErr.Error()
+		}
+		fmt.Printf("%s\n%s\n", ansi("Failed to sign Shortcut using macOS :(", orange, bold), ansi(errMsg, orange))
+		return fmt.Errorf("macOS shortcuts sign failed: %s", errMsg)
 	}
 
 	if args.Using("signing-server") {
@@ -125,13 +134,22 @@ func useSigningServiceExplicit(service *SigningService, inPath, outPath string) 
 
 	var signedShortcut, err = requestSignedShortcutExplicit(service, inPath, outPath)
 	if err != nil {
+		if outPath != "" && outPath != inPath {
+			_ = os.Remove(outPath)
+		}
 		return err
 	}
 	if len(signedShortcut) == 0 {
+		if outPath != "" && outPath != inPath {
+			_ = os.Remove(outPath)
+		}
 		return fmt.Errorf("signing service returned empty response")
 	}
 
 	if !looksLikeSignedShortcut(signedShortcut) {
+		if outPath != "" && outPath != inPath {
+			_ = os.Remove(outPath)
+		}
 		return fmt.Errorf("signing server response does not look like a signed Shortcut (missing AEA1 magic)")
 	}
 
@@ -195,8 +213,61 @@ func requestSignedShortcutExplicit(service *SigningService, inPath, outPath stri
 	return SignShortcutBytes(service, name, xmlData)
 }
 
+var signingHTTPTimeout = 45 * time.Second
+
+func classifySigningNetworkError(err error) error {
+	var netErr net.Error
+	if err != nil {
+		if ok := strings.Contains(strings.ToLower(err.Error()), "timeout") || strings.Contains(strings.ToLower(err.Error()), "deadline exceeded"); ok {
+			return fmt.Errorf("signing request timeout: %w", err)
+		}
+		if e, ok := err.(net.Error); ok && e.Timeout() {
+			netErr = e
+			return fmt.Errorf("signing request timeout: %w", netErr)
+		}
+	}
+	return fmt.Errorf("signing request error: %w", err)
+}
+
+func classifySigningHTTPError(statusCode int, status string, body []byte) error {
+	snippet := strings.TrimSpace(string(body))
+	if len(snippet) > 256 {
+		snippet = snippet[:256] + "..."
+	}
+	switch {
+	case statusCode == http.StatusUnauthorized || statusCode == http.StatusForbidden:
+		return fmt.Errorf("signing authentication failed (%s): %s", status, snippet)
+	case statusCode == http.StatusTooManyRequests || statusCode >= 500:
+		return fmt.Errorf("signing service transient failure (%s): %s", status, snippet)
+	default:
+		return fmt.Errorf("signing service HTTP error (%s): %s", status, snippet)
+	}
+}
+
+func classifyNonAEA1Payload(contentType string, body []byte) error {
+	trimmed := strings.TrimSpace(string(body))
+	lowerCT := strings.ToLower(contentType)
+	lowerTrimmed := strings.ToLower(trimmed)
+	if len(body) == 0 {
+		return fmt.Errorf("signing service returned empty response")
+	}
+	if strings.Contains(lowerCT, "text/html") || strings.HasPrefix(lowerTrimmed, "<!doctype html") || strings.HasPrefix(lowerTrimmed, "<html") {
+		return fmt.Errorf("signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: %s)", contentType)
+	}
+	if strings.Contains(lowerCT, "xml") || strings.Contains(lowerCT, "plist") || strings.HasPrefix(trimmed, "<?xml") || strings.HasPrefix(trimmed, "<plist") || strings.HasPrefix(trimmed, "bplist00") {
+		return fmt.Errorf("signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: %s)", contentType)
+	}
+	return fmt.Errorf("signing service response does not look like a signed Shortcut (missing AEA1 magic, Content-Type: %s)", contentType)
+}
+
 /// SignShortcutBytes signs explicit plist XML bytes using a remote signing service.
 func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]byte, error) {
+	if service == nil || strings.TrimSpace(service.url) == "" {
+		return nil, fmt.Errorf("signing service URL is empty")
+	}
+	if len(xmlData) == 0 {
+		return nil, fmt.Errorf("cannot sign empty shortcut plist payload")
+	}
 	if name == "" {
 		name = "Shortcut"
 	}
@@ -224,11 +295,11 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 		request.Header.Set("User-Agent", fmt.Sprintf("Shortcuts/5037.111 cherri/%s", version))
 
 		client := &http.Client{
-			Timeout: time.Second * 45,
+			Timeout: signingHTTPTimeout,
 		}
 		response, resErr := client.Do(request)
 		if resErr != nil {
-			return nil, fmt.Errorf("signing request error: %w", resErr)
+			return nil, classifySigningNetworkError(resErr)
 		}
 		defer response.Body.Close()
 
@@ -240,7 +311,7 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 		if response.StatusCode != http.StatusOK {
 			signingServiceFailed = true
 			backoff += 10
-			return nil, fmt.Errorf("signing service failed (%s): %s", response.Status, string(body))
+			return nil, classifySigningHTTPError(response.StatusCode, response.Status, body)
 		}
 
 		signingServiceFailed = false
@@ -250,8 +321,12 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 			backoff = 10
 		}
 
+		if len(body) == 0 {
+			return nil, fmt.Errorf("signing service returned empty response")
+		}
+
 		contentType := response.Header.Get("Content-Type")
-		if strings.Contains(contentType, "application/json") {
+		if strings.Contains(strings.ToLower(contentType), "application/json") {
 			var jsonRes struct {
 				Success bool `json:"success"`
 				File    struct {
@@ -265,31 +340,33 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 				} `json:"error"`
 				Message string `json:"message"`
 			}
-			if err := json.Unmarshal(body, &jsonRes); err == nil {
-				if jsonRes.Success && jsonRes.File.ContentBase64 != "" {
-					decoded, err := base64.StdEncoding.DecodeString(jsonRes.File.ContentBase64)
-					if err != nil {
-						return nil, fmt.Errorf("failed to decode base64 signed payload: %w", err)
-					}
-					if looksLikeSignedShortcut(decoded) {
-						return decoded, nil
-					}
-					return nil, fmt.Errorf("decoded signing payload missing AEA1 header")
-				}
-				if jsonRes.Error.Message != "" {
-					return nil, fmt.Errorf("signing server error: %s (%s)", jsonRes.Error.Message, jsonRes.Error.Code)
-				}
-				if jsonRes.Message != "" {
-					return nil, fmt.Errorf("signing server error: %s", jsonRes.Message)
-				}
+			if err := json.Unmarshal(body, &jsonRes); err != nil {
+				return nil, fmt.Errorf("corrupted signing service JSON response: %w", err)
 			}
+			if jsonRes.Success && jsonRes.File.ContentBase64 != "" {
+				decoded, err := base64.StdEncoding.DecodeString(jsonRes.File.ContentBase64)
+				if err != nil {
+					return nil, fmt.Errorf("corrupted base64 signed payload: %w", err)
+				}
+				if looksLikeSignedShortcut(decoded) {
+					return decoded, nil
+				}
+				return nil, classifyNonAEA1Payload("application/octet-stream (decoded base64)", decoded)
+			}
+			if jsonRes.Error.Message != "" {
+				return nil, fmt.Errorf("signing server error: %s (%s)", jsonRes.Error.Message, jsonRes.Error.Code)
+			}
+			if jsonRes.Message != "" {
+				return nil, fmt.Errorf("signing server error: %s", jsonRes.Message)
+			}
+			return nil, fmt.Errorf("signing server returned JSON with success=false and no signed payload")
 		}
 
 		if looksLikeSignedShortcut(body) {
 			return body, nil
 		}
 
-		return nil, fmt.Errorf("unexpected signing service response: %s", string(body))
+		return nil, classifyNonAEA1Payload(contentType, body)
 	}
 
 	// 2. Legacy scaxyz/shortcut-signing-server JSON payload:
@@ -310,24 +387,23 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 	request.Header.Set("User-Agent", fmt.Sprintf("Shortcuts/5037.111 cherri/%s", version))
 
 	var client = &http.Client{
-		Timeout: time.Second * 30,
+		Timeout: signingHTTPTimeout,
 	}
 	var response, resErr = client.Do(request)
 	if resErr != nil {
-		return nil, fmt.Errorf("signing request error: %w", resErr)
+		return nil, classifySigningNetworkError(resErr)
 	}
 	defer response.Body.Close()
 
-	var responseContentType = response.Header.Get("Content-Type")
-	var allowedContentTypes = []string{"application/octet-stream", "application/x-plist", "application/x-apple-shortcut"}
-	if !slices.Contains(allowedContentTypes, responseContentType) {
-		return nil, fmt.Errorf("unsupported response type: %s", responseContentType)
+	var body, readErr = io.ReadAll(response.Body)
+	if readErr != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", readErr)
 	}
 
 	if response.StatusCode != http.StatusOK {
 		signingServiceFailed = true
 		backoff += 10
-		return nil, fmt.Errorf("failed to sign Shortcut (%s)", response.Status)
+		return nil, classifySigningHTTPError(response.StatusCode, response.Status, body)
 	}
 
 	signingServiceFailed = false
@@ -337,9 +413,23 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 		backoff = 10
 	}
 
-	var body, readErr = io.ReadAll(response.Body)
-	if readErr != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", readErr)
+	if len(body) == 0 {
+		return nil, fmt.Errorf("signing service returned empty response")
+	}
+
+	var responseContentType = response.Header.Get("Content-Type")
+	mediaType := strings.TrimSpace(strings.Split(responseContentType, ";")[0])
+	// Do NOT allow application/x-plist or XML/HTML content types for signed shortcuts
+	var allowedContentTypes = []string{"application/octet-stream", "application/x-apple-shortcut"}
+	if !slices.Contains(allowedContentTypes, mediaType) {
+		if strings.HasPrefix(strings.TrimSpace(string(body)), "<?xml") || strings.HasPrefix(strings.TrimSpace(string(body)), "<plist") || strings.Contains(strings.ToLower(mediaType), "plist") || strings.Contains(strings.ToLower(mediaType), "xml") || strings.Contains(strings.ToLower(mediaType), "html") {
+			return nil, classifyNonAEA1Payload(responseContentType, body)
+		}
+		return nil, fmt.Errorf("unsupported signing response Content-Type: %s", responseContentType)
+	}
+
+	if !looksLikeSignedShortcut(body) {
+		return nil, classifyNonAEA1Payload(responseContentType, body)
 	}
 
 	return body, nil

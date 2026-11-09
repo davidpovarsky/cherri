@@ -363,6 +363,9 @@ func CompileFileV2(filePath string, targetOutPath string, skipSign bool) error {
 	}
 
 	if err := SignShortcut(unsignedPath, targetOutPath, signingMode); err != nil {
+		if targetOutPath != "" && targetOutPath != unsignedPath {
+			_ = os.Remove(targetOutPath)
+		}
 		return fmt.Errorf("signing failed: %w", err)
 	}
 

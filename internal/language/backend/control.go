@@ -155,7 +155,11 @@ func BuildIfStartTyped(groupingID string, input any, conditionCode int, compareV
 			case string:
 				spec.StringValue = v
 			default:
-				spec.NumberValue = v
+				if m, ok := compareVal.(map[string]any); ok && m["WFSerializationType"] == "WFTextTokenString" {
+					spec.StringValue = m
+				} else {
+					spec.NumberValue = v
+				}
 			}
 		}
 	}

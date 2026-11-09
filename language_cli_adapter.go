@@ -72,6 +72,20 @@ func HandleLanguageV2CLI() bool {
 				skipSign = true
 			} else if arg == "--hubsign" {
 				skipSign = false
+			} else if strings.HasPrefix(arg, "--signing-server=") || arg == "--signing-server" {
+				skipSign = false
+				if arg == "--signing-server" && i+1 < len(os.Args) {
+					if args.Args == nil {
+						args.Args = make(map[string]string)
+					}
+					args.Args["signing-server"] = os.Args[i+1]
+					i++
+				} else if strings.HasPrefix(arg, "--signing-server=") {
+					if args.Args == nil {
+						args.Args = make(map[string]string)
+					}
+					args.Args["signing-server"] = strings.TrimPrefix(arg, "--signing-server=")
+				}
 			} else if !strings.HasPrefix(arg, "-") && compPath == "" {
 				compPath = arg
 			}

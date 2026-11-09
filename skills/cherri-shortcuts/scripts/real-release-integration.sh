@@ -79,21 +79,69 @@ else
   echo "PASS: Non-existent compiler SHA correctly rejected fail-closed."
 fi
 
-# Test 3: Negative Mutation - Stale docs fingerprint fails closed with verified compiler
-echo "Testing negative mutation: stale docs fingerprint..."
-# Copy valid docs to isolated temp dir and tamper with schema fingerprint in fork-language/actions.md
-cp -R "$TMP_HOME/docs"/* "$STALE_DOCS_DIR/" 2>/dev/null || cp -r "$TMP_HOME/docs"/* "$STALE_DOCS_DIR/"
-if [ -f "$STALE_DOCS_DIR/fork-language/actions.md" ]; then
-  sed -i 's/schema-fingerprint: [a-f0-9]*/schema-fingerprint: 0000000000000000000000000000000000000000000000000000000000000000/' "$STALE_DOCS_DIR/fork-language/actions.md" 2>/dev/null || true
+# Test 3: Causal Isolation Negative Mutations (holding all other inputs valid)
+echo "Preparing isolated copies of verified docs for negative mutation tests..."
+cp -R "$TMP_HOME/docs/." "$STALE_DOCS_DIR/" 2>/dev/null || cp -r "$TMP_HOME/docs/." "$STALE_DOCS_DIR/"
+
+# Positive baseline check on the copied docs directory BEFORE mutating
+if CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" >/dev/null 2>&1; then
+  echo "PASS: Pre-mutation baseline on copied docs directory succeeded."
+else
+  echo "ERROR: Pre-mutation baseline on copied docs directory failed (check .git copy)!" >&2
+  exit 1
 fi
 
-# Use the verified compiler installed in $TMP_HOME but point to the mutated docs
+# Mutation 3a: Tamper ONLY with **Schema Fingerprint:** in fork-language/actions.md while keeping .git SHA and compiler valid
+echo "Testing negative mutation 3a: stale docs Schema Fingerprint..."
+if [ -f "$STALE_DOCS_DIR/fork-language/actions.md" ]; then
+  sed -i 's/\*\*Schema Fingerprint:\*\*[[:space:]]*`[a-f0-9]*`/**Schema Fingerprint:** `0000000000000000000000000000000000000000000000000000000000000000`/' "$STALE_DOCS_DIR/fork-language/actions.md" 2>/dev/null || \
+  python3 -c '
+import pathlib, re, sys
+p = pathlib.Path(sys.argv[1])
+t = p.read_text(encoding="utf-8")
+t = re.sub(r"\*\*Schema Fingerprint:\*\*\s*`[a-f0-9]{64}`", "**Schema Fingerprint:** `" + "0"*64 + "`", t)
+p.write_text(t, encoding="utf-8")
+' "$STALE_DOCS_DIR/fork-language/actions.md"
+fi
+
 DOCTOR_OUTPUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" 2>&1 || true)
 if echo "$DOCTOR_OUTPUT" | grep -qi "Schema Fingerprint mismatch"; then
-  echo "PASS: Causal isolation verified: doctor.sh failed specifically on docs fingerprint mismatch."
+  echo "PASS: Causal isolation 3a verified: doctor.sh failed specifically on docs Schema Fingerprint mismatch."
 else
-  echo "ERROR: doctor.sh did not fail with schema fingerprint mismatch! Output:" >&2
+  echo "ERROR: doctor.sh did not fail with Schema Fingerprint mismatch! Output:" >&2
   echo "$DOCTOR_OUTPUT" >&2
+  exit 1
+fi
+
+# Restore valid actions.md and verify positive control recovers immediately
+cp "$TMP_HOME/docs/fork-language/actions.md" "$STALE_DOCS_DIR/fork-language/actions.md"
+if ! CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" >/dev/null 2>&1; then
+  echo "ERROR: Restoring actions.md did not recover doctor.sh pass state!" >&2
+  exit 1
+fi
+
+# Mutation 3b: Tamper ONLY with docs .git commit SHA while keeping Schema Fingerprint and compiler valid
+echo "Testing negative mutation 3b: mismatched docs git commit SHA..."
+git -C "$STALE_DOCS_DIR" config user.email "test@example.com"
+git -C "$STALE_DOCS_DIR" config user.name "Test"
+git -C "$STALE_DOCS_DIR" commit --allow-empty -m "mutated docs commit" >/dev/null 2>&1
+DOCTOR_COMMIT_OUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" 2>&1 || true)
+if echo "$DOCTOR_COMMIT_OUT" | grep -qi "docs commit mismatch"; then
+  echo "PASS: Causal isolation 3b verified: doctor.sh failed specifically on docs commit mismatch."
+else
+  echo "ERROR: doctor.sh did not fail with docs commit mismatch! Output:" >&2
+  echo "$DOCTOR_COMMIT_OUT" >&2
+  exit 1
+fi
+
+# Mutation 3c: Tamper ONLY with explicit CHERRI_BIN while keeping docs and CHERRI_HOME valid
+echo "Testing negative mutation 3c: incompatible explicit CHERRI_BIN..."
+DOCTOR_BIN_OUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$TMP_HOME/docs" CHERRI_BIN="$TMP_HOME/nonexistent-cherri-bin" sh "$SCRIPT_DIR/doctor.sh" 2>&1 || true)
+if echo "$DOCTOR_BIN_OUT" | grep -qi "Explicit CHERRI_BIN is missing or incompatible"; then
+  echo "PASS: Causal isolation 3c verified: doctor.sh failed specifically on explicit CHERRI_BIN."
+else
+  echo "ERROR: doctor.sh did not fail on incompatible explicit CHERRI_BIN! Output:" >&2
+  echo "$DOCTOR_BIN_OUT" >&2
   exit 1
 fi
 

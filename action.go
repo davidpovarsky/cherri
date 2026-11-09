@@ -301,6 +301,9 @@ func makeActionParams(arguments []actionArgument, params map[string]any) {
 		if arguments[i].valueType == Nil || param.key == "" {
 			continue
 		}
+		if (currentAction.identifier == "editEvent" || currentAction.identifier == "editReminder") && param.name == "newValue" {
+			continue
+		}
 
 		if arguments[i].valueType == Reference {
 			params[param.key] = references[arguments[i].value.(string)]

@@ -981,9 +981,36 @@ func makeConditionalAction(t *token) {
 		if len(cond.conditions) == 1 || iosVersion < 18 {
 			var firstCondition = cond.conditions[0]
 			var firstArg = firstCondition.arguments[0]
+			var firstVar = firstArg.value.(varValue)
+			var inputType = inputEffectiveType(firstVar)
+			if len(firstCondition.arguments) > 1 {
+				var secondArg = firstCondition.arguments[1]
+				if inputType == Variable {
+					switch secondArg.valueType {
+					case Integer, Float, Bool:
+						inputType = Integer
+					case Date:
+						inputType = Date
+					default:
+						inputType = String
+					}
+				}
+				if firstVar.coerce == "" && isPolymorphicVariableRef(firstVar) {
+					switch inputType {
+					case Integer, Float:
+						firstVar.coerce = "number"
+					case Date:
+						firstVar.coerce = "date"
+					case Bool:
+						firstVar.coerce = "boolean"
+					default:
+						firstVar.coerce = "text"
+					}
+				}
+			}
 			spec.Input = map[string]any{
 				"Type":     "Variable",
-				"Variable": variableValue(firstArg.value.(varValue)),
+				"Variable": variableValue(firstVar),
 			}
 			var conditionCode = firstCondition.condition
 			if len(firstCondition.arguments) > 1 && firstCondition.arguments[1].valueType == Quantity {
@@ -995,7 +1022,6 @@ func makeConditionalAction(t *token) {
 				}
 			}
 			spec.ConditionCode = conditionCode
-			var inputType = inputEffectiveType(firstArg.value.(varValue))
 			if len(firstCondition.arguments) > 1 {
 				conditionalParameterLegacy(&spec, firstCondition.arguments[1], inputType)
 			}
@@ -1020,6 +1046,9 @@ var filterTemplates []WFConditionParam
 // inputEffectiveType resolves a conditional's left-hand variable to its concrete type,
 // which determines which plist key the comparison value is written into.
 func inputEffectiveType(v varValue) tokenType {
+	if v.coerce != "" {
+		return tokenType(v.coerce)
+	}
 	var identifier = v.value.(string)
 	if global, found := globals[identifier]; found {
 		return global.valueType
@@ -1033,6 +1062,27 @@ func inputEffectiveType(v varValue) tokenType {
 		return variable.valueType
 	}
 	return String
+}
+
+func isPolymorphicVariableRef(v varValue) bool {
+	if v.getAs != "" {
+		return true
+	}
+	identifier, ok := v.value.(string)
+	if !ok {
+		return false
+	}
+	if variable, found := variables[identifier]; found {
+		if variable.valueType == Variable {
+			return true
+		}
+		if variable.valueType == Action {
+			if a, ok := variable.value.(action); ok && a.def != nil {
+				return a.def.outputType == Variable || a.def.outputType == ""
+			}
+		}
+	}
+	return false
 }
 
 func routeConditionalValue(param *WFConditionParam, val any, inputType tokenType) {
@@ -1078,12 +1128,38 @@ func makeConditions(wfConditions *WFConditions) WFContentPredicateTableTemplate 
 			}
 		}
 
-		var inputType = inputEffectiveType(condition.arguments[0].value.(varValue))
+		var firstVar = condition.arguments[0].value.(varValue)
+		var inputType = inputEffectiveType(firstVar)
+		if len(condition.arguments) > 1 {
+			var secondArg = condition.arguments[1]
+			if inputType == Variable {
+				switch secondArg.valueType {
+				case Integer, Float, Bool:
+					inputType = Integer
+				case Date:
+					inputType = Date
+				default:
+					inputType = String
+				}
+			}
+			if firstVar.coerce == "" && isPolymorphicVariableRef(firstVar) {
+				switch inputType {
+				case Integer, Float:
+					firstVar.coerce = "number"
+				case Date:
+					firstVar.coerce = "date"
+				case Bool:
+					firstVar.coerce = "boolean"
+				default:
+					firstVar.coerce = "text"
+				}
+			}
+		}
 		var conditionParam = WFConditionParam{
 			WFCondition: conditionCode,
 			WFInput: WFInputVariable{
 				Type:     "Variable",
-				Variable: variableValue(condition.arguments[0].value.(varValue)).(WFTextTokenAttachment),
+				Variable: variableValue(firstVar).(WFTextTokenAttachment),
 			},
 		}
 

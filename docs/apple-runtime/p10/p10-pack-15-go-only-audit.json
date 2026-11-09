@@ -1,0 +1,221 @@
+{
+  "schemaVersion": "1.0",
+  "packBranch": "origin/apple-actions-pack-pure-core-20261022",
+  "packCommit": "141b9cc",
+  "p10Branch": "agent/cherri-p10-apple-actions-coverage",
+  "summary": {
+    "totalGoOnlyEvaluated": 15,
+    "alreadyNativeInUpstream": 1,
+    "complexMultiKeySetters": 2,
+    "curatedAppIntentsWithDescriptors": 12,
+    "deliberatelyPreservedDeclarations": 4
+  },
+  "goOnlyActionsAudit": [
+    {
+      "actionName": "createRemindersList",
+      "appleIdentifier": "com.apple.reminders.TTRCreateListAppIntent",
+      "1_requiredGoMechanism": "appleAppIntent('Reminders', 'com.apple.reminders', 'TTRCreateListAppIntent') + per-instance UUID + static parameter emission",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (requires rawAction or manual AppIntentDescriptor + static UUID in .cherri module, losing dynamic per-instance UUID generation)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with createRemindersListIntent and automatic AppIntentDescriptor + UUID emission",
+      "4_parameterAndAppIntentValidation": "Validated in P10 via app_intent_test.go, TestP10_CompilerSerialization, and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 (isActionRepresentable checks AppIntentDescriptor; round-trip verified in fork_roundtrip_test.go)",
+      "6_runtimeVerificationStatus": "macOS 27 ToolKit/AppIntent schema verified; live Reminders list creation included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (keep in P10 native compiler; in Pure Pack, document as requiring AppIntentDescriptor + UUID)",
+      "8_riskLevel": "LOW (well-isolated AppIntent descriptor)"
+    },
+    {
+      "actionName": "editEvent",
+      "appleIdentifier": "is.workflow.actions.setters.calendarevents",
+      "1_requiredGoMechanism": "Custom check + appendParamsFunc in actions_std.go mapping 11 editEventDetail properties to distinct WFCalendarEventContentItem* keys, ValueLabel, Mode (Set/Remove), and RemoveSpecifiedValue",
+      "2_pureCherriRepresentable": "NO (a single plain .cherri action declaration cannot dynamically switch target plist parameter keys based on the property argument or fail closed on invalid detail under Remove mode)",
+      "3_p10Implementation": "Full native implementation in actions_std.go with strict fail-closed validation on both Set and Remove modes (R12, A12)",
+      "4_parameterAndAppIntentValidation": "Verified in TestP10R_R12_EditEventInvalidDetail and TestP10R2_A12_InvalidEventDetailFailsUnderRemoveAndSet",
+      "5_decompileAndRoundTrip": "Supported in P10 (isActionRepresentable validates WFContentItemPropertyName and Mode; lossless fallback on unknown properties)",
+      "6_runtimeVerificationStatus": "macOS 27 builtin definition verified; live Calendar event mutation included in tests/ipad_acceptance/08_edit_reminder_and_event.cherri",
+      "7_portToPurePackRecommendation": "KEEP_P10_ONLY (requires Go appendParamsFunc dispatch or splitting into 22 separate single-property wrapper actions in Pure Pack)",
+      "8_riskLevel": "MEDIUM (complex multi-key setter dispatch)"
+    },
+    {
+      "actionName": "editReminder",
+      "appleIdentifier": "is.workflow.actions.setters.reminders",
+      "1_requiredGoMechanism": "Custom check + appendParamsFunc in actions_std.go mapping 13 editReminderDetail properties to WFReminderContentItem* keys, ValueLabel, Mode (Set/Remove), and RemoveSpecifiedValue",
+      "2_pureCherriRepresentable": "NO (cannot dynamically dispatch plist parameter key by property name or enforce RemoveSpecifiedValue semantics in plain .cherri DSL)",
+      "3_p10Implementation": "Full native implementation in actions_std.go with strict fail-closed validation on Set/Remove and RemoveSpecifiedValue emission (R11, R13, A11, A13, A14)",
+      "4_parameterAndAppIntentValidation": "Verified in TestP10R_R11, TestP10R_R13, TestP10R2_A11, TestP10R2_A13, TestP10R2_A14",
+      "5_decompileAndRoundTrip": "Supported in P10 (TestP10R_R13_SetterModesAndDecompile and TestP10R2_A14_RemoveSpecifiedValueEmission)",
+      "6_runtimeVerificationStatus": "macOS 27 builtin definition verified; live Reminder mutation included in tests/ipad_acceptance/08_edit_reminder_and_event.cherri",
+      "7_portToPurePackRecommendation": "KEEP_P10_ONLY (requires Go appendParamsFunc dispatch)",
+      "8_riskLevel": "MEDIUM (complex multi-key setter dispatch)"
+    },
+    {
+      "actionName": "openBook",
+      "appleIdentifier": "com.apple.iBooksX.OpenBookIntent",
+      "1_requiredGoMechanism": "appleAppIntent('Books', 'com.apple.iBooksX', 'OpenBookIntent') + AppIntentDescriptor + per-instance UUID",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with openBookIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "playAudiobook",
+      "appleIdentifier": "com.apple.iBooksX.PlayAudiobookIntent",
+      "1_requiredGoMechanism": "appleAppIntent('Books', 'com.apple.iBooksX', 'PlayAudiobookIntent') + AppIntentDescriptor + per-instance UUID",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with playAudiobookIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "playVoiceMemo",
+      "appleIdentifier": "com.apple.VoiceMemos.PlaybackVoiceMemoIntent",
+      "1_requiredGoMechanism": "appleAppIntent('Voice Memos', 'com.apple.VoiceMemos', 'PlaybackVoiceMemoIntent') + AppIntentDescriptor + per-instance UUID",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with playVoiceMemoIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "recordVoiceMemo",
+      "appleIdentifier": "com.apple.VoiceMemos.RecordVoiceMemoIntent",
+      "1_requiredGoMechanism": "appleAppIntent('Voice Memos', 'com.apple.VoiceMemos', 'RecordVoiceMemoIntent') + AppIntentDescriptor + per-instance UUID",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with recordVoiceMemoIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "run",
+      "appleIdentifier": "is.workflow.actions.runworkflow",
+      "1_requiredGoMechanism": "appendParamsFunc in actions_std.go constructing WFWorkflow descriptor map {workflowIdentifier, workflowName, isSelf: false} alongside WFWorkflowName and WFInput",
+      "2_pureCherriRepresentable": "ALREADY_NATIVE_IN_UPSTREAM (upstream electrikmilk/cherri bcc0095 already defines run() natively in actions_std.go!)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go + V2 backend lowering; 100% behavioral parity with upstream bcc0095 proven in TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison",
+      "4_parameterAndAppIntentValidation": "Verified 3-way (Upstream bcc0095 vs P10 Legacy vs P10 V2) for fixed target, dynamic target, text payload, nested dictionary payload, and missing optional input",
+      "5_decompileAndRoundTrip": "Full decompile -> recompile round-trip verified in TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison (distinguishing run vs runSelf)",
+      "6_runtimeVerificationStatus": "Static + 3-way oracle verified; physical iPad fixture generated in tests/ipad_acceptance/01_run_fixed_and_dynamic_dict.cherri",
+      "7_portToPurePackRecommendation": "NO_ACTION_NEEDED (already built into upstream Cherri core)",
+      "8_riskLevel": "LOW (proven identical to upstream oracle)"
+    },
+    {
+      "actionName": "searchSpotlight",
+      "appleIdentifier": "com.apple.Spotlight.SearchSpotlightIntent",
+      "1_requiredGoMechanism": "appleAppIntent('Spotlight', 'com.apple.Spotlight', 'SearchSpotlightIntent') + AppIntentDescriptor + per-instance UUID",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with searchSpotlightIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "setSilentMode",
+      "appleIdentifier": "com.apple.ShortcutsActions.SetSilentModeAction",
+      "1_requiredGoMechanism": "appleAppIntent('ShortcutsActions', 'com.apple.ShortcutsActions', 'SetSilentModeAction') + state toggle/set parameter mapping",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with setSilentModeIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "iOS/iPadOS hardware action (!mac); included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "startNotesAudioRecording",
+      "appleIdentifier": "com.apple.Notes.StartRecordingLinkAction",
+      "1_requiredGoMechanism": "appleAppIntent('Notes', 'com.apple.Notes', 'StartRecordingLinkAction') + AppIntentDescriptor + per-instance UUID",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with startNotesAudioRecordingIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "startStopwatch",
+      "appleIdentifier": "com.apple.clock.StartStopwatchIntent",
+      "1_requiredGoMechanism": "appleAppIntent('Clock', 'com.apple.clock', 'StartStopwatchIntent') + AppIntentDescriptor + per-instance UUID",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with startStopwatchIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "stopStopwatch",
+      "appleIdentifier": "com.apple.clock.StopStopwatchIntent",
+      "1_requiredGoMechanism": "appleAppIntent('Clock', 'com.apple.clock', 'StopStopwatchIntent') + AppIntentDescriptor + per-instance UUID",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with stopStopwatchIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "stopVoiceMemoRecording",
+      "appleIdentifier": "com.apple.VoiceMemos.StopRecording",
+      "1_requiredGoMechanism": "appleAppIntent('Voice Memos', 'com.apple.VoiceMemos', 'StopRecording') + AppIntentDescriptor + per-instance UUID",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with stopVoiceMemoRecordingIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    },
+    {
+      "actionName": "transcribeText",
+      "appleIdentifier": "com.apple.ShortcutsActions.TranscribeAudioAction",
+      "1_requiredGoMechanism": "appleAppIntent('ShortcutsActions', 'com.apple.ShortcutsActions', 'TranscribeAudioAction') + audioFile parameter + String outputType",
+      "2_pureCherriRepresentable": "PARTIAL_WITH_BOILERPLATE (plain .cherri action lacks AppIntentDescriptor emitter)",
+      "3_p10Implementation": "Native Go actionDefinition in actions_std.go with transcribeAudioIntent",
+      "4_parameterAndAppIntentValidation": "Verified in app_intent_test.go and schema registry",
+      "5_decompileAndRoundTrip": "Supported in P10 with AppIntentDescriptor preservation",
+      "6_runtimeVerificationStatus": "macOS 27 AppIntent verified; included in tests/ipad_acceptance/09_app_intents_suite.cherri",
+      "7_portToPurePackRecommendation": "DO_NOT_PORT_AS_PLAIN_DECLARATION (requires AppIntentDescriptor)",
+      "8_riskLevel": "LOW"
+    }
+  ],
+  "preservedDeclarationsAudit": [
+    {
+      "declaration": "statistic",
+      "appleIdentifier": "is.workflow.actions.statistics",
+      "upstreamBehavior": "Uses WFInput parameter key and calculationOperation enum",
+      "p10Status": "Verified in P10 actions/math.cherri: uses 'WFInput' (not 'Input') and calculationOperation enum; 100% compatible with upstream"
+    },
+    {
+      "declaration": "calculate",
+      "appleIdentifier": "is.workflow.actions.math",
+      "upstreamBehavior": "Built-in arithmetic expression / action handling",
+      "p10Status": "Handled natively by operator expression lowering and actions/math.cherri"
+    },
+    {
+      "declaration": "getFileDetail",
+      "appleIdentifier": "is.workflow.actions.properties.files",
+      "upstreamBehavior": "Uses fileDetail enum and WFContentItemPropertyName",
+      "p10Status": "Preserved in actions/documents.cherri with extended macOS 27 file properties"
+    },
+    {
+      "declaration": "calculationOperation",
+      "appleIdentifier": "enum calculationOperation",
+      "upstreamBehavior": "Average, Minimum, Maximum, Sum, Standard Deviation, Median, Mode, Range",
+      "p10Status": "Preserved with exact Apple strings in actions/math.cherri"
+    }
+  ]
+}

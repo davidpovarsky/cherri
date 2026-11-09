@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -615,5 +616,163 @@ if matches != [] {
 	}
 	if !strings.Contains(errNeq.Error(), "Invalid type 'array' for conditional '!='") {
 		t.Errorf("unexpected error message for != []: %v", errNeq)
+	}
+}
+
+func TestP10_Serialization_Conditional_GetValue_StringVsNumber_RoundTrip(t *testing.T) {
+	r := newRoundTripRunner(t)
+
+	// V2 reproduction of Asana 1219750434313969 (Section A)
+	v2Src := `let job = {"server": "General Context Server", "port": 8080}
+let srv = getValue(job, key: "server")
+if srv == "General Context Server" {
+	show("matched literal")
+}
+if job["server"] == "General Context Server" {
+	show("matched key")
+}
+let expected = "General Context Server"
+if srv == expected {
+	show("matched var")
+}
+`
+	plistPath := r.compileSource("ser_cond_getvalue_v2", v2Src)
+	doc := loadRoundTripDocument(t, plistPath)
+
+	var condActs []map[string]any
+	for _, a := range doc["WFWorkflowActions"].([]any) {
+		m := a.(map[string]any)
+		if m["WFWorkflowActionIdentifier"] == "is.workflow.actions.conditional" {
+			p := m["WFWorkflowActionParameters"].(map[string]any)
+			if mode, ok := p["WFControlFlowMode"].(uint64); ok && mode == 0 {
+				condActs = append(condActs, m)
+			}
+		}
+	}
+	if len(condActs) != 3 {
+		t.Fatalf("expected 3 conditional start actions, got %d", len(condActs))
+	}
+
+	for idx, cAct := range condActs {
+		p := cAct["WFWorkflowActionParameters"].(map[string]any)
+		if p["WFConditionalActionString"] == nil {
+			t.Fatalf("cond[%d]: missing WFConditionalActionString: %v", idx, p)
+		}
+		if p["WFNumberValue"] != nil {
+			t.Fatalf("cond[%d]: unexpected WFNumberValue %v on string comparison", idx, p["WFNumberValue"])
+		}
+		wfInput := p["WFInput"].(map[string]any)
+		varToken := wfInput["Variable"].(map[string]any)
+		valMap := varToken["Value"].(map[string]any)
+		aggrs, ok := valMap["Aggrandizements"].([]any)
+		if !ok || len(aggrs) == 0 {
+			t.Fatalf("cond[%d]: expected Aggrandizements with WFCoercionVariableAggrandizement on WFInput.Variable, got %v", idx, valMap)
+		}
+		hasStrCoerce := false
+		for _, rawAg := range aggrs {
+			ag := rawAg.(map[string]any)
+			if ag["Type"] == "WFCoercionVariableAggrandizement" && ag["CoercionItemClass"] == "WFStringContentItem" {
+				hasStrCoerce = true
+			}
+		}
+		if !hasStrCoerce {
+			t.Fatalf("cond[%d]: missing WFCoercionVariableAggrandizement=WFStringContentItem in %v", idx, aggrs)
+		}
+	}
+
+	// Decompile and verify `.text` coercion is preserved in decompiled Cherri source and survives recompilation
+	decomp := r.decompileShortcut("ser_cond_getvalue_decomp", plistPath)
+	if !strings.Contains(decomp, ".text") {
+		t.Fatalf("expected decompiled conditional on getValue to preserve '.text' coercion, got:\n%s", decomp)
+	}
+	recompPlist := r.compileSource("ser_cond_getvalue_recomp", decomp)
+	recompDoc := loadRoundTripDocument(t, recompPlist)
+	assertActionsStructurallyEqual(t, doc, recompDoc)
+}
+
+func TestP10_A4_LumenStorage27_SerializationAndRoundTrip(t *testing.T) {
+	r := newRoundTripRunner(t)
+
+	// 1. Same-run probe: storeValue + getStoredValue + deleteStoredValue (shortcut-local and global scopes)
+	srcProbe := `shortcut "Lumen Storage V27 Probe" {
+    version: "27"
+}
+
+storeValue("lumen.probe.20261025", "LUMEN_STORAGE_OK", global: true)
+let readback = getStoredValue("lumen.probe.20261025", global: true)
+show(readback)
+
+storeValue("lumen.local.key", "LOCAL_VAL", global: false)
+let localRead = getStoredValue("lumen.local.key", global: false)
+deleteStoredValue("lumen.local.key", global: false)
+let missingAfterDelete = getStoredValue("lumen.nonexistent.key", global: true)
+show(missingAfterDelete)
+`
+	plistPath := r.compileSource("a4_lumen_storage27_probe", srcProbe)
+	doc := loadRoundTripDocument(t, plistPath)
+	actionsList := doc["WFWorkflowActions"].([]any)
+
+	// Verify exact Apple identifiers and parameter keys
+	var foundSet, foundGet, foundDel bool
+	for _, a := range actionsList {
+		m := a.(map[string]any)
+		ident := fmt.Sprint(m["WFWorkflowActionIdentifier"])
+		params, _ := m["WFWorkflowActionParameters"].(map[string]any)
+		switch ident {
+		case "is.workflow.actions.setstoredcontent":
+			if params["WFStoredContentKey"] == "lumen.probe.20261025" &&
+				params["WFInput"] == "LUMEN_STORAGE_OK" &&
+				params["WFStoredContentGlobalValue"] == true {
+				foundSet = true
+			}
+		case "is.workflow.actions.getstoredcontent":
+			if params["WFStoredContentKey"] == "lumen.probe.20261025" &&
+				params["WFStoredContentGlobalValue"] == true {
+				foundGet = true
+			}
+		case "is.workflow.actions.deletestoredcontent":
+			if params["WFStoredContentKey"] == "lumen.local.key" {
+				foundDel = true
+			}
+		}
+	}
+	if !foundSet {
+		t.Fatalf("A4 failure: missing or malformed is.workflow.actions.setstoredcontent for LUMEN_STORAGE_OK")
+	}
+	if !foundGet {
+		t.Fatalf("A4 failure: missing or malformed is.workflow.actions.getstoredcontent for lumen.probe.20261025")
+	}
+	if !foundDel {
+		t.Fatalf("A4 failure: missing or malformed is.workflow.actions.deletestoredcontent for lumen.local.key")
+	}
+
+	// Verify decompile -> recompile round-trip
+	decomp := r.decompileShortcut("a4_lumen_storage27_decomp", plistPath)
+	recompPlist := r.compileSource("a4_lumen_storage27_recomp", decomp)
+	recompDoc := loadRoundTripDocument(t, recompPlist)
+	assertActionsStructurallyEqual(t, doc, recompDoc)
+
+	// 2. Version gate: under #define version 26 (legacy) and version: "26" (V2), storeValue (v27+) must fail closed!
+	forkBin := roundTripBinary(t)
+	v26Src := filepath.Join(t.TempDir(), "a4_v26_reject.cherri")
+	_ = os.WriteFile(v26Src, []byte("#define version 26\n#include 'actions/storage'\nstoreValue(\"k\", \"v\")\n"), 0o644)
+	cmdV26 := exec.Command(forkBin, v26Src, "--legacy", "--skip-sign", "--no-ansi")
+	outV26, errV26 := cmdV26.CombinedOutput()
+	if errV26 == nil {
+		t.Fatalf("A4 failure: v27 storeValue unexpectedly compiled under #define version 26:\n%s", string(outV26))
+	}
+	if !strings.Contains(string(outV26), "not available in set minimum version") {
+		t.Fatalf("A4 failure: expected version error for v27 storeValue under #define version 26, got:\n%s", string(outV26))
+	}
+
+	v26V2Src := filepath.Join(t.TempDir(), "a4_v26_v2_reject.cherri")
+	_ = os.WriteFile(v26V2Src, []byte("shortcut \"Test\" {\n    version: \"26\"\n}\nstoreValue(\"k\", \"v\")\n"), 0o644)
+	cmdV26V2 := exec.Command(forkBin, v26V2Src, "--skip-sign", "--no-ansi")
+	outV26V2, errV26V2 := cmdV26V2.CombinedOutput()
+	if errV26V2 == nil {
+		t.Fatalf("A4 failure: v27 storeValue unexpectedly compiled under V2 version: \"26\":\n%s", string(outV26V2))
+	}
+	if !strings.Contains(string(outV26V2), "requires minimum version 27") && !strings.Contains(string(outV26V2), "not available") {
+		t.Fatalf("A4 failure: expected version error for v27 storeValue under V2 version: \"26\", got:\n%s", string(outV26V2))
 	}
 }

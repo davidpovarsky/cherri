@@ -6595,9 +6595,9 @@
     "identifier": "is.workflow.actions.statistics",
     "parameterKey": "Input",
     "disposition": "EXPOSED_PARAMETER",
-    "rationale": "Declared parameter in Cherri callable variant",
-    "codePath": "actions/*.cherri or actions_std.go",
-    "evidenceRef": "Cherri actions catalog"
+    "rationale": "WorkflowKit parameter table names the input slot 'Input' while serialized Shortcut plists and upstream Cherri bcc0095 emit wire key 'WFInput'",
+    "codePath": "actions/math.cherri:statistic (WFInput)",
+    "evidenceRef": "Upstream electrikmilk/cherri bcc0095 actions/math.cherri:statistic"
   },
   {
     "identifier": "is.workflow.actions.takephoto",
