@@ -53,6 +53,8 @@ type CatalogExecutionReport struct {
 }
 
 func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
+	resetCompilerStateFully()
+	relativePath = ""
 	resetParser()
 	markBuiltins()
 	defineRawAction()

@@ -7,6 +7,8 @@ package main
 import (
 	"maps"
 	"sync"
+
+	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
 // Baseline snapshots of the process-global definition caches. Standard-action
@@ -48,6 +50,7 @@ func restoreCompilerDefinitions() {
 	actionCategories = actionCategories[:baselineCategoriesLen]
 	includedStandardActions = false
 	includedBasicStandardActions = false
+	schema.ResetDefaultRegistry()
 }
 
 // resetCompilerStateFully is resetCompilerState plus a rollback of the

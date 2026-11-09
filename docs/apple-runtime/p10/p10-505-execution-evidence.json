@@ -447,7 +447,7 @@
       "v2EmittedIdent": "is.workflow.actions.askllm",
       "decompileSupported": true,
       "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/intelligence'\n#define from watch, search\n\naskDeviceModel(\"sample\")",
+      "decompiledSource": "#include 'actions/intelligence'\n#define from watch, search\n\naskLLM(\"sample\")",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "WFLLMPrompt"
@@ -1451,7 +1451,7 @@
       "v2EmittedIdent": "is.workflow.actions.encodemedia",
       "decompileSupported": true,
       "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/media'\n#define from watch, search\n\nsetMetadata(Ask)",
+      "decompiledSource": "#include 'actions/media'\n#define from watch, search\n\nencodeAudio(Ask)",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "WFMedia"
@@ -2021,8 +2021,8 @@
       "v2Source": "generateKeyPoints(\"sample\")",
       "v2EmittedIdent": "com.apple.WritingTools.WritingToolsAppIntentsExtension.SummarizeTextIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/intelligence'\n#define from watch, search\n\ngenerateKeyPoints(\"sample\")",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/intelligence'\n#define from watch, search\n\nrawAction(\"com.apple.WritingTools.WritingToolsAppIntentsExtension.SummarizeTextIntent\", {\n\t\"summaryType\": \"createKeyPoints\",\n\t\"text\": \"sample\"\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "summaryType",
@@ -6549,8 +6549,8 @@
       "v2Source": "setAutoAnswerCalls(true)",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleAutoAnswerCallsIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetAutoAnswerCalls(true)",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleAutoAnswerCallsIntent\", {\n\t\"state\": true\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -6583,7 +6583,7 @@
       "v2EmittedIdent": "com.apple.UniversalAccess.AXSettingsShortcuts.AXToggleBackgroundSoundsIntent",
       "decompileSupported": true,
       "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetBackgroundSounds(true)",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetMediaBackgroundSounds(true)",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -6726,8 +6726,8 @@
       "v2Source": "setColorFilters(true)",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleColorFiltersIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetColorFilters(true)",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleColorFiltersIntent\", {\n\t\"state\": true\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -6763,7 +6763,7 @@
       "v2EmittedIdent": "is.workflow.actions.dnd.set",
       "decompileSupported": true,
       "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/settings'\n#define from watch, search\n\ntoggleDND()",
+      "decompiledSource": "#include 'actions/settings'\n#define from watch, search\n\nDNDOff()",
       "roundTripVerified": true
     },
     {
@@ -6831,8 +6831,8 @@
       "v2Source": "setLeftRightBalance(true)",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXSetLeftRightBalanceIntent",
       "decompileSupported": true,
-      "decompileMode": "rawAction_lossless_fallback",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXSetLeftRightBalanceIntent\", {\n\t\"state\": true\n})",
+      "decompileMode": "native_cherri_call",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetLeftRightBalance(true)",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -6849,8 +6849,8 @@
       "v2Source": "setLiveCaptions(true)",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleLiveCaptionsIntent",
       "decompileSupported": true,
-      "decompileMode": "rawAction_lossless_fallback",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleLiveCaptionsIntent\", {\n\t\"state\": true\n})",
+      "decompileMode": "native_cherri_call",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetLiveCaptions(true)",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -6885,8 +6885,8 @@
       "v2Source": "setMediaBackgroundSounds(true)",
       "v2EmittedIdent": "com.apple.UniversalAccess.AXSettingsShortcuts.AXToggleBackgroundSoundsIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetMediaBackgroundSounds(true)",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.UniversalAccess.AXSettingsShortcuts.AXToggleBackgroundSoundsIntent\", {\n\t\"setting\": \"whenMediaIsPlaying\",\n\t\"state\": true\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "setting",
@@ -6923,8 +6923,8 @@
       "v2Source": "setMonoAudio(true)",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleMonoAudioIntent",
       "decompileSupported": true,
-      "decompileMode": "rawAction_lossless_fallback",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleMonoAudioIntent\", {\n\t\"state\": true\n})",
+      "decompileMode": "native_cherri_call",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetMonoAudio(true)",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -7068,8 +7068,8 @@
       "v2Source": "setReduceTransparency(true)",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleTransparencyIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetReduceTransparency(true)",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleTransparencyIntent\", {\n\t\"state\": true\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -7125,8 +7125,8 @@
       "v2Source": "setSmartInvert(true)",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSmartInvertIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetSmartInvert(true)",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSmartInvertIntent\", {\n\t\"state\": true\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -7195,8 +7195,8 @@
       "v2Source": "setSwitchControl(true)",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSwitchControlIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetSwitchControl(true)",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSwitchControlIntent\", {\n\t\"state\": true\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -7287,8 +7287,8 @@
       "v2Source": "setVoiceControl(true)",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleVoiceControlIntent",
       "decompileSupported": true,
-      "decompileMode": "rawAction_lossless_fallback",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleVoiceControlIntent\", {\n\t\"state\": true\n})",
+      "decompileMode": "native_cherri_call",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nsetVoiceControl(true)",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "state"
@@ -8176,8 +8176,8 @@
       "v2Source": "toggleClassicInvert()",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleClassicInvertIntent",
       "decompileSupported": true,
-      "decompileMode": "rawAction_lossless_fallback",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleClassicInvertIntent\", {\n\t\"operation\": \"toggle\"\n})",
+      "decompileMode": "native_cherri_call",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\ntoggleClassicInvert()",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "operation"
@@ -8194,8 +8194,8 @@
       "v2Source": "toggleClosedCaptionsSDH()",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleCaptionsIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\ntoggleClosedCaptionsSDH()",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleCaptionsIntent\", {\n\t\"operation\": \"toggle\"\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "operation"
@@ -8285,8 +8285,8 @@
       "v2Source": "toggleFocusMode()",
       "v2EmittedIdent": "is.workflow.actions.dnd.set",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#define from watch, search\n\ntoggleFocusMode()",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#define from watch, search\n\nrawAction(\"is.workflow.actions.dnd.set\", {\n\t\"Operation\": \"Toggle\"\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "Operation"
@@ -8321,8 +8321,8 @@
       "v2Source": "toggleLEDFlash()",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleLEDFlashIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\ntoggleLEDFlash()",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleLEDFlashIntent\", {\n\t\"operation\": \"toggle\"\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "operation"
@@ -8339,8 +8339,8 @@
       "v2Source": "toggleLeftRightBalance()",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXSetLeftRightBalanceIntent",
       "decompileSupported": true,
-      "decompileMode": "rawAction_lossless_fallback",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXSetLeftRightBalanceIntent\", {\n\t\"operation\": \"toggle\"\n})",
+      "decompileMode": "native_cherri_call",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\ntoggleLeftRightBalance()",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "operation"
@@ -8484,8 +8484,8 @@
       "v2Source": "toggleReduceMotion()",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleReduceMotionIntent",
       "decompileSupported": true,
-      "decompileMode": "native_cherri_call",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\ntoggleReduceMotion()",
+      "decompileMode": "rawAction_lossless_fallback",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleReduceMotionIntent\", {\n\t\"operation\": \"toggle\"\n})",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "operation"
@@ -8538,8 +8538,8 @@
       "v2Source": "toggleSmartInvert()",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSmartInvertIntent",
       "decompileSupported": true,
-      "decompileMode": "rawAction_lossless_fallback",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSmartInvertIntent\", {\n\t\"operation\": \"toggle\"\n})",
+      "decompileMode": "native_cherri_call",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\ntoggleSmartInvert()",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "operation"
@@ -8628,8 +8628,8 @@
       "v2Source": "toggleWhitePoint()",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleWhitePointIntent",
       "decompileSupported": true,
-      "decompileMode": "rawAction_lossless_fallback",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleWhitePointIntent\", {\n\t\"operation\": \"toggle\"\n})",
+      "decompileMode": "native_cherri_call",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\ntoggleWhitePoint()",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "operation"
@@ -8664,8 +8664,8 @@
       "v2Source": "toggleZoom()",
       "v2EmittedIdent": "com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleZoomIntent",
       "decompileSupported": true,
-      "decompileMode": "rawAction_lossless_fallback",
-      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\nrawAction(\"com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleZoomIntent\", {\n\t\"operation\": \"toggle\"\n})",
+      "decompileMode": "native_cherri_call",
+      "decompiledSource": "#include 'actions/a11y'\n#define from watch, search\n\ntoggleZoom()",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "operation"
@@ -8757,7 +8757,7 @@
       "v2EmittedIdent": "com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent",
       "decompileSupported": true,
       "decompileMode": "native_cherri_call",
-      "decompiledSource": "#define from watch, search\n\nturnOnAlarm(Ask)",
+      "decompiledSource": "#define from watch, search\n\nturnOffAlarm(Ask)",
       "roundTripVerified": true,
       "emittedKeysSample": [
         "AppIntentDescriptor",

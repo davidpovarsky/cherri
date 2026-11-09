@@ -25,6 +25,7 @@ import (
 // 2. V2 generated schema registry: schema.DefaultRegistry()
 // 3. iOS/iPadOS mobile bridge catalog: currentMobileActionCatalog() (CherriActionCatalog)
 func TestP10_CatalogCLIAndMobileRegistryParity(t *testing.T) {
+	resetCompilerStateFully()
 	resetParser()
 	markBuiltins()
 	defineRawAction()

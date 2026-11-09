@@ -119,6 +119,10 @@ func compileForMobileMode(src string, requestedName string, mode string, sign bo
 
 	resetMobileLanguageState()
 	resetMobileDecompileState()
+	filePath = ""
+	relativePath = ""
+	inputPath = ""
+	outputPath = ""
 	name := normalizedMobileName(requestedName)
 
 	selectedMode := MobileCompileMode(strings.ToLower(strings.TrimSpace(mode)))
@@ -266,6 +270,10 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 
 	resetMobileLanguageState()
 	resetMobileDecompileState()
+	filePath = ""
+	relativePath = ""
+	inputPath = ""
+	outputPath = ""
 	name := normalizedMobileName(requestedName)
 	basename = strings.ReplaceAll(name, " ", "_")
 	workflowName = name

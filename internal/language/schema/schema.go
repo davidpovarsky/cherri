@@ -164,6 +164,11 @@ func NewRegistry(actions []*ActionSchema, enums map[string][]string) *Registry {
 	return r
 }
 
+// ResetDefaultRegistry restores the singleton DefaultRegistry to the clean generated 505-entry baseline.
+func ResetDefaultRegistry() {
+	defaultRegistryInstance = initDefaultRegistry()
+}
+
 // RegisterCustomAction dynamically adds or overrides an action schema in the registry.
 func (r *Registry) RegisterCustomAction(a *ActionSchema) {
 	if a == nil || a.CallableName == "" {

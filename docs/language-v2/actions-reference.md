@@ -2,7 +2,7 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`  
+**Schema Fingerprint:** `cd572454a8de7e16e6aff913a912e1a82e470baad7ad8f318f78abc6d5e90b68`  
 **Total Actions:** 505  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
@@ -7356,7 +7356,7 @@ statistic(operation: Text, input: AnyContent)
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `operation` | `Text` | Yes | - | `WFStatisticsOperation` | Average, Minimum, Maximum, Sum, Median, Mode, Range, Standard Deviation |
-| `input` | `AnyContent` | Yes | - | `Input` | - |
+| `input` | `AnyContent` | Yes | - | `WFInput` | - |
 
 ---
 
