@@ -54,6 +54,7 @@ type CatalogExecutionReport struct {
 
 func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 	resetCompilerStateFully()
+	schema.ResetDefaultRegistry()
 	relativePath = ""
 	resetParser()
 	markBuiltins()
@@ -388,7 +389,7 @@ func buildLegacySourceForEntry(entry catalogActionInfo, actionCategoryMap map[st
 		b.WriteString("measurement(\"10\", \"Length\", \"m\")\n")
 		return b.String()
 	case "embedFile":
-		b.WriteString("embedFile(\"README.md\")\n")
+		b.WriteString("embedFile(\"ReadMe.md\")\n")
 		return b.String()
 	case "rawAction":
 		b.WriteString("rawAction(\"is.workflow.actions.custom.p10test\", {\"TestKey\": \"hello\"})\n")
@@ -449,7 +450,7 @@ func buildV2SourceForEntry(entry catalogActionInfo, reg *schema.Registry) string
 		b.WriteString("measurement(\"10\", unitType: \"Length\", unit: \"m\")\n")
 		return b.String()
 	case "embedFile":
-		b.WriteString("embedFile(\"README.md\")\n")
+		b.WriteString("embedFile(\"ReadMe.md\")\n")
 		return b.String()
 	case "rawAction":
 		b.WriteString("rawAction(\"is.workflow.actions.custom.p10test\", parameters: {\"TestKey\": \"hello\"})\n")

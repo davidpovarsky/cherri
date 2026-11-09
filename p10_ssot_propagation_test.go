@@ -26,6 +26,7 @@ import (
 // 3. iOS/iPadOS mobile bridge catalog: currentMobileActionCatalog() (CherriActionCatalog)
 func TestP10_CatalogCLIAndMobileRegistryParity(t *testing.T) {
 	resetCompilerStateFully()
+	schema.ResetDefaultRegistry()
 	resetParser()
 	markBuiltins()
 	defineRawAction()
