@@ -1,0 +1,32 @@
+// P10 Physical iPadOS 27 Acceptance Test 05 — Task B3 (1219800511200890, 1219604360875370)
+// Scenario: 4-action raw fileRequest vs chained replaceText -> fileRequest (curl.moovit.co.il / MOT GetRoutes)
+shortcut "P10 iPad 05 FileRequest MOT" {
+    version: "27"
+}
+
+// Part A: 4-action raw JSON body via gettext -> fileRequest
+let rawBody = "{\"OriginStationId\":3000,\"DestinationStationId\":5000,\"Hour\":900}"
+let rawResp = fileRequest(
+    "https://httpbin.org/post",
+    method: "POST",
+    body: rawBody,
+    headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept": "application/json"
+    }
+)
+show(rawResp)
+
+// Part B: Chained replaceText template -> fileRequest
+let template = "{\"OriginStationId\":__ORIG__,\"DestinationStationId\":__DEST__}"
+let step1 = replaceText("__ORIG__", "3000", template)
+let finalBody = replaceText("__DEST__", "5000", step1)
+let chainedResp = fileRequest(
+    "https://httpbin.org/post",
+    method: "POST",
+    body: finalBody,
+    headers: {
+        "Content-Type": "application/json; charset=utf-8"
+    }
+)
+show(chainedResp)

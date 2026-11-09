@@ -1,0 +1,32 @@
+// P10 Physical iPadOS 27 Acceptance Test 08 — Task C5 (1220085573024106)
+// Scenario: editReminder and editEvent setter actions (Set and Remove modes)
+shortcut "P10 iPad 08 Setters Suite" {
+    version: "27"
+}
+
+let reminders = filterReminders(
+    filter: {
+        "compound": "and",
+        "predicates": [
+            { "property": "Title", "operator": "contains", "value": "CherriTest" }
+        ]
+    },
+    limit: 1
+)
+let noteText = "Updated by Cherri P10"
+let oldTag = "OldTag"
+editReminder(reminders, detail: "Notes", newValue: noteText, mode: "Set")
+editReminder(reminders, detail: "Tags", newValue: oldTag, mode: "Remove")
+
+let events = filterEvents(
+    filter: {
+        "compound": "and",
+        "predicates": [
+            { "property": "Title", "operator": "contains", "value": "CherriTest" }
+        ]
+    },
+    limit: 1
+)
+let newLoc = "Jerusalem"
+editEvent(events, detail: "Location", newValue: newLoc, mode: "Set")
+editEvent(events, detail: "URL", mode: "Remove")

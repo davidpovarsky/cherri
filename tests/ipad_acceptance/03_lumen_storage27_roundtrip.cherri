@@ -1,0 +1,25 @@
+// P10 Physical iPadOS 27 Acceptance Test 03 — Task A4 (1219814215189434)
+// Scenario: Lumen iOS/iPadOS 27 Storage persistence (same-run, cross-run, delete, missing key)
+shortcut "P10 iPad 03 Lumen Storage27" {
+    version: "27"
+}
+
+// 1. Same-run write + readback of LUMEN_STORAGE_OK
+storeValue("lumen.probe.20261025", "LUMEN_STORAGE_OK", global: true)
+let sameRunRead = getStoredValue("lumen.probe.20261025", global: true)
+if sameRunRead == "LUMEN_STORAGE_OK" {
+    show("PASS_SAME_RUN: LUMEN_STORAGE_OK")
+} else {
+    show("FAIL_SAME_RUN")
+}
+
+// 2. Cross-run persistence key (verify on second invocation before overwrite)
+let prevRunRead = getStoredValue("lumen.persistence.probe.v27", global: true)
+show("PREV_RUN_VALUE: {prevRunRead}")
+storeValue("lumen.persistence.probe.v27", "LUMEN_PERSISTENCE_20261025", global: true)
+
+// 3. Shortcut-local scope write + read + delete + missing key check
+storeValue("lumen.local.temp", "LOCAL_TEMP_VAL", global: false)
+deleteStoredValue("lumen.local.temp", global: false)
+let afterDelete = getStoredValue("lumen.local.temp", global: false)
+show("AFTER_DELETE: {afterDelete}")

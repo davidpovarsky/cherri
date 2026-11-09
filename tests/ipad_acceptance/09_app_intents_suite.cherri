@@ -1,0 +1,11 @@
+// P10 Physical iPadOS 27 Acceptance Test 09 — Task C5 (1220085573024106)
+// Scenario: Curated Apple App Intents (Clock Alarms, Stopwatch, Reminders List, Spotlight)
+shortcut "P10 iPad 09 App Intents Suite" {
+    version: "27"
+}
+
+createAlarm("Cherri P10 Test Alarm", time: "07:30", allowsSnooze: true)
+startStopwatch()
+stopStopwatch()
+createRemindersList()
+searchSpotlight("Cherri P10")

@@ -1,0 +1,28 @@
+// P10 Physical iPadOS 27 Acceptance Test 02 — Task A3 (1219750434313969)
+// Scenario: Conditional comparison on getValue(job, "server") string vs number coercion
+shortcut "P10 iPad 02 Conditional GetValue" {
+    version: "27"
+}
+
+let job = {
+    "server": "General Context Server",
+    "port": 8080
+}
+
+let srv = getValue(job, key: "server")
+if srv == "General Context Server" {
+    show("PASS_GETVALUE_STRING_LITERAL")
+} else {
+    show("FAIL_GETVALUE_STRING_LITERAL")
+}
+
+let expectedServer = "General Context Server"
+if srv == expectedServer {
+    show("PASS_GETVALUE_STRING_VARIABLE")
+} else {
+    show("FAIL_GETVALUE_STRING_VARIABLE")
+}
+
+if job["server"] == "General Context Server" {
+    show("PASS_INDEX_STRING_LITERAL")
+}

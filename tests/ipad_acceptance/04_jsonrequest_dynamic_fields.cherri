@@ -1,0 +1,28 @@
+// P10 Physical iPadOS 27 Acceptance Test 04 — Tasks B1/B2 (1219800356179243, 1219800392994574)
+// Scenario: jsonRequest with literal dictionary containing dynamic variables, nested objects, arrays, numbers, booleans
+shortcut "P10 iPad 04 JsonRequest Dynamic" {
+    version: "27"
+}
+
+let city = "ירושלים"
+let lineNo = 480
+let includeRealtime = true
+
+let resp = jsonRequest(
+    "https://httpbin.org/post",
+    method: "POST",
+    body: {
+        "city": city,
+        "lineNumber": lineNo,
+        "realtime": includeRealtime,
+        "stops": ["תחנה מרכזית", "ארלוזורוב"],
+        "meta": {
+            "client": "Cherri-P10",
+            "version": 27
+        }
+    },
+    headers: {
+        "X-Cherri-Suite": "P10-iPad-Acceptance"
+    }
+)
+show(resp)

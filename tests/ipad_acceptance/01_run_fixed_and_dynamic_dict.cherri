@@ -1,0 +1,21 @@
+// P10 Physical iPadOS 27 Acceptance Test 01 — Task A2 (1219750185341254)
+// Scenario: run() with fixed target, dynamic target, and nested dictionary payload
+shortcut "P10 iPad 01 Run Payload" {
+    version: "27"
+}
+
+let payload = {
+    "server": "General Context Server",
+    "routeId": 72,
+    "nested": {
+        "city": "Jerusalem",
+        "active": true
+    }
+}
+
+let fixedResult = run("P10EchoTarget", input: payload)
+show(fixedResult)
+
+let dynamicTarget = "P10EchoTarget"
+let dynResult = run(dynamicTarget, input: payload)
+show(dynResult)

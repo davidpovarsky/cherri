@@ -1,0 +1,10 @@
+// P10 Physical iPadOS 27 Acceptance Test 06 — Task B4 (1219604672882961)
+// Scenario: Direct HTML rendering via gettext -> setName("*.html") -> showWebpage (no base64 data URI)
+shortcut "P10 iPad 06 Direct HTML Hebrew" {
+    version: "27"
+}
+
+let routeTitle = "קו 480 — ירושלים ⇄ תל אביב"
+let htmlDoc = "<!DOCTYPE html><html dir=\"rtl\" lang=\"he\"><head><meta charset=\"utf-8\"><title>תוצאות מסלולים</title><style>body {{ font-family: -apple-system, sans-serif; padding: 24px; background: #f8fafc; color: #0f172a; }} .card {{ background: #fff; padding: 16px; border-radius: 12px; }}</style></head><body><div class=\"card\"><h1>קו 480 — ירושלים ⇄ תל אביב</h1><p>רינדור ישיר ללא Base64 דרך setName + showWebpage</p></div></body></html>"
+let namedHtml = setName(htmlDoc, name: "תוצאות מסלולים.html")
+showWebpage(namedHtml)

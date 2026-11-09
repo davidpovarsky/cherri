@@ -1,0 +1,28 @@
+// P10 Physical iPadOS 27 Acceptance Test 07 — Task C5 (1220085573024106)
+// Scenario: Content Item Filters (filterFiles, filterReminders, filterEvents) with WFContentPredicateTableTemplate
+shortcut "P10 iPad 07 Content Filters" {
+    version: "27"
+}
+
+let remFiltered = filterReminders(
+    filter: {
+        "compound": "and",
+        "predicates": [
+            { "property": "Is Completed", "operator": "equals", "value": false }
+        ]
+    },
+    limit: 5
+)
+show(remFiltered)
+
+let evFiltered = filterEvents(
+    filter: {
+        "compound": "or",
+        "predicates": [
+            { "property": "Start Date", "operator": "is today", "value": true },
+            { "property": "Title", "operator": "contains", "value": "Meeting" }
+        ]
+    },
+    limit: 5
+)
+show(evFiltered)
