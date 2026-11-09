@@ -881,6 +881,12 @@
           "change": "P10R2 corrective repair: property validation executed prior to Set/Remove branching, typed native RemoveSpecifiedValue emission, fail-closed unknown operator/mode handling.",
           "reason": "P10R2 forensic audit findings FR-03 and FR-04.",
           "evidence": "P10R2 adversarial tests A11, A12, A13, A14 and R11, R12, R13"
+        },
+        {
+          "commit": "2a4978d2a3c809ab28c7db454072abfa60258a8a",
+          "change": "Added decomp handler for editEvent and setterArgValue variable token serialization without spurious WFCalendarEventContentItemStartDate emission.",
+          "reason": "Full compile -> decompile -> recompile round-trip parity for all 11 event detail properties.",
+          "evidence": "TestP10_IPadAcceptanceKit_CompileAndStructure/08_edit_reminder_and_event, R12, R13, A12"
         }
       ]
     },
@@ -912,6 +918,12 @@
           "change": "P10R2 corrective repair: property validation executed prior to Set/Remove branching, typed native RemoveSpecifiedValue emission, fail-closed unknown operator/mode handling.",
           "reason": "P10R2 forensic audit findings FR-03 and FR-04.",
           "evidence": "P10R2 adversarial tests A11, A12, A13, A14 and R11, R12, R13"
+        },
+        {
+          "commit": "2a4978d2a3c809ab28c7db454072abfa60258a8a",
+          "change": "Added decomp handler for editReminder and setterArgValue variable token serialization without spurious WFReminderContentItemTitle emission.",
+          "reason": "Full compile -> decompile -> recompile round-trip parity for all 13 reminder detail properties.",
+          "evidence": "TestP10_IPadAcceptanceKit_CompileAndStructure/08_edit_reminder_and_event, R11, R13, A11, A14"
         }
       ]
     },
