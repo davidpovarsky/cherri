@@ -546,7 +546,7 @@ func collectActionValue(valueType *tokenType, value *any) {
 	*value = collectAction(&identifier)
 }
 
-var checkInlineVarRegex = regexp.MustCompile(`\{(.*?)(?:\['(.*?)'])?(?:\.(.*?))?}`)
+var checkInlineVarRegex = regexp.MustCompile(`\{(@?[a-zA-Z_][a-zA-Z0-9_]*)(?:\['(.*?)'])?(?:\.(.*?))?}`)
 
 func checkInlineVars(value *string) {
 	var matches = checkInlineVarRegex.FindAllStringSubmatch(*value, -1)

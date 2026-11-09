@@ -41,7 +41,7 @@ enum statisticOperations {
 }
 
 // [Doc]: Statistic: Perform a statistical operation on `input`.
-action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'Input')
+action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'WFInput')
 
 enum roundingPlace {
  'Millions'

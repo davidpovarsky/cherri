@@ -499,6 +499,9 @@ func attachmentValues(str string) any {
 	varIndex = []attachmentVariable{}
 
 	var noVarString = collectInlineVariables(&str)
+	if len(varIndex) == 0 {
+		return str
+	}
 	makeAttachmentValues()
 
 	return WFTextTokenString{
@@ -620,30 +623,32 @@ func mapInlineVariables(noVarString *string) {
 	}
 }
 
-var collectInlineVarRegex = regexp.MustCompile(`\{@?(.*?)(?:\['(.*?)'])?(?:\.(.*?))?}`)
-var replaceVarRegex = regexp.MustCompile(`(\{@?.*?})`)
+var collectInlineVarRegex = regexp.MustCompile(`\{@?([a-zA-Z_][a-zA-Z0-9_]*)(?:\['(.*?)'])?(?:\.(.*?))?}`)
+var replaceVarRegex = regexp.MustCompile(`\{@?[a-zA-Z_][a-zA-Z0-9_]*(?:\['.*?'])?(?:\..*?)?}`)
 
 // collectInlineVariables collects inline variables from `str` and adds them to a slice of attachmentVariable.
 // It then replaces all instances of inline variables in `str` with ObjectReplaceChar.
 func collectInlineVariables(str *string) (noVarString string) {
 	var matches = collectInlineVarRegex.FindAllStringSubmatch(*str, -1)
-	if matches != nil {
+	if len(matches) > 0 {
 		for _, match := range matches {
 			var attachmentVar attachmentVariable
 			if len(match) < 2 {
 				continue
 			}
 			attachmentVar.identifier = match[1]
-			if len(match[2]) > 0 {
+			if len(match) > 2 && len(match[2]) > 0 {
 				attachmentVar.getAs = match[2]
 			}
-			if len(match[3]) > 0 {
+			if len(match) > 3 && len(match[3]) > 0 {
 				attachmentVar.coerce = match[3]
 			}
 			varIndex = append(varIndex, attachmentVar)
 		}
 
 		noVarString = replaceVarRegex.ReplaceAllString(*str, ObjectReplaceCharStr)
+	} else {
+		noVarString = *str
 	}
 
 	mapInlineVariables(&noVarString)

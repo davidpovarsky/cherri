@@ -2506,10 +2506,12 @@ var actions = map[string]*actionDefinition{
 				optional:  true,
 			},
 		},
-		makeParams: func(args []actionArgument) map[string]any {
+		appendParamsFunc: func(args []actionArgument) map[string]any {
+			if len(args) == 0 {
+				return map[string]any{}
+			}
 			var name = argumentValue(args, 0)
 			return map[string]any{
-				"WFWorkflowName": name,
 				// Mirrors runSelf's emission and real-world Shortcuts output, which
 				// carries both the modern reference dict and the legacy name key.
 				// workflowIdentifier is a generated placeholder; Shortcuts resolves
@@ -2522,13 +2524,13 @@ var actions = map[string]*actionDefinition{
 			}
 		},
 		decomp: func(action *ShortcutAction) (arguments []string) {
-			if action.WFWorkflowActionParameters["WFInput"] != nil {
-				arguments = append(arguments, decompValue(action.WFWorkflowActionParameters["WFInput"]))
-			}
 			if action.WFWorkflowActionParameters["WFWorkflowName"] != nil {
 				// Reference envelopes decompile to variable names; plain names
 				// must be emitted as quoted string literals.
 				arguments = append(arguments, decompValue(action.WFWorkflowActionParameters["WFWorkflowName"]))
+			}
+			if action.WFWorkflowActionParameters["WFInput"] != nil {
+				arguments = append(arguments, decompValue(action.WFWorkflowActionParameters["WFInput"]))
 			}
 			return
 		},

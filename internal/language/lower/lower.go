@@ -2115,6 +2115,30 @@ func (l *Lowerer) isNumberExpr(expr syntax.Expression) bool {
 	return false
 }
 
+func (l *Lowerer) isArrayExpr(expr syntax.Expression) bool {
+	if expr == nil {
+		return false
+	}
+	if l.exprTypes != nil {
+		if t, ok := l.exprTypes[expr]; ok && t != nil {
+			if t.Kind() == types.KindList || t.Name() == "Array" || t.Name() == "List" {
+				return true
+			}
+		}
+	}
+	switch e := expr.(type) {
+	case *syntax.ListExpr:
+		return true
+	case *syntax.IdentExpr:
+		if ref, ok := l.bindings[e.Name]; ok && ref.Type != nil {
+			if ref.Type.Kind() == types.KindList || ref.Type.Name() == "Array" || ref.Type.Name() == "List" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func flattenCompoundCondition(expr syntax.Expression, op syntax.TokenType) []syntax.Expression {
 	if bin, ok := expr.(*syntax.BinaryExpr); ok && bin.Op == op {
 		return append(flattenCompoundCondition(bin.Left, op), flattenCompoundCondition(bin.Right, op)...)
@@ -2146,6 +2170,15 @@ func (l *Lowerer) lowerConditionClause(expr syntax.Expression) (map[string]any, 
 			code = 9
 		default:
 			return nil, fmt.Errorf("unsupported operator in compound condition: %v", binExpr.Op)
+		}
+
+		if (binExpr.Op == syntax.TokenEqual || binExpr.Op == syntax.TokenNotEqual) &&
+			(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
+			opStr := "=="
+			if binExpr.Op == syntax.TokenNotEqual {
+				opStr = "!="
+			}
+			return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
 		}
 
 		leftVal, err := l.lowerExpression(binExpr.Left)
@@ -2324,7 +2357,16 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 		}
 
 		if isComp {
-			leftVal, err := l.lowerExpression(binExpr.Left)
+			if (binExpr.Op == syntax.TokenEqual || binExpr.Op == syntax.TokenNotEqual) &&
+			(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
+			opStr := "=="
+			if binExpr.Op == syntax.TokenNotEqual {
+				opStr = "!="
+			}
+			return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
+		}
+
+		leftVal, err := l.lowerExpression(binExpr.Left)
 			if err != nil {
 				return nil, err
 			}
@@ -2423,7 +2465,16 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 				isComp = false
 			}
 			if isComp {
-				leftVal, err := l.lowerExpression(binExpr.Left)
+				if (binExpr.Op == syntax.TokenEqual || binExpr.Op == syntax.TokenNotEqual) &&
+			(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
+			opStr := "=="
+			if binExpr.Op == syntax.TokenNotEqual {
+				opStr = "!="
+			}
+			return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
+		}
+
+		leftVal, err := l.lowerExpression(binExpr.Left)
 				if err != nil {
 					return nil, err
 				}
@@ -4774,8 +4825,8 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	return nil, nil
 }
 
-var rawActionVarRegex = regexp.MustCompile(`^\$\{@?([a-zA-Z0-9_]+)\}$|^\{@?([a-zA-Z0-9_]+)\}$`)
-var rawActionInterpolationRegex = regexp.MustCompile(`\{@?([a-zA-Z0-9_]+)\}`)
+var rawActionVarRegex = regexp.MustCompile(`^\$\{@?([a-zA-Z_][a-zA-Z0-9_]*)\}$|^\{@?([a-zA-Z_][a-zA-Z0-9_]*)\}$`)
+var rawActionInterpolationRegex = regexp.MustCompile(`\{@?([a-zA-Z_][a-zA-Z0-9_]*)\}`)
 
 func (l *Lowerer) normalizeRawActionParamValue(v any) any {
 	if v == nil {
