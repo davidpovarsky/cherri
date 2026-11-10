@@ -118,8 +118,10 @@ def evaluate(inp, run_pack_generator=True):
 
     def row(component, source_commit, tested_against, checks, status=None, notes=""):
         failures = [msg for ok, msg in checks if not ok]
-        if status is None:
-            status = PASS if not failures else FAIL
+        if failures:
+            status = FAIL
+        elif status is None:
+            status = PASS
         rows.append(
             {
                 "component": component,

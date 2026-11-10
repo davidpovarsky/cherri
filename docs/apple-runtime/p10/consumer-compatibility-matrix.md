@@ -1,21 +1,21 @@
 # P10R5 — Consumer Compatibility Matrix
 
 - **Generator**: `tools/p10r3/verify_consumer_compatibility.py`
-- **Compiler HEAD at generation**: `9038ea69aea28413e00b2e9fc3bd1a379b47c7c2`
+- **Compiler HEAD at generation**: `6bc53e6cac4d57ffa6112fafb3c14fd73aa1d935`
 - **Verdict**: `COMPATIBLE_WITH_EXTERNAL_BLOCKERS`
 
 > `NOT_AVAILABLE_LOCALLY` and `BLOCKED_EXTERNAL` are never counted as `PASS`.
 
 | Component | Source Commit | Schema Fingerprint | Codec Fingerprint | Tested Against | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Compiler | `9038ea69aea2` | `787e9842bbe9` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
-| Documentation | `a38b62b819e4` | `787e9842bbe9` | `3e7e3555eefe` | compiler 9038ea69aea2 schema 787e9842bbe9 | `PASS` |
-| Skill | `f58260ed3355` | `787e9842bbe9` | `3e7e3555eefe` | docs a38b62b819e4 | `PASS` |
-| Remote Builder | `f58260ed3355` | `787e9842bbe9` | `3e7e3555eefe` | skill compatibility-manifest.json tuple | `BLOCKED_EXTERNAL` |
-| iOS Bridge | `9038ea69aea2` | `787e9842bbe9` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
-| iOS UI | `9038ea69aea2` | `787e9842bbe9` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
+| Compiler | `6bc53e6cac4d` | `787e9842bbe9` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
+| Documentation | `a38b62b819e4` | `787e9842bbe9` | `3e7e3555eefe` | compiler 6bc53e6cac4d schema 787e9842bbe9 | `PASS` |
+| Skill | `1204e1f7dfac` | `787e9842bbe9` | `3e7e3555eefe` | docs a38b62b819e4 | `PASS` |
+| Remote Builder | `1204e1f7dfac` | `787e9842bbe9` | `3e7e3555eefe` | skill compatibility-manifest.json tuple | `BLOCKED_EXTERNAL` |
+| iOS Bridge | `6bc53e6cac4d` | `787e9842bbe9` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
+| iOS UI | `6bc53e6cac4d` | `787e9842bbe9` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
 | Preview | `42ee7656e0cc` | `787e9842bbe9` | `3e7e3555eefe` | ios/WebPreview lock + generic catalog metadata renderer | `PASS` |
-| Pure+Pack | `141b9cc96cf1` | `787e9842bbe9` | `3e7e3555eefe` | P10 catalog @ 9038ea69aea2 | `PASS` |
+| Pure+Pack | `141b9cc96cf1` | `787e9842bbe9` | `3e7e3555eefe` | P10 catalog @ 6bc53e6cac4d | `PASS` |
 
 ## Check Details
 
@@ -36,7 +36,7 @@
 - [x] skill codecFingerprint == compiler (got 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e)
 - [x] skill languageVersion == compiler
 - [x] skill catalogSchemaVersion == compiler
-- [x] skill compilerCommit (f58260ed33553749b5bd00482a1c2d2d67f4f5a7) is an ancestor of HEAD
+- [x] skill compilerCommit (1204e1f7dfac7af8df0813d1514fac629765af69) is an ancestor of HEAD
 - [x] skill docsCommit (a38b62b819e48fea73dfd0636eb6de4dd08c2713) == docs HEAD (a38b62b819e48fea73dfd0636eb6de4dd08c2713)
 
 ### Remote Builder — `BLOCKED_EXTERNAL`
