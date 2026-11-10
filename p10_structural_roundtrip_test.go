@@ -201,6 +201,23 @@ func canonicalizeActionsChain(cloned map[string]any) map[string]any {
 					wf["workflowName"] = ""
 				}
 			}
+
+			// 5. Normalize implicit vs explicit WFNumberContentItem coercion on numeric conditional WFInput
+			if act["WFWorkflowActionIdentifier"] == "is.workflow.actions.conditional" {
+				if wfInput, ok := params["WFInput"].(map[string]any); ok {
+					if variable, ok := wfInput["Variable"].(map[string]any); ok {
+						if val, ok := variable["Value"].(map[string]any); ok {
+							if aggrs, ok := val["Aggrandizements"].([]any); ok && len(aggrs) == 1 {
+								if agMap, ok := aggrs[0].(map[string]any); ok {
+									if agMap["Type"] == "WFCoercionVariableAggrandizement" && agMap["CoercionItemClass"] == "WFNumberContentItem" && params["WFNumberValue"] != nil {
+										delete(val, "Aggrandizements")
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		filteredActs = append(filteredActs, act)
 	}

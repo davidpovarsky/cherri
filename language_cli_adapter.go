@@ -108,6 +108,7 @@ func HandleLanguageV2CLI() bool {
 	if len(os.Args) > 1 && os.Args[1] == "import" {
 		var importPath string
 		var outPath string
+		mode := "v2"
 		for i := 2; i < len(os.Args); i++ {
 			arg := os.Args[i]
 			if strings.HasPrefix(arg, "--output=") {
@@ -117,26 +118,31 @@ func HandleLanguageV2CLI() bool {
 					outPath = os.Args[i+1]
 					i++
 				}
+			} else if arg == "--legacy" {
+				mode = "legacy"
+			} else if arg == "--mode" {
+				if i+1 < len(os.Args) {
+					mode = os.Args[i+1]
+					i++
+				}
+			} else if strings.HasPrefix(arg, "--mode=") {
+				mode = strings.TrimPrefix(arg, "--mode=")
 			} else if !strings.HasPrefix(arg, "-") && importPath == "" {
 				importPath = arg
 			}
 		}
 		if importPath == "" {
-			fmt.Fprintf(os.Stderr, "Usage: cherri import <file.shortcut> [--output <path>]\n")
+			fmt.Fprintf(os.Stderr, "Usage: cherri import <file.shortcut> [--output <path>] [--mode legacy|v2]\n")
 			os.Exit(1)
 		}
-		shortcutBytes := importShortcut(importPath)
-		if outPath != "" {
-			outputPath = outPath
-			if args.Args == nil {
-				args.Args = make(map[string]string)
-			}
-			args.Args["output"] = outPath
-		}
-		decompile(shortcutBytes)
-		if decompContent, err := os.ReadFile(outputPath); err == nil {
-			migrated := migrate.MigrateSource(string(decompContent))
-			_ = os.WriteFile(outputPath, []byte(migrated), 0644)
+		_, err := ExecuteImportPipeline(ImportOptions{
+			InputPath:  importPath,
+			OutputPath: outPath,
+			Mode:       mode,
+		})
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "import error: %v\n", err)
+			os.Exit(1)
 		}
 		return true
 	}

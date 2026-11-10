@@ -49,8 +49,8 @@ type Value struct {
 	Value                       any                          `plist:",omitempty"`
 	Variable                    any                          `plist:",omitempty"`
 	WFDictionaryFieldValueItems []WFDictionaryFieldValueItem `plist:",omitempty"`
-	AttachmentsByRange          map[string]Value             `plist:",omitempty"`
-	String                      string                       `plist:",omitempty"`
+	AttachmentsByRange          map[string]Value             `plist:"attachmentsByRange,omitempty"`
+	String                      string                       `plist:"string,omitempty"`
 	Aggrandizements             []Aggrandizement             `plist:",omitempty"`
 	Prompt                      string                       `plist:",omitempty"`
 }

@@ -1022,8 +1022,13 @@ func (p *Parser) parseAssignStmt() *AssignStmt {
 	val := p.parseExpression(precNone)
 	p.match(TokenSemicolon)
 
+	span := nameTok.Span
+	if val != nil {
+		span = span.Merge(val.NodeSpan())
+	}
+
 	return &AssignStmt{
-		Span:  nameTok.Span.Merge(val.NodeSpan()),
+		Span:  span,
 		Name:  nameTok.Text,
 		Op:    opTok.Type,
 		Value: val,

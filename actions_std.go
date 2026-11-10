@@ -1484,7 +1484,7 @@ var actions = map[string]*actionDefinition{
 			if len(args) == 0 {
 				return map[string]any{}
 			}
-			if args[0].valueType == Variable {
+			if args[0].valueType == Variable || args[0].valueType == Question {
 				return map[string]any{
 					"WFSelectedApp": argumentValue(args, 0),
 				}
@@ -3054,11 +3054,20 @@ func textParts(args []actionArgument) map[string]any {
 }
 
 func decompReferenceValue(paramValue any) string {
+	if paramValue == nil {
+		return ""
+	}
 	if isReferenceValue(paramValue) {
 		return decompValue(paramValue)
 	}
-
-	return paramValue.(string)
+	switch v := paramValue.(type) {
+	case string:
+		return v
+	case map[string]any:
+		return decompValue(v)
+	default:
+		return fmt.Sprintf("%v", v)
+	}
 }
 
 func decompTextParts(action *ShortcutAction) (arguments []string) {
@@ -3075,7 +3084,11 @@ func decompTextParts(action *ShortcutAction) (arguments []string) {
 	}
 
 	if glue != "" || hasCustomSeparator {
-		arguments = append(arguments, fmt.Sprintf("\"%s\"", glueToChar(glue)))
+		if strings.HasPrefix(glue, "\"") && strings.HasSuffix(glue, "\"") {
+			arguments = append(arguments, glue)
+		} else {
+			arguments = append(arguments, fmt.Sprintf("\"%s\"", escapeString(glueToChar(glue))))
+		}
 	}
 
 	return
@@ -3184,18 +3197,26 @@ func appendSetMultitaskingModeParam(title, identifier, symbol string) map[string
 }
 
 func decompAppAction(key string, action *ShortcutAction) (arguments []string) {
-	if action.WFWorkflowActionParameters[key] != nil {
-		switch reflect.TypeOf(action.WFWorkflowActionParameters[key]).Kind() {
+	raw := action.WFWorkflowActionParameters[key]
+	if raw == nil {
+		raw = action.WFWorkflowActionParameters["WFSelectedApp"]
+	}
+	if raw != nil {
+		switch reflect.TypeOf(raw).Kind() {
 		case reflect.String:
-			return append(arguments, decompValue(action.WFWorkflowActionParameters[key]))
+			return append(arguments, decompValue(raw))
 		case reflect.Map:
-			for key, bundle := range action.WFWorkflowActionParameters[key].(map[string]interface{}) {
+			m := raw.(map[string]interface{})
+			if isReferenceValue(m) || m["WFSerializationType"] != nil {
+				return append(arguments, decompValue(m))
+			}
+			for key, bundle := range m {
 				if key == "BundleIdentifier" {
 					arguments = append(arguments, fmt.Sprintf("\"%s\"", bundle))
 				}
 			}
 		case reflect.Array:
-			for _, app := range action.WFWorkflowActionParameters[key].([]interface{}) {
+			for _, app := range raw.([]interface{}) {
 				var bundleIdentifer = app.(map[string]interface{})["BundleIdentifier"]
 				arguments = append(arguments, fmt.Sprintf("\"%s\"", bundleIdentifer))
 			}

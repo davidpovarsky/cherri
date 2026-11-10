@@ -549,6 +549,12 @@ func buildV2SourceForEntry(entry catalogActionInfo, reg *schema.Registry) string
 	}
 
 	switch entry.Name {
+	case "mustOutput":
+		b.WriteString("mustOutput(\"sample\", response: \"resp\")\n")
+		return b.String()
+	case "streetAddress":
+		b.WriteString("streetAddress(\"123 Main St\", addressLine2: \"Apt 4\", city: \"Cupertino\", state: \"CA\", country: \"USA\", zipCode: 95014)\n")
+		return b.String()
 	case "convertMeasurement":
 		b.WriteString("let m = Ask\nconvertMeasurement(m, unitType: \"Length\", unit: \"m\")\n")
 		return b.String()

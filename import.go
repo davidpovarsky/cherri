@@ -7,6 +7,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -14,9 +15,66 @@ import (
 
 	"github.com/electrikmilk/args-parser"
 	"github.com/electrikmilk/cherri/internal/icloudshortcut"
+	"github.com/electrikmilk/cherri/internal/language/migrate"
 )
 
 var importPath string
+
+type ImportOptions struct {
+	InputPath  string
+	OutputPath string
+	Mode       string // "legacy" or "v2"
+}
+
+type ImportResult struct {
+	OutputPath   string
+	LegacySource string
+	FinalSource  string
+	Mode         string
+}
+
+func ExecuteImportPipeline(opts ImportOptions) (*ImportResult, error) {
+	if opts.Mode == "" {
+		opts.Mode = "v2"
+	}
+	shortcutBytes := importShortcut(opts.InputPath)
+	if opts.OutputPath != "" {
+		outputPath = opts.OutputPath
+		if args.Args == nil {
+			args.Args = make(map[string]string)
+		}
+		args.Args["output"] = opts.OutputPath
+	}
+	decompile(shortcutBytes)
+
+	decompContent, err := os.ReadFile(outputPath)
+	if err != nil {
+		return nil, fmt.Errorf("read decompiled output at %s: %w", outputPath, err)
+	}
+	legacySrc := string(decompContent)
+	finalSrc := legacySrc
+
+	if strings.ToLower(opts.Mode) == "v2" {
+		migrated, _, migErr := migrate.MigrateSourceWithDiagnostics(legacySrc)
+		if migErr == nil && migrated != "" {
+			finalSrc = migrated
+			_ = os.WriteFile(outputPath, []byte(migrated), 0644)
+		} else {
+			migrated2 := migrate.MigrateSource(legacySrc)
+			if migrated2 != "" {
+				finalSrc = migrated2
+				_ = os.WriteFile(outputPath, []byte(migrated2), 0644)
+			}
+		}
+	}
+
+	return &ImportResult{
+		OutputPath:   outputPath,
+		LegacySource: legacySrc,
+		FinalSource:  finalSrc,
+		Mode:         opts.Mode,
+	}, nil
+}
 
 // Imports a Shortcut for decompilation based on path given.
 func importShortcut(path string) (shortcutBytes []byte) {

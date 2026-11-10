@@ -131,17 +131,32 @@ func makeCommentAction(comment string) {
 }
 
 func isArrayVariable(ident string) bool {
-	v, found := variables[ident]
-	if !found {
-		return false
-	}
-	if v.valueType == Arr {
-		return true
-	}
-	if v.valueType == Action {
-		if act, ok := v.value.(action); ok && (act.ident == "list" || (act.def != nil && act.def.outputType == Arr)) {
+	visited := make(map[string]bool)
+	curr := ident
+	for curr != "" && !visited[curr] {
+		visited[curr] = true
+		v, found := variables[curr]
+		if !found {
+			return false
+		}
+		if v.valueType == Arr {
 			return true
 		}
+		if v.valueType == Action {
+			if act, ok := v.value.(action); ok && (act.ident == "list" || (act.def != nil && act.def.outputType == Arr)) {
+				return true
+			}
+			return false
+		}
+		if v.valueType == Variable {
+			if ref, ok := v.value.(varValue); ok {
+				if s, ok := ref.value.(string); ok {
+					curr = s
+					continue
+				}
+			}
+		}
+		return false
 	}
 	return false
 }

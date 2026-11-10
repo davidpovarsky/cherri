@@ -67,13 +67,30 @@ var globals = map[string]varValue{
 	},
 }
 
+func init() {
+	for i := 2; i <= 10; i++ {
+		globals[fmt.Sprintf("RepeatItem%d", i)] = varValue{
+			variableType: "Variable",
+			valueType:    String,
+			value:        fmt.Sprintf("Repeat Item %d", i),
+		}
+		globals[fmt.Sprintf("RepeatIndex%d", i)] = varValue{
+			variableType: "Variable",
+			valueType:    Integer,
+			value:        fmt.Sprintf("Repeat Index %d", i),
+		}
+	}
+}
+
 func availableIdentifier(identifier *string) {
 	if v, found := variables[*identifier]; found {
 		if v.constant {
 			parserError(fmt.Sprintf("Cannot redefine constant '%s'.", *identifier))
 		}
 		if v.repeatItem {
-			parserError(fmt.Sprintf("Cannot redefine repeat item '%s'.", *identifier))
+			v.repeatItem = false
+			variables[*identifier] = v
+			return
 		}
 	}
 	if _, found := globals[*identifier]; found {
@@ -167,22 +184,39 @@ func makeVariableReferenceString(value varValue) string {
 var currentOutputName string
 var duplicateDelta int
 
-func checkDuplicateOutputName(name string) string {
-	if name != currentOutputName {
-		currentOutputName = name
-		duplicateDelta = 0
-	}
-	if _, found := uuids[name]; found {
-		return checkDuplicateOutputName(duplicateOutputName())
-	} else if args.Using("import") {
-		for _, outputName := range uuids {
-			if outputName == currentOutputName {
-				return checkDuplicateOutputName(duplicateOutputName())
-			}
+var namedVars = make(map[string]bool)
+
+func isUsedOutputName(candidate string) bool {
+	for name := range namedVars {
+		if strings.EqualFold(name, candidate) {
+			return true
 		}
 	}
+	for k, v := range uuids {
+		if strings.EqualFold(k, candidate) || strings.EqualFold(v, candidate) {
+			return true
+		}
+	}
+	for gName := range globals {
+		if strings.EqualFold(gName, candidate) {
+			return true
+		}
+	}
+	return false
+}
 
-	return currentOutputName
+func checkDuplicateOutputName(name string) string {
+	candidate := name
+	counter := 1
+	for isUsedOutputName(candidate) {
+		if args.Using("import") {
+			candidate = fmt.Sprintf("%s%d", name, counter)
+		} else {
+			candidate = fmt.Sprintf("%s %d", name, counter)
+		}
+		counter++
+	}
+	return candidate
 }
 
 func duplicateOutputName() string {

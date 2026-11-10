@@ -137,8 +137,12 @@ func resetCompilerState() {
 	// Decompilation state.
 	code.Reset()
 	decompiledIncludes = nil
+	actionByUUID = nil
+	controlFlowGroupByUUID = nil
 	varUUIDs = nil
 	constUUIDs = nil
+	emittedConstants = nil
+	activeControlFlowGroups = nil
 	identifierMap = nil
 	extractedReferences = nil
 	references = map[string]map[string]any{}

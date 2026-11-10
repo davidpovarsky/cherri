@@ -39,7 +39,65 @@ func handleRawParams(params map[string]any) {
 		if key == "WFWorkflow" {
 			continue
 		}
+		if key == "AppIntentDescriptor" {
+			params[key] = normalizeNativeDescriptor(value)
+			continue
+		}
 		params[key] = normalizeRawActionParamValue(value)
+	}
+}
+
+func isPlainNativeDictionary(v map[string]any) bool {
+	if _, ok := v["AppIntentIdentifier"]; ok {
+		return true
+	}
+	if _, ok := v["ActionRequiresAppInstallation"]; ok {
+		return true
+	}
+	if _, ok := v["BundleIdentifier"]; ok {
+		if _, ok2 := v["TeamIdentifier"]; ok2 {
+			return true
+		}
+	}
+	if _, ok := v["fileLocation"]; ok {
+		return true
+	}
+	return false
+}
+
+func normalizeNativeDescriptor(value any) any {
+	if value == nil {
+		return nil
+	}
+	switch m := value.(type) {
+	case map[string]any:
+		res := make(map[string]any, len(m))
+		for k, v := range m {
+			res[k] = normalizeNativeScalar(v)
+		}
+		return res
+	default:
+		return value
+	}
+}
+
+func normalizeNativeScalar(v any) any {
+	if v == nil {
+		return nil
+	}
+	switch val := v.(type) {
+	case string:
+		if strings.EqualFold(val, "true") {
+			return true
+		}
+		if strings.EqualFold(val, "false") {
+			return false
+		}
+		return val
+	case map[string]any:
+		return normalizeNativeDescriptor(val)
+	default:
+		return val
 	}
 }
 
@@ -62,6 +120,9 @@ func normalizeRawActionParamValue(value any) any {
 	case map[string]any:
 		if _, hasType := v["WFSerializationType"]; hasType {
 			return v
+		}
+		if isPlainNativeDictionary(v) {
+			return normalizeNativeDescriptor(v)
 		}
 		var normalized any = normalizeRawActionDictionary(v)
 		return makeDictionaryValue(&normalized)

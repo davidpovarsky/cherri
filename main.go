@@ -6,15 +6,17 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"unicode"
 
 	"github.com/electrikmilk/args-parser"
-	"github.com/electrikmilk/cherri/internal/language/migrate"
 	"howett.net/plist"
 )
 
@@ -113,11 +115,22 @@ func main() {
 	}
 
 	if args.Using("import") && args.Value("import") != "" {
-		var shortcutBytes = importShortcut(args.Value("import"))
-		decompile(shortcutBytes)
-		if decompContent, err := os.ReadFile(outputPath); err == nil {
-			migrated := migrate.MigrateSource(string(decompContent))
-			_ = os.WriteFile(outputPath, []byte(migrated), 0644)
+		mode := "v2"
+		if args.Using("legacy") || args.Value("mode") == "legacy" {
+			mode = "legacy"
+		}
+		var out string
+		if args.Using("output") {
+			out = args.Value("output")
+		}
+		_, err := ExecuteImportPipeline(ImportOptions{
+			InputPath:  args.Value("import"),
+			OutputPath: out,
+			Mode:       mode,
+		})
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "import error: %v\n", err)
+			os.Exit(1)
 		}
 
 		os.Exit(0)
@@ -374,15 +387,84 @@ func panicDebug(err error) {
 	panic("debug")
 }
 
-// Converts a map[string]interface{} to a matching struct data type.
+// normalizePlistNumbers recursively converts float64 integers and json.Number to exact uint64/int64
+// so plist.Marshal / plist.Unmarshal preserves integer types without 'real' type mismatches.
+func normalizePlistNumbers(val any) any {
+	if val == nil {
+		return nil
+	}
+	switch v := val.(type) {
+	case float64:
+		if !math.IsNaN(v) && !math.IsInf(v, 0) && v == math.Floor(v) {
+			if v >= 0 && v <= math.MaxUint64 {
+				return uint64(v)
+			}
+			return int64(v)
+		}
+		return v
+	case json.Number:
+		s := v.String()
+		if strings.ContainsAny(s, ".eE") {
+			if f, err := strconv.ParseFloat(s, 64); err == nil {
+				if !math.IsNaN(f) && !math.IsInf(f, 0) && f == math.Floor(f) {
+					if f >= 0 && f <= math.MaxUint64 {
+						return uint64(f)
+					}
+					return int64(f)
+				}
+				return f
+			}
+		}
+		if u, err := strconv.ParseUint(s, 10, 64); err == nil {
+			return u
+		}
+		if i, err := strconv.ParseInt(s, 10, 64); err == nil {
+			return i
+		}
+		if f, err := strconv.ParseFloat(s, 64); err == nil {
+			return f
+		}
+		return s
+	case map[string]any:
+		res := make(map[string]any, len(v))
+		for k, item := range v {
+			res[k] = normalizePlistNumbers(item)
+		}
+		return res
+	case []any:
+		res := make([]any, len(v))
+		for i, item := range v {
+			res[i] = normalizePlistNumbers(item)
+		}
+		return res
+	default:
+		return v
+	}
+}
+
+// Converts a map[string]interface{} to a matching struct data type safely.
+// Never prints raw private user data to stdout on error.
 func mapToStruct(data any, structure any) {
-	var plistBytes, marshalErr = plist.Marshal(data, plist.XMLFormat)
-	handle(marshalErr)
+	if data == nil || structure == nil {
+		return
+	}
+	normalized := normalizePlistNumbers(data)
+	var plistBytes, marshalErr = plist.Marshal(normalized, plist.XMLFormat)
+	if marshalErr != nil {
+		if args.Using("debug") {
+			fmt.Fprintf(os.Stderr, "mapToStruct marshal error: %v\n", marshalErr)
+		}
+		return
+	}
 
 	var _, unmarshalErr = plist.Unmarshal(plistBytes, structure)
 	if unmarshalErr != nil {
-		fmt.Println("Tried to map to struct, but it was not a struct!", data)
-		handle(unmarshalErr)
+		// Attempt fallback using Binary plist format
+		if binBytes, binErr := plist.Marshal(normalized, plist.BinaryFormat); binErr == nil {
+			_, _ = plist.Unmarshal(binBytes, structure)
+		} else if args.Using("debug") {
+			fmt.Fprintf(os.Stderr, "mapToStruct unmarshal error: %v\n", unmarshalErr)
+		}
 	}
 }
 

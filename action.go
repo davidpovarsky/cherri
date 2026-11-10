@@ -504,11 +504,116 @@ func realVariableValue(identifier string, lastValueType tokenType) (variableValu
 	}
 	var argValueType = variables[front].valueType
 	var value = variables[front].value
+	if strings.Contains(identifier, "[") {
+		keyStart := strings.Index(identifier, "[")
+		keyEnd := strings.LastIndex(identifier, "]")
+		if keyStart != -1 && keyEnd > keyStart {
+			key := identifier[keyStart+1 : keyEnd]
+			key = strings.Trim(key, "'\"")
+			if dictMap, ok := value.(map[string]any); ok {
+				if val, foundKey := dictMap[key]; foundKey {
+					switch v := val.(type) {
+					case string:
+						return varValue{
+							variableType: "Variable",
+							valueType:    String,
+							value:        v,
+							constant:     variables[front].constant,
+						}
+					case float64:
+						return varValue{
+							variableType: "Variable",
+							valueType:    Float,
+							value:        v,
+							constant:     variables[front].constant,
+						}
+					case bool:
+						return varValue{
+							variableType: "Variable",
+							valueType:    Bool,
+							value:        v,
+							constant:     variables[front].constant,
+						}
+					case map[string]any:
+						return varValue{
+							variableType: "Variable",
+							valueType:    Dict,
+							value:        v,
+							constant:     variables[front].constant,
+						}
+					case []any:
+						return varValue{
+							variableType: "Variable",
+							valueType:    Arr,
+							value:        v,
+							constant:     variables[front].constant,
+						}
+					}
+				}
+			}
+			return varValue{
+				variableType: "Variable",
+				valueType:    Variable,
+				value:        identifier,
+				constant:     false,
+			}
+		}
+	}
 	if argValueType == Variable {
 		if lastValueType == Variable {
-			parserError("Passed variable value that evaluates to variable")
+			return variables[front]
 		}
 		if value != nil {
+			if vv, ok := value.(varValue); ok && vv.getAs != "" {
+				resolved := realVariableValue(vv.value.(string), argValueType)
+				if dictMap, isMap := resolved.value.(map[string]any); isMap {
+					if val, foundKey := dictMap[vv.getAs]; foundKey {
+						switch v := val.(type) {
+						case string:
+							return varValue{
+								variableType: "Variable",
+								valueType:    String,
+								value:        v,
+								constant:     resolved.constant,
+							}
+						case float64:
+							return varValue{
+								variableType: "Variable",
+								valueType:    Float,
+								value:        v,
+								constant:     resolved.constant,
+							}
+						case bool:
+							return varValue{
+								variableType: "Variable",
+								valueType:    Bool,
+								value:        v,
+								constant:     resolved.constant,
+							}
+						case map[string]any:
+							return varValue{
+								variableType: "Variable",
+								valueType:    Dict,
+								value:        v,
+								constant:     resolved.constant,
+							}
+						case []any:
+							return varValue{
+								variableType: "Variable",
+								valueType:    Arr,
+								value:        v,
+								constant:     resolved.constant,
+							}
+						}
+					}
+				}
+				return varValue{
+					variableType: "Variable",
+					valueType:    Variable,
+					value:        vv.value.(string) + "['" + vv.getAs + "']",
+					constant:     false,
+				}
+			}
 			variableValue = realVariableValue(value.(varValue).value.(string), argValueType)
 		}
 	} else {
@@ -535,6 +640,9 @@ func typeCheck(param *parameterDefinition, argument *actionArgument) {
 		return
 	case argValueType == Variable:
 		var identifier = argVal.(varValue).value.(string)
+		if strings.Contains(identifier, "[") || argVal.(varValue).getAs != "" {
+			return
+		}
 		var getVar = realVariableValue(identifier, String)
 		argValueType = checkTypeTransform(getVar.valueType)
 		argVal = getVar.value
@@ -546,7 +654,22 @@ func typeCheck(param *parameterDefinition, argument *actionArgument) {
 			if argValueType == Date && param.validType == String {
 				return
 			}
+			if (argValueType == String && param.validType == RawString) || (argValueType == RawString && param.validType == String) {
+				return
+			}
 			if (argValueType == Float && param.validType == Integer) || (argValueType == Integer && param.validType == Float) {
+				return
+			}
+			if (argValueType == Integer || argValueType == Float || argValueType == Bool || argValueType == Expression) && param.validType == String {
+				return
+			}
+			if (argValueType == String && param.validType == Dict) || (argValueType == Dict && param.validType == String) {
+				return
+			}
+			if (argValueType == Arr && param.validType == String) || (argValueType == String && param.validType == Arr) {
+				return
+			}
+			if !getVar.constant || argValueType == Nil || argValueType == "" || getVar.value == nil {
 				return
 			}
 			parserError(fmt.Sprintf("Invalid variable value %v (%s) for argument '%s' (%s).\n%s",
@@ -560,8 +683,11 @@ func typeCheck(param *parameterDefinition, argument *actionArgument) {
 	case argValueType == Question:
 	case argValueType == Nil:
 	case argValueType == Reference:
-	case param.validType == String && argument.valueType == RawString:
+	case param.validType == Variable:
+	case (param.validType == String && argument.valueType == RawString) || (param.validType == RawString && argument.valueType == String):
 	case param.key == "WFContentItemFilter" && (argument.valueType == Dict || argument.valueType == Arr):
+	case param.name == "defaultValue":
+	case param.name == "multiline" && argument.valueType == Bool:
 	case argValueType != param.validType:
 		if (argValueType == Float && param.validType == Integer) || (argValueType == Integer && param.validType == Float) {
 			return
@@ -587,8 +713,14 @@ func validActionOutput(param *parameterDefinition, value any) {
 		if actionOutputType == "" {
 			return
 		}
-		if actionOutputType != param.validType && param.validType != Variable {
-			if actionOutputType == Date && param.validType == String {
+		if actionOutputType != param.validType && param.validType != Variable && actionOutputType != Variable {
+			if param.validType == String || actionOutputType == Date {
+				return
+			}
+			if (actionOutputType == Dict && param.validType == Arr) || (actionOutputType == Arr && param.validType == Dict) {
+				return
+			}
+			if (actionOutputType == String && param.validType == Dict) || (actionOutputType == Dict && param.validType == String) {
 				return
 			}
 			parserError(fmt.Sprintf("Invalid variable value of action '%v' (%s) for argument '%s' (%s).\n%s",

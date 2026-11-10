@@ -431,6 +431,9 @@ func normalizeV2RawParamValue(value any) any {
 		if _, hasColor := v["WFColorRepresentationType"]; hasColor {
 			return v
 		}
+		if isPlainNativeDictionary(v) {
+			return normalizeNativeDescriptor(v)
+		}
 		normalized := make(map[string]any, len(v))
 		for key, item := range v {
 			normalized[key] = normalizeV2RawParamValue(item)
@@ -461,6 +464,10 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 	}
 	for k, v := range cleanParams {
 		if k == "WFWorkflow" || (appleIdentifier == "is.workflow.actions.list" && k == "WFItems") {
+			continue
+		}
+		if k == "AppIntentDescriptor" {
+			cleanParams[k] = normalizeNativeDescriptor(v)
 			continue
 		}
 		cleanParams[k] = normalizeV2RawParamValue(v)

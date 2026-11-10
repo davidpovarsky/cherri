@@ -336,7 +336,7 @@ func collectVariableValue(constant bool, valueType *tokenType, value *any) {
 		collectExpression(valueType, value)
 		return
 	}
-	if constant && (*valueType == Arr || *valueType == Variable) {
+	if constant && *valueType == Arr {
 		parserError(fmt.Sprintf("Type %v values cannot be constants.", *valueType))
 	}
 }
@@ -407,7 +407,7 @@ func collectValue(valueType *tokenType, value *any, until rune) {
 		parserError("Value expected")
 	}
 	switch {
-	case intChar(char):
+	case intChar(char) || (char == '-' && ((next(1) >= '0' && next(1) <= '9') || next(1) == '.')):
 		*valueType = Integer
 		if strings.Contains(ahead, ".") {
 			*valueType = Float
@@ -449,11 +449,28 @@ func collectValue(valueType *tokenType, value *any, until rune) {
 	case tokenAhead(Nil):
 		*valueType = Nil
 		advanceUntil(until)
-	case strings.Contains(ahead, "("):
+	case isActionCallAhead(ahead):
 		collectActionValue(valueType, value)
 	default:
 		collectReference(valueType, value, &until, false)
 	}
+}
+
+func isActionCallAhead(ahead string) bool {
+	parenIdx := strings.Index(ahead, "(")
+	if parenIdx == -1 {
+		return false
+	}
+	beforeParen := strings.TrimSpace(ahead[:parenIdx])
+	if beforeParen == "" {
+		return false
+	}
+	for _, r := range beforeParen {
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '_' {
+			return false
+		}
+	}
+	return true
 }
 
 func collectColorValue(value *any) {
@@ -614,11 +631,15 @@ func collectReference(valueType *tokenType, value *any, until *rune, variable bo
 		if reference == "Ask" && char == ':' {
 			advance()
 			skipWhitespace()
-			if char != '\'' {
-				parserError(fmt.Sprintf("Expected prompt raw string ('), got: %c", char))
+			if char == '\'' {
+				advance()
+				prompt = collectRawString()
+			} else if char == '"' {
+				advance()
+				prompt = collectString()
+			} else {
+				parserError(fmt.Sprintf("Expected prompt string (' or \"), got: %c", char))
 			}
-			advance()
-			prompt = collectRawString()
 		}
 	} else {
 		reference = strings.TrimPrefix(reference, "@")
@@ -629,18 +650,24 @@ func collectReference(valueType *tokenType, value *any, until *rune, variable bo
 
 	if char == '[' {
 		advance()
-		if char != '\'' {
+		var key string
+		if char == '\'' {
+			advance()
+			key = collectRawString()
+		} else if char == '"' {
+			advance()
+			key = collectUntil('"')
+			advance()
+		} else {
 			parserError("Expected raw string for key.")
 		}
-		advance()
-		var key = collectRawString()
 		advanceUntil(']')
 		advance()
 		getAs = key
 	}
 	if char == '.' {
 		advance()
-		coerce = collectUntil(*until)
+		coerce = collectIdentifier()
 	}
 
 	isInputVariable(reference)
@@ -841,9 +868,6 @@ func collectVariable(constant bool) {
 		value:     value,
 	})
 
-	if varType != Variable {
-		return
-	}
 	if _, found := variables[identifier]; !found {
 		variables[identifier] = varValue{
 			variableType: "Variable",
@@ -1408,6 +1432,9 @@ func collectConditional() (conditional condition) {
 func checkConditionalTypes(conditional *tokenType, variableType tokenType, value any) {
 	if variableType == Variable {
 		var variable = value.(varValue)
+		if variable.getAs != "" || strings.Contains(variable.value.(string), "[") {
+			return
+		}
 		variableType = variable.valueType
 		var variableValue, found = getVariableValue(variable.value.(string))
 		if found && variableValue.valueType != Variable {
@@ -1420,10 +1447,16 @@ func checkConditionalTypes(conditional *tokenType, variableType tokenType, value
 		}
 		if variable.coerce != "" {
 			variableType = tokenType(variable.coerce)
+			if variableType == "richtext" || variableType == "url" || variableType == "phonenumber" || variableType == "emailaddress" {
+				variableType = String
+			}
 		}
 	}
 	if variableType == Expression {
 		variableType = Integer
+	}
+	if variableType == "" || variableType == Variable || variableType == Nil {
+		return
 	}
 
 	if len(allowedConditionalTypes[*conditional]) != 0 && !slices.Contains(allowedConditionalTypes[*conditional], variableType) {
@@ -1571,12 +1604,20 @@ func addNothing() {
 }
 
 func intChar(ch rune) bool {
-	return (ch >= '0' && ch <= '9') || ch == '-' || ch == '.'
+	return (ch >= '0' && ch <= '9') || ch == '.'
 }
 
 func collectInteger() string {
 	var collection strings.Builder
-	for intChar(char) {
+	hasDot := false
+	if char == '-' {
+		collection.WriteRune(char)
+		advance()
+	}
+	for (char >= '0' && char <= '9') || (char == '.' && !hasDot) {
+		if char == '.' {
+			hasDot = true
+		}
 		collection.WriteRune(char)
 		advance()
 	}
@@ -1586,8 +1627,18 @@ func collectInteger() string {
 
 func collectIntegerValue(valueType *tokenType, value *any) {
 	var integerString = collectInteger()
+	if integerString == "" || integerString == "-" {
+		parserError("Invalid number format")
+	}
 	if *valueType == Integer {
 		var integer, convErr = strconv.Atoi(integerString)
+		if convErr != nil {
+			if float, floatErr := strconv.ParseFloat(integerString, 64); floatErr == nil {
+				*valueType = Float
+				*value = float
+				return
+			}
+		}
 		handle(convErr)
 
 		*value = integer

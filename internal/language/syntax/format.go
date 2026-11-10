@@ -427,7 +427,7 @@ func (f *Formatter) formatExpression(expr Expression) {
 				f.formatExpression(part.Expr)
 				f.buf.WriteString("}")
 			} else {
-				f.buf.WriteString(part.Text)
+				f.buf.WriteString(escapeFStringPart(part.Text))
 			}
 		}
 		f.buf.WriteString("\"")
@@ -615,3 +615,30 @@ func formatTypeAnnotation(t TypeAnnotation) string {
 		return "Unknown"
 	}
 }
+
+func escapeFStringPart(s string) string {
+	var sb strings.Builder
+	sb.Grow(len(s))
+	for _, r := range s {
+		switch r {
+		case '\\':
+			sb.WriteString(`\\`)
+		case '"':
+			sb.WriteString(`\"`)
+		case '\n':
+			sb.WriteString(`\n`)
+		case '\r':
+			sb.WriteString(`\r`)
+		case '\t':
+			sb.WriteString(`\t`)
+		case '{':
+			sb.WriteString(`{{`)
+		case '}':
+			sb.WriteString(`}}`)
+		default:
+			sb.WriteRune(r)
+		}
+	}
+	return sb.String()
+}
+
