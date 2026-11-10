@@ -49,9 +49,15 @@ class TestP10CoverageAndGates(unittest.TestCase):
             self.assertTrue(e["structuralRoundTripPass"])
             self.assertIn("STRUCTURAL_ROUNDTRIP_PASS", e["verificationStatuses"])
             self.assertIn("PARAMETER_CONTRACT_PASS", e["verificationStatuses"])
-            # Ensure macOS static extraction is never inflated to CONFIRMED_RUNTIME without APPLE_RUNTIME_EXECUTED
+            # Ensure macOS static extraction is never inflated to APPLE_RUNTIME_VERIFIED without APPLE_RUNTIME_EXECUTED
             if e["appleRuntimeExecutedStatus"] != "APPLE_RUNTIME_EXECUTED":
-                self.assertNotEqual(e["evidenceTier"], "CONFIRMED_RUNTIME")
+                self.assertNotEqual(e["evidenceTier"], "APPLE_RUNTIME_VERIFIED")
+            if e["nativeSpecimenParityStatus"] != "NATIVE_SPECIMEN_PARITY_PASS":
+                self.assertNotEqual(e["evidenceTier"], "NATIVE_SPECIMEN_VERIFIED")
+            self.assertIn(
+                e["evidenceTier"],
+                ("COMPILER_VERIFIED", "STRUCTURAL_ROUNDTRIP_VERIFIED", "NATIVE_SPECIMEN_VERIFIED", "APPLE_RUNTIME_VERIFIED"),
+            )
 
     def test_f01_negative_mutation_fake_unit_test_ref_fails_closed(self):
         mutated = copy.deepcopy(self.matrix)
@@ -73,10 +79,16 @@ class TestP10CoverageAndGates(unittest.TestCase):
 
     def test_f01_negative_mutation_inflated_confirmed_runtime_fails_closed(self):
         mutated = copy.deepcopy(self.matrix)
-        mutated["entries"][0]["evidenceTier"] = "CONFIRMED_RUNTIME"
+        mutated["entries"][0]["evidenceTier"] = "APPLE_RUNTIME_VERIFIED"
         mutated["entries"][0]["appleRuntimeExecutedStatus"] = "NEEDS_EVIDENCE"
         with self.assertRaises(ValueError):
             gen.validate_against_schema(mutated, self.schema)
+
+        mutated_specimen = copy.deepcopy(self.matrix)
+        mutated_specimen["entries"][0]["evidenceTier"] = "NATIVE_SPECIMEN_VERIFIED"
+        mutated_specimen["entries"][0]["nativeSpecimenParityStatus"] = "NEEDS_EVIDENCE"
+        with self.assertRaises(ValueError):
+            gen.validate_against_schema(mutated_specimen, self.schema)
 
     # --- PART B: Ledger, Crosswalk & 11-Surface Consistency ---
     def test_f02_denominator_crosswalk_arithmetic_and_ledger_truth(self):
@@ -102,12 +114,31 @@ class TestP10CoverageAndGates(unittest.TestCase):
         )
         self.assertEqual(d["cherriCatalogTotalEntries"], 505)
         self.assertEqual(d["cherriCallableActions"] + d["cherriCompilerConstructs"], 505)
+        self.assertEqual(d["uniqueIdentifiersInCherriCatalog"], 390)
+        self.assertEqual(d["uniqueCallableIdentifiersInCherriCatalog"], 382)
+        self.assertEqual(d["uniqueConstructIdentifiersInCherriCatalog"], 8)
+        self.assertEqual(
+            d["uniqueCallableIdentifiersInCherriCatalog"] + d["aliasCallableActionsOverSharedIdentifiers"],
+            d["cherriCallableActions"],
+        )
 
         ok, errs = consistency.check_consistency(p10_dir=self.p10_dir)
         self.assertTrue(ok, f"Expected 11-way consistency check to pass, got: {errs}")
 
     def test_f02_negative_mutations_across_crosswalk_and_reports_fail_closed(self):
-        for mode in ("report_verified", "crosswalk_verified", "gap_md_missing_high", "matrix_fake_runtime_tier"):
+        for mode in (
+            "c5_1_ledger_vs_crosswalk",
+            "c5_2_crosswalk_vs_report",
+            "c5_3_deferred_double_count",
+            "c5_4_unique_identifiers_mismatch",
+            "c5_5_evidence_tier_inflated",
+            "c5_6_markdown_stale_number",
+            "c5_7_parameter_matrix_vs_report",
+            "report_verified",
+            "crosswalk_verified",
+            "gap_md_missing_high",
+            "matrix_fake_runtime_tier",
+        ):
             ok, errs = consistency.check_consistency(p10_dir=self.p10_dir, mutate_mode=mode)
             self.assertFalse(ok, f"Expected mutation mode {mode} to fail closed")
             self.assertGreater(len(errs), 0)

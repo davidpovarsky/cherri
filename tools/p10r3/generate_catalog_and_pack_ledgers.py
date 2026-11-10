@@ -509,10 +509,21 @@ def validate_against_schema(matrix, schema):
         for st in entry["verificationStatuses"]:
             if st not in valid_statuses:
                 raise ValueError(f"Invalid verification status '{st}' on {entry['cherriName']}")
-        # Anti-inflation invariant: CONFIRMED_RUNTIME requires APPLE_RUNTIME_EXECUTED
-        if entry["evidenceTier"] == "CONFIRMED_RUNTIME" and entry["appleRuntimeExecutedStatus"] != "APPLE_RUNTIME_EXECUTED":
+        # Anti-inflation invariants:
+        # 1. APPLE_RUNTIME_VERIFIED requires APPLE_RUNTIME_EXECUTED
+        if entry["evidenceTier"] == "APPLE_RUNTIME_VERIFIED" and entry["appleRuntimeExecutedStatus"] != "APPLE_RUNTIME_EXECUTED":
             raise ValueError(
-                f"Entry {entry['cherriName']} claims CONFIRMED_RUNTIME without APPLE_RUNTIME_EXECUTED"
+                f"Entry {entry['cherriName']} claims APPLE_RUNTIME_VERIFIED without APPLE_RUNTIME_EXECUTED"
+            )
+        # 2. NATIVE_SPECIMEN_VERIFIED requires NATIVE_SPECIMEN_PARITY_PASS
+        if entry["evidenceTier"] == "NATIVE_SPECIMEN_VERIFIED" and entry["nativeSpecimenParityStatus"] != "NATIVE_SPECIMEN_PARITY_PASS":
+            raise ValueError(
+                f"Entry {entry['cherriName']} claims NATIVE_SPECIMEN_VERIFIED without NATIVE_SPECIMEN_PARITY_PASS"
+            )
+        # 3. STRUCTURAL_ROUNDTRIP_VERIFIED requires structuralRoundTripPass
+        if entry["evidenceTier"] == "STRUCTURAL_ROUNDTRIP_VERIFIED" and not entry.get("structuralRoundTripPass"):
+            raise ValueError(
+                f"Entry {entry['cherriName']} claims STRUCTURAL_ROUNDTRIP_VERIFIED without structuralRoundTripPass"
             )
         if not entry["unitTestRef"] or "TestP10_VerifyAndRecord505CatalogExecution" not in entry["unitTestRef"]:
             raise ValueError(f"Entry {entry['cherriName']} lacks real execution test reference: {entry['unitTestRef']}")
@@ -541,6 +552,7 @@ def build_all_artifacts():
         raise RuntimeError(f"Missing real execution evidence file: {exec_ev_path}")
     exec_ev_data = json.loads(exec_ev_path.read_text(encoding="utf-8"))
     exec_by_name = {e["name"]: e for e in exec_ev_data.get("entries", [])}
+    param_dim_summaries = exec_ev_data.get("parameterDimensionSummaries", [])
     if len(exec_by_name) != 505:
         raise RuntimeError(f"Expected 505 entries in execution evidence, got {len(exec_by_name)}")
 
@@ -647,15 +659,20 @@ def build_all_artifacts():
         }
 
         # Evidence Tier & Runtime Verification State
-        # Honest separation (PART B): macOS static/runtime schema extraction is CONFIRMED_NATIVE,
-        # NOT CONFIRMED_RUNTIME unless actual Apple Shortcuts runtime execution was verified.
+        # Honest separation (Part C3):
+        # - APPLE_RUNTIME_VERIFIED: only when appleRuntimeExecutedStatus == APPLE_RUNTIME_EXECUTED
+        # - NATIVE_SPECIMEN_VERIFIED: only when nativeSpecimenParityStatus == NATIVE_SPECIMEN_PARITY_PASS
+        # - STRUCTURAL_ROUNDTRIP_VERIFIED: when compiler output + decompile + recompile structural round-trip is verified
+        # - COMPILER_VERIFIED: when compiled only
         app_intent = item.get("appIntent")
         if runtime_exec_status == "APPLE_RUNTIME_EXECUTED":
-            evidence_tier = "CONFIRMED_RUNTIME"
-        elif ident in ledger_by_ident or is_construct or in_pure:
-            evidence_tier = "CONFIRMED_NATIVE"
+            evidence_tier = "APPLE_RUNTIME_VERIFIED"
+        elif native_specimen_status == "NATIVE_SPECIMEN_PARITY_PASS":
+            evidence_tier = "NATIVE_SPECIMEN_VERIFIED"
+        elif structural_rt_ok:
+            evidence_tier = "STRUCTURAL_ROUNDTRIP_VERIFIED"
         else:
-            evidence_tier = "OBSERVED"
+            evidence_tier = "COMPILER_VERIFIED"
         evidence_tier_counts[evidence_tier] += 1
 
         if non_mac_only or (
@@ -794,6 +811,7 @@ def build_all_artifacts():
             "evidenceTierCounts": dict(evidence_tier_counts),
             "decompileModeCounts": dict(decompile_mode_counts),
             "coverageDimensionsSummary": cov_dim_summary,
+            "parameterDimensionSummaries": param_dim_summaries,
         },
         "entries": rows,
     }
@@ -809,8 +827,14 @@ def build_all_artifacts():
 def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha, dep_fp, pure_names, pack_added, pack_aliases):
     entries = matrix_505["entries"]
     ident_to_cherri = collections.defaultdict(list)
+    callable_ident_to_cherri = collections.defaultdict(list)
+    construct_ident_to_cherri = collections.defaultdict(list)
     for e in entries:
         ident_to_cherri[e["shortcutIdentifier"]].append(e["cherriName"])
+        if e["compilerConstruct"]:
+            construct_ident_to_cherri[e["shortcutIdentifier"]].append(e["cherriName"])
+        else:
+            callable_ident_to_cherri[e["shortcutIdentifier"]].append(e["cherriName"])
 
     status_counts = collections.Counter(r.get("status") for r in p10_ledger)
     elig_counts = collections.Counter(r.get("eligibility") for r in p10_ledger)
@@ -834,6 +858,11 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha, dep_f
 
     new_native_rows = [r for r in p10_ledger if r.get("status") == "NEW_NATIVE_ACTION"]
     missing_app_intent_rows = [r for r in p10_ledger if r.get("status") == "MISSING_APP_INTENT_DESCRIPTOR"]
+
+    multi_action_idents = {
+        ident: names for ident, names in sorted(callable_ident_to_cherri.items()) if len(names) > 1
+    }
+    alias_callable_extra_count = sum(len(names) - 1 for names in multi_action_idents.values())
 
     crosswalk = {
         "schemaVersion": "2.0",
@@ -860,6 +889,10 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha, dep_f
             "cherriCallableActions": matrix_505["summary"]["callableActions"],
             "cherriCompilerConstructs": matrix_505["summary"]["compilerConstructs"],
             "uniqueIdentifiersInCherriCatalog": len(ident_to_cherri),
+            "uniqueCallableIdentifiersInCherriCatalog": len(callable_ident_to_cherri),
+            "uniqueConstructIdentifiersInCherriCatalog": len(construct_ident_to_cherri),
+            "sharedCallableIdentifiersCount": len(multi_action_idents),
+            "aliasCallableActionsOverSharedIdentifiers": alias_callable_extra_count,
             "cherriPureOriginalEntries": matrix_505["summary"]["pureOriginalSupportedCount"],
             "cherriPurePlusPackEntries": matrix_505["summary"]["purePlusPackSupportedCount"],
             "cherriPackDeclarativeAddedOrAliasedEntries": (
@@ -876,37 +909,53 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha, dep_f
             "outputTypeConcordanceDIFFERS": output_concordance_counts.get("DIFFERS", 0),
             "needsRuntimeEvidenceParameters": 1,
             "explanation": (
-                "All 390 covered Apple identifiers in p10-action-ledger.json carry status COVERED_PARTIAL (0 COVERED_VERIFIED) "
-                "because evaluate_action_coverage (FR-05, Gate A07/R16) requires verified runtime outputType concordance "
-                "between Apple's runtime metadata and Cherri's declared outputType (313 UNASSESSED + 77 DIFFERS), "
+                f"All {len(covered_partial_rows)} covered Apple identifiers in p10-action-ledger.json carry status COVERED_PARTIAL "
+                f"({len(covered_verified_rows)} COVERED_VERIFIED) because evaluate_action_coverage (FR-05, Gate A07/R16) requires verified "
+                f"runtime outputType concordance between Apple's runtime metadata and Cherri's declared outputType "
+                f"({output_concordance_counts.get('UNASSESSED', 0)} UNASSESSED + {output_concordance_counts.get('DIFFERS', 0)} DIFFERS), "
                 "plus 1 calendar picker parameter requiring live runtime evidence (Gate R15)."
             ),
         },
         "historicalDiscrepancyNote": {
-            "earlierTextClaim": "100 MISSING_HIGH_PRIORITY + 1037 MISSING_LOW_PRIORITY",
-            "authoritativeLedgerTruth": "97 NEW_NATIVE_ACTION + 1040 MISSING_APP_INTENT_DESCRIPTOR = 1137 uncovered eligible",
+            "earlierTextClaim": "100 MISSING_HIGH_PRIORITY + 1037 MISSING_LOW_PRIORITY; or 2482 / 1613 double-counting DEFERRED_NO_EVIDENCE",
+            "authoritativeLedgerTruth": (
+                f"2396 total = {len(eligible_rows)} eligible ({elig_counts.get('ELIGIBLE_USER_FACING', 0)} ELIGIBLE_USER_FACING + "
+                f"{elig_counts.get('ELIGIBLE_APP_INTENT', 0)} ELIGIBLE_APP_INTENT) + {len(excluded_rows)} excluded/deferred "
+                f"(including {status_counts.get('DEFERRED_NO_EVIDENCE', 0)} DEFERRED_NO_EVIDENCE); "
+                f"{len(new_native_rows)} NEW_NATIVE_ACTION + {len(missing_app_intent_rows)} MISSING_APP_INTENT_DESCRIPTOR = "
+                f"{len(uncovered_eligible_rows)} uncovered eligible"
+            ),
             "explanation": (
-                "An earlier narrative draft used pre-remediation labels (100 MISSING_HIGH_PRIORITY / 1037 MISSING_LOW_PRIORITY) "
-                "before 3 native actions were mapped and the taxonomy was standardized in p10-action-ledger.json to "
-                "NEW_NATIVE_ACTION (97 records) and MISSING_APP_INTENT_DESCRIPTOR (1,040 records)."
+                "1) DEFERRED_NO_EVIDENCE (86 records) is already part of the 869 non-eligible records (596 EXCLUDED_NONRUNNABLE + "
+                "131 EXCLUDED_HIDDEN_INTERNAL + 86 DEFERRED_NO_EVIDENCE + 29 EXCLUDED_CONFIG_ONLY + 27 EXCLUDED_THIRD_PARTY_DEPENDENCY = 869; "
+                "1527 + 869 = 2396). Adding 86 again to 2396 (2482) or to 1527 (1613) is a double-counting error. "
+                "2) All 505 Cherri catalog entries map to 390 unique ShortcutIdentifiers (382 unique callable identifiers + 8 compiler construct "
+                "identifiers = 390; plus 115 alias/variant callable actions sharing 36 of those identifiers: 382 + 115 = 497 callables; 497 + 8 = 505)."
             ),
         },
         "reconciliationFormula": {
             "appleDiscoveryEquation": (
-                "2396 discovered = 1527 eligible user-facing (487 ELIGIBLE_USER_FACING + 1040 ELIGIBLE_APP_INTENT) "
-                "+ 869 excluded/deferred (596 EXCLUDED_NONRUNNABLE + 131 EXCLUDED_HIDDEN_INTERNAL + 86 DEFERRED_NO_EVIDENCE "
-                "+ 29 EXCLUDED_CONFIG_ONLY + 27 EXCLUDED_THIRD_PARTY_DEPENDENCY)"
+                f"{len(p10_ledger)} discovered = {len(eligible_rows)} eligible user-facing "
+                f"({elig_counts.get('ELIGIBLE_USER_FACING', 0)} ELIGIBLE_USER_FACING + {elig_counts.get('ELIGIBLE_APP_INTENT', 0)} ELIGIBLE_APP_INTENT) "
+                f"+ {len(excluded_rows)} excluded/deferred ({status_counts.get('EXCLUDED_NONRUNNABLE', 0)} EXCLUDED_NONRUNNABLE + "
+                f"{status_counts.get('EXCLUDED_HIDDEN_INTERNAL', 0)} EXCLUDED_HIDDEN_INTERNAL + {status_counts.get('DEFERRED_NO_EVIDENCE', 0)} DEFERRED_NO_EVIDENCE "
+                f"+ {status_counts.get('EXCLUDED_CONFIG_ONLY', 0)} EXCLUDED_CONFIG_ONLY + {status_counts.get('EXCLUDED_THIRD_PARTY_DEPENDENCY', 0)} EXCLUDED_THIRD_PARTY_DEPENDENCY)"
             ),
             "appleCoverageEquation": (
-                "1527 eligible user-facing = 390 COVERED_PARTIAL unique Apple identifiers (0 COVERED_VERIFIED: "
-                "313 outputTypeConcordance=UNASSESSED + 77 outputTypeConcordance=DIFFERS) "
-                "+ 1137 uncovered eligible Apple identifiers (97 NEW_NATIVE_ACTION + 1040 MISSING_APP_INTENT_DESCRIPTOR)"
+                f"{len(eligible_rows)} eligible user-facing = {len(covered_partial_rows)} COVERED_PARTIAL unique Apple identifiers "
+                f"({len(covered_verified_rows)} COVERED_VERIFIED: {output_concordance_counts.get('UNASSESSED', 0)} outputTypeConcordance=UNASSESSED + "
+                f"{output_concordance_counts.get('DIFFERS', 0)} outputTypeConcordance=DIFFERS) "
+                f"+ {len(uncovered_eligible_rows)} uncovered eligible Apple identifiers ({len(new_native_rows)} NEW_NATIVE_ACTION + "
+                f"{len(missing_app_intent_rows)} MISSING_APP_INTENT_DESCRIPTOR)"
             ),
             "cherriToAppleMappingEquation": (
-                "505 Cherri catalog entries (497 callable actions + 8 compiler constructs) map to 381 unique ShortcutIdentifiers "
-                "in the CLI catalog (plus 9 identifier aliases covered in the 390 runtime ledger = 390 COVERED_PARTIAL Apple identifiers) "
-                "because multiple Cherri split/variant actions target a single Apple identifier with distinct constant parameter presets "
-                "(e.g. setWiFi/toggleWiFi -> is.workflow.actions.wifi.set)."
+                f"{matrix_505['summary']['totalEntries']} Cherri catalog entries ({matrix_505['summary']['callableActions']} callable actions + "
+                f"{matrix_505['summary']['compilerConstructs']} compiler constructs) map to {len(ident_to_cherri)} unique ShortcutIdentifiers "
+                f"in the CLI catalog ({len(callable_ident_to_cherri)} unique callable identifiers + {len(construct_ident_to_cherri)} construct identifiers = "
+                f"{len(ident_to_cherri)} unique identifiers, matching {len(covered_rows)} COVERED_PARTIAL Apple identifiers in the runtime ledger), "
+                f"with {alias_callable_extra_count} additional callable variant/alias actions sharing {len(multi_action_idents)} identifiers "
+                f"({len(callable_ident_to_cherri)} + {alias_callable_extra_count} = {matrix_505['summary']['callableActions']} callables; "
+                f"{matrix_505['summary']['callableActions']} + {matrix_505['summary']['compilerConstructs']} = {matrix_505['summary']['totalEntries']})."
             ),
             "pureToPackToP10Equation": (
                 "505 P10 catalog entries = 441 Pure Original names at bcc0095 (433 callables + 8 constructs, of which 54 also have "
@@ -955,6 +1004,22 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha, dep_f
     ]
     for tier, cnt in sorted(s["evidenceTierCounts"].items()):
         r1_lines.append(f"| `{tier}` | `{cnt}` |")
+
+    if s.get("parameterDimensionSummaries"):
+        r1_lines.extend(
+            [
+                "",
+                "## Parameter Contract Verification Summary by Dimension (`Part B5`)",
+                "",
+                "| Dimension | Total Catalog | Constructs Excluded | Eligible | Tested | Pass | Fail | N/A | Not Tested | Sub-Kind Breakdown |",
+                "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |",
+            ]
+        )
+        for pd in s["parameterDimensionSummaries"]:
+            sk_str = ", ".join(f"`{k}`={v}" for k, v in sorted((pd.get("subKindBreakdown") or {}).items()))
+            r1_lines.append(
+                f"| `{pd['dimension']}` | `{pd['totalCatalog']}` | `{pd['constructsExcluded']}` | `{pd['eligible']}` | `{pd['tested']}` | `{pd['pass']}` | `{pd['fail']}` | `{pd['notApplicable']}` | `{pd['notTested']}` | {sk_str} |"
+            )
 
     r1_lines.extend(
         [

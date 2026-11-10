@@ -1045,6 +1045,18 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	// 0. Check native escape / rawAction
 	if callName == "rawAction" || callName == "native.action" || callName == "action" ||
 		callName == "native.plist" || callName == "native.ref" || callName == "native.workflow" {
+		if (callName == "rawAction" || callName == "native.action") && call.PrimaryArg == nil {
+			hasIdentNamed := false
+			for _, nArg := range call.NamedArgs {
+				if nArg.Label == "identifier" || nArg.Label == "" {
+					hasIdentNamed = true
+					break
+				}
+			}
+			if !hasIdentNamed {
+				a.error(CodeMissingArgument, call.Span, fmt.Sprintf("missing required argument \"identifier\" in call to %q", callName))
+			}
+		}
 		if call.PrimaryArg != nil {
 			a.analyzeExpression(call.PrimaryArg, scope)
 		}

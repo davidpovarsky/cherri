@@ -2271,8 +2271,7 @@ var actions = map[string]*actionDefinition{
 			if titleTok == nil && subtitleTok == nil {
 				if len(args) > 2 {
 					var photo string
-					var image = getArgValue(args[2])
-					if reflect.TypeOf(image).Kind() != reflect.String && args[2].valueType == Variable {
+					if args[2].valueType == Variable {
 						photo = fmt.Sprintf("{%s}", makeVariableReferenceString(args[2].value.(varValue)))
 					} else if s, ok := getArgValue(args[2]).(string); ok {
 						photo = s

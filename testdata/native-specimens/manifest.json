@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0.0",
+  "description": "Manifest of independently authored Apple Shortcuts native specimens used for P10R5 Native Specimen Parity verification. Only specimens authored natively in Apple Shortcuts (not Cherri compiler outputs) may be registered here.",
+  "specimenCollectionPolicy": {
+    "oracleRule": "NEVER_USE_CHERRI_AS_SELF_ORACLE",
+    "requiresManualAppleShortcutsAuthoring": true,
+    "requiresUnsignedPlistOrVerifiedShortcut": true,
+    "requiresSanitizedNonPrivateContent": true,
+    "allowedStatuses": [
+      "NATIVE_SPECIMEN_PARITY_PASS",
+      "NATIVE_SPECIMEN_PARITY_FAIL",
+      "SPECIMEN_MISSING",
+      "SPECIMEN_INVALID",
+      "SPECIMEN_PLATFORM_MISMATCH",
+      "NEEDS_EVIDENCE"
+    ]
+  },
+  "specimens": []
+}

@@ -62,6 +62,9 @@ jobs:
         python3 tools/p10r3/verify_or_generate_pack.py --verify-generated
         python3 tools/p10r3/verify_ledger_consistency.py
         python3 tools/p10r3/verify_ledger_consistency.py --mutate-check
+        python3 tools/p10r3/verify_consumer_compatibility.py
+        python3 tools/p10r3/verify_consumer_compatibility.py --mutate-check
+        python3 tools/p10r3/generate_negative_mutation_matrix.py
         python3 tools/p10r3/test_coverage_and_gates.py -v
         python3 tools/p10r3/run_release_gates.py --verify-registry
         python3 tools/p10r3/run_release_gates.py --verify-commit
@@ -125,6 +128,9 @@ jobs:
         python3 tools/p10r3/verify_or_generate_pack.py --verify-generated
         python3 tools/p10r3/verify_ledger_consistency.py
         python3 tools/p10r3/verify_ledger_consistency.py --mutate-check
+        python3 tools/p10r3/verify_consumer_compatibility.py
+        python3 tools/p10r3/verify_consumer_compatibility.py --mutate-check
+        python3 tools/p10r3/generate_negative_mutation_matrix.py
         python3 tools/p10r3/test_coverage_and_gates.py -v
         python3 tools/p10r3/run_release_gates.py --verify-registry
         python3 tools/p10r3/run_release_gates.py --verify-commit

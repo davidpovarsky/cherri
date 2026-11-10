@@ -69,8 +69,30 @@ def check_consistency(
     if errors:
         return False, errors
 
-    # Apply synthetic mutation if requested
-    if mutate_mode == "report_verified":
+    # Apply synthetic mutation if requested (Part C5 — 7 required negative mutations)
+    if mutate_mode == "c5_1_ledger_vs_crosswalk":
+        crosswalk = json.loads(json.dumps(crosswalk))
+        crosswalk["denominators"]["appleCoveredVerifiedIdentifiers"] = 390
+    elif mutate_mode == "c5_2_crosswalk_vs_report":
+        cov_report_md = cov_report_md.replace("| `COVERED_VERIFIED` | 0 |", "| `COVERED_VERIFIED` | 389 |")
+    elif mutate_mode == "c5_3_deferred_double_count":
+        crosswalk = json.loads(json.dumps(crosswalk))
+        crosswalk["denominators"]["appleRuntimeDiscoveredTotal"] = 2482
+        crosswalk["denominators"]["appleEligibleUserFacingTotal"] = 1613
+    elif mutate_mode == "c5_4_unique_identifiers_mismatch":
+        crosswalk = json.loads(json.dumps(crosswalk))
+        crosswalk["reconciliationFormula"]["cherriToAppleMappingEquation"] = (
+            "505 Cherri catalog entries map to 381 unique ShortcutIdentifiers in the CLI catalog"
+        )
+    elif mutate_mode == "c5_5_evidence_tier_inflated":
+        matrix = json.loads(json.dumps(matrix))
+        matrix["entries"][0]["evidenceTier"] = "NATIVE_SPECIMEN_VERIFIED"
+        matrix["entries"][0]["nativeSpecimenParityStatus"] = "NEEDS_EVIDENCE"
+    elif mutate_mode == "c5_6_markdown_stale_number":
+        gap_md = gap_md.replace("`97` `NEW_NATIVE_ACTION`", "`100` `MISSING_HIGH_PRIORITY`")
+    elif mutate_mode == "c5_7_parameter_matrix_vs_report":
+        cat_md = cat_md.replace("| `optionalParams` | `505` | `8` | `201` |", "| `optionalParams` | `505` | `8` | `505` |")
+    elif mutate_mode == "report_verified":
         cov_report_md = cov_report_md.replace("| `COVERED_VERIFIED` | 0 |", "| `COVERED_VERIFIED` | 389 |")
     elif mutate_mode == "crosswalk_verified":
         crosswalk = json.loads(json.dumps(crosswalk))
@@ -79,7 +101,7 @@ def check_consistency(
         gap_md = gap_md.replace("`97` `NEW_NATIVE_ACTION`", "`100` `MISSING_HIGH_PRIORITY`")
     elif mutate_mode == "matrix_fake_runtime_tier":
         matrix = json.loads(json.dumps(matrix))
-        matrix["entries"][0]["evidenceTier"] = "CONFIRMED_RUNTIME"
+        matrix["entries"][0]["evidenceTier"] = "APPLE_RUNTIME_VERIFIED"
         matrix["entries"][0]["appleRuntimeExecutedStatus"] = "NEEDS_EVIDENCE"
 
     # 1. Authoritative Ledger (2,396 rows)
@@ -153,8 +175,22 @@ def check_consistency(
     if expected_verified == 0 and "390 COVERED_VERIFIED" in eq_cov:
         errors.append("Crosswalk appleCoverageEquation falsely claims '390 COVERED_VERIFIED' while ledger has 0 COVERED_VERIFIED")
 
-    # 3. 505 Catalog Coverage Matrix vs Execution Evidence
+    # Ensure uniqueIdentifiersInCherriCatalog and cherriToAppleMappingEquation are consistent (Part C5 #4)
     m_entries = matrix.get("entries", [])
+    expected_unique_idents = len({e.get("shortcutIdentifier") for e in m_entries if e.get("shortcutIdentifier")})
+    if d.get("uniqueIdentifiersInCherriCatalog") != expected_unique_idents:
+        errors.append(
+            f"Crosswalk uniqueIdentifiersInCherriCatalog={d.get('uniqueIdentifiersInCherriCatalog')} != {expected_unique_idents}"
+        )
+    eq_map = crosswalk.get("reconciliationFormula", {}).get("cherriToAppleMappingEquation", "")
+    if f"map to {expected_unique_idents} unique ShortcutIdentifiers" not in eq_map:
+        errors.append(
+            f"Crosswalk cherriToAppleMappingEquation does not match uniqueIdentifiersInCherriCatalog ({expected_unique_idents}): {eq_map}"
+        )
+    if "381 unique ShortcutIdentifiers" in eq_map:
+        errors.append("Crosswalk cherriToAppleMappingEquation contains stale hardcoded '381 unique ShortcutIdentifiers'")
+
+    # 3. 505 Catalog Coverage Matrix vs Execution Evidence
     ev_entries = exec_ev.get("entries", [])
     if len(m_entries) != 505 or len(ev_entries) != 505:
         errors.append(f"Expected 505 entries in matrix ({len(m_entries)}) and execution evidence ({len(ev_entries)})")
@@ -172,9 +208,17 @@ def check_consistency(
                 errors.append(f"Matrix vs execution evidence roundTripVerified mismatch on {nm}")
             if e.get("decompileMode") != ev_row.get("decompileMode"):
                 errors.append(f"Matrix vs execution evidence decompileMode mismatch on {nm}")
-            if e.get("evidenceTier") == "CONFIRMED_RUNTIME" and e.get("appleRuntimeExecutedStatus") != "APPLE_RUNTIME_EXECUTED":
+            if e.get("evidenceTier") in ("APPLE_RUNTIME_VERIFIED", "CONFIRMED_RUNTIME") and e.get("appleRuntimeExecutedStatus") != "APPLE_RUNTIME_EXECUTED":
                 errors.append(
-                    f"Matrix entry {nm} claims evidenceTier=CONFIRMED_RUNTIME without appleRuntimeExecutedStatus=APPLE_RUNTIME_EXECUTED"
+                    f"Matrix entry {nm} claims evidenceTier={e.get('evidenceTier')} without appleRuntimeExecutedStatus=APPLE_RUNTIME_EXECUTED"
+                )
+            if e.get("evidenceTier") == "NATIVE_SPECIMEN_VERIFIED" and e.get("nativeSpecimenParityStatus") != "NATIVE_SPECIMEN_PARITY_PASS":
+                errors.append(
+                    f"Matrix entry {nm} claims evidenceTier=NATIVE_SPECIMEN_VERIFIED without nativeSpecimenParityStatus=NATIVE_SPECIMEN_PARITY_PASS"
+                )
+            if e.get("evidenceTier") in ("CONFIRMED_NATIVE", "OBSERVED", "INFERRED"):
+                errors.append(
+                    f"Matrix entry {nm} uses legacy ambiguous evidenceTier={e.get('evidenceTier')}"
                 )
 
     # 4. Baseline State JSON consistency
@@ -240,6 +284,12 @@ def check_consistency(
     cat_table_rows = re.findall(r"^\|\s*(\d+)\s*\|\s*`[^`]+`\s*\|\s*`(?:action|compilerConstruct)`\s*\|", cat_md, flags=re.MULTILINE)
     if len(cat_table_rows) != 505:
         errors.append(f"catalog-supported-by-compiler.md has {len(cat_table_rows)} action rows, expected 505")
+    for pd in ms.get("parameterDimensionSummaries", []):
+        row_prefix = f"| `{pd['dimension']}` | `{pd['totalCatalog']}` | `{pd['constructsExcluded']}` | `{pd['eligible']}` | `{pd['tested']}` | `{pd['pass']}` | `{pd['fail']}` | `{pd['notApplicable']}` | `{pd['notTested']}` |"
+        if row_prefix not in cat_md:
+            errors.append(
+                f"catalog-supported-by-compiler.md parameter dimension row mismatch for {pd['dimension']}: expected {row_prefix}"
+            )
 
     # 8. pure-pack-portability.md checks
     if "`441` catalog entries" not in pack_md:
@@ -272,12 +322,25 @@ def main():
     p10_dir = REPO_ROOT / "docs" / "apple-runtime" / "p10"
 
     if args.mutate_check:
-        for mode in ("report_verified", "crosswalk_verified", "gap_md_missing_high", "matrix_fake_runtime_tier"):
+        all_modes = (
+            "c5_1_ledger_vs_crosswalk",
+            "c5_2_crosswalk_vs_report",
+            "c5_3_deferred_double_count",
+            "c5_4_unique_identifiers_mismatch",
+            "c5_5_evidence_tier_inflated",
+            "c5_6_markdown_stale_number",
+            "c5_7_parameter_matrix_vs_report",
+            "report_verified",
+            "crosswalk_verified",
+            "gap_md_missing_high",
+            "matrix_fake_runtime_tier",
+        )
+        for mode in all_modes:
             ok, errors = check_consistency(p10_dir=p10_dir, mutate_mode=mode)
             if ok:
                 print(f"ERROR: Mutation mode '{mode}' unexpectedly passed consistency check!", file=sys.stderr)
                 sys.exit(1)
-        print("SUCCESS: All 4 mutation modes correctly failed closed.")
+        print(f"SUCCESS: All {len(all_modes)} mutation modes (including Part C5 1..7) correctly failed closed.")
         sys.exit(0)
 
     ok, errors = check_consistency(p10_dir=p10_dir)

@@ -404,6 +404,7 @@ func decompileWorkflowMetadata() {
 	quick := metadataDefinitionValues(shortcut.WFQuickActionSurfaces, quickActions, quickActionOrder)
 
 	wroteDefinition := false
+
 	if len(from) != 0 {
 		newCodeLine(fmt.Sprintf("#define from %s\n", strings.Join(from, ", ")))
 		wroteDefinition = true
@@ -449,17 +450,17 @@ func decompileWorkflowMetadata() {
 		switch behaviorName {
 		case "WFWorkflowNoInputBehaviorShowError":
 			errMsg, _ := params["Error"].(string)
-			newCodeLine(fmt.Sprintf("#define noinput stop with \"%s\"\n", escapeString(errMsg)))
+			newCodeLine(fmt.Sprintf("#define noinput stopwith \"%s\"\n", escapeString(errMsg)))
 			wroteDefinition = true
 		case "WFWorkflowNoInputBehaviorAskForInput":
 			if itemClass, ok := params["ItemClass"].(string); ok {
 				if cherriType, found := revItems[itemClass]; found {
-					newCodeLine(fmt.Sprintf("#define noinput ask for %s\n", cherriType))
+					newCodeLine(fmt.Sprintf("#define noinput askfor %s\n", cherriType))
 					wroteDefinition = true
 				}
 			}
 		case "WFWorkflowNoInputBehaviorGetClipboard":
-			newCodeLine("#define noinput get clipboard\n")
+			newCodeLine("#define noinput getclipboard\n")
 			wroteDefinition = true
 		}
 	}

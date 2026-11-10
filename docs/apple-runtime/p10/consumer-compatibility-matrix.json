@@ -1,0 +1,224 @@
+{
+  "schemaVersion": "1.0",
+  "generator": "tools/p10r3/verify_consumer_compatibility.py",
+  "compilerHead": "9038ea69aea28413e00b2e9fc3bd1a379b47c7c2",
+  "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+  "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+  "verdict": "COMPATIBLE_WITH_EXTERNAL_BLOCKERS",
+  "statusCounts": {
+    "PASS": 7,
+    "FAIL": 0,
+    "NOT_AVAILABLE_LOCALLY": 0,
+    "BLOCKED_EXTERNAL": 1
+  },
+  "components": [
+    {
+      "component": "Compiler",
+      "sourceCommit": "9038ea69aea28413e00b2e9fc3bd1a379b47c7c2",
+      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "testedAgainst": "live `go run . --capabilities-json`",
+      "status": "PASS",
+      "checks": [
+        {
+          "ok": true,
+          "check": "schemaFingerprint is 64-hex"
+        },
+        {
+          "ok": true,
+          "check": "codecFingerprint is 64-hex"
+        },
+        {
+          "ok": true,
+          "check": "codecFingerprint independent of schemaFingerprint"
+        },
+        {
+          "ok": true,
+          "check": "actionCount == 505 (got 505)"
+        },
+        {
+          "ok": true,
+          "check": "languageVersion == 2.0"
+        }
+      ],
+      "failures": [],
+      "notes": ""
+    },
+    {
+      "component": "Documentation",
+      "sourceCommit": "a38b62b819e48fea73dfd0636eb6de4dd08c2713",
+      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "testedAgainst": "compiler 9038ea69aea2 schema 787e9842bbe9",
+      "status": "PASS",
+      "checks": [
+        {
+          "ok": true,
+          "check": "cherri docs/language-v2/actions-reference.md fingerprint == compiler"
+        },
+        {
+          "ok": true,
+          "check": "cherrilang.org fork-language/actions.md fingerprint == compiler (got 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)"
+        },
+        {
+          "ok": true,
+          "check": "smoke_test_snippets.py PINNED_CHERRI_COMMIT (4f4d30f1b863e8d53cd3d56eb8ddcaffab7ce8f2) is an ancestor of compiler HEAD"
+        }
+      ],
+      "failures": [],
+      "notes": ""
+    },
+    {
+      "component": "Skill",
+      "sourceCommit": "f58260ed33553749b5bd00482a1c2d2d67f4f5a7",
+      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "testedAgainst": "docs a38b62b819e4",
+      "status": "PASS",
+      "checks": [
+        {
+          "ok": true,
+          "check": "skill schemaFingerprint == compiler (got 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)"
+        },
+        {
+          "ok": true,
+          "check": "skill codecFingerprint == compiler (got 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e)"
+        },
+        {
+          "ok": true,
+          "check": "skill languageVersion == compiler"
+        },
+        {
+          "ok": true,
+          "check": "skill catalogSchemaVersion == compiler"
+        },
+        {
+          "ok": true,
+          "check": "skill compilerCommit (f58260ed33553749b5bd00482a1c2d2d67f4f5a7) is an ancestor of HEAD"
+        },
+        {
+          "ok": true,
+          "check": "skill docsCommit (a38b62b819e48fea73dfd0636eb6de4dd08c2713) == docs HEAD (a38b62b819e48fea73dfd0636eb6de4dd08c2713)"
+        }
+      ],
+      "failures": [],
+      "notes": ""
+    },
+    {
+      "component": "Remote Builder",
+      "sourceCommit": "f58260ed33553749b5bd00482a1c2d2d67f4f5a7",
+      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "testedAgainst": "skill compatibility-manifest.json tuple",
+      "status": "BLOCKED_EXTERNAL",
+      "checks": [
+        {
+          "ok": true,
+          "check": "builder input compilerCommit is an ancestor of HEAD"
+        }
+      ],
+      "failures": [],
+      "notes": "Remote Linux ARM64 builder host is external; only its input tuple is verified locally. Not counted as PASS."
+    },
+    {
+      "component": "iOS Bridge",
+      "sourceCommit": "9038ea69aea28413e00b2e9fc3bd1a379b47c7c2",
+      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "testedAgainst": "schema.DefaultRegistry() (same registry as compiler)",
+      "status": "PASS",
+      "checks": [
+        {
+          "ok": true,
+          "check": "ios_bridge.go exports CherriActionCatalog"
+        },
+        {
+          "ok": true,
+          "check": "ios_bridge.go returns registry-derived SchemaFingerprint"
+        },
+        {
+          "ok": true,
+          "check": "mobile_compiler.go consumes schema.DefaultRegistry()"
+        }
+      ],
+      "failures": [],
+      "notes": ""
+    },
+    {
+      "component": "iOS UI",
+      "sourceCommit": "9038ea69aea28413e00b2e9fc3bd1a379b47c7c2",
+      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "testedAgainst": "iOS Bridge C ABI",
+      "status": "PASS",
+      "checks": [
+        {
+          "ok": true,
+          "check": "CherriCompiler.swift calls CherriActionCatalog()"
+        },
+        {
+          "ok": true,
+          "check": "CherriCompiler.swift decodes schemaFingerprint from bridge"
+        },
+        {
+          "ok": true,
+          "check": "no hardcoded fingerprint literals in CherriCompiler.swift (0 found)"
+        }
+      ],
+      "failures": [],
+      "notes": "Swift build/runtime verification requires macOS/Xcode (macOS CI job); static contract checked here."
+    },
+    {
+      "component": "Preview",
+      "sourceCommit": "42ee7656e0cc07b00a097ff4d17d90c8eb8b6efd",
+      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "testedAgainst": "ios/WebPreview lock + generic catalog metadata renderer",
+      "status": "PASS",
+      "checks": [
+        {
+          "ok": true,
+          "check": "package.json pins preview-shortcut to a 40-hex commit (github:davidpovarsky/preview-shortcut#42ee7656e0cc07b00a097ff4d17d90c8eb8b6efd)"
+        },
+        {
+          "ok": true,
+          "check": "package-lock.json resolved commit == package.json pin"
+        },
+        {
+          "ok": true,
+          "check": "pinned preview commit exists in preview-shortcut repository"
+        }
+      ],
+      "failures": [],
+      "notes": ""
+    },
+    {
+      "component": "Pure+Pack",
+      "sourceCommit": "141b9cc96cf1df3f9d1593548dc49ae8a46a256a",
+      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "testedAgainst": "P10 catalog @ 9038ea69aea2",
+      "status": "PASS",
+      "checks": [
+        {
+          "ok": true,
+          "check": "Pure+Pack commit == 141b9cc96cf1df3f9d1593548dc49ae8a46a256a"
+        },
+        {
+          "ok": true,
+          "check": "Pure+Pack commit object present"
+        },
+        {
+          "ok": true,
+          "check": "Pure Original commit object present (read-only)"
+        },
+        {
+          "ok": true,
+          "check": "deterministic generator byte-parity with 141b9cc (0 drift errors)"
+        }
+      ],
+      "failures": [],
+      "notes": ""
+    }
+  ]
+}

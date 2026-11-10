@@ -36,6 +36,18 @@ var volatileTopLevelKeys = map[string]bool{
 	"WFWorkflowClientVersion": true,
 }
 
+func CompareDocumentsStrict(docA, docB map[string]any) *ComparisonResult {
+	res := &ComparisonResult{Equal: true}
+	scope := BuildDocumentScope(docA, docB)
+
+	compareDict(docA, docB, "", scope, nil, res)
+
+	sort.Slice(res.Differences, func(i, j int) bool {
+		return res.Differences[i].Path < res.Differences[j].Path
+	})
+	return res
+}
+
 type Scope struct {
 	producersA   map[string]int // UUID -> action index in A
 	producersB   map[string]int // UUID -> action index in B

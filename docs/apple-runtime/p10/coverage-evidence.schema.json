@@ -145,6 +145,10 @@
             "type": "string",
             "enum": [
               "NATIVE_SPECIMEN_PARITY_PASS",
+              "NATIVE_SPECIMEN_PARITY_FAIL",
+              "SPECIMEN_MISSING",
+              "SPECIMEN_INVALID",
+              "SPECIMEN_PLATFORM_MISMATCH",
               "NEEDS_EVIDENCE",
               "UNSUPPORTED"
             ]
@@ -173,6 +177,10 @@
                 "DECOMPILE_PASS",
                 "STRUCTURAL_ROUNDTRIP_PASS",
                 "NATIVE_SPECIMEN_PARITY_PASS",
+                "NATIVE_SPECIMEN_PARITY_FAIL",
+                "SPECIMEN_MISSING",
+                "SPECIMEN_INVALID",
+                "SPECIMEN_PLATFORM_MISMATCH",
                 "APPLE_RUNTIME_EXECUTED",
                 "BLOCKED_DEVICE",
                 "UNSUPPORTED",
@@ -210,10 +218,10 @@
           "evidenceTier": {
             "type": "string",
             "enum": [
-              "INFERRED",
-              "OBSERVED",
-              "CONFIRMED_NATIVE",
-              "CONFIRMED_RUNTIME"
+              "COMPILER_VERIFIED",
+              "STRUCTURAL_ROUNDTRIP_VERIFIED",
+              "NATIVE_SPECIMEN_VERIFIED",
+              "APPLE_RUNTIME_VERIFIED"
             ]
           },
           "runtimeVerificationState": {

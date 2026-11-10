@@ -39,30 +39,33 @@ type ActionExecutionEvidence struct {
 	DecompileMode              string   `json:"decompileMode"`
 	DecompiledSource           string   `json:"decompiledSource,omitempty"`
 	DecompileError             string   `json:"decompileError,omitempty"`
-	RoundTripVerified          bool     `json:"roundTripVerified"`
-	StructuralRoundTripPass    bool     `json:"structuralRoundTripPass"`
-	RoundTripError             string   `json:"roundTripError,omitempty"`
-	NativeSpecimenParityStatus string   `json:"nativeSpecimenParityStatus"`
-	AppleRuntimeExecutedStatus string   `json:"appleRuntimeExecutedStatus"`
-	VerificationStatuses       []string `json:"verificationStatuses"`
-	EmittedKeysSample          []string `json:"emittedKeysSample,omitempty"`
+	RoundTripVerified          bool                    `json:"roundTripVerified"`
+	StructuralRoundTripPass    bool                    `json:"structuralRoundTripPass"`
+	ComparisonModeUsed         string                  `json:"comparisonModeUsed,omitempty"`
+	RoundTripError             string                  `json:"roundTripError,omitempty"`
+	NativeSpecimenParityStatus string                  `json:"nativeSpecimenParityStatus"`
+	AppleRuntimeExecutedStatus string                  `json:"appleRuntimeExecutedStatus"`
+	VerificationStatuses       []string                `json:"verificationStatuses"`
+	EmittedKeysSample          []string                `json:"emittedKeysSample,omitempty"`
+	ParameterContractDetails   *ParameterContractResult `json:"parameterContractDetails,omitempty"`
 }
 
 type CatalogExecutionReport struct {
-	TotalCatalogEntries        int                       `json:"totalCatalogEntries"`
-	CallableCount              int                       `json:"callableCount"`
-	ConstructCount             int                       `json:"constructCount"`
-	LegacyPassCount            int                       `json:"legacyPassCount"`
-	V2PassCount                int                       `json:"v2PassCount"`
-	PlistIdentifierPassCount   int                       `json:"plistIdentifierPassCount"`
-	ParameterContractPassCount int                       `json:"parameterContractPassCount"`
-	DecompilePassCount         int                       `json:"decompilePassCount"`
-	RoundTripPassCount         int                       `json:"roundTripPassCount"`
-	StructuralRoundTripCount   int                       `json:"structuralRoundTripCount"`
-	NativeSpecimenParityCount  int                       `json:"nativeSpecimenParityCount"`
-	AppleRuntimeExecutedCount  int                       `json:"appleRuntimeExecutedCount"`
-	AllowedExclusions          []string                  `json:"allowedExclusions"`
-	Entries                    []ActionExecutionEvidence `json:"entries"`
+	TotalCatalogEntries         int                         `json:"totalCatalogEntries"`
+	CallableCount               int                         `json:"callableCount"`
+	ConstructCount              int                         `json:"constructCount"`
+	LegacyPassCount             int                         `json:"legacyPassCount"`
+	V2PassCount                 int                         `json:"v2PassCount"`
+	PlistIdentifierPassCount    int                         `json:"plistIdentifierPassCount"`
+	ParameterContractPassCount  int                         `json:"parameterContractPassCount"`
+	DecompilePassCount          int                         `json:"decompilePassCount"`
+	RoundTripPassCount          int                         `json:"roundTripPassCount"`
+	StructuralRoundTripCount    int                         `json:"structuralRoundTripCount"`
+	NativeSpecimenParityCount   int                         `json:"nativeSpecimenParityCount"`
+	AppleRuntimeExecutedCount   int                         `json:"appleRuntimeExecutedCount"`
+	AllowedExclusions           []string                    `json:"allowedExclusions"`
+	ParameterDimensionSummaries []ParameterDimensionSummary `json:"parameterDimensionSummaries,omitempty"`
+	Entries                     []ActionExecutionEvidence   `json:"entries"`
 }
 
 func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
@@ -95,7 +98,8 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 		Entries:             make([]ActionExecutionEvidence, 0, len(catalog)),
 	}
 
-	nativeSpecimenIdents := loadVerifiedNativeSpecimenIdentifiers()
+	nativeSpecimenResults := EvaluateAllCatalogNativeSpecimens()
+	var contractResults []ParameterContractResult
 
 	for _, entry := range catalog {
 		if entry.CompilerConstruct {
@@ -104,7 +108,10 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 			report.CallableCount++
 		}
 
-		ev := executeSingleCatalogEntry(entry, reg, identToNames, actionCategoryMap, nativeSpecimenIdents)
+		ev := executeSingleCatalogEntry(entry, reg, identToNames, actionCategoryMap, nativeSpecimenResults)
+		if ev.ParameterContractDetails != nil {
+			contractResults = append(contractResults, *ev.ParameterContractDetails)
+		}
 		if ev.LegacySupported {
 			report.LegacyPassCount++
 		} else {
@@ -136,15 +143,19 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 		if ev.StructuralRoundTripPass {
 			report.StructuralRoundTripCount++
 		}
-		if ev.NativeSpecimenParityStatus == "NATIVE_SPECIMEN_PARITY_PASS" {
+		if ev.NativeSpecimenParityStatus == NativeSpecimenStatusPass {
 			report.NativeSpecimenParityCount++
 		}
 		if ev.AppleRuntimeExecutedStatus == "APPLE_RUNTIME_EXECUTED" {
 			report.AppleRuntimeExecutedCount++
 		}
 
+		// Clear bulky inline TestInput strings inside p10-505-execution-evidence.json while keeping full details in p10-505-parameter-contract-evidence.json
+		ev.ParameterContractDetails = nil
 		report.Entries = append(report.Entries, ev)
 	}
+
+	report.ParameterDimensionSummaries = buildParameterDimensionSummaries(contractResults)
 
 	outPath := filepath.Join("docs", "apple-runtime", "p10", "p10-505-execution-evidence.json")
 	rawJSON, err := json.MarshalIndent(report, "", "  ")
@@ -160,34 +171,7 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 		report.LegacyPassCount, report.V2PassCount, report.ParameterContractPassCount, report.DecompilePassCount, report.StructuralRoundTripCount, report.NativeSpecimenParityCount, report.AppleRuntimeExecutedCount)
 }
 
-func loadVerifiedNativeSpecimenIdentifiers() map[string]bool {
-	out := make(map[string]bool)
-	matches, err := filepath.Glob(filepath.Join("testdata", "shortcuts", "*.shortcut"))
-	if err != nil {
-		return out
-	}
-	for _, m := range matches {
-		raw, err := os.ReadFile(m)
-		if err != nil {
-			continue
-		}
-		var doc map[string]any
-		if _, err := plist.Unmarshal(raw, &doc); err != nil {
-			continue
-		}
-		acts, _ := doc["WFWorkflowActions"].([]any)
-		for _, rawAct := range acts {
-			if act, ok := rawAct.(map[string]any); ok {
-				if id, ok := act["WFWorkflowActionIdentifier"].(string); ok && id != "" {
-					out[id] = true
-				}
-			}
-		}
-	}
-	return out
-}
-
-func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, identToNames map[string][]string, actionCategoryMap map[string]string, nativeSpecimenIdents map[string]bool) ActionExecutionEvidence {
+func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, identToNames map[string][]string, actionCategoryMap map[string]string, nativeSpecimenResults map[string]NativeSpecimenEvaluationResult) ActionExecutionEvidence {
 	legSrc := buildLegacySourceForEntry(entry, actionCategoryMap)
 	v2Src := buildV2SourceForEntry(entry, reg)
 
@@ -198,7 +182,7 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 		LegacySource:               strings.TrimSpace(legSrc),
 		V2Source:                   strings.TrimSpace(v2Src),
 		DecompileMode:              "UNSUPPORTED",
-		NativeSpecimenParityStatus: "NEEDS_EVIDENCE",
+		NativeSpecimenParityStatus: NativeSpecimenStatusNeedsEvidence,
 		AppleRuntimeExecutedStatus: "BLOCKED_DEVICE",
 		VerificationStatuses:       []string{"CATALOG_DISCOVERED"},
 	}
@@ -209,8 +193,10 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 		ev.VerificationStatuses = append(ev.VerificationStatuses, "SCHEMA_REGISTERED")
 	}
 
-	if nativeSpecimenIdents[entry.ShortcutIdentifier] {
-		ev.NativeSpecimenParityStatus = "NATIVE_SPECIMEN_PARITY_PASS"
+	if specEval, ok := nativeSpecimenResults["name:"+entry.Name]; ok {
+		ev.NativeSpecimenParityStatus = specEval.Status
+	} else if specEval, ok := nativeSpecimenResults["ident:"+entry.ShortcutIdentifier]; ok {
+		ev.NativeSpecimenParityStatus = specEval.Status
 	}
 
 	// 1. Execute Legacy Compiler
@@ -266,8 +252,9 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 		ev.VerificationStatuses = append(ev.VerificationStatuses, "PLIST_IDENTIFIER_PASS")
 	}
 
-	// 2b. Verify Parameter Contract (missing required rejected, invalid enum rejected, platform gate)
+	// 2b. Verify Parameter Contract (required, missing required rejected, optional, enum, dynamic/literal-only, platform gate)
 	contractRes := verifyCatalogActionParameterContract(entry, reg, actionCategoryMap)
+	ev.ParameterContractDetails = &contractRes
 	if contractRes.ContractPassed {
 		ev.ParameterContractVerified = true
 		ev.VerificationStatuses = append(ev.VerificationStatuses, "PARAMETER_CONTRACT_PASS")
@@ -357,7 +344,7 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 		return ev
 	}
 
-	cmpRes, cmpErr := CompareShortcutPlistsCanonical(sourcePlist, recompPlist)
+	cmpRes, cmpErr := CompareShortcutPlistsWithMode(sourcePlist, recompPlist, ComparisonModeActionPayload)
 	if cmpErr != nil {
 		ev.RoundTripError = fmt.Sprintf("canonical structural comparison error: %v", cmpErr)
 		ev.VerificationStatuses = append(ev.VerificationStatuses, ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
@@ -375,6 +362,11 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 
 	ev.RoundTripVerified = true
 	ev.StructuralRoundTripPass = true
+	ev.ComparisonModeUsed = string(ComparisonModeActionPayload)
+	// Also check if FullWorkflowSemanticComparison passes (when decompiled workflow headers match source headers)
+	if fullCmp, fullErr := CompareShortcutPlistsWithMode(sourcePlist, recompPlist, ComparisonModeFullWorkflowSemantic); fullErr == nil && fullCmp.Equal {
+		ev.ComparisonModeUsed = string(ComparisonModeFullWorkflowSemantic)
+	}
 	ev.VerificationStatuses = append(ev.VerificationStatuses, "STRUCTURAL_ROUNDTRIP_PASS", ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
 	return ev
 }
