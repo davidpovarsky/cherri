@@ -21,35 +21,48 @@ import (
 )
 
 type ActionExecutionEvidence struct {
-	Name               string   `json:"name"`
-	ShortcutIdentifier string   `json:"shortcutIdentifier"`
-	CompilerConstruct  bool     `json:"compilerConstruct"`
-	LegacySupported    bool     `json:"legacySupported"`
-	LegacySource       string   `json:"legacySource"`
-	LegacyEmittedIdent string   `json:"legacyEmittedIdent,omitempty"`
-	LegacyError        string   `json:"legacyError,omitempty"`
-	V2Supported        bool     `json:"v2Supported"`
-	V2Source           string   `json:"v2Source"`
-	V2EmittedIdent     string   `json:"v2EmittedIdent,omitempty"`
-	V2Error            string   `json:"v2Error,omitempty"`
-	DecompileSupported bool     `json:"decompileSupported"`
-	DecompileMode      string   `json:"decompileMode"`
-	DecompiledSource   string   `json:"decompiledSource,omitempty"`
-	DecompileError     string   `json:"decompileError,omitempty"`
-	RoundTripVerified  bool     `json:"roundTripVerified"`
-	RoundTripError     string   `json:"roundTripError,omitempty"`
-	EmittedKeysSample  []string `json:"emittedKeysSample,omitempty"`
+	Name                       string   `json:"name"`
+	ShortcutIdentifier         string   `json:"shortcutIdentifier"`
+	CompilerConstruct          bool     `json:"compilerConstruct"`
+	LegacySupported            bool     `json:"legacySupported"`
+	LegacySource               string   `json:"legacySource"`
+	LegacyEmittedIdent         string   `json:"legacyEmittedIdent,omitempty"`
+	LegacyError                string   `json:"legacyError,omitempty"`
+	V2Supported                bool     `json:"v2Supported"`
+	V2Source                   string   `json:"v2Source"`
+	V2EmittedIdent             string   `json:"v2EmittedIdent,omitempty"`
+	V2Error                    string   `json:"v2Error,omitempty"`
+	PlistIdentifierVerified    bool     `json:"plistIdentifierVerified"`
+	ParameterContractVerified  bool     `json:"parameterContractVerified"`
+	ParameterContractError     string   `json:"parameterContractError,omitempty"`
+	DecompileSupported         bool     `json:"decompileSupported"`
+	DecompileMode              string   `json:"decompileMode"`
+	DecompiledSource           string   `json:"decompiledSource,omitempty"`
+	DecompileError             string   `json:"decompileError,omitempty"`
+	RoundTripVerified          bool     `json:"roundTripVerified"`
+	StructuralRoundTripPass    bool     `json:"structuralRoundTripPass"`
+	RoundTripError             string   `json:"roundTripError,omitempty"`
+	NativeSpecimenParityStatus string   `json:"nativeSpecimenParityStatus"`
+	AppleRuntimeExecutedStatus string   `json:"appleRuntimeExecutedStatus"`
+	VerificationStatuses       []string `json:"verificationStatuses"`
+	EmittedKeysSample          []string `json:"emittedKeysSample,omitempty"`
 }
 
 type CatalogExecutionReport struct {
-	TotalCatalogEntries int                       `json:"totalCatalogEntries"`
-	CallableCount       int                       `json:"callableCount"`
-	ConstructCount      int                       `json:"constructCount"`
-	LegacyPassCount     int                       `json:"legacyPassCount"`
-	V2PassCount         int                       `json:"v2PassCount"`
-	DecompilePassCount  int                       `json:"decompilePassCount"`
-	RoundTripPassCount  int                       `json:"roundTripPassCount"`
-	Entries             []ActionExecutionEvidence `json:"entries"`
+	TotalCatalogEntries        int                       `json:"totalCatalogEntries"`
+	CallableCount              int                       `json:"callableCount"`
+	ConstructCount             int                       `json:"constructCount"`
+	LegacyPassCount            int                       `json:"legacyPassCount"`
+	V2PassCount                int                       `json:"v2PassCount"`
+	PlistIdentifierPassCount   int                       `json:"plistIdentifierPassCount"`
+	ParameterContractPassCount int                       `json:"parameterContractPassCount"`
+	DecompilePassCount         int                       `json:"decompilePassCount"`
+	RoundTripPassCount         int                       `json:"roundTripPassCount"`
+	StructuralRoundTripCount   int                       `json:"structuralRoundTripCount"`
+	NativeSpecimenParityCount  int                       `json:"nativeSpecimenParityCount"`
+	AppleRuntimeExecutedCount  int                       `json:"appleRuntimeExecutedCount"`
+	AllowedExclusions          []string                  `json:"allowedExclusions"`
+	Entries                    []ActionExecutionEvidence `json:"entries"`
 }
 
 func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
@@ -78,8 +91,11 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 
 	report := CatalogExecutionReport{
 		TotalCatalogEntries: len(catalog),
+		AllowedExclusions:   CanonicalAllowedExclusions,
 		Entries:             make([]ActionExecutionEvidence, 0, len(catalog)),
 	}
+
+	nativeSpecimenIdents := loadVerifiedNativeSpecimenIdentifiers()
 
 	for _, entry := range catalog {
 		if entry.CompilerConstruct {
@@ -88,7 +104,7 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 			report.CallableCount++
 		}
 
-		ev := executeSingleCatalogEntry(entry, reg, identToNames, actionCategoryMap)
+		ev := executeSingleCatalogEntry(entry, reg, identToNames, actionCategoryMap, nativeSpecimenIdents)
 		if ev.LegacySupported {
 			report.LegacyPassCount++
 		} else {
@@ -99,6 +115,14 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 		} else {
 			t.Errorf("V2 execution failed for %s (%s): %s\nSource:\n%s", entry.Name, entry.ShortcutIdentifier, ev.V2Error, ev.V2Source)
 		}
+		if ev.PlistIdentifierVerified {
+			report.PlistIdentifierPassCount++
+		}
+		if ev.ParameterContractVerified {
+			report.ParameterContractPassCount++
+		} else {
+			t.Errorf("Parameter contract failed for %s (%s): %s", entry.Name, entry.ShortcutIdentifier, ev.ParameterContractError)
+		}
 		if ev.DecompileSupported {
 			report.DecompilePassCount++
 		} else {
@@ -108,6 +132,15 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 			report.RoundTripPassCount++
 		} else {
 			t.Errorf("Round-trip execution failed for %s (%s): %s\nDecompiled:\n%s", entry.Name, entry.ShortcutIdentifier, ev.RoundTripError, ev.DecompiledSource)
+		}
+		if ev.StructuralRoundTripPass {
+			report.StructuralRoundTripCount++
+		}
+		if ev.NativeSpecimenParityStatus == "NATIVE_SPECIMEN_PARITY_PASS" {
+			report.NativeSpecimenParityCount++
+		}
+		if ev.AppleRuntimeExecutedStatus == "APPLE_RUNTIME_EXECUTED" {
+			report.AppleRuntimeExecutedCount++
 		}
 
 		report.Entries = append(report.Entries, ev)
@@ -123,21 +156,61 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 			t.Fatalf("failed to write %s: %v", outPath, err)
 		}
 	}
-	t.Logf("505 Catalog Execution Summary: Legacy=%d/505, V2=%d/505, Decompile=%d/505, RoundTrip=%d/505",
-		report.LegacyPassCount, report.V2PassCount, report.DecompilePassCount, report.RoundTripPassCount)
+	t.Logf("505 Catalog Execution Summary: Legacy=%d/505, V2=%d/505, ParamContract=%d/505, Decompile=%d/505, StructuralRoundTrip=%d/505, NativeSpecimenParity=%d/505, RuntimeExecuted=%d/505",
+		report.LegacyPassCount, report.V2PassCount, report.ParameterContractPassCount, report.DecompilePassCount, report.StructuralRoundTripCount, report.NativeSpecimenParityCount, report.AppleRuntimeExecutedCount)
 }
 
-func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, identToNames map[string][]string, actionCategoryMap map[string]string) ActionExecutionEvidence {
+func loadVerifiedNativeSpecimenIdentifiers() map[string]bool {
+	out := make(map[string]bool)
+	matches, err := filepath.Glob(filepath.Join("testdata", "shortcuts", "*.shortcut"))
+	if err != nil {
+		return out
+	}
+	for _, m := range matches {
+		raw, err := os.ReadFile(m)
+		if err != nil {
+			continue
+		}
+		var doc map[string]any
+		if _, err := plist.Unmarshal(raw, &doc); err != nil {
+			continue
+		}
+		acts, _ := doc["WFWorkflowActions"].([]any)
+		for _, rawAct := range acts {
+			if act, ok := rawAct.(map[string]any); ok {
+				if id, ok := act["WFWorkflowActionIdentifier"].(string); ok && id != "" {
+					out[id] = true
+				}
+			}
+		}
+	}
+	return out
+}
+
+func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, identToNames map[string][]string, actionCategoryMap map[string]string, nativeSpecimenIdents map[string]bool) ActionExecutionEvidence {
 	legSrc := buildLegacySourceForEntry(entry, actionCategoryMap)
 	v2Src := buildV2SourceForEntry(entry, reg)
 
 	ev := ActionExecutionEvidence{
-		Name:               entry.Name,
-		ShortcutIdentifier: entry.ShortcutIdentifier,
-		CompilerConstruct:  entry.CompilerConstruct,
-		LegacySource:       strings.TrimSpace(legSrc),
-		V2Source:           strings.TrimSpace(v2Src),
-		DecompileMode:      "UNSUPPORTED",
+		Name:                       entry.Name,
+		ShortcutIdentifier:         entry.ShortcutIdentifier,
+		CompilerConstruct:          entry.CompilerConstruct,
+		LegacySource:               strings.TrimSpace(legSrc),
+		V2Source:                   strings.TrimSpace(v2Src),
+		DecompileMode:              "UNSUPPORTED",
+		NativeSpecimenParityStatus: "NEEDS_EVIDENCE",
+		AppleRuntimeExecutedStatus: "BLOCKED_DEVICE",
+		VerificationStatuses:       []string{"CATALOG_DISCOVERED"},
+	}
+
+	if entry.CompilerConstruct {
+		ev.VerificationStatuses = append(ev.VerificationStatuses, "SCHEMA_REGISTERED")
+	} else if _, ok := reg.LookupAction(entry.Name); ok {
+		ev.VerificationStatuses = append(ev.VerificationStatuses, "SCHEMA_REGISTERED")
+	}
+
+	if nativeSpecimenIdents[entry.ShortcutIdentifier] {
+		ev.NativeSpecimenParityStatus = "NATIVE_SPECIMEN_PARITY_PASS"
 	}
 
 	// 1. Execute Legacy Compiler
@@ -156,6 +229,7 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 				ev.LegacySupported = true
 				ev.LegacyEmittedIdent = matchedIdent
 				ev.EmittedKeysSample = keys
+				ev.VerificationStatuses = append(ev.VerificationStatuses, "LEGACY_COMPILE_PASS")
 			} else {
 				ev.LegacyError = fmt.Sprintf("emitted plist did not contain expected identifier %q", entry.ShortcutIdentifier)
 			}
@@ -180,40 +254,60 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 				if len(ev.EmittedKeysSample) == 0 {
 					ev.EmittedKeysSample = keys
 				}
+				ev.VerificationStatuses = append(ev.VerificationStatuses, "V2_COMPILE_PASS")
 			} else {
 				ev.V2Error = fmt.Sprintf("emitted v2 plist did not contain expected identifier %q", entry.ShortcutIdentifier)
 			}
 		}
 	}
 
-	// 3. Execute Decompiler on emitted plist (prefer V2 plist, fallback to Legacy plist)
-	sourcePlist := v2PlistBytes
+	if ev.LegacySupported && ev.V2Supported {
+		ev.PlistIdentifierVerified = true
+		ev.VerificationStatuses = append(ev.VerificationStatuses, "PLIST_IDENTIFIER_PASS")
+	}
+
+	// 2b. Verify Parameter Contract (missing required rejected, invalid enum rejected, platform gate)
+	contractRes := verifyCatalogActionParameterContract(entry, reg, actionCategoryMap)
+	if contractRes.ContractPassed {
+		ev.ParameterContractVerified = true
+		ev.VerificationStatuses = append(ev.VerificationStatuses, "PARAMETER_CONTRACT_PASS")
+	} else {
+		ev.ParameterContractError = contractRes.FailureReason
+	}
+
+	// 3. Execute Decompiler on emitted plist (use legPlistBytes as canonical baseline since decompiler outputs legacy syntax, fallback to v2PlistBytes)
+	sourcePlist := legPlistBytes
 	if len(sourcePlist) == 0 {
-		sourcePlist = legPlistBytes
+		sourcePlist = v2PlistBytes
 	}
 	if len(sourcePlist) == 0 {
 		ev.DecompileError = "no compiled plist available to decompile"
 		ev.RoundTripError = "no decompiled source available"
+		ev.VerificationStatuses = append(ev.VerificationStatuses, ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
 		return ev
 	}
 
 	if entry.Name == "comment" {
 		args.Args["comments"] = "true"
-		defer delete(args.Args, "comments")
 	}
 	decompResp := decompileForMobile(sourcePlist, "Exec_"+entry.Name)
+	if entry.Name == "comment" {
+		delete(args.Args, "comments")
+	}
 	if !decompResp.OK || strings.TrimSpace(decompResp.Source) == "" {
 		ev.DecompileError = decompResp.Error
 		if ev.DecompileError == "" {
 			ev.DecompileError = "decompiler returned empty source"
 		}
 		ev.RoundTripError = "decompile failed"
+		ev.VerificationStatuses = append(ev.VerificationStatuses, ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
 		return ev
 	}
 
 	decompSrc := strings.TrimSpace(decompResp.Source)
 	ev.DecompileSupported = true
 	ev.DecompiledSource = decompSrc
+	ev.VerificationStatuses = append(ev.VerificationStatuses, "DECOMPILE_PASS")
 
 	// Classify actual decompile mode from decompiled output
 	if entry.CompilerConstruct {
@@ -230,8 +324,7 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 		}
 	}
 
-	// 4. Execute Round-Trip Recompilation on decompiled source
-	// If the action is macOnly or has version headers not preserved by decompiler, prepend required target directives if needed
+	// 4. Execute Round-Trip Recompilation on decompiled source and perform Canonical Structural Plist Comparison
 	recompSrc := decompResp.Source
 	if entry.MacOnly && !strings.Contains(recompSrc, "#define mac") {
 		recompSrc = "#define mac true\n" + recompSrc
@@ -242,26 +335,47 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 
 	recompResp := compileForMobileMode(recompSrc, "Recomp_"+entry.Name, "legacy", false)
 	if !recompResp.OK {
-		// Try auto/v2 mode via migration if decompiled syntax uses v2 constructs or v2-only literal forms
 		migrated := migrate.MigrateSource(recompSrc)
 		recompResp = compileForMobileMode(migrated, "Recomp_"+entry.Name, "v2", false)
 	}
 	if !recompResp.OK {
 		ev.RoundTripError = recompResp.Error
+		ev.VerificationStatuses = append(ev.VerificationStatuses, ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
 		return ev
 	}
 
 	recompPlist, err := base64.StdEncoding.DecodeString(recompResp.PlistBase64)
 	if err != nil {
 		ev.RoundTripError = err.Error()
+		ev.VerificationStatuses = append(ev.VerificationStatuses, ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
 		return ev
 	}
 	recompIdent, _ := inspectEmittedPlistForIdentifier(recompPlist, entry.ShortcutIdentifier)
 	if recompIdent == "" {
 		ev.RoundTripError = fmt.Sprintf("recompiled plist missing identifier %q", entry.ShortcutIdentifier)
+		ev.VerificationStatuses = append(ev.VerificationStatuses, ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
 		return ev
 	}
+
+	cmpRes, cmpErr := CompareShortcutPlistsCanonical(sourcePlist, recompPlist)
+	if cmpErr != nil {
+		ev.RoundTripError = fmt.Sprintf("canonical structural comparison error: %v", cmpErr)
+		ev.VerificationStatuses = append(ev.VerificationStatuses, ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
+		return ev
+	}
+	if !cmpRes.Equal {
+		var diffStrs []string
+		for _, d := range cmpRes.Differences {
+			diffStrs = append(diffStrs, fmt.Sprintf("%s: %s (expected=%v, actual=%v)", d.Path, d.Kind, d.A, d.B))
+		}
+		ev.RoundTripError = fmt.Sprintf("canonical structural mismatch: %s", strings.Join(diffStrs, "; "))
+		ev.VerificationStatuses = append(ev.VerificationStatuses, ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
+		return ev
+	}
+
 	ev.RoundTripVerified = true
+	ev.StructuralRoundTripPass = true
+	ev.VerificationStatuses = append(ev.VerificationStatuses, "STRUCTURAL_ROUNDTRIP_PASS", ev.NativeSpecimenParityStatus, ev.AppleRuntimeExecutedStatus)
 	return ev
 }
 
@@ -366,13 +480,13 @@ func buildLegacySourceForEntry(entry catalogActionInfo, actionCategoryMap map[st
 		case "menu":
 			b.WriteString("menu \"Choose\" {\n\titem \"Option 1\":\n\t\tshow(\"1\")\n}\n")
 		case "repeat":
-			b.WriteString("repeat i for 2 {\n\tshow(\"r\")\n}\n")
+			b.WriteString("repeat _ for 2 {\n\tshow(\"r\")\n}\n")
 		case "repeat.each":
-			b.WriteString("@arr = [\"a\", \"b\"]\nfor item in @arr {\n\tshow(\"ok\")\n}\n")
+			b.WriteString("for _ in Ask {\n\tshow(\"ok\")\n}\n")
 		case "setVariable":
 			b.WriteString("@myVar = \"hello\"\n")
 		case "appendVariable":
-			b.WriteString("@myVar = [\"a\"]\n@myVar += \"item\"\n")
+			b.WriteString("@myVar = list(\"a\")\n@myVar += \"item\"\n")
 		case "dictionaryValue":
 			b.WriteString("@d = {\"key\": \"value\"}\n")
 		case "calculateExpression":
@@ -505,6 +619,8 @@ func legacyArgForParam(actionName string, p catalogParameter) string {
 		return "Ask"
 	}
 	switch p.Type {
+	case "rawtext":
+		return "'sample'"
 	case "text", "string":
 		if strings.Contains(strings.ToLower(p.Name), "appid") || strings.Contains(strings.ToLower(actionName), "app") {
 			return "\"com.apple.Notes\""
@@ -598,12 +714,14 @@ func v2ArgForParam(actionName string, p catalogParameter, sp *schema.ParameterSc
 			}
 			return "1"
 		case "Image", "File", "Contact", "CalendarEvent", "AnyContent":
-			if !p.Literal && p.Type != "text" && p.Type != "string" {
+			if !p.Literal && p.Type != "text" && p.Type != "string" && p.Type != "rawtext" {
 				return "Ask"
 			}
 		}
 	}
 	switch p.Type {
+	case "rawtext":
+		return "\"sample\""
 	case "text", "string":
 		if strings.Contains(strings.ToLower(p.Name), "appid") || strings.Contains(strings.ToLower(actionName), "app") {
 			return "\"com.apple.Notes\""

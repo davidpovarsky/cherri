@@ -54,6 +54,7 @@ func decompile(b []byte) {
 	}
 
 	loadBasicStandardActions()
+	loadAllStandardActionsForDecompile()
 	resetParse()
 	firstChar()
 
@@ -311,6 +312,9 @@ func mapSplitActions() {
 		var ident = action.identifier
 		if action.identifier == "" {
 			ident = identifier
+		}
+		if action.overrideIdentifier != "" {
+			ident = action.overrideIdentifier
 		}
 
 		ident = strings.ToLower(ident)
@@ -743,7 +747,44 @@ func decompExpression(action *ShortcutAction) {
 	checkConstantLiteral(action)
 }
 
+var skipNextLoopVarAction bool
+
+func peekLoopVariableAction(expectedPrefix string) string {
+	if actionIndex+1 >= len(shortcut.WFWorkflowActions) {
+		return ""
+	}
+	nextAction := peekActions(1)
+	if nextAction.WFWorkflowActionIdentifier != SetVariableIdentifier {
+		return ""
+	}
+	varName, ok := nextAction.WFWorkflowActionParameters["WFVariableName"].(string)
+	if !ok || varName == "" {
+		return ""
+	}
+	wfInput, ok := nextAction.WFWorkflowActionParameters["WFInput"].(map[string]any)
+	if !ok {
+		return ""
+	}
+	val, ok := wfInput["Value"].(map[string]any)
+	if !ok {
+		return ""
+	}
+	refName, _ := val["VariableName"].(string)
+	if !strings.HasPrefix(refName, expectedPrefix) {
+		return ""
+	}
+	if varName != "_" {
+		sanitizeIdentifier(&varName)
+	}
+	return varName
+}
+
 func decompVariable(action *ShortcutAction) {
+	if skipNextLoopVarAction {
+		skipNextLoopVarAction = false
+		currentVariableValue = ""
+		return
+	}
 	var variableName = action.WFWorkflowActionParameters["WFVariableName"].(string)
 	sanitizeIdentifier(&variableName)
 	newCodeLine(fmt.Sprintf("@%s", variableName))
@@ -864,7 +905,13 @@ func decompRepeat(action *ShortcutAction) {
 	case startStatement:
 		beginStatement(Repeat, action)
 
-		code.WriteString("_ for ")
+		loopVar := peekLoopVariableAction("Repeat Index")
+		if loopVar != "" {
+			skipNextLoopVarAction = true
+		} else {
+			loopVar = "_"
+		}
+		code.WriteString(loopVar + " for ")
 
 		code.WriteString(decompValue(action.WFWorkflowActionParameters["WFRepeatCount"]))
 
@@ -882,7 +929,13 @@ func decompFor(action *ShortcutAction) {
 	case startStatement:
 		beginStatement(RepeatWithEach, action)
 
-		code.WriteString("_ in ")
+		loopVar := peekLoopVariableAction("Repeat Item")
+		if loopVar != "" {
+			skipNextLoopVarAction = true
+		} else {
+			loopVar = "_"
+		}
+		code.WriteString(loopVar + " in ")
 
 		code.WriteString(decompValue(action.WFWorkflowActionParameters["WFInput"]))
 
@@ -1803,7 +1856,11 @@ func matchAction(action *ShortcutAction) (name string, definition actionDefiniti
 		definition = *def
 		name = call
 
-		if splitActions, found := identifierMap[identifier]; found {
+		var splitKey = strings.ToLower(identifier)
+		if def.overrideIdentifier != "" {
+			splitKey = strings.ToLower(def.overrideIdentifier)
+		}
+		if splitActions, found := identifierMap[splitKey]; found {
 			matchSplitAction(&splitActions, action.WFWorkflowActionParameters, &name, &definition)
 			if identifier == "documentpicker.open" {
 				if wfFile, ok := action.WFWorkflowActionParameters["WFFile"].(map[string]interface{}); ok && wfFile["fileLocation"] != nil {
@@ -1845,9 +1902,11 @@ func matchAction(action *ShortcutAction) (name string, definition actionDefiniti
 }
 
 type actionMatch struct {
-	params uint
-	values uint
-	action actionValue
+	params           uint
+	values           uint
+	addValues        uint
+	addParamsViolated bool
+	action           actionValue
 }
 
 func matchSplitAction(splitActions *[]actionValue, parameters map[string]any, identifier *string, definition *actionDefinition) {
@@ -1871,10 +1930,6 @@ func matchSplitAction(splitActions *[]actionValue, parameters map[string]any, id
 		return
 	}
 
-	// A single positive parameter match is decisive even against the default
-	// action: without this, unambiguous shapes like selectFolder's
-	// WFPickingMode:"Folders" degraded to the default selectFile and lost
-	// their distinguishing parameters.
 	if len(matches) == 1 {
 		*identifier = matches[0].action.identifier
 		*definition = *matches[0].action.definition
@@ -1882,23 +1937,48 @@ func matchSplitAction(splitActions *[]actionValue, parameters map[string]any, id
 	}
 
 	sort.SliceStable(matches, func(i, j int) bool {
-		return matches[i].params > matches[j].params || matches[i].values > matches[j].values
+		if matches[i].addValues != matches[j].addValues {
+			return matches[i].addValues > matches[j].addValues
+		}
+		if matches[i].values != matches[j].values {
+			return matches[i].values > matches[j].values
+		}
+		if matches[i].params != matches[j].params {
+			return matches[i].params > matches[j].params
+		}
+		if matches[i].action.definition.defaultAction != matches[j].action.definition.defaultAction {
+			return matches[i].action.definition.defaultAction
+		}
+		return matches[i].action.identifier < matches[j].action.identifier
 	})
 
 	if args.Using("debug") {
 		for _, match := range matches[0:] {
 			fmt.Printf("%s()\n", match.action.identifier)
-			fmt.Println("params:", match.params, " values:", match.values)
+			fmt.Println("params:", match.params, " values:", match.values, " addValues:", match.addValues)
 			fmt.Println("---")
 		}
 		fmt.Print("\n")
 	}
 
 	if !competingMatches(matches) {
-		if args.Using("debug") {
-			fmt.Println("matches are not competing! using default")
+		// If the default action itself had its appendParams violated (so it is not in matches),
+		// pick the best non-violated match rather than falling back to a violated default action.
+		defaultInMatches := false
+		if hasDefaultAction {
+			for _, m := range matches {
+				if m.action.identifier == defaultAction.identifier {
+					defaultInMatches = true
+					break
+				}
+			}
 		}
-		return
+		if hasDefaultAction && defaultInMatches {
+			if args.Using("debug") {
+				fmt.Println("matches are not competing! using default")
+			}
+			return
+		}
 	}
 
 	var matchedAction = matches[0]
@@ -1907,29 +1987,48 @@ func matchSplitAction(splitActions *[]actionValue, parameters map[string]any, id
 }
 
 func getSplitActionMatches(splitActions *[]actionValue, parameters map[string]any) (matches []actionMatch) {
+	var nonViolated []actionMatch
+	var allScored []actionMatch
 	for _, splitAction := range *splitActions {
-		var matchedParams, matchedValues = scoreActionMatch(splitAction, splitAction.definition.parameters, parameters)
-		if matchedParams == 0 {
-			continue
+		var matchedParams, matchedValues, addValues, violated = scoreActionMatch(splitAction, splitAction.definition.parameters, parameters)
+		m := actionMatch{
+			params:            matchedParams,
+			values:            matchedValues,
+			addValues:         addValues,
+			addParamsViolated: violated,
+			action:            splitAction,
 		}
-
-		matches = append(matches, actionMatch{
-			params: matchedParams,
-			values: matchedValues,
-			action: splitAction,
-		})
+		if !violated {
+			nonViolated = append(nonViolated, m)
+		}
+		if matchedParams > 0 {
+			allScored = append(allScored, m)
+		}
 	}
-	return
+	if len(nonViolated) > 0 {
+		// Prefer non-violated matches that matched at least one parameter, or all non-violated if none matched parameters (e.g. 0-arg call)
+		var positiveNonViolated []actionMatch
+		for _, m := range nonViolated {
+			if m.params > 0 {
+				positiveNonViolated = append(positiveNonViolated, m)
+			}
+		}
+		if len(positiveNonViolated) > 0 {
+			return positiveNonViolated
+		}
+		return nonViolated
+	}
+	return allScored
 }
 
 // competingMatches determines if the matches for this identifier have more values than 1 matching this action.
 func competingMatches(matches []actionMatch) bool {
-	if len(matches) >= 2 && matches[0].values > matches[1].values {
+	if len(matches) >= 2 && (matches[0].addValues > matches[1].addValues || matches[0].values > matches[1].values || matches[0].params > matches[1].params) {
 		return true
 	}
 	var hasCompetingValues bool
 	for _, match := range matches {
-		if match.values > 1 {
+		if match.addValues > 0 || match.values > 1 {
 			hasCompetingValues = true
 			break
 		}
@@ -1945,19 +2044,22 @@ func competingMatches(matches []actionMatch) bool {
 	return false
 }
 
-func scoreActionMatch(splitAction actionValue, splitActionParams []parameterDefinition, parameters map[string]any) (matchedParams uint, matchedValues uint) {
+func scoreActionMatch(splitAction actionValue, splitActionParams []parameterDefinition, parameters map[string]any) (matchedParams uint, matchedValues uint, addValues uint, addParamsViolated bool) {
 	var paramMatches, valueMatches = scoreActionParams(&splitActionParams, parameters)
 	matchedParams += paramMatches
 	matchedValues += valueMatches
 
 	var splitActionAddParams []parameterDefinition
 	if splitAction.definition.appendParamsFunc != nil {
-		for key, value := range splitAction.definition.appendParamsFunc([]actionArgument{}) {
-			splitActionAddParams = append(splitActionAddParams, parameterDefinition{
-				key:          key,
-				defaultValue: value,
-			})
-		}
+		func() {
+			defer func() { _ = recover() }()
+			for key, value := range splitAction.definition.appendParamsFunc([]actionArgument{}) {
+				splitActionAddParams = append(splitActionAddParams, parameterDefinition{
+					key:          key,
+					defaultValue: value,
+				})
+			}
+		}()
 	}
 
 	if len(splitAction.definition.appendParams) != 0 {
@@ -1969,9 +2071,11 @@ func scoreActionMatch(splitAction actionValue, splitActionParams []parameterDefi
 		}
 	}
 
-	var addParamMatches, addValueMatches = scoreActionAddParams(&splitActionAddParams, parameters)
+	var addParamMatches, addValueMatches, violated = scoreActionAddParams(&splitActionAddParams, parameters)
 	matchedParams += addParamMatches
 	matchedValues += addValueMatches
+	addValues = addValueMatches
+	addParamsViolated = violated
 
 	return
 }
@@ -1998,29 +2102,58 @@ func scoreActionParams(splitActionParams *[]parameterDefinition, parameters map[
 	return
 }
 
-func scoreActionAddParams(splitActionAddParams *[]parameterDefinition, parameters map[string]any) (matchedParams uint, matchedValues uint) {
+func plistValuesMatch(expected, actual any) bool {
+	if expected == nil && actual == nil {
+		return true
+	}
+	if expected == nil || actual == nil {
+		return false
+	}
+	if reflect.DeepEqual(expected, actual) {
+		return true
+	}
+	expKind := reflect.TypeOf(expected).Kind()
+	actKind := reflect.TypeOf(actual).Kind()
+	if expKind == reflect.Map && actKind == reflect.Map {
+		expVal := reflect.ValueOf(expected)
+		actVal := reflect.ValueOf(actual)
+		if expVal.Len() != actVal.Len() {
+			return false
+		}
+		for _, k := range expVal.MapKeys() {
+			av := actVal.MapIndex(k)
+			if !av.IsValid() {
+				return false
+			}
+			if !plistValuesMatch(expVal.MapIndex(k).Interface(), av.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if expKind == reflect.Struct && actKind == reflect.Map {
+		var defMap map[string]any
+		mapToStruct(expected, &defMap)
+		return plistValuesMatch(defMap, actual)
+	}
+	return fmt.Sprintf("%v", expected) == fmt.Sprintf("%v", actual)
+}
+
+func scoreActionAddParams(splitActionAddParams *[]parameterDefinition, parameters map[string]any) (matchedParams uint, matchedValues uint, violated bool) {
 	for _, param := range *splitActionAddParams {
 		if param.key == "" {
 			continue
 		}
-		if value, found := parameters[param.key]; found {
+		value, found := parameters[param.key]
+		if !found {
+			violated = true
+			continue
+		}
+		if plistValuesMatch(param.defaultValue, value) {
 			matchedParams++
-
-			var defaultValueType = reflect.TypeOf(param.defaultValue).Kind()
-			var valueType = reflect.TypeOf(value).Kind()
-			if defaultValueType == reflect.Map && valueType == reflect.Map {
-				if reflect.DeepEqual(param.defaultValue, value) || decompValue(param.defaultValue) == decompValue(value) {
-					matchedValues++
-				}
-			} else if defaultValueType == reflect.Struct && valueType == reflect.Map {
-				var defMap map[string]any
-				mapToStruct(param.defaultValue, &defMap)
-				if reflect.DeepEqual(defMap, value) || decompValue(defMap) == decompValue(value) {
-					matchedValues++
-				}
-			} else if fmt.Sprintf("%v", param.defaultValue) == fmt.Sprintf("%v", value) {
-				matchedValues++
-			}
+			matchedValues++
+		} else {
+			violated = true
 		}
 	}
 	return

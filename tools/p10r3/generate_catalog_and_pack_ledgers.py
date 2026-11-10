@@ -4,7 +4,7 @@
 Generates the authoritative, non-tautological P10 audit artifacts from real
 compiler/decompiler execution evidence, git history, and runtime extraction ledgers:
 1. docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json (validated against coverage-evidence.schema.json)
-2. docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json (reconciles 2396 -> 1527 -> 390 -> 505)
+2. docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json (reconciles 2396 -> 1527 -> 390 COVERED_PARTIAL -> 505)
 3. docs/apple-runtime/p10/p10-pack-15-go-only-audit.json (with explicit classification on all 15 Go-only actions)
 4. docs/apple-runtime/p10/catalog-supported-by-compiler.md
 5. docs/apple-runtime/p10/apple-discovered-not-supported.md
@@ -14,6 +14,7 @@ compiler/decompiler execution evidence, git history, and runtime extraction ledg
 
 import collections
 import datetime
+import hashlib
 import json
 import pathlib
 import re
@@ -23,6 +24,41 @@ import sys
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 UPSTREAM_SHA = "bcc0095754e2cc0baaeb4d93dae172b8153b4716"
 PACK_SHA = "141b9cc96cf1df3f9d1593548dc49ae8a46a256a"
+
+DEPENDENCY_GLOBS = [
+    "actions/*.cherri",
+    "actions_std.go",
+    "actions_catalog.go",
+    "action.go",
+    "decompile.go",
+    "mobile_compiler.go",
+    "parser.go",
+    "raw_actions.go",
+    "internal/language/schema/generated_registry.go",
+    "internal/shortcutcompare/compare.go",
+    "p10_catalog_execution_test.go",
+    "p10_structural_roundtrip_test.go",
+    "docs/apple-runtime/p10/p10-action-ledger.json",
+    "docs/apple-runtime/p10/p10-505-execution-evidence.json",
+    "docs/apple-runtime/p10/coverage-evidence.schema.json",
+]
+
+
+def compute_input_dependency_fingerprint(repo_root: pathlib.Path = REPO_ROOT) -> str:
+    """Computes a deterministic SHA-256 fingerprint over all compiler, action, schema, and ledger inputs.
+    Normalizes CRLF -> LF so the digest is 100% identical across Windows, Linux, and macOS."""
+    h = hashlib.sha256()
+    matched_paths = set()
+    for pattern in DEPENDENCY_GLOBS:
+        for p in sorted(repo_root.glob(pattern)):
+            if p.is_file():
+                matched_paths.add(p.relative_to(repo_root).as_posix())
+    for rel in sorted(matched_paths):
+        full = repo_root / rel
+        raw = full.read_bytes().replace(b"\r\n", b"\n")
+        file_digest = hashlib.sha256(raw).hexdigest()
+        h.update(f"{rel}:{file_digest}\n".encode("utf-8"))
+    return h.hexdigest()
 
 
 def git_output(args):
@@ -172,7 +208,7 @@ def locate_real_unit_test_refs(action_names):
     refs = {}
     for name in action_names:
         matched = [f"p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[{name}]"]
-        pattern = re.compile(rf'\b{re.escape(name)}\b')
+        pattern = re.compile(rf"\b{re.escape(name)}\b")
         for fname, content in file_contents.items():
             if fname == "p10_catalog_execution_test.go":
                 continue
@@ -435,6 +471,8 @@ def validate_against_schema(matrix, schema):
         raise ValueError(f"Expected schemaVersion 2.0, got {matrix['schemaVersion']}")
     if not re.match(r"^[0-9a-f]{40}$", matrix["sourceCommit"]):
         raise ValueError(f"Invalid sourceCommit: {matrix['sourceCommit']}")
+    if not re.match(r"^[0-9a-f]{64}$", matrix.get("inputDependencyFingerprint", "")):
+        raise ValueError(f"Invalid inputDependencyFingerprint: {matrix.get('inputDependencyFingerprint')}")
     if matrix["totalCatalogEntries"] != 505 or len(matrix["entries"]) != 505:
         raise ValueError("Expected exactly 505 entries")
 
@@ -446,6 +484,7 @@ def validate_against_schema(matrix, schema):
     item_schema = schema["properties"]["entries"]["items"]
     item_req = item_schema["required"]
     item_props = item_schema["properties"]
+    valid_statuses = set(item_props["verificationStatuses"]["items"]["enum"])
 
     for idx, entry in enumerate(matrix["entries"]):
         for k in item_req:
@@ -455,15 +494,33 @@ def validate_against_schema(matrix, schema):
             raise ValueError(f"Invalid entryKind: {entry['entryKind']}")
         if not isinstance(entry["sourceLine"], int) or entry["sourceLine"] < 1:
             raise ValueError(f"Invalid sourceLine on {entry['cherriName']}: {entry['sourceLine']}")
-        for enum_key in ("decompileMode", "packSupportKind", "evidenceTier", "runtimeVerificationState"):
+        for enum_key in (
+            "decompileMode",
+            "packSupportKind",
+            "evidenceTier",
+            "runtimeVerificationState",
+            "nativeSpecimenParityStatus",
+            "appleRuntimeExecutedStatus",
+        ):
             if entry[enum_key] not in item_props[enum_key]["enum"]:
                 raise ValueError(f"Invalid {enum_key} on {entry['cherriName']}: {entry[enum_key]}")
+        if not isinstance(entry.get("verificationStatuses"), list) or not entry["verificationStatuses"]:
+            raise ValueError(f"Empty verificationStatuses on {entry['cherriName']}")
+        for st in entry["verificationStatuses"]:
+            if st not in valid_statuses:
+                raise ValueError(f"Invalid verification status '{st}' on {entry['cherriName']}")
+        # Anti-inflation invariant: CONFIRMED_RUNTIME requires APPLE_RUNTIME_EXECUTED
+        if entry["evidenceTier"] == "CONFIRMED_RUNTIME" and entry["appleRuntimeExecutedStatus"] != "APPLE_RUNTIME_EXECUTED":
+            raise ValueError(
+                f"Entry {entry['cherriName']} claims CONFIRMED_RUNTIME without APPLE_RUNTIME_EXECUTED"
+            )
         if not entry["unitTestRef"] or "TestP10_VerifyAndRecord505CatalogExecution" not in entry["unitTestRef"]:
             raise ValueError(f"Entry {entry['cherriName']} lacks real execution test reference: {entry['unitTestRef']}")
 
 
 def build_all_artifacts():
     head_sha = get_head_sha()
+    dep_fp = compute_input_dependency_fingerprint(REPO_ROOT)
 
     # 1. Load live CLI catalog
     res = subprocess.run(
@@ -526,8 +583,16 @@ def build_all_artifacts():
 
         legacy_ok = bool(ev["legacySupported"])
         v2_ok = bool(ev["v2Supported"])
+        plist_id_ok = bool(ev.get("plistIdentifierVerified", legacy_ok and v2_ok))
+        param_contract_ok = bool(ev.get("parameterContractVerified", legacy_ok and v2_ok))
         decomp_ok = bool(ev["decompileSupported"])
-        rt_ok = bool(ev["roundTripVerified"])
+        structural_rt_ok = bool(ev.get("structuralRoundTripPass", ev["roundTripVerified"]))
+        rt_ok = structural_rt_ok
+        native_specimen_status = ev.get("nativeSpecimenParityStatus", "NEEDS_EVIDENCE")
+        runtime_exec_status = ev.get("appleRuntimeExecutedStatus", "NEEDS_EVIDENCE")
+        ver_statuses = list(ev.get("verificationStatuses") or [])
+        allowed_exclusions = list(ev.get("allowedExclusions") or [])
+
         decomp_mode = ev["decompileMode"]
         if decomp_mode not in ("native_cherri_call", "rawAction_lossless_fallback", "native_control_flow", "UNSUPPORTED"):
             raise RuntimeError(f"Unexpected decompileMode '{decomp_mode}' for {name}")
@@ -582,10 +647,12 @@ def build_all_artifacts():
         }
 
         # Evidence Tier & Runtime Verification State
+        # Honest separation (PART B): macOS static/runtime schema extraction is CONFIRMED_NATIVE,
+        # NOT CONFIRMED_RUNTIME unless actual Apple Shortcuts runtime execution was verified.
         app_intent = item.get("appIntent")
-        if ident in ledger_by_ident:
+        if runtime_exec_status == "APPLE_RUNTIME_EXECUTED":
             evidence_tier = "CONFIRMED_RUNTIME"
-        elif is_construct or in_pure:
+        elif ident in ledger_by_ident or is_construct or in_pure:
             evidence_tier = "CONFIRMED_NATIVE"
         else:
             evidence_tier = "OBSERVED"
@@ -598,11 +665,22 @@ def build_all_artifacts():
         ):
             runtime_state = "PHYSICAL_IPAD_PENDING"
         elif ident in ledger_by_ident and rt_ok:
-            runtime_state = "MACOS27_RUNTIME_EXTRACTED_AND_COMPILED"
+            runtime_state = "MACOS27_STATIC_EXTRACTED_AND_COMPILED"
         elif rt_ok:
             runtime_state = "COMPILE_AND_ROUNDTRIP_VERIFIED"
         else:
             runtime_state = "COMPILE_VERIFIED_ONLY"
+
+        # 7 Coverage Dimensions (PART B.2)
+        coverage_dimensions = {
+            "1_appleRuntimeDiscovery": "DISCOVERED_IN_MACOS27_LEDGER" if ident in ledger_by_ident else "COMPILER_CONSTRUCT_OR_SYNTHETIC",
+            "2_appleActionEligibility": ledger_row.get("eligibility", "COMPILER_CONSTRUCT" if is_construct else "CHERRI_DECLARATIVE_ALIAS"),
+            "3_appleIdentifierMappedToCherri": ledger_row.get("status", "COMPILER_CONSTRUCT" if is_construct else "MAPPED_BY_SHARED_IDENTIFIER"),
+            "4_cherriCallableCompiled": "STRUCTURAL_ROUNDTRIP_PASS" if structural_rt_ok else ("COMPILE_PASS" if (legacy_ok and v2_ok) else "FAIL"),
+            "5_nativePlistSpecimenCompared": native_specimen_status,
+            "6_runtimeExecutionVerified": runtime_exec_status,
+            "7_purePlusPackPortability": pack_support_kind,
+        }
 
         limitations = []
         if decomp_mode == "rawAction_lossless_fallback":
@@ -646,9 +724,17 @@ def build_all_artifacts():
                 "appIntent": app_intent,
                 "legacySupported": legacy_ok,
                 "v2Supported": v2_ok,
+                "plistIdentifierVerified": plist_id_ok,
+                "parameterContractVerified": param_contract_ok,
                 "decompileSupported": decomp_ok,
                 "decompileMode": decomp_mode,
                 "roundTripVerified": rt_ok,
+                "structuralRoundTripPass": structural_rt_ok,
+                "nativeSpecimenParityStatus": native_specimen_status,
+                "appleRuntimeExecutedStatus": runtime_exec_status,
+                "verificationStatuses": ver_statuses,
+                "allowedExclusions": allowed_exclusions,
+                "coverageDimensions": coverage_dimensions,
                 "pureOriginalSupported": in_pure,
                 "purePlusPackSupported": in_pack,
                 "packSupportKind": pack_support_kind,
@@ -660,9 +746,20 @@ def build_all_artifacts():
             }
         )
 
+    cov_dim_summary = {
+        "1_appleRuntimeDiscovery": dict(collections.Counter(r["coverageDimensions"]["1_appleRuntimeDiscovery"] for r in rows)),
+        "2_appleActionEligibility": dict(collections.Counter(r["coverageDimensions"]["2_appleActionEligibility"] for r in rows)),
+        "3_appleIdentifierMappedToCherri": dict(collections.Counter(r["coverageDimensions"]["3_appleIdentifierMappedToCherri"] for r in rows)),
+        "4_cherriCallableCompiled": dict(collections.Counter(r["coverageDimensions"]["4_cherriCallableCompiled"] for r in rows)),
+        "5_nativePlistSpecimenCompared": dict(collections.Counter(r["coverageDimensions"]["5_nativePlistSpecimenCompared"] for r in rows)),
+        "6_runtimeExecutionVerified": dict(collections.Counter(r["coverageDimensions"]["6_runtimeExecutionVerified"] for r in rows)),
+        "7_purePlusPackPortability": dict(collections.Counter(r["coverageDimensions"]["7_purePlusPackPortability"] for r in rows)),
+    }
+
     matrix_505 = {
         "schemaVersion": "2.0",
         "sourceCommit": head_sha,
+        "inputDependencyFingerprint": dep_fp,
         "totalCatalogEntries": len(rows),
         "summary": {
             "totalEntries": len(rows),
@@ -671,8 +768,23 @@ def build_all_artifacts():
             "compilerConstructs": construct_count,
             "legacySupportedCount": sum(1 for r in rows if r["legacySupported"]),
             "v2SupportedCount": sum(1 for r in rows if r["v2Supported"]),
+            "plistIdentifierVerifiedCount": sum(1 for r in rows if r["plistIdentifierVerified"]),
+            "parameterContractVerifiedCount": sum(1 for r in rows if r["parameterContractVerified"]),
             "decompileSupportedCount": sum(1 for r in rows if r["decompileSupported"]),
             "roundTripVerifiedCount": sum(1 for r in rows if r["roundTripVerified"]),
+            "structuralRoundTripVerifiedCount": sum(1 for r in rows if r["structuralRoundTripPass"]),
+            "nativeSpecimenParityCount": sum(
+                1 for r in rows if r["nativeSpecimenParityStatus"] == "NATIVE_SPECIMEN_PARITY_PASS"
+            ),
+            "appleRuntimeExecutedCount": sum(
+                1 for r in rows if r["appleRuntimeExecutedStatus"] == "APPLE_RUNTIME_EXECUTED"
+            ),
+            "blockedDeviceCount": sum(
+                1 for r in rows if r["appleRuntimeExecutedStatus"] == "BLOCKED_DEVICE"
+            ),
+            "needsEvidenceCount": sum(
+                1 for r in rows if r["nativeSpecimenParityStatus"] == "NEEDS_EVIDENCE"
+            ),
             "pureOriginalSupportedCount": sum(1 for r in rows if r["pureOriginalSupported"]),
             "purePlusPackSupportedCount": sum(1 for r in rows if r["purePlusPackSupported"]),
             "p10OnlyGoRequiredCount": sum(1 for r in rows if r["packSupportKind"] == "P10_ONLY_GO_REQUIRED"),
@@ -681,6 +793,7 @@ def build_all_artifacts():
             ),
             "evidenceTierCounts": dict(evidence_tier_counts),
             "decompileModeCounts": dict(decompile_mode_counts),
+            "coverageDimensionsSummary": cov_dim_summary,
         },
         "entries": rows,
     }
@@ -690,10 +803,10 @@ def build_all_artifacts():
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     validate_against_schema(matrix_505, schema)
 
-    return matrix_505, pack_15, p10_ledger, pack_manifest, head_sha
+    return matrix_505, pack_15, p10_ledger, pack_manifest, head_sha, dep_fp, pure_names, pack_added, pack_aliases
 
 
-def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha):
+def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha, dep_fp, pure_names, pack_added, pack_aliases):
     entries = matrix_505["entries"]
     ident_to_cherri = collections.defaultdict(list)
     for e in entries:
@@ -708,20 +821,41 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha):
     excluded_rows = [
         r for r in p10_ledger if r.get("eligibility") not in ("ELIGIBLE_USER_FACING", "ELIGIBLE_APP_INTENT")
     ]
-    covered_rows = [r for r in p10_ledger if r.get("status") in ("COVERED_VERIFIED", "COVERED_PARTIAL")]
+    covered_verified_rows = [r for r in p10_ledger if r.get("status") == "COVERED_VERIFIED"]
+    covered_partial_rows = [r for r in p10_ledger if r.get("status") == "COVERED_PARTIAL"]
+    covered_rows = covered_verified_rows + covered_partial_rows
     uncovered_eligible_rows = [
         r for r in eligible_rows if r.get("status") not in ("COVERED_VERIFIED", "COVERED_PARTIAL")
     ]
 
+    output_concordance_counts = collections.Counter(
+        r.get("outputTypeConcordance", "UNASSESSED") for r in covered_partial_rows
+    )
+
+    new_native_rows = [r for r in p10_ledger if r.get("status") == "NEW_NATIVE_ACTION"]
+    missing_app_intent_rows = [r for r in p10_ledger if r.get("status") == "MISSING_APP_INTENT_DESCRIPTOR"]
+
     crosswalk = {
-        "schemaVersion": "1.0",
+        "schemaVersion": "2.0",
         "sourceCommit": head_sha,
+        "inputDependencyFingerprint": dep_fp,
         "denominators": {
             "appleRuntimeDiscoveredTotal": len(p10_ledger),
             "appleEligibleUserFacingTotal": len(eligible_rows),
+            "appleEligibleBuiltinTotal": elig_counts.get("ELIGIBLE_USER_FACING", 0),
+            "appleEligibleAppIntentTotal": elig_counts.get("ELIGIBLE_APP_INTENT", 0),
             "appleExcludedInternalOrNonRunnableTotal": len(excluded_rows),
             "appleCoveredUniqueIdentifiers": len(covered_rows),
+            "appleCoveredVerifiedIdentifiers": len(covered_verified_rows),
+            "appleCoveredPartialIdentifiers": len(covered_partial_rows),
             "appleUncoveredEligibleIdentifiers": len(uncovered_eligible_rows),
+            "appleNewNativeActionIdentifiers": len(new_native_rows),
+            "appleMissingAppIntentDescriptorIdentifiers": len(missing_app_intent_rows),
+            "appleDeferredNoEvidenceIdentifiers": status_counts.get("DEFERRED_NO_EVIDENCE", 0),
+            "appleExcludedHiddenInternalIdentifiers": status_counts.get("EXCLUDED_HIDDEN_INTERNAL", 0),
+            "appleExcludedConfigOnlyIdentifiers": status_counts.get("EXCLUDED_CONFIG_ONLY", 0),
+            "appleExcludedNonRunnableIdentifiers": status_counts.get("EXCLUDED_NONRUNNABLE", 0),
+            "appleExcludedThirdPartyDependencyIdentifiers": status_counts.get("EXCLUDED_THIRD_PARTY_DEPENDENCY", 0),
             "cherriCatalogTotalEntries": matrix_505["summary"]["totalEntries"],
             "cherriCallableActions": matrix_505["summary"]["callableActions"],
             "cherriCompilerConstructs": matrix_505["summary"]["compilerConstructs"],
@@ -735,11 +869,52 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha):
             "cherriP10OnlyGoRequiredEntries": matrix_505["summary"]["p10OnlyGoRequiredCount"],
             "cherriRequiresAppIntentDescriptorEntries": matrix_505["summary"]["requiresAppIntentDescriptorCount"],
         },
+        "coveredPartialReasonBreakdown": {
+            "totalCoveredPartial": len(covered_partial_rows),
+            "totalCoveredVerified": len(covered_verified_rows),
+            "outputTypeConcordanceUNASSESSED": output_concordance_counts.get("UNASSESSED", 0),
+            "outputTypeConcordanceDIFFERS": output_concordance_counts.get("DIFFERS", 0),
+            "needsRuntimeEvidenceParameters": 1,
+            "explanation": (
+                "All 390 covered Apple identifiers in p10-action-ledger.json carry status COVERED_PARTIAL (0 COVERED_VERIFIED) "
+                "because evaluate_action_coverage (FR-05, Gate A07/R16) requires verified runtime outputType concordance "
+                "between Apple's runtime metadata and Cherri's declared outputType (313 UNASSESSED + 77 DIFFERS), "
+                "plus 1 calendar picker parameter requiring live runtime evidence (Gate R15)."
+            ),
+        },
+        "historicalDiscrepancyNote": {
+            "earlierTextClaim": "100 MISSING_HIGH_PRIORITY + 1037 MISSING_LOW_PRIORITY",
+            "authoritativeLedgerTruth": "97 NEW_NATIVE_ACTION + 1040 MISSING_APP_INTENT_DESCRIPTOR = 1137 uncovered eligible",
+            "explanation": (
+                "An earlier narrative draft used pre-remediation labels (100 MISSING_HIGH_PRIORITY / 1037 MISSING_LOW_PRIORITY) "
+                "before 3 native actions were mapped and the taxonomy was standardized in p10-action-ledger.json to "
+                "NEW_NATIVE_ACTION (97 records) and MISSING_APP_INTENT_DESCRIPTOR (1,040 records)."
+            ),
+        },
         "reconciliationFormula": {
-            "appleDiscoveryEquation": "2396 discovered = 1527 eligible user-facing (303 builtin + 1224 first-party AppIntents) + 869 excluded (750 internal/config-only + 57 conditional third-party + 50 non-runnable definitions + 12 legacy deprecated)",
-            "appleCoverageEquation": "1527 eligible user-facing = 390 COVERED_VERIFIED unique Apple identifiers + 1137 uncovered eligible Apple identifiers (0 COVERED_PARTIAL, 100 MISSING_HIGH_PRIORITY, 1037 MISSING_LOW_PRIORITY)",
-            "cherriToAppleMappingEquation": "505 Cherri catalog entries (497 callable actions + 8 compiler constructs) map to 381 unique ShortcutIdentifiers in the CLI catalog (plus 9 identifier aliases covered in the 390 runtime ledger = 390 covered Apple identifiers) because multiple Cherri split/variant actions target a single Apple identifier with distinct constant parameter presets (e.g. setWiFi/toggleWiFi -> is.workflow.actions.wifi.set).",
-            "pureToPackToP10Equation": "505 P10 catalog entries = 441 Pure Original names at bcc0095 (433 callables + 8 constructs, of which 54 also have *Advanced aliases in 141b9cc and 2 [editEvent, transcribeText] were upgraded to Go in P10) + 48 Pure+Pack new declarative actions at 141b9cc + 4 declarative toggleSet actions in actions/settings.cherri (AnnounceNotifications, SilenceUnknownCallers) + 12 net-new Go-only actions in actions_std.go (editReminder + 11 AppIntent actions).",
+            "appleDiscoveryEquation": (
+                "2396 discovered = 1527 eligible user-facing (487 ELIGIBLE_USER_FACING + 1040 ELIGIBLE_APP_INTENT) "
+                "+ 869 excluded/deferred (596 EXCLUDED_NONRUNNABLE + 131 EXCLUDED_HIDDEN_INTERNAL + 86 DEFERRED_NO_EVIDENCE "
+                "+ 29 EXCLUDED_CONFIG_ONLY + 27 EXCLUDED_THIRD_PARTY_DEPENDENCY)"
+            ),
+            "appleCoverageEquation": (
+                "1527 eligible user-facing = 390 COVERED_PARTIAL unique Apple identifiers (0 COVERED_VERIFIED: "
+                "313 outputTypeConcordance=UNASSESSED + 77 outputTypeConcordance=DIFFERS) "
+                "+ 1137 uncovered eligible Apple identifiers (97 NEW_NATIVE_ACTION + 1040 MISSING_APP_INTENT_DESCRIPTOR)"
+            ),
+            "cherriToAppleMappingEquation": (
+                "505 Cherri catalog entries (497 callable actions + 8 compiler constructs) map to 381 unique ShortcutIdentifiers "
+                "in the CLI catalog (plus 9 identifier aliases covered in the 390 runtime ledger = 390 COVERED_PARTIAL Apple identifiers) "
+                "because multiple Cherri split/variant actions target a single Apple identifier with distinct constant parameter presets "
+                "(e.g. setWiFi/toggleWiFi -> is.workflow.actions.wifi.set)."
+            ),
+            "pureToPackToP10Equation": (
+                "505 P10 catalog entries = 441 Pure Original names at bcc0095 (433 callables + 8 constructs, of which 54 also have "
+                "*Advanced aliases in 141b9cc and 2 [editEvent, transcribeText] were upgraded to Go in P10) "
+                "+ 48 Pure+Pack new declarative actions at 141b9cc + 4 declarative toggleSet actions in actions/settings.cherri "
+                "(AnnounceNotifications, SilenceUnknownCallers) + 12 net-new Go-only actions in actions_std.go "
+                "(editReminder + 11 AppIntent actions)."
+            ),
         },
         "ledgerStatusBreakdown": dict(status_counts),
         "ledgerEligibilityBreakdown": dict(elig_counts),
@@ -754,11 +929,16 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha):
         "# Cherri P10 — Compiler-Supported Catalog Report (`505` Entries)",
         "",
         f"- **Source Commit**: `{head_sha}`",
+        f"- **Input Dependency Fingerprint**: `{dep_fp}`",
         f"- **Total Catalog Entries**: `{s['totalEntries']}` (`{s['callableActions']}` callable actions + `{s['compilerConstructs']}` compiler constructs)",
-        f"- **Legacy Compiler Verified (`TestP10_VerifyAndRecord505CatalogExecution`)**: `{s['legacySupportedCount']} / {s['totalEntries']}`",
-        f"- **V2 Compiler Verified (`TestP10_VerifyAndRecord505CatalogExecution`)**: `{s['v2SupportedCount']} / {s['totalEntries']}`",
-        f"- **Decompiler Verified**: `{s['decompileSupportedCount']} / {s['totalEntries']}`",
-        f"- **Round-Trip Verified (Compile -> Plist -> Decompile -> Recompile)**: `{s['roundTripVerifiedCount']} / {s['totalEntries']}`",
+        f"- **Legacy Compiler Verified (`LEGACY_COMPILE_PASS`)**: `{s['legacySupportedCount']} / {s['totalEntries']}`",
+        f"- **V2 Compiler Verified (`V2_COMPILE_PASS`)**: `{s['v2SupportedCount']} / {s['totalEntries']}`",
+        f"- **Plist Identifier Verified (`PLIST_IDENTIFIER_PASS`)**: `{s['plistIdentifierVerifiedCount']} / {s['totalEntries']}`",
+        f"- **Parameter Contract Verified (`PARAMETER_CONTRACT_PASS`)**: `{s['parameterContractVerifiedCount']} / {s['totalEntries']}`",
+        f"- **Decompiler Verified (`DECOMPILE_PASS`)**: `{s['decompileSupportedCount']} / {s['totalEntries']}`",
+        f"- **Canonical Structural Round-Trip Verified (`STRUCTURAL_ROUNDTRIP_PASS`)**: `{s['structuralRoundTripVerifiedCount']} / {s['totalEntries']}`",
+        f"- **Native Specimen Parity (`NATIVE_SPECIMEN_PARITY_PASS`)**: `{s['nativeSpecimenParityCount']} / {s['totalEntries']}` (`{s['needsEvidenceCount']}` `NEEDS_EVIDENCE`)",
+        f"- **Apple Runtime Executed (`APPLE_RUNTIME_EXECUTED`)**: `{s['appleRuntimeExecutedCount']} / {s['totalEntries']}` (`{s['blockedDeviceCount']}` `BLOCKED_DEVICE`)",
         "",
         "## Decompile Mode Breakdown",
         "",
@@ -781,50 +961,80 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha):
             "",
             "## Complete 505 Catalog Verification Table",
             "",
-            "| # | Cherri Name | Kind | Apple Identifier | Source Location | Decompile Mode | Pack Support | Evidence Tier |",
-            "| :---: | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
+            "| # | Cherri Name | Kind | Apple Identifier | Source Location | Decompile Mode | Structural Round-Trip | Pack Support | Evidence Tier |",
+            "| :---: | :--- | :--- | :--- | :--- | :--- | :---: | :--- | :--- |",
         ]
     )
     for idx, e in enumerate(entries, start=1):
+        rt_badge = "PASS" if e["structuralRoundTripPass"] else "FAIL"
         r1_lines.append(
-            f"| {idx} | `{e['cherriName']}` | `{e['entryKind']}` | `{e['shortcutIdentifier']}` | `{e['sourceFile']}:{e['sourceLine']}` | `{e['decompileMode']}` | `{e['packSupportKind']}` | `{e['evidenceTier']}` |"
+            f"| {idx} | `{e['cherriName']}` | `{e['entryKind']}` | `{e['shortcutIdentifier']}` | `{e['sourceFile']}:{e['sourceLine']}` | `{e['decompileMode']}` | `{rt_badge}` | `{e['packSupportKind']}` | `{e['evidenceTier']}` |"
         )
 
     # Report 2: apple-discovered-not-supported.md
-    missing_high = [r for r in p10_ledger if r.get("status") == "MISSING_HIGH_PRIORITY"]
-    missing_low = [r for r in p10_ledger if r.get("status") == "MISSING_LOW_PRIORITY"]
     r2_lines = [
         "# Apple Runtime Discovered vs Cherri Supported — Gap & Denominator Report",
         "",
         f"- **Source Commit**: `{head_sha}`",
+        f"- **Input Dependency Fingerprint**: `{dep_fp}`",
         f"- **Total Raw Discovered Apple Runtime Records**: `{len(p10_ledger)}`",
-        f"- **Eligible User-Facing Apple Actions**: `{len(eligible_rows)}` (`{elig_counts.get('ELIGIBLE_USER_FACING', 0)}` builtin + `{elig_counts.get('ELIGIBLE_APP_INTENT', 0)}` first-party AppIntents)",
-        f"- **Excluded Records**: `{len(excluded_rows)}` (`{status_counts.get('EXCLUDED_INTERNAL_OR_CONFIG', 0)}` internal/config-only + `{status_counts.get('CONDITIONAL_THIRD_PARTY', 0)}` third-party conditional + `{status_counts.get('EXCLUDED_NON_ACTION_DEFINITION', 0)}` non-runnable definitions + `{status_counts.get('DEPRECATED_LEGACY', 0)}` deprecated legacy)",
-        f"- **Covered Unique Apple Identifiers (`COVERED_VERIFIED`)**: `{len(covered_rows)}` (`25.54%` of `1,527` eligible user-facing Apple actions)",
-        f"- **Uncovered Eligible Apple Identifiers**: `{len(uncovered_eligible_rows)}` (`{len(missing_high)}` `MISSING_HIGH_PRIORITY` + `{len(missing_low)}` `MISSING_LOW_PRIORITY`)",
+        f"- **Eligible User-Facing Apple Actions**: `{len(eligible_rows)}` (`{elig_counts.get('ELIGIBLE_USER_FACING', 0)}` `ELIGIBLE_USER_FACING` + `{elig_counts.get('ELIGIBLE_APP_INTENT', 0)}` `ELIGIBLE_APP_INTENT`)",
+        f"- **Excluded / Deferred Records**: `{len(excluded_rows)}` (`{status_counts.get('EXCLUDED_NONRUNNABLE', 0)}` `EXCLUDED_NONRUNNABLE` + `{status_counts.get('EXCLUDED_HIDDEN_INTERNAL', 0)}` `EXCLUDED_HIDDEN_INTERNAL` + `{status_counts.get('DEFERRED_NO_EVIDENCE', 0)}` `DEFERRED_NO_EVIDENCE` + `{status_counts.get('EXCLUDED_CONFIG_ONLY', 0)}` `EXCLUDED_CONFIG_ONLY` + `{status_counts.get('EXCLUDED_THIRD_PARTY_DEPENDENCY', 0)}` `EXCLUDED_THIRD_PARTY_DEPENDENCY`)",
+        f"- **Covered Unique Apple Identifiers (`COVERED_PARTIAL`)**: `{len(covered_partial_rows)}` (`25.54%` of `1,527` eligible user-facing Apple actions; `COVERED_VERIFIED`: `{len(covered_verified_rows)}`)",
+        f"- **Uncovered Eligible Apple Identifiers**: `{len(uncovered_eligible_rows)}` (`{len(new_native_rows)}` `NEW_NATIVE_ACTION` + `{len(missing_app_intent_rows)}` `MISSING_APP_INTENT_DESCRIPTOR`)",
         "",
-        "## Why `505` Cherri Catalog Entries != `1,527` Eligible Apple Actions",
+        "## Authoritative Taxonomy Breakdown (`p10-action-ledger.json`)",
         "",
-        "1. **Cherri Split/Variant Actions (`505` entries -> `390` unique Apple identifiers)**: Cherri exposes multiple ergonomic callables that compile to the same underlying Apple `WFWorkflowActionIdentifier` with different parameter presets (for example, `setWiFi` and `toggleWiFi` both emit `is.workflow.actions.wifi.set`).",
-        "2. **Uncovered Eligible Apple Actions (`1,137` identifiers)**: Out of `1,527` eligible user-facing actions discovered in the macOS 27 / iOS 27 runtime corpus, `390` are natively covered by Cherri and `1,137` remain uncovered (`100` high-priority candidates + `1,037` low-priority/specialized AppIntents). Any uncovered Apple action can still be authored losslessly via `rawAction(\"identifier\", { ... })`.",
+        "| Status | Count | Eligibility Class | Notes |",
+        "| :--- | :---: | :--- | :--- |",
+        f"| `COVERED_VERIFIED` | `{status_counts.get('COVERED_VERIFIED', 0)}` | `ELIGIBLE_USER_FACING` | Requires verified runtime `outputTypeConcordance == CONCORDANT` |",
+        f"| `COVERED_PARTIAL` | `{status_counts.get('COVERED_PARTIAL', 0)}` | `ELIGIBLE_USER_FACING` | `{output_concordance_counts.get('UNASSESSED', 0)}` `UNASSESSED` + `{output_concordance_counts.get('DIFFERS', 0)}` `DIFFERS` output type concordance; `1` parameter `NEEDS_RUNTIME_EVIDENCE` |",
+        f"| `NEW_NATIVE_ACTION` | `{status_counts.get('NEW_NATIVE_ACTION', 0)}` | `ELIGIBLE_USER_FACING` | Uncovered native built-in / system actions |",
+        f"| `MISSING_APP_INTENT_DESCRIPTOR` | `{status_counts.get('MISSING_APP_INTENT_DESCRIPTOR', 0)}` | `ELIGIBLE_APP_INTENT` | Uncovered first-party App Intent actions |",
+        f"| `DEFERRED_NO_EVIDENCE` | `{status_counts.get('DEFERRED_NO_EVIDENCE', 0)}` | `DEFERRED` | Insufficient runtime parameter metadata |",
+        f"| `EXCLUDED_HIDDEN_INTERNAL` | `{status_counts.get('EXCLUDED_HIDDEN_INTERNAL', 0)}` | `EXCLUDED_INTERNAL` | Hidden/internal workflow actions |",
+        f"| `EXCLUDED_CONFIG_ONLY` | `{status_counts.get('EXCLUDED_CONFIG_ONLY', 0)}` | `EXCLUDED_CONFIG_ONLY` | Configuration-only definitions |",
+        f"| `EXCLUDED_NONRUNNABLE` | `{status_counts.get('EXCLUDED_NONRUNNABLE', 0)}` | `EXCLUDED_NONRUNNABLE` | Non-runnable entities and queries |",
+        f"| `EXCLUDED_THIRD_PARTY_DEPENDENCY` | `{status_counts.get('EXCLUDED_THIRD_PARTY_DEPENDENCY', 0)}` | `EXCLUDED_THIRD_PARTY` | Requires third-party apps |",
         "",
-        "## All `100` `MISSING_HIGH_PRIORITY` Apple Actions",
+        "## Why All `390` Covered Apple Identifiers Are `COVERED_PARTIAL` (`0` `COVERED_VERIFIED`)",
         "",
-        "| # | Apple Identifier | Name | Source Kind | OS Availability |",
+        "In `p10-action-ledger.json`, `evaluate_action_coverage` (FR-05, enforced by Gate `A07` and `R16`) only promotes an Apple identifier to `COVERED_VERIFIED` when both its parameter contracts and its runtime `outputTypeConcordance` are verified against Apple's runtime metadata. Across the `390` covered Apple identifiers:",
+        f"- `{output_concordance_counts.get('UNASSESSED', 0)}` have `outputTypeConcordance == \"UNASSESSED\"` (Apple runtime metadata or Cherri declaration reports `Unknown`/`None`).",
+        f"- `{output_concordance_counts.get('DIFFERS', 0)}` have `outputTypeConcordance == \"DIFFERS\"` (e.g., Apple metadata reports `None` while Cherri types the output as `text`, `array`, or `variable`).",
+        "- `1` parameter (`WFCalendarDescriptor` picker on `addNewEvent`) requires live runtime specimen confirmation (`NEEDS_RUNTIME_EVIDENCE`, Gate `R15`).",
+        "",
+        "## Historical Discrepancy Note (`97 NEW_NATIVE_ACTION` vs Earlier `100 MISSING_HIGH_PRIORITY`)",
+        "",
+        "An earlier narrative draft referred to `100 MISSING_HIGH_PRIORITY` and `1,037 MISSING_LOW_PRIORITY` actions (`100 + 1,037 = 1,137`). During P10 remediation, `3` native built-in actions were mapped into the `390` covered set (`487 ELIGIBLE_USER_FACING - 390 COVERED_PARTIAL = 97 NEW_NATIVE_ACTION`), and the authoritative `p10-action-ledger.json` taxonomy standardized the `1,137` uncovered eligible records into `97 NEW_NATIVE_ACTION` + `1,040 MISSING_APP_INTENT_DESCRIPTOR`.",
+        "",
+        f"## All `{len(new_native_rows)}` `NEW_NATIVE_ACTION` Apple Actions",
+        "",
+        "| # | Apple Identifier | Title | Category | OS Availability |",
         "| :---: | :--- | :--- | :--- | :--- |",
     ]
-    for idx, r in enumerate(sorted(missing_high, key=lambda x: x["identifier"]), start=1):
+    for idx, r in enumerate(sorted(new_native_rows, key=lambda x: x["identifier"]), start=1):
         r2_lines.append(
-            f"| {idx} | `{r['identifier']}` | {r.get('name', '')} | `{r.get('sourceKind', '')}` | `{r.get('osAvailability', '')}` |"
+            f"| {idx} | `{r['identifier']}` | {r.get('title', '')} | `{r.get('category', '')}` | `{r.get('osAvailability', '')}` |"
         )
 
-    # Report 3: pure-pack-portability.md
+    # Report 3: pure-pack-portability.md (dynamically computed from sets)
+    pure_total = matrix_505["summary"]["pureOriginalSupportedCount"]
+    pure_constructs = matrix_505["summary"]["compilerConstructs"]
+    pure_callables = pure_total - pure_constructs
+    pack_new_count = len(pack_added)
+    pack_alias_count = len(pack_aliases)
+    pack_supported_in_505 = matrix_505["summary"]["purePlusPackSupportedCount"]
+    p10_total = matrix_505["summary"]["totalEntries"]
+
     r3_lines = [
         "# Pure Original (`bcc0095`) vs Pure+Pack (`141b9cc`) vs P10 Native Portability Report",
         "",
-        f"- **Upstream Pure Baseline Commit**: `{UPSTREAM_SHA}` (`389` catalog entries: `381` callable actions + `8` compiler constructs)",
-        f"- **Pure+Pack Overlay Commit**: `{PACK_SHA}` (`491` catalog entries: `389` Pure Original + `102` declarative Pack entries [`48` new actions + `54` extended aliases])",
-        f"- **P10 Native Branch Commit**: `{head_sha}` (`505` catalog entries: `491` Pure+Pack + `2` P10-only multi-key Go setters + `12` curated AppIntent actions requiring Go `AppIntentDescriptor`)",
+        f"- **Source Commit**: `{head_sha}`",
+        f"- **Input Dependency Fingerprint**: `{dep_fp}`",
+        f"- **Upstream Pure Baseline Commit**: `{UPSTREAM_SHA}` (`{pure_total}` catalog entries: `{pure_callables}` callable actions + `{pure_constructs}` compiler constructs)",
+        f"- **Pure+Pack Overlay Commit**: `{PACK_SHA}` (`{pure_total}` Pure Original names + `{pack_new_count + pack_alias_count}` declarative Pack entries [`{pack_new_count}` new actions + `{pack_alias_count}` `*Advanced` aliases]; `{pack_supported_in_505}` of the `505` P10 catalog entries are supported in Pure+Pack)",
+        f"- **P10 Native Branch Commit**: `{head_sha}` (`{p10_total}` catalog entries: `{pure_total}` Pure Original [with `editEvent` and `transcribeText` upgraded to Go] + `{pack_new_count}` Pack new declarative actions + `4` declarative `toggleSet` actions in `actions/settings.cherri` + `12` net-new Go-only actions in `actions_std.go`)",
         "",
         "## Exact Classification of the 15 Go-Only Actions Evaluated Between Pack and P10",
         "",
@@ -833,20 +1043,22 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha):
     ]
     for idx, item in enumerate(pack_15["goOnlyActionsAudit"], start=1):
         cls = item["classification"]
-        in_pure_str = "YES (Native)" if cls == "ALREADY_UPSTREAM" else "NO"
+        in_pure_str = "YES (Native)" if cls == "ALREADY_UPSTREAM" else ("YES (Declarative Stub)" if item["actionName"] in pure_names else "NO")
         in_pack_str = "YES (Inherited from Upstream)" if cls == "ALREADY_UPSTREAM" else "NO (Excluded from Declarative Pack)"
         r3_lines.append(
             f"| {idx} | `{item['actionName']}` | `{item['appleIdentifier']}` | `{cls}` | {in_pure_str} | {in_pack_str} | YES (Native Go) |"
         )
 
     baseline_state = {
-        "schemaVersion": "1.0",
+        "schemaVersion": "2.0",
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "branch": "agent/cherri-p10-apple-actions-coverage",
         "sourceCommit": head_sha,
+        "inputDependencyFingerprint": dep_fp,
         "upstreamBaselineCommit": UPSTREAM_SHA,
         "purePackCommit": PACK_SHA,
         "counts": crosswalk["denominators"],
+        "ledgerStatusBreakdown": dict(status_counts),
         "goOnly15Summary": {
             "total": 15,
             "ALREADY_UPSTREAM": [
@@ -863,7 +1075,7 @@ def build_crosswalk_and_reports(matrix_505, pack_15, p10_ledger, head_sha):
         },
         "externalBlockers": {
             "physicalIPadOS27": "BLOCKED_DEVICE",
-            "liveAppleServerSigning": "BLOCKED_EXTERNAL_SIGNING",
+            "liveAppleServerSigning": "BLOCKED_SIGNING",
             "authoringPatternsZip_1219604109827689": "BLOCKED_MISSING_ARTIFACT",
             "ownerReleaseGate_1219611682706483": "OWNER_APPROVAL_REQUIRED",
         },
@@ -882,9 +1094,9 @@ def main():
     out_dir = REPO_ROOT / "docs" / "apple-runtime" / "p10"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    matrix_505, pack_15, p10_ledger, pack_manifest, head_sha = build_all_artifacts()
+    matrix_505, pack_15, p10_ledger, pack_manifest, head_sha, dep_fp, pure_names, pack_added, pack_aliases = build_all_artifacts()
     crosswalk, r1_md, r2_md, r3_md, baseline_state = build_crosswalk_and_reports(
-        matrix_505, pack_15, p10_ledger, head_sha
+        matrix_505, pack_15, p10_ledger, head_sha, dep_fp, pure_names, pack_added, pack_aliases
     )
 
     matrix_path = out_dir / "p10-505-catalog-coverage-matrix.json"

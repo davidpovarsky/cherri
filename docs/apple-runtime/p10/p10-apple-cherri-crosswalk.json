@@ -1,12 +1,24 @@
 {
-  "schemaVersion": "1.0",
-  "sourceCommit": "55d7800dc01cd52ca3d6a5a17b3159ffe5a28089",
+  "schemaVersion": "2.0",
+  "sourceCommit": "50c6442b0b5ef1c9fa126b1eae14fc1b1ace9916",
+  "inputDependencyFingerprint": "b007acdb3b633d9460f6ba90a68e309901aead2d85cd9848cc85fab075cba43c",
   "denominators": {
     "appleRuntimeDiscoveredTotal": 2396,
     "appleEligibleUserFacingTotal": 1527,
+    "appleEligibleBuiltinTotal": 487,
+    "appleEligibleAppIntentTotal": 1040,
     "appleExcludedInternalOrNonRunnableTotal": 869,
     "appleCoveredUniqueIdentifiers": 390,
+    "appleCoveredVerifiedIdentifiers": 0,
+    "appleCoveredPartialIdentifiers": 390,
     "appleUncoveredEligibleIdentifiers": 1137,
+    "appleNewNativeActionIdentifiers": 97,
+    "appleMissingAppIntentDescriptorIdentifiers": 1040,
+    "appleDeferredNoEvidenceIdentifiers": 86,
+    "appleExcludedHiddenInternalIdentifiers": 131,
+    "appleExcludedConfigOnlyIdentifiers": 29,
+    "appleExcludedNonRunnableIdentifiers": 596,
+    "appleExcludedThirdPartyDependencyIdentifiers": 27,
     "cherriCatalogTotalEntries": 505,
     "cherriCallableActions": 497,
     "cherriCompilerConstructs": 8,
@@ -17,10 +29,23 @@
     "cherriP10OnlyGoRequiredEntries": 2,
     "cherriRequiresAppIntentDescriptorEntries": 12
   },
+  "coveredPartialReasonBreakdown": {
+    "totalCoveredPartial": 390,
+    "totalCoveredVerified": 0,
+    "outputTypeConcordanceUNASSESSED": 313,
+    "outputTypeConcordanceDIFFERS": 77,
+    "needsRuntimeEvidenceParameters": 1,
+    "explanation": "All 390 covered Apple identifiers in p10-action-ledger.json carry status COVERED_PARTIAL (0 COVERED_VERIFIED) because evaluate_action_coverage (FR-05, Gate A07/R16) requires verified runtime outputType concordance between Apple's runtime metadata and Cherri's declared outputType (313 UNASSESSED + 77 DIFFERS), plus 1 calendar picker parameter requiring live runtime evidence (Gate R15)."
+  },
+  "historicalDiscrepancyNote": {
+    "earlierTextClaim": "100 MISSING_HIGH_PRIORITY + 1037 MISSING_LOW_PRIORITY",
+    "authoritativeLedgerTruth": "97 NEW_NATIVE_ACTION + 1040 MISSING_APP_INTENT_DESCRIPTOR = 1137 uncovered eligible",
+    "explanation": "An earlier narrative draft used pre-remediation labels (100 MISSING_HIGH_PRIORITY / 1037 MISSING_LOW_PRIORITY) before 3 native actions were mapped and the taxonomy was standardized in p10-action-ledger.json to NEW_NATIVE_ACTION (97 records) and MISSING_APP_INTENT_DESCRIPTOR (1,040 records)."
+  },
   "reconciliationFormula": {
-    "appleDiscoveryEquation": "2396 discovered = 1527 eligible user-facing (303 builtin + 1224 first-party AppIntents) + 869 excluded (750 internal/config-only + 57 conditional third-party + 50 non-runnable definitions + 12 legacy deprecated)",
-    "appleCoverageEquation": "1527 eligible user-facing = 390 COVERED_VERIFIED unique Apple identifiers + 1137 uncovered eligible Apple identifiers (0 COVERED_PARTIAL, 100 MISSING_HIGH_PRIORITY, 1037 MISSING_LOW_PRIORITY)",
-    "cherriToAppleMappingEquation": "505 Cherri catalog entries (497 callable actions + 8 compiler constructs) map to 381 unique ShortcutIdentifiers in the CLI catalog (plus 9 identifier aliases covered in the 390 runtime ledger = 390 covered Apple identifiers) because multiple Cherri split/variant actions target a single Apple identifier with distinct constant parameter presets (e.g. setWiFi/toggleWiFi -> is.workflow.actions.wifi.set).",
+    "appleDiscoveryEquation": "2396 discovered = 1527 eligible user-facing (487 ELIGIBLE_USER_FACING + 1040 ELIGIBLE_APP_INTENT) + 869 excluded/deferred (596 EXCLUDED_NONRUNNABLE + 131 EXCLUDED_HIDDEN_INTERNAL + 86 DEFERRED_NO_EVIDENCE + 29 EXCLUDED_CONFIG_ONLY + 27 EXCLUDED_THIRD_PARTY_DEPENDENCY)",
+    "appleCoverageEquation": "1527 eligible user-facing = 390 COVERED_PARTIAL unique Apple identifiers (0 COVERED_VERIFIED: 313 outputTypeConcordance=UNASSESSED + 77 outputTypeConcordance=DIFFERS) + 1137 uncovered eligible Apple identifiers (97 NEW_NATIVE_ACTION + 1040 MISSING_APP_INTENT_DESCRIPTOR)",
+    "cherriToAppleMappingEquation": "505 Cherri catalog entries (497 callable actions + 8 compiler constructs) map to 381 unique ShortcutIdentifiers in the CLI catalog (plus 9 identifier aliases covered in the 390 runtime ledger = 390 COVERED_PARTIAL Apple identifiers) because multiple Cherri split/variant actions target a single Apple identifier with distinct constant parameter presets (e.g. setWiFi/toggleWiFi -> is.workflow.actions.wifi.set).",
     "pureToPackToP10Equation": "505 P10 catalog entries = 441 Pure Original names at bcc0095 (433 callables + 8 constructs, of which 54 also have *Advanced aliases in 141b9cc and 2 [editEvent, transcribeText] were upgraded to Go in P10) + 48 Pure+Pack new declarative actions at 141b9cc + 4 declarative toggleSet actions in actions/settings.cherri (AnnounceNotifications, SilenceUnknownCallers) + 12 net-new Go-only actions in actions_std.go (editReminder + 11 AppIntent actions)."
   },
   "ledgerStatusBreakdown": {

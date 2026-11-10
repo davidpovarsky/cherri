@@ -5,6 +5,7 @@
   "required": [
     "schemaVersion",
     "sourceCommit",
+    "inputDependencyFingerprint",
     "totalCatalogEntries",
     "summary",
     "entries"
@@ -18,6 +19,10 @@
       "type": "string",
       "pattern": "^[0-9a-f]{40}$"
     },
+    "inputDependencyFingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
     "totalCatalogEntries": {
       "type": "integer",
       "const": 505
@@ -30,14 +35,22 @@
         "compilerConstructs",
         "legacySupportedCount",
         "v2SupportedCount",
+        "plistIdentifierVerifiedCount",
+        "parameterContractVerifiedCount",
         "decompileSupportedCount",
         "roundTripVerifiedCount",
+        "structuralRoundTripVerifiedCount",
+        "nativeSpecimenParityCount",
+        "appleRuntimeExecutedCount",
+        "blockedDeviceCount",
+        "needsEvidenceCount",
         "pureOriginalSupportedCount",
         "purePlusPackSupportedCount",
         "p10OnlyGoRequiredCount",
         "requiresAppIntentDescriptorCount",
         "evidenceTierCounts",
-        "decompileModeCounts"
+        "decompileModeCounts",
+        "coverageDimensionsSummary"
       ],
       "properties": {
         "totalEntries": { "type": "integer", "const": 505 },
@@ -45,8 +58,15 @@
         "compilerConstructs": { "type": "integer", "const": 8 },
         "legacySupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
         "v2SupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "plistIdentifierVerifiedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "parameterContractVerifiedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
         "decompileSupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
         "roundTripVerifiedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "structuralRoundTripVerifiedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "nativeSpecimenParityCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "appleRuntimeExecutedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "blockedDeviceCount": { "type": "integer", "minimum": 0, "maximum": 505 },
+        "needsEvidenceCount": { "type": "integer", "minimum": 0, "maximum": 505 },
         "pureOriginalSupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
         "purePlusPackSupportedCount": { "type": "integer", "minimum": 0, "maximum": 505 },
         "p10OnlyGoRequiredCount": { "type": "integer", "minimum": 0, "maximum": 505 },
@@ -68,9 +88,17 @@
           "osAvailability",
           "legacySupported",
           "v2Supported",
+          "plistIdentifierVerified",
+          "parameterContractVerified",
           "decompileSupported",
           "decompileMode",
           "roundTripVerified",
+          "structuralRoundTripPass",
+          "nativeSpecimenParityStatus",
+          "appleRuntimeExecutedStatus",
+          "verificationStatuses",
+          "allowedExclusions",
+          "coverageDimensions",
           "pureOriginalSupported",
           "purePlusPackSupported",
           "packSupportKind",
@@ -99,6 +127,8 @@
           },
           "legacySupported": { "type": "boolean" },
           "v2Supported": { "type": "boolean" },
+          "plistIdentifierVerified": { "type": "boolean" },
+          "parameterContractVerified": { "type": "boolean" },
           "decompileSupported": { "type": "boolean" },
           "decompileMode": {
             "type": "string",
@@ -110,6 +140,62 @@
             ]
           },
           "roundTripVerified": { "type": "boolean" },
+          "structuralRoundTripPass": { "type": "boolean" },
+          "nativeSpecimenParityStatus": {
+            "type": "string",
+            "enum": [
+              "NATIVE_SPECIMEN_PARITY_PASS",
+              "NEEDS_EVIDENCE",
+              "UNSUPPORTED"
+            ]
+          },
+          "appleRuntimeExecutedStatus": {
+            "type": "string",
+            "enum": [
+              "APPLE_RUNTIME_EXECUTED",
+              "BLOCKED_DEVICE",
+              "NEEDS_EVIDENCE",
+              "UNSUPPORTED"
+            ]
+          },
+          "verificationStatuses": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "enum": [
+                "CATALOG_DISCOVERED",
+                "SCHEMA_REGISTERED",
+                "LEGACY_COMPILE_PASS",
+                "V2_COMPILE_PASS",
+                "PLIST_IDENTIFIER_PASS",
+                "PARAMETER_CONTRACT_PASS",
+                "DECOMPILE_PASS",
+                "STRUCTURAL_ROUNDTRIP_PASS",
+                "NATIVE_SPECIMEN_PARITY_PASS",
+                "APPLE_RUNTIME_EXECUTED",
+                "BLOCKED_DEVICE",
+                "UNSUPPORTED",
+                "NEEDS_EVIDENCE"
+              ]
+            }
+          },
+          "allowedExclusions": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "coverageDimensions": {
+            "type": "object",
+            "required": [
+              "1_appleRuntimeDiscovery",
+              "2_appleActionEligibility",
+              "3_appleIdentifierMappedToCherri",
+              "4_cherriCallableCompiled",
+              "5_nativePlistSpecimenCompared",
+              "6_runtimeExecutionVerified",
+              "7_purePlusPackPortability"
+            ]
+          },
           "pureOriginalSupported": { "type": "boolean" },
           "purePlusPackSupported": { "type": "boolean" },
           "packSupportKind": {
@@ -135,6 +221,7 @@
             "enum": [
               "COMPILE_AND_ROUNDTRIP_VERIFIED",
               "COMPILE_VERIFIED_ONLY",
+              "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
               "MACOS27_RUNTIME_EXTRACTED_AND_COMPILED",
               "PHYSICAL_IPAD_PENDING"
             ]

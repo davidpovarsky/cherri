@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """tools/p10r3/run_release_gates.py
 
-Authoritative executable gate runner for Cherri P10R3.
+Authoritative executable gate runner for Cherri P10R4.
 Executes all 28 acceptance gates (R01-R28) and 28 adversarial gates (A01-A28).
-Rejects zero executions, skipped tests, missing registrations, and stale PASS assertions.
-Outputs docs/apple-runtime/p10/p10r3-gate-results.json directly from execution evidence.
+Rejects zero executions, skipped tests, missing registrations, stale PASS assertions,
+and input dependency fingerprint drift.
+Outputs docs/apple-runtime/p10/p10r3-gate-results.json (or --out-results) and optional
+--ci-attestation directly from real execution evidence.
 """
 
 import argparse
@@ -13,16 +15,29 @@ import hashlib
 import json
 import os
 import pathlib
+import platform
 import subprocess
 import sys
 import time
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT / "tools" / "p10r3"))
+
+from generate_catalog_and_pack_ledgers import compute_input_dependency_fingerprint
 
 # Complete required gate identifiers
 REQUIRED_R_GATES = [f"R{i:02d}" for i in range(1, 29)]
 REQUIRED_A_GATES = [f"A{i:02d}" for i in range(1, 29)]
 ALL_REQUIRED_GATES = REQUIRED_R_GATES + REQUIRED_A_GATES
+
+BLOCKED_STATUSES = {
+    "BLOCKED_EXTERNAL",
+    "BLOCKED_PLATFORM",
+    "BLOCKED_DEVICE",
+    "BLOCKED_SIGNING",
+    "BLOCKED_PERMISSION",
+    "NEEDS_EVIDENCE",
+}
 
 # Execution commands and metadata for every gate
 GATE_DEFINITIONS = {
@@ -177,7 +192,7 @@ GATE_DEFINITIONS = {
         "name": "iOS 27 Simulator runtime execution (platform-aware vs Physical iPad BLOCKED_DEVICE)",
         "isPlatformSimulatorCheck": True,
         "tier": "BLOCKED_EXTERNAL",
-        "blockerReason": "iOS 27 Simulator execution requires macOS + Xcode iOS 27 Simulator runtime (BLOCKED_PLATFORM on Windows/Linux). Physical iPadOS 27 execution is tracked separately as BLOCKED_DEVICE in docs/apple-runtime/p10/device-acceptance-manifest.json.",
+        "blockerReason": "iOS 27 Simulator execution requires macOS + Xcode iOS 27 Simulator runtime (BLOCKED_PLATFORM when absent). Physical iPadOS 27 execution is tracked separately as BLOCKED_DEVICE in docs/apple-runtime/p10/device-acceptance-manifest.json.",
         "sourceFile": "scripts/ios27_runtime_poc.sh",
     },
     "R23": {
@@ -428,7 +443,15 @@ GATE_DEFINITIONS = {
 
 def get_current_git_sha():
     try:
-        res = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, capture_output=True, text=True, check=True, encoding="utf-8", errors="replace")
+        res = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+            encoding="utf-8",
+            errors="replace",
+        )
         return res.stdout.strip()
     except Exception:
         return "unknown"
@@ -442,12 +465,82 @@ def validate_gate_registry(active_gates):
     return True
 
 
-def execute_gate(gate_id, defn):
-    """Executes a single gate command, returns result dictionary."""
-    t0 = time.time()
+def classify_command_output(gate_id, defn, returncode, combined_output, duration_seconds):
+    """Evaluates command return code, skipped markers, and expected markers. Fails closed."""
+    out_hash = hashlib.sha256(combined_output.encode("utf-8")).hexdigest()
+    cmd_str = " ".join(defn.get("command", []))
 
-    if defn.get("isPlatformSimulatorCheck"):
-        if sys.platform == "darwin":
+    # Reject skipped tests or zero tests run
+    if "--- SKIP:" in combined_output or "testing: warning: no tests to run" in combined_output or "Ran 0 tests" in combined_output:
+        return {
+            "id": gate_id,
+            "name": defn["name"],
+            "status": "FAIL",
+            "tier": defn["tier"],
+            "command": cmd_str,
+            "exitCode": returncode if returncode != 0 else 1,
+            "durationSeconds": duration_seconds,
+            "outputSha256": out_hash,
+            "sourceFile": defn["sourceFile"],
+            "error": "Gate test was skipped or ran 0 tests",
+        }
+
+    if returncode != 0:
+        return {
+            "id": gate_id,
+            "name": defn["name"],
+            "status": "FAIL",
+            "tier": defn["tier"],
+            "command": cmd_str,
+            "exitCode": returncode,
+            "durationSeconds": duration_seconds,
+            "outputSha256": out_hash,
+            "sourceFile": defn["sourceFile"],
+            "error": combined_output[-500:],
+        }
+
+    marker = defn.get("expectedMarker")
+    if marker and marker not in combined_output:
+        return {
+            "id": gate_id,
+            "name": defn["name"],
+            "status": "FAIL",
+            "tier": defn["tier"],
+            "command": cmd_str,
+            "exitCode": 1,
+            "durationSeconds": duration_seconds,
+            "outputSha256": out_hash,
+            "sourceFile": defn["sourceFile"],
+            "error": f"Missing expected output marker '{marker}' in test output",
+        }
+
+    return {
+        "id": gate_id,
+        "name": defn["name"],
+        "status": "PASS",
+        "tier": defn["tier"],
+        "command": cmd_str,
+        "exitCode": 0,
+        "durationSeconds": duration_seconds,
+        "outputSha256": out_hash,
+        "sourceFile": defn["sourceFile"],
+    }
+
+
+def evaluate_r22_simulator_gate(
+    gate_id,
+    defn,
+    host_platform=None,
+    simctl_returncode=None,
+    simctl_stdout=None,
+    poc_returncode=None,
+    poc_output=None,
+):
+    """Evaluates R22 with granular blocker classes (BLOCKED_PLATFORM, BLOCKED_SIGNING, BLOCKED_PERMISSION, BLOCKED_DEVICE)."""
+    t0 = time.time()
+    plat = host_platform if host_platform is not None else sys.platform
+    if plat == "darwin":
+        if simctl_returncode is None:
             sim_check = subprocess.run(
                 ["xcrun", "simctl", "list", "runtimes"],
                 cwd=REPO_ROOT,
@@ -456,7 +549,10 @@ def execute_gate(gate_id, defn):
                 encoding="utf-8",
                 errors="replace",
             )
-            if sim_check.returncode == 0 and "iOS 27" in (sim_check.stdout or ""):
+            simctl_returncode = sim_check.returncode
+            simctl_stdout = sim_check.stdout or ""
+        if simctl_returncode == 0 and "iOS 27" in (simctl_stdout or ""):
+            if poc_returncode is None:
                 proc = subprocess.run(
                     ["bash", "scripts/ios27_runtime_poc.sh"],
                     cwd=REPO_ROOT,
@@ -465,53 +561,27 @@ def execute_gate(gate_id, defn):
                     encoding="utf-8",
                     errors="replace",
                 )
-                dur = round(time.time() - t0, 3)
-                out_hash = hashlib.sha256(((proc.stdout or "") + (proc.stderr or "")).encode("utf-8")).hexdigest()
-                return {
-                    "id": gate_id,
-                    "name": defn["name"],
-                    "status": "PASS" if proc.returncode == 0 else "FAIL",
-                    "tier": "PRODUCTION_PATH",
-                    "command": "bash scripts/ios27_runtime_poc.sh",
-                    "exitCode": proc.returncode,
-                    "durationSeconds": dur,
-                    "outputSha256": out_hash,
-                    "sourceFile": defn["sourceFile"],
-                }
-        return {
-            "id": gate_id,
-            "name": defn["name"],
-            "status": "BLOCKED_EXTERNAL",
-            "blockerClass": "BLOCKED_PLATFORM",
-            "physicalDeviceBlockerClass": "BLOCKED_DEVICE",
-            "tier": defn["tier"],
-            "command": f"platform={sys.platform} (requires darwin + iOS 27 Simulator runtime; physical iPad tracked as BLOCKED_DEVICE)",
-            "exitCode": 0,
-            "durationSeconds": round(time.time() - t0, 3),
-            "outputSha256": hashlib.sha256(b"BLOCKED_PLATFORM_AND_BLOCKED_DEVICE").hexdigest(),
-            "sourceFile": defn["sourceFile"],
-            "rationale": defn.get("blockerReason", ""),
-        }
-
-    if defn.get("checkProtectedIOSFiles"):
-        files = defn["checkProtectedIOSFiles"]
-        base = defn.get("upstreamBase", "bcc0095754e2cc0baaeb4d93dae172b8153b4716")
-        cmd_diff = ["git", "diff", f"{base}..HEAD", "--"] + files
-        cmd_status = ["git", "status", "--porcelain", "--"] + files
-        p_diff = subprocess.run(cmd_diff, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
-        p_stat = subprocess.run(cmd_status, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
-        dur = round(time.time() - t0, 3)
-        combined = f"DIFF:\n{p_diff.stdout}\nSTATUS:\n{p_stat.stdout}"
-        out_hash = hashlib.sha256(combined.encode("utf-8")).hexdigest()
-        cmd_str = f"{' '.join(cmd_diff)} && {' '.join(cmd_status)}"
-        if p_diff.returncode == 0 and p_stat.returncode == 0 and len(p_diff.stdout.strip()) == 0 and len(p_stat.stdout.strip()) == 0:
+                poc_returncode = proc.returncode
+                poc_output = (proc.stdout or "") + (proc.stderr or "")
+            dur = round(time.time() - t0, 3)
+            out_hash = hashlib.sha256((poc_output or "").encode("utf-8")).hexdigest()
+            if poc_returncode == 0 and "IOS27_SHORTCUTS_RUNTIME_POC=PASS" in (poc_output or ""):
+                status = "PASS"
+            elif "BLOCKED_SIGNING" in (poc_output or "") or poc_returncode == 2:
+                status = "BLOCKED_SIGNING"
+            elif "BLOCKED_PERMISSION" in (poc_output or ""):
+                status = "BLOCKED_PERMISSION"
+            else:
+                status = "FAIL"
             return {
                 "id": gate_id,
                 "name": defn["name"],
-                "status": "PASS",
-                "tier": defn["tier"],
-                "command": cmd_str,
-                "exitCode": 0,
+                "status": status,
+                "blockerClass": status if status in BLOCKED_STATUSES else None,
+                "physicalDeviceBlockerClass": "BLOCKED_DEVICE",
+                "tier": "PRODUCTION_PATH" if status in ("PASS", "FAIL") else "BLOCKED_EXTERNAL",
+                "command": "bash scripts/ios27_runtime_poc.sh",
+                "exitCode": poc_returncode,
                 "durationSeconds": dur,
                 "outputSha256": out_hash,
                 "sourceFile": defn["sourceFile"],
@@ -519,26 +589,107 @@ def execute_gate(gate_id, defn):
         return {
             "id": gate_id,
             "name": defn["name"],
-            "status": "FAIL",
+            "status": "BLOCKED_PLATFORM",
+            "blockerCategory": "BLOCKED_EXTERNAL",
+            "blockerClass": "BLOCKED_PLATFORM",
+            "physicalDeviceBlockerClass": "BLOCKED_DEVICE",
             "tier": defn["tier"],
-            "command": cmd_str,
-            "exitCode": 1,
-            "durationSeconds": dur,
-            "outputSha256": out_hash,
+            "command": "xcrun simctl list runtimes (darwin host without iOS 27 Simulator runtime installed)",
+            "exitCode": 0,
+            "durationSeconds": round(time.time() - t0, 3),
+            "outputSha256": hashlib.sha256(b"DARWIN_MISSING_IOS27_SIMULATOR_RUNTIME").hexdigest(),
             "sourceFile": defn["sourceFile"],
-            "error": f"Protected iOS files modified since {base} or in working tree:\n{combined[:300]}",
+            "rationale": "macOS host detected, but Xcode iOS 27 Simulator runtime is not installed on this runner (BLOCKED_PLATFORM). Physical iPadOS 27 hardware is tracked separately as BLOCKED_DEVICE.",
         }
 
-    if defn.get("isBlocked"):
+    return {
+        "id": gate_id,
+        "name": defn["name"],
+        "status": "BLOCKED_PLATFORM",
+        "blockerCategory": "BLOCKED_EXTERNAL",
+        "blockerClass": "BLOCKED_PLATFORM",
+        "physicalDeviceBlockerClass": "BLOCKED_DEVICE",
+        "tier": defn["tier"],
+        "command": f"platform={plat} (requires darwin + iOS 27 Simulator runtime; physical iPad tracked as BLOCKED_DEVICE)",
+        "exitCode": 0,
+        "durationSeconds": round(time.time() - t0, 3),
+        "outputSha256": hashlib.sha256(b"BLOCKED_PLATFORM_AND_BLOCKED_DEVICE").hexdigest(),
+        "sourceFile": defn["sourceFile"],
+        "rationale": defn.get("blockerReason", ""),
+    }
+
+
+def evaluate_r23_protected_files(gate_id, defn, diff_stdout="", status_stdout="", returncodes=(0, 0)):
+    files = defn["checkProtectedIOSFiles"]
+    base = defn.get("upstreamBase", "76d722502e20db977e84a095444d0172442655b8")
+    cmd_diff = ["git", "diff", f"{base}..HEAD", "--"] + files
+    cmd_status = ["git", "status", "--porcelain", "--"] + files
+    combined = f"DIFF:\n{diff_stdout}\nSTATUS:\n{status_stdout}"
+    out_hash = hashlib.sha256(combined.encode("utf-8")).hexdigest()
+    cmd_str = f"{' '.join(cmd_diff)} && {' '.join(cmd_status)}"
+    if returncodes == (0, 0) and len(diff_stdout.strip()) == 0 and len(status_stdout.strip()) == 0:
         return {
             "id": gate_id,
             "name": defn["name"],
-            "status": "BLOCKED_EXTERNAL",
+            "status": "PASS",
+            "tier": defn["tier"],
+            "command": cmd_str,
+            "exitCode": 0,
+            "durationSeconds": 0.01,
+            "outputSha256": out_hash,
+            "sourceFile": defn["sourceFile"],
+        }
+    return {
+        "id": gate_id,
+        "name": defn["name"],
+        "status": "FAIL",
+        "tier": defn["tier"],
+        "command": cmd_str,
+        "exitCode": 1,
+        "durationSeconds": 0.01,
+        "outputSha256": out_hash,
+        "sourceFile": defn["sourceFile"],
+        "error": f"Protected iOS files modified since {base} or in working tree:\n{combined[:300]}",
+    }
+
+
+def execute_gate(gate_id, defn):
+    """Executes a single gate command, returns result dictionary."""
+    t0 = time.time()
+
+    if defn.get("isPlatformSimulatorCheck"):
+        return evaluate_r22_simulator_gate(gate_id, defn)
+
+    if defn.get("checkProtectedIOSFiles"):
+        files = defn["checkProtectedIOSFiles"]
+        base = defn.get("upstreamBase", "76d722502e20db977e84a095444d0172442655b8")
+        cmd_diff = ["git", "diff", f"{base}..HEAD", "--"] + files
+        cmd_status = ["git", "status", "--porcelain", "--"] + files
+        p_diff = subprocess.run(cmd_diff, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        p_stat = subprocess.run(cmd_status, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        res = evaluate_r23_protected_files(
+            gate_id,
+            defn,
+            diff_stdout=p_diff.stdout or "",
+            status_stdout=p_stat.stdout or "",
+            returncodes=(p_diff.returncode, p_stat.returncode),
+        )
+        res["durationSeconds"] = round(time.time() - t0, 3)
+        return res
+
+    if defn.get("isBlocked"):
+        b_class = defn.get("blockerClass", "BLOCKED_EXTERNAL")
+        return {
+            "id": gate_id,
+            "name": defn["name"],
+            "status": b_class,
+            "blockerCategory": "BLOCKED_EXTERNAL",
+            "blockerClass": b_class,
             "tier": defn["tier"],
             "command": "N/A (external environment)",
             "exitCode": 0,
             "durationSeconds": 0.0,
-            "outputSha256": hashlib.sha256(b"BLOCKED_EXTERNAL").hexdigest(),
+            "outputSha256": hashlib.sha256(b_class.encode("utf-8")).hexdigest(),
             "sourceFile": defn["sourceFile"],
             "rationale": defn.get("blockerReason", ""),
         }
@@ -548,75 +699,7 @@ def execute_gate(gate_id, defn):
         proc = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
         dur = round(time.time() - t0, 3)
         combined_output = (proc.stdout or "") + (proc.stderr or "")
-        out_hash = hashlib.sha256(combined_output.encode("utf-8")).hexdigest()
-
-        if defn.get("checkEmptyDiff"):
-            if proc.returncode == 0 and len(proc.stdout.strip()) == 0:
-                return {
-                    "id": gate_id,
-                    "name": defn["name"],
-                    "status": "PASS",
-                    "tier": defn["tier"],
-                    "command": " ".join(cmd),
-                    "exitCode": 0,
-                    "durationSeconds": dur,
-                    "outputSha256": out_hash,
-                    "sourceFile": defn["sourceFile"],
-                }
-            else:
-                return {
-                    "id": gate_id,
-                    "name": defn["name"],
-                    "status": "FAIL",
-                    "tier": defn["tier"],
-                    "command": " ".join(cmd),
-                    "exitCode": proc.returncode if proc.returncode != 0 else 1,
-                    "durationSeconds": dur,
-                    "outputSha256": out_hash,
-                    "sourceFile": defn["sourceFile"],
-                    "error": f"Protected diff non-empty: {proc.stdout[:200]}",
-                }
-
-        if proc.returncode != 0:
-            return {
-                "id": gate_id,
-                "name": defn["name"],
-                "status": "FAIL",
-                "tier": defn["tier"],
-                "command": " ".join(cmd),
-                "exitCode": proc.returncode,
-                "durationSeconds": dur,
-                "outputSha256": out_hash,
-                "sourceFile": defn["sourceFile"],
-                "error": combined_output[-500:],
-            }
-
-        marker = defn.get("expectedMarker")
-        if marker and marker not in combined_output:
-            return {
-                "id": gate_id,
-                "name": defn["name"],
-                "status": "FAIL",
-                "tier": defn["tier"],
-                "command": " ".join(cmd),
-                "exitCode": 1,
-                "durationSeconds": dur,
-                "outputSha256": out_hash,
-                "sourceFile": defn["sourceFile"],
-                "error": f"Missing expected output marker '{marker}' in test output",
-            }
-
-        return {
-            "id": gate_id,
-            "name": defn["name"],
-            "status": "PASS",
-            "tier": defn["tier"],
-            "command": " ".join(cmd),
-            "exitCode": 0,
-            "durationSeconds": dur,
-            "outputSha256": out_hash,
-            "sourceFile": defn["sourceFile"],
-        }
+        return classify_command_output(gate_id, defn, proc.returncode, combined_output, dur)
     except Exception as e:
         dur = round(time.time() - t0, 3)
         return {
@@ -633,39 +716,129 @@ def execute_gate(gate_id, defn):
         }
 
 
+def compute_release_verdict(results):
+    """Computes overall release verdict from gate results. Never returns READY if any gate is blocked or failing."""
+    if len(results) != len(ALL_REQUIRED_GATES):
+        return "NOT_READY"
+    passing = sum(1 for r in results if r["status"] == "PASS")
+    blocked = sum(1 for r in results if r["status"] in BLOCKED_STATUSES)
+    failing = len(results) - passing - blocked
+    if failing > 0:
+        return "NOT_READY"
+    if blocked > 0:
+        return "PARTIAL_WITH_EXTERNAL_BLOCKERS"
+    return "READY"
+
+
+def verify_commit_and_fingerprints(
+    repo_root: pathlib.Path = REPO_ROOT,
+    head_sha: str = None,
+    artifact_rel_paths: tuple = (
+        "docs/apple-runtime/p10/p10r3-gate-results.json",
+        "docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json",
+        "docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json",
+        "docs/apple-runtime/p10/baseline-state.json",
+    ),
+    current_fingerprint: str = None,
+    artifact_overrides: dict = None,
+):
+    """Verifies that every tracked P10 JSON artifact has:
+    1. A valid 40-hex sourceCommit that is an ancestor of (or equal to) HEAD.
+    2. An inputDependencyFingerprint that matches the current SHA-256 fingerprint of all compiler/action/schema/ledger inputs.
+    """
+    if head_sha is None:
+        head_sha = get_current_git_sha()
+    if current_fingerprint is None:
+        current_fingerprint = compute_input_dependency_fingerprint(repo_root)
+    artifact_overrides = artifact_overrides or {}
+    errors = []
+
+    for rel in artifact_rel_paths:
+        if rel in artifact_overrides:
+            data = artifact_overrides[rel]
+        else:
+            p = repo_root / rel
+            if not p.exists():
+                errors.append(f"Missing artifact for commit/fingerprint check: {rel}")
+                continue
+            data = json.loads(p.read_text(encoding="utf-8"))
+
+        sc = data.get("sourceCommit", "")
+        if not sc or len(sc) != 40:
+            errors.append(f"Invalid sourceCommit '{sc}' in {rel}")
+        else:
+            anc = subprocess.run(["git", "merge-base", "--is-ancestor", sc, head_sha], cwd=repo_root)
+            if anc.returncode != 0:
+                errors.append(f"sourceCommit {sc} in {rel} is not an ancestor of HEAD {head_sha}")
+
+        fp = data.get("inputDependencyFingerprint", "")
+        if not fp or len(fp) != 64:
+            errors.append(f"Missing or invalid inputDependencyFingerprint '{fp}' in {rel}")
+        elif fp != current_fingerprint:
+            errors.append(
+                f"inputDependencyFingerprint drift in {rel}: recorded {fp} != current {current_fingerprint}"
+            )
+
+    return len(errors) == 0, errors
+
+
+def get_tool_versions():
+    versions = {"python": sys.version.split()[0], "platform": platform.platform()}
+    try:
+        go_ver = subprocess.run(["go", "version"], cwd=REPO_ROOT, capture_output=True, text=True, check=False)
+        versions["go"] = (go_ver.stdout or "").strip()
+    except Exception:
+        versions["go"] = "unknown"
+    return versions
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Cherri P10R3 Executable Release Gate Runner")
+    parser = argparse.ArgumentParser(description="Cherri P10R4 Executable Release Gate Runner")
     parser.add_argument("--run-all", action="store_true", help="Execute all 56 gates sequentially")
     parser.add_argument("--gate", type=str, help="Execute a single gate by ID")
     parser.add_argument("--verify-registry", action="store_true", help="Verify completeness of gate registry")
-    parser.add_argument("--verify-commit", action="store_true", help="Verify recorded sourceCommit in gate results and ledgers is an ancestor of or equal to HEAD")
+    parser.add_argument(
+        "--verify-commit",
+        action="store_true",
+        help="Verify recorded sourceCommit ancestry and exact inputDependencyFingerprint across all P10 artifacts",
+    )
     parser.add_argument("--mutate-missing", type=str, help="Simulate missing a gate to verify fail-closed behavior")
-    parser.add_argument("--out-results", type=str, default="docs/apple-runtime/p10/p10r3-gate-results.json",
-                        help="Path to write JSON results")
+    parser.add_argument(
+        "--out-results",
+        type=str,
+        default="docs/apple-runtime/p10/p10r3-gate-results.json",
+        help="Path to write JSON results",
+    )
+    parser.add_argument(
+        "--ci-attestation",
+        type=str,
+        default="",
+        help="Optional path to write machine-readable CI attestation JSON",
+    )
     args = parser.parse_args()
 
     if args.verify_commit:
         head_sha = get_current_git_sha()
-        for rel in (
-            args.out_results,
-            "docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json",
-            "docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json",
-            "docs/apple-runtime/p10/baseline-state.json",
-        ):
-            p = REPO_ROOT / rel
-            if not p.exists():
-                print(f"ERROR: Missing artifact for commit check: {rel}", file=sys.stderr)
-                sys.exit(1)
-            data = json.loads(p.read_text(encoding="utf-8"))
-            sc = data.get("sourceCommit", "")
-            if not sc or len(sc) != 40:
-                print(f"ERROR: Invalid sourceCommit '{sc}' in {rel}", file=sys.stderr)
-                sys.exit(1)
-            anc = subprocess.run(["git", "merge-base", "--is-ancestor", sc, head_sha], cwd=REPO_ROOT)
-            if anc.returncode != 0:
-                print(f"ERROR: sourceCommit {sc} in {rel} is not an ancestor of HEAD {head_sha}", file=sys.stderr)
-                sys.exit(1)
-        print(f"SUCCESS: All P10 artifact sourceCommit values verified against HEAD ({head_sha}).")
+        dep_fp = compute_input_dependency_fingerprint(REPO_ROOT)
+        ok, errors = verify_commit_and_fingerprints(
+            repo_root=REPO_ROOT,
+            head_sha=head_sha,
+            artifact_rel_paths=(
+                args.out_results,
+                "docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json",
+                "docs/apple-runtime/p10/p10-apple-cherri-crosswalk.json",
+                "docs/apple-runtime/p10/baseline-state.json",
+            ),
+            current_fingerprint=dep_fp,
+        )
+        if not ok:
+            for e in errors:
+                print(f"ERROR: {e}", file=sys.stderr)
+            sys.exit(1)
+        print(
+            f"SUCCESS: All P10 artifact sourceCommit values verified as ancestors of HEAD ({head_sha}) "
+            f"and inputDependencyFingerprint matched ({dep_fp})."
+        )
         sys.exit(0)
 
     # Mutation test verification
@@ -692,11 +865,11 @@ def main():
             sys.exit(1)
         res = execute_gate(gid, GATE_DEFINITIONS[gid])
         print(json.dumps(res, indent=2))
-        sys.exit(0 if res["status"] in ("PASS", "BLOCKED_EXTERNAL") else 1)
+        sys.exit(0 if res["status"] == "PASS" or res["status"] in BLOCKED_STATUSES else 1)
 
     if args.run_all:
         validate_gate_registry(list(GATE_DEFINITIONS.keys()))
-        print(f"=== Starting P10R3 Full Gate Execution ({len(ALL_REQUIRED_GATES)} gates) ===")
+        print(f"=== Starting P10R4 Full Gate Execution ({len(ALL_REQUIRED_GATES)} gates) ===")
         results = []
         passing = 0
         blocked = 0
@@ -711,7 +884,7 @@ def main():
             print(f"{st} ({res['durationSeconds']}s)")
             if st == "PASS":
                 passing += 1
-            elif st == "BLOCKED_EXTERNAL":
+            elif st in BLOCKED_STATUSES:
                 blocked += 1
             else:
                 failing += 1
@@ -725,17 +898,14 @@ def main():
         print(f"Failing:           {failing}")
 
         head_sha = get_current_git_sha()
-        if failing > 0:
-            verdict = "NOT_READY"
-        elif blocked > 0:
-            verdict = "PARTIAL_WITH_EXTERNAL_BLOCKERS"
-        else:
-            verdict = "READY"
+        dep_fp = compute_input_dependency_fingerprint(REPO_ROOT)
+        verdict = compute_release_verdict(results)
 
         payload = {
-            "milestone": "P10R3",
+            "milestone": "P10R4",
             "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "sourceCommit": head_sha,
+            "inputDependencyFingerprint": dep_fp,
             "verdict": verdict,
             "legacyVerdict": "P10R3_CORRECTIVE_PARTIAL_VERIFIED" if failing == 0 else "P10R3_GATE_FAILURE",
             "summary": {
@@ -745,7 +915,9 @@ def main():
                 "failingGates": failing,
                 "rGatesTotal": len(REQUIRED_R_GATES),
                 "rGatesPassing": sum(1 for r in results if r["id"].startswith("R") and r["status"] == "PASS"),
-                "rGatesBlockedExternal": sum(1 for r in results if r["id"].startswith("R") and r["status"] == "BLOCKED_EXTERNAL"),
+                "rGatesBlockedExternal": sum(
+                    1 for r in results if r["id"].startswith("R") and r["status"] in BLOCKED_STATUSES
+                ),
                 "aGatesTotal": len(REQUIRED_A_GATES),
                 "aGatesPassing": sum(1 for r in results if r["id"].startswith("A") and r["status"] == "PASS"),
                 "aGatesFailing": sum(1 for r in results if r["id"].startswith("A") and r["status"] == "FAIL"),
@@ -753,10 +925,43 @@ def main():
             "gates": results,
         }
 
-        out_path = REPO_ROOT / args.out_results
+        out_path = pathlib.Path(args.out_results)
+        if not out_path.is_absolute():
+            out_path = REPO_ROOT / out_path
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        out_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         print(f"Results written to: {out_path}")
+
+        if args.ci_attestation:
+            att_path = pathlib.Path(args.ci_attestation)
+            if not att_path.is_absolute():
+                att_path = REPO_ROOT / att_path
+            att_path.parent.mkdir(parents=True, exist_ok=True)
+            attestation = {
+                "schemaVersion": "1.0",
+                "headCommit": head_sha,
+                "inputDependencyFingerprint": dep_fp,
+                "runId": os.environ.get("GITHUB_RUN_ID", "local"),
+                "workflow": os.environ.get("GITHUB_WORKFLOW", "local"),
+                "runnerOs": os.environ.get("RUNNER_OS", sys.platform),
+                "timestamp": payload["timestamp"],
+                "command": " ".join(sys.argv),
+                "verdict": verdict,
+                "summary": payload["summary"],
+                "toolVersions": get_tool_versions(),
+                "gates": [
+                    {
+                        "id": r["id"],
+                        "status": r["status"],
+                        "exitCode": r["exitCode"],
+                        "durationSeconds": r["durationSeconds"],
+                        "outputSha256": r["outputSha256"],
+                    }
+                    for r in results
+                ],
+            }
+            att_path.write_text(json.dumps(attestation, indent=2) + "\n", encoding="utf-8")
+            print(f"CI attestation written to: {att_path}")
 
         sys.exit(0 if failing == 0 else 1)
 

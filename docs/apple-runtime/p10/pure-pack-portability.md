@@ -1,15 +1,17 @@
 # Pure Original (`bcc0095`) vs Pure+Pack (`141b9cc`) vs P10 Native Portability Report
 
-- **Upstream Pure Baseline Commit**: `bcc0095754e2cc0baaeb4d93dae172b8153b4716` (`389` catalog entries: `381` callable actions + `8` compiler constructs)
-- **Pure+Pack Overlay Commit**: `141b9cc96cf1df3f9d1593548dc49ae8a46a256a` (`491` catalog entries: `389` Pure Original + `102` declarative Pack entries [`48` new actions + `54` extended aliases])
-- **P10 Native Branch Commit**: `55d7800dc01cd52ca3d6a5a17b3159ffe5a28089` (`505` catalog entries: `491` Pure+Pack + `2` P10-only multi-key Go setters + `12` curated AppIntent actions requiring Go `AppIntentDescriptor`)
+- **Source Commit**: `50c6442b0b5ef1c9fa126b1eae14fc1b1ace9916`
+- **Input Dependency Fingerprint**: `b007acdb3b633d9460f6ba90a68e309901aead2d85cd9848cc85fab075cba43c`
+- **Upstream Pure Baseline Commit**: `bcc0095754e2cc0baaeb4d93dae172b8153b4716` (`441` catalog entries: `433` callable actions + `8` compiler constructs)
+- **Pure+Pack Overlay Commit**: `141b9cc96cf1df3f9d1593548dc49ae8a46a256a` (`441` Pure Original names + `102` declarative Pack entries [`48` new actions + `54` `*Advanced` aliases]; `487` of the `505` P10 catalog entries are supported in Pure+Pack)
+- **P10 Native Branch Commit**: `50c6442b0b5ef1c9fa126b1eae14fc1b1ace9916` (`505` catalog entries: `441` Pure Original [with `editEvent` and `transcribeText` upgraded to Go] + `48` Pack new declarative actions + `4` declarative `toggleSet` actions in `actions/settings.cherri` + `12` net-new Go-only actions in `actions_std.go`)
 
 ## Exact Classification of the 15 Go-Only Actions Evaluated Between Pack and P10
 
 | # | Action Name | Apple Identifier | Classification | Pure Original (`bcc0095`) | Pure+Pack (`141b9cc`) | P10 Native |
 | :---: | :--- | :--- | :--- | :---: | :---: | :---: |
 | 1 | `createRemindersList` | `com.apple.reminders.TTRCreateListAppIntent` | `REQUIRES_APPINTENT_DESCRIPTOR` | NO | NO (Excluded from Declarative Pack) | YES (Native Go) |
-| 2 | `editEvent` | `is.workflow.actions.setters.calendarevents` | `P10_ONLY_GO_REQUIRED` | NO | NO (Excluded from Declarative Pack) | YES (Native Go) |
+| 2 | `editEvent` | `is.workflow.actions.setters.calendarevents` | `P10_ONLY_GO_REQUIRED` | YES (Declarative Stub) | NO (Excluded from Declarative Pack) | YES (Native Go) |
 | 3 | `editReminder` | `is.workflow.actions.setters.reminders` | `P10_ONLY_GO_REQUIRED` | NO | NO (Excluded from Declarative Pack) | YES (Native Go) |
 | 4 | `openBook` | `com.apple.iBooksX.OpenBookIntent` | `REQUIRES_APPINTENT_DESCRIPTOR` | NO | NO (Excluded from Declarative Pack) | YES (Native Go) |
 | 5 | `playAudiobook` | `com.apple.iBooksX.PlayAudiobookIntent` | `REQUIRES_APPINTENT_DESCRIPTOR` | NO | NO (Excluded from Declarative Pack) | YES (Native Go) |
@@ -22,4 +24,4 @@
 | 12 | `startStopwatch` | `com.apple.clock.StartStopwatchIntent` | `REQUIRES_APPINTENT_DESCRIPTOR` | NO | NO (Excluded from Declarative Pack) | YES (Native Go) |
 | 13 | `stopStopwatch` | `com.apple.clock.StopStopwatchIntent` | `REQUIRES_APPINTENT_DESCRIPTOR` | NO | NO (Excluded from Declarative Pack) | YES (Native Go) |
 | 14 | `stopVoiceMemoRecording` | `com.apple.VoiceMemos.StopRecording` | `REQUIRES_APPINTENT_DESCRIPTOR` | NO | NO (Excluded from Declarative Pack) | YES (Native Go) |
-| 15 | `transcribeText` | `com.apple.ShortcutsActions.TranscribeAudioAction` | `REQUIRES_APPINTENT_DESCRIPTOR` | NO | NO (Excluded from Declarative Pack) | YES (Native Go) |
+| 15 | `transcribeText` | `com.apple.ShortcutsActions.TranscribeAudioAction` | `REQUIRES_APPINTENT_DESCRIPTOR` | YES (Declarative Stub) | NO (Excluded from Declarative Pack) | YES (Native Go) |

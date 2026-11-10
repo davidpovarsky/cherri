@@ -12327,7 +12327,7 @@ func initDefaultRegistry() *Registry {
 			Module: "device",
 			AppleIdentifier: "is.workflow.actions.quit.app",
 			PrimaryParameterID: "appID",
-			EmittedKeys: []string{"WFApp", "WFAskToSaveChanges"},
+			EmittedKeys: []string{"WFApp", "WFAskToSaveChanges", "WFAskToSaveChanges"},
 			OutputType: types.Unknown,
 			OutputTypeName: "Unknown",
 			Builtin: true,
@@ -12339,6 +12339,9 @@ func initDefaultRegistry() *Registry {
 				Category: "device",
 				Subcategory: "Apps",
 				InsertionSnippet: "killApp(Ask)",
+			},
+			StaticParameters: map[string]any{
+				"WFAskToSaveChanges": false,
 			},
 			Parameters: []ParameterSchema{
 				{

@@ -1654,10 +1654,11 @@ var actions = map[string]*actionDefinition{
 		check: func(args []actionArgument, definition *actionDefinition) {
 			replaceAppIDs(args, definition)
 		},
+		appendParams: map[string]any{
+			"WFAskToSaveChanges": false,
+		},
 		makeParams: func(args []actionArgument) (params map[string]any) {
 			params = make(map[string]any)
-
-			params["WFAskToSaveChanges"] = false
 
 			if args[0].valueType == Variable {
 				params["WFApp"] = argumentValue(args, 0)
@@ -2407,10 +2408,31 @@ var actions = map[string]*actionDefinition{
 			},
 		},
 		check: func(args []actionArgument, _ *actionDefinition) {
-			var contactDetail = args[1].value.(string)
+			var contactDetail = fmt.Sprint(getArgValue(args[1]))
 			var contactDetailKey = strings.ReplaceAll(contactDetail, " ", "")
 			currentAction.definition.parameters = slices.Clone(currentAction.definition.parameters)
 			currentAction.definition.parameters[2].key = "WFContactContentItem" + contactDetailKey
+		},
+		appendParamsFunc: func(args []actionArgument) map[string]any {
+			params := map[string]any{
+				"Mode": "Set",
+			}
+			if len(args) >= 3 {
+				contactDetail := fmt.Sprint(getArgValue(args[1]))
+				contactDetailKey := strings.ReplaceAll(contactDetail, " ", "")
+				if contactDetailKey != "" {
+					if args[2].valueType == Variable {
+						if vv, ok := args[2].value.(varValue); ok {
+							params["WFContactContentItem"+contactDetailKey] = variableValue(vv)
+						} else {
+							params["WFContactContentItem"+contactDetailKey] = argumentValue(args, 2)
+						}
+					} else {
+						params["WFContactContentItem"+contactDetailKey] = argumentValue(args, 2)
+					}
+				}
+			}
+			return params
 		},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			params := action.WFWorkflowActionParameters
@@ -2779,6 +2801,30 @@ func loadBasicStandardActions() {
 	handleActionDefinitions()
 }
 
+func loadAllStandardActionsForDecompile() {
+	savedIncluded := slices.Clone(included)
+	for _, actionInclude := range actionIncludes {
+		if slices.Contains(savedIncluded, fmt.Sprintf("actions/%s", actionInclude)) {
+			continue
+		}
+		included = []string{}
+		includes = []include{}
+		lines = []string{fmt.Sprintf("#include 'actions/%s'\n", actionInclude)}
+		tokens = []token{}
+		resetParse()
+		handleIncludes()
+		currentCategory = actionInclude
+		handleActionDefinitions()
+		savedIncluded = append(savedIncluded, fmt.Sprintf("actions/%s", actionInclude))
+	}
+	included = savedIncluded
+	includes = []include{}
+	currentCategory = ""
+	lines = []string{}
+	tokens = []token{}
+	resetParse()
+}
+
 func loadActionsByCategory() {
 	for _, actionInclude := range actionCategories {
 		lines = append(lines, fmt.Sprintf("#include 'actions/%s'\n", actionInclude))
@@ -3124,13 +3170,13 @@ func appendSetMultitaskingModeParam(title, identifier, symbol string) map[string
 	return map[string]any{
 		"mode": map[string]any{
 			"identifier": identifier,
-			"subtitle": map[string]string{
+			"subtitle": map[string]any{
 				"key": title,
 			},
-			"symbol": map[string]string{
+			"symbol": map[string]any{
 				"systemName": symbol,
 			},
-			"title": map[string]string{
+			"title": map[string]any{
 				"key": title,
 			},
 			"value": identifier,

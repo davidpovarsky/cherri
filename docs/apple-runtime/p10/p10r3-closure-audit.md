@@ -102,16 +102,18 @@ Execution of `python tools/p10r3/run_release_gates.py --run-all`:
 
 ## 4. Reconciled Catalog and Ledger Metrics
 
-Authoritative mathematical agreement established across `p10-action-ledger.json`, `p10-coverage-report.md`, and `p10r2-validation-results.json`:
+Authoritative mathematical agreement established across `p10-action-ledger.json`, `p10-apple-cherri-crosswalk.json`, `p10-coverage-report.md`, and `p10r2-validation-results.json`:
 - **Total Ledger Records**: 2,396
-- **Eligible Candidate Denominator**: 1,527
-  - Covered Actions: 390 (all `COVERED_PARTIAL`, 0 `COVERED_VERIFIED`)
-  - Missing Built-in Candidates: 118 (`MISSING_BUILTIN`)
-  - Missing App Intent Candidates: 1,019 (`MISSING_APP_INTENT`)
-- **Exclusions**: 869
-  - ToolKit internal / non-runnable: 859
-  - Third-party Dropbox dependencies: 9
-  - Deprecated action: 1 (`is.workflow.actions.runworkflow`)
+- **Eligible Candidate Denominator**: 1,527 (`487` `ELIGIBLE_USER_FACING` + `1,040` `ELIGIBLE_APP_INTENT`)
+  - Covered Actions: 390 (all `COVERED_PARTIAL`, `0` `COVERED_VERIFIED`: `313` `outputTypeConcordance=UNASSESSED` + `77` `outputTypeConcordance=DIFFERS`)
+  - Uncovered Native Actions: 97 (`NEW_NATIVE_ACTION`)
+  - Uncovered App Intents: 1,040 (`MISSING_APP_INTENT_DESCRIPTOR`)
+- **Excluded / Deferred Records**: 869
+  - `EXCLUDED_NONRUNNABLE`: 596
+  - `EXCLUDED_HIDDEN_INTERNAL`: 131
+  - `DEFERRED_NO_EVIDENCE`: 86
+  - `EXCLUDED_CONFIG_ONLY`: 29
+  - `EXCLUDED_THIRD_PARTY_DEPENDENCY`: 27
 - **Residual Parameter Dispositions**:
   - `OPEN_USER_PARAMETER`: 0
   - `NEEDS_RUNTIME_EVIDENCE`: 1 (Calendar picker token `WFDateSpecifier`)

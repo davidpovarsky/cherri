@@ -5,7 +5,7 @@
 **Base Commit:** `15c22783e85dd26f9a1ddb45c542d17e67fb7cc0`  
 **Verified Compiler Commit:** `15f29066e627a1776b8cb17405117e99263171d3`  
 **Verified Docs Commit:** `8daeebc33b55b691493dfe75ff823c24dce44c21`  
-**Schema Fingerprint:** `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (updated in P10 after statistic WFInput wire key fix to cd572454a8de7e16e6aff913a912e1a82e470baad7ad8f318f78abc6d5e90b68)`  
+**Schema Fingerprint:** `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (updated in P10 after statistic WFInput wire key fix to 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)`  
 **Codec Fingerprint:** `3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e`  
 **Status:** **100% PASS** (Full Differential Parity Achieved)
 
@@ -151,7 +151,7 @@ The Open Minis Skill, compatibility manifest, documentation, and compiler are pi
   "skillVersion": "2.0.0",
   "languageVersion": "2.0",
   "catalogSchemaVersion": "3.0",
-  "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (updated in P10 after statistic WFInput wire key fix to cd572454a8de7e16e6aff913a912e1a82e470baad7ad8f318f78abc6d5e90b68)",
+  "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (updated in P10 after statistic WFInput wire key fix to 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)",
   "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
   "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
   "compilerCommit": "15f29066e627a1776b8cb17405117e99263171d3",
@@ -164,7 +164,7 @@ The Open Minis Skill, compatibility manifest, documentation, and compiler are pi
 - `skills/cherri-shortcuts/scripts/doctor.sh` exits **0**:
   - Compiler verified against `15f29066e627a1776b8cb17405117e99263171d3`
   - Docs verified against `8daeebc33b55b691493dfe75ff823c24dce44c21`
-  - Schema fingerprint verified: `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (updated in P10 after statistic WFInput wire key fix to cd572454a8de7e16e6aff913a912e1a82e470baad7ad8f318f78abc6d5e90b68)`
+  - Schema fingerprint verified: `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (updated in P10 after statistic WFInput wire key fix to 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)`
   - Codec fingerprint verified: `3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e`
 - `skills/cherri-shortcuts/scripts/self-test.sh` exits **0**:
   - All 10 packaging, compatibility, offline caching, mismatch rejection, and atomic update scenarios passed.

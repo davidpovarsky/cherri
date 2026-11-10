@@ -290,6 +290,8 @@ func decompileForMobile(plistBytes []byte, requestedName string) (response mobil
 	}
 
 	loadBasicStandardActions()
+	loadAllStandardActionsForDecompile()
+	skipNextLoopVarAction = false
 	resetParse()
 	firstChar()
 

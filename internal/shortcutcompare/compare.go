@@ -286,21 +286,24 @@ func compareDict(a, b map[string]any, path string, scope *Scope, ignoredKeys map
 			strA, okA := valA.(string)
 			strB, okB := valB.(string)
 			if okA && okB {
-				// Verify declared producer in A
-				if len(scope.producersA) > 0 {
-					if _, ok := scope.producersA[strA]; !ok {
-						addDiff(res, childPath, "dangling-reference-in-a", strA, nil)
-						continue
+				_, inProdA := scope.producersA[strA]
+				_, inProdB := scope.producersB[strB]
+				if !inProdA && !inProdB {
+					if strA == strB {
+						continue // External or normalized parameter token match
 					}
+					addDiff(res, childPath, "output-uuid-mismatch", strA, strB)
+					continue
 				}
-				// Verify declared producer in B
-				if len(scope.producersB) > 0 {
-					if _, ok := scope.producersB[strB]; !ok {
-						addDiff(res, childPath, "dangling-reference-in-b", nil, strB)
-						continue
-					}
+				if !inProdA && inProdB {
+					addDiff(res, childPath, "dangling-reference-in-a", strA, nil)
+					continue
 				}
-				// Verify mapping
+				if inProdA && !inProdB {
+					addDiff(res, childPath, "dangling-reference-in-b", nil, strB)
+					continue
+				}
+				// Both are declared producers in scope; verify bijective mapping
 				if scope.producerAtoB[strA] == strB && scope.producerBtoA[strB] == strA {
 					continue // Bijective reference match
 				}
@@ -343,12 +346,7 @@ func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
 		return
 	}
 
-	// Exact deep equality
-	if reflect.DeepEqual(a, b) {
-		return
-	}
-
-	// Map
+	// Map (must recurse via compareDict so bijective UUID/GroupingIdentifier/OutputUUID scope is enforced even when raw strings happen to match)
 	mapA, okMapA := a.(map[string]any)
 	mapB, okMapB := b.(map[string]any)
 	if okMapA && okMapB {
@@ -378,6 +376,11 @@ func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
 	}
 	if okSliceA != okSliceB {
 		addDiff(res, path, "type", describe(a), describe(b))
+		return
+	}
+
+	// Exact scalar deep equality
+	if reflect.DeepEqual(a, b) {
 		return
 	}
 

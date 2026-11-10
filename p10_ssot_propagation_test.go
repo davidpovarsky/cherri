@@ -9,9 +9,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -466,3 +469,627 @@ func extractFirstAction(t *testing.T, plistBytes []byte) map[string]any {
 	}
 	return act
 }
+
+func copyIsolatedSSoTWorkspace(t *testing.T) string {
+	t.Helper()
+	ws := t.TempDir()
+
+	copyFile := func(srcRel string) {
+		t.Helper()
+		src := filepath.FromSlash(srcRel)
+		dst := filepath.Join(ws, src)
+		if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
+			t.Fatalf("mkdir %s: %v", filepath.Dir(dst), err)
+		}
+		in, err := os.Open(src)
+		if err != nil {
+			t.Fatalf("open %s: %v", src, err)
+		}
+		defer in.Close()
+		out, err := os.Create(dst)
+		if err != nil {
+			t.Fatalf("create %s: %v", dst, err)
+		}
+		defer out.Close()
+		if _, err := io.Copy(out, in); err != nil {
+			t.Fatalf("copy %s -> %s: %v", src, dst, err)
+		}
+	}
+
+	copyDir := func(relDir string) {
+		t.Helper()
+		root := filepath.FromSlash(relDir)
+		err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if info.IsDir() {
+				return nil
+			}
+			rel, err := filepath.Rel(".", path)
+			if err != nil {
+				return err
+			}
+			copyFile(filepath.ToSlash(rel))
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("walk %s: %v", relDir, err)
+		}
+	}
+
+	copyFile("go.mod")
+	copyFile("go.sum")
+	copyFile("stdfunc.cherri")
+
+	rootEntries, err := os.ReadDir(".")
+	if err != nil {
+		t.Fatalf("readdir .: %v", err)
+	}
+	for _, entry := range rootEntries {
+		name := entry.Name()
+		if entry.IsDir() {
+			continue
+		}
+		if strings.HasSuffix(name, ".go") && !strings.HasSuffix(name, "_test.go") {
+			copyFile(name)
+		}
+	}
+
+	copyDir("actions")
+	copyDir("internal")
+	copyDir("tools/language-schema")
+	copyFile("docs/apple-runtime/macos-27/parameter-encodings.json")
+	copyFile("docs/apple-runtime/p10/p10-505-catalog-coverage-matrix.json")
+	copyFile("docs/apple-runtime/p10/p10-action-ledger.json")
+	copyFile("docs/architecture/action-emitter-ownership.json")
+
+	return ws
+}
+
+// TestP10_RealSSoTSourceToConsumersPropagation (PART D.2–D.4) proves true Single Source of Truth
+// propagation by modifying ONLY ONE SOURCE FILE (`actions/basic.cherri`) in an isolated workspace,
+// running `go run ./tools/language-schema`, and verifying automatic propagation across all 17 stages
+// and consumers (plus parameter addition propagation) without touching any other source file.
+func TestP10_RealSSoTSourceToConsumersPropagation(t *testing.T) {
+	ws := copyIsolatedSSoTWorkspace(t)
+	basicPath := filepath.Join(ws, "actions", "basic.cherri")
+	origBasicBytes, err := os.ReadFile(basicPath)
+	if err != nil {
+		t.Fatalf("read basic.cherri: %v", err)
+	}
+
+	// Stage 1: Edit ONLY actions/basic.cherri to add syntheticProbeMode + syntheticPropagationProbe
+	synthDeclV1 := `
+
+enum syntheticProbeMode {
+	'Fast',
+	'Thorough',
+}
+
+// [Doc]: [Synthetic Probe] Probe automatic SSoT propagation across all 17 consumers.
+action 'synthetic.propagation.probe' syntheticPropagationProbe(text prompt: 'WFSyntheticProbePrompt', syntheticProbeMode ?mode: 'WFSyntheticProbeMode' = "Fast"): text {
+	"WFSyntheticProbeVersion": 1
+}
+`
+	if err := os.WriteFile(basicPath, append(origBasicBytes, []byte(synthDeclV1)...), 0644); err != nil {
+		t.Fatalf("write basic.cherri: %v", err)
+	}
+
+	// Before running generator, --verify-generated MUST fail closed (detecting un-regenerated drift)
+	verifyBeforeCmd := exec.Command("go", "run", "./tools/language-schema", "--verify-generated")
+	verifyBeforeCmd.Dir = ws
+	if out, err := verifyBeforeCmd.CombinedOutput(); err == nil {
+		t.Fatalf("expected --verify-generated to fail BEFORE running generator, but it succeeded:\n%s", string(out))
+	}
+
+	// Stage 4: Run the REAL schema generator (`go run ./tools/language-schema`)
+	genCmd := exec.Command("go", "run", "./tools/language-schema")
+	genCmd.Dir = ws
+	if out, err := genCmd.CombinedOutput(); err != nil {
+		t.Fatalf("go run ./tools/language-schema failed in isolated workspace: %v\n%s", err, string(out))
+	}
+
+	// Verify --verify-generated now passes with zero drift
+	verifyAfterCmd := exec.Command("go", "run", "./tools/language-schema", "--verify-generated")
+	verifyAfterCmd.Dir = ws
+	if out, err := verifyAfterCmd.CombinedOutput(); err != nil {
+		t.Fatalf("expected --verify-generated to pass AFTER running generator, got: %v\n%s", err, string(out))
+	}
+
+	// Stage 5: Inspect generated_registry.go on disk
+	genRegBytes, err := os.ReadFile(filepath.Join(ws, "internal", "language", "schema", "generated_registry.go"))
+	if err != nil {
+		t.Fatalf("read generated_registry.go: %v", err)
+	}
+	genRegText := string(genRegBytes)
+	for _, needle := range []string{
+		`"syntheticPropagationProbe"`,
+		`AppleIdentifier: "is.workflow.actions.synthetic.propagation.probe"`,
+		`WireKey: "WFSyntheticProbePrompt"`,
+		`WireKey: "WFSyntheticProbeMode"`,
+		`EnumName: "syntheticProbeMode"`,
+		`"WFSyntheticProbeVersion"`,
+	} {
+		if !strings.Contains(genRegText, needle) {
+			t.Fatalf("Stage 5: generated_registry.go missing expected generated content %q", needle)
+		}
+	}
+
+	// Build isolated cherri binary once to exercise CLI, Legacy, V2, Decompiler, Docs, Skill, and Preview
+	binName := "cherri_probe"
+	if runtime.GOOS == "windows" {
+		binName = "cherri_probe.exe"
+	}
+	binPath := filepath.Join(ws, binName)
+	buildCmd := exec.Command("go", "build", "-o", binPath, ".")
+	buildCmd.Dir = ws
+	if out, err := buildCmd.CombinedOutput(); err != nil {
+		t.Fatalf("go build isolated binary failed: %v\n%s", err, string(out))
+	}
+
+	// Stage 11 & 15: CLI --action=syntheticPropagationProbe (also used by Open Minis Skill lookup)
+	actionDocCmd := exec.Command(binPath, "--action=syntheticPropagationProbe", "--no-ansi")
+	actionDocCmd.Dir = ws
+	actionDocOut, err := actionDocCmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Stage 11: --action=syntheticPropagationProbe failed: %v\n%s", err, string(actionDocOut))
+	}
+	for _, needle := range []string{"syntheticPropagationProbe(", "prompt", "mode", "Fast", "Thorough"} {
+		if !strings.Contains(string(actionDocOut), needle) {
+			t.Fatalf("Stage 11: --action=syntheticPropagationProbe missing %q in:\n%s", needle, string(actionDocOut))
+		}
+	}
+
+	// Stage 3, 12, 14, 15, 16: CLI --actions-json (506 entries, Docs/Skill/Preview metadata)
+	jsonCmd := exec.Command(binPath, "--actions-json", "--no-ansi")
+	jsonCmd.Dir = ws
+	jsonOut, err := jsonCmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Stage 12: --actions-json failed: %v\n%s", err, string(jsonOut))
+	}
+	var catPayload struct {
+		Actions []catalogActionInfo `json:"actions"`
+	}
+	if err := json.Unmarshal(jsonOut, &catPayload); err != nil {
+		t.Fatalf("Stage 12: unmarshal --actions-json: %v", err)
+	}
+	if len(catPayload.Actions) != 506 {
+		t.Fatalf("Stage 3/12: expected 506 actions (505 + syntheticPropagationProbe), got %d", len(catPayload.Actions))
+	}
+	var probeCat *catalogActionInfo
+	for i := range catPayload.Actions {
+		if catPayload.Actions[i].Name == "syntheticPropagationProbe" {
+			probeCat = &catPayload.Actions[i]
+			break
+		}
+	}
+	if probeCat == nil {
+		t.Fatal("Stage 12: syntheticPropagationProbe missing from --actions-json")
+	}
+	if probeCat.ShortcutIdentifier != "is.workflow.actions.synthetic.propagation.probe" ||
+		len(probeCat.Parameters) != 2 ||
+		!strings.Contains(probeCat.InsertionSnippet, "syntheticPropagationProbe(") {
+		t.Fatalf("Stage 12/16: unexpected catalog/preview metadata: %+v", probeCat)
+	}
+
+	// Stage 2, 6, 7, 8, 9, 10, 13: Write a small Go test inside the isolated workspace to verify
+	// in-process Parser table, schema.DefaultRegistry(), currentMobileActionCatalog() (iOS bridge),
+	// Legacy compile, V2 compile, Canonical Structural Plist comparison, and Decompiler round-trip!
+	probeTestCode := `package main
+
+import (
+	"encoding/base64"
+	"strings"
+	"testing"
+
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/shortcutcompare"
+	"howett.net/plist"
+)
+
+func unmarshalShortcutDoc(t *testing.T, b []byte) map[string]any {
+	t.Helper()
+	var doc map[string]any
+	if _, err := plist.Unmarshal(b, &doc); err != nil {
+		t.Fatalf("plist unmarshal: %v", err)
+	}
+	return doc
+}
+
+func TestIsolatedWorkspaceConsumers(t *testing.T) {
+	resetCompilerStateFully()
+	schema.ResetDefaultRegistry()
+	markBuiltins()
+	defineRawAction()
+	loadStandardActions()
+
+	// Stage 2: Parser action & enum tables
+	if actions["syntheticPropagationProbe"] == nil {
+		t.Fatal("Stage 2: syntheticPropagationProbe missing from parser actions map")
+	}
+	if len(enumerations["syntheticProbeMode"]) != 2 {
+		t.Fatalf("Stage 2: syntheticProbeMode enum missing or wrong size: %v", enumerations["syntheticProbeMode"])
+	}
+
+	// Stage 6: V2 Schema Registry
+	reg := schema.DefaultRegistry()
+	actSchema, ok := reg.LookupAction("syntheticPropagationProbe")
+	if !ok {
+		t.Fatal("Stage 6: syntheticPropagationProbe missing from schema.DefaultRegistry()")
+	}
+	if actSchema.AppleIdentifier != "is.workflow.actions.synthetic.propagation.probe" || len(actSchema.Parameters) != 2 {
+		t.Fatalf("Stage 6: unexpected schema entry: %+v", actSchema)
+	}
+
+	// Stage 13: Mobile / iOS Bridge Catalog (currentMobileActionCatalog)
+	mobCat := currentMobileActionCatalog()
+	if len(mobCat) != 506 {
+		t.Fatalf("Stage 13: expected 506 entries in currentMobileActionCatalog(), got %d", len(mobCat))
+	}
+	foundMob := false
+	for _, item := range mobCat {
+		if item.Name == "syntheticPropagationProbe" {
+			foundMob = true
+			if item.InsertionSnippet == "" || len(item.EmittedKeys) == 0 {
+				t.Fatalf("Stage 13/16: mobile/preview metadata incomplete: %+v", item)
+			}
+			break
+		}
+	}
+	if !foundMob {
+		t.Fatal("Stage 13: syntheticPropagationProbe missing from currentMobileActionCatalog()")
+	}
+
+	// Stage 7, 8, 9: Legacy Compile vs V2 Compile + Canonical Structural Comparison
+	legResp := compileForMobileMode("#define name ProbeLeg\nsyntheticPropagationProbe(\"Hello Probe\", \"Thorough\")\n", "ProbeLeg", "legacy", false)
+	if !legResp.OK {
+		t.Fatalf("Stage 7: Legacy compile failed: %s", legResp.Error)
+	}
+	v2Resp := compileForMobileMode("syntheticPropagationProbe(\"Hello Probe\", mode: \"Thorough\")\n", "ProbeV2", "v2", false)
+	if !v2Resp.OK {
+		t.Fatalf("Stage 8: V2 compile failed: %s", v2Resp.Error)
+	}
+	legPlist, _ := base64.StdEncoding.DecodeString(legResp.PlistBase64)
+	v2Plist, _ := base64.StdEncoding.DecodeString(v2Resp.PlistBase64)
+
+	cmpRes := shortcutcompare.CompareDocumentsNormalized(unmarshalShortcutDoc(t, legPlist), unmarshalShortcutDoc(t, v2Plist))
+	if !cmpRes.Equal {
+		t.Fatalf("Stage 9: Legacy vs V2 canonical plist mismatch: diffs=%+v", cmpRes.Differences)
+	}
+
+	// Stage 10: Decompiler -> Recompile Canonical Structural Round-Trip
+	decompResp := decompileForMobile(v2Plist, "ProbeDecomp")
+	if !decompResp.OK {
+		t.Fatalf("Stage 10: decompileForMobile failed: %s", decompResp.Error)
+	}
+	if !strings.Contains(decompResp.Source, "syntheticPropagationProbe(\"Hello Probe\", \"Thorough\")") {
+		t.Fatalf("Stage 10: expected native decompiled call, got:\n%s", decompResp.Source)
+	}
+	recompResp := compileForMobileMode(decompResp.Source, "ProbeRecomp", "legacy", false)
+	if !recompResp.OK {
+		t.Fatalf("Stage 10: recompile failed: %s", recompResp.Error)
+	}
+	recompPlist, _ := base64.StdEncoding.DecodeString(recompResp.PlistBase64)
+	rtCmp := shortcutcompare.CompareDocumentsNormalized(unmarshalShortcutDoc(t, v2Plist), unmarshalShortcutDoc(t, recompPlist))
+	if !rtCmp.Equal {
+		t.Fatalf("Stage 10: Decompile -> Recompile structural mismatch: diffs=%+v", rtCmp.Differences)
+	}
+}
+`
+	if err := os.WriteFile(filepath.Join(ws, "ssot_probe_verify_test.go"), []byte(probeTestCode), 0644); err != nil {
+		t.Fatalf("write ssot_probe_verify_test.go: %v", err)
+	}
+	goTestCmd := exec.Command("go", "test", "-run", "^TestIsolatedWorkspaceConsumers$", "-count=1", "-v", ".")
+	goTestCmd.Dir = ws
+	if out, err := goTestCmd.CombinedOutput(); err != nil {
+		t.Fatalf("TestIsolatedWorkspaceConsumers failed: %v\n%s", err, string(out))
+	}
+
+	// Stage 17: Pure+Pack Generator (`verify_or_generate_pack.py --generate --out-dir ... --p10-root <ws>`)
+	packOutDir := filepath.Join(ws, "generated_pack")
+	repoRoot, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	packScript := filepath.Join(repoRoot, "tools", "p10r3", "verify_or_generate_pack.py")
+	packCmd := exec.Command("python", packScript, "--generate", "--out-dir", packOutDir, "--p10-root", ws)
+	packCmd.Dir = repoRoot
+	if out, err := packCmd.CombinedOutput(); err != nil {
+		t.Fatalf("Stage 17: verify_or_generate_pack.py --generate failed: %v\n%s", err, string(out))
+	}
+	genBasicModuleBytes, err := os.ReadFile(filepath.Join(packOutDir, "modules", "basic.cherri"))
+	if err != nil {
+		t.Fatalf("Stage 17: read generated modules/basic.cherri: %v", err)
+	}
+	genBasicModule := string(genBasicModuleBytes)
+	if !strings.Contains(genBasicModule, "syntheticPropagationProbe") || !strings.Contains(genBasicModule, "syntheticProbeMode") {
+		t.Fatalf("Stage 17: generated Pack modules/basic.cherri missing syntheticPropagationProbe or syntheticProbeMode:\n%s", genBasicModule)
+	}
+
+	// --- PART D.4: Parameter Addition Propagation (add `text ?tag: 'WFSyntheticProbeTag'` to basic.cherri ONLY) ---
+	synthDeclV2 := `
+
+enum syntheticProbeMode {
+	'Fast',
+	'Thorough',
+}
+
+// [Doc]: [Synthetic Probe] Probe automatic SSoT propagation across all 17 consumers.
+action 'synthetic.propagation.probe' syntheticPropagationProbe(text prompt: 'WFSyntheticProbePrompt', syntheticProbeMode ?mode: 'WFSyntheticProbeMode' = "Fast", text ?tag: 'WFSyntheticProbeTag'): text {
+	"WFSyntheticProbeVersion": 1
+}
+`
+	if err := os.WriteFile(basicPath, append(origBasicBytes, []byte(synthDeclV2)...), 0644); err != nil {
+		t.Fatalf("write basic.cherri V2: %v", err)
+	}
+	genCmd2 := exec.Command("go", "run", "./tools/language-schema")
+	genCmd2.Dir = ws
+	if out, err := genCmd2.CombinedOutput(); err != nil {
+		t.Fatalf("D4: go run ./tools/language-schema after parameter addition failed: %v\n%s", err, string(out))
+	}
+
+	paramAddTestCode := `package main
+
+import (
+	"encoding/base64"
+	"strings"
+	"testing"
+
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/shortcutcompare"
+	"howett.net/plist"
+)
+
+func unmarshalShortcutDoc(t *testing.T, b []byte) map[string]any {
+	t.Helper()
+	var doc map[string]any
+	if _, err := plist.Unmarshal(b, &doc); err != nil {
+		t.Fatalf("plist unmarshal: %v", err)
+	}
+	return doc
+}
+
+func TestIsolatedParameterAdditionPropagation(t *testing.T) {
+	resetCompilerStateFully()
+	schema.ResetDefaultRegistry()
+	markBuiltins()
+	defineRawAction()
+	loadStandardActions()
+
+	v2Resp := compileForMobileMode("syntheticPropagationProbe(\"Hello Probe\", mode: \"Thorough\", tag: \"v42\")\n", "ProbeTagV2", "v2", false)
+	if !v2Resp.OK {
+		t.Fatalf("D4: V2 compile with new tag parameter failed: %s", v2Resp.Error)
+	}
+	v2Plist, _ := base64.StdEncoding.DecodeString(v2Resp.PlistBase64)
+	act := extractFirstActionForParamTest(t, v2Plist)
+	params, _ := act["WFWorkflowActionParameters"].(map[string]any)
+	if params["WFSyntheticProbeTag"] != "v42" {
+		t.Fatalf("D4: expected WFSyntheticProbeTag='v42', got %v", params["WFSyntheticProbeTag"])
+	}
+
+	decompResp := decompileForMobile(v2Plist, "ProbeTagDecomp")
+	if !decompResp.OK || !strings.Contains(decompResp.Source, "\"v42\"") {
+		t.Fatalf("D4: decompile did not preserve new tag parameter: %s", decompResp.Source)
+	}
+	recompResp := compileForMobileMode(decompResp.Source, "ProbeTagRecomp", "legacy", false)
+	if !recompResp.OK {
+		t.Fatalf("D4: recompile failed: %s", recompResp.Error)
+	}
+	recompPlist, _ := base64.StdEncoding.DecodeString(recompResp.PlistBase64)
+	cmp := shortcutcompare.CompareDocumentsNormalized(unmarshalShortcutDoc(t, v2Plist), unmarshalShortcutDoc(t, recompPlist))
+	if !cmp.Equal {
+		t.Fatalf("D4: canonical round-trip failed after parameter addition: diffs=%+v", cmp.Differences)
+	}
+}
+
+func extractFirstActionForParamTest(t *testing.T, plistBytes []byte) map[string]any {
+	var doc map[string]any
+	_, _ = plist.Unmarshal(plistBytes, &doc)
+	acts := doc["WFWorkflowActions"].([]any)
+	return acts[0].(map[string]any)
+}
+`
+
+	if err := os.WriteFile(filepath.Join(ws, "ssot_probe_verify_test.go"), []byte(paramAddTestCode), 0644); err != nil {
+		t.Fatalf("write ssot_probe_verify_test.go V2: %v", err)
+	}
+	goTestCmd2 := exec.Command("go", "test", "-run", "^TestIsolatedParameterAdditionPropagation$", "-count=1", "-v", ".")
+	goTestCmd2.Dir = ws
+	if out, err := goTestCmd2.CombinedOutput(); err != nil {
+		t.Fatalf("TestIsolatedParameterAdditionPropagation failed: %v\n%s", err, string(out))
+	}
+}
+
+// TestP10_SSoTNegativeDriftDetection (PART D.5) verifies that 10 distinct drift mutations across
+// .cherri declarations, generated_registry.go, facets, emitter ownership, and Pack modules
+// each fail closed deterministically.
+func TestP10_SSoTNegativeDriftDetection(t *testing.T) {
+	ws := copyIsolatedSSoTWorkspace(t)
+	basicPath := filepath.Join(ws, "actions", "basic.cherri")
+	genRegPath := filepath.Join(ws, "internal", "language", "schema", "generated_registry.go")
+
+	origBasic, err := os.ReadFile(basicPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	origGenReg, err := os.ReadFile(genRegPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	restoreWorkspace := func() {
+		_ = os.WriteFile(basicPath, origBasic, 0644)
+		_ = os.WriteFile(genRegPath, origGenReg, 0644)
+	}
+
+	// Build language-schema binary once in ws so subtests don't recompile tools/language-schema 11 times
+	schemaBin := filepath.Join(ws, "language-schema-bin")
+	if runtime.GOOS == "windows" {
+		schemaBin += ".exe"
+	}
+	buildSchemaCmd := exec.Command("go", "build", "-o", schemaBin, "./tools/language-schema")
+	buildSchemaCmd.Dir = ws
+	if bOut, bErr := buildSchemaCmd.CombinedOutput(); bErr != nil {
+		t.Fatalf("failed to build language-schema binary: %v\n%s", bErr, string(bOut))
+	}
+
+	// Cache baseline --actions-json output for subtests 5..8 that only mutate generated_registry.go
+	baseCatPath := filepath.Join(ws, "baseline-live-catalog.json")
+	dumpCatCmd := exec.Command("go", "run", ".", "--actions-json")
+	dumpCatCmd.Dir = ws
+	catBytes, catErr := dumpCatCmd.Output()
+	if catErr != nil {
+		t.Fatalf("failed to dump baseline --actions-json: %v", catErr)
+	}
+	if err := os.WriteFile(baseCatPath, catBytes, 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Baseline sanity check: clean isolated workspace MUST pass --verify-generated before any mutation
+	cleanCmd := exec.Command(schemaBin, "--catalog-file="+baseCatPath, "--verify-generated")
+	cleanCmd.Dir = ws
+	if cleanOut, cleanErr := cleanCmd.CombinedOutput(); cleanErr != nil {
+		t.Fatalf("clean isolated workspace failed --verify-generated before mutations: %v\n%s", cleanErr, string(cleanOut))
+	}
+
+	assertVerifyGeneratedFails := func(t *testing.T, label string, expectedSubstring string, useCachedCatalog bool) {
+		t.Helper()
+		args := []string{"--verify-generated"}
+		if useCachedCatalog {
+			args = []string{"--catalog-file=" + baseCatPath, "--verify-generated"}
+		}
+		cmd := exec.Command(schemaBin, args...)
+		cmd.Dir = ws
+		out, err := cmd.CombinedOutput()
+		outStr := string(out)
+		if err == nil {
+			t.Fatalf("%s: expected --verify-generated to fail closed, but it passed:\n%s", label, outStr)
+		}
+		if !strings.Contains(outStr, expectedSubstring) {
+			t.Fatalf("%s: expected failure output to contain %q (not an accidental build error), got:\n%s", label, expectedSubstring, outStr)
+		}
+	}
+
+	t.Run("1_Unregenerated_New_Action_In_Cherri_File", func(t *testing.T) {
+		defer restoreWorkspace()
+		mut := string(origBasic) + "\naction 'drift.one' driftActionOne(text x: 'WFX')\n"
+		_ = os.WriteFile(basicPath, []byte(mut), 0644)
+		assertVerifyGeneratedFails(t, "1_Unregenerated_New_Action_In_Cherri_File", "Drift detected!", false)
+	})
+
+	t.Run("2_Unregenerated_Parameter_Addition", func(t *testing.T) {
+		defer restoreWorkspace()
+		mut := strings.Replace(
+			string(origBasic),
+			"action comment(rawtext text: 'WFCommentActionText')",
+			"action comment(rawtext text: 'WFCommentActionText', text ?extraDrift: 'WFExtraDrift')",
+			1,
+		)
+		if mut == string(origBasic) {
+			t.Fatal("replacement failed to modify origBasic")
+		}
+		_ = os.WriteFile(basicPath, []byte(mut), 0644)
+		assertVerifyGeneratedFails(t, "2_Unregenerated_Parameter_Addition", "Drift detected!", false)
+	})
+
+	t.Run("3_Unregenerated_Enum_Modification", func(t *testing.T) {
+		defer restoreWorkspace()
+		mut := strings.Replace(
+			string(origBasic),
+			"'Items',",
+			"'Items',\n\t'TamperedEnumVariant',",
+			1,
+		)
+		if mut == string(origBasic) {
+			t.Fatal("replacement failed to modify origBasic")
+		}
+		_ = os.WriteFile(basicPath, []byte(mut), 0644)
+		assertVerifyGeneratedFails(t, "3_Unregenerated_Enum_Modification", "Drift detected!", false)
+	})
+
+	t.Run("4_Unregenerated_StaticParameters_Change", func(t *testing.T) {
+		defer restoreWorkspace()
+		mut := strings.Replace(
+			string(origBasic),
+			`"WFAlertActionCancelButtonShown": false`,
+			`"WFAlertActionCancelButtonShown": true`,
+			1,
+		)
+		if mut == string(origBasic) {
+			t.Fatal("replacement failed to modify origBasic")
+		}
+		_ = os.WriteFile(basicPath, []byte(mut), 0644)
+		assertVerifyGeneratedFails(t, "4_Unregenerated_StaticParameters_Change", "Drift detected!", false)
+	})
+
+	t.Run("5_Manual_Edit_To_Generated_Registry_WireKey", func(t *testing.T) {
+		defer restoreWorkspace()
+		mut := strings.Replace(string(origGenReg), `WireKey: "WFCommentActionText"`, `WireKey: "WFTamperedCommentKey"`, 1)
+		_ = os.WriteFile(genRegPath, []byte(mut), 0644)
+		assertVerifyGeneratedFails(t, "5_Manual_Edit_To_Generated_Registry_WireKey", "Drift detected!", true)
+	})
+
+	t.Run("6_Manual_Edit_To_Generated_Registry_AppleIdentifier", func(t *testing.T) {
+		defer restoreWorkspace()
+		mut := strings.Replace(
+			string(origGenReg),
+			`AppleIdentifier: "is.workflow.actions.comment"`,
+			`AppleIdentifier: "is.workflow.actions.tampered.comment"`,
+			1,
+		)
+		_ = os.WriteFile(genRegPath, []byte(mut), 0644)
+		assertVerifyGeneratedFails(t, "6_Manual_Edit_To_Generated_Registry_AppleIdentifier", "Drift detected!", true)
+	})
+
+	t.Run("7_Manual_Edit_To_Generated_Registry_AppIntentDescriptor", func(t *testing.T) {
+		defer restoreWorkspace()
+		mut := strings.Replace(
+			string(origGenReg),
+			`AppIntentIdentifier: "TTRCreateListAppIntent"`,
+			`AppIntentIdentifier: "TamperedCreateListAppIntent"`,
+			1,
+		)
+		_ = os.WriteFile(genRegPath, []byte(mut), 0644)
+		assertVerifyGeneratedFails(t, "7_Manual_Edit_To_Generated_Registry_AppIntentDescriptor", "Drift detected!", true)
+	})
+
+	t.Run("8_Manual_Edit_To_Generated_Registry_PlatformAvailability", func(t *testing.T) {
+		defer restoreWorkspace()
+		mut := strings.Replace(string(origGenReg), `MacOnly: true`, `MacOnly: false`, 1)
+		_ = os.WriteFile(genRegPath, []byte(mut), 0644)
+		assertVerifyGeneratedFails(t, "8_Manual_Edit_To_Generated_Registry_PlatformAvailability", "Drift detected!", true)
+	})
+
+	t.Run("9_Facet_Referencing_Removed_Primary_Parameter", func(t *testing.T) {
+		defer restoreWorkspace()
+		// Rename alert parameter 'alert' -> 'renamedAlert' in basic.cherri; validateFacets must fail closed!
+		mut := strings.Replace(
+			string(origBasic),
+			"action alert(text alert: 'WFAlertActionMessage'",
+			"action alert(text renamedAlert: 'WFAlertActionMessage'",
+			1,
+		)
+		_ = os.WriteFile(basicPath, []byte(mut), 0644)
+		assertVerifyGeneratedFails(t, "9_Facet_Referencing_Removed_Primary_Parameter", "Facet validation failed:", false)
+	})
+
+	t.Run("10_Pure_Pack_Generator_Drift_Against_Modified_Cherri_Source", func(t *testing.T) {
+		defer restoreWorkspace()
+		mut := string(origBasic) + "\naction 'drift.pack' driftPackAction(text x: 'WFX')\n"
+		_ = os.WriteFile(basicPath, []byte(mut), 0644)
+
+		repoRoot, err := os.Getwd()
+		if err != nil {
+			t.Fatal(err)
+		}
+		packScript := filepath.Join(repoRoot, "tools", "p10r3", "verify_or_generate_pack.py")
+		cmd := exec.Command("python", packScript, "--verify-generated", "--p10-root", ws)
+		cmd.Dir = repoRoot
+		out, err := cmd.CombinedOutput()
+		if err == nil {
+			t.Fatalf("10_Pure_Pack_Generator_Drift: expected verify_or_generate_pack.py --verify-generated to fail closed on drifted basic.cherri, but it passed:\n%s", string(out))
+		}
+	})
+}
+

@@ -1384,7 +1384,7 @@ func (r *Runner) runUpstream() {
 
 	// U02: Regenerate assembled schema deterministically
 	fp := r.reg.Fingerprint()
-	u02Passed := fp == "cd572454a8de7e16e6aff913a912e1a82e470baad7ad8f318f78abc6d5e90b68"
+	u02Passed := fp == "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46"
 	r.Record("U02", "upstream", "Regenerate assembled schema from original declarations and narrow facets", "unit+generation", []string{"unit", "generation"}, u02Passed, "PASSED", fmt.Sprintf("Schema fingerprint: %s (deterministic)", fp))
 
 	// U03: Simulate upstream parameter change

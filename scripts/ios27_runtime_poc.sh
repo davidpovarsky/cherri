@@ -144,14 +144,21 @@ sign_and_verify() {
     echo "Native shortcuts sign exit code: $sign_exit"
 
     if [ $sign_exit -ne 0 ] || [ ! -f "$signed_file" ]; then
-        echo "Native shortcuts sign failed or output missing. Attempting Cherri HubSign fallback..."
-        if [ "$compile_flag" = "--legacy" ]; then
-            ./cherri "$source_cherri" --legacy -s=anyone -d 2>&1 | tee -a artifacts/sign.log
+        if [ "${CHERRI_ALLOW_EXTERNAL_SIGNING:-0}" = "1" ]; then
+            echo "Native shortcuts sign failed or output missing. CHERRI_ALLOW_EXTERNAL_SIGNING=1 set; attempting Cherri HubSign fallback..."
+            if [ "$compile_flag" = "--legacy" ]; then
+                ./cherri "$source_cherri" --legacy -s=anyone -d 2>&1 | tee -a artifacts/sign.log
+            else
+                ./cherri "$source_cherri" -s=anyone -d 2>&1 | tee -a artifacts/sign.log
+            fi
+            local shortcut_name="$(basename "$source_cherri" .cherri).shortcut"
+            cp -f "tests/runtime_poc/$shortcut_name" "$signed_file" 2>/dev/null || true
         else
-            ./cherri "$source_cherri" -s=anyone -d 2>&1 | tee -a artifacts/sign.log
+            echo "Native shortcuts sign failed (exit=$sign_exit) and external HubSign is disabled by default (set CHERRI_ALLOW_EXTERNAL_SIGNING=1 only with explicit owner approval)."
+            take_failure_screenshot
+            echo "IOS27_SHORTCUTS_RUNTIME_POC=BLOCKED_SIGNING BLOCKER=NATIVE_SIGNING_UNAVAILABLE ($signed_file)"
+            exit 2
         fi
-        local shortcut_name="$(basename "$source_cherri" .cherri).shortcut"
-        cp -f "tests/runtime_poc/$shortcut_name" "$signed_file" 2>/dev/null || true
     fi
 
     if [ ! -f "$signed_file" ]; then

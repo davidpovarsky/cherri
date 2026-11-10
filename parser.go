@@ -1193,11 +1193,13 @@ func collectRepeat(identifier string) {
 		},
 	)
 
-	variables[repeatIndexIdentifier] = varValue{
-		variableType: "Variable",
-		valueType:    Integer,
-		value:        repeatIndexIdentifier,
-		repeatItem:   true,
+	if repeatIndexIdentifier != "_" {
+		variables[repeatIndexIdentifier] = varValue{
+			variableType: "Variable",
+			valueType:    Integer,
+			value:        repeatIndexIdentifier,
+			repeatItem:   true,
+		}
 	}
 
 	repeatIndexDepth++
@@ -1245,11 +1247,13 @@ func collectRepeatEach(identifier string) {
 		},
 	)
 
-	variables[repeatItemIdentifier] = varValue{
-		variableType: "Variable",
-		valueType:    String,
-		value:        repeatItemIdentifier,
-		repeatItem:   true,
+	if repeatItemIdentifier != "_" {
+		variables[repeatItemIdentifier] = varValue{
+			variableType: "Variable",
+			valueType:    String,
+			value:        repeatItemIdentifier,
+			repeatItem:   true,
+		}
 	}
 
 	repeatItemIndex++

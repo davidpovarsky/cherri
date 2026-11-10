@@ -1,16 +1,28 @@
 {
-  "schemaVersion": "1.0",
-  "timestamp": "2026-11-09T21:04:06.329333+00:00",
+  "schemaVersion": "2.0",
+  "timestamp": "2026-11-09T23:50:33.683811+00:00",
   "branch": "agent/cherri-p10-apple-actions-coverage",
-  "sourceCommit": "55d7800dc01cd52ca3d6a5a17b3159ffe5a28089",
+  "sourceCommit": "50c6442b0b5ef1c9fa126b1eae14fc1b1ace9916",
+  "inputDependencyFingerprint": "b007acdb3b633d9460f6ba90a68e309901aead2d85cd9848cc85fab075cba43c",
   "upstreamBaselineCommit": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
   "purePackCommit": "141b9cc96cf1df3f9d1593548dc49ae8a46a256a",
   "counts": {
     "appleRuntimeDiscoveredTotal": 2396,
     "appleEligibleUserFacingTotal": 1527,
+    "appleEligibleBuiltinTotal": 487,
+    "appleEligibleAppIntentTotal": 1040,
     "appleExcludedInternalOrNonRunnableTotal": 869,
     "appleCoveredUniqueIdentifiers": 390,
+    "appleCoveredVerifiedIdentifiers": 0,
+    "appleCoveredPartialIdentifiers": 390,
     "appleUncoveredEligibleIdentifiers": 1137,
+    "appleNewNativeActionIdentifiers": 97,
+    "appleMissingAppIntentDescriptorIdentifiers": 1040,
+    "appleDeferredNoEvidenceIdentifiers": 86,
+    "appleExcludedHiddenInternalIdentifiers": 131,
+    "appleExcludedConfigOnlyIdentifiers": 29,
+    "appleExcludedNonRunnableIdentifiers": 596,
+    "appleExcludedThirdPartyDependencyIdentifiers": 27,
     "cherriCatalogTotalEntries": 505,
     "cherriCallableActions": 497,
     "cherriCompilerConstructs": 8,
@@ -20,6 +32,16 @@
     "cherriPackDeclarativeAddedOrAliasedEntries": 46,
     "cherriP10OnlyGoRequiredEntries": 2,
     "cherriRequiresAppIntentDescriptorEntries": 12
+  },
+  "ledgerStatusBreakdown": {
+    "DEFERRED_NO_EVIDENCE": 86,
+    "EXCLUDED_HIDDEN_INTERNAL": 131,
+    "COVERED_PARTIAL": 390,
+    "MISSING_APP_INTENT_DESCRIPTOR": 1040,
+    "EXCLUDED_CONFIG_ONLY": 29,
+    "EXCLUDED_NONRUNNABLE": 596,
+    "NEW_NATIVE_ACTION": 97,
+    "EXCLUDED_THIRD_PARTY_DEPENDENCY": 27
   },
   "goOnly15Summary": {
     "total": 15,
@@ -47,7 +69,7 @@
   },
   "externalBlockers": {
     "physicalIPadOS27": "BLOCKED_DEVICE",
-    "liveAppleServerSigning": "BLOCKED_EXTERNAL_SIGNING",
+    "liveAppleServerSigning": "BLOCKED_SIGNING",
     "authoringPatternsZip_1219604109827689": "BLOCKED_MISSING_ARTIFACT",
     "ownerReleaseGate_1219611682706483": "OWNER_APPROVAL_REQUIRED"
   }
