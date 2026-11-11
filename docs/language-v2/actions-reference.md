@@ -6,6 +6,7 @@
 **Total Actions:** 505  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
+All 497 callable action definitions in this 505-entry catalog (alongside the 8 compiler constructs) are derived from `actions/*.cherri` and `actions_std.go`, exposed identically across CLI (`--actions-json`), `schema.DefaultRegistry()`, and the iOS/iPadOS Action Palette (`currentMobileActionCatalog()`), and indexed deterministically in `DefaultReverseActionRegistry()` for `--fidelity=hybrid` readable import in both Legacy and Cherri v2 modes.
 
 ## Table of Modules
 

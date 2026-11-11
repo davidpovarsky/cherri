@@ -164,9 +164,23 @@ func init() {
 	})
 	args.Register(args.Argument{
 		Name:         "fidelity",
-		Description:  "Import fidelity mode ('lossless' or 'semantic').",
+		Description:  "Import fidelity mode ('lossless', 'hybrid', or 'semantic').",
 		DefaultValue: "",
 		ExpectsValue: true,
-		Values:       []string{"lossless", "semantic"},
+		Values:       []string{"lossless", "hybrid", "semantic"},
+	})
+	args.Register(args.Argument{
+		Name:         "import-fidelity",
+		Description:  "Import fidelity mode ('lossless', 'hybrid', or 'semantic').",
+		DefaultValue: "",
+		ExpectsValue: true,
+		Values:       []string{"lossless", "hybrid", "semantic"},
+	})
+	args.Register(args.Argument{
+		Name:         "mode",
+		Description:  "Language mode ('legacy' or 'v2').",
+		DefaultValue: "",
+		ExpectsValue: true,
+		Values:       []string{"legacy", "v2"},
 	})
 }

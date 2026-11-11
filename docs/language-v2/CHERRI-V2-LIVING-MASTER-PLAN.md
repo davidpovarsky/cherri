@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.3.0 | **Baseline verified:** 2026-10-15 (Asia/Jerusalem) | **Status:** P0-P9 COMPLETED_VERIFIED; 71/94 LOCAL ACCEPTANCE PASSED (0 failed; 22 simulator/runtime obligations proved via CI; AI01 BLOCKED_EXTERNAL); Live Cherri Cloud Relay & iOS 27 Simulator Runtime Assertion PROVEN (Runs 38481419887 & 38481419846) on agent/cherri-v2-product-completion.
+> **Plan version:** 2.4.0 | **Baseline verified:** 2026-11-11 (Asia/Jerusalem) | **Status:** P0-P9 COMPLETED_VERIFIED; P10R8 (38/38 Lossless Fidelity) & P10R9 (Unified Engine, Reverse Action Registry & 38/38 Hybrid Readable Import in Legacy + V2, HYB01-HYB30) COMPLETED_VERIFIED on `agent/cherri-p10r9-unified-engine-hybrid-import-20261111`; 71/94 LOCAL ACCEPTANCE PASSED (0 failed; 22 simulator/runtime obligations proved via CI; AI01 BLOCKED_EXTERNAL; 38-shortcut physical device runtime 0/38 BLOCKED_DEVICE).
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -822,6 +822,23 @@ Next smallest independently verifiable batch:
   2. Safari/Web reader and tab actions.
   3. Notes rich-text and folder manipulation native actions.
   4. Photos album search and asset management native actions.
+
+---
+
+## 12. Milestone P10R8 & P10R9 — Lossless Native Fidelity, Unified Forward/Reverse Engine & Hybrid Readable Import
+
+- [x] **P10R8: Complete Native Lossless Shortcut Fidelity (`38/38` in Legacy + V2)**
+  - Implemented `rawPlist(...)`, `#workflowheader`, and `#declare` in Legacy and `native.workflow(native.plist(...), exact: true)` + `native.action(..., parameters: native.plist(...))` in Cherri v2.
+  - Verified `38/38` real-world corpus shortcuts (`27,652` actions, `totalActionDelta: 0`) pass `lossless` import and unsigned compilation in both `legacy` and `v2` modes against `tools/p10r7/independent_fidelity_oracle.py`.
+- [x] **P10R9: Unified Shared Engine, Deterministic Reverse Action Registry & Hybrid Readable Import (`--fidelity=hybrid`)**
+  - Unified all Shortcut decoding onto `DecodeNativeShortcutDocument(b []byte)` (`import_fidelity.go`) with strict container/action validation (`HYB18`–`HYB21`), control-flow stack validation, and UUID dependency graph extraction.
+  - Built `DefaultReverseActionRegistry()` (`reverse_action_registry.go`) from `EnsureCanonicalStandardActions()` (`496` standard actions across `381` unique Apple identifiers: `303` single-variant, `78` multi-variant), populated `includeCategory` across all standard actions, and eliminated Go map iteration non-determinism in `decompile.go:matchAction` (`HYB07`).
+  - Added `ActionEmissionContext` and `EvaluateActionEmission` (`action.go`) as the shared emission bottleneck for Legacy and V2, and hardened `CanonicalBackendSession.Finalize()` (`language_backend_adapter.go`) to switch to `plist.BinaryFormat` when strings contain XML-unsafe control characters (`\x0b`, NUL; `HYB16`).
+  - Implemented `PlanHybridImport`, `RenderHybridLegacySource`, and `RenderHybridV2Source` (`hybrid_import.go`), verifying candidate natural actions by compiling in isolation in both Legacy and V2 and checking full-workflow `plistValuesStrictlyEqual` before returning.
+  - Verified `38/38` corpus shortcuts (`27,652` actions) pass both `lossless` and `hybrid` import + unsigned compile in both `legacy` and `v2` modes (`1,463` `NATURAL_VERIFIED` actions across `28` callables; `26,188` `EXACT_NATIVE` fallbacks; `1` `SOURCE_INVALID` at `035:723`).
+  - Passed all `30` adversarial tests (`TestHYB01`–`TestHYB30`), dual SSoT propagation (`TestP10R9_SSoTPropagation_DeclarativeAndGoHandler`), and `1,000` sequential mixed compilations (`TestP10R9_SequentialMixedCompilesIsolation`).
+  - Documented architecture and audit matrices in `docs/architecture/unified-import-and-compiler-contract.md` and `docs/apple-runtime/p10r9/`.
+
 
 
 

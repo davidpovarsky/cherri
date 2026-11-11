@@ -1,0 +1,719 @@
+{
+  "phase": "P10R9-Phase0-Baseline",
+  "generatedAtUtc": "2026-11-11T17:56:22.316924+00:00",
+  "baseCommit": "bbf2fc922ffb7e810d862e3f6ab94b9b871577c4",
+  "upstreamMergeBase": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+  "baselineBinarySha256": "c47951dfebd79c591f6a0511ad4cf055b9510c512372261ebeefe8eeec28c91f",
+  "totalSpecimens": 38,
+  "totalSourceActions": 27652,
+  "losslessLegacyPassCount": 38,
+  "losslessV2PassCount": 38,
+  "losslessFullTreeEqualCount": 38,
+  "validControlFlowSpecimens": 37,
+  "sourceInvalidSpecimens": [
+    "035"
+  ],
+  "canonicalCatalogActionCount": 505,
+  "globalActionTaxonomy": {
+    "UNREPRESENTABLE_PARAM": 15113,
+    "CONTROL_REGION": 10570,
+    "KNOWN_DISAMBIGUATED": 1589,
+    "AMBIGUOUS_VARIANT": 229,
+    "THIRD_PARTY_NO_CANONICAL_DEF": 137,
+    "UNKNOWN_NATIVE_ID": 13,
+    "SOURCE_INVALID": 1
+  },
+  "benchmarks": {
+    "007": {
+      "legacy": {
+        "importDurationMs": 77.15,
+        "compileDurationMs": 153.37,
+        "sourceBytes": 538357,
+        "compiledPlistBytes": 537299,
+        "compiledBinaryPlistBytes": 531945
+      },
+      "v2": {
+        "importDurationMs": 58.69,
+        "compileDurationMs": 68.92,
+        "sourceBytes": 538585,
+        "compiledPlistBytes": 539046,
+        "compiledBinaryPlistBytes": 531945
+      }
+    },
+    "012": {
+      "legacy": {
+        "importDurationMs": 312.22,
+        "compileDurationMs": 657.4,
+        "sourceBytes": 1936932,
+        "compiledPlistBytes": 1672113,
+        "compiledBinaryPlistBytes": 405698
+      },
+      "v2": {
+        "importDurationMs": 274.65,
+        "compileDurationMs": 305.24,
+        "sourceBytes": 1986440,
+        "compiledPlistBytes": 2272759,
+        "compiledBinaryPlistBytes": 405698
+      }
+    },
+    "027": {
+      "legacy": {
+        "importDurationMs": 257.11,
+        "compileDurationMs": 508.15,
+        "sourceBytes": 1793757,
+        "compiledPlistBytes": 1536823,
+        "compiledBinaryPlistBytes": 328270
+      },
+      "v2": {
+        "importDurationMs": 242.93,
+        "compileDurationMs": 261.62,
+        "sourceBytes": 1841745,
+        "compiledPlistBytes": 1981220,
+        "compiledBinaryPlistBytes": 328270
+      }
+    },
+    "032": {
+      "legacy": {
+        "importDurationMs": 52.33,
+        "compileDurationMs": 117.9,
+        "sourceBytes": 333652,
+        "compiledPlistBytes": 327899,
+        "compiledBinaryPlistBytes": 640185
+      },
+      "v2": {
+        "importDurationMs": 48.65,
+        "compileDurationMs": 55.49,
+        "sourceBytes": 333820,
+        "compiledPlistBytes": 329004,
+        "compiledBinaryPlistBytes": 640185
+      }
+    },
+    "035": {
+      "legacy": {
+        "importDurationMs": 573.87,
+        "compileDurationMs": 2258.52,
+        "sourceBytes": 7404728,
+        "compiledPlistBytes": 7174058,
+        "compiledBinaryPlistBytes": 5892051
+      },
+      "v2": {
+        "importDurationMs": 603.09,
+        "compileDurationMs": 630.86,
+        "sourceBytes": 7447856,
+        "compiledPlistBytes": 7910481,
+        "compiledBinaryPlistBytes": 5892051
+      }
+    }
+  },
+  "specimens": [
+    {
+      "specimenId": "001",
+      "sourceSha256": "7426c942812251a1d6c76c52dd521dccf8c06053b4b2b78d7e5579e3d50e9235",
+      "totalActions": 162,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 162,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 116,
+        "CONTROL_REGION": 42,
+        "KNOWN_DISAMBIGUATED": 4
+      }
+    },
+    {
+      "specimenId": "002",
+      "sourceSha256": "50ab2b29c0441f6a56bd4c7adcd541744bd6cad7c9f7cbca57488dfa7ee120fe",
+      "totalActions": 205,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 205,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 108,
+        "KNOWN_DISAMBIGUATED": 10,
+        "CONTROL_REGION": 85,
+        "AMBIGUOUS_VARIANT": 2
+      }
+    },
+    {
+      "specimenId": "003",
+      "sourceSha256": "4df4df2ba9d0d22368dbf53a4ec9aa73218075f8ca0f3e9bd0a57071f381c814",
+      "totalActions": 202,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 202,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 24,
+        "UNREPRESENTABLE_PARAM": 132,
+        "CONTROL_REGION": 46
+      }
+    },
+    {
+      "specimenId": "004",
+      "sourceSha256": "caa6971beb2df52290bcd103ccd2f89dbd733d0069be7a7f7b0e6823d156fc47",
+      "totalActions": 247,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 247,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 130,
+        "CONTROL_REGION": 100,
+        "KNOWN_DISAMBIGUATED": 13,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 3,
+        "UNKNOWN_NATIVE_ID": 1
+      }
+    },
+    {
+      "specimenId": "005",
+      "sourceSha256": "f71237beddb0d02d994ab376e8eacb855d9576267586daaf75f37e51f68417a9",
+      "totalActions": 230,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 230,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 123,
+        "CONTROL_REGION": 81,
+        "KNOWN_DISAMBIGUATED": 13,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 13
+      }
+    },
+    {
+      "specimenId": "006",
+      "sourceSha256": "2d2c2842d5701933c8ed4d72c6bf792b1d70a9e2296fcf24f9e07c5224f16b50",
+      "totalActions": 43,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 43,
+      "candidateTaxonomy": {
+        "CONTROL_REGION": 13,
+        "UNREPRESENTABLE_PARAM": 28,
+        "KNOWN_DISAMBIGUATED": 2
+      }
+    },
+    {
+      "specimenId": "007",
+      "sourceSha256": "fbffd74de924b13cd5665e66d31db9f94f9f681ae042874264429ad2f8c2da66",
+      "totalActions": 10,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 10,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 10
+      }
+    },
+    {
+      "specimenId": "008",
+      "sourceSha256": "4da552ed0d240819d9f64efe5255251a8f425728465dc6f4e8f099ca8d2925c0",
+      "totalActions": 449,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 449,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 35,
+        "UNREPRESENTABLE_PARAM": 221,
+        "AMBIGUOUS_VARIANT": 4,
+        "CONTROL_REGION": 189
+      }
+    },
+    {
+      "specimenId": "009",
+      "sourceSha256": "811f4b3c4ce6edb9935224afc4e89d7a1e946d2c4ca47098c75fcd99128faa08",
+      "totalActions": 449,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 449,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 36,
+        "UNREPRESENTABLE_PARAM": 220,
+        "AMBIGUOUS_VARIANT": 4,
+        "CONTROL_REGION": 189
+      }
+    },
+    {
+      "specimenId": "010",
+      "sourceSha256": "6a56a1b117486d8aa65bd527e26f1fadb3676404443ffc694acfeca60d6888a9",
+      "totalActions": 59,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 59,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 5,
+        "UNREPRESENTABLE_PARAM": 49,
+        "CONTROL_REGION": 5
+      }
+    },
+    {
+      "specimenId": "011",
+      "sourceSha256": "bd5c373099314369672389c412869d4cc5830f7f1c95f993982378b0ec40a8e6",
+      "totalActions": 169,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 169,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 9,
+        "UNREPRESENTABLE_PARAM": 80,
+        "CONTROL_REGION": 79,
+        "AMBIGUOUS_VARIANT": 1
+      }
+    },
+    {
+      "specimenId": "012",
+      "sourceSha256": "05da6dc5a49a3e9a325c1ee8beb2968c222843fe5225f78fd3404c11c6832f33",
+      "totalActions": 2474,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 2474,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 104,
+        "UNREPRESENTABLE_PARAM": 1343,
+        "CONTROL_REGION": 1020,
+        "AMBIGUOUS_VARIANT": 4,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 3
+      }
+    },
+    {
+      "specimenId": "013",
+      "sourceSha256": "b24f392474beb6d7d331c39d2300348efcab1046fe52d877fc4443610a74fcf6",
+      "totalActions": 73,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 73,
+      "candidateTaxonomy": {
+        "CONTROL_REGION": 25,
+        "UNREPRESENTABLE_PARAM": 44,
+        "KNOWN_DISAMBIGUATED": 4
+      }
+    },
+    {
+      "specimenId": "014",
+      "sourceSha256": "077443ad1d63df294a624cc94bf9c63194eaf852b97942aa0915328bbeb3d8e9",
+      "totalActions": 519,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 519,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 33,
+        "UNREPRESENTABLE_PARAM": 327,
+        "CONTROL_REGION": 158,
+        "AMBIGUOUS_VARIANT": 1
+      }
+    },
+    {
+      "specimenId": "015",
+      "sourceSha256": "debe14d11dd8aed7c15eecd86cadc1018ec2e9cff8c8ed0403c68f7a0cd0722d",
+      "totalActions": 49,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 49,
+      "candidateTaxonomy": {
+        "CONTROL_REGION": 17,
+        "UNREPRESENTABLE_PARAM": 30,
+        "KNOWN_DISAMBIGUATED": 2
+      }
+    },
+    {
+      "specimenId": "016",
+      "sourceSha256": "be6a8b54fc7ba44d51b31a7ad81a216754e19c44a3cc2d1fb9dbf1aaf88d94c1",
+      "totalActions": 850,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 850,
+      "candidateTaxonomy": {
+        "UNKNOWN_NATIVE_ID": 1,
+        "KNOWN_DISAMBIGUATED": 108,
+        "UNREPRESENTABLE_PARAM": 427,
+        "CONTROL_REGION": 314
+      }
+    },
+    {
+      "specimenId": "017",
+      "sourceSha256": "d86b2b7df2394cf1f3c0dd67c1cc283cc44f949f07ff5c5f52c96541f42c93b2",
+      "totalActions": 8,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 8,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 8
+      }
+    },
+    {
+      "specimenId": "018",
+      "sourceSha256": "685809064a9482efcc91eae167fd24fcbd39e42aff0382accf416b43d42b36c5",
+      "totalActions": 2683,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 2683,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 140,
+        "UNREPRESENTABLE_PARAM": 1377,
+        "CONTROL_REGION": 1116,
+        "AMBIGUOUS_VARIANT": 49,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1
+      }
+    },
+    {
+      "specimenId": "019",
+      "sourceSha256": "9cb8cf7d9e738c2059317169ee0cc8d92d5a410981bb5887dd3506193e47f0ce",
+      "totalActions": 263,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 263,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 11,
+        "UNREPRESENTABLE_PARAM": 150,
+        "CONTROL_REGION": 99,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1,
+        "AMBIGUOUS_VARIANT": 2
+      }
+    },
+    {
+      "specimenId": "020",
+      "sourceSha256": "394397e1fdbb0708972f48122ad42ba8279fa7f955b0483956781fa04c122b11",
+      "totalActions": 161,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 161,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 11,
+        "UNREPRESENTABLE_PARAM": 62,
+        "CONTROL_REGION": 82,
+        "AMBIGUOUS_VARIANT": 6
+      }
+    },
+    {
+      "specimenId": "021",
+      "sourceSha256": "e875a09695af1f6a0ef32ed69b01d32b070c60dc718b3d71bc2d91ff30ad10cd",
+      "totalActions": 2683,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 2683,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 140,
+        "UNREPRESENTABLE_PARAM": 1377,
+        "CONTROL_REGION": 1116,
+        "AMBIGUOUS_VARIANT": 49,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1
+      }
+    },
+    {
+      "specimenId": "022",
+      "sourceSha256": "cbeb2372bebeb9d05e2e080a369a5814089f676d60a1f5a86dc1283bdcd7fcc4",
+      "totalActions": 1831,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 1831,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 81,
+        "UNREPRESENTABLE_PARAM": 1165,
+        "CONTROL_REGION": 583,
+        "UNKNOWN_NATIVE_ID": 1,
+        "AMBIGUOUS_VARIANT": 1
+      }
+    },
+    {
+      "specimenId": "023",
+      "sourceSha256": "89105b9579c31541f9149ec1ddf3e8453e0fcc27a74711b7a25d4e0c05c0f7e9",
+      "totalActions": 507,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 507,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 40,
+        "UNREPRESENTABLE_PARAM": 307,
+        "CONTROL_REGION": 158,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1,
+        "AMBIGUOUS_VARIANT": 1
+      }
+    },
+    {
+      "specimenId": "024",
+      "sourceSha256": "b04f16bb90e796ae2200d93801ad173b973dd63b5dbdbac981b7cc49e1a218a3",
+      "totalActions": 850,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 850,
+      "candidateTaxonomy": {
+        "UNKNOWN_NATIVE_ID": 1,
+        "KNOWN_DISAMBIGUATED": 119,
+        "UNREPRESENTABLE_PARAM": 395,
+        "CONTROL_REGION": 314,
+        "AMBIGUOUS_VARIANT": 21
+      }
+    },
+    {
+      "specimenId": "025",
+      "sourceSha256": "48bb269bb5d456b3686223851a7706d6b8da394d1860d8a9ac2f9c1209681948",
+      "totalActions": 2728,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 2728,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 110,
+        "UNREPRESENTABLE_PARAM": 1471,
+        "CONTROL_REGION": 1146,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1
+      }
+    },
+    {
+      "specimenId": "026",
+      "sourceSha256": "55d6da55dbbd59d498347e0f4247946ecd6f82c6c3785ef8e4ccd7215a272e07",
+      "totalActions": 180,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 180,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 119,
+        "CONTROL_REGION": 59,
+        "KNOWN_DISAMBIGUATED": 2
+      }
+    },
+    {
+      "specimenId": "027",
+      "sourceSha256": "de0996ec0ee7d9fd2f7a4210f08895101e4ee8312450448c52131996f26aa503",
+      "totalActions": 2398,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 2398,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 137,
+        "UNREPRESENTABLE_PARAM": 1130,
+        "CONTROL_REGION": 1014,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 100,
+        "AMBIGUOUS_VARIANT": 12,
+        "UNKNOWN_NATIVE_ID": 5
+      }
+    },
+    {
+      "specimenId": "028",
+      "sourceSha256": "8da295e3f64c117d2dfb31c1c877dc807f063f4593baf8d51fef88e289e704f9",
+      "totalActions": 522,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 522,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 5,
+        "UNREPRESENTABLE_PARAM": 350,
+        "CONTROL_REGION": 166,
+        "AMBIGUOUS_VARIANT": 1
+      }
+    },
+    {
+      "specimenId": "029",
+      "sourceSha256": "c3922ee08e09d485614185e53de3118fc074124a173d73b74352bf941ff00a08",
+      "totalActions": 76,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 76,
+      "candidateTaxonomy": {
+        "CONTROL_REGION": 25,
+        "UNREPRESENTABLE_PARAM": 47,
+        "KNOWN_DISAMBIGUATED": 4
+      }
+    },
+    {
+      "specimenId": "030",
+      "sourceSha256": "039da6c2141f96909d25806a8f92438e7f85efc9950c027c35204b7e9e71251e",
+      "totalActions": 850,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 850,
+      "candidateTaxonomy": {
+        "UNKNOWN_NATIVE_ID": 1,
+        "KNOWN_DISAMBIGUATED": 119,
+        "UNREPRESENTABLE_PARAM": 395,
+        "CONTROL_REGION": 314,
+        "AMBIGUOUS_VARIANT": 21
+      }
+    },
+    {
+      "specimenId": "031",
+      "sourceSha256": "a831360158048feed8296772c6abddd70a8b186eba32b24db903a0c2f183dd81",
+      "totalActions": 957,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 957,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 106,
+        "UNREPRESENTABLE_PARAM": 467,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 6,
+        "CONTROL_REGION": 351,
+        "AMBIGUOUS_VARIANT": 27
+      }
+    },
+    {
+      "specimenId": "032",
+      "sourceSha256": "d6d9f24bbbe43615b1968acd493da6796a075863d4123967c8b71bf35df14764",
+      "totalActions": 7,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 7,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 2,
+        "UNREPRESENTABLE_PARAM": 5
+      }
+    },
+    {
+      "specimenId": "033",
+      "sourceSha256": "8da295e3f64c117d2dfb31c1c877dc807f063f4593baf8d51fef88e289e704f9",
+      "totalActions": 522,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 522,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 5,
+        "UNREPRESENTABLE_PARAM": 350,
+        "CONTROL_REGION": 166,
+        "AMBIGUOUS_VARIANT": 1
+      }
+    },
+    {
+      "specimenId": "034",
+      "sourceSha256": "18954a857062ad6a1eeaff305a425fb93d10fccfeb9416936f0c9db5dacb9dfd",
+      "totalActions": 521,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 521,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 273,
+        "CONTROL_REGION": 218,
+        "KNOWN_DISAMBIGUATED": 25,
+        "AMBIGUOUS_VARIANT": 4,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1
+      }
+    },
+    {
+      "specimenId": "035",
+      "sourceSha256": "c44b4fe49258c34d0277b21f45690174290bc39dd9aba0e02d1147ab4e120578",
+      "totalActions": 2155,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 2155,
+      "candidateTaxonomy": {
+        "KNOWN_DISAMBIGUATED": 85,
+        "UNREPRESENTABLE_PARAM": 1407,
+        "CONTROL_REGION": 645,
+        "AMBIGUOUS_VARIANT": 12,
+        "SOURCE_INVALID": 1,
+        "UNKNOWN_NATIVE_ID": 3,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 2
+      }
+    },
+    {
+      "specimenId": "036",
+      "sourceSha256": "d39e20461416418598e8d01cb1b6357169f41e1a0f64d9dabfe922374b267594",
+      "totalActions": 521,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 521,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 351,
+        "CONTROL_REGION": 157,
+        "KNOWN_DISAMBIGUATED": 11,
+        "AMBIGUOUS_VARIANT": 2
+      }
+    },
+    {
+      "specimenId": "037",
+      "sourceSha256": "1840ac8246b962503115a6b1710a1895af5fdaa54f6d583242489322b7d08d60",
+      "totalActions": 829,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 829,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 406,
+        "CONTROL_REGION": 393,
+        "KNOWN_DISAMBIGUATED": 24,
+        "AMBIGUOUS_VARIANT": 2,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 4
+      }
+    },
+    {
+      "specimenId": "038",
+      "sourceSha256": "db6bb550cb02e5e46dc27078b8aa053b809e20f7c18cfcecef6482a46ff240a3",
+      "totalActions": 210,
+      "losslessLegacyCompilePass": true,
+      "losslessV2CompilePass": true,
+      "losslessFullTreeEqual": true,
+      "preP10R9HybridNaturalCount": 0,
+      "preP10R9ExactFallbackCount": 210,
+      "candidateTaxonomy": {
+        "UNREPRESENTABLE_PARAM": 113,
+        "KNOWN_DISAMBIGUATED": 10,
+        "CONTROL_REGION": 85,
+        "AMBIGUOUS_VARIANT": 2
+      }
+    }
+  ]
+}

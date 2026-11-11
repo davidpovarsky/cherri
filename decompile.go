@@ -2957,7 +2957,13 @@ func processRawParameters(params map[string]any) map[string]any {
 }
 
 func matchAction(action *ShortcutAction) (name string, definition actionDefinition) {
-	for call, def := range actions {
+	sortedCalls := make([]string, 0, len(actions))
+	for call := range actions {
+		sortedCalls = append(sortedCalls, call)
+	}
+	sort.Strings(sortedCalls)
+	for _, call := range sortedCalls {
+		def := actions[call]
 		var identifier = strings.ToLower(call)
 		if def.identifier != "" {
 			identifier = def.identifier

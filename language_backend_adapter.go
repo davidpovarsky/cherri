@@ -909,8 +909,14 @@ func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
 			!s.rawWorkflowExact,
 		)
 		var buf bytes.Buffer
-		enc := plist.NewEncoder(&buf)
-		enc.Indent("\t")
+		format := plist.XMLFormat
+		if plistValueHasXMLUnsafeStringChar(merged) {
+			format = plist.BinaryFormat
+		}
+		enc := plist.NewEncoderForFormat(&buf, format)
+		if format == plist.XMLFormat {
+			enc.Indent("\t")
+		}
 		if err := enc.Encode(merged); err != nil {
 			return nil, fmt.Errorf("plist encoding error: %w", err)
 		}
@@ -931,4 +937,32 @@ func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
 		return nil, fmt.Errorf("plist encoding error: %w", err)
 	}
 	return buf.Bytes(), nil
+}
+
+func plistValueHasXMLUnsafeStringChar(v any) bool {
+	switch x := v.(type) {
+	case string:
+		for _, r := range x {
+			if r < 0x20 && r != '\n' && r != '\r' && r != '\t' {
+				return true
+			}
+		}
+		return false
+	case map[string]any:
+		for k, val := range x {
+			if plistValueHasXMLUnsafeStringChar(k) || plistValueHasXMLUnsafeStringChar(val) {
+				return true
+			}
+		}
+		return false
+	case []any:
+		for _, item := range x {
+			if plistValueHasXMLUnsafeStringChar(item) {
+				return true
+			}
+		}
+		return false
+	default:
+		return false
+	}
 }

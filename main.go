@@ -116,12 +116,16 @@ func main() {
 
 	if args.Using("import") && args.Value("import") != "" {
 		mode := "v2"
-		if args.Using("legacy") || args.Value("mode") == "legacy" {
+		if args.Using("legacy") || strings.EqualFold(args.Value("mode"), "legacy") {
 			mode = "legacy"
+		} else if args.Using("mode") && args.Value("mode") != "" {
+			mode = args.Value("mode")
 		}
 		fidelity := "semantic"
 		if args.Using("fidelity") && args.Value("fidelity") != "" {
 			fidelity = args.Value("fidelity")
+		} else if args.Using("import-fidelity") && args.Value("import-fidelity") != "" {
+			fidelity = args.Value("import-fidelity")
 		}
 		var out string
 		if args.Using("output") {

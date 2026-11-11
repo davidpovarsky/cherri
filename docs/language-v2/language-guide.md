@@ -276,3 +276,28 @@ The migration tool:
 2. Strips legacy `#include` statements
 3. Converts string interpolation `"Count {count}"` to `f"Count {count}"`
 4. Formats code canonically.
+
+---
+
+## 11. Importing Shortcuts (`--fidelity=lossless|hybrid|semantic`)
+
+Use `cherri import` (or `--import=...`) to import an unsigned `.shortcut`, `.plist`, or `.json` file (or iCloud link) into Cherri v2 (`--mode=v2`, default) or Legacy (`--mode=legacy`):
+
+```bash
+# Lossless import (default): full-workflow native escape preserving 100% of plist structure
+cherri import MyShortcut.plist --fidelity=lossless --mode=v2
+
+# Hybrid readable import: emits natural Cherri calls where 100% wire-equivalent and falls back per-action to native.action(...) / rawAction(...)
+cherri import MyShortcut.plist --fidelity=hybrid --mode=v2
+cherri import MyShortcut.plist --fidelity=hybrid --mode=legacy
+
+# Semantic import: best-effort human-oriented decompilation + strict V2 AST migration
+cherri import MyShortcut.plist --fidelity=semantic --mode=v2
+```
+
+| Fidelity Mode | Guarantee | Best Used For |
+|---------------|-----------|---------------|
+| `lossless` (default) | 100% bit-for-bit decoded plist tree identity (`native.workflow` / `#workflow_header_plist`) | Exact archival, round-tripping complex/third-party Shortcuts without any structural drift |
+| `hybrid` | 100% bit-for-bit decoded plist tree identity (`NATURAL_VERIFIED` natural calls + per-action `EXACT_NATIVE` escape) | Reading and editing real-world Shortcuts in natural Cherri syntax while preserving exact wire fidelity |
+| `semantic` | Best-effort readable decompilation (`MigrateSemanticLegacySourceToV2Strict` in v2 mode; fails closed if invalid) | Inspecting or refactoring simple Shortcuts where strict wire-level UUID/header preservation is not required |
+

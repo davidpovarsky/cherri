@@ -101,5 +101,33 @@ All downstream surfaces update automatically without manual duplication:
 - **V2 Schema & Analyzer (`schema.DefaultRegistry()`):** `tools/language-schema` extracts live `--actions-json` output (failing closed if extraction fails) and generates `internal/language/schema/generated_registry.go`.
 - **V2 Compiler (`CompileSourceToPlist`):** Resolves calls against `schema.DefaultRegistry()` and lowers them through `CanonicalBackendSession.EmitResolvedCall()`, invoking the exact same `checkAction()` and `getActionParameters()` engine as Legacy.
 - **iOS/iPadOS Action Palette (`currentMobileActionCatalog()`):** Reads directly from `schema.DefaultRegistry()` with 1:1 field parity to `buildActionCatalog()`.
-- **Decompiler (`decompile.go`):** Matches emitted identifiers and parameter keys against `actions` map (or falls back losslessly to `rawAction(...)`).
+- **Decompiler (`decompile.go`) & Reverse Action Registry (`reverse_action_registry.go`):** Matches emitted identifiers and parameter keys deterministically via `DefaultReverseActionRegistry()` (or falls back losslessly to `rawAction(...)` / `native.action(...)`).
 - **Pure+Pack Classifier (`tools/p10r3/verify_or_generate_pack.py`):** Classifies declarative vs. Go-handler actions directly from `actions/*.cherri` and `actions_std.go`.
+
+---
+
+## 4. P10R9 — Unified Forward & Reverse Engine (`lossless` + `hybrid` + `semantic`)
+
+```mermaid
+flowchart TD
+    INPUT["Unsigned Shortcut Input\n(.shortcut / .plist / .json)"] --> DEC["DecodeNativeShortcutDocument()\n(import_fidelity.go)"]
+    DEC -->|"--fidelity=lossless"| LOSS_LEG["RenderLosslessLegacySourceFromDocument()"]
+    DEC -->|"--fidelity=lossless"| LOSS_V2["RenderLosslessV2SourceFromDocument()"]
+    DEC -->|"--fidelity=hybrid"| PLAN["PlanHybridImport()\n(hybrid_import.go + DefaultReverseActionRegistry())"]
+    PLAN -->|"Per-action compile verification\nin Legacy + V2"| HYB_LEG["RenderHybridLegacySource()"]
+    PLAN -->|"Per-action compile verification\nin Legacy + V2"| HYB_V2["RenderHybridV2Source()"]
+    DEC -->|"--fidelity=semantic"| SEM_LEG["decompile() (deterministic matchAction)"]
+    SEM_LEG -->|"--mode=v2"| SEM_V2["MigrateSemanticLegacySourceToV2Strict()"]
+    HYB_LEG --> COMP_LEG["Legacy Frontend -> EvaluateActionEmission()"]
+    HYB_V2 --> COMP_V2["V2 Frontend -> CanonicalBackendSession -> EvaluateActionEmission()"]
+    COMP_LEG --> PLIST["100% Identical Decoded Plist Tree\n(38/38 Corpus Shortcuts Verified)"]
+    COMP_V2 --> PLIST
+```
+
+| Capability | Before P10R9 | After P10R9 |
+| :--- | :--- | :--- |
+| **Native Shortcut Decoding** | Separate decoding paths for `lossless` vs `semantic`; `bytes.TrimSpace` could corrupt binary plist trailers ending in whitespace bytes | Single `DecodeNativeShortcutDocument()` validating root, `WFWorkflowActions`, action identifiers, parameter maps, UUID dependency graph, and control-flow stacks |
+| **Reverse Action Lookup** | `decompile.go:matchAction` iterated `actions` map in non-deterministic Go hash order; `EnsureCanonicalStandardActions()` did not populate `includeCategory` | `DefaultReverseActionRegistry()` indexes all `497` callable actions (`381` unique Apple IDs: `305` single-variant, `76` multi-variant) with deterministic sorting and category `#include` metadata |
+| **Readable Lossless Import (`--fidelity=hybrid`)** | Not available (`lossless` emitted 100% raw escapes; `semantic` failed on 37/38 real-world corpus shortcuts) | `PlanHybridImport()` verifies candidate natural actions in both Legacy and V2 and falls back per-action to `rawAction(...)` / `native.action(...)`, achieving `38/38` (`100%`) oracle-verified parity in both Legacy and V2 |
+| **V2 XML Control Character Safety** | `howett.net/plist` XML encoder replaced `\x0b` (vertical tab) with `\ufffd` in V2 output | `CanonicalBackendSession.Finalize()` automatically selects `plist.BinaryFormat` when strings contain XML-unsafe control characters (`HYB16`) |
+

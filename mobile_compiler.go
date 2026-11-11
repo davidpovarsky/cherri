@@ -80,7 +80,9 @@ func detectLegacySource(src string) bool {
 			strings.HasPrefix(trimmed, "#define") ||
 			strings.HasPrefix(trimmed, "#import") ||
 			strings.HasPrefix(trimmed, "#question") ||
-			strings.HasPrefix(trimmed, "#ref") {
+			strings.HasPrefix(trimmed, "#ref") ||
+			strings.HasPrefix(trimmed, "#workflowheader") ||
+			strings.HasPrefix(trimmed, "#declare") {
 			return true
 		}
 	}
@@ -211,8 +213,15 @@ func compileForMobileMode(src string, requestedName string, mode string, sign bo
 	var buf bytes.Buffer
 	enc := plist.NewEncoder(&buf)
 	enc.Indent("\t")
-	if err := enc.Encode(shortcut); err != nil {
-		panic(err)
+	if importedWorkflowHeader != nil {
+		merged := mergeWorkflowHeaderMap(importedWorkflowHeader, shortcut.WFWorkflowActions, exactActionParamsPresence, shortcut, false)
+		if err := enc.Encode(merged); err != nil {
+			panic(err)
+		}
+	} else {
+		if err := enc.Encode(shortcut); err != nil {
+			panic(err)
+		}
 	}
 	legacyBytes := buf.Bytes()
 
@@ -241,6 +250,72 @@ func compileForMobileMode(src string, requestedName string, mode string, sign bo
 	}
 
 	return response
+}
+
+func decompileForMobileWithOptions(plistBytes []byte, requestedName string, mode string, fidelity string) mobileCompileResponse {
+	f := strings.ToLower(strings.TrimSpace(fidelity))
+	if f == "" {
+		f = "semantic"
+	}
+	m := strings.ToLower(strings.TrimSpace(mode))
+	if m == "" {
+		m = "legacy"
+	}
+	if f == "semantic" && m == "legacy" {
+		return decompileForMobile(plistBytes, requestedName)
+	}
+
+	name := normalizedMobileName(requestedName)
+	doc, err := DecodeNativeShortcutDocument(plistBytes)
+	if err != nil {
+		return mobileCompileResponse{
+			OK:    false,
+			Name:  name,
+			Error: err.Error(),
+			Mode:  m,
+		}
+	}
+
+	if f == "lossless" {
+		var src string
+		if m == "legacy" {
+			src, err = RenderLosslessLegacySourceFromDocument(doc)
+		} else {
+			src, err = RenderLosslessV2SourceFromDocument(doc)
+		}
+		if err != nil {
+			return mobileCompileResponse{OK: false, Name: name, Error: err.Error(), Mode: m}
+		}
+		return mobileCompileResponse{OK: true, Name: name, Source: src, Mode: m}
+	}
+
+	if f == "hybrid" {
+		plan, err := PlanHybridImport(doc)
+		if err != nil {
+			return mobileCompileResponse{OK: false, Name: name, Error: err.Error(), Mode: m}
+		}
+		var src string
+		if m == "legacy" {
+			src, err = RenderHybridLegacySource(doc, plan)
+		} else {
+			src, err = RenderHybridV2Source(doc, plan)
+		}
+		if err != nil {
+			return mobileCompileResponse{OK: false, Name: name, Error: err.Error(), Mode: m}
+		}
+		return mobileCompileResponse{OK: true, Name: name, Source: src, Mode: m}
+	}
+
+	// semantic + v2
+	legResp := decompileForMobile(plistBytes, requestedName)
+	if !legResp.OK {
+		return legResp
+	}
+	v2Src, err := MigrateSemanticLegacySourceToV2Strict(legResp.Source)
+	if err != nil {
+		return mobileCompileResponse{OK: false, Name: name, Error: err.Error(), Mode: "v2"}
+	}
+	return mobileCompileResponse{OK: true, Name: name, Source: v2Src, Mode: "v2"}
 }
 
 func decompileForMobile(plistBytes []byte, requestedName string) (response mobileCompileResponse) {

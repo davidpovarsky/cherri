@@ -215,10 +215,32 @@ func undefinable() bool {
 	return currentAction.definition.builtin || currentAction.definition.makeParams != nil || currentAction.definition.check != nil || currentAction.definition.decomp != nil || currentAction.definition.appIntent != emptyAppIntent
 }
 
+// ActionEmissionContext encapsulates the canonical action identifier, definition, arguments,
+// and reference context for shared action emission without mutating unrelated global state.
+type ActionEmissionContext struct {
+	Identifier string
+	Definition actionDefinition
+	Arguments  []actionArgument
+	Reference  *WFActionReference
+}
+
+// EvaluateActionEmission evaluates an ActionEmissionContext using the canonical action parameter
+// builder while restoring any transient currentAction state on return.
+func EvaluateActionEmission(ctx ActionEmissionContext) (string, map[string]any) {
+	saveCurrentAction()
+	defer restoreCurrentAction()
+	currentAction.identifier = ctx.Identifier
+	currentAction.definition = ctx.Definition
+	ident := getFullActionIdentifier()
+	params := getActionParameters(ctx.Arguments)
+	return ident, attachReferenceToParams(params, ctx.Reference)
+}
+
 // makeAction builds an action based on its actionDefinition and adds it to the shortcut.
 func makeAction(arguments []actionArgument, reference *WFActionReference) {
+	isRawAction := currentAction.identifier == "rawAction"
 	hasExplicitRawPlist := false
-	if currentAction.identifier == "rawAction" && len(arguments) > 0 {
+	if isRawAction && len(arguments) > 0 {
 		if rawIdent, ok := getArgValue(arguments[0]).(string); ok {
 			currentAction.definition.overrideIdentifier = rawIdent
 		}
@@ -233,11 +255,11 @@ func makeAction(arguments []actionArgument, reference *WFActionReference) {
 	var ident = getFullActionIdentifier()
 	// Determine parameters
 	var params = getActionParameters(arguments)
-	if hasExplicitRawPlist {
+	if isRawAction {
 		if exactActionParamsPresence == nil {
 			exactActionParamsPresence = make(map[int]bool)
 		}
-		exactActionParamsPresence[len(shortcut.WFWorkflowActions)] = true
+		exactActionParamsPresence[len(shortcut.WFWorkflowActions)] = hasExplicitRawPlist
 	}
 	// Additionally add the output name and UUID of this action if provided
 	addAction(ident, attachReferenceToParams(params, reference))

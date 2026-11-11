@@ -94,3 +94,26 @@ From analysis of real-world Shortcut evidence (`אפשרויות מילון.json
 2. **Approach B (Native Dictionary Action):** `is.workflow.actions.dictionary` with `WFItems` -> `setvariable`. Supported via literal `{ "key": value }`.
 3. **Approach C (JSON Text -> Set Name *.json):** `gettext` -> `is.workflow.actions.setitemname` (`WFName = "name.json"`) -> `setvariable`. Distinct from dictionary creation.
 4. **Approach D (JSON Text -> Reference Coercion):** `gettext` -> `setvariable` with `WFCoercionVariableAggrandizement` (`CoercionItemClass: "WFDictionaryContentItem"`). Coercion reference without `detect.dictionary`.
+
+---
+
+## 6. P10R9 — Unified Import Codec, Deterministic Reverse Registry, `ActionEmissionContext` & Hybrid Readable Planner
+
+### 6.1 Shared Native Document (`import_fidelity.go`)
+- **`DecodeNativeShortcutDocument(b []byte) (*NativeShortcutDocument, error)`** is the single decoding and validation entry point for all unsigned Shortcut inputs (binary plist `bplist00`, XML plist, and JSON; rejects `AEA1` signed archives cleanly).
+- Validates root dictionary structure (`HYB18`), `WFWorkflowActions` slice type (`HYB19`), per-action `WFWorkflowActionIdentifier` non-empty string (`HYB20`), and `WFWorkflowActionParameters` dictionary type (`HYB21`).
+- Extracts action UUID producer/consumer graphs (`ProducerUUIDIndex`, `ConsumerUUIDIndex`) and validates control-flow stacks (`GroupingIdentifier` / `WFControlFlowMode` `0 -> 1 -> 2`), tagging malformed source actions such as orphan `WFControlFlowMode == 2` (`035` index `723`) with `SourceValidity: "SOURCE_INVALID:CONTROL_FLOW_ORPHAN_END"`.
+
+### 6.2 Deterministic Reverse Action Registry (`reverse_action_registry.go`)
+- **`DefaultReverseActionRegistry()`** builds a deterministic reverse lookup table directly from `EnsureCanonicalStandardActions()` (`497` callable definitions across `381` unique Apple identifiers: `305` single-variant and `76` multi-variant).
+- Eliminates Go map iteration non-determinism in `decompile.go:matchAction` (`HYB07`) and provides `ResolveReverseActionCandidate()` for disambiguating multi-variant identifiers via `AppIntent` descriptors, `StaticParameters`, required parameter keys, and lexicographic `DefinitionID` tie-breaking.
+
+### 6.3 Shared Action Emission Context (`action.go`)
+- **`ActionEmissionContext`** and **`EvaluateActionEmission(ctx ActionEmissionContext)`** provide a single bottleneck around `checkAction()`, `call.Definition.make(...)`, `getActionParameters()`, and `addStdAction()` for both Legacy (`shortcutgen.go`) and Cherri v2 (`CanonicalBackendSession.EmitResolvedCall`).
+- Preserves XML-unsafe control characters (`\x0b`, NUL) in `CanonicalBackendSession.Finalize()` by switching to `plist.BinaryFormat` when strings contain characters that XML 1.0 cannot represent (`HYB16`).
+
+### 6.4 Shared Hybrid Readable Import Planner (`hybrid_import.go`)
+- **`PlanHybridImport(doc *NativeShortcutDocument)`** classifies every action in a Shortcut into `NATURAL_VERIFIED`, `EXACT_NATIVE`, or `SOURCE_INVALID_EXACT_ONLY` with one of 13 canonical reason codes.
+- Every candidate natural action is compiled in isolation in both Legacy (`compileLegacySourceToRawMapInMemory`) and Cherri v2 (`CompileSourceToPlist`) and compared against the source action dictionary via `plistValuesStrictlyEqual`.
+- Both **`RenderHybridLegacySource`** and **`RenderHybridV2Source`** run a final full-workflow compile verification gate against `doc.RawRoot` before returning; if any workflow-level difference is detected, they fall back safely to the lossless representation so `hybrid` import is mathematically guaranteed to be 100% lossless (`38/38` corpus shortcuts, `27,652` actions).
+

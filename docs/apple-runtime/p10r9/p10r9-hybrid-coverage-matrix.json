@@ -1,0 +1,1279 @@
+{
+  "benchmarks": {
+    "007": {
+      "hybridLegacy": {
+        "compileDurationMs": 104.371,
+        "importDurationMs": 157.384,
+        "sourceBytes": 538357
+      },
+      "hybridV2": {
+        "compileDurationMs": 31.506,
+        "importDurationMs": 43.358,
+        "sourceBytes": 538585
+      }
+    },
+    "012": {
+      "hybridLegacy": {
+        "compileDurationMs": 596.901,
+        "importDurationMs": 1111.026,
+        "sourceBytes": 1908311
+      },
+      "hybridV2": {
+        "compileDurationMs": 207.511,
+        "importDurationMs": 298.091,
+        "sourceBytes": 1955739
+      }
+    },
+    "027": {
+      "hybridLegacy": {
+        "compileDurationMs": 548.608,
+        "importDurationMs": 985.68,
+        "sourceBytes": 1755138
+      },
+      "hybridV2": {
+        "compileDurationMs": 249.415,
+        "importDurationMs": 322.291,
+        "sourceBytes": 1800970
+      }
+    },
+    "032": {
+      "hybridLegacy": {
+        "compileDurationMs": 83.82,
+        "importDurationMs": 125.135,
+        "sourceBytes": 333023
+      },
+      "hybridV2": {
+        "compileDurationMs": 20.089,
+        "importDurationMs": 26.514,
+        "sourceBytes": 333151
+      }
+    },
+    "035": {
+      "hybridLegacy": {
+        "compileDurationMs": 2070.121,
+        "importDurationMs": 2868.914,
+        "sourceBytes": 7381822
+      },
+      "hybridV2": {
+        "compileDurationMs": 513.022,
+        "importDurationMs": 693.311,
+        "sourceBytes": 7423338
+      }
+    }
+  },
+  "exactNativeFallbackActions": 26188,
+  "globalNaturalCallables": {
+    "alert": 56,
+    "comment": 655,
+    "confirm": 1,
+    "createFolder": 6,
+    "define": 2,
+    "dismissSiri": 19,
+    "lightMode": 2,
+    "nothing": 6,
+    "output": 2,
+    "reboot": 2,
+    "returnToHomescreen": 3,
+    "setAirdropReceiving": 2,
+    "setBrightness": 4,
+    "setVolume": 4,
+    "show": 9,
+    "showNotification": 3,
+    "showWebpage": 9,
+    "shutdown": 2,
+    "speak": 33,
+    "stop": 444,
+    "text": 152,
+    "toggleAppearance": 3,
+    "toggleBluetooth": 1,
+    "toggleSilenceUnknownCallers": 1,
+    "toggleWifi": 1,
+    "vibrate": 12,
+    "wait": 16,
+    "waitToReturn": 13
+  },
+  "globalReasonCounts": {
+    "AMBIGUOUS_VARIANT": 46,
+    "CONTROL_REGION": 10570,
+    "KNOWN_DISAMBIGUATED": 1463,
+    "SOURCE_INVALID": 1,
+    "THIRD_PARTY_NO_CANONICAL_DEF": 137,
+    "UNKNOWN_NATIVE_ID": 13,
+    "UNREPRESENTABLE_PARAM": 15422
+  },
+  "hybridLegacyOraclePass": 38,
+  "hybridLegacyV2TreeEqualCount": 38,
+  "hybridV2OraclePass": 38,
+  "losslessLegacyOraclePass": 38,
+  "losslessV2OraclePass": 38,
+  "naturalVerifiedActions": 1463,
+  "phase": "P10R9-Hybrid-Coverage-Matrix",
+  "sourceInvalidActions": 1,
+  "specimens": [
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 158,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "51cedda5a1cb8419c55c2397a0810bb7f88e5b7e109b4990b5ae040a1187ad7b",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "79b0a3dbc468e0cfe364599411ae7e1eaab5a6159ad8af4046216809b4e6a06e",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 1,
+        "stop": 2,
+        "wait": 1
+      },
+      "naturalVerifiedCount": 4,
+      "reasonCounts": {
+        "CONTROL_REGION": 42,
+        "KNOWN_DISAMBIGUATED": 4,
+        "UNREPRESENTABLE_PARAM": 116
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "fb248f2d115c83846fff33b9583218d3e2ea6aba0ef290f865f5d380025da25a",
+      "specimenId": "001",
+      "totalActions": 162
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 196,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "a367b4daf6fd527df1ed381830323368afeb26e94f7bd98a333f31584e466c07",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "f782c9b4c609853de9d1a79eba51fa5bd9bb6bbf1c15f8262114adbc03e9d45a",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 6,
+        "nothing": 1,
+        "stop": 2
+      },
+      "naturalVerifiedCount": 9,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 2,
+        "CONTROL_REGION": 85,
+        "KNOWN_DISAMBIGUATED": 9,
+        "UNREPRESENTABLE_PARAM": 109
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "7e38ed1a9701dc768d4616a654f67eceb0c13574610d7b571152538b745660ae",
+      "specimenId": "002",
+      "totalActions": 205
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 178,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "7948afc3e4ad26c248960038d50ea8ed58169061c751f2d8402a58310445d6fc",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "cd7f8494d4d2f3104f7deec3519872843a4d62331ac18fbd7de1d1e14ff80bd9",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 2,
+        "comment": 20,
+        "stop": 2
+      },
+      "naturalVerifiedCount": 24,
+      "reasonCounts": {
+        "CONTROL_REGION": 46,
+        "KNOWN_DISAMBIGUATED": 24,
+        "UNREPRESENTABLE_PARAM": 132
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "f59b6bb7e018cf04f4203e286e51b808548d6effcb6e2200203f5e644648eaeb",
+      "specimenId": "003",
+      "totalActions": 202
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 234,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "58c63b4306acac4f9af3aa4c40db68c663a6ffa166c7cd7143a0e53872ad1255",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "e2aced1b4bcb492f14d9e138e1dc8a36250489dbf13665ac1af5b44338279aab",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 3,
+        "stop": 8,
+        "waitToReturn": 2
+      },
+      "naturalVerifiedCount": 13,
+      "reasonCounts": {
+        "CONTROL_REGION": 100,
+        "KNOWN_DISAMBIGUATED": 13,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 3,
+        "UNKNOWN_NATIVE_ID": 1,
+        "UNREPRESENTABLE_PARAM": 130
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "b37f504c4ee7a2274dda80c8fec72bf4325ed354c17881dcf9fcd6646ad20afd",
+      "specimenId": "004",
+      "totalActions": 247
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 217,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "976ad70c53b8aae50ff75eae32f54345dac88f46793e344daf1a546a9947f8b5",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "c659259dd33e696451caa3d2ffba2f6328fdb3f1f5c569fd9bd149af80d94fd8",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 4,
+        "showNotification": 3,
+        "stop": 6
+      },
+      "naturalVerifiedCount": 13,
+      "reasonCounts": {
+        "CONTROL_REGION": 81,
+        "KNOWN_DISAMBIGUATED": 13,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 13,
+        "UNREPRESENTABLE_PARAM": 123
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "47077f502c89128ab77ef41a8f77a5aed98d707bf758a1f898bcf716b87248a8",
+      "specimenId": "005",
+      "totalActions": 230
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 41,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "e1fe95e80916d4b4bdd222c5ce7eb1eecd214f9af0001f268add0c1d1fba91dc",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "b30d0f4f059f162de5357f3811d99e101021a04323c0805c8f6afdb3dc4095a6",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 1,
+        "comment": 1
+      },
+      "naturalVerifiedCount": 2,
+      "reasonCounts": {
+        "CONTROL_REGION": 13,
+        "KNOWN_DISAMBIGUATED": 2,
+        "UNREPRESENTABLE_PARAM": 28
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "c6ed5b1a091e213f7903884f1e24862bb04f924f1e0666b948796875813271d8",
+      "specimenId": "006",
+      "totalActions": 43
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 10,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "0502728f4478068c7cc04d7a2c7f80fff4480efe0d60448052e20d39cde94d6b",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "154a60b56b7f19b674f356c8edcddad016ab898a824b95096fbf67f0522fe9ff",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {},
+      "naturalVerifiedCount": 0,
+      "reasonCounts": {
+        "UNREPRESENTABLE_PARAM": 10
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "93662b1189761316559f12f4cbf98e1ba814d0e66f998ce6b1cb098b6056a276",
+      "specimenId": "007",
+      "totalActions": 10
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 416,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "4f72d34432f0aaa947b2ff7eb78bcf741fb29810569cf27f46ea499e15726949",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "0b221b5f4442e605c30c5caf80a54fa800f2ac819502446aeef67806a6841771",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 4,
+        "comment": 13,
+        "define": 1,
+        "showWebpage": 1,
+        "stop": 12,
+        "text": 2
+      },
+      "naturalVerifiedCount": 33,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 2,
+        "CONTROL_REGION": 189,
+        "KNOWN_DISAMBIGUATED": 33,
+        "UNREPRESENTABLE_PARAM": 225
+      },
+      "requiredIncludes": [
+        "text",
+        "web"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "46b9a5ab5c7a28fb62a5f540c5a8e70f84e9a22fd7708d231033ba5859a89f77",
+      "specimenId": "008",
+      "totalActions": 449
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 415,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "303c956618c851051ff1656b6daa8caaedbd950965128db20d10b5cb5c6074a5",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "25063fc06bce1979458396ac1cbb6f74e2186993e14cce852aecc98ec944b3c0",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 4,
+        "comment": 13,
+        "define": 1,
+        "showWebpage": 2,
+        "stop": 12,
+        "text": 2
+      },
+      "naturalVerifiedCount": 34,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 2,
+        "CONTROL_REGION": 189,
+        "KNOWN_DISAMBIGUATED": 34,
+        "UNREPRESENTABLE_PARAM": 224
+      },
+      "requiredIncludes": [
+        "text",
+        "web"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "ee3a3b7c77760612ead32ec063f6c5ccc9e04ade2fdd52691179c0235f253549",
+      "specimenId": "009",
+      "totalActions": 449
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 54,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "d99e626d96614a11de05d35cb2ffd891e59e4d9b8a88f03b6b45b586c8f2d9a1",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "e62c10dab816d78b5ab40cb5122b967c768bac979f2d4a5a4b14b10213f1c470",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 5
+      },
+      "naturalVerifiedCount": 5,
+      "reasonCounts": {
+        "CONTROL_REGION": 5,
+        "KNOWN_DISAMBIGUATED": 5,
+        "UNREPRESENTABLE_PARAM": 49
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "aea61aa6812354435200c7ad187e8a39bc44ec3bb9173bc21b82f9fd2c7fc392",
+      "specimenId": "010",
+      "totalActions": 59
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 161,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "b6f6c0911e93b62e54c2b4f9fb796ae77ed2e047ac45460c484653a62d48791a",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "b0d4e0b09ee1403e2a852144f317c066222687ff18defa2de661b6df6e77bb02",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 8
+      },
+      "naturalVerifiedCount": 8,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 1,
+        "CONTROL_REGION": 79,
+        "KNOWN_DISAMBIGUATED": 8,
+        "UNREPRESENTABLE_PARAM": 81
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "e2168301a358b23860d6d584e546bd3779cffc15acf03f84d7961d2750fcb470",
+      "specimenId": "011",
+      "totalActions": 169
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 2370,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "1f597a164fd1caf8660bbd7789b6e7e31afcfc320ddcbb6cfb846ea9bdf4e516",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "dae851d53db1fb03bf68ea5b1885afe368039a0ea3bfab5f809bc1158f37e3a9",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 1,
+        "comment": 69,
+        "show": 1,
+        "stop": 31,
+        "wait": 2
+      },
+      "naturalVerifiedCount": 104,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 4,
+        "CONTROL_REGION": 1020,
+        "KNOWN_DISAMBIGUATED": 104,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 3,
+        "UNREPRESENTABLE_PARAM": 1343
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "ac5d000b82011e18e2e996c9012785aca1b6d4f935949a0b7c0737935e84fd81",
+      "specimenId": "012",
+      "totalActions": 2474
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 70,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "3d630efa8dc35256b6faad82546d28d249b8ada454c3e878573074e9c1f84173",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "3a289bfafddb0200ec7b08714e5e35210af0bba7a45b1b5a016c7302069a96d8",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 1,
+        "stop": 2
+      },
+      "naturalVerifiedCount": 3,
+      "reasonCounts": {
+        "CONTROL_REGION": 25,
+        "KNOWN_DISAMBIGUATED": 3,
+        "UNREPRESENTABLE_PARAM": 45
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "183af33bdc88d8a2425dd694c8dd28d6aabbf0ae49973dbe83e6f086ca2cbf47",
+      "specimenId": "013",
+      "totalActions": 73
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 487,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "c14d889533a71b78a059f28cca2c80e0411c492efd307c46a8ec5ff890c02309",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "7695b14230f8daf9125c39c623a9a862e9589652098b0c4ee9bfd3628b1396a7",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 1,
+        "comment": 16,
+        "stop": 10,
+        "text": 1,
+        "waitToReturn": 4
+      },
+      "naturalVerifiedCount": 32,
+      "reasonCounts": {
+        "CONTROL_REGION": 158,
+        "KNOWN_DISAMBIGUATED": 32,
+        "UNREPRESENTABLE_PARAM": 329
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "0bcfb4c168b78e3ec656eb3ea18f895439206a1e0a382639ff7eb004bb710a44",
+      "specimenId": "014",
+      "totalActions": 519
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 47,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "b7397e421c7b25f826d08ea8bc2496069cfa8faf15f0c2634ff97b25da9a78f0",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "76cbeaaf524be9af0477d124173bf34e84e19e5624b0ec9ad4e0e9069f6f400f",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 1,
+        "stop": 1
+      },
+      "naturalVerifiedCount": 2,
+      "reasonCounts": {
+        "CONTROL_REGION": 17,
+        "KNOWN_DISAMBIGUATED": 2,
+        "UNREPRESENTABLE_PARAM": 30
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "4833136b14d6fb83a57a216bf5b0f5ce23e1b3fbee3657fcca2bd8fb6706f350",
+      "specimenId": "015",
+      "totalActions": 49
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 751,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "21e90c815d4c597fb44ae446330af49f378ac158971b259b05636851b4ac9cf7",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "8acd2c4ff70304390048a25fcb624520b9b0597d223647055121c38cb90e727d",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 86,
+        "stop": 13
+      },
+      "naturalVerifiedCount": 99,
+      "reasonCounts": {
+        "CONTROL_REGION": 314,
+        "KNOWN_DISAMBIGUATED": 99,
+        "UNKNOWN_NATIVE_ID": 1,
+        "UNREPRESENTABLE_PARAM": 436
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "919f1f7dd8f5f8101aef23fcb1a7375438420f4bc47a8254b063497f2077e9c3",
+      "specimenId": "016",
+      "totalActions": 850
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 8,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "b671b7dfbf2e922c6cad2051f2166998b9a08078ec2d9f7f4b67d59f4959efa7",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "3982cf4c0d9110b76c417799d9503755f5b48b0c56d4b7f4d8f9ca45a78fe7e7",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {},
+      "naturalVerifiedCount": 0,
+      "reasonCounts": {
+        "UNREPRESENTABLE_PARAM": 8
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "1c351eca575ec4bc2fc0538cc8a31fb388b3132f80994f4ec90ab2ab1190f134",
+      "specimenId": "017",
+      "totalActions": 8
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 2568,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "52bea844319a9953ec91590181a6f2ed5cc807ae50150ef5101ecce37e4d0705",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "f11305746648b09a74cef28bb3480a7c3599cd2c209bd7f5d415c6e15a64e234",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 2,
+        "comment": 6,
+        "dismissSiri": 1,
+        "showWebpage": 2,
+        "stop": 54,
+        "text": 49,
+        "wait": 1
+      },
+      "naturalVerifiedCount": 115,
+      "reasonCounts": {
+        "CONTROL_REGION": 1116,
+        "KNOWN_DISAMBIGUATED": 115,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1,
+        "UNREPRESENTABLE_PARAM": 1451
+      },
+      "requiredIncludes": [
+        "device",
+        "web"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "2233846638f04d799051597e78074676df0b463bbe36155130b5f8d4ca6b9cee",
+      "specimenId": "018",
+      "totalActions": 2683
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 250,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "bb051c00bdeefe5e00fb4b16799141f92ed930c8cda904975bcc2e5c4f2afd33",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "4750a82bcea43ddc20e0ac4dc7e4148c4463c6c0f25ce864218dc0316fda6244",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 7,
+        "output": 2,
+        "stop": 4
+      },
+      "naturalVerifiedCount": 13,
+      "reasonCounts": {
+        "CONTROL_REGION": 99,
+        "KNOWN_DISAMBIGUATED": 13,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1,
+        "UNREPRESENTABLE_PARAM": 150
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "51727b9f55ad82625c6decb41a3be0634eb21c7fcb0c5965ac7f92bfd30e9647",
+      "specimenId": "019",
+      "totalActions": 263
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 149,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "1d629b67e5acf6409f318d8be24825ff9a6ad70e853f90a423c9fc9b93afbef9",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "8215141ac3674d683e8a7fa45c924edfc74296c14d98e847afd8b9a6282595fa",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 2,
+        "shutdown": 1,
+        "stop": 1,
+        "toggleBluetooth": 1,
+        "toggleSilenceUnknownCallers": 1,
+        "toggleWifi": 1,
+        "vibrate": 5
+      },
+      "naturalVerifiedCount": 12,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 5,
+        "CONTROL_REGION": 82,
+        "KNOWN_DISAMBIGUATED": 12,
+        "UNREPRESENTABLE_PARAM": 62
+      },
+      "requiredIncludes": [
+        "device",
+        "settings"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "a19c61e2f547721455d8b58d643951f8a02003298ba9cac82c6ef100a65fdc28",
+      "specimenId": "020",
+      "totalActions": 161
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 2568,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "43bc8f84d518349f7dc109fc9771ca0bbdfc2a9a1cc4db7c219010cf37bea906",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "6f88713127eb656368b9acda2a6c261a929ac10aa4a7267c42a8b56a0b2374d1",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 2,
+        "comment": 6,
+        "dismissSiri": 1,
+        "showWebpage": 2,
+        "stop": 54,
+        "text": 49,
+        "wait": 1
+      },
+      "naturalVerifiedCount": 115,
+      "reasonCounts": {
+        "CONTROL_REGION": 1116,
+        "KNOWN_DISAMBIGUATED": 115,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1,
+        "UNREPRESENTABLE_PARAM": 1451
+      },
+      "requiredIncludes": [
+        "device",
+        "web"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "a2c1c7f384ff3cdf5e4bbaaac573d3cc390e0c07ae6726906633b57ccabfbbb4",
+      "specimenId": "021",
+      "totalActions": 2683
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 1754,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "6f43753f12ea5007694f0f3b9d878522ef128e8d43983d8f405f0456ea54ff9d",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "67cf2c13da7dbefbbbd1c0444c30e442ec9e72770a68140431f6c7ae18d7a588",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 7,
+        "comment": 8,
+        "stop": 62
+      },
+      "naturalVerifiedCount": 77,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 1,
+        "CONTROL_REGION": 583,
+        "KNOWN_DISAMBIGUATED": 77,
+        "UNKNOWN_NATIVE_ID": 1,
+        "UNREPRESENTABLE_PARAM": 1169
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "3897b4331e8aad1d0c0a9ff771393fa7ad6727bd1516ded86b2e7e67737fc5c9",
+      "specimenId": "022",
+      "totalActions": 1831
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 467,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "f80ad684f3ee39a4e875213bff950cd6d75387171fec606d6821ff0bc144e243",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "347e7b958ec4d9e80d2e940d203a2f6950e59b8a128632e2ee5db860d607c6fe",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 3,
+        "comment": 31,
+        "stop": 6
+      },
+      "naturalVerifiedCount": 40,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 1,
+        "CONTROL_REGION": 158,
+        "KNOWN_DISAMBIGUATED": 40,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1,
+        "UNREPRESENTABLE_PARAM": 307
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "44179f5ebd5e206acf4581aace612b308aca33c7d6d7c35b20044e3211f18417",
+      "specimenId": "023",
+      "totalActions": 507
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 726,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "de882121d3eb7eb394c0a7b8cee9089d5c611462ca5adb439dbf85ef1cd8c9b6",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "ce237d902cb0fb257886f74804f73b0c0633424087d00d5afc871c9200eb5637",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 86,
+        "createFolder": 3,
+        "nothing": 1,
+        "stop": 13,
+        "text": 21
+      },
+      "naturalVerifiedCount": 124,
+      "reasonCounts": {
+        "CONTROL_REGION": 314,
+        "KNOWN_DISAMBIGUATED": 124,
+        "UNKNOWN_NATIVE_ID": 1,
+        "UNREPRESENTABLE_PARAM": 411
+      },
+      "requiredIncludes": [
+        "documents"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "46081fe352d4df577e55ba7ac23d937d55f9137a834ddf8e10e3ce06675a9683",
+      "specimenId": "024",
+      "totalActions": 850
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 2659,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "c973ae394286ae47b54ec7be8e7a491c754bdd3562845f27b23ee35e4ad315c9",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "f455390682a3b33b599ce260c1c78de9afac2b0a26d6275f7ac4b6e77e00cc4c",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 4,
+        "comment": 6,
+        "dismissSiri": 1,
+        "showWebpage": 2,
+        "stop": 55,
+        "wait": 1
+      },
+      "naturalVerifiedCount": 69,
+      "reasonCounts": {
+        "CONTROL_REGION": 1146,
+        "KNOWN_DISAMBIGUATED": 69,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1,
+        "UNREPRESENTABLE_PARAM": 1512
+      },
+      "requiredIncludes": [
+        "device",
+        "web"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "ff40ac4fdcd4ab8359df47327f57931114746aeb49bd7b42b2c28d4bbec9235b",
+      "specimenId": "025",
+      "totalActions": 2728
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 178,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "e1686ef2ee2fc7617b4dcc845ee48e4050355e4a122a8cb60ea160fdf922bdba",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "f3ce9a1acf8cbcb96d1e61335c47a9214bdbb77f74f72ef2a2bba8274cc95ef5",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "stop": 2
+      },
+      "naturalVerifiedCount": 2,
+      "reasonCounts": {
+        "CONTROL_REGION": 59,
+        "KNOWN_DISAMBIGUATED": 2,
+        "UNREPRESENTABLE_PARAM": 119
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "727f35b74f44312503504f3420364b4b81b1f54a0892dcba8b48a89111fd3c47",
+      "specimenId": "026",
+      "totalActions": 180
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 2264,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "53ce527f4cb0a84ff67db284784c307c8741f65573cd2c7662f5468483ce2c2a",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "b7d065de5c75ce395dcdc1936cdeab4521b0abc0abe53009c7459fb90b84eee0",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 6,
+        "comment": 20,
+        "dismissSiri": 15,
+        "lightMode": 2,
+        "returnToHomescreen": 3,
+        "show": 4,
+        "speak": 33,
+        "stop": 43,
+        "toggleAppearance": 3,
+        "wait": 5
+      },
+      "naturalVerifiedCount": 134,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 15,
+        "CONTROL_REGION": 1014,
+        "KNOWN_DISAMBIGUATED": 134,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 100,
+        "UNKNOWN_NATIVE_ID": 5,
+        "UNREPRESENTABLE_PARAM": 1130
+      },
+      "requiredIncludes": [
+        "device",
+        "settings",
+        "text"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "5a356f0a0e93a14a8242f6c9880fc3add2706966c085d58b9bfaa42907c7d351",
+      "specimenId": "027",
+      "totalActions": 2398
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 516,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "da467e09a5af0e9076f9c9761a6fba2b2797ef0c411ad99338e9bc61eb59f67b",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "6b9ed9a21b25844c74709442cff8bc50771a248c79c3b0c6c161d10fe41f44b0",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 3,
+        "comment": 1,
+        "stop": 1,
+        "text": 1
+      },
+      "naturalVerifiedCount": 6,
+      "reasonCounts": {
+        "CONTROL_REGION": 166,
+        "KNOWN_DISAMBIGUATED": 6,
+        "UNREPRESENTABLE_PARAM": 350
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "49f0c5326e0685e0bcd9da666b8bad29a9bbbd4d833bbf4024a07a7ba7854de5",
+      "specimenId": "028",
+      "totalActions": 522
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 73,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "d01aa5b1cc88dfb7c0e3675168ab8f43112fef9b4fb17aca3343786369a5134f",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "d19faba31b5f0c549ed7ffa0afe44bad9e891b3f52ca266ee6883f0074a7d225",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 1,
+        "stop": 2
+      },
+      "naturalVerifiedCount": 3,
+      "reasonCounts": {
+        "CONTROL_REGION": 25,
+        "KNOWN_DISAMBIGUATED": 3,
+        "UNREPRESENTABLE_PARAM": 48
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "47bf70bd31bf4d4a858030c246db9d29ad56e8725e027e7489bf636ead4332ea",
+      "specimenId": "029",
+      "totalActions": 76
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 726,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "ecc0fb569f49326815dfa34d23932d5b90669d3aa4ff56701401ce0306430400",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "c3e13416470868e58b6907cb3c0442f1176fe224152b55af085222f677994803",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 86,
+        "createFolder": 3,
+        "nothing": 1,
+        "stop": 13,
+        "text": 21
+      },
+      "naturalVerifiedCount": 124,
+      "reasonCounts": {
+        "CONTROL_REGION": 314,
+        "KNOWN_DISAMBIGUATED": 124,
+        "UNKNOWN_NATIVE_ID": 1,
+        "UNREPRESENTABLE_PARAM": 411
+      },
+      "requiredIncludes": [
+        "documents"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "6c6382f80e31b7abbe121ddd7679fa9cc859755f806813a23dfdbc6b72a1d3d7",
+      "specimenId": "030",
+      "totalActions": 850
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 859,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "8223d3d3b1dc2c900bcefff7b5b0cc3e4a54f86aeb966ab0a173f667a85bdac6",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "c761af57104bf6646d1c8af16c1d27f98fabe370a3210cc84842ef9d89b2998c",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 73,
+        "nothing": 1,
+        "reboot": 2,
+        "setAirdropReceiving": 2,
+        "setBrightness": 4,
+        "setVolume": 4,
+        "shutdown": 1,
+        "stop": 2,
+        "wait": 4,
+        "waitToReturn": 5
+      },
+      "naturalVerifiedCount": 98,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 6,
+        "CONTROL_REGION": 351,
+        "KNOWN_DISAMBIGUATED": 98,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 6,
+        "UNREPRESENTABLE_PARAM": 496
+      },
+      "requiredIncludes": [
+        "device",
+        "sharing"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "4b7e8b9f467a2ddd992e95d5ec4030132058121448845cf9584792146eb5b5bf",
+      "specimenId": "031",
+      "totalActions": 957
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 5,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "e052d1568482c0944faf08bd4f6c427be67f6d97e96610427a639fb8cfb73779",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "8f7c6ad8822939da06d84690a2ce19704e8e64430cc2f15ff4909b98ab9bc326",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 2
+      },
+      "naturalVerifiedCount": 2,
+      "reasonCounts": {
+        "KNOWN_DISAMBIGUATED": 2,
+        "UNREPRESENTABLE_PARAM": 5
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "896660408a9ba3bade172b5c3dad46833cb55b8f3dbc2db0657fc517a78f04d0",
+      "specimenId": "032",
+      "totalActions": 7
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 516,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "da467e09a5af0e9076f9c9761a6fba2b2797ef0c411ad99338e9bc61eb59f67b",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "6b9ed9a21b25844c74709442cff8bc50771a248c79c3b0c6c161d10fe41f44b0",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 3,
+        "comment": 1,
+        "stop": 1,
+        "text": 1
+      },
+      "naturalVerifiedCount": 6,
+      "reasonCounts": {
+        "CONTROL_REGION": 166,
+        "KNOWN_DISAMBIGUATED": 6,
+        "UNREPRESENTABLE_PARAM": 350
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "49f0c5326e0685e0bcd9da666b8bad29a9bbbd4d833bbf4024a07a7ba7854de5",
+      "specimenId": "033",
+      "totalActions": 522
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 507,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "e5d1c885f4dae8da901cee81e4c688c82065d8a4a7d55435ef61e10a12b9aa3b",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "1aa257da23d9ef097fa72d177f9fe4ac4ee56c71c2e8576a8b47d747dc9de45a",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 12,
+        "stop": 2
+      },
+      "naturalVerifiedCount": 14,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 4,
+        "CONTROL_REGION": 218,
+        "KNOWN_DISAMBIGUATED": 14,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 1,
+        "UNREPRESENTABLE_PARAM": 284
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "d3eda70271e212ccbc370572a552a15279987d371daa0a3edded687f45a636db",
+      "specimenId": "034",
+      "totalActions": 521
+    },
+    {
+      "controlFlowValid": false,
+      "controlFlowViolation": {
+        "code": "CONTROL_FLOW_ORPHAN_END",
+        "actionIndex": 723,
+        "identifier": "is.workflow.actions.conditional",
+        "groupingIdentifier": "CD0646A5-F986-4CEA-9C7E-66D6E1E2B272",
+        "message": "action 723 (is.workflow.actions.conditional) has WFControlFlowMode=2 without matching open GroupingIdentifier \"CD0646A5-F986-4CEA-9C7E-66D6E1E2B272\""
+      },
+      "exactNativeCount": 2074,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "e61dc4c782d45e34032cf097404ba904c2db862ca1319f262e8b3d36afd9925e",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "600cd8030406bec550bb32f88a73f54e0f238b7b17f75d40bbe0c82ceebb59ec",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 4,
+        "comment": 58,
+        "dismissSiri": 1,
+        "stop": 16,
+        "text": 1
+      },
+      "naturalVerifiedCount": 80,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 1,
+        "CONTROL_REGION": 645,
+        "KNOWN_DISAMBIGUATED": 80,
+        "SOURCE_INVALID": 1,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 2,
+        "UNKNOWN_NATIVE_ID": 3,
+        "UNREPRESENTABLE_PARAM": 1423
+      },
+      "requiredIncludes": [
+        "device"
+      ],
+      "sourceInvalidCount": 1,
+      "sourceSha256": "6a3d75dcf98997bc458bd550baf95f4a999f100cc99b876a5cccbd89ff3a4100",
+      "specimenId": "035",
+      "totalActions": 2155
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 512,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "2fe931d0fe1442bc3686ae57aaea295ccaecb57e6a31797e655db56bc17887c3",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "2fc179407f7243207fecd419bd0ae3dae3178ba71eb059a0a57d885215912876",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "nothing": 1,
+        "show": 4,
+        "stop": 2,
+        "text": 2
+      },
+      "naturalVerifiedCount": 9,
+      "reasonCounts": {
+        "CONTROL_REGION": 157,
+        "KNOWN_DISAMBIGUATED": 9,
+        "UNREPRESENTABLE_PARAM": 355
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "35f615dfd4181aa5e5cda35f3c3b26df350867faa876cf3055b6f56a81c4da8c",
+      "specimenId": "036",
+      "totalActions": 521
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 803,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "2e01027b88c9a2eab76939cef0a3193322d18eadc9a2563b0389538f396e5438",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "07399444fa6bd46d0a2d161cc25789204c7d20d102797d7ca509edb7229abaa3",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "alert": 1,
+        "comment": 4,
+        "confirm": 1,
+        "stop": 8,
+        "text": 2,
+        "vibrate": 7,
+        "wait": 1,
+        "waitToReturn": 2
+      },
+      "naturalVerifiedCount": 26,
+      "reasonCounts": {
+        "CONTROL_REGION": 393,
+        "KNOWN_DISAMBIGUATED": 26,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 4,
+        "UNREPRESENTABLE_PARAM": 406
+      },
+      "requiredIncludes": [
+        "device"
+      ],
+      "sourceInvalidCount": 0,
+      "sourceSha256": "f53d8c7ebcc811cad93977856bd2379da2feca981c803c706f419be464dfec25",
+      "specimenId": "037",
+      "totalActions": 829
+    },
+    {
+      "controlFlowValid": true,
+      "controlFlowViolation": null,
+      "exactNativeCount": 201,
+      "hybridLegacyPass": true,
+      "hybridLegacySourceSha256": "a4d8816cdb88bb812fc274c863dd5a6d07c4ef7658338603c509e59fc99af0ee",
+      "hybridLegacyV2TreeEqual": true,
+      "hybridV2Pass": true,
+      "hybridV2SourceSha256": "3385a50531ef6c66e25cc2fccf328c79250d28332b75c305548a8a4a8637c61b",
+      "losslessLegacyPass": true,
+      "losslessV2Pass": true,
+      "naturalCallables": {
+        "comment": 6,
+        "nothing": 1,
+        "stop": 2
+      },
+      "naturalVerifiedCount": 9,
+      "reasonCounts": {
+        "AMBIGUOUS_VARIANT": 2,
+        "CONTROL_REGION": 85,
+        "KNOWN_DISAMBIGUATED": 9,
+        "UNREPRESENTABLE_PARAM": 114
+      },
+      "requiredIncludes": null,
+      "sourceInvalidCount": 0,
+      "sourceSha256": "ac17b7d4c4626391a6e72e12828a36825cc6259f020a7aede2c6d5f1b142fa54",
+      "specimenId": "038",
+      "totalActions": 210
+    }
+  ],
+  "totalActions": 27652,
+  "totalSpecimens": 38
+}

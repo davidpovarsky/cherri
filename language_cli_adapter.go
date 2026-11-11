@@ -128,19 +128,21 @@ func HandleLanguageV2CLI() bool {
 				}
 			} else if strings.HasPrefix(arg, "--mode=") {
 				mode = strings.TrimPrefix(arg, "--mode=")
-			} else if arg == "--fidelity" {
+			} else if arg == "--fidelity" || arg == "--import-fidelity" {
 				if i+1 < len(os.Args) {
 					fidelity = os.Args[i+1]
 					i++
 				}
 			} else if strings.HasPrefix(arg, "--fidelity=") {
 				fidelity = strings.TrimPrefix(arg, "--fidelity=")
+			} else if strings.HasPrefix(arg, "--import-fidelity=") {
+				fidelity = strings.TrimPrefix(arg, "--import-fidelity=")
 			} else if !strings.HasPrefix(arg, "-") && importPath == "" {
 				importPath = arg
 			}
 		}
 		if importPath == "" {
-			fmt.Fprintf(os.Stderr, "Usage: cherri import <file.shortcut> [--output <path>] [--mode legacy|v2] [--fidelity lossless|semantic]\n")
+			fmt.Fprintf(os.Stderr, "Usage: cherri import <file.shortcut> [--output <path>] [--mode legacy|v2] [--fidelity lossless|hybrid|semantic]\n")
 			os.Exit(1)
 		}
 		_, err := ExecuteImportPipeline(ImportOptions{

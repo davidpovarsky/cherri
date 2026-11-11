@@ -6,10 +6,14 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -28,8 +32,352 @@ type rawPlistDict struct {
 	Data map[string]any
 }
 
+// ControlFlowViolationInfo records a structural control-flow defect in a source Shortcut.
+type ControlFlowViolationInfo struct {
+	Code        string `json:"code"`
+	ActionIndex int    `json:"actionIndex"`
+	Identifier  string `json:"identifier"`
+	GroupingID  string `json:"groupingIdentifier,omitempty"`
+	Message     string `json:"message"`
+}
+
+// NativeActionRecord represents a single validated native Shortcut action from a decoded Shortcut document.
+type NativeActionRecord struct {
+	Index               int
+	Identifier          string
+	Parameters          map[string]any
+	HadParametersKey    bool
+	UUID                string
+	CustomOutputName    string
+	GroupingIdentifier  string
+	ControlFlowMode     *int
+	AppIntentDescriptor map[string]any
+	ReferencedUUIDs     []string
+	ReferencedVars      []string
+	SourceValidity      string // "VALID" or "SOURCE_INVALID:<reason>"
+}
+
+// NativeShortcutDocument is the single shared native representation decoded by all import paths.
+type NativeShortcutDocument struct {
+	RawRoot              map[string]any
+	Header               map[string]any
+	HasActionsKey        bool
+	Actions              []NativeActionRecord
+	SourceFormat         string // "binary-plist", "xml-plist", "json"
+	SourceHash           string // SHA-256 hex of raw input bytes
+	ControlFlowValid     bool
+	ControlFlowViolation *ControlFlowViolationInfo
+	ProducerUUIDIndex    map[string]int   // UUID -> action index
+	ConsumerUUIDIndex    map[string][]int // UUID -> consuming action indices
+}
+
 func isLosslessImportFidelity() bool {
-	return strings.EqualFold(strings.TrimSpace(args.Value("fidelity")), "lossless")
+	f := strings.TrimSpace(args.Value("fidelity"))
+	if f == "" {
+		f = strings.TrimSpace(args.Value("import-fidelity"))
+	}
+	return strings.EqualFold(f, "lossless")
+}
+
+func isHybridImportFidelity() bool {
+	f := strings.TrimSpace(args.Value("fidelity"))
+	if f == "" {
+		f = strings.TrimSpace(args.Value("import-fidelity"))
+	}
+	return strings.EqualFold(f, "hybrid")
+}
+
+// DecodeNativeShortcutDocument decodes and strictly validates an unsigned Shortcut from binary plist,
+// XML plist, or JSON into the shared NativeShortcutDocument representation.
+func DecodeNativeShortcutDocument(b []byte) (*NativeShortcutDocument, error) {
+	if len(b) >= 4 && string(b[:4]) == "AEA1" {
+		return nil, fmt.Errorf("signed Shortcut container (AEA1) is not supported: provide an unsigned plist/JSON or iCloud link")
+	}
+	trimmed := bytes.TrimSpace(b)
+	if len(trimmed) == 0 {
+		return nil, fmt.Errorf("empty shortcut input")
+	}
+
+	sum := sha256.Sum256(b)
+	sourceHash := hex.EncodeToString(sum[:])
+
+	var raw map[string]any
+	var sourceFormat string
+
+	if trimmed[0] == '{' || trimmed[0] == '[' {
+		if trimmed[0] != '{' {
+			return nil, fmt.Errorf("invalid JSON shortcut at root: expected JSON object, got array")
+		}
+		sourceFormat = "json"
+		dec := json.NewDecoder(bytes.NewReader(trimmed))
+		dec.UseNumber()
+		var decodedAny any
+		if err := dec.Decode(&decodedAny); err != nil {
+			return nil, fmt.Errorf("invalid JSON shortcut: %w", err)
+		}
+		var trailing any
+		if err := dec.Decode(&trailing); err != io.EOF {
+			return nil, fmt.Errorf("invalid JSON shortcut: trailing data after root JSON object")
+		}
+		decodedMap, ok := decodedAny.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("invalid JSON shortcut at root: expected dictionary object")
+		}
+		normalized, _ := normalizeRawJSONNumbers(decodedMap).(map[string]any)
+		raw = normalized
+	} else {
+		if hasSignedBytes(b) {
+			return nil, fmt.Errorf("signed or unrecognized binary Shortcut container is not supported: expected unsigned bplist00, XML plist, or JSON")
+		}
+		plistInput := trimmed
+		if bytes.HasPrefix(b, []byte("bplist00")) {
+			plistInput = b
+		}
+		var decodedAny any
+		format, err := plist.Unmarshal(plistInput, &decodedAny)
+		if err != nil {
+			return nil, fmt.Errorf("invalid plist shortcut: %w", err)
+		}
+		if decodedAny == nil {
+			raw = map[string]any{}
+		} else {
+			decodedMap, ok := decodedAny.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("invalid plist shortcut at root: expected dictionary, got %T", decodedAny)
+			}
+			raw = decodedMap
+		}
+		if format == plist.BinaryFormat || bytes.HasPrefix(b, []byte("bplist00")) {
+			sourceFormat = "binary-plist"
+		} else {
+			sourceFormat = "xml-plist"
+		}
+	}
+
+	if raw == nil {
+		raw = map[string]any{}
+	}
+
+	header := make(map[string]any, len(raw))
+	for k, v := range raw {
+		if k == "WFWorkflowActions" {
+			continue
+		}
+		header[k] = deepClonePlistValue(v)
+	}
+
+	rawActs, hasActions := raw["WFWorkflowActions"]
+	var rawActionList []any
+	if hasActions {
+		switch typed := rawActs.(type) {
+		case []any:
+			rawActionList = typed
+		case []map[string]any:
+			rawActionList = make([]any, len(typed))
+			for i, m := range typed {
+				rawActionList[i] = m
+			}
+		default:
+			return nil, fmt.Errorf("invalid WFWorkflowActions at root.WFWorkflowActions: expected array of action dictionaries, got %T", rawActs)
+		}
+	}
+
+	records := make([]NativeActionRecord, 0, len(rawActionList))
+	producerUUIDIndex := make(map[string]int)
+	consumerUUIDIndex := make(map[string][]int)
+
+	type cfFrame struct {
+		groupingID string
+		actionIdx  int
+		identifier string
+	}
+	var cfStack []cfFrame
+	cfValid := true
+	var cfViolation *ControlFlowViolationInfo
+
+	for idx, rawItem := range rawActionList {
+		actMap, ok := rawItem.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("invalid action at WFWorkflowActions[%d]: expected dictionary, got %T", idx, rawItem)
+		}
+		rawIdent, hasIdent := actMap["WFWorkflowActionIdentifier"]
+		if !hasIdent {
+			return nil, fmt.Errorf("invalid action at WFWorkflowActions[%d].WFWorkflowActionIdentifier: missing required string key", idx)
+		}
+		ident, ok := rawIdent.(string)
+		if !ok || strings.TrimSpace(ident) == "" {
+			return nil, fmt.Errorf("invalid action at WFWorkflowActions[%d].WFWorkflowActionIdentifier: expected non-empty string, got %T", idx, rawIdent)
+		}
+
+		var params map[string]any
+		rawParams, hasParams := actMap["WFWorkflowActionParameters"]
+		if hasParams {
+			if rawParams == nil {
+				params = map[string]any{}
+			} else if pm, ok := rawParams.(map[string]any); ok {
+				params = deepClonePlistMap(pm)
+			} else {
+				return nil, fmt.Errorf("invalid action at WFWorkflowActions[%d].WFWorkflowActionParameters (%s): expected dictionary, got %T", idx, ident, rawParams)
+			}
+		}
+
+		rec := NativeActionRecord{
+			Index:            idx,
+			Identifier:       ident,
+			Parameters:       params,
+			HadParametersKey: hasParams,
+			SourceValidity:   "VALID",
+		}
+
+		if params != nil {
+			if u, ok := params["UUID"].(string); ok && u != "" {
+				rec.UUID = u
+				if _, exists := producerUUIDIndex[u]; !exists {
+					producerUUIDIndex[u] = idx
+				}
+			}
+			if cn, ok := params["CustomOutputName"].(string); ok && cn != "" {
+				rec.CustomOutputName = cn
+			}
+			if gid, ok := params["GroupingIdentifier"].(string); ok && gid != "" {
+				rec.GroupingIdentifier = gid
+			}
+			if rawCF, hasCF := params["WFControlFlowMode"]; hasCF {
+				if iv, ok := asSignedOrUnsignedInt(rawCF); ok {
+					var cfInt int
+					if iv.signed {
+						cfInt = int(iv.sVal)
+					} else {
+						cfInt = int(iv.uVal)
+					}
+					rec.ControlFlowMode = &cfInt
+				}
+			}
+			if desc, ok := params["AppIntentDescriptor"].(map[string]any); ok {
+				rec.AppIntentDescriptor = deepClonePlistMap(desc)
+			}
+
+			uuidSet := make(map[string]struct{})
+			varSet := make(map[string]struct{})
+			collectActionReferencesRecursive(params, uuidSet, varSet)
+			if len(uuidSet) > 0 {
+				rec.ReferencedUUIDs = make([]string, 0, len(uuidSet))
+				for u := range uuidSet {
+					rec.ReferencedUUIDs = append(rec.ReferencedUUIDs, u)
+				}
+				sort.Strings(rec.ReferencedUUIDs)
+				for _, u := range rec.ReferencedUUIDs {
+					consumerUUIDIndex[u] = append(consumerUUIDIndex[u], idx)
+				}
+			}
+			if len(varSet) > 0 {
+				rec.ReferencedVars = make([]string, 0, len(varSet))
+				for vn := range varSet {
+					rec.ReferencedVars = append(rec.ReferencedVars, vn)
+				}
+				sort.Strings(rec.ReferencedVars)
+			}
+		}
+
+		if rec.ControlFlowMode != nil {
+			modeVal := *rec.ControlFlowMode
+			switch modeVal {
+			case 0:
+				cfStack = append(cfStack, cfFrame{
+					groupingID: rec.GroupingIdentifier,
+					actionIdx:  idx,
+					identifier: ident,
+				})
+			case 1:
+				if len(cfStack) == 0 || cfStack[len(cfStack)-1].groupingID != rec.GroupingIdentifier {
+					cfValid = false
+					rec.SourceValidity = "SOURCE_INVALID:CONTROL_FLOW_ORPHAN_MIDDLE"
+					if cfViolation == nil {
+						cfViolation = &ControlFlowViolationInfo{
+							Code:        "CONTROL_FLOW_ORPHAN_MIDDLE",
+							ActionIndex: idx,
+							Identifier:  ident,
+							GroupingID:  rec.GroupingIdentifier,
+							Message:     fmt.Sprintf("action %d (%s) has WFControlFlowMode=1 without matching open GroupingIdentifier %q", idx, ident, rec.GroupingIdentifier),
+						}
+					}
+				}
+			case 2:
+				if len(cfStack) == 0 || cfStack[len(cfStack)-1].groupingID != rec.GroupingIdentifier {
+					cfValid = false
+					rec.SourceValidity = "SOURCE_INVALID:CONTROL_FLOW_ORPHAN_END"
+					if cfViolation == nil {
+						cfViolation = &ControlFlowViolationInfo{
+							Code:        "CONTROL_FLOW_ORPHAN_END",
+							ActionIndex: idx,
+							Identifier:  ident,
+							GroupingID:  rec.GroupingIdentifier,
+							Message:     fmt.Sprintf("action %d (%s) has WFControlFlowMode=2 without matching open GroupingIdentifier %q", idx, ident, rec.GroupingIdentifier),
+						}
+					}
+				} else {
+					cfStack = cfStack[:len(cfStack)-1]
+				}
+			}
+		}
+
+		records = append(records, rec)
+	}
+
+	if len(cfStack) > 0 {
+		cfValid = false
+		top := cfStack[len(cfStack)-1]
+		if top.actionIdx >= 0 && top.actionIdx < len(records) && records[top.actionIdx].SourceValidity == "VALID" {
+			records[top.actionIdx].SourceValidity = "SOURCE_INVALID:CONTROL_FLOW_UNCLOSED_START"
+		}
+		if cfViolation == nil {
+			cfViolation = &ControlFlowViolationInfo{
+				Code:        "CONTROL_FLOW_UNCLOSED_START",
+				ActionIndex: top.actionIdx,
+				Identifier:  top.identifier,
+				GroupingID:  top.groupingID,
+				Message:     fmt.Sprintf("action %d (%s) opened GroupingIdentifier %q without matching WFControlFlowMode=2", top.actionIdx, top.identifier, top.groupingID),
+			}
+		}
+	}
+
+	return &NativeShortcutDocument{
+		RawRoot:              deepClonePlistMap(raw),
+		Header:               header,
+		HasActionsKey:        hasActions,
+		Actions:              records,
+		SourceFormat:         sourceFormat,
+		SourceHash:           sourceHash,
+		ControlFlowValid:     cfValid,
+		ControlFlowViolation: cfViolation,
+		ProducerUUIDIndex:    producerUUIDIndex,
+		ConsumerUUIDIndex:    consumerUUIDIndex,
+	}, nil
+}
+
+func collectActionReferencesRecursive(v any, uuidSet map[string]struct{}, varSet map[string]struct{}) {
+	switch x := v.(type) {
+	case map[string]any:
+		if outUUID, ok := x["OutputUUID"].(string); ok && outUUID != "" {
+			uuidSet[outUUID] = struct{}{}
+		}
+		if vn, ok := x["VariableName"].(string); ok && vn != "" {
+			varSet[vn] = struct{}{}
+		}
+		if wvn, ok := x["WFVariableName"].(string); ok && wvn != "" {
+			varSet[wvn] = struct{}{}
+		}
+		for k, val := range x {
+			if k == "UUID" {
+				continue
+			}
+			collectActionReferencesRecursive(val, uuidSet, varSet)
+		}
+	case []any:
+		for _, item := range x {
+			collectActionReferencesRecursive(item, uuidSet, varSet)
+		}
+	}
 }
 
 func decodeShortcutRawMap(b []byte) (map[string]any, error) {
@@ -45,6 +393,10 @@ func decodeShortcutRawMap(b []byte) (map[string]any, error) {
 		if err := dec.Decode(&raw); err != nil {
 			return nil, fmt.Errorf("invalid JSON shortcut: %w", err)
 		}
+		var trailing any
+		if err := dec.Decode(&trailing); err != io.EOF {
+			return nil, fmt.Errorf("invalid JSON shortcut: trailing data after root JSON object")
+		}
 		if raw == nil {
 			return map[string]any{}, nil
 		}
@@ -52,8 +404,12 @@ func decodeShortcutRawMap(b []byte) (map[string]any, error) {
 		return normalized, nil
 	}
 
+	plistInput := trimmed
+	if bytes.HasPrefix(b, []byte("bplist00")) {
+		plistInput = b
+	}
 	var raw map[string]any
-	if _, err := plist.Unmarshal(trimmed, &raw); err != nil {
+	if _, err := plist.Unmarshal(plistInput, &raw); err != nil {
 		return nil, fmt.Errorf("invalid plist shortcut: %w", err)
 	}
 	if raw == nil {
@@ -197,7 +553,15 @@ func mergeWorkflowHeaderMap(
 		}
 		if len(act.WFWorkflowActionParameters) > 0 {
 			actMap["WFWorkflowActionParameters"] = act.WFWorkflowActionParameters
-		} else if exactParamsPresence != nil && exactParamsPresence[i] {
+		} else if exactParamsPresence != nil {
+			if hasParams, exists := exactParamsPresence[i]; exists {
+				if hasParams {
+					actMap["WFWorkflowActionParameters"] = map[string]any{}
+				}
+			} else if !fillMissingDefaults {
+				actMap["WFWorkflowActionParameters"] = map[string]any{}
+			}
+		} else if !fillMissingDefaults {
 			actMap["WFWorkflowActionParameters"] = map[string]any{}
 		}
 		compiledActions = append(compiledActions, actMap)
@@ -489,6 +853,100 @@ func asSignedOrUnsignedInt(v any) (plistIntVal, bool) {
 	}
 }
 
+func RenderLosslessLegacySourceFromDocument(doc *NativeShortcutDocument) (string, error) {
+	if doc == nil {
+		return "", fmt.Errorf("nil NativeShortcutDocument")
+	}
+	headerLit, err := encodePlistValueToLiteral(doc.Header)
+	if err != nil {
+		return "", fmt.Errorf("encode workflow header: %w", err)
+	}
+
+	var out strings.Builder
+	out.WriteString("#workflowheader ")
+	out.WriteString(formatCherriDoubleQuotedString(headerLit))
+	out.WriteByte('\n')
+
+	for _, rec := range doc.Actions {
+		rawLine, err := formatRawLegacyActionCall(rec)
+		if err != nil {
+			return "", err
+		}
+		out.WriteString(rawLine)
+		out.WriteByte('\n')
+	}
+
+	return out.String(), nil
+}
+
+func RenderLosslessV2SourceFromDocument(doc *NativeShortcutDocument) (string, error) {
+	if doc == nil {
+		return "", fmt.Errorf("nil NativeShortcutDocument")
+	}
+	headerLit, err := encodePlistValueToLiteral(doc.Header)
+	if err != nil {
+		return "", fmt.Errorf("encode workflow header: %w", err)
+	}
+
+	var out strings.Builder
+	out.WriteString("native.workflow(native.plist(")
+	out.WriteString(formatCherriDoubleQuotedString(headerLit))
+	out.WriteString("), exact: true)\n")
+
+	for _, rec := range doc.Actions {
+		rawLine, err := formatRawV2ActionCall(rec)
+		if err != nil {
+			return "", err
+		}
+		out.WriteString(rawLine)
+		out.WriteByte('\n')
+	}
+
+	return out.String(), nil
+}
+
+func formatRawLegacyActionCall(rec NativeActionRecord) (string, error) {
+	var out strings.Builder
+	out.WriteString("rawAction(")
+	out.WriteString(formatCherriDoubleQuotedString(rec.Identifier))
+	if rec.HadParametersKey {
+		params := rec.Parameters
+		if params == nil {
+			params = map[string]any{}
+		}
+		pLit, err := encodePlistValueToLiteral(params)
+		if err != nil {
+			return "", fmt.Errorf("encode action %d (%s) params: %w", rec.Index, rec.Identifier, err)
+		}
+		out.WriteString(", rawPlist(")
+		out.WriteString(formatCherriDoubleQuotedString(pLit))
+		out.WriteByte(')')
+	}
+	out.WriteByte(')')
+	return out.String(), nil
+}
+
+func formatRawV2ActionCall(rec NativeActionRecord) (string, error) {
+	var out strings.Builder
+	out.WriteString("native.action(")
+	out.WriteString(formatCherriDoubleQuotedString(rec.Identifier))
+	if rec.HadParametersKey {
+		params := rec.Parameters
+		if params == nil {
+			params = map[string]any{}
+		}
+		pLit, err := encodePlistValueToLiteral(params)
+		if err != nil {
+			return "", fmt.Errorf("encode action %d (%s) params: %w", rec.Index, rec.Identifier, err)
+		}
+		out.WriteString(", parameters: native.plist(")
+		out.WriteString(formatCherriDoubleQuotedString(pLit))
+		out.WriteByte(')')
+	}
+	out.WriteByte(')')
+	return out.String(), nil
+}
+
 func renderLosslessLegacySource(doc map[string]any) (string, error) {
 	header, actions, _ := splitWorkflowHeaderAndActions(doc)
 	headerLit, err := encodePlistValueToLiteral(header)
@@ -615,4 +1073,3 @@ func collectRawPlistValue(value *any) {
 	}
 	*value = rawPlistDict{Data: decoded}
 }
-
