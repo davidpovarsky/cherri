@@ -1553,6 +1553,33 @@
       "reason": "P10R audit findings F01-F08 and acceptance matrix R01-R28.",
       "evidence": "p10r_acceptance_test.go (all 13 tests PASS), tools/shortcut-runtime/tests/test_runtime_extraction.py (all 38 tests PASS), and full acceptance suite.",
       "note": "Milestone P10R compiler, decompiler, and standard action library repair."
+    },
+    {
+      "name": "P10R7 independent semantic fidelity oracle, true lossless lowering, and P10R6 reconciliation",
+      "locations": [
+        "actions_std.go",
+        "compiler_state.go",
+        "decompile.go",
+        "fork_roundtrip_test.go",
+        "internal/language/backend/control.go",
+        "internal/language/schema/metadata.go",
+        "language_backend_adapter.go",
+        "parser.go",
+        "raw_actions.go",
+        "shared_control.go",
+        "shortcut.go",
+        "shortcutgen.go",
+        "tools/p10r6/corpus_audit.py",
+        "tools/p10r7/",
+        "docs/apple-runtime/p10/",
+        "docs/apple-runtime/p10r6/",
+        "docs/apple-runtime/p10r7/"
+      ],
+      "firstForkCommit": "b9d2da47ce00ad1cff5927f6a231398b0ea07fbd",
+      "change": "Replaced tautological corpus audit comparison with an independent 12-gate semantic fidelity oracle and 36-mutation negative verification suite; eliminated unrequested setvariable, nothing, and duplicate conditional/End If emissions across legacy/decompiler lowering; preserved verbatim IntentAppDefinition without altering generated schemaFingerprint; reconciled private and sanitized 38-shortcut reports (+6,703 -> +6 total action delta, 3/38 -> 21/38 strict action sequence fidelity) and retracted inflated P10R6 PASS claims.",
+      "reason": "Milestone P10R7 verified semantic fidelity, independent oracle, safe lowering, and evidence integrity.",
+      "evidence": "go test ./... PASS, legacy-parity 47/47 + 17/17 PASS, consumer compatibility PASS (with external Remote Builder blocker), 55/56 release gates PASS (1 external macOS blocker), 37/37 independent oracle mutation tests OK, reconcile_private_and_sanitized_reports.py --verify --mutate-check PASS, and docs/apple-runtime/p10r7/p10r7-final-audit.md.",
+      "note": "Milestone P10R7 provenance metadata recorded in follow-up commit referencing implementation commit b9d2da47ce00ad1cff5927f6a231398b0ea07fbd."
     }
   ]
 }
