@@ -1580,6 +1580,40 @@
       "reason": "Milestone P10R7 verified semantic fidelity, independent oracle, safe lowering, and evidence integrity.",
       "evidence": "go test ./... PASS, legacy-parity 47/47 + 17/17 PASS, consumer compatibility PASS (with external Remote Builder blocker), 55/56 release gates PASS (1 external macOS blocker), 37/37 independent oracle mutation tests OK, reconcile_private_and_sanitized_reports.py --verify --mutate-check PASS, and docs/apple-runtime/p10r7/p10r7-final-audit.md.",
       "note": "Milestone P10R7 provenance metadata recorded in follow-up commit referencing implementation commit b9d2da47ce00ad1cff5927f6a231398b0ea07fbd."
+    },
+    {
+      "name": "P10R8 complete native fidelity (Legacy lossless directives, V2 exact native lowering, import fidelity routing, and oracle hardening)",
+      "locations": [
+        "import_fidelity.go",
+        "p10r8_fidelity_test.go",
+        "action.go",
+        "args.go",
+        "compiler_state.go",
+        "decompile.go",
+        "import.go",
+        "language_backend_adapter.go",
+        "language_backend_session.go",
+        "language_cli_adapter.go",
+        "main.go",
+        "output.go",
+        "parser.go",
+        "raw_actions.go",
+        "token.go",
+        "internal/language/ir/ir.go",
+        "internal/language/lower/lower.go",
+        "internal/language/syntax/parser.go",
+        "tools/p10r7/independent_fidelity_oracle.py",
+        "tools/p10r7/run_38_audit.py",
+        "tools/p10r7/test_independent_oracle_mutations.py",
+        "tools/p10r7/audit_integrity.py",
+        "docs/apple-runtime/p10/",
+        "docs/apple-runtime/p10r8/"
+      ],
+      "firstForkCommit": "5cdc4e97f813c84f9a040173899f555536c15bbf",
+      "change": "Implemented strict lossless import/compile parity across both Legacy (#workflowheader, #declare, rawPlist) and Cherri v2 (native.workflow exact: true, native.plist, ExactRawAction); routed --fidelity lossless/semantic cleanly (cherri import defaults to V2 lossless; --import defaults to semantic); fixed empty dictionary literal handling, ExecuteImportPipeline/BeginBackendTransaction state isolation, and V2 parser non-advancing loop guards; hardened independent fidelity oracle (M37-M60, 72 mutation tests) and enforced source-present dangling OutputUUID consistency.",
+      "reason": "Milestone P10R8 complete native wire fidelity across both Legacy and Cherri v2 pipelines without breaking semantic mode or upstream compatibility.",
+      "evidence": "go test ./... PASS, TestP10R8_* PASS, TestForkActionProvenanceRegistry PASS, legacy-parity 47+17 PASS, language-schema --verify-generated PASS, 72/72 independent oracle mutation tests OK, 55/56 P10 release gates PASS (R22 BLOCKED_PLATFORM), and 38-shortcut Legacy+V2 audit in docs/apple-runtime/p10r8/p10r8-final-audit.md (38/38 STRICT_ACTION_SEQUENCE_PASS / ACTION_PARAMETER_WIRE_PASS / VARIABLE_GRAPH_PASS / WORKFLOW_HEADER_PASS, 11/11 THIRD_PARTY_DESCRIPTOR_WIRE_PASS, 38/38 V2_COMPILE_PASS, 37/38 FULL_WORKFLOW_SEMANTIC_PASS with 035 failing closed on SOURCE_CONTROL_FLOW_INVALID, 0/38 APPLE_RUNTIME_EXECUTED BLOCKED_DEVICE).",
+      "note": "Milestone P10R8 provenance metadata recorded in separate follow-up commit referencing implementation commit 5cdc4e97f813c84f9a040173899f555536c15bbf (Oracle Phase 1 commit 701e9915f8ce26f81e72df7e8d1a7f6d6e7c884d)."
     }
   ]
 }
