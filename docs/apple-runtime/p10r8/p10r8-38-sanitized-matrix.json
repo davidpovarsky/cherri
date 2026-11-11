@@ -1,0 +1,2010 @@
+{
+  "harnessVersion": "p10r8-audit-harness-20261111.1",
+  "oracleVersion": "p10r8-fidelity-oracle-20261111.1",
+  "verificationMode": "PRIVATE_CORPUS_VERIFIED_LOCALLY",
+  "verifiedAtUtc": "2026-11-11T14:39:29+00:00",
+  "compilerGitCommit": "5cdc4e97f813c84f9a040173899f555536c15bbf",
+  "compilerWorktreeDirty": false,
+  "compilerBinarySha256": "0b34dd933087ebe0508f9d19c8945ebde602e07446a7b61f45562621e4f38d8b",
+  "os": "Windows-11-10.0.26300-SP0",
+  "expectedSpecimenIds": [
+    "001",
+    "002",
+    "003",
+    "004",
+    "005",
+    "006",
+    "007",
+    "008",
+    "009",
+    "010",
+    "011",
+    "012",
+    "013",
+    "014",
+    "015",
+    "016",
+    "017",
+    "018",
+    "019",
+    "020",
+    "021",
+    "022",
+    "023",
+    "024",
+    "025",
+    "026",
+    "027",
+    "028",
+    "029",
+    "030",
+    "031",
+    "032",
+    "033",
+    "034",
+    "035",
+    "036",
+    "037",
+    "038"
+  ],
+  "totalSpecimens": 38,
+  "totalSourceActions": 27652,
+  "totalCompiledActions": 27652,
+  "totalActionDelta": 0,
+  "strictActionSequencePassCount": 38,
+  "fullWorkflowSemanticPassCount": 37,
+  "gateSummary": {
+    "RAW_JSON_DECODE_PASS": 38,
+    "BPLIST_OR_XML_DECODE_PASS": 38,
+    "DECOMPILE_PASS": 38,
+    "LEGACY_COMPILE_PASS": 38,
+    "V2_COMPILE_PASS": 38,
+    "STRICT_ACTION_SEQUENCE_PASS": 38,
+    "ACTION_PARAMETER_WIRE_PASS": 38,
+    "VARIABLE_GRAPH_PASS": 38,
+    "CONTROL_FLOW_PASS": 37,
+    "WORKFLOW_HEADER_PASS": 38,
+    "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": 11,
+    "FULL_WORKFLOW_SEMANTIC_PASS": 37,
+    "APPLE_RUNTIME_EXECUTED": 0
+  },
+  "extendedGateSummary": {
+    "SOURCE_CONTAINER_EQUIVALENCE_PASS": 38,
+    "STRICT_NATIVE_WIRE_FIDELITY_PASS": 37
+  },
+  "familyAdded": {},
+  "familyRemoved": {},
+  "v2Summary": {
+    "V2_COMPILE_PASS": 38,
+    "STRICT_ACTION_SEQUENCE_PASS": 38,
+    "FULL_WORKFLOW_SEMANTIC_PASS": 37
+  },
+  "sourceInvalidSpecimens": [
+    "035"
+  ],
+  "runtimeIntegrityErrors": [],
+  "matrix": [
+    {
+      "specimenId": "001",
+      "sourceSha256": "7426c942812251a1d6c76c52dd521dccf8c06053b4b2b78d7e5579e3d50e9235",
+      "compiledSha256": "7426c942812251a1d6c76c52dd521dccf8c06053b4b2b78d7e5579e3d50e9235",
+      "sourceActions": 162,
+      "compiledActions": 162,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.279,
+        "import_v2_sec": 0.16,
+        "compile_legacy_sec": 0.454,
+        "compile_v2_sec": 0.188
+      }
+    },
+    {
+      "specimenId": "002",
+      "sourceSha256": "50ab2b29c0441f6a56bd4c7adcd541744bd6cad7c9f7cbca57488dfa7ee120fe",
+      "compiledSha256": "50ab2b29c0441f6a56bd4c7adcd541744bd6cad7c9f7cbca57488dfa7ee120fe",
+      "sourceActions": 205,
+      "compiledActions": 205,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.256,
+        "import_v2_sec": 0.249,
+        "compile_legacy_sec": 0.821,
+        "compile_v2_sec": 0.212
+      }
+    },
+    {
+      "specimenId": "003",
+      "sourceSha256": "4df4df2ba9d0d22368dbf53a4ec9aa73218075f8ca0f3e9bd0a57071f381c814",
+      "compiledSha256": "4df4df2ba9d0d22368dbf53a4ec9aa73218075f8ca0f3e9bd0a57071f381c814",
+      "sourceActions": 202,
+      "compiledActions": 202,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.145,
+        "import_v2_sec": 0.151,
+        "compile_legacy_sec": 0.324,
+        "compile_v2_sec": 0.121
+      }
+    },
+    {
+      "specimenId": "004",
+      "sourceSha256": "caa6971beb2df52290bcd103ccd2f89dbd733d0069be7a7f7b0e6823d156fc47",
+      "compiledSha256": "caa6971beb2df52290bcd103ccd2f89dbd733d0069be7a7f7b0e6823d156fc47",
+      "sourceActions": 247,
+      "compiledActions": 247,
+      "actionDelta": 0,
+      "sourceDescriptors": 8,
+      "compiledDescriptors": 8,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 1,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.11,
+        "import_v2_sec": 0.11,
+        "compile_legacy_sec": 0.215,
+        "compile_v2_sec": 0.105
+      }
+    },
+    {
+      "specimenId": "005",
+      "sourceSha256": "f71237beddb0d02d994ab376e8eacb855d9576267586daaf75f37e51f68417a9",
+      "compiledSha256": "f71237beddb0d02d994ab376e8eacb855d9576267586daaf75f37e51f68417a9",
+      "sourceActions": 230,
+      "compiledActions": 230,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.117,
+        "import_v2_sec": 0.129,
+        "compile_legacy_sec": 0.313,
+        "compile_v2_sec": 0.14
+      }
+    },
+    {
+      "specimenId": "006",
+      "sourceSha256": "2d2c2842d5701933c8ed4d72c6bf792b1d70a9e2296fcf24f9e07c5224f16b50",
+      "compiledSha256": "2d2c2842d5701933c8ed4d72c6bf792b1d70a9e2296fcf24f9e07c5224f16b50",
+      "sourceActions": 43,
+      "compiledActions": 43,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.061,
+        "import_v2_sec": 0.082,
+        "compile_legacy_sec": 0.151,
+        "compile_v2_sec": 0.072
+      }
+    },
+    {
+      "specimenId": "007",
+      "sourceSha256": "fbffd74de924b13cd5665e66d31db9f94f9f681ae042874264429ad2f8c2da66",
+      "compiledSha256": "fbffd74de924b13cd5665e66d31db9f94f9f681ae042874264429ad2f8c2da66",
+      "sourceActions": 10,
+      "compiledActions": 10,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.078,
+        "import_v2_sec": 0.074,
+        "compile_legacy_sec": 0.172,
+        "compile_v2_sec": 0.079
+      }
+    },
+    {
+      "specimenId": "008",
+      "sourceSha256": "4da552ed0d240819d9f64efe5255251a8f425728465dc6f4e8f099ca8d2925c0",
+      "compiledSha256": "4da552ed0d240819d9f64efe5255251a8f425728465dc6f4e8f099ca8d2925c0",
+      "sourceActions": 449,
+      "compiledActions": 449,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 1,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.141,
+        "import_v2_sec": 0.135,
+        "compile_legacy_sec": 0.354,
+        "compile_v2_sec": 0.194
+      }
+    },
+    {
+      "specimenId": "009",
+      "sourceSha256": "811f4b3c4ce6edb9935224afc4e89d7a1e946d2c4ca47098c75fcd99128faa08",
+      "compiledSha256": "811f4b3c4ce6edb9935224afc4e89d7a1e946d2c4ca47098c75fcd99128faa08",
+      "sourceActions": 449,
+      "compiledActions": 449,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 1,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.21,
+        "import_v2_sec": 0.175,
+        "compile_legacy_sec": 0.477,
+        "compile_v2_sec": 0.25
+      }
+    },
+    {
+      "specimenId": "010",
+      "sourceSha256": "6a56a1b117486d8aa65bd527e26f1fadb3676404443ffc694acfeca60d6888a9",
+      "compiledSha256": "6a56a1b117486d8aa65bd527e26f1fadb3676404443ffc694acfeca60d6888a9",
+      "sourceActions": 59,
+      "compiledActions": 59,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.088,
+        "import_v2_sec": 0.106,
+        "compile_legacy_sec": 0.149,
+        "compile_v2_sec": 0.075
+      }
+    },
+    {
+      "specimenId": "011",
+      "sourceSha256": "bd5c373099314369672389c412869d4cc5830f7f1c95f993982378b0ec40a8e6",
+      "compiledSha256": "bd5c373099314369672389c412869d4cc5830f7f1c95f993982378b0ec40a8e6",
+      "sourceActions": 169,
+      "compiledActions": 169,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.104,
+        "import_v2_sec": 0.13,
+        "compile_legacy_sec": 0.63,
+        "compile_v2_sec": 0.222
+      }
+    },
+    {
+      "specimenId": "012",
+      "sourceSha256": "05da6dc5a49a3e9a325c1ee8beb2968c222843fe5225f78fd3404c11c6832f33",
+      "compiledSha256": "05da6dc5a49a3e9a325c1ee8beb2968c222843fe5225f78fd3404c11c6832f33",
+      "sourceActions": 2474,
+      "compiledActions": 2474,
+      "actionDelta": 0,
+      "sourceDescriptors": 3,
+      "compiledDescriptors": 3,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 2,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.506,
+        "import_v2_sec": 0.518,
+        "compile_legacy_sec": 1.23,
+        "compile_v2_sec": 0.376
+      }
+    },
+    {
+      "specimenId": "013",
+      "sourceSha256": "b24f392474beb6d7d331c39d2300348efcab1046fe52d877fc4443610a74fcf6",
+      "compiledSha256": "b24f392474beb6d7d331c39d2300348efcab1046fe52d877fc4443610a74fcf6",
+      "sourceActions": 73,
+      "compiledActions": 73,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 15,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.071,
+        "import_v2_sec": 0.079,
+        "compile_legacy_sec": 0.181,
+        "compile_v2_sec": 0.093
+      }
+    },
+    {
+      "specimenId": "014",
+      "sourceSha256": "077443ad1d63df294a624cc94bf9c63194eaf852b97942aa0915328bbeb3d8e9",
+      "compiledSha256": "077443ad1d63df294a624cc94bf9c63194eaf852b97942aa0915328bbeb3d8e9",
+      "sourceActions": 519,
+      "compiledActions": 519,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.165,
+        "import_v2_sec": 0.219,
+        "compile_legacy_sec": 0.375,
+        "compile_v2_sec": 0.175
+      }
+    },
+    {
+      "specimenId": "015",
+      "sourceSha256": "debe14d11dd8aed7c15eecd86cadc1018ec2e9cff8c8ed0403c68f7a0cd0722d",
+      "compiledSha256": "debe14d11dd8aed7c15eecd86cadc1018ec2e9cff8c8ed0403c68f7a0cd0722d",
+      "sourceActions": 49,
+      "compiledActions": 49,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.079,
+        "import_v2_sec": 0.064,
+        "compile_legacy_sec": 0.179,
+        "compile_v2_sec": 0.089
+      }
+    },
+    {
+      "specimenId": "016",
+      "sourceSha256": "be6a8b54fc7ba44d51b31a7ad81a216754e19c44a3cc2d1fb9dbf1aaf88d94c1",
+      "compiledSha256": "be6a8b54fc7ba44d51b31a7ad81a216754e19c44a3cc2d1fb9dbf1aaf88d94c1",
+      "sourceActions": 850,
+      "compiledActions": 850,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 2
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.288,
+        "import_v2_sec": 0.375,
+        "compile_legacy_sec": 0.678,
+        "compile_v2_sec": 0.238
+      }
+    },
+    {
+      "specimenId": "017",
+      "sourceSha256": "d86b2b7df2394cf1f3c0dd67c1cc283cc44f949f07ff5c5f52c96541f42c93b2",
+      "compiledSha256": "d86b2b7df2394cf1f3c0dd67c1cc283cc44f949f07ff5c5f52c96541f42c93b2",
+      "sourceActions": 8,
+      "compiledActions": 8,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.696,
+        "import_v2_sec": 0.658,
+        "compile_legacy_sec": 2.778,
+        "compile_v2_sec": 0.618
+      }
+    },
+    {
+      "specimenId": "018",
+      "sourceSha256": "685809064a9482efcc91eae167fd24fcbd39e42aff0382accf416b43d42b36c5",
+      "compiledSha256": "685809064a9482efcc91eae167fd24fcbd39e42aff0382accf416b43d42b36c5",
+      "sourceActions": 2683,
+      "compiledActions": 2683,
+      "actionDelta": 0,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 1,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.418,
+        "import_v2_sec": 0.396,
+        "compile_legacy_sec": 1.05,
+        "compile_v2_sec": 0.39
+      }
+    },
+    {
+      "specimenId": "019",
+      "sourceSha256": "9cb8cf7d9e738c2059317169ee0cc8d92d5a410981bb5887dd3506193e47f0ce",
+      "compiledSha256": "9cb8cf7d9e738c2059317169ee0cc8d92d5a410981bb5887dd3506193e47f0ce",
+      "sourceActions": 263,
+      "compiledActions": 263,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.142,
+        "import_v2_sec": 0.144,
+        "compile_legacy_sec": 0.494,
+        "compile_v2_sec": 0.137
+      }
+    },
+    {
+      "specimenId": "020",
+      "sourceSha256": "394397e1fdbb0708972f48122ad42ba8279fa7f955b0483956781fa04c122b11",
+      "compiledSha256": "394397e1fdbb0708972f48122ad42ba8279fa7f955b0483956781fa04c122b11",
+      "sourceActions": 161,
+      "compiledActions": 161,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.085,
+        "import_v2_sec": 0.075,
+        "compile_legacy_sec": 0.135,
+        "compile_v2_sec": 0.079
+      }
+    },
+    {
+      "specimenId": "021",
+      "sourceSha256": "e875a09695af1f6a0ef32ed69b01d32b070c60dc718b3d71bc2d91ff30ad10cd",
+      "compiledSha256": "e875a09695af1f6a0ef32ed69b01d32b070c60dc718b3d71bc2d91ff30ad10cd",
+      "sourceActions": 2683,
+      "compiledActions": 2683,
+      "actionDelta": 0,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 1,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.387,
+        "import_v2_sec": 0.406,
+        "compile_legacy_sec": 1.048,
+        "compile_v2_sec": 0.389
+      }
+    },
+    {
+      "specimenId": "022",
+      "sourceSha256": "cbeb2372bebeb9d05e2e080a369a5814089f676d60a1f5a86dc1283bdcd7fcc4",
+      "compiledSha256": "cbeb2372bebeb9d05e2e080a369a5814089f676d60a1f5a86dc1283bdcd7fcc4",
+      "sourceActions": 1831,
+      "compiledActions": 1831,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 33,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.756,
+        "import_v2_sec": 0.692,
+        "compile_legacy_sec": 2.082,
+        "compile_v2_sec": 0.658
+      }
+    },
+    {
+      "specimenId": "023",
+      "sourceSha256": "89105b9579c31541f9149ec1ddf3e8453e0fcc27a74711b7a25d4e0c05c0f7e9",
+      "compiledSha256": "89105b9579c31541f9149ec1ddf3e8453e0fcc27a74711b7a25d4e0c05c0f7e9",
+      "sourceActions": 507,
+      "compiledActions": 507,
+      "actionDelta": 0,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 1,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.093,
+        "import_v2_sec": 0.093,
+        "compile_legacy_sec": 0.223,
+        "compile_v2_sec": 0.091
+      }
+    },
+    {
+      "specimenId": "024",
+      "sourceSha256": "b04f16bb90e796ae2200d93801ad173b973dd63b5dbdbac981b7cc49e1a218a3",
+      "compiledSha256": "b04f16bb90e796ae2200d93801ad173b973dd63b5dbdbac981b7cc49e1a218a3",
+      "sourceActions": 850,
+      "compiledActions": 850,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 2
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.19,
+        "import_v2_sec": 0.191,
+        "compile_legacy_sec": 0.475,
+        "compile_v2_sec": 0.175
+      }
+    },
+    {
+      "specimenId": "025",
+      "sourceSha256": "48bb269bb5d456b3686223851a7706d6b8da394d1860d8a9ac2f9c1209681948",
+      "compiledSha256": "48bb269bb5d456b3686223851a7706d6b8da394d1860d8a9ac2f9c1209681948",
+      "sourceActions": 2728,
+      "compiledActions": 2728,
+      "actionDelta": 0,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 2,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.345,
+        "import_v2_sec": 0.348,
+        "compile_legacy_sec": 0.909,
+        "compile_v2_sec": 0.343
+      }
+    },
+    {
+      "specimenId": "026",
+      "sourceSha256": "55d6da55dbbd59d498347e0f4247946ecd6f82c6c3785ef8e4ccd7215a272e07",
+      "compiledSha256": "55d6da55dbbd59d498347e0f4247946ecd6f82c6c3785ef8e4ccd7215a272e07",
+      "sourceActions": 180,
+      "compiledActions": 180,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 1,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.631,
+        "import_v2_sec": 0.64,
+        "compile_legacy_sec": 2.801,
+        "compile_v2_sec": 0.665
+      }
+    },
+    {
+      "specimenId": "027",
+      "sourceSha256": "de0996ec0ee7d9fd2f7a4210f08895101e4ee8312450448c52131996f26aa503",
+      "compiledSha256": "de0996ec0ee7d9fd2f7a4210f08895101e4ee8312450448c52131996f26aa503",
+      "sourceActions": 2398,
+      "compiledActions": 2398,
+      "actionDelta": 0,
+      "sourceDescriptors": 131,
+      "compiledDescriptors": 131,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 7,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.237,
+        "import_v2_sec": 0.263,
+        "compile_legacy_sec": 0.494,
+        "compile_v2_sec": 0.247
+      }
+    },
+    {
+      "specimenId": "028",
+      "sourceSha256": "8da295e3f64c117d2dfb31c1c877dc807f063f4593baf8d51fef88e289e704f9",
+      "compiledSha256": "8da295e3f64c117d2dfb31c1c877dc807f063f4593baf8d51fef88e289e704f9",
+      "sourceActions": 522,
+      "compiledActions": 522,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 1,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.1,
+        "import_v2_sec": 0.103,
+        "compile_legacy_sec": 0.225,
+        "compile_v2_sec": 0.104
+      }
+    },
+    {
+      "specimenId": "029",
+      "sourceSha256": "c3922ee08e09d485614185e53de3118fc074124a173d73b74352bf941ff00a08",
+      "compiledSha256": "c3922ee08e09d485614185e53de3118fc074124a173d73b74352bf941ff00a08",
+      "sourceActions": 76,
+      "compiledActions": 76,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.055,
+        "import_v2_sec": 0.06,
+        "compile_legacy_sec": 0.116,
+        "compile_v2_sec": 0.062
+      }
+    },
+    {
+      "specimenId": "030",
+      "sourceSha256": "039da6c2141f96909d25806a8f92438e7f85efc9950c027c35204b7e9e71251e",
+      "compiledSha256": "039da6c2141f96909d25806a8f92438e7f85efc9950c027c35204b7e9e71251e",
+      "sourceActions": 850,
+      "compiledActions": 850,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 2
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.216,
+        "import_v2_sec": 0.231,
+        "compile_legacy_sec": 0.571,
+        "compile_v2_sec": 0.175
+      }
+    },
+    {
+      "specimenId": "031",
+      "sourceSha256": "a831360158048feed8296772c6abddd70a8b186eba32b24db903a0c2f183dd81",
+      "compiledSha256": "a831360158048feed8296772c6abddd70a8b186eba32b24db903a0c2f183dd81",
+      "sourceActions": 957,
+      "compiledActions": 957,
+      "actionDelta": 0,
+      "sourceDescriptors": 9,
+      "compiledDescriptors": 9,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 6,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.169,
+        "import_v2_sec": 0.169,
+        "compile_legacy_sec": 0.412,
+        "compile_v2_sec": 0.169
+      }
+    },
+    {
+      "specimenId": "032",
+      "sourceSha256": "d6d9f24bbbe43615b1968acd493da6796a075863d4123967c8b71bf35df14764",
+      "compiledSha256": "d6d9f24bbbe43615b1968acd493da6796a075863d4123967c8b71bf35df14764",
+      "sourceActions": 7,
+      "compiledActions": 7,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.048,
+        "import_v2_sec": 0.046,
+        "compile_legacy_sec": 0.114,
+        "compile_v2_sec": 0.053
+      }
+    },
+    {
+      "specimenId": "033",
+      "sourceSha256": "8da295e3f64c117d2dfb31c1c877dc807f063f4593baf8d51fef88e289e704f9",
+      "compiledSha256": "8da295e3f64c117d2dfb31c1c877dc807f063f4593baf8d51fef88e289e704f9",
+      "sourceActions": 522,
+      "compiledActions": 522,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 1,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.103,
+        "import_v2_sec": 0.104,
+        "compile_legacy_sec": 0.238,
+        "compile_v2_sec": 0.098
+      }
+    },
+    {
+      "specimenId": "034",
+      "sourceSha256": "18954a857062ad6a1eeaff305a425fb93d10fccfeb9416936f0c9db5dacb9dfd",
+      "compiledSha256": "18954a857062ad6a1eeaff305a425fb93d10fccfeb9416936f0c9db5dacb9dfd",
+      "sourceActions": 521,
+      "compiledActions": 521,
+      "actionDelta": 0,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.565,
+        "import_v2_sec": 0.566,
+        "compile_legacy_sec": 2.551,
+        "compile_v2_sec": 0.59
+      }
+    },
+    {
+      "specimenId": "035",
+      "sourceSha256": "c44b4fe49258c34d0277b21f45690174290bc39dd9aba0e02d1147ab4e120578",
+      "compiledSha256": "c44b4fe49258c34d0277b21f45690174290bc39dd9aba0e02d1147ab4e120578",
+      "sourceActions": 2155,
+      "compiledActions": 2155,
+      "actionDelta": 0,
+      "sourceDescriptors": 24,
+      "compiledDescriptors": 24,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "FAIL"
+      },
+      "firstMismatch": {
+        "gate": "CONTROL_FLOW_PASS",
+        "category": "CONTROL_FLOW_CHANGE",
+        "path": "WFWorkflowActions[723].WFControlFlowMode",
+        "subcategory": "SOURCE_CONTROL_FLOW_INVALID"
+      },
+      "gateFirstMismatch": {
+        "CONTROL_FLOW_PASS": {
+          "gate": "CONTROL_FLOW_PASS",
+          "category": "CONTROL_FLOW_CHANGE",
+          "path": "WFWorkflowActions[723].WFControlFlowMode",
+          "subcategory": "SOURCE_CONTROL_FLOW_INVALID"
+        }
+      },
+      "gateMismatchCounts": {
+        "CONTROL_FLOW_PASS": 1
+      },
+      "sourceValidity": {
+        "controlFlowValid": false,
+        "controlFlowViolation": {
+          "index": 723,
+          "category": "CONTROL_FLOW_ORPHAN_END"
+        },
+        "danglingReferenceCount": 2,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "FAIL",
+        "firstMismatch": {
+          "gate": "CONTROL_FLOW_PASS",
+          "category": "CONTROL_FLOW_CHANGE",
+          "path": "WFWorkflowActions[723].WFControlFlowMode",
+          "subcategory": "SOURCE_CONTROL_FLOW_INVALID"
+        }
+      },
+      "timing": {
+        "import_legacy_sec": 0.587,
+        "import_v2_sec": 0.559,
+        "compile_legacy_sec": 1.978,
+        "compile_v2_sec": 0.557
+      }
+    },
+    {
+      "specimenId": "036",
+      "sourceSha256": "d39e20461416418598e8d01cb1b6357169f41e1a0f64d9dabfe922374b267594",
+      "compiledSha256": "d39e20461416418598e8d01cb1b6357169f41e1a0f64d9dabfe922374b267594",
+      "sourceActions": 521,
+      "compiledActions": 521,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.136,
+        "import_v2_sec": 0.135,
+        "compile_legacy_sec": 0.431,
+        "compile_v2_sec": 0.14
+      }
+    },
+    {
+      "specimenId": "037",
+      "sourceSha256": "1840ac8246b962503115a6b1710a1895af5fdaa54f6d583242489322b7d08d60",
+      "compiledSha256": "1840ac8246b962503115a6b1710a1895af5fdaa54f6d583242489322b7d08d60",
+      "sourceActions": 829,
+      "compiledActions": 829,
+      "actionDelta": 0,
+      "sourceDescriptors": 5,
+      "compiledDescriptors": 5,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 7,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.139,
+        "import_v2_sec": 0.135,
+        "compile_legacy_sec": 0.289,
+        "compile_v2_sec": 0.136
+      }
+    },
+    {
+      "specimenId": "038",
+      "sourceSha256": "db6bb550cb02e5e46dc27078b8aa053b809e20f7c18cfcecef6482a46ff240a3",
+      "compiledSha256": "db6bb550cb02e5e46dc27078b8aa053b809e20f7c18cfcecef6482a46ff240a3",
+      "sourceActions": 210,
+      "compiledActions": 210,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "PASS",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "PASS",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "extendedGates": {
+        "SOURCE_CONTAINER_EQUIVALENCE_PASS": "PASS",
+        "STRICT_NATIVE_WIRE_FIDELITY_PASS": "PASS"
+      },
+      "firstMismatch": null,
+      "gateFirstMismatch": {},
+      "gateMismatchCounts": {},
+      "sourceValidity": {
+        "controlFlowValid": true,
+        "controlFlowViolation": null,
+        "danglingReferenceCount": 0,
+        "duplicateProducerUuidCount": 0
+      },
+      "v2": {
+        "compile": "PASS",
+        "strictSequence": "PASS",
+        "full": "PASS",
+        "firstMismatch": null
+      },
+      "timing": {
+        "import_legacy_sec": 0.152,
+        "import_v2_sec": 0.155,
+        "compile_legacy_sec": 0.626,
+        "compile_v2_sec": 0.179
+      }
+    }
+  ]
+}
