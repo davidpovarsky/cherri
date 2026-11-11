@@ -4,7 +4,7 @@
 **Phase:** P10R6 — Real Shortcut Import, Lossless Decompilation, Native Plist Fidelity, and Actions App Integration  
 **Component:** Third-Party AppIntents & Sindre Sorhus' Actions App (v4.0.1)  
 **Evaluator:** Dana (Security) & Yael (Research)  
-**Status:** 100% PRESERVED & ROUND-TRIP VERIFIED (11/11 Specimens with Third-Party Actions)
+**Status:** Coarse AppIntent Dictionary Preservation Active (Reconciled in P10R7: 2/11 STRICT_WIRE PASS, 9/11 FAIL on Sequence Shift, 27 N/A)
 
 ---
 
@@ -76,9 +76,8 @@ In the 38 real-world shortcut corpus, **11 shortcuts** contain third-party Actio
 | **028** | 2 | `com.sindresorhus.Actions` | `ParseJSONIntent` | **PASS (100%)** |
 | **033** | 2 | `com.sindresorhus.Actions` | `ParseJSONIntent` | **PASS (100%)** |
 
-**Total Third-Party Actions Evaluated:** 70 actions  
-**Total Preserved:** 70 / 70 (100.0%)  
-**Gate `THIRD_PARTY_DESCRIPTOR_PRESERVED` Result:** **11 / 11 PASS** (Remaining 27 shortcuts contain standard Apple built-in actions and are recorded as `N/A`).
+**Total Third-Party Actions Evaluated:** 70 actions (note: under the strict P10R7 descriptor-dictionary extractor tracking all `AppIntentDescriptor` and `IntentAppDefinition` dicts, **164** descriptor parameters appear across 11 specimens `004, 012, 018, 021, 023, 025, 027, 031, 034, 035, 037`, while `008, 009, 014, 022, 028, 033` invoke Actions App identifiers without `AppIntentDescriptor`/`IntentAppDefinition` sub-dicts)  
+**P10R6 Coarse Check:** Top-level `AppIntentDescriptor` dictionary unwrapping rule active in `raw_actions.go` (reconciled in P10R7: P10R6 `corpus_audit.py` evaluated coarse `raw_actions.go` presence rather than strict aligned-index parameter equality; under strict `independent_fidelity_oracle.py`, `THIRD_PARTY_DESCRIPTOR_WIRE_PASS` is `2 / 11` PASS for aligned sequences `004`, `023`, and `9 / 11` FAIL due to action-count/index shifts in `012, 018, 021, 025, 027, 031, 034, 035, 037`).
 
 ---
 

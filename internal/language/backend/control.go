@@ -236,6 +236,16 @@ func BuildLoopEnd(groupingID string, outputUUID string) map[string]any {
 
 // BuildMenuStart constructs the beginning action parameters for a menu block.
 func BuildMenuStart(groupingID string, prompt any, itemTitles []string) map[string]any {
+	itemValues := make([]any, len(itemTitles))
+	for i, title := range itemTitles {
+		itemValues[i] = title
+	}
+	return BuildMenuStartItems(groupingID, prompt, itemValues)
+}
+
+// BuildMenuStartItems constructs the beginning action parameters for a menu block
+// with arbitrary string or serialized WFValue item values.
+func BuildMenuStartItems(groupingID string, prompt any, itemValues []any) map[string]any {
 	params := map[string]any{
 		"GroupingIdentifier": groupingID,
 		"WFControlFlowMode":  ControlFlowStart,
@@ -243,11 +253,11 @@ func BuildMenuStart(groupingID string, prompt any, itemTitles []string) map[stri
 	if prompt != nil && prompt != "" {
 		params["WFMenuPrompt"] = prompt
 	}
-	menuItems := make([]WFMenuItem, len(itemTitles))
-	for i, title := range itemTitles {
+	menuItems := make([]WFMenuItem, len(itemValues))
+	for i, val := range itemValues {
 		menuItems[i] = WFMenuItem{
 			WFItemType: 0,
-			WFValue:    title,
+			WFValue:    val,
 		}
 	}
 	params["WFMenuItems"] = menuItems
@@ -256,11 +266,17 @@ func BuildMenuStart(groupingID string, prompt any, itemTitles []string) map[stri
 
 // BuildMenuCase constructs a case branch action parameters for a menu.
 func BuildMenuCase(groupingID string, title string) map[string]any {
+	return BuildMenuCaseWithTitle(groupingID, title, title)
+}
+
+// BuildMenuCaseWithTitle constructs a case branch action parameters for a menu
+// with a distinct display title and attributed title value.
+func BuildMenuCaseWithTitle(groupingID string, title string, attributedTitle any) map[string]any {
 	return map[string]any{
 		"GroupingIdentifier":        groupingID,
 		"WFControlFlowMode":         ControlFlowElse,
 		"WFMenuItemTitle":           title,
-		"WFMenuItemAttributedTitle": title,
+		"WFMenuItemAttributedTitle": attributedTitle,
 	}
 }
 

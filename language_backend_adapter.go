@@ -466,7 +466,7 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 		if k == "WFWorkflow" || (appleIdentifier == "is.workflow.actions.list" && k == "WFItems") {
 			continue
 		}
-		if k == "AppIntentDescriptor" {
+		if k == "AppIntentDescriptor" || k == "IntentAppDefinition" {
 			cleanParams[k] = normalizeNativeDescriptor(v)
 			continue
 		}

@@ -29,6 +29,7 @@ const (
 
 var code strings.Builder
 var specialCharsRegex *regexp.Regexp
+var decompilingRawTextToken = false
 var actionByUUID map[string]*ShortcutAction
 var actionIndexByUUID map[string]int
 var controlFlowGroupByUUID map[string]string
@@ -209,6 +210,8 @@ func decompile(b []byte) {
 	controlFlowGroups = make(map[int]controlFlowGroup)
 	varUUIDs = []string{}
 	constUUIDs = []string{}
+	pendingFoldUUID = ""
+	currentVariableValue = ""
 
 	basename = strings.ReplaceAll(basename, " ", "_")
 	outputPath = getOutputPath(basename + ".cherri")
@@ -347,32 +350,90 @@ func mapIdentifiers() {
 		}
 	}
 
-	uuidRefCount := make(map[string]int)
+	setVarRefs := make(map[string]int)
+	setVarFirstIdx := make(map[string]int)
+	setVarHasAggr := make(map[string]bool)
+	setVarFallbackName := make(map[string]string)
+	otherRefs := make(map[string]int)
+
 	for i := range shortcut.WFWorkflowActions {
 		action := &shortcut.WFWorkflowActions[i]
-		if action.WFWorkflowActionIdentifier == SetVariableIdentifier || action.WFWorkflowActionIdentifier == AppendVariableIdentifier {
+		params := action.WFWorkflowActionParameters
+		if params == nil {
 			continue
 		}
-		countUUIDsInParams(action.WFWorkflowActionParameters, uuidRefCount)
-	}
-	for u := range uuidRefCount {
-		if actionByUUID[u] != nil {
-			constUUIDs = append(constUUIDs, u)
-			if _, found := uuids[u]; !found {
-				act := actionByUUID[u]
-				outName := getString(act.WFWorkflowActionParameters, "CustomOutputName")
-				if outName == "" {
-					outName = defaultActionOutputName(act.WFWorkflowActionIdentifier)
+		if action.WFWorkflowActionIdentifier == SetVariableIdentifier {
+			if inputMap := getMap(params, "WFInput"); inputMap != nil {
+				var wfInput WFInput
+				mapToStruct(inputMap, &wfInput)
+				if u := wfInput.Value.OutputUUID; u != "" {
+					setVarRefs[u]++
+					if setVarRefs[u] == 1 {
+						setVarFirstIdx[u] = i
+						setVarHasAggr[u] = len(wfInput.Value.Aggrandizements) > 0
+						outName := wfInput.Value.OutputName
+						if outName == "" {
+							outName = getString(params, "WFVariableName")
+						}
+						if outName != "" {
+							setVarFallbackName[u] = outName
+						}
+					}
 				}
-				mapUUID(u, outName)
 			}
+			continue
+		}
+		countUUIDsInParams(params, otherRefs)
+	}
+
+	isControlFlow := func(id string) bool {
+		return id == "is.workflow.actions.conditional" ||
+			id == "is.workflow.actions.choosefrommenu" ||
+			id == "is.workflow.actions.repeat.count" ||
+			id == "is.workflow.actions.repeat.each"
+	}
+
+	for i := range shortcut.WFWorkflowActions {
+		action := &shortcut.WFWorkflowActions[i]
+		params := action.WFWorkflowActionParameters
+		if params == nil {
+			continue
+		}
+		u := getString(params, "UUID")
+		if u == "" {
+			continue
+		}
+		if setVarRefs[u]+otherRefs[u] == 0 {
+			continue
+		}
+		foldable := setVarRefs[u] == 1 &&
+			otherRefs[u] == 0 &&
+			!setVarHasAggr[u] &&
+			setVarFirstIdx[u] == i+1 &&
+			!isControlFlow(action.WFWorkflowActionIdentifier) &&
+			action.WFWorkflowActionIdentifier != AppendVariableIdentifier
+
+		if foldable {
+			varUUIDs = append(varUUIDs, u)
+		} else {
+			constUUIDs = append(constUUIDs, u)
+		}
+		if _, found := uuids[u]; !found {
+			outName := getString(params, "CustomOutputName")
+			if outName == "" {
+				outName = setVarFallbackName[u]
+			}
+			if outName == "" {
+				outName = defaultActionOutputName(action.WFWorkflowActionIdentifier)
+			}
+			mapUUID(u, outName)
 		}
 	}
 
 	for _, action := range shortcut.WFWorkflowActions {
 		currentAction.identifier = action.WFWorkflowActionIdentifier
 		var params = action.WFWorkflowActionParameters
-		if params == nil || action.WFWorkflowActionIdentifier == SetVariableIdentifier || action.WFWorkflowActionIdentifier == AppendVariableIdentifier {
+		if params == nil || action.WFWorkflowActionIdentifier == SetVariableIdentifier {
 			continue
 		}
 
@@ -419,7 +480,7 @@ func mapControlFlowOutputs() {
 	groupingIdx = 0
 }
 
-// Map out variables in the Shortcut and their UUIDs for later checks.
+// Map out variables in the Shortcut so Pass 2 / decompilation recognizes assigned variable names.
 func mapVariables() {
 	for _, action := range shortcut.WFWorkflowActions {
 		currentAction.identifier = action.WFWorkflowActionIdentifier
@@ -433,19 +494,6 @@ func mapVariables() {
 				sanitizeIdentifier(&varName)
 				if _, found := variables[varName]; !found {
 					variables[varName] = varValue{}
-				}
-			}
-
-			if inputMap := getMap(params, "WFInput"); inputMap != nil {
-				var wfInput WFInput
-				mapToStruct(inputMap, &wfInput)
-				if wfInput.Value.OutputUUID != "" {
-					varUUIDs = append(varUUIDs, wfInput.Value.OutputUUID)
-					outName := wfInput.Value.OutputName
-					if outName == "" {
-						outName = varName
-					}
-					mapUUID(wfInput.Value.OutputUUID, outName)
 				}
 			}
 		}
@@ -618,7 +666,9 @@ func mapAttachmentIdentifiers(attachments map[string]Value) {
 
 func checkConstantUUID(value Value) {
 	if value.OutputUUID != "" && value.Type == "ActionOutput" && actionByUUID[value.OutputUUID] != nil {
-		constUUIDs = append(constUUIDs, value.OutputUUID)
+		if !slices.Contains(constUUIDs, value.OutputUUID) {
+			constUUIDs = append(constUUIDs, value.OutputUUID)
+		}
 	}
 }
 
@@ -829,18 +879,22 @@ func decompileWorkflowMetadata() {
 	}
 
 	revItems := reversedContentItems()
-	if (shortcut.WFWorkflowHasShortcutInputVariables || slices.Contains(shortcut.WFWorkflowTypes, "ActionExtension") || slices.Contains(shortcut.WFWorkflowTypes, "QuickActions")) &&
-		len(shortcut.WFWorkflowInputContentItemClasses) > 0 && len(shortcut.WFWorkflowInputContentItemClasses) < 20 {
-		var inputTypes []string
-		for _, cls := range shortcut.WFWorkflowInputContentItemClasses {
-			if cherriType, found := revItems[cls]; found {
-				inputTypes = append(inputTypes, cherriType)
-			}
-		}
-		if len(inputTypes) > 0 {
-			sort.Strings(inputTypes)
-			newCodeLine(fmt.Sprintf("#define inputs %s\n", strings.Join(inputTypes, ", ")))
+	if (shortcut.WFWorkflowHasShortcutInputVariables || slices.Contains(shortcut.WFWorkflowTypes, "ActionExtension") || slices.Contains(shortcut.WFWorkflowTypes, "QuickActions")) && shortcut.WFWorkflowInputContentItemClasses != nil {
+		if len(shortcut.WFWorkflowInputContentItemClasses) == 0 {
+			newCodeLine("#define inputs none\n")
 			wroteDefinition = true
+		} else if len(shortcut.WFWorkflowInputContentItemClasses) < 20 {
+			var inputTypes []string
+			for _, cls := range shortcut.WFWorkflowInputContentItemClasses {
+				if cherriType, found := revItems[cls]; found {
+					inputTypes = append(inputTypes, cherriType)
+				}
+			}
+			if len(inputTypes) > 0 {
+				sort.Strings(inputTypes)
+				newCodeLine(fmt.Sprintf("#define inputs %s\n", strings.Join(inputTypes, ", ")))
+				wroteDefinition = true
+			}
 		}
 	}
 
@@ -963,15 +1017,49 @@ func metadataDefinitionValues(selected []string, definitions map[string]string, 
 }
 
 var currentVariableValue string
+var pendingFoldUUID string
+
+func isFoldableAction(action *ShortcutAction) bool {
+	if action == nil || action.WFWorkflowActionParameters == nil {
+		return false
+	}
+	u, ok := action.WFWorkflowActionParameters[UUID].(string)
+	if !ok || u == "" {
+		return false
+	}
+	return slices.Contains(varUUIDs, u) && !slices.Contains(constUUIDs, u)
+}
+
+func canDecompDictionaryGetValue(action *ShortcutAction) bool {
+	if !isFoldableAction(action) {
+		return false
+	}
+	if dictType, ok := action.WFWorkflowActionParameters["WFGetDictionaryValueType"].(string); ok && dictType != "" && dictType != "Value" {
+		return false
+	}
+	keyStr, ok := action.WFWorkflowActionParameters["WFDictionaryKey"].(string)
+	if !ok || strings.ContainsAny(keyStr, "'[]{}\n\r") {
+		return false
+	}
+	inputRef := decompValue(action.WFWorkflowActionParameters["WFInput"])
+	if inputRef == "" || strings.ContainsAny(inputRef, "[].\"'{ \t\n\r") {
+		return false
+	}
+	return true
+}
 
 func decompileActions() {
 	for i, action := range shortcut.WFWorkflowActions {
 		actionIndex = i
+		if action.WFWorkflowActionIdentifier != SetVariableIdentifier {
+			currentVariableValue = ""
+			pendingFoldUUID = ""
+		}
 		switch action.WFWorkflowActionIdentifier {
 		case "is.workflow.actions.comment":
 			decompComment(&action)
 		case "is.workflow.actions.gettext":
-			if !hasUnrepresentableTextToken(action.WFWorkflowActionParameters) {
+			if !hasUnrepresentableActionTextParams(action.WFWorkflowActionParameters) {
 				decompTextValue(&action)
 			} else {
 				decompAction(&action)
@@ -991,7 +1079,7 @@ func decompileActions() {
 			}
 		case "is.workflow.actions.calculateexpression":
 			decompExpression(&action)
-		case SetVariableIdentifier, AppendVariableIdentifier:
+		case SetVariableIdentifier:
 			decompVariable(&action)
 		case "is.workflow.actions.conditional":
 			decompConditional(&action)
@@ -1002,9 +1090,7 @@ func decompileActions() {
 		case "is.workflow.actions.choosefrommenu":
 			decompMenu(&action)
 		case "is.workflow.actions.getvalueforkey":
-			var dictionaryKey = action.WFWorkflowActionParameters["WFDictionaryKey"]
-			if dictionaryKey != nil && action.WFWorkflowActionParameters[UUID] != nil &&
-				!slices.Contains(constUUIDs, action.WFWorkflowActionParameters[UUID].(string)) {
+			if canDecompDictionaryGetValue(&action) {
 				decompDictionaryGetValue(&action)
 				continue
 			}
@@ -1018,13 +1104,17 @@ func decompileActions() {
 var varUUIDs []string
 var constUUIDs []string
 
-// checkConstantLiteral determines if action should be written out on a new line as a constant and clear the current variable value.
+// checkConstantLiteral determines if action should be written out on a new line as a constant or deferred for folding.
 func checkConstantLiteral(action *ShortcutAction) {
-	if _, found := action.WFWorkflowActionParameters[UUID]; !found {
+	if action == nil || action.WFWorkflowActionParameters == nil {
 		return
 	}
-	var actionUUID = action.WFWorkflowActionParameters[UUID].(string)
-	if slices.Contains(varUUIDs, actionUUID) && !slices.Contains(constUUIDs, actionUUID) {
+	actionUUID, ok := action.WFWorkflowActionParameters[UUID].(string)
+	if !ok || actionUUID == "" {
+		return
+	}
+	if isFoldableAction(action) {
+		pendingFoldUUID = actionUUID
 		return
 	}
 	if outputName, found := uuids[actionUUID]; found {
@@ -1037,6 +1127,7 @@ func checkConstantLiteral(action *ShortcutAction) {
 		code.WriteString(currentVariableValue)
 		code.WriteRune('\n')
 		currentVariableValue = ""
+		pendingFoldUUID = ""
 	}
 }
 
@@ -1055,6 +1146,25 @@ func makeConstantLiteral(action *ShortcutAction) {
 		code.WriteString(currentVariableValue)
 		code.WriteRune('\n')
 		currentVariableValue = ""
+		pendingFoldUUID = ""
+	}
+}
+
+func emitOrDeferActionCall(action *ShortcutAction) {
+	var isConstant, isVariableValue = checkOutputType(action)
+	if isConstant && isVariableValue {
+		makeConstantLiteral(action)
+	} else if isConstant {
+		checkConstantLiteral(action)
+	} else if isVariableValue {
+		if u, ok := action.WFWorkflowActionParameters[UUID].(string); ok && u != "" {
+			pendingFoldUUID = u
+		}
+	} else {
+		code.WriteString(tabbedLine(currentVariableValue))
+		code.WriteRune('\n')
+		currentVariableValue = ""
+		pendingFoldUUID = ""
 	}
 }
 
@@ -1081,12 +1191,21 @@ func decompComment(action *ShortcutAction) {
 
 var decompilingText = false
 
+func emitUnreferencedTextValue(action *ShortcutAction) {
+	if currentVariableValue != "" && !isFoldableAction(action) {
+		newCodeLine(fmt.Sprintf("text(%s)\n", currentVariableValue))
+		currentVariableValue = ""
+		pendingFoldUUID = ""
+	}
+}
+
 func decompTextValue(action *ShortcutAction) {
 	if importQuestionByActionParam != nil && importQuestionByActionParam[actionIndex] != nil {
 		if qName, isQ := importQuestionByActionParam[actionIndex]["WFTextActionText"]; isQ {
 			if action.WFWorkflowActionParameters[UUID] != nil {
 				currentVariableValue = qName
 				checkConstantLiteral(action)
+				emitUnreferencedTextValue(action)
 			} else {
 				newCodeLine(fmt.Sprintf("text(%s)\n\n", qName))
 			}
@@ -1095,39 +1214,29 @@ func decompTextValue(action *ShortcutAction) {
 	}
 
 	decompilingText = true
-	if hasUnrepresentableTextToken(action.WFWorkflowActionParameters) {
+	if hasUnrepresentableActionTextParams(action.WFWorkflowActionParameters) {
 		decompilingText = false
 		decompAction(action)
 		return
 	}
 	rawText := action.WFWorkflowActionParameters["WFTextActionText"]
-	currentVariableValue = decompValue(rawText)
-	if currentVariableValue == "" {
-		currentVariableValue = "\"\""
-	} else if _, isStr := rawText.(string); !isStr {
-		if !strings.HasPrefix(currentVariableValue, "\"") {
-			currentVariableValue = "\"" + currentVariableValue
-		}
-		if !strings.HasSuffix(currentVariableValue, "\"") || strings.HasSuffix(currentVariableValue, "\\\"") {
-			currentVariableValue = currentVariableValue + "\""
+	if rawStr, isStr := rawText.(string); isStr && checkInlineVarRegex.MatchString(rawStr) && !strings.ContainsAny(rawStr, "\\'\r\n") {
+		currentVariableValue = fmt.Sprintf("'%s'", rawStr)
+	} else {
+		currentVariableValue = decompValue(rawText)
+		if currentVariableValue == "" {
+			currentVariableValue = "\"\""
+		} else if !isStr {
+			if !strings.HasPrefix(currentVariableValue, "\"") {
+				currentVariableValue = "\"" + currentVariableValue
+			}
+			if !strings.HasSuffix(currentVariableValue, "\"") || strings.HasSuffix(currentVariableValue, "\\\"") {
+				currentVariableValue = currentVariableValue + "\""
+			}
 		}
 	}
 	checkConstantLiteral(action)
-	if currentVariableValue != "" {
-		actionUUID, _ := action.WFWorkflowActionParameters[UUID].(string)
-		consumedByVar := actionUUID != "" && slices.Contains(varUUIDs, actionUUID)
-		followedBySetVar := false
-		if actionIndex+1 < len(shortcut.WFWorkflowActions) {
-			nextIdent := shortcut.WFWorkflowActions[actionIndex+1].WFWorkflowActionIdentifier
-			if nextIdent == SetVariableIdentifier || nextIdent == AppendVariableIdentifier {
-				followedBySetVar = true
-			}
-		}
-		if !consumedByVar && !followedBySetVar {
-			newCodeLine(fmt.Sprintf("text(%s)\n", currentVariableValue))
-			currentVariableValue = ""
-		}
-	}
+	emitUnreferencedTextValue(action)
 	decompilingText = false
 }
 
@@ -1187,6 +1296,11 @@ func decompNumberValue(action *ShortcutAction) (nonLiteral bool) {
 
 	currentVariableValue = decompValue(number)
 	checkConstantLiteral(action)
+	if currentVariableValue != "" && !isFoldableAction(action) {
+		newCodeLine(fmt.Sprintf("number(%s)\n", currentVariableValue))
+		currentVariableValue = ""
+		pendingFoldUUID = ""
+	}
 
 	return
 }
@@ -1210,6 +1324,11 @@ func decompBasicExpression(action *ShortcutAction) {
 	currentVariableValue = varRegex.ReplaceAllString(expression, "$1")
 
 	checkConstantLiteral(action)
+	if currentVariableValue != "" && !isFoldableAction(action) {
+		currentVariableValue = ""
+		pendingFoldUUID = ""
+		decompAction(action)
+	}
 }
 
 func decompExpression(action *ShortcutAction) {
@@ -1223,16 +1342,7 @@ func decompExpression(action *ShortcutAction) {
 	outsideVars := regexp.MustCompile(`{(.*?)}`).ReplaceAllString(expression, "")
 	if strings.Contains(expression, ",") || regexp.MustCompile(`[a-zA-Z]`).MatchString(outsideVars) {
 		currentVariableValue = makeRawAction(action)
-		var isConstant, isVariableValue = checkOutputType(action)
-		if isConstant && isVariableValue {
-			makeConstantLiteral(action)
-		} else if isConstant {
-			checkConstantLiteral(action)
-		} else if !isVariableValue {
-			code.WriteString(tabbedLine(currentVariableValue))
-			code.WriteRune('\n')
-			currentVariableValue = ""
-		}
+		emitOrDeferActionCall(action)
 		return
 	}
 
@@ -1240,6 +1350,10 @@ func decompExpression(action *ShortcutAction) {
 	currentVariableValue = varRegex.ReplaceAllString(expression, "$1")
 
 	checkConstantLiteral(action)
+	if currentVariableValue != "" && !isFoldableAction(action) {
+		currentVariableValue = makeRawAction(action)
+		emitOrDeferActionCall(action)
+	}
 }
 
 var skipNextLoopVarAction bool
@@ -1278,13 +1392,28 @@ func decompVariable(action *ShortcutAction) {
 	if skipNextLoopVarAction {
 		skipNextLoopVarAction = false
 		currentVariableValue = ""
+		pendingFoldUUID = ""
+		return
+	}
+	if action.WFWorkflowActionIdentifier == SetVariableIdentifier &&
+		action.WFWorkflowActionParameters["WFInput"] == nil &&
+		action.WFWorkflowActionParameters["WFVariableName"] != nil {
+		currentVariableValue = makeRawAction(action)
+		emitOrDeferActionCall(action)
 		return
 	}
 	var variableName = action.WFWorkflowActionParameters["WFVariableName"].(string)
 	sanitizeIdentifier(&variableName)
 	newCodeLine(fmt.Sprintf("@%s", variableName))
 
-	if currentVariableValue != "" {
+	var inputUUID string
+	if inputMap := getMap(action.WFWorkflowActionParameters, "WFInput"); inputMap != nil {
+		var wfInput WFInput
+		mapToStruct(inputMap, &wfInput)
+		inputUUID = wfInput.Value.OutputUUID
+	}
+
+	if currentVariableValue != "" && pendingFoldUUID != "" && inputUUID == pendingFoldUUID {
 		code.WriteRune(' ')
 		if action.WFWorkflowActionIdentifier == AppendVariableIdentifier {
 			code.WriteString("+= ")
@@ -1305,6 +1434,7 @@ func decompVariable(action *ShortcutAction) {
 	}
 
 	currentVariableValue = ""
+	pendingFoldUUID = ""
 	code.WriteRune('\n')
 }
 
@@ -1674,6 +1804,10 @@ func decompDictionary(action *ShortcutAction) {
 	currentVariableValue = decompDictionaryValue(params.WFItems.Value.WFDictionaryFieldValueItems)
 
 	checkConstantLiteral(action)
+	if currentVariableValue != "" && !isFoldableAction(action) {
+		currentVariableValue = makeRawAction(action)
+		emitOrDeferActionCall(action)
+	}
 }
 
 func decompDictionaryValue(items []WFDictionaryFieldValueItem) string {
@@ -1983,10 +2117,16 @@ func decompPlainDictionaryTree(value map[string]interface{}) map[string]any {
 func decompStructuredValue(value any) any {
 	switch typed := value.(type) {
 	case map[string]interface{}:
+		if hasUnrepresentableTextToken(typed) {
+			return typed
+		}
 		if isReferenceValue(typed) {
 			return fmt.Sprintf("${%s}", decompValueObject(typed))
 		}
 		if serType, ok := typed["WFSerializationType"].(string); ok && serType == "WFTextTokenString" {
+			prevRawText := decompilingRawTextToken
+			decompilingRawTextToken = true
+			defer func() { decompilingRawTextToken = prevRawText }()
 			return decompValueObject(typed)
 		}
 		if isPlainDictionaryValue(typed) {
@@ -2060,7 +2200,9 @@ func decompObjectValue(valueObj any) string {
 		decompAttachmentString(&attachmentString, map[string]any{
 			"{0, 1}": value,
 		})
-		attachmentString = strings.Trim(attachmentString, "\"{}")
+		if !decompilingRawTextToken {
+			attachmentString = strings.Trim(attachmentString, "\"{}")
+		}
 	}
 
 	if attachments, found := value["attachmentsByRange"]; found {
@@ -2140,6 +2282,11 @@ func decompAttachmentString(attachmentString *string, attachments map[string]int
 		}
 	}
 
+	if decompilingRawTextToken {
+		*attachmentString = result.String()
+		return
+	}
+
 	*attachmentString = escapeString(result.String())
 
 	if !decompilingDictionary && !decompilingText {
@@ -2205,26 +2352,7 @@ func decompAction(action *ShortcutAction) {
 	}
 
 	currentVariableValue = makeActionCallCode(action)
-
-	var isConstant, isVariableValue = checkOutputType(action)
-	if isConstant && isVariableValue {
-		makeConstantLiteral(action)
-	} else if isConstant {
-		checkConstantLiteral(action)
-	} else if !isVariableValue {
-		followedBySetVar := false
-		if actionIndex+1 < len(shortcut.WFWorkflowActions) {
-			nextIdent := shortcut.WFWorkflowActions[actionIndex+1].WFWorkflowActionIdentifier
-			if nextIdent == SetVariableIdentifier || nextIdent == AppendVariableIdentifier {
-				followedBySetVar = true
-			}
-		}
-		if !followedBySetVar {
-			code.WriteString(tabbedLine(currentVariableValue))
-			code.WriteRune('\n')
-			currentVariableValue = ""
-		}
-	}
+	emitOrDeferActionCall(action)
 }
 
 func makeActionCallCode(action *ShortcutAction) string {
@@ -2331,6 +2459,12 @@ func isActionRepresentable(action *ShortcutAction, def *actionDefinition) bool {
 
 	if def.appIntent.name != "" || def.appIntent.bundleIdentifier != "" || def.appIntent.appIntentIdentifier != "" {
 		knownKeys["AppIntentDescriptor"] = true
+	}
+
+	if intentApp, hasIntentApp := action.WFWorkflowActionParameters["IntentAppDefinition"]; hasIntentApp {
+		if !plistCanonicalEqual(def.appendParams["IntentAppDefinition"], intentApp) {
+			return false
+		}
 	}
 
 	for k := range action.WFWorkflowActionParameters {
@@ -2453,8 +2587,16 @@ func isActionRepresentable(action *ShortcutAction, def *actionDefinition) bool {
 	}
 
 	// Reject WFTextTokenString containing orphaned references or unresolvable inline braces
-	for _, v := range action.WFWorkflowActionParameters {
-		if hasUnrepresentableTextToken(v) {
+	rawStringKeys := map[string]bool{}
+	if def.decomp == nil {
+		for _, param := range def.parameters {
+			if param.key != "" && (param.validType == String || param.validType == RawString || param.validType == Variable) {
+				rawStringKeys[param.key] = true
+			}
+		}
+	}
+	for k, v := range action.WFWorkflowActionParameters {
+		if hasUnrepresentableTextTokenRaw(v, rawStringKeys[k]) {
 			return false
 		}
 	}
@@ -2462,18 +2604,41 @@ func isActionRepresentable(action *ShortcutAction, def *actionDefinition) bool {
 	return true
 }
 
+func isLiteralRawStringCandidate(s string) bool {
+	return checkInlineVarRegex.MatchString(s) && !strings.ContainsAny(s, "\\'\r\n")
+}
+
+func hasUnrepresentableActionTextParams(params map[string]any) bool {
+	for k, v := range params {
+		if hasUnrepresentableTextTokenRaw(v, k == "WFTextActionText") {
+			return true
+		}
+	}
+	return false
+}
+
 func hasUnrepresentableTextToken(v any) bool {
+	return hasUnrepresentableTextTokenRaw(v, false)
+}
+
+func isOrphanedActionOutput(attMap map[string]any) bool {
+	if attMap == nil || attMap["Type"] != "ActionOutput" {
+		return false
+	}
+	u, _ := attMap["OutputUUID"].(string)
+	if u == "" || actionByUUID[u] == nil {
+		return true
+	}
+	if targetIdx, isTarget := actionIndexByUUID[u]; isTarget && targetIdx >= actionIndex {
+		return true
+	}
+	return false
+}
+
+func hasUnrepresentableTextTokenRaw(v any, allowTopLevelRaw bool) bool {
 	if str, isStr := v.(string); isStr {
-		if strings.Contains(str, "{") {
-			matches := checkInlineVarRegex.FindAllStringSubmatch(str, -1)
-			for _, match := range matches {
-				if len(match) >= 2 && match[1] != "" {
-					ident := match[1]
-					if !isDecompKnownReference(ident) {
-						return true
-					}
-				}
-			}
+		if strings.Contains(str, "{") && checkInlineVarRegex.MatchString(str) {
+			return !(allowTopLevelRaw && isLiteralRawStringCandidate(str))
 		}
 		return false
 	}
@@ -2488,6 +2653,10 @@ func hasUnrepresentableTextToken(v any) bool {
 		}
 		return false
 	}
+	if m["WFSerializationType"] == "WFTextTokenAttachment" {
+		valMap, ok := m["Value"].(map[string]any)
+		return ok && isOrphanedActionOutput(valMap)
+	}
 	if m["WFSerializationType"] == "WFTextTokenString" {
 		valMap, ok := m["Value"].(map[string]any)
 		if !ok {
@@ -2497,14 +2666,8 @@ func hasUnrepresentableTextToken(v any) bool {
 		if atts, ok := valMap["attachmentsByRange"].(map[string]any); ok {
 			for _, a := range atts {
 				if attMap, ok := a.(map[string]any); ok {
-					if attMap["Type"] == "ActionOutput" {
-						u, _ := attMap["OutputUUID"].(string)
-						if u == "" || actionByUUID[u] == nil {
-							return true
-						}
-						if targetIdx, isTarget := actionIndexByUUID[u]; isTarget && targetIdx >= actionIndex {
-							return true
-						}
+					if isOrphanedActionOutput(attMap) {
+						return true
 					}
 				}
 			}
@@ -2545,6 +2708,9 @@ func isDecompKnownReference(ident string) bool {
 	}
 	for uUUID, uName := range uuids {
 		if uName == ident {
+			if slices.Contains(varUUIDs, uUUID) && !slices.Contains(constUUIDs, uUUID) {
+				continue
+			}
 			if targetIdx, ok := actionIndexByUUID[uUUID]; ok && targetIdx < actionIndex {
 				return true
 			}
@@ -2585,7 +2751,7 @@ func checkOutputType(action *ShortcutAction) (isConstant bool, isVariableValue b
 // skipDecompAction skips actions we don't support or when necessary.
 func skipDecompAction(action *ShortcutAction) bool {
 	var identifier = actionIdentifierEnd(action.WFWorkflowActionIdentifier)
-	if identifier == "nothing" && actionIndex+1 < len(shortcut.WFWorkflowActions) {
+	if identifier == "nothing" && len(action.WFWorkflowActionParameters) == 0 && actionIndex+1 < len(shortcut.WFWorkflowActions) {
 		var nextAction = peekActions(1)
 		var controlflowActionIdentifiers = []string{"conditional", "repeat.each", "repeat.count", "choosefrommenu"}
 		var nextActionIdentifier = actionIdentifierEnd(nextAction.WFWorkflowActionIdentifier)
@@ -2619,14 +2785,18 @@ func decompActionArguments(actionCallCode *strings.Builder, matchedAction *actio
 		}
 		if argValue == "" {
 			if value, found := action.WFWorkflowActionParameters[param.key]; found {
-				if (param.validType == String || param.validType == RawString) && !isReferenceValue(value) {
-					switch reflect.TypeOf(value).Kind() {
-					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-						reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
-						reflect.Float32, reflect.Float64:
-						argValue = fmt.Sprintf("\"%v\"", value)
-					default:
-						argValue = decompValue(value)
+				if (param.validType == String || param.validType == RawString || param.validType == Variable) && !isReferenceValue(value) {
+					if strVal, isStr := value.(string); isStr && isLiteralRawStringCandidate(strVal) {
+						argValue = fmt.Sprintf("'%s'", strVal)
+					} else {
+						switch reflect.TypeOf(value).Kind() {
+						case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+							reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+							reflect.Float32, reflect.Float64:
+							argValue = fmt.Sprintf("\"%v\"", value)
+						default:
+							argValue = decompValue(value)
+						}
 					}
 				} else {
 					argValue = decompValue(value)
@@ -3038,6 +3208,25 @@ func scoreActionParams(splitActionParams *[]parameterDefinition, parameters map[
 		}
 	}
 	return
+}
+
+func plistCanonicalEqual(expected, actual any) bool {
+	if plistValuesMatch(expected, actual) {
+		return true
+	}
+	bExp, errExp := plist.Marshal(expected, plist.XMLFormat)
+	bAct, errAct := plist.Marshal(actual, plist.XMLFormat)
+	if errExp != nil || errAct != nil {
+		return false
+	}
+	var vExp, vAct any
+	if _, err := plist.Unmarshal(bExp, &vExp); err != nil {
+		return false
+	}
+	if _, err := plist.Unmarshal(bAct, &vAct); err != nil {
+		return false
+	}
+	return reflect.DeepEqual(vExp, vAct)
 }
 
 func plistValuesMatch(expected, actual any) bool {

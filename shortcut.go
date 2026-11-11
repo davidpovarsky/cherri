@@ -20,18 +20,18 @@ type ShortcutIcon struct {
 type Shortcut struct {
 	WFWorkflowIcon                       ShortcutIcon
 	WFWorkflowActions                    []ShortcutAction
-	WFQuickActionSurfaces                []string
+	WFQuickActionSurfaces                []string            `plist:",omitempty"`
 	WFWorkflowInputContentItemClasses    []string
 	WFWorkflowClientVersion              string
 	WFWorkflowMinimumClientVersion       int
 	WFWorkflowMinimumClientVersionString string
 	WFWorkflowImportQuestions            []WFQuestion
 	WFWorkflowTypes                      []string
-	WFWorkflowOutputContentItemClasses   []string
+	WFWorkflowOutputContentItemClasses   []string            `plist:",omitempty"`
 	WFWorkflowHasShortcutInputVariables  bool
 	WFWorkflowHasOutputFallback          bool
-	WFWorkflowNoInputBehavior            map[string]any
-	WFWorkflowTriggers                   []AutomationTrigger
+	WFWorkflowNoInputBehavior            map[string]any      `plist:",omitempty"`
+	WFWorkflowTriggers                   []AutomationTrigger `plist:",omitempty"`
 }
 
 var shortcut Shortcut

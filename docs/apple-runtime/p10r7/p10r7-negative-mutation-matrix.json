@@ -1,0 +1,222 @@
+{
+  "oracleVersion": "p10r7-fidelity-oracle-20261110.1",
+  "totalScenarios": 36,
+  "mutations": [
+    {
+      "id": "M01",
+      "mutation": "Replace WFWorkflowActionIdentifier of one action",
+      "failingGate": "STRICT_ACTION_SEQUENCE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M02",
+      "mutation": "Remove one action from the middle",
+      "failingGate": "STRICT_ACTION_SEQUENCE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M03",
+      "mutation": "Add one is.workflow.actions.nothing",
+      "failingGate": "STRICT_ACTION_SEQUENCE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M04",
+      "mutation": "Swap order of two different actions",
+      "failingGate": "STRICT_ACTION_SEQUENCE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M05",
+      "mutation": "Replace appendvariable with setvariable",
+      "failingGate": "STRICT_ACTION_SEQUENCE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M06",
+      "mutation": "Add setvariable replacing producer",
+      "failingGate": "VARIABLE_GRAPH_PASS",
+      "verified": true
+    },
+    {
+      "id": "M07",
+      "mutation": "Remove getvalueforkey used downstream",
+      "failingGate": "STRICT_ACTION_SEQUENCE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M08",
+      "mutation": "Change native string value",
+      "failingGate": "ACTION_PARAMETER_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M09",
+      "mutation": "Change native number to string",
+      "failingGate": "ACTION_PARAMETER_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M10",
+      "mutation": "Change key of native parameter",
+      "failingGate": "ACTION_PARAMETER_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M11",
+      "mutation": "Omit optional param present in source",
+      "failingGate": "ACTION_PARAMETER_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M12",
+      "mutation": "Replace WFTextTokenString with plain string",
+      "failingGate": "ACTION_PARAMETER_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M13",
+      "mutation": "Change deep nested dictionary value/type",
+      "failingGate": "ACTION_PARAMETER_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M14",
+      "mutation": "Replace WFDictionaryFieldValue with non-equivalent native dict",
+      "failingGate": "ACTION_PARAMETER_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M15",
+      "mutation": "OutputUUID points to wrong action",
+      "failingGate": "VARIABLE_GRAPH_PASS",
+      "verified": true
+    },
+    {
+      "id": "M16",
+      "mutation": "UUID alias collision (non-bijective)",
+      "failingGate": "VARIABLE_GRAPH_PASS",
+      "verified": true
+    },
+    {
+      "id": "M17",
+      "mutation": "WFVariableName changes scope",
+      "failingGate": "ACTION_PARAMETER_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M18",
+      "mutation": "Change WFControlFlowMode",
+      "failingGate": "CONTROL_FLOW_PASS",
+      "verified": true
+    },
+    {
+      "id": "M19",
+      "mutation": "Change GroupingIdentifier",
+      "failingGate": "CONTROL_FLOW_PASS",
+      "verified": true
+    },
+    {
+      "id": "M20",
+      "mutation": "Remove branch/end/otherwise control-flow",
+      "failingGate": "CONTROL_FLOW_PASS",
+      "verified": true
+    },
+    {
+      "id": "M21",
+      "mutation": "Change WFWorkflowTypes / share sheet",
+      "failingGate": "WORKFLOW_HEADER_PASS",
+      "verified": true
+    },
+    {
+      "id": "M22",
+      "mutation": "Omit WFWorkflowTriggers",
+      "failingGate": "WORKFLOW_HEADER_PASS",
+      "verified": true
+    },
+    {
+      "id": "M23",
+      "mutation": "Change WFWorkflowNoInputBehavior",
+      "failingGate": "WORKFLOW_HEADER_PASS",
+      "verified": true
+    },
+    {
+      "id": "M24",
+      "mutation": "Change input/output content classes",
+      "failingGate": "WORKFLOW_HEADER_PASS",
+      "verified": true
+    },
+    {
+      "id": "M25",
+      "mutation": "Change minimum client version",
+      "failingGate": "WORKFLOW_HEADER_PASS",
+      "verified": true
+    },
+    {
+      "id": "M26",
+      "mutation": "Change AppIntentIdentifier",
+      "failingGate": "THIRD_PARTY_DESCRIPTOR_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M27",
+      "mutation": "Change BundleIdentifier / TeamIdentifier",
+      "failingGate": "THIRD_PARTY_DESCRIPTOR_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M28",
+      "mutation": "Same 164 descriptors but moved to wrong action index",
+      "failingGate": "THIRD_PARTY_DESCRIPTOR_WIRE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M29",
+      "mutation": "Two different inputs normalize to same result",
+      "failingGate": "RAW_JSON_DECODE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M30",
+      "mutation": "JSON failure with valid plist \u2014 must not give JSON PASS",
+      "failingGate": "RAW_JSON_DECODE_PASS",
+      "verified": true
+    },
+    {
+      "id": "M31",
+      "mutation": "Stale output file from another run",
+      "failingGate": "freshness/provenance gate",
+      "verified": true
+    },
+    {
+      "id": "M32",
+      "mutation": "Report claiming 28,103 instead of 27,652",
+      "failingGate": "report reconciliation gate",
+      "verified": true
+    },
+    {
+      "id": "M33",
+      "mutation": "Erasing SHA / changing compiler commit in report",
+      "failingGate": "provenance gate",
+      "verified": true
+    },
+    {
+      "id": "M34",
+      "mutation": "Extra action created via lowering rule without mapping",
+      "failingGate": "PROVEN_LOWERING_EQUIVALENCE",
+      "verified": true
+    },
+    {
+      "id": "M35",
+      "mutation": "Changing rewrite rule conditions without proof update",
+      "failingGate": "PROVEN_LOWERING_EQUIVALENCE",
+      "verified": true
+    },
+    {
+      "id": "M36",
+      "mutation": "Marking Apple runtime PASS without device evidence",
+      "failingGate": "Apple runtime integrity gate",
+      "verified": true
+    }
+  ]
+}

@@ -2926,8 +2926,10 @@ func checkMissingStandardInclude(identifier *string, parsing bool) {
 		if parsing {
 			exit(fmt.Sprintf("Action '%s()' requires include:\n\n%s", name, includeStatement))
 		} else {
-			popLine(includeStatement)
-			markDecompiledInclude(actionInclude)
+			if actionInclude != "basic" {
+				popLine(includeStatement)
+				markDecompiledInclude(actionInclude)
+			}
 			break
 		}
 	}

@@ -149,6 +149,7 @@ func resetCompilerState() {
 	currentVariableValue = ""
 	decompilingText = false
 	decompilingDictionary = false
+	decompilingRawTextToken = false
 	macDefinition = false
 	setMacDefinition = false
 

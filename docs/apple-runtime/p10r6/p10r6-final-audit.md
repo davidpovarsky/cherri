@@ -144,9 +144,9 @@ All existing and newly authored test suites pass cleanly in the worktree:
 - 38 / 38 (100.0%) PASS on `INPUT_DECODE_PASS`
 - 38 / 38 (100.0%) PASS on `DECOMPILE_PASS`
 - 38 / 38 (100.0%) PASS on `LEGACY_COMPILE_PASS`
-- 38 / 38 (100.0%) PASS on `ACTION_SEQUENCE_PASS`
-- 38 / 38 (100.0%) PASS on `FULL_WORKFLOW_SEMANTIC_PASS`
-- 11 / 11 (100.0%) PASS on `THIRD_PARTY_DESCRIPTOR_PRESERVED` (27 N/A)
+- 3 / 38 (7.9%) PASS on `ACTION_SEQUENCE_PASS` *(reconciled in P10R7 via `tools/p10r7/independent_fidelity_oracle.py`; the original `tools/p10r6/corpus_audit.py` hardcoded `PASS` prior to P10R7 and produced a nominal `38/38`, retracted here; P10R6 compiled action total was **34,355** across **27,652** source actions, `+6,703` bloat)*
+- 0 / 38 (0.0%) PASS on `FULL_WORKFLOW_SEMANTIC_PASS` *(reconciled in P10R7: original P10R6 script hardcoded `PASS` before wire/header/variable oracle enforcement existed; see `docs/apple-runtime/p10r7/p10r7-baseline-reconciliation.md` and `p10r7-final-audit.md`)*
+- `THIRD_PARTY_DESCRIPTOR_PRESERVED`: coarse top-level `AppIntentDescriptor` dictionary unwrapping check passed on the 11 Actions/AppIntent specimens in P10R6, whereas strict P10R7 wire verification (`THIRD_PARTY_DESCRIPTOR_WIRE_PASS`, tracking all 164 descriptor parameters at aligned indices across the 11 specimens carrying `AppIntentDescriptor`/`IntentAppDefinition`) is `2 / 11` PASS (`004`, `023`, `27 N/A`) in P10R7 until the remaining 9 sequence-shifted workflows reach `STRICT_ACTION_SEQUENCE_PASS`.
 
 ---
 

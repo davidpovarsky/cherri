@@ -661,6 +661,205 @@ func TestForkActionRoundTrips(t *testing.T) {
 			t.Errorf("expected unmodeled parameter WFContentItemFilter preserved in rawAction, got:\n%s", decompiled)
 		}
 	})
+
+	t.Run("menuItem/interpolated-variable-token-string", func(t *testing.T) {
+		source := "@label = \"Dynamic\"\nmenu \"Pick {@label}\" {\nitem \"Item {@label}\":\n\tshow(\"chosen\")\n}\n"
+		srcPath := filepath.Join(r.dir, "menu-interp.cherri")
+		if err := os.WriteFile(srcPath, []byte(source), 0644); err != nil {
+			t.Fatalf("write menu-interp source: %v", err)
+		}
+		r.runCherri("menu-interp/compile-legacy", srcPath, "--legacy", "--skip-sign", "--no-ansi")
+		shortcutA := filepath.Join(r.dir, "menu-interp_unsigned.shortcut")
+		docA := loadRoundTripDocument(t, shortcutA)
+		actions, ok := docA["WFWorkflowActions"].([]any)
+		if !ok || len(actions) < 3 {
+			t.Fatalf("expected at least 3 actions in compiled menu shortcut, got %v", docA["WFWorkflowActions"])
+		}
+		var sawStart, sawCase bool
+		for _, raw := range actions {
+			act, _ := raw.(map[string]any)
+			if act["WFWorkflowActionIdentifier"] != "is.workflow.actions.choosefrommenu" {
+				continue
+			}
+			params, _ := act["WFWorkflowActionParameters"].(map[string]any)
+			mode := fmt.Sprintf("%v", params["WFControlFlowMode"])
+			if mode == "0" {
+				sawStart = true
+				items, _ := params["WFMenuItems"].([]any)
+				if len(items) != 1 {
+					t.Fatalf("expected 1 WFMenuItems entry, got %d", len(items))
+				}
+				entry, _ := items[0].(map[string]any)
+				valMap, isDict := entry["WFValue"].(map[string]any)
+				if !isDict || valMap["WFSerializationType"] != "WFTextTokenString" {
+					t.Fatalf("expected WFMenuItems[0].WFValue to be WFTextTokenString dict, got %T (%v)", entry["WFValue"], entry["WFValue"])
+				}
+			} else if mode == "1" {
+				sawCase = true
+				title, isStr := params["WFMenuItemTitle"].(string)
+				if !isStr || strings.Contains(title, "map[") {
+					t.Fatalf("expected clean string WFMenuItemTitle, got %T (%v)", params["WFMenuItemTitle"], params["WFMenuItemTitle"])
+				}
+				attrMap, isDict := params["WFMenuItemAttributedTitle"].(map[string]any)
+				if !isDict || attrMap["attachmentsByRange"] == nil {
+					t.Fatalf("expected WFMenuItemAttributedTitle dict with attachmentsByRange, got %T (%v)", params["WFMenuItemAttributedTitle"], params["WFMenuItemAttributedTitle"])
+				}
+			}
+		}
+		if !sawStart || !sawCase {
+			t.Fatalf("expected both choosefrommenu mode 0 and mode 1, got sawStart=%v sawCase=%v", sawStart, sawCase)
+		}
+		sourceBPath := filepath.Join(r.dir, "menu-interp_b.cherri")
+		r.runCherri("menu-interp/import-legacy", "--import="+shortcutA, "--legacy", "-o="+sourceBPath, "--no-ansi")
+		decompBytes, err := os.ReadFile(sourceBPath)
+		if err != nil {
+			t.Fatalf("read decompiled menu-interp: %v", err)
+		}
+		if strings.Contains(string(decompBytes), "map[") {
+			t.Fatalf("decompiled menu leaked struct formatting:\n%s", string(decompBytes))
+		}
+		r.runCherri("menu-interp/recompile-legacy", sourceBPath, "--legacy", "--skip-sign", "--no-ansi")
+		shortcutB := filepath.Join(r.dir, "menu-interp_b_unsigned.shortcut")
+		assertStructurallyEqual(t, "menu-interp", shortcutA, shortcutB)
+	})
+
+	t.Run("setvariable/no-wfinput-preserves-rawAction", func(t *testing.T) {
+		var sc = Shortcut{
+			WFWorkflowActions: []ShortcutAction{
+				{
+					WFWorkflowActionIdentifier: "is.workflow.actions.setvariable",
+					WFWorkflowActionParameters: map[string]any{
+						"WFVariableName": "EmptyInit",
+					},
+				},
+			},
+		}
+		plistBytes, err := plist.Marshal(sc, plist.XMLFormat)
+		if err != nil {
+			t.Fatalf("marshal test plist: %v", err)
+		}
+		plistPath := filepath.Join(r.dir, "setvar_no_input.plist")
+		if err := os.WriteFile(plistPath, plistBytes, 0644); err != nil {
+			t.Fatalf("write test plist: %v", err)
+		}
+		decompiled := r.decompileShortcut("setvar-no-input", plistPath)
+		if !strings.Contains(decompiled, "rawAction(\"is.workflow.actions.setvariable\"") {
+			t.Fatalf("expected rawAction fallback for setvariable without WFInput, got:\n%s", decompiled)
+		}
+		if strings.Contains(decompiled, "nothing()") {
+			t.Fatalf("unexpected synthetic nothing() inserted for setvariable without WFInput:\n%s", decompiled)
+		}
+		sourceBPath := filepath.Join(r.dir, "setvar-no-input_b.cherri")
+		r.runCherri("setvar-no-input/recompile", sourceBPath, "--legacy", "--skip-sign", "--no-ansi")
+		docB := loadRoundTripDocument(t, filepath.Join(r.dir, "setvar-no-input_b_unsigned.shortcut"))
+		actionsB, _ := docB["WFWorkflowActions"].([]any)
+		if len(actionsB) != 1 {
+			t.Fatalf("expected exactly 1 action after recompile (no extra nothing), got %d", len(actionsB))
+		}
+		act0, _ := actionsB[0].(map[string]any)
+		if act0["WFWorkflowActionIdentifier"] != "is.workflow.actions.setvariable" {
+			t.Fatalf("expected setvariable identifier, got %v", act0["WFWorkflowActionIdentifier"])
+		}
+	})
+
+	t.Run("rawAction/text-token-string-preserves-braces", func(t *testing.T) {
+		const producerUUID = "11111111-2222-3333-4444-555555555555"
+		var sc = Shortcut{
+			WFWorkflowActions: []ShortcutAction{
+				{
+					WFWorkflowActionIdentifier: "is.workflow.actions.gettext",
+					WFWorkflowActionParameters: map[string]any{
+						UUID:               producerUUID,
+						"CustomOutputName": "Greeting",
+						"WFTextActionText": "hello",
+					},
+				},
+				{
+					WFWorkflowActionIdentifier: "custom.action.tokenParam",
+					WFWorkflowActionParameters: map[string]any{
+						"CustomText": map[string]any{
+							"WFSerializationType": "WFTextTokenString",
+							"Value": map[string]any{
+								"string": ObjectReplaceCharStr,
+								"attachmentsByRange": map[string]any{
+									"{0, 1}": map[string]any{
+										"Type":       "ActionOutput",
+										"OutputName": "Greeting",
+										"OutputUUID": producerUUID,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+		plistBytes, err := plist.Marshal(sc, plist.XMLFormat)
+		if err != nil {
+			t.Fatalf("marshal test plist: %v", err)
+		}
+		plistPath := filepath.Join(r.dir, "raw_text_token.plist")
+		if err := os.WriteFile(plistPath, plistBytes, 0644); err != nil {
+			t.Fatalf("write test plist: %v", err)
+		}
+		decompiledPath := filepath.Join(r.dir, "raw-text-token_b.cherri")
+		r.runCherri("raw-text-token/import-legacy", "--import="+plistPath, "--legacy", "-o="+decompiledPath, "--no-ansi")
+		decompiledBytes, err := os.ReadFile(decompiledPath)
+		if err != nil {
+			t.Fatalf("read decompiled raw-text-token: %v", err)
+		}
+		decompiled := string(decompiledBytes)
+		if !strings.Contains(decompiled, "\"{Greeting}\"") && !strings.Contains(decompiled, "{Greeting}") {
+			t.Fatalf("expected WFTextTokenString inside rawAction to keep braces around Greeting, got:\n%s", decompiled)
+		}
+		r.runCherri("raw-text-token/recompile", decompiledPath, "--legacy", "--skip-sign", "--no-ansi")
+		docB := loadRoundTripDocument(t, filepath.Join(r.dir, "raw-text-token_b_unsigned.shortcut"))
+		actionsB, _ := docB["WFWorkflowActions"].([]any)
+		if len(actionsB) != 2 {
+			t.Fatalf("expected 2 actions after recompile, got %d", len(actionsB))
+		}
+		act1, _ := actionsB[1].(map[string]any)
+		params1, _ := act1["WFWorkflowActionParameters"].(map[string]any)
+		customText, ok := params1["CustomText"].(map[string]any)
+		if !ok || customText["WFSerializationType"] != "WFTextTokenString" {
+			t.Fatalf("expected recompiled CustomText to preserve WFTextTokenString serialization, got %T (%v)", params1["CustomText"], params1["CustomText"])
+		}
+	})
+
+	t.Run("rawAction/intent-app-definition-stays-flat", func(t *testing.T) {
+		r := newRoundTripRunner(t)
+		source := `#define name intent_app_def
+rawAction("is.workflow.actions.timer.start", {
+	"IntentAppDefinition": {
+		"BundleIdentifier": "com.apple.mobiletimer",
+		"Name": "Clock",
+		"TeamIdentifier": "0000000000"
+	}
+})
+`
+		srcPath := filepath.Join(r.dir, "intent_app_def.cherri")
+		if err := os.WriteFile(srcPath, []byte(source), 0644); err != nil {
+			t.Fatalf("write source: %v", err)
+		}
+		r.runCherri("intent-app-def/compile", srcPath, "--legacy", "--skip-sign", "--no-ansi")
+		doc := loadRoundTripDocument(t, filepath.Join(r.dir, "intent_app_def_unsigned.shortcut"))
+		actionsOut, _ := doc["WFWorkflowActions"].([]any)
+		if len(actionsOut) != 1 {
+			t.Fatalf("expected 1 action, got %d", len(actionsOut))
+		}
+		act, _ := actionsOut[0].(map[string]any)
+		params, _ := act["WFWorkflowActionParameters"].(map[string]any)
+		intentApp, ok := params["IntentAppDefinition"].(map[string]any)
+		if !ok {
+			t.Fatalf("expected IntentAppDefinition map, got %T", params["IntentAppDefinition"])
+		}
+		if _, wrapped := intentApp["WFSerializationType"]; wrapped {
+			t.Fatalf("IntentAppDefinition in rawAction must remain a plain native dictionary, got wrapped %v", intentApp)
+		}
+		if intentApp["BundleIdentifier"] != "com.apple.mobiletimer" || intentApp["TeamIdentifier"] != "0000000000" {
+			t.Fatalf("unexpected IntentAppDefinition contents: %v", intentApp)
+		}
+	})
 }
 
 func assertBase64DecodesAsEncode(t *testing.T, r *roundTripRunner, label string, source string) {

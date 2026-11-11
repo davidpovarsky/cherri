@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0",
-  "sourceCommit": "c5c59432bab885712a5512babcde378e2ea76854",
-  "inputDependencyFingerprint": "cf00bedc7ca27b85adfaa0124e89514cfb1c7c04622c7cd02bb73a8603581b0a",
+  "sourceCommit": "62a9a4a0bf44482705d7a69ed2db573ee740b189",
+  "inputDependencyFingerprint": "d5dfcfa064f90c4d4ee3dbda5d06db7ccb31766cd006b7cf353990f3ca6cf70b",
   "totalCatalogEntries": 505,
   "summary": {
     "totalEntries": 505,
@@ -28,7 +28,8 @@
     },
     "decompileModeCounts": {
       "native_cherri_call": 497,
-      "native_control_flow": 8
+      "native_control_flow": 7,
+      "rawAction_lossless_fallback": 1
     },
     "coverageDimensionsSummary": {
       "1_appleRuntimeDiscovery": {
@@ -22322,7 +22323,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[nothing]; app_intent_test.go; compiler_isolation_test.go; p10_structural_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[nothing]; app_intent_test.go; compiler_isolation_test.go; fork_roundtrip_test.go",
       "emittedParameterKeys": [],
       "knownLimitations": "None"
     },
@@ -40211,7 +40212,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[menu]; control_flow_matrix_test.go; ios_bridge_matrix_test.go; p10_structural_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[menu]; control_flow_matrix_test.go; fork_roundtrip_test.go; ios_bridge_matrix_test.go",
       "emittedParameterKeys": [
         "GroupingIdentifier",
         "UUID",
@@ -40449,7 +40450,7 @@
       "plistIdentifierVerified": true,
       "parameterContractVerified": true,
       "decompileSupported": true,
-      "decompileMode": "native_control_flow",
+      "decompileMode": "rawAction_lossless_fallback",
       "roundTripVerified": true,
       "structuralRoundTripPass": true,
       "nativeSpecimenParityStatus": "NEEDS_EVIDENCE",
@@ -40487,7 +40488,7 @@
         "WFSerializationType",
         "WFVariableName"
       ],
-      "knownLimitations": "None"
+      "knownLimitations": "Decompiles via lossless rawAction(...) fallback because multiple Cherri wrapper actions share the same Apple identifier without a unique constant parameter discriminator."
     },
     {
       "cherriName": "dictionaryValue",

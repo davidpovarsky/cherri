@@ -1,21 +1,21 @@
 # P10R5 — Consumer Compatibility Matrix
 
 - **Generator**: `tools/p10r3/verify_consumer_compatibility.py`
-- **Compiler HEAD at generation**: `c5c59432bab885712a5512babcde378e2ea76854`
+- **Compiler HEAD at generation**: `62a9a4a0bf44482705d7a69ed2db573ee740b189`
 - **Verdict**: `COMPATIBLE_WITH_EXTERNAL_BLOCKERS`
 
 > `NOT_AVAILABLE_LOCALLY` and `BLOCKED_EXTERNAL` are never counted as `PASS`.
 
 | Component | Source Commit | Schema Fingerprint | Codec Fingerprint | Tested Against | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Compiler | `c5c59432bab8` | `787e9842bbe9` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
-| Documentation | `a38b62b819e4` | `787e9842bbe9` | `3e7e3555eefe` | compiler c5c59432bab8 schema 787e9842bbe9 | `PASS` |
+| Compiler | `62a9a4a0bf44` | `787e9842bbe9` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
+| Documentation | `a38b62b819e4` | `787e9842bbe9` | `3e7e3555eefe` | compiler 62a9a4a0bf44 schema 787e9842bbe9 | `PASS` |
 | Skill | `1204e1f7dfac` | `787e9842bbe9` | `3e7e3555eefe` | docs a38b62b819e4 | `PASS` |
 | Remote Builder | `1204e1f7dfac` | `787e9842bbe9` | `3e7e3555eefe` | skill compatibility-manifest.json tuple | `BLOCKED_EXTERNAL` |
-| iOS Bridge | `c5c59432bab8` | `787e9842bbe9` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
-| iOS UI | `c5c59432bab8` | `787e9842bbe9` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
+| iOS Bridge | `62a9a4a0bf44` | `787e9842bbe9` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
+| iOS UI | `62a9a4a0bf44` | `787e9842bbe9` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
 | Preview | `42ee7656e0cc` | `787e9842bbe9` | `3e7e3555eefe` | ios/WebPreview lock + generic catalog metadata renderer | `PASS` |
-| Pure+Pack | `141b9cc96cf1` | `787e9842bbe9` | `3e7e3555eefe` | P10 catalog @ c5c59432bab8 | `PASS` |
+| Pure+Pack | `141b9cc96cf1` | `787e9842bbe9` | `3e7e3555eefe` | P10 catalog @ 62a9a4a0bf44 | `PASS` |
 
 ## Check Details
 

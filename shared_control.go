@@ -68,9 +68,21 @@ func BuildMenuStart(groupingID string, prompt any, itemTitles []string) map[stri
 	return backend.BuildMenuStart(groupingID, prompt, itemTitles)
 }
 
+// BuildMenuStartItems constructs the beginning action parameters for a menu block
+// with arbitrary string or serialized WFValue item values.
+func BuildMenuStartItems(groupingID string, prompt any, itemValues []any) map[string]any {
+	return backend.BuildMenuStartItems(groupingID, prompt, itemValues)
+}
+
 // BuildMenuCase constructs a case branch action parameters for a menu.
 func BuildMenuCase(groupingID string, title string) map[string]any {
 	return backend.BuildMenuCase(groupingID, title)
+}
+
+// BuildMenuCaseWithTitle constructs a case branch action parameters for a menu
+// with a distinct display title and attributed title value.
+func BuildMenuCaseWithTitle(groupingID string, title string, attributedTitle any) map[string]any {
+	return backend.BuildMenuCaseWithTitle(groupingID, title, attributedTitle)
 }
 
 // BuildMenuEnd constructs the closing action parameters for a menu block.

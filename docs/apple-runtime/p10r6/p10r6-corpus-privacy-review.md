@@ -36,7 +36,7 @@ This document certifies that:
 
 ## 3. Threat Model & Sensitive Data Taxonomy
 
-During the P10R6 audit across 38 real shortcuts (totaling 28,103 raw actions and 35,016 compiled actions), the following categories of potentially sensitive parameters were identified in real Apple Shortcuts and verified to be protected:
+During the P10R6 audit across 38 real shortcuts (verified row sum: **27,652** source actions and **34,355** compiled actions in P10R6; an earlier draft misquoted 28,103 / 35,016 and was reconciled during P10R7), the following categories of potentially sensitive parameters were identified in real Apple Shortcuts and verified to be protected:
 
 ### 3.1 Network & API Credentials
 - **Observed In Shortcuts:** Webhook URLs, REST API query parameters, bearer tokens, basic auth headers, Slack/Discord bot webhooks.

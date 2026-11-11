@@ -583,6 +583,8 @@ var ContentItemClasses = map[string]string{
 	"dictionary":   "WFDictionaryContentItem",
 	"number":       "WFNumberContentItem",
 	"url":          "WFURLContentItem",
+	"bool":         "WFBooleanContentItem",
+	"contentitem":  "WFContentItem",
 }
 
 // WorkflowTypes maps surface names to Apple Shortcuts workflow types.

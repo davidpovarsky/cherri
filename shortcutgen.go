@@ -37,9 +37,15 @@ func generateShortcut() {
 
 	shortcut = BuildWorkflowHeader()
 	shortcut.WFWorkflowHasShortcutInputVariables = hasShortcutInputVariables
-	shortcut.WFQuickActionSurfaces = definedQuickActions
-	shortcut.WFWorkflowNoInputBehavior = noInput
-	shortcut.WFWorkflowTriggers = automationTriggers
+	if len(definedQuickActions) > 0 {
+		shortcut.WFQuickActionSurfaces = definedQuickActions
+	}
+	if len(noInput) > 0 {
+		shortcut.WFWorkflowNoInputBehavior = noInput
+	}
+	if len(automationTriggers) > 0 {
+		shortcut.WFWorkflowTriggers = automationTriggers
+	}
 
 	waitFor(
 		func() {
@@ -58,6 +64,9 @@ func generateShortcut() {
 	// Must run after generateActions(): question.actionIndex is only populated
 	// once each action referencing it has actually been generated.
 	shortcut.WFWorkflowImportQuestions = generateImportQuestions()
+	if shortcut.WFWorkflowImportQuestions == nil {
+		shortcut.WFWorkflowImportQuestions = []WFQuestion{}
+	}
 
 	if args.Using("debug") {
 		printShortcutGenDebug()
@@ -457,10 +466,12 @@ func variableValueWithSerialization(variable varValue, serializationType string)
 	}
 	if variable.getAs != "" {
 		var refValueType = variable.valueType
+		var targetVar = variable
 		if variable.valueType == Variable && variableReference.valueType != "" {
 			refValueType = variableReference.valueType
+			targetVar = variableReference
 		}
-		if refValueType == Dict {
+		if isDictAggrandizement(refValueType, &targetVar) {
 			aggrandizements = append(aggrandizements, Aggrandizement{
 				Type:          "WFDictionaryValueVariableAggrandizement",
 				DictionaryKey: variable.getAs,
@@ -601,24 +612,26 @@ func makeAttachmentValues() {
 	}
 }
 
-func makeAggrandizement(valueType *tokenType, variable *varValue, getAs string) (aggrandizement Aggrandizement) {
-	switch *valueType {
+func isDictAggrandizement(valueType tokenType, variable *varValue) bool {
+	switch valueType {
 	case Dict:
-		aggrandizement.Type = "WFDictionaryValueVariableAggrandizement"
+		return true
 	case Action:
-		var variableAction = *variable.value.(action).def
-		if variableAction.outputType == Dict {
-			aggrandizement.Type = "WFDictionaryValueVariableAggrandizement"
-		} else {
-			aggrandizement.Type = "WFPropertyVariableAggrandizement"
+		if variable != nil {
+			if a, ok := variable.value.(action); ok && a.def != nil && a.def.outputType == Dict {
+				return true
+			}
 		}
-	default:
-		aggrandizement.Type = "WFPropertyVariableAggrandizement"
 	}
+	return false
+}
 
-	if aggrandizement.Type == "WFDictionaryValueVariableAggrandizement" {
+func makeAggrandizement(valueType *tokenType, variable *varValue, getAs string) (aggrandizement Aggrandizement) {
+	if valueType != nil && isDictAggrandizement(*valueType, variable) {
+		aggrandizement.Type = "WFDictionaryValueVariableAggrandizement"
 		aggrandizement.DictionaryKey = getAs
 	} else {
+		aggrandizement.Type = "WFPropertyVariableAggrandizement"
 		aggrandizement.PropertyName = getAs
 	}
 
@@ -1272,6 +1285,38 @@ func conditionalParameterVariableLegacy(spec *ConditionSpec, arg actionArgument,
 	}
 }
 
+// menuItemValueAndTitle normalizes a menu item or case argument into its WFMenuItems WFValue,
+// plain WFMenuItemTitle display string, and WFMenuItemAttributedTitle value.
+func menuItemValueAndTitle(arg actionArgument) (menuValue any, caseTitle string, attributedTitle any) {
+	val := paramValue(arg, String)
+	switch v := val.(type) {
+	case string:
+		return v, v, v
+	case WFTextTokenString:
+		return v, fmt.Sprint(arg.value), v.Value
+	case WFValue:
+		if v.WFSerializationType == "WFTextTokenString" {
+			return v, fmt.Sprint(arg.value), v.Value
+		}
+		if v.WFSerializationType == "WFTextTokenAttachment" {
+			if att, ok := v.Value.(Value); ok {
+				tok := Value{
+					String: ObjectReplaceCharStr,
+					AttachmentsByRange: map[string]Value{
+						"{0, 1}": att,
+					},
+				}
+				return WFValue{
+					Value:               tok,
+					WFSerializationType: "WFTextTokenString",
+				}, fmt.Sprint(arg.value), tok
+			}
+		}
+	}
+	s := fmt.Sprint(val)
+	return s, s, s
+}
+
 func makeMenuAction(t *token) {
 	if t.valueType == EndClosure {
 		addStdAction("choosefrommenu", BuildMenuEnd(t.ident, createUUIDReference(t.value.(string))))
@@ -1285,22 +1330,23 @@ func makeMenuAction(t *token) {
 		}, String)
 	}
 	var menuItemParams = menus[t.ident]
-	itemTitles := make([]string, len(menuItemParams))
+	itemValues := make([]any, len(menuItemParams))
 	for i, item := range menuItemParams {
-		itemTitles[i] = fmt.Sprint(paramValue(actionArgument{
+		menuVal, _, _ := menuItemValueAndTitle(actionArgument{
 			valueType: item.valueType,
 			value:     item.value,
-		}, String))
+		})
+		itemValues[i] = menuVal
 	}
-	addStdAction("choosefrommenu", BuildMenuStart(t.ident, prompt, itemTitles))
+	addStdAction("choosefrommenu", BuildMenuStartItems(t.ident, prompt, itemValues))
 }
 
 func makeMenuItemAction(t *token) {
-	title := fmt.Sprint(paramValue(actionArgument{
+	_, title, attrTitle := menuItemValueAndTitle(actionArgument{
 		valueType: t.valueType,
 		value:     t.value,
-	}, String))
-	addStdAction("choosefrommenu", BuildMenuCase(t.ident, title))
+	})
+	addStdAction("choosefrommenu", BuildMenuCaseWithTitle(t.ident, title, attrTitle))
 }
 
 func makeRepeatAction(t *token) {
@@ -1356,6 +1402,9 @@ func generateImportQuestions() (importQuestions []WFQuestion) {
 }
 
 func generateInputContentItems() (inputContentItems []string) {
+	if len(inputs) == 1 && inputs[0] == "__NONE__" {
+		return []string{}
+	}
 	if len(inputs) == 0 {
 		for _, input := range contentItems {
 			inputContentItems = append(inputContentItems, input)

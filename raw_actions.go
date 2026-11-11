@@ -26,7 +26,7 @@ func defineRawAction() {
 			}
 
 			var params = getArgValue(args[1]).(map[string]interface{})
-			handleRawParams(params)
+			handleRawActionParams(params)
 
 			return params
 		},
@@ -35,11 +35,29 @@ func defineRawAction() {
 }
 
 func handleRawParams(params map[string]any) {
+	handleRawParamsWithOptions(params, false)
+}
+
+func handleRawActionParams(params map[string]any) {
+	handleRawParamsWithOptions(params, true)
+}
+
+func handleRawParamsWithOptions(params map[string]any, normalizeIntentApp bool) {
 	for key, value := range params {
 		if key == "WFWorkflow" {
 			continue
 		}
-		if key == "AppIntentDescriptor" {
+		if key == "WFVariableName" {
+			if varName, ok := value.(string); ok && varName != "" {
+				if _, exists := variables[varName]; !exists {
+					variables[varName] = varValue{
+						variableType: "Variable",
+						value:        varName,
+					}
+				}
+			}
+		}
+		if key == "AppIntentDescriptor" || (normalizeIntentApp && key == "IntentAppDefinition") {
 			params[key] = normalizeNativeDescriptor(value)
 			continue
 		}

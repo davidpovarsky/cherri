@@ -1,0 +1,1396 @@
+{
+  "harnessVersion": "p10r7-audit-harness-20261110.1",
+  "oracleVersion": "p10r7-fidelity-oracle-20261110.1",
+  "compilerBinarySha256": "316e4bc858c2daddc658dd95fa645f3fceeab83d0d2ce5da45ed02916b0c2e2c",
+  "totalSpecimens": 38,
+  "totalSourceActions": 27652,
+  "totalCompiledActions": 27658,
+  "totalActionDelta": 6,
+  "strictActionSequencePassCount": 21,
+  "fullWorkflowSemanticPassCount": 0,
+  "gateSummary": {
+    "RAW_JSON_DECODE_PASS": 38,
+    "BPLIST_OR_XML_DECODE_PASS": 38,
+    "DECOMPILE_PASS": 38,
+    "LEGACY_COMPILE_PASS": 38,
+    "V2_COMPILE_PASS": 1,
+    "STRICT_ACTION_SEQUENCE_PASS": 21,
+    "ACTION_PARAMETER_WIRE_PASS": 0,
+    "VARIABLE_GRAPH_PASS": 10,
+    "CONTROL_FLOW_PASS": 21,
+    "WORKFLOW_HEADER_PASS": 4,
+    "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": 2,
+    "FULL_WORKFLOW_SEMANTIC_PASS": 0,
+    "APPLE_RUNTIME_EXECUTED": 0
+  },
+  "matrix": [
+    {
+      "specimenId": "001",
+      "sourceSha256": "7426c942812251a1d6c76c52dd521dccf8c06053b4b2b78d7e5579e3d50e9235",
+      "compiledSha256": "d1cbd14826793085c22c13ff317cfce369b2c298808401b51a1fada055da54e2",
+      "sourceActions": 162,
+      "compiledActions": 162,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.197,
+        "decompile_v2_sec": 0.525,
+        "compile_legacy_sec": 0.527,
+        "compile_v2_sec": 0.127
+      }
+    },
+    {
+      "specimenId": "002",
+      "sourceSha256": "50ab2b29c0441f6a56bd4c7adcd541744bd6cad7c9f7cbca57488dfa7ee120fe",
+      "compiledSha256": "798f89f89195428cc5b32fd201f2f675b30cd5107c7f2fa1a650dbc8d7d73445",
+      "sourceActions": 205,
+      "compiledActions": 204,
+      "actionDelta": -1,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "STRICT_ACTION_SEQUENCE_PASS",
+        "category": "ACTION_COUNT_MISMATCH",
+        "path": "WFWorkflowActions (len 205 vs 204)"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.471,
+        "decompile_v2_sec": 1.115,
+        "compile_legacy_sec": 0.871,
+        "compile_v2_sec": 0.128
+      }
+    },
+    {
+      "specimenId": "003",
+      "sourceSha256": "4df4df2ba9d0d22368dbf53a4ec9aa73218075f8ca0f3e9bd0a57071f381c814",
+      "compiledSha256": "84b496a8850f56f3f78a5e6df5729ae58826d8954a8a82feffb9e397392962c9",
+      "sourceActions": 202,
+      "compiledActions": 202,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowInputContentItemClasses: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.19,
+        "decompile_v2_sec": 0.33,
+        "compile_legacy_sec": 0.302,
+        "compile_v2_sec": 0.079
+      }
+    },
+    {
+      "specimenId": "004",
+      "sourceSha256": "caa6971beb2df52290bcd103ccd2f89dbd733d0069be7a7f7b0e6823d156fc47",
+      "compiledSha256": "9a89c5ebf161ac45dfdcab721c6a0f30a531c4c42834f690a2240336667e4656",
+      "sourceActions": 247,
+      "compiledActions": 247,
+      "actionDelta": 0,
+      "sourceDescriptors": 8,
+      "compiledDescriptors": 8,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.206,
+        "decompile_v2_sec": 0.33,
+        "compile_legacy_sec": 0.214,
+        "compile_v2_sec": 0.083
+      }
+    },
+    {
+      "specimenId": "005",
+      "sourceSha256": "f71237beddb0d02d994ab376e8eacb855d9576267586daaf75f37e51f68417a9",
+      "compiledSha256": "f9f35502f2c62141128af5bcc39d5f9729e9e811272a98344cade3fb08a1b10c",
+      "sourceActions": 230,
+      "compiledActions": 230,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.259,
+        "decompile_v2_sec": 0.334,
+        "compile_legacy_sec": 0.206,
+        "compile_v2_sec": 0.24
+      }
+    },
+    {
+      "specimenId": "006",
+      "sourceSha256": "2d2c2842d5701933c8ed4d72c6bf792b1d70a9e2296fcf24f9e07c5224f16b50",
+      "compiledSha256": "4169bf37844dd96f89a7eee716d24c72873f903c1e32d59423da57191a1b2157",
+      "sourceActions": 43,
+      "compiledActions": 43,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowInputContentItemClasses: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.061,
+        "decompile_v2_sec": 0.1,
+        "compile_legacy_sec": 0.079,
+        "compile_v2_sec": 0.031
+      }
+    },
+    {
+      "specimenId": "007",
+      "sourceSha256": "fbffd74de924b13cd5665e66d31db9f94f9f681ae042874264429ad2f8c2da66",
+      "compiledSha256": "5c3e9f35162fd4cf50b73625b11e582f380a7b439b2a8b457570227c857007f3",
+      "sourceActions": 10,
+      "compiledActions": 10,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowInputContentItemClasses: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.052,
+        "decompile_v2_sec": 0.12,
+        "compile_legacy_sec": 0.122,
+        "compile_v2_sec": 0.038
+      }
+    },
+    {
+      "specimenId": "008",
+      "sourceSha256": "4da552ed0d240819d9f64efe5255251a8f425728465dc6f4e8f099ca8d2925c0",
+      "compiledSha256": "355125a5724854a4f0adb01296248af433e626b412cdd3f338bea825cffcf28a",
+      "sourceActions": 449,
+      "compiledActions": 449,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.107,
+        "decompile_v2_sec": 0.201,
+        "compile_legacy_sec": 0.238,
+        "compile_v2_sec": 0.058
+      }
+    },
+    {
+      "specimenId": "009",
+      "sourceSha256": "811f4b3c4ce6edb9935224afc4e89d7a1e946d2c4ca47098c75fcd99128faa08",
+      "compiledSha256": "7e182eabf3231221f0011249a4c7a262881248aad7e6d6ff4b578043b7e59b30",
+      "sourceActions": 449,
+      "compiledActions": 449,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.113,
+        "decompile_v2_sec": 0.206,
+        "compile_legacy_sec": 0.233,
+        "compile_v2_sec": 0.051
+      }
+    },
+    {
+      "specimenId": "010",
+      "sourceSha256": "6a56a1b117486d8aa65bd527e26f1fadb3676404443ffc694acfeca60d6888a9",
+      "compiledSha256": "3bc52565362f121ac0defa4499dc2f53095dbe11488eead2418af6188b0076e2",
+      "sourceActions": 59,
+      "compiledActions": 59,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "ACTION_PARAMETER_WIRE_PASS",
+        "category": "EXTRA_PARAM_KEY",
+        "path": "WFWorkflowActions[3].WFWorkflowActionParameters.Show-text"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.077,
+        "decompile_v2_sec": 0.107,
+        "compile_legacy_sec": 0.09,
+        "compile_v2_sec": 0.07
+      }
+    },
+    {
+      "specimenId": "011",
+      "sourceSha256": "bd5c373099314369672389c412869d4cc5830f7f1c95f993982378b0ec40a8e6",
+      "compiledSha256": "13900cd788fe43d3e5a64b7d08c36b3590956f1f5b91161e63154171a646c062",
+      "sourceActions": 169,
+      "compiledActions": 169,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowInputContentItemClasses: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.081,
+        "decompile_v2_sec": 0.127,
+        "compile_legacy_sec": 0.151,
+        "compile_v2_sec": 0.041
+      }
+    },
+    {
+      "specimenId": "012",
+      "sourceSha256": "05da6dc5a49a3e9a325c1ee8beb2968c222843fe5225f78fd3404c11c6832f33",
+      "compiledSha256": "a40c871a24afecf25a71134d3cb88e6569f90ccfcbf11892a86ccdead0ed6eaf",
+      "sourceActions": 2474,
+      "compiledActions": 2478,
+      "actionDelta": 4,
+      "sourceDescriptors": 3,
+      "compiledDescriptors": 3,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "FAIL",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.434,
+        "decompile_v2_sec": 0.481,
+        "compile_legacy_sec": 0.154,
+        "compile_v2_sec": 0.047
+      }
+    },
+    {
+      "specimenId": "013",
+      "sourceSha256": "b24f392474beb6d7d331c39d2300348efcab1046fe52d877fc4443610a74fcf6",
+      "compiledSha256": "2f9b3c470de55c807b439d9b2ad3685495a035b8bb4710291117f534f7c9f277",
+      "sourceActions": 73,
+      "compiledActions": 73,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.064,
+        "decompile_v2_sec": 0.094,
+        "compile_legacy_sec": 0.094,
+        "compile_v2_sec": 0.038
+      }
+    },
+    {
+      "specimenId": "014",
+      "sourceSha256": "077443ad1d63df294a624cc94bf9c63194eaf852b97942aa0915328bbeb3d8e9",
+      "compiledSha256": "c675423f17d3f5039c81b71d12c8c1e8fa3d54e8a3f6de0b1e07821c833ce5a7",
+      "sourceActions": 519,
+      "compiledActions": 517,
+      "actionDelta": -2,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.231,
+        "decompile_v2_sec": 0.269,
+        "compile_legacy_sec": 0.121,
+        "compile_v2_sec": 0.032
+      }
+    },
+    {
+      "specimenId": "015",
+      "sourceSha256": "debe14d11dd8aed7c15eecd86cadc1018ec2e9cff8c8ed0403c68f7a0cd0722d",
+      "compiledSha256": "c2324923e3d6f7f33d3a8a9e3d6ace0538a36c95b3ded3377d30886b00c9fa07",
+      "sourceActions": 49,
+      "compiledActions": 49,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.057,
+        "decompile_v2_sec": 0.086,
+        "compile_legacy_sec": 0.096,
+        "compile_v2_sec": 0.035
+      }
+    },
+    {
+      "specimenId": "016",
+      "sourceSha256": "be6a8b54fc7ba44d51b31a7ad81a216754e19c44a3cc2d1fb9dbf1aaf88d94c1",
+      "compiledSha256": "92458ec5d05d10ac58ad9c7714bcdacc79d77cbca41a4c93bc2461d3b6078581",
+      "sourceActions": 850,
+      "compiledActions": 835,
+      "actionDelta": -15,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.401,
+        "decompile_v2_sec": 0.643,
+        "compile_legacy_sec": 0.486,
+        "compile_v2_sec": 0.063
+      }
+    },
+    {
+      "specimenId": "017",
+      "sourceSha256": "d86b2b7df2394cf1f3c0dd67c1cc283cc44f949f07ff5c5f52c96541f42c93b2",
+      "compiledSha256": "7a12abcf59822e51177c447817ff61a811c64607a7ad9ea36c221de7929d2451",
+      "sourceActions": 8,
+      "compiledActions": 8,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowInputContentItemClasses: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.286,
+        "decompile_v2_sec": 1.261,
+        "compile_legacy_sec": 1.911,
+        "compile_v2_sec": 0.192
+      }
+    },
+    {
+      "specimenId": "018",
+      "sourceSha256": "685809064a9482efcc91eae167fd24fcbd39e42aff0382accf416b43d42b36c5",
+      "compiledSha256": "d574dd729b66530c13781a0a410da3dc937433c5f87f57eeed32dec25f48de7d",
+      "sourceActions": 2683,
+      "compiledActions": 2695,
+      "actionDelta": 12,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "FAIL",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.655,
+        "decompile_v2_sec": 0.786,
+        "compile_legacy_sec": 0.312,
+        "compile_v2_sec": 0.059
+      }
+    },
+    {
+      "specimenId": "019",
+      "sourceSha256": "9cb8cf7d9e738c2059317169ee0cc8d92d5a410981bb5887dd3506193e47f0ce",
+      "compiledSha256": "0fdb4d1d2ac759f17e16893175166c83d2226ee6c40f7185f5f4d56a066602b2",
+      "sourceActions": 263,
+      "compiledActions": 263,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "ACTION_PARAMETER_WIRE_PASS",
+        "category": "PARAM_VALUE_CHANGE",
+        "path": "WFWorkflowActions[4].WFWorkflowActionParameters.WFInput.Value.OutputName"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.166,
+        "decompile_v2_sec": 0.331,
+        "compile_legacy_sec": 0.396,
+        "compile_v2_sec": 0.057
+      }
+    },
+    {
+      "specimenId": "020",
+      "sourceSha256": "394397e1fdbb0708972f48122ad42ba8279fa7f955b0483956781fa04c122b11",
+      "compiledSha256": "908be8822e6e765ba97155ca259abaef8619d3bd5d6a7860eb9581c52caae7f5",
+      "sourceActions": 161,
+      "compiledActions": 161,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.158,
+        "decompile_v2_sec": 0.188,
+        "compile_legacy_sec": 0.111,
+        "compile_v2_sec": 0.037
+      }
+    },
+    {
+      "specimenId": "021",
+      "sourceSha256": "e875a09695af1f6a0ef32ed69b01d32b070c60dc718b3d71bc2d91ff30ad10cd",
+      "compiledSha256": "8456044ae919baaf2baf134f32ecfac36998147417b4d551b434f6215e8848af",
+      "sourceActions": 2683,
+      "compiledActions": 2695,
+      "actionDelta": 12,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "FAIL",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.7,
+        "decompile_v2_sec": 0.777,
+        "compile_legacy_sec": 0.332,
+        "compile_v2_sec": 0.065
+      }
+    },
+    {
+      "specimenId": "022",
+      "sourceSha256": "cbeb2372bebeb9d05e2e080a369a5814089f676d60a1f5a86dc1283bdcd7fcc4",
+      "compiledSha256": "61b2e0ee27d426e9e9468ee56db6a94690d59b94f0cb538bae2fefcd5eca1a34",
+      "sourceActions": 1831,
+      "compiledActions": 1839,
+      "actionDelta": 8,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 1.692,
+        "decompile_v2_sec": 2.189,
+        "compile_legacy_sec": 1.154,
+        "compile_v2_sec": 0.154
+      }
+    },
+    {
+      "specimenId": "023",
+      "sourceSha256": "89105b9579c31541f9149ec1ddf3e8453e0fcc27a74711b7a25d4e0c05c0f7e9",
+      "compiledSha256": "5c2e3d519592a42a04de1758535d15aa8e94ef79fd0b6198c7bec930dc258b18",
+      "sourceActions": 507,
+      "compiledActions": 507,
+      "actionDelta": 0,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "PASS",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.147,
+        "decompile_v2_sec": 0.194,
+        "compile_legacy_sec": 0.121,
+        "compile_v2_sec": 0.031
+      }
+    },
+    {
+      "specimenId": "024",
+      "sourceSha256": "b04f16bb90e796ae2200d93801ad173b973dd63b5dbdbac981b7cc49e1a218a3",
+      "compiledSha256": "f572b4f1a98a4a612c3a31d047d8c92d61dae863b27423c486d0dbaeee085437",
+      "sourceActions": 850,
+      "compiledActions": 836,
+      "actionDelta": -14,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.42,
+        "decompile_v2_sec": 0.509,
+        "compile_legacy_sec": 0.243,
+        "compile_v2_sec": 0.05
+      }
+    },
+    {
+      "specimenId": "025",
+      "sourceSha256": "48bb269bb5d456b3686223851a7706d6b8da394d1860d8a9ac2f9c1209681948",
+      "compiledSha256": "150e4030b98029a7c6397ef3e6de0ec9ced9829bb7a69cdddfb6ae8a4341b076",
+      "sourceActions": 2728,
+      "compiledActions": 2740,
+      "actionDelta": 12,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "FAIL",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.661,
+        "decompile_v2_sec": 0.768,
+        "compile_legacy_sec": 0.309,
+        "compile_v2_sec": 0.059
+      }
+    },
+    {
+      "specimenId": "026",
+      "sourceSha256": "55d6da55dbbd59d498347e0f4247946ecd6f82c6c3785ef8e4ccd7215a272e07",
+      "compiledSha256": "bc0b5ffb4d99f42944c0b6d13ecf1aee50dd8b7df6cb121eac82c5398a0124b7",
+      "sourceActions": 180,
+      "compiledActions": 180,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowInputContentItemClasses: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 2.271,
+        "decompile_v2_sec": 6.767,
+        "compile_legacy_sec": 5.083,
+        "compile_v2_sec": 60.017
+      }
+    },
+    {
+      "specimenId": "027",
+      "sourceSha256": "de0996ec0ee7d9fd2f7a4210f08895101e4ee8312450448c52131996f26aa503",
+      "compiledSha256": "789896b3d634e27ffce0ae9a826dceb0b5e843005727e12a7d3e1f7f15c01c70",
+      "sourceActions": 2398,
+      "compiledActions": 2404,
+      "actionDelta": 6,
+      "sourceDescriptors": 117,
+      "compiledDescriptors": 117,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "FAIL",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.676,
+        "decompile_v2_sec": 0.734,
+        "compile_legacy_sec": 0.186,
+        "compile_v2_sec": 0.057
+      }
+    },
+    {
+      "specimenId": "028",
+      "sourceSha256": "8da295e3f64c117d2dfb31c1c877dc807f063f4593baf8d51fef88e289e704f9",
+      "compiledSha256": "8c354daa25e1c6464346f8f92208bfa81ad43cf18c86b6af092dbfa95c804215",
+      "sourceActions": 522,
+      "compiledActions": 522,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.14,
+        "decompile_v2_sec": 54.308,
+        "compile_legacy_sec": 0.251,
+        "compile_v2_sec": 0.0
+      }
+    },
+    {
+      "specimenId": "029",
+      "sourceSha256": "c3922ee08e09d485614185e53de3118fc074124a173d73b74352bf941ff00a08",
+      "compiledSha256": "8f5be1d91e2eb1a30733d129406c4acf98bdcb5d33a641b569e21417a3d24bbd",
+      "sourceActions": 76,
+      "compiledActions": 76,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "PASS",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.109,
+        "decompile_v2_sec": 0.18,
+        "compile_legacy_sec": 0.123,
+        "compile_v2_sec": 0.041
+      }
+    },
+    {
+      "specimenId": "030",
+      "sourceSha256": "039da6c2141f96909d25806a8f92438e7f85efc9950c027c35204b7e9e71251e",
+      "compiledSha256": "107672093b493abcce161a9a9194cc4843c359258cc594976b4b55f1468cd2a1",
+      "sourceActions": 850,
+      "compiledActions": 836,
+      "actionDelta": -14,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.529,
+        "decompile_v2_sec": 0.621,
+        "compile_legacy_sec": 4.749,
+        "compile_v2_sec": 0.073
+      }
+    },
+    {
+      "specimenId": "031",
+      "sourceSha256": "a831360158048feed8296772c6abddd70a8b186eba32b24db903a0c2f183dd81",
+      "compiledSha256": "ee12e7cf0afc4a3b200ba7167a53597d597bb14e7a38d6ca7174a868d2f3ccfa",
+      "sourceActions": 957,
+      "compiledActions": 955,
+      "actionDelta": -2,
+      "sourceDescriptors": 7,
+      "compiledDescriptors": 7,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "FAIL",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowInputContentItemClasses: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.389,
+        "decompile_v2_sec": 0.547,
+        "compile_legacy_sec": 0.258,
+        "compile_v2_sec": 0.06
+      }
+    },
+    {
+      "specimenId": "032",
+      "sourceSha256": "d6d9f24bbbe43615b1968acd493da6796a075863d4123967c8b71bf35df14764",
+      "compiledSha256": "a8dcd58fc89adf6f462dfd9ab986c83134e453f315e255bf7a0dfd8b2421895d",
+      "sourceActions": 7,
+      "compiledActions": 7,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "PASS",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowInputContentItemClasses: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.07,
+        "decompile_v2_sec": 0.122,
+        "compile_legacy_sec": 0.119,
+        "compile_v2_sec": 0.084
+      }
+    },
+    {
+      "specimenId": "033",
+      "sourceSha256": "8da295e3f64c117d2dfb31c1c877dc807f063f4593baf8d51fef88e289e704f9",
+      "compiledSha256": "03c1aba3b765e1461e1196f78aa3d21d782045101e45dfde505d525d7c1ad0de",
+      "sourceActions": 522,
+      "compiledActions": 522,
+      "actionDelta": 0,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "PASS",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "PASS",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.138,
+        "decompile_v2_sec": 61.398,
+        "compile_legacy_sec": 0.213,
+        "compile_v2_sec": 0.0
+      }
+    },
+    {
+      "specimenId": "034",
+      "sourceSha256": "18954a857062ad6a1eeaff305a425fb93d10fccfeb9416936f0c9db5dacb9dfd",
+      "compiledSha256": "727bc8ff27e7b8ad9d37823f21144ce02eec5735d1a048f0e49c29e4461c6bf1",
+      "sourceActions": 521,
+      "compiledActions": 523,
+      "actionDelta": 2,
+      "sourceDescriptors": 1,
+      "compiledDescriptors": 1,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "FAIL",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 1.561,
+        "decompile_v2_sec": 2.581,
+        "compile_legacy_sec": 2.333,
+        "compile_v2_sec": 0.275
+      }
+    },
+    {
+      "specimenId": "035",
+      "sourceSha256": "c44b4fe49258c34d0277b21f45690174290bc39dd9aba0e02d1147ab4e120578",
+      "compiledSha256": "e1bbd80b9d3a92394481fed24783f7f964485e642bcfce5e2930adc780bb5c90",
+      "sourceActions": 2155,
+      "compiledActions": 2154,
+      "actionDelta": -1,
+      "sourceDescriptors": 19,
+      "compiledDescriptors": 19,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "FAIL",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Missing header key: WFWorkflowOutputContentItemClasses"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.775,
+        "decompile_v2_sec": 3.078,
+        "compile_legacy_sec": 2.866,
+        "compile_v2_sec": 0.296
+      }
+    },
+    {
+      "specimenId": "036",
+      "sourceSha256": "d39e20461416418598e8d01cb1b6357169f41e1a0f64d9dabfe922374b267594",
+      "compiledSha256": "1d0ae20ab12f1d55c3dacbae92a464d7946af23736d8ae92a850dd15407fff33",
+      "sourceActions": 521,
+      "compiledActions": 519,
+      "actionDelta": -2,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowInputContentItemClasses: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.459,
+        "decompile_v2_sec": 0.697,
+        "compile_legacy_sec": 0.561,
+        "compile_v2_sec": 0.108
+      }
+    },
+    {
+      "specimenId": "037",
+      "sourceSha256": "1840ac8246b962503115a6b1710a1895af5fdaa54f6d583242489322b7d08d60",
+      "compiledSha256": "bb72ab10a4f6503ce3dc7aea56773e214e20cd9ed604d13d58e72c7b9bb8ee64",
+      "sourceActions": 829,
+      "compiledActions": 831,
+      "actionDelta": 2,
+      "sourceDescriptors": 5,
+      "compiledDescriptors": 5,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "FAIL",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "FAIL",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "WORKFLOW_HEADER_PASS",
+        "category": "HEADER_CHANGE",
+        "path": "Header value mismatch in WFWorkflowMinimumClientVersion: PARAM_VALUE_CHANGE"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.294,
+        "decompile_v2_sec": 0.373,
+        "compile_legacy_sec": 0.223,
+        "compile_v2_sec": 0.043
+      }
+    },
+    {
+      "specimenId": "038",
+      "sourceSha256": "db6bb550cb02e5e46dc27078b8aa053b809e20f7c18cfcecef6482a46ff240a3",
+      "compiledSha256": "ea6973fa9c34c575e443e122522946c2ac77e9fe7ef9a3e42b5f618a7cb7aa73",
+      "sourceActions": 210,
+      "compiledActions": 209,
+      "actionDelta": -1,
+      "sourceDescriptors": 0,
+      "compiledDescriptors": 0,
+      "gates": {
+        "RAW_JSON_DECODE_PASS": "PASS",
+        "BPLIST_OR_XML_DECODE_PASS": "PASS",
+        "DECOMPILE_PASS": "PASS",
+        "LEGACY_COMPILE_PASS": "PASS",
+        "V2_COMPILE_PASS": "FAIL",
+        "STRICT_ACTION_SEQUENCE_PASS": "FAIL",
+        "ACTION_PARAMETER_WIRE_PASS": "FAIL",
+        "VARIABLE_GRAPH_PASS": "FAIL",
+        "CONTROL_FLOW_PASS": "FAIL",
+        "WORKFLOW_HEADER_PASS": "PASS",
+        "THIRD_PARTY_DESCRIPTOR_WIRE_PASS": "NOT_APPLICABLE",
+        "FULL_WORKFLOW_SEMANTIC_PASS": "FAIL",
+        "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE"
+      },
+      "firstMismatch": {
+        "gate": "STRICT_ACTION_SEQUENCE_PASS",
+        "category": "ACTION_COUNT_MISMATCH",
+        "path": "WFWorkflowActions (len 210 vs 209)"
+      },
+      "timing": {
+        "decompile_legacy_sec": 0.264,
+        "decompile_v2_sec": 0.513,
+        "compile_legacy_sec": 0.563,
+        "compile_v2_sec": 0.09
+      }
+    }
+  ]
+}

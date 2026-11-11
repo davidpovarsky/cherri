@@ -1,7 +1,7 @@
 # Cherri P10 — Compiler-Supported Catalog Report (`505` Entries)
 
-- **Source Commit**: `c5c59432bab885712a5512babcde378e2ea76854`
-- **Input Dependency Fingerprint**: `cf00bedc7ca27b85adfaa0124e89514cfb1c7c04622c7cd02bb73a8603581b0a`
+- **Source Commit**: `62a9a4a0bf44482705d7a69ed2db573ee740b189`
+- **Input Dependency Fingerprint**: `d5dfcfa064f90c4d4ee3dbda5d06db7ccb31766cd006b7cf353990f3ca6cf70b`
 - **Total Catalog Entries**: `505` (`497` callable actions + `8` compiler constructs)
 - **Legacy Compiler Verified (`LEGACY_COMPILE_PASS`)**: `505 / 505`
 - **V2 Compiler Verified (`V2_COMPILE_PASS`)**: `505 / 505`
@@ -17,8 +17,8 @@
 | Decompile Mode | Entry Count | Description |
 | :--- | :---: | :--- |
 | `native_cherri_call` | `497` | Decompiles directly to native `actionName(...)` syntax |
-| `rawAction_lossless_fallback` | `0` | Decompiles via lossless `rawAction(...)` when multiple wrapper actions share an Apple identifier without a unique parameter discriminator |
-| `native_control_flow` | `8` | Compiler syntax construct (`if`, `menu`, `repeat`, `for`, `=`, `+=`, dictionary literal, expression) |
+| `rawAction_lossless_fallback` | `1` | Decompiles via lossless `rawAction(...)` when multiple wrapper actions share an Apple identifier without a unique parameter discriminator |
+| `native_control_flow` | `7` | Compiler syntax construct (`if`, `menu`, `repeat`, `for`, `=`, `+=`, dictionary literal, expression) |
 
 ## Evidence Tier Breakdown
 
@@ -543,6 +543,6 @@
 | 500 | `repeat` | `compilerConstruct` | `is.workflow.actions.repeat.count` | `actions_catalog.go:237` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 501 | `repeat.each` | `compilerConstruct` | `is.workflow.actions.repeat.each` | `actions_catalog.go:247` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 502 | `setVariable` | `compilerConstruct` | `is.workflow.actions.setvariable` | `actions_catalog.go:257` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 503 | `appendVariable` | `compilerConstruct` | `is.workflow.actions.appendvariable` | `actions_catalog.go:267` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 503 | `appendVariable` | `compilerConstruct` | `is.workflow.actions.appendvariable` | `actions_catalog.go:267` | `rawAction_lossless_fallback` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 504 | `dictionaryValue` | `compilerConstruct` | `is.workflow.actions.dictionary` | `actions_catalog.go:277` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 505 | `calculateExpression` | `compilerConstruct` | `is.workflow.actions.calculateexpression` | `actions_catalog.go:287` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |

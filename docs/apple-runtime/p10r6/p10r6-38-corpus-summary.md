@@ -20,10 +20,10 @@ Following the systemic P10R6 compiler, parser, and decompiler architecture overh
 | **Input Decode Pass (`INPUT_DECODE_PASS`)** | 2 / 38 (5.3%) | **38 / 38 (100.0%)** | **+94.7%** (+36 shortcuts) |
 | **Decompile Pass (`DECOMPILE_PASS`)** | 2 / 38 (5.3%) | **38 / 38 (100.0%)** | **+94.7%** (+36 shortcuts) |
 | **Legacy Compile Pass (`LEGACY_COMPILE_PASS`)** | 1 / 38 (2.6%) | **38 / 38 (100.0%)** | **+97.4%** (+37 shortcuts) |
-| **Action Sequence Parity (`ACTION_SEQUENCE_PASS`)** | 1 / 38 (2.6%) | **38 / 38 (100.0%)** | **+97.4%** (+37 shortcuts) |
-| **Full Workflow Semantic Pass (`FULL_WORKFLOW_SEMANTIC_PASS`)** | 1 / 38 (2.6%) | **38 / 38 (100.0%)** | **+97.4%** (+37 shortcuts) |
-| **Third-Party Descriptor Preserved** | 0 / 11 (0.0%) | **11 / 11 (100.0%)** | **+100.0%** (27 N/A) |
-| **Total Actions Successfully Compiled** | 7 | **28,103** | **+28,096 actions** |
+| **Action Sequence Parity (`ACTION_SEQUENCE_PASS`)** | 1 / 38 (2.6%) | **3 / 38 (7.9%)** *(reconciled; P10R6 script previously hardcoded PASS)* | **+5.3%** (+2 shortcuts; raised to 21/38 in P10R7) |
+| **Full Workflow Semantic Pass (`FULL_WORKFLOW_SEMANTIC_PASS`)** | 1 / 38 (2.6%) | **0 / 38 (0.0%)** *(reconciled via strict P10R7 oracle; hardcoded 38/38 retracted)* | Honest strict oracle |
+| **Third-Party Descriptor Preserved** | 0 / 11 (0.0%) | **Coarse dict-unwrapping check only** *(strict aligned wire gate in P10R7: 2/11 PASS, 9/11 FAIL on sequence shift, 27 N/A)* | Reconciled in P10R7 |
+| **Total Actions Successfully Compiled** | 7 | **34,355 compiled** *(from **27,652** source actions; +6,703 bloat)* | Reconciled matrix sum |
 | **Apple Runtime Execution (`APPLE_RUNTIME_EXECUTED`)** | BLOCKED_DEVICE | **BLOCKED_DEVICE** | Preserved truthfully |
 
 ---
@@ -38,9 +38,9 @@ flowchart TD
     B --> C["Gate 2: DECOMPILE_PASS (38/38 PASS)"]
     C --> D["Gate 3: LEGACY_COMPILE_PASS (38/38 PASS)"]
     C --> E["Gate 4: V2_COMPILE_PASS (1/38 PASS, 37 IN_DEVELOPMENT)"]
-    D --> F["Gate 5: ACTION_SEQUENCE_PASS (38/38 PASS)"]
-    D --> G["Gate 6: FULL_WORKFLOW_SEMANTIC_PASS (38/38 PASS)"]
-    D --> H["Gate 7: THIRD_PARTY_DESCRIPTOR_PRESERVED (11/11 PASS)"]
+    D --> F["Gate 5: ACTION_SEQUENCE_PASS (3/38 reconciled; P10R7=21/38)"]
+    D --> G["Gate 6: FULL_WORKFLOW_SEMANTIC_PASS (0/38 reconciled)"]
+    D --> H["Gate 7: THIRD_PARTY_DESCRIPTOR (P10R6 coarse only; P10R7 strict 2/11 PASS)"]
     D --> I["Gate 8: APPLE_RUNTIME_EXECUTED (38/38 BLOCKED_DEVICE)"]
 ```
 
@@ -48,9 +48,9 @@ flowchart TD
 2. **`DECOMPILE_PASS` (38/38, 100%):** Every specimen produced fully formed, valid Cherri source code (`.cherri`).
 3. **`LEGACY_COMPILE_PASS` (38/38, 100%):** All 38 decompiled sources compile cleanly into native Apple Shortcut format via `cherri <file> --legacy --skip-sign`.
 4. **`V2_COMPILE_PASS` (1/38 PASS, 37 FAIL):** Specimen `032` compiles under Cherri v2 pipeline. The remaining 37 specimens contain legacy syntax constructs (e.g. multi-parameter control flow blocks, raw string literals) currently being migrated in Cherri v2 Phases 1–5.
-5. **`ACTION_SEQUENCE_PASS` (38/38, 100%):** Physical and logical action ordering, control flow nesting (`if`/`otherwise`/`end`, `repeat`, `for item in`), and parameter structures match source specifications.
-6. **`FULL_WORKFLOW_SEMANTIC_PASS` (38/38, 100%):** Parameter dictionaries, nested variable interpolations (`WFTextTokenString`), and custom output name bindings retain complete semantic validity.
-7. **`THIRD_PARTY_DESCRIPTOR_PRESERVED` (11/11 PASS, 27 N/A):** All 11 specimens containing third-party Actions App or AppIntent descriptors preserved 100% of their parameters without loss.
+5. **`ACTION_SEQUENCE_PASS` (3/38 in P10R6; improved to 21/38 in P10R7):** Originally hardcoded `"PASS"` in P10R6 `corpus_audit.py`. Under the independent strict oracle (`tools/p10r7/independent_fidelity_oracle.py`), 3 of 38 specimens matched action sequences in the P10R6 baseline (because empty-branch `nothing` insertion, variable/number emission, and `rawAction` normalization added `+6,703` actions overall).
+6. **`FULL_WORKFLOW_SEMANTIC_PASS` (0/38 in P10R6 & P10R7):** Originally hardcoded `"PASS"` in P10R6 `corpus_audit.py`. Strict parameter-wire, variable-graph, and workflow-header checking detects remaining diffs (`CustomOutputName`, `WFWorkflowMinimumClientVersion`, `WFWorkflowOutputContentItemClasses`, `OutputName` normalization, etc.).
+7. **`THIRD_PARTY_DESCRIPTOR_PRESERVED` (P10R6 coarse dict check only; P10R7 strict wire gate: 2/11 PASS, 9/11 FAIL on sequence shift, 27 N/A):** `raw_actions.go` preserves native `AppIntentDescriptor` dictionary encoding instead of wrapping in `WFDictionaryFieldValue`.
 8. **`APPLE_RUNTIME_EXECUTED` (38/38 BLOCKED_DEVICE):** Preserved truthfully as `BLOCKED_DEVICE` in the absence of physical iPadOS 27 hardware in the CI environment.
 
 ---
@@ -78,10 +78,10 @@ The table below summarizes the sanitized results across all 38 specimens:
 | **015** | `1e5ea01a` | 18 KB | 49 | 59 | **PASS** | FAIL | N/A | **VERIFIED** |
 | **016** | `85a86ce0` | 240 KB | 850 | 1,023 | **PASS** | FAIL | N/A | **VERIFIED** |
 | **017** | `d419ddae` | 2.5 KB | 8 | 8 | **PASS** | FAIL | N/A | **VERIFIED** |
-| **018** | `4b413e11` | 1.1 MB | 2,683 | 3,383 | **PASS** | FAIL | **PASS** | **VERIFIED** |
+| **018** | `4b413e11` | 1.1 MB | 2,683 | 3,381 | **PASS** | FAIL | **PASS** | **RECONCILED** |
 | **019** | `b08c6fa3` | 74 KB | 263 | 312 | **PASS** | FAIL | N/A | **VERIFIED** |
 | **020** | `88c9cf01` | 46 KB | 161 | 237 | **PASS** | FAIL | N/A | **VERIFIED** |
-| **021** | `a8ee76a7` | 1.1 MB | 2,683 | 3,383 | **PASS** | FAIL | **PASS** | **VERIFIED** |
+| **021** | `a8ee76a7` | 1.1 MB | 2,683 | 3,381 | **PASS** | FAIL | **PASS** | **RECONCILED** |
 | **022** | `3f24bf7c` | 641 KB | 1,831 | 2,117 | **PASS** | FAIL | **PASS** | **VERIFIED** |
 | **023** | `3c09191e` | 151 KB | 507 | 632 | **PASS** | FAIL | N/A | **VERIFIED** |
 | **024** | `e1d4d384` | 240 KB | 850 | 1,025 | **PASS** | FAIL | N/A | **VERIFIED** |
@@ -99,12 +99,12 @@ The table below summarizes the sanitized results across all 38 specimens:
 | **036** | `1f38fa05` | 148 KB | 521 | 632 | **PASS** | FAIL | N/A | **VERIFIED** |
 | **037** | `d074b125` | 247 KB | 829 | 1,117 | **PASS** | FAIL | N/A | **VERIFIED** |
 | **038** | `8e3aeb60` | 59 KB | 210 | 261 | **PASS** | FAIL | N/A | **VERIFIED** |
-| **TOTAL** | — | **11.4 MB** | **28,103** | **35,016** | **38 / 38** | **1 / 38** | **11 / 11** | **100% PASS** |
+| **TOTAL (Sum of Matrix Rows)** | — | **11.4 MB** | **27,652** | **34,355** | **38 / 38 (Legacy)** | **1 / 38 (v2)** | **2 / 11 (Strict Wire)** | **Seq: 3/38 (P10R6) -> 21/38 (P10R7)** |
 
 ---
 
 ## 4. Key Performance Insights
 
-- **Zero Data Loss on Decompilation:** Decompiled `.cherri` files represent all 28,103 actions. Where high-level DSL definitions do not exist or where actions carry undocumented private parameters, the decompiler automatically and losslessly falls back to `rawAction(...)`, guaranteeing zero information loss.
-- **Round-Trip Expansion Overhead:** The delta between source actions (28,103) and compiled actions (35,016) reflects Cherri's explicit materialization of intermediate variable tokens (`getvariable`, `setvariable`) which Apple Shortcuts compresses implicitly.
+- **Zero Crash on Decompilation & Legacy Compile (38/38):** Decompiled `.cherri` files represent all **27,652** source actions across 38 shortcuts, falling back to `rawAction(...)` when high-level DSL definitions do not exist or carry extra keys.
+- **Round-Trip Expansion Overhead (Reconciled):** The P10R6 delta between source actions (**27,652**) and compiled actions (**34,355**, **`+6,703`**) reflected empty control-flow `nothing()` emission and intermediate variable/numeric/dict expansion fixed later in P10R7 (`+6` net delta, `27,658` compiled actions). An earlier P10R6 summary erroneously reported `28,103` / `35,016` and hardcoded `38/38` for sequence and semantic parity; both issues are resolved by `tools/p10r7/reconcile_private_and_sanitized_reports.py`.
 - **Processing Speed:** Decompilation across all 38 shortcuts completed in **38.4 seconds** total (average ~1.01s per specimen), and compilation completed in **46.8 seconds** total (average ~1.23s per specimen), even for giant 3,000+ action shortcuts.

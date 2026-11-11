@@ -183,37 +183,45 @@ def audit_specimen(binary: pathlib.Path, spec_id: str, input_dir: pathlib.Path, 
     else:
         res["gates"]["V2_COMPILE_PASS"] = "SKIPPED"
 
-    # 4. ACTION_SEQUENCE_PASS & THIRD_PARTY_DESCRIPTOR_PRESERVED
+    # 4. Truthful independent oracle comparison (replaces hardcoded PASS in P10R6)
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "p10r7"))
+    from independent_fidelity_oracle import evaluate_shortcut_fidelity
+
     compiled_for_eval = compiled_legacy if compiled_legacy.exists() else compiled_v2
     if compiled_for_eval.exists():
         comp_meta, err = inspect_plist(compiled_for_eval)
         if comp_meta:
             res["compiledActions"] = comp_meta["actionCount"]
             res["actionDelta"] = res["compiledActions"] - res["sourceActions"]
-            
-            # Action sequence parity
-            # If the compiler compiled without crashing and preserved actions
-            res["gates"]["ACTION_SEQUENCE_PASS"] = "PASS"
-            res["gates"]["FULL_WORKFLOW_SEMANTIC_PASS"] = "PASS"
 
-            # Third party descriptor check
+            if chosen_input.suffix.lower() == ".json":
+                with open(chosen_input, "r", encoding="utf-8") as f:
+                    src_doc = json.load(f)
+            else:
+                with open(chosen_input, "rb") as f:
+                    src_doc = plistlib.load(f)
+            with open(compiled_for_eval, "rb") as f:
+                comp_doc = plistlib.load(f)
+            json_doc = None
+            if json_path.exists():
+                with open(json_path, "r", encoding="utf-8") as jf:
+                    json_doc = json.load(jf)
+
+            oracle_res = evaluate_shortcut_fidelity(src_doc, comp_doc, json_doc=json_doc)
+            oracle_gates = oracle_res["gates"]
+            res["gates"]["ACTION_SEQUENCE_PASS"] = oracle_gates["STRICT_ACTION_SEQUENCE_PASS"]
+            res["gates"]["FULL_WORKFLOW_SEMANTIC_PASS"] = oracle_gates["FULL_WORKFLOW_SEMANTIC_PASS"]
+
             if src_third_party > 0:
-                if comp_meta["thirdPartyCount"] >= src_third_party:
-                    all_dicts = all(d.get("isDict") for d in comp_meta["descriptors"])
-                    if all_dicts:
-                        res["gates"]["THIRD_PARTY_DESCRIPTOR_PRESERVED"] = "PASS"
-                    else:
-                        res["gates"]["THIRD_PARTY_DESCRIPTOR_PRESERVED"] = "FAIL"
-                        res["thirdPartyPreserved"] = False
-                else:
-                    res["gates"]["THIRD_PARTY_DESCRIPTOR_PRESERVED"] = "FAIL"
-                    res["thirdPartyPreserved"] = False
+                tp_gate = oracle_gates["THIRD_PARTY_DESCRIPTOR_WIRE_PASS"]
+                res["gates"]["THIRD_PARTY_DESCRIPTOR_PRESERVED"] = tp_gate
+                res["thirdPartyPreserved"] = (tp_gate == "PASS")
             else:
                 res["gates"]["THIRD_PARTY_DESCRIPTOR_PRESERVED"] = "N/A"
         else:
             res["gates"]["ACTION_SEQUENCE_PASS"] = "FAIL"
             res["gates"]["FULL_WORKFLOW_SEMANTIC_PASS"] = "FAIL"
-            res["gates"]["THIRD_PARTY_DESCRIPTOR_PRESERVED"] = "FAIL"
+            res["gates"]["THIRD_PARTY_DESCRIPTOR_PRESERVED"] = "FAIL" if src_third_party > 0 else "N/A"
     else:
         res["gates"]["ACTION_SEQUENCE_PASS"] = "FAIL"
         res["gates"]["FULL_WORKFLOW_SEMANTIC_PASS"] = "FAIL"
@@ -273,6 +281,16 @@ def main():
     with open(args.sanitized_out, "w", encoding="utf-8") as f:
         json.dump(sanitized, f, indent=2)
     print(f"Sanitized audit results saved to: {args.sanitized_out}")
+
+    total_src = sum(r["sourceActions"] for r in results)
+    total_comp = sum(r["compiledActions"] for r in results)
+    seq_pass = sum(1 for r in results if r["gates"]["ACTION_SEQUENCE_PASS"] == "PASS")
+    sem_pass = sum(1 for r in results if r["gates"]["FULL_WORKFLOW_SEMANTIC_PASS"] == "PASS")
+    print(
+        f"Summary (sum of rows): SourceActions={total_src}, CompiledActions={total_comp}, "
+        f"Delta={total_comp - total_src:+d}, ActionSeqPass={seq_pass}/{len(results)}, "
+        f"FullSemanticPass={sem_pass}/{len(results)}"
+    )
 
 if __name__ == "__main__":
     main()

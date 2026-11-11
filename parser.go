@@ -1046,6 +1046,13 @@ func collectTypeValues(typeName string, valueTypes map[string]string, slice *[]s
 		parserError("Expected type")
 	}
 
+	val := strings.TrimSpace(lookAheadUntil('\n'))
+	if val == "none" {
+		advanceTimes(len(val))
+		*slice = []string{"__NONE__"}
+		return
+	}
+
 	var list = valueList{name: fmt.Sprintf("%s type", typeName), mapList: &valueTypes}
 	for _, definedType := range list.parseList('\n') {
 		if slices.Contains(*slice, definedType) {
@@ -1206,7 +1213,11 @@ func collectRepeat(identifier string) {
 			ident:     group.uuid,
 			valueType: timesType,
 			value:     timesValue,
-		}, token{
+		},
+	)
+
+	if repeatIndexIdentifier != "_" {
+		tokens = append(tokens, token{
 			typeof:    Variable,
 			ident:     repeatIndexIdentifier,
 			valueType: Variable,
@@ -1214,10 +1225,7 @@ func collectRepeat(identifier string) {
 				valueType: Variable,
 				value:     fmt.Sprintf("Repeat Index%s", index),
 			},
-		},
-	)
-
-	if repeatIndexIdentifier != "_" {
+		})
 		variables[repeatIndexIdentifier] = varValue{
 			variableType: "Variable",
 			valueType:    Integer,
@@ -1260,7 +1268,11 @@ func collectRepeatEach(identifier string) {
 			ident:     group.uuid,
 			valueType: iterableType,
 			value:     iterableValue,
-		}, token{
+		},
+	)
+
+	if repeatItemIdentifier != "_" {
+		tokens = append(tokens, token{
 			typeof:    Variable,
 			ident:     repeatItemIdentifier,
 			valueType: Variable,
@@ -1268,8 +1280,8 @@ func collectRepeatEach(identifier string) {
 				valueType: Variable,
 				value:     fmt.Sprintf("Repeat Item%s", index),
 			},
-		},
-	)
+		})
+	}
 
 	if repeatItemIdentifier != "_" {
 		variables[repeatItemIdentifier] = varValue{
@@ -1392,7 +1404,6 @@ func collectConditional() (conditional condition) {
 		var collectConditionalToken = tokenType(collectConditional)
 		if condition, found := conditions[collectConditionalToken]; found {
 			conditional.condition = condition
-			checkConditionalTypes(&collectConditionalToken, variableOneType, variableOneValue)
 		} else {
 			parserError(fmt.Sprintf("Invalid conditional '%s'", collectConditional))
 		}
@@ -1400,12 +1411,14 @@ func collectConditional() (conditional condition) {
 		skipWhitespace()
 
 		if char == '{' || char == '&' || char == '|' {
+			checkConditionalTypes(&collectConditionalToken, variableOneType, variableOneValue, "")
 			return
 		}
 
 		var variableTwoType tokenType
 		var variableTwoValue any
 		collectValue(&variableTwoType, &variableTwoValue, ' ')
+		checkConditionalTypes(&collectConditionalToken, variableOneType, variableOneValue, variableTwoType)
 		conditional.arguments = append(conditional.arguments, actionArgument{
 			valueType: variableTwoType,
 			value:     variableTwoValue,
@@ -1429,7 +1442,8 @@ func collectConditional() (conditional condition) {
 	return
 }
 
-func checkConditionalTypes(conditional *tokenType, variableType tokenType, value any) {
+func checkConditionalTypes(conditional *tokenType, variableType tokenType, value any, rhsType tokenType) {
+	var hasActionOrigin bool
 	if variableType == Variable {
 		var variable = value.(varValue)
 		if variable.getAs != "" || strings.Contains(variable.value.(string), "[") {
@@ -1442,6 +1456,7 @@ func checkConditionalTypes(conditional *tokenType, variableType tokenType, value
 		}
 		if variableType == Action {
 			if a, ok := variableValue.value.(action); ok && a.def != nil {
+				hasActionOrigin = true
 				variableType = a.def.outputType
 			}
 		}
@@ -1456,6 +1471,9 @@ func checkConditionalTypes(conditional *tokenType, variableType tokenType, value
 		variableType = Integer
 	}
 	if variableType == "" || variableType == Variable || variableType == Nil {
+		return
+	}
+	if variableType == Arr && hasActionOrigin && (*conditional == Is || *conditional == Not) && rhsType == String {
 		return
 	}
 
@@ -1507,9 +1525,9 @@ func collectMenuItem() {
 	advanceUntil(':')
 	advance()
 
-	if len(menus[group.uuid]) > 0 && group.identifier == "" {
-		addNothing()
-	}
+	// if len(menus[group.uuid]) > 0 && group.identifier == "" {
+	// 	addNothing()
+	// }
 
 	menus[group.uuid] = append(menus[group.uuid], varValue{
 		valueType: itemType,
@@ -1558,9 +1576,9 @@ func collectEndStatement() {
 		reachable()
 	}
 
-	if controlFlowGroup.identifier == "" {
-		addNothing()
-	}
+	// if controlFlowGroup.identifier == "" {
+	// 	addNothing()
+	// }
 
 	variables[controlFlowGroup.identifier] = varValue{
 		constant: true,
@@ -1573,7 +1591,7 @@ func collectEndStatement() {
 		value:     controlFlowGroup.identifier,
 	})
 	groupingIdx--
-	addNothing()
+	// addNothing()
 }
 
 // groupStatement creates a grouping UUID for a statement and adds to the statement groupings.
@@ -1804,9 +1822,11 @@ func collectActionCall() {
 
 func collectAction(identifier *string) (value action) {
 	if _, found := actions[*identifier]; !found {
-		checkMissingStandardInclude(identifier, true)
-		args.Args["action"] = *identifier
-		actionsSearch()
+		if *identifier != "" {
+			checkMissingStandardInclude(identifier, true)
+			args.Args["action"] = *identifier
+			actionsSearch()
+		}
 		parserError(fmt.Sprintf("Undefined action '%s()'", *identifier))
 	}
 	advance()
@@ -1814,6 +1834,31 @@ func collectAction(identifier *string) (value action) {
 
 	var arguments = collectArguments()
 	currentAction.arguments = arguments
+
+	if *identifier == "rawAction" {
+		for _, arg := range arguments {
+			if dict, ok := arg.value.(map[string]interface{}); ok {
+				if vName, ok := dict["WFVariableName"].(string); ok && vName != "" {
+					sName := vName
+					sanitizeIdentifier(&sName)
+					if sName != "" {
+						if _, found := variables[sName]; !found {
+							variables[sName] = varValue{
+								variableType: "Variable",
+								value:        sName,
+							}
+						}
+					}
+					if _, found := variables[vName]; !found {
+						variables[vName] = varValue{
+							variableType: "Variable",
+							value:        vName,
+						}
+					}
+				}
+			}
+		}
+	}
 
 	checkAction()
 	value = makeActionValue(*identifier, arguments)
@@ -1939,6 +1984,7 @@ func getChar(atIndex int) rune {
 }
 
 func firstChar() {
+	char = 0
 	lineIdx = 0
 	lineCharIdx = -1
 	idx = -1
