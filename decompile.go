@@ -198,6 +198,18 @@ func decodeShortcutDocument(b []byte) (string, error) {
 }
 
 func decompile(b []byte) {
+	if isLosslessImportFidelity() {
+		doc, err := decodeShortcutRawMap(b)
+		handle(err)
+		src, err := renderLosslessLegacySource(doc)
+		handle(err)
+		outputPath = getOutputPath(basename + ".cherri")
+		if writeErr := os.WriteFile(outputPath, []byte(src), 0600); writeErr != nil {
+			handle(writeErr)
+		}
+		return
+	}
+
 	_, err := decodeShortcutDocument(b)
 	if err != nil {
 		handle(err)

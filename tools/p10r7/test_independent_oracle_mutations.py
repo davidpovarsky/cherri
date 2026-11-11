@@ -728,6 +728,33 @@ class TestP10R8OracleMutations(unittest.TestCase):
         rows = aligned_action_inventory(self.src, reb)
         self.assertEqual([r["op"] for r in rows], ["added"])
 
+    def test_preserved_source_dangling_reference_consistency(self):
+        dangling_id = "DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"
+        src = copy.deepcopy(self.src)
+        src["WFWorkflowActions"][1]["WFWorkflowActionParameters"]["WFInput"]["Value"]["OutputUUID"] = dangling_id
+        reb = copy.deepcopy(src)
+        res = self.ev(reb, src=src)
+        self.assertEqual(res["sourceValidity"]["danglingReferenceCount"], 1)
+        self.assertEqual(res["gates"]["VARIABLE_GRAPH_PASS"], "PASS")
+        self.assertEqual(res["gates"]["ACTION_PARAMETER_WIRE_PASS"], "PASS")
+
+        # Altering the dangling literal fails both VARIABLE_GRAPH_PASS and ACTION_PARAMETER_WIRE_PASS.
+        reb_alt = copy.deepcopy(src)
+        reb_alt["WFWorkflowActions"][1]["WFWorkflowActionParameters"]["WFInput"]["Value"]["OutputUUID"] = \
+            "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"
+        self.assertFullFail(self.ev(reb_alt, src=src), "VARIABLE_GRAPH_PASS", "ACTION_PARAMETER_WIRE_PASS")
+
+        # Pointing a source dangling ref at a valid rebuilt producer also fails both gates.
+        reb_res = copy.deepcopy(src)
+        reb_res["WFWorkflowActions"][1]["WFWorkflowActionParameters"]["WFInput"]["Value"]["OutputUUID"] = \
+            reb_res["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["UUID"]
+        self.assertFullFail(self.ev(reb_res, src=src), "VARIABLE_GRAPH_PASS", "ACTION_PARAMETER_WIRE_PASS")
+
+        # Direct scope without graph registration keeps match_reference_uuid strict.
+        scope = BijectiveUUIDScope()
+        self.assertFalse(scope.match_reference_uuid(dangling_id, dangling_id))
+
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -24,6 +24,9 @@ func defineRawAction() {
 			if len(args) == 1 {
 				return map[string]any{}
 			}
+			if raw, ok := args[1].value.(rawPlistDict); ok {
+				return deepClonePlistMap(raw.Data)
+			}
 
 			var params = getArgValue(args[1]).(map[string]interface{})
 			handleRawActionParams(params)

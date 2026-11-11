@@ -117,6 +117,8 @@ func resetCompilerState() {
 	noInput = map[string]any{}
 	definitions = map[string]any{}
 	includedFile = false
+	importedWorkflowHeader = nil
+	exactActionParamsPresence = nil
 
 	// Includes.
 	included = []string{}

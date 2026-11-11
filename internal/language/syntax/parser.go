@@ -110,6 +110,7 @@ func (p *Parser) ParseProgram() *Program {
 			continue
 		}
 
+		prevTok := p.curr
 		if p.isDeclarationStart() {
 			decl := p.parseDeclaration()
 			if decl != nil {
@@ -120,6 +121,13 @@ func (p *Parser) ParseProgram() *Program {
 			if stmt != nil {
 				prog.Statements = append(prog.Statements, stmt)
 			}
+		}
+		if p.curr.Type == prevTok.Type && p.curr.Text == prevTok.Text && p.curr.Span == prevTok.Span && p.curr.Type != TokenEOF {
+			p.errors = append(p.errors, ParseError{
+				Span:    p.curr.Span,
+				Message: fmt.Sprintf("unexpected token %q", p.curr.Text),
+			})
+			p.advance()
 		}
 	}
 
@@ -1070,9 +1078,17 @@ func (p *Parser) parseBlockStmt() *BlockStmt {
 			p.advance()
 			continue
 		}
+		prevTok := p.curr
 		stmt := p.parseStatement()
 		if stmt != nil {
 			stmts = append(stmts, stmt)
+		}
+		if p.curr.Type == prevTok.Type && p.curr.Text == prevTok.Text && p.curr.Span == prevTok.Span && p.curr.Type != TokenEOF {
+			p.errors = append(p.errors, ParseError{
+				Span:    p.curr.Span,
+				Message: fmt.Sprintf("unexpected token %q", p.curr.Text),
+			})
+			p.advance()
 		}
 	}
 	endTok, _ := p.expect(TokenRBrace)

@@ -220,6 +220,12 @@ func parse() {
 	case startOfLineTokenAhead(Trigger):
 		advance()
 		collectTrigger()
+	case startOfLineTokenAhead(WorkflowHeader):
+		advance()
+		collectWorkflowHeaderDirective()
+	case startOfLineTokenAhead(Declare):
+		advance()
+		collectDeclareDirective()
 	case startOfLineTokenAhead(Reference):
 		advance()
 		collectEncodedReference()
@@ -440,6 +446,9 @@ func collectValue(valueType *tokenType, value *any, until rune) {
 	case tokenAhead(Quantity):
 		*valueType = Quantity
 		collectQtyValue(value)
+	case tokenAhead(RawPlist):
+		*valueType = Dict
+		collectRawPlistValue(value)
 	case tokenAhead(True):
 		*valueType = Bool
 		*value = true
@@ -1738,7 +1747,7 @@ func collectArray() (array interface{}) {
 func collectDictionary() (dictionary interface{}) {
 	if char == '}' {
 		advance()
-		return
+		return map[string]interface{}{}
 	}
 	var rawJSON = "{" + collectObject() + "}"
 	if args.Using("debug") {
@@ -1837,7 +1846,14 @@ func collectAction(identifier *string) (value action) {
 
 	if *identifier == "rawAction" {
 		for _, arg := range arguments {
-			if dict, ok := arg.value.(map[string]interface{}); ok {
+			var dict map[string]interface{}
+			switch v := arg.value.(type) {
+			case map[string]interface{}:
+				dict = v
+			case rawPlistDict:
+				dict = v.Data
+			}
+			if dict != nil {
 				if vName, ok := dict["WFVariableName"].(string); ok && vName != "" {
 					sName := vName
 					sanitizeIdentifier(&sName)

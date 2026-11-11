@@ -24,6 +24,7 @@ type ImportOptions struct {
 	InputPath  string
 	OutputPath string
 	Mode       string // "legacy" or "v2"
+	Fidelity   string // "lossless" or "semantic"
 }
 
 type ImportResult struct {
@@ -31,20 +32,84 @@ type ImportResult struct {
 	LegacySource string
 	FinalSource  string
 	Mode         string
+	Fidelity     string
 }
 
 func ExecuteImportPipeline(opts ImportOptions) (*ImportResult, error) {
 	if opts.Mode == "" {
 		opts.Mode = "v2"
 	}
+	if opts.Fidelity == "" {
+		opts.Fidelity = "lossless"
+	}
+	if args.Args == nil {
+		args.Args = make(map[string]string)
+	}
+	prevFidelity, hadFidelity := args.Args["fidelity"]
+	prevOutput, hadOutput := args.Args["output"]
+	resetCompilerStateFully()
+	defer func() {
+		resetCompilerStateFully()
+		if hadFidelity {
+			args.Args["fidelity"] = prevFidelity
+		} else {
+			delete(args.Args, "fidelity")
+		}
+		if hadOutput {
+			args.Args["output"] = prevOutput
+		} else {
+			delete(args.Args, "output")
+		}
+	}()
+
 	shortcutBytes := importShortcut(opts.InputPath)
 	if opts.OutputPath != "" {
 		outputPath = opts.OutputPath
-		if args.Args == nil {
-			args.Args = make(map[string]string)
-		}
 		args.Args["output"] = opts.OutputPath
+	} else {
+		delete(args.Args, "output")
 	}
+
+	if strings.EqualFold(opts.Fidelity, "lossless") {
+		doc, err := decodeShortcutRawMap(shortcutBytes)
+		if err != nil {
+			return nil, fmt.Errorf("decode shortcut %s: %w", opts.InputPath, err)
+		}
+		resolvedOut := opts.OutputPath
+		if resolvedOut == "" {
+			resolvedOut = getOutputPath(basename + ".cherri")
+		}
+		outputPath = resolvedOut
+
+		var legacySrc string
+		var finalSrc string
+		if strings.EqualFold(opts.Mode, "legacy") {
+			legacySrc, err = renderLosslessLegacySource(doc)
+			if err != nil {
+				return nil, fmt.Errorf("render lossless legacy source: %w", err)
+			}
+			finalSrc = legacySrc
+		} else {
+			finalSrc, err = renderLosslessV2Source(doc)
+			if err != nil {
+				return nil, fmt.Errorf("render lossless v2 source: %w", err)
+			}
+		}
+
+		if writeErr := os.WriteFile(resolvedOut, []byte(finalSrc), 0644); writeErr != nil {
+			return nil, fmt.Errorf("write lossless import output %s: %w", resolvedOut, writeErr)
+		}
+
+		return &ImportResult{
+			OutputPath:   resolvedOut,
+			LegacySource: legacySrc,
+			FinalSource:  finalSrc,
+			Mode:         opts.Mode,
+			Fidelity:     "lossless",
+		}, nil
+	}
+
+	args.Args["fidelity"] = "semantic"
 	decompile(shortcutBytes)
 
 	decompContent, err := os.ReadFile(outputPath)
@@ -73,6 +138,7 @@ func ExecuteImportPipeline(opts ImportOptions) (*ImportResult, error) {
 		LegacySource: legacySrc,
 		FinalSource:  finalSrc,
 		Mode:         opts.Mode,
+		Fidelity:     "semantic",
 	}, nil
 }
 

@@ -109,6 +109,7 @@ func HandleLanguageV2CLI() bool {
 		var importPath string
 		var outPath string
 		mode := "v2"
+		fidelity := "lossless"
 		for i := 2; i < len(os.Args); i++ {
 			arg := os.Args[i]
 			if strings.HasPrefix(arg, "--output=") {
@@ -127,18 +128,26 @@ func HandleLanguageV2CLI() bool {
 				}
 			} else if strings.HasPrefix(arg, "--mode=") {
 				mode = strings.TrimPrefix(arg, "--mode=")
+			} else if arg == "--fidelity" {
+				if i+1 < len(os.Args) {
+					fidelity = os.Args[i+1]
+					i++
+				}
+			} else if strings.HasPrefix(arg, "--fidelity=") {
+				fidelity = strings.TrimPrefix(arg, "--fidelity=")
 			} else if !strings.HasPrefix(arg, "-") && importPath == "" {
 				importPath = arg
 			}
 		}
 		if importPath == "" {
-			fmt.Fprintf(os.Stderr, "Usage: cherri import <file.shortcut> [--output <path>] [--mode legacy|v2]\n")
+			fmt.Fprintf(os.Stderr, "Usage: cherri import <file.shortcut> [--output <path>] [--mode legacy|v2] [--fidelity lossless|semantic]\n")
 			os.Exit(1)
 		}
 		_, err := ExecuteImportPipeline(ImportOptions{
 			InputPath:  importPath,
 			OutputPath: outPath,
 			Mode:       mode,
+			Fidelity:   fidelity,
 		})
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "import error: %v\n", err)

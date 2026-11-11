@@ -32,6 +32,8 @@ const (
 	Import         tokenType = "#import"
 	Reference      tokenType = "#ref"
 	Trigger        tokenType = "#trigger"
+	WorkflowHeader tokenType = "#workflowheader"
+	Declare        tokenType = "#declare"
 	Action         tokenType = "action"
 	ToggleSet      tokenType = "toggleSet"
 	Function       tokenType = "function"
@@ -81,6 +83,7 @@ const (
 	Conditional tokenType = "conditional"
 	Enumeration tokenType = "enum"
 	Quantity    tokenType = "qty"
+	RawPlist    tokenType = "rawPlist("
 )
 
 /* Operators */

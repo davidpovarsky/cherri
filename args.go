@@ -162,4 +162,11 @@ func init() {
 		DefaultValue: "",
 		ExpectsValue: true,
 	})
+	args.Register(args.Argument{
+		Name:         "fidelity",
+		Description:  "Import fidelity mode ('lossless' or 'semantic').",
+		DefaultValue: "",
+		ExpectsValue: true,
+		Values:       []string{"lossless", "semantic"},
+	})
 }

@@ -134,6 +134,7 @@ class BijectiveUUIDScope:
         self.reb_action_uuid_to_idx: Dict[str, int] = {}
         self.group_src_to_reb: Dict[str, str] = {}
         self.group_reb_to_src: Dict[str, str] = {}
+        self.allow_preserved_dangling: bool = False
 
     def register_action_uuid(self, src_uuid: str, reb_uuid: str, action_idx: int) -> Optional[str]:
         if not src_uuid or not reb_uuid:
@@ -169,6 +170,20 @@ class BijectiveUUIDScope:
         if not src_uuid or not reb_uuid:
             return src_uuid == reb_uuid
         return self.src_to_reb.get(src_uuid) == reb_uuid and self.reb_to_src.get(reb_uuid) == src_uuid
+
+    def match_reference_uuid(self, src_uuid: str, reb_uuid: str) -> bool:
+        """Match an OutputUUID reference against producer mapping, allowing only exact
+        reproduction of pre-existing dangling source references after graph verification."""
+        if self.match_uuid(src_uuid, reb_uuid):
+            return True
+        if (
+            self.allow_preserved_dangling
+            and src_uuid == reb_uuid
+            and src_uuid not in self.src_action_uuid_to_idx
+            and reb_uuid not in self.reb_action_uuid_to_idx
+        ):
+            return True
+        return False
 
     def match_group(self, src_group: str, reb_group: str) -> bool:
         if not src_group or not reb_group:
@@ -266,8 +281,12 @@ def diff_values(
             if not scope.match_group(src_val, reb_val):
                 add("REFERENCE_CHANGE", "GroupingIdentifier does not match bijective group mapping")
             return
-        if key in (PRODUCER_KEY, REFERENCE_KEY) and not json_numbers:
+        if key == PRODUCER_KEY and not json_numbers:
             if not scope.match_uuid(src_val, reb_val):
+                add("REFERENCE_CHANGE", f"{key} does not match bijective producer mapping")
+            return
+        if key == REFERENCE_KEY and not json_numbers:
+            if not scope.match_reference_uuid(src_val, reb_val):
                 add("REFERENCE_CHANGE", f"{key} does not match bijective producer mapping")
             return
         if src_val != reb_val:
@@ -490,6 +509,8 @@ def evaluate_shortcut_fidelity(
                     graph_fail("EDGE_CHANGE", f"WFWorkflowActions[{i}].{r_path}", "Reference edge does not map to the corresponding producer")
     if not graph_failed:
         gates["VARIABLE_GRAPH_PASS"] = "PASS"
+    if src_count == reb_count:
+        scope.allow_preserved_dangling = True
 
     # Gate 6: CONTROL_FLOW_PASS
     src_cf_violation = validate_control_flow(src_actions)

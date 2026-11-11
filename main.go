@@ -119,6 +119,10 @@ func main() {
 		if args.Using("legacy") || args.Value("mode") == "legacy" {
 			mode = "legacy"
 		}
+		fidelity := "semantic"
+		if args.Using("fidelity") && args.Value("fidelity") != "" {
+			fidelity = args.Value("fidelity")
+		}
 		var out string
 		if args.Using("output") {
 			out = args.Value("output")
@@ -127,6 +131,7 @@ func main() {
 			InputPath:  args.Value("import"),
 			OutputPath: out,
 			Mode:       mode,
+			Fidelity:   fidelity,
 		})
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "import error: %v\n", err)

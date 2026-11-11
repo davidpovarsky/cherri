@@ -15,13 +15,17 @@ var (
 	compilerSessionMutex     sync.Mutex
 	canonicalActionsOnce     sync.Once
 	canonicalStandardActions map[string]*actionDefinition
+	canonicalEnumerations    map[string][]string
 )
 
 func EnsureCanonicalStandardActions() map[string]*actionDefinition {
 	canonicalActionsOnce.Do(func() {
+		resetCompilerStateFully()
 		loadStandardActions()
 		defineRawAction()
 		canonicalStandardActions = maps.Clone(actions)
+		canonicalEnumerations = maps.Clone(enumerations)
+		resetCompilerStateFully()
 	})
 	return canonicalStandardActions
 }
@@ -34,13 +38,19 @@ type BackendTransaction struct {
 func BeginBackendTransaction() (*BackendTransaction, func()) {
 	compilerSessionMutex.Lock()
 	resetCompilerState()
+	if len(canonicalEnumerations) > 0 {
+		if enumerations == nil {
+			enumerations = make(map[string][]string, len(canonicalEnumerations))
+		}
+		maps.Copy(enumerations, canonicalEnumerations)
+	}
 
 	tx := &BackendTransaction{
 		actionStack: make([]actionReference, 0, 8),
 	}
 
 	cleanup := func() {
-		resetCompilerState()
+		resetCompilerStateFully()
 		compilerSessionMutex.Unlock()
 	}
 

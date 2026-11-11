@@ -126,7 +126,12 @@ func writeShortcut(path string, debug string) {
 		plistEncoder.Indent("\t")
 	}
 
-	var encodeErr = plistEncoder.Encode(shortcut)
+	var payload any = shortcut
+	if len(importedWorkflowHeader) > 0 {
+		payload = mergeWorkflowHeaderMap(importedWorkflowHeader, shortcut.WFWorkflowActions, exactActionParamsPresence, shortcut, false)
+	}
+
+	var encodeErr = plistEncoder.Encode(payload)
 	handle(encodeErr)
 
 	if writeDebugOutput {

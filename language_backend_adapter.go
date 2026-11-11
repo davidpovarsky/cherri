@@ -17,10 +17,13 @@ import (
 )
 
 type CanonicalBackendSession struct {
-	tx          *BackendTransaction
-	cleanup     func()
-	shortcut    Shortcut
-	rawWorkflow map[string]any
+	tx                *BackendTransaction
+	cleanup           func()
+	shortcut          Shortcut
+	rawWorkflow       map[string]any
+	hasRawWorkflow    bool
+	rawWorkflowExact  bool
+	exactActionParams map[int]bool
 }
 
 func NewCanonicalBackendSession() *CanonicalBackendSession {
@@ -296,6 +299,32 @@ func (s *CanonicalBackendSession) EndControl(region backend.ControlRegion) error
 func (s *CanonicalBackendSession) EmitRawAction(appleIdentifier string, params map[string]any, outputUUID, outputName, groupingID string) error {
 	_, err := s.emitRaw(appleIdentifier, params, outputUUID, outputName, groupingID)
 	return err
+}
+
+func (s *CanonicalBackendSession) EmitExactRawAction(appleIdentifier string, params map[string]any, hasParams bool) error {
+	if strings.TrimSpace(appleIdentifier) == "" {
+		return fmt.Errorf("action identifier must not be empty")
+	}
+	idx := len(s.shortcut.WFWorkflowActions)
+	if s.exactActionParams == nil {
+		s.exactActionParams = make(map[int]bool)
+	}
+	s.exactActionParams[idx] = hasParams
+
+	var clonedParams map[string]any
+	if hasParams {
+		if params == nil {
+			clonedParams = map[string]any{}
+		} else {
+			clonedParams = deepClonePlistMap(params)
+		}
+	}
+
+	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
+		WFWorkflowActionIdentifier: appleIdentifier,
+		WFWorkflowActionParameters: clonedParams,
+	})
+	return nil
 }
 
 func sanitizeRawParamValue(v any) any {
@@ -822,8 +851,11 @@ func (s *CanonicalBackendSession) SetMetadata(name string, value any) {
 	case "rawWorkflow":
 		if m, ok := value.(map[string]any); ok {
 			s.rawWorkflow = m
-		} else if m, ok := value.(map[string]interface{}); ok {
-			s.rawWorkflow = m
+			s.hasRawWorkflow = true
+		}
+	case "rawWorkflowExact":
+		if b, ok := value.(bool); ok {
+			s.rawWorkflowExact = b
 		}
 	}
 }
@@ -860,37 +892,22 @@ func (s *CanonicalBackendSession) BindImportQuestion(questionName string, wireKe
 }
 
 func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
-	if len(s.shortcut.WFWorkflowTypes) == 0 {
-		s.shortcut.WFWorkflowTypes = schema.DefaultWorkflowTypes()
-	}
-	if len(s.shortcut.WFWorkflowInputContentItemClasses) == 0 {
-		s.shortcut.WFWorkflowInputContentItemClasses = schema.DefaultInputContentItemClasses()
-	}
-
-	if len(s.rawWorkflow) > 0 {
-		merged := make(map[string]any, len(s.rawWorkflow)+10)
-		var sBuf bytes.Buffer
-		if err := plist.NewEncoder(&sBuf).Encode(s.shortcut); err == nil {
-			var sMap map[string]any
-			if _, err := plist.Unmarshal(sBuf.Bytes(), &sMap); err == nil {
-				for k, v := range sMap {
-					merged[k] = v
-				}
+	if s.hasRawWorkflow || len(s.rawWorkflow) > 0 {
+		if !s.rawWorkflowExact {
+			if len(s.shortcut.WFWorkflowTypes) == 0 {
+				s.shortcut.WFWorkflowTypes = schema.DefaultWorkflowTypes()
+			}
+			if len(s.shortcut.WFWorkflowInputContentItemClasses) == 0 {
+				s.shortcut.WFWorkflowInputContentItemClasses = schema.DefaultInputContentItemClasses()
 			}
 		}
-		for k, v := range s.rawWorkflow {
-			merged[k] = v
-		}
-		if inputs, ok := merged["WFWorkflowInputContentItemClasses"].([]any); !ok || len(inputs) == 0 {
-			if _, has := merged["WFWorkflowInputContentItemClasses"]; !has {
-				merged["WFWorkflowInputContentItemClasses"] = s.shortcut.WFWorkflowInputContentItemClasses
-			}
-		}
-		if types, ok := merged["WFWorkflowTypes"].([]any); !ok || len(types) == 0 {
-			if _, has := merged["WFWorkflowTypes"]; !has {
-				merged["WFWorkflowTypes"] = s.shortcut.WFWorkflowTypes
-			}
-		}
+		merged := mergeWorkflowHeaderMap(
+			s.rawWorkflow,
+			s.shortcut.WFWorkflowActions,
+			s.exactActionParams,
+			s.shortcut,
+			!s.rawWorkflowExact,
+		)
 		var buf bytes.Buffer
 		enc := plist.NewEncoder(&buf)
 		enc.Indent("\t")
@@ -898,6 +915,13 @@ func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
 			return nil, fmt.Errorf("plist encoding error: %w", err)
 		}
 		return buf.Bytes(), nil
+	}
+
+	if len(s.shortcut.WFWorkflowTypes) == 0 {
+		s.shortcut.WFWorkflowTypes = schema.DefaultWorkflowTypes()
+	}
+	if len(s.shortcut.WFWorkflowInputContentItemClasses) == 0 {
+		s.shortcut.WFWorkflowInputContentItemClasses = schema.DefaultInputContentItemClasses()
 	}
 
 	var buf bytes.Buffer

@@ -217,9 +217,15 @@ func undefinable() bool {
 
 // makeAction builds an action based on its actionDefinition and adds it to the shortcut.
 func makeAction(arguments []actionArgument, reference *WFActionReference) {
+	hasExplicitRawPlist := false
 	if currentAction.identifier == "rawAction" && len(arguments) > 0 {
 		if rawIdent, ok := getArgValue(arguments[0]).(string); ok {
 			currentAction.definition.overrideIdentifier = rawIdent
+		}
+		if len(arguments) >= 2 {
+			if _, ok := arguments[1].value.(rawPlistDict); ok {
+				hasExplicitRawPlist = true
+			}
 		}
 	}
 	actionIndex++
@@ -227,6 +233,12 @@ func makeAction(arguments []actionArgument, reference *WFActionReference) {
 	var ident = getFullActionIdentifier()
 	// Determine parameters
 	var params = getActionParameters(arguments)
+	if hasExplicitRawPlist {
+		if exactActionParamsPresence == nil {
+			exactActionParamsPresence = make(map[int]bool)
+		}
+		exactActionParamsPresence[len(shortcut.WFWorkflowActions)] = true
+	}
 	// Additionally add the output name and UUID of this action if provided
 	addAction(ident, attachReferenceToParams(params, reference))
 }

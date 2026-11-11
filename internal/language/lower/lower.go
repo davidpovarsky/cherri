@@ -2,6 +2,7 @@ package lower
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -155,6 +156,17 @@ func (l *Lowerer) GenerateUUID() string {
 
 func (l *Lowerer) emitAction(node *ir.NativeActionNode) {
 	if l.session != nil && l.emitErr == nil {
+		if node.ExactRawParameters {
+			if exactSession, ok := l.session.(interface {
+				EmitExactRawAction(appleIdentifier string, params map[string]any, hasParams bool) error
+			}); ok {
+				if err := exactSession.EmitExactRawAction(node.AppleIdentifier, node.Parameters, node.HasExactRawParameters); err != nil {
+					l.emitErr = err
+				}
+				l.workflow.AddAction(node)
+				return
+			}
+		}
 		if err := l.session.EmitRawAction(node.AppleIdentifier, node.Parameters, node.OutputUUID, node.OutputName, node.GroupingIdentifier); err != nil {
 			l.emitErr = err
 		}
@@ -4129,15 +4141,32 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if err != nil {
 					return nil, fmt.Errorf("failed to lower action parameters: %w", err)
 				}
-				if m, ok := val.(map[string]interface{}); ok {
+				switch typed := val.(type) {
+				case *ir.RawPlistValue:
+					m, ok := typed.Data.(map[string]any)
+					if !ok {
+						return nil, fmt.Errorf("parameters argument to %s must be a dictionary, got %T", actionName, typed.Data)
+					}
+					node.ExactRawParameters = true
+					node.HasExactRawParameters = true
 					for k, v := range m {
+						node.Parameters[k] = cloneLowerPlistValue(v)
+					}
+				case ir.RawPlistValue:
+					m, ok := typed.Data.(map[string]any)
+					if !ok {
+						return nil, fmt.Errorf("parameters argument to %s must be a dictionary, got %T", actionName, typed.Data)
+					}
+					node.ExactRawParameters = true
+					node.HasExactRawParameters = true
+					for k, v := range m {
+						node.Parameters[k] = cloneLowerPlistValue(v)
+					}
+				case map[string]any:
+					for k, v := range typed {
 						node.Parameters[k] = l.normalizeRawActionParamValue(v)
 					}
-				} else if m, ok := val.(map[string]any); ok {
-					for k, v := range m {
-						node.Parameters[k] = l.normalizeRawActionParamValue(v)
-					}
-				} else {
+				default:
 					return nil, fmt.Errorf("parameters argument to %s must be a dictionary, got %T", actionName, val)
 				}
 			} else if arg.Label == "uuid" || arg.Label == "outputUUID" {
@@ -4169,6 +4198,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		if strings.TrimSpace(node.AppleIdentifier) == "" {
 			return nil, fmt.Errorf("%s requires a non-empty action identifier", actionName)
 		}
+		if !node.HasExactRawParameters && len(call.NamedArgs) == 0 && l.workflow.ExactRawWorkflow {
+			node.ExactRawParameters = true
+		}
 		l.emitAction(node)
 		if l.emitErr != nil {
 			return nil, l.emitErr
@@ -4195,6 +4227,17 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			return nil, fmt.Errorf("failed to lower native.plist data: %w", err)
 		}
 		if str, ok := val.(string); ok {
+			if strings.HasPrefix(str, "b64:") {
+				rawBytes, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(str, "b64:"))
+				if err != nil {
+					return nil, fmt.Errorf("native.plist failed to decode base64 plist: %w", err)
+				}
+				var parsed any
+				if _, err := plist.Unmarshal(rawBytes, &parsed); err != nil {
+					return nil, fmt.Errorf("native.plist failed to parse binary plist: %w", err)
+				}
+				return &ir.RawPlistValue{Data: parsed}, nil
+			}
 			trimmed := strings.TrimSpace(str)
 			if strings.HasPrefix(trimmed, "<?xml") || strings.HasPrefix(trimmed, "<plist") {
 				var parsed any
@@ -4300,14 +4343,25 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	}
 	if actionName == "native.workflow" {
 		var targetExpr syntax.Expression
+		exactWorkflow := false
 		if call.PrimaryArg != nil {
 			targetExpr = call.PrimaryArg
-		} else {
-			for _, arg := range call.NamedArgs {
-				if arg.Label == "workflow" || arg.Label == "data" || arg.Label == "plist" || arg.Label == "" {
-					targetExpr = arg.Value
-					break
+		}
+		for _, arg := range call.NamedArgs {
+			if arg.Label == "exact" {
+				exVal, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, fmt.Errorf("failed to lower native.workflow exact flag: %w", err)
 				}
+				b, ok := exVal.(bool)
+				if !ok {
+					return nil, fmt.Errorf("native.workflow exact argument must be bool, got %T", exVal)
+				}
+				exactWorkflow = b
+				continue
+			}
+			if targetExpr == nil && (arg.Label == "workflow" || arg.Label == "data" || arg.Label == "plist" || arg.Label == "") {
+				targetExpr = arg.Value
 			}
 		}
 		if targetExpr == nil {
@@ -4318,27 +4372,58 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			return nil, fmt.Errorf("failed to lower native.workflow: %w", err)
 		}
 		var rawMap map[string]interface{}
-		if str, ok := val.(string); ok && (strings.HasPrefix(strings.TrimSpace(str), "<?xml") || strings.HasPrefix(strings.TrimSpace(str), "<plist")) {
-			var parsed any
-			if _, err := plist.Unmarshal([]byte(str), &parsed); err != nil {
-				return nil, fmt.Errorf("native.workflow failed to parse XML plist: %w", err)
+		switch typed := val.(type) {
+		case *ir.RawPlistValue:
+			m, ok := typed.Data.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("native.workflow plist payload must decode to a dictionary, got %T", typed.Data)
 			}
-			if m, ok := parsed.(map[string]interface{}); ok {
-				rawMap = m
-			} else if m, ok := parsed.(map[string]any); ok {
-				rawMap = m
+			rawMap = cloneLowerPlistValue(m).(map[string]any)
+		case ir.RawPlistValue:
+			m, ok := typed.Data.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("native.workflow plist payload must decode to a dictionary, got %T", typed.Data)
 			}
-		} else if m, ok := val.(map[string]interface{}); ok {
-			rawMap = m
-		} else if m, ok := val.(map[string]any); ok {
-			rawMap = m
-		} else {
+			rawMap = cloneLowerPlistValue(m).(map[string]any)
+		case string:
+			if strings.HasPrefix(typed, "b64:") {
+				rawBytes, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(typed, "b64:"))
+				if err != nil {
+					return nil, fmt.Errorf("native.workflow failed to decode base64 plist: %w", err)
+				}
+				var parsed any
+				if _, err := plist.Unmarshal(rawBytes, &parsed); err != nil {
+					return nil, fmt.Errorf("native.workflow failed to parse binary plist: %w", err)
+				}
+				m, ok := parsed.(map[string]any)
+				if !ok {
+					return nil, fmt.Errorf("native.workflow binary plist must be a dictionary, got %T", parsed)
+				}
+				rawMap = m
+			} else if strings.HasPrefix(strings.TrimSpace(typed), "<?xml") || strings.HasPrefix(strings.TrimSpace(typed), "<plist") {
+				var parsed any
+				if _, err := plist.Unmarshal([]byte(typed), &parsed); err != nil {
+					return nil, fmt.Errorf("native.workflow failed to parse XML plist: %w", err)
+				}
+				m, ok := parsed.(map[string]any)
+				if !ok {
+					return nil, fmt.Errorf("native.workflow XML plist must be a dictionary, got %T", parsed)
+				}
+				rawMap = m
+			} else {
+				return nil, fmt.Errorf("native.workflow string argument must be XML or b64 plist data")
+			}
+		case map[string]any:
+			rawMap = typed
+		default:
 			return nil, fmt.Errorf("native.workflow argument must be a workflow dictionary or XML plist string, got %T", val)
 		}
 
 		l.workflow.IsFullNativePass = true
+		l.workflow.ExactRawWorkflow = exactWorkflow
 		l.workflow.NativeWorkflowRaw = rawMap
 		if l.session != nil {
+			l.session.SetMetadata("rawWorkflowExact", exactWorkflow)
 			l.session.SetMetadata("rawWorkflow", rawMap)
 		}
 
@@ -5124,4 +5209,37 @@ func (l *Lowerer) normalizeRawActionParamValue(v any) any {
 		return v
 	}
 }
+
+func cloneLowerPlistValue(v any) any {
+	switch typed := v.(type) {
+	case nil:
+		return nil
+	case *ir.RawPlistValue:
+		if typed == nil {
+			return nil
+		}
+		return cloneLowerPlistValue(typed.Data)
+	case ir.RawPlistValue:
+		return cloneLowerPlistValue(typed.Data)
+	case map[string]any:
+		res := make(map[string]any, len(typed))
+		for k, val := range typed {
+			res[k] = cloneLowerPlistValue(val)
+		}
+		return res
+	case []any:
+		res := make([]any, len(typed))
+		for i, val := range typed {
+			res[i] = cloneLowerPlistValue(val)
+		}
+		return res
+	case []byte:
+		res := make([]byte, len(typed))
+		copy(res, typed)
+		return res
+	default:
+		return v
+	}
+}
+
 
