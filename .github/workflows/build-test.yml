@@ -55,6 +55,15 @@ jobs:
         go test -v ./tools/legacy-parity/...
         go run ./tools/legacy-parity
 
+    - name: P10R8 Independent Oracle Mutation Suite & Sanitized Report Integrity
+      # PRIVATE_CORPUS_NOT_RUN_IN_PUBLIC_CI: the 38 private specimens are never present in CI.
+      # The reconcile --verify below is a REPORT-INTEGRITY check of committed sanitized files,
+      # not a live corpus recompilation and not a corpus PASS.
+      run: |
+        python3 -B tools/p10r7/test_independent_oracle_mutations.py -v
+        python3 -B tools/p10r7/reconcile_private_and_sanitized_reports.py --verify --mutate-check
+        echo "PRIVATE_CORPUS_NOT_RUN_IN_PUBLIC_CI"
+
     - name: P10 SSoT, Coverage Ledgers, Pack & Release Gates
       run: |
         git fetch origin apple-actions-pack-pure-core-20261022
@@ -120,6 +129,15 @@ jobs:
       run: |
         go test -v ./tools/legacy-parity/...
         go run ./tools/legacy-parity
+
+    - name: P10R8 Independent Oracle Mutation Suite & Sanitized Report Integrity
+      # PRIVATE_CORPUS_NOT_RUN_IN_PUBLIC_CI: the 38 private specimens are never present in CI.
+      # The reconcile --verify below is a REPORT-INTEGRITY check of committed sanitized files,
+      # not a live corpus recompilation and not a corpus PASS.
+      run: |
+        python3 -B tools/p10r7/test_independent_oracle_mutations.py -v
+        python3 -B tools/p10r7/reconcile_private_and_sanitized_reports.py --verify --mutate-check
+        echo "PRIVATE_CORPUS_NOT_RUN_IN_PUBLIC_CI"
 
     - name: P10 SSoT, Coverage Ledgers, Pack & Release Gates
       run: |

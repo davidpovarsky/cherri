@@ -409,5 +409,325 @@ class TestIndependentOracleMutations(unittest.TestCase):
         self.assertEqual(res["gates"]["APPLE_RUNTIME_EXECUTED"], "BLOCKED_DEVICE")
         self.assertNotEqual(res["gates"]["APPLE_RUNTIME_EXECUTED"], "PASS")
 
+def create_p10r8_base():
+    """Synthetic base extended with every header field P10R7 failed to compare."""
+    base = create_synthetic_base()
+    base["WFWorkflowIcon"] = {"WFWorkflowIconGlyphNumber": 59511, "WFWorkflowIconStartColor": 4282601983}
+    base["WFQuickActionSurfaces"] = ["QuickActions"]
+    base["WFWorkflowMinimumClientVersionString"] = "900"
+    base["WFWorkflowHasShortcutInputVariables"] = False
+    base["WFWorkflowHasOutputFallback"] = False
+    base["WFWorkflowImportQuestions"] = [
+        {"ActionIndex": 0, "Category": "Parameter", "ParameterKey": "WFTextActionText", "Text": "Q"}
+    ]
+    base["WFWorkflowInputContentItemClasses"] = []
+    return base
+
+
+class TestP10R8OracleMutations(unittest.TestCase):
+    """M37-M60. Each mutation is executed against the real evaluator."""
+
+    def setUp(self):
+        self.src = create_p10r8_base()
+        self.reb = copy.deepcopy(self.src)
+
+    def ev(self, reb, src=None, **kw):
+        return evaluate_shortcut_fidelity(src if src is not None else self.src, reb, **kw)
+
+    def assertFullFail(self, res, *gate_names):
+        for g in gate_names:
+            self.assertEqual(res["gates"][g], "FAIL", g)
+        self.assertEqual(res["gates"]["FULL_WORKFLOW_SEMANTIC_PASS"], "FAIL")
+        self.assertEqual(res["extendedGates"]["STRICT_NATIVE_WIRE_FIDELITY_PASS"], "FAIL")
+
+    def test_p10r8_baseline_passes_with_json(self):
+        res = self.ev(self.reb, json_doc=self.src)
+        for g, v in res["gates"].items():
+            if g in ("DECOMPILE_PASS", "LEGACY_COMPILE_PASS", "V2_COMPILE_PASS", "APPLE_RUNTIME_EXECUTED"):
+                continue
+            self.assertEqual(v, "PASS", g)
+        self.assertEqual(res["extendedGates"]["SOURCE_CONTAINER_EQUIVALENCE_PASS"], "PASS")
+        self.assertEqual(res["gateMismatches"], {})
+
+    def test_m37_change_client_version(self):
+        self.reb["WFWorkflowClientVersion"] = "2300.0.0"
+        self.assertFullFail(self.ev(self.reb), "WORKFLOW_HEADER_PASS")
+
+    def test_m38_remove_client_version(self):
+        del self.reb["WFWorkflowClientVersion"]
+        self.assertFullFail(self.ev(self.reb), "WORKFLOW_HEADER_PASS")
+
+    def test_m39_change_icon_glyph_and_color(self):
+        for field in ("WFWorkflowIconGlyphNumber", "WFWorkflowIconStartColor"):
+            reb = copy.deepcopy(self.reb)
+            reb["WFWorkflowIcon"][field] += 1
+            self.assertFullFail(self.ev(reb), "WORKFLOW_HEADER_PASS")
+        reb = copy.deepcopy(self.reb)
+        del reb["WFWorkflowIcon"]["WFWorkflowIconStartColor"]
+        self.assertFullFail(self.ev(reb), "WORKFLOW_HEADER_PASS")
+
+    def test_m40_add_or_remove_quick_action_surfaces(self):
+        reb = copy.deepcopy(self.reb)
+        del reb["WFQuickActionSurfaces"]
+        self.assertFullFail(self.ev(reb), "WORKFLOW_HEADER_PASS")
+        src = copy.deepcopy(self.src)
+        del src["WFQuickActionSurfaces"]
+        self.assertFullFail(self.ev(self.reb, src=src), "WORKFLOW_HEADER_PASS")
+
+    def test_m41_remove_custom_output_name(self):
+        del self.reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["CustomOutputName"]
+        self.assertFullFail(self.ev(self.reb), "ACTION_PARAMETER_WIRE_PASS")
+
+    def test_m42_change_custom_output_name(self):
+        self.reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["CustomOutputName"] = "Renamed"
+        self.assertFullFail(self.ev(self.reb), "ACTION_PARAMETER_WIRE_PASS")
+
+    def test_m43_remove_action_uuid_including_final(self):
+        for idx in (0, 4):
+            reb = copy.deepcopy(self.reb)
+            del reb["WFWorkflowActions"][idx]["WFWorkflowActionParameters"]["UUID"]
+            self.assertFullFail(self.ev(reb), "VARIABLE_GRAPH_PASS", "ACTION_PARAMETER_WIRE_PASS")
+        # Source UUID absent but rebuilt invents one: extra key, never harmless.
+        src = copy.deepcopy(self.src)
+        del src["WFWorkflowActions"][4]["WFWorkflowActionParameters"]["UUID"]
+        res = self.ev(self.reb, src=src)
+        self.assertFullFail(res, "VARIABLE_GRAPH_PASS", "ACTION_PARAMETER_WIRE_PASS")
+        # The synthetic final action never had a UUID: adding one must fail too.
+        reb = copy.deepcopy(self.reb)
+        reb["WFWorkflowActions"][5]["WFWorkflowActionParameters"]["UUID"] = "55555555-5555-5555-5555-555555555555"
+        self.assertFullFail(self.ev(reb), "VARIABLE_GRAPH_PASS")
+
+    def test_m44_duplicate_producer_uuid(self):
+        self.reb["WFWorkflowActions"][1]["WFWorkflowActionParameters"]["UUID"] = \
+            self.reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["UUID"]
+        self.assertFullFail(self.ev(self.reb), "VARIABLE_GRAPH_PASS")
+
+    def test_m45_output_uuid_non_existent_producer(self):
+        self.reb["WFWorkflowActions"][1]["WFWorkflowActionParameters"]["WFInput"]["Value"]["OutputUUID"] = \
+            "99999999-0000-0000-0000-000000000000"
+        res = self.ev(self.reb)
+        self.assertFullFail(res, "VARIABLE_GRAPH_PASS")
+        self.assertEqual(res["gateMismatches"]["VARIABLE_GRAPH_PASS"]["subcategory"], "DANGLING_REFERENCE")
+
+    def test_m45b_alpha_renaming_is_allowed_only_when_bijective(self):
+        # Consistent renaming of producer+reference is NOT a fidelity failure in the graph gate.
+        reb = copy.deepcopy(self.reb)
+        old = "11111111-1111-1111-1111-111111111111"
+        new = "ABABABAB-1111-1111-1111-111111111111"
+        reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["UUID"] = new
+        for i in (1, 2):
+            reb["WFWorkflowActions"][i]["WFWorkflowActionParameters"]["WFInput"]["Value"]["OutputUUID"] = new
+        res = self.ev(reb)
+        self.assertEqual(res["gates"]["VARIABLE_GRAPH_PASS"], "PASS")
+        self.assertEqual(res["gates"]["ACTION_PARAMETER_WIRE_PASS"], "PASS")
+        self.assertNotEqual(old, new)
+
+    def test_m46_json_text_differs_from_plist(self):
+        js = copy.deepcopy(self.src)
+        js["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["WFTextActionText"] = "Other"
+        res = self.ev(self.reb, json_doc=js)
+        self.assertEqual(res["gates"]["RAW_JSON_DECODE_PASS"], "FAIL")
+        self.assertEqual(res["extendedGates"]["SOURCE_CONTAINER_EQUIVALENCE_PASS"], "FAIL")
+        self.assertEqual(res["gates"]["FULL_WORKFLOW_SEMANTIC_PASS"], "FAIL")
+
+    def test_m47_json_nested_key_or_type_differs(self):
+        js = copy.deepcopy(self.src)
+        js["WFWorkflowActions"][4]["WFWorkflowActionParameters"]["AppIntentDescriptor"]["Parameters"]["extra"] = 1
+        self.assertEqual(self.ev(self.reb, json_doc=js)["extendedGates"]["SOURCE_CONTAINER_EQUIVALENCE_PASS"], "FAIL")
+        js = copy.deepcopy(self.src)
+        js["WFWorkflowActions"][4]["WFWorkflowActionParameters"]["AppIntentDescriptor"]["ActionRequiresAppInstallation"] = "true"
+        self.assertEqual(self.ev(self.reb, json_doc=js)["extendedGates"]["SOURCE_CONTAINER_EQUIVALENCE_PASS"], "FAIL")
+        js = copy.deepcopy(self.src)
+        js["WFWorkflowMinimumClientVersion"] = "900"
+        self.assertEqual(self.ev(self.reb, json_doc=js)["extendedGates"]["SOURCE_CONTAINER_EQUIVALENCE_PASS"], "FAIL")
+
+    def test_m48_empty_list_replaced_by_missing_key(self):
+        del self.reb["WFWorkflowInputContentItemClasses"]
+        self.assertFullFail(self.ev(self.reb), "WORKFLOW_HEADER_PASS")
+
+    def test_m49_minimum_client_version_string_only(self):
+        self.reb["WFWorkflowMinimumClientVersionString"] = "1400"
+        self.assertFullFail(self.ev(self.reb), "WORKFLOW_HEADER_PASS")
+
+    def test_m50_descriptor_moved_preserving_content_multiset(self):
+        src = copy.deepcopy(self.src)
+        extra = copy.deepcopy(src["WFWorkflowActions"][4]["WFWorkflowActionParameters"]["AppIntentDescriptor"])
+        extra["AppIntentIdentifier"] = "SecondIntent"
+        src["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["AppIntentDescriptor"] = extra
+        reb = copy.deepcopy(src)
+        # swap descriptors between the two actions: same bag of dictionaries, wrong indices
+        d0 = reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["AppIntentDescriptor"]
+        d4 = reb["WFWorkflowActions"][4]["WFWorkflowActionParameters"]["AppIntentDescriptor"]
+        reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["AppIntentDescriptor"] = d4
+        reb["WFWorkflowActions"][4]["WFWorkflowActionParameters"]["AppIntentDescriptor"] = d0
+        res = self.ev(reb, src=src)
+        self.assertFullFail(res, "THIRD_PARTY_DESCRIPTOR_WIRE_PASS")
+
+    def test_m51_malformed_text_token_string(self):
+        src = copy.deepcopy(self.src)
+        src["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["WFTextActionText"] = {
+            "Value": {"string": "\ufffc", "attachmentsByRange": {"{0, 1}": {"Type": "Variable", "VariableName": "x"}}},
+            "WFSerializationType": "WFTextTokenString",
+        }
+        reb = copy.deepcopy(src)
+        reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["WFTextActionText"]["Value"]["attachmentsByRange"] = {
+            "{0, 2}": {"Type": "Variable", "VariableName": "x"}}
+        self.assertFullFail(self.ev(reb, src=src), "ACTION_PARAMETER_WIRE_PASS")
+        reb = copy.deepcopy(src)
+        del reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["WFTextActionText"]["Value"]["attachmentsByRange"]
+        self.assertFullFail(self.ev(reb, src=src), "ACTION_PARAMETER_WIRE_PASS")
+
+    def test_m52_default_serialization_type_added(self):
+        self.reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["WFSerializationType"] = "WFTextTokenString"
+        res = self.ev(self.reb)
+        self.assertFullFail(res, "ACTION_PARAMETER_WIRE_PASS")
+        self.assertEqual(res["gateMismatches"]["ACTION_PARAMETER_WIRE_PASS"]["category"], "EXTRA_PARAM_KEY")
+
+    def test_m53_stale_shortcut_after_failed_compile_step(self):
+        import tempfile
+        from audit_integrity import run_compile_step
+        with tempfile.TemporaryDirectory() as d:
+            out = pathlib.Path(d) / "x.shortcut"
+            out.write_bytes(b"stale-previous-output")
+            old = out.stat().st_mtime - 1000
+            os.utime(out, (old, old))
+            # step that fails and produces nothing
+            res = run_compile_step([sys.executable, "-c", "import sys; sys.exit(3)"], out)
+            self.assertEqual(res["gate"], "FAIL")
+            self.assertFalse(res["outputPresent"], "stale file must have been removed")
+            # step that exits 0 but produces nothing is also a failure
+            res = run_compile_step([sys.executable, "-c", "pass"], out)
+            self.assertEqual(res["gate"], "FAIL")
+            # a genuine fresh output passes
+            script = f"open({str(out)!r},'wb').write(b'fresh')"
+            res = run_compile_step([sys.executable, "-c", script], out)
+            self.assertEqual(res["gate"], "PASS")
+
+    def test_m54_source_extra_top_level_key(self):
+        self.src["WFWorkflowFutureKey"] = {"x": 1}
+        self.assertFullFail(self.ev(self.reb), "WORKFLOW_HEADER_PASS")
+        reb = copy.deepcopy(self.src)
+        reb["WFWorkflowOtherFutureKey"] = 1
+        self.assertFullFail(self.ev(reb), "WORKFLOW_HEADER_PASS")
+
+    def test_m55_group_end_marker_or_import_question_index(self):
+        self.reb["WFWorkflowActions"][5]["WFWorkflowActionParameters"]["WFControlFlowMode"] = 1
+        self.assertFullFail(self.ev(self.reb), "CONTROL_FLOW_PASS")
+        reb = copy.deepcopy(self.src)
+        reb["WFWorkflowImportQuestions"][0]["ActionIndex"] = 1
+        self.assertFullFail(self.ev(reb), "WORKFLOW_HEADER_PASS")
+
+    def test_m56_missing_specimen_fails_closed(self):
+        import tempfile
+        from audit_integrity import check_corpus_inventory
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            for sid in [f"{i:03d}" for i in range(1, 39)]:
+                (root / f"{sid}.plist").write_bytes(b"x")
+                (root / f"{sid}.json").write_bytes(b"{}")
+            self.assertEqual(check_corpus_inventory(root), [])
+            (root / "017.plist").unlink()
+            errs = check_corpus_inventory(root)
+            self.assertEqual(errs, ["MISSING_SPECIMEN:017.plist"])
+            (root / "038.json").write_bytes(b"")
+            self.assertIn("EMPTY_SPECIMEN:038.json", check_corpus_inventory(root))
+
+    def test_m57_output_name_changed_with_bijective_uuid_remap(self):
+        reb = copy.deepcopy(self.reb)
+        new = "CDCDCDCD-1111-1111-1111-111111111111"
+        reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["UUID"] = new
+        for i in (1, 2):
+            v = reb["WFWorkflowActions"][i]["WFWorkflowActionParameters"]["WFInput"]["Value"]
+            v["OutputUUID"] = new
+        reb["WFWorkflowActions"][1]["WFWorkflowActionParameters"]["WFInput"]["Value"]["OutputName"] = "Different"
+        res = self.ev(reb)
+        self.assertEqual(res["gates"]["VARIABLE_GRAPH_PASS"], "PASS")
+        self.assertFullFail(res, "ACTION_PARAMETER_WIRE_PASS")
+
+    def test_m58_output_fallback_and_input_variables(self):
+        for key in ("WFWorkflowHasOutputFallback", "WFWorkflowHasShortcutInputVariables"):
+            reb = copy.deepcopy(self.reb)
+            reb[key] = not reb[key]
+            self.assertFullFail(self.ev(reb), "WORKFLOW_HEADER_PASS")
+            reb = copy.deepcopy(self.reb)
+            del reb[key]
+            self.assertFullFail(self.ev(reb), "WORKFLOW_HEADER_PASS")
+
+    def test_m59_string_true_in_native_bool_intent(self):
+        d = self.reb["WFWorkflowActions"][4]["WFWorkflowActionParameters"]["AppIntentDescriptor"]
+        d["ActionRequiresAppInstallation"] = "true"
+        res = self.ev(self.reb)
+        self.assertFullFail(res, "ACTION_PARAMETER_WIRE_PASS", "THIRD_PARTY_DESCRIPTOR_WIRE_PASS")
+
+    def test_m60_runtime_pass_without_device_evidence(self):
+        from audit_integrity import check_runtime_gate
+        res = self.ev(self.reb)
+        self.assertEqual(check_runtime_gate(res["gates"]), [])
+        forged = dict(res["gates"], APPLE_RUNTIME_EXECUTED="PASS")
+        self.assertEqual(check_runtime_gate(forged), ["RUNTIME_PASS_WITHOUT_DEVICE_EVIDENCE"])
+        self.assertTrue(check_runtime_gate(forged, {"deviceModel": "x"}))
+
+    # --- Additional hardening beyond M37-M60 -------------------------------------------
+    def test_per_gate_first_mismatch_is_not_hidden_by_header_failure(self):
+        self.reb["WFWorkflowClientVersion"] = "other"
+        self.reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["WFTextActionText"] = "Changed"
+        res = self.ev(self.reb)
+        self.assertEqual(res["firstMismatch"]["gate"], "WORKFLOW_HEADER_PASS")
+        self.assertIn("ACTION_PARAMETER_WIRE_PASS", res["gateMismatches"])
+        self.assertIn("WORKFLOW_HEADER_PASS", res["gateMismatches"])
+
+    def test_mismatch_details_never_contain_values(self):
+        self.reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["WFTextActionText"] = "SECRET-TOKEN-123"
+        res = self.ev(self.reb)
+        self.assertNotIn("SECRET-TOKEN-123", json.dumps(res))
+        self.assertNotIn("Hello World", json.dumps(res))
+
+    def test_source_control_flow_orphan_end_is_never_a_pass(self):
+        src = copy.deepcopy(self.src)
+        src["WFWorkflowActions"].append(copy.deepcopy(src["WFWorkflowActions"][5]))  # orphan duplicate End
+        reb = copy.deepcopy(src)  # byte-identical rebuild of a malformed source
+        res = self.ev(reb, src=src)
+        self.assertFalse(res["sourceValidity"]["controlFlowValid"])
+        self.assertEqual(res["gates"]["CONTROL_FLOW_PASS"], "FAIL")
+        self.assertEqual(res["gates"]["FULL_WORKFLOW_SEMANTIC_PASS"], "FAIL")
+        self.assertEqual(res["gateMismatches"]["CONTROL_FLOW_PASS"]["subcategory"], "SOURCE_CONTROL_FLOW_INVALID")
+
+    def test_unregistered_uuid_is_not_dynamically_accepted(self):
+        scope = BijectiveUUIDScope()
+        self.assertFalse(scope.match_uuid("A", "B"))
+
+    def test_other_uuid_shaped_strings_are_exact_not_remapped(self):
+        src = copy.deepcopy(self.src)
+        src["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["WFTextActionText"] = "11111111-1111-1111-1111-111111111111"
+        reb = copy.deepcopy(src)
+        reb["WFWorkflowActions"][0]["WFWorkflowActionParameters"]["WFTextActionText"] = "22222222-2222-2222-2222-222222222222"
+        self.assertFullFail(self.ev(reb, src=src), "ACTION_PARAMETER_WIRE_PASS")
+
+    def test_int_float_not_coerced_in_wire(self):
+        reb = copy.deepcopy(self.reb)
+        reb["WFWorkflowActions"][3]["WFWorkflowActionParameters"]["WFCondition"] = 4.0
+        self.assertFullFail(self.ev(reb), "ACTION_PARAMETER_WIRE_PASS")
+
+    def test_unparseable_present_json_is_fail_in_file_audit(self):
+        import plistlib
+        import tempfile
+        from independent_fidelity_oracle import audit_file_pair
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            (root / "s.plist").write_bytes(plistlib.dumps(self.src))
+            (root / "r.shortcut").write_bytes(plistlib.dumps(self.reb))
+            (root / "s.json").write_text("{not json", encoding="utf-8")
+            res = audit_file_pair(root / "s.plist", root / "r.shortcut", root / "s.json")
+            self.assertEqual(res["gates"]["RAW_JSON_DECODE_PASS"], "FAIL")
+            self.assertEqual(res["gates"]["FULL_WORKFLOW_SEMANTIC_PASS"], "FAIL")
+
+    def test_aligned_inventory_does_not_blame_shifted_actions(self):
+        from independent_fidelity_oracle import aligned_action_inventory
+        reb = copy.deepcopy(self.reb)
+        reb["WFWorkflowActions"].insert(0, {"WFWorkflowActionIdentifier": "is.workflow.actions.nothing", "WFWorkflowActionParameters": {}})
+        rows = aligned_action_inventory(self.src, reb)
+        self.assertEqual([r["op"] for r in rows], ["added"])
+
+
 if __name__ == "__main__":
     unittest.main()
