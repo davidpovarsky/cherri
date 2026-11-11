@@ -1614,6 +1614,34 @@
       "reason": "Milestone P10R8 complete native wire fidelity across both Legacy and Cherri v2 pipelines without breaking semantic mode or upstream compatibility.",
       "evidence": "go test ./... PASS, TestP10R8_* PASS, TestForkActionProvenanceRegistry PASS, legacy-parity 47+17 PASS, language-schema --verify-generated PASS, 72/72 independent oracle mutation tests OK, 55/56 P10 release gates PASS (R22 BLOCKED_PLATFORM), and 38-shortcut Legacy+V2 audit in docs/apple-runtime/p10r8/p10r8-final-audit.md (38/38 STRICT_ACTION_SEQUENCE_PASS / ACTION_PARAMETER_WIRE_PASS / VARIABLE_GRAPH_PASS / WORKFLOW_HEADER_PASS, 11/11 THIRD_PARTY_DESCRIPTOR_WIRE_PASS, 38/38 V2_COMPILE_PASS, 37/38 FULL_WORKFLOW_SEMANTIC_PASS with 035 failing closed on SOURCE_CONTROL_FLOW_INVALID, 0/38 APPLE_RUNTIME_EXECUTED BLOCKED_DEVICE).",
       "note": "Milestone P10R8 provenance metadata recorded in separate follow-up commit referencing implementation commit 5cdc4e97f813c84f9a040173899f555536c15bbf (Oracle Phase 1 commit 701e9915f8ce26f81e72df7e8d1a7f6d6e7c884d)."
+    },
+    {
+      "name": "P10R9 unified shared engine, deterministic reverse action registry, and hybrid readable import (--fidelity=hybrid)",
+      "locations": [
+        "action.go",
+        "args.go",
+        "decompile.go",
+        "hybrid_import.go",
+        "import.go",
+        "import_fidelity.go",
+        "language_backend_adapter.go",
+        "language_backend_session.go",
+        "language_cli_adapter.go",
+        "main.go",
+        "mobile_compiler.go",
+        "p10r9_hybrid_test.go",
+        "reverse_action_registry.go",
+        "docs/architecture/",
+        "docs/apple-runtime/p10r9/",
+        "docs/language-v2/",
+        "docs/shortcut-action-development-playbook.md",
+        "docs/ai-team/handoffs/"
+      ],
+      "firstForkCommit": "b91c1ca0834a6799213ac6829d36e61e9c8075e5",
+      "change": "Unified Shortcut import decoding onto DecodeNativeShortcutDocument (binary-plist trailer-safe, XML-plist, JSON, control-flow stack validation, UUID producer/consumer graph); created DefaultReverseActionRegistry (496 standard actions across 381 unique Apple identifiers) and eliminated map iteration order non-determinism in decompile.go:matchAction; populated includeCategory in EnsureCanonicalStandardActions; added ActionEmissionContext / EvaluateActionEmission; switched CanonicalBackendSession.Finalize to binary plist when strings contain XML-unsafe control characters; implemented PlanHybridImport, RenderHybridLegacySource, and RenderHybridV2Source with per-action compile verification in both Legacy and V2 and full-workflow verification gates.",
+      "reason": "Milestone P10R9 one shared forward/reverse engine, deterministic reverse action registry, and lossless hybrid readable import across Legacy and Cherri v2.",
+      "evidence": "TestP10R9_CoreParityAcrossAllSurfaces PASS (38/38 lossless and hybrid import + unsigned compile in Legacy and V2; 1,463 NATURAL_VERIFIED actions across 28 callables; 26,188 EXACT_NATIVE fallbacks; 1 SOURCE_INVALID at 035:723), TestHYB01..TestHYB30 (30/30 PASS), TestP10R9_SSoTPropagation_DeclarativeAndGoHandler PASS, TestP10R9_SequentialMixedCompilesIsolation (1,000 sequential mixed compiles PASS), TestP10R8_* PASS, TestCherriNoSign PASS, TestDecomp PASS, verify_ledger_consistency.py PASS, verify_consumer_compatibility.py PASS, run_release_gates.py 55/56 PASS, and docs/apple-runtime/p10r9/p10r9-final-audit.md.",
+      "note": "Milestone P10R9 provenance metadata recorded in separate follow-up commit referencing implementation commit b91c1ca0834a6799213ac6829d36e61e9c8075e5."
     }
   ]
 }

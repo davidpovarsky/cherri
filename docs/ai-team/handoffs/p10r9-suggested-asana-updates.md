@@ -1,6 +1,8 @@
 # Suggested Asana Updates for Cherri P10R9 (Read-Only Handoff Record)
 
 **Asana Project:** `davidpovarsky/cherri` (`1219603572114432`)  
+**Branch:** `agent/cherri-p10r9-unified-engine-hybrid-import-20261111`  
+**Implementation Commit:** `b91c1ca0834a6799213ac6829d36e61e9c8075e5`  
 **Policy Note:** Per explicit P10R9 task instructions, Asana was treated as read-only during this run. The following evidence-backed updates are prepared for posting under `NORMAL` mode (`[MAIN_SESSION]`).
 
 ---

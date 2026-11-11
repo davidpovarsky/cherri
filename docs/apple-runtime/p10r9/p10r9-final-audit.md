@@ -3,6 +3,7 @@
 **Date:** 2026-11-11  
 **Branch:** `agent/cherri-p10r9-unified-engine-hybrid-import-20261111`  
 **Base Commit (P10R8):** `20c5c750b4c147727ab7ff59c4177b54a8461188`  
+**Implementation Commit:** `b91c1ca0834a6799213ac6829d36e61e9c8075e5`  
 **Corpus:** 38 real-world Apple Shortcuts (`001`–`038`), **27,652** total source actions  
 **Independent Oracle:** `tools/p10r7/independent_fidelity_oracle.py` (`p10r8-fidelity-oracle-20261111.1`)  
 **Execution Mode:** `NORMAL` (`[MAIN_SESSION]`)
