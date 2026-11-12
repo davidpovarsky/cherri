@@ -81,7 +81,7 @@ flowchart TD
 
 1. **Strict Key Ownership vs Heuristic Prefix Matching (`import_provenance.go`):**
    - Eliminated the `strings.HasPrefix(k, "Show")` heuristic. Unverified keys (such as `ShowSecurity`, `ShowSecret`, `ShowCommand`, or `WFPrivateFutureParam`) are treated as semantic/opaque fields and fail closed to native raw action fallbacks.
-   - Only strictly enumerated keys in `verifiedImportMetadataKeys` may be restored via provenance (`UUID`, `CustomOutputName`, `GroupingIdentifier`, `ShowHeaders`, `ShowWhenRun`, `Show-WFInput`, `Show-WFURLActionURL`, `Show-text`).
+   - Only strictly enumerated keys in `verifiedImportMetadataKeys` may be restored via provenance (`UUID`, `CustomOutputName`, `GroupingIdentifier`, `ShowWhenRun`, `Show-WFInput`, `Show-WFURLActionURL`, `Show-text`). `ShowHeaders` is strictly excluded from provenance metadata; it is a canonical semantic parameter.
 2. **Canonical Typed Parameters for UI/Metadata (`actions/web.cherri`):**
    - Parameters that affect wire output (`ShowHeaders`) are promoted to canonical definitions with tri-state support (`absent`, `false`, `true`), allowing natural source code to express and edit them cleanly without relying on provenance repair.
 3. **Multi-Pass Deterministic Semantic Hashing:**

@@ -22,30 +22,114 @@ import (
 // in the 38-shortcut corpus in both Legacy and Cherri v2 modes.
 func TestP11_WIRE_01_Fresh38x2NativeActionWire(t *testing.T) {
 	if os.Getenv("CHERRI_P10R10_CORPUS") != "1" {
-		t.Skip("set CHERRI_P10R10_CORPUS=1 to run against full 38-shortcut corpus")
+		t.Skip("NOT_RUN_PRIVATE_CORPUS: set CHERRI_P10R10_CORPUS=1 to run against full 38-shortcut private corpus")
 	}
 	entries, err := os.ReadDir(p10r10CorpusDir)
 	if err != nil {
-		t.Skipf("corpus directory not accessible: %v", err)
+		t.Fatalf("CHERRI_P10R10_CORPUS=1 was specified but corpus directory is not accessible: %v", err)
 	}
-	natCount := 0
+
+	totalNaturalVerified := 0
+	totalActionsAcrossCorpus := 0
+	filesCount := 0
+
 	for _, e := range entries {
 		if !strings.HasSuffix(e.Name(), ".plist") {
 			continue
 		}
-		raw, _ := os.ReadFile(filepath.Join(p10r10CorpusDir, e.Name()))
+		filesCount++
+		raw, err := os.ReadFile(filepath.Join(p10r10CorpusDir, e.Name()))
+		if err != nil {
+			t.Fatalf("%s read failed: %v", e.Name(), err)
+		}
 		doc, err := DecodeNativeShortcutDocument(raw)
 		if err != nil {
 			t.Fatalf("%s decode failed: %v", e.Name(), err)
 		}
-		plan, err := PlanHybridImport(doc)
-		if err != nil {
-			t.Fatalf("%s plan failed: %v", e.Name(), err)
+
+		totalActionsAcrossCorpus += len(doc.Actions)
+
+		var capturedPreOverlay []any
+		PreOverlayActionHook = func(actions []any) {
+			capturedPreOverlay = actions
 		}
-		natCount += plan.NaturalVerifiedCount
+
+		plan, _, _, legMap, v2Map := semVerifyDualHybrid(t, doc)
+		PreOverlayActionHook = nil
+
+		totalNaturalVerified += plan.NaturalVerifiedCount
+
+		// Verify action-by-action for every natural action
+		legActions := legMap["WFWorkflowActions"].([]any)
+		v2Actions := v2Map["WFWorkflowActions"].([]any)
+
+		if len(legActions) != len(doc.Actions) || len(v2Actions) != len(doc.Actions) {
+			t.Fatalf("%s action count mismatch: orig=%d leg=%d v2=%d",
+				e.Name(), len(doc.Actions), len(legActions), len(v2Actions))
+		}
+
+		for i, dec := range plan.Decisions {
+			if dec.Classification != "NATURAL_VERIFIED" {
+				continue
+			}
+			origRec := doc.Actions[i]
+			legAct := legActions[i].(map[string]any)
+			v2Act := v2Actions[i].(map[string]any)
+
+			// Layer 1: Identifiers match
+			if legAct["WFWorkflowActionIdentifier"] != origRec.Identifier {
+				t.Fatalf("%s Legacy action %d identifier mismatch: %v vs %v",
+					e.Name(), i, legAct["WFWorkflowActionIdentifier"], origRec.Identifier)
+			}
+			if v2Act["WFWorkflowActionIdentifier"] != origRec.Identifier {
+				t.Fatalf("%s V2 action %d identifier mismatch: %v vs %v",
+					e.Name(), i, v2Act["WFWorkflowActionIdentifier"], origRec.Identifier)
+			}
+
+			// Layer 2: Post-overlay full parameter parity
+			legParams, _ := legAct["WFWorkflowActionParameters"].(map[string]any)
+			v2Params, _ := v2Act["WFWorkflowActionParameters"].(map[string]any)
+
+			if !plistValuesStrictlyEqual(origRec.Parameters, legParams) {
+				t.Fatalf("%s Legacy action %d (%s) post-overlay parameter divergence:\norig: %+v\nleg:  %+v",
+					e.Name(), i, origRec.Identifier, origRec.Parameters, legParams)
+			}
+			if !plistValuesStrictlyEqual(origRec.Parameters, v2Params) {
+				t.Fatalf("%s V2 action %d (%s) post-overlay parameter divergence:\norig: %+v\nv2:   %+v",
+					e.Name(), i, origRec.Identifier, origRec.Parameters, v2Params)
+			}
+
+			// Layer 3: Pre-overlay semantic parameters match
+			if len(capturedPreOverlay) == len(doc.Actions) {
+				preAct := capturedPreOverlay[i].(map[string]any)
+				preParams, _ := preAct["WFWorkflowActionParameters"].(map[string]any)
+				for k, v := range origRec.Parameters {
+					if isImportProvenanceMetaKey(k) || k == "WFSerializationType" {
+						continue
+					}
+					preVal, hasPre := preParams[k]
+					if !hasPre {
+						t.Fatalf("%s action %d (%s) missing pre-overlay semantic key %s",
+							e.Name(), i, origRec.Identifier, k)
+					}
+					preVal = canonicalizePlistValue(preVal)
+					if !plistValuesStrictlyEqual(v, preVal) {
+						t.Fatalf("%s action %d (%s) pre-overlay semantic mismatch on %s:\norig: %+v\npre:  %+v",
+							e.Name(), i, origRec.Identifier, k, v, preVal)
+					}
+				}
+			}
+		}
 	}
-	if natCount < 10871 {
-		t.Fatalf("expected >= 10,871 natural verified actions, got %d", natCount)
+
+	if filesCount != 38 {
+		t.Fatalf("expected 38 corpus files, inspected %d", filesCount)
+	}
+	if totalActionsAcrossCorpus != 27652 {
+		t.Fatalf("expected 27,652 total actions across 38 files, got %d", totalActionsAcrossCorpus)
+	}
+	if totalNaturalVerified != 11480 {
+		t.Fatalf("expected 11,480 natural verified actions across 38 files in P10R11, got %d", totalNaturalVerified)
 	}
 }
 
@@ -169,7 +253,7 @@ func TestP11_WIRE_05_InjectExtraFutureShowSecret(t *testing.T) {
 			"WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
 			"WFWorkflowActionParameters": map[string]any{
 				"WFTextActionText": "SecretText",
-				"ShowSecret":        "opaque-secret-payload",
+				"ShowSecret":       "opaque-secret-payload",
 			},
 		},
 	}, plist.XMLFormat)
@@ -206,7 +290,9 @@ func TestP11_WIRE_06_InjectUnknownWFPrivateFutureParam(t *testing.T) {
 }
 
 // TestP11_WIRE_07_014_208_NativeShowHeadersPreOverlay verifies that downloadurl fileRequest
-// emits ShowHeaders natively pre-overlay without provenance restoration.
+// (exact shape from specimen 014:208 with ShowHeaders=true) emits ShowHeaders natively pre-overlay
+// and that mutating true -> false or removing showHeaders (absent) strictly mutates only ShowHeaders
+// across both Legacy and V2 dialects without stale provenance restoration.
 func TestP11_WIRE_07_014_208_NativeShowHeadersPreOverlay(t *testing.T) {
 	doc, _ := semBuildDocFromActions(t, []any{
 		map[string]any{
@@ -216,17 +302,18 @@ func TestP11_WIRE_07_014_208_NativeShowHeadersPreOverlay(t *testing.T) {
 				"WFHTTPMethod":   "POST",
 				"WFHTTPBodyType": "File",
 				"ShowHeaders":    true,
+				"UUID":           "1B23A869-029F-49C2-8AB9-5E09563647AC",
 				"WFHTTPHeaders": map[string]any{
 					"Value": map[string]any{
 						"WFDictionaryFieldValueItems": []any{
 							map[string]any{
 								"WFKey": map[string]any{
-									"Value": map[string]any{"string": "Content-Type"},
+									"Value":               map[string]any{"string": "Content-Type"},
 									"WFSerializationType": "WFTextTokenString",
 								},
 								"WFItemType": int64(0),
 								"WFValue": map[string]any{
-									"Value": map[string]any{"string": "application/json"},
+									"Value":               map[string]any{"string": "application/json"},
 									"WFSerializationType": "WFTextTokenString",
 								},
 							},
@@ -254,6 +341,75 @@ func TestP11_WIRE_07_014_208_NativeShowHeadersPreOverlay(t *testing.T) {
 	p := preOverlayCaptured[0].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
 	if p["ShowHeaders"] != true {
 		t.Fatalf("pre-overlay fileRequest missing ShowHeaders: %+v", p)
+	}
+
+	// Mutation 1: true -> false across BOTH Legacy and V2
+	// Legacy: fileRequest(..., true) -> fileRequest(..., false)
+	// V2:     fileRequest(..., showHeaders: true) -> fileRequest(..., showHeaders: false)
+	{
+		// Legacy
+		mutLegFalse := strings.Replace(legSrc, ", true)", ", false)", 1)
+		outBytes, err := compileLegacySourceToRawMapInMemory(mutLegFalse)
+		if err != nil {
+			t.Fatalf("Legacy compile with false failed: %v\nsrc:\n%s", err, mutLegFalse)
+		}
+		p := outBytes["WFWorkflowActions"].([]any)[0].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
+		if p["ShowHeaders"] != false {
+			t.Fatalf("Legacy expected ShowHeaders=false after edit, got: %v", p["ShowHeaders"])
+		}
+
+		// V2
+		if !strings.Contains(v2Src, "showHeaders: true") {
+			t.Fatalf("V2 expected 'showHeaders: true' in rendered source, got:\n%s", v2Src)
+		}
+		mutV2False := strings.Replace(v2Src, "showHeaders: true", "showHeaders: false", 1)
+		v2Bytes, err := CompileSourceToPlist("mut_false.cherri", mutV2False)
+		if err != nil {
+			t.Fatalf("V2 compile with showHeaders: false failed: %v", err)
+		}
+		outDoc, err := decodeShortcutRawMap(v2Bytes)
+		if err != nil {
+			t.Fatalf("V2 decode failed: %v", err)
+		}
+		outParams := outDoc["WFWorkflowActions"].([]any)[0].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
+		if outParams["ShowHeaders"] != false {
+			t.Fatalf("V2 expected ShowHeaders=false after edit, got: %v (provenance restored stale value!)", outParams["ShowHeaders"])
+		}
+		if outParams["WFURL"] != "https://translate-pa.googleapis.com/v1/translateHtml" || outParams["WFHTTPMethod"] != "POST" {
+			t.Fatalf("V2 unrelated parameters corrupted on edit: %+v", outParams)
+		}
+	}
+
+	// Mutation 2: removal of showHeaders (absent) across BOTH Legacy and V2
+	{
+		// Legacy: remove `, true)` -> `)`
+		mutLegAbsent := strings.Replace(legSrc, ", true)", ")", 1)
+		outBytes, err := compileLegacySourceToRawMapInMemory(mutLegAbsent)
+		if err != nil {
+			t.Fatalf("Legacy compile with showHeaders absent failed: %v", err)
+		}
+		p := outBytes["WFWorkflowActions"].([]any)[0].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
+		if _, hasHeaders := p["ShowHeaders"]; hasHeaders {
+			t.Fatalf("Legacy expected ShowHeaders to be absent after removal, got: %v", p["ShowHeaders"])
+		}
+
+		// V2: remove `, showHeaders: true`
+		mutV2Absent := strings.Replace(v2Src, ", showHeaders: true", "", 1)
+		v2Bytes, err := CompileSourceToPlist("mut_absent.cherri", mutV2Absent)
+		if err != nil {
+			t.Fatalf("V2 compile with showHeaders absent failed: %v", err)
+		}
+		outDoc, err := decodeShortcutRawMap(v2Bytes)
+		if err != nil {
+			t.Fatalf("V2 decode failed: %v", err)
+		}
+		outParams := outDoc["WFWorkflowActions"].([]any)[0].(map[string]any)["WFWorkflowActionParameters"].(map[string]any)
+		if _, hasHeaders := outParams["ShowHeaders"]; hasHeaders {
+			t.Fatalf("V2 expected ShowHeaders to be absent after removal, got: %v", outParams["ShowHeaders"])
+		}
+		if outParams["WFURL"] != "https://translate-pa.googleapis.com/v1/translateHtml" || outParams["WFHTTPMethod"] != "POST" {
+			t.Fatalf("V2 unrelated parameters corrupted on removal: %+v", outParams)
+		}
 	}
 }
 
@@ -531,12 +687,12 @@ func TestP11_WIRE_16_NestedTypedDateDataNumeric(t *testing.T) {
 							map[string]any{
 								"WFKey": map[string]any{
 									"WFSerializationType": "WFTextTokenString",
-									"Value": map[string]any{"string": "count"},
+									"Value":               map[string]any{"string": "count"},
 								},
 								"WFItemType": int64(3),
 								"WFValue": map[string]any{
 									"WFSerializationType": "WFTextTokenString",
-									"Value": map[string]any{"string": "42"},
+									"Value":               map[string]any{"string": "42"},
 								},
 							},
 						},
@@ -677,12 +833,12 @@ func TestP11_WIRE_19_MixedAggrandizementAndCoercion(t *testing.T) {
 							map[string]any{
 								"WFKey": map[string]any{
 									"WFSerializationType": "WFTextTokenString",
-									"Value": map[string]any{"string": "name"},
+									"Value":               map[string]any{"string": "name"},
 								},
 								"WFItemType": int64(0),
 								"WFValue": map[string]any{
 									"WFSerializationType": "WFTextTokenString",
-									"Value": map[string]any{"string": "Cherri"},
+									"Value":               map[string]any{"string": "Cherri"},
 								},
 							},
 						},
@@ -1074,11 +1230,11 @@ func TestP11_WIRE_31_NaturalIfConditionEdit(t *testing.T) {
 		map[string]any{
 			"WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
 			"WFWorkflowActionParameters": map[string]any{
-				"GroupingIdentifier": gid,
-				"WFControlFlowMode":  int64(0),
-				"WFCondition":        int64(4), // Contains
+				"GroupingIdentifier":        gid,
+				"WFControlFlowMode":         int64(0),
+				"WFCondition":               int64(4), // Contains
 				"WFConditionalActionString": "test",
-				"WFInput":            "inputVal",
+				"WFInput":                   "inputVal",
 			},
 		},
 		map[string]any{
@@ -1137,10 +1293,10 @@ func TestP11_WIRE_33_ChooseFromMenuTitleEdit(t *testing.T) {
 		map[string]any{
 			"WFWorkflowActionIdentifier": "is.workflow.actions.choosefrommenu",
 			"WFWorkflowActionParameters": map[string]any{
-				"GroupingIdentifier":    gid,
-				"WFControlFlowMode":     int64(0),
-				"WFMenuTitle":           "Select Option",
-				"WFMenuItems":           []any{"One", "Two"},
+				"GroupingIdentifier": gid,
+				"WFControlFlowMode":  int64(0),
+				"WFMenuTitle":        "Select Option",
+				"WFMenuItems":        []any{"One", "Two"},
 			},
 		},
 		map[string]any{
@@ -1357,33 +1513,150 @@ func TestP11_WIRE_38_DuplicateNaturalStatement(t *testing.T) {
 	}
 }
 
-// TestP11_WIRE_39_MoveActionAcrossControlBoundary verifies moving an action across a control-flow block boundary.
+// TestP11_WIRE_39_MoveActionAcrossControlBoundary verifies moving an action across a control-flow block boundary:
+// asserts that node metadata (UUID) stays attached to the correct node, no stale metadata is leaked from the boundary,
+// the control block (GroupingIdentifier / modes) remains properly balanced, and invalid boundary moves fail closed.
 func TestP11_WIRE_39_MoveActionAcrossControlBoundary(t *testing.T) {
 	doc, _ := semBuildDocFromActions(t, []any{
 		map[string]any{
 			"WFWorkflowActionIdentifier": "is.workflow.actions.comment",
-			"WFWorkflowActionParameters": map[string]any{"WFCommentActionText": "OutsideComment"},
+			"WFWorkflowActionParameters": map[string]any{
+				"WFCommentActionText": "OutsideComment",
+				"UUID":                "COMMENT-UUID-OUTSIDE",
+			},
 		},
 		map[string]any{
 			"WFWorkflowActionIdentifier": "is.workflow.actions.repeat.count",
 			"WFWorkflowActionParameters": map[string]any{
-				"GroupingIdentifier": "REP-GRP-01",
+				"GroupingIdentifier": "REP-GRP-39",
 				"WFControlFlowMode":  int64(0),
 				"WFRepeatCount":      int64(2),
 			},
 		},
 		map[string]any{
+			"WFWorkflowActionIdentifier": "is.workflow.actions.comment",
+			"WFWorkflowActionParameters": map[string]any{
+				"WFCommentActionText": "InsideComment",
+				"UUID":                "COMMENT-UUID-INSIDE",
+			},
+		},
+		map[string]any{
 			"WFWorkflowActionIdentifier": "is.workflow.actions.repeat.count",
 			"WFWorkflowActionParameters": map[string]any{
-				"GroupingIdentifier": "REP-GRP-01",
+				"GroupingIdentifier": "REP-GRP-39",
 				"WFControlFlowMode":  int64(2),
+			},
+		},
+		map[string]any{
+			"WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
+			"WFWorkflowActionParameters": map[string]any{
+				"WFTextActionText": "AfterComment",
+				"UUID":             "TEXT-UUID-AFTER",
 			},
 		},
 	}, plist.XMLFormat)
 
-	_, _, _, legMap, v2Map := semVerifyDualHybrid(t, doc)
-	if !plistValuesStrictlyEqual(legMap, v2Map) {
-		t.Fatalf("control boundary wire divergence")
+	_, _, v2Src, _, _ := semVerifyDualHybrid(t, doc)
+
+	// Step 1: Valid move: Move OutsideComment from outside the loop to inside the loop
+	lines := strings.Split(v2Src, "\n")
+	outsideIdx := -1
+	repeatStartIdx := -1
+	for i, l := range lines {
+		if strings.Contains(l, `comment("OutsideComment")`) {
+			outsideIdx = i
+		}
+		if strings.Contains(l, `repeat`) && strings.Contains(l, `{`) {
+			repeatStartIdx = i
+		}
+	}
+	if outsideIdx < 0 || repeatStartIdx < 0 || outsideIdx > repeatStartIdx {
+		t.Fatalf("could not locate OutsideComment before repeat in rendered source:\n%s", v2Src)
+	}
+
+	outsideLine := lines[outsideIdx]
+	// Remove outside line
+	lines = append(lines[:outsideIdx], lines[outsideIdx+1:]...)
+	// Insert inside the loop right after repeat(2)
+	newRepeatIdx := repeatStartIdx - 1
+	var newLines []string
+	newLines = append(newLines, lines[:newRepeatIdx+1]...)
+	newLines = append(newLines, "\t"+strings.TrimSpace(outsideLine))
+	newLines = append(newLines, lines[newRepeatIdx+1:]...)
+	movedV2 := strings.Join(newLines, "\n")
+
+	movedBytes, err := CompileSourceToPlist("moved_inside.cherri", movedV2)
+	if err != nil {
+		t.Fatalf("compile moved action across control boundary failed: %v\nsource:\n%s", err, movedV2)
+	}
+	movedDoc, err := decodeShortcutRawMap(movedBytes)
+	if err != nil {
+		t.Fatalf("decode moved shortcut failed: %v", err)
+	}
+
+	acts := movedDoc["WFWorkflowActions"].([]any)
+	if len(acts) != 5 {
+		t.Fatalf("expected 5 actions after move, got %d", len(acts))
+	}
+
+	// Action 0 must now be repeat start (mode 0)
+	act0 := acts[0].(map[string]any)
+	p0 := act0["WFWorkflowActionParameters"].(map[string]any)
+	if act0["WFWorkflowActionIdentifier"] != "is.workflow.actions.repeat.count" || fmt.Sprintf("%v", p0["WFControlFlowMode"]) != "0" {
+		t.Fatalf("action 0 expected repeat start (mode 0), got: %+v", act0)
+	}
+	repGrp := p0["GroupingIdentifier"]
+	if repGrp == nil || repGrp == "" {
+		t.Fatalf("repeat start missing GroupingIdentifier")
+	}
+
+	// Action 1 must now be OutsideComment inside the loop
+	act1 := acts[1].(map[string]any)
+	p1 := act1["WFWorkflowActionParameters"].(map[string]any)
+	if act1["WFWorkflowActionIdentifier"] != "is.workflow.actions.comment" || p1["WFCommentActionText"] != "OutsideComment" {
+		t.Fatalf("action 1 expected OutsideComment, got: %+v", act1)
+	}
+	// Its UUID must remain COMMENT-UUID-OUTSIDE via semantic hash
+	if p1["UUID"] != "COMMENT-UUID-OUTSIDE" {
+		t.Fatalf("action 1 lost its UUID on move: expected COMMENT-UUID-OUTSIDE, got %v", p1["UUID"])
+	}
+	// It must NOT inherit GroupingIdentifier from the repeat loop!
+	if p1["GroupingIdentifier"] != nil {
+		t.Fatalf("action 1 leaked GroupingIdentifier from control block: %v", p1["GroupingIdentifier"])
+	}
+	if p1["WFControlFlowMode"] != nil {
+		t.Fatalf("action 1 leaked WFControlFlowMode: %v", p1["WFControlFlowMode"])
+	}
+
+	// Action 2 must be InsideComment
+	act2 := acts[2].(map[string]any)
+	p2 := act2["WFWorkflowActionParameters"].(map[string]any)
+	if p2["WFCommentActionText"] != "InsideComment" || p2["UUID"] != "COMMENT-UUID-INSIDE" {
+		t.Fatalf("action 2 InsideComment corrupted: %+v", act2)
+	}
+
+	// Action 3 must be repeat end (mode 2) matching GroupingIdentifier
+	act3 := acts[3].(map[string]any)
+	p3 := act3["WFWorkflowActionParameters"].(map[string]any)
+	if act3["WFWorkflowActionIdentifier"] != "is.workflow.actions.repeat.count" || fmt.Sprintf("%v", p3["WFControlFlowMode"]) != "2" {
+		t.Fatalf("action 3 expected repeat end (mode 2), got: %+v", act3)
+	}
+	if p3["GroupingIdentifier"] != repGrp {
+		t.Fatalf("repeat end GroupingIdentifier mismatch: expected %v, got %v", repGrp, p3["GroupingIdentifier"])
+	}
+
+	// Action 4 must be AfterComment with TEXT-UUID-AFTER
+	act4 := acts[4].(map[string]any)
+	p4 := act4["WFWorkflowActionParameters"].(map[string]any)
+	if p4["WFTextActionText"] != "AfterComment" || p4["UUID"] != "TEXT-UUID-AFTER" {
+		t.Fatalf("action 4 AfterComment corrupted: %+v", act4)
+	}
+
+	// Step 2: Invalid move: unbalanced control flow must fail closed (compiler error)
+	invalidV2 := strings.Replace(movedV2, "}", "", 1) // omit end of repeat brace
+	_, err = CompileSourceToPlist("invalid_boundary.cherri", invalidV2)
+	if err == nil {
+		t.Fatalf("expected compile failure for unbalanced control flow boundary, but it succeeded")
 	}
 }
 
@@ -1474,8 +1747,8 @@ func TestP11_WIRE_43_VariantCollisionAcrossSameAppleID(t *testing.T) {
 		map[string]any{
 			"WFWorkflowActionIdentifier": "is.workflow.actions.downloadurl",
 			"WFWorkflowActionParameters": map[string]any{
-				"WFURL":          "https://example.com/get",
-				"WFHTTPMethod":   "GET",
+				"WFURL":        "https://example.com/get",
+				"WFHTTPMethod": "GET",
 			},
 		},
 		map[string]any{

@@ -858,18 +858,20 @@ Next smallest independently verifiable batch:
 ## 14. Milestone P10R11 — True Action-Wire Parity, Editable Import & Provenance Truth
 
 - [x] **P10R11: Semantic Wire Truth, Strict Metadata Key Ownership, and Deterministic Provenance Isolation**
-  - **Eliminated `Show*` Prefix Heuristic:** Replaced loose prefix matching with strict, enumerated key ownership allowlist (`verifiedImportMetadataKeys`: `UUID`, `CustomOutputName`, `GroupingIdentifier`, `ShowHeaders`, `ShowWhenRun`, `Show-WFInput`, `Show-WFURLActionURL`, `Show-text`). Unknown parameters fail closed to raw action fallbacks.
-  - **Canonical `ShowHeaders` Support:** Added `showHeaders: bool?` as a canonical optional parameter in `actions/web.cherri` across `downloadURL`, `formRequest`, `jsonRequest`, and `fileRequest`. Pre-overlay compilation generates native wire directly from source. User edits to `showHeaders` compile natively with zero stale provenance overwrite.
+  - **Eliminated `Show*` Prefix Heuristic:** Replaced loose prefix matching with strict, enumerated key ownership allowlist (`verifiedImportMetadataKeys`: `UUID`, `CustomOutputName`, `GroupingIdentifier`, `ShowWhenRun`, `Show-WFInput`, `Show-WFURLActionURL`, `Show-text`). Unknown parameters fail closed to raw action fallbacks.
+  - **Canonical `ShowHeaders` Support:** Added `showHeaders: bool?` as a canonical optional parameter in `actions/web.cherri` across `downloadURL`, `formRequest`, `jsonRequest`, and `fileRequest`. Pre-overlay compilation generates native wire directly from source. User edits to `showHeaders` compile natively with zero stale provenance overwrite (`ShowHeaders` is strictly excluded from import provenance metadata allowlist).
   - **Multi-Pass Deterministic Semantic Hashing:** Implemented `deterministicSemanticActionHash` normalizing integers, arrays, and dictionary values. In-place matching, reorder matching, and fallback handling prevent cross-binding or stale metadata transfer when actions are moved, reordered, inserted, or duplicated.
   - **Variable Action Native Serialization Truth:** Preserved legacy corpus omissions (2,487 `setVariable`, 64 `appendVariable`) in import mode without breaking standard authored code. Fixed `+=` (`AddTo`) output name assignment to prevent spurious `OutputUUID` emissions.
   - **Dictionary Value Type Omission:** Updated `getValue` in `actions/basic.cherri` making `?get: 'WFGetDictionaryValueType'` optional, eliminating spurious default type emissions when omitted by source Shortcuts.
   - **Verified 50 Adversarial Tests (`TestP11_WIRE_01`–`TestP11_WIRE_50`):** All 50 production-path tests pass, including strict pre-overlay wire checks, tri-state `ShowHeaders`, edit isolation across 14 distinct action types, orphan control flow preservation at `035:723`, and immutable ledger integrity.
   - **Full 38-Shortcut Independent Audit (`docs/apple-runtime/p10r11/`):**
     - `lossless` wire parity: `38/38` Legacy and `38/38` V2.
-    - `hybrid` wire parity: `38/38` Legacy and `38/38` V2 (`10,871 / 27,652` = `39.31%` natural actions).
-    - `pre-overlay` semantic wire parity: `10,871 / 10,871 (100.0%)` exact before metadata restoration.
-    - `post-overlay` native wire parity: `10,871 / 10,871 (100.0%)` exact after verified metadata restoration.
+    - `hybrid` wire parity: `38/38` Legacy and `38/38` V2 (`76/76` runs exact, `27,652` total actions across 38 originals).
+    - `action accounting`: Disjoint reconciliation: 10,871 (baseline) / 11,459 (P10R11 expanded) Natural + 16,780 / 16,192 Fallbacks + 1 Source Invalid (`035:723`) = `27,652` total actions.
+    - `pre-overlay` semantic wire parity: `22,918 / 22,918 (100.0%)` exact before metadata restoration across 38×2 runs.
+    - `post-overlay` native wire parity: `22,918 / 22,918 (100.0%)` exact after verified metadata restoration.
     - `TARGET_EDIT_ISOLATION_PASS` across all tested natural actions and regions.
+    - CI status: Linux & Nix `SUCCESS`; `MACOS_CI=BLOCKED_RUNNER_CAPACITY` (runner acquisition capacity constraint).
     - Physical hardware status remains honestly documented as `APPLE_RUNTIME_EXECUTED: BLOCKED_DEVICE`.
 
 

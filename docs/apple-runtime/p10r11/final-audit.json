@@ -1,20 +1,64 @@
 {
-  "version": "p10r11-final-audit-v1",
-  "generatedAt": "2026-11-12T17:15:00Z",
+  "version": "p10r11-final-audit-v2-reconciled",
+  "auditedAt": "2026-11-12T18:50:00Z",
   "compilerBinarySha256": "875c297660e1eeb8ce7a46c8755957f78a4be5434be9440ad8e151a88220136d",
-  "oracleVersion": "p10r8-fidelity-oracle-20261111.1",
+  "noPatchBinarySha256": "e384bcb514a0d4b22e699712411ee20b069e3639bfaf0cca5926e761ed7f7b35",
+  "ciStatus": {
+    "runId": 43248863362,
+    "linuxJobId": 131298939329,
+    "linuxStatus": "SUCCESS (14/14 steps passed)",
+    "nixJobId": 131299034894,
+    "nixStatus": "SUCCESS (package built)",
+    "macosJobId": 131298934920,
+    "macosStatus": "MACOS_CI=BLOCKED_RUNNER_CAPACITY (cancelled due to GitHub Actions hosted macos-latest runner capacity constraint; steps: [])"
+  },
   "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE",
-  "losslessLegacy": "38/38",
-  "losslessV2": "38/38",
-  "hybridLegacy": "38/38",
-  "hybridV2": "38/38",
-  "naturalReadableActions": "10871/27652 (39.31%)",
-  "preOverlaySemanticWireExact": "10871/10871 (100.0%)",
-  "postOverlayNativeWireExact": "10871/10871 (100.0%)",
-  "sourceInvalidPreserved": "035:723 (SOURCE_CONTROL_FLOW_INVALID)",
-  "editIsolationAllPassed": true,
-  "negativeMutationsAllCaught": true,
-  "adversarialWireTestsPassed": "50/50",
-  "releaseGatesPassed": "55/56 (1 BLOCKED_PLATFORM)",
-  "verdict": "SEMANTIC_ACTION_WIRE_TRUTH_VERIFIED"
+  "actionAccounting": {
+    "totalActionsAcross38Corpus": 27652,
+    "baselineP10R10": {
+      "naturalVerified": 10871,
+      "exactNativeFallback": 16780,
+      "sourceInvalid": 1,
+      "reconciliation": "10871 + 16780 + 1 = 27652 (100.0%)"
+    },
+    "expandedP10R11": {
+      "naturalVerified": 11459,
+      "exactNativeFallback": 16192,
+      "sourceInvalid": 1,
+      "reconciliation": "11459 + 16192 + 1 = 27652 (100.0%)"
+    }
+  },
+  "parityAudit38x2": {
+    "totalRuns": 76,
+    "layer1_fullTreeTypedExact": "76/76 (100.0%)",
+    "layer2_preRestoreIdMatch": "22918/22918 (100.0%)",
+    "layer3_preRestoreSemanticExact": "22918/22918 (100.0%)",
+    "layer3_postRestoreExact": "22918/22918 (100.0%)",
+    "showheadersPreRestoreExact": "2/2 (100.0%)",
+    "sourceInvalidPreserved": "035:723 (SOURCE_CONTROL_FLOW_INVALID)"
+  },
+  "testSuites": {
+    "p11WireFidelityTests": "50/50 PASS",
+    "oracleIndependentMutations": "72/72 PASS",
+    "ciTestDiscoveryGate": "44/44 PASS",
+    "ledgerConsistency": "11/11 PASS",
+    "purePlusPackParity": "20/20 modules match 141b9cc",
+    "releaseGatesLocal": "55/56 PASS (1 BLOCKED_PLATFORM)"
+  },
+  "keyOwnershipPolicy": {
+    "verifiedImportMetadataAllowlist": [
+      "UUID",
+      "CustomOutputName",
+      "GroupingIdentifier",
+      "ShowWhenRun",
+      "Show-WFInput",
+      "Show-WFURLActionURL",
+      "Show-text"
+    ],
+    "canonicalSemanticParameters": [
+      "ShowHeaders (actions/web.cherri: downloadURL, formRequest, jsonRequest, fileRequest)"
+    ],
+    "showPrefixHeuristicRemoved": true
+  },
+  "verdict": "P10R11_LOCAL_VERIFIED_MACOS_BLOCKED"
 }

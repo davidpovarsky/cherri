@@ -1,66 +1,1248 @@
 {
-  "version": "p10r11-pre-overlay-action-parity-v1",
-  "generatedAt": "2026-11-12T17:15:00Z",
+  "version": "p10r11-pre-overlay-action-parity-matrix-v2",
+  "generatedAt": "2026-11-12T18:49:46Z",
   "compilerBinarySha256": "875c297660e1eeb8ce7a46c8755957f78a4be5434be9440ad8e151a88220136d",
-  "corpusSummary": {
-    "specimensCount": 38,
-    "totalCompiledActions": 27652,
-    "naturalVerifiedActions": 10871,
-    "naturalPercentage": "39.31%",
-    "rawFallbackActions": 16781,
-    "rawFallbackPercentage": "60.69%"
+  "noPatchBinarySha256": "e384bcb514a0d4b22e699712411ee20b069e3639bfaf0cca5926e761ed7f7b35",
+  "summary": {
+    "totalSpecimens": 38,
+    "totalRuns": 76,
+    "layer1_full_tree_exact_runs": 76,
+    "total_natural_actions_compared": 22918,
+    "post_restore_action_exact": 22918,
+    "pre_restore_semantic_exact": 22918,
+    "pre_restore_semantic_diff": 0,
+    "pre_restore_id_match": 22918,
+    "showheaders_observed": 2,
+    "showheaders_pre_exact": 2,
+    "wfser_omitted_orig": 22918,
+    "wfser_omitted_final": 22918,
+    "natural_with_provenance_metadata": 13308,
+    "exact_native_fallbacks": 32384,
+    "source_invalid": 2,
+    "reconciliation": "11459 NATURAL + 16192 FALLBACK + 1 INVALID = 27652 ACTIONS PER DIALECT"
   },
-  "preOverlayParity": {
-    "totalNaturalEvaluated": 10871,
-    "preOverlaySemanticWireExact": 10871,
-    "preOverlaySemanticWireExactPercentage": "100.0%",
-    "postOverlayNativeWireExact": 10871,
-    "postOverlayNativeWireExactPercentage": "100.0%"
-  },
-  "metadataKeyOwnership": {
-    "identityOnlyKeys": [
-      "UUID",
-      "CustomOutputName",
-      "GroupingIdentifier"
-    ],
-    "presentationUIKeys": [
-      "ShowHeaders",
-      "ShowWhenRun",
-      "Show-WFInput",
-      "Show-WFURLActionURL",
-      "Show-text"
-    ],
-    "importPresenceKeys": [
-      "WFSerializationType"
-    ],
-    "disallowedHeuristicKeys": [
-      "ShowSecurity",
-      "ShowSecret",
-      "ShowCommand",
-      "WFPrivateFutureParam"
-    ]
-  },
-  "specificCaseAudits": {
-    "case_014_208_fileRequest": {
-      "appleIdentifier": "is.workflow.actions.downloadurl",
-      "chosenDefinitionID": "fileRequest",
-      "showHeadersTriState": "true",
-      "preOverlayShowHeadersStatus": "NATIVELY_EMITTED_FROM_SOURCE",
-      "postOverlayShowHeadersStatus": "IDENTICAL_TO_PRE_OVERLAY",
-      "heuristicPrefixBypass": false,
-      "userEditIsolated": true
+  "rows": [
+    {
+      "specimenId": "001",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 85,
+        "natural_verified": 77,
+        "post_restore_action_exact": 77,
+        "pre_restore_id_match": 77,
+        "wfser_omitted_orig": 77,
+        "wfser_omitted_final": 77,
+        "pre_restore_semantic_exact": 77,
+        "natural_with_provenance_metadata": 62
+      },
+      "diffs": []
     },
-    "case_getValue_WFGetDictionaryValueType": {
-      "appleIdentifier": "is.workflow.actions.getvalueforkey",
-      "chosenDefinitionID": "getValue",
-      "preOverlayDefaultTypeSuppressed": true,
-      "exactNativeWireMatch": true
+    {
+      "specimenId": "001",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 85,
+        "natural_verified": 77,
+        "post_restore_action_exact": 77,
+        "pre_restore_id_match": 77,
+        "wfser_omitted_orig": 77,
+        "wfser_omitted_final": 77,
+        "pre_restore_semantic_exact": 77,
+        "natural_with_provenance_metadata": 62
+      },
+      "diffs": []
     },
-    "legacy_WFSerializationType_variance": {
-      "setVariableOmissionsPreserved": 2487,
-      "appendVariableOmissionsPreserved": 64,
-      "normalAuthoredCompatibilityPreserved": true
+    {
+      "specimenId": "002",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 130,
+        "natural_verified": 75,
+        "post_restore_action_exact": 75,
+        "pre_restore_id_match": 75,
+        "wfser_omitted_orig": 75,
+        "wfser_omitted_final": 75,
+        "pre_restore_semantic_exact": 75,
+        "natural_with_provenance_metadata": 49
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "002",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 130,
+        "natural_verified": 75,
+        "post_restore_action_exact": 75,
+        "pre_restore_id_match": 75,
+        "wfser_omitted_orig": 75,
+        "wfser_omitted_final": 75,
+        "pre_restore_semantic_exact": 75,
+        "natural_with_provenance_metadata": 49
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "003",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 108,
+        "post_restore_action_exact": 108,
+        "pre_restore_id_match": 108,
+        "wfser_omitted_orig": 108,
+        "wfser_omitted_final": 108,
+        "pre_restore_semantic_exact": 108,
+        "natural_with_provenance_metadata": 42,
+        "exact_native_fallback": 94
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "003",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 108,
+        "post_restore_action_exact": 108,
+        "pre_restore_id_match": 108,
+        "wfser_omitted_orig": 108,
+        "wfser_omitted_final": 108,
+        "pre_restore_semantic_exact": 108,
+        "natural_with_provenance_metadata": 42,
+        "exact_native_fallback": 94
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "004",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 115,
+        "post_restore_action_exact": 115,
+        "pre_restore_id_match": 115,
+        "wfser_omitted_orig": 115,
+        "wfser_omitted_final": 115,
+        "natural_with_provenance_metadata": 76,
+        "pre_restore_semantic_exact": 115,
+        "exact_native_fallback": 132
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "004",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 115,
+        "post_restore_action_exact": 115,
+        "pre_restore_id_match": 115,
+        "wfser_omitted_orig": 115,
+        "wfser_omitted_final": 115,
+        "natural_with_provenance_metadata": 76,
+        "pre_restore_semantic_exact": 115,
+        "exact_native_fallback": 132
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "005",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 108,
+        "post_restore_action_exact": 108,
+        "pre_restore_id_match": 108,
+        "wfser_omitted_orig": 108,
+        "wfser_omitted_final": 108,
+        "natural_with_provenance_metadata": 82,
+        "pre_restore_semantic_exact": 108,
+        "exact_native_fallback": 122
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "005",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 108,
+        "post_restore_action_exact": 108,
+        "pre_restore_id_match": 108,
+        "wfser_omitted_orig": 108,
+        "wfser_omitted_final": 108,
+        "natural_with_provenance_metadata": 82,
+        "pre_restore_semantic_exact": 108,
+        "exact_native_fallback": 122
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "006",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 29,
+        "natural_verified": 14,
+        "post_restore_action_exact": 14,
+        "pre_restore_id_match": 14,
+        "wfser_omitted_orig": 14,
+        "wfser_omitted_final": 14,
+        "natural_with_provenance_metadata": 9,
+        "pre_restore_semantic_exact": 14
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "006",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 29,
+        "natural_verified": 14,
+        "post_restore_action_exact": 14,
+        "pre_restore_id_match": 14,
+        "wfser_omitted_orig": 14,
+        "wfser_omitted_final": 14,
+        "natural_with_provenance_metadata": 9,
+        "pre_restore_semantic_exact": 14
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "007",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 3,
+        "natural_verified": 7,
+        "post_restore_action_exact": 7,
+        "pre_restore_id_match": 7,
+        "wfser_omitted_orig": 7,
+        "wfser_omitted_final": 7,
+        "natural_with_provenance_metadata": 6,
+        "pre_restore_semantic_exact": 7
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "007",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 3,
+        "natural_verified": 7,
+        "post_restore_action_exact": 7,
+        "pre_restore_id_match": 7,
+        "wfser_omitted_orig": 7,
+        "wfser_omitted_final": 7,
+        "natural_with_provenance_metadata": 6,
+        "pre_restore_semantic_exact": 7
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "008",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 229,
+        "post_restore_action_exact": 229,
+        "pre_restore_id_match": 229,
+        "wfser_omitted_orig": 229,
+        "wfser_omitted_final": 229,
+        "pre_restore_semantic_exact": 229,
+        "exact_native_fallback": 220,
+        "natural_with_provenance_metadata": 153
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "008",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 229,
+        "post_restore_action_exact": 229,
+        "pre_restore_id_match": 229,
+        "wfser_omitted_orig": 229,
+        "wfser_omitted_final": 229,
+        "pre_restore_semantic_exact": 229,
+        "exact_native_fallback": 220,
+        "natural_with_provenance_metadata": 153
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "009",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 229,
+        "post_restore_action_exact": 229,
+        "pre_restore_id_match": 229,
+        "wfser_omitted_orig": 229,
+        "wfser_omitted_final": 229,
+        "pre_restore_semantic_exact": 229,
+        "exact_native_fallback": 220,
+        "natural_with_provenance_metadata": 152
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "009",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 229,
+        "post_restore_action_exact": 229,
+        "pre_restore_id_match": 229,
+        "wfser_omitted_orig": 229,
+        "wfser_omitted_final": 229,
+        "pre_restore_semantic_exact": 229,
+        "exact_native_fallback": 220,
+        "natural_with_provenance_metadata": 152
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "010",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 42,
+        "post_restore_action_exact": 42,
+        "pre_restore_id_match": 42,
+        "wfser_omitted_orig": 42,
+        "wfser_omitted_final": 42,
+        "pre_restore_semantic_exact": 42,
+        "natural_with_provenance_metadata": 22,
+        "exact_native_fallback": 17
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "010",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 42,
+        "post_restore_action_exact": 42,
+        "pre_restore_id_match": 42,
+        "wfser_omitted_orig": 42,
+        "wfser_omitted_final": 42,
+        "pre_restore_semantic_exact": 42,
+        "natural_with_provenance_metadata": 22,
+        "exact_native_fallback": 17
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "011",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 59,
+        "post_restore_action_exact": 59,
+        "pre_restore_id_match": 59,
+        "wfser_omitted_orig": 59,
+        "wfser_omitted_final": 59,
+        "pre_restore_semantic_exact": 59,
+        "exact_native_fallback": 110,
+        "natural_with_provenance_metadata": 44
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "011",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 59,
+        "post_restore_action_exact": 59,
+        "pre_restore_id_match": 59,
+        "wfser_omitted_orig": 59,
+        "wfser_omitted_final": 59,
+        "pre_restore_semantic_exact": 59,
+        "exact_native_fallback": 110,
+        "natural_with_provenance_metadata": 44
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "012",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 1062,
+        "post_restore_action_exact": 1062,
+        "pre_restore_id_match": 1062,
+        "wfser_omitted_orig": 1062,
+        "wfser_omitted_final": 1062,
+        "pre_restore_semantic_exact": 1062,
+        "exact_native_fallback": 1412,
+        "natural_with_provenance_metadata": 606
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "012",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 1062,
+        "post_restore_action_exact": 1062,
+        "pre_restore_id_match": 1062,
+        "wfser_omitted_orig": 1062,
+        "wfser_omitted_final": 1062,
+        "pre_restore_semantic_exact": 1062,
+        "exact_native_fallback": 1412,
+        "natural_with_provenance_metadata": 606
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "013",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 50,
+        "natural_verified": 23,
+        "post_restore_action_exact": 23,
+        "pre_restore_id_match": 23,
+        "wfser_omitted_orig": 23,
+        "wfser_omitted_final": 23,
+        "natural_with_provenance_metadata": 17,
+        "pre_restore_semantic_exact": 23
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "013",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 50,
+        "natural_verified": 23,
+        "post_restore_action_exact": 23,
+        "pre_restore_id_match": 23,
+        "wfser_omitted_orig": 23,
+        "wfser_omitted_final": 23,
+        "natural_with_provenance_metadata": 17,
+        "pre_restore_semantic_exact": 23
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "014",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 247,
+        "post_restore_action_exact": 247,
+        "pre_restore_id_match": 247,
+        "wfser_omitted_orig": 247,
+        "wfser_omitted_final": 247,
+        "pre_restore_semantic_exact": 247,
+        "exact_native_fallback": 272,
+        "natural_with_provenance_metadata": 147,
+        "showheaders_observed": 1,
+        "showheaders_pre_exact": 1
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "014",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 247,
+        "post_restore_action_exact": 247,
+        "pre_restore_id_match": 247,
+        "wfser_omitted_orig": 247,
+        "wfser_omitted_final": 247,
+        "pre_restore_semantic_exact": 247,
+        "exact_native_fallback": 272,
+        "natural_with_provenance_metadata": 147,
+        "showheaders_observed": 1,
+        "showheaders_pre_exact": 1
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "015",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 25,
+        "post_restore_action_exact": 25,
+        "pre_restore_id_match": 25,
+        "wfser_omitted_orig": 25,
+        "wfser_omitted_final": 25,
+        "natural_with_provenance_metadata": 19,
+        "pre_restore_semantic_exact": 25,
+        "exact_native_fallback": 24
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "015",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 25,
+        "post_restore_action_exact": 25,
+        "pre_restore_id_match": 25,
+        "wfser_omitted_orig": 25,
+        "wfser_omitted_final": 25,
+        "natural_with_provenance_metadata": 19,
+        "pre_restore_semantic_exact": 25,
+        "exact_native_fallback": 24
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "016",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 430,
+        "natural_verified": 420,
+        "post_restore_action_exact": 420,
+        "pre_restore_id_match": 420,
+        "wfser_omitted_orig": 420,
+        "wfser_omitted_final": 420,
+        "pre_restore_semantic_exact": 420,
+        "natural_with_provenance_metadata": 212
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "016",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 430,
+        "natural_verified": 420,
+        "post_restore_action_exact": 420,
+        "pre_restore_id_match": 420,
+        "wfser_omitted_orig": 420,
+        "wfser_omitted_final": 420,
+        "pre_restore_semantic_exact": 420,
+        "natural_with_provenance_metadata": 212
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "017",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 3,
+        "natural_verified": 5,
+        "post_restore_action_exact": 5,
+        "pre_restore_id_match": 5,
+        "wfser_omitted_orig": 5,
+        "wfser_omitted_final": 5,
+        "pre_restore_semantic_exact": 5,
+        "natural_with_provenance_metadata": 3
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "017",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 3,
+        "natural_verified": 5,
+        "post_restore_action_exact": 5,
+        "pre_restore_id_match": 5,
+        "wfser_omitted_orig": 5,
+        "wfser_omitted_final": 5,
+        "pre_restore_semantic_exact": 5,
+        "natural_with_provenance_metadata": 3
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "018",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 991,
+        "post_restore_action_exact": 991,
+        "pre_restore_id_match": 991,
+        "wfser_omitted_orig": 991,
+        "wfser_omitted_final": 991,
+        "pre_restore_semantic_exact": 991,
+        "exact_native_fallback": 1692,
+        "natural_with_provenance_metadata": 594
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "018",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 991,
+        "post_restore_action_exact": 991,
+        "pre_restore_id_match": 991,
+        "wfser_omitted_orig": 991,
+        "wfser_omitted_final": 991,
+        "pre_restore_semantic_exact": 991,
+        "exact_native_fallback": 1692,
+        "natural_with_provenance_metadata": 594
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "019",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 108,
+        "post_restore_action_exact": 108,
+        "pre_restore_id_match": 108,
+        "wfser_omitted_orig": 108,
+        "wfser_omitted_final": 108,
+        "pre_restore_semantic_exact": 108,
+        "natural_with_provenance_metadata": 79,
+        "exact_native_fallback": 155
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "019",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 108,
+        "post_restore_action_exact": 108,
+        "pre_restore_id_match": 108,
+        "wfser_omitted_orig": 108,
+        "wfser_omitted_final": 108,
+        "pre_restore_semantic_exact": 108,
+        "natural_with_provenance_metadata": 79,
+        "exact_native_fallback": 155
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "020",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 34,
+        "post_restore_action_exact": 34,
+        "pre_restore_id_match": 34,
+        "wfser_omitted_orig": 34,
+        "wfser_omitted_final": 34,
+        "pre_restore_semantic_exact": 34,
+        "exact_native_fallback": 127,
+        "natural_with_provenance_metadata": 20
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "020",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 34,
+        "post_restore_action_exact": 34,
+        "pre_restore_id_match": 34,
+        "wfser_omitted_orig": 34,
+        "wfser_omitted_final": 34,
+        "pre_restore_semantic_exact": 34,
+        "exact_native_fallback": 127,
+        "natural_with_provenance_metadata": 20
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "021",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 991,
+        "post_restore_action_exact": 991,
+        "pre_restore_id_match": 991,
+        "wfser_omitted_orig": 991,
+        "wfser_omitted_final": 991,
+        "pre_restore_semantic_exact": 991,
+        "exact_native_fallback": 1692,
+        "natural_with_provenance_metadata": 594
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "021",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 991,
+        "post_restore_action_exact": 991,
+        "pre_restore_id_match": 991,
+        "wfser_omitted_orig": 991,
+        "wfser_omitted_final": 991,
+        "pre_restore_semantic_exact": 991,
+        "exact_native_fallback": 1692,
+        "natural_with_provenance_metadata": 594
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "022",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 708,
+        "post_restore_action_exact": 708,
+        "pre_restore_id_match": 708,
+        "wfser_omitted_orig": 708,
+        "wfser_omitted_final": 708,
+        "pre_restore_semantic_exact": 708,
+        "exact_native_fallback": 1123,
+        "natural_with_provenance_metadata": 441
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "022",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 708,
+        "post_restore_action_exact": 708,
+        "pre_restore_id_match": 708,
+        "wfser_omitted_orig": 708,
+        "wfser_omitted_final": 708,
+        "pre_restore_semantic_exact": 708,
+        "exact_native_fallback": 1123,
+        "natural_with_provenance_metadata": 441
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "023",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 220,
+        "post_restore_action_exact": 220,
+        "pre_restore_id_match": 220,
+        "wfser_omitted_orig": 220,
+        "wfser_omitted_final": 220,
+        "pre_restore_semantic_exact": 220,
+        "natural_with_provenance_metadata": 115,
+        "exact_native_fallback": 287
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "023",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 220,
+        "post_restore_action_exact": 220,
+        "pre_restore_id_match": 220,
+        "wfser_omitted_orig": 220,
+        "wfser_omitted_final": 220,
+        "pre_restore_semantic_exact": 220,
+        "natural_with_provenance_metadata": 115,
+        "exact_native_fallback": 287
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "024",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 444,
+        "natural_verified": 406,
+        "post_restore_action_exact": 406,
+        "pre_restore_id_match": 406,
+        "wfser_omitted_orig": 406,
+        "wfser_omitted_final": 406,
+        "pre_restore_semantic_exact": 406,
+        "natural_with_provenance_metadata": 131
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "024",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 444,
+        "natural_verified": 406,
+        "post_restore_action_exact": 406,
+        "pre_restore_id_match": 406,
+        "wfser_omitted_orig": 406,
+        "wfser_omitted_final": 406,
+        "pre_restore_semantic_exact": 406,
+        "natural_with_provenance_metadata": 131
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "025",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 1004,
+        "post_restore_action_exact": 1004,
+        "pre_restore_id_match": 1004,
+        "wfser_omitted_orig": 1004,
+        "wfser_omitted_final": 1004,
+        "pre_restore_semantic_exact": 1004,
+        "exact_native_fallback": 1724,
+        "natural_with_provenance_metadata": 695
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "025",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 1004,
+        "post_restore_action_exact": 1004,
+        "pre_restore_id_match": 1004,
+        "wfser_omitted_orig": 1004,
+        "wfser_omitted_final": 1004,
+        "pre_restore_semantic_exact": 1004,
+        "exact_native_fallback": 1724,
+        "natural_with_provenance_metadata": 695
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "026",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 106,
+        "natural_verified": 74,
+        "post_restore_action_exact": 74,
+        "pre_restore_id_match": 74,
+        "wfser_omitted_orig": 74,
+        "wfser_omitted_final": 74,
+        "natural_with_provenance_metadata": 63,
+        "pre_restore_semantic_exact": 74
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "026",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 106,
+        "natural_verified": 74,
+        "post_restore_action_exact": 74,
+        "pre_restore_id_match": 74,
+        "wfser_omitted_orig": 74,
+        "wfser_omitted_final": 74,
+        "natural_with_provenance_metadata": 63,
+        "pre_restore_semantic_exact": 74
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "027",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 925,
+        "post_restore_action_exact": 925,
+        "pre_restore_id_match": 925,
+        "wfser_omitted_orig": 925,
+        "wfser_omitted_final": 925,
+        "pre_restore_semantic_exact": 925,
+        "exact_native_fallback": 1473,
+        "natural_with_provenance_metadata": 577
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "027",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 925,
+        "post_restore_action_exact": 925,
+        "pre_restore_id_match": 925,
+        "wfser_omitted_orig": 925,
+        "wfser_omitted_final": 925,
+        "pre_restore_semantic_exact": 925,
+        "exact_native_fallback": 1473,
+        "natural_with_provenance_metadata": 577
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "028",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 214,
+        "post_restore_action_exact": 214,
+        "pre_restore_id_match": 214,
+        "wfser_omitted_orig": 214,
+        "wfser_omitted_final": 214,
+        "pre_restore_semantic_exact": 214,
+        "natural_with_provenance_metadata": 148,
+        "exact_native_fallback": 308
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "028",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 214,
+        "post_restore_action_exact": 214,
+        "pre_restore_id_match": 214,
+        "wfser_omitted_orig": 214,
+        "wfser_omitted_final": 214,
+        "pre_restore_semantic_exact": 214,
+        "natural_with_provenance_metadata": 148,
+        "exact_native_fallback": 308
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "029",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 46,
+        "natural_verified": 30,
+        "post_restore_action_exact": 30,
+        "pre_restore_id_match": 30,
+        "wfser_omitted_orig": 30,
+        "wfser_omitted_final": 30,
+        "natural_with_provenance_metadata": 22,
+        "pre_restore_semantic_exact": 30
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "029",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 46,
+        "natural_verified": 30,
+        "post_restore_action_exact": 30,
+        "pre_restore_id_match": 30,
+        "wfser_omitted_orig": 30,
+        "wfser_omitted_final": 30,
+        "natural_with_provenance_metadata": 22,
+        "pre_restore_semantic_exact": 30
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "030",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 444,
+        "natural_verified": 406,
+        "post_restore_action_exact": 406,
+        "pre_restore_id_match": 406,
+        "wfser_omitted_orig": 406,
+        "wfser_omitted_final": 406,
+        "pre_restore_semantic_exact": 406,
+        "natural_with_provenance_metadata": 132
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "030",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 444,
+        "natural_verified": 406,
+        "post_restore_action_exact": 406,
+        "pre_restore_id_match": 406,
+        "wfser_omitted_orig": 406,
+        "wfser_omitted_final": 406,
+        "pre_restore_semantic_exact": 406,
+        "natural_with_provenance_metadata": 132
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "031",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 548,
+        "natural_verified": 409,
+        "post_restore_action_exact": 409,
+        "pre_restore_id_match": 409,
+        "wfser_omitted_orig": 409,
+        "wfser_omitted_final": 409,
+        "pre_restore_semantic_exact": 409,
+        "natural_with_provenance_metadata": 232
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "031",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 548,
+        "natural_verified": 409,
+        "post_restore_action_exact": 409,
+        "pre_restore_id_match": 409,
+        "wfser_omitted_orig": 409,
+        "wfser_omitted_final": 409,
+        "pre_restore_semantic_exact": 409,
+        "natural_with_provenance_metadata": 232
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "032",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 4,
+        "post_restore_action_exact": 4,
+        "pre_restore_id_match": 4,
+        "wfser_omitted_orig": 4,
+        "wfser_omitted_final": 4,
+        "pre_restore_semantic_exact": 4,
+        "natural_with_provenance_metadata": 2,
+        "exact_native_fallback": 3
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "032",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 4,
+        "post_restore_action_exact": 4,
+        "pre_restore_id_match": 4,
+        "wfser_omitted_orig": 4,
+        "wfser_omitted_final": 4,
+        "pre_restore_semantic_exact": 4,
+        "natural_with_provenance_metadata": 2,
+        "exact_native_fallback": 3
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "033",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 214,
+        "post_restore_action_exact": 214,
+        "pre_restore_id_match": 214,
+        "wfser_omitted_orig": 214,
+        "wfser_omitted_final": 214,
+        "pre_restore_semantic_exact": 214,
+        "natural_with_provenance_metadata": 148,
+        "exact_native_fallback": 308
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "033",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 214,
+        "post_restore_action_exact": 214,
+        "pre_restore_id_match": 214,
+        "wfser_omitted_orig": 214,
+        "wfser_omitted_final": 214,
+        "pre_restore_semantic_exact": 214,
+        "natural_with_provenance_metadata": 148,
+        "exact_native_fallback": 308
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "034",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 289,
+        "natural_verified": 232,
+        "post_restore_action_exact": 232,
+        "pre_restore_id_match": 232,
+        "wfser_omitted_orig": 232,
+        "wfser_omitted_final": 232,
+        "pre_restore_semantic_exact": 232,
+        "natural_with_provenance_metadata": 63
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "034",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 289,
+        "natural_verified": 232,
+        "post_restore_action_exact": 232,
+        "pre_restore_id_match": 232,
+        "wfser_omitted_orig": 232,
+        "wfser_omitted_final": 232,
+        "pre_restore_semantic_exact": 232,
+        "natural_with_provenance_metadata": 63
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "035",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 1015,
+        "post_restore_action_exact": 1015,
+        "pre_restore_id_match": 1015,
+        "wfser_omitted_orig": 1015,
+        "wfser_omitted_final": 1015,
+        "pre_restore_semantic_exact": 1015,
+        "exact_native_fallback": 1139,
+        "natural_with_provenance_metadata": 515,
+        "source_invalid": 1
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "035",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "natural_verified": 1015,
+        "post_restore_action_exact": 1015,
+        "pre_restore_id_match": 1015,
+        "wfser_omitted_orig": 1015,
+        "wfser_omitted_final": 1015,
+        "pre_restore_semantic_exact": 1015,
+        "exact_native_fallback": 1139,
+        "natural_with_provenance_metadata": 515,
+        "source_invalid": 1
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "036",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 279,
+        "natural_verified": 242,
+        "post_restore_action_exact": 242,
+        "pre_restore_id_match": 242,
+        "wfser_omitted_orig": 242,
+        "wfser_omitted_final": 242,
+        "natural_with_provenance_metadata": 147,
+        "pre_restore_semantic_exact": 242
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "036",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 279,
+        "natural_verified": 242,
+        "post_restore_action_exact": 242,
+        "pre_restore_id_match": 242,
+        "wfser_omitted_orig": 242,
+        "wfser_omitted_final": 242,
+        "natural_with_provenance_metadata": 147,
+        "pre_restore_semantic_exact": 242
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "037",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 521,
+        "natural_verified": 308,
+        "post_restore_action_exact": 308,
+        "pre_restore_id_match": 308,
+        "wfser_omitted_orig": 308,
+        "wfser_omitted_final": 308,
+        "natural_with_provenance_metadata": 183,
+        "pre_restore_semantic_exact": 308
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "037",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 521,
+        "natural_verified": 308,
+        "post_restore_action_exact": 308,
+        "pre_restore_id_match": 308,
+        "wfser_omitted_orig": 308,
+        "wfser_omitted_final": 308,
+        "natural_with_provenance_metadata": 183,
+        "pre_restore_semantic_exact": 308
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "038",
+      "mode": "legacy",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 131,
+        "natural_verified": 79,
+        "post_restore_action_exact": 79,
+        "pre_restore_id_match": 79,
+        "wfser_omitted_orig": 79,
+        "wfser_omitted_final": 79,
+        "natural_with_provenance_metadata": 52,
+        "pre_restore_semantic_exact": 79
+      },
+      "diffs": []
+    },
+    {
+      "specimenId": "038",
+      "mode": "v2",
+      "counts": {
+        "layer1_full_tree_exact": 1,
+        "exact_native_fallback": 131,
+        "natural_verified": 79,
+        "post_restore_action_exact": 79,
+        "pre_restore_id_match": 79,
+        "wfser_omitted_orig": 79,
+        "wfser_omitted_final": 79,
+        "natural_with_provenance_metadata": 52,
+        "pre_restore_semantic_exact": 79
+      },
+      "diffs": []
     }
-  },
-  "verdict": "SEMANTIC_WIRE_PRE_OVERLAY_PASS"
+  ]
 }

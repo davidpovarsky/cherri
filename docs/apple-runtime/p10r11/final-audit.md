@@ -1,36 +1,47 @@
-# P10R11 Action Wire Truth & Editable Hybrid — Independent Audit
+# P10R11 Action Wire Truth & Editable Hybrid — Independent Audit & Closure Report
 
 ## Final Executive Verdict
 
-**Verdict:** `SEMANTIC_ACTION_WIRE_TRUTH_VERIFIED`
+**Verdict:** `P10R11_LOCAL_VERIFIED_MACOS_BLOCKED`
 
 - **Compiler Binary SHA-256:** `875c297660e1eeb8ce7a46c8755957f78a4be5434be9440ad8e151a88220136d`
-- **Corpus Parity Across 38 Specimen Files:**
-  - `Lossless Legacy`: `38 / 38 (100%)`
-  - `Lossless V2`: `38 / 38 (100%)`
-  - `Hybrid Legacy`: `38 / 38 (100%)`
-  - `Hybrid V2`: `38 / 38 (100%)`
-- **Natural Readable Actions:** `10,871 / 27,652 (39.31%)`
-- **Pre-Overlay Semantic Wire Parity:** `10,871 / 10,871 (100.0%)`
-- **Post-Overlay Native Wire Parity:** `10,871 / 10,871 (100.0%)`
+- **No-Patch Audit Binary SHA-256:** `e384bcb514a0d4b22e699712411ee20b069e3639bfaf0cca5926e761ed7f7b35`
+- **Measured Corpus Action Total:** **27,652** across 38 normalized originals (`62,980,131` bytes physical on disk).
+- **Disjoint Action Classification:**
+  - **Baseline (P10R10):** 10,871 Natural Verified (39.31%) + 16,780 Fallbacks (60.68%) + 1 Source Invalid (0.00%) = 27,652.
+  - **Expanded (P10R11):** 11,459 Natural Verified (41.44%) + 16,192 Fallbacks (58.56%) + 1 Source Invalid (0.00%) = 27,652.
+- **Independent 38×2 Multi-Layer Audit (76 complete runs):**
+  - `Layer 1: Real Native Source → Post-Overlay Output`: **76 / 76 (100.0%)** complete recursive typed plist-tree exact matches (`bool` != `int`).
+  - `Layer 2: Real Native Source → Pre-Overlay Identifiers`: **22,918 / 22,918 (100.0%)** exact action identifier matches.
+  - `Layer 3: Pre-Overlay Semantic Parameters (Before Restore)`: **22,918 / 22,918 (100.0%)** exact semantic key-value matches (zero semantic divergence).
+  - `Layer 3: Canonical ShowHeaders Pre-Overlay Equality`: **2 / 2 (100.0%)** exact in specimen 014 (Legacy & V2).
 - **Adversarial Wire Tests (`P11-WIRE-01` .. `P11-WIRE-50`):** `50 / 50 PASS (100%)`
-- **Targeted Edit Isolation:** `PASS` (`14 / 14` specific action & region edits isolated to expected fields only)
-- **Negative Mutations Caught:** `TRUE` (72 Python oracle mutations, 11 ledger mutations, 8 consumer drift mutations)
-- **Source Flow Validity:** `035:723` preserved as `SOURCE_CONTROL_FLOW_INVALID` without silent drop.
-- **Hardware Status:** `APPLE_RUNTIME_EXECUTED: BLOCKED_DEVICE` (Mandatory disclosure: no unverified physical hardware claims).
+  - `TestP11_WIRE_01`: action-by-action pre- and post-overlay verification across all 38 files; fails if corpus missing when requested, reports `NOT_RUN_PRIVATE_CORPUS` when public.
+  - `TestP11_WIRE_39`: actual action move across control boundary into repeat loop verified; GroupingIdentifier balanced, UUID metadata preserved via semantic hash, unbalanced boundary fails closed.
+  - `TestP11_WIRE_07`: exact `014:208` action (`fileRequest` with `ShowHeaders=true` source truth) verified; mutations `true -> false` and removal (`absent`) verified across both dialects.
+- **Negative Mutations & Anti-Tautology:** `PASSED` (72 Python oracle mutations, 11 ledger consistency checks, negative plist assertions).
+- **CI Status:**
+  - `Linux (Job 131298939329)`: **SUCCESS** (14/14 steps, full Go suite, discovery gate, decomp, parity, oracle, release gates).
+  - `Nix (Job 131299034894)`: **SUCCESS** (package built).
+  - `macOS (Job 131298934920)`: **MACOS_CI=BLOCKED_RUNNER_CAPACITY** (cancelled after 15 min without runner acquisition; `steps: []`; no code or test failure demonstrated).
+- **Hardware Status:** `APPLE_RUNTIME_EXECUTED: BLOCKED_DEVICE` (Mandatory disclosure: Windows development environment, no unverified Apple physical hardware execution claimed).
 
 ---
 
-## Key Technical Breakthroughs in P10R11
+## Technical Architecture & Policy Corrections
 
-1. **Elimination of `Show*` Prefix Heuristic:**
-   Replaced loose string prefix matching with strict, enumerated key ownership allowlist (`UUID`, `CustomOutputName`, `GroupingIdentifier`, `ShowHeaders`, `ShowWhenRun`, `Show-WFInput`, `Show-WFURLActionURL`, `Show-text`). Unknown parameters fail closed to raw action fallbacks.
-
-2. **Canonical `ShowHeaders` Support:**
-   Added `showHeaders: bool?` as a first-class canonical parameter on `downloadURL`, `formRequest`, `jsonRequest`, and `fileRequest`. Pre-overlay compilation generates native wire directly from source. User edits to `showHeaders` compile natively with zero stale provenance overwrite.
-
-3. **Multi-Pass Deterministic Semantic Hashing:**
-   Implemented `deterministicSemanticActionHash` normalizing integers, arrays, and dictionary values. In-place matching, reorder matching, and fallback handling prevent cross-binding or stale metadata transfer when actions are moved, reordered, inserted, or duplicated.
-
-4. **Variable Action Native Serialization Truth:**
-   Preserved legacy corpus omissions (2,487 `setVariable`, 64 `appendVariable`) without breaking standard authored code. Fixed `+=` (`AddTo`) output name assignment to prevent spurious `OutputUUID` emissions.
+1. **Elimination of `Show*` Prefix Heuristic & Strict Key Ownership:**
+   - Previous loose prefix rule (`strings.HasPrefix(k, "Show")`) removed.
+   - Strict allowlist of import metadata keys (`verifiedImportMetadataKeys` in `import_provenance.go`): `UUID`, `CustomOutputName`, `GroupingIdentifier`, `ShowWhenRun`, `Show-WFInput`, `Show-WFURLActionURL`, `Show-text`.
+   - Unknown parameters (e.g. `ShowSecret`, `ShowSecurity`, `WFPrivateFutureParam`) fail closed to raw native action fallbacks.
+2. **Canonical `ShowHeaders` Parameter:**
+   - `ShowHeaders` is **not** an import metadata key.
+   - It is a first-class canonical semantic parameter (`bool ?showHeaders: 'ShowHeaders'`) in `actions/web.cherri` for `downloadURL`, `formRequest`, `jsonRequest`, and `fileRequest`.
+   - Emits native wire directly pre-overlay; user edits compile without stale provenance restoration.
+3. **Legacy `WFSerializationType` Variance:**
+   - Preserves absent `WFSerializationType` in `WFInput` for 2,487 `setVariable` and 64 `appendVariable` instances in import mode.
+   - Normal authored code retains standard serialized token structures.
+   - Fixed `+=` (`AddTo`) output name assignment in `shortcutgen.go:makeVariableInput` to eliminate spurious `OutputUUID` emissions.
+4. **Deterministic Semantic Action Digest:**
+   - Multi-pass restoration (`deterministicSemanticActionHash`) unifies integer types (`int`, `int64`, `uint64`) to `i:%d`.
+   - In-place match, reorder match, and fallback passes prevent stale metadata transfer when actions are moved, reordered, or duplicated.
