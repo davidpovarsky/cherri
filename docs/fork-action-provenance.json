@@ -1642,6 +1642,44 @@
       "reason": "Milestone P10R9 one shared forward/reverse engine, deterministic reverse action registry, and lossless hybrid readable import across Legacy and Cherri v2.",
       "evidence": "TestP10R9_CoreParityAcrossAllSurfaces PASS (38/38 lossless and hybrid import + unsigned compile in Legacy and V2; 1,463 NATURAL_VERIFIED actions across 28 callables; 26,188 EXACT_NATIVE fallbacks; 1 SOURCE_INVALID at 035:723), TestHYB01..TestHYB30 (30/30 PASS), TestP10R9_SSoTPropagation_DeclarativeAndGoHandler PASS, TestP10R9_SequentialMixedCompilesIsolation (1,000 sequential mixed compiles PASS), TestP10R8_* PASS, TestCherriNoSign PASS, TestDecomp PASS, verify_ledger_consistency.py PASS, verify_consumer_compatibility.py PASS, run_release_gates.py 55/56 PASS, and docs/apple-runtime/p10r9/p10r9-final-audit.md.",
       "note": "Milestone P10R9 provenance metadata recorded in separate follow-up commit referencing implementation commit b91c1ca0834a6799213ac6829d36e61e9c8075e5."
+    },
+    {
+      "name": "P10R10 semantic decompiler unification, workflow provenance preservation, and fail-closed whole-workflow verifier",
+      "locations": [
+        "compiler_state.go",
+        "copy_paste.go",
+        "decompile.go",
+        "functions.go",
+        "hybrid_import.go",
+        "import_fidelity.go",
+        "import_provenance.go",
+        "includes.go",
+        "internal/language/analysis/analyzer.go",
+        "internal/language/lower/lower.go",
+        "language_backend_adapter.go",
+        "language_cli_adapter.go",
+        "language_emit_adapter.go",
+        "p10r9_hybrid_test.go",
+        "p10r10_corpus_test.go",
+        "p10r10_semantic_hybrid_test.go",
+        "parser.go",
+        "semantic_import_planner.go",
+        "shared_codec.go",
+        "shortcutgen.go",
+        "toolkit.go",
+        "variables.go",
+        "docs/architecture/",
+        "docs/apple-runtime/p10r10/",
+        "docs/language-v2/",
+        "docs/shortcut-action-development-playbook.md",
+        "docs/ai-team/handoffs/",
+        "skills/cherri-shortcuts/"
+      ],
+      "firstForkCommit": "8e91ea9004e37581bf05c9752d39fe66dc0b4697",
+      "change": "Unified Cherri's existing semantic decompiler (prepareDecompileSemanticPasses, matchAction, decompAggrandizements, utf16OffsetToRuneIndex, sanitizeIdentifier in decompile.go) with DefaultReverseActionRegistry and DecodeNativeShortcutDocument via planUnifiedSemanticHybridImport (semantic_import_planner.go) shared identically by Legacy and Cherri v2; added structured #workflowheader __CherriImportProvenance preservation and fail-closed stripping across Legacy and V2 (import_provenance.go, import_fidelity.go, shortcutgen.go, shared_codec.go, variables.go, internal/language/analysis/analyzer.go, internal/language/lower/lower.go, language_backend_adapter.go, language_emit_adapter.go) including AbsentSerializationType restoration for variable actions without regressing upstream setvariable oracle parity; hardened verifyAndStabilizePlan / RenderAndVerifyHybrid / VerifyWholeWorkflowAgainstOriginal so errors fail closed and caller plans remain unmutated.",
+      "reason": "Milestone P10R10 single shared semantic+hybrid importer improving readable natural Cherri output while preserving bit-for-bit source parity across Legacy and Cherri v2.",
+      "evidence": "go test -count=1 ./... PASS (all Go packages including TestSEM01..TestSEM40 40/40, TestHYB01..TestHYB30 30/30, TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison 6/6, TestP10_VerifyAndRecord505CatalogExecution 505/505 Legacy/V2/ParamContract/Decompile/StructuralRoundTrip, TestCherriNoSign, TestDecomp), tools/ci-test-discovery 44/44 PASS, tools/legacy-parity 47/47 + 17/17 PASS, tools/language-schema --verify-generated PASS, skills/cherri-shortcuts/scripts/self-test.sh --skip-setup PASS, 38-shortcut independent corpus audit (38/38 lossless & hybrid parity in Legacy and V2; 10,871/27,652 = 39.31% readable natural actions vs 1,463/27,652 = 5.29% P10R9 baseline; 035:723 SOURCE_CONTROL_FLOW_INVALID preserved; negativeMutationsAllCaught=true; editIsolationAllPassed=false due to 001 NO_TOPLEVEL_COMMENT_FOUND; APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE).",
+      "note": "Milestone P10R10 provenance metadata recorded in separate follow-up commit referencing implementation commit 8e91ea9004e37581bf05c9752d39fe66dc0b4697."
     }
   ]
 }

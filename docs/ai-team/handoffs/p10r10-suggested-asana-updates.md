@@ -1,5 +1,7 @@
 # P10R10 Suggested Asana Updates (`[MAIN_SESSION]`)
 
+> Implementation Commit: `8e91ea9004e37581bf05c9752d39fe66dc0b4697`
+>
 > Status note: Live Asana tasks receive exact implementation commit SHA, provenance commit SHA, and GitHub Actions run URL/conclusions once commit, provenance metadata update, and CI completion are observed. Hardware runtime tasks remain open with explicit `APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE` reporting.
 
 ## Target Task Mapping

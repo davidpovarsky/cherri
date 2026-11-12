@@ -1,6 +1,7 @@
 # P10R10 Semantic Import Unification — Independent Corpus Audit
 
 - **Verdict:** `SEMANTIC_HYBRID_VERIFIED_INCREMENTAL`
+- **Implementation Commit:** `8e91ea9004e37581bf05c9752d39fe66dc0b4697`
 - **Compiler Binary SHA-256:** `1c9ba845730905bfb55a9797484b3da50771f70fab7b1fe1cbdb5a9b7c817b59`
 - **Lossless Parity (Legacy / V2):** `38/38` / `38/38`
 - **Hybrid Parity (Legacy / V2):** `38/38` / `38/38`

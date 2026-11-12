@@ -1,6 +1,7 @@
 # CHERRI P10R10 — Unified Semantic Importer, Provenance Preservation & Fail-Closed Verifier
 
 - **Branch**: `agent/cherri-p10r10-semantic-import-unification-20261111` (branched from `37563df53e8ac0432bd4cd125b9489f32d2f631d`)
+- **Implementation Commit:** `8e91ea9004e37581bf05c9752d39fe66dc0b4697`
 - **Execution Mode**: `NORMAL` (`[MAIN_SESSION]`)
 - **Fidelity Oracle**: `p10r8-fidelity-oracle-20261111.1`
 - **Apple Hardware Execution (`APPLE_RUNTIME_EXECUTED`)**: `BLOCKED_DEVICE` (no iOS/macOS hardware signing or device runtime claim fabricated)
