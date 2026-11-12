@@ -255,8 +255,20 @@ func TestHYB03_ProducerUUIDConsumedDownstream(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if plan.Decisions[0].Classification != "EXACT_NATIVE_FALLBACK" || plan.Decisions[1].Classification != "NATURAL_VERIFIED" || plan.Decisions[2].Classification != "EXACT_NATIVE_FALLBACK" {
-		t.Fatalf("unexpected hybrid decisions: %+v", plan.Decisions)
+	if plan.Decisions[0].Classification != "NATURAL_VERIFIED" || plan.Decisions[1].Classification != "NATURAL_VERIFIED" || plan.Decisions[2].Classification != "NATURAL_VERIFIED" {
+		t.Fatalf("unexpected hybrid decisions (expected producer+consumer promotion to NATURAL_VERIFIED): %+v", plan.Decisions)
+	}
+
+	legSrc, err := RenderHybridLegacySource(doc, plan)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legCompiled, err := compileLegacySourceToRawMapInMemory(legSrc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !plistValuesStrictlyEqual(doc.RawRoot, legCompiled) {
+		t.Fatalf("HYB03 Legacy wire mismatch: %s", firstPlistDiffPath(doc.RawRoot, legCompiled, ""))
 	}
 
 	v2Src, err := RenderHybridV2Source(doc, plan)
@@ -1886,22 +1898,22 @@ func runP10R9CorpusHybridAudit(t *testing.T) {
 		v2Hash := sha256.Sum256([]byte(hybV2Src))
 
 		row := map[string]any{
-			"specimenId":              specID,
-			"sourceSha256":            doc.SourceHash,
-			"totalActions":            plan.TotalActions,
-			"naturalVerifiedCount":    plan.NaturalVerifiedCount,
-			"exactNativeCount":        plan.ExactNativeCount,
-			"sourceInvalidCount":      plan.SourceInvalidCount,
-			"reasonCounts":            plan.ReasonCounts,
-			"naturalCallables":        specCallables,
-			"requiredIncludes":        plan.RequiredIncludes,
-			"controlFlowValid":        plan.ControlFlowValid,
-			"controlFlowViolation":    plan.ControlFlowViolation,
-			"losslessLegacyPass":      true,
-			"losslessV2Pass":          true,
-			"hybridLegacyPass":        true,
-			"hybridV2Pass":            true,
-			"hybridLegacyV2TreeEqual": true,
+			"specimenId":               specID,
+			"sourceSha256":             doc.SourceHash,
+			"totalActions":             plan.TotalActions,
+			"naturalVerifiedCount":     plan.NaturalVerifiedCount,
+			"exactNativeCount":         plan.ExactNativeCount,
+			"sourceInvalidCount":       plan.SourceInvalidCount,
+			"reasonCounts":             plan.ReasonCounts,
+			"naturalCallables":         specCallables,
+			"requiredIncludes":         plan.RequiredIncludes,
+			"controlFlowValid":         plan.ControlFlowValid,
+			"controlFlowViolation":     plan.ControlFlowViolation,
+			"losslessLegacyPass":       true,
+			"losslessV2Pass":           true,
+			"hybridLegacyPass":         true,
+			"hybridV2Pass":             true,
+			"hybridLegacyV2TreeEqual":  true,
 			"hybridLegacySourceSha256": hex.EncodeToString(legHash[:]),
 			"hybridV2SourceSha256":     hex.EncodeToString(v2Hash[:]),
 		}
@@ -2050,5 +2062,3 @@ func verifyOracleOutputForP10R9(t *testing.T, specID string, modeLabel string, c
 		}
 	}
 }
-
-

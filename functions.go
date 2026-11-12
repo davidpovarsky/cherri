@@ -42,8 +42,10 @@ type function struct {
 var functions map[string]*function
 
 // handleFunctions parses defined functions and checks their usage.
+var functionDeclRegex = regexp.MustCompile(`function (.*?)\((.*?)\)`)
+
 func handleFunctions() {
-	if !regexp.MustCompile(`function (.*?)\((.*?)\)`).MatchString(contents) {
+	if !strings.Contains(contents, "function ") || !functionDeclRegex.MatchString(contents) {
 		return
 	}
 	parseFunctions()

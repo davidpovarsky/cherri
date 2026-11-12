@@ -297,7 +297,7 @@ cherri import MyShortcut.plist --fidelity=semantic --mode=v2
 
 | Fidelity Mode | Guarantee | Best Used For |
 |---------------|-----------|---------------|
-| `lossless` (default) | 100% bit-for-bit decoded plist tree identity (`native.workflow` / `#workflow_header_plist`) | Exact archival, round-tripping complex/third-party Shortcuts without any structural drift |
-| `hybrid` | 100% bit-for-bit decoded plist tree identity (`NATURAL_VERIFIED` natural calls + per-action `EXACT_NATIVE` escape) | Reading and editing real-world Shortcuts in natural Cherri syntax while preserving exact wire fidelity |
-| `semantic` | Best-effort readable decompilation (`MigrateSemanticLegacySourceToV2Strict` in v2 mode; fails closed if invalid) | Inspecting or refactoring simple Shortcuts where strict wire-level UUID/header preservation is not required |
+| `lossless` (default for `cherri import`) | 100% bit-for-bit decoded plist tree identity (`native.workflow` / `#workflowheader`) | Exact archival, round-tripping complex/third-party Shortcuts without any structural drift |
+| `hybrid` | 100% bit-for-bit decoded plist tree identity (`NATURAL_VERIFIED` semantic calls, control-flow regions & `#workflowheader` provenance + fail-closed `EXACT_NATIVE` escape) | Reading and editing real-world Shortcuts in natural Cherri syntax (`Legacy` or `V2`) while preserving exact wire fidelity |
+| `semantic` (default for `--import=...`) | Best-effort readable decompilation (`MigrateSemanticLegacySourceToV2Strict` in v2 mode; fails closed if invalid) | Inspecting or refactoring simple Shortcuts where strict wire-level UUID/header preservation is not required |
 

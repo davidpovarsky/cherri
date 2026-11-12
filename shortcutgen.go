@@ -26,7 +26,7 @@ func BuildWorkflowHeader() Shortcut {
 		WFWorkflowHasShortcutInputVariables:  false,
 		WFWorkflowMinimumClientVersion:       900,
 		WFWorkflowMinimumClientVersionString: "900",
-		WFWorkflowActions:                   make([]ShortcutAction, 0),
+		WFWorkflowActions:                    make([]ShortcutAction, 0),
 	}
 }
 
@@ -100,7 +100,9 @@ func printShortcutGenDebug() {
 }
 
 func generateActions() {
-	uuids = make(map[string]string)
+	if uuids == nil {
+		uuids = make(map[string]string)
+	}
 	for _, t := range tokens {
 		switch t.typeof {
 		case Variable, AddTo, SubFrom, MultiplyBy, DivideBy:
@@ -146,9 +148,9 @@ func isArrayVariable(ident string) bool {
 		visited[curr] = true
 		v, found := variables[curr]
 		if !found {
-			return false
+			return importedSymbolValueTypes[curr] == Arr
 		}
-		if v.valueType == Arr {
+		if v.valueType == Arr || importedSymbolValueTypes[curr] == Arr {
 			return true
 		}
 		if v.valueType == Action {
@@ -172,7 +174,7 @@ func isArrayVariable(ident string) bool {
 
 func makeVariableAction(t *token) {
 	var setVariableParams = map[string]any{
-		"WFVariableName": t.ident,
+		"WFVariableName": resolveLegacyVariableName(t.ident),
 	}
 
 	makeVariableInput(t, setVariableParams)
@@ -409,17 +411,17 @@ func inputValue(name string, varUUID string) WFTextTokenAttachment {
 
 	if variable, found := variables[name]; found {
 		if !variable.repeatItem && (variable.constant && variable.valueType != Variable) {
-			value.OutputName = name
+			value.OutputName = resolveLegacyOutputName(name)
 			value.Type = "ActionOutput"
 		} else {
-			value.VariableName = name
+			value.VariableName = resolveLegacyVariableName(name)
 			value.Type = "Variable"
 		}
 	} else if global, found := globals[name]; found {
 		isInputVariable(name)
 		value.Type = global.variableType
 	} else {
-		value.OutputName = name
+		value.OutputName = resolveLegacyOutputName(name)
 		value.Type = "ActionOutput"
 	}
 
@@ -464,10 +466,25 @@ func variableValueWithSerialization(variable varValue, serializationType string)
 		variable.constant = v.constant
 		variable.repeatItem = v.repeatItem
 	}
-	if variable.getAs != "" {
+	appendCoerce := func() {
+		if variable.coerce != "" {
+			if contentItem, found := contentItems[variable.coerce]; found {
+				aggrandizements = append(aggrandizements, Aggrandizement{
+					Type:              "WFCoercionVariableAggrandizement",
+					CoercionItemClass: contentItem,
+				})
+			}
+		}
+	}
+	appendGetAs := func() {
+		if variable.getAs == "" {
+			return
+		}
 		var refValueType = variable.valueType
 		var targetVar = variable
-		if variable.valueType == Variable && variableReference.valueType != "" {
+		if importedSymbolValueTypes[identifier] == Dict || (variable.coerceFirst && variable.coerce == "dictionary") {
+			refValueType = Dict
+		} else if variable.valueType == Variable && variableReference.valueType != "" {
 			refValueType = variableReference.valueType
 			targetVar = variableReference
 		}
@@ -484,13 +501,12 @@ func variableValueWithSerialization(variable varValue, serializationType string)
 			})
 		}
 	}
-	if variable.coerce != "" {
-		if contentItem, found := contentItems[variable.coerce]; found {
-			aggrandizements = append(aggrandizements, Aggrandizement{
-				Type:              "WFCoercionVariableAggrandizement",
-				CoercionItemClass: contentItem,
-			})
-		}
+	if variable.coerceFirst {
+		appendCoerce()
+		appendGetAs()
+	} else {
+		appendGetAs()
+		appendCoerce()
 	}
 	var varType = "Variable"
 	if variable.variableType != "" {
@@ -501,11 +517,15 @@ func variableValueWithSerialization(variable varValue, serializationType string)
 	desc.Aggrandizements = aggrandizements
 	if variable.constant {
 		desc.Kind = "ActionOutput"
-		desc.OutputName = identifier
+		desc.OutputName = resolveLegacyOutputName(identifier)
 		desc.OutputUUID = uuids[identifier]
 	} else {
 		desc.Kind = varType
-		desc.VariableName = identifier
+		if _, isGlobal := globals[identifier]; isGlobal {
+			desc.VariableName = identifier
+		} else {
+			desc.VariableName = resolveLegacyVariableName(identifier)
+		}
 		if varType == Ask && variable.prompt != "" {
 			desc.Prompt = variable.prompt
 		}
@@ -515,16 +535,18 @@ func variableValueWithSerialization(variable varValue, serializationType string)
 }
 
 type inlineVariable struct {
-	identifier string
-	col        int
-	getAs      string
-	coerce     string
+	identifier  string
+	col         int
+	getAs       string
+	coerce      string
+	coerceFirst bool
 }
 
 type attachmentVariable struct {
-	identifier string
-	getAs      string
-	coerce     string
+	identifier  string
+	getAs       string
+	coerce      string
+	coerceFirst bool
 }
 
 var varPositions map[string]Value
@@ -555,22 +577,63 @@ func attachmentValues(str string) any {
 	}
 }
 
+func appendInlineAggrandizements(aggrs []Aggrandizement, inlineVar inlineVariable, vt tokenType, variable *varValue, strictCoerce bool) []Aggrandizement {
+	appendCoerce := func() {
+		if inlineVar.coerce == "" {
+			return
+		}
+		if contentItem, found := contentItems[inlineVar.coerce]; found {
+			aggrs = append(aggrs, Aggrandizement{
+				Type:              "WFCoercionVariableAggrandizement",
+				CoercionItemClass: contentItem,
+			})
+		} else if strictCoerce {
+			var list = makeKeyList("Available content item types:", contentItems, inlineVar.coerce)
+			parserError(fmt.Sprintf("Invalid content item for type coerce '%s'\n\n%s\n", inlineVar.coerce, list))
+		}
+	}
+	appendGetAs := func() {
+		if inlineVar.getAs == "" {
+			return
+		}
+		effVT := vt
+		if inlineVar.coerceFirst && inlineVar.coerce == "dictionary" {
+			effVT = Dict
+		}
+		aggrs = append(aggrs, makeAggrandizement(&effVT, variable, inlineVar.getAs))
+	}
+	if inlineVar.coerceFirst {
+		appendCoerce()
+		appendGetAs()
+	} else {
+		appendGetAs()
+		appendCoerce()
+	}
+	return aggrs
+}
+
 func makeAttachmentValues() {
 	for _, inlineVar := range inlineVariables {
 		var varValue, found = getVariableValue(inlineVar.identifier)
 		if !found {
 			if u, ok := uuids[inlineVar.identifier]; ok {
-				varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(ReferenceDescriptor{
+				desc := ReferenceDescriptor{
 					Kind:       "ActionOutput",
-					OutputName: inlineVar.identifier,
+					OutputName: resolveLegacyOutputName(inlineVar.identifier),
 					OutputUUID: u,
-				})
+				}
+				vt := importedSymbolValueTypes[inlineVar.identifier]
+				desc.Aggrandizements = appendInlineAggrandizements(desc.Aggrandizements, inlineVar, vt, nil, false)
+				varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(desc)
 				continue
 			}
-			varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(ReferenceDescriptor{
+			desc := ReferenceDescriptor{
 				Kind:         "Variable",
-				VariableName: inlineVar.identifier,
-			})
+				VariableName: resolveLegacyVariableName(inlineVar.identifier),
+			}
+			vt := importedSymbolValueTypes[inlineVar.identifier]
+			desc.Aggrandizements = appendInlineAggrandizements(desc.Aggrandizements, inlineVar, vt, nil, false)
+			varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(desc)
 			continue
 		}
 
@@ -582,27 +645,22 @@ func makeAttachmentValues() {
 		var desc ReferenceDescriptor
 		if !varValue.constant {
 			desc.Kind = varType
-			desc.VariableName = globalDisplayName(inlineVar.identifier, *varValue)
+			varName := globalDisplayName(inlineVar.identifier, *varValue)
+			if _, isGlobal := globals[inlineVar.identifier]; !isGlobal {
+				varName = resolveLegacyVariableName(varName)
+			}
+			desc.VariableName = varName
 		} else {
 			desc.Kind = "ActionOutput"
-			desc.OutputName = inlineVar.identifier
+			desc.OutputName = resolveLegacyOutputName(inlineVar.identifier)
 			desc.OutputUUID = uuids[inlineVar.identifier]
 		}
 
-		if inlineVar.getAs != "" {
-			aggrandizements = append(aggrandizements, makeAggrandizement(&varValue.valueType, varValue, inlineVar.getAs))
+		vt := varValue.valueType
+		if importedSymbolValueTypes[inlineVar.identifier] == Dict {
+			vt = Dict
 		}
-		if inlineVar.coerce != "" {
-			if contentItem, found := contentItems[inlineVar.coerce]; found {
-				aggrandizements = append(aggrandizements, Aggrandizement{
-					Type:              "WFCoercionVariableAggrandizement",
-					CoercionItemClass: contentItem,
-				})
-			} else {
-				var list = makeKeyList("Available content item types:", contentItems, inlineVar.coerce)
-				parserError(fmt.Sprintf("Invalid content item for type coerce '%s'\n\n%s\n", inlineVar.coerce, list))
-			}
-		}
+		aggrandizements = appendInlineAggrandizements(aggrandizements, inlineVar, vt, varValue, true)
 		desc.Aggrandizements = aggrandizements
 
 		attachmentValue := EncodeReferenceValue(desc)
@@ -650,10 +708,11 @@ func mapInlineVariables(noVarString *string) {
 		if r == ObjectReplaceChar {
 			if variableIdx < len(varIndex) {
 				inlineVariables = append(inlineVariables, inlineVariable{
-					identifier: varIndex[variableIdx].identifier,
-					col:        charPos,
-					getAs:      varIndex[variableIdx].getAs,
-					coerce:     varIndex[variableIdx].coerce,
+					identifier:  varIndex[variableIdx].identifier,
+					col:         charPos,
+					getAs:       varIndex[variableIdx].getAs,
+					coerce:      varIndex[variableIdx].coerce,
+					coerceFirst: varIndex[variableIdx].coerceFirst,
 				})
 				variableIdx++
 			}
@@ -685,7 +744,17 @@ func collectInlineVariables(str *string) (noVarString string) {
 				attachmentVar.getAs = match[2]
 			}
 			if len(match) > 3 && len(match[3]) > 0 {
-				attachmentVar.coerce = match[3]
+				if match[2] == "" {
+					if dotBracketIdx := strings.Index(match[3], "['"); dotBracketIdx > 0 && strings.HasSuffix(match[3], "']") {
+						attachmentVar.coerce = match[3][:dotBracketIdx]
+						attachmentVar.getAs = match[3][dotBracketIdx+2 : len(match[3])-2]
+						attachmentVar.coerceFirst = true
+					} else {
+						attachmentVar.coerce = match[3]
+					}
+				} else {
+					attachmentVar.coerce = match[3]
+				}
 			}
 			varIndex = append(varIndex, attachmentVar)
 		}

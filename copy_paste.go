@@ -15,7 +15,29 @@ import (
 var pasteables map[string]string
 var copyPasteRegex = regexp.MustCompile(`(copy )?([\W_]+)\{`)
 
+func hasCopyDirectiveLine(src string) bool {
+	start := 0
+	for start < len(src) {
+		end := strings.IndexByte(src[start:], '\n')
+		var line string
+		if end < 0 {
+			line = src[start:]
+			start = len(src)
+		} else {
+			line = src[start : start+end]
+			start += end + 1
+		}
+		if strings.HasPrefix(strings.TrimLeft(line, " \t\r"), "copy ") {
+			return true
+		}
+	}
+	return false
+}
+
 func handleCopyPastes() {
+	if !hasCopyDirectiveLine(contents) {
+		return
+	}
 	var matches = copyPasteRegex.FindAllStringSubmatch(contents, -1)
 	if len(matches) == 0 {
 		return

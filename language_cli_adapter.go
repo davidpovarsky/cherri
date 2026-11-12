@@ -108,6 +108,7 @@ func HandleLanguageV2CLI() bool {
 	if len(os.Args) > 1 && os.Args[1] == "import" {
 		var importPath string
 		var outPath string
+		var planJSONPath string
 		mode := "v2"
 		fidelity := "lossless"
 		for i := 2; i < len(os.Args); i++ {
@@ -119,6 +120,13 @@ func HandleLanguageV2CLI() bool {
 					outPath = os.Args[i+1]
 					i++
 				}
+			} else if arg == "--plan-json" {
+				if i+1 < len(os.Args) {
+					planJSONPath = os.Args[i+1]
+					i++
+				}
+			} else if strings.HasPrefix(arg, "--plan-json=") {
+				planJSONPath = strings.TrimPrefix(arg, "--plan-json=")
 			} else if arg == "--legacy" {
 				mode = "legacy"
 			} else if arg == "--mode" {
@@ -145,7 +153,7 @@ func HandleLanguageV2CLI() bool {
 			fmt.Fprintf(os.Stderr, "Usage: cherri import <file.shortcut> [--output <path>] [--mode legacy|v2] [--fidelity lossless|hybrid|semantic]\n")
 			os.Exit(1)
 		}
-		_, err := ExecuteImportPipeline(ImportOptions{
+		res, err := ExecuteImportPipeline(ImportOptions{
 			InputPath:  importPath,
 			OutputPath: outPath,
 			Mode:       mode,
@@ -154,6 +162,17 @@ func HandleLanguageV2CLI() bool {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "import error: %v\n", err)
 			os.Exit(1)
+		}
+		if planJSONPath != "" && res != nil && res.Plan != nil {
+			pb, mErr := json.MarshalIndent(res.Plan, "", "  ")
+			if mErr != nil {
+				fmt.Fprintf(os.Stderr, "marshal plan json: %v\n", mErr)
+				os.Exit(1)
+			}
+			if wErr := os.WriteFile(planJSONPath, pb, 0644); wErr != nil {
+				fmt.Fprintf(os.Stderr, "write plan json: %v\n", wErr)
+				os.Exit(1)
+			}
 		}
 		return true
 	}

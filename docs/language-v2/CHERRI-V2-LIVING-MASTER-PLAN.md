@@ -839,6 +839,21 @@ Next smallest independently verifiable batch:
   - Passed all `30` adversarial tests (`TestHYB01`–`TestHYB30`), dual SSoT propagation (`TestP10R9_SSoTPropagation_DeclarativeAndGoHandler`), and `1,000` sequential mixed compilations (`TestP10R9_SequentialMixedCompilesIsolation`).
   - Documented architecture and audit matrices in `docs/architecture/unified-import-and-compiler-contract.md` and `docs/apple-runtime/p10r9/`.
 
+---
+
+## 13. Milestone P10R10 — Unified Semantic Decompiler, Hybrid Import & Provenance Isolation
+
+- [x] **P10R10: Unify Semantic Decompiler (`decompile.go`) with Hybrid Planner (`semantic_import_planner.go`, `hybrid_import.go`, `import_provenance.go`)**
+  - Implemented `planUnifiedSemanticHybridImport` (`semantic_import_planner.go`) directly reusing `decompile.go` semantic recognizers and helpers (`prepareDecompileSemanticPasses`, `matchAction`, `decompAggrandizements`, `utf16OffsetToRuneIndex`, `sanitizeIdentifier`) together with `DecodeNativeShortcutDocument` (`import_fidelity.go`) and `DefaultReverseActionRegistry()` (`reverse_action_registry.go`).
+  - Synthesizes one shared semantic plan rendered directly into both **Legacy** (`#workflowheader`, `const`, `@var`, `item`, `rawAction`) and **Cherri v2** (`native.workflow`, `let`, `var`, `case`, `native.action`) for variables, producer/consumer UUID bindings, `.dictionary['key']` coerce-first attachments, sorted typed dictionaries/arrays, balanced `conditional`/`choosefrommenu`/`repeat`/`repeat.each` control regions, dynamic/optional parameters, and unrepresentable per-action/per-region fallbacks.
+  - Integrated import provenance across `import_provenance.go`, `shortcutgen.go`, `shared_codec.go`, `variables.go`, `internal/language/analysis/analyzer.go`, `internal/language/lower/lower.go`, `language_backend_adapter.go`, and Legacy/V2 header handling so original `UUID`, `CustomOutputName`, `GroupingIdentifier`, `Show-*` flags, variable bindings, and workflow metadata round-trip losslessly while `__CherriImportProvenance` is always stripped and verified absent from compiled output.
+  - Hardened the fail-closed verifier (`VerifyWholeWorkflowAgainstOriginal`, `RenderAndVerifyHybrid`, `verifyAndStabilizePlan`) to verify initial whole-workflow compile + tree parity, perform targeted per-unit/region demotion with post-demotion full-tree comparison, check decision count invariants (`len(plan.Decisions) == len(doc.Actions)`), preserve caller plans on failure, and select `plist.BinaryFormat` before marshaling when `plistValueHasXMLUnsafeStringChar` detects `\x0b`/NUL control bytes.
+  - Verified `40/40` new `TestSEM01`–`TestSEM40` tests, `30/30` existing `TestHYB01`–`TestHYB30` tests, and independent 38-shortcut CLI + Python `plistlib` + Oracle audit (`docs/apple-runtime/p10r10/`):
+    - `lossless` wire parity: `38/38` Legacy and `38/38` V2 (`27,652` actions).
+    - `hybrid` wire parity: `38/38` Legacy and `38/38` V2, up to **`10,871 / 27,652` (`39.31%`)** `NATURAL_VERIFIED` readable actions (`+9,408` vs P10R9's `1,463 / 27,652` = `5.29%`, and vs Original Semantic `0/38` full-tree parity).
+    - Explicit `SOURCE_INVALID` preservation at `035:723` (`CONTROL_FLOW_ORPHAN_END`), explicit `NO_TOPLEVEL_COMMENT_FOUND` reported on `001` edit-isolation probe (while `012`, `027`, `035`, and `TestSEM28`–`TestSEM30` pass), remaining native fallbacks broken down by reason (`CONTROL_REGION`: `10,160`, `UNREPRESENTABLE_PARAM`: `6,424`, `THIRD_PARTY_NO_CANONICAL_DEF`: `137`, `AMBIGUOUS_VARIANT`: `46`, `UNKNOWN_NATIVE_ID`: `13`), and physical Apple device execution remaining `BLOCKED_DEVICE` (`APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE`).
+
+
 
 
 

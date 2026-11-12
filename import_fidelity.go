@@ -572,6 +572,8 @@ func mergeWorkflowHeaderMap(
 		if merged == nil {
 			merged = make(map[string]any)
 		}
+		prov := extractAndStripImportProvenance(merged)
+		applyImportProvenanceToCompiledActions(prov, compiledActions)
 		merged["WFWorkflowActions"] = compiledActions
 		return merged
 	}
@@ -592,6 +594,8 @@ func mergeWorkflowHeaderMap(
 		}
 		merged[k] = deepClonePlistValue(v)
 	}
+	prov := extractAndStripImportProvenance(merged)
+	applyImportProvenanceToCompiledActions(prov, compiledActions)
 	merged["WFWorkflowActions"] = compiledActions
 	if inputs, ok := merged["WFWorkflowInputContentItemClasses"].([]any); !ok || len(inputs) == 0 {
 		if _, has := merged["WFWorkflowInputContentItemClasses"]; !has {
@@ -687,27 +691,26 @@ func formatCherriDoubleQuotedString(s string) string {
 func unescapeCherriDoubleQuotedString(s string) (string, error) {
 	var b strings.Builder
 	b.Grow(len(s))
-	runes := []rune(s)
-	for i := 0; i < len(runes); i++ {
-		if runes[i] == '\\' && i+1 < len(runes) {
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\\' && i+1 < len(s) {
 			i++
-			switch runes[i] {
+			switch s[i] {
 			case '"':
-				b.WriteRune('"')
+				b.WriteByte('"')
 			case 'n':
-				b.WriteRune('\n')
+				b.WriteByte('\n')
 			case 'r':
-				b.WriteRune('\r')
+				b.WriteByte('\r')
 			case 't':
-				b.WriteRune('\t')
+				b.WriteByte('\t')
 			case '\\':
-				b.WriteRune('\\')
+				b.WriteByte('\\')
 			default:
-				b.WriteRune(runes[i])
+				b.WriteByte(s[i])
 			}
 			continue
 		}
-		b.WriteRune(runes[i])
+		b.WriteByte(s[i])
 	}
 	return b.String(), nil
 }
@@ -1039,6 +1042,7 @@ func collectWorkflowHeaderDirective() {
 		parserError(fmt.Sprintf("Invalid #workflowheader payload: %s", err))
 	}
 	importedWorkflowHeader = hdr
+	applyLegacyHeaderImportProvenance(hdr)
 }
 
 func collectDeclareDirective() {

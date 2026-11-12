@@ -124,9 +124,11 @@ sh "$SKILL_DIR/scripts/build.sh" WORKSPACE/source/shortcut.cherri WORKSPACE/buil
 
 Known limits: direct extraction of signed `AEA1` Shortcuts is not supported
 yet — use the extractor Shortcut / iCloud-link workflow to provide a plist.
-Decompilation is beta: third-party app actions may degrade to `native.action`
-calls, and a plist structure Cherri cannot represent must be reported, not
-silently dropped.
+Decompilation supports `--fidelity=lossless` (default for `cherri import`) and
+unified `--fidelity=hybrid` (semantic decompilation + `#workflowheader` provenance +
+fail-closed whole-workflow verification with per-action/region `native.action` /
+`rawAction` fallback; `--fidelity=semantic` remains best-effort); a plist
+structure Cherri cannot represent must be reported, not silently dropped.
 
 ## Maintenance
 

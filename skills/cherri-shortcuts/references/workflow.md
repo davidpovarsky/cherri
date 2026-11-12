@@ -76,6 +76,11 @@ Input contract:
   rejects them with a clear early diagnostic; use the extractor Shortcut /
   iCloud-link workflow to provide a plist instead. Never pass AEA1 bytes to
   the plist import path.
+- Recommended import modes: use `cherri import <file.plist> --fidelity=hybrid --mode=v2`
+  (or `--mode=legacy`) for readable Cherri source with `#workflowheader` provenance
+  and fail-closed bit-for-bit plist verification (`native.action` / `rawAction`
+  only for unrepresentable actions/regions), or `--fidelity=lossless` for pure
+  full-workflow native preservation.
 
 ## Action discovery
 

@@ -608,6 +608,7 @@ func collectReference(valueType *tokenType, value *any, until *rune, variable bo
 	var reference = collectIdentifier()
 	var getAs string
 	var coerce string
+	var coerceFirst bool
 	var prompt string
 	var constant bool
 
@@ -677,6 +678,24 @@ func collectReference(valueType *tokenType, value *any, until *rune, variable bo
 	if char == '.' {
 		advance()
 		coerce = collectIdentifier()
+		if coerce != "" && getAs == "" && char == '[' {
+			advance()
+			var key string
+			if char == '\'' {
+				advance()
+				key = collectRawString()
+			} else if char == '"' {
+				advance()
+				key = collectUntil('"')
+				advance()
+			} else {
+				parserError("Expected raw string for key.")
+			}
+			advanceUntil(']')
+			advance()
+			getAs = key
+			coerceFirst = true
+		}
 	}
 
 	isInputVariable(reference)
@@ -687,6 +706,7 @@ func collectReference(valueType *tokenType, value *any, until *rune, variable bo
 		valueType:    Variable,
 		value:        reference,
 		coerce:       coerce,
+		coerceFirst:  coerceFirst,
 		getAs:        getAs,
 		prompt:       prompt,
 		constant:     constant,

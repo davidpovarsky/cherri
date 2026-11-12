@@ -131,3 +131,14 @@ flowchart TD
 | **Readable Lossless Import (`--fidelity=hybrid`)** | Not available (`lossless` emitted 100% raw escapes; `semantic` failed on 37/38 real-world corpus shortcuts) | `PlanHybridImport()` verifies candidate natural actions in both Legacy and V2 and falls back per-action to `rawAction(...)` / `native.action(...)`, achieving `38/38` (`100%`) oracle-verified parity in both Legacy and V2 |
 | **V2 XML Control Character Safety** | `howett.net/plist` XML encoder replaced `\x0b` (vertical tab) with `\ufffd` in V2 output | `CanonicalBackendSession.Finalize()` automatically selects `plist.BinaryFormat` when strings contain XML-unsafe control characters (`HYB16`) |
 
+---
+
+## 5. P10R10 — Unified Semantic Decompiler + Hybrid Import (Before vs. After)
+
+| Capability | Before P10R10 (P10R9 Baseline) | After P10R10 (Unified Semantic Hybrid) |
+| :--- | :--- | :--- |
+| **Semantic vs. Hybrid Architecture** | `decompile.go` (`0/38` full-tree parity; `35/38` Legacy compile, `1/38` V2 compile) operated separately from `PlanHybridImport()` (`1,463/27,652` = `5.29%` isolated literals) | `planUnifiedSemanticHybridImport` (`semantic_import_planner.go`) directly reuses `decompile.go` semantic passes (`prepareDecompileSemanticPasses`, `matchAction`, `decompAggrandizements`, `utf16OffsetToRuneIndex`, `sanitizeIdentifier`) + `NativeShortcutDocument` + `DefaultReverseActionRegistry()` to drive both Legacy and V2 from one semantic plan |
+| **Variables, UUIDs & Compound Constructs** | Any action with producer `UUID`, `CustomOutputName`, attachments, or control flow fell back immediately to `rawAction`/`native.action` | `import_provenance.go` + Legacy/V2 compilers preserve `UUID`, `CustomOutputName`, `GroupingIdentifier`, variable bindings, `.dictionary['key']`, sorted dicts/arrays, and balanced control regions, increasing verified readable actions to **`10,871/27,652` (`39.31%`)** while keeping **`38/38` Legacy & V2** full-tree parity |
+| **Fail-Closed Whole-Workflow Gate & XML Safety** | Legacy in-memory compiler checked raw bytes post-XML marshal where `\x0b` had already become `\ufffd`; decision count mismatch or mutated caller plans were not uniformly guarded | Pre-marshal `plistValueHasXMLUnsafeStringChar` -> `plist.BinaryFormat`, recursive `hasImportProvenanceKey` leak rejection, decision-count invariant check, immutable caller plan on error, and `TestSEM01`–`TestSEM40` + `TestHYB01`–`TestHYB30` verification |
+
+

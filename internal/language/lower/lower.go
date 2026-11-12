@@ -24,6 +24,11 @@ import (
 	"howett.net/plist"
 )
 
+type provenanceOutputNameSpec struct {
+	name    string
+	hasName bool
+}
+
 // BindingRef represents how a variable is stored and referenced in Shortcuts.
 type BindingRef struct {
 	IsVariable        bool   // true = setvariable/getvariable, false = direct action output token
@@ -54,29 +59,32 @@ var contentItemClasses = map[string]string{
 
 // Lowerer transforms a Cherri v2 AST into Native Shortcut IR.
 type Lowerer struct {
-	registry           *schema.Registry
-	session            backend.Session
-	workflow           *ir.NativeWorkflow
-	bindings           map[string]BindingRef
-	functions          map[string]*syntax.FunctionDecl
-	setupQuestions     map[string]*syntax.SetupDecl
-	enums              map[string]*syntax.EnumDecl
-	types              map[string]*syntax.TypeDecl
-	actions            map[string]*syntax.ActionDecl
-	copyBlocks         map[string]*syntax.CopyBlockStmt
-	importStack        []string
-	modules            map[string]string
-	virtualModules     map[string]string
-	baseFilePath       string
-	importedFunctions  []*syntax.FunctionDecl
-	WorkflowName       string
-	uuidCounter        int
-	repeatDepth        int
-	currentBindingName string
-	emitErr            error
-	isMac              *bool
-	exprTypes          map[syntax.Expression]types.Type
-	inExprStmt         bool
+	registry              *schema.Registry
+	session               backend.Session
+	workflow              *ir.NativeWorkflow
+	bindings              map[string]BindingRef
+	functions             map[string]*syntax.FunctionDecl
+	setupQuestions        map[string]*syntax.SetupDecl
+	enums                 map[string]*syntax.EnumDecl
+	types                 map[string]*syntax.TypeDecl
+	actions               map[string]*syntax.ActionDecl
+	copyBlocks            map[string]*syntax.CopyBlockStmt
+	importStack           []string
+	modules               map[string]string
+	virtualModules        map[string]string
+	baseFilePath          string
+	importedFunctions     []*syntax.FunctionDecl
+	WorkflowName          string
+	uuidCounter           int
+	repeatDepth           int
+	currentBindingName    string
+	emitErr               error
+	isMac                 *bool
+	exprTypes             map[syntax.Expression]types.Type
+	inExprStmt            bool
+	provenanceUUIDs       map[string]string
+	provenanceOutputNames map[string]provenanceOutputNameSpec
+	provenanceVarNames    map[string]string
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -85,17 +93,20 @@ func NewLowerer(registry *schema.Registry) *Lowerer {
 		registry = schema.DefaultRegistry()
 	}
 	return &Lowerer{
-		registry:       registry,
-		workflow:       ir.NewNativeWorkflow(),
-		bindings:       make(map[string]BindingRef),
-		functions:      make(map[string]*syntax.FunctionDecl),
-		setupQuestions: make(map[string]*syntax.SetupDecl),
-		enums:          make(map[string]*syntax.EnumDecl),
-		types:          make(map[string]*syntax.TypeDecl),
-		actions:        make(map[string]*syntax.ActionDecl),
-		copyBlocks:     make(map[string]*syntax.CopyBlockStmt),
-		modules:        make(map[string]string),
-		virtualModules: make(map[string]string),
+		registry:              registry,
+		workflow:              ir.NewNativeWorkflow(),
+		bindings:              make(map[string]BindingRef),
+		functions:             make(map[string]*syntax.FunctionDecl),
+		setupQuestions:        make(map[string]*syntax.SetupDecl),
+		enums:                 make(map[string]*syntax.EnumDecl),
+		types:                 make(map[string]*syntax.TypeDecl),
+		actions:               make(map[string]*syntax.ActionDecl),
+		copyBlocks:            make(map[string]*syntax.CopyBlockStmt),
+		modules:               make(map[string]string),
+		virtualModules:        make(map[string]string),
+		provenanceUUIDs:       make(map[string]string),
+		provenanceOutputNames: make(map[string]provenanceOutputNameSpec),
+		provenanceVarNames:    make(map[string]string),
 	}
 }
 
@@ -146,6 +157,12 @@ func NewLowererWithSession(registry *schema.Registry, session backend.Session) *
 
 // GenerateUUID returns a formatted UUID.
 func (l *Lowerer) GenerateUUID() string {
+	if l.currentBindingName != "" && l.provenanceUUIDs != nil {
+		if u, ok := l.provenanceUUIDs[l.currentBindingName]; ok && u != "" {
+			delete(l.provenanceUUIDs, l.currentBindingName)
+			return u
+		}
+	}
 	l.uuidCounter++
 	b := make([]byte, 16)
 	_, _ = rand.Read(b)
@@ -1535,19 +1552,43 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 	}
 }
 
+func (l *Lowerer) effectiveOutputName(sym string) string {
+	if l.provenanceOutputNames != nil {
+		if spec, ok := l.provenanceOutputNames[sym]; ok {
+			if !spec.hasName {
+				return ""
+			}
+			if spec.name != "" {
+				return spec.name
+			}
+		}
+	}
+	return sym
+}
+
+func (l *Lowerer) effectiveVariableName(sym string) string {
+	if l.provenanceVarNames != nil {
+		if v, ok := l.provenanceVarNames[sym]; ok && v != "" {
+			return v
+		}
+	}
+	return sym
+}
+
 func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	if b.Value == nil {
 		// uninitialized var
+		wfVarName := l.effectiveVariableName(b.Name)
 		l.bindings[b.Name] = BindingRef{
 			IsVariable:   true,
-			VariableName: b.Name,
+			VariableName: wfVarName,
 		}
 		if b.Mutable {
 			node := &ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
 				AppleIdentifier: "is.workflow.actions.setvariable",
 				Parameters: map[string]interface{}{
-					"WFVariableName": b.Name,
+					"WFVariableName": wfVarName,
 				},
 			}
 			l.emitAction(node)
@@ -1565,9 +1606,10 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	}
 
 	if b.Mutable {
+		wfVarName := l.effectiveVariableName(b.Name)
 		// Emit is.workflow.actions.setvariable
 		params := map[string]interface{}{
-			"WFVariableName": b.Name,
+			"WFVariableName": wfVarName,
 		}
 		if att := l.materializeToAttachment(val); att != nil {
 			params["WFInput"] = att
@@ -1591,17 +1633,18 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 		}
 		l.bindings[b.Name] = BindingRef{
 			IsVariable:   true,
-			VariableName: b.Name,
+			VariableName: wfVarName,
 			Type:         bType,
 		}
 	} else {
+		effOutName := l.effectiveOutputName(b.Name)
 		// let captures the value at this source point.
 		// If val is already an action output reference from the last action
 		if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "ActionOutput" {
 			l.bindings[b.Name] = BindingRef{
 				IsVariable:      false,
 				OutputUUID:      ref.OutputUUID,
-				OutputName:      b.Name,
+				OutputName:      effOutName,
 				Aggrandizements: ref.Aggrandizements,
 			}
 			if len(ref.Aggrandizements) == 0 {
@@ -1637,7 +1680,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			l.bindings[b.Name] = BindingRef{
 				IsVariable:      false,
 				OutputUUID:      uuid,
-				OutputName:      b.Name,
+				OutputName:      effOutName,
 				Aggrandizements: ref.Aggrandizements,
 			}
 		} else if ref, ok := val.(*ir.AttachmentToken); ok && (ref.Type == "Clipboard" || ref.Type == "DeviceDetails" || ref.Type == "CurrentDate" || ref.Type == "ExtensionInput" || ref.Type == "Ask") {
@@ -1651,6 +1694,12 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 		} else {
 			// Materialize literal or computed value based on its semantic type
 			uuid := l.GenerateUUID()
+			if l.provenanceUUIDs != nil {
+				if u, ok := l.provenanceUUIDs[b.Name]; ok && u != "" {
+					uuid = u
+					delete(l.provenanceUUIDs, b.Name)
+				}
+			}
 			switch v := val.(type) {
 			case float64:
 				node := &ir.NativeActionNode{
@@ -1664,36 +1713,13 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 				}
 				l.emitAction(node)
 			case int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8:
-				var n float64
-				switch num := v.(type) {
-				case int:
-					n = float64(num)
-				case int64:
-					n = float64(num)
-				case int32:
-					n = float64(num)
-				case int16:
-					n = float64(num)
-				case int8:
-					n = float64(num)
-				case uint:
-					n = float64(num)
-				case uint64:
-					n = float64(num)
-				case uint32:
-					n = float64(num)
-				case uint16:
-					n = float64(num)
-				case uint8:
-					n = float64(num)
-				}
 				node := &ir.NativeActionNode{
 					NodeID:          uuid,
 					AppleIdentifier: "is.workflow.actions.number",
 					OutputUUID:      uuid,
 					OutputName:      b.Name,
 					Parameters: map[string]interface{}{
-						"WFNumberActionNumber": n,
+						"WFNumberActionNumber": v,
 					},
 				}
 				l.emitAction(node)
@@ -1748,19 +1774,20 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 				}
 				l.emitAction(node)
 			case nil:
+				wfVarName := l.effectiveVariableName(b.Name)
 				node := &ir.NativeActionNode{
 					NodeID:          uuid,
 					AppleIdentifier: "is.workflow.actions.setvariable",
 					Parameters: map[string]interface{}{
-						"WFVariableName": b.Name,
+						"WFVariableName": wfVarName,
 					},
 				}
 				l.emitAction(node)
 				l.bindings[b.Name] = BindingRef{
 					IsVariable:   true,
 					TokenType:    "Variable",
-					VariableName: b.Name,
-					OutputName:   b.Name,
+					VariableName: wfVarName,
+					OutputName:   wfVarName,
 				}
 				return nil
 			default:
@@ -1778,7 +1805,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 			l.bindings[b.Name] = BindingRef{
 				IsVariable: false,
 				OutputUUID: uuid,
-				OutputName: b.Name,
+				OutputName: effOutName,
 			}
 		}
 	}
@@ -1819,12 +1846,17 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 		}
 	}
 
+	wfVarName := l.effectiveVariableName(a.Name)
+	if isBound && binding.VariableName != "" {
+		wfVarName = binding.VariableName
+	}
+
 	if a.Op == syntax.TokenPlusAssign && isList {
 		node := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
 			AppleIdentifier: "is.workflow.actions.appendvariable",
 			Parameters: map[string]interface{}{
-				"WFVariableName": a.Name,
+				"WFVariableName": wfVarName,
 				"WFInput":        l.materializeToAttachment(val),
 			},
 		}
@@ -1868,7 +1900,7 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 		mathUUID := l.GenerateUUID()
 		leftToken := &ir.AttachmentToken{
 			Type:       "Variable",
-			OutputName: a.Name,
+			OutputName: wfVarName,
 		}
 		mathNode := &ir.NativeActionNode{
 			NodeID:          mathUUID,
@@ -1887,20 +1919,20 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 		}
 	}
 
-		params := map[string]interface{}{
-			"WFVariableName": a.Name,
-		}
-		if att := l.materializeToAttachment(finalVal); att != nil {
-			params["WFInput"] = att
-		}
-		node := &ir.NativeActionNode{
-			NodeID:          l.GenerateUUID(),
-			AppleIdentifier: "is.workflow.actions.setvariable",
-			Parameters:      params,
-		}
-		l.emitAction(node)
-		return nil
+	params := map[string]interface{}{
+		"WFVariableName": wfVarName,
 	}
+	if att := l.materializeToAttachment(finalVal); att != nil {
+		params["WFInput"] = att
+	}
+	node := &ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters:      params,
+	}
+	l.emitAction(node)
+	return nil
+}
 
 func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 	if val == nil {
@@ -2507,15 +2539,15 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 
 		if isComp {
 			if (binExpr.Op == syntax.TokenEqual || binExpr.Op == syntax.TokenNotEqual) &&
-			(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
-			opStr := "=="
-			if binExpr.Op == syntax.TokenNotEqual {
-				opStr = "!="
+				(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
+				opStr := "=="
+				if binExpr.Op == syntax.TokenNotEqual {
+					opStr = "!="
+				}
+				return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
 			}
-			return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
-		}
 
-		leftVal, err := l.lowerExpression(binExpr.Left)
+			leftVal, err := l.lowerExpression(binExpr.Left)
 			if err != nil {
 				return nil, err
 			}
@@ -2616,15 +2648,15 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			}
 			if isComp {
 				if (binExpr.Op == syntax.TokenEqual || binExpr.Op == syntax.TokenNotEqual) &&
-			(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
-			opStr := "=="
-			if binExpr.Op == syntax.TokenNotEqual {
-				opStr = "!="
-			}
-			return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
-		}
+					(l.isArrayExpr(binExpr.Left) || l.isArrayExpr(binExpr.Right)) {
+					opStr := "=="
+					if binExpr.Op == syntax.TokenNotEqual {
+						opStr = "!="
+					}
+					return nil, fmt.Errorf("Invalid type 'array' for conditional '%s'", opStr)
+				}
 
-		leftVal, err := l.lowerExpression(binExpr.Left)
+				leftVal, err := l.lowerExpression(binExpr.Left)
 				if err != nil {
 					return nil, err
 				}
@@ -3003,6 +3035,16 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		}
 		if e.Name == "RepeatItem" {
 			return &ir.AttachmentToken{Type: "Variable", OutputName: "Repeat Item"}, nil
+		}
+		if strings.HasPrefix(e.Name, "RepeatIndex") {
+			if n, err := strconv.Atoi(strings.TrimPrefix(e.Name, "RepeatIndex")); err == nil && n >= 2 && n <= 10 {
+				return &ir.AttachmentToken{Type: "Variable", OutputName: fmt.Sprintf("Repeat Index %d", n)}, nil
+			}
+		}
+		if strings.HasPrefix(e.Name, "RepeatItem") {
+			if n, err := strconv.Atoi(strings.TrimPrefix(e.Name, "RepeatItem")); err == nil && n >= 2 && n <= 10 {
+				return &ir.AttachmentToken{Type: "Variable", OutputName: fmt.Sprintf("Repeat Item %d", n)}, nil
+			}
 		}
 		if e.Name == "ShortcutInput" {
 			l.workflow.HasShortcutInputVariables = true
@@ -3388,6 +3430,13 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			}
 			return nil, fmt.Errorf("enum %q has no member %q", e.TypeName, e.Member)
 		}
+		if e.TypeName != "" {
+			return l.lowerExpression(&syntax.MemberExpr{
+				Span:     e.Span,
+				Target:   &syntax.IdentExpr{Span: e.Span, Name: e.TypeName},
+				Property: e.Member,
+			})
+		}
 		return nil, fmt.Errorf("unknown enum %q", e.TypeName)
 
 	case *syntax.MemberExpr:
@@ -3754,7 +3803,9 @@ func (l *Lowerer) lowerFString(f *syntax.FStringExpr) (interface{}, error) {
 				}
 				if tok.Type == "Variable" {
 					att["VariableName"] = tok.OutputName
-				} else if tok.OutputName != "" {
+				} else if tok.Type == "Ask" && tok.OutputName != "" {
+					att["Prompt"] = tok.OutputName
+				} else if tok.OutputName != "" && tok.Type != "ExtensionInput" && tok.Type != "CurrentDate" && tok.Type != "Clipboard" && tok.Type != "DeviceDetails" {
 					att["OutputName"] = tok.OutputName
 				}
 				if len(tok.Aggrandizements) > 0 {
@@ -3926,6 +3977,10 @@ func (l *Lowerer) toSemanticValue(val interface{}) backend.SemanticValue {
 			kind = backend.RefMutableBinding
 		case "ExtensionInput":
 			kind = backend.RefExtensionInput
+			v.OutputName = ""
+		case "Clipboard", "CurrentDate", "DeviceDetails":
+			kind = backend.RefSystemValue
+			v.OutputName = v.Type
 		case "Ask":
 			kind = backend.RefAskEachTime
 		default:
@@ -4426,6 +4481,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			l.session.SetMetadata("rawWorkflowExact", exactWorkflow)
 			l.session.SetMetadata("rawWorkflow", rawMap)
 		}
+		l.applyImportProvenanceFromRawWorkflow(rawMap)
 
 		if v, ok := rawMap["WFWorkflowClientVersion"].(string); ok {
 			l.workflow.ClientVersion = v
@@ -5242,4 +5298,90 @@ func cloneLowerPlistValue(v any) any {
 	}
 }
 
+func provenanceBindingTypeFromValueType(vt string) types.Type {
+	switch vt {
+	case "Text", "String":
+		return types.Text
+	case "Number", "Integer", "Float":
+		return types.Number
+	case "Bool", "Boolean":
+		return types.Bool
+	case "Date":
+		return types.Date
+	case "Dict", "Dictionary":
+		return types.NewMap(types.Text, types.AnyContent)
+	case "Arr", "List":
+		return types.NewList(types.AnyContent)
+	default:
+		return nil
+	}
+}
 
+func (l *Lowerer) applyImportProvenanceFromRawWorkflow(rawMap map[string]any) {
+	if len(rawMap) == 0 {
+		return
+	}
+	prov, ok := rawMap["__CherriImportProvenance"].(map[string]any)
+	if !ok {
+		return
+	}
+	syms, ok := prov["Symbols"].(map[string]any)
+	if !ok {
+		return
+	}
+	for symName, rawEntry := range syms {
+		entry, ok := rawEntry.(map[string]any)
+		if !ok || symName == "" {
+			continue
+		}
+		kind, _ := entry["Kind"].(string)
+		uuid, _ := entry["UUID"].(string)
+		outputName, _ := entry["OutputName"].(string)
+		hasOutputName := true
+		if b, exists := entry["HasOutputName"].(bool); exists {
+			hasOutputName = b
+		}
+		varName, _ := entry["VariableName"].(string)
+		if kind != "Variable" && hasOutputName && outputName == "" {
+			outputName = symName
+		}
+		if kind == "Variable" && varName == "" {
+			if outputName != "" {
+				varName = outputName
+			} else {
+				varName = symName
+			}
+		}
+		if uuid != "" {
+			l.provenanceUUIDs[symName] = uuid
+		}
+		if kind == "Variable" {
+			if l.provenanceVarNames == nil {
+				l.provenanceVarNames = make(map[string]string)
+			}
+			l.provenanceVarNames[symName] = varName
+		} else {
+			if l.provenanceOutputNames == nil {
+				l.provenanceOutputNames = make(map[string]provenanceOutputNameSpec)
+			}
+			l.provenanceOutputNames[symName] = provenanceOutputNameSpec{
+				name:    outputName,
+				hasName: hasOutputName,
+			}
+		}
+		if _, exists := l.bindings[symName]; exists {
+			continue
+		}
+		vtStr, _ := entry["ValueType"].(string)
+		bType := provenanceBindingTypeFromValueType(vtStr)
+		if kind == "Variable" {
+			l.bindings[symName] = BindingRef{IsVariable: true, VariableName: varName, Type: bType}
+		} else if uuid != "" {
+			effOut := outputName
+			if !hasOutputName {
+				effOut = ""
+			}
+			l.bindings[symName] = BindingRef{OutputUUID: uuid, OutputName: effOut, Type: bType}
+		}
+	}
+}

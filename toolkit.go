@@ -51,8 +51,7 @@ var imported []string
 var toolkitLocale = "en"
 
 func handleImports() {
-	var matches = copyPasteRegex.FindAllStringSubmatch(contents, -1)
-	if len(matches) == 0 {
+	if !strings.Contains(contents, "#import") {
 		return
 	}
 

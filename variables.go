@@ -23,6 +23,7 @@ type varValue struct {
 	value        any
 	getAs        string
 	coerce       string
+	coerceFirst  bool
 	constant     bool
 	repeatItem   bool
 	prompt       string
@@ -102,6 +103,12 @@ func availableIdentifier(identifier *string) {
 }
 
 func createUUIDReference(identifier string) string {
+	if identifier == "" {
+		return createUUID(&identifier)
+	}
+	if existing, ok := uuids[identifier]; ok && existing != "" {
+		return existing
+	}
 	var actionUUID = createUUID(&identifier)
 	uuids[identifier] = actionUUID
 

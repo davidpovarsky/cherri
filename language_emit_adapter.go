@@ -246,9 +246,11 @@ func transformIRParamValueContext(v any, inAttachmentsByRange bool) any {
 		if tok.OutputUUID != "" {
 			valMap["OutputUUID"] = tok.OutputUUID
 		}
-		if tok.Type == "Variable" || tok.Type == "ExtensionInput" {
+		if tok.Type == "Variable" {
 			valMap["VariableName"] = tok.OutputName
-		} else if tok.OutputName != "" {
+		} else if tok.Type == "Ask" && tok.OutputName != "" {
+			valMap["Prompt"] = tok.OutputName
+		} else if tok.OutputName != "" && tok.Type != "ExtensionInput" && tok.Type != "CurrentDate" && tok.Type != "Clipboard" && tok.Type != "DeviceDetails" {
 			valMap["OutputName"] = tok.OutputName
 		}
 		if len(tok.Aggrandizements) > 0 {
@@ -285,6 +287,39 @@ func transformIRParamValueContext(v any, inAttachmentsByRange bool) any {
 // CompileSourceToPlist compiles Cherri v2 source code directly to unsigned plist bytes.
 func CompileSourceToPlist(filePath string, content string) ([]byte, error) {
 	return CompileSourceToPlistWithModules(filePath, content, nil)
+}
+
+// collectV2CompileErrorLines parses and analyzes V2 source without lowering/plist serialization
+// so verify/isolation can demote all static error lines in one pass.
+func collectV2CompileErrorLines(filePath string, content string) ([]int, error) {
+	file := source.NewFile(source.DocumentID(filePath), filePath, 1, content)
+	parser := syntax.NewParser(file)
+	prog := parser.ParseProgram()
+	if errs := parser.Errors(); len(errs) > 0 {
+		linesOut := make([]int, 0, len(errs))
+		for _, pe := range errs {
+			if pe.Span.Start.Line > 0 {
+				linesOut = append(linesOut, pe.Span.Start.Line)
+			}
+		}
+		return linesOut, fmt.Errorf("syntax error: %s", errs[0])
+	}
+	reg := schema.DefaultRegistry()
+	analyzer := analysis.NewAnalyzer(reg)
+	analyzer.Analyze(prog)
+	var linesOut []int
+	var firstErr error
+	for _, diag := range analyzer.Diagnostics() {
+		if diag.Severity == analysis.SeverityError {
+			if firstErr == nil {
+				firstErr = fmt.Errorf("semantic error [%s]: %s at %v", diag.Code, diag.Message, diag.Span)
+			}
+			if diag.Span.Start.Line > 0 {
+				linesOut = append(linesOut, diag.Span.Start.Line)
+			}
+		}
+	}
+	return linesOut, firstErr
 }
 
 // CompileSourceToPlistWithModules compiles Cherri v2 source code with optional virtual modules.

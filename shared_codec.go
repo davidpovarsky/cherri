@@ -37,8 +37,8 @@ func EncodeReferenceValue(desc ReferenceDescriptor) Value {
 		val.OutputName = desc.OutputName
 	case "Variable":
 		val.VariableName = desc.VariableName
-	case "ExtensionInput":
-		val.VariableName = desc.VariableName
+	case "ExtensionInput", "CurrentDate", "Clipboard", "DeviceDetails":
+		// Apple Shortcuts global attachments do not carry VariableName.
 	case "Ask":
 		val.Prompt = desc.Prompt
 	default:
@@ -102,11 +102,17 @@ func ReferenceToDescriptor(ref *backend.Reference) ReferenceDescriptor {
 		if desc.VariableName == "" {
 			desc.VariableName = ref.ProducerID
 		}
-	case backend.RefSystemValue, backend.RefExtensionInput:
+	case backend.RefExtensionInput:
 		desc.Kind = "ExtensionInput"
-		desc.VariableName = ref.ProducerName
+	case backend.RefSystemValue:
+		if ref.ProducerName != "" {
+			desc.Kind = ref.ProducerName
+		} else {
+			desc.Kind = "ExtensionInput"
+		}
 	case backend.RefAskEachTime:
 		desc.Kind = "Ask"
+		desc.Prompt = ref.ProducerName
 	default:
 		if ref.ProducerID != "" {
 			desc.Kind = "ActionOutput"

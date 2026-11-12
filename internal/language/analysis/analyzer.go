@@ -1,6 +1,7 @@
 package analysis
 
 import (
+	"encoding/base64"
 	"fmt"
 	"path/filepath"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"github.com/electrikmilk/cherri/internal/language/types"
+	"howett.net/plist"
 )
 
 // Symbol represents a declared entity.
@@ -73,6 +75,7 @@ type Analyzer struct {
 	minTargetVersion  float64
 	maxTargetVersion  float64
 	userFunctions     map[string]bool
+	enumNames         map[string]bool
 	loopDepth         int
 }
 
@@ -86,6 +89,7 @@ func NewAnalyzer(registry *schema.Registry) *Analyzer {
 		topLevelVars:  make(map[string]source.Span),
 		exprTypes:     make(map[syntax.Expression]types.Type),
 		userFunctions: make(map[string]bool),
+		enumNames:     make(map[string]bool),
 	}
 }
 
@@ -293,6 +297,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	scope := NewScope(nil)
 	a.topLevelVars = make(map[string]source.Span)
 	a.userFunctions = make(map[string]bool)
+	a.enumNames = make(map[string]bool)
 
 	// Builtin namespace symbols
 	scope.Define(&Symbol{Name: "system", Type: types.Unknown, Initialized: true})
@@ -305,6 +310,10 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	scope.Define(&Symbol{Name: "CurrentDate", Type: types.Date, Initialized: true})
 	scope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true})
 	scope.Define(&Symbol{Name: "RepeatItem", Type: types.AnyContent, Initialized: true})
+	for i := 2; i <= 10; i++ {
+		scope.Define(&Symbol{Name: fmt.Sprintf("RepeatIndex%d", i), Type: types.Number, Initialized: true})
+		scope.Define(&Symbol{Name: fmt.Sprintf("RepeatItem%d", i), Type: types.AnyContent, Initialized: true})
+	}
 
 	for _, stmt := range prog.Statements {
 		if b, ok := stmt.(*syntax.BindingStmt); ok {
@@ -333,6 +342,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate setup declaration %q", d.Name))
 			}
 		case *syntax.EnumDecl:
+			a.enumNames[d.Name] = true
 			if !scope.Define(&Symbol{Name: d.Name, Type: types.Text, Initialized: true, Span: d.Span}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate enum declaration %q", d.Name))
 			}
@@ -402,9 +412,122 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	}
 
 	// Pass 3: Analyze top-level statements
+	a.predefineImportProvenanceSymbols(prog.Statements, scope)
 	for _, stmt := range prog.Statements {
 		a.analyzeStatement(stmt, scope)
 	}
+}
+
+func (a *Analyzer) predefineImportProvenanceSymbols(stmts []syntax.Statement, scope *Scope) {
+	for _, stmt := range stmts {
+		es, ok := stmt.(*syntax.ExprStmt)
+		if !ok {
+			continue
+		}
+		call, ok := es.Expr.(*syntax.CallExpr)
+		if !ok {
+			continue
+		}
+		mem, ok := call.Callee.(*syntax.MemberExpr)
+		if !ok {
+			continue
+		}
+		id, ok := mem.Target.(*syntax.IdentExpr)
+		if !ok || id.Name != "native" || mem.Property != "workflow" {
+			continue
+		}
+		rawStr := extractNativeWorkflowPlistString(call)
+		if rawStr == "" {
+			continue
+		}
+		rawMap := decodePlistDictForAnalysis(rawStr)
+		if rawMap == nil {
+			continue
+		}
+		prov, ok := rawMap["__CherriImportProvenance"].(map[string]any)
+		if !ok {
+			continue
+		}
+		syms, ok := prov["Symbols"].(map[string]any)
+		if !ok {
+			continue
+		}
+		for symName, rawEntry := range syms {
+			entry, ok := rawEntry.(map[string]any)
+			if !ok {
+				continue
+			}
+			kind, _ := entry["Kind"].(string)
+			mutable := kind == "Variable"
+			var symType types.Type = types.AnyContent
+			switch vt, _ := entry["ValueType"].(string); vt {
+			case "Number", "Integer", "Float":
+				symType = types.Number
+			case "Text", "String":
+				symType = types.Text
+			case "Bool", "Boolean":
+				symType = types.Bool
+			case "Date":
+				symType = types.Date
+			case "Dict", "Dictionary":
+				symType = types.NewMap(types.Text, types.AnyContent)
+			case "Arr", "List":
+				symType = types.NewList(types.AnyContent)
+			}
+			scope.Define(&Symbol{
+				Name:        symName,
+				Type:        symType,
+				Mutable:     mutable,
+				Initialized: true,
+			})
+		}
+	}
+}
+
+func extractNativeWorkflowPlistString(call *syntax.CallExpr) string {
+	var target syntax.Expression = call.PrimaryArg
+	if target == nil {
+		for _, n := range call.NamedArgs {
+			if n.Label == "" || n.Label == "workflow" || n.Label == "plist" || n.Label == "data" {
+				target = n.Value
+				break
+			}
+		}
+	}
+	if target == nil {
+		return ""
+	}
+	if lit, ok := target.(*syntax.LiteralExpr); ok {
+		return lit.Value
+	}
+	if innerCall, ok := target.(*syntax.CallExpr); ok {
+		if innerCall.PrimaryArg != nil {
+			if lit, ok := innerCall.PrimaryArg.(*syntax.LiteralExpr); ok {
+				return lit.Value
+			}
+		}
+	}
+	return ""
+}
+
+func decodePlistDictForAnalysis(rawStr string) map[string]any {
+	trimmed := strings.TrimSpace(rawStr)
+	var rawBytes []byte
+	if strings.HasPrefix(trimmed, "b64:") {
+		b, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(trimmed, "b64:"))
+		if err != nil {
+			return nil
+		}
+		rawBytes = b
+	} else {
+		rawBytes = []byte(trimmed)
+	}
+	var parsed any
+	if _, err := plist.Unmarshal(rawBytes, &parsed); err != nil {
+		return nil
+	}
+	m, _ := parsed.(map[string]any)
+	return m
 }
 
 func (a *Analyzer) analyzeShortcutDecl(sd *syntax.ShortcutDecl) {
@@ -548,12 +671,16 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			a.error(CodeLegacySyntax, s.Span, "legacy variable syntax '@name' is unsupported; use 'let' or 'var'")
 		}
 
-		if _, found := scope.LookupLocal(s.Name); found {
-			a.error(CodeDuplicateName, s.Span, fmt.Sprintf("duplicate variable declaration %q in this scope", s.Name))
-			return
+		if existingLocal, found := scope.LookupLocal(s.Name); found {
+			if existingLocal.Span.Start.Line == 0 {
+				delete(scope.symbols, s.Name)
+			} else {
+				a.error(CodeDuplicateName, s.Span, fmt.Sprintf("duplicate variable declaration %q in this scope", s.Name))
+				return
+			}
 		}
 
-		if parentSym, exists := scope.Lookup(s.Name); exists {
+		if parentSym, exists := scope.Lookup(s.Name); exists && parentSym.Span.Start.Line != 0 {
 			a.warn(CodeShadowing, s.Span, fmt.Sprintf("variable %q shadows an existing declaration at %s", s.Name, parentSym.Span))
 		}
 
@@ -834,6 +961,15 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		}
 
 	case *syntax.EnumMemberExpr:
+		if e.TypeName != "" && !a.enumNames[e.TypeName] {
+			if _, found := scope.Lookup(e.TypeName); found {
+				return a.analyzeExpressionInternal(&syntax.MemberExpr{
+					Span:     e.Span,
+					Target:   &syntax.IdentExpr{Span: e.Span, Name: e.TypeName},
+					Property: e.Member,
+				}, scope)
+			}
+		}
 		return types.Text
 
 	case *syntax.IndexExpr:

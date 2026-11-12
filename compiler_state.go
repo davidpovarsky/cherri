@@ -119,6 +119,9 @@ func resetCompilerState() {
 	includedFile = false
 	importedWorkflowHeader = nil
 	exactActionParamsPresence = nil
+	importedSymbolOutputNames = nil
+	importedSymbolVariableNames = nil
+	importedSymbolValueTypes = nil
 
 	// Includes.
 	included = []string{}

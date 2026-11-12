@@ -1,7 +1,7 @@
-# Unified Import & Compiler Contract (P10R9)
+# Unified Import & Compiler Contract (P10R9 / P10R10)
 
-**Date:** 2026-11-11  
-**Status:** Active Architectural Contract (P10R9)  
+**Date:** 2026-11-12  
+**Status:** Active Architectural Contract (P10R10)  
 **Owners:** `[איתן | Architecture]`, `[נועם | Engineering]`, `[רוני | QA]`
 
 ---
@@ -39,11 +39,11 @@ flowchart TD
     Decode --> Doc["NativeShortcutDocument + NativeActionRecord[]"]
     Doc --> Fidelity{"--fidelity"}
     Fidelity -->|"lossless"| Lossless["RenderLosslessLegacySourceFromDocument / RenderLosslessV2SourceFromDocument"]
-    Fidelity -->|"hybrid"| Planner["PlanHybridImport (hybrid_import.go) + DefaultReverseActionRegistry (reverse_action_registry.go)"]
+    Fidelity -->|"hybrid"| Planner["planUnifiedSemanticHybridImport (semantic_import_planner.go + decompile.go + DefaultReverseActionRegistry + import_provenance.go)"]
     Fidelity -->|"semantic"| Semantic["decompile() + MigrateSemanticLegacySourceToV2Strict"]
-    Planner --> Verify["Strict Candidate Verification (Legacy + V2 in-memory re-compile)"]
-    Verify --> Gate["Full-Workflow Verification Gate"]
-    Gate --> OutHybrid["RenderHybridLegacySource / RenderHybridV2Source"]
+    Planner --> Verify["Dual-Dialect Compile + Targeted Unit/Region Demotion (verifyAndStabilizePlan)"]
+    Verify --> Gate["Fail-Closed Whole-Workflow Gate (RenderAndVerifyHybrid / VerifyWholeWorkflowAgainstOriginal)"]
+    Gate --> OutHybrid["RenderHybridLegacySource / RenderHybridV2Source (+ --plan-json)"]
 ```
 
 ---
@@ -53,24 +53,24 @@ flowchart TD
 | Fidelity Mode | CLI Invocation | Wire Guarantee | Output Representation |
 | :--- | :--- | :--- | :--- |
 | **`lossless`** | `cherri import <file> [--fidelity=lossless] [--mode=v2\|legacy]` | **100% Exact Native Wire Parity** (`38/38` real corpus shortcuts) | Exact header (`native.workflow(..., exact: true)` / `#workflowheader`) + 1:1 raw actions (`native.action` / `rawAction`). |
-| **`hybrid`** | `cherri import <file> --fidelity=hybrid [--mode=v2\|legacy]` | **100% Exact Native Wire Parity** (`38/38` real corpus shortcuts) | Exact header + verified readable named calls (`comment(...)`, `alert(...)`, `stop()`, `wait(...)`, `darkMode()`, `vibrate()`, etc.) mixed with exact native fallbacks where required. |
+| **`hybrid`** | `cherri import <file> --fidelity=hybrid [--mode=v2\|legacy] [--plan-json=<path>]` | **100% Exact Native Wire Parity** (`38/38` real corpus shortcuts, `10,871/27,652` = `39.31%` natural readable actions) | Exact provenance-carrying header (`__CherriImportProvenance` stripped at compile) + shared semantic plan rendered as Legacy/V2 calls, variables, dictionaries, and control blocks with per-unit/per-region native fallback. |
 | **`semantic`** | `cherri --import=<file> [--fidelity=semantic] [--mode=v2\|legacy]` | **Best-Effort Semantic Reconstruction** | Legacy decompiler reconstruction (`#define`, `@var`, `if`/`menu`/`repeat` blocks); in `mode=v2`, strictly migrated and validated via `MigrateSemanticLegacySourceToV2Strict`. |
 
 ---
 
-## 4. Deterministic Reverse Action Registry & Hybrid Planner Contract
+## 4. Deterministic Reverse Action Registry & Unified Semantic Hybrid Planner Contract
 
-1. **Deterministic Reverse Lookup (`reverse_action_registry.go`):**
+1. **Deterministic Reverse Lookup (`reverse_action_registry.go`) + Shared `decompile.go` Passes:**
    - `DefaultReverseActionRegistry()` indexes `EnsureCanonicalStandardActions()` by full `AppleIdentifier` with lexicographically sorted candidate lists.
-   - `ResolveReverseActionCandidate(rec NativeActionRecord)` classifies every action into one of seven mutually exclusive reason codes:
-     - `KNOWN_DISAMBIGUATED`: Unique canonical definition matched by `AppleIdentifier`, `AppIntentDescriptor`, `StaticParameters` (`appendParams`), and `ParameterKeys`, with no producer `UUID`/`CustomOutputName` or serialized attachment references.
+   - `planUnifiedSemanticHybridImport` (`semantic_import_planner.go`) reuses `decompile.go` semantic passes (`prepareDecompileSemanticPasses`, `matchAction`, `decompAggrandizements`, `utf16OffsetToRuneIndex`, `sanitizeIdentifier`) and coordinates with `import_provenance.go` (`buildImportProvenance`, `applyImportProvenanceToCompiledActions`, `hasImportProvenanceKey`) so Legacy and V2 render from one shared semantic plan.
+   - `ResolveReverseActionCandidate(rec NativeActionRecord)` and the unified planner classify every action into one of seven mutually exclusive reason codes:
+     - `KNOWN_DISAMBIGUATED`: Verified natural statement, expression, variable binding, or balanced control-flow region whose Legacy and V2 compilations both reproduce the exact original plist wire structure.
      - `AMBIGUOUS_VARIANT`: Multiple canonical definitions share `AppleIdentifier` and wire parameters lack a distinguishing discriminator or tie on structural scores (`HYB06`).
-     - `UNREPRESENTABLE_PARAM`: Action carries producer `UUID`/`CustomOutputName`, variable/attachment references, extra undocumented plist keys (`HYB08`), or non-literal parameter structures.
-     - `CONTROL_REGION`: Control-flow marker (`WFControlFlowMode` / `GroupingIdentifier`).
+     - `UNREPRESENTABLE_PARAM`: Parameter, output/aggrandizement shape, extra undocumented plist key (`HYB08`), or complex value cannot be reconstructed identically in both dialects.
+     - `CONTROL_REGION`: Control-flow marker (`WFControlFlowMode` / `GroupingIdentifier`) whose enclosing control region could not be promoted atomically.
      - `UNKNOWN_NATIVE_ID`: Uncatalogued `is.workflow.actions.*` identifier (`HYB05`).
      - `THIRD_PARTY_NO_CANONICAL_DEF`: Third-party app intent outside the built-in catalog (`HYB15`).
      - `SOURCE_INVALID`: Malformed source control-flow marker (e.g. `035` index `723` `CONTROL_FLOW_ORPHAN_END`, `HYB14`).
-2. **Strict Candidate Verification & Full-Workflow Gate (`hybrid_import.go`):**
-   - Every `KNOWN_DISAMBIGUATED` candidate is synthesized into both Legacy and V2 call syntax and compiled in-memory via `verifyHybridCandidatePair`.
-   - Promotion to `NATURAL_VERIFIED` occurs **only** if both Legacy and V2 compile cleanly to a single `ShortcutAction` whose `WFWorkflowActionIdentifier`, `HadParametersKey`, and `WFWorkflowActionParameters` satisfy `plistValuesStrictlyEqual` against the original `NativeActionRecord`.
-   - `RenderHybridLegacySource` and `RenderHybridV2Source` execute a final full-workflow verification gate against `doc.RawRoot`, demoting any action that would alter full-workflow wire equality.
+2. **Fail-Closed Provenance & Whole-Workflow Verification (`hybrid_import.go`, `semantic_import_planner.go`, `import_provenance.go`):**
+   - `__CherriImportProvenance` in `#workflowheader` / `native.workflow` seeds original action `UUID`, `CustomOutputName`, `GroupingIdentifier`, `Show-*` flags, and variable/symbol bindings during compilation and is always stripped from output plists; `VerifyWholeWorkflowAgainstOriginal` recursively rejects any compiled artifact containing `__CherriImportProvenance` (`hasImportProvenanceKey`).
+   - `RenderAndVerifyHybrid` and `verifyAndStabilizePlan` enforce structural decision count equality (`len(plan.Decisions) == len(doc.Actions)`), recompile after targeted per-unit/region demotion without mutating the caller's plan on failure, select `plist.BinaryFormat` pre-marshal when `plistValueHasXMLUnsafeStringChar` detects `\x0b`/NUL (`HYB16`), and refuse to return success unless final Legacy and V2 compiled plists satisfy `plistValuesStrictlyEqual(doc.RawRoot, compiled)`.

@@ -145,7 +145,6 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 		params["CustomOutputName"] = call.OutputName
 	}
 
-
 	action := ShortcutAction{
 		WFWorkflowActionIdentifier: fullIdent,
 		WFWorkflowActionParameters: params,
@@ -341,8 +340,10 @@ func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
 			OutputUUID: tok.OutputUUID,
 			OutputName: tok.OutputName,
 		}
-		if tok.Type == "Variable" || tok.Type == "ExtensionInput" {
+		if tok.Type == "Variable" {
 			desc.VariableName = tok.OutputName
+		} else if tok.Type == "Ask" {
+			desc.Prompt = tok.OutputName
 		}
 		if len(tok.Aggrandizements) > 0 {
 			desc.Aggrandizements = make([]Aggrandizement, len(tok.Aggrandizements))
@@ -354,7 +355,7 @@ func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
 				pInfo := a["PropertyUserInfo"]
 				desc.Aggrandizements[i] = Aggrandizement{
 					Type:              tStr,
-					PropertyName:     pName,
+					PropertyName:      pName,
 					CoercionItemClass: cItem,
 					DictionaryKey:     dKey,
 					PropertyUserInfo:  pInfo,

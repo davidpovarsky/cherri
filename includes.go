@@ -43,6 +43,9 @@ var includedFile bool
 // parseIncludes() searches for include statements within the file and
 // injects the contents of the file at the specified path.
 func parseIncludes() {
+	if !strings.Contains(contents, "#include") {
+		return
+	}
 	includedFile = false
 	for char != -1 {
 		switch {
@@ -194,11 +197,29 @@ func delinquentFile() (errorFilename string, errorLine int, errorCol int) {
 }
 
 func findOriginalLine(errorLine *int) {
-	for l, line := range strings.Split(originalContents, "\n") {
-		if line == lines[lineIdx] {
-			*errorLine = l + 1
-			break
+	if lineIdx < 0 || lineIdx >= len(lines) {
+		return
+	}
+	target := lines[lineIdx]
+	pos := 0
+	lineNum := 1
+	for {
+		nl := strings.IndexByte(originalContents[pos:], '\n')
+		var cur string
+		if nl < 0 {
+			cur = originalContents[pos:]
+		} else {
+			cur = originalContents[pos : pos+nl]
 		}
+		if cur == target {
+			*errorLine = lineNum
+			return
+		}
+		if nl < 0 {
+			return
+		}
+		pos += nl + 1
+		lineNum++
 	}
 }
 

@@ -233,16 +233,7 @@ func decompile(b []byte) {
 		filePath = outputPath
 	}
 
-	loadBasicStandardActions()
-	loadAllStandardActionsForDecompile()
-	resetParse()
-	firstChar()
-
-	initNamedVars()
-	mapVariables()
-	mapSplitActions()
-	mapIdentifiers()
-	mapControlFlowOutputs()
+	prepareDecompileSemanticPasses()
 
 	defineName()
 	decompileIcon()
@@ -3365,14 +3356,39 @@ func decompWarning(message string) {
 	fmt.Println(ansi("Warning:", orange, bold), fmt.Sprintf("%s (%s:%d:0)\n", message, filePath, linesLen+1))
 }
 
+// prepareDecompileSemanticPasses initializes decompiler action metadata and runs the
+// semantic pre-analysis passes shared by legacy semantic decompile and the unified planner.
+func prepareDecompileSemanticPasses() {
+	loadBasicStandardActions()
+	loadAllStandardActionsForDecompile()
+	resetParse()
+	firstChar()
+
+	initNamedVars()
+	mapVariables()
+	mapSplitActions()
+	mapIdentifiers()
+	mapControlFlowOutputs()
+}
+
 func decompError(message string, action *ShortcutAction) {
+	if embeddedCompilerMode {
+		panic(embeddedCompilerPanic{message: message})
+	}
 	fmt.Println(ansi(fmt.Sprintf("Error: %s\n\n", message), red, bold))
 
-	fmt.Println("Action identifier:", action.WFWorkflowActionIdentifier)
+	if action != nil {
+		fmt.Println("Action identifier:", action.WFWorkflowActionIdentifier)
+	}
 	lines = strings.Split(code.String(), "\n")
 	var linesLen = len(lines)
-	var lastWrittenLine = lines[linesLen-1]
-	var prevWrittenLine = lines[linesLen-2]
+	var lastWrittenLine, prevWrittenLine string
+	if linesLen >= 1 {
+		lastWrittenLine = lines[linesLen-1]
+	}
+	if linesLen >= 2 {
+		prevWrittenLine = lines[linesLen-2]
+	}
 	fmt.Printf("\nStopped while writing line %d:\n", linesLen)
 	fmt.Printf("%s %s\n", ansi(fmt.Sprintf("%d |", linesLen-1), dim), ansi(prevWrittenLine, dim))
 	fmt.Printf("%s %s\n", ansi(fmt.Sprintf("%d |", linesLen), dim), ansi(lastWrittenLine, red))

@@ -57,13 +57,13 @@ cherri --actions-json
 
 Consumers should read this catalog rather than parse Cherri source files independently.
 
-### Automatic Propagation Across Forward & Reverse Surfaces (P10R9)
+### Automatic Propagation Across Forward & Reverse Surfaces (P10R9–P10R10)
 
 Every action defined in `actions/*.cherri` or `actions_std.go` propagates automatically across both forward compilation and reverse/hybrid import:
 
 1. **Canonical Forward Engine:** `EnsureCanonicalStandardActions()` loads `actions/*.cherri` (with category metadata via `loadBasicStandardActions()` + `loadAllStandardActionsForDecompile()`) and merges `actions_std.go`. Both Legacy (`shortcutgen.go`) and Cherri v2 (`CanonicalBackendSession.EmitResolvedCall`) evaluate parameters and custom `make` / `parameters` closures through `EvaluateActionEmission(ActionEmissionContext{...})`.
 2. **Catalog & Schema Parity:** Running `go run ./tools/language-schema` updates `internal/language/schema/generated_registry.go` (`505` entries: `497` callable actions + `8` compiler constructs), keeping `--actions-json`, `schema.DefaultRegistry()`, and `currentMobileActionCatalog()` (`CherriActionCatalog` on iOS/iPadOS) in 1:1 parity.
-3. **Deterministic Reverse Registry & Hybrid Import (`--fidelity=hybrid`):** `DefaultReverseActionRegistry()` (`reverse_action_registry.go`) indexes all `497` callable definitions by Apple `WFWorkflowActionIdentifier` (`381` unique Apple identifiers: `305` single-variant, `76` multi-variant), discriminator keys, `StaticParameters`, `AppIntent` descriptors, version bounds, and category `#include` requirements. `PlanHybridImport()` (`hybrid_import.go`) uses this registry and isolated forward compilation in both Legacy and V2 to emit verified natural action calls (`NATURAL_VERIFIED`) whenever the recompiled plist matches the source action dictionary bit-for-bit, or falls back per-action to `rawAction(...)` / `native.action(...)` (`EXACT_NATIVE`).
+3. **Unified Semantic & Hybrid Reverse Import (`--fidelity=hybrid`):** `DefaultReverseActionRegistry()` (`reverse_action_registry.go`) indexes all `497` callable definitions by Apple `WFWorkflowActionIdentifier` (`381` unique Apple identifiers: `305` single-variant, `76` multi-variant), discriminator keys, `StaticParameters`, `AppIntent` descriptors, version bounds, and category `#include` requirements. `PlanHybridImport()` (`hybrid_import.go`) delegates to `planUnifiedSemanticHybridImport()` (`semantic_import_planner.go`), reusing `decompile.go` semantic pre-analysis (`prepareDecompileSemanticPasses()`, `matchAction()`, `decompAggrandizements()`, `utf16OffsetToRuneIndex()`, `sanitizeIdentifier()`), `#workflowheader` import provenance (`import_provenance.go`), and fail-closed whole-workflow verification (`verifyAndStabilizePlan()`, `RenderAndVerifyHybrid()`, `VerifyWholeWorkflowAgainstOriginal()`) across both Legacy and Cherri v2 to emit natural calls (`NATURAL_VERIFIED`, `10,871 / 27,652` = `39.31%` across the 38-shortcut audit corpus) or fall back per-action/region to `rawAction(...)` / `native.action(...)` (`EXACT_NATIVE`) without losing exact wire fidelity.
 
 ## Forks relevant to action work
 
