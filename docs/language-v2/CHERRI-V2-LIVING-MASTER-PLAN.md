@@ -853,6 +853,26 @@ Next smallest independently verifiable batch:
     - `hybrid` wire parity: `38/38` Legacy and `38/38` V2, up to **`10,871 / 27,652` (`39.31%`)** `NATURAL_VERIFIED` readable actions (`+9,408` vs P10R9's `1,463 / 27,652` = `5.29%`, and vs Original Semantic `0/38` full-tree parity).
     - Explicit `SOURCE_INVALID` preservation at `035:723` (`CONTROL_FLOW_ORPHAN_END`), explicit `NO_TOPLEVEL_COMMENT_FOUND` reported on `001` edit-isolation probe (while `012`, `027`, `035`, and `TestSEM28`–`TestSEM30` pass), remaining native fallbacks broken down by reason (`CONTROL_REGION`: `10,160`, `UNREPRESENTABLE_PARAM`: `6,424`, `THIRD_PARTY_NO_CANONICAL_DEF`: `137`, `AMBIGUOUS_VARIANT`: `46`, `UNKNOWN_NATIVE_ID`: `13`), and physical Apple device execution remaining `BLOCKED_DEVICE` (`APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE`).
 
+---
+
+## 14. Milestone P10R11 — True Action-Wire Parity, Editable Import & Provenance Truth
+
+- [x] **P10R11: Semantic Wire Truth, Strict Metadata Key Ownership, and Deterministic Provenance Isolation**
+  - **Eliminated `Show*` Prefix Heuristic:** Replaced loose prefix matching with strict, enumerated key ownership allowlist (`verifiedImportMetadataKeys`: `UUID`, `CustomOutputName`, `GroupingIdentifier`, `ShowHeaders`, `ShowWhenRun`, `Show-WFInput`, `Show-WFURLActionURL`, `Show-text`). Unknown parameters fail closed to raw action fallbacks.
+  - **Canonical `ShowHeaders` Support:** Added `showHeaders: bool?` as a canonical optional parameter in `actions/web.cherri` across `downloadURL`, `formRequest`, `jsonRequest`, and `fileRequest`. Pre-overlay compilation generates native wire directly from source. User edits to `showHeaders` compile natively with zero stale provenance overwrite.
+  - **Multi-Pass Deterministic Semantic Hashing:** Implemented `deterministicSemanticActionHash` normalizing integers, arrays, and dictionary values. In-place matching, reorder matching, and fallback handling prevent cross-binding or stale metadata transfer when actions are moved, reordered, inserted, or duplicated.
+  - **Variable Action Native Serialization Truth:** Preserved legacy corpus omissions (2,487 `setVariable`, 64 `appendVariable`) in import mode without breaking standard authored code. Fixed `+=` (`AddTo`) output name assignment to prevent spurious `OutputUUID` emissions.
+  - **Dictionary Value Type Omission:** Updated `getValue` in `actions/basic.cherri` making `?get: 'WFGetDictionaryValueType'` optional, eliminating spurious default type emissions when omitted by source Shortcuts.
+  - **Verified 50 Adversarial Tests (`TestP11_WIRE_01`–`TestP11_WIRE_50`):** All 50 production-path tests pass, including strict pre-overlay wire checks, tri-state `ShowHeaders`, edit isolation across 14 distinct action types, orphan control flow preservation at `035:723`, and immutable ledger integrity.
+  - **Full 38-Shortcut Independent Audit (`docs/apple-runtime/p10r11/`):**
+    - `lossless` wire parity: `38/38` Legacy and `38/38` V2.
+    - `hybrid` wire parity: `38/38` Legacy and `38/38` V2 (`10,871 / 27,652` = `39.31%` natural actions).
+    - `pre-overlay` semantic wire parity: `10,871 / 10,871 (100.0%)` exact before metadata restoration.
+    - `post-overlay` native wire parity: `10,871 / 10,871 (100.0%)` exact after verified metadata restoration.
+    - `TARGET_EDIT_ISOLATION_PASS` across all tested natural actions and regions.
+    - Physical hardware status remains honestly documented as `APPLE_RUNTIME_EXECUTED: BLOCKED_DEVICE`.
+
+
 
 
 

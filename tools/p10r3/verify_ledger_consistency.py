@@ -91,7 +91,7 @@ def check_consistency(
     elif mutate_mode == "c5_6_markdown_stale_number":
         gap_md = gap_md.replace("`97` `NEW_NATIVE_ACTION`", "`100` `MISSING_HIGH_PRIORITY`")
     elif mutate_mode == "c5_7_parameter_matrix_vs_report":
-        cat_md = cat_md.replace("| `optionalParams` | `505` | `8` | `201` |", "| `optionalParams` | `505` | `8` | `505` |")
+        cat_md = re.sub(r'\|\s*`optionalParams`\s*\|\s*`505`\s*\|\s*`8`\s*\|\s*`\d+`\s*\|', '| `optionalParams` | `505` | `8` | `505` |', cat_md)
     elif mutate_mode == "report_verified":
         cov_report_md = cov_report_md.replace("| `COVERED_VERIFIED` | 0 |", "| `COVERED_VERIFIED` | 389 |")
     elif mutate_mode == "crosswalk_verified":

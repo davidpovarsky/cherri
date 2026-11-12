@@ -1,0 +1,110 @@
+{
+  "version": "p10r11-naked-authored-call-coverage-v1",
+  "generatedAt": "2026-11-12T17:15:00Z",
+  "compilerBinarySha256": "875c297660e1eeb8ce7a46c8755957f78a4be5434be9440ad8e151a88220136d",
+  "evidenceStandard": "NO_IMPORT_PROVENANCE_PURE_AUTHORED_CODE",
+  "testedCallables": [
+    {
+      "name": "text",
+      "appleIdentifier": "is.workflow.actions.gettext",
+      "legacyForm": "text(\"hello\")",
+      "v2Form": "text(\"hello\")",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "comment",
+      "appleIdentifier": "is.workflow.actions.comment",
+      "legacyForm": "comment(\"audit\")",
+      "v2Form": "comment(\"audit\")",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "downloadURL",
+      "appleIdentifier": "is.workflow.actions.downloadurl",
+      "legacyForm": "downloadURL(\"https://api.example.com\", nil, true)",
+      "v2Form": "downloadURL(\"https://api.example.com\", showHeaders: true)",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "fileRequest",
+      "appleIdentifier": "is.workflow.actions.downloadurl",
+      "legacyForm": "fileRequest(\"https://api.example.com/upload\", \"POST\", nil, nil, true)",
+      "v2Form": "fileRequest(\"https://api.example.com/upload\", method: \"POST\", showHeaders: true)",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "saveFile",
+      "appleIdentifier": "is.workflow.actions.documentpicker.save",
+      "legacyForm": "saveFile(\"Docs/out.txt\", ShortcutInput)",
+      "v2Form": "saveFile(\"Docs/out.txt\", content: ShortcutInput)",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "prompt",
+      "appleIdentifier": "is.workflow.actions.ask",
+      "legacyForm": "prompt(\"Enter name\")",
+      "v2Form": "prompt(\"Enter name\")",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "chooseFromList",
+      "appleIdentifier": "is.workflow.actions.choosefromlist",
+      "legacyForm": "chooseFromList(ShortcutInput, \"Select item\")",
+      "v2Form": "chooseFromList(ShortcutInput, prompt: \"Select item\")",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "setName",
+      "appleIdentifier": "is.workflow.actions.setitemname",
+      "legacyForm": "setName(ShortcutInput, \"NewName.pdf\")",
+      "v2Form": "setName(ShortcutInput, name: \"NewName.pdf\")",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "replaceText",
+      "appleIdentifier": "is.workflow.actions.text.replace",
+      "legacyForm": "replaceText(\"foo\", \"bar\", ShortcutInput)",
+      "v2Form": "replaceText(\"foo\", replacement: \"bar\", input: ShortcutInput)",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "getValue",
+      "appleIdentifier": "is.workflow.actions.getvalueforkey",
+      "legacyForm": "getValue(\"key\", ShortcutInput)",
+      "v2Form": "getValue(\"key\", input: ShortcutInput)",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "setVariable",
+      "appleIdentifier": "is.workflow.actions.setvariable",
+      "legacyForm": "@total = ShortcutInput",
+      "v2Form": "total = ShortcutInput",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    },
+    {
+      "name": "appendVariable",
+      "appleIdentifier": "is.workflow.actions.appendvariable",
+      "legacyForm": "@list += ShortcutInput",
+      "v2Form": "list += ShortcutInput",
+      "wireParity": "PASS",
+      "evidenceLevel": "OBSERVED_APPLE_NATIVE"
+    }
+  ],
+  "unverifiedVariantsScope": {
+    "totalCatalogActions": 505,
+    "observedCorpusActions": 118,
+    "unobservedCatalogActions": 387,
+    "status": "AUTHORED_ACTION_CONTRACT_PARTIAL"
+  }
+}

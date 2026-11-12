@@ -108,7 +108,11 @@ enum HTTPMethod {
 }
 
 // [Doc]: [HTTP] Download URL: Download the contents of a URL.
-action default downloadURL(text url: 'WFURL', dictionary! ?headers: 'WFHTTPHeaders'): variable {
+action default downloadURL(
+    text url: 'WFURL',
+    dictionary! ?headers: 'WFHTTPHeaders',
+    bool ?showHeaders: 'ShowHeaders',
+): variable {
 	"WFHTTPMethod": "GET"
 }
 
@@ -118,6 +122,7 @@ action 'downloadurl' formRequest(
     HTTPMethod ?method: 'WFHTTPMethod',
     dictionary! ?body: 'WFFormValues',
     dictionary! ?headers: 'WFHTTPHeaders',
+    bool ?showHeaders: 'ShowHeaders',
 ) {
     "WFHTTPBodyType": "Form"
 }
@@ -128,6 +133,7 @@ action 'downloadurl' jsonRequest(
     HTTPMethod ?method: 'WFHTTPMethod',
     dictionary! ?body: 'WFJSONValues',
     dictionary! ?headers: 'WFHTTPHeaders',
+    bool ?showHeaders: 'ShowHeaders',
 ) {
     "WFHTTPBodyType": "JSON"
 }
@@ -138,6 +144,7 @@ action 'downloadurl' fileRequest(
     HTTPMethod ?method: 'WFHTTPMethod',
     variable ?body: 'WFRequestVariable',
     dictionary! ?headers: 'WFHTTPHeaders',
+    bool ?showHeaders: 'ShowHeaders',
 ) {
     "WFHTTPBodyType": "File"
 }

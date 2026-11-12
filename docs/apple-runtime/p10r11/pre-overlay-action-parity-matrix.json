@@ -1,0 +1,66 @@
+{
+  "version": "p10r11-pre-overlay-action-parity-v1",
+  "generatedAt": "2026-11-12T17:15:00Z",
+  "compilerBinarySha256": "875c297660e1eeb8ce7a46c8755957f78a4be5434be9440ad8e151a88220136d",
+  "corpusSummary": {
+    "specimensCount": 38,
+    "totalCompiledActions": 27652,
+    "naturalVerifiedActions": 10871,
+    "naturalPercentage": "39.31%",
+    "rawFallbackActions": 16781,
+    "rawFallbackPercentage": "60.69%"
+  },
+  "preOverlayParity": {
+    "totalNaturalEvaluated": 10871,
+    "preOverlaySemanticWireExact": 10871,
+    "preOverlaySemanticWireExactPercentage": "100.0%",
+    "postOverlayNativeWireExact": 10871,
+    "postOverlayNativeWireExactPercentage": "100.0%"
+  },
+  "metadataKeyOwnership": {
+    "identityOnlyKeys": [
+      "UUID",
+      "CustomOutputName",
+      "GroupingIdentifier"
+    ],
+    "presentationUIKeys": [
+      "ShowHeaders",
+      "ShowWhenRun",
+      "Show-WFInput",
+      "Show-WFURLActionURL",
+      "Show-text"
+    ],
+    "importPresenceKeys": [
+      "WFSerializationType"
+    ],
+    "disallowedHeuristicKeys": [
+      "ShowSecurity",
+      "ShowSecret",
+      "ShowCommand",
+      "WFPrivateFutureParam"
+    ]
+  },
+  "specificCaseAudits": {
+    "case_014_208_fileRequest": {
+      "appleIdentifier": "is.workflow.actions.downloadurl",
+      "chosenDefinitionID": "fileRequest",
+      "showHeadersTriState": "true",
+      "preOverlayShowHeadersStatus": "NATIVELY_EMITTED_FROM_SOURCE",
+      "postOverlayShowHeadersStatus": "IDENTICAL_TO_PRE_OVERLAY",
+      "heuristicPrefixBypass": false,
+      "userEditIsolated": true
+    },
+    "case_getValue_WFGetDictionaryValueType": {
+      "appleIdentifier": "is.workflow.actions.getvalueforkey",
+      "chosenDefinitionID": "getValue",
+      "preOverlayDefaultTypeSuppressed": true,
+      "exactNativeWireMatch": true
+    },
+    "legacy_WFSerializationType_variance": {
+      "setVariableOmissionsPreserved": 2487,
+      "appendVariableOmissionsPreserved": 64,
+      "normalAuthoredCompatibilityPreserved": true
+    }
+  },
+  "verdict": "SEMANTIC_WIRE_PRE_OVERLAY_PASS"
+}

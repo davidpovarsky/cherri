@@ -1,21 +1,21 @@
 {
   "schemaVersion": "1.0",
   "generator": "tools/p10r3/verify_consumer_compatibility.py",
-  "compilerHead": "8e91ea9004e37581bf05c9752d39fe66dc0b4697",
-  "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+  "compilerHead": "dd9bd664571d53cc558956481ef79e1760615063",
+  "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
   "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
-  "verdict": "COMPATIBLE_WITH_EXTERNAL_BLOCKERS",
+  "verdict": "INCOMPATIBLE",
   "statusCounts": {
-    "PASS": 7,
-    "FAIL": 0,
+    "PASS": 5,
+    "FAIL": 2,
     "NOT_AVAILABLE_LOCALLY": 0,
     "BLOCKED_EXTERNAL": 1
   },
   "components": [
     {
       "component": "Compiler",
-      "sourceCommit": "8e91ea9004e37581bf05c9752d39fe66dc0b4697",
-      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "sourceCommit": "dd9bd664571d53cc558956481ef79e1760615063",
+      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "live `go run . --capabilities-json`",
       "status": "PASS",
@@ -47,17 +47,17 @@
     {
       "component": "Documentation",
       "sourceCommit": "a38b62b819e48fea73dfd0636eb6de4dd08c2713",
-      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
-      "testedAgainst": "compiler 8e91ea9004e3 schema 787e9842bbe9",
-      "status": "PASS",
+      "testedAgainst": "compiler dd9bd664571d schema 8fca1c4c849e",
+      "status": "FAIL",
       "checks": [
         {
           "ok": true,
           "check": "cherri docs/language-v2/actions-reference.md fingerprint == compiler"
         },
         {
-          "ok": true,
+          "ok": false,
           "check": "cherrilang.org fork-language/actions.md fingerprint == compiler (got 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)"
         },
         {
@@ -65,20 +65,22 @@
           "check": "smoke_test_snippets.py PINNED_CHERRI_COMMIT (4f4d30f1b863e8d53cd3d56eb8ddcaffab7ce8f2) is an ancestor of compiler HEAD"
         }
       ],
-      "failures": [],
+      "failures": [
+        "cherrilang.org fork-language/actions.md fingerprint == compiler (got 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)"
+      ],
       "notes": ""
     },
     {
       "component": "Skill",
       "sourceCommit": "1204e1f7dfac7af8df0813d1514fac629765af69",
-      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "docs a38b62b819e4",
       "status": "PASS",
       "checks": [
         {
           "ok": true,
-          "check": "skill schemaFingerprint == compiler (got 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)"
+          "check": "skill schemaFingerprint == compiler (got 8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a)"
         },
         {
           "ok": true,
@@ -107,7 +109,7 @@
     {
       "component": "Remote Builder",
       "sourceCommit": "1204e1f7dfac7af8df0813d1514fac629765af69",
-      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "skill compatibility-manifest.json tuple",
       "status": "BLOCKED_EXTERNAL",
@@ -122,8 +124,8 @@
     },
     {
       "component": "iOS Bridge",
-      "sourceCommit": "8e91ea9004e37581bf05c9752d39fe66dc0b4697",
-      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "sourceCommit": "dd9bd664571d53cc558956481ef79e1760615063",
+      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "schema.DefaultRegistry() (same registry as compiler)",
       "status": "PASS",
@@ -146,8 +148,8 @@
     },
     {
       "component": "iOS UI",
-      "sourceCommit": "8e91ea9004e37581bf05c9752d39fe66dc0b4697",
-      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "sourceCommit": "dd9bd664571d53cc558956481ef79e1760615063",
+      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "iOS Bridge C ABI",
       "status": "PASS",
@@ -171,7 +173,7 @@
     {
       "component": "Preview",
       "sourceCommit": "42ee7656e0cc07b00a097ff4d17d90c8eb8b6efd",
-      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "ios/WebPreview lock + generic catalog metadata renderer",
       "status": "PASS",
@@ -195,10 +197,10 @@
     {
       "component": "Pure+Pack",
       "sourceCommit": "141b9cc96cf1df3f9d1593548dc49ae8a46a256a",
-      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
-      "testedAgainst": "P10 catalog @ 8e91ea9004e3",
-      "status": "PASS",
+      "testedAgainst": "P10 catalog @ dd9bd664571d",
+      "status": "FAIL",
       "checks": [
         {
           "ok": true,
@@ -213,11 +215,13 @@
           "check": "Pure Original commit object present (read-only)"
         },
         {
-          "ok": true,
-          "check": "deterministic generator byte-parity with 141b9cc (0 drift errors)"
+          "ok": false,
+          "check": "deterministic generator byte-parity with 141b9cc (2 drift errors)"
         }
       ],
-      "failures": [],
+      "failures": [
+        "deterministic generator byte-parity with 141b9cc (2 drift errors)"
+      ],
       "notes": ""
     }
   ]

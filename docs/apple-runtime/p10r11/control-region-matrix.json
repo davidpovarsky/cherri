@@ -1,0 +1,44 @@
+{
+  "version": "p10r11-control-region-v1",
+  "generatedAt": "2026-11-12T17:15:00Z",
+  "compilerBinarySha256": "875c297660e1eeb8ce7a46c8755957f78a4be5434be9440ad8e151a88220136d",
+  "totalControlActions": 10160,
+  "atomicRegionFamilies": {
+    "conditional": {
+      "observedActionsCount": 8880,
+      "regionStructure": "if / otherwise / end",
+      "atomicStatus": "VERIFIED_ATOMIC_OR_FALLBACK",
+      "orphanHandling": "FAIL_CLOSED"
+    },
+    "choosefrommenu": {
+      "observedActionsCount": 976,
+      "regionStructure": "menu / case / end",
+      "atomicStatus": "VERIFIED_ATOMIC_OR_FALLBACK",
+      "orphanHandling": "FAIL_CLOSED"
+    },
+    "repeat_each": {
+      "observedActionsCount": 264,
+      "regionStructure": "repeat.each / end",
+      "atomicStatus": "VERIFIED_ATOMIC_OR_FALLBACK",
+      "orphanHandling": "FAIL_CLOSED"
+    },
+    "repeat_count": {
+      "observedActionsCount": 40,
+      "regionStructure": "repeat(count) / end",
+      "atomicStatus": "VERIFIED_ATOMIC_OR_FALLBACK",
+      "orphanHandling": "FAIL_CLOSED"
+    }
+  },
+  "specimen_035_723_audit": {
+    "specimenId": "035",
+    "actionIndex": 723,
+    "appleIdentifier": "is.workflow.actions.conditional",
+    "controlFlowMode": 2,
+    "groupingIdentifier": "07C9A4B8-B549-4328-9121-71EBE3CD08DF",
+    "diagnostic": "SOURCE_CONTROL_FLOW_INVALID",
+    "reason": "Malformed original shortcut contains unmatched End If marker without preceding Start If marker",
+    "treatment": "PRESERVED_AS_RAW_ACTION_WITHOUT_SILENT_CORRUPTION",
+    "roundTripLossless": true
+  },
+  "overallVerdict": "CONTROL_REGION_GRAPH_PASS"
+}

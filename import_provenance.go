@@ -1,7 +1,13 @@
 package main
 
 import (
-	"strings"
+	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"sort"
+
+	"howett.net/plist"
 )
 
 // importProvenanceKey is the reserved workflow-header key under which import tooling stores
@@ -21,14 +27,143 @@ var (
 	importedSymbolValueTypes    map[string]tokenType
 )
 
+// verifiedImportMetadataKeys defines the strict allowlist of action parameter keys that
+// may be treated as non-semantic import metadata.
+// An unknown key (including any unknown key starting with "Show") is considered
+// semantic/opaque and MUST NEVER be automatically treated as import metadata.
+var verifiedImportMetadataKeys = map[string]bool{
+	"UUID":                true,
+	"CustomOutputName":    true,
+	"GroupingIdentifier":  true,
+	"ShowWhenRun":         true,
+	"Show-WFInput":        true,
+	"Show-WFURLActionURL": true,
+	"Show-text":           true,
+}
+
 // isImportProvenanceMetaKey reports whether an action parameter key is import metadata that may be
 // restored from provenance. Semantic parameter values are never restored from provenance.
 func isImportProvenanceMetaKey(k string) bool {
-	switch k {
-	case "UUID", "CustomOutputName", "GroupingIdentifier":
-		return true
+	return verifiedImportMetadataKeys[k]
+}
+
+// deterministicSemanticActionHash computes a canonical digest of the semantic parameters of an action,
+// excluding non-semantic import metadata keys and Legacy variable-action serialization wrappers.
+func deterministicSemanticActionHash(identifier string, params map[string]any) string {
+	var buf bytes.Buffer
+	buf.WriteString(identifier)
+	buf.WriteByte(':')
+	keys := make([]string, 0, len(params))
+	for k := range params {
+		if isImportProvenanceMetaKey(k) {
+			continue
+		}
+		if (identifier == "is.workflow.actions.setvariable" || identifier == "is.workflow.actions.appendvariable") && k == "WFSerializationType" {
+			continue
+		}
+		keys = append(keys, k)
 	}
-	return strings.HasPrefix(k, "Show")
+	sort.Strings(keys)
+	for i, k := range keys {
+		if i > 0 {
+			buf.WriteByte(';')
+		}
+		buf.WriteString(k)
+		buf.WriteByte('=')
+		writeCanonicalPlistValue(&buf, params[k])
+	}
+	sum := sha256.Sum256(buf.Bytes())
+	return hex.EncodeToString(sum[:16])
+}
+
+func canonicalizePlistValue(v any) any {
+	if v == nil {
+		return nil
+	}
+	switch x := v.(type) {
+	case string, bool, float64:
+		return v
+	case int:
+		return int64(x)
+	case uint64:
+		return int64(x)
+	case int64:
+		return x
+	}
+	b, err := plist.Marshal(v, plist.BinaryFormat)
+	if err != nil {
+		return v
+	}
+	var out any
+	if _, err := plist.Unmarshal(b, &out); err != nil {
+		return v
+	}
+	return out
+}
+
+func writeCanonicalPlistValue(buf *bytes.Buffer, v any) {
+	v = canonicalizePlistValue(v)
+	if v == nil {
+		buf.WriteString("<nil>")
+		return
+	}
+	switch val := v.(type) {
+	case string:
+		buf.WriteString("s:")
+		buf.WriteString(val)
+	case bool:
+		if val {
+			buf.WriteString("b:1")
+		} else {
+			buf.WriteString("b:0")
+		}
+	case int:
+		fmt.Fprintf(buf, "i:%d", val)
+	case int64:
+		fmt.Fprintf(buf, "i:%d", val)
+	case uint64:
+		fmt.Fprintf(buf, "i:%d", val)
+	case float64:
+		fmt.Fprintf(buf, "f:%v", val)
+	case []byte:
+		fmt.Fprintf(buf, "d:%x", val)
+	case []any:
+		buf.WriteString("a:[")
+		for i, item := range val {
+			if i > 0 {
+				buf.WriteByte(',')
+			}
+			writeCanonicalPlistValue(buf, item)
+		}
+		buf.WriteByte(']')
+	case []string:
+		buf.WriteString("as:[")
+		for i, item := range val {
+			if i > 0 {
+				buf.WriteByte(',')
+			}
+			buf.WriteString(item)
+		}
+		buf.WriteByte(']')
+	case map[string]any:
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		buf.WriteString("m:{")
+		for i, k := range keys {
+			if i > 0 {
+				buf.WriteByte(',')
+			}
+			buf.WriteString(k)
+			buf.WriteByte('=')
+			writeCanonicalPlistValue(buf, val[k])
+		}
+		buf.WriteByte('}')
+	default:
+		fmt.Fprintf(buf, "v:%v", val)
+	}
 }
 
 // buildImportProvenance builds a sparse provenance record for the supplied actions.
@@ -51,8 +186,9 @@ func buildImportProvenance(recs []NativeActionRecord) map[string]any {
 			continue
 		}
 		entry := map[string]any{
-			"Index":      int64(i),
-			"Identifier": rec.Identifier,
+			"Index":        int64(i),
+			"Identifier":   rec.Identifier,
+			"SemanticHash": deterministicSemanticActionHash(rec.Identifier, rec.Parameters),
 		}
 		if len(meta) > 0 {
 			entry["Meta"] = meta
@@ -139,9 +275,21 @@ func isUUIDReferencedInCompiledActions(compiled []any, skipIdx int, targetUUID s
 	return false
 }
 
+type parsedProvEntry struct {
+	index        int
+	identifier   string
+	semanticHash string
+	meta         map[string]any
+	absentCustom bool
+	absentUUID   bool
+	absentTopSer bool
+}
+
 // applyImportProvenanceToCompiledActions restores metadata keys onto compiled actions. It is a
 // no-op unless the action count and each entry's identifier match, so structural edits that change
 // the action list never receive stale metadata.
+// It uses deterministic semantic hashing to bind metadata to the exact corresponding action,
+// preventing stale metadata application on action reordering or replacement.
 func applyImportProvenanceToCompiledActions(prov map[string]any, compiled []any) {
 	if prov == nil {
 		return
@@ -150,51 +298,128 @@ func applyImportProvenanceToCompiledActions(prov map[string]any, compiled []any)
 	if !ok || count != len(compiled) {
 		return
 	}
-	entries, _ := prov["Actions"].([]any)
-	for _, raw := range entries {
-		entry, _ := raw.(map[string]any)
-		if entry == nil {
+	rawEntries, _ := prov["Actions"].([]any)
+	if len(rawEntries) == 0 {
+		return
+	}
+
+	entries := make([]*parsedProvEntry, 0, len(rawEntries))
+	for _, raw := range rawEntries {
+		entryMap, _ := raw.(map[string]any)
+		if entryMap == nil {
 			continue
 		}
-		idxv, ok := provInt(entry["Index"])
+		idxv, ok := provInt(entryMap["Index"])
 		if !ok || idxv < 0 || idxv >= len(compiled) {
 			continue
 		}
-		act, _ := compiled[idxv].(map[string]any)
-		if act == nil {
-			continue
-		}
-		ident, _ := entry["Identifier"].(string)
-		if cur, _ := act["WFWorkflowActionIdentifier"].(string); cur != ident {
-			continue
-		}
-		meta, _ := entry["Meta"].(map[string]any)
-		absentCustom, _ := entry["AbsentCustomOutputName"].(bool)
-		absentUUID, _ := entry["AbsentUUID"].(bool)
-		absentTopSer, _ := entry["AbsentSerializationType"].(bool)
+		ident, _ := entryMap["Identifier"].(string)
+		semHash, _ := entryMap["SemanticHash"].(string)
+		meta, _ := entryMap["Meta"].(map[string]any)
+		absentCustom, _ := entryMap["AbsentCustomOutputName"].(bool)
+		absentUUID, _ := entryMap["AbsentUUID"].(bool)
+		absentTopSer, _ := entryMap["AbsentSerializationType"].(bool)
 		if len(meta) == 0 && !absentCustom && !absentUUID && !absentTopSer {
 			continue
 		}
+		entries = append(entries, &parsedProvEntry{
+			index:        idxv,
+			identifier:   ident,
+			semanticHash: semHash,
+			meta:         meta,
+			absentCustom: absentCustom,
+			absentUUID:   absentUUID,
+			absentTopSer: absentTopSer,
+		})
+	}
+
+	// Compute compiled hashes for all compiled actions
+	compiledHashes := make([]string, len(compiled))
+	compiledIdents := make([]string, len(compiled))
+	for j, rawAct := range compiled {
+		act, _ := rawAct.(map[string]any)
+		if act == nil {
+			continue
+		}
+		compiledIdents[j], _ = act["WFWorkflowActionIdentifier"].(string)
 		params, _ := act["WFWorkflowActionParameters"].(map[string]any)
-		if len(meta) > 0 {
+		compiledHashes[j] = deterministicSemanticActionHash(compiledIdents[j], params)
+	}
+
+	// Track matching: compiled index -> entry
+	matchedCompiled := make(map[int]*parsedProvEntry, len(entries))
+	usedEntries := make(map[int]bool, len(entries))
+
+	// Pass 1: Exact in-place match (same index, same identifier, same semantic hash)
+	for eIdx, e := range entries {
+		j := e.index
+		if j < len(compiled) && compiledIdents[j] == e.identifier {
+			if e.semanticHash != "" && compiledHashes[j] == e.semanticHash {
+				matchedCompiled[j] = e
+				usedEntries[eIdx] = true
+			}
+		}
+	}
+
+	// Pass 2: Reordered/moved actions (unmatched entry whose semantic hash uniquely matches an unmatched compiled action)
+	for eIdx, e := range entries {
+		if usedEntries[eIdx] || e.semanticHash == "" {
+			continue
+		}
+		matchingCompiledIdx := -1
+		matchCount := 0
+		for j := 0; j < len(compiled); j++ {
+			if matchedCompiled[j] == nil && compiledIdents[j] == e.identifier && compiledHashes[j] == e.semanticHash {
+				matchingCompiledIdx = j
+				matchCount++
+			}
+		}
+		if matchCount == 1 {
+			matchedCompiled[matchingCompiledIdx] = e
+			usedEntries[eIdx] = true
+		}
+	}
+
+	// Pass 3: Backwards compatibility for legacy provenance records without SemanticHash.
+	// When SemanticHash is present, matching strictly requires hash equality (preventing stale
+	// metadata inheritance on action replacement, tampering, or duplication).
+	for eIdx, e := range entries {
+		if usedEntries[eIdx] || e.semanticHash != "" {
+			continue
+		}
+		j := e.index
+		if j < len(compiled) && matchedCompiled[j] == nil && compiledIdents[j] == e.identifier {
+			matchedCompiled[j] = e
+			usedEntries[eIdx] = true
+		}
+	}
+
+	// Apply matched metadata
+	for j, e := range matchedCompiled {
+		act, _ := compiled[j].(map[string]any)
+		if act == nil {
+			continue
+		}
+		params, _ := act["WFWorkflowActionParameters"].(map[string]any)
+		if len(e.meta) > 0 {
 			if params == nil {
 				params = map[string]any{}
 			}
-			for k, v := range meta {
+			for k, v := range e.meta {
 				if isImportProvenanceMetaKey(k) {
 					params[k] = deepClonePlistValue(v)
 				}
 			}
 		}
-		if absentCustom && params != nil {
+		if e.absentCustom && params != nil {
 			delete(params, "CustomOutputName")
 		}
-		if absentUUID && params != nil {
-			if u, hasU := params["UUID"].(string); hasU && u != "" && !isUUIDReferencedInCompiledActions(compiled, idxv, u) {
+		if e.absentUUID && params != nil {
+			if u, hasU := params["UUID"].(string); hasU && u != "" && !isUUIDReferencedInCompiledActions(compiled, j, u) {
 				delete(params, "UUID")
 			}
 		}
-		if absentTopSer && params != nil {
+		if e.absentTopSer && params != nil {
 			delete(params, "WFSerializationType")
 		}
 		if params != nil {

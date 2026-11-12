@@ -2,11 +2,10 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46`  
+**Schema Fingerprint:** `8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a`  
 **Total Actions:** 505  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
-All 497 callable action definitions in this 505-entry catalog (alongside the 8 compiler constructs) are derived from `actions/*.cherri` and `actions_std.go`, exposed identically across CLI (`--actions-json`), `schema.DefaultRegistry()`, and the iOS/iPadOS Action Palette (`currentMobileActionCatalog()`), and indexed deterministically in `DefaultReverseActionRegistry()` for `--fidelity=hybrid` readable import in both Legacy and Cherri v2 modes.
 
 ## Table of Modules
 
@@ -1847,13 +1846,14 @@ displaySleep()
 Download the contents of a URL.
 
 ```cherri
-downloadURL(url: Text, headers?: Map<Text, AnyContent>) -> AnyContent
+downloadURL(url: Text, headers?: Map<Text, AnyContent>, showHeaders?: Bool) -> AnyContent
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `url` | `Text` | Yes | - | `WFURL` | - |
 | `headers` | `Map<Text, AnyContent>` | No | - | `WFHTTPHeaders` | - |
+| `showHeaders` | `Bool` | No | - | `ShowHeaders` | - |
 
 ---
 
@@ -2007,7 +2007,7 @@ file(file: AnyContent) -> AnyContent
 Send a `method` file request to `url` with `body` and optional `headers.
 
 ```cherri
-fileRequest(url: Text, method?: Text, body?: AnyContent, headers?: Map<Text, AnyContent>)
+fileRequest(url: Text, method?: Text, body?: AnyContent, headers?: Map<Text, AnyContent>, showHeaders?: Bool)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -2016,6 +2016,7 @@ fileRequest(url: Text, method?: Text, body?: AnyContent, headers?: Map<Text, Any
 | `method` | `Text` | No | - | `WFHTTPMethod` | POST, PUT, PATCH, DELETE |
 | `body` | `AnyContent` | No | - | `WFRequestVariable` | - |
 | `headers` | `Map<Text, AnyContent>` | No | - | `WFHTTPHeaders` | - |
+| `showHeaders` | `Bool` | No | - | `ShowHeaders` | - |
 
 ---
 
@@ -2399,7 +2400,7 @@ floor(number: Number, roundTo?: Text = "Integer", powerOfTen?: Number) -> Number
 Send a `method` request to `url` with `body` and optional `headers.
 
 ```cherri
-formRequest(url: Text, method?: Text, body?: Map<Text, AnyContent>, headers?: Map<Text, AnyContent>)
+formRequest(url: Text, method?: Text, body?: Map<Text, AnyContent>, headers?: Map<Text, AnyContent>, showHeaders?: Bool)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -2408,6 +2409,7 @@ formRequest(url: Text, method?: Text, body?: Map<Text, AnyContent>, headers?: Ma
 | `method` | `Text` | No | - | `WFHTTPMethod` | POST, PUT, PATCH, DELETE |
 | `body` | `Map<Text, AnyContent>` | No | - | `WFFormValues` | - |
 | `headers` | `Map<Text, AnyContent>` | No | - | `WFHTTPHeaders` | - |
+| `showHeaders` | `Bool` | No | - | `ShowHeaders` | - |
 
 ---
 
@@ -4253,13 +4255,14 @@ getVPN() -> AnyContent
 For constants only, otherwise `dictionary['key']` syntax should be used.
 
 ```cherri
-getValue(dictionary: Map<Text, AnyContent>, key: Text) -> AnyContent
+getValue(dictionary: Map<Text, AnyContent>, key: Text, get?: Text) -> AnyContent
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `dictionary` | `Map<Text, AnyContent>` | Yes | - | `WFInput` | - |
 | `key` | `Text` | Yes | - | `WFDictionaryKey` | - |
+| `get` | `Text` | No | - | `WFGetDictionaryValueType` | - |
 
 ---
 
@@ -4473,7 +4476,7 @@ isOnline()
 Send a `method` JSON request to `url` with `body` and optional `headers.
 
 ```cherri
-jsonRequest(url: Text, method?: Text, body?: Map<Text, AnyContent>, headers?: Map<Text, AnyContent>)
+jsonRequest(url: Text, method?: Text, body?: Map<Text, AnyContent>, headers?: Map<Text, AnyContent>, showHeaders?: Bool)
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -4482,6 +4485,7 @@ jsonRequest(url: Text, method?: Text, body?: Map<Text, AnyContent>, headers?: Ma
 | `method` | `Text` | No | - | `WFHTTPMethod` | POST, PUT, PATCH, DELETE |
 | `body` | `Map<Text, AnyContent>` | No | - | `WFJSONValues` | - |
 | `headers` | `Map<Text, AnyContent>` | No | - | `WFHTTPHeaders` | - |
+| `showHeaders` | `Bool` | No | - | `ShowHeaders` | - |
 
 ---
 

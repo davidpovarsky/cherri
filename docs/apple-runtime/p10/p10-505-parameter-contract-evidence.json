@@ -46,17 +46,17 @@
       "dimension": "optionalParams",
       "totalCatalog": 505,
       "constructsExcluded": 8,
-      "eligible": 201,
-      "tested": 201,
-      "pass": 201,
+      "eligible": 202,
+      "tested": 202,
+      "pass": 202,
       "fail": 0,
-      "notApplicable": 304,
+      "notApplicable": 303,
       "notTested": 0,
       "blocked": 0,
       "subKindBreakdown": {
         "COMPILER_CONSTRUCT": 8,
-        "NO_OPTIONAL_PARAMS": 296,
-        "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED": 201
+        "NO_OPTIONAL_PARAMS": 295,
+        "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED": 202
       }
     },
     {
@@ -4585,16 +4585,16 @@
         "testName": "MissingRequiredRejected_downloadURL",
         "testInput": "#define name ParamContractTest\n#include 'actions/web'\ndownloadURL()",
         "expectedBehavior": "compiler rejects missing required argument",
-        "actualBehavior": "rejected with error: Missing required 1st argument 'url'.\n\n### Download URL\n\nDownload the contents of a URL.\n\n```\ndownloadURL(text url, ...): variable\n```",
+        "actualBehavior": "rejected with error: Missing required 1st argument 'url'.\n\n### Download URL\n\nDownload the contents of a URL.\n\n```\ndownloadURL(text url, ..., ...): variable\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#MissingRequiredRejected"
       },
       "optionalParams": {
         "status": "PASS",
         "subKind": "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED",
         "testName": "OptionalParams_downloadURL",
-        "testInput": "#define name ParamContractTest\n#include 'actions/web'\ndownloadURL(\"https://example.com\", {\"optKey\": \"optVal\"})",
+        "testInput": "#define name ParamContractTest\n#include 'actions/web'\ndownloadURL(\"https://example.com\", {\"optKey\": \"optVal\"}, true)",
         "expectedBehavior": "compiles both without and with explicit optional arguments and emits expected wire keys",
-        "actualBehavior": "verified omitted (2 keys) vs explicit (3 keys) plist serialization",
+        "actualBehavior": "verified omitted (2 keys) vs explicit (4 keys) plist serialization",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#OptionalParams"
       },
       "enumValidation": {
@@ -5416,16 +5416,16 @@
         "testName": "MissingRequiredRejected_fileRequest",
         "testInput": "#define name ParamContractTest\n#include 'actions/web'\nfileRequest()",
         "expectedBehavior": "compiler rejects missing required argument",
-        "actualBehavior": "rejected with error: Missing required 1st argument 'url'.\n\n### File Request\n\nSend a `method` file request to `url` with `body` and optional `headers.\n\n```\nfileRequest(text url, ..., ..., ...)\n```",
+        "actualBehavior": "rejected with error: Missing required 1st argument 'url'.\n\n### File Request\n\nSend a `method` file request to `url` with `body` and optional `headers.\n\n```\nfileRequest(text url, ..., ..., ..., ...)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#MissingRequiredRejected"
       },
       "optionalParams": {
         "status": "PASS",
         "subKind": "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED",
         "testName": "OptionalParams_fileRequest",
-        "testInput": "#define name ParamContractTest\n#include 'actions/web'\nfileRequest(\"https://example.com\", \"POST\", Ask, {\"optKey\": \"optVal\"})",
+        "testInput": "#define name ParamContractTest\n#include 'actions/web'\nfileRequest(\"https://example.com\", \"POST\", Ask, {\"optKey\": \"optVal\"}, true)",
         "expectedBehavior": "compiles both without and with explicit optional arguments and emits expected wire keys",
-        "actualBehavior": "verified omitted (2 keys) vs explicit (5 keys) plist serialization",
+        "actualBehavior": "verified omitted (2 keys) vs explicit (6 keys) plist serialization",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#OptionalParams"
       },
       "enumValidation": {
@@ -5434,7 +5434,7 @@
         "testName": "EnumValidation_fileRequest",
         "testInput": "#define name ParamContractTest\n#include 'actions/web'\nfileRequest(\"https://example.com\", \"__INVALID_ENUM_VALUE_P10R5__\")",
         "expectedBehavior": "valid enum \"POST\" compiles and invalid enum is rejected",
-        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'method'.\n\n\n### File Request\n\nSend a `method` file request to `url` with `body` and optional `headers.\n\n```\nenum HTTPMethod {\n    'POST',\n    'PUT',\n    'PATCH',\n    'DELETE',\n}\n\nfileRequest(..., HTTPMethod ?method, ..., ...)\n```",
+        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'method'.\n\n\n### File Request\n\nSend a `method` file request to `url` with `body` and optional `headers.\n\n```\nenum HTTPMethod {\n    'POST',\n    'PUT',\n    'PATCH',\n    'DELETE',\n}\n\nfileRequest(..., HTTPMethod ?method, ..., ..., ...)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#EnumValidation"
       },
       "dynamicReference": {
@@ -6749,16 +6749,16 @@
         "testName": "MissingRequiredRejected_formRequest",
         "testInput": "#define name ParamContractTest\n#include 'actions/web'\nformRequest()",
         "expectedBehavior": "compiler rejects missing required argument",
-        "actualBehavior": "rejected with error: Missing required 1st argument 'url'.\n\n### Form Request\n\nSend a `method` request to `url` with `body` and optional `headers.\n\n```\nformRequest(text url, ..., ..., ...)\n```",
+        "actualBehavior": "rejected with error: Missing required 1st argument 'url'.\n\n### Form Request\n\nSend a `method` request to `url` with `body` and optional `headers.\n\n```\nformRequest(text url, ..., ..., ..., ...)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#MissingRequiredRejected"
       },
       "optionalParams": {
         "status": "PASS",
         "subKind": "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED",
         "testName": "OptionalParams_formRequest",
-        "testInput": "#define name ParamContractTest\n#include 'actions/web'\nformRequest(\"https://example.com\", \"POST\", {\"optKey\": \"optVal\"}, {\"optKey\": \"optVal\"})",
+        "testInput": "#define name ParamContractTest\n#include 'actions/web'\nformRequest(\"https://example.com\", \"POST\", {\"optKey\": \"optVal\"}, {\"optKey\": \"optVal\"}, true)",
         "expectedBehavior": "compiles both without and with explicit optional arguments and emits expected wire keys",
-        "actualBehavior": "verified omitted (2 keys) vs explicit (5 keys) plist serialization",
+        "actualBehavior": "verified omitted (2 keys) vs explicit (6 keys) plist serialization",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#OptionalParams"
       },
       "enumValidation": {
@@ -6767,7 +6767,7 @@
         "testName": "EnumValidation_formRequest",
         "testInput": "#define name ParamContractTest\n#include 'actions/web'\nformRequest(\"https://example.com\", \"__INVALID_ENUM_VALUE_P10R5__\")",
         "expectedBehavior": "valid enum \"POST\" compiles and invalid enum is rejected",
-        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'method'.\n\n\n### Form Request\n\nSend a `method` request to `url` with `body` and optional `headers.\n\n```\nenum HTTPMethod {\n    'POST',\n    'PUT',\n    'PATCH',\n    'DELETE',\n}\n\nformRequest(..., HTTPMethod ?method, ..., ...)\n```",
+        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'method'.\n\n\n### Form Request\n\nSend a `method` request to `url` with `body` and optional `headers.\n\n```\nenum HTTPMethod {\n    'POST',\n    'PUT',\n    'PATCH',\n    'DELETE',\n}\n\nformRequest(..., HTTPMethod ?method, ..., ..., ...)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#EnumValidation"
       },
       "dynamicReference": {
@@ -13754,15 +13754,16 @@
         "testName": "MissingRequiredRejected_getValue",
         "testInput": "#define name ParamContractTest\ngetValue({\"key\": \"value\"})",
         "expectedBehavior": "compiler rejects missing required argument",
-        "actualBehavior": "rejected with error: Missing required 2nd argument 'key'.\n\n### Get Value from Dictionary\n\nFor constants only, otherwise `dictionary['key']` syntax should be used.\n\n```\ngetValue(..., text key): variable\n```",
+        "actualBehavior": "rejected with error: Missing required 2nd argument 'key'.\n\n### Get Value from Dictionary\n\nFor constants only, otherwise `dictionary['key']` syntax should be used.\n\n```\ngetValue(..., text key, ...): variable\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#MissingRequiredRejected"
       },
       "optionalParams": {
-        "status": "NOT_APPLICABLE",
-        "subKind": "NO_OPTIONAL_PARAMS",
+        "status": "PASS",
+        "subKind": "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED",
         "testName": "OptionalParams_getValue",
-        "expectedBehavior": "action has 0 optional parameters",
-        "actualBehavior": "0 optional parameters declared in schema",
+        "testInput": "#define name ParamContractTest\ngetValue({\"key\": \"value\"}, \"sample\", \"opt_sample\")",
+        "expectedBehavior": "compiles both without and with explicit optional arguments and emits expected wire keys",
+        "actualBehavior": "verified omitted (2 keys) vs explicit (3 keys) plist serialization",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#OptionalParams"
       },
       "enumValidation": {
@@ -13791,7 +13792,7 @@
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#PlatformGate"
       },
       "requiredParamsVerified": true,
-      "optionalParamsVerified": false,
+      "optionalParamsVerified": true,
       "missingRequiredRejectedBool": true,
       "enumValidationVerified": false,
       "dynamicReferenceVerified": true,
@@ -14830,16 +14831,16 @@
         "testName": "MissingRequiredRejected_jsonRequest",
         "testInput": "#define name ParamContractTest\n#include 'actions/web'\njsonRequest()",
         "expectedBehavior": "compiler rejects missing required argument",
-        "actualBehavior": "rejected with error: Missing required 1st argument 'url'.\n\n### JSON Request\n\nSend a `method` JSON request to `url` with `body` and optional `headers.\n\n```\njsonRequest(text url, ..., ..., ...)\n```",
+        "actualBehavior": "rejected with error: Missing required 1st argument 'url'.\n\n### JSON Request\n\nSend a `method` JSON request to `url` with `body` and optional `headers.\n\n```\njsonRequest(text url, ..., ..., ..., ...)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#MissingRequiredRejected"
       },
       "optionalParams": {
         "status": "PASS",
         "subKind": "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED",
         "testName": "OptionalParams_jsonRequest",
-        "testInput": "#define name ParamContractTest\n#include 'actions/web'\njsonRequest(\"https://example.com\", \"POST\", {\"optKey\": \"optVal\"}, {\"optKey\": \"optVal\"})",
+        "testInput": "#define name ParamContractTest\n#include 'actions/web'\njsonRequest(\"https://example.com\", \"POST\", {\"optKey\": \"optVal\"}, {\"optKey\": \"optVal\"}, true)",
         "expectedBehavior": "compiles both without and with explicit optional arguments and emits expected wire keys",
-        "actualBehavior": "verified omitted (2 keys) vs explicit (5 keys) plist serialization",
+        "actualBehavior": "verified omitted (2 keys) vs explicit (6 keys) plist serialization",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#OptionalParams"
       },
       "enumValidation": {
@@ -14848,7 +14849,7 @@
         "testName": "EnumValidation_jsonRequest",
         "testInput": "#define name ParamContractTest\n#include 'actions/web'\njsonRequest(\"https://example.com\", \"__INVALID_ENUM_VALUE_P10R5__\")",
         "expectedBehavior": "valid enum \"POST\" compiles and invalid enum is rejected",
-        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'method'.\n\n\n### JSON Request\n\nSend a `method` JSON request to `url` with `body` and optional `headers.\n\n```\nenum HTTPMethod {\n    'POST',\n    'PUT',\n    'PATCH',\n    'DELETE',\n}\n\njsonRequest(..., HTTPMethod ?method, ..., ...)\n```",
+        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'method'.\n\n\n### JSON Request\n\nSend a `method` JSON request to `url` with `body` and optional `headers.\n\n```\nenum HTTPMethod {\n    'POST',\n    'PUT',\n    'PATCH',\n    'DELETE',\n}\n\njsonRequest(..., HTTPMethod ?method, ..., ..., ...)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#EnumValidation"
       },
       "dynamicReference": {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0",
-  "sourceCommit": "8e91ea9004e37581bf05c9752d39fe66dc0b4697",
-  "inputDependencyFingerprint": "a604df996cb65fd056d17de942671e23848ed65b57058d68a2dfbacb7c40a768",
+  "sourceCommit": "dd9bd664571d53cc558956481ef79e1760615063",
+  "inputDependencyFingerprint": "9d11e5125a9570d2c1e32acea55bf8b98a3b97cfb2b061aee7321a4e846b9524",
   "totalCatalogEntries": 505,
   "summary": {
     "totalEntries": 505,
@@ -97,17 +97,17 @@
         "dimension": "optionalParams",
         "totalCatalog": 505,
         "constructsExcluded": 8,
-        "eligible": 201,
-        "tested": 201,
-        "pass": 201,
+        "eligible": 202,
+        "tested": 202,
+        "pass": 202,
         "fail": 0,
-        "notApplicable": 304,
+        "notApplicable": 303,
         "notTested": 0,
         "blocked": 0,
         "subKindBreakdown": {
           "COMPILER_CONSTRUCT": 8,
-          "NO_OPTIONAL_PARAMS": 296,
-          "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED": 201
+          "NO_OPTIONAL_PARAMS": 295,
+          "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED": 202
         }
       },
       {
@@ -520,7 +520,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 168,
+      "sourceLine": 166,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -3079,7 +3079,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 176,
+      "sourceLine": 174,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -3161,7 +3161,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[chooseFromList]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[chooseFromList]; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -6087,7 +6087,7 @@
         "maxVersion": 0.0,
         "targetSummary": "UNIVERSAL_DECLARED"
       },
-      "parameterCount": 2,
+      "parameterCount": 3,
       "parameters": [
         {
           "name": "url",
@@ -6104,6 +6104,14 @@
           "optional": true,
           "enum": "",
           "literalOnly": true
+        },
+        {
+          "name": "showHeaders",
+          "key": "ShowHeaders",
+          "type": "bool",
+          "optional": true,
+          "enum": "",
+          "literalOnly": false
         }
       ],
       "outputType": "variable",
@@ -6145,7 +6153,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[downloadURL]; decomp_includes_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[downloadURL]; decomp_includes_test.go; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFHTTPMethod",
         "WFURL"
@@ -7176,7 +7184,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/web.cherri",
-      "sourceLine": 136,
+      "sourceLine": 142,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -7184,7 +7192,7 @@
         "maxVersion": 0.0,
         "targetSummary": "UNIVERSAL_DECLARED"
       },
-      "parameterCount": 4,
+      "parameterCount": 5,
       "parameters": [
         {
           "name": "url",
@@ -7217,6 +7225,14 @@
           "optional": true,
           "enum": "",
           "literalOnly": true
+        },
+        {
+          "name": "showHeaders",
+          "key": "ShowHeaders",
+          "type": "bool",
+          "optional": true,
+          "enum": "",
+          "literalOnly": false
         }
       ],
       "outputType": "None",
@@ -7258,7 +7274,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[fileRequest]; p10_http_json_test.go; p10_structural_roundtrip_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[fileRequest]; p10_http_json_test.go; p10_structural_roundtrip_test.go; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFHTTPBodyType",
         "WFURL"
@@ -7357,7 +7373,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/web.cherri",
-      "sourceLine": 146,
+      "sourceLine": 153,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -9125,7 +9141,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/web.cherri",
-      "sourceLine": 116,
+      "sourceLine": 120,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -9133,7 +9149,7 @@
         "maxVersion": 0.0,
         "targetSummary": "UNIVERSAL_DECLARED"
       },
-      "parameterCount": 4,
+      "parameterCount": 5,
       "parameters": [
         {
           "name": "url",
@@ -9166,6 +9182,14 @@
           "optional": true,
           "enum": "",
           "literalOnly": true
+        },
+        {
+          "name": "showHeaders",
+          "key": "ShowHeaders",
+          "type": "bool",
+          "optional": true,
+          "enum": "",
+          "literalOnly": false
         }
       ],
       "outputType": "None",
@@ -9207,7 +9231,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[formRequest]; codec_matrix_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[formRequest]; codec_matrix_test.go; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFHTTPBodyType",
         "WFURL"
@@ -12842,7 +12866,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 184,
+      "sourceLine": 182,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -13746,7 +13770,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 189,
+      "sourceLine": 187,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -14193,7 +14217,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 199,
+      "sourceLine": 197,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -14276,7 +14300,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 204,
+      "sourceLine": 202,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -14897,7 +14921,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 156,
+      "sourceLine": 154,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -16107,7 +16131,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 194,
+      "sourceLine": 192,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -17730,7 +17754,7 @@
         "maxVersion": 0.0,
         "targetSummary": "UNIVERSAL_DECLARED"
       },
-      "parameterCount": 2,
+      "parameterCount": 3,
       "parameters": [
         {
           "name": "dictionary",
@@ -17745,6 +17769,14 @@
           "key": "WFDictionaryKey",
           "type": "text",
           "optional": false,
+          "enum": "",
+          "literalOnly": false
+        },
+        {
+          "name": "get",
+          "key": "WFGetDictionaryValueType",
+          "type": "text",
+          "optional": true,
           "enum": "",
           "literalOnly": false
         }
@@ -17791,7 +17823,6 @@
       "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[getValue]; p10_compiler_bugfixes_test.go; p10_compiler_serialization_test.go; p10_independent_oracle_test.go",
       "emittedParameterKeys": [
         "WFDictionaryKey",
-        "WFGetDictionaryValueType",
         "WFInput"
       ],
       "knownLimitations": "None"
@@ -18586,7 +18617,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[hash]; p10r10_semantic_hybrid_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[hash]; p10r10_semantic_hybrid_test.go; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFInput"
       ],
@@ -19042,7 +19073,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/web.cherri",
-      "sourceLine": 126,
+      "sourceLine": 131,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -19050,7 +19081,7 @@
         "maxVersion": 0.0,
         "targetSummary": "UNIVERSAL_DECLARED"
       },
-      "parameterCount": 4,
+      "parameterCount": 5,
       "parameters": [
         {
           "name": "url",
@@ -19083,6 +19114,14 @@
           "optional": true,
           "enum": "",
           "literalOnly": true
+        },
+        {
+          "name": "showHeaders",
+          "key": "ShowHeaders",
+          "type": "bool",
+          "optional": true,
+          "enum": "",
+          "literalOnly": false
         }
       ],
       "outputType": "None",
@@ -26194,7 +26233,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[replaceText]; p10_http_json_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[replaceText]; p10_http_json_test.go; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFInput",
         "WFReplaceTextFind",
@@ -31783,7 +31822,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 159,
+      "sourceLine": 157,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -31857,7 +31896,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[setName]; codec_matrix_test.go; p10_http_json_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[setName]; codec_matrix_test.go; p10_http_json_test.go; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFInput",
         "WFName"
@@ -33198,7 +33237,7 @@
       "compilerConstruct": false,
       "category": "basic",
       "sourceFile": "actions/basic.cherri",
-      "sourceLine": 153,
+      "sourceLine": 151,
       "osAvailability": {
         "macOnly": false,
         "nonMacOnly": false,
@@ -39082,7 +39121,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[translate]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[translate]; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFInputText",
         "WFSelectedLanguage"
@@ -40416,7 +40455,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[setVariable]",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[setVariable]; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFInput",
         "WFSerializationType",
@@ -40482,7 +40521,7 @@
       "packSupportKind": "UPSTREAM_CORE",
       "evidenceTier": "STRUCTURAL_ROUNDTRIP_VERIFIED",
       "runtimeVerificationState": "MACOS27_STATIC_EXTRACTED_AND_COMPILED",
-      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[appendVariable]; ios_bridge_matrix_test.go",
+      "unitTestRef": "p10_catalog_execution_test.go::TestP10_VerifyAndRecord505CatalogExecution[appendVariable]; ios_bridge_matrix_test.go; p11_wire_fidelity_test.go",
       "emittedParameterKeys": [
         "WFInput",
         "WFSerializationType",

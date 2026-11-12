@@ -217,7 +217,7 @@ func makeVariableInput(t *token, params map[string]any) {
 
 	makeVariableValueAction(t, &outputName, &varUUID)
 	if t.valueType != Arr && t.value != nil {
-		if t.typeof == Variable && t.valueType == Variable {
+		if (t.typeof == Variable || t.typeof == AddTo) && t.valueType == Variable {
 			params["WFInput"] = variableValue(t.value.(varValue))
 		} else {
 			params["WFInput"] = inputValue(outputName, varUUID)

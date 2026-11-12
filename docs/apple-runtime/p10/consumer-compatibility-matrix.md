@@ -1,21 +1,21 @@
 # P10R5 — Consumer Compatibility Matrix
 
 - **Generator**: `tools/p10r3/verify_consumer_compatibility.py`
-- **Compiler HEAD at generation**: `8e91ea9004e37581bf05c9752d39fe66dc0b4697`
-- **Verdict**: `COMPATIBLE_WITH_EXTERNAL_BLOCKERS`
+- **Compiler HEAD at generation**: `dd9bd664571d53cc558956481ef79e1760615063`
+- **Verdict**: `INCOMPATIBLE`
 
 > `NOT_AVAILABLE_LOCALLY` and `BLOCKED_EXTERNAL` are never counted as `PASS`.
 
 | Component | Source Commit | Schema Fingerprint | Codec Fingerprint | Tested Against | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Compiler | `8e91ea9004e3` | `787e9842bbe9` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
-| Documentation | `a38b62b819e4` | `787e9842bbe9` | `3e7e3555eefe` | compiler 8e91ea9004e3 schema 787e9842bbe9 | `PASS` |
-| Skill | `1204e1f7dfac` | `787e9842bbe9` | `3e7e3555eefe` | docs a38b62b819e4 | `PASS` |
-| Remote Builder | `1204e1f7dfac` | `787e9842bbe9` | `3e7e3555eefe` | skill compatibility-manifest.json tuple | `BLOCKED_EXTERNAL` |
-| iOS Bridge | `8e91ea9004e3` | `787e9842bbe9` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
-| iOS UI | `8e91ea9004e3` | `787e9842bbe9` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
-| Preview | `42ee7656e0cc` | `787e9842bbe9` | `3e7e3555eefe` | ios/WebPreview lock + generic catalog metadata renderer | `PASS` |
-| Pure+Pack | `141b9cc96cf1` | `787e9842bbe9` | `3e7e3555eefe` | P10 catalog @ 8e91ea9004e3 | `PASS` |
+| Compiler | `dd9bd664571d` | `8fca1c4c849e` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
+| Documentation | `a38b62b819e4` | `8fca1c4c849e` | `3e7e3555eefe` | compiler dd9bd664571d schema 8fca1c4c849e | `FAIL` |
+| Skill | `1204e1f7dfac` | `8fca1c4c849e` | `3e7e3555eefe` | docs a38b62b819e4 | `PASS` |
+| Remote Builder | `1204e1f7dfac` | `8fca1c4c849e` | `3e7e3555eefe` | skill compatibility-manifest.json tuple | `BLOCKED_EXTERNAL` |
+| iOS Bridge | `dd9bd664571d` | `8fca1c4c849e` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
+| iOS UI | `dd9bd664571d` | `8fca1c4c849e` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
+| Preview | `42ee7656e0cc` | `8fca1c4c849e` | `3e7e3555eefe` | ios/WebPreview lock + generic catalog metadata renderer | `PASS` |
+| Pure+Pack | `141b9cc96cf1` | `8fca1c4c849e` | `3e7e3555eefe` | P10 catalog @ dd9bd664571d | `FAIL` |
 
 ## Check Details
 
@@ -26,13 +26,13 @@
 - [x] actionCount == 505 (got 505)
 - [x] languageVersion == 2.0
 
-### Documentation — `PASS`
+### Documentation — `FAIL`
 - [x] cherri docs/language-v2/actions-reference.md fingerprint == compiler
-- [x] cherrilang.org fork-language/actions.md fingerprint == compiler (got 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)
+- [ ] cherrilang.org fork-language/actions.md fingerprint == compiler (got 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)
 - [x] smoke_test_snippets.py PINNED_CHERRI_COMMIT (4f4d30f1b863e8d53cd3d56eb8ddcaffab7ce8f2) is an ancestor of compiler HEAD
 
 ### Skill — `PASS`
-- [x] skill schemaFingerprint == compiler (got 787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46)
+- [x] skill schemaFingerprint == compiler (got 8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a)
 - [x] skill codecFingerprint == compiler (got 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e)
 - [x] skill languageVersion == compiler
 - [x] skill catalogSchemaVersion == compiler
@@ -59,8 +59,8 @@
 - [x] package-lock.json resolved commit == package.json pin
 - [x] pinned preview commit exists in preview-shortcut repository
 
-### Pure+Pack — `PASS`
+### Pure+Pack — `FAIL`
 - [x] Pure+Pack commit == 141b9cc96cf1df3f9d1593548dc49ae8a46a256a
 - [x] Pure+Pack commit object present
 - [x] Pure Original commit object present (read-only)
-- [x] deterministic generator byte-parity with 141b9cc (0 drift errors)
+- [ ] deterministic generator byte-parity with 141b9cc (2 drift errors)

@@ -485,6 +485,21 @@ func splitWorkflowHeaderAndActions(doc map[string]any) (map[string]any, []map[st
 	return header, actions, true
 }
 
+// PreOverlayActionHook is an optional test/audit hook called with compiled actions immediately
+// before applyImportProvenanceToCompiledActions overlays metadata onto them.
+var PreOverlayActionHook func(compiledActions []any)
+
+func deepClonePlistSlice(s []any) []any {
+	if s == nil {
+		return nil
+	}
+	res := make([]any, len(s))
+	for i, item := range s {
+		res[i] = deepClonePlistValue(item)
+	}
+	return res
+}
+
 func deepClonePlistMap(m map[string]any) map[string]any {
 	if m == nil {
 		return nil
@@ -573,6 +588,9 @@ func mergeWorkflowHeaderMap(
 			merged = make(map[string]any)
 		}
 		prov := extractAndStripImportProvenance(merged)
+		if PreOverlayActionHook != nil {
+			PreOverlayActionHook(deepClonePlistSlice(compiledActions))
+		}
 		applyImportProvenanceToCompiledActions(prov, compiledActions)
 		merged["WFWorkflowActions"] = compiledActions
 		return merged
@@ -595,6 +613,9 @@ func mergeWorkflowHeaderMap(
 		merged[k] = deepClonePlistValue(v)
 	}
 	prov := extractAndStripImportProvenance(merged)
+	if PreOverlayActionHook != nil {
+		PreOverlayActionHook(deepClonePlistSlice(compiledActions))
+	}
 	applyImportProvenanceToCompiledActions(prov, compiledActions)
 	merged["WFWorkflowActions"] = compiledActions
 	if inputs, ok := merged["WFWorkflowInputContentItemClasses"].([]any); !ok || len(inputs) == 0 {

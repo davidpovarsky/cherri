@@ -772,7 +772,7 @@ func (ctx *semanticImportContext) isContextFreeRecord(rec NativeActionRecord) bo
 		return false
 	}
 	for k := range rec.Parameters {
-		if strings.HasPrefix(k, "Show") {
+		if isImportProvenanceMetaKey(k) {
 			return false
 		}
 	}

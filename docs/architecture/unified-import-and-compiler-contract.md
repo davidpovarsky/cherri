@@ -1,7 +1,7 @@
-# Unified Import & Compiler Contract (P10R9 / P10R10)
+# Unified Import & Compiler Contract (P10R9 / P10R10 / P10R11)
 
 **Date:** 2026-11-12  
-**Status:** Active Architectural Contract (P10R10)  
+**Status:** Active Architectural Contract (P10R11)  
 **Owners:** `[איתן | Architecture]`, `[נועם | Engineering]`, `[רוני | QA]`
 
 ---
@@ -74,3 +74,23 @@ flowchart TD
 2. **Fail-Closed Provenance & Whole-Workflow Verification (`hybrid_import.go`, `semantic_import_planner.go`, `import_provenance.go`):**
    - `__CherriImportProvenance` in `#workflowheader` / `native.workflow` seeds original action `UUID`, `CustomOutputName`, `GroupingIdentifier`, `Show-*` flags, and variable/symbol bindings during compilation and is always stripped from output plists; `VerifyWholeWorkflowAgainstOriginal` recursively rejects any compiled artifact containing `__CherriImportProvenance` (`hasImportProvenanceKey`).
    - `RenderAndVerifyHybrid` and `verifyAndStabilizePlan` enforce structural decision count equality (`len(plan.Decisions) == len(doc.Actions)`), recompile after targeted per-unit/region demotion without mutating the caller's plan on failure, select `plist.BinaryFormat` pre-marshal when `plistValueHasXMLUnsafeStringChar` detects `\x0b`/NUL (`HYB16`), and refuse to return success unless final Legacy and V2 compiled plists satisfy `plistValuesStrictlyEqual(doc.RawRoot, compiled)`.
+
+---
+
+## 5. P10R11 Action-Wire Truth & Strict Metadata Key Ownership
+
+1. **Strict Key Ownership vs Heuristic Prefix Matching (`import_provenance.go`):**
+   - Eliminated the `strings.HasPrefix(k, "Show")` heuristic. Unverified keys (such as `ShowSecurity`, `ShowSecret`, `ShowCommand`, or `WFPrivateFutureParam`) are treated as semantic/opaque fields and fail closed to native raw action fallbacks.
+   - Only strictly enumerated keys in `verifiedImportMetadataKeys` may be restored via provenance (`UUID`, `CustomOutputName`, `GroupingIdentifier`, `ShowHeaders`, `ShowWhenRun`, `Show-WFInput`, `Show-WFURLActionURL`, `Show-text`).
+2. **Canonical Typed Parameters for UI/Metadata (`actions/web.cherri`):**
+   - Parameters that affect wire output (`ShowHeaders`) are promoted to canonical definitions with tri-state support (`absent`, `false`, `true`), allowing natural source code to express and edit them cleanly without relying on provenance repair.
+3. **Multi-Pass Deterministic Semantic Hashing:**
+   - Every imported action provenance record computes a `SemanticHash` via `deterministicSemanticActionHash`, normalizing integers, arrays, and map structures.
+   - Restoration uses a 3-pass matching algorithm:
+     - **Pass 1:** Exact index + identifier + semantic hash match (in-place match).
+     - **Pass 2:** Reorder match (unique semantic hash across unused candidates of the same identifier).
+     - **Pass 3:** Backward compatibility fallback only for legacy un-hashed records.
+   - This prevents stale metadata transfer when actions are reordered, inserted, replaced, or duplicated.
+4. **Variable Action Native Serialization Truth:**
+   - In import mode, absence of `WFSerializationType` in legacy source actions (2,487 `setVariable`, 64 `appendVariable`) is preserved without breaking normal authored code compilation.
+   - The compiler distinguishes between assignment (`=`) and addition (`+=`), eliminating spurious `OutputUUID` generation on append operations.

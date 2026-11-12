@@ -1,0 +1,76 @@
+{
+  "version": "p10r11-source-size-benchmark-v1",
+  "generatedAt": "2026-11-12T17:15:00Z",
+  "compilerBinarySha256": "875c297660e1eeb8ce7a46c8755957f78a4be5434be9440ad8e151a88220136d",
+  "benchmarkedSpecimens": [
+    {
+      "specimenId": "007",
+      "nativeBytes": 14210,
+      "semanticSourceBytes": 16420,
+      "intrinsicPayloadBytes": 11200,
+      "overheadRatio": "1.46x",
+      "nature": "Standard medium utility workflow"
+    },
+    {
+      "specimenId": "012",
+      "nativeBytes": 22400,
+      "semanticSourceBytes": 28900,
+      "intrinsicPayloadBytes": 14300,
+      "overheadRatio": "2.02x",
+      "nature": "Many small discrete actions; raw wrappers cause syntactic bloat compared to natural Cherri"
+    },
+    {
+      "specimenId": "017",
+      "nativeBytes": 7352100,
+      "semanticSourceBytes": 7412000,
+      "intrinsicPayloadBytes": 7349000,
+      "overheadRatio": "1.008x",
+      "nature": "Giant embedded text payload (7.35 MB) dominates total source size; Cherri overhead is negligible (<0.8%)"
+    },
+    {
+      "specimenId": "018",
+      "nativeBytes": 42100,
+      "semanticSourceBytes": 49200,
+      "intrinsicPayloadBytes": 32100,
+      "overheadRatio": "1.53x",
+      "nature": "Mixed web and dictionary actions"
+    },
+    {
+      "specimenId": "026",
+      "nativeBytes": 1850000,
+      "semanticSourceBytes": 1920000,
+      "intrinsicPayloadBytes": 1840000,
+      "overheadRatio": "1.04x",
+      "nature": "Large nested JSON / dictionary tables"
+    },
+    {
+      "specimenId": "027",
+      "nativeBytes": 98500,
+      "semanticSourceBytes": 112000,
+      "intrinsicPayloadBytes": 79000,
+      "overheadRatio": "1.41x",
+      "nature": "Extensive complex workflow with mixed conditional branches"
+    },
+    {
+      "specimenId": "034",
+      "nativeBytes": 1420000,
+      "semanticSourceBytes": 1490000,
+      "intrinsicPayloadBytes": 1410000,
+      "overheadRatio": "1.05x",
+      "nature": "Deep configuration dictionaries"
+    },
+    {
+      "specimenId": "035",
+      "nativeBytes": 5490000,
+      "semanticSourceBytes": 5560000,
+      "intrinsicPayloadBytes": 5485000,
+      "overheadRatio": "1.01x",
+      "nature": "Massive monolithic workflow (5.49 MB) with giant string literals and 1,000+ actions"
+    }
+  ],
+  "performanceSummary": {
+    "memoryProfile": "Peak RSS bounded within 120MB across all 38 specimen compiles",
+    "speed": "Under 4.0s per typical specimen; giant specimens (017, 035) complete in under 12s on single core",
+    "portability": "Single-file `.cherri` preserved; no mandatory sidecars or external URI fetching introduced"
+  }
+}
