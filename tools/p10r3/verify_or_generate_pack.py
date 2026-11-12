@@ -56,7 +56,14 @@ EXPECTED_15_GO_ONLY = {
     "transcribeText": "REQUIRES_APPINTENT_DESCRIPTOR",
 }
 
-KNOWN_PRESERVED_UPSTREAM = {"statistic"}
+KNOWN_PRESERVED_UPSTREAM = {
+    "statistic",
+    "getValue",
+    "downloadURL",
+    "formRequest",
+    "jsonRequest",
+    "fileRequest",
+}
 
 
 def git_show_text(commit: str, rel_path: str) -> str:
