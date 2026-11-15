@@ -1,0 +1,191 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "P10R13",
+  "primaryRunId": "43733946853",
+  "ipadVerificationRunId": "43731642051",
+  "workflow": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+  "compilerCommitSha": "616f14eecd4d81a020677ecab4a3d37fc24c2625",
+  "runnerEnvironment": {
+    "runnerLabel": "xcode-27",
+    "osProductName": "macOS",
+    "osProductVersion": "27.0.1",
+    "osBuildVersion": "26A434",
+    "kernelVersion": "Darwin Kernel Version 27.0.0 (RELEASE_ARM64_VMAPPLE arm64)",
+    "xcodeSelectPath": "/Applications/Xcode_27.1.app/Contents/Developer",
+    "xcodeVersion": "Xcode 27.1 (Build 27A9275)",
+    "verifiedSimulatorDevices": [
+      {
+        "runId": "43731642051",
+        "maskedUdid": "4DF1AA75-REDACTED",
+        "deviceName": "iPad mini (A20 Pro)",
+        "runtimeName": "iOS 27.2",
+        "runtimeVersion": "27.2",
+        "osBuildNumber": "24B8117",
+        "isIPad": true,
+        "shortcutsAppInstalled": true,
+        "shortcutsBundleId": "com.apple.shortcuts",
+        "scrollContainerType": "ScrollView",
+        "scrollContainerFrame": {
+          "x": 281,
+          "y": 0,
+          "width": 475,
+          "height": 1158
+        }
+      },
+      {
+        "runId": "43733946853",
+        "maskedUdid": "C898E3E4-REDACTED",
+        "deviceName": "iPhone Duo",
+        "runtimeName": "iOS 27.2",
+        "runtimeVersion": "27.2",
+        "osBuildNumber": "24B91016s",
+        "isIPad": false,
+        "shortcutsAppInstalled": true,
+        "shortcutsBundleId": "com.apple.shortcuts",
+        "scrollContainerType": "CollectionView",
+        "scrollContainerFrame": {
+          "x": 0,
+          "y": 0,
+          "width": 466,
+          "height": 678
+        }
+      }
+    ]
+  },
+  "gates": {
+    "RUNNER_AVAILABLE": "PASS",
+    "SIMULATOR_BOOTED": "PASS",
+    "SHORTCUTS_APP_INSTALLED": "PASS",
+    "SHORTCUTS_LAUNCHED": "PASS",
+    "EDITOR_OPENED": "PASS",
+    "FILE_IMPORT_ATTEMPTED": "PASS",
+    "COMPILER_ARTIFACT_IMPORTED": "BLOCKED_SIGNING",
+    "SHORTCUT_EXISTS_IN_LIBRARY": "BLOCKED_SIGNING",
+    "ACTION_EDITOR_CAPTURED": "PARTIAL_EDITOR_CAPTURE",
+    "SHORTCUT_RUN_ATTEMPTED": "BLOCKED_SIGNING",
+    "SHORTCUT_RUN_COMPLETED": "BLOCKED_SIGNING",
+    "CALLBACK_CAPTURED": "PASS",
+    "TRACE_CAPTURED": "BLOCKED_SIGNING",
+    "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+  },
+  "importRoutes": [
+    {
+      "routeId": "route_1_create_shortcut_scheme",
+      "documented": true,
+      "command": "xcrun simctl openurl <UDID> shortcuts://create-shortcut",
+      "exitCode": 0,
+      "status": "PASS",
+      "observedOutput": ""
+    },
+    {
+      "routeId": "route_2_unsigned_file_openurl",
+      "documented": true,
+      "command": "xcrun simctl openurl <UDID> file://<unsigned.shortcut>",
+      "exitCode": 0,
+      "status": "ATTEMPTED_UI_CHECK_REQUIRED",
+      "observedOutput": "simctl openurl exits 0, but iOS/iPadOS 27.2 Shortcuts.app rejects unsigned .shortcut files without AEA1 signature"
+    },
+    {
+      "routeId": "route_3_macos_host_sign_then_openurl",
+      "documented": true,
+      "command": "/usr/bin/shortcuts sign --mode anyone && xcrun simctl openurl <UDID> file://<signed.shortcut>",
+      "hostSignExitCode": 1,
+      "hostSignOutput": "Error: In order to do this, you must be signed into iCloud.",
+      "openUrlExitCode": 1,
+      "status": "BLOCKED_SIGNING",
+      "observedOutput": "Blocked by macOS host signing: Error: In order to do this, you must be signed into iCloud."
+    },
+    {
+      "routeId": "route_4_exploratory_import_shortcut_scheme",
+      "documented": false,
+      "classification": "UNDOCUMENTED",
+      "command": "xcrun simctl openurl <UDID> shortcuts://import-shortcut?name=CherriQAProbe",
+      "exitCode": 0,
+      "status": "UNDOCUMENTED_PROBE",
+      "observedOutput": ""
+    }
+  ],
+  "compiledFixtures": [
+    {
+      "fixtureId": "qa-functional-v2",
+      "dialect": "v2",
+      "sourceSha256": "c18a0d6f4f8fc339430497ef9300dae32b412e037d0582e59236868de001dd59",
+      "unsignedPlistSha256": "2633d1392e063e832bafa6f0fafb4e46a54f026ecf423f50db8e7185437d7f57",
+      "nativeActionCount": 30
+    },
+    {
+      "fixtureId": "qa-functional-legacy",
+      "dialect": "legacy",
+      "sourceSha256": "d12d6e3d770dbe8ae8d4e96c3a500f6d4e144b9de74804563a0ce2fdcc1f900f",
+      "unsignedPlistSha256": "70918c2b233bf8f08d41609f7730deffe6de9cbe350aef686d926cbc4db98bd9",
+      "nativeActionCount": 31
+    },
+    {
+      "fixtureId": "qa-scroll-editor-v2",
+      "dialect": "v2",
+      "sourceSha256": "e8991ab412f0bbe8cdff2a0a0ca3b02c684cfdd36997e3477730e69d690cfec0",
+      "unsignedPlistSha256": "f5212e210351646fbc0be78387642f6e88315f351382e102418e481f85d45f2f",
+      "nativeActionCount": 35
+    },
+    {
+      "fixtureId": "qa-scroll-editor-legacy",
+      "dialect": "legacy",
+      "sourceSha256": "7fda9c4c5286e109a8beeac40645aa97270b98a3b11f6577bd8a1d358ad50182",
+      "unsignedPlistSha256": "d064710fda26242e31bf928d7d13dff34ffcc19ce3a3e9b16ae25da3cfeab7dc",
+      "nativeActionCount": 36
+    },
+    {
+      "fixtureId": "qa-rtl-hebrew-v2",
+      "dialect": "v2",
+      "sourceSha256": "dc380bd398377012c9df35c049523de920d3ce4d8d81ff5c623d5015b5835f81",
+      "unsignedPlistSha256": "f8d00926161df32e5645cb4bb34982e8e6e24bc3f2fc5c4fa7074e6c98e2524f",
+      "nativeActionCount": 14
+    },
+    {
+      "fixtureId": "qa-functional-v2-uninstrumented",
+      "dialect": "v2",
+      "sourceSha256": "bb30fa2191c34e6f14a56bf82b150e5c8deeb6a703196c8791df99f4ef3b0ca3",
+      "unsignedPlistSha256": "b9d8ff0653ec8f29e0410fd95ac9d4cb24e5ae49e47dbfffa2a79ff9ff30cf87",
+      "nativeActionCount": 13
+    },
+    {
+      "fixtureId": "qa-functional-legacy-uninstrumented",
+      "dialect": "legacy",
+      "sourceSha256": "e0ec58034022dc6bfbd46640268d2187330ce5656565f199567905b84340147f",
+      "unsignedPlistSha256": "29fa8f57b665963ef29818f40487eb3a5e78c4996f6b4827c9d21631676a2ac1",
+      "nativeActionCount": 14
+    }
+  ],
+  "instrumentationParity": {
+    "v2": {
+      "uninstrumentedActionCount": 13,
+      "instrumentedTotalActionCount": 30,
+      "projectedSourceActionCount": 13,
+      "inlineDebugActionCount": 15,
+      "collectorEventActionCount": 2,
+      "sourceActionSequenceMatches": true
+    },
+    "legacy": {
+      "uninstrumentedActionCount": 14,
+      "instrumentedTotalActionCount": 31,
+      "projectedSourceActionCount": 14,
+      "inlineDebugActionCount": 15,
+      "collectorEventActionCount": 2,
+      "sourceActionSequenceMatches": true
+    }
+  },
+  "xctestSummary": {
+    "title": "Test - CherriSimulatorQAReceiver",
+    "result": "Passed",
+    "totalTestCount": 2,
+    "passedTests": 2,
+    "failedTests": 0,
+    "skippedTests": 0
+  },
+  "receiverCallbackEvidence": {
+    "runId": "receiver-self-test",
+    "status": "SUCCESS",
+    "resultSummary": "CHERRI_QA_RECEIVER_OK",
+    "timestampISO8601": "2026-11-15T16:26:30.872Z"
+  }
+}
