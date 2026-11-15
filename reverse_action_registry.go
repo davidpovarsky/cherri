@@ -66,7 +66,7 @@ func DefaultReverseActionRegistry() *ReverseActionRegistry {
 func BuildReverseActionRegistryFromMap(defs map[string]*actionDefinition) *ReverseActionRegistry {
 	names := make([]string, 0, len(defs))
 	for name, def := range defs {
-		if def == nil || name == "rawAction" {
+		if def == nil || name == "rawAction" || isDebugStdlibMacro(name) {
 			continue
 		}
 		names = append(names, name)

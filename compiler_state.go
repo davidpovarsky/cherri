@@ -44,6 +44,7 @@ func init() {
 func restoreCompilerDefinitions() {
 	captureCompilerBaselines()
 	actions = maps.Clone(baselineActions)
+	registerDebugStdlibActions()
 	enumerations = maps.Clone(baselineEnumerations)
 	actionCategories = actionCategories[:baselineCategoriesLen]
 	includedStandardActions = false

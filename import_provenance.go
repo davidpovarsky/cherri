@@ -50,6 +50,25 @@ func isImportProvenanceMetaKey(k string) bool {
 	return verifiedImportMetadataKeys[k]
 }
 
+// actionDefaultShowMetaKey returns the verified non-semantic Show-* metadata key emitted by default
+// for an action identifier when compiled from natural Cherri source, or "" if none.
+func actionDefaultShowMetaKey(identifier string) string {
+	switch identifier {
+	case "is.workflow.actions.text.split",
+		"is.workflow.actions.text.combine",
+		"is.workflow.actions.text.changecase",
+		"is.workflow.actions.correctspelling":
+		return "Show-text"
+	case "is.workflow.actions.openurl":
+		return "Show-WFInput"
+	case "is.workflow.actions.url",
+		"is.workflow.actions.readinglist":
+		return "Show-WFURLActionURL"
+	default:
+		return ""
+	}
+}
+
 // deterministicSemanticActionHash computes a canonical digest of the semantic parameters of an action,
 // excluding non-semantic import metadata keys and Legacy variable-action serialization wrappers.
 func deterministicSemanticActionHash(identifier string, params map[string]any) string {
@@ -185,7 +204,13 @@ func buildImportProvenance(recs []NativeActionRecord) map[string]any {
 		absentUUID := !hasUUID
 		_, hasTopSer := rec.Parameters["WFSerializationType"]
 		absentTopSer := !hasTopSer && (rec.Identifier == "is.workflow.actions.setvariable" || rec.Identifier == "is.workflow.actions.appendvariable")
-		if len(meta) == 0 && !absentCustom && !absentUUID && !absentTopSer {
+		var absentShowKey string
+		if defShow := actionDefaultShowMetaKey(rec.Identifier); defShow != "" {
+			if _, hasShow := rec.Parameters[defShow]; !hasShow {
+				absentShowKey = defShow
+			}
+		}
+		if len(meta) == 0 && !absentCustom && !absentUUID && !absentTopSer && absentShowKey == "" {
 			continue
 		}
 		entry := map[string]any{
@@ -204,6 +229,9 @@ func buildImportProvenance(recs []NativeActionRecord) map[string]any {
 		}
 		if absentTopSer {
 			entry["AbsentSerializationType"] = true
+		}
+		if absentShowKey != "" {
+			entry["AbsentShowKey"] = absentShowKey
 		}
 		entries = append(entries, entry)
 	}
@@ -279,13 +307,14 @@ func isUUIDReferencedInCompiledActions(compiled []any, skipIdx int, targetUUID s
 }
 
 type parsedProvEntry struct {
-	index        int
-	identifier   string
-	semanticHash string
-	meta         map[string]any
-	absentCustom bool
-	absentUUID   bool
-	absentTopSer bool
+	index         int
+	identifier    string
+	semanticHash  string
+	meta          map[string]any
+	absentCustom  bool
+	absentUUID    bool
+	absentTopSer  bool
+	absentShowKey string
 }
 
 // applyImportProvenanceToCompiledActions restores metadata keys onto compiled actions. It is a
@@ -322,17 +351,19 @@ func applyImportProvenanceToCompiledActions(prov map[string]any, compiled []any)
 		absentCustom, _ := entryMap["AbsentCustomOutputName"].(bool)
 		absentUUID, _ := entryMap["AbsentUUID"].(bool)
 		absentTopSer, _ := entryMap["AbsentSerializationType"].(bool)
-		if len(meta) == 0 && !absentCustom && !absentUUID && !absentTopSer {
+		absentShowKey, _ := entryMap["AbsentShowKey"].(string)
+		if len(meta) == 0 && !absentCustom && !absentUUID && !absentTopSer && absentShowKey == "" {
 			continue
 		}
 		entries = append(entries, &parsedProvEntry{
-			index:        idxv,
-			identifier:   ident,
-			semanticHash: semHash,
-			meta:         meta,
-			absentCustom: absentCustom,
-			absentUUID:   absentUUID,
-			absentTopSer: absentTopSer,
+			index:         idxv,
+			identifier:    ident,
+			semanticHash:  semHash,
+			meta:          meta,
+			absentCustom:  absentCustom,
+			absentUUID:    absentUUID,
+			absentTopSer:  absentTopSer,
+			absentShowKey: absentShowKey,
 		})
 	}
 
@@ -455,6 +486,9 @@ func applyImportProvenanceToCompiledActions(prov map[string]any, compiled []any)
 		}
 		if e.absentTopSer && params != nil {
 			delete(params, "WFSerializationType")
+		}
+		if e.absentShowKey != "" && isImportProvenanceMetaKey(e.absentShowKey) && params != nil {
+			delete(params, e.absentShowKey)
 		}
 		if params != nil {
 			act["WFWorkflowActionParameters"] = params

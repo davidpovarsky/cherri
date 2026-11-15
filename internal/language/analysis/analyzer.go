@@ -1400,7 +1400,8 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			a.checkAcceptedForms(primParam, call.PrimaryArg, callName)
 			argType := unwrapDynamicOptional(a.analyzeExpression(call.PrimaryArg, scope))
 			if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
-				if !(primParam.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(call.PrimaryArg)) {
+				if !(primParam.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(call.PrimaryArg)) &&
+					!isAttachmentCapableTextParamSchema(actionSchema.AppleIdentifier, primParam.WireKey, call.PrimaryArg) {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", primParam.Label, primParam.Type, argType))
 				}
 			}
@@ -1483,7 +1484,8 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		a.checkAcceptedForms(param, nArg.Value, callName)
 		argType := unwrapDynamicOptional(a.analyzeExpression(nArg.Value, scope))
 		if param.Type != nil && argType != nil && !argType.AssignableTo(param.Type) {
-			if !(param.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(nArg.Value)) {
+			if !(param.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(nArg.Value)) &&
+				!isAttachmentCapableTextParamSchema(actionSchema.AppleIdentifier, param.WireKey, nArg.Value) {
 				a.error(CodeArgumentType, nArg.Value.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Label, param.Type, argType))
 			}
 		}
@@ -1655,4 +1657,60 @@ func isNumericLiteralOrTokenString(expr syntax.Expression) bool {
 		return err == nil
 	}
 	return false
+}
+
+func isAttachmentCapableTextParamSchema(appleIdentifier, wireKey string, expr syntax.Expression) bool {
+	switch wireKey {
+	case "WFImageResizeWidth",
+		"WFImageResizeHeight",
+		"WFImageResizePercentage",
+		"WFImageResizeLength",
+		"WFImageCropWidth",
+		"WFImageCropHeight",
+		"WFImageCropX",
+		"WFImageCropY",
+		"WFImageWidth",
+		"WFImageHeight",
+		"WFImageX",
+		"WFImageY",
+		"WFRotation",
+		"WFOverlayImageOpacity",
+		"WFMaskCornerRadius":
+		if lit, ok := expr.(*syntax.LiteralExpr); ok {
+			return lit.Type == syntax.TokenNumber || lit.Type == syntax.TokenString || lit.Type == syntax.TokenRawString
+		}
+		return isReferenceLikeExpr(expr)
+	}
+	switch appleIdentifier {
+	case "is.workflow.actions.text.split", "is.workflow.actions.text.combine":
+		if wireKey == "text" || wireKey == "" {
+			return isReferenceLikeExpr(expr)
+		}
+	case "is.workflow.actions.text.changecase", "is.workflow.actions.correctspelling":
+		if wireKey == "text" {
+			return isReferenceLikeExpr(expr)
+		}
+	case "is.workflow.actions.openurl", "is.workflow.actions.detect.link":
+		if wireKey == "WFInput" {
+			return isReferenceLikeExpr(expr)
+		}
+	case "is.workflow.actions.geturlcomponent":
+		if wireKey == "WFURL" {
+			return isReferenceLikeExpr(expr)
+		}
+	case "is.workflow.actions.url.expand":
+		if wireKey == "URL" {
+			return isReferenceLikeExpr(expr)
+		}
+	}
+	return false
+}
+
+func isReferenceLikeExpr(expr syntax.Expression) bool {
+	switch expr.(type) {
+	case *syntax.IdentExpr, *syntax.MemberExpr, *syntax.IndexExpr, *syntax.CallExpr:
+		return true
+	default:
+		return false
+	}
 }

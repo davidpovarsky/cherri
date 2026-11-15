@@ -145,7 +145,7 @@ type actionDefinition struct {
 	minVersionString   string
 	maxVersion         float64
 	maxVersionString   string
-	builtin            bool // builtin is based on if the action was in the actions map when it was first initialized.
+	builtin            bool   // builtin is based on if the action was in the actions map when it was first initialized.
 	includeCategory    string // Standard action include category ('actions/<cat>') that declared this definition; "" for builtin/Go-defined actions and basic actions that never require an include.
 }
 
@@ -270,6 +270,30 @@ func EvaluateActionEmission(ctx ActionEmissionContext) (string, map[string]any) 
 
 // makeAction builds an action based on its actionDefinition and adds it to the shortcut.
 func makeAction(arguments []actionArgument, reference *WFActionReference) {
+	if isDebugStdlibMacro(currentAction.identifier) {
+		params := getActionParameters(arguments)
+		var outputUUID, outputName string
+		if reference != nil {
+			outputUUID = reference.UUID
+			outputName = reference.CustomOutputName
+		}
+		macroName := currentAction.identifier
+		expanded, err := resolveDebugMacroCall(macroName, params, shortcut.WFWorkflowActions, outputUUID, outputName)
+		if err != nil {
+			exit(err.Error())
+		}
+		if debugMacroRequestsDates(macroName, params) {
+			withDates, inserted, backfillErr := backfillDebugLogDates(shortcut.WFWorkflowActions)
+			if backfillErr != nil {
+				exit(backfillErr.Error())
+			}
+			shortcut.WFWorkflowActions = withDates
+			actionIndex += inserted
+		}
+		shortcut.WFWorkflowActions = append(shortcut.WFWorkflowActions, expanded...)
+		actionIndex += len(expanded)
+		return
+	}
 	isRawAction := currentAction.identifier == "rawAction"
 	hasExplicitRawPlist := false
 	if isRawAction && len(arguments) > 0 {
@@ -705,11 +729,36 @@ func isNumericOrTextImageParamKey(key string) bool {
 		"WFImageCropWidth",
 		"WFImageCropHeight",
 		"WFImageCropX",
-		"WFImageCropY":
+		"WFImageCropY",
+		"WFImageWidth",
+		"WFImageHeight",
+		"WFImageX",
+		"WFImageY",
+		"WFRotation",
+		"WFOverlayImageOpacity",
+		"WFMaskCornerRadius":
 		return true
 	default:
 		return false
 	}
+}
+
+func isAttachmentCapableTextParam(actionIdent string, paramKey string) bool {
+	if isNumericOrTextImageParamKey(paramKey) {
+		return true
+	}
+	ident := strings.TrimPrefix(actionIdent, "is.workflow.actions.")
+	switch ident {
+	case "text.split", "text.changecase", "correctspelling":
+		return paramKey == "text"
+	case "openurl", "detect.link":
+		return paramKey == "WFInput"
+	case "geturlcomponent":
+		return paramKey == "WFURL"
+	case "url.expand":
+		return paramKey == "URL"
+	}
+	return false
 }
 
 // typeCheck is used to check the types of arguments given for actions.

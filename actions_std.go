@@ -3045,14 +3045,18 @@ func textParts(args []actionArgument) map[string]any {
 
 	var separator any = "\n"
 	if len(args) >= 2 && args[1].value != nil && args[1].valueType != Nil {
-		separator = getArgValue(args[1])
+		if args[1].valueType == Variable {
+			separator = args[1]
+		} else {
+			separator = getArgValue(args[1])
+		}
 	}
 	switch {
 	case separator == " ":
 		data["WFTextSeparator"] = "Spaces"
 	case separator == "\n":
 		data["WFTextSeparator"] = "New Lines"
-	case separator == "" && currentAction.identifier == "text.split":
+	case separator == "" && (currentAction.identifier == "text.split" || currentAction.definition.identifier == "text.split"):
 		data["WFTextSeparator"] = "Every Character"
 	default:
 		data["WFTextSeparator"] = "Custom"
@@ -3516,5 +3520,3 @@ func setterArgValue(arg actionArgument) any {
 	}
 	return getArgValue(arg)
 }
-
-

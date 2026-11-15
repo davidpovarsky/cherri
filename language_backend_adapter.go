@@ -136,6 +136,23 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	// Run canonical getActionParameters
 	params := getActionParameters(args)
 
+	if isDebugStdlibMacro(ident) {
+		macroName := ident
+		expanded, err := resolveDebugMacroCall(macroName, params, s.shortcut.WFWorkflowActions, call.OutputUUID, call.OutputName)
+		if err != nil {
+			return "", err
+		}
+		if debugMacroRequestsDates(macroName, params) {
+			withDates, _, backfillErr := backfillDebugLogDates(s.shortcut.WFWorkflowActions)
+			if backfillErr != nil {
+				return "", backfillErr
+			}
+			s.shortcut.WFWorkflowActions = withDates
+		}
+		s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, expanded...)
+		return call.OutputUUID, nil
+	}
+
 	// Determine Apple identifier
 	fullIdent := getFullActionIdentifier()
 	if call.AppleIdentifier != "" && (fullIdent == "is.workflow.actions." || fullIdent == "") {

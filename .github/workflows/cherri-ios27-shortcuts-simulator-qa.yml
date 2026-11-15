@@ -1,0 +1,112 @@
+name: Cherri iOS/iPadOS 27 Shortcuts Simulator QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      probe_level:
+        description: "Probe level (preflight | import | editor | runtime | full)"
+        required: false
+        default: "full"
+        type: choice
+        options:
+          - preflight
+          - import
+          - editor
+          - runtime
+          - full
+      device_profile:
+        description: "Simulator device profile (ipad-default | iphone-fallback)"
+        required: false
+        default: "ipad-default"
+        type: choice
+        options:
+          - ipad-default
+          - iphone-fallback
+      sample_id:
+        description: "Synthetic fixture sample ID"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - qa-functional
+          - qa-scroll-editor
+          - qa-rtl-hebrew
+      capture_full_editor:
+        description: "Capture multi-page editor screenshots and accessibility tree"
+        required: false
+        default: true
+        type: boolean
+      max_editor_pages:
+        description: "Maximum editor pages to scroll and snapshot"
+        required: false
+        default: "20"
+        type: string
+      upload_sanitized_artifacts:
+        description: "Upload sanitized QA artifacts (7-day retention)"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator-qa:
+    name: iPadOS 27 Simulator Shortcuts QA
+    runs-on: xcode-27
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run iPadOS 27 Simulator Shortcuts QA Orchestrator
+        run: |
+          chmod +x scripts/ios27_shortcuts_simulator_qa.sh
+          ./scripts/ios27_shortcuts_simulator_qa.sh \
+            "${{ inputs.probe_level || 'full' }}" \
+            "${{ inputs.device_profile || 'ipad-default' }}" \
+            "${{ inputs.sample_id || 'all' }}" \
+            "${{ inputs.capture_full_editor || 'true' }}" \
+            "${{ inputs.max_editor_pages || '20' }}"
+
+      - name: Pre-Upload Sanitization & Privacy Gate
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+          root = "artifacts/cherri-ios27-simulator-qa"
+          if not os.path.isdir(root):
+              sys.exit(0)
+          forbidden = re.compile(r"(cherri-shortcut-audit-20261110|[0-3][0-9]\.plist|BEGIN PRIVATE KEY|ghp_[A-Za-z0-9]+)")
+          for dirpath, _, filenames in os.walk(root):
+              for fn in filenames:
+                  if fn.endswith((".json", ".jsonl", ".md", ".txt", ".log")):
+                      p = os.path.join(dirpath, fn)
+                      with open(p, "r", encoding="utf-8", errors="ignore") as f:
+                          content = f.read()
+                      m = forbidden.search(content)
+                      if m:
+                          print(f"PRIVACY GATE FAILED: forbidden pattern {m.group(0)} in {p}", file=sys.stderr)
+                          sys.exit(1)
+          print("Privacy & sanitization gate passed.")
+          PY
+
+      - name: Upload Sanitized Simulator QA Artifacts
+        if: always() && (inputs.upload_sanitized_artifacts == true || inputs.upload_sanitized_artifacts == '')
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-ios27-simulator-qa-${{ github.run_id }}
+          path: artifacts/cherri-ios27-simulator-qa/${{ github.run_id }}/
+          retention-days: 7
+          if-no-files-found: warn

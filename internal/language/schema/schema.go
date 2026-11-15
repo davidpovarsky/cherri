@@ -291,9 +291,255 @@ func (r *Registry) Fingerprint() string {
 }
 
 // LookupAction returns the ActionSchema by its callable name.
+// Compiler-expanded debug/QA stdlib macros are resolved as a fallback without
+// mutating the 505 canonical Apple action catalog or its fingerprint.
 func (r *Registry) LookupAction(name string) (*ActionSchema, bool) {
-	a, ok := r.actionsByName[name]
-	return a, ok
+	if a, ok := r.actionsByName[name]; ok {
+		return a, true
+	}
+	if a, ok := compilerMacroSchemas[name]; ok {
+		return a, true
+	}
+	return nil, false
+}
+
+var compilerMacroSchemas = map[string]*ActionSchema{
+	"debugLog": {
+		ID:                 "debugLog",
+		CallableName:       "debugLog",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.appendvariable",
+		PrimaryParameterID: "withDates",
+		Parameters: []ParameterSchema{
+			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogs", Label: "showLogs", DisplayName: "Show Logs", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogs", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys:    []string{"WFDebugShowLogs", "WFDebugShowLogsAsText", "WFDebugWithDates", "WFVariableName"},
+		OutputType:     types.Text,
+		OutputTypeName: "text",
+		RawOutputType:  "string",
+		Docs: ActionDocs{
+			Title:            "Debug Log",
+			Description:      "Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows.",
+			Category:         "debug",
+			InsertionSnippet: "debugLog()",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugLogPrevious": {
+		ID:                 "debugLogPrevious",
+		CallableName:       "debugLogPrevious",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.appendvariable",
+		PrimaryParameterID: "withDates",
+		Parameters: []ParameterSchema{
+			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogs", Label: "showLogs", DisplayName: "Show Logs", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogs", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys:    []string{"WFDebugShowLogs", "WFDebugShowLogsAsText", "WFDebugWithDates"},
+		OutputType:     types.Text,
+		OutputTypeName: "text",
+		RawOutputType:  "string",
+		Docs: ActionDocs{
+			Title:            "Log Previous Result",
+			Description:      "Alias for debugLog with optional withDates/showLogs/showLogsAsText.",
+			Category:         "debug",
+			InsertionSnippet: "debugLogPrevious()",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugShowLogs": {
+		ID:                 "debugShowLogs",
+		CallableName:       "debugShowLogs",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.previewdocument",
+		PrimaryParameterID: "withDates",
+		Parameters: []ParameterSchema{
+			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys: []string{"WFDebugShowLogsAsText", "WFDebugWithDates"},
+		OutputType:  types.Void,
+		Docs: ActionDocs{
+			Title:            "Show Debug Logs",
+			Description:      "Preview native objects, naming items by Creation Date when enabled; use showLogsAsText for text formatting.",
+			Category:         "debug",
+			InsertionSnippet: "debugShowLogs()",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugFinish": {
+		ID:                 "debugFinish",
+		CallableName:       "debugFinish",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.previewdocument",
+		PrimaryParameterID: "withDates",
+		Parameters: []ParameterSchema{
+			{ID: "withDates", Label: "withDates", DisplayName: "With Dates", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugWithDates", EvidenceStatus: EvidenceInferred},
+			{ID: "showLogsAsText", Label: "showLogsAsText", DisplayName: "Show Logs As Text", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: true, AcceptedForms: []string{"bool", "expression", "reference"}, DefaultValue: "false", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugShowLogsAsText", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys: []string{"WFDebugShowLogsAsText", "WFDebugWithDates"},
+		OutputType:  types.Void,
+		Docs: ActionDocs{
+			Title:            "Finish Debug Session",
+			Description:      "Preview native objects with optional Creation Date names or display text with showLogsAsText.",
+			Category:         "debug",
+			InsertionSnippet: "debugFinish()",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugClearLogs": {
+		ID:              "debugClearLogs",
+		CallableName:    "debugClearLogs",
+		Module:          "debug",
+		AppleIdentifier: "is.workflow.actions.setvariable",
+		Parameters:      []ParameterSchema{},
+		OutputType:      types.Void,
+		Docs: ActionDocs{
+			Title:            "Clear Debug Logs",
+			Description:      "Reset the execution-local debug log to an empty value.",
+			Category:         "debug",
+			InsertionSnippet: "debugClearLogs()",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugTrace": {
+		ID:                 "debugTrace",
+		CallableName:       "debugTrace",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.appendvariable",
+		PrimaryParameterID: "value",
+		Parameters: []ParameterSchema{
+			{ID: "value", Label: "value", DisplayName: "Value", Type: types.Text, TypeName: "text", RawType: "string", Optional: false, AcceptedForms: []string{"string", "interpolation", "expression", "reference"}, OmissionPolicy: OmitPolicyEmit, WireKey: "WFInput", Codec: "textToken", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys:    []string{"WFInput"},
+		OutputType:     types.Text,
+		OutputTypeName: "text",
+		RawOutputType:  "string",
+		Docs: ActionDocs{
+			Title:            "Trace Value and Time",
+			Description:      "Append current time followed by a value to the execution-local debug log.",
+			Category:         "debug",
+			InsertionSnippet: "debugTrace(value: <#text#>)",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugAssert": {
+		ID:                 "debugAssert",
+		CallableName:       "debugAssert",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.conditional",
+		PrimaryParameterID: "condition",
+		Parameters: []ParameterSchema{
+			{ID: "condition", Label: "condition", DisplayName: "Condition", Type: types.Bool, TypeName: "bool", RawType: "bool", Optional: false, AcceptedForms: []string{"bool", "expression", "reference"}, OmissionPolicy: OmitPolicyEmit, WireKey: "WFInput", EvidenceStatus: EvidenceInferred},
+			{ID: "message", Label: "message", DisplayName: "Message", Type: types.Text, TypeName: "text", RawType: "string", Optional: true, AcceptedForms: []string{"string", "interpolation", "expression", "reference"}, DefaultValue: "Assertion failed", OmissionPolicy: OmitPolicyOmit, WireKey: "WFAlertActionMessage", Codec: "textToken", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys: []string{"WFAlertActionMessage", "WFInput"},
+		OutputType:  types.Void,
+		Docs: ActionDocs{
+			Title:            "Assert Condition",
+			Description:      "Stop the Shortcut with a message when the condition is false.",
+			Category:         "debug",
+			InsertionSnippet: "debugAssert(condition: <#bool#>)",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugStartTimer": {
+		ID:                 "debugStartTimer",
+		CallableName:       "debugStartTimer",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.date",
+		PrimaryParameterID: "label",
+		Parameters: []ParameterSchema{
+			{ID: "label", Label: "label", DisplayName: "Label", Type: types.Text, TypeName: "text", RawType: "string", Optional: false, AcceptedForms: []string{"string", "interpolation", "expression", "reference"}, OmissionPolicy: OmitPolicyEmit, WireKey: "WFDebugTimerLabel", Codec: "textToken", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys: []string{"WFDebugTimerLabel"},
+		OutputType:  types.Void,
+		Docs: ActionDocs{
+			Title:            "Start Debug Timer",
+			Description:      "Remember the current time under a compile-time label.",
+			Category:         "debug",
+			InsertionSnippet: "debugStartTimer(label: <#text#>)",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugStopTimer": {
+		ID:                 "debugStopTimer",
+		CallableName:       "debugStopTimer",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.gettimebetweendates",
+		PrimaryParameterID: "label",
+		Parameters: []ParameterSchema{
+			{ID: "label", Label: "label", DisplayName: "Label", Type: types.Text, TypeName: "text", RawType: "string", Optional: false, AcceptedForms: []string{"string", "interpolation", "expression", "reference"}, OmissionPolicy: OmitPolicyEmit, WireKey: "WFDebugTimerLabel", Codec: "textToken", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys:    []string{"WFDebugTimerLabel"},
+		OutputType:     types.Number,
+		OutputTypeName: "number",
+		RawOutputType:  "float",
+		Docs: ActionDocs{
+			Title:            "Stop Debug Timer",
+			Description:      "Measure elapsed seconds and append the result to the execution-local log.",
+			Category:         "debug",
+			InsertionSnippet: "debugStopTimer(label: <#text#>)",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugTraceEvent": {
+		ID:                 "debugTraceEvent",
+		CallableName:       "debugTraceEvent",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.appendvariable",
+		PrimaryParameterID: "stage",
+		Parameters: []ParameterSchema{
+			{ID: "stage", Label: "stage", DisplayName: "Stage", Type: types.Text, TypeName: "text", RawType: "string", Optional: false, AcceptedForms: []string{"string"}, OmissionPolicy: OmitPolicyEmit, WireKey: "WFDebugTraceStage", EvidenceStatus: EvidenceInferred},
+			{ID: "label", Label: "label", DisplayName: "Label", Type: types.Text, TypeName: "text", RawType: "string", Optional: true, AcceptedForms: []string{"string"}, DefaultValue: "", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugTraceLabel", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys:    []string{"WFDebugTraceLabel", "WFDebugTraceStage"},
+		OutputType:     types.Text,
+		OutputTypeName: "text",
+		RawOutputType:  "string",
+		Docs: ActionDocs{
+			Title:            "Record QA Structured Trace Event",
+			Description:      "Append a structured JSONL trace record (stage, label, step sequence, and CurrentDate timestamp) to the execution-local QA trace buffer without mutating __cherri_debug_log.",
+			Category:         "debug",
+			InsertionSnippet: "debugTraceEvent(stage: \"after\", label: \"step-1\")",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
+	"debugExportTrace": {
+		ID:                 "debugExportTrace",
+		CallableName:       "debugExportTrace",
+		Module:             "debug",
+		AppleIdentifier:    "is.workflow.actions.gettext",
+		PrimaryParameterID: "runId",
+		Parameters: []ParameterSchema{
+			{ID: "runId", Label: "runId", DisplayName: "Run ID", Type: types.Text, TypeName: "text", RawType: "string", Optional: true, AcceptedForms: []string{"string"}, DefaultValue: "cherri-qa-run", OmissionPolicy: OmitPolicyOmit, WireKey: "WFDebugTraceRunID", EvidenceStatus: EvidenceInferred},
+		},
+		EmittedKeys:    []string{"WFDebugTraceRunID"},
+		OutputType:     types.Text,
+		OutputTypeName: "text",
+		RawOutputType:  "string",
+		Docs: ActionDocs{
+			Title:            "Export QA Structured Trace Snapshot",
+			Description:      "Combine the execution-local QA trace buffer into a deterministic JSON envelope for QA inspection or callback export without mutating __cherri_debug_log.",
+			Category:         "debug",
+			InsertionSnippet: "debugExportTrace(runId: \"qa-run-1\")",
+		},
+		Builtin:        true,
+		EvidenceStatus: EvidenceInferred,
+	},
 }
 
 // LookupByIdentifier returns all ActionSchemas matching the Apple identifier.

@@ -24,6 +24,7 @@ func EnsureCanonicalStandardActions() map[string]*actionDefinition {
 		loadBasicStandardActions()
 		loadAllStandardActionsForDecompile()
 		defineRawAction()
+		registerDebugStdlibActions()
 		canonicalStandardActions = maps.Clone(actions)
 		canonicalEnumerations = maps.Clone(enumerations)
 		resetCompilerStateFully()

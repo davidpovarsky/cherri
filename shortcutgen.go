@@ -879,7 +879,13 @@ func argumentValue(args []actionArgument, idx int) any {
 		arg = args[idx]
 	}
 
-	return paramValue(arg, actionParameter.validType)
+	handleAs := actionParameter.validType
+	fullIdent := getFullActionIdentifier()
+	if arg.valueType == Variable && (isAttachmentCapableTextParam(fullIdent, actionParameter.key) ||
+		((fullIdent == "is.workflow.actions.text.split" || fullIdent == "is.workflow.actions.text.combine") && idx == 1)) {
+		handleAs = Variable
+	}
+	return paramValue(arg, handleAs)
 }
 
 func paramValue(arg actionArgument, handleAs tokenType) any {

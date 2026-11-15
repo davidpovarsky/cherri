@@ -37,30 +37,31 @@ type semanticControlRegion struct {
 // semanticImportContext holds the single shared semantic interpretation derived from
 // decompile.go's analysis passes, NativeShortcutDocument, and DefaultReverseActionRegistry.
 type semanticImportContext struct {
-	Doc                 *NativeShortcutDocument
-	Registry            *ReverseActionRegistry
-	UseCache            bool
-	Actions             []ShortcutAction
-	UsedProducerUUIDs   map[string]bool
-	UUIDToSymbol        map[string]string
-	SymbolToUUID        map[string]string
-	VarToSymbol         map[string]string
-	SymbolToVar         map[string]string
-	Symbols             map[string]map[string]any
-	SymbolProducers     map[string]int
-	RegionsByGroup      map[string]*semanticControlRegion
-	RegionsByIndex       map[int]*semanticControlRegion
-	DecompiledUUIDHints  map[string]string
-	MatchedActionNames   []string
-	fallbackLegacyLines  []string
-	fallbackV2Lines      []string
-	fallbackReasons      []string
-	candidateActionMarks map[int]string
-	candidateRegionOrder []string
-	postAtomicActionCnt  int
-	rawRefCounter        int
-	pendingLegacyDecls   []string
-	insideJSONLiteral    int
+	Doc                     *NativeShortcutDocument
+	Registry                *ReverseActionRegistry
+	UseCache                bool
+	Actions                 []ShortcutAction
+	UsedProducerUUIDs       map[string]bool
+	UUIDToSymbol            map[string]string
+	SymbolToUUID            map[string]string
+	VarToSymbol             map[string]string
+	SymbolToVar             map[string]string
+	Symbols                 map[string]map[string]any
+	SymbolProducers         map[string]int
+	RegionsByGroup          map[string]*semanticControlRegion
+	RegionsByIndex          map[int]*semanticControlRegion
+	DecompiledUUIDHints     map[string]string
+	MatchedActionNames      []string
+	fallbackLegacyLines     []string
+	fallbackV2Lines         []string
+	fallbackReasons         []string
+	candidateActionMarks    map[int]string
+	candidateRegionOrder    []string
+	postAtomicActionCnt     int
+	rawRefCounter           int
+	pendingLegacyDecls      []string
+	insideJSONLiteral       int
+	currentSynthActionIdent string
 }
 
 // semanticExprPair holds paired Legacy and V2 Cherri expressions rendered from one semantic AST/value.
@@ -228,6 +229,11 @@ func buildSemanticImportContext(doc *NativeShortcutDocument, reg *ReverseActionR
 			if _, hasProd := doc.ProducerUUIDIndex[u]; hasProd {
 				ctx.UsedProducerUUIDs[u] = true
 			}
+		}
+	}
+	for i, rec := range doc.Actions {
+		if rec.Identifier == "is.workflow.actions.dictionary" && rec.UUID != "" && doc.ProducerUUIDIndex[rec.UUID] == i {
+			ctx.UsedProducerUUIDs[rec.UUID] = true
 		}
 	}
 
@@ -898,6 +904,11 @@ func (ctx *semanticImportContext) isContextFreeRecord(rec NativeActionRecord) bo
 	if rec.UUID != "" || rec.CustomOutputName != "" || len(rec.ReferencedUUIDs) > 0 || len(rec.ReferencedVars) > 0 {
 		return false
 	}
+	if defShowKey := actionDefaultShowMetaKey(rec.Identifier); defShowKey != "" {
+		if _, hasShow := rec.Parameters[defShowKey]; !hasShow {
+			return false
+		}
+	}
 	for k := range rec.Parameters {
 		if isImportProvenanceMetaKey(k) {
 			return false
@@ -979,6 +990,9 @@ func (ctx *semanticImportContext) synthesizeNumberAction(rec NativeActionRecord)
 		return "", "", false
 	}
 	lit, ok := ctx.renderNumberOrAttachmentPair(rawVal)
+	if !ok {
+		lit, ok = ctx.renderAnyTextPair(rawVal, true)
+	}
 	if !ok {
 		return "", "", false
 	}
@@ -1177,6 +1191,9 @@ func (ctx *semanticImportContext) selectOrderedCandidates(idx int, rec NativeAct
 
 func staticParamsCompatible(wire map[string]any, staticParams map[string]any) bool {
 	for k, expected := range staticParams {
+		if isImportProvenanceMetaKey(k) {
+			continue
+		}
 		actual, ok := wire[k]
 		if !ok || !plistCanonicalEqual(expected, actual) {
 			return false
@@ -1328,6 +1345,11 @@ type v2NamedArg struct {
 
 func (ctx *semanticImportContext) synthesizeDefinitionArgs(rec NativeActionRecord, cand ReverseActionCandidate) ([]string, []v2NamedArg, bool) {
 	def := cand.Definition
+	prevSynthIdent := ctx.currentSynthActionIdent
+	ctx.currentSynthActionIdent = cand.AppleIdentifier
+	defer func() {
+		ctx.currentSynthActionIdent = prevSynthIdent
+	}()
 	hasDupLabel := hasDuplicateParamLabels(def.parameters)
 
 	type renderedSlot struct {
@@ -1478,8 +1500,8 @@ func (ctx *semanticImportContext) renderParameterValuePair(p parameterDefinition
 		ser, _ := m["WFSerializationType"].(string)
 		switch ser {
 		case "WFTextTokenAttachment":
-			// String/RawString parameters in Cherri serialize references as WFTextTokenString, never WFTextTokenAttachment.
-			if p.validType == String || p.validType == RawString {
+			// String/RawString parameters in Cherri serialize references as WFTextTokenString unless attachment-capable.
+			if (p.validType == String || p.validType == RawString) && !isAttachmentCapableTextParam(ctx.currentSynthActionIdent, p.key) {
 				return semanticExprPair{}, false
 			}
 			return ctx.renderSerializedAttachmentPair(m, false)
@@ -2082,21 +2104,13 @@ func (ctx *semanticImportContext) reverseTextPartsParam(rec NativeActionRecord, 
 	if (callableName != "splitText" && callableName != "joinText") || (p.name != "separator" && p.name != "glue") {
 		return semanticExprPair{}, false, false
 	}
-	if show, _ := rec.Parameters["Show-text"].(bool); !show {
-		return semanticExprPair{}, true, false
-	}
 	sepMode, _ := rec.Parameters["WFTextSeparator"].(string)
 	switch sepMode {
-	case "":
-		if _, hasCustom := rec.Parameters["WFTextCustomSeparator"]; hasCustom {
-			return semanticExprPair{}, true, false
-		}
-		return semanticExprPair{}, true, true
 	case "New Lines":
 		if _, hasCustom := rec.Parameters["WFTextCustomSeparator"]; hasCustom {
 			return semanticExprPair{}, true, false
 		}
-		return semanticExprPair{Legacy: `"\n"`, V2: `"\n"`}, true, true
+		return semanticExprPair{}, true, true
 	case "Spaces":
 		if _, hasCustom := rec.Parameters["WFTextCustomSeparator"]; hasCustom {
 			return semanticExprPair{}, true, false
@@ -2113,6 +2127,9 @@ func (ctx *semanticImportContext) reverseTextPartsParam(rec NativeActionRecord, 
 	case "Custom":
 		rawCustom, hasCustom := rec.Parameters["WFTextCustomSeparator"]
 		if !hasCustom {
+			return semanticExprPair{}, true, false
+		}
+		if s, isStr := rawCustom.(string); isStr && (s == " " || s == "\n" || (s == "" && callableName == "splitText")) {
 			return semanticExprPair{}, true, false
 		}
 		ep, ok := ctx.renderAnyTextPair(rawCustom, true)

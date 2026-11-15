@@ -130,6 +130,26 @@ fail-closed whole-workflow verification with per-action/region `native.action` /
 `rawAction` fallback; `--fidelity=semantic` remains best-effort); a plist
 structure Cherri cannot represent must be reported, not silently dropped.
 
+## Debug logging and native object previews
+
+In the Cherri compiler, `debugLog()` (and `debugLogPrevious()`) captures the
+preceding native Shortcuts output without converting it to Text. Its optional
+Boolean flags are `withDates`, `showLogs`, and `showLogsAsText`. `withDates`
+captures `Creation Date` (`WFFileCreationDate`) adjacent to the native output
+producer. Normal `showLogs` previews native objects; `withDates` + `showLogs`
+adds `Repeat with Each -> Set Name(Creation Date) -> Quick Look` matching the
+verified iPad-exported Shortcuts workflow. Only `showLogsAsText` converts
+values for textual display. `showLogs` and `showLogsAsText` are mutually
+exclusive.
+
+Use documented V2 named calls such as:
+- `debugLog(withDates: true)`
+- `debugLog(withDates: true, showLogs: true)`
+- `debugLog(withDates: true, showLogsAsText: true)`
+- `debugTraceEvent(stage: "after", label: "step-1")` / `debugExportTrace(runId: "qa-run-1")` for opt-in QA structured trace snapshots.
+
+Consult `references/debug-logging.md` and `docs/apple-runtime/cherri-debug/debug-native-object-preview-2026-11-12.md` before choosing flags.
+
 ## Maintenance
 
 Refresh Cherri source/compiler and upstream docs only when needed:

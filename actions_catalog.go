@@ -106,6 +106,9 @@ const actionCatalogVersion = "2"
 func buildActionCatalog() []catalogActionInfo {
 	names := make([]string, 0, len(actions))
 	for name := range actions {
+		if isDebugStdlibMacro(name) {
+			continue
+		}
 		names = append(names, name)
 	}
 	sort.Strings(names)

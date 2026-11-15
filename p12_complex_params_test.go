@@ -532,7 +532,7 @@ func TestP12_PAR_06_TypedVarOutputAndDictAggrandizementProvenance(t *testing.T) 
 func TestP12_PAR_07_AbsentVsFalseAndZeroNumericTriState(t *testing.T) {
 	u1 := "77777777-7777-4777-8777-000000000001"
 	actions := []any{
-		// Numeric zero vs float vs string-encoded number (string-encoded number must stay EXACT_NATIVE_FALLBACK).
+		// Numeric zero vs float vs string-encoded number (promoted in P10R13 via number("1") preserving string wire type).
 		map[string]any{
 			"WFWorkflowActionIdentifier": "is.workflow.actions.number",
 			"WFWorkflowActionParameters": map[string]any{
@@ -574,12 +574,11 @@ func TestP12_PAR_07_AbsentVsFalseAndZeroNumericTriState(t *testing.T) {
 		map[int]string{
 			0: "NATURAL_VERIFIED",
 			1: "NATURAL_VERIFIED",
-			2: "EXACT_NATIVE_FALLBACK",
+			2: "NATURAL_VERIFIED",
 			3: "NATURAL_VERIFIED",
 			4: "EXACT_NATIVE_FALLBACK",
 		},
 		map[int]string{
-			2: "UNREPRESENTABLE_PARAM",
 			4: "AMBIGUOUS_VARIANT",
 		},
 		nil,
