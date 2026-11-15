@@ -1855,6 +1855,31 @@
       "reason": "Milestone P10R13 iPadOS 27 Simulator runtime QA infrastructure, compile-time debug stdlib integration without catalog drift, and native action fidelity promotions raising natural action coverage to 23,353 / 27,652 (84.45%, +863 vs P10R12) with 0 Stage-3 demotions.",
       "evidence": "go test -count=1 -timeout=20m ./... PASS (including TestDebugStdlib*, TestDebugTimer*, TestP13_FID_01..04, TestP13_SimulatorQA*, TestP13_CorpusFidelityAndSourceSizeAudit 23,353/27,652 = 84.45% natural verified, TestP11_WIRE_01 76/76, TestP12_BASE_02 0 demotions), skills/cherri-shortcuts/scripts/self-test.sh 10/10 PASS, verify_ledger_consistency.py PASS, verify_consumer_compatibility.py PASS, and docs/apple-runtime/p10r13/.",
       "note": "Milestone P10R13 provenance metadata and P10 ledger sync recorded in separate follow-up commit referencing implementation commit f62707d622f72267796bb674b3d17336941121ae."
+    },
+    {
+      "name": "P10R14 iPadOS 27 Simulator QA runtime oracle, NDJSON trace collector, structural action classifier, and privacy/CI gates",
+      "locations": [
+        ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+        ".gitignore",
+        "action.go",
+        "compiler_state.go",
+        "debug_stdlib.go",
+        "language_backend_adapter.go",
+        "p14_simulator_qa_runtime_trace_test.go",
+        "scripts/ios27_shortcuts_simulator_qa.sh",
+        "simulator_qa_oracle.go",
+        "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/Info.plist",
+        "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/ReceiverApp.swift",
+        "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift",
+        "tools/shortcuts-simulator-qa/fixtures/qa-functional-legacy.cherri",
+        "tools/shortcuts-simulator-qa/fixtures/qa-functional-v2.cherri",
+        "tools/shortcuts-simulator-qa/fixtures/qa-rtl-hebrew-v2.cherri"
+      ],
+      "firstForkCommit": "cfe0564038ee5376692350daac33200c4b91e9d7",
+      "change": "Replaced P10R13 quoted multiline trace envelope with a valid NDJSON stream (schemaVersion 1.4, traceTransport ndjson-stream, collectorSentinel ===CHERRI_QA_TRACE_NDJSON_V14===) using UTF-16 code-unit attachment offsets (utf16CodeUnitCount) and JSON string escaping (including U+FFFC -> \\ufffc); added compile-time debug instrumentation manifest tracking and structural action classification (isStructuralInlineTraceTextAction, isStructuralCollectorEnvelopeTextAction) so user-authored Text actions containing debug substrings are never misclassified; implemented the 14-gate state machine and correlated callback/trace oracle (simulator_qa_oracle.go, ParseAndValidateQATracePayload, EvaluateSimulatorQAGates); removed hardcoded BLOCKED_IMPORT overwrite in scripts/ios27_shortcuts_simulator_qa.sh; tracked ReceiverApp/Info.plist in git; hardened CherriSimulatorQAUITests.swift editor identity detection and regex/allowlist secret redaction; added require_runtime workflow input and binary PNG/xcresult privacy gate.",
+      "reason": "Milestone P10R14 closure of all 6 P10R13 simulator QA, trace serialization, classifier collision, editor false-positive, and privacy gate findings while preserving 505 public catalog actions and 84.45% natural corpus fidelity.",
+      "evidence": "go test -count=1 -timeout=20m ./... PASS (including TestP14_*, TestP13_*, TestDebugStdlib*, TestDebugTimer*, TestP13_CorpusFidelityAndSourceSizeAudit 23,353/27,652 = 84.45% natural verified), skills/cherri-shortcuts/scripts/self-test.sh --skip-setup 10/10 PASS.",
+      "note": "Milestone P10R14 provenance metadata recorded in separate follow-up commit referencing implementation commit cfe0564038ee5376692350daac33200c4b91e9d7."
     }
   ]
 }
