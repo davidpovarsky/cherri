@@ -109,8 +109,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "Shortcuts", "All Shortcuts", "Library", "Gallery", "Automation",
         "Search", "Search Actions", "New Shortcut", "Create Shortcut",
         "Add Shortcut", "+ Add Shortcut", "Add Action", "Add", "Done",
-        "Cancel", "Select", "More", "Share", "Duplicate", "Delete",
-        "Rename", "Details", "Info", "Play", "Run", "Run Shortcut", "Stop",
+        "Cancel", "Select", "More", "Share", "Share Shortcut", "Edit",
+        "Duplicate", "Delete", "Rename", "Details", "Info", "Play", "Run",
+        "Run Shortcut", "Stop", "Show Sidebar", "Hide Sidebar", "editor",
+        "New Shortcut, No actions", "New Shortcut, Shortcut Menu",
+        "Report a Concern", "Preparing support for\ndescribe a shortcut",
         "Allow", "Always Allow", "Allow Once", "Don't Allow", "OK",
         "Continue", "Get Started", "Not Now", "Close", "Dismiss", "Report",
         "Set Up Shortcut", "Replace", "About This Shortcut", "Can Run When Locked",
@@ -128,7 +131,8 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "CHERRI_QA_", "ANCHOR_", "qa.", "qa-functional", "qa-scroll-editor",
         "qa-rtl-hebrew", "Cherri QA", "===CHERRI_QA_TRACE_NDJSON_V14===",
         "ElementType_", "Vertical scroll bar", "Horizontal scroll bar",
-        "_TtGC7SwiftUI", "More, qa-"
+        "_TtGC7SwiftUI", "More, qa-", "More, New Shortcut", "Edit, New Shortcut",
+        "Preparing support for"
     ]
 
     private static let libraryChromeLabels: Set<String> = [
@@ -251,17 +255,20 @@ final class CherriSimulatorQAUITests: XCTestCase {
             }
         }
 
-        let hasSearchActions = shortcuts.searchFields["Search Actions"].exists ||
-                               shortcuts.buttons["Add Action"].exists ||
-                               shortcuts.buttons["Done"].exists ||
-                               shortcuts.buttons["Info"].exists ||
-                               shortcuts.buttons["Shortcut Details"].exists
+        let hasEditorPane = shortcuts.otherElements["editor"].exists ||
+                            shortcuts.navigationBars["New Shortcut"].exists ||
+                            shortcuts.navigationBars[expectedShortcutName].exists ||
+                            shortcuts.searchFields["Search Actions"].exists ||
+                            shortcuts.buttons["Add Action"].exists ||
+                            shortcuts.buttons["Done"].exists ||
+                            shortcuts.buttons["Info"].exists ||
+                            shortcuts.buttons["Shortcut Details"].exists
 
         let libraryStillPrimary = shortcuts.otherElements["all_shortcuts_library"].exists &&
                                   shortcuts.navigationBars["All Shortcuts"].exists &&
-                                  !hasSearchActions
+                                  !hasEditorPane
 
-        let editorOpened = hasSearchActions || (!libraryStillPrimary && !shortcuts.otherElements["all_shortcuts_library"].exists)
+        let editorOpened = hasEditorPane || (!libraryStillPrimary && !shortcuts.otherElements["all_shortcuts_library"].exists)
         let identityVerified = editorOpened && (
             shortcuts.buttons[expectedShortcutName].exists ||
             shortcuts.staticTexts[expectedShortcutName].exists ||
