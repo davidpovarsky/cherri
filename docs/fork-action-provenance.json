@@ -1820,6 +1820,41 @@
       "reason": "Milestone P10R12 verified natural import raising natural action coverage to 22,490 / 27,652 (81.33%, +11,031 vs P10R11) with 3,820 / 4,071 whole control regions promoted, 0 Stage-3 demotions, and 100% recursive typed plist parity.",
       "evidence": "go test -count=1 -timeout=20m ./... PASS (all Go packages including 55 TestP12_* and 50 TestP11_* tests plus full corpus run CHERRI_P10R10_CORPUS=1), independent 38x2 oracle (76/76 L1 exact, 22,490/22,490 pre-overlay semantic & post-overlay wire exact per dialect, 9/9 anti-tautology PASS, 0 modeParityDiffs), skill self-test.sh --skip-setup 10/10 scenarios PASS, and docs/apple-runtime/p10r12/final-audit.md (APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE).",
       "note": "Milestone P10R12 provenance metadata and P10 ledger sync recorded in separate follow-up commit referencing implementation commit bbb83df02e0707a222f49c745dcd04b136df7818."
+    },
+    {
+      "name": "P10R13 debug stdlib macro integration, iPadOS 27 Simulator QA harness & workflow, and native action fidelity promotions (+863 corpus actions)",
+      "locations": [
+        ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+        "action.go",
+        "actions_catalog.go",
+        "actions_std.go",
+        "compiler_state.go",
+        "debug_stdlib.go",
+        "debug_stdlib_test.go",
+        "debug_timer_native_test.go",
+        "import_provenance.go",
+        "internal/language/analysis/analyzer.go",
+        "internal/language/schema/schema.go",
+        "language_backend_adapter.go",
+        "language_backend_session.go",
+        "p12_complex_params_test.go",
+        "p13_fidelity_promotion_test.go",
+        "p13_simulator_qa_harness_test.go",
+        "reverse_action_registry.go",
+        "scripts/ios27_shortcuts_simulator_qa.sh",
+        "semantic_import_planner.go",
+        "shortcutgen.go",
+        "skills/cherri-shortcuts/SKILL.md",
+        "skills/cherri-shortcuts/references/debug-logging.md",
+        "tools/shortcuts-simulator-qa/",
+        "docs/apple-runtime/cherri-debug/",
+        "docs/apple-runtime/p10r13/"
+      ],
+      "firstForkCommit": "f62707d622f72267796bb674b3d17336941121ae",
+      "change": "Cleanly integrated compile-time debug stdlib macros (debugLog, debugTimerStart, debugTimerEnd, debugPrint, debugQuickLook, debugAssert, debugSummary) and structured QA tracing (--qa-instrument, --qa-run-id, --qa-callback-url) across Legacy and Cherri v2 while preserving exact 505 public catalog action count and schemaFingerprint; built iPadOS 27 Shortcuts Simulator QA harness (scripts/ios27_shortcuts_simulator_qa.sh, tools/shortcuts-simulator-qa/XcodeProject, .github/workflows/cherri-ios27-shortcuts-simulator-qa.yml, 8 synthetic fixtures); promoted +863 real-world corpus actions from EXACT_NATIVE_FALLBACK to NATURAL_VERIFIED across number string/attachment inputs, text.split/text.combine separator and absent Show-text handling, WFTextTokenAttachment variable inputs on text.changecase/openurl/detect.link/geturlcomponent/url.expand/image.resize/image.crop/overlayimageonimage/image.mask, and unreferenced sorted dictionary UUID preservation.",
+      "reason": "Milestone P10R13 iPadOS 27 Simulator runtime QA infrastructure, compile-time debug stdlib integration without catalog drift, and native action fidelity promotions raising natural action coverage to 23,353 / 27,652 (84.45%, +863 vs P10R12) with 0 Stage-3 demotions.",
+      "evidence": "go test -count=1 -timeout=20m ./... PASS (including TestDebugStdlib*, TestDebugTimer*, TestP13_FID_01..04, TestP13_SimulatorQA*, TestP13_CorpusFidelityAndSourceSizeAudit 23,353/27,652 = 84.45% natural verified, TestP11_WIRE_01 76/76, TestP12_BASE_02 0 demotions), skills/cherri-shortcuts/scripts/self-test.sh 10/10 PASS, verify_ledger_consistency.py PASS, verify_consumer_compatibility.py PASS, and docs/apple-runtime/p10r13/.",
+      "note": "Milestone P10R13 provenance metadata and P10 ledger sync recorded in separate follow-up commit referencing implementation commit f62707d622f72267796bb674b3d17336941121ae."
     }
   ]
 }

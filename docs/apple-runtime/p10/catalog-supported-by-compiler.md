@@ -1,7 +1,7 @@
 # Cherri P10 — Compiler-Supported Catalog Report (`505` Entries)
 
-- **Source Commit**: `bbb83df02e0707a222f49c745dcd04b136df7818`
-- **Input Dependency Fingerprint**: `15a58c3b3464893d2cb37c2d279cc28c7879916255a13b7f6715f55538630eb3`
+- **Source Commit**: `f62707d622f72267796bb674b3d17336941121ae`
+- **Input Dependency Fingerprint**: `d633656ec0a900625275bd7abe2751c397df6321e58b1aee700475433575044f`
 - **Total Catalog Entries**: `505` (`497` callable actions + `8` compiler constructs)
 - **Legacy Compiler Verified (`LEGACY_COMPILE_PASS`)**: `505 / 505`
 - **V2 Compiler Verified (`V2_COMPILE_PASS`)**: `505 / 505`
@@ -538,11 +538,11 @@
 | 495 | `vibrate` | `action` | `is.workflow.actions.vibrate` | `actions/device.cherri:39` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 496 | `wait` | `action` | `is.workflow.actions.delay` | `actions/basic.cherri:126` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 497 | `waitToReturn` | `action` | `is.workflow.actions.waittoreturn` | `actions/basic.cherri:129` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 498 | `conditional` | `compilerConstruct` | `is.workflow.actions.conditional` | `actions_catalog.go:217` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 499 | `menu` | `compilerConstruct` | `is.workflow.actions.choosefrommenu` | `actions_catalog.go:227` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 500 | `repeat` | `compilerConstruct` | `is.workflow.actions.repeat.count` | `actions_catalog.go:237` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 501 | `repeat.each` | `compilerConstruct` | `is.workflow.actions.repeat.each` | `actions_catalog.go:247` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 502 | `setVariable` | `compilerConstruct` | `is.workflow.actions.setvariable` | `actions_catalog.go:257` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 503 | `appendVariable` | `compilerConstruct` | `is.workflow.actions.appendvariable` | `actions_catalog.go:267` | `rawAction_lossless_fallback` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 504 | `dictionaryValue` | `compilerConstruct` | `is.workflow.actions.dictionary` | `actions_catalog.go:277` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 505 | `calculateExpression` | `compilerConstruct` | `is.workflow.actions.calculateexpression` | `actions_catalog.go:287` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 498 | `conditional` | `compilerConstruct` | `is.workflow.actions.conditional` | `actions_catalog.go:220` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 499 | `menu` | `compilerConstruct` | `is.workflow.actions.choosefrommenu` | `actions_catalog.go:230` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 500 | `repeat` | `compilerConstruct` | `is.workflow.actions.repeat.count` | `actions_catalog.go:240` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 501 | `repeat.each` | `compilerConstruct` | `is.workflow.actions.repeat.each` | `actions_catalog.go:250` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 502 | `setVariable` | `compilerConstruct` | `is.workflow.actions.setvariable` | `actions_catalog.go:260` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 503 | `appendVariable` | `compilerConstruct` | `is.workflow.actions.appendvariable` | `actions_catalog.go:270` | `rawAction_lossless_fallback` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 504 | `dictionaryValue` | `compilerConstruct` | `is.workflow.actions.dictionary` | `actions_catalog.go:280` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 505 | `calculateExpression` | `compilerConstruct` | `is.workflow.actions.calculateexpression` | `actions_catalog.go:290` | `native_control_flow` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
