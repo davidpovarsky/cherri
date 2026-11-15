@@ -16,4 +16,5 @@
 | `1220501019343349` | P1 ARCH/DOC Unified Planner, Measured Coverage & Contracts | Verify & Close on full suite + CI | `OPEN -> PENDING_SYNC` | All 7 `docs/apple-runtime/p10r12/*` reports & architecture/master plan docs |
 | `1220500827828558` | BLOCKER CI macOS Capacity & Apple iPad Device Gate | **KEEP OPEN** | `OPEN` | Physical device hardware & macOS hosted capacity remain external blockers |
 
-- This ledger will be updated with exact Asana API timestamps, implementation SHA, provenance SHA, and GitHub Actions run/job URLs immediately after remote push and Asana sync complete.
+- **Implementation Commit:** `bbb83df02e0707a222f49c745dcd04b136df7818`  
+- **Provenance & Push Sequence:** Pre-push gate ledger synced against `bbb83df02e0707a222f49c745dcd04b136df7818`; live Asana API task comments and completion updates are written directly on Asana immediately after push and GitHub Actions verification.

@@ -60,5 +60,6 @@
 
 ## 3. Remaining Blockers & Safe Next Steps
 
+**Implementation Commit (`<IMPL_SHA>`):** `bbb83df02e0707a222f49c745dcd04b136df7818`  
 - **macOS CI Capacity & Physical Hardware Runtime:** Remote GitHub Actions macOS execution and physical iOS/iPadOS Shortcuts import/run validation remain external release blockers (`APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE`).
-- **CI / Provenance / Asana Closure State:** Local 38×2 oracle verified prior to final doc/commit sequence; full Go + CI-equivalent local suite, non-circular `docs/fork-action-provenance.json` commit, branch push, GitHub Actions run, and Asana subtask closure follow immediately on this branch.
+- **Provenance & Asana Closure State:** Recorded non-circular `firstForkCommit` entries (`prompt`, `generateImage`, and P10R12 milestone) in `docs/fork-action-provenance.json` and synced P10 ledgers (`docs/apple-runtime/p10/*`) in the dedicated provenance follow-up commit immediately prior to push, GitHub Actions verification, and live Asana sync.

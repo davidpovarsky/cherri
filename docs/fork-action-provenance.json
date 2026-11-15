@@ -471,9 +471,17 @@
       "change": "Added 'Modulus' operation to calculationOperation enum, changed operandTwo key to WFScientificMathOperand and mirrored WFMathOperand in makeActionParams.",
       "reason": "Modulus operations and modern scientific operand serialization in real shortcuts.",
       "evidence": "batch-14 corpus evidence in Shortcut Color_Glyph Editor.",
-      "notes": [],
+      "notes": [
+        "Further refined in P10R12 under entry 'prompt' (bbb83df02e0707a222f49c745dcd04b136df7818): multiline Bool alignment, nil default guard, typed WFAskActionDefaultAnswer* switching, and urlAnswer removal."
+      ],
       "supersededByUpstream": null,
-      "history": []
+      "history": [
+        {
+          "milestone": "P10R12",
+          "commit": "bbb83df02e0707a222f49c745dcd04b136df7818",
+          "summary": "Prompt action multiline Bool, nil default guard, and typed default answer parameter key cleanup recorded under entry 'prompt'."
+        }
+      ]
     },
     {
       "name": "ask numeric bounds flags",
@@ -489,9 +497,17 @@
       "change": "Added allowsDecimal (WFAskActionAllowsDecimalNumbers) and allowsNegative (WFAskActionAllowsNegativeNumbers) optional parameters to ask action in actions_std.go.",
       "reason": "Real prompt/ask actions serialize explicit decimal and negative number constraints.",
       "evidence": "batch-14 corpus evidence in Shortcut Color_Glyph Editor.",
-      "notes": [],
+      "notes": [
+        "Further refined in P10R12 under entry 'prompt' (bbb83df02e0707a222f49c745dcd04b136df7818): multiline Bool alignment, nil default guard, typed WFAskActionDefaultAnswer* switching, and urlAnswer removal."
+      ],
       "supersededByUpstream": null,
-      "history": []
+      "history": [
+        {
+          "milestone": "P10R12",
+          "commit": "bbb83df02e0707a222f49c745dcd04b136df7818",
+          "summary": "Prompt action multiline Bool, nil default guard, and typed default answer parameter key cleanup recorded under entry 'prompt'."
+        }
+      ]
     },
     {
       "name": "getParentDirectory",
@@ -1365,6 +1381,44 @@
       "notes": [],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "prompt",
+      "identifier": "is.workflow.actions.ask",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-corrected",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions_std.go",
+      "forkLocations": [
+        "actions_std.go",
+        "internal/language/schema/generated_registry.go",
+        "skills/cherri-shortcuts/compatibility-manifest.json"
+      ],
+      "firstForkCommit": "bbb83df02e0707a222f49c745dcd04b136df7818",
+      "change": "Changed multiline (WFAllowsMultilineText) parameter validType from String to Bool (default true); guarded appendParamsFunc against omitted or nil defaultValue so empty defaultValue emits no keys; switched on inputType to emit only the matching typed WFAskActionDefaultAnswer* key (removing redundant fallback WFAskActionDefaultAnswer and urlAnswer emissions and updating emittedKeys).",
+      "reason": "Milestone P10R12 strict Apple native wire parity and round-trip safety when defaultValue is omitted or nil or typed as Number/URL/Date/Time/Date and Time.",
+      "evidence": "TestP12_PAR_04_PromptMultilineBoolDefaultAndInputTypeAbsence, TestP12_PAR_11_DualDialectStrictPreOverlayNoDemotionGate, TestP12_EDIT_05_EditPromptMultilineBoolAndDefaultIsolated, and 38x2 corpus oracle (0 pre-overlay semantic diffs).",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "generateImage",
+      "identifier": "GenerateImageIntent",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-corrected",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions_std.go",
+      "forkLocations": [
+        "actions_std.go"
+      ],
+      "firstForkCommit": "bbb83df02e0707a222f49c745dcd04b136df7818",
+      "change": "Updated generateImage appendParamsFunc style check from args[2].valueType == String to also accept RawString so style enum mapping runs identically for both Legacy and Cherri v2 lowered string arguments.",
+      "reason": "Milestone P10R12 forward-engine parity across Legacy String and Cherri v2 RawString argument representations.",
+      "evidence": "actions_std.go:2642, EvaluateActionEmission Legacy/V2 lowering parity, and TestP10_ParameterContractMatrix_AllCatalogActions / TestP10_VerifyAndRecord505CatalogExecution.",
+      "notes": [],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
@@ -1716,6 +1770,56 @@
       "reason": "Milestone P10R10 single shared semantic+hybrid importer improving readable natural Cherri output while preserving bit-for-bit source parity across Legacy and Cherri v2.",
       "evidence": "go test -count=1 ./... PASS (all Go packages including TestSEM01..TestSEM40 40/40, TestHYB01..TestHYB30 30/30, TestP10_IndependentOracle_UpstreamBinaryBehavioralComparison 6/6, TestP10_VerifyAndRecord505CatalogExecution 505/505 Legacy/V2/ParamContract/Decompile/StructuralRoundTrip, TestCherriNoSign, TestDecomp), tools/ci-test-discovery 44/44 PASS, tools/legacy-parity 47/47 + 17/17 PASS, tools/language-schema --verify-generated PASS, skills/cherri-shortcuts/scripts/self-test.sh --skip-setup PASS, 38-shortcut independent corpus audit (38/38 lossless & hybrid parity in Legacy and V2; 10,871/27,652 = 39.31% readable natural actions vs 1,463/27,652 = 5.29% P10R9 baseline; 035:723 SOURCE_CONTROL_FLOW_INVALID preserved; negativeMutationsAllCaught=true; editIsolationAllPassed=false due to 001 NO_TOPLEVEL_COMMENT_FOUND; APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE).",
       "note": "Milestone P10R10 provenance metadata recorded in separate follow-up commit referencing implementation commit 8e91ea9004e37581bf05c9752d39fe66dc0b4697."
+    },
+    {
+      "name": "P10R12 atomic control regions, typed complex parameter reverse codecs, and 38x2 independent oracle verification",
+      "locations": [
+        "action.go",
+        "actions_std.go",
+        "compiler_state.go",
+        "decompile.go",
+        "hybrid_import.go",
+        "import_fidelity.go",
+        "import_provenance.go",
+        "import_provenance_oracle_nopatch.go",
+        "import_provenance_restore.go",
+        "internal/language/analysis/analyzer.go",
+        "internal/language/backend/contracts.go",
+        "internal/language/backend/control.go",
+        "internal/language/lower/lower.go",
+        "internal/language/schema/generated_registry.go",
+        "internal/language/syntax/ast.go",
+        "internal/language/syntax/format.go",
+        "internal/language/syntax/parser.go",
+        "language_backend_adapter.go",
+        "language_value_adapter.go",
+        "mobile_compiler.go",
+        "output.go",
+        "p10r9_hybrid_test.go",
+        "p11_wire_fidelity_test.go",
+        "p12_baseline_truth_test.go",
+        "p12_complex_params_test.go",
+        "p12_control_regions_test.go",
+        "parser.go",
+        "semantic_import_planner.go",
+        "shared_codec.go",
+        "shared_control.go",
+        "shortcut.go",
+        "shortcutgen.go",
+        "token.go",
+        "tools/language-acceptance/main.go",
+        "tools/language-schema/main.go",
+        "docs/apple-runtime/p10r12/",
+        "docs/architecture/",
+        "docs/language-v2/",
+        "docs/shortcut-action-development-playbook.md",
+        "docs/ai-team/handoffs/"
+      ],
+      "firstForkCommit": "bbb83df02e0707a222f49c745dcd04b136df7818",
+      "change": "Extended semantic_import_planner.go with strict atomic balanced control-region promotion (If/Otherwise/End If, Choose from Menu/Menu Item/End Menu, Repeat Each, Repeat Count) across Legacy and Cherri v2; added reverse typed complex parameter codecs (WFTextTokenString UTF-16/braces, WFTextTokenAttachment/Aggrandizements, WFContentPredicateTableTemplate, ordered WFDictionaryFieldValue, WFNumberSubstitutableState, arrays, enums, absent-vs-false tri-states); scoped empty-dictionary WFExplicitDictionaryFieldValueWrapper serialization to top-level is.workflow.actions.dictionary WFItems; isolated args.Args['import'] inside runDecompilePasses and rejected unseeded forward ActionOutput consumers at Stage 1 (rejectUnseededForwardActionOutputCandidates); added cherri_oracle_nopatch build tag (import_provenance_oracle_nopatch.go) for independent Layer 1-3 no-patch verification; regenerated schema and updated prompt/generateImage handlers.",
+      "reason": "Milestone P10R12 verified natural import raising natural action coverage to 22,490 / 27,652 (81.33%, +11,031 vs P10R11) with 3,820 / 4,071 whole control regions promoted, 0 Stage-3 demotions, and 100% recursive typed plist parity.",
+      "evidence": "go test -count=1 -timeout=20m ./... PASS (all Go packages including 55 TestP12_* and 50 TestP11_* tests plus full corpus run CHERRI_P10R10_CORPUS=1), independent 38x2 oracle (76/76 L1 exact, 22,490/22,490 pre-overlay semantic & post-overlay wire exact per dialect, 9/9 anti-tautology PASS, 0 modeParityDiffs), skill self-test.sh --skip-setup 10/10 scenarios PASS, and docs/apple-runtime/p10r12/final-audit.md (APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE).",
+      "note": "Milestone P10R12 provenance metadata and P10 ledger sync recorded in separate follow-up commit referencing implementation commit bbb83df02e0707a222f49c745dcd04b136df7818."
     }
   ]
 }

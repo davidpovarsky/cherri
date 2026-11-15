@@ -1,7 +1,7 @@
 # Apple Runtime Discovered vs Cherri Supported — Gap & Denominator Report
 
-- **Source Commit**: `dd9bd664571d53cc558956481ef79e1760615063`
-- **Input Dependency Fingerprint**: `9d11e5125a9570d2c1e32acea55bf8b98a3b97cfb2b061aee7321a4e846b9524`
+- **Source Commit**: `bbb83df02e0707a222f49c745dcd04b136df7818`
+- **Input Dependency Fingerprint**: `15a58c3b3464893d2cb37c2d279cc28c7879916255a13b7f6715f55538630eb3`
 - **Total Raw Discovered Apple Runtime Records**: `2396`
 - **Eligible User-Facing Apple Actions**: `1527` (`487` `ELIGIBLE_USER_FACING` + `1040` `ELIGIBLE_APP_INTENT`)
 - **Excluded / Deferred Records**: `869` (`596` `EXCLUDED_NONRUNNABLE` + `131` `EXCLUDED_HIDDEN_INTERNAL` + `86` `DEFERRED_NO_EVIDENCE` + `29` `EXCLUDED_CONFIG_ONLY` + `27` `EXCLUDED_THIRD_PARTY_DEPENDENCY`)

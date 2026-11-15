@@ -1,21 +1,21 @@
 # P10R5 — Consumer Compatibility Matrix
 
 - **Generator**: `tools/p10r3/verify_consumer_compatibility.py`
-- **Compiler HEAD at generation**: `e8f3cd98e6a74f0c429edb80ae342b6d2b18812c`
+- **Compiler HEAD at generation**: `bbb83df02e0707a222f49c745dcd04b136df7818`
 - **Verdict**: `COMPATIBLE_WITH_EXTERNAL_BLOCKERS`
 
 > `NOT_AVAILABLE_LOCALLY` and `BLOCKED_EXTERNAL` are never counted as `PASS`.
 
 | Component | Source Commit | Schema Fingerprint | Codec Fingerprint | Tested Against | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Compiler | `e8f3cd98e6a7` | `f55851491e52` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
+| Compiler | `bbb83df02e07` | `f55851491e52` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
 | Documentation | — | `f55851491e52` | `3e7e3555eefe` | cherri in-repo reference only | `NOT_AVAILABLE_LOCALLY` |
 | Skill | `1204e1f7dfac` | `f55851491e52` | `3e7e3555eefe` | docs a38b62b819e4 | `PASS` |
 | Remote Builder | `1204e1f7dfac` | `f55851491e52` | `3e7e3555eefe` | skill compatibility-manifest.json tuple | `BLOCKED_EXTERNAL` |
-| iOS Bridge | `e8f3cd98e6a7` | `f55851491e52` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
-| iOS UI | `e8f3cd98e6a7` | `f55851491e52` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
+| iOS Bridge | `bbb83df02e07` | `f55851491e52` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
+| iOS UI | `bbb83df02e07` | `f55851491e52` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
 | Preview | `42ee7656e0cc` | `f55851491e52` | `3e7e3555eefe` | ios/WebPreview lock + generic catalog metadata renderer | `PASS` |
-| Pure+Pack | `141b9cc96cf1` | `f55851491e52` | `3e7e3555eefe` | P10 catalog @ e8f3cd98e6a7 | `PASS` |
+| Pure+Pack | `141b9cc96cf1` | `f55851491e52` | `3e7e3555eefe` | P10 catalog @ bbb83df02e07 | `PASS` |
 
 ## Check Details
 

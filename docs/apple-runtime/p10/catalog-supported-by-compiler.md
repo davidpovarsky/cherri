@@ -1,7 +1,7 @@
 # Cherri P10 — Compiler-Supported Catalog Report (`505` Entries)
 
-- **Source Commit**: `dd9bd664571d53cc558956481ef79e1760615063`
-- **Input Dependency Fingerprint**: `9d11e5125a9570d2c1e32acea55bf8b98a3b97cfb2b061aee7321a4e846b9524`
+- **Source Commit**: `bbb83df02e0707a222f49c745dcd04b136df7818`
+- **Input Dependency Fingerprint**: `15a58c3b3464893d2cb37c2d279cc28c7879916255a13b7f6715f55538630eb3`
 - **Total Catalog Entries**: `505` (`497` callable actions + `8` compiler constructs)
 - **Legacy Compiler Verified (`LEGACY_COMPILE_PASS`)**: `505 / 505`
 - **V2 Compiler Verified (`V2_COMPILE_PASS`)**: `505 / 505`
@@ -84,7 +84,7 @@
 | 41 | `containsText` | `action` | `is.workflow.actions.text.match` | `actions_std.go:1145` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 42 | `contentGraph` | `action` | `is.workflow.actions.viewresult` | `actions/basic.cherri:80` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 43 | `convertImage` | `action` | `is.workflow.actions.image.convert` | `actions/images.cherri:131` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 44 | `convertMeasurement` | `action` | `is.workflow.actions.measurement.convert` | `actions_std.go:2058` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 44 | `convertMeasurement` | `action` | `is.workflow.actions.measurement.convert` | `actions_std.go:2065` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 45 | `convertTimeZone` | `action` | `is.workflow.actions.converttimezone` | `actions/calendar.cherri:61` | `native_cherri_call` | `PASS` | `PACK_DECLARATIVE_MODULE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 46 | `convertToJPEG` | `action` | `is.workflow.actions.image.convert` | `actions/images.cherri:134` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 47 | `convertToUSDZ` | `action` | `com.apple.HydraUSDAppIntents.ConvertToUSDZ` | `actions/documents.cherri:168` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -95,7 +95,7 @@
 | 52 | `createFolder` | `action` | `is.workflow.actions.file.createfolder` | `actions/documents.cherri:59` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 53 | `createPlaylist` | `action` | `is.workflow.actions.createplaylist` | `actions/music.cherri:119` | `native_cherri_call` | `PASS` | `PACK_DECLARATIVE_MODULE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 54 | `createRemindersList` | `action` | `com.apple.reminders.TTRCreateListAppIntent` | `actions_std.go:319` | `native_cherri_call` | `PASS` | `REQUIRES_APPINTENT_DESCRIPTOR` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 55 | `createShortcutLink` | `action` | `com.apple.shortcuts.CreateShortcutiCloudLinkAction` | `actions_std.go:1966` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 55 | `createShortcutLink` | `action` | `com.apple.shortcuts.CreateShortcutiCloudLinkAction` | `actions_std.go:1973` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 56 | `cropImage` | `action` | `is.workflow.actions.image.crop` | `actions/images.cherri:23` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 57 | `currentDate` | `action` | `is.workflow.actions.date` | `actions/calendar.cherri:197` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 58 | `currentLocation` | `action` | `is.workflow.actions.location` | `actions/location.cherri:9` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -116,7 +116,7 @@
 | 73 | `editReminder` | `action` | `is.workflow.actions.setters.reminders` | `actions_std.go:869` | `native_cherri_call` | `PASS` | `P10_ONLY_GO_REQUIRED` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 74 | `ejectDisk` | `action` | `is.workflow.actions.ejectdisk` | `actions/mac.cherri:119` | `native_cherri_call` | `PASS` | `PACK_DECLARATIVE_MODULE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 75 | `emailAddress` | `action` | `is.workflow.actions.email` | `actions_std.go:490` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 76 | `embedFile` | `action` | `is.workflow.actions.gettext` | `actions_std.go:2351` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 76 | `embedFile` | `action` | `is.workflow.actions.gettext` | `actions_std.go:2358` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 77 | `encodeAudio` | `action` | `is.workflow.actions.encodemedia` | `actions/media.cherri:47` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 78 | `encodeVideo` | `action` | `is.workflow.actions.encodemedia` | `actions/media.cherri:179` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 79 | `expandURL` | `action` | `is.workflow.actions.url.expand` | `actions/web.cherri:11` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -150,7 +150,7 @@
 | 107 | `formatNumber` | `action` | `is.workflow.actions.format.number` | `actions/basic.cherri:115` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 108 | `formatTime` | `action` | `is.workflow.actions.format.date` | `actions/calendar.cherri:226` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 109 | `formatTimestamp` | `action` | `is.workflow.actions.format.date` | `actions/calendar.cherri:231` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 110 | `generateImage` | `action` | `com.apple.GenerativePlaygroundApp.GenerateImageIntent` | `actions_std.go:2590` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 110 | `generateImage` | `action` | `com.apple.GenerativePlaygroundApp.GenerateImageIntent` | `actions_std.go:2597` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 111 | `generateKeyPoints` | `action` | `com.apple.WritingTools.WritingToolsAppIntentsExtension.SummarizeTextIntent` | `actions/intelligence.cherri:109` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 112 | `generateList` | `action` | `com.apple.WritingTools.WritingToolsAppIntentsExtension.FormatListIntent` | `actions/intelligence.cherri:94` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 113 | `generateProofread` | `action` | `com.apple.WritingTools.WritingToolsAppIntentsExtension.ProofreadIntent` | `actions/intelligence.cherri:100` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -265,20 +265,20 @@
 | 222 | `getWebPageDetail` | `action` | `is.workflow.actions.properties.safariwebpage` | `actions/web.cherri:63` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 223 | `getWebpageContents` | `action` | `is.workflow.actions.getwebpagecontents` | `actions/web.cherri:81` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 224 | `getWifiDetail` | `action` | `is.workflow.actions.getwifi` | `actions/network.cherri:26` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 225 | `getWindows` | `action` | `is.workflow.actions.filter.windows` | `actions_std.go:1982` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 225 | `getWindows` | `action` | `is.workflow.actions.filter.windows` | `actions_std.go:1989` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 226 | `hash` | `action` | `is.workflow.actions.hash` | `actions/crypto.cherri:27` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 227 | `hideAllApps` | `action` | `is.workflow.actions.hide.app` | `actions_std.go:1551` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 228 | `hideApp` | `action` | `is.workflow.actions.hide.app` | `actions_std.go:1515` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 227 | `hideAllApps` | `action` | `is.workflow.actions.hide.app` | `actions_std.go:1558` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 228 | `hideApp` | `action` | `is.workflow.actions.hide.app` | `actions_std.go:1522` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 229 | `intercom` | `action` | `is.workflow.actions.intercom` | `actions/device.cherri:134` | `native_cherri_call` | `PASS` | `PACK_DECLARATIVE_MODULE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 230 | `isCharging` | `action` | `is.workflow.actions.getbatterylevel` | `actions/device.cherri:71` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 231 | `isOnline` | `action` | `is.workflow.actions.getipaddress` | `actions/network.cherri:85` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 232 | `joinText` | `action` | `is.workflow.actions.text.combine` | `actions_std.go:1294` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 233 | `jsonRequest` | `action` | `is.workflow.actions.downloadurl` | `actions/web.cherri:131` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 234 | `killAllApps` | `action` | `is.workflow.actions.quit.app` | `actions_std.go:1679` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 235 | `killApp` | `action` | `is.workflow.actions.quit.app` | `actions_std.go:1639` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 234 | `killAllApps` | `action` | `is.workflow.actions.quit.app` | `actions_std.go:1686` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 235 | `killApp` | `action` | `is.workflow.actions.quit.app` | `actions_std.go:1646` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 236 | `labelFile` | `action` | `is.workflow.actions.file.label` | `actions_std.go:662` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 237 | `lightMode` | `action` | `is.workflow.actions.appearance` | `actions/settings.cherri:46` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 238 | `list` | `action` | `is.workflow.actions.list` | `actions_std.go:1869` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 238 | `list` | `action` | `is.workflow.actions.list` | `actions_std.go:1876` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 239 | `listen` | `action` | `is.workflow.actions.dictatetext` | `actions/text.cherri:24` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 240 | `location` | `action` | `is.workflow.actions.location` | `actions/location.cherri:6` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 241 | `lockApp` | `action` | `is.workflow.actions.lock.app` | `actions/mac.cherri:131` | `native_cherri_call` | `PASS` | `PACK_DECLARATIVE_MODULE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -300,12 +300,12 @@
 | 257 | `makeShortcut` | `action` | `com.apple.shortcuts.CreateWorkflowAction` | `actions/shortcuts.cherri:26` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 258 | `makeSizedDiskImage` | `action` | `is.workflow.actions.makediskimage` | `actions/mac.cherri:32` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 259 | `makeSpokenAudio` | `action` | `is.workflow.actions.makespokenaudiofromtext` | `actions/text.cherri:36` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 260 | `makeVCard` | `action` | `is.workflow.actions.gettext` | `actions_std.go:2191` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 260 | `makeVCard` | `action` | `is.workflow.actions.gettext` | `actions_std.go:2198` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 261 | `makeVideoFromGIF` | `action` | `is.workflow.actions.makevideofromgif` | `actions/images.cherri:198` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 262 | `markup` | `action` | `is.workflow.actions.avairyeditphoto` | `actions/documents.cherri:26` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 263 | `maskImage` | `action` | `is.workflow.actions.image.mask` | `actions/images.cherri:40` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 264 | `matchText` | `action` | `is.workflow.actions.text.match` | `actions/text.cherri:112` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 265 | `measurement` | `action` | `is.workflow.actions.measurement.create` | `actions_std.go:2125` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 265 | `measurement` | `action` | `is.workflow.actions.measurement.create` | `actions_std.go:2132` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 266 | `mountDiskImage` | `action` | `is.workflow.actions.mountdiskimage` | `actions/mac.cherri:116` | `native_cherri_call` | `PASS` | `PACK_DECLARATIVE_MODULE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 267 | `moveFile` | `action` | `is.workflow.actions.file.move` | `actions/documents.cherri:52` | `native_cherri_call` | `PASS` | `PACK_DECLARATIVE_MODULE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 268 | `moveWindow` | `action` | `is.workflow.actions.movewindow` | `actions/mac.cherri:69` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -313,14 +313,14 @@
 | 270 | `newContact` | `action` | `is.workflow.actions.addnewcontact` | `actions_std.go:561` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 271 | `nothing` | `action` | `is.workflow.actions.nothing` | `actions/basic.cherri:42` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 272 | `number` | `action` | `is.workflow.actions.number` | `actions/basic.cherri:112` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 273 | `openApp` | `action` | `is.workflow.actions.openapp` | `actions_std.go:1459` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 273 | `openApp` | `action` | `is.workflow.actions.openapp` | `actions_std.go:1466` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 274 | `openBook` | `action` | `com.apple.iBooksX.OpenBookIntent` | `actions_std.go:468` | `native_cherri_call` | `PASS` | `REQUIRES_APPINTENT_DESCRIPTOR` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 275 | `openCustomXCallbackURL` | `action` | `is.workflow.actions.openxcallbackurl` | `actions_std.go:1909` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 275 | `openCustomXCallbackURL` | `action` | `is.workflow.actions.openxcallbackurl` | `actions_std.go:1916` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 276 | `openFile` | `action` | `is.workflow.actions.openin` | `actions/documents.cherri:81` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 277 | `openInMaps` | `action` | `is.workflow.actions.searchmaps` | `actions/location.cherri:50` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 278 | `openNote` | `action` | `is.workflow.actions.shownote` | `actions/documents.cherri:146` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 279 | `openRemindersList` | `action` | `is.workflow.actions.showlist` | `actions/calendar.cherri:92` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 280 | `openShortcut` | `action` | `com.apple.shortcuts.OpenWorkflowAction` | `actions_std.go:1797` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 280 | `openShortcut` | `action` | `com.apple.shortcuts.OpenWorkflowAction` | `actions_std.go:1804` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 281 | `openURL` | `action` | `is.workflow.actions.openurl` | `actions/web.cherri:6` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 282 | `openXCallbackURL` | `action` | `is.workflow.actions.openxcallbackurl` | `actions/web.cherri:44` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 283 | `optimizePDF` | `action` | `is.workflow.actions.compresspdf` | `actions/pdf.cherri:27` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -342,8 +342,8 @@
 | 299 | `print` | `action` | `is.workflow.actions.print` | `actions/documents.cherri:155` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 300 | `prompt` | `action` | `is.workflow.actions.ask` | `actions_std.go:1376` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 301 | `quicklook` | `action` | `is.workflow.actions.previewdocument` | `actions/basic.cherri:64` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 302 | `quitAllApps` | `action` | `is.workflow.actions.quit.app` | `actions_std.go:1613` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 303 | `quitApp` | `action` | `is.workflow.actions.quit.app` | `actions_std.go:1577` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 302 | `quitAllApps` | `action` | `is.workflow.actions.quit.app` | `actions_std.go:1620` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 303 | `quitApp` | `action` | `is.workflow.actions.quit.app` | `actions_std.go:1584` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 304 | `randomNumber` | `action` | `is.workflow.actions.number.random` | `actions/basic.cherri:121` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 305 | `rawAction` | `action` | `is.workflow.actions.rawaction` | `raw_actions.go:11` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 306 | `reboot` | `action` | `is.workflow.actions.reboot` | `actions/device.cherri:34` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -366,12 +366,12 @@
 | 323 | `reveal` | `action` | `is.workflow.actions.file.reveal` | `actions/documents.cherri:113` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 324 | `rotateMedia` | `action` | `is.workflow.actions.image.rotate` | `actions/images.cherri:119` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 325 | `round` | `action` | `is.workflow.actions.round` | `actions/math.cherri:67` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 326 | `run` | `action` | `is.workflow.actions.runworkflow` | `actions_std.go:2675` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 326 | `run` | `action` | `is.workflow.actions.runworkflow` | `actions_std.go:2682` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 327 | `runAppleScript` | `action` | `is.workflow.actions.runapplescript` | `actions/mac.cherri:110` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 328 | `runJSAutomation` | `action` | `is.workflow.actions.runjavascriptforautomation` | `actions/mac.cherri:113` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 329 | `runJavaScriptOnWebpage` | `action` | `is.workflow.actions.runjavascriptonwebpage` | `actions/web.cherri:53` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 330 | `runSSHScript` | `action` | `is.workflow.actions.runsshscript` | `actions/network.cherri:58` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 331 | `runSelf` | `action` | `is.workflow.actions.runworkflow` | `actions_std.go:1832` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 331 | `runSelf` | `action` | `is.workflow.actions.runworkflow` | `actions_std.go:1839` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 332 | `runShellScript` | `action` | `is.workflow.actions.runshellscript` | `actions/mac.cherri:101` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 333 | `saveFile` | `action` | `is.workflow.actions.documentpicker.save` | `actions/documents.cherri:123` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 334 | `saveFilePrompt` | `action` | `is.workflow.actions.documentpicker.save` | `actions/documents.cherri:119` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -416,7 +416,7 @@
 | 373 | `setClosedCaptionsSDH` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleCaptionsIntent` | `actions/a11y.cherri:81` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 374 | `setColorFilters` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleColorFiltersIntent` | `actions/a11y.cherri:84` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 375 | `setContrast` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleContrastIntent` | `actions/a11y.cherri:87` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 376 | `setFocusMode` | `action` | `is.workflow.actions.dnd.set` | `actions_std.go:2506` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 376 | `setFocusMode` | `action` | `is.workflow.actions.dnd.set` | `actions_std.go:2513` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 377 | `setHotspot` | `action` | `is.workflow.actions.personalhotspot.set` | `actions/device.cherri:122` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 378 | `setHotspotPassword` | `action` | `is.workflow.actions.personalhotspot.password.set` | `actions/network.cherri:94` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 379 | `setLEDFlash` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleLEDFlashIntent` | `actions/a11y.cherri:90` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -439,7 +439,7 @@
 | 396 | `setSmartInvert` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSmartInvertIntent` | `actions/a11y.cherri:108` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 397 | `setSoundRecognition` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSoundDetectionIntent` | `actions/a11y.cherri:55` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 398 | `setStageManager` | `action` | `is.workflow.actions.stagemanager.set` | `actions/settings.cherri:88` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 399 | `setStageManagerMultitasking` | `action` | `com.apple.ShortcutsActions.SetMultitaskingModeAction` | `actions_std.go:2476` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 399 | `setStageManagerMultitasking` | `action` | `com.apple.ShortcutsActions.SetMultitaskingModeAction` | `actions_std.go:2483` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 400 | `setSwitchControl` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleSwitchControlIntent` | `actions/a11y.cherri:111` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 401 | `setTextSize` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXSetLargeTextIntent` | `actions/a11y.cherri:46` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 402 | `setTrueTone` | `action` | `is.workflow.actions.truetone.set` | `actions/settings.cherri:85` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -450,7 +450,7 @@
 | 407 | `setWallpaper` | `action` | `is.workflow.actions.wallpaper.set` | `actions/settings.cherri:58` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 408 | `setWhitePoint` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleWhitePointIntent` | `actions/a11y.cherri:117` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 409 | `setWifi` | `action` | `is.workflow.actions.wifi.set` | `actions/device.cherri:107` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 410 | `setWindowedMultitasking` | `action` | `com.apple.ShortcutsActions.SetMultitaskingModeAction` | `actions_std.go:2451` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 410 | `setWindowedMultitasking` | `action` | `com.apple.ShortcutsActions.SetMultitaskingModeAction` | `actions_std.go:2458` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 411 | `setZoom` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleZoomIntent` | `actions/a11y.cherri:120` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 412 | `share` | `action` | `is.workflow.actions.share` | `actions/sharing.cherri:6` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 413 | `show` | `action` | `is.workflow.actions.showresult` | `actions/basic.cherri:61` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -465,7 +465,7 @@
 | 422 | `skipFwd` | `action` | `is.workflow.actions.skipforward` | `actions/music.cherri:78` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 423 | `sleep` | `action` | `is.workflow.actions.sleep` | `actions/mac.cherri:40` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 424 | `speak` | `action` | `is.workflow.actions.speaktext` | `actions/text.cherri:48` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 425 | `splitApps` | `action` | `is.workflow.actions.splitscreen` | `actions_std.go:1707` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 425 | `splitApps` | `action` | `is.workflow.actions.splitscreen` | `actions_std.go:1714` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 426 | `splitPDF` | `action` | `is.workflow.actions.splitpdf` | `actions/pdf.cherri:30` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 427 | `splitText` | `action` | `is.workflow.actions.text.split` | `actions_std.go:1269` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 428 | `startNotesAudioRecording` | `action` | `com.apple.Notes.StartRecordingLinkAction` | `actions_std.go:364` | `native_cherri_call` | `PASS` | `REQUIRES_APPINTENT_DESCRIPTOR` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -501,7 +501,7 @@
 | 458 | `toggleContrast` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleContrastIntent` | `actions/a11y.cherri:87` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 459 | `toggleDND` | `action` | `is.workflow.actions.dnd.set` | `actions/settings.cherri:31` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 460 | `toggleFlashlight` | `action` | `is.workflow.actions.flashlight` | `actions/device.cherri:52` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 461 | `toggleFocusMode` | `action` | `is.workflow.actions.dnd.set` | `actions_std.go:2557` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 461 | `toggleFocusMode` | `action` | `is.workflow.actions.dnd.set` | `actions_std.go:2564` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 462 | `toggleHotspot` | `action` | `is.workflow.actions.personalhotspot.set` | `actions/device.cherri:122` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 463 | `toggleLEDFlash` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXToggleLEDFlashIntent` | `actions/a11y.cherri:90` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 464 | `toggleLeftRightBalance` | `action` | `com.apple.AccessibilityUtilities.AXSettingsShortcuts.AXSetLeftRightBalanceIntent` | `actions/a11y.cherri:93` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
@@ -530,7 +530,7 @@
 | 487 | `turnOffAlarm` | `action` | `com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent` | `actions_std.go:219` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 488 | `turnOnAlarm` | `action` | `com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent` | `actions_std.go:190` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 489 | `typeOf` | `action` | `is.workflow.actions.getitemtype` | `actions/basic.cherri:51` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
-| 490 | `updateContact` | `action` | `is.workflow.actions.setters.contacts` | `actions_std.go:2385` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
+| 490 | `updateContact` | `action` | `is.workflow.actions.setters.contacts` | `actions_std.go:2392` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 491 | `uppercase` | `action` | `is.workflow.actions.text.changecase` | `actions/text.cherri:59` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 492 | `url` | `action` | `is.workflow.actions.url` | `actions_std.go:1319` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
 | 493 | `urlDecode` | `action` | `is.workflow.actions.urlencode` | `actions/web.cherri:39` | `native_cherri_call` | `PASS` | `UPSTREAM_CORE` | `STRUCTURAL_ROUNDTRIP_VERIFIED` |
