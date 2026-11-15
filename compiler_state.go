@@ -166,6 +166,7 @@ func resetCompilerState() {
 	// Action-processing scratch state.
 	currentAction = actionReference{}
 	savedAction = actionReference{}
+	resetDebugInstrumentationManifest()
 	appIds = nil
 	pasteables = nil
 	repeatItemIndex = 1

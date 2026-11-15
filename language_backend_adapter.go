@@ -149,6 +149,7 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 			}
 			s.shortcut.WFWorkflowActions = withDates
 		}
+		recordDebugExpandedActions(macroName, len(s.shortcut.WFWorkflowActions), expanded)
 		s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, expanded...)
 		return call.OutputUUID, nil
 	}

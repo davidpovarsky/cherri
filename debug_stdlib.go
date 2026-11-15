@@ -9,8 +9,10 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"strings"
+	"unicode/utf16"
 
 	"github.com/google/uuid"
 )
@@ -18,6 +20,100 @@ import (
 const debugLogVariableName = "__cherri_debug_log"
 const debugTimerVariablePrefix = "__cherri_debug_timer_"
 const debugQATraceVariableName = "__cherri_qa_trace"
+const debugQACollectorSentinel = "===CHERRI_QA_TRACE_NDJSON_V14==="
+
+type debugInstrumentationManifest struct {
+	inlineUUIDs    map[string]bool
+	collectorUUIDs map[string]bool
+	inlineIndices  map[int]bool
+	collectorIdxs  map[int]bool
+}
+
+var currentDebugInstrumentation debugInstrumentationManifest
+
+func resetDebugInstrumentationManifest() {
+	currentDebugInstrumentation = debugInstrumentationManifest{
+		inlineUUIDs:    make(map[string]bool),
+		collectorUUIDs: make(map[string]bool),
+		inlineIndices:  make(map[int]bool),
+		collectorIdxs:  make(map[int]bool),
+	}
+}
+
+func recordDebugExpandedActions(macroName string, startIdx int, expanded []ShortcutAction) {
+	if currentDebugInstrumentation.inlineUUIDs == nil {
+		resetDebugInstrumentationManifest()
+	}
+	isCollector := macroName == "debugExportTrace"
+	for offset, act := range expanded {
+		idx := startIdx + offset
+		if isCollector {
+			currentDebugInstrumentation.collectorIdxs[idx] = true
+		} else {
+			currentDebugInstrumentation.inlineIndices[idx] = true
+		}
+		if act.WFWorkflowActionParameters != nil {
+			if u, ok := act.WFWorkflowActionParameters["UUID"].(string); ok && u != "" {
+				if isCollector {
+					currentDebugInstrumentation.collectorUUIDs[u] = true
+				} else {
+					currentDebugInstrumentation.inlineUUIDs[u] = true
+				}
+			}
+		}
+	}
+}
+
+func shiftDebugManifestIndicesAfterBackfill(after map[int][]ShortcutAction, priorLen int) {
+	if len(after) == 0 || (len(currentDebugInstrumentation.inlineIndices) == 0 && len(currentDebugInstrumentation.collectorIdxs) == 0) {
+		return
+	}
+	newInline := make(map[int]bool, len(currentDebugInstrumentation.inlineIndices))
+	newCollector := make(map[int]bool, len(currentDebugInstrumentation.collectorIdxs))
+	offset := 0
+	for i := 0; i < priorLen; i++ {
+		if currentDebugInstrumentation.inlineIndices[i] {
+			newInline[i+offset] = true
+		}
+		if currentDebugInstrumentation.collectorIdxs[i] {
+			newCollector[i+offset] = true
+		}
+		if ins := after[i]; len(ins) > 0 {
+			for k := 1; k <= len(ins); k++ {
+				newInline[i+offset+k] = true
+			}
+			offset += len(ins)
+		}
+	}
+	currentDebugInstrumentation.inlineIndices = newInline
+	currentDebugInstrumentation.collectorIdxs = newCollector
+}
+
+func recordDebugBackfilledActionUUID(u string) {
+	if currentDebugInstrumentation.inlineUUIDs == nil {
+		resetDebugInstrumentationManifest()
+	}
+	if u != "" {
+		currentDebugInstrumentation.inlineUUIDs[u] = true
+	}
+}
+
+func escapeJSONStringContent(s string) string {
+	b, err := json.Marshal(s)
+	var escaped string
+	if err != nil || len(b) < 2 {
+		escaped = strings.NewReplacer(`\`, `\\`, `"`, `\"`, "\n", `\n`, "\r", `\r`, "\t", `\t`).Replace(s)
+	} else {
+		escaped = string(b[1 : len(b)-1])
+	}
+	// Escape literal U+FFFC as \ufffc so user strings never collide with Apple
+	// Shortcuts WFTextTokenString attachment placeholders.
+	return strings.ReplaceAll(escaped, "\uFFFC", `\ufffc`)
+}
+
+func utf16CodeUnitCount(s string) int {
+	return len(utf16.Encode([]rune(s)))
+}
 
 func debugTimerVariableName(label string) (string, error) {
 	if strings.TrimSpace(label) == "" {
@@ -282,9 +378,11 @@ func backfillDebugLogDates(prior []ShortcutAction) ([]ShortcutAction, int, error
 		if datedProducer[source.OutputUUID] {
 			continue
 		}
+		backfillUUID := strings.ToUpper(uuid.NewString())
+		recordDebugBackfilledActionUUID(backfillUUID)
 		after[producer] = append(after[producer], makeAction("detect.date", map[string]any{
 			"WFInput": debugLogDateSourceRef(source.OutputUUID, source.OutputName),
-			"UUID":    strings.ToUpper(uuid.NewString()),
+			"UUID":    backfillUUID,
 		}))
 		datedProducer[source.OutputUUID] = true
 	}
@@ -295,6 +393,7 @@ func backfillDebugLogDates(prior []ShortcutAction) ([]ShortcutAction, int, error
 	if inserted == 0 {
 		return prior, 0, nil
 	}
+	shiftDebugManifestIndicesAfterBackfill(after, len(prior))
 	result := make([]ShortcutAction, 0, len(prior)+inserted)
 	for i, a := range prior {
 		result = append(result, a)
@@ -538,14 +637,16 @@ func isDebugStdlibMacro(name string) bool {
 
 // debugTraceEventToken builds a deterministic WFTextTokenString JSONL line with
 // a live CurrentDate token so the exported trace records actual execution order.
+// Uses exact UTF-16 code unit offsets (len(utf16.Encode([]rune(prefix)))) so
+// non-BMP emoji, Hebrew + niqqud, and surrogate pairs never misalign attachmentsByRange.
 func debugTraceEventToken(stage, label, prevActionID string, stepSeq int) map[string]any {
-	safeStage := strings.ReplaceAll(strings.ReplaceAll(stage, `\`, `\\`), `"`, `\"`)
-	safeLabel := strings.ReplaceAll(strings.ReplaceAll(label, `\`, `\\`), `"`, `\"`)
-	safePrev := strings.ReplaceAll(strings.ReplaceAll(prevActionID, `\`, `\\`), `"`, `\"`)
-	prefix := fmt.Sprintf(`{"schemaVersion":"1.0","kind":"INLINE_DEBUG_ACTION","stage":"%s","label":"%s","stepSequence":%d,"actionIdentifier":"%s","timestamp":"`,
+	safeStage := escapeJSONStringContent(stage)
+	safeLabel := escapeJSONStringContent(label)
+	safePrev := escapeJSONStringContent(prevActionID)
+	prefix := fmt.Sprintf(`{"schemaVersion":"1.4","kind":"INLINE_DEBUG_ACTION","stage":"%s","label":"%s","stepSequence":%d,"actionIdentifier":"%s","timestampPrecision":"apple-currentdate","valueType":"UNKNOWN_AT_TRACE_EVENT","timestamp":"`,
 		safeStage, safeLabel, stepSeq, safePrev)
 	suffix := `"}`
-	offset := len([]rune(prefix))
+	offset := utf16CodeUnitCount(prefix)
 	rangeKey := fmt.Sprintf("{%d, 1}", offset)
 	return map[string]any{
 		"WFSerializationType": "WFTextTokenString",
@@ -561,12 +662,21 @@ func debugTraceEventToken(stage, label, prevActionID string, stepSeq int) map[st
 }
 
 // debugExportTraceEnvelopeToken wraps the combined JSONL trace lines in a
-// deterministic JSON snapshot envelope correlated by runId.
+// structurally valid NDJSON stream: a single-line JSON header COLLECTOR_EVENT
+// followed by a newline, the uncorrupted multiline Combined Text of JSONL
+// records, and a single-line JSON footer COLLECTOR_EVENT. Because the multiline
+// attachment sits on its own NDJSON lines between header and footer records
+// (never inside a quoted JSON string literal), quotes, backslashes, newlines,
+// Hebrew/RTL, emoji, and nested JSON inside trace lines never corrupt JSON syntax.
 func debugExportTraceEnvelopeToken(runID, combinedUUID string) map[string]any {
-	safeRunID := strings.ReplaceAll(strings.ReplaceAll(runID, `\`, `\\`), `"`, `\"`)
-	prefix := fmt.Sprintf(`{"schemaVersion":"1.0","kind":"COLLECTOR_EVENT","runId":"%s","traceTransport":"export-snapshot","eventsJsonl":"`, safeRunID)
-	suffix := `"}`
-	offset := len([]rune(prefix))
+	safeRunID := escapeJSONStringContent(runID)
+	headerLine := fmt.Sprintf(`{"schemaVersion":"1.4","kind":"COLLECTOR_EVENT","stage":"collector_begin","runId":"%s","traceTransport":"ndjson-stream","collectorSentinel":"%s"}`,
+		safeRunID, debugQACollectorSentinel)
+	footerLine := fmt.Sprintf(`{"schemaVersion":"1.4","kind":"COLLECTOR_EVENT","stage":"collector_end","runId":"%s","traceTransport":"ndjson-stream","collectorSentinel":"%s"}`,
+		safeRunID, debugQACollectorSentinel)
+	prefix := headerLine + "\n"
+	suffix := "\n" + footerLine
+	offset := utf16CodeUnitCount(prefix)
 	rangeKey := fmt.Sprintf("{%d, 1}", offset)
 	return map[string]any{
 		"WFSerializationType": "WFTextTokenString",
@@ -909,14 +1019,107 @@ type DebugTraceActionMapping struct {
 	NativeActionIndex int    `json:"nativeActionIndex"`
 	SourceActionIndex int    `json:"sourceActionIndex"` // -1 for injected debug actions
 	ActionIdentifier  string `json:"actionIdentifier"`
+	ActionUUID        string `json:"actionUuid,omitempty"`
 	Kind              string `json:"kind"` // SOURCE_ACTION | INLINE_DEBUG_ACTION | COLLECTOR_EVENT
 	VariableTarget    string `json:"variableTarget,omitempty"`
 	PreservesProducer bool   `json:"preservesProducer"`
 }
 
+func isStructuralInlineTraceTextAction(actions []ShortcutAction, idx int) bool {
+	if idx < 0 || idx+1 >= len(actions) {
+		return false
+	}
+	act := actions[idx]
+	next := actions[idx+1]
+	if act.WFWorkflowActionIdentifier != "is.workflow.actions.gettext" || next.WFWorkflowActionIdentifier != "is.workflow.actions.appendvariable" {
+		return false
+	}
+	if next.WFWorkflowActionParameters["WFVariableName"] != debugQATraceVariableName {
+		return false
+	}
+	actUUID, _ := act.WFWorkflowActionParameters["UUID"].(string)
+	if actUUID == "" {
+		return false
+	}
+	src, ok := debugLogOutputRef(next.WFWorkflowActionParameters["WFInput"])
+	if !ok || src.OutputUUID != actUUID {
+		return false
+	}
+	m, okMap := act.WFWorkflowActionParameters["WFTextActionText"].(map[string]any)
+	if !okMap || m["WFSerializationType"] != "WFTextTokenString" {
+		return false
+	}
+	v, okV := m["Value"].(map[string]any)
+	if !okV {
+		return false
+	}
+	atts, okA := v["attachmentsByRange"].(map[string]any)
+	if !okA || len(atts) != 1 {
+		return false
+	}
+	for _, rawTok := range atts {
+		if tm, okT := rawTok.(map[string]any); okT && tm["Type"] == "CurrentDate" {
+			return true
+		}
+	}
+	return false
+}
+
+func isStructuralCollectorEnvelopeTextAction(actions []ShortcutAction, idx int) bool {
+	if idx <= 0 || idx >= len(actions) {
+		return false
+	}
+	prev := actions[idx-1]
+	act := actions[idx]
+	if prev.WFWorkflowActionIdentifier != "is.workflow.actions.text.combine" || act.WFWorkflowActionIdentifier != "is.workflow.actions.gettext" {
+		return false
+	}
+	combineUUID, _ := prev.WFWorkflowActionParameters["UUID"].(string)
+	if combineUUID == "" {
+		return false
+	}
+	var combineTargetsTrace bool
+	if m, okMap := prev.WFWorkflowActionParameters["text"].(map[string]any); okMap {
+		if v, okV := m["Value"].(map[string]any); okV {
+			vn, _ := v["VariableName"].(string)
+			combineTargetsTrace = (vn == debugQATraceVariableName)
+		}
+	} else if tok, okTok := prev.WFWorkflowActionParameters["text"].(WFTextTokenAttachment); okTok {
+		combineTargetsTrace = (tok.Value.VariableName == debugQATraceVariableName)
+	}
+	if !combineTargetsTrace {
+		return false
+	}
+	m, okMap := act.WFWorkflowActionParameters["WFTextActionText"].(map[string]any)
+	if !okMap || m["WFSerializationType"] != "WFTextTokenString" {
+		return false
+	}
+	v, okV := m["Value"].(map[string]any)
+	if !okV {
+		return false
+	}
+	s, _ := v["string"].(string)
+	if !strings.Contains(s, debugQACollectorSentinel) && !strings.Contains(s, `"traceTransport":"export-snapshot"`) {
+		return false
+	}
+	atts, okA := v["attachmentsByRange"].(map[string]any)
+	if !okA || len(atts) != 1 {
+		return false
+	}
+	for _, rawTok := range atts {
+		if tm, okT := rawTok.(map[string]any); okT {
+			if tm["Type"] == "ActionOutput" && tm["OutputUUID"] == combineUUID && tm["OutputName"] == "Combined Text" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // ClassifyShortcutTraceActions classifies the native actions of a compiled Shortcut
 // into SOURCE_ACTION, INLINE_DEBUG_ACTION, and COLLECTOR_EVENT so QA harnesses
-// never confuse injected debug/trace helpers with user source actions.
+// never confuse injected debug/trace helpers with user source actions, even if
+// user-authored Text actions contain literal debug JSON substrings.
 func ClassifyShortcutTraceActions(actions []ShortcutAction) []DebugTraceActionMapping {
 	mappings := make([]DebugTraceActionMapping, 0, len(actions))
 	sourceIdx := 0
@@ -924,6 +1127,7 @@ func ClassifyShortcutTraceActions(actions []ShortcutAction) []DebugTraceActionMa
 		id := act.WFWorkflowActionIdentifier
 		params := act.WFWorkflowActionParameters
 		varName, _ := params["WFVariableName"].(string)
+		actUUID, _ := params["UUID"].(string)
 		kind := "SOURCE_ACTION"
 		srcIdx := sourceIdx
 		preserves := true
@@ -932,20 +1136,29 @@ func ClassifyShortcutTraceActions(actions []ShortcutAction) []DebugTraceActionMa
 		if isDebugVar {
 			kind = "INLINE_DEBUG_ACTION"
 			srcIdx = -1
+		} else if actUUID != "" && currentDebugInstrumentation.collectorUUIDs[actUUID] {
+			kind = "COLLECTOR_EVENT"
+			srcIdx = -1
+		} else if actUUID != "" && currentDebugInstrumentation.inlineUUIDs[actUUID] {
+			kind = "INLINE_DEBUG_ACTION"
+			srcIdx = -1
 		} else if id == "is.workflow.actions.detect.date" {
 			if src, ok := debugLogOutputRef(params["WFInput"]); ok && src.OutputUUID != "" {
+				isCreationDate := false
 				if tok, okTok := params["WFInput"].(WFTextTokenAttachment); okTok && len(tok.Value.Aggrandizements) == 1 && tok.Value.Aggrandizements[0].PropertyUserInfo == "WFFileCreationDate" {
-					kind = "INLINE_DEBUG_ACTION"
-					srcIdx = -1
+					isCreationDate = true
 				} else if m, okMap := params["WFInput"].(map[string]any); okMap {
 					if v, okV := m["Value"].(map[string]any); okV {
 						if aggs, okA := v["Aggrandizements"].([]any); okA && len(aggs) == 1 {
 							if a0, ok0 := aggs[0].(map[string]any); ok0 && a0["PropertyUserInfo"] == "WFFileCreationDate" {
-								kind = "INLINE_DEBUG_ACTION"
-								srcIdx = -1
+								isCreationDate = true
 							}
 						}
 					}
+				}
+				if isCreationDate {
+					kind = "INLINE_DEBUG_ACTION"
+					srcIdx = -1
 				}
 			}
 		} else if id == "is.workflow.actions.text.combine" {
@@ -963,21 +1176,22 @@ func ClassifyShortcutTraceActions(actions []ShortcutAction) []DebugTraceActionMa
 				}
 			}
 		} else if id == "is.workflow.actions.gettext" {
-			if m, okMap := params["WFTextActionText"].(map[string]any); okMap {
-				if v, okV := m["Value"].(map[string]any); okV {
-					if s, _ := v["string"].(string); strings.Contains(s, `"kind":"INLINE_DEBUG_ACTION"`) {
-						kind = "INLINE_DEBUG_ACTION"
-						srcIdx = -1
-					} else if strings.Contains(s, `"kind":"COLLECTOR_EVENT"`) {
-						kind = "COLLECTOR_EVENT"
-						srcIdx = -1
-					}
-				}
+			if isStructuralInlineTraceTextAction(actions, i) {
+				kind = "INLINE_DEBUG_ACTION"
+				srcIdx = -1
+			} else if isStructuralCollectorEnvelopeTextAction(actions, i) {
+				kind = "COLLECTOR_EVENT"
+				srcIdx = -1
 			} else if s, okStr := params["WFTextActionText"].(string); okStr && s == "" {
 				if i+1 < len(actions) && actions[i+1].WFWorkflowActionIdentifier == "is.workflow.actions.setvariable" &&
 					actions[i+1].WFWorkflowActionParameters["WFVariableName"] == debugLogVariableName {
-					kind = "INLINE_DEBUG_ACTION"
-					srcIdx = -1
+					if actUUID != "" {
+						src, ok := debugLogOutputRef(actions[i+1].WFWorkflowActionParameters["WFInput"])
+						if ok && src.OutputUUID == actUUID {
+							kind = "INLINE_DEBUG_ACTION"
+							srcIdx = -1
+						}
+					}
 				}
 			}
 		}
@@ -989,10 +1203,101 @@ func ClassifyShortcutTraceActions(actions []ShortcutAction) []DebugTraceActionMa
 			NativeActionIndex: i,
 			SourceActionIndex: srcIdx,
 			ActionIdentifier:  id,
+			ActionUUID:        actUUID,
 			Kind:              kind,
 			VariableTarget:    varName,
 			PreservesProducer: preserves,
 		})
 	}
 	return mappings
+}
+
+// QATraceRecord represents a single validated runtime trace record (either an
+// INLINE_DEBUG_ACTION event or a COLLECTOR_EVENT envelope boundary).
+type QATraceRecord struct {
+	SchemaVersion      string `json:"schemaVersion"`
+	Kind               string `json:"kind"`
+	Stage              string `json:"stage"`
+	Label              string `json:"label,omitempty"`
+	RunID              string `json:"runId,omitempty"`
+	StepSequence       *int   `json:"stepSequence,omitempty"`
+	ActionIdentifier   string `json:"actionIdentifier,omitempty"`
+	Timestamp          string `json:"timestamp,omitempty"`
+	TimestampPrecision string `json:"timestampPrecision,omitempty"`
+	ValueType          string `json:"valueType,omitempty"`
+	TraceTransport     string `json:"traceTransport,omitempty"`
+	CollectorSentinel  string `json:"collectorSentinel,omitempty"`
+}
+
+// ParseAndValidateQATracePayload parses and validates an exported NDJSON trace
+// stream (or legacy 1.0 snapshot envelope) emitted by debugExportTrace. It fails
+// closed on malformed JSON lines, missing collector boundaries, mismatched runId,
+// empty inline event sets when requireInlineEvents is true, or invalid stages.
+func ParseAndValidateQATracePayload(rawPayload string, expectedRunID string, requireInlineEvents bool) ([]QATraceRecord, error) {
+	trimmed := strings.TrimSpace(rawPayload)
+	if trimmed == "" {
+		return nil, fmt.Errorf("empty QA trace payload")
+	}
+	lines := strings.Split(trimmed, "\n")
+	var records []QATraceRecord
+	hasBegin := false
+	hasEnd := false
+	inlineCount := 0
+
+	for lineIdx, rawLine := range lines {
+		line := strings.TrimSpace(rawLine)
+		if line == "" || line == debugQACollectorSentinel {
+			continue
+		}
+		var rec QATraceRecord
+		dec := json.NewDecoder(strings.NewReader(line))
+		if err := dec.Decode(&rec); err != nil {
+			return nil, fmt.Errorf("trace line %d invalid JSON: %w", lineIdx+1, err)
+		}
+		if rec.SchemaVersion != "1.4" && rec.SchemaVersion != "1.0" {
+			return nil, fmt.Errorf("trace line %d unsupported schemaVersion %q", lineIdx+1, rec.SchemaVersion)
+		}
+		switch rec.Kind {
+		case "COLLECTOR_EVENT":
+			if expectedRunID != "" && rec.RunID != "" && rec.RunID != expectedRunID {
+				return nil, fmt.Errorf("trace line %d runId mismatch: got %q, want %q", lineIdx+1, rec.RunID, expectedRunID)
+			}
+			switch rec.Stage {
+			case "collector_begin":
+				hasBegin = true
+			case "collector_end":
+				hasEnd = true
+			case "end":
+				// Legacy 1.0 placeholder support
+				hasBegin = true
+				hasEnd = true
+			default:
+				return nil, fmt.Errorf("trace line %d invalid COLLECTOR_EVENT stage %q", lineIdx+1, rec.Stage)
+			}
+		case "INLINE_DEBUG_ACTION":
+			switch rec.Stage {
+			case "before", "after", "error", "end":
+			default:
+				return nil, fmt.Errorf("trace line %d invalid INLINE_DEBUG_ACTION stage %q", lineIdx+1, rec.Stage)
+			}
+			if strings.TrimSpace(rec.Timestamp) == "" {
+				return nil, fmt.Errorf("trace line %d INLINE_DEBUG_ACTION missing timestamp", lineIdx+1)
+			}
+			if rec.StepSequence == nil || *rec.StepSequence < 0 {
+				return nil, fmt.Errorf("trace line %d INLINE_DEBUG_ACTION missing non-negative stepSequence", lineIdx+1)
+			}
+			inlineCount++
+		default:
+			return nil, fmt.Errorf("trace line %d unknown kind %q", lineIdx+1, rec.Kind)
+		}
+		records = append(records, rec)
+	}
+
+	if !hasBegin || !hasEnd {
+		return nil, fmt.Errorf("trace payload missing collector boundary events (begin=%t, end=%t)", hasBegin, hasEnd)
+	}
+	if requireInlineEvents && inlineCount == 0 {
+		return nil, fmt.Errorf("trace payload contains 0 INLINE_DEBUG_ACTION records")
+	}
+	return records, nil
 }

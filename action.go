@@ -290,6 +290,7 @@ func makeAction(arguments []actionArgument, reference *WFActionReference) {
 			shortcut.WFWorkflowActions = withDates
 			actionIndex += inserted
 		}
+		recordDebugExpandedActions(macroName, len(shortcut.WFWorkflowActions), expanded)
 		shortcut.WFWorkflowActions = append(shortcut.WFWorkflowActions, expanded...)
 		actionIndex += len(expanded)
 		return

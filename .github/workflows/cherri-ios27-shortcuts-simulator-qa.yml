@@ -4,11 +4,14 @@ on:
   push:
     branches:
       - "agent/cherri-p10r13-*"
+      - "agent/cherri-p10r14-*"
     paths:
       - ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml"
       - "scripts/ios27_shortcuts_simulator_qa.sh"
       - "tools/shortcuts-simulator-qa/**"
       - "debug_stdlib.go"
+      - "simulator_qa_oracle.go"
+      - "p14_simulator_qa_runtime_trace_test.go"
   workflow_dispatch:
     inputs:
       probe_level:
@@ -46,10 +49,15 @@ on:
         default: true
         type: boolean
       max_editor_pages:
-        description: "Maximum editor pages to scroll and snapshot"
+        description: "Maximum editor pages to scroll and snapshot (1..20)"
         required: false
         default: "20"
         type: string
+      require_runtime:
+        description: "Fail closed with non-zero exit if SHORTCUT_RUN_COMPLETED or TRACE_CAPTURED is not PASS"
+        required: false
+        default: false
+        type: boolean
       upload_sanitized_artifacts:
         description: "Upload sanitized QA artifacts (7-day retention)"
         required: false
@@ -78,6 +86,9 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - name: Run Go Simulator QA & Trace Oracle Unit Tests
+        run: go test -v -run "TestP14_|TestP13_SimulatorQA|TestDebug" .
+
       - name: Run iPadOS 27 Simulator Shortcuts QA Orchestrator
         run: |
           chmod +x scripts/ios27_shortcuts_simulator_qa.sh
@@ -86,32 +97,50 @@ jobs:
             "${{ inputs.device_profile || 'ipad-default' }}" \
             "${{ inputs.sample_id || 'all' }}" \
             "${{ inputs.capture_full_editor || 'true' }}" \
-            "${{ inputs.max_editor_pages || '20' }}"
+            "${{ inputs.max_editor_pages || '20' }}" \
+            "${{ inputs.require_runtime || 'false' }}"
 
-      - name: Pre-Upload Sanitization & Privacy Gate
+      - name: Pre-Upload Sanitization & Privacy Gate (Text + Binary PNG Scan)
+        id: privacy_gate
         if: always()
         run: |
           python3 - <<'PY'
-          import os, re, sys
+          import json, os, re, sys
           root = "artifacts/cherri-ios27-simulator-qa"
           if not os.path.isdir(root):
-              sys.exit(0)
-          forbidden = re.compile(r"(cherri-shortcut-audit-20261110|[0-3][0-9]\.plist|BEGIN PRIVATE KEY|ghp_[A-Za-z0-9]+)")
+              sys.exit(1)
+          forbidden = re.compile(rb"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|AppleID|iCloudToken)")
+          summary_checked = False
           for dirpath, _, filenames in os.walk(root):
               for fn in filenames:
-                  if fn.endswith((".json", ".jsonl", ".md", ".txt", ".log")):
-                      p = os.path.join(dirpath, fn)
-                      with open(p, "r", encoding="utf-8", errors="ignore") as f:
-                          content = f.read()
-                      m = forbidden.search(content)
-                      if m:
-                          print(f"PRIVACY GATE FAILED: forbidden pattern {m.group(0)} in {p}", file=sys.stderr)
+                  p = os.path.join(dirpath, fn)
+                  if fn.endswith((".shortcut", ".plist", ".cherri")):
+                      print(f"PRIVACY GATE FAILED: raw build artifact {p} must not remain in upload directory", file=sys.stderr)
+                      sys.exit(1)
+                  with open(p, "rb") as f:
+                      data = f.read()
+                  m = forbidden.search(data)
+                  if m:
+                      print(f"PRIVACY GATE FAILED: forbidden pattern {m.group(0)!r} in {p}", file=sys.stderr)
+                      sys.exit(1)
+                  if fn == "summary.json":
+                      doc = json.loads(data.decode("utf-8"))
+                      if not doc.get("privacyGatePassed"):
+                          print(f"PRIVACY GATE FAILED: summary.json privacyGatePassed is false in {p}", file=sys.stderr)
                           sys.exit(1)
-          print("Privacy & sanitization gate passed.")
+                      summary_checked = True
+          if not summary_checked:
+              print("PRIVACY GATE FAILED: summary.json not found", file=sys.stderr)
+              sys.exit(1)
+          gh_out = os.environ.get("GITHUB_OUTPUT")
+          if gh_out:
+              with open(gh_out, "a", encoding="utf-8") as out_f:
+                  out_f.write("passed=true\n")
+          print("Privacy & sanitization gate passed across all text and binary artifacts.")
           PY
 
       - name: Upload Sanitized Simulator QA Artifacts
-        if: always() && (inputs.upload_sanitized_artifacts == true || inputs.upload_sanitized_artifacts == '')
+        if: always() && steps.privacy_gate.outputs.passed == 'true' && (inputs.upload_sanitized_artifacts == true || inputs.upload_sanitized_artifacts == '')
         uses: actions/upload-artifact@v4
         with:
           name: cherri-ios27-simulator-qa-${{ github.run_id }}

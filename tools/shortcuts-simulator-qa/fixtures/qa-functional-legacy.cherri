@@ -25,5 +25,5 @@ if baseCount == 2 {
 
 debugTraceEvent("end", "workflow-complete")
 const traceEnvelope = debugExportTrace("qa-functional-legacy")
-const finalSummary = text("CHERRI_QA_RESULT:ok:count=2:mode=legacy")
+const finalSummary = text("CHERRI_QA_RESULT:ok:count=2:mode=legacy\n{traceEnvelope}")
 output(finalSummary)

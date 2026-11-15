@@ -4,9 +4,13 @@ import UIKit
 struct CallbackEventRecord: Codable {
     let schemaVersion: String
     let runId: String
+    let fixtureId: String?
+    let expectedShortcutName: String?
+    let eventSource: String
     let status: String
     let host: String
     let resultSummary: String?
+    let tracePayload: String?
     let errorMessage: String?
     let receiverSelfTest: Bool
     let timestampISO8601: String
@@ -35,6 +39,15 @@ final class CallbackEventStore: ObservableObject {
         return docs.appendingPathComponent("callback-events.json")
     }
 
+    func resetStore() {
+        events = []
+        lastStatus = "IDLE"
+        lastRunId = "none"
+        lastResult = "none"
+        try? FileManager.default.removeItem(at: eventsFileURL)
+        persist()
+    }
+
     func loadExisting() {
         guard let data = try? Data(contentsOf: eventsFileURL),
               let decoded = try? JSONDecoder().decode([CallbackEventRecord].self, from: data) else {
@@ -48,18 +61,54 @@ final class CallbackEventStore: ObservableObject {
         }
     }
 
-    /// Redacts arbitrary strings unless they match synthetic allowlisted prefixes or JSON trace envelopes.
+    private static let forbiddenPattern: NSRegularExpression? = {
+        let pattern = "(?i)(cherri-shortcut-audit-20261110|\\b[0-3][0-9]\\.plist\\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\\s+[A-Za-z0-9._\\-]+|[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}|/Users/[A-Za-z0-9._\\-]+|[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})"
+        return try? NSRegularExpression(pattern: pattern)
+    }()
+
+    static func containsForbiddenSecret(_ s: String) -> Bool {
+        guard let regex = forbiddenPattern else { return false }
+        let range = NSRange(s.startIndex..<s.endIndex, in: s)
+        return regex.firstMatch(in: s, options: [], range: range) != nil
+    }
+
+    /// Redacts arbitrary strings unless they match synthetic allowlisted prefixes or validated NDJSON trace records.
     static func sanitizeAllowlisted(_ raw: String?) -> String? {
         guard let raw = raw, !raw.isEmpty else { return nil }
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty { return nil }
+        if containsForbiddenSecret(trimmed) {
+            return "[REDACTED_SECRET_OR_PII]"
+        }
         if trimmed.hasPrefix("CHERRI_QA_") ||
+           trimmed.hasPrefix("{\"schemaVersion\":\"1.4\"") ||
            trimmed.hasPrefix("{\"schemaVersion\":\"1.0\"") ||
+           trimmed.hasPrefix("===CHERRI_QA_TRACE_NDJSON_V14===") ||
            trimmed.hasPrefix("ANCHOR_") ||
            trimmed == "ok" ||
            trimmed == "cancelled" {
-            return String(trimmed.prefix(4096))
+            return String(trimmed.prefix(16384))
         }
         return "[REDACTED_NON_ALLOWLISTED_LEN_\(trimmed.count)]"
+    }
+
+    static func splitResultAndTrace(_ raw: String?) -> (summary: String?, trace: String?) {
+        guard let raw = raw, !raw.isEmpty else { return (nil, nil) }
+        var summaryLines: [String] = []
+        var traceLines: [String] = []
+        for line in raw.components(separatedBy: .newlines) {
+            let t = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if t.isEmpty { continue }
+            if t == "===CHERRI_QA_TRACE_NDJSON_V14===" ||
+               (t.hasPrefix("{") && t.hasSuffix("}") && (t.contains("\"kind\":\"COLLECTOR_EVENT\"") || t.contains("\"kind\":\"INLINE_DEBUG_ACTION\""))) {
+                traceLines.append(t)
+            } else {
+                summaryLines.append(t)
+            }
+        }
+        let summaryStr = summaryLines.isEmpty ? nil : sanitizeAllowlisted(summaryLines.joined(separator: "\n"))
+        let traceStr = traceLines.isEmpty ? nil : sanitizeAllowlisted(traceLines.joined(separator: "\n"))
+        return (summaryStr, traceStr)
     }
 
     func handleIncomingURL(_ url: URL) {
@@ -71,7 +120,11 @@ final class CallbackEventStore: ObservableObject {
             params[item.name] = item.value ?? ""
         }
         let runId = params["runId"] ?? params["run_id"] ?? "unspecified-run"
+        let fixtureId = params["fixtureId"] ?? params["fixture_id"]
+        let expectedShortcut = params["shortcutName"] ?? params["shortcut_name"]
         let selfTest = (params["selfTest"] == "1" || runId.hasPrefix("receiver-self-test"))
+        let eventSource = selfTest ? "receiver-self-test" : (params["source"] ?? "shortcuts-x-callback")
+
         let status: String
         switch host {
         case "success":
@@ -83,14 +136,21 @@ final class CallbackEventStore: ObservableObject {
         default:
             status = "UNKNOWN_\(host.uppercased())"
         }
-        let rawResult = params["result"] ?? params["output"]
+
+        let rawResult = params["result"] ?? params["output"] ?? params["input"] ?? params["text"]
         let rawErr = params["errorMessage"] ?? params["error"]
+        let (cleanSummary, cleanTrace) = Self.splitResultAndTrace(rawResult)
+
         let record = CallbackEventRecord(
-            schemaVersion: "1.0",
+            schemaVersion: "1.4",
             runId: String(runId.prefix(128)),
+            fixtureId: fixtureId.map { String($0.prefix(128)) },
+            expectedShortcutName: expectedShortcut.map { String($0.prefix(128)) },
+            eventSource: String(eventSource.prefix(64)),
             status: status,
             host: host,
-            resultSummary: Self.sanitizeAllowlisted(rawResult),
+            resultSummary: cleanSummary,
+            tracePayload: cleanTrace,
             errorMessage: Self.sanitizeAllowlisted(rawErr),
             receiverSelfTest: selfTest,
             timestampISO8601: formatter.string(from: Date())
@@ -182,6 +242,9 @@ struct CherriSimulatorQAReceiverApp: App {
 
     private func handleLaunchArguments() {
         let args = ProcessInfo.processInfo.arguments
+        if args.contains("--reset-callback-store") {
+            store.resetStore()
+        }
         if args.contains("--trigger-self-callback") {
             if let u = URL(string: "cherriqa://success?runId=receiver-self-test&selfTest=1&result=CHERRI_QA_RECEIVER_OK") {
                 store.handleIncomingURL(u)
