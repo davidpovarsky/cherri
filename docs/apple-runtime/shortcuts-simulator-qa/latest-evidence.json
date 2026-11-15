@@ -1,10 +1,16 @@
 {
-  "schemaVersion": "1.0",
-  "phase": "P10R13",
-  "primaryRunId": "43733946853",
-  "ipadVerificationRunId": "43731642051",
+  "schemaVersion": "1.4",
+  "phase": "P10R14",
+  "primaryRunId": "43751936080",
+  "previousRunId": "43749990966",
   "workflow": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
-  "compilerCommitSha": "616f14eecd4d81a020677ecab4a3d37fc24c2625",
+  "compilerCommitSha": "66e50265d95497a32781d33e088a66dbdd55898a",
+  "implementationCommitSha": "cfe0564038ee5376692350daac33200c4b91e9d7",
+  "provenanceCommitSha": "3b73f43f13e7a11d677f26fe503a6db93e48beb4",
+  "requireRuntime": false,
+  "releaseReadiness": "PARTIAL_READY_WITH_BLOCKED_SIGNING",
+  "privacyGatePassed": true,
+  "privacyViolations": [],
   "runnerEnvironment": {
     "runnerLabel": "xcode-27",
     "osProductName": "macOS",
@@ -15,7 +21,7 @@
     "xcodeVersion": "Xcode 27.1 (Build 27A9275)",
     "verifiedSimulatorDevices": [
       {
-        "runId": "43731642051",
+        "runId": "43751936080",
         "maskedUdid": "4DF1AA75-REDACTED",
         "deviceName": "iPad mini (A20 Pro)",
         "runtimeName": "iOS 27.2",
@@ -30,24 +36,6 @@
           "y": 0,
           "width": 475,
           "height": 1158
-        }
-      },
-      {
-        "runId": "43733946853",
-        "maskedUdid": "C898E3E4-REDACTED",
-        "deviceName": "iPhone Duo",
-        "runtimeName": "iOS 27.2",
-        "runtimeVersion": "27.2",
-        "osBuildNumber": "24B91016s",
-        "isIPad": false,
-        "shortcutsAppInstalled": true,
-        "shortcutsBundleId": "com.apple.shortcuts",
-        "scrollContainerType": "CollectionView",
-        "scrollContainerFrame": {
-          "x": 0,
-          "y": 0,
-          "width": 466,
-          "height": 678
         }
       }
     ]
@@ -83,10 +71,10 @@
       "command": "xcrun simctl openurl <UDID> file://<unsigned.shortcut>",
       "exitCode": 0,
       "status": "ATTEMPTED_UI_CHECK_REQUIRED",
-      "observedOutput": "simctl openurl exits 0, but iOS/iPadOS 27.2 Shortcuts.app rejects unsigned .shortcut files without AEA1 signature"
+      "observedOutput": ""
     },
     {
-      "routeId": "route_3_macos_host_sign_then_openurl",
+      "routeId": "route_3_signed_shortcut_openurl",
       "documented": true,
       "command": "/usr/bin/shortcuts sign --mode anyone && xcrun simctl openurl <UDID> file://<signed.shortcut>",
       "hostSignExitCode": 1,
@@ -109,50 +97,50 @@
     {
       "fixtureId": "qa-functional-v2",
       "dialect": "v2",
-      "sourceSha256": "c18a0d6f4f8fc339430497ef9300dae32b412e037d0582e59236868de001dd59",
-      "unsignedPlistSha256": "2633d1392e063e832bafa6f0fafb4e46a54f026ecf423f50db8e7185437d7f57",
+      "sourceSha256": "715bcc5f696ffd546aff589eda0f4354deeb2c1f437a6f6b72fd368132851acd",
+      "unsignedPlistSha256": "44d3bdaf470ac81c86ed0d27bf8f0256aab6786fe04fa15a9dd6f7a9fa6e99a5",
       "nativeActionCount": 30
     },
     {
       "fixtureId": "qa-functional-legacy",
       "dialect": "legacy",
-      "sourceSha256": "d12d6e3d770dbe8ae8d4e96c3a500f6d4e144b9de74804563a0ce2fdcc1f900f",
-      "unsignedPlistSha256": "70918c2b233bf8f08d41609f7730deffe6de9cbe350aef686d926cbc4db98bd9",
+      "sourceSha256": "8fe363fde89ba618ad7ef31bbb5da350ecf035a8f386057695a8a721158ffde5",
+      "unsignedPlistSha256": "307e2108ea2cded6876e7d3f90a1ef7742bf98eef5036696e4435f11c97550e1",
       "nativeActionCount": 31
     },
     {
       "fixtureId": "qa-scroll-editor-v2",
       "dialect": "v2",
       "sourceSha256": "e8991ab412f0bbe8cdff2a0a0ca3b02c684cfdd36997e3477730e69d690cfec0",
-      "unsignedPlistSha256": "f5212e210351646fbc0be78387642f6e88315f351382e102418e481f85d45f2f",
+      "unsignedPlistSha256": "8b1cb5226cb800c9816173e3ead9107cdbfc8a0bedc0e4f483ce14142957ac58",
       "nativeActionCount": 35
     },
     {
       "fixtureId": "qa-scroll-editor-legacy",
       "dialect": "legacy",
       "sourceSha256": "7fda9c4c5286e109a8beeac40645aa97270b98a3b11f6577bd8a1d358ad50182",
-      "unsignedPlistSha256": "d064710fda26242e31bf928d7d13dff34ffcc19ce3a3e9b16ae25da3cfeab7dc",
+      "unsignedPlistSha256": "f3ece7032b6c913509e0b2507470c88fe2d41ed7ce31be27ea31ef65c1346457",
       "nativeActionCount": 36
     },
     {
       "fixtureId": "qa-rtl-hebrew-v2",
       "dialect": "v2",
-      "sourceSha256": "dc380bd398377012c9df35c049523de920d3ce4d8d81ff5c623d5015b5835f81",
-      "unsignedPlistSha256": "f8d00926161df32e5645cb4bb34982e8e6e24bc3f2fc5c4fa7074e6c98e2524f",
-      "nativeActionCount": 14
+      "sourceSha256": "12e231979fe313e589117c72958107f3d45650c6917239ef043c89b8d95c9f77",
+      "unsignedPlistSha256": "c104fff8ee581f30ca197f5214d0b565a81165705b6bf6e158a97a74f700005d",
+      "nativeActionCount": 18
     },
     {
       "fixtureId": "qa-functional-v2-uninstrumented",
       "dialect": "v2",
-      "sourceSha256": "bb30fa2191c34e6f14a56bf82b150e5c8deeb6a703196c8791df99f4ef3b0ca3",
-      "unsignedPlistSha256": "b9d8ff0653ec8f29e0410fd95ac9d4cb24e5ae49e47dbfffa2a79ff9ff30cf87",
+      "sourceSha256": "07444bbda0be61ba5ec4b9884ec3f8ae27624ee549c2e2c0406c415cdcc4eb4b",
+      "unsignedPlistSha256": "c2178860e094ce5e8ce5c266a6099fd2677e8a688225b094a7650d18f8fe5888",
       "nativeActionCount": 13
     },
     {
       "fixtureId": "qa-functional-legacy-uninstrumented",
       "dialect": "legacy",
-      "sourceSha256": "e0ec58034022dc6bfbd46640268d2187330ce5656565f199567905b84340147f",
-      "unsignedPlistSha256": "29fa8f57b665963ef29818f40487eb3a5e78c4996f6b4827c9d21631676a2ac1",
+      "sourceSha256": "f9d99a9d771adbc39c34125a52714a2d2dc23aaf1a73ed7c0df1406cfa2761a6",
+      "unsignedPlistSha256": "0c1a6953335cdb6aedd18c54bc66ccb302a61194e18330021f38740708a50555",
       "nativeActionCount": 14
     }
   ],
@@ -163,7 +151,9 @@
       "projectedSourceActionCount": 13,
       "inlineDebugActionCount": 15,
       "collectorEventActionCount": 2,
-      "sourceActionSequenceMatches": true
+      "sourceActionSequenceMatches": true,
+      "traceTransport": "ndjson-stream",
+      "collectorSentinel": "===CHERRI_QA_TRACE_NDJSON_V14==="
     },
     "legacy": {
       "uninstrumentedActionCount": 14,
@@ -171,21 +161,64 @@
       "projectedSourceActionCount": 14,
       "inlineDebugActionCount": 15,
       "collectorEventActionCount": 2,
-      "sourceActionSequenceMatches": true
+      "sourceActionSequenceMatches": true,
+      "traceTransport": "ndjson-stream",
+      "collectorSentinel": "===CHERRI_QA_TRACE_NDJSON_V14==="
     }
+  },
+  "editorCoverage": {
+    "schemaVersion": "1.4",
+    "shortcutLaunched": true,
+    "shortcutForegroundVerified": true,
+    "expectedShortcutName": "qa-functional-v2",
+    "importConsentButtonTapped": false,
+    "shortcutExistsInLibrary": false,
+    "editorOpened": true,
+    "editorIdentityVerified": false,
+    "editorHeaderLabels": [
+      "All Shortcuts",
+      "All Shortcuts",
+      "New Shortcut"
+    ],
+    "scrollContainerFound": true,
+    "scrollContainerType": "ScrollView",
+    "scrollContainerFrame": {
+      "x": 281,
+      "y": 0,
+      "width": 475,
+      "height": 1158
+    },
+    "totalPagesCaptured": 3,
+    "maxEditorPages": 20,
+    "captureStatus": "PARTIAL_EDITOR_CAPTURE",
+    "detectedActionCards": [
+      "Button:Show Sidebar",
+      "Cell:New Shortcut, No actions",
+      "Button:Play",
+      "Button:Share Shortcut",
+      "StaticText:Preparing support for describe a shortcut",
+      "Button:Report a Concern",
+      "StaticText:Report a Concern"
+    ],
+    "detectedAnchors": [],
+    "bottomReachedEvidence": "MULTI_SIGNAL_STALL_AT_PAGE_3:IDENTICAL_VISIBLE_LABEL_FRAME_DIGEST+ZERO_LAST_CARD_Y_DELTA"
   },
   "xctestSummary": {
     "title": "Test - CherriSimulatorQAReceiver",
     "result": "Passed",
-    "totalTestCount": 2,
-    "passedTests": 2,
+    "totalTestCount": 3,
+    "passedTests": 3,
     "failedTests": 0,
     "skippedTests": 0
   },
   "receiverCallbackEvidence": {
+    "schemaVersion": "1.4",
     "runId": "receiver-self-test",
+    "eventSource": "receiver-self-test",
+    "receiverSelfTest": true,
+    "host": "success",
     "status": "SUCCESS",
     "resultSummary": "CHERRI_QA_RECEIVER_OK",
-    "timestampISO8601": "2026-11-15T16:26:30.872Z"
+    "timestampISO8601": "2026-11-15T19:13:07.031Z"
   }
 }

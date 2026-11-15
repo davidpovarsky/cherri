@@ -1,0 +1,224 @@
+{
+  "schemaVersion": "1.4",
+  "phase": "P10R14",
+  "primaryRunId": "43751936080",
+  "previousRunId": "43749990966",
+  "workflow": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+  "compilerCommitSha": "66e50265d95497a32781d33e088a66dbdd55898a",
+  "implementationCommitSha": "cfe0564038ee5376692350daac33200c4b91e9d7",
+  "provenanceCommitSha": "3b73f43f13e7a11d677f26fe503a6db93e48beb4",
+  "requireRuntime": false,
+  "releaseReadiness": "PARTIAL_READY_WITH_BLOCKED_SIGNING",
+  "privacyGatePassed": true,
+  "privacyViolations": [],
+  "runnerEnvironment": {
+    "runnerLabel": "xcode-27",
+    "osProductName": "macOS",
+    "osProductVersion": "27.0.1",
+    "osBuildVersion": "26A434",
+    "kernelVersion": "Darwin Kernel Version 27.0.0 (RELEASE_ARM64_VMAPPLE arm64)",
+    "xcodeSelectPath": "/Applications/Xcode_27.1.app/Contents/Developer",
+    "xcodeVersion": "Xcode 27.1 (Build 27A9275)",
+    "verifiedSimulatorDevices": [
+      {
+        "runId": "43751936080",
+        "maskedUdid": "4DF1AA75-REDACTED",
+        "deviceName": "iPad mini (A20 Pro)",
+        "runtimeName": "iOS 27.2",
+        "runtimeVersion": "27.2",
+        "osBuildNumber": "24B8117",
+        "isIPad": true,
+        "shortcutsAppInstalled": true,
+        "shortcutsBundleId": "com.apple.shortcuts",
+        "scrollContainerType": "ScrollView",
+        "scrollContainerFrame": {
+          "x": 281,
+          "y": 0,
+          "width": 475,
+          "height": 1158
+        }
+      }
+    ]
+  },
+  "gates": {
+    "RUNNER_AVAILABLE": "PASS",
+    "SIMULATOR_BOOTED": "PASS",
+    "SHORTCUTS_APP_INSTALLED": "PASS",
+    "SHORTCUTS_LAUNCHED": "PASS",
+    "EDITOR_OPENED": "PASS",
+    "FILE_IMPORT_ATTEMPTED": "PASS",
+    "COMPILER_ARTIFACT_IMPORTED": "BLOCKED_SIGNING",
+    "SHORTCUT_EXISTS_IN_LIBRARY": "BLOCKED_SIGNING",
+    "ACTION_EDITOR_CAPTURED": "PARTIAL_EDITOR_CAPTURE",
+    "SHORTCUT_RUN_ATTEMPTED": "BLOCKED_SIGNING",
+    "SHORTCUT_RUN_COMPLETED": "BLOCKED_SIGNING",
+    "CALLBACK_CAPTURED": "PASS",
+    "TRACE_CAPTURED": "BLOCKED_SIGNING",
+    "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+  },
+  "importRoutes": [
+    {
+      "routeId": "route_1_create_shortcut_scheme",
+      "documented": true,
+      "command": "xcrun simctl openurl <UDID> shortcuts://create-shortcut",
+      "exitCode": 0,
+      "status": "PASS",
+      "observedOutput": ""
+    },
+    {
+      "routeId": "route_2_unsigned_file_openurl",
+      "documented": true,
+      "command": "xcrun simctl openurl <UDID> file://<unsigned.shortcut>",
+      "exitCode": 0,
+      "status": "ATTEMPTED_UI_CHECK_REQUIRED",
+      "observedOutput": ""
+    },
+    {
+      "routeId": "route_3_signed_shortcut_openurl",
+      "documented": true,
+      "command": "/usr/bin/shortcuts sign --mode anyone && xcrun simctl openurl <UDID> file://<signed.shortcut>",
+      "hostSignExitCode": 1,
+      "hostSignOutput": "Error: In order to do this, you must be signed into iCloud.",
+      "openUrlExitCode": 1,
+      "status": "BLOCKED_SIGNING",
+      "observedOutput": "Blocked by macOS host signing: Error: In order to do this, you must be signed into iCloud."
+    },
+    {
+      "routeId": "route_4_exploratory_import_shortcut_scheme",
+      "documented": false,
+      "classification": "UNDOCUMENTED",
+      "command": "xcrun simctl openurl <UDID> shortcuts://import-shortcut?name=CherriQAProbe",
+      "exitCode": 0,
+      "status": "UNDOCUMENTED_PROBE",
+      "observedOutput": ""
+    }
+  ],
+  "compiledFixtures": [
+    {
+      "fixtureId": "qa-functional-v2",
+      "dialect": "v2",
+      "sourceSha256": "715bcc5f696ffd546aff589eda0f4354deeb2c1f437a6f6b72fd368132851acd",
+      "unsignedPlistSha256": "44d3bdaf470ac81c86ed0d27bf8f0256aab6786fe04fa15a9dd6f7a9fa6e99a5",
+      "nativeActionCount": 30
+    },
+    {
+      "fixtureId": "qa-functional-legacy",
+      "dialect": "legacy",
+      "sourceSha256": "8fe363fde89ba618ad7ef31bbb5da350ecf035a8f386057695a8a721158ffde5",
+      "unsignedPlistSha256": "307e2108ea2cded6876e7d3f90a1ef7742bf98eef5036696e4435f11c97550e1",
+      "nativeActionCount": 31
+    },
+    {
+      "fixtureId": "qa-scroll-editor-v2",
+      "dialect": "v2",
+      "sourceSha256": "e8991ab412f0bbe8cdff2a0a0ca3b02c684cfdd36997e3477730e69d690cfec0",
+      "unsignedPlistSha256": "8b1cb5226cb800c9816173e3ead9107cdbfc8a0bedc0e4f483ce14142957ac58",
+      "nativeActionCount": 35
+    },
+    {
+      "fixtureId": "qa-scroll-editor-legacy",
+      "dialect": "legacy",
+      "sourceSha256": "7fda9c4c5286e109a8beeac40645aa97270b98a3b11f6577bd8a1d358ad50182",
+      "unsignedPlistSha256": "f3ece7032b6c913509e0b2507470c88fe2d41ed7ce31be27ea31ef65c1346457",
+      "nativeActionCount": 36
+    },
+    {
+      "fixtureId": "qa-rtl-hebrew-v2",
+      "dialect": "v2",
+      "sourceSha256": "12e231979fe313e589117c72958107f3d45650c6917239ef043c89b8d95c9f77",
+      "unsignedPlistSha256": "c104fff8ee581f30ca197f5214d0b565a81165705b6bf6e158a97a74f700005d",
+      "nativeActionCount": 18
+    },
+    {
+      "fixtureId": "qa-functional-v2-uninstrumented",
+      "dialect": "v2",
+      "sourceSha256": "07444bbda0be61ba5ec4b9884ec3f8ae27624ee549c2e2c0406c415cdcc4eb4b",
+      "unsignedPlistSha256": "c2178860e094ce5e8ce5c266a6099fd2677e8a688225b094a7650d18f8fe5888",
+      "nativeActionCount": 13
+    },
+    {
+      "fixtureId": "qa-functional-legacy-uninstrumented",
+      "dialect": "legacy",
+      "sourceSha256": "f9d99a9d771adbc39c34125a52714a2d2dc23aaf1a73ed7c0df1406cfa2761a6",
+      "unsignedPlistSha256": "0c1a6953335cdb6aedd18c54bc66ccb302a61194e18330021f38740708a50555",
+      "nativeActionCount": 14
+    }
+  ],
+  "instrumentationParity": {
+    "v2": {
+      "uninstrumentedActionCount": 13,
+      "instrumentedTotalActionCount": 30,
+      "projectedSourceActionCount": 13,
+      "inlineDebugActionCount": 15,
+      "collectorEventActionCount": 2,
+      "sourceActionSequenceMatches": true,
+      "traceTransport": "ndjson-stream",
+      "collectorSentinel": "===CHERRI_QA_TRACE_NDJSON_V14==="
+    },
+    "legacy": {
+      "uninstrumentedActionCount": 14,
+      "instrumentedTotalActionCount": 31,
+      "projectedSourceActionCount": 14,
+      "inlineDebugActionCount": 15,
+      "collectorEventActionCount": 2,
+      "sourceActionSequenceMatches": true,
+      "traceTransport": "ndjson-stream",
+      "collectorSentinel": "===CHERRI_QA_TRACE_NDJSON_V14==="
+    }
+  },
+  "editorCoverage": {
+    "schemaVersion": "1.4",
+    "shortcutLaunched": true,
+    "shortcutForegroundVerified": true,
+    "expectedShortcutName": "qa-functional-v2",
+    "importConsentButtonTapped": false,
+    "shortcutExistsInLibrary": false,
+    "editorOpened": true,
+    "editorIdentityVerified": false,
+    "editorHeaderLabels": [
+      "All Shortcuts",
+      "All Shortcuts",
+      "New Shortcut"
+    ],
+    "scrollContainerFound": true,
+    "scrollContainerType": "ScrollView",
+    "scrollContainerFrame": {
+      "x": 281,
+      "y": 0,
+      "width": 475,
+      "height": 1158
+    },
+    "totalPagesCaptured": 3,
+    "maxEditorPages": 20,
+    "captureStatus": "PARTIAL_EDITOR_CAPTURE",
+    "detectedActionCards": [
+      "Button:Show Sidebar",
+      "Cell:New Shortcut, No actions",
+      "Button:Play",
+      "Button:Share Shortcut",
+      "StaticText:Preparing support for describe a shortcut",
+      "Button:Report a Concern",
+      "StaticText:Report a Concern"
+    ],
+    "detectedAnchors": [],
+    "bottomReachedEvidence": "MULTI_SIGNAL_STALL_AT_PAGE_3:IDENTICAL_VISIBLE_LABEL_FRAME_DIGEST+ZERO_LAST_CARD_Y_DELTA"
+  },
+  "xctestSummary": {
+    "title": "Test - CherriSimulatorQAReceiver",
+    "result": "Passed",
+    "totalTestCount": 3,
+    "passedTests": 3,
+    "failedTests": 0,
+    "skippedTests": 0
+  },
+  "receiverCallbackEvidence": {
+    "schemaVersion": "1.4",
+    "runId": "receiver-self-test",
+    "eventSource": "receiver-self-test",
+    "receiverSelfTest": true,
+    "host": "success",
+    "status": "SUCCESS",
+    "resultSummary": "CHERRI_QA_RECEIVER_OK",
+    "timestampISO8601": "2026-11-15T19:13:07.031Z"
+  }
+}
