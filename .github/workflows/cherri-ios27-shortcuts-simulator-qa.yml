@@ -1,6 +1,14 @@
 name: Cherri iOS/iPadOS 27 Shortcuts Simulator QA
 
 on:
+  push:
+    branches:
+      - "agent/cherri-p10r13-*"
+    paths:
+      - ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml"
+      - "scripts/ios27_shortcuts_simulator_qa.sh"
+      - "tools/shortcuts-simulator-qa/**"
+      - "debug_stdlib.go"
   workflow_dispatch:
     inputs:
       probe_level:
