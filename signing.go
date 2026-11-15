@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -16,6 +17,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -353,10 +355,16 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 				if err != nil {
 					return nil, fmt.Errorf("corrupted base64 signed payload: %w", err)
 				}
-				if looksLikeSignedShortcut(decoded) {
-					return decoded, nil
+				if !looksLikeSignedShortcut(decoded) {
+					return nil, classifyNonAEA1Payload("application/octet-stream (decoded base64)", decoded)
 				}
-				return nil, classifyNonAEA1Payload("application/octet-stream (decoded base64)", decoded)
+				if expectedSHA := strings.TrimSpace(jsonRes.File.SignedSHA256); expectedSHA != "" {
+					actualSHA := fmt.Sprintf("%x", sha256.Sum256(decoded))
+					if !strings.EqualFold(expectedSHA, actualSHA) {
+						return nil, fmt.Errorf("signing service signed_sha256 mismatch: expected %s, got %s", expectedSHA, actualSHA)
+					}
+				}
+				return decoded, nil
 			}
 			if jsonRes.Error.Message != "" {
 				return nil, fmt.Errorf("signing server error: %s (%s)", jsonRes.Error.Message, jsonRes.Error.Code)
@@ -518,4 +526,148 @@ func hubSign() SigningService {
 			return fmt.Sprintf("Shortcut Signing Powered By %s", ansi("Shortcuty Sign", red))
 		},
 	}
+}
+
+// SigningProvenanceManifest records exact-file signing hashes and verification metadata without exposing URLs or secrets.
+type SigningProvenanceManifest struct {
+	SchemaVersion        string                  `json:"schemaVersion"`
+	CompilerCommitSHA    string                  `json:"compilerCommitSha,omitempty"`
+	SigningMethod        string                  `json:"signingMethod"`
+	ServiceName          string                  `json:"serviceName"`
+	ShortcutName         string                  `json:"shortcutName"`
+	SourceFile           string                  `json:"sourceFile,omitempty"`
+	SourceSHA256         string                  `json:"sourceSha256,omitempty"`
+	UnsignedFile         string                  `json:"unsignedFile"`
+	UnsignedPlistSHA256  string                  `json:"unsignedPlistSha256"`
+	UnsignedByteSize     int                     `json:"unsignedByteSize"`
+	NativeActionCount    int                     `json:"nativeActionCount"`
+	SignedFile           string                  `json:"signedFile"`
+	SignedArtifactSHA256 string                  `json:"signedArtifactSha256"`
+	SignedByteSize       int                     `json:"signedByteSize"`
+	HeaderMagic          string                  `json:"headerMagic"`
+	VerificationTier     SigningVerificationTier `json:"verificationTier"`
+}
+
+var signingPrivacyDenyPattern = regexp.MustCompile(`(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,})`)
+
+// SignUnsignedShortcutFileWithProvenance signs an exact pre-compiled unsigned .shortcut plist file on disk
+// without recompiling it, enforces synthetic-only privacy rules, verifies AEA1 + SHA256 integrity, and returns provenance metadata.
+func SignUnsignedShortcutFileWithProvenance(
+	unsignedPath string,
+	signedOutPath string,
+	sourcePath string,
+	compilerCommitSHA string,
+	service *SigningService,
+) (*SigningProvenanceManifest, error) {
+	if strings.TrimSpace(unsignedPath) == "" {
+		return nil, fmt.Errorf("unsigned shortcut path is empty")
+	}
+	if strings.TrimSpace(signedOutPath) == "" {
+		return nil, fmt.Errorf("signed output shortcut path is empty")
+	}
+	if signingPrivacyDenyPattern.MatchString(unsignedPath) || signingPrivacyDenyPattern.MatchString(sourcePath) {
+		return nil, fmt.Errorf("privacy guard blocked signing of forbidden/private corpus path")
+	}
+
+	unsignedBytes, err := os.ReadFile(unsignedPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read unsigned shortcut file %s: %w", filepath.Base(unsignedPath), err)
+	}
+	if len(unsignedBytes) == 0 {
+		return nil, fmt.Errorf("cannot sign empty unsigned shortcut file %s", filepath.Base(unsignedPath))
+	}
+	if signingPrivacyDenyPattern.Match(unsignedBytes) {
+		return nil, fmt.Errorf("privacy guard blocked signing of payload containing forbidden/private corpus markers")
+	}
+	if len(unsignedBytes) >= 4 && string(unsignedBytes[:4]) == "AEA1" {
+		return nil, fmt.Errorf("input file %s is already an AEA1 signed archive; expected unsigned plist", filepath.Base(unsignedPath))
+	}
+
+	var plistDoc map[string]any
+	if _, err := plist.Unmarshal(unsignedBytes, &plistDoc); err != nil {
+		return nil, fmt.Errorf("input file %s is not a valid plist: %w", filepath.Base(unsignedPath), err)
+	}
+	rawActions, hasActions := plistDoc["WFWorkflowActions"]
+	if !hasActions {
+		return nil, fmt.Errorf("input plist %s is missing WFWorkflowActions", filepath.Base(unsignedPath))
+	}
+	nativeActionCount := 0
+	if slice, ok := rawActions.([]any); ok {
+		nativeActionCount = len(slice)
+	}
+
+	var sourceSHA256 string
+	var sourceBase string
+	if strings.TrimSpace(sourcePath) != "" {
+		srcBytes, srcErr := os.ReadFile(sourcePath)
+		if srcErr != nil {
+			return nil, fmt.Errorf("failed to read source file %s: %w", filepath.Base(sourcePath), srcErr)
+		}
+		if signingPrivacyDenyPattern.Match(srcBytes) {
+			return nil, fmt.Errorf("privacy guard blocked source file containing forbidden/private corpus markers")
+		}
+		sourceSHA256 = fmt.Sprintf("%x", sha256.Sum256(srcBytes))
+		sourceBase = filepath.Base(sourcePath)
+	}
+
+	activeService := service
+	signingMethod := "HUBSIGN_REMOTE_SERVICE"
+	if activeService == nil {
+		h := hubSign()
+		activeService = &h
+	} else if !strings.Contains(activeService.url, "shortcuty.app") {
+		signingMethod = "CUSTOM_REMOTE_SIGNING_SERVICE"
+	}
+
+	shortcutName := strings.TrimSuffix(filepath.Base(signedOutPath), ".shortcut")
+	shortcutName = strings.TrimSuffix(shortcutName, "_unsigned")
+	shortcutName = strings.TrimSuffix(shortcutName, "-signed")
+	if shortcutName == "" {
+		shortcutName = "Shortcut"
+	}
+
+	signedBytes, signErr := SignShortcutBytes(activeService, shortcutName, unsignedBytes)
+	if signErr != nil {
+		if unsignedPath != signedOutPath {
+			_ = os.Remove(signedOutPath)
+		}
+		return nil, signErr
+	}
+
+	tier, valErr := ValidateSignedShortcutBytes(signedBytes)
+	if valErr != nil {
+		if unsignedPath != signedOutPath {
+			_ = os.Remove(signedOutPath)
+		}
+		return nil, fmt.Errorf("signed artifact validation failed: %w", valErr)
+	}
+
+	if err := os.MkdirAll(filepath.Dir(signedOutPath), 0755); err != nil {
+		return nil, fmt.Errorf("failed to create output directory: %w", err)
+	}
+	if err := os.WriteFile(signedOutPath, signedBytes, 0600); err != nil {
+		return nil, fmt.Errorf("failed to write signed shortcut to %s: %w", filepath.Base(signedOutPath), err)
+	}
+
+	unsignedSHA256 := fmt.Sprintf("%x", sha256.Sum256(unsignedBytes))
+	signedSHA256 := fmt.Sprintf("%x", sha256.Sum256(signedBytes))
+
+	return &SigningProvenanceManifest{
+		SchemaVersion:        "1.4",
+		CompilerCommitSHA:    strings.TrimSpace(compilerCommitSHA),
+		SigningMethod:        signingMethod,
+		ServiceName:          activeService.name,
+		ShortcutName:         shortcutName,
+		SourceFile:           sourceBase,
+		SourceSHA256:         sourceSHA256,
+		UnsignedFile:         filepath.Base(unsignedPath),
+		UnsignedPlistSHA256:  unsignedSHA256,
+		UnsignedByteSize:     len(unsignedBytes),
+		NativeActionCount:    nativeActionCount,
+		SignedFile:           filepath.Base(signedOutPath),
+		SignedArtifactSHA256: signedSHA256,
+		SignedByteSize:       len(signedBytes),
+		HeaderMagic:          string(signedBytes[:4]),
+		VerificationTier:     tier,
+	}, nil
 }

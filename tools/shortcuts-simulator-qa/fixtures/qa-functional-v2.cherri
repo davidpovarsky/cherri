@@ -1,3 +1,4 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
 debugClearLogs()
 debugTraceEvent(stage: "before", label: "step-1-greeting")
 let greeting = text("CHERRI_QA_SYNTHETIC_GREETING")
@@ -10,6 +11,7 @@ debugLog(withDates: true)
 let meta = {"suite": "cherri-ios27-simulator-qa", "dialect": "v2", "expectedCount": 2}
 debugLog(withDates: true)
 let suiteName = getValue(dictionary: meta, key: "suite")
+comment("ANCHOR_CARD_15_MID_CENTER")
 
 if baseCount == 2 {
     repeat 2 {
@@ -23,4 +25,5 @@ if baseCount == 2 {
 debugTraceEvent(stage: "end", label: "workflow-complete")
 let traceEnvelope = debugExportTrace(runId: "qa-functional-v2")
 let finalSummary = text("CHERRI_QA_RESULT:ok:count=2:mode=v2\n\(traceEnvelope)")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
 output(finalSummary)

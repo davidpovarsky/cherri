@@ -9,6 +9,8 @@ on:
       - ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml"
       - "scripts/ios27_shortcuts_simulator_qa.sh"
       - "tools/shortcuts-simulator-qa/**"
+      - "signing.go"
+      - "language_cli_adapter.go"
       - "debug_stdlib.go"
       - "simulator_qa_oracle.go"
       - "p14_simulator_qa_runtime_trace_test.go"
@@ -87,7 +89,7 @@ jobs:
           cache: true
 
       - name: Run Go Simulator QA & Trace Oracle Unit Tests
-        run: go test -v -run "TestP14_|TestP13_SimulatorQA|TestDebug" .
+        run: go test -v -run "TestP14_|TestP10_A1_|TestP13_SimulatorQA|TestDebug" .
 
       - name: Run iPadOS 27 Simulator Shortcuts QA Orchestrator
         run: |

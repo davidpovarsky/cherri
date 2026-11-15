@@ -1,12 +1,22 @@
 package main
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestP14_TraceEventAndCollectorNDJSONEscapingAndUTF16Ranges(t *testing.T) {
@@ -489,5 +499,309 @@ func TestP14_WorkflowOrchestratorAndSwiftHarnessRegressionLocks(t *testing.T) {
 	if _, err := os.Stat(filepath.Join("tools", "shortcuts-simulator-qa", "XcodeProject", "ReceiverApp", "Info.plist")); err != nil {
 		t.Fatalf("ReceiverApp/Info.plist must exist in repository: %v", err)
 	}
+
+	for _, token := range []string{
+		"sign \"$UNSIGNED_FILE\"",
+		"--hubsign",
+		"builds/signed/${EXPECTED_SHORTCUT_NAME}.shortcut",
+		"UNSIGNED_FILE\" = \"$SIGNED_FILE\"",
+		"signing-provenance.json",
+		"request-signed-import.txt",
+		"request-shortcut-run.txt",
+		"plist-vs-editor-comparison.json",
+	} {
+		if !strings.Contains(sh, token) {
+			t.Fatalf("ios27_shortcuts_simulator_qa.sh missing required HubSign/handshake token %q", token)
+		}
+	}
+	for _, req := range []string{
+		"importConsentButtonTapped",
+		"importSheetSnapshotCaptured",
+		"runtimeTriggerDispatched",
+		"runtimeCallbackObservedInUI",
+	} {
+		if !strings.Contains(ui, req) {
+			t.Fatalf("CherriSimulatorQAUITests.swift missing required P10R14 handshake/runtime field %q", req)
+		}
+	}
+}
+
+func TestP14_ExactFileHubSignAndProvenanceContract(t *testing.T) {
+	tmpDir := t.TempDir()
+	exeSuffix := ""
+	if runtime.GOOS == "windows" {
+		exeSuffix = ".exe"
+	}
+	cherriBin := filepath.Join(tmpDir, "cherri"+exeSuffix)
+
+	buildCmd := exec.Command("go", "build", "-o", cherriBin, ".")
+	if out, err := buildCmd.CombinedOutput(); err != nil {
+		t.Fatalf("failed to build cherri binary: %v\n%s", err, string(out))
+	}
+
+	compileFixture := func(srcRel string, legacy bool, baseOut string) (string, []byte) {
+		args := []string{srcRel, "--skip-sign", "--output=" + baseOut, "--no-ansi"}
+		if legacy {
+			args = append(args, "--legacy")
+		}
+		cmd := exec.Command(cherriBin, args...)
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Fatalf("failed to compile %s (legacy=%v): %v\n%s", srcRel, legacy, err, string(out))
+		}
+		if _, statErr := os.Stat(baseOut); statErr != nil {
+			t.Fatalf("expected compiled unsigned artifact at %s: %v", baseOut, statErr)
+		}
+		data, err := os.ReadFile(baseOut)
+		if err != nil {
+			t.Fatalf("read unsigned output %s: %v", baseOut, err)
+		}
+		if len(data) >= 4 && string(data[:4]) == "AEA1" {
+			t.Fatalf("compiled --skip-sign file %s unexpectedly starts with AEA1", baseOut)
+		}
+		return baseOut, data
+	}
+
+	v2Src := filepath.Join("tools", "shortcuts-simulator-qa", "fixtures", "qa-functional-v2.cherri")
+	legacySrc := filepath.Join("tools", "shortcuts-simulator-qa", "fixtures", "qa-functional-legacy.cherri")
+	v2UnsignedPath, v2UnsignedBytes := compileFixture(v2Src, false, filepath.Join(tmpDir, "qa-functional-v2.shortcut"))
+	legacyUnsignedPath, legacyUnsignedBytes := compileFixture(legacySrc, true, filepath.Join(tmpDir, "qa-functional-legacy.shortcut"))
+
+	validAEA1 := append([]byte("AEA1"), bytes.Repeat([]byte{0x42, 0x7A, 0x19, 0xC3}, 24)...)
+	validSum := sha256.Sum256(validAEA1)
+	validSHA := hex.EncodeToString(validSum[:])
+
+	var expectedUpload []byte
+	mode := "valid"
+	serverHits := 0
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		serverHits++
+		if r.URL.Path != "/api/v1/sign" {
+			http.Error(w, "unexpected path", http.StatusNotFound)
+			return
+		}
+		if err := r.ParseMultipartForm(4 << 20); err != nil {
+			http.Error(w, "bad multipart: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		f, _, err := r.FormFile("file")
+		if err != nil {
+			http.Error(w, "missing file field", http.StatusBadRequest)
+			return
+		}
+		defer f.Close()
+		uploaded, err := io.ReadAll(f)
+		if err != nil {
+			http.Error(w, "read upload failed", http.StatusInternalServerError)
+			return
+		}
+		if expectedUpload != nil && !bytes.Equal(uploaded, expectedUpload) {
+			http.Error(w, fmt.Sprintf("exact-byte mismatch: uploaded %d bytes != expected %d bytes", len(uploaded), len(expectedUpload)), http.StatusBadRequest)
+			return
+		}
+
+		switch mode {
+		case "valid":
+			w.Header().Set("Content-Type", "application/json")
+			resp := map[string]any{
+				"success": true,
+				"file": map[string]any{
+					"format":         "aea1",
+					"content_base64": base64.StdEncoding.EncodeToString(validAEA1),
+					"signed_sha256":  validSHA,
+				},
+			}
+			_ = json.NewEncoder(w).Encode(resp)
+		case "xml":
+			w.Header().Set("Content-Type", "application/xml")
+			_, _ = w.Write([]byte(`<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><dict/></dict></plist>`))
+		case "html":
+			w.Header().Set("Content-Type", "text/html")
+			_, _ = w.Write([]byte(`<!doctype html><html><body>502 Bad Gateway</body></html>`))
+		case "json-error":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"success":false,"error":{"code":"SIGN_REJECTED","message":"synthetic rejection"}}`))
+		case "sha-mismatch":
+			w.Header().Set("Content-Type", "application/json")
+			resp := map[string]any{
+				"success": true,
+				"file": map[string]any{
+					"format":         "aea1",
+					"content_base64": base64.StdEncoding.EncodeToString(validAEA1),
+					"signed_sha256":  strings.Repeat("0", 64),
+				},
+			}
+			_ = json.NewEncoder(w).Encode(resp)
+		case "non-aea1":
+			w.Header().Set("Content-Type", "application/json")
+			resp := map[string]any{
+				"success": true,
+				"file": map[string]any{
+					"format":         "bplist",
+					"content_base64": base64.StdEncoding.EncodeToString([]byte("bplist00_not_signed_aea1_payload")),
+				},
+			}
+			_ = json.NewEncoder(w).Encode(resp)
+		case "empty":
+			w.WriteHeader(http.StatusOK)
+		case "http-503":
+			w.Header().Set("Content-Type", "text/plain")
+			w.WriteHeader(http.StatusServiceUnavailable)
+			_, _ = w.Write([]byte("service temporarily unavailable"))
+		case "slow":
+			time.Sleep(250 * time.Millisecond)
+			w.WriteHeader(http.StatusOK)
+		}
+	}))
+	defer srv.Close()
+
+	signEndpoint := srv.URL + "/api/v1/sign?response=json"
+
+	// 1. Positive exact-byte HubSign tests for BOTH V2 and Legacy compiled outputs.
+	for _, tc := range []struct {
+		name          string
+		unsignedPath  string
+		unsignedBytes []byte
+		sourcePath    string
+	}{
+		{name: "v2", unsignedPath: v2UnsignedPath, unsignedBytes: v2UnsignedBytes, sourcePath: v2Src},
+		{name: "legacy", unsignedPath: legacyUnsignedPath, unsignedBytes: legacyUnsignedBytes, sourcePath: legacySrc},
+	} {
+		t.Run("positive_"+tc.name, func(t *testing.T) {
+			mode = "valid"
+			expectedUpload = tc.unsignedBytes
+			signedOut := filepath.Join(tmpDir, tc.name+"-signed.shortcut")
+			manifestOut := filepath.Join(tmpDir, tc.name+"-manifest.json")
+
+			cmd := exec.Command(cherriBin,
+				"sign", tc.unsignedPath,
+				"--output="+signedOut,
+				"--signing-server="+signEndpoint,
+				"--source-file="+tc.sourcePath,
+				"--compiler-sha=deadbeef1234",
+				"--manifest-out="+manifestOut,
+				"--no-ansi",
+			)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("cherri sign (%s) failed: %v\n%s", tc.name, err, string(out))
+			}
+
+			signedBytes, err := os.ReadFile(signedOut)
+			if err != nil {
+				t.Fatalf("read signed output: %v", err)
+			}
+			if !bytes.Equal(signedBytes, validAEA1) {
+				t.Fatalf("signed bytes mismatch: got %d bytes, want %d", len(signedBytes), len(validAEA1))
+			}
+
+			manifestBytes, err := os.ReadFile(manifestOut)
+			if err != nil {
+				t.Fatalf("read manifest: %v", err)
+			}
+			if strings.Contains(string(manifestBytes), srv.URL) {
+				t.Fatalf("provenance manifest leaked signing server URL %q: %s", srv.URL, string(manifestBytes))
+			}
+			if strings.Contains(string(out), srv.URL) {
+				t.Fatalf("CLI stdout leaked signing server URL %q: %s", srv.URL, string(out))
+			}
+
+			var manifest SigningProvenanceManifest
+			if err := json.Unmarshal(manifestBytes, &manifest); err != nil {
+				t.Fatalf("decode manifest: %v", err)
+			}
+			srcBytes, _ := os.ReadFile(tc.sourcePath)
+			srcSum := fmt.Sprintf("%x", sha256.Sum256(srcBytes))
+			unsignedSum := fmt.Sprintf("%x", sha256.Sum256(tc.unsignedBytes))
+			if manifest.HeaderMagic != "AEA1" ||
+				manifest.SourceSHA256 != srcSum ||
+				manifest.UnsignedPlistSHA256 != unsignedSum ||
+				manifest.SignedArtifactSHA256 != validSHA ||
+				manifest.NativeActionCount == 0 {
+				t.Fatalf("unexpected provenance manifest fields: %+v", manifest)
+			}
+		})
+	}
+
+	// 2. Negative fail-closed tests (XML, HTML, JSON error, SHA256 mismatch, non-AEA1, empty, HTTP 503, unreachable, invalid file).
+	expectedUpload = v2UnsignedBytes
+	for _, negMode := range []string{"xml", "html", "json-error", "sha-mismatch", "non-aea1", "empty", "http-503"} {
+		t.Run("negative_cli_"+negMode, func(t *testing.T) {
+			mode = negMode
+			signedOut := filepath.Join(tmpDir, "fail-"+negMode+".shortcut")
+			cmd := exec.Command(cherriBin,
+				"sign", v2UnsignedPath,
+				"--output="+signedOut,
+				"--signing-server="+signEndpoint,
+				"--no-ansi",
+			)
+			if out, err := cmd.CombinedOutput(); err == nil {
+				t.Fatalf("expected non-zero exit for server mode %s, got nil (out=%s)", negMode, string(out))
+			}
+			if _, statErr := os.Stat(signedOut); !os.IsNotExist(statErr) {
+				t.Fatalf("signed output %s must not exist on failed signing mode %s", signedOut, negMode)
+			}
+		})
+	}
+
+	t.Run("negative_cli_unreachable", func(t *testing.T) {
+		signedOut := filepath.Join(tmpDir, "fail-unreachable.shortcut")
+		cmd := exec.Command(cherriBin,
+			"sign", v2UnsignedPath,
+			"--output="+signedOut,
+			"--signing-server=http://127.0.0.1:1/api/v1/sign?response=json",
+			"--no-ansi",
+		)
+		if _, err := cmd.CombinedOutput(); err == nil {
+			t.Fatalf("expected failure for unreachable signing endpoint")
+		}
+		if _, statErr := os.Stat(signedOut); !os.IsNotExist(statErr) {
+			t.Fatalf("signed output must not exist on unreachable endpoint failure")
+		}
+	})
+
+	t.Run("negative_timeout_fail_closed", func(t *testing.T) {
+		mode = "slow"
+		prevTimeout := signingHTTPTimeout
+		signingHTTPTimeout = 80 * time.Millisecond
+		defer func() { signingHTTPTimeout = prevTimeout }()
+
+		signedOut := filepath.Join(tmpDir, "fail-timeout.shortcut")
+		svc := &SigningService{name: "MockSlowHubSign", url: signEndpoint}
+		if _, err := SignUnsignedShortcutFileWithProvenance(v2UnsignedPath, signedOut, v2Src, "testsha", svc); err == nil {
+			t.Fatalf("expected timeout error when server sleeps beyond signingHTTPTimeout")
+		}
+		if _, statErr := os.Stat(signedOut); !os.IsNotExist(statErr) {
+			t.Fatalf("timeout failure must not leave signed output file behind")
+		}
+	})
+
+	t.Run("negative_invalid_inputs_and_privacy_guard", func(t *testing.T) {
+		mode = "valid"
+		svc := &SigningService{name: "MockHubSign", url: signEndpoint}
+
+		badFile := filepath.Join(tmpDir, "not-a-plist.shortcut")
+		_ = os.WriteFile(badFile, []byte("not-a-plist"), 0600)
+		if _, err := SignUnsignedShortcutFileWithProvenance(badFile, filepath.Join(tmpDir, "bad-out.shortcut"), "", "", svc); err == nil {
+			t.Fatalf("expected invalid plist rejection")
+		}
+
+		alreadySigned := filepath.Join(tmpDir, "already-aea1.shortcut")
+		_ = os.WriteFile(alreadySigned, validAEA1, 0600)
+		if _, err := SignUnsignedShortcutFileWithProvenance(alreadySigned, filepath.Join(tmpDir, "aea1-out.shortcut"), "", "", svc); err == nil {
+			t.Fatalf("expected rejection of already-signed AEA1 input")
+		}
+
+		hitsBeforePrivacy := serverHits
+		privateMarkerPath := filepath.Join(tmpDir, "cherri-shortcut-audit-20261110-sample.shortcut")
+		_ = os.WriteFile(privateMarkerPath, v2UnsignedBytes, 0600)
+		if _, err := SignUnsignedShortcutFileWithProvenance(privateMarkerPath, filepath.Join(tmpDir, "priv-out.shortcut"), "", "", svc); err == nil {
+			t.Fatalf("expected privacy guard rejection for private corpus path")
+		}
+		if serverHits != hitsBeforePrivacy {
+			t.Fatalf("privacy guard must block before contacting signing server (hits before=%d, after=%d)", hitsBeforePrivacy, serverHits)
+		}
+	})
 }
 

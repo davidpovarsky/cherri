@@ -43,6 +43,7 @@ struct EditorActionCoverageReport: Codable {
     let shortcutForegroundVerified: Bool
     let expectedShortcutName: String
     let importConsentButtonTapped: Bool
+    let importSheetSnapshotCaptured: Bool
     let shortcutExistsInLibrary: Bool
     let libraryShortcutCells: [String]
     let editorOpened: Bool
@@ -57,6 +58,8 @@ struct EditorActionCoverageReport: Codable {
     let detectedActionCards: [String]
     let detectedAnchors: [String]
     let bottomReachedEvidence: String
+    let runtimeTriggerDispatched: Bool
+    let runtimeCallbackObservedInUI: Bool
 }
 
 final class CherriSimulatorQAUITests: XCTestCase {
@@ -109,21 +112,25 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "Shortcuts", "All Shortcuts", "Library", "Gallery", "Automation",
         "Search", "Search Actions", "New Shortcut", "Create Shortcut",
         "Add Shortcut", "+ Add Shortcut", "Add Action", "Add", "Done",
-        "Cancel", "Select", "More", "Share", "Share Shortcut", "Edit",
+        "Cancel", "Select", "More", "Share", "Share Shortcut", "Edit", "Edit Shortcut",
+        "Open", "Keep Both", "Set Up Shortcut", "Replace", "Scripting", "Actions",
         "Duplicate", "Delete", "Rename", "Details", "Info", "Play", "Run",
         "Run Shortcut", "Stop", "Show Sidebar", "Hide Sidebar", "editor",
         "New Shortcut, No actions", "New Shortcut, Shortcut Menu",
         "Report a Concern", "Preparing support for\ndescribe a shortcut",
         "Allow", "Always Allow", "Allow Once", "Don't Allow", "OK",
         "Continue", "Get Started", "Not Now", "Close", "Dismiss", "Report",
-        "Set Up Shortcut", "Replace", "About This Shortcut", "Can Run When Locked",
+        "About This Shortcut", "Can Run When Locked", "Shortcut Details",
         "No Shortcuts", "Toolbar", "BackButton", "main.button.newshortcut",
         "all_shortcuts_library", "ellipsis.circle.fill", "plus.circle.fill",
         "magnifyingglass", "Dictate", "Comment", "Text", "Number", "Dictionary",
-        "Get Dictionary Value", "If", "Otherwise", "End If", "Repeat", "End Repeat",
-        "Stop and Output", "Set Variable", "Add to Variable", "Combine Text",
+        "Get Dictionary Value", "Get Value", "Get Value for Key", "Current Date",
+        "If", "Otherwise", "End If", "Repeat", "Repeat Times", "End Repeat",
+        "Repeat Index", "Repeat Item", "Condition", "Equals", "Is Equal To",
+        "Stop and Output", "Output", "Set Variable", "Add to Variable", "Combine Text",
         "Get Dates from Input", "Quick Look", "Show Alert", "Show Result",
-        "Wait", "Nothing", "המשך", "אישור", "צור קיצור דרך", "הוסף קיצור דרך",
+        "Wait", "Nothing", "New Lines", "Text Value", "Key", "Value",
+        "המשך", "אישור", "צור קיצור דרך", "הוסף קיצור דרך",
         "בדיקת קיצור דרך סינתטי בעברית - iPadOS 27"
     ]
 
@@ -132,7 +139,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-rtl-hebrew", "Cherri QA", "===CHERRI_QA_TRACE_NDJSON_V14===",
         "ElementType_", "Vertical scroll bar", "Horizontal scroll bar",
         "_TtGC7SwiftUI", "More, qa-", "More, New Shortcut", "Edit, New Shortcut",
-        "Preparing support for"
+        "Edit, qa-", "Open, qa-", "Play, qa-", "Preparing support for"
     ]
 
     private static let libraryChromeLabels: Set<String> = [
@@ -160,8 +167,15 @@ final class CherriSimulatorQAUITests: XCTestCase {
         }
         for prefix in Self.allowlistedPrefixes {
             if trimmed.hasPrefix(prefix) {
-                return String(trimmed.prefix(256))
+                return String(trimmed.prefix(512))
             }
+        }
+        if trimmed.contains("ANCHOR_") ||
+           trimmed.contains("CHERRI_QA_") ||
+           trimmed.contains("qa-functional-") ||
+           trimmed.contains("qa-scroll-editor-") ||
+           trimmed.contains("qa-rtl-hebrew-") {
+            return String(trimmed.prefix(512))
         }
         if trimmed.hasSuffix(" actions") || trimmed.hasSuffix("%") {
             return String(trimmed.prefix(128))
@@ -238,23 +252,41 @@ final class CherriSimulatorQAUITests: XCTestCase {
         expectedShortcutName: String
     ) -> (editorOpened: Bool, identityVerified: Bool, headerLabels: [String]) {
         var headers: [String] = []
+        var sawExpectedInHeader = false
         let navBars = shortcuts.navigationBars
         for i in 0..<min(navBars.count, 5) {
             let nb = navBars.element(boundBy: i)
             if nb.exists {
                 if !nb.identifier.isEmpty {
-                    headers.append( sanitizeUIString(nb.identifier) ?? "REDACTED" )
+                    headers.append(sanitizeUIString(nb.identifier) ?? "REDACTED")
+                    if nb.identifier.localizedCaseInsensitiveContains(expectedShortcutName) {
+                        sawExpectedInHeader = true
+                    }
                 }
                 let texts = nb.staticTexts
                 for j in 0..<min(texts.count, 4) {
                     let st = texts.element(boundBy: j)
                     if st.exists && !st.label.isEmpty {
-                        headers.append( sanitizeUIString(st.label) ?? "REDACTED" )
+                        headers.append(sanitizeUIString(st.label) ?? "REDACTED")
+                        if st.label.localizedCaseInsensitiveContains(expectedShortcutName) {
+                            sawExpectedInHeader = true
+                        }
+                    }
+                }
+                let btns = nb.buttons
+                for j in 0..<min(btns.count, 6) {
+                    let b = btns.element(boundBy: j)
+                    if b.exists && !b.label.isEmpty {
+                        headers.append(sanitizeUIString(b.label) ?? "REDACTED")
+                        if b.label.localizedCaseInsensitiveContains(expectedShortcutName) {
+                            sawExpectedInHeader = true
+                        }
                     }
                 }
             }
         }
 
+        let namePred = NSPredicate(format: "label == %@ OR label BEGINSWITH %@ OR label CONTAINS[c] %@", expectedShortcutName, expectedShortcutName + ",", expectedShortcutName)
         let hasEditorPane = shortcuts.otherElements["editor"].exists ||
                             shortcuts.navigationBars["New Shortcut"].exists ||
                             shortcuts.navigationBars[expectedShortcutName].exists ||
@@ -262,7 +294,8 @@ final class CherriSimulatorQAUITests: XCTestCase {
                             shortcuts.buttons["Add Action"].exists ||
                             shortcuts.buttons["Done"].exists ||
                             shortcuts.buttons["Info"].exists ||
-                            shortcuts.buttons["Shortcut Details"].exists
+                            shortcuts.buttons["Shortcut Details"].exists ||
+                            shortcuts.buttons["Scripting"].exists
 
         let libraryStillPrimary = shortcuts.otherElements["all_shortcuts_library"].exists &&
                                   shortcuts.navigationBars["All Shortcuts"].exists &&
@@ -270,11 +303,43 @@ final class CherriSimulatorQAUITests: XCTestCase {
 
         let editorOpened = hasEditorPane || (!libraryStillPrimary && !shortcuts.otherElements["all_shortcuts_library"].exists)
         let identityVerified = editorOpened && (
-            shortcuts.buttons[expectedShortcutName].exists ||
-            shortcuts.staticTexts[expectedShortcutName].exists ||
+            sawExpectedInHeader ||
+            shortcuts.buttons.matching(namePred).firstMatch.exists ||
+            shortcuts.staticTexts.matching(namePred).firstMatch.exists ||
             shortcuts.navigationBars[expectedShortcutName].exists
         )
         return (editorOpened, identityVerified, headers)
+    }
+
+    private func waitForHandshakeFile(_ url: URL, timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if FileManager.default.fileExists(atPath: url.path) {
+                return true
+            }
+            Thread.sleep(forTimeInterval: 0.25)
+        }
+        return false
+    }
+
+    private func dismissOnboardingAndStaleAlerts(shortcuts: XCUIApplication, springboard: XCUIApplication) {
+        let dismissOrder = ["OK", "Continue", "Get Started", "Not Now", "Dismiss", "המשך", "אישור"]
+        for _ in 0..<3 {
+            var dismissedAny = false
+            for targetApp in [shortcuts, springboard] {
+                for label in dismissOrder {
+                    let btn = targetApp.buttons[label].firstMatch
+                    if btn.exists && btn.isHittable {
+                        btn.tap()
+                        dismissedAny = true
+                        Thread.sleep(forTimeInterval: 0.8)
+                    }
+                }
+            }
+            if !dismissedAny {
+                break
+            }
+        }
     }
 
     func test01_ReceiverSelfCallbackAndContainerPersistence() throws {
@@ -291,90 +356,234 @@ final class CherriSimulatorQAUITests: XCTestCase {
         let outDir = sharedOutputDirectory()
         let maxPages = min(20, max(1, Int(ProcessInfo.processInfo.environment["CHERRI_QA_MAX_EDITOR_PAGES"] ?? "12") ?? 12))
         let expectedShortcutName = ProcessInfo.processInfo.environment["CHERRI_QA_EXPECTED_SHORTCUT_NAME"] ?? "qa-functional-v2"
+        let expectSignedImport = (ProcessInfo.processInfo.environment["CHERRI_QA_EXPECT_SIGNED_IMPORT"] == "true")
+        let expectRuntimeRun = (ProcessInfo.processInfo.environment["CHERRI_QA_EXPECT_RUNTIME_RUN"] == "true")
+        let execRunNonce = ProcessInfo.processInfo.environment["CHERRI_QA_EXEC_RUN_NONCE"] ?? ""
 
         let shortcuts = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
 
-        // Prefer activate() so any modal import sheet opened by simctl openurl is preserved
+        // Ensure Shortcuts is foregrounded and clear any first-launch / prior-probe modals before importing
         shortcuts.activate()
         var launched = shortcuts.wait(for: .runningForeground, timeout: 10)
         if !launched {
             shortcuts.launch()
             launched = shortcuts.wait(for: .runningForeground, timeout: 15)
         }
+        dismissOnboardingAndStaleAlerts(shortcuts: shortcuts, springboard: springboard)
 
-        // Step 1: Check if a signed .shortcut import consent sheet is present; if so, tap Add Shortcut
+        // Step 1: Coordinated host -> simulator signed .shortcut import handshake (if AEA1 signed artifact is ready)
         var importConsentTapped = false
-        let importButtons = ["Add Shortcut", "+ Add Shortcut", "Set Up Shortcut", "Replace", "הוסף קיצור דרך"]
-        for candidate in importButtons {
-            let btn = shortcuts.buttons[candidate].firstMatch
-            if btn.waitForExistence(timeout: 2) && btn.isHittable {
+        var importSheetCaptured = false
+        if expectSignedImport {
+            let reqURL = outDir.appendingPathComponent("request-signed-import.txt")
+            let ackURL = outDir.appendingPathComponent("ack-signed-import.txt")
+            try? FileManager.default.removeItem(at: ackURL)
+            try? expectedShortcutName.data(using: .utf8)?.write(to: reqURL, options: .atomic)
+            _ = waitForHandshakeFile(ackURL, timeout: 15.0)
+
+            let sheetButtonLabels = ["Add Shortcut", "+ Add Shortcut", "Set Up Shortcut", "Replace", "Keep Both", "הוסף קיצור דרך"]
+            let sheetPredicate = NSPredicate(format: "label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both' OR label == 'Replace'")
+
+            var foundSheetBtn: XCUIElement? = nil
+            let sheetDeadline = Date().addingTimeInterval(12.0)
+            while Date() < sheetDeadline && foundSheetBtn == nil {
+                for targetApp in [shortcuts, springboard] {
+                    for candidate in sheetButtonLabels {
+                        let btn = targetApp.buttons[candidate].firstMatch
+                        if btn.exists && btn.isHittable {
+                            foundSheetBtn = btn
+                            break
+                        }
+                    }
+                    if foundSheetBtn == nil {
+                        let predBtn = targetApp.buttons.matching(sheetPredicate).firstMatch
+                        if predBtn.exists && predBtn.isHittable {
+                            foundSheetBtn = predBtn
+                        }
+                    }
+                    if foundSheetBtn != nil {
+                        break
+                    }
+                }
+                if foundSheetBtn == nil {
+                    Thread.sleep(forTimeInterval: 0.4)
+                }
+            }
+
+            if let btn = foundSheetBtn {
+                let sheetShot = XCUIScreen.main.screenshot()
+                try? sheetShot.pngRepresentation.write(to: outDir.appendingPathComponent("import-consent-sheet.png"), options: .atomic)
+                if let sheetSnap = try? shortcuts.snapshot() {
+                    let appF = shortcuts.frame.isEmpty ? CGRect(x: 0, y: 0, width: 1024, height: 1366) : shortcuts.frame
+                    let sheetNodes = flattenSnapshot(sheetSnap, screenIndex: 0, viewport: appF)
+                    let enc = JSONEncoder()
+                    enc.outputFormatting = [.prettyPrinted, .sortedKeys]
+                    if let d = try? enc.encode(sheetNodes) {
+                        try? d.write(to: outDir.appendingPathComponent("import-sheet-tree.json"), options: .atomic)
+                    }
+                }
+                importSheetCaptured = true
                 btn.tap()
                 importConsentTapped = true
                 let gone = NSPredicate(format: "exists == false")
-                _ = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: gone, object: btn)], timeout: 15)
+                _ = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: gone, object: btn)], timeout: 12)
                 Thread.sleep(forTimeInterval: 1.5)
-                break
-            }
-        }
 
-        // Step 2: Dismiss first-launch splash / onboarding or SpringBoard permission alerts if present
-        let onboardingLabels = ["Continue", "Get Started", "Not Now", "OK", "Allow", "Always Allow", "המשך", "אישור"]
-        for targetApp in [shortcuts, springboard] {
-            for label in onboardingLabels {
-                let btn = targetApp.buttons[label].firstMatch
-                if btn.exists && btn.isHittable {
+                // Handle secondary confirmation if Shortcuts asks Replace / Keep Both / Done
+                let followUpLabels = ["Replace", "Keep Both", "Add Shortcut", "Done"]
+                let followDeadline = Date().addingTimeInterval(5.0)
+                while Date() < followDeadline {
+                    var tappedFollowUp = false
+                    for label in followUpLabels {
+                        let b2 = shortcuts.buttons[label].firstMatch
+                        if b2.exists && b2.isHittable {
+                            b2.tap()
+                            tappedFollowUp = true
+                            Thread.sleep(forTimeInterval: 1.2)
+                            break
+                        }
+                    }
+                    if !tappedFollowUp {
+                        break
+                    }
+                }
+            } else {
+                let diagShot = XCUIScreen.main.screenshot()
+                try? diagShot.pngRepresentation.write(to: outDir.appendingPathComponent("import-sheet-timeout.png"), options: .atomic)
+            }
+        } else {
+            // Even without host handshake signal, check if an import sheet is already visible
+            let importButtons = ["Add Shortcut", "+ Add Shortcut", "Set Up Shortcut", "Replace", "הוסף קיצור דרך"]
+            for candidate in importButtons {
+                let btn = shortcuts.buttons[candidate].firstMatch
+                if btn.waitForExistence(timeout: 1) && btn.isHittable {
+                    importConsentTapped = true
                     btn.tap()
-                    Thread.sleep(forTimeInterval: 1.0)
+                    Thread.sleep(forTimeInterval: 1.5)
+                    break
                 }
             }
         }
 
+        dismissOnboardingAndStaleAlerts(shortcuts: shortcuts, springboard: springboard)
         let foregroundVerified = (shortcuts.state == .runningForeground)
 
-        // Step 3: Inspect All Shortcuts library for expectedShortcutName
+        // Step 2: Inspect All Shortcuts library for expectedShortcutName (with bounded wait after import)
         var shortcutExistsInLibrary = false
         var libraryCells: [String] = []
-        let cellsQuery = shortcuts.collectionViews.cells
-        let cellCount = min(cellsQuery.count, 25)
-        for i in 0..<cellCount {
-            let cell = cellsQuery.element(boundBy: i)
-            if cell.exists {
-                let rawLabel = cell.label
-                if let sanitized = sanitizeUIString(rawLabel) {
-                    libraryCells.append(sanitized)
+        let libDeadline = Date().addingTimeInterval(expectSignedImport ? 8.0 : 2.0)
+        while Date() < libDeadline {
+            libraryCells.removeAll()
+            let cellsQuery = shortcuts.collectionViews.cells
+            let cellCount = min(cellsQuery.count, 30)
+            for i in 0..<cellCount {
+                let cell = cellsQuery.element(boundBy: i)
+                if cell.exists {
+                    let rawLabel = cell.label
+                    if let sanitized = sanitizeUIString(rawLabel) {
+                        libraryCells.append(sanitized)
+                    }
+                    if rawLabel == expectedShortcutName ||
+                       rawLabel.hasPrefix("\(expectedShortcutName),") ||
+                       rawLabel.localizedCaseInsensitiveContains(expectedShortcutName) ||
+                       cell.buttons[expectedShortcutName].exists ||
+                       cell.staticTexts[expectedShortcutName].exists {
+                        shortcutExistsInLibrary = true
+                    }
                 }
-                if rawLabel == expectedShortcutName ||
-                   rawLabel.hasPrefix("\(expectedShortcutName),") ||
-                   cell.buttons[expectedShortcutName].exists ||
-                   cell.staticTexts[expectedShortcutName].exists {
+            }
+            if !shortcutExistsInLibrary {
+                let namePred = NSPredicate(format: "label == %@ OR label BEGINSWITH %@ OR label CONTAINS[c] %@", expectedShortcutName, expectedShortcutName + ",", expectedShortcutName)
+                if shortcuts.buttons.matching(namePred).firstMatch.exists ||
+                   shortcuts.staticTexts.matching(namePred).firstMatch.exists ||
+                   shortcuts.navigationBars[expectedShortcutName].exists {
                     shortcutExistsInLibrary = true
                 }
             }
-        }
-        if !shortcutExistsInLibrary && shortcuts.buttons[expectedShortcutName].exists {
-            shortcutExistsInLibrary = true
+            if shortcutExistsInLibrary || !expectSignedImport {
+                break
+            }
+            Thread.sleep(forTimeInterval: 0.5)
         }
 
-        // Step 4: Open editor for the imported shortcut (if present in library), or open New Shortcut editor
+        // Step 3: Open the genuine action editor for expectedShortcutName (or New Shortcut if blocked)
         if shortcutExistsInLibrary {
-            let moreBtn = shortcuts.buttons["More, \(expectedShortcutName)"].firstMatch
-            if moreBtn.exists && moreBtn.isHittable {
-                moreBtn.tap()
-                Thread.sleep(forTimeInterval: 2.0)
-            } else {
-                // Locate the shortcut cell and tap its secondary (ellipsis) button
-                for i in 0..<cellCount {
-                    let cell = cellsQuery.element(boundBy: i)
-                    if cell.exists && (cell.label == expectedShortcutName || cell.label.hasPrefix("\(expectedShortcutName),")) {
-                        if cell.buttons.count >= 2 {
-                            let ellipsis = cell.buttons.element(boundBy: 1)
-                            if ellipsis.exists && ellipsis.isHittable {
-                                ellipsis.tap()
-                                Thread.sleep(forTimeInterval: 2.0)
-                                break
+            // If not already showing the expected shortcut inside Other["editor"], tap its library card safely (left/center, avoiding Play at top-right)
+            var editorMatchesExpected = shortcuts.otherElements["editor"].exists && (
+                shortcuts.navigationBars[expectedShortcutName].exists ||
+                shortcuts.navigationBars.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", expectedShortcutName)).firstMatch.exists
+            )
+            if !editorMatchesExpected {
+                let editByLabel = shortcuts.buttons["Edit, \(expectedShortcutName)"].firstMatch
+                let openByLabel = shortcuts.buttons["Open, \(expectedShortcutName)"].firstMatch
+                if editByLabel.exists && editByLabel.isHittable {
+                    editByLabel.tap()
+                    Thread.sleep(forTimeInterval: 1.5)
+                } else if openByLabel.exists && openByLabel.isHittable {
+                    openByLabel.tap()
+                    Thread.sleep(forTimeInterval: 1.5)
+                } else {
+                    let cellsQuery = shortcuts.collectionViews.cells
+                    let cellCount = min(cellsQuery.count, 30)
+                    for i in 0..<cellCount {
+                        let cell = cellsQuery.element(boundBy: i)
+                        if cell.exists && (
+                            cell.label == expectedShortcutName ||
+                            cell.label.hasPrefix("\(expectedShortcutName),") ||
+                            cell.label.localizedCaseInsensitiveContains(expectedShortcutName) ||
+                            cell.staticTexts[expectedShortcutName].exists
+                        ) {
+                            // Tap bottom-left/center of card so we never hit top-right Play button
+                            cell.coordinate(withNormalizedOffset: CGVector(dx: 0.35, dy: 0.65)).tap()
+                            Thread.sleep(forTimeInterval: 1.5)
+                            break
+                        }
+                    }
+                }
+            }
+
+            // On iPadOS 27 split preview, tap the top-right "Edit" button if not already in full action editor mode
+            let alreadyFullEditor = shortcuts.buttons["Scripting"].exists ||
+                                    shortcuts.buttons["Actions"].exists ||
+                                    shortcuts.buttons["Done"].exists ||
+                                    shortcuts.searchFields["Search Actions"].exists ||
+                                    !shortcuts.otherElements["all_shortcuts_library"].exists
+            if !alreadyFullEditor {
+                let editPred = NSPredicate(format: "label == 'Edit' OR label == 'Edit Shortcut' OR label BEGINSWITH 'Edit'")
+                let matchingEditBtns = shortcuts.buttons.matching(editPred)
+                var chosenEditBtn: XCUIElement? = nil
+                var bestEditX: CGFloat = 250
+                for idx in 0..<min(matchingEditBtns.count, 8) {
+                    let b = matchingEditBtns.element(boundBy: idx)
+                    if b.exists && b.isHittable && b.frame.origin.x > bestEditX {
+                        bestEditX = b.frame.origin.x
+                        chosenEditBtn = b
+                    }
+                }
+                if let editBtn = chosenEditBtn {
+                    editBtn.tap()
+                    Thread.sleep(forTimeInterval: 1.8)
+                } else {
+                    // Fallback: check rightmost button in top bar above y=100, excluding Share Shortcut & Play
+                    let navButtons = shortcuts.navigationBars.buttons
+                    var candidateBtn: XCUIElement? = nil
+                    var bestX: CGFloat = 0
+                    for i in 0..<min(navButtons.count, 10) {
+                        let b = navButtons.element(boundBy: i)
+                        if b.exists && b.isHittable && b.frame.origin.x > 580 && b.frame.origin.y < 110 && b.frame.size.width >= 38 {
+                            let lbl = b.label
+                            if lbl != "Share Shortcut" && lbl != "Share" && lbl != "Play" && lbl != "Run" {
+                                if b.frame.origin.x > bestX {
+                                    bestX = b.frame.origin.x
+                                    candidateBtn = b
+                                }
                             }
                         }
+                    }
+                    if let btn = candidateBtn {
+                        btn.tap()
+                        Thread.sleep(forTimeInterval: 1.8)
                     }
                 }
             }
@@ -402,26 +611,42 @@ final class CherriSimulatorQAUITests: XCTestCase {
             expectedShortcutName: expectedShortcutName
         )
 
-        // Step 5: Locate scrollable container inside the active view (excluding all_shortcuts_library when editor is open)
+        // Step 4: Locate scrollable canvas inside Other["editor"] (avoiding all_shortcuts_library and action picker drawer)
         var scrollElement: XCUIElement = shortcuts
         var scrollType: String? = nil
         var scrollFrame: SanitizedFrame? = nil
 
+        let editorRoot = shortcuts.otherElements["editor"].firstMatch
+        let searchRoot: XCUIElement = editorRoot.exists ? editorRoot : shortcuts
+        let libraryRoot = shortcuts.otherElements["all_shortcuts_library"].firstMatch
+        let libraryFrame = libraryRoot.exists ? libraryRoot.frame : CGRect.zero
+
         let candidates: [(String, XCUIElementQuery)] = [
-            ("CollectionView", shortcuts.collectionViews),
-            ("ScrollView", shortcuts.scrollViews),
-            ("Table", shortcuts.tables)
+            ("ScrollView", searchRoot.scrollViews),
+            ("CollectionView", searchRoot.collectionViews),
+            ("Table", searchRoot.tables)
         ]
-        var bestArea: CGFloat = 0
+        var bestScore: CGFloat = -1
         for (typeName, query) in candidates {
-            let count = min(query.count, 6)
+            let count = min(query.count, 8)
             for i in 0..<count {
                 let el = query.element(boundBy: i)
                 if el.exists {
                     let f = el.frame
-                    let area = f.width * f.height
-                    if area > bestArea && f.height > 120 {
-                        bestArea = area
+                    if f.height <= 120 || f.width <= 150 { continue }
+                    if libraryRoot.exists && abs(f.origin.x - libraryFrame.origin.x) < 10 && f.size.width <= libraryFrame.size.width + 10 {
+                        continue
+                    }
+                    var score = f.width * f.height
+                    // In iPadOS 27 full split editor, action canvas is on the left (minX < 350) while picker drawer is on the right (minX >= 400)
+                    if editorRoot.exists && f.origin.x < 350 {
+                        score += 2_000_000
+                    }
+                    if typeName == "ScrollView" {
+                        score += 500_000
+                    }
+                    if score > bestScore {
+                        bestScore = score
                         scrollElement = el
                         scrollType = typeName
                         scrollFrame = SanitizedFrame(x: f.origin.x, y: f.origin.y, width: f.width, height: f.height)
@@ -462,18 +687,18 @@ final class CherriSimulatorQAUITests: XCTestCase {
             var lastCardY: Double? = nil
 
             for node in pageNodes where node.visible {
-                if let lbl = node.label {
-                    if lbl.contains("ANCHOR_") {
-                        pageAnchors.append(lbl)
-                        if !seenAnchors.contains(lbl) {
-                            seenAnchors.insert(lbl)
-                            orderedAnchors.append(lbl)
+                for candidateText in [node.label, node.value].compactMap({ $0 }) {
+                    if candidateText.contains("ANCHOR_") {
+                        pageAnchors.append(candidateText)
+                        if !seenAnchors.contains(candidateText) {
+                            seenAnchors.insert(candidateText)
+                            orderedAnchors.append(candidateText)
                         }
                     }
-                    if (node.elementTypeName == "Cell" || node.elementTypeName == "StaticText" || node.elementTypeName == "Button") &&
-                       !Self.libraryChromeLabels.contains(lbl) &&
-                       !lbl.hasPrefix("[REDACTED_") {
-                        let cardEntry = "\(node.elementTypeName):\(lbl)"
+                    if (node.elementTypeName == "Cell" || node.elementTypeName == "StaticText" || node.elementTypeName == "Button" || node.elementTypeName == "TextField" || node.elementTypeName == "TextView") &&
+                       !Self.libraryChromeLabels.contains(candidateText) &&
+                       !candidateText.hasPrefix("[REDACTED_") {
+                        let cardEntry = "\(node.elementTypeName):\(candidateText)"
                         if !seenActionCards.contains(cardEntry) {
                             seenActionCards.insert(cardEntry)
                             orderedActionCards.append(cardEntry)
@@ -526,10 +751,49 @@ final class CherriSimulatorQAUITests: XCTestCase {
             previousDigest = digest
             previousLastY = lastCardY
 
-            let startCoord = scrollElement.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.75))
-            let endCoord = scrollElement.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.20))
+            let startCoord = scrollElement.coordinate(withNormalizedOffset: CGVector(dx: 0.45, dy: 0.78))
+            let endCoord = scrollElement.coordinate(withNormalizedOffset: CGVector(dx: 0.45, dy: 0.22))
             startCoord.press(forDuration: 0.05, thenDragTo: endCoord)
-            Thread.sleep(forTimeInterval: 0.8)
+            Thread.sleep(forTimeInterval: 0.9)
+        }
+
+        // Step 5: Coordinated live runtime x-callback-url execution while UI test can confirm any Open/Allow dialog
+        var runtimeTriggerDispatched = false
+        var runtimeCallbackObservedInUI = false
+        if expectRuntimeRun && (shortcutExistsInLibrary || importConsentTapped) {
+            let runReqURL = outDir.appendingPathComponent("request-shortcut-run.txt")
+            let runAckURL = outDir.appendingPathComponent("ack-shortcut-run.txt")
+            try? FileManager.default.removeItem(at: runAckURL)
+            try? execRunNonce.data(using: .utf8)?.write(to: runReqURL, options: .atomic)
+            runtimeTriggerDispatched = waitForHandshakeFile(runAckURL, timeout: 12.0)
+
+            let receiver = XCUIApplication(bundleIdentifier: "org.cherrilang.qa.Receiver")
+            let confirmLabels = ["Always Allow", "Allow", "Open", "Allow Once", "Run", "Continue", "OK"]
+            let runDeadline = Date().addingTimeInterval(22.0)
+            while Date() < runDeadline {
+                for targetApp in [springboard, shortcuts] {
+                    for lbl in confirmLabels {
+                        let btn = targetApp.buttons[lbl].firstMatch
+                        if btn.exists && btn.isHittable {
+                            btn.tap()
+                            Thread.sleep(forTimeInterval: 0.5)
+                        }
+                    }
+                }
+                if receiver.state == .runningForeground {
+                    let runIdLabel = receiver.staticTexts["qa.receiver.lastRunId"]
+                    let statusLabel = receiver.staticTexts["qa.receiver.status"]
+                    let matchesNonce = execRunNonce.isEmpty || (runIdLabel.exists && runIdLabel.label.contains(execRunNonce))
+                    let completedStatus = statusLabel.exists && (statusLabel.label.contains("SUCCESS") || statusLabel.label.contains("ERROR") || statusLabel.label.contains("CANCELLED"))
+                    if matchesNonce && completedStatus {
+                        runtimeCallbackObservedInUI = true
+                        let rtShot = XCUIScreen.main.screenshot()
+                        try? rtShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-callback.png"), options: .atomic)
+                        break
+                    }
+                }
+                Thread.sleep(forTimeInterval: 0.5)
+            }
         }
 
         let hasTopAnchor = orderedAnchors.contains(where: { $0.contains("ANCHOR_CARD_01") || $0.contains("ANCHOR_RTL_01") })
@@ -550,6 +814,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             shortcutForegroundVerified: foregroundVerified,
             expectedShortcutName: expectedShortcutName,
             importConsentButtonTapped: importConsentTapped,
+            importSheetSnapshotCaptured: importSheetCaptured,
             shortcutExistsInLibrary: shortcutExistsInLibrary,
             libraryShortcutCells: libraryCells,
             editorOpened: editorOpened,
@@ -563,7 +828,9 @@ final class CherriSimulatorQAUITests: XCTestCase {
             captureStatus: captureStatus,
             detectedActionCards: orderedActionCards,
             detectedAnchors: orderedAnchors,
-            bottomReachedEvidence: bottomEvidence
+            bottomReachedEvidence: bottomEvidence,
+            runtimeTriggerDispatched: runtimeTriggerDispatched,
+            runtimeCallbackObservedInUI: runtimeCallbackObservedInUI
         )
 
         let encoder = JSONEncoder()

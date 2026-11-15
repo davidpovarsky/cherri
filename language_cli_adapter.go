@@ -104,6 +104,80 @@ func HandleLanguageV2CLI() bool {
 		return true
 	}
 
+	// 0a. sign <unsigned.shortcut> --output <signed.shortcut> [--hubsign] [--signing-server <url>] [--source-file <file.cherri>] [--compiler-sha <sha>] [--manifest-out <provenance.json>]
+	if len(os.Args) > 1 && os.Args[1] == "sign" {
+		var unsignedPath string
+		var outPath string
+		var sourcePath string
+		var compilerSHA string
+		var manifestOutPath string
+		var customServerURL string
+		for i := 2; i < len(os.Args); i++ {
+			arg := os.Args[i]
+			if strings.HasPrefix(arg, "--output=") {
+				outPath = strings.TrimPrefix(arg, "--output=")
+			} else if arg == "-o" || arg == "--output" {
+				if i+1 < len(os.Args) {
+					outPath = os.Args[i+1]
+					i++
+				}
+			} else if strings.HasPrefix(arg, "--source-file=") {
+				sourcePath = strings.TrimPrefix(arg, "--source-file=")
+			} else if arg == "--source-file" && i+1 < len(os.Args) {
+				sourcePath = os.Args[i+1]
+				i++
+			} else if strings.HasPrefix(arg, "--compiler-sha=") {
+				compilerSHA = strings.TrimPrefix(arg, "--compiler-sha=")
+			} else if arg == "--compiler-sha" && i+1 < len(os.Args) {
+				compilerSHA = os.Args[i+1]
+				i++
+			} else if strings.HasPrefix(arg, "--manifest-out=") {
+				manifestOutPath = strings.TrimPrefix(arg, "--manifest-out=")
+			} else if arg == "--manifest-out" && i+1 < len(os.Args) {
+				manifestOutPath = os.Args[i+1]
+				i++
+			} else if strings.HasPrefix(arg, "--signing-server=") {
+				customServerURL = strings.TrimPrefix(arg, "--signing-server=")
+			} else if arg == "--signing-server" && i+1 < len(os.Args) {
+				customServerURL = os.Args[i+1]
+				i++
+			} else if !strings.HasPrefix(arg, "-") && unsignedPath == "" {
+				unsignedPath = arg
+			}
+		}
+		if unsignedPath == "" || outPath == "" {
+			fmt.Fprintf(os.Stderr, "Usage: cherri sign <unsigned.shortcut> --output=<signed.shortcut> [--hubsign] [--signing-server=<url>] [--source-file=<file.cherri>] [--compiler-sha=<sha>] [--manifest-out=<provenance.json>]\n")
+			os.Exit(1)
+		}
+		var svc *SigningService
+		if strings.TrimSpace(customServerURL) != "" {
+			svc = &SigningService{
+				name: "Custom Signing Server",
+				url:  strings.TrimSpace(customServerURL),
+			}
+		} else {
+			h := hubSign()
+			svc = &h
+		}
+		manifest, err := SignUnsignedShortcutFileWithProvenance(unsignedPath, outPath, sourcePath, compilerSHA, svc)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Signing error: %v\n", err)
+			os.Exit(1)
+		}
+		if manifestOutPath != "" {
+			mb, mErr := json.MarshalIndent(manifest, "", "  ")
+			if mErr != nil {
+				fmt.Fprintf(os.Stderr, "Marshal signing manifest error: %v\n", mErr)
+				os.Exit(1)
+			}
+			if wErr := os.WriteFile(manifestOutPath, mb, 0644); wErr != nil {
+				fmt.Fprintf(os.Stderr, "Write signing manifest error: %v\n", wErr)
+				os.Exit(1)
+			}
+		}
+		return true
+	}
+
 	// 0b. import <file> [--output <out>] [--unsigned]
 	if len(os.Args) > 1 && os.Args[1] == "import" {
 		var importPath string

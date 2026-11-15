@@ -1,10 +1,12 @@
 #define name Cherri QA Functional Legacy Uninstrumented
 #define color blue
 
+comment("ANCHOR_CARD_01_TOP_HEADER")
 const greeting = text("CHERRI_QA_SYNTHETIC_GREETING")
 const baseCount = number(2)
 const meta = {"suite": "cherri-ios27-simulator-qa", "dialect": "legacy", "expectedCount": 2}
 const suiteName = getValue(meta, "suite")
+comment("ANCHOR_CARD_15_MID_CENTER")
 
 if baseCount == 2 {
     repeat idx for 2 {
@@ -15,4 +17,5 @@ if baseCount == 2 {
 }
 
 const finalSummary = text("CHERRI_QA_RESULT:ok:count=2:mode=legacy")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
 output(finalSummary)

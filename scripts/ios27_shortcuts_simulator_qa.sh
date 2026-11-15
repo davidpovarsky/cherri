@@ -77,20 +77,25 @@ GATE_PHYSICAL_DEVICE_TESTED="BLOCKED_DEVICE"
 case "$SAMPLE_ID" in
   qa-scroll-editor)
     TARGET_FIXTURE_ID="qa-scroll-editor-v2"
+    LEGACY_COUNTERPART_ID="qa-scroll-editor-legacy"
     EXPECTED_SHORTCUT_NAME="qa-scroll-editor-v2"
     EXPECTED_SEMANTIC_OUTPUT="ANCHOR_CARD_26_TEXT_ZETA"
     ;;
   qa-rtl-hebrew)
     TARGET_FIXTURE_ID="qa-rtl-hebrew-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="qa-rtl-hebrew-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_RTL_RESULT:ok:hebrew"
     ;;
   *)
     TARGET_FIXTURE_ID="qa-functional-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="qa-functional-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_RESULT:ok:count=2:mode=v2"
     ;;
 esac
+TARGET_SOURCE_FILE="$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures/${TARGET_FIXTURE_ID}.cherri"
+LEGACY_COUNTERPART_SOURCE="$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures/${LEGACY_COUNTERPART_ID}.cherri"
 
 # ---------------------------------------------------------------------------
 # Phase 0: Build Cherri CLI & Compile Synthetic Sanitized Fixtures
@@ -324,7 +329,20 @@ with open(f"{artifact_dir}/sim-devices.json") as f:
     devices_map = json.load(f).get("devices", {})
 
 ios_runtimes = [r for r in runtimes if r.get("isAvailable") and ("iOS" in r.get("name", "") or "iPadOS" in r.get("name", ""))]
-ios_runtimes.sort(key=lambda r: r.get("version", ""), reverse=True)
+prefer_ipad = (profile != "iphone-fallback")
+
+def runtime_rank(r):
+    rid = r.get("identifier", "")
+    devs = devices_map.get(rid, [])
+    has_avail_ipad = any("iPad" in d.get("name", "") and d.get("isAvailable", True) for d in devs)
+    not_iphone_specific = ("iPhone" not in rid)
+    return (
+        str(r.get("version", "")),
+        1 if (has_avail_ipad if prefer_ipad else not has_avail_ipad) else 0,
+        1 if (not_iphone_specific if prefer_ipad else True) else 0,
+    )
+
+ios_runtimes.sort(key=runtime_rank, reverse=True)
 
 chosen_rt = None
 for r in ios_runtimes:
@@ -341,7 +359,6 @@ if not chosen_rt:
 rt_id = chosen_rt["identifier"]
 rt_devs = devices_map.get(rt_id, [])
 
-prefer_ipad = (profile != "iphone-fallback")
 chosen_dev = None
 if prefer_ipad:
     for d in rt_devs:
@@ -443,31 +460,47 @@ with open(out_path, "w", encoding="utf-8") as f:
 PY
 
 # ---------------------------------------------------------------------------
-# Phase 2: Import Decision Tree (4 Explicit Routes + Pre-Signed Check)
+# Phase 2: Import Decision Tree (HubSign Exact-File Signing + 4 Import Routes)
 # ---------------------------------------------------------------------------
 SIGNED_ARTIFACT_VALID_AEA1="false"
 SIGNING_METHOD="NONE"
 SIGNED_SHA256=""
+SIGNED_BYTE_SIZE="0"
+LEGACY_SIGNING_VERIFIED="false"
 
 if [ "$PROBE_LEVEL" != "preflight" ] && [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PASS" ]; then
-  echo "=== Phase 2: Testing Import Decision Tree ==="
+  echo "=== Phase 2: Testing Import Decision Tree & HubSign Signing ==="
   GATE_FILE_IMPORT_ATTEMPTED="PASS"
 
+  CHERRI_BIN="$ARTIFACT_DIR/builds/cherri"
+  mkdir -p "$ARTIFACT_DIR/builds/signed"
   UNSIGNED_FILE="$ARTIFACT_DIR/builds/${TARGET_FIXTURE_ID}.shortcut"
-  SIGNED_FILE="$ARTIFACT_DIR/builds/${EXPECTED_SHORTCUT_NAME}.shortcut"
+  SIGNED_FILE="$ARTIFACT_DIR/builds/signed/${EXPECTED_SHORTCUT_NAME}.shortcut"
   SIGNED_CANDIDATE="$ARTIFACT_DIR/builds/${TARGET_FIXTURE_ID}-signed.shortcut"
   PRE_SIGNED_FIXTURE="$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures/signed/${TARGET_FIXTURE_ID}.shortcut"
+  LEGACY_UNSIGNED_FILE="$ARTIFACT_DIR/builds/${LEGACY_COUNTERPART_ID}.shortcut"
+  LEGACY_SIGNED_CANDIDATE="$ARTIFACT_DIR/builds/${LEGACY_COUNTERPART_ID}-signed.shortcut"
+  if [ "$UNSIGNED_FILE" = "$SIGNED_FILE" ]; then
+    echo "ERROR: UNSIGNED_FILE and SIGNED_FILE must never alias ($UNSIGNED_FILE)" >&2
+    exit 1
+  fi
+  if [ ! -s "$UNSIGNED_FILE" ]; then
+    echo "ERROR: Compiled unsigned plist missing at $UNSIGNED_FILE" >&2
+    exit 1
+  fi
 
   # Route 2: Unsigned .shortcut via simctl openurl (verify rejection of unsigned file)
   ROUTE2_OUT="$(xcrun simctl openurl "$UDID" "file://$UNSIGNED_FILE" 2>&1)"
   ROUTE2_RC=$?
   sleep 2
   xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route2-unsigned-openurl.png" 2>/dev/null || true
+  xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
   # Route 4: Exploratory undocumented shortcuts://import-shortcut (explicitly tagged UNDOCUMENTED)
   ROUTE4_OUT="$(xcrun simctl openurl "$UDID" "shortcuts://import-shortcut?name=CherriQAProbe" 2>&1)"
   ROUTE4_RC=$?
   sleep 1
+  xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
   # Route 1: Documented shortcuts://create-shortcut URL scheme
   ROUTE1_OUT="$(xcrun simctl openurl "$UDID" "shortcuts://create-shortcut" 2>&1)"
@@ -478,48 +511,124 @@ if [ "$PROBE_LEVEL" != "preflight" ] && [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PAS
     GATE_SHORTCUTS_LAUNCHED="PASS"
     GATE_EDITOR_OPENED="PASS"
   fi
+  xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
-  # Route 3: macOS host /usr/bin/shortcuts sign (or owner-provided pre-signed fixture) -> simctl openurl
-  if [ -x /usr/bin/shortcuts ]; then
-    SIGN_HELP_OUT="$(/usr/bin/shortcuts sign --help 2>&1 || true)"
-    SIGN_OUT="$(/usr/bin/shortcuts sign --mode anyone --input "$UNSIGNED_FILE" --output "$SIGNED_CANDIDATE" 2>&1)"
-    SIGN_RC=$?
-  else
-    SIGN_HELP_OUT="/usr/bin/shortcuts not present"
-    SIGN_OUT="/usr/bin/shortcuts not present"
-    SIGN_RC=127
-  fi
+  # Route 3: Sign EXACT preflight-validated unsigned plist via Cherri HubSign (fail closed on XML/HTML/timeout/non-AEA1)
+  rm -f "$SIGNED_CANDIDATE" "$SIGNED_FILE"
+  SIGN_OUT="$("$CHERRI_BIN" sign "$UNSIGNED_FILE" \
+    --output="$SIGNED_CANDIDATE" \
+    --hubsign \
+    --source-file="$TARGET_SOURCE_FILE" \
+    --compiler-sha="$SOURCE_SHA" \
+    --manifest-out="$ARTIFACT_DIR/builds/signing-provenance-target.json" \
+    --no-ansi 2>&1)"
+  SIGN_RC=$?
 
   if [ "$SIGN_RC" -eq 0 ] && [ -s "$SIGNED_CANDIDATE" ]; then
     HEADER_MAGIC="$(head -c 4 "$SIGNED_CANDIDATE" 2>/dev/null || true)"
-    if [ "$HEADER_MAGIC" = "AEA1" ]; then
+    BYTE_COUNT="$(wc -c < "$SIGNED_CANDIDATE" | tr -d '[:space:]')"
+    if [ "$HEADER_MAGIC" = "AEA1" ] && [ "${BYTE_COUNT:-0}" -ge 16 ]; then
       cp -f "$SIGNED_CANDIDATE" "$SIGNED_FILE"
       SIGNED_ARTIFACT_VALID_AEA1="true"
-      SIGNING_METHOD="MACOS_HOST_SHORTCUTS_CLI"
+      SIGNING_METHOD="HUBSIGN_REMOTE_SERVICE"
       SIGNED_SHA256="$(shasum -a 256 "$SIGNED_FILE" | awk '{print $1}')"
+      SIGNED_BYTE_SIZE="$BYTE_COUNT"
+    else
+      rm -f "$SIGNED_CANDIDATE" "$SIGNED_FILE"
+      SIGN_RC=1
+      SIGN_OUT="HubSign returned invalid artifact header=$HEADER_MAGIC bytes=${BYTE_COUNT:-0}"
     fi
-  elif [ -s "$PRE_SIGNED_FIXTURE" ]; then
-    HEADER_MAGIC="$(head -c 4 "$PRE_SIGNED_FIXTURE" 2>/dev/null || true)"
-    if [ "$HEADER_MAGIC" = "AEA1" ]; then
+  fi
+
+  # Also verify Legacy counterpart compiles and HubSigns cleanly using exact unsigned plist bytes
+  rm -f "$LEGACY_SIGNED_CANDIDATE"
+  LEGACY_SIGN_OUT=""
+  LEGACY_SIGN_RC=1
+  if [ -s "$LEGACY_UNSIGNED_FILE" ]; then
+    LEGACY_SIGN_OUT="$("$CHERRI_BIN" sign "$LEGACY_UNSIGNED_FILE" \
+      --output="$LEGACY_SIGNED_CANDIDATE" \
+      --hubsign \
+      --source-file="$LEGACY_COUNTERPART_SOURCE" \
+      --compiler-sha="$SOURCE_SHA" \
+      --manifest-out="$ARTIFACT_DIR/builds/signing-provenance-legacy.json" \
+      --no-ansi 2>&1)"
+    LEGACY_SIGN_RC=$?
+    if [ "$LEGACY_SIGN_RC" -eq 0 ] && [ -s "$LEGACY_SIGNED_CANDIDATE" ]; then
+      LEG_MAGIC="$(head -c 4 "$LEGACY_SIGNED_CANDIDATE" 2>/dev/null || true)"
+      LEG_SIZE="$(wc -c < "$LEGACY_SIGNED_CANDIDATE" | tr -d '[:space:]')"
+      if [ "$LEG_MAGIC" = "AEA1" ] && [ "${LEG_SIZE:-0}" -ge 16 ]; then
+        LEGACY_SIGNING_VERIFIED="true"
+      else
+        rm -f "$LEGACY_SIGNED_CANDIDATE"
+        LEGACY_SIGN_RC=1
+      fi
+    fi
+  fi
+
+  # Diagnostic fallback ONLY if remote HubSign was unreachable or failed: record host CLI / pre-signed fixture behavior honestly
+  if [ "$SIGNED_ARTIFACT_VALID_AEA1" != "true" ]; then
+    if [ -x /usr/bin/shortcuts ]; then
+      HOST_CLI_OUT="$(/usr/bin/shortcuts sign --mode anyone --input "$UNSIGNED_FILE" --output "$SIGNED_CANDIDATE" 2>&1)"
+      HOST_CLI_RC=$?
+      if [ "$HOST_CLI_RC" -eq 0 ] && [ -s "$SIGNED_CANDIDATE" ] && [ "$(head -c 4 "$SIGNED_CANDIDATE" 2>/dev/null || true)" = "AEA1" ]; then
+        cp -f "$SIGNED_CANDIDATE" "$SIGNED_FILE"
+        SIGNED_ARTIFACT_VALID_AEA1="true"
+        SIGNING_METHOD="MACOS_HOST_SHORTCUTS_CLI"
+        SIGNED_SHA256="$(shasum -a 256 "$SIGNED_FILE" | awk '{print $1}')"
+        SIGNED_BYTE_SIZE="$(wc -c < "$SIGNED_FILE" | tr -d '[:space:]')"
+      else
+        SIGN_OUT="${SIGN_OUT} | macOS host CLI fallback failed: ${HOST_CLI_OUT}"
+      fi
+    fi
+    if [ "$SIGNED_ARTIFACT_VALID_AEA1" != "true" ] && [ -s "$PRE_SIGNED_FIXTURE" ] && [ "$(head -c 4 "$PRE_SIGNED_FIXTURE" 2>/dev/null || true)" = "AEA1" ]; then
       cp -f "$PRE_SIGNED_FIXTURE" "$SIGNED_FILE"
       SIGNED_ARTIFACT_VALID_AEA1="true"
       SIGNING_METHOD="OWNER_PRE_SIGNED_SYNTHETIC_FIXTURE"
       SIGNED_SHA256="$(shasum -a 256 "$SIGNED_FILE" | awk '{print $1}')"
+      SIGNED_BYTE_SIZE="$(wc -c < "$SIGNED_FILE" | tr -d '[:space:]')"
     fi
   fi
 
-  # Open the signed .shortcut LAST so the modal Add Shortcut consent sheet is active when XCUITest starts
+  # Write sanitized signing provenance summary (zero internal URLs, zero credentials, exact SHA-256 chain)
+  python3 - "$ARTIFACT_DIR/runtime/signing-provenance.json" \
+    "$ARTIFACT_DIR/builds/signing-provenance-target.json" \
+    "$ARTIFACT_DIR/builds/signing-provenance-legacy.json" \
+    "$SIGNED_ARTIFACT_VALID_AEA1" "$SIGNING_METHOD" "$SIGNED_SHA256" "$SIGNED_BYTE_SIZE" \
+    "$LEGACY_SIGNING_VERIFIED" "$SOURCE_SHA" <<'PY'
+import json, os, sys
+
+out_path, tgt_p, leg_p, valid_s, method, sha, sz, leg_ok, commit_sha = sys.argv[1:10]
+def load_opt(p):
+    if os.path.exists(p):
+        try:
+            return json.load(open(p, encoding="utf-8"))
+        except Exception:
+            return None
+    return None
+
+doc = {
+    "schemaVersion": "1.4",
+    "compilerCommitSha": commit_sha,
+    "signedArtifactValidAEA1": (valid_s == "true"),
+    "signingMethod": method,
+    "signedArtifactSha256": sha if sha else None,
+    "signedByteSize": int(sz) if sz.isdigit() else 0,
+    "legacyCounterpartSignedAEA1": (leg_ok == "true"),
+    "targetProvenance": load_opt(tgt_p),
+    "legacyProvenance": load_opt(leg_p),
+}
+with open(out_path, "w", encoding="utf-8") as f:
+    json.dump(doc, f, indent=2)
+PY
+
+  ROUTE3_RC="$SIGN_RC"
   if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ]; then
-    ROUTE3_OUT="$(xcrun simctl openurl "$UDID" "file://$SIGNED_FILE" 2>&1)"
-    ROUTE3_RC=$?
-    sleep 3
-    xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route3-signed-openurl.png" 2>/dev/null || true
+    ROUTE3_OUT="AEA1 signed artifact verified ($SIGNED_BYTE_SIZE bytes, method=$SIGNING_METHOD, legacyCounterpart=$LEGACY_SIGNING_VERIFIED); deferred simctl openurl to coordinated XCUITest handshake."
   else
-    ROUTE3_OUT="Blocked by macOS host signing: $SIGN_OUT"
-    ROUTE3_RC="$SIGN_RC"
+    ROUTE3_OUT="Blocked signing: $SIGN_OUT"
   fi
 
-  python3 - "$ARTIFACT_DIR/import-attempts.json" "$ROUTE1_RC" "$ROUTE1_OUT" "$ROUTE2_RC" "$ROUTE2_OUT" "$SIGN_RC" "$SIGN_OUT" "$ROUTE3_RC" "$ROUTE3_OUT" "$ROUTE4_RC" "$ROUTE4_OUT" "$SIGNED_ARTIFACT_VALID_AEA1" "$SIGNING_METHOD" "$SIGNED_SHA256" <<'PY'
+  python3 - "$ARTIFACT_DIR/import-attempts.json" "$ROUTE1_RC" "$ROUTE1_OUT" "$ROUTE2_RC" "$ROUTE2_OUT" "$SIGN_RC" "$SIGN_OUT" "$ROUTE3_RC" "$ROUTE3_OUT" "$ROUTE4_RC" "$ROUTE4_OUT" "$SIGNED_ARTIFACT_VALID_AEA1" "$SIGNING_METHOD" "$SIGNED_SHA256" "$SIGNED_BYTE_SIZE" "$LEGACY_SIGNING_VERIFIED" <<'PY'
 import json
 import sys
 
@@ -529,13 +638,21 @@ r2_rc, r2_out = int(sys.argv[4]), sys.argv[5]
 sign_rc, sign_out = int(sys.argv[6]), sys.argv[7]
 r3_rc, r3_out = int(sys.argv[8]), sys.argv[9]
 r4_rc, r4_out = int(sys.argv[10]), sys.argv[11]
-aea1_valid, sign_method, signed_sha = (sys.argv[12] == "true"), sys.argv[13], sys.argv[14]
+aea1_valid, sign_method, signed_sha, signed_bytes, legacy_signed = (
+    (sys.argv[12] == "true"),
+    sys.argv[13],
+    sys.argv[14],
+    int(sys.argv[15]) if sys.argv[15].isdigit() else 0,
+    (sys.argv[16] == "true"),
+)
 
 attempts = {
     "schemaVersion": "1.4",
     "signedArtifactValidAEA1": aea1_valid,
     "signingMethod": sign_method,
     "signedArtifactSha256": signed_sha if signed_sha else None,
+    "signedByteSize": signed_bytes,
+    "legacyCounterpartSignedAEA1": legacy_signed,
     "routes": [
         {
             "routeId": "route_1_create_shortcut_scheme",
@@ -550,17 +667,17 @@ attempts = {
             "documented": True,
             "command": "xcrun simctl openurl <UDID> file://<unsigned.shortcut>",
             "exitCode": r2_rc,
-            "status": "BLOCKED_SIGNING" if r2_rc != 0 else "ATTEMPTED_UI_CHECK_REQUIRED",
+            "status": "UNSIGNED_REJECTED_EXPECTED_UI_MODAL" if r2_rc == 0 else "BLOCKED_SIGNING",
             "observedOutput": r2_out[:512],
         },
         {
             "routeId": "route_3_signed_shortcut_openurl",
             "documented": True,
-            "command": "/usr/bin/shortcuts sign --mode anyone && xcrun simctl openurl <UDID> file://<signed.shortcut>",
+            "command": "cherri sign <unsigned.shortcut> --hubsign && coordinated xcrun simctl openurl <UDID> file://<signed.shortcut>",
             "hostSignExitCode": sign_rc,
             "hostSignOutput": sign_out[:512],
             "openUrlExitCode": r3_rc,
-            "status": "SIGNED_OPENURL_DISPATCHED" if (aea1_valid and r3_rc == 0) else "BLOCKED_SIGNING",
+            "status": "SIGNED_ARTIFACT_READY_FOR_COORDINATED_IMPORT" if aea1_valid else "BLOCKED_SIGNING",
             "observedOutput": r3_out[:512],
         },
         {
@@ -600,9 +717,60 @@ if [ "$PROBE_LEVEL" = "editor" ] || [ "$PROBE_LEVEL" = "runtime" ] || [ "$PROBE_
     xcodegen generate
     popd >/dev/null
 
+    EXEC_RUN_NONCE="${TARGET_FIXTURE_ID}-${RUN_ID}"
+    RUN_URL="$(python3 - "$EXPECTED_SHORTCUT_NAME" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" <<'PY'
+import sys, urllib.parse
+name, run_nonce, fid = sys.argv[1:4]
+q = urllib.parse.quote
+x_success = f"cherriqa://success?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
+x_cancel = f"cherriqa://cancel?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
+x_error = f"cherriqa://error?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
+print(f"shortcuts://x-callback-url/run-shortcut?name={q(name)}&input=text&text=CHERRI_QA_INPUT&x-success={q(x_success, safe='')}&x-cancel={q(x_cancel, safe='')}&x-error={q(x_error, safe='')}")
+PY
+)"
+
     export TEST_RUNNER_CHERRI_QA_SHARED_OUTPUT_DIR="$ARTIFACT_DIR/editor"
     export TEST_RUNNER_CHERRI_QA_MAX_EDITOR_PAGES="$MAX_EDITOR_PAGES"
     export TEST_RUNNER_CHERRI_QA_EXPECTED_SHORTCUT_NAME="$EXPECTED_SHORTCUT_NAME"
+    export TEST_RUNNER_CHERRI_QA_EXPECT_SIGNED_IMPORT="$SIGNED_ARTIFACT_VALID_AEA1"
+    export TEST_RUNNER_CHERRI_QA_EXPECT_RUNTIME_RUN="$SIGNED_ARTIFACT_VALID_AEA1"
+    export TEST_RUNNER_CHERRI_QA_EXEC_RUN_NONCE="$EXEC_RUN_NONCE"
+
+    rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
+    (
+      import_dispatched=0
+      run_dispatched=0
+      for _tick in $(seq 1 2400); do
+        if [ "$import_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import.txt" ]; then
+          import_dispatched=1
+          if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
+            IMP_OUT="$(xcrun simctl openurl "$UDID" "file://$SIGNED_FILE" 2>&1)"
+            IMP_RC=$?
+            printf 'rc=%s\n%s\n' "$IMP_RC" "${IMP_OUT:0:256}" > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
+          else
+            printf 'rc=1\nNO_VALID_AEA1\n' > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
+          fi
+        fi
+        if [ "$run_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-shortcut-run.txt" ]; then
+          run_dispatched=1
+          RUN_OUT="$(xcrun simctl openurl "$UDID" "$RUN_URL" 2>&1)"
+          RUN_RC=$?
+          printf 'rc=%s\n' "$RUN_RC" > "$ARTIFACT_DIR/editor/ack-shortcut-run.txt"
+        fi
+        [ -f "$ARTIFACT_DIR/editor/handshake-stop.txt" ] && break
+        sleep 0.2
+      done
+    ) &
+    HANDSHAKE_PID=$!
+    cleanup_handshake() {
+      if [ -n "${HANDSHAKE_PID:-}" ]; then
+        touch "$ARTIFACT_DIR/editor/handshake-stop.txt" 2>/dev/null || true
+        kill "$HANDSHAKE_PID" 2>/dev/null || true
+        wait "$HANDSHAKE_PID" 2>/dev/null || true
+        HANDSHAKE_PID=""
+      fi
+    }
+    trap cleanup_handshake EXIT
 
     XCRESULT_PATH="$ARTIFACT_DIR/tests/CherriSimulatorQA.xcresult"
     rm -rf "$XCRESULT_PATH"
@@ -616,6 +784,15 @@ if [ "$PROBE_LEVEL" = "editor" ] || [ "$PROBE_LEVEL" = "runtime" ] || [ "$PROBE_
       > "$ARTIFACT_DIR/tests/xcodebuild-test.log" 2>&1
     XCODEBUILD_TEST_RC=$?
     echo "xcodebuild test exit code: $XCODEBUILD_TEST_RC"
+
+    cleanup_handshake
+    trap - EXIT
+
+    DID_HANDSHAKE_RUN="false"
+    if [ -f "$ARTIFACT_DIR/editor/ack-shortcut-run.txt" ]; then
+      DID_HANDSHAKE_RUN="true"
+    fi
+    rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
 
     if [ -d "$XCRESULT_PATH" ]; then
       xcrun xcresulttool get test-results summary --path "$XCRESULT_PATH" > "$ARTIFACT_DIR/tests/xcresult-summary.json" 2>/dev/null || true
@@ -661,21 +838,86 @@ if [ "$PROBE_LEVEL" = "editor" ] || [ "$PROBE_LEVEL" = "runtime" ] || [ "$PROBE_
       fi
     fi
 
+    # Generate comparison of compiled plist actions/parameters against captured Shortcuts Editor cards
+    if [ -n "${UNSIGNED_FILE:-}" ] && [ -s "${UNSIGNED_FILE:-}" ]; then
+      python3 - "$UNSIGNED_FILE" "$ARTIFACT_DIR/editor/editor-action-coverage.json" "$ARTIFACT_DIR/editor/editor-tree.json" "$ARTIFACT_DIR/editor/plist-vs-editor-comparison.json" "$TARGET_FIXTURE_ID" <<'PY'
+import json, os, plistlib, sys
+
+plist_path, cov_path, tree_path, out_path, fid = sys.argv[1:6]
+doc = plistlib.loads(open(plist_path, "rb").read())
+actions = doc.get("WFWorkflowActions", [])
+cov = json.load(open(cov_path, encoding="utf-8")) if os.path.exists(cov_path) else {}
+tree = json.load(open(tree_path, encoding="utf-8")) if os.path.exists(tree_path) else []
+
+visible_texts = set()
+for card in cov.get("detectedActionCards", []):
+    visible_texts.add(card)
+for a in cov.get("detectedAnchors", []):
+    visible_texts.add(a)
+for n in tree:
+    if n.get("visible"):
+        for k in ("label", "value"):
+            v = n.get(k)
+            if v:
+                visible_texts.add(v)
+joined_ui = "\n".join(visible_texts)
+
+plist_items = []
+for idx, act in enumerate(actions):
+    aid = act.get("WFWorkflowActionIdentifier", "")
+    params = act.get("WFWorkflowActionParameters", {})
+    marker = None
+    if aid == "is.workflow.actions.comment":
+        marker = params.get("WFCommentActionText", "")
+    elif aid == "is.workflow.actions.gettext":
+        txt = params.get("WFTextActionText", "")
+        marker = txt.get("Value", {}).get("string", "") if isinstance(txt, dict) else str(txt)
+    elif aid == "is.workflow.actions.number":
+        marker = str(params.get("WFNumberActionNumber", ""))
+    expected_ui_titles = {
+        "is.workflow.actions.comment": "Comment",
+        "is.workflow.actions.gettext": "Text",
+        "is.workflow.actions.number": "Number",
+        "is.workflow.actions.dictionary": "Dictionary",
+        "is.workflow.actions.getvalueforkey": "Get Dictionary Value",
+        "is.workflow.actions.conditional": "If",
+        "is.workflow.actions.repeat.count": "Repeat",
+        "is.workflow.actions.output": "Stop and Output",
+    }
+    title_hint = expected_ui_titles.get(aid, aid.split(".")[-1])
+    matched_title = (title_hint in joined_ui) or ("Get Value" in joined_ui and aid == "is.workflow.actions.getvalueforkey")
+    matched_marker = bool(marker and isinstance(marker, str) and len(marker) >= 6 and (marker.splitlines()[0][:24] in joined_ui))
+    plist_items.append({
+        "nativeIndex": idx,
+        "actionIdentifier": aid,
+        "expectedCardHint": title_hint,
+        "markerPreview": str(marker)[:80] if marker else None,
+        "matchedCardTitleInUI": matched_title,
+        "matchedParameterInUI": matched_marker,
+    })
+
+summary = {
+    "schemaVersion": "1.4",
+    "fixtureId": fid,
+    "compiledNativeActionCount": len(actions),
+    "detectedAnchorsCount": len(cov.get("detectedAnchors", [])),
+    "detectedAnchors": cov.get("detectedAnchors", []),
+    "detectedActionCardsCount": len(cov.get("detectedActionCards", [])),
+    "matchedCardTitlesCount": sum(1 for item in plist_items if item["matchedCardTitleInUI"]),
+    "matchedParameterValuesCount": sum(1 for item in plist_items if item["matchedParameterInUI"]),
+    "actions": plist_items,
+}
+with open(out_path, "w", encoding="utf-8") as f:
+    json.dump(summary, f, indent=2)
+PY
+    fi
+
     # Phase 4: Correlated Runtime Execution of Imported Shortcut via x-callback-url
-    EXEC_RUN_NONCE="${TARGET_FIXTURE_ID}-${RUN_ID}"
     if [ "$GATE_SHORTCUT_EXISTS_IN_LIBRARY" = "PASS" ]; then
       GATE_SHORTCUT_RUN_ATTEMPTED="PASS"
-      RUN_URL="$(python3 - "$EXPECTED_SHORTCUT_NAME" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" <<'PY'
-import sys, urllib.parse
-name, run_nonce, fid = sys.argv[1:4]
-q = urllib.parse.quote
-x_success = f"cherriqa://success?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
-x_cancel = f"cherriqa://cancel?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
-x_error = f"cherriqa://error?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
-print(f"shortcuts://x-callback-url/run-shortcut?name={q(name)}&input=text&text=CHERRI_QA_INPUT&x-success={q(x_success, safe='')}&x-cancel={q(x_cancel, safe='')}&x-error={q(x_error, safe='')}")
-PY
-)"
-      xcrun simctl openurl "$UDID" "$RUN_URL" >/dev/null 2>&1 || true
+      if [ "$DID_HANDSHAKE_RUN" != "true" ]; then
+        xcrun simctl openurl "$UDID" "$RUN_URL" >/dev/null 2>&1 || true
+      fi
 
       # Bounded adaptive polling for correlated callback event (up to 20s)
       for poll_idx in $(seq 1 20); do
@@ -831,7 +1073,7 @@ PY
 
 # Perform internal privacy scan across all text and binary files before writing summary.json
 PRIVACY_SCAN_OUT="$(python3 - "$ARTIFACT_DIR" "$UDID" <<'PY'
-import os, re, sys
+import json, os, re, sys
 
 root, raw_udid = sys.argv[1], sys.argv[2]
 forbidden = re.compile(rb"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,})")
@@ -848,7 +1090,7 @@ for dirpath, _, filenames in os.walk(root):
         if raw_udid and len(raw_udid) >= 36 and raw_udid.encode("utf-8") in data:
             violations.append(f"{fn}: unmasked simulator UDID present")
 
-print(json.dumps({"passed": len(violations) == 0, "violations": violations}) if "json" in sys.modules else "")
+print(json.dumps({"passed": len(violations) == 0, "violations": violations}))
 PY
 )"
 
@@ -867,13 +1109,14 @@ python3 - "$ARTIFACT_DIR" "$RUN_ID" "$SOURCE_SHA" "$REQUIRE_RUNTIME" \
   "$GATE_SHORTCUT_RUN_COMPLETED" \
   "$GATE_CALLBACK_CAPTURED" \
   "$GATE_TRACE_CAPTURED" \
-  "$GATE_PHYSICAL_DEVICE_TESTED" <<'PY'
+  "$GATE_PHYSICAL_DEVICE_TESTED" "$UDID" <<'PY'
 import json
 import os
 import re
 import sys
 
 artifact_dir, run_id, sha, req_rt = sys.argv[1:5]
+raw_udid = sys.argv[19] if len(sys.argv) > 19 else ""
 gates = {
     "RUNNER_AVAILABLE": sys.argv[5],
     "SIMULATOR_BOOTED": sys.argv[6],
@@ -914,8 +1157,9 @@ elif gates["COMPILER_ARTIFACT_IMPORTED"] == "BLOCKED_SIGNING":
 else:
     readiness = "PARTIAL_READY"
 
-# Scan all artifact files (including binary PNGs) for forbidden patterns
+# Scan all artifact files (including binary PNGs) for forbidden patterns and raw UDIDs
 forbidden = re.compile(rb"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,})")
+custom_server = os.environ.get("CHERRI_SIGNING_SERVER", "").strip()
 privacy_violations = []
 for dirpath, _, filenames in os.walk(artifact_dir):
     for fn in filenames:
@@ -925,6 +1169,10 @@ for dirpath, _, filenames in os.walk(artifact_dir):
         m = forbidden.search(data)
         if m:
             privacy_violations.append(f"{fn}: {m.group(0).decode('utf-8', errors='replace')}")
+        if raw_udid and len(raw_udid) >= 36 and raw_udid.encode("utf-8") in data:
+            privacy_violations.append(f"{fn}: unmasked simulator UDID present")
+        if custom_server and "sign.shortcuty.app" not in custom_server and custom_server.encode("utf-8") in data:
+            privacy_violations.append(f"{fn}: custom signing URL leaked into artifact")
 
 privacy_passed = (len(privacy_violations) == 0)
 

@@ -1,7 +1,9 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
 let greeting = text("CHERRI_QA_SYNTHETIC_GREETING")
 let baseCount = number(2)
 let meta = {"suite": "cherri-ios27-simulator-qa", "dialect": "v2", "expectedCount": 2}
 let suiteName = getValue(dictionary: meta, key: "suite")
+comment("ANCHOR_CARD_15_MID_CENTER")
 
 if baseCount == 2 {
     repeat 2 {
@@ -12,4 +14,5 @@ if baseCount == 2 {
 }
 
 let finalSummary = text("CHERRI_QA_RESULT:ok:count=2:mode=v2")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
 output(finalSummary)

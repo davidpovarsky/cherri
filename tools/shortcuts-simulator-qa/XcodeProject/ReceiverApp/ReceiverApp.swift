@@ -62,7 +62,7 @@ final class CallbackEventStore: ObservableObject {
     }
 
     private static let forbiddenPattern: NSRegularExpression? = {
-        let pattern = "(?i)(cherri-shortcut-audit-20261110|\\b[0-3][0-9]\\.plist\\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\\s+[A-Za-z0-9._\\-]+|[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}|/Users/[A-Za-z0-9._\\-]+|[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})"
+        let pattern = "(?i)(cherri-shortcut-audit-20261110|\\b[0-3][0-9]\\.plist\\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\\s+[A-Za-z0-9._\\-]+|[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}|/Users/[A-Za-z0-9._\\-]+)"
         return try? NSRegularExpression(pattern: pattern)
     }()
 
@@ -117,11 +117,20 @@ final class CallbackEventStore: ObservableObject {
         let comps = URLComponents(url: url, resolvingAgainstBaseURL: false)
         var params: [String: String] = [:]
         for item in comps?.queryItems ?? [] {
+            if let existing = params[item.name], !existing.isEmpty {
+                continue
+            }
             params[item.name] = item.value ?? ""
         }
-        let runId = params["runId"] ?? params["run_id"] ?? "unspecified-run"
-        let fixtureId = params["fixtureId"] ?? params["fixture_id"]
-        let expectedShortcut = params["shortcutName"] ?? params["shortcut_name"]
+        // Also handle path-encoded metadata: cherriqa://success/<runId>/<fixtureId>/<shortcutName>?result=...
+        let pathParts = url.pathComponents.filter { $0 != "/" && !$0.isEmpty }
+        let pathRunId = pathParts.count >= 1 ? pathParts[0] : nil
+        let pathFixtureId = pathParts.count >= 2 ? pathParts[1] : nil
+        let pathShortcutName = pathParts.count >= 3 ? pathParts[2] : nil
+
+        let runId = params["runId"] ?? params["run_id"] ?? pathRunId ?? "unspecified-run"
+        let fixtureId = params["fixtureId"] ?? params["fixture_id"] ?? pathFixtureId
+        let expectedShortcut = params["shortcutName"] ?? params["shortcut_name"] ?? pathShortcutName
         let selfTest = (params["selfTest"] == "1" || runId.hasPrefix("receiver-self-test"))
         let eventSource = selfTest ? "receiver-self-test" : (params["source"] ?? "shortcuts-x-callback")
 
