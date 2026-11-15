@@ -39,11 +39,15 @@ const (
 
 // Transformation represents an aggrandizement (property, coercion, dict key, etc.)
 type Transformation struct {
-	Type              string `json:"type"`
-	PropertyName      string `json:"propertyName,omitempty"`
-	CoercionItemClass string `json:"coercionItemClass,omitempty"`
-	DictionaryKey     string `json:"dictionaryKey,omitempty"`
-	PropertyUserInfo  any    `json:"propertyUserInfo,omitempty"`
+	Type                 string `json:"type"`
+	PropertyName         string `json:"propertyName,omitempty"`
+	CoercionItemClass    string `json:"coercionItemClass,omitempty"`
+	DictionaryKey        string `json:"dictionaryKey,omitempty"`
+	PropertyUserInfo     any    `json:"propertyUserInfo,omitempty"`
+	WFDateFormat         string `json:"wfDateFormat,omitempty"`
+	WFDateFormatStyle    string `json:"wfDateFormatStyle,omitempty"`
+	WFTimeFormatStyle    string `json:"wfTimeFormatStyle,omitempty"`
+	WFISO8601IncludeTime *bool  `json:"wfISO8601IncludeTime,omitempty"`
 }
 
 // Reference is a structured symbolic reference.

@@ -148,9 +148,9 @@ func isArrayVariable(ident string) bool {
 		visited[curr] = true
 		v, found := variables[curr]
 		if !found {
-			return importedSymbolValueTypes[curr] == Arr
+			return importedSymbolValueTypes[curr] == Arr || importedSymbolAppendVars[curr]
 		}
-		if v.valueType == Arr || importedSymbolValueTypes[curr] == Arr {
+		if v.valueType == Arr || importedSymbolValueTypes[curr] == Arr || importedSymbolAppendVars[curr] {
 			return true
 		}
 		if v.valueType == Action {
@@ -267,7 +267,7 @@ func makeVariableValue(reference *WFActionReference, valueType tokenType, value 
 		makeAction(action.args, reference)
 	case Dict:
 		addStdAction("dictionary", attachReferenceToParams(map[string]any{
-			"WFItems": makeDictionaryValue(value),
+			"WFItems": makeExplicitDictionaryValue(value),
 		}, reference))
 	}
 }
@@ -288,6 +288,24 @@ func makeRawStringValue(reference *WFActionReference, value *any) {
 	addStdAction("gettext", attachReferenceToParams(map[string]any{
 		"WFTextActionText": fmt.Sprintf("%s", *value),
 	}, reference))
+}
+
+func makeExplicitDictionaryValue(value *any) WFDictionaryFieldValue {
+	items := makeDictionary(*value)
+	if len(items) > 0 {
+		return WFDictionaryFieldValue{
+			Value: WFDictionaryFieldValueWrapper{
+				WFDictionaryFieldValueItems: items,
+			},
+			WFSerializationType: "WFDictionaryFieldValue",
+		}
+	}
+	return WFDictionaryFieldValue{
+		Value: WFExplicitDictionaryFieldValueWrapper{
+			WFDictionaryFieldValueItems: []WFDictionaryFieldValueItem{},
+		},
+		WFSerializationType: "WFDictionaryFieldValue",
+	}
 }
 
 func makeBoolValue(reference *WFActionReference, value *any) {
@@ -449,9 +467,58 @@ func variableValue(variable varValue) any {
 	return variableValueWithSerialization(variable, "WFTextTokenAttachment")
 }
 
+func resolveDescriptorVar(v varValue) ReferenceDescriptor {
+	desc := *v.descriptor
+	if desc.Kind != "" {
+		return desc
+	}
+	identifier, _ := v.value.(string)
+	if global, found := globals[identifier]; found {
+		isInputVariable(identifier)
+		switch global.variableType {
+		case "ExtensionInput", "CurrentDate", "Clipboard", "DeviceDetails":
+			desc.Kind = global.variableType
+			return desc
+		case "Ask":
+			desc.Kind = "Ask"
+			if desc.Prompt == "" && global.prompt != "" {
+				desc.Prompt = global.prompt
+			}
+			return desc
+		default:
+			desc.Kind = "Variable"
+			desc.VariableName = globalDisplayName(identifier, global)
+			return desc
+		}
+	}
+	if !importedSymbolIsVariable[identifier] {
+		if u, hasU := uuids[identifier]; hasU && u != "" {
+			desc.Kind = "ActionOutput"
+			desc.OutputUUID = u
+			if !desc.ExplicitOutputName && desc.OutputName == "" {
+				desc.OutputName = resolveLegacyOutputName(identifier)
+			}
+			return desc
+		}
+		if ref, found := variables[identifier]; found && ref.constant {
+			desc.Kind = "ActionOutput"
+			desc.OutputUUID = uuids[identifier]
+			if !desc.ExplicitOutputName && desc.OutputName == "" {
+				desc.OutputName = resolveLegacyOutputName(identifier)
+			}
+			return desc
+		}
+	}
+	desc.Kind = "Variable"
+	if desc.VariableName == "" {
+		desc.VariableName = resolveLegacyVariableName(identifier)
+	}
+	return desc
+}
+
 func variableValueWithSerialization(variable varValue, serializationType string) any {
 	if variable.descriptor != nil {
-		return EncodeReferenceAttachment(*variable.descriptor, serializationType)
+		return EncodeReferenceAttachment(resolveDescriptorVar(variable), serializationType)
 	}
 
 	var identifier, _ = variable.value.(string)
@@ -462,6 +529,9 @@ func variableValueWithSerialization(variable varValue, serializationType string)
 		variable.variableType = global.variableType
 		identifier = globalDisplayName(identifier, global)
 	} else if v, found := variables[identifier]; found {
+		if v.descriptor != nil && variable.getAs == "" && variable.coerce == "" {
+			return EncodeReferenceAttachment(resolveDescriptorVar(v), serializationType)
+		}
 		variableReference = v
 		variable.constant = v.constant
 		variable.repeatItem = v.repeatItem
@@ -480,24 +550,27 @@ func variableValueWithSerialization(variable varValue, serializationType string)
 		if variable.getAs == "" {
 			return
 		}
-		var refValueType = variable.valueType
-		var targetVar = variable
-		if importedSymbolValueTypes[identifier] == Dict || (variable.coerceFirst && variable.coerce == "dictionary") {
-			refValueType = Dict
-		} else if variable.valueType == Variable && variableReference.valueType != "" {
-			refValueType = variableReference.valueType
-			targetVar = variableReference
+		isDictProp := false
+		if !variable.coerceFirst || variable.coerce == "dictionary" {
+			var refValueType = variable.valueType
+			var targetVar = variable
+			if importedSymbolValueTypes[identifier] == Dict || importedSymbolDictAggr[identifier] || (variable.coerceFirst && variable.coerce == "dictionary") {
+				refValueType = Dict
+			} else if variable.valueType == Variable && variableReference.valueType != "" {
+				refValueType = variableReference.valueType
+				targetVar = variableReference
+			}
+			isDictProp = isDictAggrandizement(refValueType, &targetVar)
 		}
-		if isDictAggrandizement(refValueType, &targetVar) {
+		if isDictProp {
 			aggrandizements = append(aggrandizements, Aggrandizement{
 				Type:          "WFDictionaryValueVariableAggrandizement",
 				DictionaryKey: variable.getAs,
 			})
 		} else {
 			aggrandizements = append(aggrandizements, Aggrandizement{
-				PropertyUserInfo: 0,
-				Type:             "WFPropertyVariableAggrandizement",
-				PropertyName:     variable.getAs,
+				Type:         "WFPropertyVariableAggrandizement",
+				PropertyName: variable.getAs,
 			})
 		}
 	}
@@ -596,6 +669,13 @@ func appendInlineAggrandizements(aggrs []Aggrandizement, inlineVar inlineVariabl
 		if inlineVar.getAs == "" {
 			return
 		}
+		if inlineVar.coerceFirst && inlineVar.coerce != "dictionary" {
+			aggrs = append(aggrs, Aggrandizement{
+				Type:         "WFPropertyVariableAggrandizement",
+				PropertyName: inlineVar.getAs,
+			})
+			return
+		}
 		effVT := vt
 		if inlineVar.coerceFirst && inlineVar.coerce == "dictionary" {
 			effVT = Dict
@@ -616,24 +696,38 @@ func makeAttachmentValues() {
 	for _, inlineVar := range inlineVariables {
 		var varValue, found = getVariableValue(inlineVar.identifier)
 		if !found {
-			if u, ok := uuids[inlineVar.identifier]; ok {
-				desc := ReferenceDescriptor{
-					Kind:       "ActionOutput",
-					OutputName: resolveLegacyOutputName(inlineVar.identifier),
-					OutputUUID: u,
+			if !importedSymbolIsVariable[inlineVar.identifier] {
+				if u, ok := uuids[inlineVar.identifier]; ok {
+					desc := ReferenceDescriptor{
+						Kind:       "ActionOutput",
+						OutputName: resolveLegacyOutputName(inlineVar.identifier),
+						OutputUUID: u,
+					}
+					vt := importedSymbolValueTypes[inlineVar.identifier]
+					if importedSymbolDictAggr[inlineVar.identifier] {
+						vt = Dict
+					}
+					desc.Aggrandizements = appendInlineAggrandizements(desc.Aggrandizements, inlineVar, vt, nil, false)
+					varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(desc)
+					continue
 				}
-				vt := importedSymbolValueTypes[inlineVar.identifier]
-				desc.Aggrandizements = appendInlineAggrandizements(desc.Aggrandizements, inlineVar, vt, nil, false)
-				varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(desc)
-				continue
 			}
 			desc := ReferenceDescriptor{
 				Kind:         "Variable",
 				VariableName: resolveLegacyVariableName(inlineVar.identifier),
 			}
 			vt := importedSymbolValueTypes[inlineVar.identifier]
+			if importedSymbolDictAggr[inlineVar.identifier] {
+				vt = Dict
+			}
 			desc.Aggrandizements = appendInlineAggrandizements(desc.Aggrandizements, inlineVar, vt, nil, false)
 			varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(desc)
+			continue
+		}
+
+		if varValue.descriptor != nil {
+			resolved := resolveDescriptorVar(*varValue)
+			varPositions[fmt.Sprintf("{%d, 1}", inlineVar.col)] = EncodeReferenceValue(resolved)
 			continue
 		}
 
@@ -657,7 +751,7 @@ func makeAttachmentValues() {
 		}
 
 		vt := varValue.valueType
-		if importedSymbolValueTypes[inlineVar.identifier] == Dict {
+		if importedSymbolValueTypes[inlineVar.identifier] == Dict || importedSymbolDictAggr[inlineVar.identifier] {
 			vt = Dict
 		}
 		aggrandizements = appendInlineAggrandizements(aggrandizements, inlineVar, vt, varValue, true)
@@ -795,9 +889,15 @@ func paramValue(arg actionArgument, handleAs tokenType) any {
 	switch arg.valueType {
 	case Variable:
 		varVal := arg.value.(varValue)
+		if varVal.descriptor == nil && varVal.getAs == "" && varVal.coerce == "" {
+			if ref, found := getVariableValue(fmt.Sprint(varVal.value)); found && ref != nil && ref.descriptor != nil {
+				varVal = *ref
+			}
+		}
 		if varVal.descriptor != nil {
+			resolved := resolveDescriptorVar(varVal)
 			if handleAs == String {
-				attVal := EncodeReferenceValue(*varVal.descriptor)
+				attVal := EncodeReferenceValue(resolved)
 				return WFTextTokenString{
 					Value: WFTextTokenStringValue{
 						String: "\uFFFC",
@@ -808,7 +908,7 @@ func paramValue(arg actionArgument, handleAs tokenType) any {
 					WFSerializationType: "WFTextTokenString",
 				}
 			}
-			return variableValue(varVal)
+			return EncodeReferenceAttachment(resolved, "WFTextTokenAttachment")
 		}
 		if handleAs == String {
 			var refStr = makeVariableReferenceString(varVal)
@@ -980,6 +1080,18 @@ func makeDictionaryItem(key string, value any) WFDictionaryFieldValueItem {
 	case WFBoolValue:
 		itemType = itemTypeBool
 		wfValue = v
+	case varValue:
+		itemType = itemTypeText
+		if v.descriptor == nil && v.getAs == "" && v.coerce == "" {
+			if ref, found := getVariableValue(fmt.Sprint(v.value)); found && ref != nil && ref.descriptor != nil {
+				v = *ref
+			}
+		}
+		if v.descriptor != nil {
+			wfValue = EncodeReferenceAttachment(resolveDescriptorVar(v), "WFTextTokenAttachment")
+		} else {
+			wfValue = variableValue(v)
+		}
 	default:
 		itemType = itemTypeText
 		wfValue = WFTextTokenString{
@@ -1095,37 +1207,12 @@ func makeConditionalAction(t *token) {
 			var firstCondition = cond.conditions[0]
 			var firstArg = firstCondition.arguments[0]
 			var firstVar = firstArg.value.(varValue)
-			var inputType = inputEffectiveType(firstVar)
-			if len(firstCondition.arguments) > 1 {
-				var secondArg = firstCondition.arguments[1]
-				if inputType == Variable {
-					switch secondArg.valueType {
-					case Integer, Float, Bool:
-						inputType = Integer
-					case Date:
-						inputType = Date
-					default:
-						inputType = String
-					}
-				}
-				if firstVar.coerce == "" && isPolymorphicVariableRef(firstVar) {
-					switch inputType {
-					case Integer, Float:
-						firstVar.coerce = "number"
-					case Date:
-						firstVar.coerce = "date"
-					case Bool:
-						firstVar.coerce = "boolean"
-					default:
-						firstVar.coerce = "text"
-					}
-				}
-			}
+			var conditionCode = firstCondition.condition
+			var inputType = conditionalComparisonInputType(&firstVar, firstCondition.arguments, conditionCode)
 			spec.Input = map[string]any{
 				"Type":     "Variable",
 				"Variable": variableValue(firstVar),
 			}
-			var conditionCode = firstCondition.condition
 			if len(firstCondition.arguments) > 1 && firstCondition.arguments[1].valueType == Quantity {
 				switch conditionCode {
 				case conditions[GreaterThan]:
@@ -1159,10 +1246,13 @@ var filterTemplates []WFConditionParam
 // inputEffectiveType resolves a conditional's left-hand variable to its concrete type,
 // which determines which plist key the comparison value is written into.
 func inputEffectiveType(v varValue) tokenType {
+	if v.descriptor != nil {
+		return Variable
+	}
 	if v.coerce != "" {
 		return tokenType(v.coerce)
 	}
-	var identifier = v.value.(string)
+	identifier, _ := v.value.(string)
 	if global, found := globals[identifier]; found {
 		return global.valueType
 	}
@@ -1177,21 +1267,112 @@ func inputEffectiveType(v varValue) tokenType {
 	return String
 }
 
-func isPolymorphicVariableRef(v varValue) bool {
-	if v.getAs != "" {
+func isNumericPropertyVarValue(v *varValue) bool {
+	if v == nil || v.descriptor != nil {
+		return false
+	}
+	if v.coerce != "" && v.coerce != "image" {
+		return false
+	}
+	if v.getAs != "Height" && v.getAs != "Width" {
+		return false
+	}
+	identifier, _ := v.value.(string)
+	baseVar, hasBaseVar := variables[identifier]
+	return importedSymbolValueTypes[identifier] != Dict && !importedSymbolDictAggr[identifier] && (!hasBaseVar || !isDictAggrandizement(baseVar.valueType, &baseVar))
+}
+
+func argAsVarValue(arg actionArgument) (varValue, bool) {
+	switch v := arg.value.(type) {
+	case varValue:
+		return v, true
+	case *varValue:
+		if v != nil {
+			return *v, true
+		}
+	}
+	return varValue{}, false
+}
+
+func canPromoteNumericPropertyRHS(v *varValue, inputType tokenType) bool {
+	if v == nil || v.coerce != "" {
+		return false
+	}
+	if inputType == Variable || inputType == Conditional || inputType == "" {
 		return true
 	}
+	if inputType == String {
+		identifier, _ := v.value.(string)
+		_, inVars := variables[identifier]
+		_, inGlobals := globals[identifier]
+		return !inVars && !inGlobals
+	}
+	return false
+}
+
+func conditionalComparisonInputType(firstVar *varValue, args []actionArgument, conditionCode int) tokenType {
+	inputType := inputEffectiveType(*firstVar)
+	if len(args) > 1 {
+		secondArg := args[1]
+		if isNumericPropertyVarValue(firstVar) && secondArg.valueType != String && secondArg.valueType != RawString {
+			return Integer
+		}
+		if canPromoteNumericPropertyRHS(firstVar, inputType) {
+			if v2, ok := argAsVarValue(secondArg); ok && isNumericPropertyVarValue(&v2) {
+				return Integer
+			}
+		}
+		if inputType == Variable || inputType == Conditional || inputType == "" {
+			switch secondArg.valueType {
+			case Integer, Float, Bool:
+				inputType = Integer
+			case Date:
+				inputType = Date
+			default:
+				switch conditionCode {
+				case conditions[LessThan], conditions[LessOrEqual], conditions[GreaterThan], conditions[GreaterOrEqual], conditions[Between]:
+					inputType = Integer
+				default:
+					inputType = String
+				}
+			}
+		}
+		if firstVar.descriptor == nil && firstVar.coerce == "" && isPolymorphicVariableRef(*firstVar) {
+			switch inputType {
+			case Integer, Float:
+				firstVar.coerce = "number"
+			case Date:
+				firstVar.coerce = "date"
+			case Bool:
+				firstVar.coerce = "boolean"
+			default:
+				firstVar.coerce = "text"
+			}
+		}
+	}
+	return inputType
+}
+
+// isPolymorphicVariableRef matches V2 ensureConditionalInputCoercion: only explicit
+// dictionary lookups and polymorphic untyped container/web actions trigger automatic coercion.
+func isPolymorphicVariableRef(v varValue) bool {
 	identifier, ok := v.value.(string)
 	if !ok {
 		return false
 	}
 	if variable, found := variables[identifier]; found {
-		if variable.valueType == Variable {
+		if v.getAs != "" && isDictAggrandizement(variable.valueType, &variable) {
 			return true
 		}
 		if variable.valueType == Action {
-			if a, ok := variable.value.(action); ok && a.def != nil {
-				return a.def.outputType == Variable || a.def.outputType == ""
+			if a, ok := variable.value.(action); ok && a.def != nil && a.def.outputType == Variable {
+				switch a.def.identifier {
+				case "getvalueforkey", "getitemfromlist", "base64encode", "downloadurl":
+					return true
+				}
+				if a.def.appIdentifier == "com.Scripting.Lumen.GetStoredValueIntent" {
+					return true
+				}
 			}
 		}
 	}
@@ -1242,32 +1423,7 @@ func makeConditions(wfConditions *WFConditions) WFContentPredicateTableTemplate 
 		}
 
 		var firstVar = condition.arguments[0].value.(varValue)
-		var inputType = inputEffectiveType(firstVar)
-		if len(condition.arguments) > 1 {
-			var secondArg = condition.arguments[1]
-			if inputType == Variable {
-				switch secondArg.valueType {
-				case Integer, Float, Bool:
-					inputType = Integer
-				case Date:
-					inputType = Date
-				default:
-					inputType = String
-				}
-			}
-			if firstVar.coerce == "" && isPolymorphicVariableRef(firstVar) {
-				switch inputType {
-				case Integer, Float:
-					firstVar.coerce = "number"
-				case Date:
-					firstVar.coerce = "date"
-				case Bool:
-					firstVar.coerce = "boolean"
-				default:
-					firstVar.coerce = "text"
-				}
-			}
-		}
+		var inputType = conditionalComparisonInputType(&firstVar, condition.arguments, conditionCode)
 		var conditionParam = WFConditionParam{
 			WFCondition: conditionCode,
 			WFInput: WFInputVariable{
@@ -1296,6 +1452,18 @@ func makeConditions(wfConditions *WFConditions) WFContentPredicateTableTemplate 
 }
 
 func conditionalParameter(param *WFConditionParam, arg actionArgument, inputType tokenType) {
+	if ns, ok := arg.value.(legacyNumericString); ok {
+		if param.WFNumberValue == nil {
+			param.WFNumberValue = string(ns)
+		} else {
+			param.WFAnotherNumber = string(ns)
+		}
+		return
+	}
+	if ev, ok := arg.value.(legacyCondEnum); ok {
+		param.WFEnumeration = string(ev)
+		return
+	}
 	switch arg.valueType {
 	case Quantity:
 		param.WFDuration = makeQuantityFieldValue(arg.value.([]actionArgument))
@@ -1310,7 +1478,11 @@ func conditionalParameter(param *WFConditionParam, arg actionArgument, inputType
 	case Integer, Float:
 		routeConditionalValue(param, paramValue(arg, arg.valueType), Integer)
 	default:
-		routeConditionalValue(param, paramValue(arg, arg.valueType), inputType)
+		routeType := inputType
+		if inputType == Bool && arg.valueType == String {
+			routeType = String
+		}
+		routeConditionalValue(param, paramValue(arg, arg.valueType), routeType)
 	}
 }
 
@@ -1326,6 +1498,18 @@ func conditionalParameterVariable(param *WFConditionParam, arg actionArgument, i
 
 // conditionalParameterLegacy routes single comparison arguments into typed ConditionSpec
 func conditionalParameterLegacy(spec *ConditionSpec, arg actionArgument, inputType tokenType) {
+	if ns, ok := arg.value.(legacyNumericString); ok {
+		if spec.NumberValue == nil {
+			spec.NumberValue = string(ns)
+		} else {
+			spec.AnotherNumber = string(ns)
+		}
+		return
+	}
+	if ev, ok := arg.value.(legacyCondEnum); ok {
+		spec.Enumeration = string(ev)
+		return
+	}
 	switch arg.valueType {
 	case Quantity:
 		spec.DurationValue = makeQuantityFieldValue(arg.value.([]actionArgument))
@@ -1340,7 +1524,11 @@ func conditionalParameterLegacy(spec *ConditionSpec, arg actionArgument, inputTy
 	case Integer, Float:
 		routeConditionalValueLegacy(spec, paramValue(arg, arg.valueType), Integer)
 	default:
-		routeConditionalValueLegacy(spec, paramValue(arg, arg.valueType), inputType)
+		routeType := inputType
+		if inputType == Bool && arg.valueType == String {
+			routeType = String
+		}
+		routeConditionalValueLegacy(spec, paramValue(arg, arg.valueType), routeType)
 	}
 }
 
@@ -1392,25 +1580,80 @@ func makeMenuAction(t *token) {
 		return
 	}
 	var prompt any
-	if t.valueType != Nil {
+	var hasEmptyPrompt bool
+	var legacyCancel bool
+	if spec, ok := t.value.(legacyMenuStartSpec); ok && t.valueType == Menu {
+		if spec.PromptType != Nil {
+			prompt = paramValue(actionArgument{
+				valueType: spec.PromptType,
+				value:     spec.PromptValue,
+			}, String)
+		}
+		hasEmptyPrompt = spec.HasEmptyPrompt
+		legacyCancel = spec.LegacyCancel
+	} else if t.valueType != Nil {
 		prompt = paramValue(actionArgument{
 			valueType: t.valueType,
 			value:     t.value,
 		}, String)
 	}
 	var menuItemParams = menus[t.ident]
+	hasPlain := false
+	for _, item := range menuItemParams {
+		if miSpec, ok := item.value.(legacyMenuItemSpec); ok && item.valueType == Item && miSpec.Plain {
+			hasPlain = true
+			break
+		}
+	}
 	itemValues := make([]any, len(menuItemParams))
 	for i, item := range menuItemParams {
-		menuVal, _, _ := menuItemValueAndTitle(actionArgument{
-			valueType: item.valueType,
-			value:     item.value,
-		})
-		itemValues[i] = menuVal
+		var arg actionArgument
+		isPlain := false
+		if miSpec, ok := item.value.(legacyMenuItemSpec); ok && item.valueType == Item {
+			arg = actionArgument{
+				valueType: miSpec.ValueType,
+				value:     miSpec.Value,
+			}
+			isPlain = miSpec.Plain
+		} else {
+			arg = actionArgument{
+				valueType: item.valueType,
+				value:     item.value,
+			}
+		}
+		menuVal, _, _ := menuItemValueAndTitle(arg)
+		if hasPlain && !isPlain {
+			itemValues[i] = WFMenuItem{WFItemType: 0, WFValue: menuVal}
+		} else {
+			itemValues[i] = menuVal
+		}
+	}
+	if hasEmptyPrompt || legacyCancel || hasPlain {
+		addStdAction("choosefrommenu", BuildMenuStartFull(MenuStartOptions{
+			GroupingID:               t.ident,
+			Prompt:                   prompt,
+			IncludeEmptyPrompt:       hasEmptyPrompt,
+			Items:                    itemValues,
+			PreservePlainStringItems: hasPlain,
+			LegacyCancelBehavior:     legacyCancel,
+		}))
+		return
 	}
 	addStdAction("choosefrommenu", BuildMenuStartItems(t.ident, prompt, itemValues))
 }
 
 func makeMenuItemAction(t *token) {
+	if miSpec, ok := t.value.(legacyMenuItemSpec); ok && t.valueType == Item {
+		_, title, attrTitle := menuItemValueAndTitle(actionArgument{
+			valueType: miSpec.ValueType,
+			value:     miSpec.Value,
+		})
+		if miSpec.HasTitle {
+			title = miSpec.Title
+		}
+		addStdAction("choosefrommenu", BuildMenuCaseFull(t.ident, title, attrTitle, !miSpec.Plain))
+		return
+	}
 	_, title, attrTitle := menuItemValueAndTitle(actionArgument{
 		valueType: t.valueType,
 		value:     t.value,
@@ -1423,10 +1666,13 @@ func makeRepeatAction(t *token) {
 		addStdAction("repeat.count", BuildLoopEnd(t.ident, createUUIDReference(t.value.(string))))
 		return
 	}
-	count := paramValue(actionArgument{
-		valueType: t.valueType,
-		value:     t.value,
-	}, Integer)
+	var count any
+	if t.valueType != Nil {
+		count = paramValue(actionArgument{
+			valueType: t.valueType,
+			value:     t.value,
+		}, Integer)
+	}
 	addStdAction("repeat.count", BuildRepeatCountStart(t.ident, count))
 }
 

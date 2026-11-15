@@ -510,6 +510,14 @@ Keep upstream documentation synchronization possible and isolate fork-specific/g
 
 Document uncertain/observed behavior as such; do not present inference as guaranteed API behavior.
 
+## P10R12 hybrid import, Go-handler fixes, and non-circular provenance
+
+- Changes to Go-implemented standard actions in `actions_std.go` (for example fixing `prompt` `multiline` parameter types or nil default answers) are material action changes just like edits under `actions/*.cherri`: regenerate `internal/language/schema/generated_registry.go` (`go run ./tools/language-schema`), verify `skills/cherri-shortcuts/compatibility-manifest.json`, and record the implementation commit SHA in `docs/fork-action-provenance.json` only via a **separate follow-up provenance commit** (never circular inside the implementation commit).
+- Hybrid import (`semantic_import_planner.go`) reuses the shared semantic decompiler (`decompile.go`) and canonical action registry under strict lifecycle states (`CANDIDATE -> VERIFIED / DEMOTED`):
+  - Isolate CLI-flag-sensitive behavior (such as `args.Using("import")` in `variables.go`) identically across CLI and library/test entrypoints.
+  - Reject unseeded forward `ActionOutput` consumers at Stage 1 rather than emitting forward-referenced `@var`/`const` declarations.
+  - Never print raw corpus parameter strings, URLs, or secrets in public tests or committed diagnostics; sanitize error reports to specimen ID, dialect, action index, and key/type paths.
+
 ## Open Minis Skill propagation
 
 The Skill under:

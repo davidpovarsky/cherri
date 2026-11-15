@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0",
   "generator": "tools/p10r3/verify_consumer_compatibility.py",
-  "compilerHead": "6daaf525b131266f648d527176dfe8e74b4bd881",
-  "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
+  "compilerHead": "e8f3cd98e6a74f0c429edb80ae342b6d2b18812c",
+  "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
   "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
   "verdict": "COMPATIBLE_WITH_EXTERNAL_BLOCKERS",
   "statusCounts": {
@@ -14,8 +14,8 @@
   "components": [
     {
       "component": "Compiler",
-      "sourceCommit": "6daaf525b131266f648d527176dfe8e74b4bd881",
-      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
+      "sourceCommit": "e8f3cd98e6a74f0c429edb80ae342b6d2b18812c",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "live `go run . --capabilities-json`",
       "status": "PASS",
@@ -47,7 +47,7 @@
     {
       "component": "Documentation",
       "sourceCommit": null,
-      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "cherri in-repo reference only",
       "status": "NOT_AVAILABLE_LOCALLY",
@@ -58,19 +58,19 @@
         }
       ],
       "failures": [],
-      "notes": "cherrilang.org checkout not present at C:\\nonexistent; site copy and smoke pin not verified."
+      "notes": "cherrilang.org checkout not present at __missing__; site copy and smoke pin not verified."
     },
     {
       "component": "Skill",
       "sourceCommit": "1204e1f7dfac7af8df0813d1514fac629765af69",
-      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "docs a38b62b819e4",
       "status": "PASS",
       "checks": [
         {
           "ok": true,
-          "check": "skill schemaFingerprint == compiler (got 8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a)"
+          "check": "skill schemaFingerprint == compiler (got f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d)"
         },
         {
           "ok": true,
@@ -95,7 +95,7 @@
     {
       "component": "Remote Builder",
       "sourceCommit": "1204e1f7dfac7af8df0813d1514fac629765af69",
-      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "skill compatibility-manifest.json tuple",
       "status": "BLOCKED_EXTERNAL",
@@ -110,8 +110,8 @@
     },
     {
       "component": "iOS Bridge",
-      "sourceCommit": "6daaf525b131266f648d527176dfe8e74b4bd881",
-      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
+      "sourceCommit": "e8f3cd98e6a74f0c429edb80ae342b6d2b18812c",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "schema.DefaultRegistry() (same registry as compiler)",
       "status": "PASS",
@@ -134,8 +134,8 @@
     },
     {
       "component": "iOS UI",
-      "sourceCommit": "6daaf525b131266f648d527176dfe8e74b4bd881",
-      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
+      "sourceCommit": "e8f3cd98e6a74f0c429edb80ae342b6d2b18812c",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "iOS Bridge C ABI",
       "status": "PASS",
@@ -159,7 +159,7 @@
     {
       "component": "Preview",
       "sourceCommit": "42ee7656e0cc07b00a097ff4d17d90c8eb8b6efd",
-      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
       "testedAgainst": "ios/WebPreview lock + generic catalog metadata renderer",
       "status": "PASS",
@@ -183,9 +183,9 @@
     {
       "component": "Pure+Pack",
       "sourceCommit": "141b9cc96cf1df3f9d1593548dc49ae8a46a256a",
-      "schemaFingerprint": "8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
       "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
-      "testedAgainst": "P10 catalog @ 6daaf525b131",
+      "testedAgainst": "P10 catalog @ e8f3cd98e6a7",
       "status": "PASS",
       "checks": [
         {

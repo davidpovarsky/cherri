@@ -1,21 +1,21 @@
 # P10R5 — Consumer Compatibility Matrix
 
 - **Generator**: `tools/p10r3/verify_consumer_compatibility.py`
-- **Compiler HEAD at generation**: `6daaf525b131266f648d527176dfe8e74b4bd881`
+- **Compiler HEAD at generation**: `e8f3cd98e6a74f0c429edb80ae342b6d2b18812c`
 - **Verdict**: `COMPATIBLE_WITH_EXTERNAL_BLOCKERS`
 
 > `NOT_AVAILABLE_LOCALLY` and `BLOCKED_EXTERNAL` are never counted as `PASS`.
 
 | Component | Source Commit | Schema Fingerprint | Codec Fingerprint | Tested Against | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Compiler | `6daaf525b131` | `8fca1c4c849e` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
-| Documentation | — | `8fca1c4c849e` | `3e7e3555eefe` | cherri in-repo reference only | `NOT_AVAILABLE_LOCALLY` |
-| Skill | `1204e1f7dfac` | `8fca1c4c849e` | `3e7e3555eefe` | docs a38b62b819e4 | `PASS` |
-| Remote Builder | `1204e1f7dfac` | `8fca1c4c849e` | `3e7e3555eefe` | skill compatibility-manifest.json tuple | `BLOCKED_EXTERNAL` |
-| iOS Bridge | `6daaf525b131` | `8fca1c4c849e` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
-| iOS UI | `6daaf525b131` | `8fca1c4c849e` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
-| Preview | `42ee7656e0cc` | `8fca1c4c849e` | `3e7e3555eefe` | ios/WebPreview lock + generic catalog metadata renderer | `PASS` |
-| Pure+Pack | `141b9cc96cf1` | `8fca1c4c849e` | `3e7e3555eefe` | P10 catalog @ 6daaf525b131 | `PASS` |
+| Compiler | `e8f3cd98e6a7` | `f55851491e52` | `3e7e3555eefe` | live `go run . --capabilities-json` | `PASS` |
+| Documentation | — | `f55851491e52` | `3e7e3555eefe` | cherri in-repo reference only | `NOT_AVAILABLE_LOCALLY` |
+| Skill | `1204e1f7dfac` | `f55851491e52` | `3e7e3555eefe` | docs a38b62b819e4 | `PASS` |
+| Remote Builder | `1204e1f7dfac` | `f55851491e52` | `3e7e3555eefe` | skill compatibility-manifest.json tuple | `BLOCKED_EXTERNAL` |
+| iOS Bridge | `e8f3cd98e6a7` | `f55851491e52` | `3e7e3555eefe` | schema.DefaultRegistry() (same registry as compiler) | `PASS` |
+| iOS UI | `e8f3cd98e6a7` | `f55851491e52` | `3e7e3555eefe` | iOS Bridge C ABI | `PASS` |
+| Preview | `42ee7656e0cc` | `f55851491e52` | `3e7e3555eefe` | ios/WebPreview lock + generic catalog metadata renderer | `PASS` |
+| Pure+Pack | `141b9cc96cf1` | `f55851491e52` | `3e7e3555eefe` | P10 catalog @ e8f3cd98e6a7 | `PASS` |
 
 ## Check Details
 
@@ -28,10 +28,10 @@
 
 ### Documentation — `NOT_AVAILABLE_LOCALLY`
 - [x] cherri docs/language-v2/actions-reference.md fingerprint == compiler
-- _Note_: cherrilang.org checkout not present at C:\nonexistent; site copy and smoke pin not verified.
+- _Note_: cherrilang.org checkout not present at __missing__; site copy and smoke pin not verified.
 
 ### Skill — `PASS`
-- [x] skill schemaFingerprint == compiler (got 8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a)
+- [x] skill schemaFingerprint == compiler (got f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d)
 - [x] skill codecFingerprint == compiler (got 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e)
 - [x] skill languageVersion == compiler
 - [x] skill catalogSchemaVersion == compiler

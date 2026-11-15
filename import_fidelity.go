@@ -489,6 +489,10 @@ func splitWorkflowHeaderAndActions(doc map[string]any) (map[string]any, []map[st
 // before applyImportProvenanceToCompiledActions overlays metadata onto them.
 var PreOverlayActionHook func(compiledActions []any)
 
+// PreOverlayCaptureHook is a dialect-aware test/audit hook called with the dialect ("legacy",
+// "v2", or "") and compiled actions immediately before provenance metadata restoration.
+var PreOverlayCaptureHook func(dialect string, compiledActions []any)
+
 func deepClonePlistSlice(s []any) []any {
 	if s == nil {
 		return nil
@@ -561,6 +565,17 @@ func mergeWorkflowHeaderMap(
 	fallback Shortcut,
 	fillMissingDefaults bool,
 ) map[string]any {
+	return mergeWorkflowHeaderMapWithDialect("", rawHeader, actions, exactParamsPresence, fallback, fillMissingDefaults)
+}
+
+func mergeWorkflowHeaderMapWithDialect(
+	dialect string,
+	rawHeader map[string]any,
+	actions []ShortcutAction,
+	exactParamsPresence map[int]bool,
+	fallback Shortcut,
+	fillMissingDefaults bool,
+) map[string]any {
 	compiledActions := make([]any, 0, len(actions))
 	for i, act := range actions {
 		actMap := map[string]any{
@@ -591,7 +606,10 @@ func mergeWorkflowHeaderMap(
 		if PreOverlayActionHook != nil {
 			PreOverlayActionHook(deepClonePlistSlice(compiledActions))
 		}
-		applyImportProvenanceToCompiledActions(prov, compiledActions)
+		if PreOverlayCaptureHook != nil {
+			PreOverlayCaptureHook(dialect, deepClonePlistSlice(compiledActions))
+		}
+		maybeApplyImportProvenanceToCompiledActions(prov, compiledActions)
 		merged["WFWorkflowActions"] = compiledActions
 		return merged
 	}
@@ -616,7 +634,10 @@ func mergeWorkflowHeaderMap(
 	if PreOverlayActionHook != nil {
 		PreOverlayActionHook(deepClonePlistSlice(compiledActions))
 	}
-	applyImportProvenanceToCompiledActions(prov, compiledActions)
+	if PreOverlayCaptureHook != nil {
+		PreOverlayCaptureHook(dialect, deepClonePlistSlice(compiledActions))
+	}
+	maybeApplyImportProvenanceToCompiledActions(prov, compiledActions)
 	merged["WFWorkflowActions"] = compiledActions
 	if inputs, ok := merged["WFWorkflowInputContentItemClasses"].([]any); !ok || len(inputs) == 0 {
 		if _, has := merged["WFWorkflowInputContentItemClasses"]; !has {
@@ -1097,4 +1118,83 @@ func collectRawPlistValue(value *any) {
 		parserError(fmt.Sprintf("Invalid rawPlist payload: %s", err))
 	}
 	*value = rawPlistDict{Data: decoded}
+}
+
+func rawMapString(m map[string]any, key string) string {
+	s, _ := m[key].(string)
+	return s
+}
+
+func collectRawRefValue(value *any) {
+	skipWhitespace()
+	var baseSym string
+	if !tokenAhead(RawPlist) {
+		if char == '@' {
+			advance()
+		}
+		if char == '"' {
+			advance()
+			baseSym = collectString()
+		} else {
+			baseSym = collectIdentifier()
+		}
+		if baseSym == "" {
+			parserError("Expected symbol identifier or rawPlist(...) inside rawRef(...)")
+		}
+		skipWhitespace()
+		if char != ',' {
+			parserError(fmt.Sprintf("Expected ',' after rawRef symbol %q, got: %c", baseSym, char))
+		}
+		advance()
+		skipWhitespace()
+		if !tokenAhead(RawPlist) {
+			parserError("Expected rawPlist(...) as second argument to rawRef(...)")
+		}
+	}
+	var dictVal any
+	collectRawPlistValue(&dictVal)
+	skipWhitespace()
+	if char != ')' {
+		parserError(fmt.Sprintf("Expected ')' closing rawRef(...), got: %c", char))
+	}
+	advance()
+
+	rawMap := dictVal.(rawPlistDict).Data
+	_, hasExplicitOutName := rawMap["OutputName"]
+	desc := ReferenceDescriptor{
+		Kind:               rawMapString(rawMap, "Type"),
+		OutputUUID:         rawMapString(rawMap, "OutputUUID"),
+		OutputName:         rawMapString(rawMap, "OutputName"),
+		ExplicitOutputName: hasExplicitOutName,
+		VariableName:       rawMapString(rawMap, "VariableName"),
+		Prompt:             rawMapString(rawMap, "Prompt"),
+	}
+	if rawAgs, ok := rawMap["Aggrandizements"].([]any); ok {
+		for _, item := range rawAgs {
+			m, ok := item.(map[string]any)
+			if !ok {
+				parserError("rawRef Aggrandizements entries must be dictionaries")
+			}
+			ag := Aggrandizement{
+				Type:              rawMapString(m, "Type"),
+				CoercionItemClass: rawMapString(m, "CoercionItemClass"),
+				DictionaryKey:     rawMapString(m, "DictionaryKey"),
+				PropertyName:      rawMapString(m, "PropertyName"),
+				PropertyUserInfo:  m["PropertyUserInfo"],
+				WFDateFormat:      rawMapString(m, "WFDateFormat"),
+				WFDateFormatStyle: rawMapString(m, "WFDateFormatStyle"),
+				WFTimeFormatStyle: rawMapString(m, "WFTimeFormatStyle"),
+			}
+			if b, ok := m["WFISO8601IncludeTime"].(bool); ok {
+				ag.WFISO8601IncludeTime = &b
+			}
+			desc.Aggrandizements = append(desc.Aggrandizements, ag)
+		}
+	}
+	*value = varValue{
+		variableType: "Variable",
+		valueType:    Variable,
+		value:        baseSym,
+		descriptor:   &desc,
+	}
 }

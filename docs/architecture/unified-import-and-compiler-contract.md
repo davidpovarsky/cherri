@@ -94,3 +94,17 @@ flowchart TD
 4. **Variable Action Native Serialization Truth:**
    - In import mode, absence of `WFSerializationType` in legacy source actions (2,487 `setVariable`, 64 `appendVariable`) is preserved without breaking normal authored code compilation.
    - The compiler distinguishes between assignment (`=`) and addition (`+=`), eliminating spurious `OutputUUID` generation on append operations.
+
+## 6. P10R12 Contract — Atomic Control Regions, Typed Complex Parameters & Semantic Lifecycle
+
+1. **Semantic Lifecycle & Fail-Closed Ownership (`semantic_import_planner.go`):**
+   - Action classification transitions strictly through `NOT_CANDIDATE`, `SOURCE_INVALID`, `CANDIDATE -> VERIFIED / DEMOTED` (`HybridPlanLifecycleSummary`). No action may ship in an unresolved `CANDIDATE` state (`TestP12_BASE_02`).
+   - `runDecompilePasses` isolates `args.Args` (`"import"`, `"no-ansi"`) so CLI `cherri import` and library/test callers (`PlanHybridImport`) produce identical symbol disambiguation (`TestP12_PAR_13`).
+   - `rejectUnseededForwardActionOutputCandidates` rejects natural promotion whenever an action references an unseeded forward `ActionOutput` produced by a later still-natural action (`cIdx <= prodIdx`), failing closed at Stage 1 instead of emitting forward-referenced `@var`/`const` compile errors (`TestP12_PAR_13`).
+2. **Atomic Control-Region Ownership (`semantic_import_planner.go`, `shared_control.go`):**
+   - Balanced nested control trees across `conditional` (`if / else / end`), `choosefrommenu` (`menu / case / end`), `repeat.each` (`repeat / end`), and `repeat.count` (`for / end`) promote atomically or demote together at balanced region boundaries, leaving `0` unclosed regions and `0` orphan markers (`035:723` remains `SOURCE_INVALID`).
+   - Mixed internal raw fallbacks inside an outer region preserve balanced region markers without corrupting surrounding control nesting (`TestP12_CF_01`..`TestP12_CF_22`).
+3. **Typed Complex Parameter Codecs & Canonical Action Fixes (`actions_std.go`, `decompile.go`):**
+   - One canonical action registry (`actions_std.go` + `actions/*.cherri` -> `internal/language/schema/generated_registry.go`) drives forward compilation, reverse parameter rendering, Skill discovery, and metadata verification across UTF-16 `WFTextTokenString`, `WFTextTokenAttachment` + aggrandizements, `WFDictionaryFieldValue`, `WFContentPredicateTableTemplate`, `WFNumberSubstitutableState`, and typed lists/arrays.
+   - Canonical Go-handler fixes in `actions_std.go` (`prompt` / `is.workflow.actions.ask` `multiline` `String -> Bool` + nil/typed default keys, `generateImage` `RawString` style handling) keep authored code and hybrid roundtrips aligned (`TestP12_PAR_01`..`TestP12_PAR_13`).
+

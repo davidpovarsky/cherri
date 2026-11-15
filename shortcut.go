@@ -20,14 +20,14 @@ type ShortcutIcon struct {
 type Shortcut struct {
 	WFWorkflowIcon                       ShortcutIcon
 	WFWorkflowActions                    []ShortcutAction
-	WFQuickActionSurfaces                []string            `plist:",omitempty"`
+	WFQuickActionSurfaces                []string `plist:",omitempty"`
 	WFWorkflowInputContentItemClasses    []string
 	WFWorkflowClientVersion              string
 	WFWorkflowMinimumClientVersion       int
 	WFWorkflowMinimumClientVersionString string
 	WFWorkflowImportQuestions            []WFQuestion
 	WFWorkflowTypes                      []string
-	WFWorkflowOutputContentItemClasses   []string            `plist:",omitempty"`
+	WFWorkflowOutputContentItemClasses   []string `plist:",omitempty"`
 	WFWorkflowHasShortcutInputVariables  bool
 	WFWorkflowHasOutputFallback          bool
 	WFWorkflowNoInputBehavior            map[string]any      `plist:",omitempty"`
@@ -56,11 +56,15 @@ type Value struct {
 }
 
 type Aggrandizement struct {
-	Type              string `plist:",omitempty"`
-	CoercionItemClass string `plist:",omitempty"`
-	DictionaryKey     string `plist:",omitempty"`
-	PropertyName      string `plist:",omitempty"`
-	PropertyUserInfo  any    `plist:",omitempty"`
+	Type                 string `plist:",omitempty"`
+	CoercionItemClass    string `plist:",omitempty"`
+	DictionaryKey        string `plist:",omitempty"`
+	PropertyName         string `plist:",omitempty"`
+	PropertyUserInfo     any    `plist:",omitempty"`
+	WFDateFormat         string `plist:",omitempty"`
+	WFDateFormatStyle    string `plist:",omitempty"`
+	WFTimeFormatStyle    string `plist:",omitempty"`
+	WFISO8601IncludeTime *bool  `plist:",omitempty"`
 }
 
 type WFDictionaryFieldValueItem struct {
@@ -106,7 +110,7 @@ type WFTextTokenString struct {
 
 type WFTextTokenStringValue struct {
 	AttachmentsByRange map[string]Value `plist:"attachmentsByRange,omitempty"`
-	String             string           `plist:"string,omitempty"`
+	String             string           `plist:"string"`
 }
 
 type WFDictionaryFieldValue struct {
@@ -116,6 +120,12 @@ type WFDictionaryFieldValue struct {
 
 type WFDictionaryFieldValueWrapper struct {
 	WFDictionaryFieldValueItems []WFDictionaryFieldValueItem `plist:",omitempty"`
+}
+
+// WFExplicitDictionaryFieldValueWrapper preserves an explicit empty WFDictionaryFieldValueItems
+// array on top-level is.workflow.actions.dictionary WFItems without affecting rawAction parameters.
+type WFExplicitDictionaryFieldValueWrapper struct {
+	WFDictionaryFieldValueItems []WFDictionaryFieldValueItem `plist:"WFDictionaryFieldValueItems"`
 }
 
 type WFArrayValue struct {
@@ -138,7 +148,6 @@ type WFQuantityFieldValue struct {
 	WFSerializationType string          `plist:",omitempty"`
 }
 
-
 type WFContentPredicateTableTemplate struct {
 	Value               WFConditionValue `plist:",omitempty"`
 	WFSerializationType string           `plist:",omitempty"`
@@ -147,6 +156,7 @@ type WFContentPredicateTableTemplate struct {
 type WFConditionValue struct {
 	WFActionParameterFilterPrefix    int
 	WFActionParameterFilterTemplates []WFConditionParam `plist:",omitempty"`
+	WFContentPredicateBoundedDate    bool
 }
 
 type WFConditionParam struct {
@@ -161,6 +171,25 @@ type WFConditionParam struct {
 	WFDate                    any             `plist:",omitempty"`
 	WFAnotherDate             any             `plist:",omitempty"`
 	WFDuration                any             `plist:",omitempty"`
+	WFEnumeration             any             `plist:",omitempty"`
+}
+
+type legacyNumericString string
+type legacyCondEnum string
+
+type legacyMenuStartSpec struct {
+	PromptType     tokenType
+	PromptValue    any
+	HasEmptyPrompt bool
+	LegacyCancel   bool
+}
+
+type legacyMenuItemSpec struct {
+	ValueType tokenType
+	Value     any
+	Title     string
+	HasTitle  bool
+	Plain     bool
 }
 
 type WFInputVariable struct {

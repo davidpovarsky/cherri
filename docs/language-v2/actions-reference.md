@@ -2,7 +2,7 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `8fca1c4c849e2a8517a2277c9e68269932140d193f953e515595b44a98bb343a`  
+**Schema Fingerprint:** `f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d`  
 **Total Actions:** 505  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
@@ -56,7 +56,7 @@ list(listItem: Text, listItem: Text)
 Ask for input with prompt, with optional inputType and defaultValue.
 
 ```cherri
-prompt(prompt: Text, inputType?: Text = "Text", defaultValue?: Text, multiline?: Text = "true", allowsDecimal?: Bool = "true", allowsNegative?: Bool = "true")
+prompt(prompt: Text, inputType?: Text = "Text", defaultValue?: Text, multiline?: Bool = "true", allowsDecimal?: Bool = "true", allowsNegative?: Bool = "true")
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
@@ -64,7 +64,7 @@ prompt(prompt: Text, inputType?: Text = "Text", defaultValue?: Text, multiline?:
 | `prompt` | `Text` | Yes | - | `WFAskActionPrompt` | - |
 | `inputType` | `Text` | No | `Text` | `WFInputType` | Text, Number, URL, Date, Time, Date and Time |
 | `defaultValue` | `Text` | No | - | `` | - |
-| `multiline` | `Text` | No | `true` | `WFAllowsMultilineText` | - |
+| `multiline` | `Bool` | No | `true` | `WFAllowsMultilineText` | - |
 | `allowsDecimal` | `Bool` | No | `true` | `WFAskActionAllowsDecimalNumbers` | - |
 | `allowsNegative` | `Bool` | No | `true` | `WFAskActionAllowsNegativeNumbers` | - |
 
@@ -365,7 +365,7 @@ updateContact(contact: AnyContent, detail: Text, value: Text)
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `contact` | `AnyContent` | Yes | - | `WFInput` | - |
-| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random, Phone Numbers, Phone Number, Email Addresses, Email Address, Street Addresses, URLs, Notes, Relationship to Me, Contact Photo, File Size |
 | `value` | `Text` | Yes | - | `` | - |
 
 ---
@@ -1452,12 +1452,12 @@ contentGraph(input: AnyContent)
 Convert image to another format, compression quality, and/or remove metadata.
 
 ```cherri
-convertImage(image: Image, format: Text, quality?: Number, preserveMetadata?: Bool = "true") -> Image
+convertImage(image: AnyContent, format: Text, quality?: Number, preserveMetadata?: Bool = "true") -> Image
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `image` | `Image` | Yes | - | `WFInput` | - |
+| `image` | `AnyContent` | Yes | - | `WFInput` | - |
 | `format` | `Text` | Yes | - | `WFImageFormat` | TIFF, GIF, PNG, BMP, PDF, HEIF |
 | `quality` | `Number` | No | - | `WFImageCompressionQuality` | - |
 | `preserveMetadata` | `Bool` | No | `true` | `WFImagePreserveMetadata` | - |
@@ -1611,18 +1611,19 @@ createPlaylist(name: Text, author?: Text, description?: Text, items?: AnyContent
 
 **Title:** Crop Image  
 **Apple Identifier:** `is.workflow.actions.image.crop`  
+**Returns:** `Image`  
 ```cherri
-cropImage(image: AnyContent, width?: Text = "100", height?: Text = "100", position?: Text = "Center", customPositionX?: Text, customPositionY?: Text)
+cropImage(image: AnyContent, width?: AnyContent = "100", height?: AnyContent = "100", position?: Text = "Center", customPositionX?: AnyContent, customPositionY?: AnyContent) -> Image
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `image` | `AnyContent` | Yes | - | `WFInput` | - |
-| `width` | `Text` | No | `100` | `WFImageCropWidth` | - |
-| `height` | `Text` | No | `100` | `WFImageCropHeight` | - |
+| `width` | `AnyContent` | No | `100` | `WFImageCropWidth` | - |
+| `height` | `AnyContent` | No | `100` | `WFImageCropHeight` | - |
 | `position` | `Text` | No | `Center` | `WFImageCropPosition` | Center, Top Left, Top Right, Bottom Left, Bottom Right, Custom |
-| `customPositionX` | `Text` | No | - | `WFImageCropX` | - |
-| `customPositionY` | `Text` | No | - | `WFImageCropY` | - |
+| `customPositionX` | `AnyContent` | No | - | `WFImageCropX` | - |
+| `customPositionY` | `AnyContent` | No | - | `WFImageCropY` | - |
 
 ---
 
@@ -2072,7 +2073,7 @@ filterContacts(contacts: AnyContent, filter?: AnyContent, sortBy?: Text, sortOrd
 |-----------|------|----------|---------|----------|---------|
 | `contacts` | `AnyContent` | No | - | `WFContentItemInputParameter` | - |
 | `filter` | `AnyContent` | No | - | `WFContentItemFilter` | - |
-| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random |
+| `sortBy` | `Text` | No | - | `WFContentItemSortProperty` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random, Phone Numbers, Phone Number, Email Addresses, Email Address, Street Addresses, URLs, Notes, Relationship to Me, Contact Photo, File Size |
 | `sortOrder` | `Text` | No | `A to Z` | `WFContentItemSortOrder` | A to Z, Z to A |
 | `limit` | `Number` | No | - | `WFContentItemLimitNumber` | - |
 
@@ -2793,7 +2794,7 @@ getContactDetail(contact: AnyContent, detail: Text)
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `contact` | `AnyContent` | Yes | - | `WFInput` | - |
-| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random, Phone Numbers, Phone Number, Email Addresses, Email Address, Street Addresses, URLs, Notes, Relationship to Me, Contact Photo, File Size |
 
 ---
 
@@ -4096,7 +4097,7 @@ getTimeBetweenDates(startDate: AnyContent, endDate?: AnyContent, unit?: Text) ->
 |-----------|------|----------|---------|----------|---------|
 | `startDate` | `AnyContent` | No | - | `WFTimeUntilFromDate` | - |
 | `endDate` | `AnyContent` | No | - | `WFInput` | - |
-| `unit` | `Text` | No | - | `WFTimeUntilUnit` | Minutes, Hours, Days, Weeks, Months, Years, Seconds |
+| `unit` | `Text` | No | - | `WFTimeUntilUnit` | Minutes, Hours, Days, Weeks, Months, Years, Seconds, Total Time |
 
 ---
 
@@ -4255,12 +4256,12 @@ getVPN() -> AnyContent
 For constants only, otherwise `dictionary['key']` syntax should be used.
 
 ```cherri
-getValue(dictionary: Map<Text, AnyContent>, key: Text, get?: Text) -> AnyContent
+getValue(dictionary: AnyContent, key: Text, get?: Text) -> AnyContent
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `dictionary` | `Map<Text, AnyContent>` | Yes | - | `WFInput` | - |
+| `dictionary` | `AnyContent` | Yes | - | `WFInput` | - |
 | `key` | `Text` | Yes | - | `WFDictionaryKey` | - |
 | `get` | `Text` | No | - | `WFGetDictionaryValueType` | - |
 
@@ -4275,12 +4276,12 @@ getValue(dictionary: Map<Text, AnyContent>, key: Text, get?: Text) -> AnyContent
 Get only the values from the `dictionary`.
 
 ```cherri
-getValues(dictionary: Map<Text, AnyContent>) -> List<AnyContent>
+getValues(dictionary: AnyContent) -> List<AnyContent>
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `dictionary` | `Map<Text, AnyContent>` | Yes | - | `WFInput` | - |
+| `dictionary` | `AnyContent` | Yes | - | `WFInput` | - |
 
 ---
 
@@ -5516,7 +5517,7 @@ removeContactDetail(contact: AnyContent, detail: Text)
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `contact` | `AnyContent` | Yes | - | `WFInput` | - |
-| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random |
+| `detail` | `Text` | Yes | - | `WFContentItemPropertyName` | First Name, Middle Name, Last Name, Birthday, Prefix, Suffix, Nickname, Phonetic First Name, Phonetic Last Name, Phonetic Middle Name, Company, Job Title, Department, File Extension, Creation Date, File Path, Last Modified Date, Name, Random, Phone Numbers, Phone Number, Email Addresses, Email Address, Street Addresses, URLs, Notes, Relationship to Me, Contact Photo, File Size |
 
 ---
 
@@ -5642,14 +5643,14 @@ replaceText(find: Text, replacement: Text, subject: Text, caseSensitive?: Bool =
 **Apple Identifier:** `is.workflow.actions.image.resize`  
 **Returns:** `Image`  
 ```cherri
-resizeImage(image: Image, width: Number, height?: Number) -> Image
+resizeImage(image: AnyContent, width: AnyContent, height?: AnyContent) -> Image
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
-| `image` | `Image` | Yes | - | `WFImage` | - |
-| `width` | `Number` | Yes | - | `WFImageResizeWidth` | - |
-| `height` | `Number` | No | - | `WFImageResizeHeight` | - |
+| `image` | `AnyContent` | Yes | - | `WFImage` | - |
+| `width` | `AnyContent` | Yes | - | `WFImageResizeWidth` | - |
+| `height` | `AnyContent` | No | - | `WFImageResizeHeight` | - |
 
 ---
 
@@ -5657,14 +5658,15 @@ resizeImage(image: Image, width: Number, height?: Number) -> Image
 
 **Title:** Resize Image By Longest Edge  
 **Apple Identifier:** `is.workflow.actions.image.resize`  
+**Returns:** `Image`  
 ```cherri
-resizeImageByLongestEdge(image: AnyContent, length: Text)
+resizeImageByLongestEdge(image: AnyContent, length: AnyContent) -> Image
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `image` | `AnyContent` | Yes | - | `WFImage` | - |
-| `length` | `Text` | Yes | - | `WFImageResizeLength` | - |
+| `length` | `AnyContent` | Yes | - | `WFImageResizeLength` | - |
 
 ---
 
@@ -5672,14 +5674,15 @@ resizeImageByLongestEdge(image: AnyContent, length: Text)
 
 **Title:** Resize Image By Percent  
 **Apple Identifier:** `is.workflow.actions.image.resize`  
+**Returns:** `Image`  
 ```cherri
-resizeImageByPercent(image: AnyContent, percentage: Text)
+resizeImageByPercent(image: AnyContent, percentage: AnyContent) -> Image
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
 |-----------|------|----------|---------|----------|---------|
 | `image` | `AnyContent` | Yes | - | `WFImage` | - |
-| `percentage` | `Text` | Yes | - | `WFImageResizePercentage` | - |
+| `percentage` | `AnyContent` | Yes | - | `WFImageResizePercentage` | - |
 
 ---
 

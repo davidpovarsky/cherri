@@ -8,6 +8,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
@@ -15,6 +16,10 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"howett.net/plist"
 )
+
+// Independent copy so ValString preserves literal identifier braces in V2 without
+// shielding shortcutgen's inline-variable regex from regex quantifier tests.
+var v2LiteralInlineBraceRegex = regexp.MustCompile(`\{@?[a-zA-Z_][a-zA-Z0-9_]*(?:\['.*?'\])?(?:\..*?)?\}`)
 
 type CanonicalBackendSession struct {
 	tx                *BackendTransaction
@@ -168,6 +173,9 @@ func convertCallArgToActionArg(arg backend.CallArgument) actionArgument {
 	case backend.ValFloat:
 		return actionArgument{valueType: Float, value: val.FloatVal}
 	case backend.ValString:
+		if v2LiteralInlineBraceRegex.MatchString(val.StrVal) {
+			return actionArgument{valueType: RawString, value: val.StrVal}
+		}
 		return actionArgument{valueType: String, value: val.StrVal}
 	case backend.ValReference:
 		ref := val.Ref
@@ -353,12 +361,26 @@ func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
 				cItem, _ := a["CoercionItemClass"].(string)
 				dKey, _ := a["DictionaryKey"].(string)
 				pInfo := a["PropertyUserInfo"]
+				dfFmt, _ := a["WFDateFormat"].(string)
+				dfStyle, _ := a["WFDateFormatStyle"].(string)
+				tfStyle, _ := a["WFTimeFormatStyle"].(string)
+				var isoIncTime *bool
+				if bPtr, ok := a["WFISO8601IncludeTime"].(*bool); ok && bPtr != nil {
+					b := *bPtr
+					isoIncTime = &b
+				} else if bVal, ok := a["WFISO8601IncludeTime"].(bool); ok {
+					isoIncTime = &bVal
+				}
 				desc.Aggrandizements[i] = Aggrandizement{
-					Type:              tStr,
-					PropertyName:      pName,
-					CoercionItemClass: cItem,
-					DictionaryKey:     dKey,
-					PropertyUserInfo:  pInfo,
+					Type:                 tStr,
+					PropertyName:         pName,
+					CoercionItemClass:    cItem,
+					DictionaryKey:        dKey,
+					PropertyUserInfo:     pInfo,
+					WFDateFormat:         dfFmt,
+					WFDateFormatStyle:    dfStyle,
+					WFTimeFormatStyle:    tfStyle,
+					WFISO8601IncludeTime: isoIncTime,
 				}
 			}
 		}
@@ -493,7 +515,9 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 		cleanParams[k] = sanitizeRawParamValue(v)
 	}
 	for k, v := range cleanParams {
-		if k == "WFWorkflow" || (appleIdentifier == "is.workflow.actions.list" && k == "WFItems") {
+		if k == "WFWorkflow" ||
+			(appleIdentifier == "is.workflow.actions.list" && k == "WFItems") ||
+			(appleIdentifier == "is.workflow.actions.choosefrommenu" && (k == "WFMenuItems" || k == "WFMenuItemAttributedTitle")) {
 			continue
 		}
 		if k == "AppIntentDescriptor" || k == "IntentAppDefinition" {
@@ -504,27 +528,27 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 	}
 	if appleIdentifier == "is.workflow.actions.dictionary" {
 		if dictVal, ok := cleanParams["WFItems"].(WFDictionaryFieldValue); ok {
-			cleanParams["WFItems"] = dictVal
+			cleanParams["WFItems"] = toExplicitDictionaryFieldValue(dictVal)
 		} else if m, ok := cleanParams["WFItems"].(map[string]any); ok {
 			if ser, hasSer := m["WFSerializationType"]; hasSer && ser == "WFDictionaryFieldValue" {
-				// already wrapped
+				ensureExplicitDictionaryMapItems(m)
 			} else {
 				var valAny any = m
-				cleanParams["WFItems"] = makeDictionaryValue(&valAny)
+				cleanParams["WFItems"] = makeExplicitDictionaryValue(&valAny)
 			}
 		} else if m, ok := cleanParams["WFItems"].(map[string]interface{}); ok {
 			if ser, hasSer := m["WFSerializationType"]; hasSer && ser == "WFDictionaryFieldValue" {
-				// already wrapped
+				ensureExplicitDictionaryMapItems(m)
 			} else {
 				var valAny any = m
-				cleanParams["WFItems"] = makeDictionaryValue(&valAny)
+				cleanParams["WFItems"] = makeExplicitDictionaryValue(&valAny)
 			}
 		} else if items, ok := cleanParams["WFItems"].([]WFDictionaryFieldValueItem); ok {
 			var valAny any = items
-			cleanParams["WFItems"] = makeDictionaryValue(&valAny)
+			cleanParams["WFItems"] = makeExplicitDictionaryValue(&valAny)
 		} else if items, ok := cleanParams["WFItems"].([]any); ok {
 			var valAny any = items
-			cleanParams["WFItems"] = makeDictionaryValue(&valAny)
+			cleanParams["WFItems"] = makeExplicitDictionaryValue(&valAny)
 		}
 	}
 	if outputUUID != "" {
@@ -538,9 +562,6 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 		cleanParams["GroupingIdentifier"] = groupingID
 	}
 	if appleIdentifier == "is.workflow.actions.conditional" {
-		if mode, ok := cleanParams["WFControlFlowMode"].(int); !ok || mode == 0 {
-			cleanParams["WFConditionalLegacyComparisonBehavior"] = true
-		}
 		if att, ok := cleanParams["WFInput"].(WFTextTokenAttachment); ok {
 			cleanParams["WFInput"] = map[string]any{
 				"Type":     "Variable",
@@ -697,40 +718,59 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 			}
 			cleanParams["WFMenuItems"] = menuItems
 		case []any:
-			menuItems := make([]WFMenuItem, len(items))
-			for i, it := range items {
-				if mItem, ok := it.(WFMenuItem); ok {
-					menuItems[i] = mItem
-				} else if m, ok := it.(map[string]any); ok {
-					mItem := WFMenuItem{WFItemType: 0}
-					if t, ok := m["WFItemType"].(int); ok {
-						mItem.WFItemType = t
-					}
-					if v, ok := m["WFValue"]; ok {
-						mItem.WFValue = v
-					}
-					menuItems[i] = mItem
-				} else if m, ok := it.(map[string]interface{}); ok {
-					mItem := WFMenuItem{WFItemType: 0}
-					if t, ok := m["WFItemType"].(int); ok {
-						mItem.WFItemType = t
-					}
-					if v, ok := m["WFValue"]; ok {
-						mItem.WFValue = v
-					}
-					menuItems[i] = mItem
-				} else if s, ok := it.(string); ok {
-					menuItems[i] = WFMenuItem{
-						WFItemType: 0,
-						WFValue:    s,
-					}
+			hasRawString := false
+			for _, it := range items {
+				if _, ok := it.(string); ok {
+					hasRawString = true
+					break
 				}
 			}
-			cleanParams["WFMenuItems"] = menuItems
-		}
-		if title, ok := cleanParams["WFMenuItemTitle"].(string); ok {
-			if _, hasAttr := cleanParams["WFMenuItemAttributedTitle"]; !hasAttr {
-				cleanParams["WFMenuItemAttributedTitle"] = title
+			if hasRawString {
+				menuAny := make([]any, len(items))
+				for i, it := range items {
+					switch v := it.(type) {
+					case string, WFMenuItem:
+						menuAny[i] = v
+					case map[string]any:
+						mItem := WFMenuItem{WFItemType: 0}
+						if t, ok := v["WFItemType"].(int); ok {
+							mItem.WFItemType = t
+						}
+						if val, ok := v["WFValue"]; ok {
+							mItem.WFValue = val
+						}
+						menuAny[i] = mItem
+					default:
+						menuAny[i] = WFMenuItem{WFItemType: 0, WFValue: it}
+					}
+				}
+				cleanParams["WFMenuItems"] = menuAny
+			} else {
+				menuItems := make([]WFMenuItem, len(items))
+				for i, it := range items {
+					if mItem, ok := it.(WFMenuItem); ok {
+						menuItems[i] = mItem
+					} else if m, ok := it.(map[string]any); ok {
+						mItem := WFMenuItem{WFItemType: 0}
+						if t, ok := m["WFItemType"].(int); ok {
+							mItem.WFItemType = t
+						}
+						if v, ok := m["WFValue"]; ok {
+							mItem.WFValue = v
+						}
+						menuItems[i] = mItem
+					} else if m, ok := it.(map[string]interface{}); ok {
+						mItem := WFMenuItem{WFItemType: 0}
+						if t, ok := m["WFItemType"].(int); ok {
+							mItem.WFItemType = t
+						}
+						if v, ok := m["WFValue"]; ok {
+							mItem.WFValue = v
+						}
+						menuItems[i] = mItem
+					}
+				}
+				cleanParams["WFMenuItems"] = menuItems
 			}
 		}
 	}
@@ -902,7 +942,8 @@ func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
 				s.shortcut.WFWorkflowInputContentItemClasses = schema.DefaultInputContentItemClasses()
 			}
 		}
-		merged := mergeWorkflowHeaderMap(
+		merged := mergeWorkflowHeaderMapWithDialect(
+			"v2",
 			s.rawWorkflow,
 			s.shortcut.WFWorkflowActions,
 			s.exactActionParams,
@@ -938,6 +979,80 @@ func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
 		return nil, fmt.Errorf("plist encoding error: %w", err)
 	}
 	return buf.Bytes(), nil
+}
+
+func toExplicitDictionaryFieldValue(v WFDictionaryFieldValue) WFDictionaryFieldValue {
+	ser := v.WFSerializationType
+	if ser == "" {
+		ser = "WFDictionaryFieldValue"
+	}
+	var items []WFDictionaryFieldValueItem
+	switch inner := v.Value.(type) {
+	case WFExplicitDictionaryFieldValueWrapper:
+		items = inner.WFDictionaryFieldValueItems
+	case *WFExplicitDictionaryFieldValueWrapper:
+		if inner != nil {
+			items = inner.WFDictionaryFieldValueItems
+		}
+	case WFDictionaryFieldValueWrapper:
+		items = inner.WFDictionaryFieldValueItems
+	case *WFDictionaryFieldValueWrapper:
+		if inner != nil {
+			items = inner.WFDictionaryFieldValueItems
+		}
+	case map[string]any:
+		ensureExplicitDictionaryInnerMap(inner)
+		return WFDictionaryFieldValue{Value: inner, WFSerializationType: ser}
+	}
+	if len(items) > 0 {
+		return WFDictionaryFieldValue{
+			Value: WFDictionaryFieldValueWrapper{
+				WFDictionaryFieldValueItems: items,
+			},
+			WFSerializationType: ser,
+		}
+	}
+	return WFDictionaryFieldValue{
+		Value: WFExplicitDictionaryFieldValueWrapper{
+			WFDictionaryFieldValueItems: []WFDictionaryFieldValueItem{},
+		},
+		WFSerializationType: ser,
+	}
+}
+
+func ensureExplicitDictionaryMapItems(m map[string]any) {
+	if m == nil {
+		return
+	}
+	val, hasVal := m["Value"]
+	if !hasVal || val == nil {
+		m["Value"] = map[string]any{"WFDictionaryFieldValueItems": []any{}}
+		return
+	}
+	switch inner := val.(type) {
+	case WFExplicitDictionaryFieldValueWrapper:
+		if len(inner.WFDictionaryFieldValueItems) > 0 {
+			m["Value"] = WFDictionaryFieldValueWrapper{WFDictionaryFieldValueItems: inner.WFDictionaryFieldValueItems}
+		} else if inner.WFDictionaryFieldValueItems == nil {
+			inner.WFDictionaryFieldValueItems = []WFDictionaryFieldValueItem{}
+			m["Value"] = inner
+		}
+	case WFDictionaryFieldValueWrapper:
+		if len(inner.WFDictionaryFieldValueItems) == 0 {
+			m["Value"] = WFExplicitDictionaryFieldValueWrapper{WFDictionaryFieldValueItems: []WFDictionaryFieldValueItem{}}
+		}
+	case map[string]any:
+		ensureExplicitDictionaryInnerMap(inner)
+	}
+}
+
+func ensureExplicitDictionaryInnerMap(inner map[string]any) {
+	if inner == nil {
+		return
+	}
+	if rawItems, exists := inner["WFDictionaryFieldValueItems"]; !exists || rawItems == nil {
+		inner["WFDictionaryFieldValueItems"] = []any{}
+	}
 }
 
 func plistValueHasXMLUnsafeStringChar(v any) bool {

@@ -874,6 +874,29 @@ Next smallest independently verifiable batch:
     - CI status: Linux & Nix `SUCCESS`; `MACOS_CI=BLOCKED_RUNNER_CAPACITY` (runner acquisition capacity constraint).
     - Physical hardware status remains honestly documented as `APPLE_RUNTIME_EXECUTED: BLOCKED_DEVICE`.
 
+---
+
+## 15. Milestone P10R12 — Verified Readable Control Regions & Typed Complex Parameters
+
+- [x] **P10R12: Atomic Control Region Promotion, Typed Complex Parameter Reverse Rendering & Fail-Closed Lifecycle (`semantic_import_planner.go`, `decompile.go`, `actions_std.go`, `shared_control.go`, `internal/language/`)**
+  - **Truthfulness & Lifecycle Hardening (`Gate A` / `Gate B` / `Gate C`):**
+    - Separated explicit action lifecycle transitions (`NOT_CANDIDATE`, `SOURCE_INVALID`, `CANDIDATE` -> `VERIFIED` / `DEMOTED`) and isolated `args.Args["import"]` state inside `runDecompilePasses` (`semantic_import_planner.go`) so CLI `cherri import` and library calls (`go test`) behave deterministically.
+    - Made pre-overlay verification fail closed across separate Legacy and Cherri v2 capture buffers (`TestP12_BASE_01`), verified fresh-vs-sequential state isolation (`TestP12_BASE_02`, `TestP12_BASE_02B`), and sanitized all corpus diagnostics so no raw secrets/URLs/values leak.
+    - Added `rejectUnseededForwardActionOutputCandidates` so unseeded forward `ActionOutput` references (such as `027:1556 -> 1557`) fail closed at Stage 1 cleanly without generating forward-reference compile failures.
+  - **Atomic Balanced Control Regions (`TestP12_CF_01`–`TestP12_CF_22`):**
+    - Built balanced nested control-region tree handling across `conditional` (`if / else / end`), `choosefrommenu` (`menu / case / end`), `repeat.each` (`repeat / end`), and `repeat.count` (`for / end`) with exact `GroupingIdentifier` / `WFControlFlowMode` preservation and `0` unclosed or orphan markers (`035:723` preserved as `SOURCE_INVALID`).
+    - Promoted **`3,820 / 4,071` (`93.83%`)** whole balanced regions (`9,878` native markers) including **`230 / 230` (`100%`)** `repeat.each` and **`127 / 127` (`100%`)** `repeat.count` regions; reduced `CONTROL_REGION` marker fallbacks from `10,160` (P10R11) to **`692`** (`-93.19%`).
+  - **Typed Complex Parameters & Canonical Fixes (`TestP12_PAR_01`–`TestP12_PAR_13`, `actions_std.go`):**
+    - Reused and extended shared reverse parameter codecs across UTF-16 `WFTextTokenString` interpolations, `WFTextTokenAttachment` + aggrandizements, `WFDictionaryFieldValue`, `WFContentPredicateTableTemplate`, `WFNumberSubstitutableState`, and typed lists/arrays (`46,110` complex parameter shape observations across `164` distinct action IDs).
+    - Fixed `prompt` (`is.workflow.actions.ask`: `multiline` `String -> Bool`, `nil` default answer handling, typed default answer keys without spurious `WFAskActionDefaultAnswer`/`urlAnswer`) and `generateImage` (`RawString` style handling) in `actions_std.go`, regenerating the SSoT schema (`f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d`).
+  - **Verified P10R12 Suite & Independent 38×2 Oracle Audit (`docs/apple-runtime/p10r12/`):**
+    - **`55` new Go regression/oracle tests (`p12_*_test.go`)** including edit-isolation coverage (`TestP12_EDIT_01`–`TestP12_EDIT_08`, `TestP12_CF_22`: `TARGET_EDIT_ISOLATION_PASS`) plus `9/9` oracle anti-tautology checks (`AT-01`..`AT-09`).
+    - **38 × 2 Full Corpus Audit (`76` fresh runs):** **`76 / 76 (100.0%)`** full recursive typed plist-tree matches in both Legacy and Cherri v2, `0` errors, `0` mode parity diffs, `0` Stage-3 demotions, `0` unresolved candidates.
+    - **Reconciled Action Accounting (Per Dialect, Denominator = `27,652`):** **`22,490` `NATURAL_VERIFIED` (`81.33%`)** + **`5,161` `EXACT_NATIVE_FALLBACK`** (`UNREPRESENTABLE_PARAM`: `4,273`, `CONTROL_REGION`: `692`, `THIRD_PARTY_NO_CANONICAL_DEF`: `137`, `AMBIGUOUS_VARIANT`: `46`, `UNKNOWN_NATIVE_ID`: `13`) + **`1` `SOURCE_INVALID`** (`035:723`).
+    - **Source Footprint Reduction:** Legacy `.cherri` corpus total reduced from `85,826,939 B` to **`80,348,473 B` (`-6.38%`)** and Cherri v2 from `86,177,871 B` to **`80,485,763 B` (`-6.60%`)**.
+    - Physical hardware status remains **`APPLE_RUNTIME_EXECUTED: BLOCKED_DEVICE`**.
+
+
 
 
 

@@ -128,7 +128,7 @@ func writeShortcut(path string, debug string) {
 
 	var payload any = shortcut
 	if len(importedWorkflowHeader) > 0 {
-		payload = mergeWorkflowHeaderMap(importedWorkflowHeader, shortcut.WFWorkflowActions, exactActionParamsPresence, shortcut, false)
+		payload = mergeWorkflowHeaderMapWithDialect("legacy", importedWorkflowHeader, shortcut.WFWorkflowActions, exactActionParamsPresence, shortcut, false)
 	}
 
 	var encodeErr = plistEncoder.Encode(payload)

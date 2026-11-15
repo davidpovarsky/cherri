@@ -84,16 +84,42 @@ var facets = map[string]ActionFacet{
 		PrimaryParameterID: "image",
 		OutputTypeOverride: "Image",
 		ParamTypeOverrides: map[string]string{
-			"image":  "Image",
-			"width":  "Number",
-			"height": "Number",
+			"width":  "AnyContent",
+			"height": "AnyContent",
+		},
+	},
+	"resizeImageByPercent": {
+		PrimaryParameterID: "image",
+		OutputTypeOverride: "Image",
+		ParamTypeOverrides: map[string]string{
+			"percentage": "AnyContent",
+		},
+	},
+	"resizeImageByLongestEdge": {
+		PrimaryParameterID: "image",
+		OutputTypeOverride: "Image",
+		ParamTypeOverrides: map[string]string{
+			"length": "AnyContent",
+		},
+	},
+	"cropImage": {
+		PrimaryParameterID: "image",
+		OutputTypeOverride: "Image",
+		ParamTypeOverrides: map[string]string{
+			"width":           "AnyContent",
+			"height":          "AnyContent",
+			"customPositionX": "AnyContent",
+			"customPositionY": "AnyContent",
 		},
 	},
 	"convertImage": {
 		PrimaryParameterID: "image",
 		OutputTypeOverride: "Image",
-		ParamTypeOverrides: map[string]string{
-			"image": "Image",
+	},
+	"getTravelTime": {
+		PrimaryParameterID: "destination",
+		ParamAcceptedFormsOverrides: map[string][]string{
+			"customLocation": {"literal", "tokenString", "attachment(output)", "attachment(variable)"},
 		},
 	},
 	"text": {
@@ -193,6 +219,18 @@ var facets = map[string]ActionFacet{
 	"openBook": {
 		PrimaryParameterID: "target",
 		OutputTypeOverride: "Void",
+	},
+	"getValue": {
+		PrimaryParameterID: "dictionary",
+		ParamTypeOverrides: map[string]string{
+			"dictionary": "AnyContent",
+		},
+	},
+	"getValues": {
+		PrimaryParameterID: "dictionary",
+		ParamTypeOverrides: map[string]string{
+			"dictionary": "AnyContent",
+		},
 	},
 }
 
@@ -502,6 +540,14 @@ func determineConfirmedForms(ap *AppleParameterEncoding, codec string) ([]string
 
 	if !hasVar && len(ap.VariableTypes) > 0 {
 		return []string{"literal"}, true
+	}
+
+	if ap.Class == "WFNumberFieldParameter" || ap.SingleStateClass == "WFNumberStringSubstitutableState" {
+		return []string{"literal", "attachment(output)", "attachment(variable)"}, true
+	}
+
+	if ap.Class == "WFDateFieldParameter" || ap.SingleStateClass == "WFDateFieldParameterState" {
+		return []string{"tokenString", "attachment(output)", "attachment(variable)"}, true
 	}
 
 	if ap.Class != "" || ap.SingleStateClass != "" {

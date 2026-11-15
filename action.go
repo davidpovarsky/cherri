@@ -187,6 +187,38 @@ var enumerations = map[string][]string{
 	"focusUntil":                    {"Turned Off", "Time", "I Leave", "Event Ends"},
 }
 
+// forkEnumExtensions augments upstream-declared enums with confirmed Apple
+// Shortcuts runtime choices without mutating upstream actions/*.cherri files.
+var forkEnumExtensions = map[string][]string{
+	"timeBetweenDatesUnit": {"Total Time"},
+	"contactDetail": {
+		"Phone Numbers",
+		"Phone Number",
+		"Email Addresses",
+		"Email Address",
+		"Street Addresses",
+		"URLs",
+		"Notes",
+		"Relationship to Me",
+		"Contact Photo",
+		"File Size",
+	},
+}
+
+func extendForkEnumeration(identifier string) {
+	extras, ok := forkEnumExtensions[identifier]
+	if !ok {
+		return
+	}
+	existing := enumerations[identifier]
+	for _, item := range extras {
+		if !slices.Contains(existing, item) {
+			existing = append(existing, item)
+		}
+	}
+	enumerations[identifier] = existing
+}
+
 var actionIndex int
 
 // setCurrentAction sets the current action identifier and definition for use between functions.
@@ -664,6 +696,22 @@ func checkTypeTransform(valueType tokenType) tokenType {
 	return valueType
 }
 
+func isNumericOrTextImageParamKey(key string) bool {
+	switch key {
+	case "WFImageResizeWidth",
+		"WFImageResizeHeight",
+		"WFImageResizePercentage",
+		"WFImageResizeLength",
+		"WFImageCropWidth",
+		"WFImageCropHeight",
+		"WFImageCropX",
+		"WFImageCropY":
+		return true
+	default:
+		return false
+	}
+}
+
 // typeCheck is used to check the types of arguments given for actions.
 func typeCheck(param *parameterDefinition, argument *actionArgument) {
 	var argValueType = checkTypeTransform(argument.valueType)
@@ -722,6 +770,7 @@ func typeCheck(param *parameterDefinition, argument *actionArgument) {
 	case param.key == "WFContentItemFilter" && (argument.valueType == Dict || argument.valueType == Arr):
 	case param.name == "defaultValue":
 	case param.name == "multiline" && argument.valueType == Bool:
+	case param.validType == String && (argValueType == Integer || argValueType == Float) && isNumericOrTextImageParamKey(param.key):
 	case argValueType != param.validType:
 		if (argValueType == Float && param.validType == Integer) || (argValueType == Integer && param.validType == Float) {
 			return

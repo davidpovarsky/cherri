@@ -1,0 +1,75 @@
+{
+  "version": "p10r12-baseline-and-reasons-v1",
+  "generatedAt": "2026-11-15T05:11:58Z",
+  "baselineStartSha": "e8f3cd98e6a74f0c429edb80ae342b6d2b18812c",
+  "compilerBinarySha256": "7407548dd6a768c86414ff1495a14d3cfb2ee669bd1e6bd72a08e59a01fe8bad",
+  "nopatchBinarySha256": "87b029d8c7db0845a3b343b9ab63a7fcd9175e82a50c634ad22ea7395870e911",
+  "totalCorpusSpecimens": 38,
+  "totalActionsPerDialect": 27652,
+  "progression": {
+    "p10r9": {
+      "naturalVerified": 1463,
+      "naturalSharePct": 5.29,
+      "exactNativeFallback": 26188,
+      "sourceInvalid": 1
+    },
+    "p10r10": {
+      "naturalVerified": 10871,
+      "naturalSharePct": 39.31,
+      "exactNativeFallback": 16780,
+      "sourceInvalid": 1
+    },
+    "p10r11_final": {
+      "naturalVerified": 11459,
+      "naturalSharePct": 41.44,
+      "preliminaryCandidateCountNote": "11480 preliminary planner candidates vs 11459 verified final (-21 delta traced to stateful cache leakage / candidate-vs-final gap before P10R12 Gate A/B)",
+      "exactNativeFallback": 16192,
+      "sourceInvalid": 1,
+      "fallbackReasons": {
+        "CONTROL_REGION": 10160,
+        "UNREPRESENTABLE_PARAM": 5836,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 137,
+        "AMBIGUOUS_VARIANT": 46,
+        "UNKNOWN_NATIVE_ID": 13
+      }
+    },
+    "p10r12_final": {
+      "naturalVerified": 22490,
+      "naturalSharePct": 81.33,
+      "exactNativeFallback": 5161,
+      "sourceInvalid": 1,
+      "demotedActionCount": 0,
+      "unresolvedCandidateCount": 0,
+      "reasonCounts": {
+        "UNREPRESENTABLE_PARAM": 4273,
+        "KNOWN_DISAMBIGUATED": 22490,
+        "CONTROL_REGION": 692,
+        "AMBIGUOUS_VARIANT": 46,
+        "THIRD_PARTY_NO_CANONICAL_DEF": 137,
+        "UNKNOWN_NATIVE_ID": 13,
+        "SOURCE_INVALID": 1
+      }
+    }
+  },
+  "netPromotionDeltaFromP10R11": {
+    "naturalVerifiedGain": 11031,
+    "controlRegionMarkersPromoted": 9468,
+    "complexParamActionsPromoted": 1563,
+    "thirdPartyDelta": 0,
+    "ambiguousVariantDelta": 0,
+    "unknownNativeIdDelta": 0,
+    "sourceInvalidDelta": 0
+  },
+  "lifecycleInvariants": {
+    "states": [
+      "NOT_CANDIDATE",
+      "SOURCE_INVALID",
+      "CANDIDATE",
+      "VERIFIED",
+      "DEMOTED"
+    ],
+    "finalVerifiedPerDialect": 22490,
+    "demotedAcross76Runs": 0,
+    "freshVsSequentialStatefulDrift": 0
+  }
+}

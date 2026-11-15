@@ -1402,7 +1402,7 @@ var actions = map[string]*actionDefinition{
 			},
 			{
 				name:         "multiline",
-				validType:    String,
+				validType:    Bool,
 				key:          "WFAllowsMultilineText",
 				optional:     true,
 				defaultValue: true,
@@ -1423,28 +1423,36 @@ var actions = map[string]*actionDefinition{
 			},
 		},
 		appendParamsFunc: func(args []actionArgument) map[string]any {
-			if len(args) < 3 {
+			if len(args) < 3 || args[2].valueType == Nil || args[2].value == nil {
 				return map[string]any{}
 			}
 			val := argumentValue(args, 2)
-			var defaultAnswer = map[string]any{
-				"WFAskActionDefaultAnswer": val,
-			}
 			switch getArgValue(args[1]) {
 			case "Number":
-				defaultAnswer["WFAskActionDefaultAnswerNumber"] = paramValue(args[2], Integer)
+				return map[string]any{
+					"WFAskActionDefaultAnswerNumber": paramValue(args[2], Integer),
+				}
 			case "URL":
-				defaultAnswer["WFAskActionDefaultAnswerURL"] = val
-				defaultAnswer["urlAnswer"] = val
+				return map[string]any{
+					"WFAskActionDefaultAnswerURL": val,
+				}
 			case "Date":
-				defaultAnswer["WFAskActionDefaultAnswerDate"] = val
+				return map[string]any{
+					"WFAskActionDefaultAnswerDate": val,
+				}
 			case "Time":
-				defaultAnswer["WFAskActionDefaultAnswerTime"] = val
+				return map[string]any{
+					"WFAskActionDefaultAnswerTime": val,
+				}
 			case "Date and Time":
-				defaultAnswer["WFAskActionDefaultAnswerDateAndTime"] = val
+				return map[string]any{
+					"WFAskActionDefaultAnswerDateAndTime": val,
+				}
+			default:
+				return map[string]any{
+					"WFAskActionDefaultAnswer": val,
+				}
 			}
-
-			return defaultAnswer
 		},
 		emittedKeys: []string{
 			"WFAskActionDefaultAnswer",
@@ -1453,7 +1461,6 @@ var actions = map[string]*actionDefinition{
 			"WFAskActionDefaultAnswerDate",
 			"WFAskActionDefaultAnswerTime",
 			"WFAskActionDefaultAnswerDateAndTime",
-			"urlAnswer",
 		},
 	},
 	"openApp": {
@@ -2632,7 +2639,7 @@ var actions = map[string]*actionDefinition{
 			var title string
 			var subtitle string
 			var style = argumentValue(args, 2)
-			if args[2].valueType == String {
+			if args[2].valueType == String || args[2].valueType == RawString {
 				style = getArgValue(args[2])
 				switch style {
 				case "chatgpt":

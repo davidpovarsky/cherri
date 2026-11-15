@@ -84,6 +84,7 @@ const (
 	Enumeration tokenType = "enum"
 	Quantity    tokenType = "qty"
 	RawPlist    tokenType = "rawPlist("
+	RawRef      tokenType = "rawRef("
 )
 
 /* Operators */
@@ -107,6 +108,8 @@ const (
 	LessOrEqual    tokenType = "<="
 	Between        tokenType = "<>"
 	IsToday        tokenType = "isToday"
+	IsTrue         tokenType = "isTrue"
+	IsFalse        tokenType = "isFalse"
 	Plus           tokenType = "+"
 	Minus          tokenType = "-"
 	Multiply       tokenType = "*"

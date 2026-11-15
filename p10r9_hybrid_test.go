@@ -715,8 +715,8 @@ func TestHYB12_ValidMenuRegionWithMultipleCases(t *testing.T) {
 		t.Fatalf("expected valid menu control flow, err=%v violation=%+v", err, doc.ControlFlowViolation)
 	}
 	plan, _ := PlanHybridImport(doc)
-	if plan.NaturalVerifiedCount != 2 {
-		t.Fatalf("expected 2 natural inner actions, got %d", plan.NaturalVerifiedCount)
+	if plan.NaturalVerifiedCount != 6 {
+		t.Fatalf("expected 6 natural menu region actions, got %d", plan.NaturalVerifiedCount)
 	}
 	v2Src, _ := RenderHybridV2Source(doc, plan)
 	v2Plist, err := CompileSourceToPlist("hyb12.cherri", v2Src)

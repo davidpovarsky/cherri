@@ -5625,7 +5625,7 @@
         "testName": "EnumValidation_filterContacts",
         "testInput": "#define name ParamContractTest\n#include 'actions/contacts'\nfilterContacts(Ask, {\"predicates\": [{\"property\": \"Name\", \"operator\": \"equals\", \"value\": \"test\"}]}, \"__INVALID_ENUM_VALUE_P10R5__\")",
         "expectedBehavior": "valid enum \"First Name\" compiles and invalid enum is rejected",
-        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'sortBy'.\n\n\n### Filter Contacts\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n}\n\nfilterContacts(..., ..., contactDetail ?sortBy, ..., ...)\n```",
+        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'sortBy'.\n\n\n### Filter Contacts\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n    'Phone Numbers',\n    'Phone Number',\n    'Email Addresses',\n    'Email Address',\n    'Street Addresses',\n    'URLs',\n    'Notes',\n    'Relationship to Me',\n    'Contact Photo',\n    'File Size',\n}\n\nfilterContacts(..., ..., contactDetail ?sortBy, ..., ...)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#EnumValidation"
       },
       "dynamicReference": {
@@ -8202,7 +8202,7 @@
         "testName": "MissingRequiredRejected_getContactDetail",
         "testInput": "#define name ParamContractTest\n#include 'actions/contacts'\ngetContactDetail(Ask)",
         "expectedBehavior": "compiler rejects missing required argument",
-        "actualBehavior": "rejected with error: Missing required 2nd argument 'detail'.\n\n### Get Detail of Contact\n\nGet a detail about a contact.\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n}\n\ngetContactDetail(..., contactDetail detail)\n```",
+        "actualBehavior": "rejected with error: Missing required 2nd argument 'detail'.\n\n### Get Detail of Contact\n\nGet a detail about a contact.\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n    'Phone Numbers',\n    'Phone Number',\n    'Email Addresses',\n    'Email Address',\n    'Street Addresses',\n    'URLs',\n    'Notes',\n    'Relationship to Me',\n    'Contact Photo',\n    'File Size',\n}\n\ngetContactDetail(..., contactDetail detail)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#MissingRequiredRejected"
       },
       "optionalParams": {
@@ -8219,7 +8219,7 @@
         "testName": "EnumValidation_getContactDetail",
         "testInput": "#define name ParamContractTest\n#include 'actions/contacts'\ngetContactDetail(Ask, \"__INVALID_ENUM_VALUE_P10R5__\")",
         "expectedBehavior": "valid enum \"First Name\" compiles and invalid enum is rejected",
-        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'detail'.\n\n\n### Get Detail of Contact\n\nGet a detail about a contact.\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n}\n\ngetContactDetail(..., contactDetail detail)\n```",
+        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'detail'.\n\n\n### Get Detail of Contact\n\nGet a detail about a contact.\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n    'Phone Numbers',\n    'Phone Number',\n    'Email Addresses',\n    'Email Address',\n    'Street Addresses',\n    'URLs',\n    'Notes',\n    'Relationship to Me',\n    'Contact Photo',\n    'File Size',\n}\n\ngetContactDetail(..., contactDetail detail)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#EnumValidation"
       },
       "dynamicReference": {
@@ -13203,7 +13203,7 @@
         "testName": "EnumValidation_getTimeBetweenDates",
         "testInput": "#define name ParamContractTest\n#include 'actions/calendar'\ngetTimeBetweenDates(Ask, Ask, \"__INVALID_ENUM_VALUE_P10R5__\")",
         "expectedBehavior": "valid enum \"Minutes\" compiles and invalid enum is rejected",
-        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'unit'.\n\n\n### Get Time Between Dates\n\nGet the time between two dates.\n\n```\nenum timeBetweenDatesUnit {\n    'Minutes',\n    'Hours',\n    'Days',\n    'Weeks',\n    'Months',\n    'Years',\n    'Seconds',\n}\n\ngetTimeBetweenDates(..., ..., timeBetweenDatesUnit ?unit): number\n```",
+        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'unit'.\n\n\n### Get Time Between Dates\n\nGet the time between two dates.\n\n```\nenum timeBetweenDatesUnit {\n    'Minutes',\n    'Hours',\n    'Days',\n    'Weeks',\n    'Months',\n    'Years',\n    'Seconds',\n    'Total Time',\n}\n\ngetTimeBetweenDates(..., ..., timeBetweenDatesUnit ?unit): number\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#EnumValidation"
       },
       "dynamicReference": {
@@ -19095,9 +19095,9 @@
         "status": "PASS",
         "subKind": "OPTIONAL_OMITTED_AND_EXPLICIT_VERIFIED",
         "testName": "OptionalParams_prompt",
-        "testInput": "#define name ParamContractTest\nprompt(\"sample\", \"Number\", \"opt_sample\", \"opt_sample\", false, false)",
+        "testInput": "#define name ParamContractTest\nprompt(\"sample\", \"Number\", \"opt_sample\", false, false, false)",
         "expectedBehavior": "compiles both without and with explicit optional arguments and emits expected wire keys",
-        "actualBehavior": "verified omitted (1 keys) vs explicit (7 keys) plist serialization",
+        "actualBehavior": "verified omitted (1 keys) vs explicit (6 keys) plist serialization",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#OptionalParams"
       },
       "enumValidation": {
@@ -19723,7 +19723,7 @@
         "testName": "MissingRequiredRejected_removeContactDetail",
         "testInput": "#define name ParamContractTest\n#include 'actions/contacts'\nremoveContactDetail(Ask)",
         "expectedBehavior": "compiler rejects missing required argument",
-        "actualBehavior": "rejected with error: Missing required 2nd argument 'detail'.\n\n### Remove Contact Detail\n\nRemove a detail from a contact.\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n}\n\nremoveContactDetail(..., contactDetail detail)\n```",
+        "actualBehavior": "rejected with error: Missing required 2nd argument 'detail'.\n\n### Remove Contact Detail\n\nRemove a detail from a contact.\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n    'Phone Numbers',\n    'Phone Number',\n    'Email Addresses',\n    'Email Address',\n    'Street Addresses',\n    'URLs',\n    'Notes',\n    'Relationship to Me',\n    'Contact Photo',\n    'File Size',\n}\n\nremoveContactDetail(..., contactDetail detail)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#MissingRequiredRejected"
       },
       "optionalParams": {
@@ -19740,7 +19740,7 @@
         "testName": "EnumValidation_removeContactDetail",
         "testInput": "#define name ParamContractTest\n#include 'actions/contacts'\nremoveContactDetail(Ask, \"__INVALID_ENUM_VALUE_P10R5__\")",
         "expectedBehavior": "valid enum \"First Name\" compiles and invalid enum is rejected",
-        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'detail'.\n\n\n### Remove Contact Detail\n\nRemove a detail from a contact.\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n}\n\nremoveContactDetail(..., contactDetail detail)\n```",
+        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'detail'.\n\n\n### Remove Contact Detail\n\nRemove a detail from a contact.\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n    'Phone Numbers',\n    'Phone Number',\n    'Email Addresses',\n    'Email Address',\n    'Street Addresses',\n    'URLs',\n    'Notes',\n    'Relationship to Me',\n    'Contact Photo',\n    'File Size',\n}\n\nremoveContactDetail(..., contactDetail detail)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#EnumValidation"
       },
       "dynamicReference": {
@@ -31077,7 +31077,7 @@
         "testName": "EnumValidation_updateContact",
         "testInput": "#define name ParamContractTest\n#include 'actions/contacts'\nupdateContact(Ask, \"__INVALID_ENUM_VALUE_P10R5__\", \"sample\")",
         "expectedBehavior": "valid enum \"First Name\" compiles and invalid enum is rejected",
-        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'detail'.\n\n\n### Update Contact\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n}\n\nupdateContact(..., contactDetail detail, ...)\n```",
+        "actualBehavior": "rejected invalid enum with error: Invalid value '__INVALID_ENUM_VALUE_P10R5__' for argument 'detail'.\n\n\n### Update Contact\n\n```\nenum contactDetail {\n    'First Name',\n    'Middle Name',\n    'Last Name',\n    'Birthday',\n    'Prefix',\n    'Suffix',\n    'Nickname',\n    'Phonetic First Name',\n    'Phonetic Last Name',\n    'Phonetic Middle Name',\n    'Company',\n    'Job Title',\n    'Department',\n    'File Extension',\n    'Creation Date',\n    'File Path',\n    'Last Modified Date',\n    'Name',\n    'Random',\n    'Phone Numbers',\n    'Phone Number',\n    'Email Addresses',\n    'Email Address',\n    'Street Addresses',\n    'URLs',\n    'Notes',\n    'Relationship to Me',\n    'Contact Photo',\n    'File Size',\n}\n\nupdateContact(..., contactDetail detail, ...)\n```",
         "evidenceRef": "p10_structural_roundtrip_test.go::verifyCatalogActionParameterContract#EnumValidation"
       },
       "dynamicReference": {

@@ -214,7 +214,7 @@ func compileForMobileMode(src string, requestedName string, mode string, sign bo
 	enc := plist.NewEncoder(&buf)
 	enc.Indent("\t")
 	if importedWorkflowHeader != nil {
-		merged := mergeWorkflowHeaderMap(importedWorkflowHeader, shortcut.WFWorkflowActions, exactActionParamsPresence, shortcut, false)
+		merged := mergeWorkflowHeaderMapWithDialect("legacy", importedWorkflowHeader, shortcut.WFWorkflowActions, exactActionParamsPresence, shortcut, false)
 		if err := enc.Encode(merged); err != nil {
 			panic(err)
 		}

@@ -23,8 +23,11 @@ import (
 type HybridActionDecision struct {
 	ActionIndex        int    `json:"actionIndex"`
 	AppleIdentifier    string `json:"appleIdentifier"`
-	Classification     string `json:"classification"` // "NATURAL_VERIFIED", "EXACT_NATIVE_FALLBACK", or "SOURCE_INVALID"
+	Classification     string `json:"classification"` // "NATURAL_VERIFIED", "NATURAL_CANDIDATE", "EXACT_NATIVE_FALLBACK", or "SOURCE_INVALID"
 	ReasonCode         string `json:"reasonCode"`     // "KNOWN_DISAMBIGUATED", "AMBIGUOUS_VARIANT", "UNREPRESENTABLE_PARAM", "UNKNOWN_NATIVE_ID", "THIRD_PARTY_NO_CANONICAL_DEF", "CONTROL_REGION", "SOURCE_INVALID"
+	CandidateStatus    string `json:"candidateStatus,omitempty"`
+	DemotionStage      string `json:"demotionStage,omitempty"`
+	DemotionReason     string `json:"demotionReason,omitempty"`
 	ChosenDefinitionID string `json:"chosenDefinitionId,omitempty"`
 	IncludeCategory    string `json:"includeCategory,omitempty"`
 	RegionGroupID      string `json:"regionGroupId,omitempty"`
@@ -33,21 +36,54 @@ type HybridActionDecision struct {
 	DiagnosticComment  string `json:"diagnosticComment,omitempty"`
 }
 
+// HybridUnitTransition records the candidate -> verified / demoted lifecycle for an action or control region.
+type HybridUnitTransition struct {
+	UnitID           string `json:"unitId"`
+	Kind             string `json:"kind"` // "action" or "region"
+	RegionGroupID    string `json:"regionGroupId,omitempty"`
+	StartIndex       int    `json:"startIndex"`
+	EndIndex         int    `json:"endIndex"`
+	ActionCount      int    `json:"actionCount"`
+	AppleIdentifier  string `json:"appleIdentifier"`
+	CandidateStage   string `json:"candidateStage"`             // "CANDIDATE" or "NOT_CANDIDATE"
+	FinalState       string `json:"finalState"`                 // "VERIFIED", "DEMOTED", "FALLBACK", or "SOURCE_INVALID"
+	FinalStage       string `json:"finalStage"`                 // pipeline stage that finalized state
+	TransitionReason string `json:"transitionReason,omitempty"` // deterministic sanitized reason
+}
+
+// HybridPlanLifecycleSummary captures stage-separated candidate, atomic, demoted, and verified counts.
+type HybridPlanLifecycleSummary struct {
+	CandidateActionCount int                    `json:"candidateActionCount"`
+	PostAtomicCount      int                    `json:"postAtomicCount"`
+	VerifiedActionCount  int                    `json:"verifiedActionCount"`
+	DemotedActionCount   int                    `json:"demotedActionCount"`
+	DemotionReasons      map[string]int         `json:"demotionReasons,omitempty"`
+	CandidateRegionCount int                    `json:"candidateRegionCount"`
+	VerifiedRegionCount  int                    `json:"verifiedRegionCount"`
+	DemotedRegionCount   int                    `json:"demotedRegionCount"`
+	Transitions          []HybridUnitTransition `json:"transitions,omitempty"`
+}
+
+func isHybridNaturalClassification(c string) bool {
+	return c == "NATURAL_VERIFIED" || c == "NATURAL_CANDIDATE"
+}
+
 // HybridImportPlan is the shared mode-independent plan for --fidelity=hybrid.
 type HybridImportPlan struct {
-	SourceHash           string                    `json:"sourceHash"`
-	SourceFormat         string                    `json:"sourceFormat"`
-	TotalActions         int                       `json:"totalActions"`
-	NaturalVerifiedCount int                       `json:"naturalVerifiedCount"`
-	ExactNativeCount     int                       `json:"exactNativeCount"`
-	SourceInvalidCount   int                       `json:"sourceInvalidCount"`
-	ReasonCounts         map[string]int            `json:"reasonCounts"`
-	RequiredIncludes     []string                  `json:"requiredIncludes,omitempty"`
-	Decisions            []HybridActionDecision    `json:"decisions"`
-	ControlFlowValid     bool                      `json:"controlFlowValid"`
-	ControlFlowViolation *ControlFlowViolationInfo `json:"controlFlowViolation,omitempty"`
-	Symbols              map[string]map[string]any `json:"-"`
-	SymbolProducers      map[string]int            `json:"-"`
+	SourceHash           string                      `json:"sourceHash"`
+	SourceFormat         string                      `json:"sourceFormat"`
+	TotalActions         int                         `json:"totalActions"`
+	NaturalVerifiedCount int                         `json:"naturalVerifiedCount"`
+	ExactNativeCount     int                         `json:"exactNativeCount"`
+	SourceInvalidCount   int                         `json:"sourceInvalidCount"`
+	ReasonCounts         map[string]int              `json:"reasonCounts"`
+	RequiredIncludes     []string                    `json:"requiredIncludes,omitempty"`
+	Decisions            []HybridActionDecision      `json:"decisions"`
+	Lifecycle            *HybridPlanLifecycleSummary `json:"lifecycle,omitempty"`
+	ControlFlowValid     bool                        `json:"controlFlowValid"`
+	ControlFlowViolation *ControlFlowViolationInfo   `json:"controlFlowViolation,omitempty"`
+	Symbols              map[string]map[string]any   `json:"-"`
+	SymbolProducers      map[string]int              `json:"-"`
 }
 
 const emptyXMLPlistRaw = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\"><dict></dict></plist>"
@@ -450,7 +486,8 @@ func compileLegacySourceToRawMapInMemory(src string) (result map[string]any, err
 	initParse()
 	generateShortcut()
 
-	merged := mergeWorkflowHeaderMap(
+	merged := mergeWorkflowHeaderMapWithDialect(
+		"legacy",
 		importedWorkflowHeader,
 		shortcut.WFWorkflowActions,
 		exactActionParamsPresence,
@@ -507,6 +544,19 @@ func cloneHybridPlan(plan *HybridImportPlan) *HybridImportPlan {
 		for k, v := range plan.SymbolProducers {
 			c.SymbolProducers[k] = v
 		}
+	}
+	if plan.Lifecycle != nil {
+		lc := *plan.Lifecycle
+		if len(plan.Lifecycle.DemotionReasons) > 0 {
+			lc.DemotionReasons = make(map[string]int, len(plan.Lifecycle.DemotionReasons))
+			for k, v := range plan.Lifecycle.DemotionReasons {
+				lc.DemotionReasons[k] = v
+			}
+		}
+		if len(plan.Lifecycle.Transitions) > 0 {
+			lc.Transitions = append([]HybridUnitTransition(nil), plan.Lifecycle.Transitions...)
+		}
+		c.Lifecycle = &lc
 	}
 	return &c
 }
@@ -619,7 +669,7 @@ func effectiveSymbolsForPlan(plan *HybridImportPlan) map[string]map[string]any {
 	for symName, meta := range plan.Symbols {
 		cloned := deepClonePlistMap(meta)
 		if prodIdx, ok := plan.SymbolProducers[symName]; ok && prodIdx >= 0 && prodIdx < len(plan.Decisions) {
-			cloned["ProducerRaw"] = plan.Decisions[prodIdx].Classification != "NATURAL_VERIFIED"
+			cloned["ProducerRaw"] = !isHybridNaturalClassification(plan.Decisions[prodIdx].Classification)
 		}
 		out[symName] = cloned
 	}
@@ -639,7 +689,7 @@ func formatHybridLegacySource(doc *NativeShortcutDocument, plan *HybridImportPla
 
 	incSet := make(map[string]struct{})
 	for _, dec := range plan.Decisions {
-		if dec.Classification == "NATURAL_VERIFIED" && dec.IncludeCategory != "" {
+		if isHybridNaturalClassification(dec.Classification) && dec.IncludeCategory != "" {
 			incSet[dec.IncludeCategory] = struct{}{}
 		}
 	}
@@ -683,7 +733,7 @@ func writeIndentedHybridDecisions(out *strings.Builder, decisions []HybridAction
 			call = dec.LegacyCall
 		}
 		trimmed := strings.TrimSpace(call)
-		isControl := dec.Classification == "NATURAL_VERIFIED" && dec.RegionGroupID != ""
+		isControl := isHybridNaturalClassification(dec.Classification) && dec.RegionGroupID != ""
 		if isControl && strings.HasPrefix(trimmed, "}") && depth > 0 {
 			depth--
 		}
@@ -759,12 +809,16 @@ func recountHybridPlanStats(plan *HybridImportPlan) {
 }
 
 func demoteMismatchedHybridActions(doc *NativeShortcutDocument, plan *HybridImportPlan, compiledMap map[string]any) bool {
+	return demoteMismatchedHybridActionsWithStage(doc, plan, compiledMap, "WORKFLOW_WIRE_VERIFY")
+}
+
+func demoteMismatchedHybridActionsWithStage(doc *NativeShortcutDocument, plan *HybridImportPlan, compiledMap map[string]any, stage string) bool {
 	var compiledActs []any
 	if compiledMap != nil {
 		compiledActs, _ = compiledMap["WFWorkflowActions"].([]any)
 	}
-	demoteIdx := make(map[int]bool)
-	demoteGroups := make(map[string]bool)
+	demoteIdx := make(map[int]string)
+	demoteGroups := make(map[string]string)
 
 	if len(compiledActs) != len(doc.Actions) {
 		limit := len(compiledActs)
@@ -780,35 +834,35 @@ func demoteMismatchedHybridActions(doc *NativeShortcutDocument, plan *HybridImpo
 		}
 		target := -1
 		for i := firstDiverge; i >= 0; i-- {
-			if i < len(plan.Decisions) && plan.Decisions[i].Classification == "NATURAL_VERIFIED" {
+			if i < len(plan.Decisions) && isHybridNaturalClassification(plan.Decisions[i].Classification) {
 				target = i
 				break
 			}
 		}
 		if target < 0 {
 			for i := range plan.Decisions {
-				if plan.Decisions[i].Classification == "NATURAL_VERIFIED" {
+				if isHybridNaturalClassification(plan.Decisions[i].Classification) {
 					target = i
 					break
 				}
 			}
 		}
 		if target >= 0 {
-			demoteIdx[target] = true
+			demoteIdx[target] = "WIRE_ACTION_COUNT_MISMATCH"
 			if rg := plan.Decisions[target].RegionGroupID; rg != "" {
-				demoteGroups[rg] = true
+				demoteGroups[rg] = "WIRE_ACTION_COUNT_MISMATCH"
 			}
 		}
 	} else {
 		for i := range plan.Decisions {
 			dec := &plan.Decisions[i]
-			if dec.Classification != "NATURAL_VERIFIED" {
+			if !isHybridNaturalClassification(dec.Classification) {
 				continue
 			}
 			if !compiledActionMatchesRecord(compiledActs[i], doc.Actions[i]) {
-				demoteIdx[i] = true
+				demoteIdx[i] = "WIRE_ACTION_PARAM_MISMATCH"
 				if dec.RegionGroupID != "" {
-					demoteGroups[dec.RegionGroupID] = true
+					demoteGroups[dec.RegionGroupID] = "WIRE_ACTION_PARAM_MISMATCH"
 				}
 			}
 		}
@@ -818,10 +872,10 @@ func demoteMismatchedHybridActions(doc *NativeShortcutDocument, plan *HybridImpo
 			for i := range doc.Actions {
 				if !compiledActionMatchesRecord(compiledActs[i], doc.Actions[i]) {
 					for j := i - 1; j >= 0; j-- {
-						if plan.Decisions[j].Classification == "NATURAL_VERIFIED" {
-							demoteIdx[j] = true
+						if isHybridNaturalClassification(plan.Decisions[j].Classification) {
+							demoteIdx[j] = "WIRE_NEIGHBOR_SHIFT_MISMATCH"
 							if plan.Decisions[j].RegionGroupID != "" {
-								demoteGroups[plan.Decisions[j].RegionGroupID] = true
+								demoteGroups[plan.Decisions[j].RegionGroupID] = "WIRE_NEIGHBOR_SHIFT_MISMATCH"
 							}
 							break
 						}
@@ -841,10 +895,14 @@ func demoteMismatchedHybridActions(doc *NativeShortcutDocument, plan *HybridImpo
 	changed := false
 	for i := range plan.Decisions {
 		dec := &plan.Decisions[i]
-		if dec.Classification != "NATURAL_VERIFIED" {
+		if !isHybridNaturalClassification(dec.Classification) {
 			continue
 		}
-		if !demoteIdx[i] && (dec.RegionGroupID == "" || !demoteGroups[dec.RegionGroupID]) {
+		reason := demoteIdx[i]
+		if reason == "" && dec.RegionGroupID != "" {
+			reason = demoteGroups[dec.RegionGroupID]
+		}
+		if reason == "" {
 			continue
 		}
 		rec := doc.Actions[i]
@@ -854,6 +912,9 @@ func demoteMismatchedHybridActions(doc *NativeShortcutDocument, plan *HybridImpo
 			continue
 		}
 		dec.Classification = "EXACT_NATIVE_FALLBACK"
+		dec.CandidateStatus = "DEMOTED"
+		dec.DemotionStage = stage
+		dec.DemotionReason = reason
 		if dec.RegionGroupID != "" {
 			dec.ReasonCode = "CONTROL_REGION"
 			dec.RegionGroupID = ""
@@ -868,6 +929,9 @@ func demoteMismatchedHybridActions(doc *NativeShortcutDocument, plan *HybridImpo
 	}
 
 	if changed {
+		if plan.Lifecycle != nil {
+			reconcileLifecycleAfterExternalDemotion(plan)
+		}
 		recountHybridPlanStats(plan)
 	}
 	return changed
@@ -880,4 +944,31 @@ func singleActionProvenanceHeaderLiteral(rec NativeActionRecord) string {
 		return emptyXMLPlistRaw
 	}
 	return lit
+}
+
+func reconcileLifecycleAfterExternalDemotion(plan *HybridImportPlan) {
+	if plan == nil || plan.Lifecycle == nil {
+		return
+	}
+	verified := 0
+	demoted := 0
+	reasons := make(map[string]int)
+	for _, dec := range plan.Decisions {
+		if dec.Classification == "NATURAL_VERIFIED" {
+			verified++
+		} else if dec.CandidateStatus == "DEMOTED" {
+			demoted++
+			if dec.DemotionStage != "" || dec.DemotionReason != "" {
+				key := dec.DemotionStage + ":" + dec.DemotionReason
+				reasons[key]++
+			}
+		}
+	}
+	plan.Lifecycle.VerifiedActionCount = verified
+	plan.Lifecycle.DemotedActionCount = demoted
+	if len(reasons) > 0 {
+		plan.Lifecycle.DemotionReasons = reasons
+	} else {
+		plan.Lifecycle.DemotionReasons = nil
+	}
 }

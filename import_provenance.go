@@ -25,6 +25,9 @@ var (
 	importedSymbolOutputNames   map[string]importedOutputNameSpec
 	importedSymbolVariableNames map[string]string
 	importedSymbolValueTypes    map[string]tokenType
+	importedSymbolAppendVars    map[string]bool
+	importedSymbolDictAggr      map[string]bool
+	importedSymbolIsVariable    map[string]bool
 )
 
 // verifiedImportMetadataKeys defines the strict allowlist of action parameter keys that
@@ -394,7 +397,25 @@ func applyImportProvenanceToCompiledActions(prov map[string]any, compiled []any)
 		}
 	}
 
-	// Apply matched metadata
+	// Record compiler-paired control-flow group per action before applying metadata so edits
+	// cannot tear a region's GroupingIdentifier apart across matched/unmatched control boundaries.
+	origGroups := make([]string, len(compiled))
+	for j, rawAct := range compiled {
+		act, _ := rawAct.(map[string]any)
+		if act == nil {
+			continue
+		}
+		if params, _ := act["WFWorkflowActionParameters"].(map[string]any); params != nil {
+			if gid, _ := params["GroupingIdentifier"].(string); gid != "" {
+				origGroups[j] = gid
+			}
+		}
+	}
+
+	groupTargets := make(map[string]string)
+	conflictedGroups := make(map[string]bool)
+
+	// Apply matched metadata (deferring GroupingIdentifier for whole-group validation)
 	for j, e := range matchedCompiled {
 		act, _ := compiled[j].(map[string]any)
 		if act == nil {
@@ -406,9 +427,22 @@ func applyImportProvenanceToCompiledActions(prov map[string]any, compiled []any)
 				params = map[string]any{}
 			}
 			for k, v := range e.meta {
-				if isImportProvenanceMetaKey(k) {
-					params[k] = deepClonePlistValue(v)
+				if !isImportProvenanceMetaKey(k) {
+					continue
 				}
+				if k == "GroupingIdentifier" {
+					if origG := origGroups[j]; origG != "" {
+						if targetG, _ := v.(string); targetG != "" {
+							if prev, exists := groupTargets[origG]; exists && prev != targetG {
+								conflictedGroups[origG] = true
+							} else {
+								groupTargets[origG] = targetG
+							}
+						}
+					}
+					continue
+				}
+				params[k] = deepClonePlistValue(v)
 			}
 		}
 		if e.absentCustom && params != nil {
@@ -425,6 +459,35 @@ func applyImportProvenanceToCompiledActions(prov map[string]any, compiled []any)
 		if params != nil {
 			act["WFWorkflowActionParameters"] = params
 		}
+	}
+
+	// Ensure a target GroupingIdentifier is claimed by at most one non-conflicting compiler group.
+	targetOwners := make(map[string]int, len(groupTargets))
+	for origG, targetG := range groupTargets {
+		if conflictedGroups[origG] {
+			continue
+		}
+		targetOwners[targetG]++
+	}
+	for j, rawAct := range compiled {
+		origG := origGroups[j]
+		if origG == "" || conflictedGroups[origG] {
+			continue
+		}
+		targetG, hasTarget := groupTargets[origG]
+		if !hasTarget || targetOwners[targetG] != 1 {
+			continue
+		}
+		act, _ := rawAct.(map[string]any)
+		if act == nil {
+			continue
+		}
+		params, _ := act["WFWorkflowActionParameters"].(map[string]any)
+		if params == nil {
+			params = map[string]any{}
+			act["WFWorkflowActionParameters"] = params
+		}
+		params["GroupingIdentifier"] = targetG
 	}
 }
 
@@ -466,6 +529,15 @@ func applyLegacyHeaderImportProvenance(hdr map[string]any) {
 	if importedSymbolValueTypes == nil {
 		importedSymbolValueTypes = map[string]tokenType{}
 	}
+	if importedSymbolAppendVars == nil {
+		importedSymbolAppendVars = map[string]bool{}
+	}
+	if importedSymbolDictAggr == nil {
+		importedSymbolDictAggr = map[string]bool{}
+	}
+	if importedSymbolIsVariable == nil {
+		importedSymbolIsVariable = map[string]bool{}
+	}
 	for symName, rawEntry := range syms {
 		entry, ok := rawEntry.(map[string]any)
 		if !ok || symName == "" {
@@ -485,11 +557,18 @@ func applyLegacyHeaderImportProvenance(hdr map[string]any) {
 		if vtTok != "" {
 			importedSymbolValueTypes[symName] = vtTok
 		}
+		if ap, _ := entry["AppendVariable"].(bool); ap {
+			importedSymbolAppendVars[symName] = true
+		}
+		if da, _ := entry["DictAggrandizement"].(bool); da || vtTok == Dict {
+			importedSymbolDictAggr[symName] = true
+		}
 
 		if uuidStr != "" {
 			uuids[symName] = uuidStr
 		}
 		if kind == "Variable" {
+			importedSymbolIsVariable[symName] = true
 			if varName != "" && varName != symName {
 				importedSymbolVariableNames[symName] = varName
 			}

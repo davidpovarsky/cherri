@@ -15,12 +15,13 @@ import (
 
 // ReferenceDescriptor is the shared pure description of a symbolic reference.
 type ReferenceDescriptor struct {
-	Kind            string // "ActionOutput", "Variable", "ExtensionInput", "Ask"
-	OutputUUID      string
-	OutputName      string
-	VariableName    string
-	Prompt          string
-	Aggrandizements []Aggrandizement
+	Kind               string // "ActionOutput", "Variable", "ExtensionInput", "Ask"
+	OutputUUID         string
+	OutputName         string
+	ExplicitOutputName bool
+	VariableName       string
+	Prompt             string
+	Aggrandizements    []Aggrandizement
 }
 
 // SharedCodecHook allows test interception of the shared reference encoder (for Section 19 verification).
@@ -132,9 +133,13 @@ func ReferenceToDescriptor(ref *backend.Reference) ReferenceDescriptor {
 				CoercionItemClass: t.CoercionItemClass,
 				DictionaryKey:     t.DictionaryKey,
 				PropertyUserInfo:  t.PropertyUserInfo,
+				WFDateFormat:      t.WFDateFormat,
+				WFDateFormatStyle: t.WFDateFormatStyle,
+				WFTimeFormatStyle: t.WFTimeFormatStyle,
 			}
-			if aggr.Type == "WFPropertyVariableAggrandizement" && aggr.PropertyUserInfo == nil {
-				aggr.PropertyUserInfo = 0
+			if t.WFISO8601IncludeTime != nil {
+				b := *t.WFISO8601IncludeTime
+				aggr.WFISO8601IncludeTime = &b
 			}
 			desc.Aggrandizements = append(desc.Aggrandizements, aggr)
 		}

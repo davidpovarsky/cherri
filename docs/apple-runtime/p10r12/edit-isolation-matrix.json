@@ -1,0 +1,217 @@
+{
+  "version": "p10r12-edit-isolation-matrix-v1",
+  "generatedAt": "2026-11-15T05:11:58Z",
+  "compilerBinarySha256": "7407548dd6a768c86414ff1495a14d3cfb2ee669bd1e6bd72a08e59a01fe8bad",
+  "p12EditIsolationTests": [
+    {
+      "testId": "TestP12_EDIT_01_ReplaceSingleParameterIsolated",
+      "target": "comment parameter inside workflow with conditional region",
+      "editedField": "WFCommentActionText",
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "TestP12_EDIT_02_EditConditionOperatorAndValueIsolated",
+      "target": "conditional region header comparator & value",
+      "editedField": "WFCondition (== -> !=) + WFConditionalActionString",
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "TestP12_EDIT_03_EditMenuPromptAndCaseTitleIsolated",
+      "target": "choosefrommenu prompt and one case label",
+      "editedField": "WFMenuPrompt + single WFMenuItemTitle",
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "TestP12_EDIT_04_EditRepeatCountIsolated",
+      "target": "repeat.count loop header literal",
+      "editedField": "WFRepeatCount (3 -> 9)",
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "TestP12_EDIT_05_EditPromptMultilineBoolAndDefaultIsolated",
+      "target": "prompt() text and multiline boolean flag",
+      "editedField": "WFAskActionPrompt + WFAllowsMultilineText",
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "TestP12_EDIT_06_EditListItemAddReorderIsolated",
+      "target": "list() items add + reorder",
+      "editedField": "WFItems",
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "TestP12_EDIT_07_EditInterpolatedTextWithBracesAndEmojiIsolated",
+      "target": "text() UTF-16 interpolation around literal braces, RTL Hebrew, and emoji",
+      "editedField": "WFTextActionText (string + UTF-16 attachmentsByRange)",
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "TestP12_EDIT_08_DuplicateReorderRemoveNaturalActionPreservesAdjacentFallback",
+      "target": "remove & duplicate natural action around third-party fallback",
+      "editedField": "workflow action ordering/count around native.action",
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "TestP12_CF_22_ControlRegionEditAfterBoundaryMove",
+      "target": "move natural comment into balanced conditional region across boundary",
+      "editedField": "action position + balanced GroupingIdentifier",
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    }
+  ],
+  "carriedForwardP11TestedEdits": [
+    {
+      "testId": "P11-WIRE-09",
+      "action": "downloadURL / fileRequest",
+      "editedField": "ShowHeaders",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-21",
+      "action": "text",
+      "editedField": "WFTextActionText",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-22",
+      "action": "comment",
+      "editedField": "WFCommentActionText",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-23",
+      "action": "setVariable",
+      "editedField": "WFInput (variable value source)",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-24",
+      "action": "appendVariable",
+      "editedField": "WFInput",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-25",
+      "action": "setName",
+      "editedField": "WFName",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-26",
+      "action": "replaceText",
+      "editedField": "WFReplaceTextFind",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-27",
+      "action": "fileRequest",
+      "editedField": "WFURL",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-28",
+      "action": "saveFile",
+      "editedField": "WFFileDestinationPath",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-29",
+      "action": "prompt",
+      "editedField": "WFAskActionPrompt",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-30",
+      "action": "chooseFromList",
+      "editedField": "WFChooseFromListActionPrompt",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-31",
+      "action": "conditional",
+      "editedField": "WFCondition (condition operator)",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-32",
+      "action": "repeat.each",
+      "editedField": "WFInput (loop collection)",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-33",
+      "action": "choosefrommenu",
+      "editedField": "WFMenuTitle",
+      "isolatedDelta": 1,
+      "unrelatedActionDelta": 0,
+      "status": "PASS"
+    }
+  ],
+  "carriedForwardP11AdversarialOperations": [
+    {
+      "testId": "P11-WIRE-35",
+      "scenario": "Reorder same-identifier actions with distinct UUIDs",
+      "expected": "No wrong metadata or UUID cross-binding transferred; deterministic semantic hash isolates entries",
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-36",
+      "scenario": "Insert same-identifier action in middle",
+      "expected": "Inserted action compiles cleanly without inheriting previous index provenance",
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-37",
+      "scenario": "Remove one action and add another of same identifier",
+      "expected": "Removed action provenance is not transferred to replacement",
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-38",
+      "scenario": "Duplicate natural statement",
+      "expected": "New distinct action generated without duplicate UUID conflict",
+      "status": "PASS"
+    },
+    {
+      "testId": "P11-WIRE-40",
+      "scenario": "Tampered provenance header (modified semantic hash)",
+      "expected": "Provenance matching fails closed; no stale restoration applied",
+      "status": "PASS"
+    }
+  ],
+  "overallVerdict": "TARGET_EDIT_ISOLATION_PASS"
+}

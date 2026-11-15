@@ -342,7 +342,11 @@ func (f *Formatter) formatStatement(stmt Statement) {
 	case *RepeatStmt:
 		f.writeIndent()
 		f.buf.WriteString("repeat ")
-		f.formatExpression(s.Count)
+		if s.Count != nil {
+			f.formatExpression(s.Count)
+		} else {
+			f.buf.WriteString("none")
+		}
 		if s.IndexVar != "" {
 			fmt.Fprintf(&f.buf, " as %s", s.IndexVar)
 		}
@@ -350,13 +354,12 @@ func (f *Formatter) formatStatement(stmt Statement) {
 		f.formatBlockStmt(s.BodyBlock, false)
 	case *MenuStmt:
 		f.writeIndent()
-		f.buf.WriteString("menu(")
-		f.formatExpression(s.Prompt)
-		f.buf.WriteString(") {\n")
+		f.formatMenuHeader(s)
+		f.buf.WriteString(" {\n")
 		f.indent++
 		for _, c := range s.Cases {
 			f.writeIndent()
-			fmt.Fprintf(&f.buf, "case %q ", c.Label)
+			f.formatMenuCaseHeader(c)
 			f.formatBlockStmt(c.BodyBlock, false)
 			f.buf.WriteString("\n")
 		}
@@ -395,6 +398,9 @@ func (f *Formatter) formatIfStmt(s *IfStmt, withIndent bool) {
 		f.writeIndent()
 	}
 	f.buf.WriteString("if ")
+	if s.Modern {
+		f.buf.WriteString("modern: ")
+	}
 	f.formatExpression(s.Condition)
 	f.buf.WriteString(" ")
 	f.formatBlockStmt(s.ThenBlock, false)
@@ -557,20 +563,23 @@ func (f *Formatter) formatExpression(expr Expression) {
 		f.formatBlockStmt(e.BodyBlock, false)
 	case *RepeatStmt:
 		f.buf.WriteString("repeat ")
-		f.formatExpression(e.Count)
+		if e.Count != nil {
+			f.formatExpression(e.Count)
+		} else {
+			f.buf.WriteString("none")
+		}
 		if e.IndexVar != "" {
 			fmt.Fprintf(&f.buf, " as %s", e.IndexVar)
 		}
 		f.buf.WriteString(" ")
 		f.formatBlockStmt(e.BodyBlock, false)
 	case *MenuStmt:
-		f.buf.WriteString("menu(")
-		f.formatExpression(e.Prompt)
-		f.buf.WriteString(") {\n")
+		f.formatMenuHeader(e)
+		f.buf.WriteString(" {\n")
 		f.indent++
 		for _, c := range e.Cases {
 			f.writeIndent()
-			fmt.Fprintf(&f.buf, "case %q ", c.Label)
+			f.formatMenuCaseHeader(c)
 			f.formatBlockStmt(c.BodyBlock, false)
 			f.buf.WriteString("\n")
 		}
@@ -578,6 +587,41 @@ func (f *Formatter) formatExpression(expr Expression) {
 		f.writeIndent()
 		f.buf.WriteString("}")
 	}
+}
+
+func (f *Formatter) formatMenuHeader(s *MenuStmt) {
+	f.buf.WriteString("menu")
+	if s.Prompt != nil || s.LegacyCancel {
+		f.buf.WriteString("(")
+		wrote := false
+		if s.Prompt != nil {
+			f.formatExpression(s.Prompt)
+			wrote = true
+		}
+		if s.LegacyCancel {
+			if wrote {
+				f.buf.WriteString(", ")
+			}
+			f.buf.WriteString("legacyCancel: true")
+		}
+		f.buf.WriteString(")")
+	}
+}
+
+func (f *Formatter) formatMenuCaseHeader(c MenuCase) {
+	f.buf.WriteString("case ")
+	if c.Value != nil {
+		f.formatExpression(c.Value)
+	} else {
+		fmt.Fprintf(&f.buf, "%q", c.Label)
+	}
+	if c.HasTitle {
+		fmt.Fprintf(&f.buf, " title %q", c.Title)
+	}
+	if c.Plain {
+		f.buf.WriteString(" plain")
+	}
+	f.buf.WriteString(" ")
 }
 
 func formatTypeAnnotation(t TypeAnnotation) string {

@@ -1,0 +1,99 @@
+{
+  "version": "p10r12-final-audit-v1",
+  "auditedAt": "2026-11-15T05:11:58Z",
+  "baselineStartSha": "e8f3cd98e6a74f0c429edb80ae342b6d2b18812c",
+  "compilerBinarySha256": "7407548dd6a768c86414ff1495a14d3cfb2ee669bd1e6bd72a08e59a01fe8bad",
+  "nopatchBinarySha256": "87b029d8c7db0845a3b343b9ab63a7fcd9175e82a50c634ad22ea7395870e911",
+  "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+  "p12GoTestCatalog": {
+    "totalTestFunctions": 55,
+    "files": {
+      "p12_baseline_truth_test.go": [
+        "TestP12_BASE_01_PreOverlayFailClosedBothDialects",
+        "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+        "TestP12_BASE_02B_CacheIsolationRegression",
+        "TestP12_BASE_03_BidirectionalPreOverlayAndScopedSerializationType",
+        "TestP12_BASE_04_NoPatchExternalOracleBuildAndVerify",
+        "TestP12_BASE_05_SanitizedPrivateFailureReporting",
+        "TestP12_ORACLE_01_HeaderDivergenceMutationDetected",
+        "TestP12_ORACLE_02_UUIDGraphBreakageMutationDetected",
+        "TestP12_ORACLE_03_TypeAndPresenceConfusionDetected",
+        "TestP12_ORACLE_04_RawWrapperAndProvenanceLeakDetected",
+        "TestP12_ORACLE_05_NoPatchOracleRejectsFakeRestoreInBinary",
+        "TestP12_ORACLE_06_DictOrderIndependenceAndArrayOrderSensitivity"
+      ],
+      "p12_complex_params_test.go": [
+        "TestP12_PAR_01_WFTextTokenStringUTF16EmojiAndBraces",
+        "TestP12_PAR_02_WFTextTokenStringLiteralBraceCollisionFailsClosed",
+        "TestP12_PAR_03_RTLBidiTextAndDictKeysPreserved",
+        "TestP12_PAR_04_PromptMultilineBoolDefaultAndInputTypeAbsence",
+        "TestP12_PAR_05_ListMixedTextTokenAndAttachmentRejection",
+        "TestP12_PAR_06_TypedVarOutputAndDictAggrandizementProvenance",
+        "TestP12_PAR_07_AbsentVsFalseAndZeroNumericTriState",
+        "TestP12_PAR_08_NestedDictFailClosedAndSortedScalarsPromote",
+        "TestP12_PAR_09_EnumExtensionsAndOpenAppNoStage3Demotion",
+        "TestP12_PAR_10_ThirdPartyUnknownActionPreservedUnchanged",
+        "TestP12_PAR_11_DualDialectStrictPreOverlayNoDemotionGate",
+        "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+        "TestP12_EDIT_05_EditPromptMultilineBoolAndDefaultIsolated",
+        "TestP12_EDIT_06_EditListItemAddReorderIsolated",
+        "TestP12_EDIT_07_EditInterpolatedTextWithBracesAndEmojiIsolated",
+        "TestP12_EDIT_08_DuplicateReorderRemoveNaturalActionPreservesAdjacentFallback",
+        "TestP12_PAR_13_ForwardActionOutputAndCLIImportParity"
+      ],
+      "p12_control_regions_test.go": [
+        "TestP12_CF_01_BalancedSimpleIf",
+        "TestP12_CF_02_LegacyComparisonFlagTriState",
+        "TestP12_CF_03_UnaryAndBinaryComparators",
+        "TestP12_CF_04_IfElseBranchAndProducerSafety",
+        "TestP12_CF_05_NumericPropertyAndDistanceOrder",
+        "TestP12_CF_06_DateAndCompoundWFConditions",
+        "TestP12_CF_07_NestedConditionalsAtomic",
+        "TestP12_CF_08_InvalidOrphanAndCrossedControlFlow",
+        "TestP12_CF_09_MenuCaseTitlesAndOrder",
+        "TestP12_CF_10_MenuAttributedTitleVariantsAndDualCopyRejection",
+        "TestP12_CF_11_MenuPromptAndUnicodeRTLCases",
+        "TestP12_CF_12_MenuDuplicateTitlesAndEmptyList",
+        "TestP12_CF_13_NestedMenus",
+        "TestP12_CF_14_MenuOutputConsumerRefs",
+        "TestP12_CF_15_MenuLegacyCancelBehaviorAndPreCaseComment",
+        "TestP12_CF_16_RepeatCountLiteral",
+        "TestP12_CF_17_RepeatCountTypedVariableRef",
+        "TestP12_CF_18_RepeatEachNativeInputAndOmittedInput",
+        "TestP12_CF_19_RepeatIndexItemAndResultOutputs",
+        "TestP12_CF_20_NestedRepeatAndConditional",
+        "TestP12_CF_21_IncorrectRepeatGroupFailClosed",
+        "TestP12_CF_22_ControlRegionEditAfterBoundaryMove",
+        "TestP12_EDIT_01_ReplaceSingleParameterIsolated",
+        "TestP12_EDIT_02_EditConditionOperatorAndValueIsolated",
+        "TestP12_EDIT_03_EditMenuPromptAndCaseTitleIsolated",
+        "TestP12_EDIT_04_EditRepeatCountIsolated"
+      ]
+    }
+  },
+  "corpusAudit38x2": {
+    "totalSpecimens": 38,
+    "totalRuns": 76,
+    "layer1FullTreeExactRuns": "76/76 (100.0%)",
+    "naturalVerifiedPerDialect": 22490,
+    "naturalSharePct": 81.33,
+    "exactNativeFallbackPerDialect": 5161,
+    "sourceInvalidPerDialect": 1,
+    "preRestoreSemanticExact": "44980/44980 (100.0%)",
+    "postRestoreNativeExact": "44980/44980 (100.0%)",
+    "demotedActionCount": 0,
+    "unresolvedCandidates": 0,
+    "antiTautology": "9/9 PASS",
+    "wholeControlRegionsPromoted": "3820/4071 (93.83%)",
+    "repeatRegionsPromoted": "357/357 (100.0%)"
+  },
+  "hardwareRuntimeStatus": {
+    "APPLE_RUNTIME_EXECUTED": "BLOCKED_DEVICE",
+    "physicalIpadOsTested": false
+  },
+  "ciStatus": {
+    "status": "PENDING_FINAL_PUSH_EXECUTION",
+    "note": "To be recorded in handoffs and Asana after pushing the final non-circular provenance commit and watching GitHub Actions."
+  },
+  "verdict": "P10R12_LOCAL_38X2_VERIFIED_DEVICE_BLOCKED"
+}

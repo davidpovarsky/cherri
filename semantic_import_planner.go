@@ -8,11 +8,13 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 	"unicode"
 
+	"github.com/electrikmilk/args-parser"
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
@@ -21,12 +23,15 @@ import (
 
 // semanticControlRegion tracks a paired control-flow construct across both Legacy and V2.
 type semanticControlRegion struct {
-	GroupID string
-	Kind    string // "conditional", "choosefrommenu", "repeat.count", "repeat.each"
-	Start   int
-	Mids    []int
-	End     int
-	Valid   bool
+	GroupID                string
+	Kind                   string // "conditional", "choosefrommenu", "repeat.count", "repeat.each"
+	Start                  int
+	Mids                   []int
+	End                    int
+	Valid                  bool
+	Parent                 *semanticControlRegion
+	Children               []*semanticControlRegion
+	ContainsInvalidControl bool
 }
 
 // semanticImportContext holds the single shared semantic interpretation derived from
@@ -44,10 +49,18 @@ type semanticImportContext struct {
 	Symbols             map[string]map[string]any
 	SymbolProducers     map[string]int
 	RegionsByGroup      map[string]*semanticControlRegion
-	RegionsByIndex      map[int]*semanticControlRegion
-	fallbackLegacyLines []string
-	fallbackV2Lines     []string
-	fallbackReasons     []string
+	RegionsByIndex       map[int]*semanticControlRegion
+	DecompiledUUIDHints  map[string]string
+	MatchedActionNames   []string
+	fallbackLegacyLines  []string
+	fallbackV2Lines      []string
+	fallbackReasons      []string
+	candidateActionMarks map[int]string
+	candidateRegionOrder []string
+	postAtomicActionCnt  int
+	rawRefCounter        int
+	pendingLegacyDecls   []string
+	insideJSONLiteral    int
 }
 
 // semanticExprPair holds paired Legacy and V2 Cherri expressions rendered from one semantic AST/value.
@@ -134,12 +147,14 @@ func planUnifiedSemanticHybridImport(doc *NativeShortcutDocument, reg *ReverseAc
 			AppleIdentifier: rec.Identifier,
 			Classification:  "EXACT_NATIVE_FALLBACK",
 			ReasonCode:      defReason,
+			CandidateStatus: "NOT_CANDIDATE",
 			LegacyCall:      rawLeg,
 			V2Call:          rawV2,
 		}
 		if rec.SourceValidity != "VALID" {
 			plan.Decisions[i].Classification = "SOURCE_INVALID"
 			plan.Decisions[i].ReasonCode = "SOURCE_INVALID"
+			plan.Decisions[i].CandidateStatus = "SOURCE_INVALID"
 			plan.Decisions[i].DiagnosticComment = fmt.Sprintf("// [HYBRID_DIAGNOSTIC] action %d (%s): %s", rec.Index, rec.Identifier, rec.SourceValidity)
 		}
 	}
@@ -148,9 +163,12 @@ func planUnifiedSemanticHybridImport(doc *NativeShortcutDocument, reg *ReverseAc
 	if err := ctx.synthesizeAllCandidates(plan); err != nil {
 		return nil, err
 	}
+	ctx.rejectUnseededForwardActionOutputCandidates(plan)
+	ctx.captureCandidateSnapshot(plan)
 
 	// Stage 2: Reconcile control-flow region pairing (never leave partial natural region).
-	ctx.enforceAtomicRegions(plan)
+	ctx.enforceAtomicRegionsWithStage(plan, "ATOMIC_REGION", "ATOMIC_REGION_PARTIAL")
+	ctx.postAtomicActionCnt = countActiveNaturalCandidates(plan)
 	recountHybridPlanStats(plan)
 
 	// Stage 3: Verify and stabilize full Legacy + V2 workflows against original doc.RawRoot.
@@ -232,7 +250,9 @@ func buildSemanticImportContext(doc *NativeShortcutDocument, reg *ReverseActionR
 
 func (ctx *semanticImportContext) runDecompilePasses(xmlBytes []byte) (err error) {
 	origEmbedded := embeddedCompilerMode
+	origArgs := args.Args
 	embeddedCompilerMode = true
+	args.Args = map[string]string{"import": "", "no-ansi": ""}
 	defer func() {
 		if r := recover(); r != nil {
 			if ep, ok := r.(embeddedCompilerPanic); ok {
@@ -242,9 +262,11 @@ func (ctx *semanticImportContext) runDecompilePasses(xmlBytes []byte) (err error
 			}
 		}
 		embeddedCompilerMode = origEmbedded
+		resetCompilerStateFully()
+		args.Args = origArgs
 	}()
 
-	resetCompilerState()
+	resetCompilerStateFully()
 	resetMobileDecompileState()
 	shortcut = Shortcut{}
 	code.Reset()
@@ -268,50 +290,121 @@ func (ctx *semanticImportContext) runDecompilePasses(xmlBytes []byte) (err error
 	}
 	prepareDecompileSemanticPasses()
 
+	ctx.DecompiledUUIDHints = make(map[string]string, len(uuids))
+	for k, v := range uuids {
+		ctx.DecompiledUUIDHints[k] = v
+	}
 	ctx.Actions = make([]ShortcutAction, len(shortcut.WFWorkflowActions))
 	copy(ctx.Actions, shortcut.WFWorkflowActions)
+	ctx.MatchedActionNames = make([]string, len(ctx.Actions))
+	for i := range ctx.Actions {
+		actCopy := ctx.Actions[i]
+		matchedName, _ := matchAction(&actCopy)
+		ctx.MatchedActionNames[i] = matchedName
+	}
 	return nil
+}
+
+func markRegionAndAncestorsInvalid(reg *semanticControlRegion) {
+	for cur := reg; cur != nil; cur = cur.Parent {
+		cur.Valid = false
+		cur.ContainsInvalidControl = true
+	}
 }
 
 func (ctx *semanticImportContext) buildControlRegions() {
 	stack := make([]*semanticControlRegion, 0)
+	dupGroups := make(map[string]bool)
+	markOpenStackInvalid := func() {
+		for _, openReg := range stack {
+			markRegionAndAncestorsInvalid(openReg)
+		}
+	}
+
 	for i, rec := range ctx.Doc.Actions {
-		if rec.SourceValidity != "VALID" || rec.ControlFlowMode == nil || rec.GroupingIdentifier == "" {
+		kind := controlKindFromIdentifier(rec.Identifier)
+		if rec.ControlFlowMode == nil {
+			if rec.SourceValidity != "VALID" && (kind != "" || strings.HasPrefix(rec.SourceValidity, "SOURCE_INVALID:CONTROL_FLOW")) {
+				markOpenStackInvalid()
+			}
 			continue
 		}
+
 		gid := rec.GroupingIdentifier
-		kind := controlKindFromIdentifier(rec.Identifier)
 		mode := *rec.ControlFlowMode
 		switch mode {
 		case 0:
+			var parent *semanticControlRegion
+			if len(stack) > 0 {
+				parent = stack[len(stack)-1]
+			}
 			reg := &semanticControlRegion{
 				GroupID: gid,
 				Kind:    kind,
 				Start:   i,
 				End:     -1,
+				Parent:  parent,
 			}
-			ctx.RegionsByGroup[gid] = reg
-			ctx.RegionsByIndex[i] = reg
-			stack = append(stack, reg)
-		case 1:
-			if reg, ok := ctx.RegionsByGroup[gid]; ok && reg.Kind == kind {
-				reg.Mids = append(reg.Mids, i)
-				ctx.RegionsByIndex[i] = reg
+			if parent != nil {
+				parent.Children = append(parent.Children, reg)
 			}
-		case 2:
-			if reg, ok := ctx.RegionsByGroup[gid]; ok && reg.Kind == kind && reg.End == -1 {
-				reg.End = i
-				ctx.RegionsByIndex[i] = reg
-				if len(stack) > 0 && stack[len(stack)-1].GroupID == gid {
-					reg.Valid = true
-					stack = stack[:len(stack)-1]
+			hasErr := rec.SourceValidity != "VALID" || gid == "" || kind == ""
+			if gid != "" {
+				if prev, exists := ctx.RegionsByGroup[gid]; exists {
+					dupGroups[gid] = true
+					markRegionAndAncestorsInvalid(prev)
+					hasErr = true
+				} else if !hasErr {
+					ctx.RegionsByGroup[gid] = reg
 				}
 			}
+			ctx.RegionsByIndex[i] = reg
+			stack = append(stack, reg)
+			if hasErr {
+				markRegionAndAncestorsInvalid(reg)
+			}
+		case 1:
+			if len(stack) == 0 || stack[len(stack)-1].GroupID != gid || gid == "" ||
+				stack[len(stack)-1].Kind != kind || rec.SourceValidity != "VALID" ||
+				(kind != "conditional" && kind != "choosefrommenu") ||
+				(kind == "conditional" && len(stack[len(stack)-1].Mids) > 0) {
+				markOpenStackInvalid()
+				if gid != "" {
+					if reg, ok := ctx.RegionsByGroup[gid]; ok {
+						markRegionAndAncestorsInvalid(reg)
+					}
+				}
+				continue
+			}
+			top := stack[len(stack)-1]
+			top.Mids = append(top.Mids, i)
+			ctx.RegionsByIndex[i] = top
+		case 2:
+			if len(stack) > 0 && gid != "" && stack[len(stack)-1].GroupID == gid {
+				top := stack[len(stack)-1]
+				stack = stack[:len(stack)-1]
+				top.End = i
+				ctx.RegionsByIndex[i] = top
+				if rec.SourceValidity != "VALID" || top.Kind != kind || top.Kind == "" || top.ContainsInvalidControl || dupGroups[gid] || top.Start < 0 || top.End <= top.Start {
+					markRegionAndAncestorsInvalid(top)
+				} else {
+					top.Valid = true
+				}
+				continue
+			}
+			markOpenStackInvalid()
+			if gid != "" {
+				if reg, ok := ctx.RegionsByGroup[gid]; ok {
+					markRegionAndAncestorsInvalid(reg)
+				}
+			}
+		default:
+			markOpenStackInvalid()
 		}
 	}
-	// Mark any region still open on stack invalid.
+	// Mark any region still open on stack (and its ancestors) invalid.
 	for _, r := range stack {
-		r.Valid = false
+		markRegionAndAncestorsInvalid(r)
 	}
 }
 
@@ -488,13 +581,9 @@ func (ctx *semanticImportContext) buildDualSymbolTable() {
 		}
 		rec := ctx.Doc.Actions[prodIdx]
 		info := refInfoByUUID[u]
-		if info != nil && info.mixed {
-			// Consumers disagree on OutputName for this UUID; avoid unsafe symbol sharing.
-			continue
-		}
 
-		// Reuse decompile.go's mapped identifier when present!
-		hint := uuids[u]
+		// Reuse precomputed decompile.go identifier hint when present.
+		hint := ctx.DecompiledUUIDHints[u]
 		if hint == "" {
 			if rec.CustomOutputName != "" {
 				hint = rec.CustomOutputName
@@ -511,12 +600,12 @@ func (ctx *semanticImportContext) buildDualSymbolTable() {
 
 		hasOutName := false
 		outName := ""
-		if info != nil && info.sawName {
-			hasOutName = true
-			outName = info.name
-		} else if rec.CustomOutputName != "" && (info == nil || !info.sawOmitted) {
+		if rec.CustomOutputName != "" {
 			hasOutName = true
 			outName = rec.CustomOutputName
+		} else if info != nil && info.sawName {
+			hasOutName = true
+			outName = info.name
 		}
 
 		valType := inferValueTypeForAction(rec.Identifier, canonicalDefs)
@@ -537,6 +626,8 @@ func (ctx *semanticImportContext) buildDualSymbolTable() {
 	firstVarReader := make(map[string]int)
 	appendVarSet := make(map[string]bool)
 	setVarBeforeAppend := make(map[string]bool)
+	dictVarFromSet := make(map[string]bool)
+	nonDictVarWrite := make(map[string]bool)
 	allVarSet := make(map[string]bool)
 	for i, rec := range ctx.Doc.Actions {
 		if rec.Identifier == "is.workflow.actions.setvariable" || rec.Identifier == "is.workflow.actions.appendvariable" {
@@ -544,8 +635,26 @@ func (ctx *semanticImportContext) buildDualSymbolTable() {
 				allVarSet[vn] = true
 				if rec.Identifier == "is.workflow.actions.appendvariable" {
 					appendVarSet[vn] = true
-				} else {
+					nonDictVarWrite[vn] = true
+				} else if wfIn, hasIn := rec.Parameters["WFInput"]; hasIn {
 					setVarBeforeAppend[vn] = true
+					isDictAssign := false
+					if inMap, okIn := wfIn.(map[string]any); okIn {
+						if valMap, okVal := inMap["Value"].(map[string]any); okVal && strVal(valMap["Type"]) == "ActionOutput" {
+							u := strVal(valMap["OutputUUID"])
+							ags, _ := valMap["Aggrandizements"].([]any)
+							if prodIdx, okP := ctx.Doc.ProducerUUIDIndex[u]; okP && prodIdx < len(ctx.Doc.Actions) && len(ags) == 0 {
+								if inferValueTypeForAction(ctx.Doc.Actions[prodIdx].Identifier, canonicalDefs) == "Dictionary" {
+									isDictAssign = true
+								}
+							}
+						}
+					}
+					if isDictAssign {
+						dictVarFromSet[vn] = true
+					} else {
+						nonDictVarWrite[vn] = true
+					}
 				}
 				if _, seen := firstVarWriter[vn]; !seen {
 					firstVarWriter[vn] = i
@@ -587,10 +696,16 @@ func (ctx *semanticImportContext) buildDualSymbolTable() {
 			"Kind":         "Variable",
 			"VariableName": origVar,
 		}
-		if dictHintVar[origVar] {
-			entry["ValueType"] = "Dictionary"
-		} else if appendVarSet[origVar] && !setVarBeforeAppend[origVar] {
+		if appendVarSet[origVar] {
+			entry["AppendVariable"] = true
+		}
+		if dictHintVar[origVar] || (dictVarFromSet[origVar] && !nonDictVarWrite[origVar]) {
+			entry["DictAggrandizement"] = true
+		}
+		if !dictHintVar[origVar] && appendVarSet[origVar] && !setVarBeforeAppend[origVar] {
 			entry["ValueType"] = "List"
+		} else if (dictHintVar[origVar] || dictVarFromSet[origVar]) && !nonDictVarWrite[origVar] {
+			entry["ValueType"] = "Dictionary"
 		}
 		wIdx, hasWriter := firstVarWriter[origVar]
 		rIdx, hasReader := firstVarReader[origVar]
@@ -614,6 +729,8 @@ func inferValueTypeForAction(appleID string, defs map[string]*actionDefinition) 
 		return "Number"
 	case "is.workflow.actions.dictionary", "is.workflow.actions.detect.dictionary", "is.workflow.actions.setvalueforkey":
 		return "Dictionary"
+	case "is.workflow.actions.date", "is.workflow.actions.adjustdate", "is.workflow.actions.detect.date":
+		return "Date"
 	case "is.workflow.actions.list", "is.workflow.actions.text.split":
 		return "List"
 	}
@@ -647,7 +764,7 @@ func (ctx *semanticImportContext) synthesizeAllCandidates(plan *HybridImportPlan
 	sort.Strings(gids)
 	for _, gid := range gids {
 		reg := ctx.RegionsByGroup[gid]
-		if reg == nil || !reg.Valid || !ctx.Doc.ControlFlowValid {
+		if reg == nil || !reg.Valid || reg.ContainsInvalidControl {
 			continue
 		}
 		ctx.trySynthesizeRegion(reg, plan)
@@ -667,6 +784,10 @@ func (ctx *semanticImportContext) synthesizeAllCandidates(plan *HybridImportPlan
 }
 
 func (ctx *semanticImportContext) trySynthesizeSingleAction(idx int, rec NativeActionRecord, plan *HybridImportPlan) {
+	ctx.pendingLegacyDecls = nil
+	defer func() {
+		ctx.pendingLegacyDecls = nil
+	}()
 	if metaHasUnsupportedShape(rec) {
 		return
 	}
@@ -715,8 +836,11 @@ func (ctx *semanticImportContext) trySynthesizeSingleAction(idx int, rec NativeA
 		v2Call = fmt.Sprintf("let %s = %s", sym, v2Call)
 	}
 
+	hasPendingDecls := len(ctx.pendingLegacyDecls) > 0
+	legCall = ctx.flushPendingLegacyDecls(legCall)
+
 	// When safe/context-free and not already verified in workflow, use cached single-action verifier!
-	if ctx.isContextFreeRecord(rec) && rec.Identifier != "is.workflow.actions.setvariable" && rec.Identifier != "is.workflow.actions.appendvariable" {
+	if !hasPendingDecls && ctx.isContextFreeRecord(rec) && rec.Identifier != "is.workflow.actions.setvariable" && rec.Identifier != "is.workflow.actions.appendvariable" {
 		if cands := ctx.Registry.ByAppleIdentifier[rec.Identifier]; len(cands) > 0 {
 			for _, cand := range cands {
 				if cand.CallableName == chosenID {
@@ -759,8 +883,11 @@ func (ctx *semanticImportContext) trySynthesizeSingleAction(idx int, rec NativeA
 }
 
 func applyDecisionCandidate(dec *HybridActionDecision, legCall, v2Call, chosenID, includeCat string) {
-	dec.Classification = "NATURAL_VERIFIED"
+	dec.Classification = "NATURAL_CANDIDATE"
 	dec.ReasonCode = "KNOWN_DISAMBIGUATED"
+	dec.CandidateStatus = "CANDIDATE"
+	dec.DemotionStage = ""
+	dec.DemotionReason = ""
 	dec.ChosenDefinitionID = chosenID
 	dec.IncludeCategory = includeCat
 	dec.LegacyCall = legCall
@@ -831,7 +958,7 @@ func (ctx *semanticImportContext) synthesizeTextAction(rec NativeActionRecord) (
 	}
 	rawVal, hasVal := rec.Parameters["WFTextActionText"]
 	if !hasVal {
-		return "text(\"\")", "text(\"\")", true
+		return "", "", false
 	}
 	expr, ok := ctx.renderAnyTextPair(rawVal, true)
 	if !ok {
@@ -901,7 +1028,7 @@ func (ctx *semanticImportContext) synthesizeSetVariable(rec NativeActionRecord) 
 	if !hasIn {
 		return "", "", false
 	}
-	valExpr, ok := ctx.renderVariableInputPair(rawIn)
+	valExpr, ok := ctx.renderVarAssignInputPair(rawIn)
 	if !ok {
 		return "", "", false
 	}
@@ -928,11 +1055,28 @@ func (ctx *semanticImportContext) synthesizeAppendVariable(rec NativeActionRecor
 	if !hasIn {
 		return "", "", false
 	}
-	valExpr, ok := ctx.renderVariableInputPair(rawIn)
+	valExpr, ok := ctx.renderVarAssignInputPair(rawIn)
 	if !ok {
 		return "", "", false
 	}
 	return fmt.Sprintf("@%s += %s", sym, valExpr.Legacy), fmt.Sprintf("%s += %s", sym, valExpr.V2), true
+}
+
+// renderVarAssignInputPair restricts direct variable assignment/append inputs to single-action
+// attachment references; inline literals compile to two actions in Legacy (@v = literal).
+func (ctx *semanticImportContext) renderVarAssignInputPair(rawIn any) (semanticExprPair, bool) {
+	m, ok := rawIn.(map[string]any)
+	if !ok {
+		return semanticExprPair{}, false
+	}
+	ser, _ := m["WFSerializationType"].(string)
+	if ser == "WFTextTokenAttachment" {
+		return ctx.renderSerializedAttachmentPair(m, true)
+	}
+	if typ, _ := m["Type"].(string); typ != "" {
+		return ctx.renderAttachmentBodyPair(m, true)
+	}
+	return semanticExprPair{}, false
 }
 
 func (ctx *semanticImportContext) renderVariableInputPair(rawIn any) (semanticExprPair, bool) {
@@ -954,7 +1098,7 @@ func (ctx *semanticImportContext) renderVariableInputPair(rawIn any) (semanticEx
 		case "WFTextTokenString":
 			return ctx.renderWFTextTokenStringPair(v)
 		case "WFDictionaryFieldValue":
-			return ctx.renderWFDictionaryPair(v)
+			return ctx.renderStrictSortedDictionaryPair(v)
 		default:
 			if typ, _ := v["Type"].(string); typ != "" {
 				return ctx.renderAttachmentBodyPair(v, true)
@@ -999,10 +1143,9 @@ func (ctx *semanticImportContext) selectOrderedCandidates(idx int, rec NativeAct
 	var out []ReverseActionCandidate
 	seen := make(map[string]bool)
 
-	// Re-use decompile.go's matchAction / scoreActionMatch heuristic first when ShortcutAction is available.
-	if idx >= 0 && idx < len(ctx.Actions) {
-		actCopy := ctx.Actions[idx]
-		matchedName, _ := matchAction(&actCopy)
+	// Re-use precomputed decompile.go matchAction heuristic captured before any verification compiles.
+	if idx >= 0 && idx < len(ctx.MatchedActionNames) {
+		matchedName := ctx.MatchedActionNames[idx]
 		if matchedName != "" {
 			for _, c := range cands {
 				if c.CallableName == matchedName && !seen[c.CallableName] {
@@ -1081,6 +1224,51 @@ func (ctx *semanticImportContext) synthesizeCallFromCandidate(rec NativeActionRe
 	}
 
 	def := cand.Definition
+	switch rec.Identifier {
+	case "is.workflow.actions.gettextfrompdf":
+		if _, hasType := rec.Parameters["WFGetTextFromPDFTextType"]; !hasType {
+			return "", "", false
+		}
+	case "is.workflow.actions.filter.files":
+		limEn, hasLimEn := rec.Parameters["WFContentItemLimitEnabled"].(bool)
+		_, hasLimNum := rec.Parameters["WFContentItemLimitNumber"]
+		if (hasLimEn && (!limEn || !hasLimNum)) || (hasLimNum && !hasLimEn) {
+			return "", "", false
+		}
+	case "is.workflow.actions.runworkflow":
+		if cand.CallableName == "runSelf" {
+			_, hasWF := rec.Parameters["WFWorkflow"]
+			_, hasName := rec.Parameters["WFWorkflowName"]
+			_, hasIn := rec.Parameters["WFInput"]
+			isSelf, _ := rec.Parameters["isSelf"].(bool)
+			if !isSelf || hasWF || hasName || hasIn {
+				return "", "", false
+			}
+		} else {
+			// `run` generates a fresh random WFWorkflow.workflowIdentifier UUID on every compile,
+			// which cannot preserve existing workflow descriptors under strict raw-wire equality.
+			return "", "", false
+		}
+	case "is.workflow.actions.openapp":
+		if rec.Parameters["WFAppName"] != nil || rec.Parameters["WFWindowingFormat"] != nil {
+			return "", "", false
+		}
+		selApp, hasSel := rec.Parameters["WFSelectedApp"]
+		if !hasSel {
+			return "", "", false
+		}
+		if selMap, isMap := selApp.(map[string]any); isMap {
+			if len(selMap) != 1 {
+				return "", "", false
+			}
+			bundleVal, hasBundle := selMap["BundleIdentifier"]
+			if !hasBundle || !plistValuesStrictlyEqual(bundleVal, rec.Parameters["WFAppIdentifier"]) {
+				return "", "", false
+			}
+		} else if _, isAtt := rec.Parameters["WFAppIdentifier"].(map[string]any); !isAtt {
+			return "", "", false
+		}
+	}
 	// If AppIntent is expected, ensure wire matches AppIntentDescriptor if present.
 	if len(rec.AppIntentDescriptor) > 0 && def.appIntent != (appIntent{}) {
 		expectedBundle, _ := rec.AppIntentDescriptor["BundleIdentifier"].(string)
@@ -1152,22 +1340,36 @@ func (ctx *semanticImportContext) synthesizeDefinitionArgs(rec NativeActionRecor
 	slots := make([]renderedSlot, len(def.parameters))
 
 	for i, p := range def.parameters {
-		if p.key == "" {
-			if ep, handled, okTP := ctx.reverseTextPartsParam(rec, cand.CallableName, p); handled {
-				if !okTP {
-					return nil, nil, false
+		paramKey := p.key
+		if paramKey == "" {
+			if cand.CallableName == "list" && p.infinite {
+				paramKey = "WFItems"
+			} else {
+				if ep, handled, okTP := ctx.reverseTextPartsParam(rec, cand.CallableName, p); handled {
+					if !okTP {
+						return nil, nil, false
+					}
+					if ep.Legacy != "" || ep.V2 != "" {
+						slots[i] = renderedSlot{present: true, legList: []string{ep.Legacy}, v2List: []string{ep.V2}, label: p.name}
+					}
+					continue
 				}
-				if ep.Legacy != "" || ep.V2 != "" {
-					slots[i] = renderedSlot{present: true, legList: []string{ep.Legacy}, v2List: []string{ep.V2}, label: p.name}
+				if ep, handled, okAsk := ctx.reverseAskDefaultParam(rec, &def, p); handled {
+					if !okAsk {
+						return nil, nil, false
+					}
+					if ep.Legacy != "" || ep.V2 != "" {
+						slots[i] = renderedSlot{present: true, legList: []string{ep.Legacy}, v2List: []string{ep.V2}, label: p.name}
+					}
+					continue
+				}
+				if !p.optional {
+					return nil, nil, false
 				}
 				continue
 			}
-			if !p.optional {
-				return nil, nil, false
-			}
-			continue
 		}
-		rawVal, exists := rec.Parameters[p.key]
+		rawVal, exists := rec.Parameters[paramKey]
 		if !exists {
 			if !p.optional {
 				return nil, nil, false
@@ -1178,8 +1380,11 @@ func (ctx *semanticImportContext) synthesizeDefinitionArgs(rec NativeActionRecor
 		// Handle infinite/variadic parameter (e.g. list(...), ask, etc.)
 		if p.infinite {
 			if items, ok := rawVal.([]any); ok {
-				if len(items) == 0 && p.optional {
-					continue
+				if len(items) == 0 {
+					if p.optional {
+						continue
+					}
+					return nil, nil, false
 				}
 				var lItems, vItems []string
 				for _, it := range items {
@@ -1281,7 +1486,7 @@ func (ctx *semanticImportContext) renderParameterValuePair(p parameterDefinition
 		case "WFTextTokenString":
 			return ctx.renderWFTextTokenStringPair(m)
 		case "WFDictionaryFieldValue":
-			return ctx.renderWFDictionaryPair(m)
+			return ctx.renderStrictSortedDictionaryPair(m)
 		case "WFQuantityFieldValue":
 			if p.validType == Quantity || p.qty {
 				return ctx.renderQuantityPair(m)
@@ -1311,16 +1516,17 @@ func (ctx *semanticImportContext) renderParameterValuePair(p parameterDefinition
 			}
 			return semanticExprPair{Legacy: "false", V2: "false"}, true
 		}
+		return semanticExprPair{}, false
 	case Arr:
 		if items, ok := rawVal.([]any); ok {
 			return ctx.renderArrayLiteralPair(items)
 		}
 	case Dict:
 		if m, ok := rawVal.(map[string]any); ok {
-			if ep, ok := ctx.renderWFDictionaryPair(m); ok {
+			if ep, ok := ctx.renderStrictSortedDictionaryPair(m); ok {
 				return ep, true
 			}
-			return ctx.renderPlainDictPair(m)
+			return semanticExprPair{}, false
 		}
 	case Variable:
 		switch v := rawVal.(type) {
@@ -1336,7 +1542,7 @@ func (ctx *semanticImportContext) renderParameterValuePair(p parameterDefinition
 		case []any:
 			return ctx.renderArrayLiteralPair(v)
 		case map[string]any:
-			return ctx.renderPlainDictPair(v)
+			return semanticExprPair{}, false
 		}
 	}
 
@@ -1352,10 +1558,16 @@ func (ctx *semanticImportContext) renderStringPair(s string) (semanticExprPair, 
 	if plistValueHasXMLUnsafeStringChar(s) {
 		return semanticExprPair{}, false
 	}
-	// If string contains braces in Legacy, Cherri parses {x} inside "..." as interpolation unless single-quoted!
+	// If string contains braces in Legacy, Cherri parses {x} inside "..." as interpolation unless single-quoted.
+	// Inside JSON/dictionary literals, Legacy json.Unmarshal forbids single quotes and makeDictionaryItem
+	// alters WFTextTokenString when '{' or '}' appears, so fail closed when insideJSONLiteral > 0.
 	v2Esc := formatCherriDoubleQuotedString(s)
 	legEsc := v2Esc
-	if strings.Contains(s, "{") {
+	if ctx.insideJSONLiteral > 0 {
+		if strings.ContainsAny(s, "{}") {
+			return semanticExprPair{}, false
+		}
+	} else if strings.Contains(s, "{") {
 		if !strings.ContainsAny(s, "'\n\r\t\\") {
 			legEsc = "'" + s + "'"
 		} else {
@@ -1433,13 +1645,37 @@ func (ctx *semanticImportContext) renderSerializedAttachmentPair(m map[string]an
 	return ctx.renderAttachmentBodyPair(valMap, insideAssign)
 }
 
+func (ctx *semanticImportContext) nextRawRefName() string {
+	for {
+		ctx.rawRefCounter++
+		cand := fmt.Sprintf("_rawRef_%d", ctx.rawRefCounter)
+		if _, exists := ctx.Symbols[cand]; !exists {
+			return cand
+		}
+	}
+}
+
+func (ctx *semanticImportContext) flushPendingLegacyDecls(legExpr string) string {
+	if len(ctx.pendingLegacyDecls) == 0 {
+		return legExpr
+	}
+	joined := strings.Join(ctx.pendingLegacyDecls, "\n") + "\n" + legExpr
+	ctx.pendingLegacyDecls = nil
+	return joined
+}
+
 func (ctx *semanticImportContext) renderAttachmentBodyPair(att map[string]any, insideAssign bool) (semanticExprPair, bool) {
+	return ctx.renderAttachmentBodyPairEx(att, insideAssign, false)
+}
+
+func (ctx *semanticImportContext) renderAttachmentBodyPairEx(att map[string]any, insideAssign, insideString bool) (semanticExprPair, bool) {
 	typ, _ := att["Type"].(string)
 	if typ == "" {
 		return semanticExprPair{}, false
 	}
 
 	var legBase, v2Base string
+	var needSymbolicFallback bool
 	switch typ {
 	case "ActionOutput":
 		u, _ := att["OutputUUID"].(string)
@@ -1449,6 +1685,13 @@ func (ctx *semanticImportContext) renderAttachmentBodyPair(att map[string]any, i
 		}
 		legBase = sym
 		v2Base = sym
+		on, hasOn := att["OutputName"].(string)
+		symRec := ctx.Symbols[sym]
+		symHasOutName, _ := symRec["HasOutputName"].(bool)
+		symOutName, _ := symRec["OutputName"].(string)
+		if hasOn != symHasOutName || (hasOn && on != symOutName) {
+			needSymbolicFallback = true
+		}
 	case "Variable":
 		vn, _ := att["VariableName"].(string)
 		if vn == "" {
@@ -1478,7 +1721,7 @@ func (ctx *semanticImportContext) renderAttachmentBodyPair(att map[string]any, i
 		v2Base = "Clipboard"
 	case "Ask":
 		if p, _ := att["Prompt"].(string); p != "" {
-			return semanticExprPair{}, false
+			needSymbolicFallback = true
 		}
 		legBase = "Ask"
 		v2Base = "Ask"
@@ -1492,17 +1735,156 @@ func (ctx *semanticImportContext) renderAttachmentBodyPair(att map[string]any, i
 	rawAggrs, hasAggrs := att["Aggrandizements"]
 	if hasAggrs {
 		agList, ok := rawAggrs.([]any)
-		if ok && len(agList) > 0 {
-			legRef, v2Ref, ok := ctx.applyAggrandizementSuffixes(legBase, v2Base, agList, typ == "DeviceDetails")
-			if !ok {
-				return semanticExprPair{}, false
+		if !ok {
+			return semanticExprPair{}, false
+		}
+		if len(agList) > 0 {
+			if !needSymbolicFallback {
+				legRef, v2Ref, needsLegacyFallback, okA := ctx.applyAggrandizementSuffixes(legBase, v2Base, agList, typ == "DeviceDetails", ctx.attachmentBaseValueType(att))
+				if okA {
+					_ = insideAssign
+					if needsLegacyFallback {
+						rawPair, okRaw := ctx.renderSymbolicRawRefPair(att, insideString)
+						if !okRaw {
+							return semanticExprPair{}, false
+						}
+						legRef = rawPair.Legacy
+					}
+					return semanticExprPair{Legacy: legRef, V2: v2Ref}, true
+				}
 			}
-			_ = insideAssign
-			return semanticExprPair{Legacy: legRef, V2: v2Ref}, true
+			return ctx.renderSymbolicRawRefPair(att, insideString)
 		}
 	}
 
+	if needSymbolicFallback {
+		return ctx.renderSymbolicRawRefPair(att, insideString)
+	}
 	return semanticExprPair{Legacy: legBase, V2: v2Base}, true
+}
+
+func (ctx *semanticImportContext) renderSymbolicRawRefPair(att map[string]any, insideString bool) (semanticExprPair, bool) {
+	if !insideString && ctx.insideJSONLiteral > 0 {
+		return semanticExprPair{}, false
+	}
+	for k := range att {
+		switch k {
+		case "Type", "OutputUUID", "OutputName", "VariableName", "Prompt", "Aggrandizements":
+		default:
+			return semanticExprPair{}, false
+		}
+	}
+
+	typ, _ := att["Type"].(string)
+	legMap := make(map[string]any)
+	var legBaseSym string
+	var v2Primary string
+	var v2Named []string
+
+	switch typ {
+	case "ActionOutput":
+		u, _ := att["OutputUUID"].(string)
+		sym, ok := ctx.UUIDToSymbol[u]
+		if !ok || sym == "" {
+			return semanticExprPair{}, false
+		}
+		legBaseSym = sym
+		v2Primary = sym
+		symRec := ctx.Symbols[sym]
+		symHasOutName, _ := symRec["HasOutputName"].(bool)
+		if on, hasOn := att["OutputName"].(string); hasOn && on != "" {
+			legMap["OutputName"] = on
+			v2Named = append(v2Named, "outputName: "+formatCherriDoubleQuotedString(on))
+		} else if symHasOutName {
+			legMap["OutputName"] = ""
+			v2Named = append(v2Named, `outputName: ""`)
+		}
+	case "Variable":
+		vn, _ := att["VariableName"].(string)
+		if vn == "" {
+			vn, _ = att["OutputName"].(string)
+		}
+		if vn == "" {
+			return semanticExprPair{}, false
+		}
+		if isBuiltinLoopVarName(vn) {
+			legMap["Type"] = "Variable"
+			legMap["VariableName"] = vn
+			v2Named = append(v2Named, `kind: "Variable"`, "name: "+formatCherriDoubleQuotedString(vn))
+		} else {
+			sym, ok := ctx.VarToSymbol[vn]
+			if !ok || sym == "" {
+				return semanticExprPair{}, false
+			}
+			legBaseSym = sym
+			v2Primary = sym
+			if on, hasOn := att["OutputName"].(string); hasOn && on != "" {
+				legMap["OutputName"] = on
+				v2Named = append(v2Named, "outputName: "+formatCherriDoubleQuotedString(on))
+			}
+		}
+	case "ExtensionInput":
+		legMap["Type"] = "ExtensionInput"
+		v2Primary = "ShortcutInput"
+	case "CurrentDate":
+		legMap["Type"] = "CurrentDate"
+		v2Primary = "CurrentDate"
+	case "Clipboard":
+		legMap["Type"] = "Clipboard"
+		v2Primary = "Clipboard"
+	case "DeviceDetails":
+		legMap["Type"] = "DeviceDetails"
+		v2Primary = "Device"
+	case "Ask":
+		legMap["Type"] = "Ask"
+		v2Primary = "Ask"
+		if p, hasP := att["Prompt"].(string); hasP && p != "" {
+			legMap["Prompt"] = p
+			v2Named = append(v2Named, "prompt: "+formatCherriDoubleQuotedString(p))
+		}
+	default:
+		return semanticExprPair{}, false
+	}
+
+	if rawAggrs, hasAggrs := att["Aggrandizements"]; hasAggrs {
+		agList, ok := rawAggrs.([]any)
+		if !ok {
+			return semanticExprPair{}, false
+		}
+		if len(agList) > 0 {
+			legMap["Aggrandizements"] = agList
+			agPlistLit, err := encodePlistValueToLiteral(map[string]any{"Aggrandizements": agList})
+			if err != nil {
+				return semanticExprPair{}, false
+			}
+			v2Named = append(v2Named, "aggrandizements: native.plist("+formatCherriDoubleQuotedString(agPlistLit)+")")
+		}
+	}
+
+	legPlistLit, err := encodePlistValueToLiteral(legMap)
+	if err != nil {
+		return semanticExprPair{}, false
+	}
+	var legCall string
+	if legBaseSym != "" {
+		legCall = fmt.Sprintf("rawRef(%s, rawPlist(%s))", legBaseSym, formatCherriDoubleQuotedString(legPlistLit))
+	} else {
+		legCall = fmt.Sprintf("rawRef(rawPlist(%s))", formatCherriDoubleQuotedString(legPlistLit))
+	}
+	legOut := legCall
+	if insideString {
+		tmp := ctx.nextRawRefName()
+		ctx.pendingLegacyDecls = append(ctx.pendingLegacyDecls, fmt.Sprintf("const %s = %s", tmp, legCall))
+		legOut = tmp
+	}
+
+	v2Args := make([]string, 0, 1+len(v2Named))
+	if v2Primary != "" {
+		v2Args = append(v2Args, v2Primary)
+	}
+	v2Args = append(v2Args, v2Named...)
+	v2Out := fmt.Sprintf("native.ref(%s)", strings.Join(v2Args, ", "))
+	return semanticExprPair{Legacy: legOut, V2: v2Out}, true
 }
 
 func isBuiltinLoopVarName(plistName string) bool {
@@ -1531,22 +1913,55 @@ func builtinLoopIdentFromPlistName(plistName string) string {
 	return ""
 }
 
-func (ctx *semanticImportContext) applyAggrandizementSuffixes(legBase, v2Base string, agList []any, isDevice bool) (string, string, bool) {
+func (ctx *semanticImportContext) attachmentBaseValueType(att map[string]any) string {
+	switch strVal(att["Type"]) {
+	case "ActionOutput":
+		if sym, ok := ctx.UUIDToSymbol[strVal(att["OutputUUID"])]; ok && sym != "" {
+			return strVal(ctx.Symbols[sym]["ValueType"])
+		}
+	case "Variable":
+		vn := strVal(att["VariableName"])
+		if vn == "" {
+			vn = strVal(att["OutputName"])
+		}
+		if vn == "" || isBuiltinLoopVarName(vn) {
+			return ""
+		}
+		if sym, ok := ctx.VarToSymbol[vn]; ok && sym != "" {
+			if vt := strVal(ctx.Symbols[sym]["ValueType"]); vt != "" {
+				return vt
+			}
+			if da, _ := ctx.Symbols[sym]["DictAggrandizement"].(bool); da {
+				return "Dictionary"
+			}
+			return ""
+		}
+	case "CurrentDate":
+		return "Date"
+	case "DeviceDetails":
+		return "DeviceDetails"
+	}
+	return ""
+}
+
+func (ctx *semanticImportContext) applyAggrandizementSuffixes(legBase, v2Base string, agList []any, isDevice bool, baseVT string) (string, string, bool, bool) {
 	// Convert to []Aggrandizement to reuse decompile.go's decompAggrandizements for Legacy,
 	// and pair with V2's MemberExpr/IndexExpr syntax!
 	// Legacy decompAggrandizements/makeAttachmentValues only emit at most one getAs/Prop followed
-	// by at most one Coercion, so skip multi-element chains whose order diverges.
+	// by at most one Coercion (plus single leading Coercion -> ['Key']/['Prop'] with coerceFirst).
 	if len(agList) > 2 {
-		return "", "", false
+		return "", "", false, false
 	}
 	sawIndexOrProp := false
 	sawCoerce := false
+	needsLegacyFallback := false
+	firstCoerceAlias := ""
 	typed := make([]Aggrandizement, 0, len(agList))
 	v2Expr := v2Base
 	for _, rawA := range agList {
 		m, ok := rawA.(map[string]any)
 		if !ok {
-			return "", "", false
+			return "", "", false, false
 		}
 		typ, _ := m["Type"].(string)
 		ag := Aggrandizement{
@@ -1558,7 +1973,7 @@ func (ctx *semanticImportContext) applyAggrandizementSuffixes(legBase, v2Base st
 		}
 		if ag.PropertyUserInfo != nil {
 			// Complex PropertyUserInfo is outside plain dot/bracket aggrandizements.
-			return "", "", false
+			return "", "", false, false
 		}
 		typed = append(typed, ag)
 
@@ -1567,35 +1982,56 @@ func (ctx *semanticImportContext) applyAggrandizementSuffixes(legBase, v2Base st
 			allowCoerceFirstDict := sawCoerce && len(typed) == 2 &&
 				typed[0].Type == "WFCoercionVariableAggrandizement" &&
 				typed[0].CoercionItemClass == "WFDictionaryContentItem"
-			if ag.DictionaryKey == "" || isDevice || sawIndexOrProp || (sawCoerce && !allowCoerceFirstDict) {
-				return "", "", false
+			if ag.DictionaryKey == "" || isDevice || sawIndexOrProp || (sawCoerce && !allowCoerceFirstDict) ||
+				strings.ContainsAny(ag.DictionaryKey, "'\"}\r\n") {
+				return "", "", false, false
+			}
+			if !allowCoerceFirstDict && baseVT != "Dictionary" {
+				if baseVT != "" && baseVT != "List" {
+					return "", "", false, false
+				}
+				needsLegacyFallback = true
 			}
 			sawIndexOrProp = true
 			v2Expr = fmt.Sprintf("%s[%s]", v2Expr, formatCherriDoubleQuotedString(ag.DictionaryKey))
 		case "WFCoercionVariableAggrandizement":
 			if sawCoerce {
-				return "", "", false
+				return "", "", false, false
 			}
 			sawCoerce = true
 			alias, found := coercionAliasForClass(ag.CoercionItemClass)
 			if !found {
-				return "", "", false
+				return "", "", false, false
+			}
+			if len(typed) == 1 {
+				firstCoerceAlias = alias
 			}
 			v2Expr = fmt.Sprintf("%s.%s", v2Expr, alias)
 		case "WFPropertyVariableAggrandizement":
-			if ag.PropertyName == "" || sawIndexOrProp || sawCoerce {
-				return "", "", false
+			allowCoerceFirstNonDict := sawCoerce && len(typed) == 2 &&
+				typed[0].Type == "WFCoercionVariableAggrandizement" &&
+				typed[0].CoercionItemClass != "" &&
+				typed[0].CoercionItemClass != "WFDictionaryContentItem"
+			if ag.PropertyName == "" || sawIndexOrProp || (sawCoerce && !allowCoerceFirstNonDict) ||
+				strings.ContainsAny(ag.PropertyName, "'\"}\r\n") {
+				return "", "", false, false
+			}
+			if !allowCoerceFirstNonDict && baseVT == "Dictionary" {
+				return "", "", false, false
+			}
+			if isDevice && sawCoerce {
+				return "", "", false, false
 			}
 			sawIndexOrProp = true
-			if isDevice {
+			if isDevice || allowCoerceFirstNonDict {
 				v2Expr = fmt.Sprintf("%s[%s]", v2Expr, formatCherriDoubleQuotedString(ag.PropertyName))
 			} else if isSimpleIdent(ag.PropertyName) && !contentItemClassesLower()[strings.ToLower(ag.PropertyName)] {
 				v2Expr = fmt.Sprintf("%s.%s", v2Expr, ag.PropertyName)
 			} else {
-				return "", "", false
+				return "", "", false, false
 			}
 		default:
-			return "", "", false
+			return "", "", false, false
 		}
 	}
 
@@ -1603,22 +2039,25 @@ func (ctx *semanticImportContext) applyAggrandizementSuffixes(legBase, v2Base st
 	if len(typed) == 2 && !isDevice &&
 		typed[0].Type == "WFCoercionVariableAggrandizement" && typed[0].CoercionItemClass == "WFDictionaryContentItem" &&
 		typed[1].Type == "WFDictionaryValueVariableAggrandizement" && typed[1].DictionaryKey != "" &&
-		!strings.ContainsAny(typed[1].DictionaryKey, "'\"\r\n") {
+		!strings.ContainsAny(typed[1].DictionaryKey, "'\"}\r\n") {
 		legRef = fmt.Sprintf("%s.dictionary['%s']", legBase, typed[1].DictionaryKey)
+	} else if len(typed) == 2 && !isDevice &&
+		typed[0].Type == "WFCoercionVariableAggrandizement" && typed[0].CoercionItemClass != "" &&
+		typed[0].CoercionItemClass != "WFDictionaryContentItem" &&
+		typed[1].Type == "WFPropertyVariableAggrandizement" && typed[1].PropertyName != "" &&
+		firstCoerceAlias != "" && !strings.ContainsAny(typed[1].PropertyName, "'\"}\r\n") {
+		legRef = fmt.Sprintf("%s.%s['%s']", legBase, firstCoerceAlias, typed[1].PropertyName)
 	} else {
 		legRef = legBase
 		decompAggrandizements(&legRef, typed)
 	}
 	if legRef == "" || v2Expr == "" {
-		return "", "", false
+		return "", "", false, false
 	}
-	return legRef, v2Expr, true
+	return legRef, v2Expr, needsLegacyFallback, true
 }
 
 func unwrapWFListItem(it any) (any, bool) {
-	if s, ok := it.(string); ok {
-		return s, true
-	}
 	m, ok := it.(map[string]any)
 	if !ok || len(m) != 2 {
 		return nil, false
@@ -1628,7 +2067,15 @@ func unwrapWFListItem(it any) (any, bool) {
 	if !okT || itType != 0 || !hasVal {
 		return nil, false
 	}
-	return val, true
+	switch v := val.(type) {
+	case string:
+		return v, true
+	case map[string]any:
+		if ser, _ := v["WFSerializationType"].(string); ser == "WFTextTokenString" {
+			return v, true
+		}
+	}
+	return nil, false
 }
 
 func (ctx *semanticImportContext) reverseTextPartsParam(rec NativeActionRecord, callableName string, p parameterDefinition) (semanticExprPair, bool, bool) {
@@ -1673,6 +2120,66 @@ func (ctx *semanticImportContext) reverseTextPartsParam(rec NativeActionRecord, 
 	default:
 		return semanticExprPair{}, true, false
 	}
+}
+
+func (ctx *semanticImportContext) reverseAskDefaultParam(rec NativeActionRecord, def *actionDefinition, p parameterDefinition) (semanticExprPair, bool, bool) {
+	if def == nil || def.identifier != "ask" || p.name != "defaultValue" {
+		return semanticExprPair{}, false, false
+	}
+	allDefaultKeys := []string{
+		"WFAskActionDefaultAnswer",
+		"WFAskActionDefaultAnswerNumber",
+		"WFAskActionDefaultAnswerURL",
+		"WFAskActionDefaultAnswerDate",
+		"WFAskActionDefaultAnswerTime",
+		"WFAskActionDefaultAnswerDateAndTime",
+	}
+	var presentKeys []string
+	for _, k := range allDefaultKeys {
+		if _, ok := rec.Parameters[k]; ok {
+			presentKeys = append(presentKeys, k)
+		}
+	}
+	if len(presentKeys) == 0 {
+		return semanticExprPair{}, true, true
+	}
+	if len(presentKeys) > 1 {
+		return semanticExprPair{}, true, false
+	}
+	actualKey := presentKeys[0]
+	inputType, _ := rec.Parameters["WFInputType"].(string)
+	expectedKey := "WFAskActionDefaultAnswer"
+	switch inputType {
+	case "Number":
+		expectedKey = "WFAskActionDefaultAnswerNumber"
+	case "URL":
+		expectedKey = "WFAskActionDefaultAnswerURL"
+	case "Date":
+		expectedKey = "WFAskActionDefaultAnswerDate"
+	case "Time":
+		expectedKey = "WFAskActionDefaultAnswerTime"
+	case "Date and Time":
+		expectedKey = "WFAskActionDefaultAnswerDateAndTime"
+	}
+	if actualKey != expectedKey {
+		return semanticExprPair{}, true, false
+	}
+	rawVal := rec.Parameters[actualKey]
+	if actualKey == "WFAskActionDefaultAnswerNumber" {
+		switch v := rawVal.(type) {
+		case string:
+			ep, ok := ctx.renderStringPair(v)
+			return ep, true, ok
+		case map[string]any:
+			if ser, _ := v["WFSerializationType"].(string); ser == "WFTextTokenAttachment" {
+				ep, ok := ctx.renderSerializedAttachmentPair(v, false)
+				return ep, true, ok
+			}
+		}
+		return semanticExprPair{}, true, false
+	}
+	ep, ok := ctx.renderAnyTextPair(rawVal, true)
+	return ep, true, ok
 }
 
 func coercionAliasForClass(class string) (string, bool) {
@@ -1732,6 +2239,9 @@ func (ctx *semanticImportContext) renderWFTextTokenStringPair(m map[string]any) 
 	}
 	rawAtts, hasAtts := valMap["attachmentsByRange"].(map[string]any)
 	if !hasAtts || len(rawAtts) == 0 {
+		if hasAtts {
+			return semanticExprPair{}, false
+		}
 		// Uninterpolated WFTextTokenString: check if natural string produces WFTextTokenString cleanly when checked.
 		return ctx.renderStringPair(str)
 	}
@@ -1741,24 +2251,29 @@ func (ctx *semanticImportContext) renderWFTextTokenStringPair(m map[string]any) 
 		endRune   int
 		att       semanticExprPair
 	}
+	prevDeclsLen := len(ctx.pendingLegacyDecls)
 	spans := make([]rangeSpan, 0, len(rawAtts))
 	for rngStr, rawA := range rawAtts {
 		var u16Start, u16Len int
 		if _, err := fmt.Sscanf(rngStr, "{%d, %d}", &u16Start, &u16Len); err != nil || u16Len <= 0 || u16Start < 0 {
+			ctx.pendingLegacyDecls = ctx.pendingLegacyDecls[:prevDeclsLen]
 			return semanticExprPair{}, false
 		}
 		attMap, ok := rawA.(map[string]any)
 		if !ok {
+			ctx.pendingLegacyDecls = ctx.pendingLegacyDecls[:prevDeclsLen]
 			return semanticExprPair{}, false
 		}
 		// Reuse decompile.go's utf16OffsetToRuneIndex for exact surrogate/emoji alignment!
 		sr := utf16OffsetToRuneIndex(str, u16Start)
 		er := utf16OffsetToRuneIndex(str, u16Start+u16Len)
 		if sr < 0 || er < sr {
+			ctx.pendingLegacyDecls = ctx.pendingLegacyDecls[:prevDeclsLen]
 			return semanticExprPair{}, false
 		}
-		ep, ok := ctx.renderAttachmentBodyPair(attMap, false)
+		ep, ok := ctx.renderAttachmentBodyPairEx(attMap, false, true)
 		if !ok {
+			ctx.pendingLegacyDecls = ctx.pendingLegacyDecls[:prevDeclsLen]
 			return semanticExprPair{}, false
 		}
 		spans = append(spans, rangeSpan{startRune: sr, endRune: er, att: ep})
@@ -1768,26 +2283,34 @@ func (ctx *semanticImportContext) renderWFTextTokenStringPair(m map[string]any) 
 	})
 
 	runes := []rune(str)
-	var legSB, v2SB strings.Builder
+	var legSB, v2SB, legRawSB strings.Builder
+	var expectedSpans [][2]int
 	legSB.WriteByte('"')
 	v2SB.WriteString(`f"`)
 
 	cursor := 0
 	for _, sp := range spans {
 		if sp.startRune < cursor || sp.endRune > len(runes) {
+			ctx.pendingLegacyDecls = ctx.pendingLegacyDecls[:prevDeclsLen]
 			return semanticExprPair{}, false
 		}
 		litChunk := string(runes[cursor:sp.startRune])
-		if strings.Contains(litChunk, "{") {
-			// Legacy Cherri cannot safely distinguish literal '{' inside double-quoted interpolation string.
+		if checkInlineVarRegex.MatchString(litChunk) {
+			ctx.pendingLegacyDecls = ctx.pendingLegacyDecls[:prevDeclsLen]
 			return semanticExprPair{}, false
 		}
 		writeEscapedDualLiteralChunk(&legSB, litChunk, false)
 		writeEscapedDualLiteralChunk(&v2SB, litChunk, true)
+		legRawSB.WriteString(litChunk)
 
+		spanStart := legRawSB.Len()
 		legSB.WriteByte('{')
 		legSB.WriteString(sp.att.Legacy)
 		legSB.WriteByte('}')
+		legRawSB.WriteByte('{')
+		legRawSB.WriteString(sp.att.Legacy)
+		legRawSB.WriteByte('}')
+		expectedSpans = append(expectedSpans, [2]int{spanStart, legRawSB.Len()})
 
 		v2SB.WriteByte('{')
 		v2SB.WriteString(sp.att.V2)
@@ -1797,11 +2320,24 @@ func (ctx *semanticImportContext) renderWFTextTokenStringPair(m map[string]any) 
 	}
 	if cursor < len(runes) {
 		tail := string(runes[cursor:])
-		if strings.Contains(tail, "{") {
+		if checkInlineVarRegex.MatchString(tail) {
+			ctx.pendingLegacyDecls = ctx.pendingLegacyDecls[:prevDeclsLen]
 			return semanticExprPair{}, false
 		}
 		writeEscapedDualLiteralChunk(&legSB, tail, false)
 		writeEscapedDualLiteralChunk(&v2SB, tail, true)
+		legRawSB.WriteString(tail)
+	}
+	gotSpans := checkInlineVarRegex.FindAllStringIndex(legRawSB.String(), -1)
+	if len(gotSpans) != len(expectedSpans) {
+		ctx.pendingLegacyDecls = ctx.pendingLegacyDecls[:prevDeclsLen]
+		return semanticExprPair{}, false
+	}
+	for idx, exp := range expectedSpans {
+		if gotSpans[idx][0] != exp[0] || gotSpans[idx][1] != exp[1] {
+			ctx.pendingLegacyDecls = ctx.pendingLegacyDecls[:prevDeclsLen]
+			return semanticExprPair{}, false
+		}
 	}
 	legSB.WriteByte('"')
 	v2SB.WriteByte('"')
@@ -1840,6 +2376,10 @@ func writeEscapedDualLiteralChunk(sb *strings.Builder, chunk string, isV2FString
 }
 
 func (ctx *semanticImportContext) renderArrayLiteralPair(items []any) (semanticExprPair, bool) {
+	ctx.insideJSONLiteral++
+	defer func() {
+		ctx.insideJSONLiteral--
+	}()
 	var legParts, v2Parts []string
 	for _, it := range items {
 		ep, ok := ctx.renderVariableInputPair(it)
@@ -1856,6 +2396,10 @@ func (ctx *semanticImportContext) renderArrayLiteralPair(items []any) (semanticE
 }
 
 func (ctx *semanticImportContext) renderPlainDictPair(m map[string]any) (semanticExprPair, bool) {
+	ctx.insideJSONLiteral++
+	defer func() {
+		ctx.insideJSONLiteral--
+	}()
 	keys := make([]string, 0, len(m))
 	for k := range m {
 		keys = append(keys, k)
@@ -1889,6 +2433,10 @@ func (ctx *semanticImportContext) renderStrictSortedDictionaryPair(m map[string]
 }
 
 func (ctx *semanticImportContext) renderWFDictionaryPairMode(m map[string]any, requireSortedUniqueKeys bool) (semanticExprPair, bool) {
+	ctx.insideJSONLiteral++
+	defer func() {
+		ctx.insideJSONLiteral--
+	}()
 	valWrap, _ := m["Value"].(map[string]any)
 	if valWrap == nil {
 		return semanticExprPair{}, false
@@ -1962,7 +2510,12 @@ func (ctx *semanticImportContext) unwrapWFDictionaryKey(raw any) (string, semant
 		if v == nil {
 			return "", semanticExprPair{}, false
 		}
-		if att, hasAtt := v["attachmentsByRange"].(map[string]any); !hasAtt || len(att) == 0 {
+		att, hasAtt := v["attachmentsByRange"].(map[string]any)
+		if hasAtt {
+			if len(att) == 0 {
+				return "", semanticExprPair{}, false
+			}
+		} else {
 			if s, okS := v["string"].(string); okS {
 				ep, okE := ctx.renderStringPair(s)
 				return s, ep, okE
@@ -2108,7 +2661,35 @@ func (ctx *semanticImportContext) trySynthesizeRegion(reg *semanticControlRegion
 	}
 }
 
+func (ctx *semanticImportContext) isControlBranchProducerSafe(rec NativeActionRecord) bool {
+	if rec.UUID != "" && ctx.UsedProducerUUIDs[rec.UUID] {
+		return false
+	}
+	if _, hasCustom := rec.Parameters["CustomOutputName"]; hasCustom && rec.UUID == "" {
+		return false
+	}
+	return true
+}
+
+func (ctx *semanticImportContext) controlEndAssignPrefix(endRec NativeActionRecord) (legPrefix, v2Prefix string, ok bool) {
+	if endRec.UUID != "" && ctx.UsedProducerUUIDs[endRec.UUID] {
+		sym, hasSym := ctx.UUIDToSymbol[endRec.UUID]
+		if !hasSym || sym == "" {
+			return "", "", false
+		}
+		return fmt.Sprintf("const %s = ", sym), fmt.Sprintf("let %s = ", sym), true
+	}
+	if _, hasCustom := endRec.Parameters["CustomOutputName"]; hasCustom {
+		return "", "", false
+	}
+	return "", "", true
+}
+
 func (ctx *semanticImportContext) trySynthesizeConditionalRegion(reg *semanticControlRegion, plan *HybridImportPlan) {
+	ctx.pendingLegacyDecls = nil
+	defer func() {
+		ctx.pendingLegacyDecls = nil
+	}()
 	startRec := ctx.Doc.Actions[reg.Start]
 	endRec := ctx.Doc.Actions[reg.End]
 	if !startRec.HadParametersKey || !endRec.HadParametersKey {
@@ -2117,14 +2698,19 @@ func (ctx *semanticImportContext) trySynthesizeConditionalRegion(reg *semanticCo
 	if len(reg.Mids) > 1 {
 		return
 	}
-	if endRec.UUID != "" && ctx.UsedProducerUUIDs[endRec.UUID] {
+	if !ctx.isControlBranchProducerSafe(startRec) {
+		return
+	}
+	endAssignLeg, endAssignV2, okEnd := ctx.controlEndAssignPrefix(endRec)
+	if !okEnd {
 		return
 	}
 	allowedStart := map[string]bool{
 		"GroupingIdentifier": true, "WFControlFlowMode": true,
 		"WFCondition": true, "WFInput": true,
 		"WFConditionalActionString": true, "WFNumberValue": true, "WFAnotherNumber": true,
-		"WFDate": true, "WFAnotherDate": true, "WFConditionalLegacyComparisonBehavior": true,
+		"WFDate": true, "WFAnotherDate": true, "WFEnumeration": true, "WFDuration": true,
+		"WFConditions": true, "WFConditionalLegacyComparisonBehavior": true,
 	}
 	if !ctx.hasOnlyAllowedExtraKeys(startRec.Parameters, allowedStart) {
 		return
@@ -2134,7 +2720,8 @@ func (ctx *semanticImportContext) trySynthesizeConditionalRegion(reg *semanticCo
 	}
 	if len(reg.Mids) == 1 {
 		midRec := ctx.Doc.Actions[reg.Mids[0]]
-		if !midRec.HadParametersKey || !ctx.hasOnlyAllowedExtraKeys(midRec.Parameters, map[string]bool{"GroupingIdentifier": true, "WFControlFlowMode": true}) {
+		if !midRec.HadParametersKey || !ctx.isControlBranchProducerSafe(midRec) ||
+			!ctx.hasOnlyAllowedExtraKeys(midRec.Parameters, map[string]bool{"GroupingIdentifier": true, "WFControlFlowMode": true}) {
 			return
 		}
 	}
@@ -2146,7 +2733,7 @@ func (ctx *semanticImportContext) trySynthesizeConditionalRegion(reg *semanticCo
 
 	// Set atomic RegionGroupID decisions across start / else / end.
 	plan.Decisions[reg.Start].RegionGroupID = reg.GroupID
-	applyDecisionCandidate(&plan.Decisions[reg.Start], condPair.Legacy, condPair.V2, "conditional", "")
+	applyDecisionCandidate(&plan.Decisions[reg.Start], ctx.flushPendingLegacyDecls(endAssignLeg+condPair.Legacy), endAssignV2+condPair.V2, "conditional", "")
 
 	if len(reg.Mids) == 1 {
 		mIdx := reg.Mids[0]
@@ -2158,18 +2745,106 @@ func (ctx *semanticImportContext) trySynthesizeConditionalRegion(reg *semanticCo
 	applyDecisionCandidate(&plan.Decisions[reg.End], "}", "}", "conditional", "")
 }
 
-func (ctx *semanticImportContext) renderSingleConditionPair(params map[string]any) (semanticExprPair, bool) {
+func hasAnyConditionRHSKey(params map[string]any) bool {
+	for _, k := range []string{
+		"WFConditionalActionString", "WFNumberValue", "WFAnotherNumber",
+		"WFDate", "WFAnotherDate", "WFEnumeration", "WFDuration",
+	} {
+		if _, ok := params[k]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+func conditionBinaryOperator(condCode int) (string, bool) {
+	switch condCode {
+	case 4:
+		return "==", true
+	case 5:
+		return "!=", true
+	case 2:
+		return ">", true
+	case 3:
+		return ">=", true
+	case 0:
+		return "<", true
+	case 1:
+		return "<=", true
+	case 99:
+		return "contains", true
+	case 8:
+		return "beginsWith", true
+	case 9:
+		return "endsWith", true
+	default:
+		return "", false
+	}
+}
+
+func (ctx *semanticImportContext) renderConditionNumberRHS(v any) (semanticExprPair, bool) {
+	if s, ok := v.(string); ok {
+		q := formatCherriDoubleQuotedString(s)
+		arg := fmt.Sprintf("numeric(%s)", q)
+		return semanticExprPair{Legacy: arg, V2: arg}, true
+	}
+	return ctx.renderNumberOrAttachmentPair(v)
+}
+
+func (ctx *semanticImportContext) renderConditionDateRHS(v any) (semanticExprPair, bool) {
+	if s, ok := v.(string); ok {
+		if s == "" {
+			return semanticExprPair{}, false
+		}
+		return ctx.renderStringPair(s)
+	}
+	if m, ok := v.(map[string]any); ok {
+		ser, _ := m["WFSerializationType"].(string)
+		if ser == "WFTextTokenAttachment" {
+			return ctx.renderSerializedAttachmentPair(m, false)
+		}
+		if ser == "WFTextTokenString" {
+			return ctx.renderWFTextTokenStringPair(m)
+		}
+		if typ, _ := m["Type"].(string); typ != "" {
+			return ctx.renderAttachmentBodyPair(m, false)
+		}
+	}
+	return semanticExprPair{}, false
+}
+
+func (ctx *semanticImportContext) conditionInputIsDate(inVarRaw any) bool {
+	att, _ := inVarRaw.(map[string]any)
+	if ser, _ := att["WFSerializationType"].(string); ser == "WFTextTokenAttachment" {
+		att, _ = att["Value"].(map[string]any)
+	}
+	if att == nil {
+		return false
+	}
+	if rawAgs, ok := att["Aggrandizements"].([]any); ok && len(rawAgs) > 0 {
+		for i := len(rawAgs) - 1; i >= 0; i-- {
+			if am, ok := rawAgs[i].(map[string]any); ok && strVal(am["Type"]) == "WFCoercionVariableAggrandizement" {
+				return strVal(am["CoercionItemClass"]) == "WFDateContentItem"
+			}
+		}
+	}
+	return ctx.attachmentBaseValueType(att) == "Date"
+}
+
+func (ctx *semanticImportContext) renderConditionClausePair(params map[string]any) (semanticExprPair, bool) {
 	condCode, okC := provInt(params["WFCondition"])
 	if !okC {
 		return semanticExprPair{}, false
 	}
-
 	rawInput, hasIn := params["WFInput"]
 	if !hasIn {
 		return semanticExprPair{}, false
 	}
 	inMap, okIn := rawInput.(map[string]any)
-	if !okIn {
+	if !okIn || len(inMap) != 2 {
+		return semanticExprPair{}, false
+	}
+	if typ, _ := inMap["Type"].(string); typ != "Variable" {
 		return semanticExprPair{}, false
 	}
 	inVarRaw, hasVar := inMap["Variable"]
@@ -2181,108 +2856,261 @@ func (ctx *semanticImportContext) renderSingleConditionPair(params map[string]an
 		return semanticExprPair{}, false
 	}
 
-	// Track WFConditionalLegacyComparisonBehavior presence accurately across dialects:
-	// Legacy `if legacy ...` emits WFConditionalLegacyComparisonBehavior:true, plain `if ...` omits it.
-	// V2 `if ...` emits WFConditionalLegacyComparisonBehavior:true unconditionally in emitRaw.
-	hasLegacyFlag := params["WFConditionalLegacyComparisonBehavior"] == true
-	if !hasLegacyFlag {
-		// V2 unconditionally emits WFConditionalLegacyComparisonBehavior: true for mode 0; do not misemit.
-		return semanticExprPair{}, false
-	}
-	legPrefix := "if legacy "
-	v2Prefix := "if "
-
-	// Unary / HasValue / Empty conditions (100 = has any value, 101 = does not have any value, 1002 = isToday)
 	switch condCode {
 	case 100:
-		return semanticExprPair{
-			Legacy: fmt.Sprintf("%s%s {", legPrefix, inExpr.Legacy),
-			V2:     fmt.Sprintf("%s%s {", v2Prefix, inExpr.V2),
-		}, true
+		if hasAnyConditionRHSKey(params) {
+			return semanticExprPair{}, false
+		}
+		return semanticExprPair{Legacy: inExpr.Legacy, V2: inExpr.V2}, true
 	case 101:
-		return semanticExprPair{
-			Legacy: fmt.Sprintf("%s!%s {", legPrefix, inExpr.Legacy),
-			V2:     fmt.Sprintf("%s!%s {", v2Prefix, inExpr.V2),
-		}, true
+		if hasAnyConditionRHSKey(params) {
+			return semanticExprPair{}, false
+		}
+		return semanticExprPair{Legacy: "!" + inExpr.Legacy, V2: "!" + inExpr.V2}, true
 	case 1002:
+		if hasAnyConditionRHSKey(params) {
+			return semanticExprPair{}, false
+		}
 		return semanticExprPair{
-			Legacy: fmt.Sprintf("%sisToday(%s) {", legPrefix, inExpr.Legacy),
-			V2:     fmt.Sprintf("%sisToday(%s) {", v2Prefix, inExpr.V2),
+			Legacy: fmt.Sprintf("%s isToday", inExpr.Legacy),
+			V2:     fmt.Sprintf("isToday(%s)", inExpr.V2),
 		}, true
-	}
-
-	// Binary comparisons reuse Cherri operator table aligned with decompile.go:matchConditionOperator
-	op := ""
-	switch condCode {
-	case 4:
-		op = "=="
-	case 5:
-		op = "!="
-	case 2:
-		op = ">"
-	case 3:
-		op = ">="
-	case 0:
-		op = "<"
-	case 1:
-		op = "<="
-	case 99:
-		op = "contains"
-	case 999:
-		// `!contains`: check unary bang on contains in V2 and `!contains` in Legacy
-		if cmpStr, hasS := params["WFConditionalActionString"]; hasS {
-			rhs, ok := ctx.renderAnyTextPair(cmpStr, true)
-			if !ok {
+	case 1003:
+		if _, has := params["WFConditionalActionString"]; has {
+			return semanticExprPair{}, false
+		}
+		if _, has := params["WFEnumeration"]; has {
+			return semanticExprPair{}, false
+		}
+		if _, has := params["WFDuration"]; has {
+			return semanticExprPair{}, false
+		}
+		d1Raw, hasDate1 := params["WFDate"]
+		d2Raw, hasDate2 := params["WFAnotherDate"]
+		n1Raw, hasNum1 := params["WFNumberValue"]
+		n2Raw, hasNum2 := params["WFAnotherNumber"]
+		if hasDate1 && hasDate2 && !hasNum1 && !hasNum2 && ctx.conditionInputIsDate(inVarRaw) {
+			r1, ok1 := ctx.renderConditionDateRHS(d1Raw)
+			r2, ok2 := ctx.renderConditionDateRHS(d2Raw)
+			if !ok1 || !ok2 {
 				return semanticExprPair{}, false
 			}
 			return semanticExprPair{
-				Legacy: fmt.Sprintf("%s%s !contains %s {", legPrefix, inExpr.Legacy, rhs.Legacy),
-				V2:     fmt.Sprintf("%s!(%s contains %s) {", v2Prefix, inExpr.V2, rhs.V2),
+				Legacy: fmt.Sprintf("%s <> %s %s", inExpr.Legacy, r1.Legacy, r2.Legacy),
+				V2:     fmt.Sprintf("isBetween(%s, %s, %s)", inExpr.V2, r1.V2, r2.V2),
 			}, true
 		}
+		if hasDate1 || hasDate2 || !hasNum1 || !hasNum2 {
+			return semanticExprPair{}, false
+		}
+		r1, ok1 := ctx.renderConditionNumberRHS(n1Raw)
+		r2, ok2 := ctx.renderConditionNumberRHS(n2Raw)
+		if !ok1 || !ok2 {
+			return semanticExprPair{}, false
+		}
+		return semanticExprPair{
+			Legacy: fmt.Sprintf("%s <> %s %s", inExpr.Legacy, r1.Legacy, r2.Legacy),
+			V2:     fmt.Sprintf("isBetween(%s, %s, %s)", inExpr.V2, r1.V2, r2.V2),
+		}, true
+	}
+
+	if _, hasAnotherNum := params["WFAnotherNumber"]; hasAnotherNum {
 		return semanticExprPair{}, false
-	case 8:
-		op = "beginsWith"
-	case 9:
-		op = "endsWith"
-	default:
+	}
+	if _, hasAnotherDate := params["WFAnotherDate"]; hasAnotherDate {
+		return semanticExprPair{}, false
+	}
+	if _, hasDate := params["WFDate"]; hasDate {
+		return semanticExprPair{}, false
+	}
+	if _, hasDur := params["WFDuration"]; hasDur {
+		return semanticExprPair{}, false
+	}
+
+	strCmp, hasS := params["WFConditionalActionString"]
+	numCmp, hasN := params["WFNumberValue"]
+	enumCmp, hasEn := params["WFEnumeration"]
+	rhsCount := 0
+	if hasS {
+		rhsCount++
+	}
+	if hasN {
+		rhsCount++
+	}
+	if hasEn {
+		rhsCount++
+	}
+	if rhsCount > 1 {
+		return semanticExprPair{}, false
+	}
+	if rhsCount == 0 {
+		switch condCode {
+		case 4:
+			return semanticExprPair{
+				Legacy: fmt.Sprintf("isTrue(%s)", inExpr.Legacy),
+				V2:     fmt.Sprintf("isTrue(%s)", inExpr.V2),
+			}, true
+		case 5:
+			return semanticExprPair{
+				Legacy: fmt.Sprintf("isFalse(%s)", inExpr.Legacy),
+				V2:     fmt.Sprintf("isFalse(%s)", inExpr.V2),
+			}, true
+		default:
+			return semanticExprPair{}, false
+		}
+	}
+
+	if condCode == 999 {
+		if !hasS {
+			return semanticExprPair{}, false
+		}
+		rhs, ok := ctx.renderAnyTextPair(strCmp, true)
+		if !ok {
+			return semanticExprPair{}, false
+		}
+		return semanticExprPair{
+			Legacy: fmt.Sprintf("%s !contains %s", inExpr.Legacy, rhs.Legacy),
+			V2:     fmt.Sprintf("!(%s contains %s)", inExpr.V2, rhs.V2),
+		}, true
+	}
+
+	op, okOp := conditionBinaryOperator(condCode)
+	if !okOp {
 		return semanticExprPair{}, false
 	}
 
 	var rhsPair semanticExprPair
-	if strCmp, hasS := params["WFConditionalActionString"]; hasS {
+	switch {
+	case hasEn:
+		ev, okEv := enumCmp.(string)
+		if !okEv {
+			return semanticExprPair{}, false
+		}
+		q := fmt.Sprintf("condEnum(%s)", formatCherriDoubleQuotedString(ev))
+		rhsPair = semanticExprPair{Legacy: q, V2: q}
+	case hasS:
 		rp, ok := ctx.renderAnyTextPair(strCmp, true)
 		if !ok {
 			return semanticExprPair{}, false
 		}
 		rhsPair = rp
-	} else if numCmp, hasN := params["WFNumberValue"]; hasN {
-		rp, ok := ctx.renderNumberOrAttachmentPair(numCmp)
+	case hasN:
+		rp, ok := ctx.renderConditionNumberRHS(numCmp)
 		if !ok {
 			return semanticExprPair{}, false
 		}
 		rhsPair = rp
-	} else {
-		return semanticExprPair{}, false
 	}
 
 	return semanticExprPair{
-		Legacy: fmt.Sprintf("%s%s %s %s {", legPrefix, inExpr.Legacy, op, rhsPair.Legacy),
-		V2:     fmt.Sprintf("%s%s %s %s {", v2Prefix, inExpr.V2, op, rhsPair.V2),
+		Legacy: fmt.Sprintf("%s %s %s", inExpr.Legacy, op, rhsPair.Legacy),
+		V2:     fmt.Sprintf("%s %s %s", inExpr.V2, op, rhsPair.V2),
+	}, true
+}
+
+func (ctx *semanticImportContext) renderSingleConditionPair(params map[string]any) (semanticExprPair, bool) {
+	rawLeg, hasLegKey := params["WFConditionalLegacyComparisonBehavior"]
+	if hasLegKey && rawLeg != true {
+		return semanticExprPair{}, false
+	}
+	hasLegacyFlag := hasLegKey && rawLeg == true
+	legPrefix := "if "
+	v2Prefix := "if modern: "
+	if hasLegacyFlag {
+		legPrefix = "if legacy "
+		v2Prefix = "if "
+	}
+
+	if rawMulti, hasMulti := params["WFConditions"]; hasMulti {
+		if _, has := params["WFCondition"]; has {
+			return semanticExprPair{}, false
+		}
+		if _, has := params["WFInput"]; has {
+			return semanticExprPair{}, false
+		}
+		if hasAnyConditionRHSKey(params) {
+			return semanticExprPair{}, false
+		}
+		multiMap, okM := rawMulti.(map[string]any)
+		if !okM || multiMap["WFSerializationType"] != "WFContentPredicateTableTemplate" {
+			return semanticExprPair{}, false
+		}
+		valMap, okV := multiMap["Value"].(map[string]any)
+		if !okV {
+			return semanticExprPair{}, false
+		}
+		prefixCode, okP := provInt(valMap["WFActionParameterFilterPrefix"])
+		if !okP || (prefixCode != 0 && prefixCode != 1) {
+			return semanticExprPair{}, false
+		}
+		joiner := " || "
+		if prefixCode == 1 {
+			joiner = " && "
+		}
+		rawTmpls, okT := valMap["WFActionParameterFilterTemplates"].([]any)
+		if !okT || len(rawTmpls) == 0 {
+			return semanticExprPair{}, false
+		}
+		legParts := make([]string, len(rawTmpls))
+		v2Parts := make([]string, len(rawTmpls))
+		allowedTmpl := map[string]bool{
+			"WFCondition": true, "WFInput": true,
+			"WFConditionalActionString": true, "WFNumberValue": true, "WFAnotherNumber": true,
+			"WFDate": true, "WFAnotherDate": true, "WFEnumeration": true, "WFDuration": true,
+		}
+		for i, rawT := range rawTmpls {
+			tMap, okTM := rawT.(map[string]any)
+			if !okTM {
+				return semanticExprPair{}, false
+			}
+			for k := range tMap {
+				if !allowedTmpl[k] {
+					return semanticExprPair{}, false
+				}
+			}
+			cp, okCP := ctx.renderConditionClausePair(tMap)
+			if !okCP {
+				return semanticExprPair{}, false
+			}
+			legParts[i] = cp.Legacy
+			v2Parts[i] = cp.V2
+		}
+		return semanticExprPair{
+			Legacy: legPrefix + strings.Join(legParts, joiner) + " {",
+			V2:     v2Prefix + strings.Join(v2Parts, joiner) + " {",
+		}, true
+	}
+
+	clausePair, ok := ctx.renderConditionClausePair(params)
+	if !ok {
+		return semanticExprPair{}, false
+	}
+	return semanticExprPair{
+		Legacy: legPrefix + clausePair.Legacy + " {",
+		V2:     v2Prefix + clausePair.V2 + " {",
 	}, true
 }
 
 func (ctx *semanticImportContext) trySynthesizeMenuRegion(reg *semanticControlRegion, plan *HybridImportPlan) {
+	ctx.pendingLegacyDecls = nil
+	defer func() {
+		ctx.pendingLegacyDecls = nil
+	}()
 	startRec := ctx.Doc.Actions[reg.Start]
 	endRec := ctx.Doc.Actions[reg.End]
 	if !startRec.HadParametersKey || !endRec.HadParametersKey {
 		return
 	}
-	if endRec.UUID != "" && ctx.UsedProducerUUIDs[endRec.UUID] {
+	if !ctx.isControlBranchProducerSafe(startRec) {
+		return
+	}
+	endAssignLeg, endAssignV2, okEnd := ctx.controlEndAssignPrefix(endRec)
+	if !okEnd {
 		return
 	}
 	if !ctx.hasOnlyAllowedExtraKeys(startRec.Parameters, map[string]bool{
-		"GroupingIdentifier": true, "WFControlFlowMode": true, "WFMenuPrompt": true, "WFMenuItems": true,
+		"GroupingIdentifier": true, "WFControlFlowMode": true,
+		"WFMenuPrompt": true, "WFMenuItems": true, "WFMenuLegacyCancelBehavior": true,
 	}) {
 		return
 	}
@@ -2290,72 +3118,165 @@ func (ctx *semanticImportContext) trySynthesizeMenuRegion(reg *semanticControlRe
 		return
 	}
 
-	rawPrompt, hasPrompt := startRec.Parameters["WFMenuPrompt"]
-	var promptPair semanticExprPair
-	if !hasPrompt {
-		promptPair = semanticExprPair{Legacy: `""`, V2: `""`}
-	} else {
-		ep, ok := ctx.renderAnyTextPair(rawPrompt, false)
-		if !ok {
+	legacyCancel := false
+	if rawLC, hasLC := startRec.Parameters["WFMenuLegacyCancelBehavior"]; hasLC {
+		b, isB := rawLC.(bool)
+		if !isB || !b {
 			return
 		}
-		promptPair = ep
+		legacyCancel = true
 	}
 
-	// Verify WFMenuItems matches the Mode 1 cases 1-to-1 and no extra WFMenuItemAttributedTitle keys alter wire shape.
+	rawPrompt, hasPrompt := startRec.Parameters["WFMenuPrompt"]
+	var legHeader, v2Header string
+	switch {
+	case !hasPrompt:
+		if legacyCancel {
+			legHeader = "menu legacyCancel {"
+			v2Header = "menu(legacyCancel: true) {"
+		} else {
+			legHeader = "menu {"
+			v2Header = "menu {"
+		}
+	default:
+		if ps, okStr := rawPrompt.(string); okStr && ps == "" {
+			if legacyCancel {
+				legHeader = `menu legacyCancel "" {`
+				v2Header = `menu("", legacyCancel: true) {`
+			} else {
+				legHeader = `menu "" {`
+				v2Header = `menu("") {`
+			}
+		} else {
+			promptPair, okP := ctx.renderAnyTextPair(rawPrompt, false)
+			if !okP {
+				return
+			}
+			if legacyCancel {
+				legHeader = fmt.Sprintf("menu legacyCancel %s {", promptPair.Legacy)
+				v2Header = fmt.Sprintf("menu(%s, legacyCancel: true) {", promptPair.V2)
+			} else {
+				legHeader = fmt.Sprintf("menu %s {", promptPair.Legacy)
+				if strings.HasPrefix(promptPair.V2, `"`) {
+					v2Header = fmt.Sprintf("menu %s {", promptPair.V2)
+				} else {
+					v2Header = fmt.Sprintf("menu (%s) {", promptPair.V2)
+				}
+			}
+		}
+	}
+
 	rawItems, hasItems := startRec.Parameters["WFMenuItems"].([]any)
-	if !hasItems || len(rawItems) != len(reg.Mids) || len(reg.Mids) == 0 {
+	if !hasItems || len(rawItems) != len(reg.Mids) || len(reg.Mids) == 0 || reg.Mids[0] != reg.Start+1 {
 		return
 	}
-	caseTitles := make([]semanticExprPair, len(reg.Mids))
+	caseHeaders := make([]semanticExprPair, len(reg.Mids))
 	for ci, mIdx := range reg.Mids {
 		mRec := ctx.Doc.Actions[mIdx]
-		if !mRec.HadParametersKey || !ctx.hasOnlyAllowedExtraKeys(mRec.Parameters, map[string]bool{
+		if !mRec.HadParametersKey || !ctx.isControlBranchProducerSafe(mRec) || !ctx.hasOnlyAllowedExtraKeys(mRec.Parameters, map[string]bool{
 			"GroupingIdentifier": true, "WFControlFlowMode": true, "WFMenuItemTitle": true, "WFMenuItemAttributedTitle": true,
 		}) {
 			return
 		}
 		title, ok := mRec.Parameters["WFMenuItemTitle"].(string)
-		if !ok || title == "" {
+		if !ok {
 			return
 		}
 		attr, hasAttr := mRec.Parameters["WFMenuItemAttributedTitle"]
-		if hasAttr && attr != title {
-			return
+
+		if rawStr, isRawStr := rawItems[ci].(string); isRawStr {
+			if hasAttr {
+				return
+			}
+			vp, okVP := ctx.renderStringPair(rawStr)
+			if !okVP {
+				return
+			}
+			if rawStr == title {
+				caseHeaders[ci] = semanticExprPair{
+					Legacy: fmt.Sprintf("item %s plain:", vp.Legacy),
+					V2:     fmt.Sprintf("case %s plain:", vp.V2),
+				}
+			} else {
+				tp, okTP := ctx.renderStringPair(title)
+				if !okTP {
+					return
+				}
+				caseHeaders[ci] = semanticExprPair{
+					Legacy: fmt.Sprintf("item %s title %s plain:", vp.Legacy, tp.Legacy),
+					V2:     fmt.Sprintf("case %s title %s plain:", vp.V2, tp.V2),
+				}
+			}
+			continue
 		}
+
 		itemMap, okIM := rawItems[ci].(map[string]any)
-		if !okIM {
+		if !okIM || len(itemMap) != 2 {
 			return
 		}
 		itType, okT := provInt(itemMap["WFItemType"])
 		if !okT || itType != 0 {
 			return
 		}
-		if itemMap["WFValue"] != title {
+		rawVal, hasVal := itemMap["WFValue"]
+		if !hasVal {
+			return
+		}
+
+		if valStr, isValStr := rawVal.(string); isValStr {
+			if title == "" || !hasAttr || attr != title || valStr != title {
+				return
+			}
+			tp, okTP := ctx.renderStringPair(title)
+			if !okTP {
+				return
+			}
+			caseHeaders[ci] = semanticExprPair{
+				Legacy: fmt.Sprintf("item %s:", tp.Legacy),
+				V2:     fmt.Sprintf("case %s:", tp.V2),
+			}
+			continue
+		}
+
+		valMap, isValMap := rawVal.(map[string]any)
+		if !isValMap || valMap["WFSerializationType"] != "WFTextTokenString" {
+			return
+		}
+		valInner, okInner := valMap["Value"].(map[string]any)
+		if !okInner {
+			return
+		}
+		atts, _ := valInner["attachmentsByRange"].(map[string]any)
+		if len(atts) == 0 {
+			return
+		}
+		attrMap, okAttrMap := attr.(map[string]any)
+		if !hasAttr || !okAttrMap || !reflect.DeepEqual(attrMap, valInner) {
+			return
+		}
+		vp, okVP := ctx.renderAnyTextPair(valMap, false)
+		if !okVP || !strings.HasPrefix(vp.Legacy, `"`) || (!strings.HasPrefix(vp.V2, `"`) && !strings.HasPrefix(vp.V2, `f"`)) {
 			return
 		}
 		tp, okTP := ctx.renderStringPair(title)
 		if !okTP {
 			return
 		}
-		caseTitles[ci] = tp
+		caseHeaders[ci] = semanticExprPair{
+			Legacy: fmt.Sprintf("item %s title %s:", vp.Legacy, tp.Legacy),
+			V2:     fmt.Sprintf("case %s title %s:", vp.V2, tp.V2),
+		}
 	}
-
-	v2Header := fmt.Sprintf("menu (%s) {", promptPair.V2)
-	if strings.HasPrefix(promptPair.V2, `"`) {
-		v2Header = fmt.Sprintf("menu %s {", promptPair.V2)
-	}
-	legHeader := fmt.Sprintf("menu %s {", promptPair.Legacy)
 
 	plan.Decisions[reg.Start].RegionGroupID = reg.GroupID
-	applyDecisionCandidate(&plan.Decisions[reg.Start], legHeader, v2Header, "menu", "")
+	applyDecisionCandidate(&plan.Decisions[reg.Start], ctx.flushPendingLegacyDecls(endAssignLeg+legHeader), endAssignV2+v2Header, "menu", "")
 
 	for ci, mIdx := range reg.Mids {
 		plan.Decisions[mIdx].RegionGroupID = reg.GroupID
 		applyDecisionCandidate(
 			&plan.Decisions[mIdx],
-			fmt.Sprintf("item %s:", caseTitles[ci].Legacy),
-			fmt.Sprintf("case %s:", caseTitles[ci].V2),
+			caseHeaders[ci].Legacy,
+			caseHeaders[ci].V2,
 			"menu", "",
 		)
 	}
@@ -2365,6 +3286,10 @@ func (ctx *semanticImportContext) trySynthesizeMenuRegion(reg *semanticControlRe
 }
 
 func (ctx *semanticImportContext) trySynthesizeRepeatCountRegion(reg *semanticControlRegion, plan *HybridImportPlan) {
+	ctx.pendingLegacyDecls = nil
+	defer func() {
+		ctx.pendingLegacyDecls = nil
+	}()
 	if len(reg.Mids) != 0 {
 		return
 	}
@@ -2373,7 +3298,11 @@ func (ctx *semanticImportContext) trySynthesizeRepeatCountRegion(reg *semanticCo
 	if !startRec.HadParametersKey || !endRec.HadParametersKey {
 		return
 	}
-	if endRec.UUID != "" && ctx.UsedProducerUUIDs[endRec.UUID] {
+	if !ctx.isControlBranchProducerSafe(startRec) {
+		return
+	}
+	endAssignLeg, endAssignV2, okEnd := ctx.controlEndAssignPrefix(endRec)
+	if !okEnd {
 		return
 	}
 	if !ctx.hasOnlyAllowedExtraKeys(startRec.Parameters, map[string]bool{
@@ -2384,20 +3313,22 @@ func (ctx *semanticImportContext) trySynthesizeRepeatCountRegion(reg *semanticCo
 	if !ctx.hasOnlyAllowedExtraKeys(endRec.Parameters, map[string]bool{"GroupingIdentifier": true, "WFControlFlowMode": true}) {
 		return
 	}
-	cntRaw, hasCnt := startRec.Parameters["WFRepeatCount"]
-	if !hasCnt {
-		return
-	}
-	cntPair, ok := ctx.renderNumberOrAttachmentPair(cntRaw)
-	if !ok {
-		return
+	var cntPair semanticExprPair
+	if cntRaw, hasCnt := startRec.Parameters["WFRepeatCount"]; !hasCnt {
+		cntPair = semanticExprPair{Legacy: "none", V2: "none"}
+	} else {
+		p, ok := ctx.renderNumberOrAttachmentPair(cntRaw)
+		if !ok {
+			return
+		}
+		cntPair = p
 	}
 
 	plan.Decisions[reg.Start].RegionGroupID = reg.GroupID
 	applyDecisionCandidate(
 		&plan.Decisions[reg.Start],
-		fmt.Sprintf("repeat _ for %s {", cntPair.Legacy),
-		fmt.Sprintf("repeat _ for %s {", cntPair.V2),
+		ctx.flushPendingLegacyDecls(fmt.Sprintf("%srepeat _ for %s {", endAssignLeg, cntPair.Legacy)),
+		fmt.Sprintf("%srepeat _ for %s {", endAssignV2, cntPair.V2),
 		"repeat", "",
 	)
 	plan.Decisions[reg.End].RegionGroupID = reg.GroupID
@@ -2405,6 +3336,10 @@ func (ctx *semanticImportContext) trySynthesizeRepeatCountRegion(reg *semanticCo
 }
 
 func (ctx *semanticImportContext) trySynthesizeRepeatEachRegion(reg *semanticControlRegion, plan *HybridImportPlan) {
+	ctx.pendingLegacyDecls = nil
+	defer func() {
+		ctx.pendingLegacyDecls = nil
+	}()
 	if len(reg.Mids) != 0 {
 		return
 	}
@@ -2413,7 +3348,11 @@ func (ctx *semanticImportContext) trySynthesizeRepeatEachRegion(reg *semanticCon
 	if !startRec.HadParametersKey || !endRec.HadParametersKey {
 		return
 	}
-	if endRec.UUID != "" && ctx.UsedProducerUUIDs[endRec.UUID] {
+	if !ctx.isControlBranchProducerSafe(startRec) {
+		return
+	}
+	endAssignLeg, endAssignV2, okEnd := ctx.controlEndAssignPrefix(endRec)
+	if !okEnd {
 		return
 	}
 	if !ctx.hasOnlyAllowedExtraKeys(startRec.Parameters, map[string]bool{
@@ -2436,15 +3375,43 @@ func (ctx *semanticImportContext) trySynthesizeRepeatEachRegion(reg *semanticCon
 	plan.Decisions[reg.Start].RegionGroupID = reg.GroupID
 	applyDecisionCandidate(
 		&plan.Decisions[reg.Start],
-		fmt.Sprintf("for _ in %s {", inPair.Legacy),
-		fmt.Sprintf("for _ in %s {", inPair.V2),
+		ctx.flushPendingLegacyDecls(fmt.Sprintf("%sfor _ in %s {", endAssignLeg, inPair.Legacy)),
+		fmt.Sprintf("%sfor _ in %s {", endAssignV2, inPair.V2),
 		"repeat.each", "",
 	)
 	plan.Decisions[reg.End].RegionGroupID = reg.GroupID
 	applyDecisionCandidate(&plan.Decisions[reg.End], "}", "}", "repeat.each", "")
 }
 
+func (ctx *semanticImportContext) captureCandidateSnapshot(plan *HybridImportPlan) {
+	ctx.candidateActionMarks = make(map[int]string)
+	seenRegion := make(map[string]bool)
+	for i, dec := range plan.Decisions {
+		if isHybridNaturalClassification(dec.Classification) {
+			ctx.candidateActionMarks[i] = dec.RegionGroupID
+			if dec.RegionGroupID != "" && !seenRegion[dec.RegionGroupID] {
+				seenRegion[dec.RegionGroupID] = true
+				ctx.candidateRegionOrder = append(ctx.candidateRegionOrder, dec.RegionGroupID)
+			}
+		}
+	}
+}
+
+func countActiveNaturalCandidates(plan *HybridImportPlan) int {
+	n := 0
+	for _, dec := range plan.Decisions {
+		if isHybridNaturalClassification(dec.Classification) {
+			n++
+		}
+	}
+	return n
+}
+
 func (ctx *semanticImportContext) enforceAtomicRegions(plan *HybridImportPlan) {
+	ctx.enforceAtomicRegionsWithStage(plan, "ATOMIC_REGION", "ATOMIC_REGION_PARTIAL")
+}
+
+func (ctx *semanticImportContext) enforceAtomicRegionsWithStage(plan *HybridImportPlan, stage, demoteReason string) {
 	byGroup := make(map[string][]int)
 	for i, dec := range plan.Decisions {
 		if dec.RegionGroupID != "" {
@@ -2454,20 +3421,89 @@ func (ctx *semanticImportContext) enforceAtomicRegions(plan *HybridImportPlan) {
 	for _, idxs := range byGroup {
 		allNatural := true
 		for _, idx := range idxs {
-			if plan.Decisions[idx].Classification != "NATURAL_VERIFIED" {
+			if !isHybridNaturalClassification(plan.Decisions[idx].Classification) {
 				allNatural = false
 				break
 			}
 		}
 		if !allNatural {
 			for _, idx := range idxs {
-				ctx.demoteSingleIndexToFallback(plan, idx, "CONTROL_REGION")
+				if isHybridNaturalClassification(plan.Decisions[idx].Classification) {
+					ctx.demoteSingleIndexToFallbackWithStage(plan, idx, "CONTROL_REGION", stage, demoteReason)
+				} else {
+					plan.Decisions[idx].RegionGroupID = ""
+				}
+			}
+		}
+	}
+}
+
+// rejectUnseededForwardActionOutputCandidates fails closed at Stage 1 for any natural
+// candidate that reads an ActionOutput UUID whose producer is at a later (or equal) index
+// and remains a natural candidate (so ProducerRaw is false and the legacy const binding is not yet in scope).
+func (ctx *semanticImportContext) rejectUnseededForwardActionOutputCandidates(plan *HybridImportPlan) {
+	if ctx == nil || ctx.Doc == nil || plan == nil || len(ctx.Doc.ConsumerUUIDIndex) == 0 {
+		return
+	}
+	uuidsSorted := make([]string, 0, len(ctx.Doc.ConsumerUUIDIndex))
+	for u := range ctx.Doc.ConsumerUUIDIndex {
+		uuidsSorted = append(uuidsSorted, u)
+	}
+	sort.Strings(uuidsSorted)
+
+	revertAsStage1 := func(idx int, reason string) {
+		ctx.demoteSingleIndexToFallbackWithStage(plan, idx, reason, "", "")
+		plan.Decisions[idx].CandidateStatus = "NOT_CANDIDATE"
+		plan.Decisions[idx].DemotionStage = ""
+		plan.Decisions[idx].DemotionReason = ""
+	}
+
+	changed := true
+	for changed {
+		changed = false
+		for _, u := range uuidsSorted {
+			prodIdx, hasProd := ctx.Doc.ProducerUUIDIndex[u]
+			if !hasProd || prodIdx < 0 || prodIdx >= len(plan.Decisions) {
+				continue
+			}
+			if !isHybridNaturalClassification(plan.Decisions[prodIdx].Classification) {
+				continue
+			}
+			consumers := ctx.Doc.ConsumerUUIDIndex[u]
+			for _, cIdx := range consumers {
+				if cIdx < 0 || cIdx >= len(plan.Decisions) || cIdx > prodIdx {
+					continue
+				}
+				if !isHybridNaturalClassification(plan.Decisions[cIdx].Classification) {
+					continue
+				}
+				gid := plan.Decisions[cIdx].RegionGroupID
+				if gid != "" {
+					for j := range plan.Decisions {
+						if plan.Decisions[j].RegionGroupID != gid {
+							continue
+						}
+						if isHybridNaturalClassification(plan.Decisions[j].Classification) {
+							revertAsStage1(j, "CONTROL_REGION")
+							changed = true
+						} else {
+							plan.Decisions[j].RegionGroupID = ""
+						}
+					}
+				} else {
+					revertAsStage1(cIdx, "UNREPRESENTABLE_PARAM")
+					changed = true
+				}
 			}
 		}
 	}
 }
 
 func (ctx *semanticImportContext) demoteSingleIndexToFallback(plan *HybridImportPlan, idx int, reason string) {
+	ctx.demoteSingleIndexToFallbackWithStage(plan, idx, reason, "PLANNER_DEMOTE", "UNSPECIFIED_DEMOTE")
+}
+
+func (ctx *semanticImportContext) demoteSingleIndexToFallbackWithStage(plan *HybridImportPlan, idx int, reason, stage, demoteReason string) {
 	var rawLeg, rawV2, defReason string
 	if idx >= 0 && idx < len(ctx.fallbackLegacyLines) && ctx.fallbackLegacyLines[idx] != "" && idx < len(ctx.fallbackV2Lines) && ctx.fallbackV2Lines[idx] != "" {
 		rawLeg = ctx.fallbackLegacyLines[idx]
@@ -2488,7 +3524,13 @@ func (ctx *semanticImportContext) demoteSingleIndexToFallback(plan *HybridImport
 			ctx.fallbackReasons[idx] = defReason
 		}
 	}
+	wasCandidate := isHybridNaturalClassification(plan.Decisions[idx].Classification) || plan.Decisions[idx].CandidateStatus == "CANDIDATE"
 	plan.Decisions[idx].Classification = "EXACT_NATIVE_FALLBACK"
+	if wasCandidate {
+		plan.Decisions[idx].CandidateStatus = "DEMOTED"
+		plan.Decisions[idx].DemotionStage = stage
+		plan.Decisions[idx].DemotionReason = demoteReason
+	}
 	if reason != "" {
 		plan.Decisions[idx].ReasonCode = reason
 	} else if plan.Decisions[idx].RegionGroupID != "" {
@@ -2503,6 +3545,108 @@ func (ctx *semanticImportContext) demoteSingleIndexToFallback(plan *HybridImport
 	plan.Decisions[idx].V2Call = rawV2
 }
 
+func (ctx *semanticImportContext) promoteVerifiedCandidatesAndBuildLifecycle(plan *HybridImportPlan) {
+	demotionReasons := make(map[string]int)
+	verifiedCount := 0
+	demotedCount := 0
+	verifiedRegions := make(map[string]bool)
+	for i := range plan.Decisions {
+		dec := &plan.Decisions[i]
+		if isHybridNaturalClassification(dec.Classification) {
+			dec.Classification = "NATURAL_VERIFIED"
+			dec.CandidateStatus = "VERIFIED"
+			dec.DemotionStage = ""
+			dec.DemotionReason = ""
+			verifiedCount++
+			if dec.RegionGroupID != "" {
+				verifiedRegions[dec.RegionGroupID] = true
+			}
+		} else if dec.CandidateStatus == "DEMOTED" {
+			demotedCount++
+			key := dec.DemotionStage + ":" + dec.DemotionReason
+			demotionReasons[key]++
+		}
+	}
+
+	transitions := make([]HybridUnitTransition, 0, len(ctx.candidateRegionOrder)+len(plan.Decisions))
+	for _, gid := range ctx.candidateRegionOrder {
+		reg := ctx.RegionsByGroup[gid]
+		if reg == nil {
+			continue
+		}
+		memberIdxs := append([]int{reg.Start}, reg.Mids...)
+		memberIdxs = append(memberIdxs, reg.End)
+		finalState := "VERIFIED"
+		finalStage := "FINAL_DUAL_VERIFY"
+		reason := ""
+		if !verifiedRegions[gid] {
+			finalState = "DEMOTED"
+			for _, idx := range memberIdxs {
+				if plan.Decisions[idx].DemotionStage != "" {
+					finalStage = plan.Decisions[idx].DemotionStage
+					reason = plan.Decisions[idx].DemotionReason
+					break
+				}
+			}
+		}
+		transitions = append(transitions, HybridUnitTransition{
+			UnitID:           "region:" + gid,
+			Kind:             "region",
+			RegionGroupID:    gid,
+			StartIndex:       reg.Start,
+			EndIndex:         reg.End,
+			ActionCount:      len(memberIdxs),
+			AppleIdentifier:  "is.workflow.actions." + reg.Kind,
+			CandidateStage:   "CANDIDATE",
+			FinalState:       finalState,
+			FinalStage:       finalStage,
+			TransitionReason: reason,
+		})
+	}
+	for i, dec := range plan.Decisions {
+		if initGID, wasCand := ctx.candidateActionMarks[i]; wasCand && initGID == "" {
+			finalState := "VERIFIED"
+			finalStage := "FINAL_DUAL_VERIFY"
+			reason := ""
+			if dec.Classification != "NATURAL_VERIFIED" {
+				finalState = "DEMOTED"
+				finalStage = dec.DemotionStage
+				reason = dec.DemotionReason
+			}
+			transitions = append(transitions, HybridUnitTransition{
+				UnitID:           fmt.Sprintf("action:%d", i),
+				Kind:             "action",
+				StartIndex:       i,
+				EndIndex:         i,
+				ActionCount:      1,
+				AppleIdentifier:  dec.AppleIdentifier,
+				CandidateStage:   "CANDIDATE",
+				FinalState:       finalState,
+				FinalStage:       finalStage,
+				TransitionReason: reason,
+			})
+		}
+	}
+
+	verifiedRegionCount := len(verifiedRegions)
+	demotedRegionCount := len(ctx.candidateRegionOrder) - verifiedRegionCount
+	if len(demotionReasons) == 0 {
+		demotionReasons = nil
+	}
+	plan.Lifecycle = &HybridPlanLifecycleSummary{
+		CandidateActionCount: len(ctx.candidateActionMarks),
+		PostAtomicCount:      ctx.postAtomicActionCnt,
+		VerifiedActionCount:  verifiedCount,
+		DemotedActionCount:   demotedCount,
+		DemotionReasons:      demotionReasons,
+		CandidateRegionCount: len(ctx.candidateRegionOrder),
+		VerifiedRegionCount:  verifiedRegionCount,
+		DemotedRegionCount:   demotedRegionCount,
+		Transitions:          transitions,
+	}
+	recountHybridPlanStats(plan)
+}
+
 // ---------- Whole-workflow compile isolation + strict tree equality verification ----------
 
 type semanticVerifyUnit struct {
@@ -2514,13 +3658,13 @@ func collectNaturalUnits(plan *HybridImportPlan) []semanticVerifyUnit {
 	seenGroup := make(map[string]bool)
 	groupIndices := make(map[string][]int)
 	for i, dec := range plan.Decisions {
-		if dec.Classification == "NATURAL_VERIFIED" && dec.RegionGroupID != "" {
+		if isHybridNaturalClassification(dec.Classification) && dec.RegionGroupID != "" {
 			groupIndices[dec.RegionGroupID] = append(groupIndices[dec.RegionGroupID], i)
 		}
 	}
 	var units []semanticVerifyUnit
 	for i, dec := range plan.Decisions {
-		if dec.Classification != "NATURAL_VERIFIED" {
+		if !isHybridNaturalClassification(dec.Classification) {
 			continue
 		}
 		if dec.RegionGroupID != "" {
@@ -2597,17 +3741,17 @@ func (ctx *semanticImportContext) verifyAndStabilizePlan(plan *HybridImportPlan)
 		}
 
 		if plistValuesStrictlyEqual(ctx.Doc.RawRoot, legMap) && plistValuesStrictlyEqual(ctx.Doc.RawRoot, v2Map) {
-			recountHybridPlanStats(plan)
+			ctx.promoteVerifiedCandidatesAndBuildLifecycle(plan)
 			return nil
 		}
 
 		changedLeg := false
 		if !plistValuesStrictlyEqual(ctx.Doc.RawRoot, legMap) {
-			changedLeg = demoteMismatchedHybridActions(ctx.Doc, plan, legMap)
+			changedLeg = demoteMismatchedHybridActionsWithStage(ctx.Doc, plan, legMap, "WIRE_VERIFY_LEGACY")
 		}
 		changedV2 := false
-		if !plistValuesStrictlyEqual(ctx.Doc.RawRoot, v2Map) {
-			changedV2 = demoteMismatchedHybridActions(ctx.Doc, plan, v2Map)
+		if !changedLeg && !plistValuesStrictlyEqual(ctx.Doc.RawRoot, v2Map) {
+			changedV2 = demoteMismatchedHybridActionsWithStage(ctx.Doc, plan, v2Map, "WIRE_VERIFY_V2")
 		}
 		if !changedLeg && !changedV2 {
 			// Neither side found an obvious natural mismatch to demote; demote remaining natural units greedily.
@@ -2615,21 +3759,25 @@ func (ctx *semanticImportContext) verifyAndStabilizePlan(plan *HybridImportPlan)
 			if len(units) == 0 {
 				return fmt.Errorf("hybrid import failed fail-closed parity check with zero natural actions remaining")
 			}
-			ctx.demoteUnit(plan, units[len(units)-1])
+			ctx.demoteUnitWithStage(plan, units[len(units)-1], "GREEDY_STABILIZE", "GREEDY_WIRE_STABILIZE")
 		}
-		ctx.enforceAtomicRegions(plan)
+		ctx.enforceAtomicRegionsWithStage(plan, "ATOMIC_REGION", "ATOMIC_REGION_CASCADE")
 		recountHybridPlanStats(plan)
 	}
 	return fmt.Errorf("hybrid verification did not converge within %d iterations", maxIters)
 }
 
 func (ctx *semanticImportContext) demoteUnit(plan *HybridImportPlan, u semanticVerifyUnit) {
+	ctx.demoteUnitWithStage(plan, u, "PLANNER_DEMOTE", "UNIT_DEMOTE")
+}
+
+func (ctx *semanticImportContext) demoteUnitWithStage(plan *HybridImportPlan, u semanticVerifyUnit, stage, demoteReason string) {
 	reason := ""
 	if u.groupID != "" {
 		reason = "CONTROL_REGION"
 	}
 	for _, idx := range u.indices {
-		ctx.demoteSingleIndexToFallback(plan, idx, reason)
+		ctx.demoteSingleIndexToFallbackWithStage(plan, idx, reason, stage, demoteReason)
 	}
 }
 
@@ -2665,7 +3813,7 @@ func (ctx *semanticImportContext) mapSourceLinesToActions(plan *HybridImportPlan
 		out.WriteByte('\n')
 		incSet := make(map[string]struct{})
 		for _, dec := range plan.Decisions {
-			if dec.Classification == "NATURAL_VERIFIED" && dec.IncludeCategory != "" {
+			if isHybridNaturalClassification(dec.Classification) && dec.IncludeCategory != "" {
 				incSet[dec.IncludeCategory] = struct{}{}
 			}
 		}
@@ -2698,7 +3846,7 @@ func (ctx *semanticImportContext) mapSourceLinesToActions(plan *HybridImportPlan
 			call = dec.LegacyCall
 		}
 		trimmed := strings.TrimSpace(call)
-		isControl := dec.Classification == "NATURAL_VERIFIED" && dec.RegionGroupID != ""
+		isControl := isHybridNaturalClassification(dec.Classification) && dec.RegionGroupID != ""
 		if isControl && strings.HasPrefix(trimmed, "}") && depth > 0 {
 			depth--
 		}
@@ -2746,19 +3894,19 @@ func (ctx *semanticImportContext) ensureDialectCompilesCleanly(plan *HybridImpor
 				break
 			}
 			aIdx, found := lineToIdx[lineErr.line]
-			if !found || aIdx < 0 || aIdx >= len(plan.Decisions) || plan.Decisions[aIdx].Classification != "NATURAL_VERIFIED" {
+			if !found || aIdx < 0 || aIdx >= len(plan.Decisions) || !isHybridNaturalClassification(plan.Decisions[aIdx].Classification) {
 				break
 			}
 			if rg := plan.Decisions[aIdx].RegionGroupID; rg != "" {
 				for i := range plan.Decisions {
 					if plan.Decisions[i].RegionGroupID == rg {
-						ctx.demoteSingleIndexToFallback(plan, i, "CONTROL_REGION")
+						ctx.demoteSingleIndexToFallbackWithStage(plan, i, "CONTROL_REGION", "LEGACY_COMPILE", "LEGACY_LINE_COMPILE_ERROR")
 					}
 				}
 			} else {
-				ctx.demoteSingleIndexToFallback(plan, aIdx, "")
+				ctx.demoteSingleIndexToFallbackWithStage(plan, aIdx, "", "LEGACY_COMPILE", "LEGACY_LINE_COMPILE_ERROR")
 			}
-			ctx.enforceAtomicRegions(plan)
+			ctx.enforceAtomicRegionsWithStage(plan, "ATOMIC_REGION", "ATOMIC_REGION_LEGACY_CASCADE")
 			recountHybridPlanStats(plan)
 			alreadyFailedLatest = false
 		}
@@ -2777,15 +3925,15 @@ func (ctx *semanticImportContext) ensureDialectCompilesCleanly(plan *HybridImpor
 			demotedAny := false
 			for _, ln := range errLines {
 				if aIdx, ok := lineToIdx[ln]; ok && aIdx >= 0 && aIdx < len(plan.Decisions) {
-					if plan.Decisions[aIdx].Classification == "NATURAL_VERIFIED" {
+					if isHybridNaturalClassification(plan.Decisions[aIdx].Classification) {
 						if rg := plan.Decisions[aIdx].RegionGroupID; rg != "" {
 							for i := range plan.Decisions {
 								if plan.Decisions[i].RegionGroupID == rg {
-									ctx.demoteSingleIndexToFallback(plan, i, "CONTROL_REGION")
+									ctx.demoteSingleIndexToFallbackWithStage(plan, i, "CONTROL_REGION", "V2_COMPILE", "V2_LINE_COMPILE_ERROR")
 								}
 							}
 						} else {
-							ctx.demoteSingleIndexToFallback(plan, aIdx, "")
+							ctx.demoteSingleIndexToFallbackWithStage(plan, aIdx, "", "V2_COMPILE", "V2_LINE_COMPILE_ERROR")
 						}
 						demotedAny = true
 					}
@@ -2794,7 +3942,7 @@ func (ctx *semanticImportContext) ensureDialectCompilesCleanly(plan *HybridImpor
 			if !demotedAny {
 				break
 			}
-			ctx.enforceAtomicRegions(plan)
+			ctx.enforceAtomicRegionsWithStage(plan, "ATOMIC_REGION", "ATOMIC_REGION_V2_CASCADE")
 			recountHybridPlanStats(plan)
 		}
 	}
@@ -2809,50 +3957,78 @@ func (ctx *semanticImportContext) ensureDialectCompilesCleanly(plan *HybridImpor
 		return nil, fmt.Errorf("lossless fallback itself failed to compile for legacy=%v", legacy)
 	}
 
-	// Work on a plan snapshot where all natural units are tested selectively by binary division.
+	// Binary culprit isolation (QuickXplain-style): greedily keep maximal compile-clean
+	// prefixes/slices in O(k log N) compiles instead of linear per-unit demotions.
 	keep := make([]bool, len(units))
-	var isolateBad func(subset []int)
-	isolateBad = func(subset []int) {
-		if len(subset) == 0 {
-			return
+	var addGoodUnits func(kept []int, cands []int, skipFullCheck bool) []int
+	addGoodUnits = func(kept []int, cands []int, skipFullCheck bool) []int {
+		if len(cands) == 0 {
+			return kept
 		}
-		trial := ctx.planWithSubsetUnits(plan, units, subset)
-		if ctx.testPlanCompiles(trial, legacy) {
-			for _, ui := range subset {
-				keep[ui] = true
+		if !skipFullCheck {
+			trialIdxs := make([]int, 0, len(kept)+len(cands))
+			trialIdxs = append(trialIdxs, kept...)
+			trialIdxs = append(trialIdxs, cands...)
+			trial := ctx.planWithSubsetUnits(plan, units, trialIdxs)
+			if ctx.testPlanCompiles(trial, legacy) {
+				for _, ui := range cands {
+					keep[ui] = true
+				}
+				return trialIdxs
 			}
-			return
 		}
-		if len(subset) == 1 {
-			return
+		if len(cands) == 1 {
+			return kept
 		}
-		mid := len(subset) / 2
-		isolateBad(subset[:mid])
-		isolateBad(subset[mid:])
+		mid := len(cands) / 2
+		kept = addGoodUnits(kept, cands[:mid], false)
+		kept = addGoodUnits(kept, cands[mid:], false)
+		return kept
 	}
 
 	all := make([]int, len(units))
 	for i := range units {
 		all[i] = i
 	}
-	isolateBad(all)
+	kept := addGoodUnits(nil, all, true)
 
-	// Demote any unit not in keep, then verify combined plan (handling rare cross-unit interactions).
 	for ui, ok := range keep {
 		if !ok {
-			ctx.demoteUnit(plan, units[ui])
+			if legacy {
+				ctx.demoteUnitWithStage(plan, units[ui], "ISOLATION_BISECT", "LEGACY_BISECT_COMPILE_ERROR")
+			} else {
+				ctx.demoteUnitWithStage(plan, units[ui], "ISOLATION_BISECT", "V2_BISECT_COMPILE_ERROR")
+			}
 		}
 	}
+	ctx.enforceAtomicRegionsWithStage(plan, "ATOMIC_REGION", "ATOMIC_REGION_BISECT_CASCADE")
 	recountHybridPlanStats(plan)
 
 	if compiled, ok := ctx.compilePlanToRawMap(plan, legacy); ok {
 		return compiled, nil
 	}
 
-	// Rare cross-unit compile interaction: drop remaining active units from end until compile succeeds.
+	// Defensive fallback if an unexpected cross-region cascade invalidated kept units.
+	_ = kept
 	active := collectNaturalUnits(plan)
-	for i := len(active) - 1; i >= 0; i-- {
-		ctx.demoteUnit(plan, active[i])
+	if len(active) > 0 {
+		// Re-run binary isolation on the post-cascade active units with full check enabled.
+		keep = make([]bool, len(active))
+		units = active
+		activeAll := make([]int, len(active))
+		for i := range active {
+			activeAll[i] = i
+		}
+		addGoodUnits(nil, activeAll, false)
+		for ui, ok := range keep {
+			if !ok {
+				if legacy {
+					ctx.demoteUnitWithStage(plan, active[ui], "ISOLATION_BISECT", "LEGACY_INTERACTION_DEMOTE")
+				} else {
+					ctx.demoteUnitWithStage(plan, active[ui], "ISOLATION_BISECT", "V2_INTERACTION_DEMOTE")
+				}
+			}
+		}
 		recountHybridPlanStats(plan)
 		if compiled, ok := ctx.compilePlanToRawMap(plan, legacy); ok {
 			return compiled, nil
@@ -2870,7 +4046,7 @@ func (ctx *semanticImportContext) planWithSubsetUnits(base *HybridImportPlan, un
 		}
 	}
 	for i := range trial.Decisions {
-		if trial.Decisions[i].Classification == "NATURAL_VERIFIED" && !keepAction[i] {
+		if isHybridNaturalClassification(trial.Decisions[i].Classification) && !keepAction[i] {
 			ctx.demoteSingleIndexToFallback(trial, i, "")
 		}
 	}

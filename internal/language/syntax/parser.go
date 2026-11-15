@@ -1100,6 +1100,12 @@ func (p *Parser) parseBlockStmt() *BlockStmt {
 
 func (p *Parser) parseIfStmt() *IfStmt {
 	startTok := p.advance() // if
+	modern := false
+	if p.curr.Type == TokenIdent && p.curr.Text == "modern" && p.peek.Type == TokenColon {
+		p.advance() // modern
+		p.advance() // :
+		modern = true
+	}
 	cond := p.parseExpression(precNone)
 	thenBlock := p.parseBlockStmt()
 
@@ -1119,6 +1125,7 @@ func (p *Parser) parseIfStmt() *IfStmt {
 
 	return &IfStmt{
 		Span:      span,
+		Modern:    modern,
 		Condition: cond,
 		ThenBlock: thenBlock,
 		ElseBlock: elseBlock,
@@ -1169,9 +1176,17 @@ func (p *Parser) parseRepeatStmt() *RepeatStmt {
 		idxTok := p.advance()
 		idxVar = idxTok.Text
 		p.advance() // consume "for"
-		count = p.parseExpression(precNone)
+		if p.match(TokenNone) {
+			count = nil
+		} else {
+			count = p.parseExpression(precNone)
+		}
 	} else {
-		count = p.parseExpression(precNone)
+		if p.match(TokenNone) {
+			count = nil
+		} else {
+			count = p.parseExpression(precNone)
+		}
 		if p.match(TokenAs) {
 			idxTok, _ := p.expect(TokenIdent)
 			idxVar = idxTok.Text
@@ -1190,23 +1205,62 @@ func (p *Parser) parseRepeatStmt() *RepeatStmt {
 func (p *Parser) parseMenuStmt() *MenuStmt {
 	startTok := p.advance() // menu
 	var prompt Expression
+	hasEmptyPrompt := false
+	legacyCancel := false
+
+	assignPrompt := func(val Expression) {
+		if val == nil {
+			prompt = nil
+			return
+		}
+		if lit, ok := val.(*LiteralExpr); ok && lit.Type == TokenNone {
+			prompt = val
+			return
+		}
+		prompt = val
+		if lit, ok := val.(*LiteralExpr); ok && lit.Type == TokenString && lit.Value == "" {
+			hasEmptyPrompt = true
+		}
+	}
+
 	if p.match(TokenLParen) {
-		prompt = p.parseExpression(precNone)
+		for p.curr.Type != TokenRParen && p.curr.Type != TokenEOF {
+			if p.curr.Type == TokenIdent && p.peek.Type == TokenColon {
+				lbl := p.advance().Text
+				p.advance() // :
+				val := p.parseExpression(precNone)
+				switch lbl {
+				case "prompt":
+					assignPrompt(val)
+				case "legacyCancel":
+					if lit, ok := val.(*LiteralExpr); ok && lit.Type == TokenTrue {
+						legacyCancel = true
+					}
+				}
+			} else {
+				assignPrompt(p.parseExpression(precNone))
+			}
+			if !p.match(TokenComma) {
+				break
+			}
+		}
 		p.expect(TokenRParen)
 	} else if p.curr.Type == TokenString {
 		promptTok := p.advance()
-		prompt = &LiteralExpr{
+		assignPrompt(&LiteralExpr{
 			Span:  promptTok.Span,
 			Type:  promptTok.Type,
 			Value: promptTok.Text,
-		}
+		})
+	} else if p.curr.Type == TokenFStringStart {
+		assignPrompt(p.parseFString())
 	} else if p.curr.Type == TokenNone {
 		promptTok := p.advance()
-		prompt = &LiteralExpr{
+		assignPrompt(&LiteralExpr{
 			Span:  promptTok.Span,
 			Type:  promptTok.Type,
 			Value: "",
-		}
+		})
 	}
 	p.expect(TokenLBrace)
 
@@ -1237,54 +1291,79 @@ func (p *Parser) parseMenuStmt() *MenuStmt {
 		}
 	}
 
+	parseCaseEntry := func() MenuCase {
+		label := ""
+		var valExpr Expression
+		var customTitle string
+		hasTitle := false
+		plain := false
+		labelSpan := p.curr.Span
+		switch p.curr.Type {
+		case TokenString:
+			tok, _ := p.expect(TokenString)
+			label = tok.Text
+			labelSpan = tok.Span
+		case TokenNone, TokenNull:
+			tok := p.advance()
+			label = ""
+			labelSpan = tok.Span
+		case TokenFStringStart:
+			valExpr = p.parseFString()
+			if valExpr != nil {
+				labelSpan = valExpr.NodeSpan()
+			}
+		case TokenIdent, TokenNumber:
+			if p.curr.Type == TokenIdent && (p.peek.Type == TokenDot || p.peek.Type == TokenLBracket || p.peek.Type == TokenLParen) {
+				valExpr = p.parseExpression(precNone)
+				if valExpr != nil {
+					labelSpan = valExpr.NodeSpan()
+				}
+			} else {
+				tok := p.advance()
+				label = tok.Text
+				labelSpan = tok.Span
+			}
+		default:
+			valExpr = p.parseExpression(precNone)
+			if valExpr != nil {
+				labelSpan = valExpr.NodeSpan()
+			}
+		}
+		for p.curr.Type == TokenIdent {
+			if p.curr.Text == "plain" && (p.peek.Type == TokenColon || p.peek.Type == TokenLBrace || (p.peek.Type == TokenIdent && p.peek.Text == "title")) {
+				p.advance()
+				plain = true
+			} else if p.curr.Text == "title" && p.peek.Type == TokenString {
+				p.advance()
+				tTok, _ := p.expect(TokenString)
+				customTitle = tTok.Text
+				hasTitle = true
+				if label == "" {
+					label = customTitle
+				}
+			} else {
+				break
+			}
+		}
+		p.match(TokenColon)
+		body := parseCaseBody()
+		return MenuCase{
+			Span:      labelSpan.Merge(body.Span),
+			Label:     label,
+			Value:     valExpr,
+			Title:     customTitle,
+			HasTitle:  hasTitle,
+			Plain:     plain,
+			BodyBlock: body,
+		}
+	}
+
 	for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
 		if p.match(TokenCase) {
-			label := ""
-			labelSpan := p.curr.Span
-			if p.curr.Type == TokenString {
-				tok, _ := p.expect(TokenString)
-				label = tok.Text
-				labelSpan = tok.Span
-			} else if p.curr.Type == TokenNone || p.curr.Type == TokenNull {
-				tok := p.advance()
-				label = ""
-				labelSpan = tok.Span
-			} else if p.curr.Type == TokenIdent || p.curr.Type == TokenNumber {
-				tok := p.advance()
-				label = tok.Text
-				labelSpan = tok.Span
-			}
-			p.match(TokenColon)
-			body := parseCaseBody()
-			cases = append(cases, MenuCase{
-				Span:      labelSpan.Merge(body.Span),
-				Label:     label,
-				BodyBlock: body,
-			})
+			cases = append(cases, parseCaseEntry())
 		} else if p.curr.Type == TokenIdent && p.curr.Text == "item" {
 			p.advance() // item
-			label := ""
-			labelSpan := p.curr.Span
-			if p.curr.Type == TokenString {
-				tok, _ := p.expect(TokenString)
-				label = tok.Text
-				labelSpan = tok.Span
-			} else if p.curr.Type == TokenNone || p.curr.Type == TokenNull {
-				tok := p.advance()
-				label = ""
-				labelSpan = tok.Span
-			} else if p.curr.Type == TokenIdent || p.curr.Type == TokenNumber {
-				tok := p.advance()
-				label = tok.Text
-				labelSpan = tok.Span
-			}
-			p.match(TokenColon)
-			body := parseCaseBody()
-			cases = append(cases, MenuCase{
-				Span:      labelSpan.Merge(body.Span),
-				Label:     label,
-				BodyBlock: body,
-			})
+			cases = append(cases, parseCaseEntry())
 		} else {
 			p.advance()
 		}
@@ -1292,9 +1371,11 @@ func (p *Parser) parseMenuStmt() *MenuStmt {
 	endTok, _ := p.expect(TokenRBrace)
 
 	return &MenuStmt{
-		Span:   startTok.Span.Merge(endTok.Span),
-		Prompt: prompt,
-		Cases:  cases,
+		Span:           startTok.Span.Merge(endTok.Span),
+		Prompt:         prompt,
+		HasEmptyPrompt: hasEmptyPrompt,
+		LegacyCancel:   legacyCancel,
+		Cases:          cases,
 	}
 }
 

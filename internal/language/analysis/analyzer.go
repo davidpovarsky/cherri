@@ -789,7 +789,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 
 	case *syntax.RepeatStmt:
 		repScope := NewScope(scope)
-		cntType := a.analyzeExpression(s.Count, scope)
+		cntType := unwrapOptionalType(a.analyzeExpression(s.Count, scope))
 		if cntType != nil && !cntType.AssignableTo(types.Number) && cntType.Kind() != types.KindUnknown {
 			a.error(CodeArgumentType, s.Count.NodeSpan(), fmt.Sprintf("repeat count requires Number, got %s", cntType))
 		}
@@ -804,14 +804,95 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		a.loopDepth--
 
 	case *syntax.MenuStmt:
-		a.analyzeExpression(s.Prompt, scope)
+		if s.Prompt != nil {
+			a.analyzeExpression(s.Prompt, scope)
+		}
 		for _, c := range s.Cases {
+			if c.Value != nil {
+				a.analyzeExpression(c.Value, scope)
+			}
 			caseScope := NewScope(scope)
 			for _, cs := range c.BodyBlock.Statements {
 				a.analyzeStatement(cs, caseScope)
 			}
 		}
 	}
+}
+
+func unwrapOptionalType(t types.Type) types.Type {
+	for {
+		opt, ok := t.(types.OptionalType)
+		if !ok {
+			break
+		}
+		t = opt.Inner
+	}
+	return t
+}
+
+func unwrapDynamicOptional(t types.Type) types.Type {
+	opt, ok := t.(types.OptionalType)
+	if !ok {
+		return t
+	}
+	inner := unwrapOptionalType(opt)
+	if inner == nil || inner.Kind() == types.KindAnyContent || inner.Kind() == types.KindUnknown {
+		return inner
+	}
+	return t
+}
+
+func blockAnyYield(blk *syntax.BlockStmt) bool {
+	if blk == nil {
+		return false
+	}
+	for _, st := range blk.Statements {
+		switch s := st.(type) {
+		case *syntax.YieldStmt:
+			return true
+		case *syntax.BlockStmt:
+			if blockAnyYield(s) {
+				return true
+			}
+		case *syntax.IfStmt:
+			if ifAnyYield(s) {
+				return true
+			}
+		case *syntax.MenuStmt:
+			if menuAnyYield(s) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func ifAnyYield(s *syntax.IfStmt) bool {
+	if s == nil {
+		return false
+	}
+	if blockAnyYield(s.ThenBlock) {
+		return true
+	}
+	switch el := s.ElseBlock.(type) {
+	case *syntax.BlockStmt:
+		return blockAnyYield(el)
+	case *syntax.IfStmt:
+		return ifAnyYield(el)
+	}
+	return false
+}
+
+func menuAnyYield(s *syntax.MenuStmt) bool {
+	if s == nil {
+		return false
+	}
+	for _, c := range s.Cases {
+		if blockAnyYield(c.BodyBlock) {
+			return true
+		}
+	}
+	return false
 }
 
 func blockHasYield(blk *syntax.BlockStmt) bool {
@@ -987,6 +1068,10 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		if targetType != nil && (targetType.Kind() == types.KindUnknown || targetType.Kind() == types.KindAnyContent) {
 			return types.Unknown
 		}
+		if targetType != nil && targetType.Kind() != types.KindList && idxType != nil && idxType.AssignableTo(types.Text) && !idxType.AssignableTo(types.Number) {
+			// Content item / coerced property lookup via string key (e.g. r.file["File Extension"], Device["Device Name"]).
+			return types.AnyContent
+		}
 		if idxType != nil && !idxType.AssignableTo(types.Number) && idxType.Kind() != types.KindUnknown {
 			a.error(CodeArgumentType, e.Index.NodeSpan(), fmt.Sprintf("index expression requires Number, got %s", idxType))
 		}
@@ -1036,6 +1121,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 
 		case syntax.TokenLess, syntax.TokenLessEqual, syntax.TokenGreater, syntax.TokenGreaterEqual:
 			isComparable := func(t types.Type) bool {
+				t = unwrapOptionalType(t)
 				if t == nil || t.Kind() == types.KindUnknown || t.Kind() == types.KindAnyContent {
 					return true
 				}
@@ -1099,7 +1185,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		yields := a.yieldedTypes
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		if e.ElseBlock == nil {
+		if ifAnyYield(e) && e.ElseBlock == nil {
 			a.error(CodeYieldContext, e.Span, "value-producing 'if' expression requires 'else'")
 		}
 		if len(yields) > 0 {
@@ -1146,15 +1232,17 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		yields := a.yieldedTypes
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		for _, c := range e.Cases {
-			if !blockHasYield(c.BodyBlock) {
-				a.error(CodeYieldContext, c.Span, fmt.Sprintf("value-producing 'menu' case %q requires 'yield'", c.Label))
+		if menuAnyYield(e) {
+			for _, c := range e.Cases {
+				if !blockHasYield(c.BodyBlock) {
+					a.error(CodeYieldContext, c.Span, fmt.Sprintf("value-producing 'menu' case %q requires 'yield'", c.Label))
+				}
 			}
 		}
 		if len(yields) > 0 {
 			return yields[0]
 		}
-		return types.Unknown
+		return types.AnyContent
 	}
 
 	return types.Unknown
@@ -1228,12 +1316,24 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return types.AnyContent
 	}
 
-	// 1c. Check isToday predicate
-	if callName == "isToday" {
+	// 1c. Check condition predicates (isToday, isTrue, isFalse, numeric, condEnum)
+	if callName == "isToday" || callName == "isTrue" || callName == "isFalse" {
 		if call.PrimaryArg != nil {
 			a.analyzeExpression(call.PrimaryArg, scope)
 		}
 		return types.Bool
+	}
+	if callName == "numeric" {
+		if call.PrimaryArg != nil {
+			a.analyzeExpression(call.PrimaryArg, scope)
+		}
+		return types.Number
+	}
+	if callName == "condEnum" {
+		if call.PrimaryArg != nil {
+			a.analyzeExpression(call.PrimaryArg, scope)
+		}
+		return types.Text
 	}
 
 	// 1d. Check isBetween predicate
@@ -1298,7 +1398,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 				}
 			}
 			a.checkAcceptedForms(primParam, call.PrimaryArg, callName)
-			argType := a.analyzeExpression(call.PrimaryArg, scope)
+			argType := unwrapDynamicOptional(a.analyzeExpression(call.PrimaryArg, scope))
 			if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
 				if !(primParam.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(call.PrimaryArg)) {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", primParam.Label, primParam.Type, argType))
@@ -1381,7 +1481,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		}
 
 		a.checkAcceptedForms(param, nArg.Value, callName)
-		argType := a.analyzeExpression(nArg.Value, scope)
+		argType := unwrapDynamicOptional(a.analyzeExpression(nArg.Value, scope))
 		if param.Type != nil && argType != nil && !argType.AssignableTo(param.Type) {
 			if !(param.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(nArg.Value)) {
 				a.error(CodeArgumentType, nArg.Value.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Label, param.Type, argType))
@@ -1456,14 +1556,14 @@ func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.
 			if param.WireKey == "WFInput" {
 				return
 			}
-			if !hasLiteral && !hasTokenString {
+			if !hasLiteral && !(hasTokenString && param.Codec != "token") {
 				a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q does not accept literal values; an attachment (variable or action output) is required", param.Label, callName))
 			}
 		case *syntax.ListExpr, *syntax.MapExpr:
 			if param.WireKey == "WFInput" || param.WireKey == "WFContentItemFilter" {
 				return
 			}
-			if !hasLiteral && !hasTokenString {
+			if !hasLiteral && !(hasTokenString && param.Codec != "token") {
 				a.error(CodeArgumentType, expr.NodeSpan(), fmt.Sprintf("parameter %q in call to %q does not accept literal values; an attachment (variable or action output) is required", param.Label, callName))
 			}
 		case *syntax.FStringExpr:

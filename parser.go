@@ -449,6 +449,9 @@ func collectValue(valueType *tokenType, value *any, until rune) {
 	case tokenAhead(RawPlist):
 		*valueType = Dict
 		collectRawPlistValue(value)
+	case tokenAhead(RawRef):
+		*valueType = Variable
+		collectRawRefValue(value)
 	case tokenAhead(True):
 		*valueType = Bool
 		*value = true
@@ -769,6 +772,7 @@ func collectEnumeration() {
 	lineRef.replaceLines()
 
 	enumerations[identifier] = enumeration
+	extendForkEnumeration(identifier)
 	advance()
 }
 
@@ -888,6 +892,21 @@ func collectVariable(constant bool) {
 		collectType(&valueType, &value, '\n')
 	case constant:
 		parserError("Constants must be initialized with a value.")
+	}
+
+	if constant && valueType == Variable {
+		if vv, ok := value.(varValue); ok && vv.descriptor != nil {
+			if _, found := variables[identifier]; !found {
+				variables[identifier] = varValue{
+					variableType: "Variable",
+					valueType:    Variable,
+					value:        vv.value,
+					descriptor:   vv.descriptor,
+					constant:     true,
+				}
+			}
+			return
+		}
 	}
 
 	tokens = append(tokens, token{
@@ -1231,9 +1250,19 @@ func collectRepeat(identifier string) {
 		parserError("Expected number of times to repeat")
 	}
 
+	for char == ' ' || char == '\t' {
+		advance()
+	}
+
 	var timesType tokenType
 	var timesValue any
-	collectValue(&timesType, &timesValue, '{')
+	if consumeKeyword("none") {
+		timesType = Nil
+		timesValue = nil
+		advanceUntil('{')
+	} else {
+		collectValue(&timesType, &timesValue, '{')
+	}
 	advanceTimes(2)
 
 	tokens = append(tokens,
@@ -1407,6 +1436,47 @@ func convertFilterPrefix(filterPrefix int) string {
 }
 
 func collectConditional() (conditional condition) {
+	if consumeFuncPrefix("isTrue") {
+		conditional.condition = conditions[Is]
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		var variableOneType tokenType
+		var variableOneValue any
+		collectValue(&variableOneType, &variableOneValue, ')')
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		advanceUntil(')')
+		advance()
+		skipWhitespace()
+		conditional.arguments = append(conditional.arguments, actionArgument{
+			valueType: variableOneType,
+			value:     variableOneValue,
+		})
+		return
+	}
+	if consumeFuncPrefix("isFalse") {
+		conditional.condition = conditions[Not]
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		var variableOneType tokenType
+		var variableOneValue any
+		collectValue(&variableOneType, &variableOneValue, ')')
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		advanceUntil(')')
+		advance()
+		skipWhitespace()
+		conditional.arguments = append(conditional.arguments, actionArgument{
+			valueType: variableOneType,
+			value:     variableOneValue,
+		})
+		return
+	}
+
 	if isChar('!') {
 		conditional.condition = conditions[Empty]
 	} else {
@@ -1433,6 +1503,10 @@ func collectConditional() (conditional condition) {
 		var collectConditionalToken = tokenType(collectConditional)
 		if condition, found := conditions[collectConditionalToken]; found {
 			conditional.condition = condition
+		} else if collectConditionalToken == IsTrue {
+			conditional.condition = conditions[Is]
+		} else if collectConditionalToken == IsFalse {
+			conditional.condition = conditions[Not]
 		} else {
 			parserError(fmt.Sprintf("Invalid conditional '%s'", collectConditional))
 		}
@@ -1446,7 +1520,7 @@ func collectConditional() (conditional condition) {
 
 		var variableTwoType tokenType
 		var variableTwoValue any
-		collectValue(&variableTwoType, &variableTwoValue, ' ')
+		collectConditionalOperand(&variableTwoType, &variableTwoValue, ' ')
 		checkConditionalTypes(&collectConditionalToken, variableOneType, variableOneValue, variableTwoType)
 		conditional.arguments = append(conditional.arguments, actionArgument{
 			valueType: variableTwoType,
@@ -1459,7 +1533,7 @@ func collectConditional() (conditional condition) {
 			var variableThreeType tokenType
 			var variableThreeValue any
 
-			collectValue(&variableThreeType, &variableThreeValue, '{')
+			collectConditionalOperand(&variableThreeType, &variableThreeValue, '{')
 			conditional.arguments = append(conditional.arguments, actionArgument{
 				valueType: variableThreeType,
 				value:     variableThreeValue,
@@ -1475,6 +1549,9 @@ func checkConditionalTypes(conditional *tokenType, variableType tokenType, value
 	var hasActionOrigin bool
 	if variableType == Variable {
 		var variable = value.(varValue)
+		if variable.descriptor != nil {
+			return
+		}
 		if variable.getAs != "" || strings.Contains(variable.value.(string), "[") {
 			return
 		}
@@ -1487,6 +1564,13 @@ func checkConditionalTypes(conditional *tokenType, variableType tokenType, value
 			if a, ok := variableValue.value.(action); ok && a.def != nil {
 				hasActionOrigin = true
 				variableType = a.def.outputType
+			}
+		}
+		if !hasActionOrigin {
+			if ident, ok := variable.value.(string); ok {
+				if _, hasOut := importedSymbolOutputNames[ident]; hasOut || importedSymbolValueTypes[ident] != "" {
+					hasActionOrigin = true
+				}
 			}
 		}
 		if variable.coerce != "" {
@@ -1517,58 +1601,199 @@ func checkConditionalTypes(conditional *tokenType, variableType tokenType, value
 	}
 }
 
+func consumeKeyword(kw string) bool {
+	runes := []rune(kw)
+	for i, r := range runes {
+		if next(i) != r {
+			return false
+		}
+	}
+	after := next(len(runes))
+	if unicode.IsLetter(after) || unicode.IsDigit(after) || after == '_' {
+		return false
+	}
+	advanceTimes(len(runes))
+	return true
+}
+
+func consumeFuncPrefix(name string) bool {
+	runes := []rune(name)
+	for i, r := range runes {
+		if next(i) != r {
+			return false
+		}
+	}
+	if next(len(runes)) != '(' {
+		return false
+	}
+	advanceTimes(len(runes) + 1)
+	return true
+}
+
+func collectConditionalOperand(valType *tokenType, val *any, until rune) {
+	if consumeFuncPrefix("numeric") {
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		if char != '"' {
+			parserError("Expected quoted string argument in numeric(...)")
+		}
+		advance()
+		strVal := collectString()
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		if char != ')' {
+			advanceUntil(')')
+		}
+		advance()
+		*valType = Integer
+		*val = legacyNumericString(strVal)
+		return
+	}
+	if consumeFuncPrefix("condEnum") {
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		if char != '"' {
+			parserError("Expected quoted string argument in condEnum(...)")
+		}
+		advance()
+		strVal := collectString()
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		if char != ')' {
+			advanceUntil(')')
+		}
+		advance()
+		*valType = Enumeration
+		*val = legacyCondEnum(strVal)
+		return
+	}
+	collectValue(valType, val, until)
+}
+
 func collectMenu(identifier string) {
 	if len(menus) == 0 {
 		menus = make(map[string][]varValue)
 	}
 
 	reachable()
-	advance()
 	var group = groupStatement(Menu, &identifier)
+	for char == ' ' || char == '\t' {
+		advance()
+	}
 
-	var promptType tokenType
+	legacyCancel := consumeKeyword("legacyCancel")
+	for char == ' ' || char == '\t' {
+		advance()
+	}
+
+	var promptType tokenType = Nil
 	var promptValue any
-	collectValue(&promptType, &promptValue, '{')
+	if char != '{' {
+		collectValue(&promptType, &promptValue, '{')
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		if !legacyCancel && consumeKeyword("legacyCancel") {
+			legacyCancel = true
+			for char == ' ' || char == '\t' {
+				advance()
+			}
+		}
+	}
 	advanceUntil('{')
 	advance()
+
+	hasEmptyPrompt := promptType == String && fmt.Sprintf("%v", promptValue) == ""
+	var menuTokType = promptType
+	var menuTokVal = promptValue
+	if legacyCancel || hasEmptyPrompt {
+		menuTokType = Menu
+		menuTokVal = legacyMenuStartSpec{
+			PromptType:     promptType,
+			PromptValue:    promptValue,
+			HasEmptyPrompt: hasEmptyPrompt,
+			LegacyCancel:   legacyCancel,
+		}
+	}
 
 	menus[group.uuid] = []varValue{}
 	tokens = append(tokens, token{
 		typeof:    Menu,
 		ident:     group.uuid,
-		valueType: promptType,
-		value:     promptValue,
+		valueType: menuTokType,
+		value:     menuTokVal,
 	})
 }
 
 func collectMenuItem() {
-	advance()
 	if _, ok := controlFlowGroups[groupingIdx]; !ok {
 		parserError("Item has no starting menu statement.")
 	}
 	var group = controlFlowGroups[groupingIdx]
+	for char == ' ' || char == '\t' {
+		advance()
+	}
 
 	var itemType tokenType
 	var itemValue any
 	collectValue(&itemType, &itemValue, ':')
+
+	var customTitle string
+	var hasTitle bool
+	var plain bool
+	for {
+		for char == ' ' || char == '\t' {
+			advance()
+		}
+		if consumeKeyword("title") {
+			for char == ' ' || char == '\t' {
+				advance()
+			}
+			if char != '"' {
+				parserError("Expected quoted string after menu item 'title'")
+			}
+			advance()
+			customTitle = collectString()
+			hasTitle = true
+			continue
+		}
+		if consumeKeyword("plain") {
+			plain = true
+			continue
+		}
+		break
+	}
 	advanceUntil(':')
 	advance()
 
-	// if len(menus[group.uuid]) > 0 && group.identifier == "" {
-	// 	addNothing()
-	// }
+	var storedType = itemType
+	var storedVal = itemValue
+	if hasTitle || plain {
+		storedType = Item
+		storedVal = legacyMenuItemSpec{
+			ValueType: itemType,
+			Value:     itemValue,
+			Title:     customTitle,
+			HasTitle:  hasTitle,
+			Plain:     plain,
+		}
+	}
 
 	menus[group.uuid] = append(menus[group.uuid], varValue{
-		valueType: itemType,
-		value:     itemValue,
+		valueType: storedType,
+		value:     storedVal,
 	})
 
 	tokens = append(tokens,
 		token{
 			typeof:    Item,
 			ident:     group.uuid,
-			valueType: itemType,
-			value:     itemValue,
+			valueType: storedType,
+			value:     storedVal,
 		},
 	)
 }

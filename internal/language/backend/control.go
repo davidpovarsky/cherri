@@ -48,6 +48,7 @@ type ConditionSpec struct {
 	NumberValue   any // WFNumberValue
 	AnotherNumber any // WFAnotherNumber
 	StringValue   any // WFConditionalActionString
+	Enumeration   any // WFEnumeration
 }
 
 // RouteComparisonValue routes a comparison value into the appropriate wire field.
@@ -120,6 +121,9 @@ func BuildConditionalStart(spec ConditionSpec) map[string]any {
 	}
 	if spec.StringValue != nil {
 		params["WFConditionalActionString"] = spec.StringValue
+	}
+	if spec.Enumeration != nil {
+		params["WFEnumeration"] = spec.Enumeration
 	}
 
 	return params
@@ -206,11 +210,14 @@ func BuildIfEnd(groupingID string, outputUUID string) map[string]any {
 
 // BuildRepeatCountStart constructs the beginning action parameters for a repeat count loop.
 func BuildRepeatCountStart(groupingID string, count any) map[string]any {
-	return map[string]any{
+	params := map[string]any{
 		"GroupingIdentifier": groupingID,
 		"WFControlFlowMode":  ControlFlowStart,
-		"WFRepeatCount":      count,
 	}
+	if count != nil {
+		params["WFRepeatCount"] = count
+	}
+	return params
 }
 
 // BuildRepeatEachStart constructs the beginning action parameters for a repeat each loop.
@@ -243,25 +250,71 @@ func BuildMenuStart(groupingID string, prompt any, itemTitles []string) map[stri
 	return BuildMenuStartItems(groupingID, prompt, itemValues)
 }
 
-// BuildMenuStartItems constructs the beginning action parameters for a menu block
-// with arbitrary string or serialized WFValue item values.
-func BuildMenuStartItems(groupingID string, prompt any, itemValues []any) map[string]any {
+// MenuStartOptions configures a Choose from Menu start action parameter map.
+type MenuStartOptions struct {
+	GroupingID               string
+	Prompt                   any
+	IncludeEmptyPrompt       bool
+	Items                    []any
+	PreservePlainStringItems bool
+	LegacyCancelBehavior     bool
+}
+
+// BuildMenuStartFull constructs the beginning action parameters for a menu block
+// with full control over empty prompts, plain string vs typed WFMenuItem entries,
+// and WFMenuLegacyCancelBehavior.
+func BuildMenuStartFull(opts MenuStartOptions) map[string]any {
 	params := map[string]any{
-		"GroupingIdentifier": groupingID,
+		"GroupingIdentifier": opts.GroupingID,
 		"WFControlFlowMode":  ControlFlowStart,
 	}
-	if prompt != nil && prompt != "" {
-		params["WFMenuPrompt"] = prompt
+	if opts.Prompt != nil && (opts.IncludeEmptyPrompt || opts.Prompt != "") {
+		params["WFMenuPrompt"] = opts.Prompt
 	}
-	menuItems := make([]WFMenuItem, len(itemValues))
-	for i, val := range itemValues {
-		menuItems[i] = WFMenuItem{
-			WFItemType: 0,
-			WFValue:    val,
+	if opts.LegacyCancelBehavior {
+		params["WFMenuLegacyCancelBehavior"] = true
+	}
+	if opts.PreservePlainStringItems {
+		menuItems := make([]any, len(opts.Items))
+		for i, val := range opts.Items {
+			switch v := val.(type) {
+			case string:
+				menuItems[i] = v
+			case WFMenuItem:
+				menuItems[i] = v
+			default:
+				menuItems[i] = WFMenuItem{
+					WFItemType: 0,
+					WFValue:    val,
+				}
+			}
+		}
+		params["WFMenuItems"] = menuItems
+		return params
+	}
+	menuItems := make([]WFMenuItem, len(opts.Items))
+	for i, val := range opts.Items {
+		if mi, ok := val.(WFMenuItem); ok {
+			menuItems[i] = mi
+		} else {
+			menuItems[i] = WFMenuItem{
+				WFItemType: 0,
+				WFValue:    val,
+			}
 		}
 	}
 	params["WFMenuItems"] = menuItems
 	return params
+}
+
+// BuildMenuStartItems constructs the beginning action parameters for a menu block
+// with arbitrary string or serialized WFValue item values.
+func BuildMenuStartItems(groupingID string, prompt any, itemValues []any) map[string]any {
+	return BuildMenuStartFull(MenuStartOptions{
+		GroupingID: groupingID,
+		Prompt:     prompt,
+		Items:      itemValues,
+	})
 }
 
 // BuildMenuCase constructs a case branch action parameters for a menu.
@@ -272,12 +325,21 @@ func BuildMenuCase(groupingID string, title string) map[string]any {
 // BuildMenuCaseWithTitle constructs a case branch action parameters for a menu
 // with a distinct display title and attributed title value.
 func BuildMenuCaseWithTitle(groupingID string, title string, attributedTitle any) map[string]any {
-	return map[string]any{
-		"GroupingIdentifier":        groupingID,
-		"WFControlFlowMode":         ControlFlowElse,
-		"WFMenuItemTitle":           title,
-		"WFMenuItemAttributedTitle": attributedTitle,
+	return BuildMenuCaseFull(groupingID, title, attributedTitle, true)
+}
+
+// BuildMenuCaseFull constructs a case branch action parameters for a menu,
+// optionally omitting WFMenuItemAttributedTitle.
+func BuildMenuCaseFull(groupingID string, title string, attributedTitle any, includeAttrTitle bool) map[string]any {
+	params := map[string]any{
+		"GroupingIdentifier": groupingID,
+		"WFControlFlowMode":  ControlFlowElse,
+		"WFMenuItemTitle":    title,
 	}
+	if includeAttrTitle {
+		params["WFMenuItemAttributedTitle"] = attributedTitle
+	}
+	return params
 }
 
 // BuildMenuEnd constructs the closing action parameters for a menu block.

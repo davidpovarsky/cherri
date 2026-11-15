@@ -2947,14 +2947,50 @@ func processRawParameters(params map[string]any) map[string]any {
 	return cleanParams
 }
 
-func matchAction(action *ShortcutAction) (name string, definition actionDefinition) {
+type matchActionCacheEntry struct {
+	call   string
+	defPtr *actionDefinition
+	split  string
+}
+
+var (
+	matchActionCachedCount   = -1
+	matchActionCachedEntries []matchActionCacheEntry
+	matchActionByID          map[string]matchActionCacheEntry
+)
+
+func resetMatchActionCache() {
+	matchActionCachedCount = -1
+	matchActionCachedEntries = nil
+	matchActionByID = nil
+}
+
+func matchActionCacheValid() bool {
+	if matchActionCachedCount < 0 || len(actions) != matchActionCachedCount || matchActionByID == nil {
+		return false
+	}
+	for _, entry := range matchActionCachedEntries {
+		cur, ok := actions[entry.call]
+		if !ok || cur != entry.defPtr {
+			return false
+		}
+	}
+	return true
+}
+
+func rebuildMatchActionCache() {
 	sortedCalls := make([]string, 0, len(actions))
 	for call := range actions {
 		sortedCalls = append(sortedCalls, call)
 	}
 	sort.Strings(sortedCalls)
+	entries := make([]matchActionCacheEntry, 0, len(sortedCalls))
+	byID := make(map[string]matchActionCacheEntry, len(sortedCalls)*2)
 	for _, call := range sortedCalls {
 		def := actions[call]
+		if def == nil {
+			continue
+		}
 		var identifier = strings.ToLower(call)
 		if def.identifier != "" {
 			identifier = def.identifier
@@ -2964,54 +3000,79 @@ func matchAction(action *ShortcutAction) (name string, definition actionDefiniti
 			appIdentifier = def.appIdentifier
 		}
 		var actionIdentifier = fmt.Sprintf("%s.%s", appIdentifier, identifier)
-		if actionIdentifier != action.WFWorkflowActionIdentifier && def.overrideIdentifier != action.WFWorkflowActionIdentifier {
-			continue
-		}
-
-		definition = *def
-		name = call
-
 		var splitKey = strings.ToLower(identifier)
 		if def.overrideIdentifier != "" {
 			splitKey = strings.ToLower(def.overrideIdentifier)
 		}
-		if splitActions, found := identifierMap[splitKey]; found {
-			matchSplitAction(&splitActions, action.WFWorkflowActionParameters, &name, &definition)
-			if identifier == "documentpicker.open" {
-				if wfFile, ok := action.WFWorkflowActionParameters["WFFile"].(map[string]interface{}); ok && wfFile["fileLocation"] != nil {
-					name = "getFileFromFolder"
-					definition = *actions["getFileFromFolder"]
-				} else if actions["getFile"] != nil {
-					name = "getFile"
-					definition = *actions["getFile"]
-				}
-				return
-			}
-			if name != "run" && name != "runSelf" {
-				return
-			}
-			workflow, ok := action.WFWorkflowActionParameters["WFWorkflow"].(map[string]interface{})
-			if !ok {
-				return
-			}
-			if _, isSelf := workflow["isSelf"]; !isSelf {
-				return
-			}
-			isSelfVal, _ := workflow["isSelf"].(bool)
-			if isSelfVal || action.WFWorkflowActionParameters["WFWorkflowName"] == basename {
-				name = "runSelf"
-				definition = *actions["runSelf"]
-			} else {
-				// Split matching may have landed on either shared-identifier
-				// definition on a scoring tie; the descriptor decides, so the
-				// definition must follow the name or run loses its
-				// shortcutName argument.
-				name = "run"
-				definition = *actions["run"]
+		entry := matchActionCacheEntry{
+			call:   call,
+			defPtr: def,
+			split:  splitKey,
+		}
+		entries = append(entries, entry)
+		if _, exists := byID[actionIdentifier]; !exists {
+			byID[actionIdentifier] = entry
+		}
+		if def.overrideIdentifier != "" {
+			if _, exists := byID[def.overrideIdentifier]; !exists {
+				byID[def.overrideIdentifier] = entry
 			}
 		}
+	}
+	matchActionCachedCount = len(actions)
+	matchActionCachedEntries = entries
+	matchActionByID = byID
+}
 
+func matchAction(action *ShortcutAction) (name string, definition actionDefinition) {
+	if !matchActionCacheValid() {
+		rebuildMatchActionCache()
+	}
+	entry, found := matchActionByID[action.WFWorkflowActionIdentifier]
+	if !found {
 		return
+	}
+	definition = *entry.defPtr
+	name = entry.call
+
+	if splitActions, splitFound := identifierMap[entry.split]; splitFound {
+		matchSplitAction(&splitActions, action.WFWorkflowActionParameters, &name, &definition)
+		identifier := strings.ToLower(entry.call)
+		if entry.defPtr.identifier != "" {
+			identifier = entry.defPtr.identifier
+		}
+		if identifier == "documentpicker.open" {
+			if wfFile, ok := action.WFWorkflowActionParameters["WFFile"].(map[string]interface{}); ok && wfFile["fileLocation"] != nil {
+				name = "getFileFromFolder"
+				definition = *actions["getFileFromFolder"]
+			} else if actions["getFile"] != nil {
+				name = "getFile"
+				definition = *actions["getFile"]
+			}
+			return
+		}
+		if name != "run" && name != "runSelf" {
+			return
+		}
+		workflow, ok := action.WFWorkflowActionParameters["WFWorkflow"].(map[string]interface{})
+		if !ok {
+			return
+		}
+		if _, isSelf := workflow["isSelf"]; !isSelf {
+			return
+		}
+		isSelfVal, _ := workflow["isSelf"].(bool)
+		if isSelfVal || action.WFWorkflowActionParameters["WFWorkflowName"] == basename {
+			name = "runSelf"
+			definition = *actions["runSelf"]
+		} else {
+			// Split matching may have landed on either shared-identifier
+			// definition on a scoring tie; the descriptor decides, so the
+			// definition must follow the name or run loses its
+			// shortcutName argument.
+			name = "run"
+			definition = *actions["run"]
+		}
 	}
 	return
 }

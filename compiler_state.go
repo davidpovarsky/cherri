@@ -122,6 +122,10 @@ func resetCompilerState() {
 	importedSymbolOutputNames = nil
 	importedSymbolVariableNames = nil
 	importedSymbolValueTypes = nil
+	importedSymbolAppendVars = nil
+	importedSymbolDictAggr = nil
+	importedSymbolIsVariable = nil
+	resetMatchActionCache()
 
 	// Includes.
 	included = []string{}

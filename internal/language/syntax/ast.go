@@ -236,6 +236,7 @@ func (s *BlockStmt) statementNode()        {}
 
 type IfStmt struct {
 	Span      source.Span
+	Modern    bool
 	Condition Expression
 	ThenBlock *BlockStmt
 	ElseBlock Statement // *BlockStmt or *IfStmt
@@ -266,9 +267,11 @@ func (s *RepeatStmt) statementNode()        {}
 func (s *RepeatStmt) expressionNode()       {}
 
 type MenuStmt struct {
-	Span       source.Span
-	Prompt     Expression
-	Cases      []MenuCase
+	Span           source.Span
+	Prompt         Expression
+	HasEmptyPrompt bool
+	LegacyCancel   bool
+	Cases          []MenuCase
 }
 func (s *MenuStmt) NodeSpan() source.Span { return s.Span }
 func (s *MenuStmt) statementNode()        {}
@@ -277,6 +280,10 @@ func (s *MenuStmt) expressionNode()       {}
 type MenuCase struct {
 	Span      source.Span
 	Label     string
+	Value     Expression // optional expression (e.g. FStringExpr or IdentExpr)
+	Title     string     // optional explicit WFMenuItemTitle override
+	HasTitle  bool
+	Plain     bool       // emit plain string item in WFMenuItems and omit WFMenuItemAttributedTitle
 	BodyBlock *BlockStmt
 }
 

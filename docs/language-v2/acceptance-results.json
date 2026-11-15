@@ -1,13 +1,17 @@
 {
-  "timestamp": "2026-10-18T19:49:18Z",
+  "timestamp": "2026-11-15T04:41:55Z",
   "phase": "local",
   "closure_complete": false,
   "language_version": "2.0",
-  "schema_fingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa",
+  "schema_fingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
   "total_cases": 94,
   "passed_cases": 71,
-  "failed_cases": 0,
-  "skipped_cases": 23,
+  "failed_cases": 1,
+  "skipped_cases": 22,
+  "validation_errors": [
+    "case F01 has status PASSED but passed is false",
+    "case F01 failed: Short-circuit \u0026\u0026 and || lower to nested conditional blocks in both statement and expression contexts"
+  ],
   "results": [
     {
       "id": "B01",
@@ -56,7 +60,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Schema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (deterministic)"
+      "detail": "Schema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (deterministic)"
     },
     {
       "id": "U03",
@@ -68,7 +72,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Upstream parameter propagation rehearsal passed: ok  \tgithub.com/electrikmilk/cherri\t8.063s"
+      "detail": "Upstream parameter propagation rehearsal passed: ok  \tgithub.com/electrikmilk/cherri\t3.835s"
     },
     {
       "id": "U04",
@@ -409,7 +413,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Document analysis completes in 5.4551ms (\u003c 500ms)"
+      "detail": "Document analysis completes in 13.021ms (\u003c 500ms)"
     },
     {
       "id": "L01",
@@ -509,8 +513,8 @@
         "native"
       ],
       "passed": false,
-      "status": "PENDING_EXTERNAL",
-      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
+      "status": "FAILED",
+      "detail": "Short-circuit \u0026\u0026 and || lower to nested conditional blocks in both statement and expression contexts"
     },
     {
       "id": "F02",
@@ -972,7 +976,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "50 document analysis passes completed in 552µs"
+      "detail": "50 document analysis passes completed in 1.5404ms"
     },
     {
       "id": "CL01",
@@ -1180,7 +1184,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Working branch checked; status output length: 1052"
+      "detail": "Working branch checked; status output length: 1604"
     }
   ]
 }

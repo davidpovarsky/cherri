@@ -1,0 +1,83 @@
+{
+  "version": "p10r12-control-region-coverage-v1",
+  "generatedAt": "2026-11-15T05:11:58Z",
+  "compilerBinarySha256": "7407548dd6a768c86414ff1495a14d3cfb2ee669bd1e6bd72a08e59a01fe8bad",
+  "modeParityIdentical": true,
+  "summary": {
+    "totalCompleteRegions": 4071,
+    "naturalVerifiedWholeRegions": 3820,
+    "naturalWholeRegionRatePct": 93.83,
+    "fallbackWholeRegions": 250,
+    "mixedInternalStateRegions": 1,
+    "totalUnclosedRegions": 0,
+    "totalOrphanMarkers": 0,
+    "markerCounts": {
+      "naturalVerified": 9878,
+      "controlRegionFallback": 692,
+      "sourceInvalid": 1,
+      "totalControlMarkers": 10571
+    }
+  },
+  "wholeRegions": {
+    "conditional|EXACT_NATIVE_FALLBACK": 226,
+    "conditional|NATURAL_VERIFIED": 3300,
+    "choosefrommenu|EXACT_NATIVE_FALLBACK": 24,
+    "repeat.count|NATURAL_VERIFIED": 127,
+    "repeat.each|NATURAL_VERIFIED": 230,
+    "choosefrommenu|NATURAL_VERIFIED": 163,
+    "conditional|MIXED_INTERNAL_STATE": 1
+  },
+  "wholeRegionsByNesting": {
+    "conditional:nested|EXACT_NATIVE_FALLBACK": 209,
+    "conditional:nested|NATURAL_VERIFIED": 2918,
+    "conditional:top|NATURAL_VERIFIED": 382,
+    "choosefrommenu:nested|EXACT_NATIVE_FALLBACK": 24,
+    "repeat.count:nested|NATURAL_VERIFIED": 115,
+    "repeat.each:nested|NATURAL_VERIFIED": 221,
+    "choosefrommenu:nested|NATURAL_VERIFIED": 161,
+    "choosefrommenu:top|NATURAL_VERIFIED": 2,
+    "conditional:top|EXACT_NATIVE_FALLBACK": 17,
+    "repeat.each:top|NATURAL_VERIFIED": 9,
+    "repeat.count:top|NATURAL_VERIFIED": 12,
+    "conditional:top|MIXED_INTERNAL_STATE": 1
+  },
+  "markerCountsByFamilyAndMode": {
+    "conditional|mode=0|EXACT_NATIVE_FALLBACK": 227,
+    "conditional|mode=0|NATURAL_VERIFIED": 3300,
+    "conditional|mode=1|NATURAL_VERIFIED": 1696,
+    "conditional|mode=2|EXACT_NATIVE_FALLBACK": 227,
+    "conditional|mode=2|NATURAL_VERIFIED": 3300,
+    "choosefrommenu|mode=0|EXACT_NATIVE_FALLBACK": 24,
+    "choosefrommenu|mode=1|EXACT_NATIVE_FALLBACK": 60,
+    "choosefrommenu|mode=2|EXACT_NATIVE_FALLBACK": 24,
+    "repeat.count|mode=0|NATURAL_VERIFIED": 127,
+    "repeat.count|mode=2|NATURAL_VERIFIED": 127,
+    "repeat.each|mode=0|NATURAL_VERIFIED": 230,
+    "repeat.each|mode=2|NATURAL_VERIFIED": 230,
+    "choosefrommenu|mode=0|NATURAL_VERIFIED": 163,
+    "choosefrommenu|mode=1|NATURAL_VERIFIED": 542,
+    "choosefrommenu|mode=2|NATURAL_VERIFIED": 163,
+    "conditional|mode=1|EXACT_NATIVE_FALLBACK": 130,
+    "conditional|mode=2|SOURCE_INVALID": 1
+  },
+  "fallbackReasons": {
+    "conditional|CONTROL_REGION:cond(100)": 72,
+    "choosefrommenu|CONTROL_REGION:non_string_menu_items": 23,
+    "choosefrommenu|CONTROL_REGION:items(4)": 1,
+    "conditional|CONTROL_REGION:cond(2)": 17,
+    "conditional|CONTROL_REGION:cond(4)": 56,
+    "conditional|CONTROL_REGION:cond(99)": 15,
+    "conditional|CONTROL_REGION:cond(101)": 36,
+    "conditional|CONTROL_REGION:cond(1001)": 3,
+    "conditional|CONTROL_REGION:cond(0)": 3,
+    "conditional|CONTROL_REGION:cond(999)": 7,
+    "conditional|CONTROL_REGION:cond(3)": 7,
+    "conditional|CONTROL_REGION:cond(5)": 5,
+    "conditional|CONTROL_REGION:multi_cond(2)": 3,
+    "conditional|CONTROL_REGION:cond(1)": 2
+  },
+  "specimen035Invariant": {
+    "orphanEndIfMarker": "035:723 (WFControlFlowMode=2, conditional) stays SOURCE_INVALID",
+    "mixedInternalStateCount": 1
+  }
+}

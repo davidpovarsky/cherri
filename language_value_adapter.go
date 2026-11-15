@@ -63,6 +63,18 @@ func encodeReferenceMap(ref *backend.Reference) map[string]any {
 			if a.PropertyUserInfo != nil {
 				m["PropertyUserInfo"] = a.PropertyUserInfo
 			}
+			if a.WFDateFormat != "" {
+				m["WFDateFormat"] = a.WFDateFormat
+			}
+			if a.WFDateFormatStyle != "" {
+				m["WFDateFormatStyle"] = a.WFDateFormatStyle
+			}
+			if a.WFTimeFormatStyle != "" {
+				m["WFTimeFormatStyle"] = a.WFTimeFormatStyle
+			}
+			if a.WFISO8601IncludeTime != nil {
+				m["WFISO8601IncludeTime"] = *a.WFISO8601IncludeTime
+			}
 			aggrs[i] = m
 		}
 		valMap["Aggrandizements"] = aggrs
