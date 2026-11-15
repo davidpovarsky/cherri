@@ -1,0 +1,37 @@
+#define name Cherri QA Scroll Editor Legacy
+#define color purple
+
+comment("ANCHOR_CARD_01_TOP_HEADER")
+const card02 = text("ANCHOR_CARD_02_TEXT_ALPHA")
+const card03 = number(103)
+const card04 = {"card": "ANCHOR_CARD_04_DICT", "index": 4}
+const card05 = getValue(card04, "card")
+comment("ANCHOR_CARD_06_SECTION_A")
+const card07 = text("ANCHOR_CARD_07_TEXT_BETA")
+const card08 = number(108)
+const card09 = text("ANCHOR_CARD_09_TEXT_GAMMA")
+const card10 = number(110)
+comment("ANCHOR_CARD_11_MID_UPPER")
+if card08 == 108 {
+    const card12 = text("ANCHOR_CARD_12_IF_THEN")
+    const card13 = number(113)
+} else {
+    const card14 = text("ANCHOR_CARD_14_IF_ELSE")
+}
+comment("ANCHOR_CARD_15_MID_CENTER")
+repeat idx for 2 {
+    const card16 = text("ANCHOR_CARD_16_REPEAT_BODY")
+    const card17 = number(117)
+}
+comment("ANCHOR_CARD_18_MID_LOWER")
+const card19 = {"section": "ANCHOR_CARD_19_DICT_LOWER", "page": 3}
+const card20 = getValue(card19, "section")
+const card21 = text("ANCHOR_CARD_21_TEXT_DELTA")
+const card22 = number(122)
+comment("ANCHOR_CARD_23_SECTION_B")
+const card24 = text("ANCHOR_CARD_24_TEXT_EPSILON")
+const card25 = number(125)
+const card26 = text("ANCHOR_CARD_26_TEXT_ZETA")
+debugLog(true)
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(card26)

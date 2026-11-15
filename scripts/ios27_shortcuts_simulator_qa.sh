@@ -55,6 +55,7 @@ import hashlib
 import json
 import os
 import plistlib
+import shutil
 import subprocess
 import sys
 
@@ -82,9 +83,11 @@ for fid, fname, dialect in fixture_specs:
         src_bytes = f.read()
     src_sha256 = hashlib.sha256(src_bytes).hexdigest()
 
+    build_src = os.path.join(builds_dir, fname)
+    shutil.copyfile(fpath, build_src)
     out_base = os.path.join(builds_dir, fid)
     out_shortcut = out_base + ".shortcut"
-    cmd = [cherri_bin, fpath, "--skip-sign", f"--output={out_shortcut}"]
+    cmd = [cherri_bin, build_src, "--skip-sign", f"--output={out_shortcut}"]
     if dialect == "legacy":
         cmd.append("--legacy")
     proc = subprocess.run(cmd, cwd=builds_dir, capture_output=True, text=True)
@@ -471,6 +474,9 @@ if [ "$PROBE_LEVEL" = "editor" ] || [ "$PROBE_LEVEL" = "runtime" ] || [ "$PROBE_
 
     if [ -d "$XCRESULT_PATH" ]; then
       xcrun xcresulttool get test-results summary --path "$XCRESULT_PATH" > "$ARTIFACT_DIR/tests/xcresult-summary.json" 2>/dev/null || true
+      if [ -f "$ARTIFACT_DIR/tests/xcresult-summary.json" ] && [ -n "$UDID" ]; then
+        python3 -c 'import sys; p, u, m = sys.argv[1:4]; s = open(p, encoding="utf-8").read().replace(u, m); open(p, "w", encoding="utf-8").write(s)' "$ARTIFACT_DIR/tests/xcresult-summary.json" "$UDID" "$MASKED_UDID"
+      fi
       rm -rf "$XCRESULT_PATH"
     fi
     rm -f "$ARTIFACT_DIR/tests/xcodebuild-test.log"

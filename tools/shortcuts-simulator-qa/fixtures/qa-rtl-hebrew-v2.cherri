@@ -1,0 +1,9 @@
+debugClearLogs()
+comment("ANCHOR_RTL_01_פתיחה")
+let title = text("בדיקת קיצור דרך סינתטי בעברית - iPadOS 27")
+debugLog(withDates: true)
+let payload = {"שפה": "עברית", "כיוון": "RTL", "גרסה": 27}
+debugLog(withDates: true)
+let lang = getValue(dictionary: payload, key: "שפה")
+let summary = text("CHERRI_QA_RTL_RESULT:ok:hebrew")
+output(summary)

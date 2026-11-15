@@ -1,0 +1,34 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+let card02 = text("ANCHOR_CARD_02_TEXT_ALPHA")
+let card03 = number(103)
+let card04 = {"card": "ANCHOR_CARD_04_DICT", "index": 4}
+let card05 = getValue(dictionary: card04, key: "card")
+comment("ANCHOR_CARD_06_SECTION_A")
+let card07 = text("ANCHOR_CARD_07_TEXT_BETA")
+let card08 = number(108)
+let card09 = text("ANCHOR_CARD_09_TEXT_GAMMA")
+let card10 = number(110)
+comment("ANCHOR_CARD_11_MID_UPPER")
+if card08 == 108 {
+    let card12 = text("ANCHOR_CARD_12_IF_THEN")
+    let card13 = number(113)
+} else {
+    let card14 = text("ANCHOR_CARD_14_IF_ELSE")
+}
+comment("ANCHOR_CARD_15_MID_CENTER")
+repeat 2 {
+    let card16 = text("ANCHOR_CARD_16_REPEAT_BODY")
+    let card17 = number(117)
+}
+comment("ANCHOR_CARD_18_MID_LOWER")
+let card19 = {"section": "ANCHOR_CARD_19_DICT_LOWER", "page": 3}
+let card20 = getValue(dictionary: card19, key: "section")
+let card21 = text("ANCHOR_CARD_21_TEXT_DELTA")
+let card22 = number(122)
+comment("ANCHOR_CARD_23_SECTION_B")
+let card24 = text("ANCHOR_CARD_24_TEXT_EPSILON")
+let card25 = number(125)
+let card26 = text("ANCHOR_CARD_26_TEXT_ZETA")
+debugLog(withDates: true)
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(card26)
