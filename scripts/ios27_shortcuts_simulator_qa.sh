@@ -44,7 +44,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 ARTIFACT_DIR="$ROOT_DIR/artifacts/cherri-ios27-simulator-qa/$RUN_ID"
-mkdir -p "$ARTIFACT_DIR/editor" "$ARTIFACT_DIR/runtime" "$ARTIFACT_DIR/tests" "$ARTIFACT_DIR/docs" "$ARTIFACT_DIR/builds"
+QA_SCRATCH_DIR="${RUNNER_TEMP:-/tmp}/cherri-qa-scratch-${RUN_ID}"
+mkdir -p "$ARTIFACT_DIR/editor" "$ARTIFACT_DIR/runtime" "$ARTIFACT_DIR/tests" "$ARTIFACT_DIR/docs" "$ARTIFACT_DIR/builds" "$QA_SCRATCH_DIR"
 
 SOURCE_SHA="$(git rev-parse HEAD 2>/dev/null || echo "unknown")"
 
@@ -422,20 +423,30 @@ fi
 
 SHORTCUTS_BUNDLE_PRESENT="false"
 if [ "$GATE_SIMULATOR_BOOTED" = "PASS" ]; then
-  xcrun simctl listapps "$UDID" > "$ARTIFACT_DIR/sim-listapps.plist" 2>/dev/null || true
-  if grep -q "com.apple.shortcuts" "$ARTIFACT_DIR/sim-listapps.plist" 2>/dev/null; then
+  xcrun simctl listapps "$UDID" > "$QA_SCRATCH_DIR/sim-listapps.plist" 2>/dev/null || true
+  if grep -q "com.apple.shortcuts" "$QA_SCRATCH_DIR/sim-listapps.plist" 2>/dev/null; then
     SHORTCUTS_BUNDLE_PRESENT="true"
     GATE_SHORTCUTS_APP_INSTALLED="PASS"
   else
     GATE_SHORTCUTS_APP_INSTALLED="BLOCKED_SIMULATOR_APP"
   fi
 fi
-rm -f "$ARTIFACT_DIR/sim-listapps.plist" "$ARTIFACT_DIR/sim-runtimes.json" "$ARTIFACT_DIR/sim-devicetypes.json" "$ARTIFACT_DIR/sim-devices.json"
+python3 - "$ARTIFACT_DIR/sim-devices.json" "$ARTIFACT_DIR/sim-runtimes.json" <<'PY' 2>/dev/null || true
+import json, sys
+devs_map = json.load(open(sys.argv[1])).get("devices", {})
+rts = {r.get("identifier"): r.get("version") for r in json.load(open(sys.argv[2])).get("runtimes", [])}
+summary = []
+for rid, devs in devs_map.items():
+    for d in devs:
+        if d.get("isAvailable", True) and "iPad" in d.get("name", ""):
+            summary.append(f"{d.get('name')} (rt={rts.get(rid, rid)}, state={d.get('state')})")
+print("Available iPad simulators:", ", ".join(summary) if summary else "none")
+PY
+rm -f "$QA_SCRATCH_DIR/sim-listapps.plist" "$ARTIFACT_DIR/sim-runtimes.json" "$ARTIFACT_DIR/sim-devicetypes.json" "$ARTIFACT_DIR/sim-devices.json"
 
-ensure_sim_session_ready() {
+simctl_getenv_ok() {
   local target_udid="$1"
-  local env_rc=0
-  python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || env_rc=$?
+  python3 - "$target_udid" <<'PY' >/dev/null 2>&1
 import os, signal, subprocess, sys
 u = sys.argv[1]
 p = subprocess.Popen(
@@ -458,10 +469,50 @@ except subprocess.TimeoutExpired:
         pass
     sys.exit(124)
 PY
-  if [ "$env_rc" -eq 0 ]; then
+}
+
+wait_for_springboard_display() {
+  local target_udid="$1"
+  local max_wait="${2:-90}"
+  local probe_png="$QA_SCRATCH_DIR/springboard-probe.png"
+  local elapsed=0
+  local bytes=0
+  while [ "$elapsed" -le "$max_wait" ]; do
+    rm -f "$probe_png"
+    if simctl_getenv_ok "$target_udid"; then
+      python3 - "$target_udid" "$probe_png" <<'PY' >/dev/null 2>&1 || true
+import os, signal, subprocess, sys
+p = subprocess.Popen(["xcrun", "simctl", "io", sys.argv[1], "screenshot", sys.argv[2]], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+try:
+    p.wait(timeout=12)
+except subprocess.TimeoutExpired:
+    try: os.killpg(p.pid, signal.SIGKILL)
+    except Exception: pass
+PY
+      if [ -f "$probe_png" ]; then
+        bytes="$(wc -c < "$probe_png" | tr -d '[:space:]')"
+        if [ "${bytes:-0}" -ge 85000 ]; then
+          rm -f "$probe_png"
+          return 0
+        fi
+      fi
+    fi
+    [ "$elapsed" -ge "$max_wait" ] && break
+    sleep 5
+    elapsed=$((elapsed + 5))
+  done
+  rm -f "$probe_png"
+  echo "wait_for_springboard_display(${max_wait}s) last_screenshot_bytes=${bytes:-0}"
+  return 1
+}
+
+ensure_sim_session_ready() {
+  local target_udid="$1"
+  local force_reboot="${2:-0}"
+  if [ "$force_reboot" -ne 1 ] && simctl_getenv_ok "$target_udid" && wait_for_springboard_display "$target_udid" 10; then
     return 0
   fi
-  echo "Simulator launchd_sim session unhealthy (getenv rc=$env_rc); rebooting <UDID> cleanly..."
+  echo "Simulator session recovery triggered (force_reboot=$force_reboot); rebooting <UDID> cleanly..."
   xcrun simctl shutdown "$target_udid" >/dev/null 2>&1 || true
   sleep 2
   xcrun simctl boot "$target_udid" >/dev/null 2>&1 || true
@@ -469,26 +520,10 @@ PY
   open -g -a Simulator --args -CurrentDeviceUDID "$target_udid" >/dev/null 2>&1 || true
   sleep 3
   local retry_rc=0
-  python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || retry_rc=$?
-import os, signal, subprocess, sys
-u = sys.argv[1]
-p = subprocess.Popen(
-    ["xcrun", "simctl", "getenv", u, "HOME"],
-    stdin=subprocess.DEVNULL,
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-    start_new_session=True,
-)
-try:
-    sys.exit(p.wait(timeout=15))
-except subprocess.TimeoutExpired:
-    try:
-        os.killpg(p.pid, signal.SIGKILL)
-    except Exception:
-        pass
-    sys.exit(124)
-PY
-  echo "Simulator session post-reboot getenv check rc=$retry_rc"
+  simctl_getenv_ok "$target_udid" || retry_rc=$?
+  local sb_rc=0
+  wait_for_springboard_display "$target_udid" 90 || sb_rc=$?
+  echo "Simulator session post-reboot check getenv_rc=$retry_rc springboard_rc=$sb_rc"
   return 0
 }
 
@@ -593,6 +628,13 @@ try:
 except Exception:
     pass
 time.sleep(2)
+PY
+  if ! wait_for_springboard_display "$UDID" 90; then
+    ensure_sim_session_ready "$UDID" 1
+  fi
+  python3 - "$UDID" <<'PY' >/dev/null 2>&1 || true
+import subprocess, sys, time
+u = sys.argv[1]
 for cmd in (
     ["xcrun", "simctl", "launch", u, "com.apple.shortcuts"],
 ):
@@ -996,10 +1038,10 @@ except subprocess.TimeoutExpired:
 PY
     }
 
-    DERIVED_DATA_PATH="$ARTIFACT_DIR/builds/DerivedData"
-    XCRESULT_PATH="$ARTIFACT_DIR/tests/CherriSimulatorQA.xcresult"
-    XCRESULT_PART1_PATH="$ARTIFACT_DIR/tests/CherriSimulatorQA-Part1.xcresult"
-    rm -rf "$XCRESULT_PATH" "$XCRESULT_PART1_PATH" "$DERIVED_DATA_PATH"
+    DERIVED_DATA_PATH="$QA_SCRATCH_DIR/DerivedData"
+    XCRESULT_PATH="$QA_SCRATCH_DIR/CherriSimulatorQA.xcresult"
+    XCRESULT_PART1_PATH="$QA_SCRATCH_DIR/CherriSimulatorQA-Part1.xcresult"
+    rm -rf "$XCRESULT_PATH" "$XCRESULT_PART1_PATH" "$DERIVED_DATA_PATH" "$ARTIFACT_DIR/tests/"*.xcresult
 
     mkdir -p "$ARTIFACT_DIR/builds"
     run_cmd_timeout 600 xcodebuild build-for-testing \
@@ -1047,6 +1089,14 @@ PY
     if [ -n "$PART1_RECEIVER_DATA_DIR" ] && [ -f "$PART1_RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
       cp "$PART1_RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events-part1.json" || true
     fi
+    if [ "$XCODEBUILD_PART1_RC" -ne 0 ]; then
+      echo "Part1 exited with rc=$XCODEBUILD_PART1_RC; forcing clean Simulator session recovery before Phase 3b..."
+      ensure_sim_session_ready "$UDID" 1
+      if [ -n "${SIM_LOG_PID:-}" ] && ! kill -0 "$SIM_LOG_PID" 2>/dev/null; then
+        xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "siriactionsd" || process == "SpringBoard" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction")' --level info --style compact >> "$RAW_SIM_LOG" 2>&1 &
+        SIM_LOG_PID=$!
+      fi
+    fi
 
     import_signed_via_localhost_http() {
       local target_udid="$1"
@@ -1058,8 +1108,12 @@ import functools, http.server, os, signal, socketserver, subprocess, sys, thread
 udid, spath, name = sys.argv[1:4]
 serve_dir = os.path.dirname(spath)
 fname = os.path.basename(spath)
+served = threading.Event()
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        served.set()
+        super().do_GET()
     def guess_type(self, path):
         return "application/octet-stream"
     def log_message(self, fmt, *args):
@@ -1082,10 +1136,11 @@ except subprocess.TimeoutExpired:
         pass
     rc = 124
     out = "localhost import-shortcut timed out after 25s"
-time.sleep(5)
+if rc == 0:
+    served.wait(10)
 httpd.shutdown()
 httpd.server_close()
-print(f"rc={rc} {out.strip()}")
+print(f"rc={rc} served={served.is_set()} {out.strip()}")
 sys.exit(rc)
 PY
     }
@@ -1131,18 +1186,26 @@ PY
         PRE_SCREEN_BYTES="$(wc -c < "$ARTIFACT_DIR/editor/pre-import-screen.png" | tr -d '[:space:]')"
       fi
       if [ "${PRE_SCREEN_BYTES:-0}" -lt 120000 ]; then
-        echo "Phase 3b detected boot/respring logo screen (${PRE_SCREEN_BYTES} B); waiting 15s for SpringBoard settle and re-dispatching..."
-        sleep 15
+        echo "Phase 3b detected boot/respring/unhealthy screen (${PRE_SCREEN_BYTES} B); recovering SpringBoard before re-dispatching..."
+        if [ "${PRE_SCREEN_BYTES:-0}" -eq 0 ]; then
+          ensure_sim_session_ready "$UDID" 1
+        else
+          wait_for_springboard_display "$UDID" 90 || ensure_sim_session_ready "$UDID" 1
+        fi
         run_cmd_timeout 20 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
-        sleep 3
+        sleep 4
         _t3=$SECONDS
         PRE_IMP_RETRY_RC=0
         PRE_IMP_RETRY_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 40)" || PRE_IMP_RETRY_RC=$?
+        if [ "$PRE_IMP_RETRY_RC" -ne 0 ]; then
+          PRE_IMP_RETRY2_OUT="$(import_signed_via_localhost_http "$UDID" "$SIGNED_FILE" "$EXPECTED_SHORTCUT_NAME" 2>&1)" || PRE_IMP_RETRY_RC=$?
+          PRE_IMP_RETRY_OUT="${PRE_IMP_RETRY_OUT} | http_retry=${PRE_IMP_RETRY2_OUT}"
+        fi
         PRE_IMP_DT=$((PRE_IMP_DT + SECONDS - _t3))
         if [ "$PRE_IMP_RETRY_RC" -eq 0 ]; then
-          PRE_IMP_METHOD="${PRE_IMP_METHOD}_post_respring_retry"
+          PRE_IMP_METHOD="${PRE_IMP_METHOD}_post_recovery_retry"
           PRE_IMP_RC=0
-          PRE_IMP_OUT="${PRE_IMP_OUT} | post_respring=ok"
+          PRE_IMP_OUT="${PRE_IMP_OUT} | post_recovery=ok"
         fi
         sleep 2
         run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/pre-import-screen.png" >/dev/null 2>&1 || true
@@ -1211,7 +1274,7 @@ PY
         PHASE4_LOG_PID=""
       fi
     }
-    trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}"' EXIT
+    trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}" "${CONFIRM_XCRESULT:-}" "${QA_SCRATCH_DIR:-}"' EXIT
 
     run_cmd_timeout 900 xcodebuild test-without-building \
       -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
@@ -1503,7 +1566,7 @@ PY
         if [ "$FOUND_NONCE" != "yes" ]; then
           run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-receiver-openurl.png" >/dev/null 2>&1 || true
           echo "=== Phase 4b-confirm: Checking for Shortcuts open/allow consent dialog via test-without-building ==="
-          CONFIRM_XCRESULT="$ARTIFACT_DIR/tests/CherriSimulatorQAConfirm.xcresult"
+          CONFIRM_XCRESULT="$QA_SCRATCH_DIR/CherriSimulatorQAConfirm.xcresult"
           rm -rf "$CONFIRM_XCRESULT"
           echo "1" > "$ARTIFACT_DIR/editor/confirm-dialog-mode.txt"
           TEST_RUNNER_CHERRI_QA_DIALOG_CONFIRM_ONLY=1 run_cmd_timeout 120 xcodebuild test-without-building \
@@ -1721,8 +1784,8 @@ PY
   fi
 fi
 
-# Remove compiled binary, raw sim log, and raw .shortcut build intermediates before artifact upload
-rm -rf "$ARTIFACT_DIR/builds" "$ARTIFACT_DIR/tests/"*.log "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
+# Remove compiled binary, raw sim log, xcresult bundles, and raw .shortcut build intermediates before artifact upload
+rm -rf "$ARTIFACT_DIR/builds" "$ARTIFACT_DIR/tests/"*.log "$ARTIFACT_DIR/tests/"*.xcresult "${QA_SCRATCH_DIR:-}" "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
 
 # Write output-assertions.json and runtime-trace.jsonl
 python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" <<'PY'
@@ -1786,7 +1849,7 @@ for dirpath, _, filenames in os.walk(root):
             data = f.read()
         m = forbidden.search(data)
         if m:
-            violations.append(f"{fn}: forbidden pattern {m.group(0).decode('utf-8', errors='replace')}")
+            violations.append(f"{fn}: matched-forbidden-regex (len={len(m.group(0))})")
         if raw_udid and len(raw_udid) >= 36 and raw_udid.encode("utf-8") in data:
             violations.append(f"{fn}: unmasked simulator UDID present")
 
@@ -1868,7 +1931,7 @@ for dirpath, _, filenames in os.walk(artifact_dir):
             data = f.read()
         m = forbidden.search(data)
         if m:
-            privacy_violations.append(f"{fn}: {m.group(0).decode('utf-8', errors='replace')}")
+            privacy_violations.append(f"{fn}: matched-forbidden-regex (len={len(m.group(0))})")
         if raw_udid and len(raw_udid) >= 36 and raw_udid.encode("utf-8") in data:
             privacy_violations.append(f"{fn}: unmasked simulator UDID present")
         if custom_server and "sign.shortcuty.app" not in custom_server and custom_server.encode("utf-8") in data:
