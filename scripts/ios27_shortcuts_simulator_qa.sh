@@ -796,6 +796,7 @@ PY
     rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
     (
       import_dispatched=0
+      import_retried=0
       run_dispatched=0
       for _tick in $(seq 1 2400); do
         if [ "$import_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import.txt" ]; then
@@ -806,6 +807,14 @@ PY
             printf 'rc=%s\n%s\n' "$IMP_RC" "${IMP_OUT:0:256}" > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
           else
             printf 'rc=1\nNO_VALID_AEA1\n' > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
+          fi
+        fi
+        if [ "$import_retried" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import-retry.txt" ]; then
+          import_retried=1
+          if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
+            IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 2 "$SIGNED_FILE")"
+            IMP2_RC=$?
+            printf 'rc=%s\n%s\n' "$IMP2_RC" "${IMP2_OUT:0:256}" > "$ARTIFACT_DIR/editor/ack-signed-import-retry.txt"
           fi
         fi
         if [ "$run_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-shortcut-run.txt" ]; then
