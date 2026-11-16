@@ -432,6 +432,64 @@ if [ "$GATE_SIMULATOR_BOOTED" = "PASS" ]; then
 fi
 rm -f "$ARTIFACT_DIR/sim-listapps.plist" "$ARTIFACT_DIR/sim-runtimes.json" "$ARTIFACT_DIR/sim-devicetypes.json" "$ARTIFACT_DIR/sim-devices.json"
 
+ensure_sim_session_ready() {
+  local target_udid="$1"
+  local spawn_rc=0
+  python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || spawn_rc=$?
+import os, signal, subprocess, sys
+u = sys.argv[1]
+p = subprocess.Popen(
+    ["xcrun", "simctl", "spawn", u, "/usr/bin/true"],
+    stdin=subprocess.DEVNULL,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+    start_new_session=True,
+)
+try:
+    sys.exit(p.wait(timeout=15))
+except subprocess.TimeoutExpired:
+    try:
+        os.killpg(p.pid, signal.SIGKILL)
+    except Exception:
+        pass
+    try:
+        p.wait(timeout=3)
+    except Exception:
+        pass
+    sys.exit(124)
+PY
+  if [ "$spawn_rc" -eq 0 ]; then
+    return 0
+  fi
+  echo "Simulator launchd_sim session unhealthy (spawn rc=$spawn_rc); rebooting <UDID> cleanly..."
+  xcrun simctl shutdown "$target_udid" >/dev/null 2>&1 || true
+  sleep 2
+  xcrun simctl boot "$target_udid" >/dev/null 2>&1 || true
+  xcrun simctl bootstatus "$target_udid" -b >/dev/null 2>&1 || true
+  local retry_rc=0
+  python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || retry_rc=$?
+import os, signal, subprocess, sys
+u = sys.argv[1]
+p = subprocess.Popen(
+    ["xcrun", "simctl", "spawn", u, "/usr/bin/true"],
+    stdin=subprocess.DEVNULL,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+    start_new_session=True,
+)
+try:
+    sys.exit(p.wait(timeout=15))
+except subprocess.TimeoutExpired:
+    try:
+        os.killpg(p.pid, signal.SIGKILL)
+    except Exception:
+        pass
+    sys.exit(124)
+PY
+  echo "Simulator session post-reboot spawn check rc=$retry_rc"
+  return 0
+}
+
 simctl_openurl_resilient() {
   local target_udid="$1"
   local target_url="$2"
@@ -444,17 +502,34 @@ simctl_openurl_resilient() {
   local rc=1
   while [ "$attempt" -le "$max_attempts" ]; do
     out="$(python3 - "$target_udid" "$target_url" "$timeout_sec" <<'PY'
-import subprocess, sys
+import os, signal, subprocess, sys, tempfile
 udid, url, t = sys.argv[1], sys.argv[2], int(sys.argv[3])
-try:
-    p = subprocess.run(["xcrun", "simctl", "openurl", udid, url], stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=t)
-    sys.stdout.write((p.stdout or "") + (p.stderr or ""))
-    sys.exit(p.returncode)
-except subprocess.TimeoutExpired as exc:
-    out = (exc.stdout or b"").decode("utf-8", errors="replace") if isinstance(exc.stdout, bytes) else (exc.stdout or "")
-    err = (exc.stderr or b"").decode("utf-8", errors="replace") if isinstance(exc.stderr, bytes) else (exc.stderr or "")
-    sys.stdout.write(f"simctl openurl timed out after {t}s {out} {err}".strip())
-    sys.exit(124)
+with tempfile.TemporaryFile(mode="w+b") as tf:
+    p = subprocess.Popen(
+        ["xcrun", "simctl", "openurl", udid, url],
+        stdin=subprocess.DEVNULL,
+        stdout=tf,
+        stderr=subprocess.STDOUT,
+        start_new_session=True,
+    )
+    try:
+        rc = p.wait(timeout=t)
+        tf.seek(0)
+        sys.stdout.write(tf.read().decode("utf-8", errors="replace"))
+        sys.exit(rc)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(p.pid, signal.SIGKILL)
+        except Exception:
+            pass
+        try:
+            p.wait(timeout=3)
+        except Exception:
+            pass
+        tf.seek(0)
+        partial = tf.read().decode("utf-8", errors="replace").strip()
+        sys.stdout.write(f"simctl openurl timed out after {t}s {partial}".strip())
+        sys.exit(124)
 PY
 )"
     rc=$?
@@ -464,17 +539,25 @@ PY
     fi
     if [ "$allow_sim_restart" = "1" ] && echo "$out" | grep -Eqi "Connection interrupted|server died|NSMachErrorDomain|CoreSimulatorService|timed out"; then
       python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || true
-import subprocess, sys
+import os, signal, subprocess, sys
 u = sys.argv[1]
 for cmd in (
     ["open", "-g", "-a", "Simulator", "--args", "-CurrentDeviceUDID", u],
     ["xcrun", "simctl", "boot", u],
     ["xcrun", "simctl", "launch", u, "com.apple.shortcuts"],
 ):
+    p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     try:
-        subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, timeout=12)
-    except Exception:
-        pass
+        p.wait(timeout=12)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(p.pid, signal.SIGKILL)
+        except Exception:
+            pass
+        try:
+            p.wait(timeout=2)
+        except Exception:
+            pass
 PY
     fi
     if [ "$attempt" -lt "$max_attempts" ]; then
@@ -484,11 +567,15 @@ PY
   done
   if [ "$allow_sim_restart" = "1" ] && [ -n "$fallback_file" ] && [ -f "$fallback_file" ]; then
     python3 - "$fallback_file" <<'PY' >/dev/null 2>&1 || true
-import subprocess, sys
+import os, signal, subprocess, sys
+p = subprocess.Popen(["open", "-a", "Simulator", sys.argv[1]], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
 try:
-    subprocess.run(["open", "-a", "Simulator", sys.argv[1]], stdin=subprocess.DEVNULL, capture_output=True, timeout=12)
-except Exception:
-    pass
+    p.wait(timeout=12)
+except subprocess.TimeoutExpired:
+    try:
+        os.killpg(p.pid, signal.SIGKILL)
+    except Exception:
+        pass
 PY
   fi
   printf '%s' "$out"
@@ -585,20 +672,20 @@ if [ "$PROBE_LEVEL" != "preflight" ] && [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PAS
 
   run_negative_and_scheme_probes() {
     # Route 2: Unsigned .shortcut via simctl openurl (verify rejection of unsigned file)
-    ROUTE2_OUT="$(simctl_openurl_resilient "$UDID" "file://$UNSIGNED_FILE" 2 "" 1 45)"
+    ROUTE2_OUT="$(simctl_openurl_resilient "$UDID" "file://$UNSIGNED_FILE" 1 "" 1 30)"
     ROUTE2_RC=$?
     sleep 2
     xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route2-unsigned-openurl.png" 2>/dev/null || true
     xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
     # Route 4: Exploratory undocumented shortcuts://import-shortcut (explicitly tagged UNDOCUMENTED)
-    ROUTE4_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://import-shortcut?name=CherriQAProbe" 2 "" 1 45)"
+    ROUTE4_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://import-shortcut?name=CherriQAProbe" 1 "" 1 30)"
     ROUTE4_RC=$?
     sleep 1
     xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
     # Route 1: Documented shortcuts://create-shortcut URL scheme
-    ROUTE1_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://create-shortcut" 2 "" 1 45)"
+    ROUTE1_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://create-shortcut" 1 "" 1 30)"
     ROUTE1_RC=$?
     sleep 2
     xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route1-create-shortcut.png" 2>/dev/null || true
@@ -886,13 +973,21 @@ PY
       local timeout_sec="$1"
       shift
       python3 - "$timeout_sec" "$@" <<'PY'
-import subprocess, sys
+import os, signal, subprocess, sys
 t = int(sys.argv[1])
 cmd = sys.argv[2:]
+p = subprocess.Popen(cmd, start_new_session=True)
 try:
-    p = subprocess.run(cmd, timeout=t)
-    sys.exit(p.returncode)
+    sys.exit(p.wait(timeout=t))
 except subprocess.TimeoutExpired:
+    try:
+        os.killpg(p.pid, signal.SIGKILL)
+    except Exception:
+        pass
+    try:
+        p.wait(timeout=5)
+    except Exception:
+        pass
     sys.stderr.write(f"command timed out after {t}s: {' '.join(cmd[:4])}\n")
     sys.exit(124)
 PY
@@ -900,7 +995,8 @@ PY
 
     DERIVED_DATA_PATH="$ARTIFACT_DIR/builds/DerivedData"
     XCRESULT_PATH="$ARTIFACT_DIR/tests/CherriSimulatorQA.xcresult"
-    rm -rf "$XCRESULT_PATH" "$DERIVED_DATA_PATH"
+    XCRESULT_PART1_PATH="$ARTIFACT_DIR/tests/CherriSimulatorQA-Part1.xcresult"
+    rm -rf "$XCRESULT_PATH" "$XCRESULT_PART1_PATH" "$DERIVED_DATA_PATH"
 
     mkdir -p "$ARTIFACT_DIR/builds"
     run_cmd_timeout 600 xcodebuild build-for-testing \
@@ -916,12 +1012,47 @@ PY
       sed "s/$UDID/<UDID>/g" "$ARTIFACT_DIR/builds/xcodebuild-build.log" | tail -n 30 || true
     fi
 
+    ensure_sim_session_ready "$UDID"
+
     RAW_SIM_LOG="$ARTIFACT_DIR/runtime/raw-sim-log.txt"
     rm -f "$RAW_SIM_LOG"
     xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "siriactionsd" || process == "SpringBoard" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction")' --level info --style compact > "$RAW_SIM_LOG" 2>&1 &
     SIM_LOG_PID=$!
 
-    rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
+    rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/pre-import-ack.txt" "$ARTIFACT_DIR/editor/handshake-stop.txt"
+
+    # Stage 3.1: Run Receiver self-test + sanitizer + confirm-noop tests cleanly so XCTest exits before file:// import
+    run_cmd_timeout 420 xcodebuild test-without-building \
+      -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
+      -scheme CherriSimulatorQAReceiver \
+      -derivedDataPath "$DERIVED_DATA_PATH" \
+      -destination "platform=iOS Simulator,id=$UDID" \
+      -only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test01_ReceiverSelfCallbackAndContainerPersistence \
+      -only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test03_SanitizerRedactsSecretsAndNonAllowlistedStrings \
+      -only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test04ConfirmPendingRuntimeDialog \
+      -resultBundlePath "$XCRESULT_PART1_PATH" \
+      CODE_SIGNING_ALLOWED=NO \
+      > "$ARTIFACT_DIR/builds/xcodebuild-part1.log" 2>&1
+    XCODEBUILD_PART1_RC=$?
+    echo "xcodebuild test part1 exit code: $XCODEBUILD_PART1_RC"
+    if [ "$XCODEBUILD_PART1_RC" -ne 0 ] && [ -f "$ARTIFACT_DIR/builds/xcodebuild-part1.log" ]; then
+      grep -Ev "DVTAssertions|nativeArchitecture|Apple Watch|SimDevice :|Object:[[:space:]]+<DVTiPhoneSimulator|Method:[[:space:]]+-nativeArchitecture|Thread:[[:space:]]+<_NSMainThread|feedbackassistant\.apple\.com|^[[:space:]]*\)[[:space:]]*$" "$ARTIFACT_DIR/builds/xcodebuild-part1.log" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | tail -n 25 || true
+    fi
+
+    # Stage 3.2: Pre-XCTest outside-runner signed .shortcut import so simctl openurl file:// never contends with active AX/XCTest
+    if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
+      ensure_sim_session_ready "$UDID"
+      echo "=== Phase 3b: Pre-XCTest outside-runner signed .shortcut import openurl ==="
+      run_cmd_timeout 20 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+      sleep 3
+      PRE_IMP_T0=$SECONDS
+      PRE_IMP_RC=0
+      PRE_IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 2 "$SIGNED_FILE" 1 45)" || PRE_IMP_RC=$?
+      PRE_IMP_DT=$((SECONDS - PRE_IMP_T0))
+      printf 'rc=%s\ndurationSec=%s %s\n' "$PRE_IMP_RC" "$PRE_IMP_DT" "${PRE_IMP_OUT:0:220}" > "$ARTIFACT_DIR/editor/pre-import-ack.txt"
+      echo "Phase 3b pre-import openurl rc=$PRE_IMP_RC durationSec=${PRE_IMP_DT}s out=$(printf '%s' "$PRE_IMP_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-160)"
+      sleep 2
+    fi
     (
       import_dispatched=0
       import_retried=0
@@ -977,13 +1108,14 @@ PY
         PHASE4_LOG_PID=""
       fi
     }
-    trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}"' EXIT
+    trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}"' EXIT
 
-    run_cmd_timeout 780 xcodebuild test-without-building \
+    run_cmd_timeout 600 xcodebuild test-without-building \
       -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
       -scheme CherriSimulatorQAReceiver \
       -derivedDataPath "$DERIVED_DATA_PATH" \
       -destination "platform=iOS Simulator,id=$UDID" \
+      -only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test02_ShortcutsImportLibraryAndActionEditorCoverage \
       -resultBundlePath "$XCRESULT_PATH" \
       CODE_SIGNING_ALLOWED=NO \
       > "$ARTIFACT_DIR/builds/xcodebuild-test.log" 2>&1
@@ -1027,6 +1159,8 @@ def read_ack(name):
 
 doc = {
     "schemaVersion": "1.4",
+    "preImportAttempted": os.path.exists(os.path.join(ed, "pre-import-ack.txt")),
+    "preImportAck": read_ack("pre-import-ack.txt"),
     "importRequested": os.path.exists(os.path.join(ed, "request-signed-import.txt")),
     "importAck": read_ack("ack-signed-import.txt"),
     "importRetried": os.path.exists(os.path.join(ed, "request-signed-import-retry.txt")),
@@ -1037,15 +1171,48 @@ doc = {
 with open(os.path.join(ed, "handshake-status.json"), "w", encoding="utf-8") as f:
     json.dump(doc, f, indent=2)
 PY
-    rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
+    rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/pre-import-ack.txt" "$ARTIFACT_DIR/editor/handshake-stop.txt"
 
-    if [ -d "$XCRESULT_PATH" ]; then
-      xcrun xcresulttool get test-results summary --path "$XCRESULT_PATH" > "$ARTIFACT_DIR/tests/xcresult-summary.json" 2>/dev/null || true
-      if [ -f "$ARTIFACT_DIR/tests/xcresult-summary.json" ] && [ -n "$UDID" ]; then
-        python3 -c 'import sys; p, u, m = sys.argv[1:4]; s = open(p, encoding="utf-8").read().replace(u, m); open(p, "w", encoding="utf-8").write(s)' "$ARTIFACT_DIR/tests/xcresult-summary.json" "$UDID" "$MASKED_UDID"
-      fi
-      rm -rf "$XCRESULT_PATH"
+    PART1_JSON="$ARTIFACT_DIR/tests/xcresult-part1.json"
+    PART2_JSON="$ARTIFACT_DIR/tests/xcresult-part2.json"
+    rm -f "$PART1_JSON" "$PART2_JSON"
+    if [ -d "$XCRESULT_PART1_PATH" ]; then
+      xcrun xcresulttool get test-results summary --path "$XCRESULT_PART1_PATH" > "$PART1_JSON" 2>/dev/null || true
     fi
+    if [ -d "$XCRESULT_PATH" ]; then
+      xcrun xcresulttool get test-results summary --path "$XCRESULT_PATH" > "$PART2_JSON" 2>/dev/null || true
+    fi
+    python3 - "$ARTIFACT_DIR/tests/xcresult-summary.json" "$PART1_JSON" "$PART2_JSON" "$UDID" "$MASKED_UDID" <<'PY'
+import json, os, sys
+out_path, p1_path, p2_path, udid, masked = sys.argv[1:6]
+docs = []
+for p in (p1_path, p2_path):
+    if os.path.exists(p) and os.path.getsize(p) > 0:
+        try:
+            docs.append(json.load(open(p, encoding="utf-8")))
+        except Exception:
+            pass
+if len(docs) == 2:
+    merged = dict(docs[1])
+    merged["passedTests"] = docs[0].get("passedTests", 0) + docs[1].get("passedTests", 0)
+    merged["failedTests"] = docs[0].get("failedTests", 0) + docs[1].get("failedTests", 0)
+    merged["skippedTests"] = docs[0].get("skippedTests", 0) + docs[1].get("skippedTests", 0)
+    merged["totalTestCount"] = docs[0].get("totalTestCount", 0) + docs[1].get("totalTestCount", 0)
+    merged["expectedFailures"] = docs[0].get("expectedFailures", 0) + docs[1].get("expectedFailures", 0)
+    merged["testFailures"] = list(docs[0].get("testFailures", [])) + list(docs[1].get("testFailures", []))
+    merged["result"] = "Passed" if merged["failedTests"] == 0 and docs[0].get("result") == "Passed" and docs[1].get("result") == "Passed" else "Failed"
+    raw = json.dumps(merged, indent=2)
+elif len(docs) == 1:
+    raw = json.dumps(docs[0], indent=2)
+else:
+    raw = ""
+if udid and raw:
+    raw = raw.replace(udid, masked)
+if raw:
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(raw + "\n")
+PY
+    rm -rf "$XCRESULT_PATH" "$XCRESULT_PART1_PATH" "$PART1_JSON" "$PART2_JSON"
     rm -f "$ARTIFACT_DIR/tests/xcodebuild-test.log"
 
     # Extract receiver callback events from app data container

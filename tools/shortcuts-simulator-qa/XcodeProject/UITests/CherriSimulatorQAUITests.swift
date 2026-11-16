@@ -363,51 +363,56 @@ final class CherriSimulatorQAUITests: XCTestCase {
         let shortcuts = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
 
-        // Ensure Shortcuts is foregrounded and clear any first-launch / prior-probe modals before importing
+        // Ensure Shortcuts is foregrounded and check whether pre-XCTest outside-runner import already presented the sheet
         shortcuts.activate()
         var launched = shortcuts.wait(for: .runningForeground, timeout: 10)
         if !launched {
             shortcuts.launch()
             launched = shortcuts.wait(for: .runningForeground, timeout: 15)
         }
-        dismissOnboardingAndStaleAlerts(shortcuts: shortcuts, springboard: springboard)
 
-        // Step 1: Coordinated host -> simulator signed .shortcut import handshake (if AEA1 signed artifact is ready)
+        let sheetPredicate = NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Set Up Shortcut' OR label == 'Replace' OR label == 'Keep Both' OR label == 'הוסף קיצור דרך' OR label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both'")
+        func pollImportSheetButton(timeout: TimeInterval) -> XCUIElement? {
+            let end = Date().addingTimeInterval(timeout)
+            while Date() < end {
+                for targetApp in [shortcuts, springboard] {
+                    let predBtn = targetApp.buttons.matching(sheetPredicate).firstMatch
+                    if predBtn.exists && predBtn.isHittable {
+                        return predBtn
+                    }
+                }
+                Thread.sleep(forTimeInterval: 1.5)
+            }
+            return nil
+        }
+
+        // Step 1: Coordinated host -> simulator signed .shortcut import handshake (if not already opened pre-XCTest)
         var importConsentTapped = false
         var importSheetCaptured = false
         if expectSignedImport {
-            let reqURL = outDir.appendingPathComponent("request-signed-import.txt")
-            let retryReqURL = outDir.appendingPathComponent("request-signed-import-retry.txt")
-            let ackURL = outDir.appendingPathComponent("ack-signed-import.txt")
-            let retryAckURL = outDir.appendingPathComponent("ack-signed-import-retry.txt")
-            try? FileManager.default.removeItem(at: ackURL)
-            try? FileManager.default.removeItem(at: retryAckURL)
-            try? FileManager.default.removeItem(at: retryReqURL)
-            try? expectedShortcutName.data(using: .utf8)?.write(to: reqURL, options: .atomic)
-
-            // Wait purely on filesystem for host simctl openurl so AX queries never starve SpringBoard/Shortcuts IPC
-            _ = waitForHandshakeFile(ackURL, timeout: 95.0)
-
-            let sheetPredicate = NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Set Up Shortcut' OR label == 'Replace' OR label == 'Keep Both' OR label == 'הוסף קיצור דרך' OR label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both'")
-            func pollImportSheetButton(timeout: TimeInterval) -> XCUIElement? {
-                let end = Date().addingTimeInterval(timeout)
-                while Date() < end {
-                    for targetApp in [shortcuts, springboard] {
-                        let predBtn = targetApp.buttons.matching(sheetPredicate).firstMatch
-                        if predBtn.exists && predBtn.isHittable {
-                            return predBtn
-                        }
-                    }
-                    Thread.sleep(forTimeInterval: 1.5)
-                }
-                return nil
-            }
-
-            var foundSheetBtn = pollImportSheetButton(timeout: 18.0)
+            var foundSheetBtn = pollImportSheetButton(timeout: 5.0)
             if foundSheetBtn == nil {
-                try? expectedShortcutName.data(using: .utf8)?.write(to: retryReqURL, options: .atomic)
-                _ = waitForHandshakeFile(retryAckURL, timeout: 85.0)
-                foundSheetBtn = pollImportSheetButton(timeout: 20.0)
+                dismissOnboardingAndStaleAlerts(shortcuts: shortcuts, springboard: springboard)
+                foundSheetBtn = pollImportSheetButton(timeout: 2.0)
+            }
+            if foundSheetBtn == nil {
+                let reqURL = outDir.appendingPathComponent("request-signed-import.txt")
+                let retryReqURL = outDir.appendingPathComponent("request-signed-import-retry.txt")
+                let ackURL = outDir.appendingPathComponent("ack-signed-import.txt")
+                let retryAckURL = outDir.appendingPathComponent("ack-signed-import-retry.txt")
+                try? FileManager.default.removeItem(at: ackURL)
+                try? FileManager.default.removeItem(at: retryAckURL)
+                try? FileManager.default.removeItem(at: retryReqURL)
+                try? expectedShortcutName.data(using: .utf8)?.write(to: reqURL, options: .atomic)
+
+                // Wait purely on filesystem for host simctl openurl so AX queries never starve SpringBoard/Shortcuts IPC
+                _ = waitForHandshakeFile(ackURL, timeout: 95.0)
+                foundSheetBtn = pollImportSheetButton(timeout: 18.0)
+                if foundSheetBtn == nil {
+                    try? expectedShortcutName.data(using: .utf8)?.write(to: retryReqURL, options: .atomic)
+                    _ = waitForHandshakeFile(retryAckURL, timeout: 85.0)
+                    foundSheetBtn = pollImportSheetButton(timeout: 20.0)
+                }
             }
 
             if let btn = foundSheetBtn {
