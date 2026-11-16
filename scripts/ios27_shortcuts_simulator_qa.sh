@@ -480,8 +480,6 @@ if [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PASS" ]; then
   sleep 2
   xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
   sleep 4
-  simctl_openurl_resilient "$UDID" "shortcuts://" 2 >/dev/null 2>&1 || true
-  sleep 2
   xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 fi
 

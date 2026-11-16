@@ -385,55 +385,29 @@ final class CherriSimulatorQAUITests: XCTestCase {
             try? FileManager.default.removeItem(at: retryReqURL)
             try? expectedShortcutName.data(using: .utf8)?.write(to: reqURL, options: .atomic)
 
-            let sheetButtonLabels = ["Add Shortcut", "+ Add Shortcut", "Set Up Shortcut", "Replace", "Keep Both", "הוסף קיצור דרך"]
-            let sheetPredicate = NSPredicate(format: "label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both' OR label == 'Replace'")
+            // Wait purely on filesystem for host simctl openurl so AX queries never starve SpringBoard/Shortcuts IPC
+            _ = waitForHandshakeFile(ackURL, timeout: 65.0)
 
-            var foundSheetBtn: XCUIElement? = nil
-            var deadline = Date().addingTimeInterval(130.0)
-            var postAckRetryAt: Date? = nil
-            var retriedImport = false
-            var postRetryExtended = false
-            while Date() < deadline && foundSheetBtn == nil {
-                if postAckRetryAt == nil && FileManager.default.fileExists(atPath: ackURL.path) {
-                    postAckRetryAt = Date().addingTimeInterval(10.0)
-                    let minUntilRetry = Date().addingTimeInterval(14.0)
-                    if deadline < minUntilRetry {
-                        deadline = minUntilRetry
-                    }
-                }
-                if !retriedImport, let retryAt = postAckRetryAt, Date() >= retryAt {
-                    retriedImport = true
-                    try? expectedShortcutName.data(using: .utf8)?.write(to: retryReqURL, options: .atomic)
-                    deadline = Date().addingTimeInterval(65.0)
-                }
-                if retriedImport && !postRetryExtended && FileManager.default.fileExists(atPath: retryAckURL.path) {
-                    postRetryExtended = true
-                    let afterRetryAck = Date().addingTimeInterval(20.0)
-                    if deadline < afterRetryAck {
-                        deadline = afterRetryAck
-                    }
-                }
-                for targetApp in [shortcuts, springboard] {
-                    for candidate in sheetButtonLabels {
-                        let btn = targetApp.buttons[candidate].firstMatch
-                        if btn.exists && btn.isHittable {
-                            foundSheetBtn = btn
-                            break
-                        }
-                    }
-                    if foundSheetBtn == nil {
+            let sheetPredicate = NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Set Up Shortcut' OR label == 'Replace' OR label == 'Keep Both' OR label == 'הוסף קיצור דרך' OR label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both'")
+            func pollImportSheetButton(timeout: TimeInterval) -> XCUIElement? {
+                let end = Date().addingTimeInterval(timeout)
+                while Date() < end {
+                    for targetApp in [shortcuts, springboard] {
                         let predBtn = targetApp.buttons.matching(sheetPredicate).firstMatch
                         if predBtn.exists && predBtn.isHittable {
-                            foundSheetBtn = predBtn
+                            return predBtn
                         }
                     }
-                    if foundSheetBtn != nil {
-                        break
-                    }
+                    Thread.sleep(forTimeInterval: 1.5)
                 }
-                if foundSheetBtn == nil {
-                    Thread.sleep(forTimeInterval: 0.4)
-                }
+                return nil
+            }
+
+            var foundSheetBtn = pollImportSheetButton(timeout: 18.0)
+            if foundSheetBtn == nil {
+                try? expectedShortcutName.data(using: .utf8)?.write(to: retryReqURL, options: .atomic)
+                _ = waitForHandshakeFile(retryAckURL, timeout: 65.0)
+                foundSheetBtn = pollImportSheetButton(timeout: 20.0)
             }
 
             if let btn = foundSheetBtn {
@@ -891,11 +865,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
             let runAckURL = outDir.appendingPathComponent("ack-shortcut-run.txt")
             try? FileManager.default.removeItem(at: runAckURL)
             try? execRunNonce.data(using: .utf8)?.write(to: runReqURL, options: .atomic)
+            // Avoid flooding SpringBoard/Shortcuts with AX queries while simctl openurl dispatches RUN_URL
+            runtimeTriggerDispatched = waitForHandshakeFile(runAckURL, timeout: 55.0)
 
             let receiver = XCUIApplication(bundleIdentifier: "org.cherrilang.qa.Receiver")
-            let confirmLabels = ["Always Allow", "Allow", "Open", "Allow Once", "Run", "Continue", "OK"]
-            let runStart = Date()
-            let primaryDeadline = runStart.addingTimeInterval(25.0)
+            let confirmPredicate = NSPredicate(format: "label IN {'Always Allow', 'Allow', 'Open', 'Allow Once', 'Run', 'Continue', 'OK'}")
             var capturedMidway = false
 
             func pollRuntimeConfirmAndCallback(until deadline: Date) {
@@ -904,22 +878,10 @@ final class CherriSimulatorQAUITests: XCTestCase {
                         runtimeTriggerDispatched = true
                     }
                     for targetApp in [springboard, shortcuts] {
-                        for lbl in confirmLabels {
-                            let btn = targetApp.buttons[lbl].firstMatch
-                            if btn.exists && btn.isHittable {
-                                btn.tap()
-                                Thread.sleep(forTimeInterval: 0.5)
-                            }
-                            let alertBtn = targetApp.alerts.buttons[lbl].firstMatch
-                            if alertBtn.exists && alertBtn.isHittable {
-                                alertBtn.tap()
-                                Thread.sleep(forTimeInterval: 0.5)
-                            }
-                            let sheetBtn = targetApp.sheets.buttons[lbl].firstMatch
-                            if sheetBtn.exists && sheetBtn.isHittable {
-                                sheetBtn.tap()
-                                Thread.sleep(forTimeInterval: 0.5)
-                            }
+                        let btn = targetApp.buttons.matching(confirmPredicate).firstMatch
+                        if btn.exists && btn.isHittable {
+                            btn.tap()
+                            Thread.sleep(forTimeInterval: 0.8)
                         }
                     }
                     if receiver.state == .runningForeground {
@@ -935,11 +897,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
                             return
                         }
                     }
-                    Thread.sleep(forTimeInterval: 0.4)
+                    Thread.sleep(forTimeInterval: 1.5)
                 }
             }
 
-            pollRuntimeConfirmAndCallback(until: primaryDeadline)
+            pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(25.0))
             if !runtimeCallbackObservedInUI && !capturedMidway {
                 capturedMidway = true
                 let midShot = XCUIScreen.main.screenshot()
@@ -948,6 +910,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
                     receiver.launchArguments = ["--trigger-shortcut-url", runURLStr]
                     receiver.launch()
                     runtimeTriggerDispatched = true
+                    Thread.sleep(forTimeInterval: 2.5)
                     pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(40.0))
                 }
             }
