@@ -803,5 +803,89 @@ func TestP14_ExactFileHubSignAndProvenanceContract(t *testing.T) {
 			t.Fatalf("privacy guard must block before contacting signing server (hits before=%d, after=%d)", hitsBeforePrivacy, serverHits)
 		}
 	})
+
+	t.Run("hubsign_fallback_shortcuty_403_cloudflare_then_routinehub_aea1", func(t *testing.T) {
+		shortcutySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+			w.WriteHeader(http.StatusForbidden)
+			_, _ = w.Write([]byte(`<!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title></head></html>`))
+		}))
+		defer shortcutySrv.Close()
+
+		var receivedShortcut string
+		routineSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var payload map[string]string
+			if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+				http.Error(w, "bad json", http.StatusBadRequest)
+				return
+			}
+			receivedShortcut = payload["shortcut"]
+			w.Header().Set("Content-Type", "application/octet-stream")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(validAEA1)
+		}))
+		defer routineSrv.Close()
+
+		orig := hubSignCandidatesFunc
+		hubSignCandidatesFunc = func() []SigningService {
+			return []SigningService{
+				{name: "Shortcuty Sign", url: shortcutySrv.URL + "/api/v1/sign?response=json"},
+				{name: "RoutineHub HubSign", url: routineSrv.URL + "/sign"},
+			}
+		}
+		defer func() { hubSignCandidatesFunc = orig }()
+
+		signedOut := filepath.Join(tmpDir, "qa-functional-v2-fallback.shortcut")
+		manifest, err := SignUnsignedShortcutFileWithProvenance(v2UnsignedPath, signedOut, v2Src, "testsha", nil)
+		if err != nil {
+			t.Fatalf("expected secondary HubSign fallback to succeed when primary hits Cloudflare 403: %v", err)
+		}
+		if receivedShortcut != string(v2UnsignedBytes) {
+			t.Fatalf("secondary HubSign server did not receive exact unsigned plist bytes")
+		}
+		if manifest.ServiceName != "RoutineHub HubSign" || manifest.SigningMethod != "HUBSIGN_REMOTE_SERVICE" {
+			t.Fatalf("unexpected fallback manifest metadata: %+v", manifest)
+		}
+		if manifest.HeaderMagic != "AEA1" || manifest.SignedArtifactSHA256 != validSHA {
+			t.Fatalf("unexpected fallback signed artifact digest/magic: %+v", manifest)
+		}
+	})
+
+	t.Run("hubsign_fallback_all_fail_closed_no_residual_file", func(t *testing.T) {
+		shortcutySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/html")
+			w.WriteHeader(http.StatusForbidden)
+			_, _ = w.Write([]byte(`<!DOCTYPE html><html><title>Just a moment...</title></html>`))
+		}))
+		defer shortcutySrv.Close()
+
+		routineSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/octet-stream")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><dict/></plist>`))
+		}))
+		defer routineSrv.Close()
+
+		orig := hubSignCandidatesFunc
+		hubSignCandidatesFunc = func() []SigningService {
+			return []SigningService{
+				{name: "Shortcuty Sign", url: shortcutySrv.URL + "/api/v1/sign?response=json"},
+				{name: "RoutineHub HubSign", url: routineSrv.URL + "/sign"},
+			}
+		}
+		defer func() { hubSignCandidatesFunc = orig }()
+
+		signedOut := filepath.Join(tmpDir, "qa-functional-v2-both-fail.shortcut")
+		_, err := SignUnsignedShortcutFileWithProvenance(v2UnsignedPath, signedOut, v2Src, "testsha", nil)
+		if err == nil {
+			t.Fatalf("expected error when both Shortcuty Sign and RoutineHub HubSign fail")
+		}
+		if !strings.Contains(err.Error(), "Shortcuty Sign") || !strings.Contains(err.Error(), "RoutineHub HubSign") {
+			t.Fatalf("expected combined error mentioning both HubSign services, got: %v", err)
+		}
+		if _, statErr := os.Stat(signedOut); !os.IsNotExist(statErr) {
+			t.Fatalf("both-fail signing must not leave residual output file behind")
+		}
+	})
 }
 

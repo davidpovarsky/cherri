@@ -513,11 +513,17 @@ if [ "$PROBE_LEVEL" != "preflight" ] && [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PAS
   fi
   xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
-  # Route 3: Sign EXACT preflight-validated unsigned plist via Cherri HubSign (fail closed on XML/HTML/timeout/non-AEA1)
+  # Route 3: Sign EXACT preflight-validated unsigned plist via Cherri HubSign (or CHERRI_SIGNING_SERVER if configured)
   rm -f "$SIGNED_CANDIDATE" "$SIGNED_FILE"
+  SIGN_ARGS=(--hubsign)
+  SIGN_CMD_LABEL="--hubsign"
+  if [ -n "${CHERRI_SIGNING_SERVER:-}" ]; then
+    SIGN_ARGS=(--signing-server="$CHERRI_SIGNING_SERVER")
+    SIGN_CMD_LABEL="--signing-server=<redacted>"
+  fi
   SIGN_OUT="$("$CHERRI_BIN" sign "$UNSIGNED_FILE" \
     --output="$SIGNED_CANDIDATE" \
-    --hubsign \
+    "${SIGN_ARGS[@]}" \
     --source-file="$TARGET_SOURCE_FILE" \
     --compiler-sha="$SOURCE_SHA" \
     --manifest-out="$ARTIFACT_DIR/builds/signing-provenance-target.json" \
@@ -531,6 +537,9 @@ if [ "$PROBE_LEVEL" != "preflight" ] && [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PAS
       cp -f "$SIGNED_CANDIDATE" "$SIGNED_FILE"
       SIGNED_ARTIFACT_VALID_AEA1="true"
       SIGNING_METHOD="HUBSIGN_REMOTE_SERVICE"
+      if [ -n "${CHERRI_SIGNING_SERVER:-}" ] && [[ "$CHERRI_SIGNING_SERVER" != *"shortcuty.app"* ]] && [[ "$CHERRI_SIGNING_SERVER" != *"hubsign.routinehub.services"* ]]; then
+        SIGNING_METHOD="CUSTOM_REMOTE_SIGNING_SERVICE"
+      fi
       SIGNED_SHA256="$(shasum -a 256 "$SIGNED_FILE" | awk '{print $1}')"
       SIGNED_BYTE_SIZE="$BYTE_COUNT"
     else
@@ -547,7 +556,7 @@ if [ "$PROBE_LEVEL" != "preflight" ] && [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PAS
   if [ -s "$LEGACY_UNSIGNED_FILE" ]; then
     LEGACY_SIGN_OUT="$("$CHERRI_BIN" sign "$LEGACY_UNSIGNED_FILE" \
       --output="$LEGACY_SIGNED_CANDIDATE" \
-      --hubsign \
+      "${SIGN_ARGS[@]}" \
       --source-file="$LEGACY_COUNTERPART_SOURCE" \
       --compiler-sha="$SOURCE_SHA" \
       --manifest-out="$ARTIFACT_DIR/builds/signing-provenance-legacy.json" \
@@ -621,6 +630,9 @@ with open(out_path, "w", encoding="utf-8") as f:
     json.dump(doc, f, indent=2)
 PY
 
+  if [ -n "${CHERRI_SIGNING_SERVER:-}" ]; then
+    SIGN_OUT="${SIGN_OUT//$CHERRI_SIGNING_SERVER/<redacted-signing-server>}"
+  fi
   ROUTE3_RC="$SIGN_RC"
   if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ]; then
     ROUTE3_OUT="AEA1 signed artifact verified ($SIGNED_BYTE_SIZE bytes, method=$SIGNING_METHOD, legacyCounterpart=$LEGACY_SIGNING_VERIFIED); deferred simctl openurl to coordinated XCUITest handshake."
@@ -628,7 +640,7 @@ PY
     ROUTE3_OUT="Blocked signing: $SIGN_OUT"
   fi
 
-  python3 - "$ARTIFACT_DIR/import-attempts.json" "$ROUTE1_RC" "$ROUTE1_OUT" "$ROUTE2_RC" "$ROUTE2_OUT" "$SIGN_RC" "$SIGN_OUT" "$ROUTE3_RC" "$ROUTE3_OUT" "$ROUTE4_RC" "$ROUTE4_OUT" "$SIGNED_ARTIFACT_VALID_AEA1" "$SIGNING_METHOD" "$SIGNED_SHA256" "$SIGNED_BYTE_SIZE" "$LEGACY_SIGNING_VERIFIED" <<'PY'
+  python3 - "$ARTIFACT_DIR/import-attempts.json" "$ROUTE1_RC" "$ROUTE1_OUT" "$ROUTE2_RC" "$ROUTE2_OUT" "$SIGN_RC" "$SIGN_OUT" "$ROUTE3_RC" "$ROUTE3_OUT" "$ROUTE4_RC" "$ROUTE4_OUT" "$SIGNED_ARTIFACT_VALID_AEA1" "$SIGNING_METHOD" "$SIGNED_SHA256" "$SIGNED_BYTE_SIZE" "$LEGACY_SIGNING_VERIFIED" "$SIGN_CMD_LABEL" <<'PY'
 import json
 import sys
 
@@ -645,6 +657,7 @@ aea1_valid, sign_method, signed_sha, signed_bytes, legacy_signed = (
     int(sys.argv[15]) if sys.argv[15].isdigit() else 0,
     (sys.argv[16] == "true"),
 )
+sign_cmd_label = sys.argv[17] if len(sys.argv) > 17 else "--hubsign"
 
 attempts = {
     "schemaVersion": "1.4",
@@ -673,7 +686,7 @@ attempts = {
         {
             "routeId": "route_3_signed_shortcut_openurl",
             "documented": True,
-            "command": "cherri sign <unsigned.shortcut> --hubsign && coordinated xcrun simctl openurl <UDID> file://<signed.shortcut>",
+            "command": f"cherri sign <unsigned.shortcut> {sign_cmd_label} && coordinated xcrun simctl openurl <UDID> file://<signed.shortcut>",
             "hostSignExitCode": sign_rc,
             "hostSignOutput": sign_out[:512],
             "openUrlExitCode": r3_rc,

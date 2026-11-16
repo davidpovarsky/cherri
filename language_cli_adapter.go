@@ -155,9 +155,6 @@ func HandleLanguageV2CLI() bool {
 				name: "Custom Signing Server",
 				url:  strings.TrimSpace(customServerURL),
 			}
-		} else {
-			h := hubSign()
-			svc = &h
 		}
 		manifest, err := SignUnsignedShortcutFileWithProvenance(unsignedPath, outPath, sourcePath, compilerSHA, svc)
 		if err != nil {

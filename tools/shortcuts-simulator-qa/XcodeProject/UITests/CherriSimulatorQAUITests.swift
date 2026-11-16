@@ -451,6 +451,15 @@ final class CherriSimulatorQAUITests: XCTestCase {
             } else {
                 let diagShot = XCUIScreen.main.screenshot()
                 try? diagShot.pngRepresentation.write(to: outDir.appendingPathComponent("import-sheet-timeout.png"), options: .atomic)
+                if let timeoutSnap = try? shortcuts.snapshot() {
+                    let appF = shortcuts.frame.isEmpty ? CGRect(x: 0, y: 0, width: 1024, height: 1366) : shortcuts.frame
+                    let timeoutNodes = flattenSnapshot(timeoutSnap, screenIndex: 0, viewport: appF)
+                    let enc = JSONEncoder()
+                    enc.outputFormatting = [.prettyPrinted, .sortedKeys]
+                    if let d = try? enc.encode(timeoutNodes) {
+                        try? d.write(to: outDir.appendingPathComponent("import-sheet-timeout-tree.json"), options: .atomic)
+                    }
+                }
             }
         } else {
             // Even without host handshake signal, check if an import sheet is already visible
@@ -509,7 +518,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
 
         // Step 3: Open the genuine action editor for expectedShortcutName (or New Shortcut if blocked)
         if shortcutExistsInLibrary {
-            // If not already showing the expected shortcut inside Other["editor"], tap its library card safely (left/center, avoiding Play at top-right)
+            let libShot = XCUIScreen.main.screenshot()
+            try? libShot.pngRepresentation.write(to: outDir.appendingPathComponent("library-after-import.png"), options: .atomic)
+
+            // If not already showing the expected shortcut inside Other["editor"], open it WITHOUT triggering tile execution!
+            // On iPadOS grid tiles, tapping the card body runs the Shortcut; use Edit / More (...) button or context menu -> Edit.
             var editorMatchesExpected = shortcuts.otherElements["editor"].exists && (
                 shortcuts.navigationBars[expectedShortcutName].exists ||
                 shortcuts.navigationBars.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", expectedShortcutName)).firstMatch.exists
@@ -517,8 +530,12 @@ final class CherriSimulatorQAUITests: XCTestCase {
             if !editorMatchesExpected {
                 let editByLabel = shortcuts.buttons["Edit, \(expectedShortcutName)"].firstMatch
                 let openByLabel = shortcuts.buttons["Open, \(expectedShortcutName)"].firstMatch
+                let moreByLabel = shortcuts.buttons["More, \(expectedShortcutName)"].firstMatch
                 if editByLabel.exists && editByLabel.isHittable {
                     editByLabel.tap()
+                    Thread.sleep(forTimeInterval: 1.5)
+                } else if moreByLabel.exists && moreByLabel.isHittable {
+                    moreByLabel.tap()
                     Thread.sleep(forTimeInterval: 1.5)
                 } else if openByLabel.exists && openByLabel.isHittable {
                     openByLabel.tap()
@@ -534,8 +551,26 @@ final class CherriSimulatorQAUITests: XCTestCase {
                             cell.label.localizedCaseInsensitiveContains(expectedShortcutName) ||
                             cell.staticTexts[expectedShortcutName].exists
                         ) {
-                            // Tap bottom-left/center of card so we never hit top-right Play button
-                            cell.coordinate(withNormalizedOffset: CGVector(dx: 0.35, dy: 0.65)).tap()
+                            let cellActionBtn = cell.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'More' OR label CONTAINS[c] 'Edit' OR identifier CONTAINS[c] 'ellipsis'")).firstMatch
+                            if cellActionBtn.exists && cellActionBtn.isHittable {
+                                cellActionBtn.tap()
+                                Thread.sleep(forTimeInterval: 1.5)
+                            } else {
+                                cell.press(forDuration: 0.9)
+                                Thread.sleep(forTimeInterval: 1.2)
+                            }
+                            break
+                        }
+                    }
+                }
+
+                // If tapping More or long-pressing opened a context menu with Edit / Edit Shortcut / Details, tap Edit
+                if !shortcuts.otherElements["editor"].exists {
+                    let menuEditLabels = ["Edit", "Edit Shortcut"]
+                    for lbl in menuEditLabels {
+                        let mBtn = shortcuts.buttons[lbl].firstMatch
+                        if mBtn.exists && mBtn.isHittable {
+                            mBtn.tap()
                             Thread.sleep(forTimeInterval: 1.5)
                             break
                         }
@@ -761,6 +796,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
         var runtimeTriggerDispatched = false
         var runtimeCallbackObservedInUI = false
         if expectRuntimeRun && (shortcutExistsInLibrary || importConsentTapped) {
+            let doneBtn = shortcuts.buttons["Done"].firstMatch
+            if doneBtn.exists && doneBtn.isHittable {
+                doneBtn.tap()
+                Thread.sleep(forTimeInterval: 1.0)
+            }
             let runReqURL = outDir.appendingPathComponent("request-shortcut-run.txt")
             let runAckURL = outDir.appendingPathComponent("ack-shortcut-run.txt")
             try? FileManager.default.removeItem(at: runAckURL)

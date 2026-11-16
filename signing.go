@@ -89,8 +89,24 @@ func SignShortcut(inPath, outPath, mode string) error {
 		return useSigningServiceExplicit(&custom, inPath, outPath)
 	}
 
-	var hub = hubSign()
-	return useSigningServiceExplicit(&hub, inPath, outPath)
+	return signPathWithHubSignCandidates(inPath, outPath)
+}
+
+func signPathWithHubSignCandidates(inPath, outPath string) error {
+	var hubErrors []string
+	candidates := hubSignCandidatesFunc()
+	for idx, svc := range candidates {
+		svcCopy := svc
+		if err := useSigningServiceExplicit(&svcCopy, inPath, outPath); err == nil {
+			return nil
+		} else {
+			hubErrors = append(hubErrors, fmt.Sprintf("%s: %v", svcCopy.name, err))
+			if idx+1 < len(candidates) && !args.Using("no-ansi") {
+				fmt.Printf("%s %s failed (%v); trying next HubSign service...\n", ansi("Warning:", orange, bold), svcCopy.name, err)
+			}
+		}
+	}
+	return fmt.Errorf("%s", strings.Join(hubErrors, " | "))
 }
 
 // sign runs the shortcuts sign command on the unsigned shortcut file.
@@ -105,8 +121,7 @@ func sign() {
 }
 
 func useHubSign() {
-	var hubSignService = hubSign()
-	if err := useSigningServiceExplicit(&hubSignService, inputPath, outputPath); err != nil {
+	if err := signPathWithHubSignCandidates(inputPath, outputPath); err != nil {
 		exit(err.Error())
 	}
 }
@@ -517,7 +532,7 @@ func removeUnsigned() {
 	}
 }
 
-// Sign the Shortcut using the active remote signing service.
+// Sign the Shortcut using the primary Shortcuty HubSign remote signing service.
 func hubSign() SigningService {
 	return SigningService{
 		name: "Shortcuty Sign",
@@ -526,6 +541,25 @@ func hubSign() SigningService {
 			return fmt.Sprintf("Shortcut Signing Powered By %s", ansi("Shortcuty Sign", red))
 		},
 	}
+}
+
+// routineHubSign returns upstream Cherri's RoutineHub HubSign service endpoint.
+func routineHubSign() SigningService {
+	return SigningService{
+		name: "RoutineHub HubSign",
+		url:  "https://hubsign.routinehub.services/sign",
+		info: func() string {
+			return fmt.Sprintf("Shortcut Signing Powered By %s", ansi("RoutineHub", red))
+		},
+	}
+}
+
+var hubSignCandidatesFunc = func() []SigningService {
+	return []SigningService{hubSign(), routineHubSign()}
+}
+
+func isBuiltInHubSignURL(rawURL string) bool {
+	return strings.Contains(rawURL, "shortcuty.app") || strings.Contains(rawURL, "hubsign.routinehub.services")
 }
 
 // SigningProvenanceManifest records exact-file signing hashes and verification metadata without exposing URLs or secrets.
@@ -610,15 +644,6 @@ func SignUnsignedShortcutFileWithProvenance(
 		sourceBase = filepath.Base(sourcePath)
 	}
 
-	activeService := service
-	signingMethod := "HUBSIGN_REMOTE_SERVICE"
-	if activeService == nil {
-		h := hubSign()
-		activeService = &h
-	} else if !strings.Contains(activeService.url, "shortcuty.app") {
-		signingMethod = "CUSTOM_REMOTE_SIGNING_SERVICE"
-	}
-
 	shortcutName := strings.TrimSuffix(filepath.Base(signedOutPath), ".shortcut")
 	shortcutName = strings.TrimSuffix(shortcutName, "_unsigned")
 	shortcutName = strings.TrimSuffix(shortcutName, "-signed")
@@ -626,7 +651,36 @@ func SignUnsignedShortcutFileWithProvenance(
 		shortcutName = "Shortcut"
 	}
 
-	signedBytes, signErr := SignShortcutBytes(activeService, shortcutName, unsignedBytes)
+	var (
+		signedBytes   []byte
+		signErr       error
+		activeService = service
+		signingMethod = "HUBSIGN_REMOTE_SERVICE"
+	)
+
+	if activeService != nil {
+		if !isBuiltInHubSignURL(activeService.url) {
+			signingMethod = "CUSTOM_REMOTE_SIGNING_SERVICE"
+		}
+		signedBytes, signErr = SignShortcutBytes(activeService, shortcutName, unsignedBytes)
+	} else {
+		var hubErrors []string
+		for _, candidate := range hubSignCandidatesFunc() {
+			svcCopy := candidate
+			b, err := SignShortcutBytes(&svcCopy, shortcutName, unsignedBytes)
+			if err == nil {
+				activeService = &svcCopy
+				signedBytes = b
+				signErr = nil
+				break
+			}
+			hubErrors = append(hubErrors, fmt.Sprintf("%s: %v", svcCopy.name, err))
+		}
+		if len(signedBytes) == 0 {
+			signErr = fmt.Errorf("%s", strings.Join(hubErrors, " | "))
+		}
+	}
+
 	if signErr != nil {
 		if unsignedPath != signedOutPath {
 			_ = os.Remove(signedOutPath)
