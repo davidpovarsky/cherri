@@ -437,21 +437,23 @@ simctl_openurl_resilient() {
   local target_url="$2"
   local max_attempts="${3:-2}"
   local fallback_file="${4:-}"
+  local allow_sim_restart="${5:-0}"
+  local timeout_sec="${6:-60}"
   local attempt=1
   local out=""
   local rc=1
   while [ "$attempt" -le "$max_attempts" ]; do
-    out="$(python3 - "$target_udid" "$target_url" <<'PY'
+    out="$(python3 - "$target_udid" "$target_url" "$timeout_sec" <<'PY'
 import subprocess, sys
-udid, url = sys.argv[1], sys.argv[2]
+udid, url, t = sys.argv[1], sys.argv[2], int(sys.argv[3])
 try:
-    p = subprocess.run(["xcrun", "simctl", "openurl", udid, url], stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=45)
+    p = subprocess.run(["xcrun", "simctl", "openurl", udid, url], stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=t)
     sys.stdout.write((p.stdout or "") + (p.stderr or ""))
     sys.exit(p.returncode)
 except subprocess.TimeoutExpired as exc:
     out = (exc.stdout or b"").decode("utf-8", errors="replace") if isinstance(exc.stdout, bytes) else (exc.stdout or "")
     err = (exc.stderr or b"").decode("utf-8", errors="replace") if isinstance(exc.stderr, bytes) else (exc.stderr or "")
-    sys.stdout.write(f"simctl openurl timed out after 45s {out} {err}".strip())
+    sys.stdout.write(f"simctl openurl timed out after {t}s {out} {err}".strip())
     sys.exit(124)
 PY
 )"
@@ -460,7 +462,7 @@ PY
       printf '%s' "$out"
       return 0
     fi
-    if echo "$out" | grep -Eqi "Connection interrupted|server died|NSMachErrorDomain|CoreSimulatorService|timed out"; then
+    if [ "$allow_sim_restart" = "1" ] && echo "$out" | grep -Eqi "Connection interrupted|server died|NSMachErrorDomain|CoreSimulatorService|timed out"; then
       python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || true
 import subprocess, sys
 u = sys.argv[1]
@@ -475,10 +477,12 @@ for cmd in (
         pass
 PY
     fi
-    sleep 1
+    if [ "$attempt" -lt "$max_attempts" ]; then
+      sleep 2
+    fi
     attempt=$((attempt + 1))
   done
-  if [ -n "$fallback_file" ] && [ -f "$fallback_file" ]; then
+  if [ "$allow_sim_restart" = "1" ] && [ -n "$fallback_file" ] && [ -f "$fallback_file" ]; then
     python3 - "$fallback_file" <<'PY' >/dev/null 2>&1 || true
 import subprocess, sys
 try:
@@ -581,20 +585,20 @@ if [ "$PROBE_LEVEL" != "preflight" ] && [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PAS
 
   run_negative_and_scheme_probes() {
     # Route 2: Unsigned .shortcut via simctl openurl (verify rejection of unsigned file)
-    ROUTE2_OUT="$(simctl_openurl_resilient "$UDID" "file://$UNSIGNED_FILE" 2)"
+    ROUTE2_OUT="$(simctl_openurl_resilient "$UDID" "file://$UNSIGNED_FILE" 2 "" 1 45)"
     ROUTE2_RC=$?
     sleep 2
     xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route2-unsigned-openurl.png" 2>/dev/null || true
     xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
     # Route 4: Exploratory undocumented shortcuts://import-shortcut (explicitly tagged UNDOCUMENTED)
-    ROUTE4_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://import-shortcut?name=CherriQAProbe" 2)"
+    ROUTE4_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://import-shortcut?name=CherriQAProbe" 2 "" 1 45)"
     ROUTE4_RC=$?
     sleep 1
     xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
     # Route 1: Documented shortcuts://create-shortcut URL scheme
-    ROUTE1_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://create-shortcut" 2)"
+    ROUTE1_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://create-shortcut" 2 "" 1 45)"
     ROUTE1_RC=$?
     sleep 2
     xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route1-create-shortcut.png" 2>/dev/null || true
@@ -827,7 +831,7 @@ if [ "$PROBE_LEVEL" = "editor" ] || [ "$PROBE_LEVEL" = "runtime" ] || [ "$PROBE_
   if [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PASS" ]; then
     echo "=== Phase 3 & 4: Running XCTest UI Automation & Callback Receiver ==="
     if ! command -v xcodegen >/dev/null 2>&1; then
-      brew install xcodegen
+      HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 brew install xcodegen
     fi
     pushd "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject" >/dev/null
     xcodegen generate
@@ -928,7 +932,7 @@ PY
           if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
             _t0=$SECONDS
             IMP_RC=0
-            IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 2 "$SIGNED_FILE")" || IMP_RC=$?
+            IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 70)" || IMP_RC=$?
             _dt=$((SECONDS - _t0))
             printf 'rc=%s\ndurationSec=%s %s\n' "$IMP_RC" "$_dt" "${IMP_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
           else
@@ -940,7 +944,7 @@ PY
           if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
             _t0=$SECONDS
             IMP2_RC=0
-            IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 2 "$SIGNED_FILE")" || IMP2_RC=$?
+            IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 70)" || IMP2_RC=$?
             _dt=$((SECONDS - _t0))
             printf 'rc=%s\ndurationSec=%s %s\n' "$IMP2_RC" "$_dt" "${IMP2_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import-retry.txt"
           fi
@@ -949,7 +953,7 @@ PY
           run_dispatched=1
           _t0=$SECONDS
           RUN_RC=0
-          RUN_OUT="$(simctl_openurl_resilient "$UDID" "$RUN_URL" 2)" || RUN_RC=$?
+          RUN_OUT="$(simctl_openurl_resilient "$UDID" "$RUN_URL" 1 "" 0 35)" || RUN_RC=$?
           _dt=$((SECONDS - _t0))
           printf 'rc=%s\ndurationSec=%s %s\n' "$RUN_RC" "$_dt" "${RUN_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-shortcut-run.txt"
         fi

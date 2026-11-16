@@ -406,7 +406,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             var foundSheetBtn = pollImportSheetButton(timeout: 18.0)
             if foundSheetBtn == nil {
                 try? expectedShortcutName.data(using: .utf8)?.write(to: retryReqURL, options: .atomic)
-                _ = waitForHandshakeFile(retryAckURL, timeout: 65.0)
+                _ = waitForHandshakeFile(retryAckURL, timeout: 85.0)
                 foundSheetBtn = pollImportSheetButton(timeout: 20.0)
             }
 
