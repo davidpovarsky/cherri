@@ -1015,12 +1015,22 @@ final class CherriSimulatorQAUITests: XCTestCase {
         let receiver = XCUIApplication(bundleIdentifier: "org.cherrilang.qa.Receiver")
         let execRunNonce = ProcessInfo.processInfo.environment["CHERRI_QA_EXEC_RUN_NONCE"] ?? ""
         let confirmPredicate = NSPredicate(format: "label IN {'Always Allow', 'Allow', 'Open', 'Allow Once', 'Run', 'Continue', 'OK'}")
+        let beforeShot = XCUIScreen.main.screenshot()
+        try? beforeShot.pngRepresentation.write(to: outDir.appendingPathComponent("phase4-before-confirm.png"), options: .atomic)
         let deadline = Date().addingTimeInterval(22.0)
 
         while Date() < deadline {
-            for targetApp in [springboard, shortcuts, receiver] {
+            var candidates: [(String, XCUIApplication)] = [("springboard", springboard)]
+            if shortcuts.state == .runningForeground {
+                candidates.append(("shortcuts", shortcuts))
+            }
+            if receiver.state == .runningForeground {
+                candidates.append(("receiver", receiver))
+            }
+            for (appName, targetApp) in candidates {
                 let btn = targetApp.buttons.matching(confirmPredicate).firstMatch
                 if btn.exists && btn.isHittable {
+                    print("PHASE4_CONFIRM_TAP: app=\(appName) label=\(btn.label)")
                     btn.tap()
                     Thread.sleep(forTimeInterval: 1.5)
                 }

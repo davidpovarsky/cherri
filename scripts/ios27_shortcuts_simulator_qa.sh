@@ -1519,7 +1519,7 @@ PY
       if [ "$FOUND_NONCE" != "yes" ]; then
         echo "=== Phase 4b: Post-XCTest ReceiverApp x-callback-url dispatch ($TARGET_FIXTURE_ID) ==="
         # Outside UITests.xctrunner (automationmode=0), launch ReceiverApp so UIApplication.shared.open passes sourceApplication appIdentifier
-        xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction") AND NOT (subsystem == "com.apple.Accessibility") AND NOT (subsystem == "com.apple.defaults")' --level info --style compact > "$PHASE4_SIM_LOG" 2>&1 &
+        xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "CherriSimulatorQAReceiver" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction") AND NOT (subsystem == "com.apple.Accessibility") AND NOT (subsystem == "com.apple.defaults") AND NOT (category IN {"ToolKitIndexing", "ToolKitDatabase", "ToolKitScheduler", "BackgroundTaskScheduler", "ActionRegistry", "Daemon"})' --level debug --style compact > "$PHASE4_SIM_LOG" 2>&1 &
         PHASE4_LOG_PID=$!
         sleep 1
         TRIGGER_WRAPPER_URL="$(python3 - "$RUN_URL" <<'PY'
@@ -1527,49 +1527,58 @@ import sys, urllib.parse
 print("cherriqa://trigger?target=" + urllib.parse.quote(sys.argv[1], safe=""))
 PY
 )"
-        # Keep Shortcuts warm so openURL enters scene(_:openURLContexts:) with active UIKit sourceApplication, after installing signed ReceiverApp
+        # Keep Shortcuts warm so openURL enters scene(_:openURLContexts:) with active UIKit sourceApplication, after installing Xcode-signed ReceiverApp
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" org.cherrilang.qa.Receiver >/dev/null 2>&1 || true
         sleep 1
-        RECEIVER_BUILT_APP="$(find "$DERIVED_DATA_PATH/Build/Products" -maxdepth 3 -name "CherriSimulatorQAReceiver.app" -type d 2>/dev/null | head -n 1 || true)"
-        RECEIVER_BUNDLE_PATH="${RECEIVER_BUILT_APP:-}"
-        if [ -z "$RECEIVER_BUNDLE_PATH" ] || [ ! -d "$RECEIVER_BUNDLE_PATH" ]; then
-          RECEIVER_BUNDLE_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
-        fi
-        if [ -n "$RECEIVER_BUNDLE_PATH" ] && [ -d "$RECEIVER_BUNDLE_PATH" ]; then
-          RECEIVER_XCENT="$QA_SCRATCH_DIR/receiver.entitlements"
-          cat > "$RECEIVER_XCENT" <<'PLIST'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>get-task-allow</key>
-	<true/>
-</dict>
-</plist>
-PLIST
-          SIGNED_RECEIVER_TMP="$QA_SCRATCH_DIR/CherriSimulatorQAReceiver-signed.app"
-          rm -rf "$SIGNED_RECEIVER_TMP"
-          cp -R "$RECEIVER_BUNDLE_PATH" "$SIGNED_RECEIVER_TMP"
-          CS_OUT="$(codesign --force --sign - --identifier org.cherrilang.qa.Receiver --entitlements "$RECEIVER_XCENT" "$SIGNED_RECEIVER_TMP" 2>&1 || true)"
-          if [ -n "$RECEIVER_BUILT_APP" ] && [ -d "$RECEIVER_BUILT_APP" ]; then
-            codesign --force --sign - --identifier org.cherrilang.qa.Receiver --entitlements "$RECEIVER_XCENT" "$RECEIVER_BUILT_APP" >/dev/null 2>&1 || true
-          fi
-          INST_OUT="$(xcrun simctl install "$UDID" "$SIGNED_RECEIVER_TMP" 2>&1 || true)"
-          rm -rf "$SIGNED_RECEIVER_TMP"
-          sleep 3
-          INSTALLED_RECEIVER_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
-          NEW_DATA_DIR="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver data 2>/dev/null || true)"
-          [ -n "$NEW_DATA_DIR" ] && RECEIVER_DATA_DIR="$NEW_DATA_DIR"
-          echo "=== ReceiverApp codesign + install ==="
-          [ -n "$CS_OUT" ] && printf '%s\n' "$CS_OUT" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 5 || true
+        RECEIVER_SIGNED_DD="$QA_SCRATCH_DIR/ReceiverSignedDD"
+        rm -rf "$RECEIVER_SIGNED_DD"
+        echo "=== ReceiverApp Xcode Simulator build + install ==="
+        XCODE_RECV_RC=0
+        run_cmd_timeout 90 xcodebuild build \
+          -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
+          -target CherriSimulatorQAReceiver \
+          -sdk iphonesimulator \
+          -derivedDataPath "$RECEIVER_SIGNED_DD" \
+          -destination "platform=iOS Simulator,id=$UDID" \
+          CODE_SIGNING_ALLOWED=YES \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGN_IDENTITY="-" \
+          > "$ARTIFACT_DIR/builds/xcodebuild-receiver-signed.log" 2>&1 || XCODE_RECV_RC=$?
+        echo "ReceiverApp signed xcodebuild rc=$XCODE_RECV_RC"
+        RECEIVER_BUNDLE_PATH="$(find "$RECEIVER_SIGNED_DD/Build/Products" -maxdepth 3 -name "CherriSimulatorQAReceiver.app" -type d 2>/dev/null | head -n 1 || true)"
+        if [ "$XCODE_RECV_RC" -eq 0 ] && [ -n "$RECEIVER_BUNDLE_PATH" ] && [ -d "$RECEIVER_BUNDLE_PATH" ]; then
+          INST_OUT="$(xcrun simctl install "$UDID" "$RECEIVER_BUNDLE_PATH" 2>&1 || true)"
           [ -n "$INST_OUT" ] && printf '%s\n' "$INST_OUT" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 5 || true
-          codesign -dvv "${INSTALLED_RECEIVER_PATH:-$RECEIVER_BUNDLE_PATH}" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 12 || true
-          codesign -d --entitlements :- "${INSTALLED_RECEIVER_PATH:-$RECEIVER_BUNDLE_PATH}" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 20 || true
         else
-          echo "=== ReceiverApp codesign + install skipped: bundle not found ==="
+          echo "ReceiverApp Xcode signed build fallback -> plain ad-hoc codesign"
+          [ -f "$ARTIFACT_DIR/builds/xcodebuild-receiver-signed.log" ] && tail -n 15 "$ARTIFACT_DIR/builds/xcodebuild-receiver-signed.log" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" || true
+          RECEIVER_BUILT_APP="$(find "$DERIVED_DATA_PATH/Build/Products" -maxdepth 3 -name "CherriSimulatorQAReceiver.app" -type d 2>/dev/null | head -n 1 || true)"
+          RECEIVER_BUNDLE_PATH="${RECEIVER_BUILT_APP:-}"
+          if [ -z "$RECEIVER_BUNDLE_PATH" ] || [ ! -d "$RECEIVER_BUNDLE_PATH" ]; then
+            RECEIVER_BUNDLE_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
+          fi
+          if [ -n "$RECEIVER_BUNDLE_PATH" ] && [ -d "$RECEIVER_BUNDLE_PATH" ]; then
+            SIGNED_RECEIVER_TMP="$QA_SCRATCH_DIR/CherriSimulatorQAReceiver-signed.app"
+            rm -rf "$SIGNED_RECEIVER_TMP"
+            cp -R "$RECEIVER_BUNDLE_PATH" "$SIGNED_RECEIVER_TMP"
+            CS_OUT="$(codesign --force --sign - --identifier org.cherrilang.qa.Receiver "$SIGNED_RECEIVER_TMP" 2>&1 || true)"
+            INST_OUT="$(xcrun simctl install "$UDID" "$SIGNED_RECEIVER_TMP" 2>&1 || true)"
+            rm -rf "$SIGNED_RECEIVER_TMP"
+            [ -n "$CS_OUT" ] && printf '%s\n' "$CS_OUT" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 5 || true
+            [ -n "$INST_OUT" ] && printf '%s\n' "$INST_OUT" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 5 || true
+          fi
         fi
+        sleep 3
+        INSTALLED_RECEIVER_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
+        NEW_DATA_DIR="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver data 2>/dev/null || true)"
+        [ -n "$NEW_DATA_DIR" ] && RECEIVER_DATA_DIR="$NEW_DATA_DIR"
+        if [ -n "$INSTALLED_RECEIVER_PATH" ] && [ -d "$INSTALLED_RECEIVER_PATH" ]; then
+          codesign -dvv "$INSTALLED_RECEIVER_PATH" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 12 || true
+          codesign -d --entitlements :- "$INSTALLED_RECEIVER_PATH" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 20 || true
+        fi
+        xcrun simctl appinfo "$UDID" org.cherrilang.qa.Receiver 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | grep -E "ApplicationType|CFBundle|Path|URLSchemes|cherriqa" | head -n 20 || true
         run_cmd_timeout 15 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
-        sleep 2
+        sleep 3
         LAUNCH_RC=0
         LAUNCH_OUT="$( ( export SIMCTL_CHILD_CHERRI_TRIGGER_SHORTCUT_URL="$RUN_URL"; run_cmd_timeout 25 xcrun simctl launch "$UDID" org.cherrilang.qa.Receiver ) 2>&1 )" || LAUNCH_RC=$?
         echo "Phase4b simctl launch rc=$LAUNCH_RC out=$(printf '%s' "$LAUNCH_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-200)"
@@ -1625,6 +1634,27 @@ PLIST
                 if [ ! -f "$ARTIFACT_DIR/editor/runtime-callback.png" ]; then
                   run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/runtime-callback.png" >/dev/null 2>&1 || true
                 fi
+                break
+              fi
+            fi
+            sleep 1
+          done
+        fi
+
+        if [ "$FOUND_NONCE" != "yes" ] && [ -n "${RUN_URL_MINIMAL:-}" ]; then
+          echo "=== Phase 4b-minimal: Trying minimal x-callback-url without input parameters ==="
+          run_cmd_timeout 15 xcrun simctl terminate "$UDID" org.cherrilang.qa.Receiver >/dev/null 2>&1 || true
+          run_cmd_timeout 15 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+          sleep 2
+          MIN_RC=0
+          MIN_OUT="$( ( export SIMCTL_CHILD_CHERRI_TRIGGER_SHORTCUT_URL="$RUN_URL_MINIMAL"; run_cmd_timeout 25 xcrun simctl launch "$UDID" org.cherrilang.qa.Receiver ) 2>&1 )" || MIN_RC=$?
+          echo "Phase4b-minimal launch rc=$MIN_RC out=$(printf '%s' "$MIN_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-200)"
+          for poll_idx in $(seq 1 12); do
+            if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
+              cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
+              FOUND_NONCE="$(python3 -c 'import json,sys; evs=json.load(open(sys.argv[1])); print("yes" if any((not e.get("receiverSelfTest")) and e.get("runId")==sys.argv[2] for e in evs) else "no")' "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" 2>/dev/null || echo "no")"
+              if [ "$FOUND_NONCE" = "yes" ]; then
+                run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/runtime-callback.png" >/dev/null 2>&1 || true
                 break
               fi
             fi
