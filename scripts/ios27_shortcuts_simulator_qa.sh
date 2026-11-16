@@ -971,7 +971,7 @@ for idx, act in enumerate(actions):
         "is.workflow.actions.output": "Stop and Output",
     }
     title_hint = expected_ui_titles.get(aid, aid.split(".")[-1])
-    matched_title = (title_hint in joined_ui) or ("Get Value" in joined_ui and aid == "is.workflow.actions.getvalueforkey")
+    matched_title = (title_hint.lower() in joined_ui.lower()) or ("Get Value" in joined_ui and aid == "is.workflow.actions.getvalueforkey")
     matched_marker = bool(marker and isinstance(marker, str) and len(marker) >= 6 and (marker.splitlines()[0][:24] in joined_ui))
     plist_items.append({
         "nativeIndex": idx,
@@ -1016,6 +1016,32 @@ PY
         fi
         sleep 1
       done
+
+      if [ "${FOUND_NONCE:-no}" != "yes" ]; then
+        xcrun simctl spawn "$UDID" log show --last 3m --style compact --predicate 'process == "Shortcuts" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver"' 2>/dev/null | \
+          python3 - "$UDID" "$ROOT_DIR" "$ARTIFACT_DIR/runtime/shortcuts-log-excerpt.txt" <<'PY' || true
+import re, sys
+udid, root_dir, out_path = sys.argv[1:4]
+lines = sys.stdin.read().splitlines()
+forbidden = re.compile(r"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._\-]+|AppleID|iCloudToken)")
+uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
+users_re = re.compile(r"/Users/[^/\s]+")
+filtered = []
+for ln in lines:
+    if udid:
+        ln = ln.replace(udid, "<UDID>")
+    if root_dir:
+        ln = ln.replace(root_dir, "<REPO_ROOT>")
+    ln = users_re.sub("/Users/<redacted>", ln)
+    ln = uuid_re.sub("<UUID>", ln)
+    if forbidden.search(ln):
+        continue
+    if any(k in ln.lower() for k in ("error", "fail", "warn", "shortcut", "callback", "cherriqa", "openurl", "denied", "allow", "workflow", "qa-functional")):
+        filtered.append(ln[:300])
+with open(out_path, "w", encoding="utf-8") as f:
+    f.write("\n".join(filtered[-80:]) + ("\n" if filtered else ""))
+PY
+      fi
 
       # Evaluate callback & NDJSON trace using strict oracle rules (never hardcode BLOCKED_IMPORT!)
       RUNTIME_EVAL="$(python3 - "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" <<'PY'

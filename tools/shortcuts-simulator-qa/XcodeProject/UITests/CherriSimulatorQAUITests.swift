@@ -127,7 +127,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "Get Dictionary Value", "Get Value", "Get Value for Key", "Current Date",
         "If", "Otherwise", "End If", "Repeat", "Repeat Times", "End Repeat",
         "Repeat Index", "Repeat Item", "Condition", "Equals", "Is Equal To",
-        "Stop and Output", "Output", "Set Variable", "Add to Variable", "Combine Text",
+        "Stop and Output", "Stop and output", "Actions Menu", "Get dates from", "Output", "Set Variable", "Add to Variable", "Combine Text",
         "Get Dates from Input", "Quick Look", "Show Alert", "Show Result",
         "Wait", "Nothing", "New Lines", "Text Value", "Key", "Value",
         "המשך", "אישור", "צור קיצור דרך", "הוסף קיצור דרך",
@@ -820,7 +820,46 @@ final class CherriSimulatorQAUITests: XCTestCase {
             if doneBtn.exists && doneBtn.isHittable {
                 doneBtn.tap()
                 Thread.sleep(forTimeInterval: 1.0)
+            } else if shortcuts.otherElements["editor"].exists {
+                var closedEditor = false
+                let backBtn = shortcuts.buttons["BackButton"].firstMatch
+                if backBtn.exists && backBtn.isHittable {
+                    backBtn.tap()
+                    closedEditor = true
+                    Thread.sleep(forTimeInterval: 1.2)
+                }
+                if !closedEditor {
+                    let navButtons = shortcuts.navigationBars.buttons
+                    for i in 0..<min(navButtons.count, 5) {
+                        let b = navButtons.element(boundBy: i)
+                        if b.exists && b.isHittable && b.frame.origin.x < 110 && b.frame.origin.y < 120 {
+                            b.tap()
+                            closedEditor = true
+                            Thread.sleep(forTimeInterval: 1.2)
+                            break
+                        }
+                    }
+                }
+                if !closedEditor {
+                    let allBtns = shortcuts.buttons
+                    for i in 0..<min(allBtns.count, 16) {
+                        let b = allBtns.element(boundBy: i)
+                        if b.exists && b.isHittable && b.frame.origin.x >= 0 && b.frame.origin.x < 100 && b.frame.origin.y >= 0 && b.frame.origin.y < 100 && b.frame.size.width < 100 {
+                            b.tap()
+                            closedEditor = true
+                            Thread.sleep(forTimeInterval: 1.2)
+                            break
+                        }
+                    }
+                }
+                if shortcuts.otherElements["editor"].exists {
+                    shortcuts.terminate()
+                    Thread.sleep(forTimeInterval: 1.0)
+                }
             }
+            let preRunShot = XCUIScreen.main.screenshot()
+            try? preRunShot.pngRepresentation.write(to: outDir.appendingPathComponent("before-runtime-trigger.png"), options: .atomic)
+
             let runReqURL = outDir.appendingPathComponent("request-shortcut-run.txt")
             let runAckURL = outDir.appendingPathComponent("ack-shortcut-run.txt")
             try? FileManager.default.removeItem(at: runAckURL)
@@ -828,16 +867,33 @@ final class CherriSimulatorQAUITests: XCTestCase {
 
             let receiver = XCUIApplication(bundleIdentifier: "org.cherrilang.qa.Receiver")
             let confirmLabels = ["Always Allow", "Allow", "Open", "Allow Once", "Run", "Continue", "OK"]
-            let runDeadline = Date().addingTimeInterval(55.0)
+            let runStart = Date()
+            let runDeadline = runStart.addingTimeInterval(55.0)
+            var capturedMidway = false
             while Date() < runDeadline {
                 if !runtimeTriggerDispatched && FileManager.default.fileExists(atPath: runAckURL.path) {
                     runtimeTriggerDispatched = true
+                }
+                if !capturedMidway && Date().timeIntervalSince(runStart) >= 20.0 {
+                    capturedMidway = true
+                    let midShot = XCUIScreen.main.screenshot()
+                    try? midShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-midway.png"), options: .atomic)
                 }
                 for targetApp in [springboard, shortcuts] {
                     for lbl in confirmLabels {
                         let btn = targetApp.buttons[lbl].firstMatch
                         if btn.exists && btn.isHittable {
                             btn.tap()
+                            Thread.sleep(forTimeInterval: 0.5)
+                        }
+                        let alertBtn = targetApp.alerts.buttons[lbl].firstMatch
+                        if alertBtn.exists && alertBtn.isHittable {
+                            alertBtn.tap()
+                            Thread.sleep(forTimeInterval: 0.5)
+                        }
+                        let sheetBtn = targetApp.sheets.buttons[lbl].firstMatch
+                        if sheetBtn.exists && sheetBtn.isHittable {
+                            sheetBtn.tap()
                             Thread.sleep(forTimeInterval: 0.5)
                         }
                     }
@@ -856,6 +912,22 @@ final class CherriSimulatorQAUITests: XCTestCase {
                     }
                 }
                 Thread.sleep(forTimeInterval: 0.4)
+            }
+            if !runtimeCallbackObservedInUI {
+                let toShot = XCUIScreen.main.screenshot()
+                try? toShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-timeout.png"), options: .atomic)
+                var timeoutNodes: [SanitizedAccessibilityNode] = []
+                if let scSnap = try? shortcuts.snapshot() {
+                    timeoutNodes.append(contentsOf: flattenSnapshot(scSnap, screenIndex: 90, viewport: appFrame))
+                }
+                if let sbSnap = try? springboard.snapshot() {
+                    timeoutNodes.append(contentsOf: flattenSnapshot(sbSnap, screenIndex: 91, viewport: appFrame))
+                }
+                let enc = JSONEncoder()
+                enc.outputFormatting = [.prettyPrinted, .sortedKeys]
+                if let d = try? enc.encode(timeoutNodes) {
+                    try? d.write(to: outDir.appendingPathComponent("runtime-timeout-tree.json"), options: .atomic)
+                }
             }
         }
 
