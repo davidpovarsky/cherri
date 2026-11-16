@@ -467,7 +467,7 @@ if [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PASS" ]; then
   open -g -a Simulator --args -CurrentDeviceUDID "$UDID" >/dev/null 2>&1 || true
   sleep 2
   xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
-  sleep 2
+  sleep 5
 fi
 
 MASKED_UDID="$(echo "$UDID" | cut -c1-8)-REDACTED"
@@ -822,9 +822,11 @@ PY
         if [ "$import_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import.txt" ]; then
           import_dispatched=1
           if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
+            _t0=$SECONDS
             IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 3 "$SIGNED_FILE")"
             IMP_RC=$?
-            printf 'rc=%s\n%s\n' "$IMP_RC" "${IMP_OUT:0:256}" > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
+            _dt=$((SECONDS - _t0))
+            printf 'rc=%s\ndurationSec=%s %s\n' "$IMP_RC" "$_dt" "${IMP_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
           else
             printf 'rc=1\nNO_VALID_AEA1\n' > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
           fi
@@ -832,16 +834,20 @@ PY
         if [ "$import_retried" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import-retry.txt" ]; then
           import_retried=1
           if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
+            _t0=$SECONDS
             IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 2 "$SIGNED_FILE")"
             IMP2_RC=$?
-            printf 'rc=%s\n%s\n' "$IMP2_RC" "${IMP2_OUT:0:256}" > "$ARTIFACT_DIR/editor/ack-signed-import-retry.txt"
+            _dt=$((SECONDS - _t0))
+            printf 'rc=%s\ndurationSec=%s %s\n' "$IMP2_RC" "$_dt" "${IMP2_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import-retry.txt"
           fi
         fi
         if [ "$run_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-shortcut-run.txt" ]; then
           run_dispatched=1
+          _t0=$SECONDS
           RUN_OUT="$(simctl_openurl_resilient "$UDID" "$RUN_URL" 3)"
           RUN_RC=$?
-          printf 'rc=%s\n%s\n' "$RUN_RC" "${RUN_OUT:0:256}" > "$ARTIFACT_DIR/editor/ack-shortcut-run.txt"
+          _dt=$((SECONDS - _t0))
+          printf 'rc=%s\ndurationSec=%s %s\n' "$RUN_RC" "$_dt" "${RUN_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-shortcut-run.txt"
         fi
         [ -f "$ARTIFACT_DIR/editor/handshake-stop.txt" ] && break
         sleep 0.2
@@ -1165,10 +1171,12 @@ for ln in lines:
     ln = uuid_re.sub("<UUID>", ln)
     if forbidden.search(ln):
         continue
-    if any(k in ln.lower() for k in ("error", "fail", "warn", "shortcut", "callback", "cherriqa", "openurl", "denied", "allow", "workflow", "qa-functional", "trigger", "scene", "x-callback")):
+    if "ToolKitIndexing" in ln or "ToolKitDatabase" in ln or "approvedForPublicDrawerToDisplayActionIdentifier" in ln or "ToolDatabaseWriter" in ln:
+        continue
+    if any(k in ln.lower() for k in ("error", "fail", "warn", "shortcut", "callback", "cherriqa", "openurl", "denied", "allow", "workflow", "qa-functional", "trigger", "scene", "x-callback", "run")):
         filtered.append(ln[:300])
 with open(out_path, "w", encoding="utf-8") as f:
-    f.write("\n".join(filtered[-100:]) + ("\n" if filtered else ""))
+    f.write("\n".join(filtered[-150:]) + ("\n" if filtered else ""))
 PY
     fi
     rm -f "${RAW_SIM_LOG:-}"

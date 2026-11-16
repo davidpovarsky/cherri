@@ -379,7 +379,9 @@ final class CherriSimulatorQAUITests: XCTestCase {
             let reqURL = outDir.appendingPathComponent("request-signed-import.txt")
             let retryReqURL = outDir.appendingPathComponent("request-signed-import-retry.txt")
             let ackURL = outDir.appendingPathComponent("ack-signed-import.txt")
+            let retryAckURL = outDir.appendingPathComponent("ack-signed-import-retry.txt")
             try? FileManager.default.removeItem(at: ackURL)
+            try? FileManager.default.removeItem(at: retryAckURL)
             try? FileManager.default.removeItem(at: retryReqURL)
             try? expectedShortcutName.data(using: .utf8)?.write(to: reqURL, options: .atomic)
 
@@ -387,22 +389,29 @@ final class CherriSimulatorQAUITests: XCTestCase {
             let sheetPredicate = NSPredicate(format: "label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both' OR label == 'Replace'")
 
             var foundSheetBtn: XCUIElement? = nil
-            let overallDeadline = Date().addingTimeInterval(110.0)
+            var deadline = Date().addingTimeInterval(65.0)
             var postAckRetryAt: Date? = nil
             var retriedImport = false
-            var finalDeadline: Date? = nil
-            while Date() < overallDeadline && foundSheetBtn == nil {
+            var postRetryExtended = false
+            while Date() < deadline && foundSheetBtn == nil {
                 if postAckRetryAt == nil && FileManager.default.fileExists(atPath: ackURL.path) {
                     postAckRetryAt = Date().addingTimeInterval(10.0)
+                    let minUntilRetry = Date().addingTimeInterval(14.0)
+                    if deadline < minUntilRetry {
+                        deadline = minUntilRetry
+                    }
                 }
                 if !retriedImport, let retryAt = postAckRetryAt, Date() >= retryAt {
                     retriedImport = true
-                    shortcuts.activate()
                     try? expectedShortcutName.data(using: .utf8)?.write(to: retryReqURL, options: .atomic)
-                    finalDeadline = Date().addingTimeInterval(25.0)
+                    deadline = Date().addingTimeInterval(55.0)
                 }
-                if let endAt = finalDeadline, Date() >= endAt {
-                    break
+                if retriedImport && !postRetryExtended && FileManager.default.fileExists(atPath: retryAckURL.path) {
+                    postRetryExtended = true
+                    let afterRetryAck = Date().addingTimeInterval(18.0)
+                    if deadline < afterRetryAck {
+                        deadline = afterRetryAck
+                    }
                 }
                 for targetApp in [shortcuts, springboard] {
                     for candidate in sheetButtonLabels {
