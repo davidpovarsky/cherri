@@ -1197,7 +1197,9 @@ noise = (
     "com.apple.foundation.filecoordination", "com.apple.launchservices:binding",
     "com.apple.cloudkit.sim", "BackBoardServices", "FrontBoardServices:Workspace",
     "com.apple.dt.xctest", "com.apple.xpc.transaction", "XC_kAXXCAttribute",
-    "com.apple.runningboard:monitor", "com.apple.siri:Client"
+    "com.apple.runningboard:monitor", "com.apple.siri:Client",
+    "com.apple.launchservices:datasep", "application record search init",
+    "com.apple.appintents:Connection", "com.apple.shortcuts:AppIntentsMetadata"
 )
 uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
 users_re = re.compile(r"/Users/[^/\s]+")

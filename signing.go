@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
@@ -282,7 +283,55 @@ func classifyNonAEA1Payload(contentType string, body []byte) error {
 	return fmt.Errorf("signing service response does not look like a signed Shortcut (missing AEA1 magic, Content-Type: %s)", contentType)
 }
 
-/// SignShortcutBytes signs explicit plist XML bytes using a remote signing service.
+// doSigningPOST executes a signing POST request with automatic IPv4 fallback when CI runners lack IPv6 routing.
+func doSigningPOST(targetURL, contentType string, bodyBytes []byte) (*http.Response, []byte, error) {
+	runOnce := func(transport http.RoundTripper) (*http.Response, []byte, error) {
+		request, httpErr := http.NewRequest("POST", targetURL, bytes.NewReader(bodyBytes))
+		if httpErr != nil {
+			return nil, nil, fmt.Errorf("failed to create http request: %w", httpErr)
+		}
+		request.Header.Set("Content-Type", contentType)
+		request.Header.Set("User-Agent", fmt.Sprintf("Shortcuts/5037.111 cherri/%s", version))
+		client := &http.Client{
+			Timeout:   signingHTTPTimeout,
+			Transport: transport,
+		}
+		response, resErr := client.Do(request)
+		if resErr != nil {
+			return nil, nil, resErr
+		}
+		defer response.Body.Close()
+		body, readErr := io.ReadAll(response.Body)
+		if readErr != nil {
+			return nil, nil, fmt.Errorf("failed to read response body: %w", readErr)
+		}
+		return response, body, nil
+	}
+
+	response, body, err := runOnce(nil)
+	if err != nil {
+		msg := strings.ToLower(err.Error())
+		if strings.Contains(msg, "no route to host") || strings.Contains(msg, "network is unreachable") {
+			if baseTransport, ok := http.DefaultTransport.(*http.Transport); ok {
+				v4Transport := baseTransport.Clone()
+				dialer := &net.Dialer{Timeout: 20 * time.Second, KeepAlive: 30 * time.Second}
+				v4Transport.DialContext = func(ctx context.Context, _, addr string) (net.Conn, error) {
+					return dialer.DialContext(ctx, "tcp4", addr)
+				}
+				response, body, err = runOnce(v4Transport)
+			}
+		}
+	}
+	if err != nil {
+		if strings.Contains(err.Error(), "failed to read response body") || strings.Contains(err.Error(), "failed to create http request") {
+			return nil, nil, err
+		}
+		return nil, nil, classifySigningNetworkError(err)
+	}
+	return response, body, nil
+}
+
+// / SignShortcutBytes signs explicit plist XML bytes using a remote signing service.
 func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]byte, error) {
 	if service == nil || strings.TrimSpace(service.url) == "" {
 		return nil, fmt.Errorf("signing service URL is empty")
@@ -309,25 +358,9 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 			return nil, fmt.Errorf("failed to close multipart writer: %w", err)
 		}
 
-		request, httpErr := http.NewRequest("POST", service.url, &b)
-		if httpErr != nil {
-			return nil, fmt.Errorf("failed to create http request: %w", httpErr)
-		}
-		request.Header.Set("Content-Type", w.FormDataContentType())
-		request.Header.Set("User-Agent", fmt.Sprintf("Shortcuts/5037.111 cherri/%s", version))
-
-		client := &http.Client{
-			Timeout: signingHTTPTimeout,
-		}
-		response, resErr := client.Do(request)
-		if resErr != nil {
-			return nil, classifySigningNetworkError(resErr)
-		}
-		defer response.Body.Close()
-
-		body, readErr := io.ReadAll(response.Body)
-		if readErr != nil {
-			return nil, fmt.Errorf("failed to read response body: %w", readErr)
+		response, body, postErr := doSigningPOST(service.url, w.FormDataContentType(), b.Bytes())
+		if postErr != nil {
+			return nil, postErr
 		}
 
 		if response.StatusCode != http.StatusOK {
@@ -407,25 +440,9 @@ func SignShortcutBytes(service *SigningService, name string, xmlData []byte) ([]
 		return nil, fmt.Errorf("failed to marshal json payload: %w", jsonErr)
 	}
 
-	var request, httpErr = http.NewRequest("POST", service.url, bytes.NewReader(jsonPayload))
-	if httpErr != nil {
-		return nil, fmt.Errorf("failed to create http request: %w", httpErr)
-	}
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("User-Agent", fmt.Sprintf("Shortcuts/5037.111 cherri/%s", version))
-
-	var client = &http.Client{
-		Timeout: signingHTTPTimeout,
-	}
-	var response, resErr = client.Do(request)
-	if resErr != nil {
-		return nil, classifySigningNetworkError(resErr)
-	}
-	defer response.Body.Close()
-
-	var body, readErr = io.ReadAll(response.Body)
-	if readErr != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", readErr)
+	response, body, postErr := doSigningPOST(service.url, "application/json", jsonPayload)
+	if postErr != nil {
+		return nil, postErr
 	}
 
 	if response.StatusCode != http.StatusOK {
