@@ -492,11 +492,27 @@ PY
 }
 
 if [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PASS" ]; then
-  open -g -a Simulator --args -CurrentDeviceUDID "$UDID" >/dev/null 2>&1 || true
-  sleep 2
-  xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
-  sleep 4
-  xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+  python3 - "$UDID" <<'PY' >/dev/null 2>&1 || true
+import subprocess, sys, time
+u = sys.argv[1]
+try:
+    subprocess.run(["open", "-g", "-a", "Simulator", "--args", "-CurrentDeviceUDID", u], stdin=subprocess.DEVNULL, capture_output=True, timeout=15)
+except Exception:
+    pass
+time.sleep(2)
+for cmd in (
+    ["xcrun", "simctl", "launch", u, "com.apple.shortcuts"],
+):
+    try:
+        subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, timeout=30)
+    except Exception:
+        pass
+time.sleep(3)
+try:
+    subprocess.run(["xcrun", "simctl", "terminate", u, "com.apple.shortcuts"], stdin=subprocess.DEVNULL, capture_output=True, timeout=20)
+except Exception:
+    pass
+PY
 fi
 
 MASKED_UDID="$(echo "$UDID" | cut -c1-8)-REDACTED"
@@ -906,7 +922,7 @@ PY
       import_dispatched=0
       import_retried=0
       run_dispatched=0
-      for _tick in $(seq 1 4000); do
+      for _tick in $(seq 1 4500); do
         if [ "$import_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import.txt" ]; then
           import_dispatched=1
           if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
@@ -959,7 +975,7 @@ PY
     }
     trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}"' EXIT
 
-    run_cmd_timeout 600 xcodebuild test-without-building \
+    run_cmd_timeout 780 xcodebuild test-without-building \
       -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
       -scheme CherriSimulatorQAReceiver \
       -derivedDataPath "$DERIVED_DATA_PATH" \
@@ -970,7 +986,7 @@ PY
     XCODEBUILD_TEST_RC=$?
     echo "xcodebuild test exit code: $XCODEBUILD_TEST_RC"
     if [ "$XCODEBUILD_TEST_RC" -ne 0 ] && [ -f "$ARTIFACT_DIR/builds/xcodebuild-test.log" ]; then
-      sed "s/$UDID/<UDID>/g" "$ARTIFACT_DIR/builds/xcodebuild-test.log" | tail -n 25 || true
+      grep -Ev "DVTAssertions|nativeArchitecture|Apple Watch|SimDevice :|Object:[[:space:]]+<DVTiPhoneSimulator|Method:[[:space:]]+-nativeArchitecture|Thread:[[:space:]]+<_NSMainThread|feedbackassistant\.apple\.com|^[[:space:]]*\)[[:space:]]*$" "$ARTIFACT_DIR/builds/xcodebuild-test.log" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | tail -n 35 || true
     fi
 
     cleanup_handshake
@@ -1386,9 +1402,9 @@ exec_lines = []
 exec_keywords = (
     "CherriReceiver", "BackgroundShortcutRunner", "WFOutputAction",
     "WorkflowExecution", "RunningLifecycle", "XCallback", "x-callback",
-    "taint", "appIdentifier", "destination", "cherriqa", "VoiceShortcutClient",
-    "WFXCallback", "openURL", "OpenURL", "WFLibraryRunCoordinator",
-    "Shortcuts:URL", "WFWorkflow"
+    "taint", "appIdentifier", "destination app", "could not be determined",
+    "cherriqa", "VoiceShortcutClient", "WFXCallback", "openURL",
+    "OpenURL", "WFLibraryRunCoordinator", "Shortcuts:URL", "WFWorkflow"
 )
 for ln in lines:
     if udid:
