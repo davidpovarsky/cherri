@@ -855,7 +855,15 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 if shortcuts.otherElements["editor"].exists {
                     shortcuts.terminate()
                     Thread.sleep(forTimeInterval: 1.0)
+                    shortcuts.activate()
+                    _ = shortcuts.wait(for: .runningForeground, timeout: 10)
+                    Thread.sleep(forTimeInterval: 2.0)
                 }
+            }
+            if shortcuts.state != .runningForeground {
+                shortcuts.activate()
+                _ = shortcuts.wait(for: .runningForeground, timeout: 10)
+                Thread.sleep(forTimeInterval: 1.5)
             }
             let preRunShot = XCUIScreen.main.screenshot()
             try? preRunShot.pngRepresentation.write(to: outDir.appendingPathComponent("before-runtime-trigger.png"), options: .atomic)
@@ -868,50 +876,61 @@ final class CherriSimulatorQAUITests: XCTestCase {
             let receiver = XCUIApplication(bundleIdentifier: "org.cherrilang.qa.Receiver")
             let confirmLabels = ["Always Allow", "Allow", "Open", "Allow Once", "Run", "Continue", "OK"]
             let runStart = Date()
-            let runDeadline = runStart.addingTimeInterval(55.0)
+            let primaryDeadline = runStart.addingTimeInterval(25.0)
             var capturedMidway = false
-            while Date() < runDeadline {
-                if !runtimeTriggerDispatched && FileManager.default.fileExists(atPath: runAckURL.path) {
+
+            func pollRuntimeConfirmAndCallback(until deadline: Date) {
+                while Date() < deadline {
+                    if !runtimeTriggerDispatched && FileManager.default.fileExists(atPath: runAckURL.path) {
+                        runtimeTriggerDispatched = true
+                    }
+                    for targetApp in [springboard, shortcuts] {
+                        for lbl in confirmLabels {
+                            let btn = targetApp.buttons[lbl].firstMatch
+                            if btn.exists && btn.isHittable {
+                                btn.tap()
+                                Thread.sleep(forTimeInterval: 0.5)
+                            }
+                            let alertBtn = targetApp.alerts.buttons[lbl].firstMatch
+                            if alertBtn.exists && alertBtn.isHittable {
+                                alertBtn.tap()
+                                Thread.sleep(forTimeInterval: 0.5)
+                            }
+                            let sheetBtn = targetApp.sheets.buttons[lbl].firstMatch
+                            if sheetBtn.exists && sheetBtn.isHittable {
+                                sheetBtn.tap()
+                                Thread.sleep(forTimeInterval: 0.5)
+                            }
+                        }
+                    }
+                    if receiver.state == .runningForeground {
+                        let runIdLabel = receiver.staticTexts["qa.receiver.lastRunId"]
+                        let statusLabel = receiver.staticTexts["qa.receiver.status"]
+                        let matchesNonce = execRunNonce.isEmpty || (runIdLabel.exists && runIdLabel.label.contains(execRunNonce))
+                        let completedStatus = statusLabel.exists && (statusLabel.label.contains("SUCCESS") || statusLabel.label.contains("ERROR") || statusLabel.label.contains("CANCELLED"))
+                        if matchesNonce && completedStatus {
+                            runtimeTriggerDispatched = runtimeTriggerDispatched || FileManager.default.fileExists(atPath: runAckURL.path)
+                            runtimeCallbackObservedInUI = true
+                            let rtShot = XCUIScreen.main.screenshot()
+                            try? rtShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-callback.png"), options: .atomic)
+                            return
+                        }
+                    }
+                    Thread.sleep(forTimeInterval: 0.4)
+                }
+            }
+
+            pollRuntimeConfirmAndCallback(until: primaryDeadline)
+            if !runtimeCallbackObservedInUI && !capturedMidway {
+                capturedMidway = true
+                let midShot = XCUIScreen.main.screenshot()
+                try? midShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-midway.png"), options: .atomic)
+                if let runURLStr = ProcessInfo.processInfo.environment["CHERRI_QA_RUN_URL"], !runURLStr.isEmpty {
+                    receiver.launchArguments = ["--trigger-shortcut-url", runURLStr]
+                    receiver.launch()
                     runtimeTriggerDispatched = true
+                    pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(30.0))
                 }
-                if !capturedMidway && Date().timeIntervalSince(runStart) >= 20.0 {
-                    capturedMidway = true
-                    let midShot = XCUIScreen.main.screenshot()
-                    try? midShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-midway.png"), options: .atomic)
-                }
-                for targetApp in [springboard, shortcuts] {
-                    for lbl in confirmLabels {
-                        let btn = targetApp.buttons[lbl].firstMatch
-                        if btn.exists && btn.isHittable {
-                            btn.tap()
-                            Thread.sleep(forTimeInterval: 0.5)
-                        }
-                        let alertBtn = targetApp.alerts.buttons[lbl].firstMatch
-                        if alertBtn.exists && alertBtn.isHittable {
-                            alertBtn.tap()
-                            Thread.sleep(forTimeInterval: 0.5)
-                        }
-                        let sheetBtn = targetApp.sheets.buttons[lbl].firstMatch
-                        if sheetBtn.exists && sheetBtn.isHittable {
-                            sheetBtn.tap()
-                            Thread.sleep(forTimeInterval: 0.5)
-                        }
-                    }
-                }
-                if receiver.state == .runningForeground {
-                    let runIdLabel = receiver.staticTexts["qa.receiver.lastRunId"]
-                    let statusLabel = receiver.staticTexts["qa.receiver.status"]
-                    let matchesNonce = execRunNonce.isEmpty || (runIdLabel.exists && runIdLabel.label.contains(execRunNonce))
-                    let completedStatus = statusLabel.exists && (statusLabel.label.contains("SUCCESS") || statusLabel.label.contains("ERROR") || statusLabel.label.contains("CANCELLED"))
-                    if matchesNonce && completedStatus {
-                        runtimeTriggerDispatched = runtimeTriggerDispatched || FileManager.default.fileExists(atPath: runAckURL.path)
-                        runtimeCallbackObservedInUI = true
-                        let rtShot = XCUIScreen.main.screenshot()
-                        try? rtShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-callback.png"), options: .atomic)
-                        break
-                    }
-                }
-                Thread.sleep(forTimeInterval: 0.4)
             }
             if !runtimeCallbackObservedInUI {
                 let toShot = XCUIScreen.main.screenshot()

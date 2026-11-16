@@ -786,6 +786,12 @@ PY
     export TEST_RUNNER_CHERRI_QA_EXPECT_SIGNED_IMPORT="$SIGNED_ARTIFACT_VALID_AEA1"
     export TEST_RUNNER_CHERRI_QA_EXPECT_RUNTIME_RUN="$SIGNED_ARTIFACT_VALID_AEA1"
     export TEST_RUNNER_CHERRI_QA_EXEC_RUN_NONCE="$EXEC_RUN_NONCE"
+    export TEST_RUNNER_CHERRI_QA_RUN_URL="$RUN_URL"
+
+    RAW_SIM_LOG="$ARTIFACT_DIR/runtime/raw-sim-log.txt"
+    rm -f "$RAW_SIM_LOG"
+    xcrun simctl spawn "$UDID" log stream --predicate 'process == "Shortcuts" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver"' --level debug --style compact > "$RAW_SIM_LOG" 2>&1 &
+    SIM_LOG_PID=$!
 
     rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
     (
@@ -819,6 +825,11 @@ PY
         kill "$HANDSHAKE_PID" 2>/dev/null || true
         wait "$HANDSHAKE_PID" 2>/dev/null || true
         HANDSHAKE_PID=""
+      fi
+      if [ -n "${SIM_LOG_PID:-}" ]; then
+        kill "$SIM_LOG_PID" 2>/dev/null || true
+        wait "$SIM_LOG_PID" 2>/dev/null || true
+        SIM_LOG_PID=""
       fi
     }
     trap cleanup_handshake EXIT
@@ -1017,12 +1028,11 @@ PY
         sleep 1
       done
 
-      if [ "${FOUND_NONCE:-no}" != "yes" ]; then
-        xcrun simctl spawn "$UDID" log show --last 3m --style compact --predicate 'process == "Shortcuts" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver"' 2>/dev/null | \
-          python3 - "$UDID" "$ROOT_DIR" "$ARTIFACT_DIR/runtime/shortcuts-log-excerpt.txt" <<'PY' || true
+      if [ "${FOUND_NONCE:-no}" != "yes" ] && [ -f "${RAW_SIM_LOG:-}" ]; then
+        python3 - "$UDID" "$ROOT_DIR" "$RAW_SIM_LOG" "$ARTIFACT_DIR/runtime/shortcuts-log-excerpt.txt" <<'PY' || true
 import re, sys
-udid, root_dir, out_path = sys.argv[1:4]
-lines = sys.stdin.read().splitlines()
+udid, root_dir, in_path, out_path = sys.argv[1:5]
+lines = open(in_path, encoding="utf-8", errors="replace").read().splitlines()
 forbidden = re.compile(r"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._\-]+|AppleID|iCloudToken)")
 uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
 users_re = re.compile(r"/Users/[^/\s]+")
@@ -1036,12 +1046,13 @@ for ln in lines:
     ln = uuid_re.sub("<UUID>", ln)
     if forbidden.search(ln):
         continue
-    if any(k in ln.lower() for k in ("error", "fail", "warn", "shortcut", "callback", "cherriqa", "openurl", "denied", "allow", "workflow", "qa-functional")):
+    if any(k in ln.lower() for k in ("error", "fail", "warn", "shortcut", "callback", "cherriqa", "openurl", "denied", "allow", "workflow", "qa-functional", "trigger", "scene", "x-callback")):
         filtered.append(ln[:300])
 with open(out_path, "w", encoding="utf-8") as f:
-    f.write("\n".join(filtered[-80:]) + ("\n" if filtered else ""))
+    f.write("\n".join(filtered[-100:]) + ("\n" if filtered else ""))
 PY
       fi
+      rm -f "${RAW_SIM_LOG:-}"
 
       # Evaluate callback & NDJSON trace using strict oracle rules (never hardcode BLOCKED_IMPORT!)
       RUNTIME_EVAL="$(python3 - "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" <<'PY'
@@ -1133,8 +1144,8 @@ PY
   fi
 fi
 
-# Remove compiled binary and raw .shortcut build intermediates before artifact upload
-rm -rf "$ARTIFACT_DIR/builds"
+# Remove compiled binary, raw sim log, and raw .shortcut build intermediates before artifact upload
+rm -rf "$ARTIFACT_DIR/builds" "${RAW_SIM_LOG:-}"
 
 # Write output-assertions.json and runtime-trace.jsonl
 python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" <<'PY'

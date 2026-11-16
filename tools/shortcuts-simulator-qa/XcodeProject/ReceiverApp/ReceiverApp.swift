@@ -259,6 +259,12 @@ struct CherriSimulatorQAReceiverApp: App {
                 store.handleIncomingURL(u)
             }
         }
+        if let idx = args.firstIndex(of: "--trigger-shortcut-url"), idx + 1 < args.count,
+           let targetURL = URL(string: args[idx + 1]) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                UIApplication.shared.open(targetURL, options: [:], completionHandler: nil)
+            }
+        }
         if let idx = args.firstIndex(of: "--share-shortcut-path"), idx + 1 < args.count {
             let path = args[idx + 1]
             let url = URL(fileURLWithPath: path)
