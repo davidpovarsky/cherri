@@ -406,11 +406,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 try? expectedShortcutName.data(using: .utf8)?.write(to: reqURL, options: .atomic)
 
                 // Wait purely on filesystem for host simctl openurl so AX queries never starve SpringBoard/Shortcuts IPC
-                _ = waitForHandshakeFile(ackURL, timeout: 95.0)
+                _ = waitForHandshakeFile(ackURL, timeout: 60.0)
                 foundSheetBtn = pollImportSheetButton(timeout: 18.0)
                 if foundSheetBtn == nil {
                     try? expectedShortcutName.data(using: .utf8)?.write(to: retryReqURL, options: .atomic)
-                    _ = waitForHandshakeFile(retryAckURL, timeout: 85.0)
+                    _ = waitForHandshakeFile(retryAckURL, timeout: 80.0)
                     foundSheetBtn = pollImportSheetButton(timeout: 20.0)
                 }
             }

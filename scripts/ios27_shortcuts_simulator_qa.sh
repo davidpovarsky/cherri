@@ -1042,39 +1042,22 @@ PY
       grep -Ev "DVTAssertions|nativeArchitecture|Apple Watch|SimDevice :|Object:[[:space:]]+<DVTiPhoneSimulator|Method:[[:space:]]+-nativeArchitecture|Thread:[[:space:]]+<_NSMainThread|feedbackassistant\.apple\.com|^[[:space:]]*\)[[:space:]]*$" "$ARTIFACT_DIR/builds/xcodebuild-part1.log" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | tail -n 25 || true
     fi
 
-    # Stage 3.2: Pre-XCTest outside-runner signed .shortcut import so simctl openurl file:// never contends with active AX/XCTest
-    if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
-      ensure_sim_session_ready "$UDID"
-      echo "=== Phase 3b: Pre-XCTest outside-runner signed .shortcut import openurl ==="
-      run_cmd_timeout 20 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
-      sleep 4
-      PRE_IMP_METHOD="file_primary"
-      PRE_IMP_T0=$SECONDS
-      PRE_IMP_RC=0
-      PRE_IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 50)" || PRE_IMP_RC=$?
-      PRE_IMP_DT=$((SECONDS - PRE_IMP_T0))
-      if [ "$PRE_IMP_RC" -ne 0 ]; then
-        TMP_SIGNED_IMPORT="/tmp/cherri-import-${RUN_ID}.shortcut"
-        cp -f "$SIGNED_FILE" "$TMP_SIGNED_IMPORT"
-        PRE_IMP_METHOD="file_tmp"
-        _t1=$SECONDS
-        PRE_IMP2_RC=0
-        PRE_IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$TMP_SIGNED_IMPORT" 1 "" 0 35)" || PRE_IMP2_RC=$?
-        _dt1=$((SECONDS - _t1))
-        PRE_IMP_RC=$PRE_IMP2_RC
-        PRE_IMP_DT=$((PRE_IMP_DT + _dt1))
-        PRE_IMP_OUT="${PRE_IMP_OUT} | tmp=${PRE_IMP2_OUT}"
-        rm -f "$TMP_SIGNED_IMPORT"
-      fi
-      if [ "$PRE_IMP_RC" -ne 0 ]; then
-        PRE_IMP_METHOD="localhost_import_scheme_signed_aea1"
-        _t2=$SECONDS
-        PRE_IMP3_OUT="$(python3 - "$UDID" "$SIGNED_FILE" "$EXPECTED_SHORTCUT_NAME" <<'PY'
-import functools, http.server, os, signal, socketserver, subprocess, sys, threading, urllib.parse
+    # Save Part1 self-test callback store immediately in case Simulator resprings/migrates containers before Phase 5
+    PART1_RECEIVER_DATA_DIR="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver data 2>/dev/null || true)"
+    if [ -n "$PART1_RECEIVER_DATA_DIR" ] && [ -f "$PART1_RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
+      cp "$PART1_RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events-part1.json" || true
+    fi
 
-udid, signed_path, name = sys.argv[1:4]
-serve_dir = os.path.dirname(signed_path)
-fname = os.path.basename(signed_path)
+    import_signed_via_localhost_http() {
+      local target_udid="$1"
+      local signed_path="$2"
+      local sc_name="$3"
+      python3 - "$target_udid" "$signed_path" "$sc_name" <<'PY'
+import functools, http.server, os, signal, socketserver, subprocess, sys, threading, time, urllib.parse
+
+udid, spath, name = sys.argv[1:4]
+serve_dir = os.path.dirname(spath)
+fname = os.path.basename(spath)
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
     def guess_type(self, path):
@@ -1093,29 +1076,79 @@ try:
     rc = p.wait(timeout=25)
     out = (p.stdout.read() or b"").decode("utf-8", errors="replace")
 except subprocess.TimeoutExpired:
-    try: os.killpg(p.pid, signal.SIGKILL)
-    except Exception: pass
+    try:
+        os.killpg(p.pid, signal.SIGKILL)
+    except Exception:
+        pass
     rc = 124
     out = "localhost import-shortcut timed out after 25s"
-import time
 time.sleep(5)
 httpd.shutdown()
 httpd.server_close()
-print(f"rc={rc}")
-print(out.strip())
+print(f"rc={rc} {out.strip()}")
 sys.exit(rc)
 PY
-        )" || PRE_IMP3_RC=$?
-        PRE_IMP3_RC="${PRE_IMP3_RC:-0}"
+    }
+
+    # Stage 3.2: Pre-XCTest outside-runner signed .shortcut import so simctl openurl file:// never contends with active AX/XCTest
+    if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
+      ensure_sim_session_ready "$UDID"
+      echo "=== Phase 3b: Pre-XCTest outside-runner signed .shortcut import openurl ==="
+      run_cmd_timeout 20 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+      sleep 4
+      PRE_IMP_METHOD="file_primary"
+      PRE_IMP_T0=$SECONDS
+      PRE_IMP_RC=0
+      PRE_IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 45)" || PRE_IMP_RC=$?
+      PRE_IMP_DT=$((SECONDS - PRE_IMP_T0))
+      if [ "$PRE_IMP_RC" -ne 0 ]; then
+        TMP_SIGNED_IMPORT="/tmp/cherri-import-${RUN_ID}.shortcut"
+        cp -f "$SIGNED_FILE" "$TMP_SIGNED_IMPORT"
+        PRE_IMP_METHOD="file_tmp"
+        _t1=$SECONDS
+        PRE_IMP2_RC=0
+        PRE_IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$TMP_SIGNED_IMPORT" 1 "" 0 30)" || PRE_IMP2_RC=$?
+        _dt1=$((SECONDS - _t1))
+        PRE_IMP_RC=$PRE_IMP2_RC
+        PRE_IMP_DT=$((PRE_IMP_DT + _dt1))
+        PRE_IMP_OUT="${PRE_IMP_OUT} | tmp=${PRE_IMP2_OUT}"
+        rm -f "$TMP_SIGNED_IMPORT"
+      fi
+      if [ "$PRE_IMP_RC" -ne 0 ]; then
+        PRE_IMP_METHOD="localhost_import_scheme_signed_aea1"
+        _t2=$SECONDS
+        PRE_IMP3_RC=0
+        PRE_IMP3_OUT="$(import_signed_via_localhost_http "$UDID" "$SIGNED_FILE" "$EXPECTED_SHORTCUT_NAME" 2>&1)" || PRE_IMP3_RC=$?
         _dt2=$((SECONDS - _t2))
         PRE_IMP_RC=$PRE_IMP3_RC
         PRE_IMP_DT=$((PRE_IMP_DT + _dt2))
         PRE_IMP_OUT="${PRE_IMP_OUT} | http_scheme=${PRE_IMP3_OUT}"
       fi
-      printf 'rc=%s\nmethod=%s durationSec=%s %s\n' "$PRE_IMP_RC" "$PRE_IMP_METHOD" "$PRE_IMP_DT" "${PRE_IMP_OUT:0:180}" > "$ARTIFACT_DIR/editor/pre-import-ack.txt"
-      echo "Phase 3b pre-import ($PRE_IMP_METHOD) rc=$PRE_IMP_RC durationSec=${PRE_IMP_DT}s out=$(printf '%s' "$PRE_IMP_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-180)"
       sleep 2
       run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/pre-import-screen.png" >/dev/null 2>&1 || true
+      PRE_SCREEN_BYTES=0
+      if [ -f "$ARTIFACT_DIR/editor/pre-import-screen.png" ]; then
+        PRE_SCREEN_BYTES="$(wc -c < "$ARTIFACT_DIR/editor/pre-import-screen.png" | tr -d '[:space:]')"
+      fi
+      if [ "${PRE_SCREEN_BYTES:-0}" -lt 120000 ]; then
+        echo "Phase 3b detected boot/respring logo screen (${PRE_SCREEN_BYTES} B); waiting 15s for SpringBoard settle and re-dispatching..."
+        sleep 15
+        run_cmd_timeout 20 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+        sleep 3
+        _t3=$SECONDS
+        PRE_IMP_RETRY_RC=0
+        PRE_IMP_RETRY_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 40)" || PRE_IMP_RETRY_RC=$?
+        PRE_IMP_DT=$((PRE_IMP_DT + SECONDS - _t3))
+        if [ "$PRE_IMP_RETRY_RC" -eq 0 ]; then
+          PRE_IMP_METHOD="${PRE_IMP_METHOD}_post_respring_retry"
+          PRE_IMP_RC=0
+          PRE_IMP_OUT="${PRE_IMP_OUT} | post_respring=ok"
+        fi
+        sleep 2
+        run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/pre-import-screen.png" >/dev/null 2>&1 || true
+      fi
+      printf 'rc=%s\nmethod=%s durationSec=%s %s\n' "$PRE_IMP_RC" "$PRE_IMP_METHOD" "$PRE_IMP_DT" "${PRE_IMP_OUT:0:180}" > "$ARTIFACT_DIR/editor/pre-import-ack.txt"
+      echo "Phase 3b pre-import ($PRE_IMP_METHOD) rc=$PRE_IMP_RC durationSec=${PRE_IMP_DT}s out=$(printf '%s' "$PRE_IMP_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-180)"
     fi
     (
       import_dispatched=0
@@ -1127,7 +1160,7 @@ PY
           if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
             _t0=$SECONDS
             IMP_RC=0
-            IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 70)" || IMP_RC=$?
+            IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 45)" || IMP_RC=$?
             _dt=$((SECONDS - _t0))
             printf 'rc=%s\ndurationSec=%s %s\n' "$IMP_RC" "$_dt" "${IMP_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
           else
@@ -1139,7 +1172,13 @@ PY
           if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
             _t0=$SECONDS
             IMP2_RC=0
-            IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 70)" || IMP2_RC=$?
+            IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 35)" || IMP2_RC=$?
+            if [ "$IMP2_RC" -ne 0 ]; then
+              IMP2_HTTP_RC=0
+              IMP2_HTTP_OUT="$(import_signed_via_localhost_http "$UDID" "$SIGNED_FILE" "$EXPECTED_SHORTCUT_NAME" 2>&1)" || IMP2_HTTP_RC=$?
+              IMP2_RC=$IMP2_HTTP_RC
+              IMP2_OUT="${IMP2_OUT} | http_scheme=${IMP2_HTTP_OUT}"
+            fi
             _dt=$((SECONDS - _t0))
             printf 'rc=%s\ndurationSec=%s %s\n' "$IMP2_RC" "$_dt" "${IMP2_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import-retry.txt"
           fi
@@ -1279,15 +1318,19 @@ PY
     rm -rf "$XCRESULT_PATH" "$XCRESULT_PART1_PATH" "$PART1_JSON" "$PART2_JSON"
     rm -f "$ARTIFACT_DIR/tests/xcodebuild-test.log"
 
-    # Extract receiver callback events from app data container
+    # Extract receiver callback events from app data container (or Part1 snapshot if Simulator resprung)
     RECEIVER_DATA_DIR="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver data 2>/dev/null || true)"
     if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
       cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
+      GATE_CALLBACK_CAPTURED="PASS"
+    elif [ -f "$ARTIFACT_DIR/runtime/callback-events-part1.json" ]; then
+      cp "$ARTIFACT_DIR/runtime/callback-events-part1.json" "$ARTIFACT_DIR/runtime/callback-events.json"
       GATE_CALLBACK_CAPTURED="PASS"
     else
       echo "[]" > "$ARTIFACT_DIR/runtime/callback-events.json"
       GATE_CALLBACK_CAPTURED="FAIL_UI"
     fi
+    rm -f "$ARTIFACT_DIR/runtime/callback-events-part1.json"
 
     # Evaluate import & editor capture gates from editor-action-coverage.json
     if [ -f "$ARTIFACT_DIR/editor/editor-action-coverage.json" ]; then
