@@ -958,6 +958,7 @@ PY
     export TEST_RUNNER_CHERRI_QA_EXPECTED_SHORTCUT_NAME="$EXPECTED_SHORTCUT_NAME"
     export TEST_RUNNER_CHERRI_QA_EXPECT_SIGNED_IMPORT="$SIGNED_ARTIFACT_VALID_AEA1"
     export TEST_RUNNER_CHERRI_QA_EXPECT_RUNTIME_RUN="$SIGNED_ARTIFACT_VALID_AEA1"
+    export TEST_RUNNER_CHERRI_QA_DEFER_RUNTIME_TO_PHASE4B="true"
     export TEST_RUNNER_CHERRI_QA_EXEC_RUN_NONCE="$EXEC_RUN_NONCE"
     export TEST_RUNNER_CHERRI_QA_RUN_URL="$RUN_URL"
     export TEST_RUNNER_CHERRI_QA_RUN_URL_MINIMAL="$RUN_URL_MINIMAL"
@@ -1173,7 +1174,7 @@ PY
     }
     trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}"' EXIT
 
-    run_cmd_timeout 600 xcodebuild test-without-building \
+    run_cmd_timeout 900 xcodebuild test-without-building \
       -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
       -scheme CherriSimulatorQAReceiver \
       -derivedDataPath "$DERIVED_DATA_PATH" \

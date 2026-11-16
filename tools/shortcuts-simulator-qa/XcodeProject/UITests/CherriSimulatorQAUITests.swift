@@ -804,16 +804,71 @@ final class CherriSimulatorQAUITests: XCTestCase {
             previousDigest = digest
             previousLastY = lastCardY
 
-            let startCoord = scrollElement.coordinate(withNormalizedOffset: CGVector(dx: 0.45, dy: 0.78))
-            let endCoord = scrollElement.coordinate(withNormalizedOffset: CGVector(dx: 0.45, dy: 0.22))
+            let startCoord = scrollElement.coordinate(withNormalizedOffset: CGVector(dx: 0.45, dy: 0.84))
+            let endCoord = scrollElement.coordinate(withNormalizedOffset: CGVector(dx: 0.45, dy: 0.16))
             startCoord.press(forDuration: 0.05, thenDragTo: endCoord)
             Thread.sleep(forTimeInterval: 0.9)
         }
 
-        // Step 5: Coordinated live runtime x-callback-url execution while UI test can confirm any Open/Allow dialog
         var runtimeTriggerDispatched = false
         var runtimeCallbackObservedInUI = false
-        if expectRuntimeRun && (shortcutExistsInLibrary || importConsentTapped) {
+
+        func writeEditorArtifacts() {
+            let hasTopAnchor = orderedAnchors.contains(where: { $0.contains("ANCHOR_CARD_01") || $0.contains("ANCHOR_RTL_01") })
+            let hasBottomAnchor = orderedAnchors.contains(where: { $0.contains("ANCHOR_CARD_28") || $0.contains("ANCHOR_RTL_01") })
+
+            let captureStatus: String
+            if !foregroundVerified {
+                captureStatus = "BLOCKED_SIMULATOR_APP"
+            } else if editorOpened && shortcutExistsInLibrary && editorIdentityVerified && hasTopAnchor && hasBottomAnchor && !orderedActionCards.isEmpty {
+                captureStatus = "EDITOR_CAPTURE_COMPLETE"
+            } else {
+                captureStatus = "PARTIAL_EDITOR_CAPTURE"
+            }
+
+            let coverage = EditorActionCoverageReport(
+                schemaVersion: "1.4",
+                shortcutLaunched: launched,
+                shortcutForegroundVerified: foregroundVerified,
+                expectedShortcutName: expectedShortcutName,
+                importConsentButtonTapped: importConsentTapped,
+                importSheetSnapshotCaptured: importSheetCaptured,
+                shortcutExistsInLibrary: shortcutExistsInLibrary,
+                libraryShortcutCells: libraryCells,
+                editorOpened: editorOpened,
+                editorIdentityVerified: editorIdentityVerified,
+                editorHeaderLabels: headerLabels,
+                scrollContainerFound: scrollType != nil,
+                scrollContainerType: scrollType,
+                scrollContainerFrame: scrollFrame,
+                totalPagesCaptured: screenshotManifest.count,
+                maxEditorPages: maxPages,
+                captureStatus: captureStatus,
+                detectedActionCards: orderedActionCards,
+                detectedAnchors: orderedAnchors,
+                bottomReachedEvidence: bottomEvidence,
+                runtimeTriggerDispatched: runtimeTriggerDispatched,
+                runtimeCallbackObservedInUI: runtimeCallbackObservedInUI
+            )
+
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+
+            if let treeData = try? encoder.encode(allMergedNodes) {
+                try? treeData.write(to: outDir.appendingPathComponent("editor-tree.json"), options: .atomic)
+            }
+            if let manifestData = try? encoder.encode(screenshotManifest) {
+                try? manifestData.write(to: outDir.appendingPathComponent("screenshots-manifest.json"), options: .atomic)
+            }
+            if let covData = try? encoder.encode(coverage) {
+                try? covData.write(to: outDir.appendingPathComponent("editor-action-coverage.json"), options: .atomic)
+            }
+        }
+        writeEditorArtifacts()
+
+        // Step 5: Coordinated live runtime x-callback-url execution (deferred to Phase 4b ad-hoc signed ReceiverApp when configured)
+        let deferRuntimeToPhase4b = (ProcessInfo.processInfo.environment["CHERRI_QA_DEFER_RUNTIME_TO_PHASE4B"] == "true")
+        if !deferRuntimeToPhase4b && expectRuntimeRun && (shortcutExistsInLibrary || importConsentTapped) {
             let doneBtn = shortcuts.buttons["Done"].firstMatch
             if doneBtn.exists && doneBtn.isHittable {
                 doneBtn.tap()
@@ -930,56 +985,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             }
         }
 
-        let hasTopAnchor = orderedAnchors.contains(where: { $0.contains("ANCHOR_CARD_01") || $0.contains("ANCHOR_RTL_01") })
-        let hasBottomAnchor = orderedAnchors.contains(where: { $0.contains("ANCHOR_CARD_28") || $0.contains("ANCHOR_RTL_01") })
-
-        let captureStatus: String
-        if !foregroundVerified {
-            captureStatus = "BLOCKED_SIMULATOR_APP"
-        } else if editorOpened && shortcutExistsInLibrary && editorIdentityVerified && hasTopAnchor && hasBottomAnchor && !orderedActionCards.isEmpty {
-            captureStatus = "EDITOR_CAPTURE_COMPLETE"
-        } else {
-            captureStatus = "PARTIAL_EDITOR_CAPTURE"
-        }
-
-        let coverage = EditorActionCoverageReport(
-            schemaVersion: "1.4",
-            shortcutLaunched: launched,
-            shortcutForegroundVerified: foregroundVerified,
-            expectedShortcutName: expectedShortcutName,
-            importConsentButtonTapped: importConsentTapped,
-            importSheetSnapshotCaptured: importSheetCaptured,
-            shortcutExistsInLibrary: shortcutExistsInLibrary,
-            libraryShortcutCells: libraryCells,
-            editorOpened: editorOpened,
-            editorIdentityVerified: editorIdentityVerified,
-            editorHeaderLabels: headerLabels,
-            scrollContainerFound: scrollType != nil,
-            scrollContainerType: scrollType,
-            scrollContainerFrame: scrollFrame,
-            totalPagesCaptured: screenshotManifest.count,
-            maxEditorPages: maxPages,
-            captureStatus: captureStatus,
-            detectedActionCards: orderedActionCards,
-            detectedAnchors: orderedAnchors,
-            bottomReachedEvidence: bottomEvidence,
-            runtimeTriggerDispatched: runtimeTriggerDispatched,
-            runtimeCallbackObservedInUI: runtimeCallbackObservedInUI
-        )
-
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-
-        if let treeData = try? encoder.encode(allMergedNodes) {
-            try? treeData.write(to: outDir.appendingPathComponent("editor-tree.json"), options: .atomic)
-        }
-        if let manifestData = try? encoder.encode(screenshotManifest) {
-            try? manifestData.write(to: outDir.appendingPathComponent("screenshots-manifest.json"), options: .atomic)
-        }
-        if let covData = try? encoder.encode(coverage) {
-            try? covData.write(to: outDir.appendingPathComponent("editor-action-coverage.json"), options: .atomic)
-        }
-
+        writeEditorArtifacts()
         XCTAssertTrue(launched && foregroundVerified, "Apple Shortcuts app (com.apple.shortcuts) must launch in foreground on Simulator")
     }
 
