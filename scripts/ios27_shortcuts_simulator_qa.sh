@@ -924,12 +924,14 @@ PY
     }
     trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}"' EXIT
 
+    DERIVED_DATA_PATH="$ARTIFACT_DIR/builds/DerivedData"
     XCRESULT_PATH="$ARTIFACT_DIR/tests/CherriSimulatorQA.xcresult"
-    rm -rf "$XCRESULT_PATH"
+    rm -rf "$XCRESULT_PATH" "$DERIVED_DATA_PATH"
 
     run_cmd_timeout 720 xcodebuild test \
       -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
       -scheme CherriSimulatorQAReceiver \
+      -derivedDataPath "$DERIVED_DATA_PATH" \
       -destination "platform=iOS Simulator,id=$UDID" \
       -resultBundlePath "$XCRESULT_PATH" \
       CODE_SIGNING_ALLOWED=NO \
@@ -1113,38 +1115,63 @@ PY
       fi
 
       if [ "$FOUND_NONCE" != "yes" ]; then
-        echo "=== Phase 4b: Post-XCTest simctl openurl dispatch ($TARGET_FIXTURE_ID) ==="
-        # Now that xcodebuild test / UITests.xctrunner has exited (automationmode=0), dispatch outside XCUITest like ios27_runtime_poc.sh
+        echo "=== Phase 4b: Post-XCTest ReceiverApp x-callback-url dispatch ($TARGET_FIXTURE_ID) ==="
+        # Outside UITests.xctrunner (automationmode=0), launch ReceiverApp so UIApplication.shared.open passes sourceApplication appIdentifier
         xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction") AND NOT (subsystem == "com.apple.Accessibility") AND NOT (subsystem == "com.apple.defaults")' --level info --style compact > "$PHASE4_SIM_LOG" 2>&1 &
         PHASE4_LOG_PID=$!
         sleep 1
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+        run_cmd_timeout 15 xcrun simctl terminate "$UDID" org.cherrilang.qa.Receiver >/dev/null 2>&1 || true
         sleep 1
-        simctl_openurl_resilient "$UDID" "$RUN_URL" 2 >/dev/null 2>&1 || true
+        run_cmd_timeout 25 xcrun simctl launch "$UDID" org.cherrilang.qa.Receiver --trigger-shortcut-url "$RUN_URL" >/dev/null 2>&1 || true
         for poll_idx in $(seq 1 15); do
           if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
             cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
             FOUND_NONCE="$(python3 -c 'import json,sys; evs=json.load(open(sys.argv[1])); print("yes" if any((not e.get("receiverSelfTest")) and e.get("runId")==sys.argv[2] for e in evs) else "no")' "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" 2>/dev/null || echo "no")"
             if [ "$FOUND_NONCE" = "yes" ]; then
+              run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/runtime-callback.png" >/dev/null 2>&1 || true
               break
             fi
           fi
           sleep 1
         done
-        run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-openurl.png" >/dev/null 2>&1 || true
 
         if [ "$FOUND_NONCE" != "yes" ]; then
-          echo "=== Phase 4c: Post-XCTest plain run-shortcut fallback probe ==="
-          simctl_openurl_resilient "$UDID" "$RUN_URL_PLAIN" 2 >/dev/null 2>&1 || true
-          sleep 6
-          run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-plain-url.png" >/dev/null 2>&1 || true
+          run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-receiver-openurl.png" >/dev/null 2>&1 || true
+          echo "=== Phase 4b-confirm: Checking for Shortcuts open/allow consent dialog via test-without-building ==="
+          CONFIRM_XCRESULT="$ARTIFACT_DIR/tests/CherriSimulatorQAConfirm.xcresult"
+          rm -rf "$CONFIRM_XCRESULT"
+          echo "1" > "$ARTIFACT_DIR/editor/confirm-dialog-mode.txt"
+          TEST_RUNNER_CHERRI_QA_DIALOG_CONFIRM_ONLY=1 run_cmd_timeout 120 xcodebuild test-without-building \
+            -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
+            -scheme CherriSimulatorQAReceiver \
+            -derivedDataPath "$DERIVED_DATA_PATH" \
+            -destination "platform=iOS Simulator,id=$UDID" \
+            -only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test04ConfirmPendingRuntimeDialog \
+            -resultBundlePath "$CONFIRM_XCRESULT" \
+            CODE_SIGNING_ALLOWED=NO \
+            >> "$ARTIFACT_DIR/tests/xcodebuild-test.log" 2>&1 || true
+          rm -rf "$CONFIRM_XCRESULT" "$ARTIFACT_DIR/editor/confirm-dialog-mode.txt"
+          for poll_idx in $(seq 1 10); do
+            if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
+              cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
+              FOUND_NONCE="$(python3 -c 'import json,sys; evs=json.load(open(sys.argv[1])); print("yes" if any((not e.get("receiverSelfTest")) and e.get("runId")==sys.argv[2] for e in evs) else "no")' "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" 2>/dev/null || echo "no")"
+              if [ "$FOUND_NONCE" = "yes" ]; then
+                if [ ! -f "$ARTIFACT_DIR/editor/runtime-callback.png" ]; then
+                  run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/runtime-callback.png" >/dev/null 2>&1 || true
+                fi
+                break
+              fi
+            fi
+            sleep 1
+          done
         fi
 
         if [ -n "${PHASE4_LOG_PID:-}" ]; then
           stop_bg_pid "$PHASE4_LOG_PID"
           PHASE4_LOG_PID=""
         fi
-        echo "=== Phase 4b/c finished (FOUND_NONCE=$FOUND_NONCE) ==="
+        echo "=== Phase 4b finished (FOUND_NONCE=$FOUND_NONCE) ==="
       fi
 
       # Evaluate callback & NDJSON trace using strict oracle rules (never hardcode BLOCKED_IMPORT!)
@@ -1255,7 +1282,10 @@ noise = (
     "com.apple.dt.xctest", "com.apple.xpc.transaction", "XC_kAXXCAttribute",
     "com.apple.runningboard:monitor", "com.apple.siri:Client",
     "com.apple.launchservices:datasep", "application record search init",
-    "com.apple.appintents:Connection", "com.apple.shortcuts:AppIntentsMetadata"
+    "com.apple.appintents:Connection", "com.apple.shortcuts:AppIntentsMetadata",
+    "Realizing settings extension", "SceneExtension", "FBSScene", "UIScene",
+    "UIKeyboard", "RBSAssertion", "com.apple.runningboard", "CoreAnalytics",
+    "container_create_or_lookup_app_group_path"
 )
 uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
 users_re = re.compile(r"/Users/[^/\s]+")

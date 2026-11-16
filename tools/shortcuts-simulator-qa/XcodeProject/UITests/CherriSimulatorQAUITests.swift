@@ -901,68 +901,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 }
             }
 
-            pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(25.0))
+            pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(15.0))
             if !runtimeCallbackObservedInUI && !capturedMidway {
                 capturedMidway = true
                 let midShot = XCUIScreen.main.screenshot()
                 try? midShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-midway.png"), options: .atomic)
-                if let runURLStr = ProcessInfo.processInfo.environment["CHERRI_QA_RUN_URL"], !runURLStr.isEmpty {
-                    // Attempt 2: cold-terminate Shortcuts to drop any iPadOS multi-window/hidden scene before ReceiverApp opens RUN_URL cleanly
-                    shortcuts.terminate()
-                    Thread.sleep(forTimeInterval: 1.5)
-                    receiver.launchArguments = ["--trigger-shortcut-url", runURLStr]
-                    receiver.launch()
-                    runtimeTriggerDispatched = true
-                    Thread.sleep(forTimeInterval: 2.5)
-                    pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(30.0))
-                }
-            }
-            if !runtimeCallbackObservedInUI {
-                if let minimalURL = ProcessInfo.processInfo.environment["CHERRI_QA_RUN_URL_MINIMAL"], !minimalURL.isEmpty {
-                    // Attempt 3: minimal x-callback-url without input=text/text params
-                    shortcuts.terminate()
-                    Thread.sleep(forTimeInterval: 1.5)
-                    receiver.launchArguments = ["--trigger-shortcut-url", minimalURL]
-                    receiver.launch()
-                    Thread.sleep(forTimeInterval: 2.5)
-                    pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(25.0))
-                }
-            }
-            if !runtimeCallbackObservedInUI {
-                if let plainURL = ProcessInfo.processInfo.environment["CHERRI_QA_RUN_URL_PLAIN"], !plainURL.isEmpty {
-                    // Attempt 4 (diag): plain shortcuts://run-shortcut?name=... scheme
-                    shortcuts.terminate()
-                    Thread.sleep(forTimeInterval: 1.5)
-                    receiver.launchArguments = ["--trigger-shortcut-url", plainURL]
-                    receiver.launch()
-                    Thread.sleep(forTimeInterval: 2.5)
-                    pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(15.0))
-                    let plainShot = XCUIScreen.main.screenshot()
-                    try? plainShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-plain-scheme-diag.png"), options: .atomic)
-                }
-            }
-            if !runtimeCallbackObservedInUI {
-                // Attempt 5 (diag): tap the small 29x29 Play triangle inside the shortcut card in All Shortcuts
-                if shortcuts.state != .runningForeground {
-                    shortcuts.activate()
-                    _ = shortcuts.wait(for: .runningForeground, timeout: 10)
-                    Thread.sleep(forTimeInterval: 1.5)
-                }
-                let cardCell = shortcuts.cells.matching(NSPredicate(format: "label BEGINSWITH %@", expectedShortcutName)).firstMatch
-                let innerPlayBtn = cardCell.buttons["Play"].firstMatch
-                if innerPlayBtn.exists && innerPlayBtn.isHittable {
-                    innerPlayBtn.tap()
-                    Thread.sleep(forTimeInterval: 8.0)
-                    for targetApp in [springboard, shortcuts] {
-                        let btn = targetApp.buttons.matching(confirmPredicate).firstMatch
-                        if btn.exists && btn.isHittable {
-                            btn.tap()
-                            Thread.sleep(forTimeInterval: 4.0)
-                        }
-                    }
-                    let playDiagShot = XCUIScreen.main.screenshot()
-                    try? playDiagShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-play-tap-diag.png"), options: .atomic)
-                }
             }
             if !runtimeCallbackObservedInUI {
                 let toShot = XCUIScreen.main.screenshot()
@@ -1049,5 +992,42 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertEqual(sanitizeUIString("ANCHOR_CARD_01_TOP_HEADER"), "ANCHOR_CARD_01_TOP_HEADER")
         XCTAssertEqual(sanitizeUIString("CHERRI_QA_RESULT:ok:count=2:mode=v2"), "CHERRI_QA_RESULT:ok:count=2:mode=v2")
         XCTAssertEqual(sanitizeUIString("All Shortcuts"), "All Shortcuts")
+    }
+
+    func test04ConfirmPendingRuntimeDialog() throws {
+        guard let outputDir = ProcessInfo.processInfo.environment["CHERRI_QA_SHARED_OUTPUT_DIR"], !outputDir.isEmpty else { return }
+        let outDir = URL(fileURLWithPath: outputDir, isDirectory: true)
+        let sentinel = outDir.appendingPathComponent("confirm-dialog-mode.txt")
+        guard ProcessInfo.processInfo.environment["CHERRI_QA_DIALOG_CONFIRM_ONLY"] == "1" || FileManager.default.fileExists(atPath: sentinel.path) else { return }
+        let shortcuts = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let receiver = XCUIApplication(bundleIdentifier: "org.cherrilang.qa.Receiver")
+        let execRunNonce = ProcessInfo.processInfo.environment["CHERRI_QA_EXEC_RUN_NONCE"] ?? ""
+        let confirmPredicate = NSPredicate(format: "label IN {'Always Allow', 'Allow', 'Open', 'Allow Once', 'Run', 'Continue', 'OK'}")
+        let deadline = Date().addingTimeInterval(22.0)
+
+        while Date() < deadline {
+            for targetApp in [springboard, shortcuts] {
+                let btn = targetApp.buttons.matching(confirmPredicate).firstMatch
+                if btn.exists && btn.isHittable {
+                    btn.tap()
+                    Thread.sleep(forTimeInterval: 1.5)
+                }
+            }
+            if receiver.state == .runningForeground {
+                let runIdLabel = receiver.staticTexts["qa.receiver.lastRunId"]
+                let statusLabel = receiver.staticTexts["qa.receiver.status"]
+                let matchesNonce = execRunNonce.isEmpty || (runIdLabel.exists && runIdLabel.label.contains(execRunNonce))
+                let completedStatus = statusLabel.exists && (statusLabel.label.contains("SUCCESS") || statusLabel.label.contains("ERROR") || statusLabel.label.contains("CANCELLED"))
+                if matchesNonce && completedStatus {
+                    let rtShot = XCUIScreen.main.screenshot()
+                    try? rtShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-callback.png"), options: .atomic)
+                    return
+                }
+            }
+            Thread.sleep(forTimeInterval: 1.5)
+        }
+        let afterShot = XCUIScreen.main.screenshot()
+        try? afterShot.pngRepresentation.write(to: outDir.appendingPathComponent("phase4-after-confirm.png"), options: .atomic)
     }
 }
