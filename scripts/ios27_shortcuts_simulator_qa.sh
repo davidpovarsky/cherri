@@ -812,6 +812,21 @@ x_error = f"cherriqa://error?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutNam
 print(f"shortcuts://x-callback-url/run-shortcut?name={q(name)}&input=text&text=CHERRI_QA_INPUT&x-source=CherriSimulatorQAReceiver&x-success={q(x_success, safe='')}&x-cancel={q(x_cancel, safe='')}&x-error={q(x_error, safe='')}")
 PY
 )"
+    RUN_URL_MINIMAL="$(python3 - "$EXPECTED_SHORTCUT_NAME" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" <<'PY'
+import sys, urllib.parse
+name, run_nonce, fid = sys.argv[1:4]
+q = urllib.parse.quote
+x_success = f"cherriqa://success?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
+x_cancel = f"cherriqa://cancel?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
+x_error = f"cherriqa://error?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
+print(f"shortcuts://x-callback-url/run-shortcut?name={q(name)}&x-source=CherriSimulatorQAReceiver&x-success={q(x_success, safe='')}&x-cancel={q(x_cancel, safe='')}&x-error={q(x_error, safe='')}")
+PY
+)"
+    RUN_URL_PLAIN="$(python3 - "$EXPECTED_SHORTCUT_NAME" <<'PY'
+import sys, urllib.parse
+print(f"shortcuts://run-shortcut?name={urllib.parse.quote(sys.argv[1])}")
+PY
+)"
 
     export TEST_RUNNER_CHERRI_QA_SHARED_OUTPUT_DIR="$ARTIFACT_DIR/editor"
     export TEST_RUNNER_CHERRI_QA_MAX_EDITOR_PAGES="$MAX_EDITOR_PAGES"
@@ -820,10 +835,12 @@ PY
     export TEST_RUNNER_CHERRI_QA_EXPECT_RUNTIME_RUN="$SIGNED_ARTIFACT_VALID_AEA1"
     export TEST_RUNNER_CHERRI_QA_EXEC_RUN_NONCE="$EXEC_RUN_NONCE"
     export TEST_RUNNER_CHERRI_QA_RUN_URL="$RUN_URL"
+    export TEST_RUNNER_CHERRI_QA_RUN_URL_MINIMAL="$RUN_URL_MINIMAL"
+    export TEST_RUNNER_CHERRI_QA_RUN_URL_PLAIN="$RUN_URL_PLAIN"
 
     RAW_SIM_LOG="$ARTIFACT_DIR/runtime/raw-sim-log.txt"
     rm -f "$RAW_SIM_LOG"
-    xcrun simctl spawn "$UDID" log stream --predicate 'process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "siriactionsd" || process == "SpringBoard" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver"' --level debug --style compact > "$RAW_SIM_LOG" 2>&1 &
+    xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "siriactionsd" || process == "SpringBoard" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction")' --level info --style compact > "$RAW_SIM_LOG" 2>&1 &
     SIM_LOG_PID=$!
 
     rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
@@ -1178,7 +1195,9 @@ noise = (
     "com.apple.Accessibility", "com.apple.defaults:User Defaults",
     "com.apple.AppleMediaServices", "com.apple.clouddocs", "com.apple.accounts",
     "com.apple.foundation.filecoordination", "com.apple.launchservices:binding",
-    "com.apple.cloudkit.sim", "BackBoardServices", "FrontBoardServices:Workspace"
+    "com.apple.cloudkit.sim", "BackBoardServices", "FrontBoardServices:Workspace",
+    "com.apple.dt.xctest", "com.apple.xpc.transaction", "XC_kAXXCAttribute",
+    "com.apple.runningboard:monitor", "com.apple.siri:Client"
 )
 uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
 users_re = re.compile(r"/Users/[^/\s]+")
@@ -1199,12 +1218,16 @@ for ln in lines:
         "x-callback", "run-shortcut", "cherriqa", "openurl", "backgroundshortcutrunner",
         "qa-functional", "qa-scroll", "qa-rtl", "wfworkflow", "vcdatastore", "daemontask",
         "error", "fail", "denied", "allow", "trigger", "scene", "playback", "dialog",
-        "com.apple.shortcuts", "com.apple.workflowkit"
+        "com.apple.shortcuts", "com.apple.workflowkit", "cherri", "shortcuts["
     )):
         filtered.append(ln[:320])
 with open(out_path, "w", encoding="utf-8") as f:
-    kept = filtered[:80] + ["--- [truncated middle] ---"] + filtered[-270:] if len(filtered) > 350 else filtered
+    kept = filtered[:80] + ["--- [truncated middle] ---"] + filtered[-370:] if len(filtered) > 450 else filtered
     f.write("\n".join(kept) + ("\n" if kept else ""))
+print(f"scrubbed sim log excerpt: {len(filtered)} matching lines -> kept {len(kept)}")
+for ln in filtered[-40:]:
+    if any(k in ln.lower() for k in ("x-callback", "run-shortcut", "cherriqa", "openurl", "backgroundshortcutrunner", "qa-functional", "wfworkflow", "denied", "allow", "cherri")):
+        print("SIMLOG:", ln)
 PY
     fi
     rm -f "${RAW_SIM_LOG:-}"
