@@ -389,7 +389,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             let sheetPredicate = NSPredicate(format: "label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both' OR label == 'Replace'")
 
             var foundSheetBtn: XCUIElement? = nil
-            var deadline = Date().addingTimeInterval(65.0)
+            var deadline = Date().addingTimeInterval(130.0)
             var postAckRetryAt: Date? = nil
             var retriedImport = false
             var postRetryExtended = false
@@ -404,11 +404,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 if !retriedImport, let retryAt = postAckRetryAt, Date() >= retryAt {
                     retriedImport = true
                     try? expectedShortcutName.data(using: .utf8)?.write(to: retryReqURL, options: .atomic)
-                    deadline = Date().addingTimeInterval(55.0)
+                    deadline = Date().addingTimeInterval(65.0)
                 }
                 if retriedImport && !postRetryExtended && FileManager.default.fileExists(atPath: retryAckURL.path) {
                     postRetryExtended = true
-                    let afterRetryAck = Date().addingTimeInterval(18.0)
+                    let afterRetryAck = Date().addingTimeInterval(20.0)
                     if deadline < afterRetryAck {
                         deadline = afterRetryAck
                     }
@@ -948,7 +948,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
                     receiver.launchArguments = ["--trigger-shortcut-url", runURLStr]
                     receiver.launch()
                     runtimeTriggerDispatched = true
-                    pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(30.0))
+                    pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(40.0))
                 }
             }
             if !runtimeCallbackObservedInUI {

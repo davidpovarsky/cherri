@@ -441,16 +441,28 @@ simctl_openurl_resilient() {
   local out=""
   local rc=1
   while [ "$attempt" -le "$max_attempts" ]; do
-    out="$(xcrun simctl openurl "$target_udid" "$target_url" 2>&1)"
+    out="$(python3 - "$target_udid" "$target_url" <<'PY'
+import subprocess, sys
+udid, url = sys.argv[1], sys.argv[2]
+try:
+    p = subprocess.run(["xcrun", "simctl", "openurl", udid, url], capture_output=True, text=True, timeout=45)
+    sys.stdout.write((p.stdout or "") + (p.stderr or ""))
+    sys.exit(p.returncode)
+except subprocess.TimeoutExpired as exc:
+    out = (exc.stdout or b"").decode("utf-8", errors="replace") if isinstance(exc.stdout, bytes) else (exc.stdout or "")
+    err = (exc.stderr or b"").decode("utf-8", errors="replace") if isinstance(exc.stderr, bytes) else (exc.stderr or "")
+    sys.stdout.write(f"simctl openurl timed out after 45s {out} {err}".strip())
+    sys.exit(124)
+PY
+)"
     rc=$?
     if [ "$rc" -eq 0 ]; then
       printf '%s' "$out"
       return 0
     fi
-    if echo "$out" | grep -Eqi "Connection interrupted|server died|NSMachErrorDomain|CoreSimulatorService"; then
+    if echo "$out" | grep -Eqi "Connection interrupted|server died|NSMachErrorDomain|CoreSimulatorService|timed out"; then
       open -g -a Simulator --args -CurrentDeviceUDID "$target_udid" >/dev/null 2>&1 || true
       xcrun simctl boot "$target_udid" >/dev/null 2>&1 || true
-      xcrun simctl bootstatus "$target_udid" -b >/dev/null 2>&1 || true
       xcrun simctl launch "$target_udid" com.apple.shortcuts >/dev/null 2>&1 || true
     fi
     sleep 2
@@ -467,7 +479,10 @@ if [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PASS" ]; then
   open -g -a Simulator --args -CurrentDeviceUDID "$UDID" >/dev/null 2>&1 || true
   sleep 2
   xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
-  sleep 5
+  sleep 4
+  simctl_openurl_resilient "$UDID" "shortcuts://" 2 >/dev/null 2>&1 || true
+  sleep 2
+  xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 fi
 
 MASKED_UDID="$(echo "$UDID" | cut -c1-8)-REDACTED"
@@ -1171,12 +1186,13 @@ for ln in lines:
     ln = uuid_re.sub("<UUID>", ln)
     if forbidden.search(ln):
         continue
-    if "ToolKitIndexing" in ln or "ToolKitDatabase" in ln or "approvedForPublicDrawerToDisplayActionIdentifier" in ln or "ToolDatabaseWriter" in ln:
+    if "ToolKitIndexing" in ln or "ToolKitDatabase" in ln or "approvedForPublicDrawerToDisplayActionIdentifier" in ln or "ToolDatabaseWriter" in ln or "CFBundle:strings" in ln or "CFBundle:resources" in ln:
         continue
     if any(k in ln.lower() for k in ("error", "fail", "warn", "shortcut", "callback", "cherriqa", "openurl", "denied", "allow", "workflow", "qa-functional", "trigger", "scene", "x-callback", "run")):
         filtered.append(ln[:300])
 with open(out_path, "w", encoding="utf-8") as f:
-    f.write("\n".join(filtered[-150:]) + ("\n" if filtered else ""))
+    kept = filtered[:40] + ["--- [truncated middle] ---"] + filtered[-110:] if len(filtered) > 150 else filtered
+    f.write("\n".join(kept) + ("\n" if kept else ""))
 PY
     fi
     rm -f "${RAW_SIM_LOG:-}"
