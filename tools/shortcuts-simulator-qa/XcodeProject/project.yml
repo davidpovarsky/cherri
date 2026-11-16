@@ -16,12 +16,13 @@ targets:
     platform: iOS
     sources:
       - path: ReceiverApp
-    info:
-      path: ReceiverApp/Info.plist
+        excludes:
+          - Info.plist
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: org.cherrilang.qa.Receiver
         GENERATE_INFOPLIST_FILE: "NO"
+        INFOPLIST_FILE: ReceiverApp/Info.plist
         TARGETED_DEVICE_FAMILY: "1,2"
   CherriSimulatorQAUITests:
     type: bundle.ui-testing
