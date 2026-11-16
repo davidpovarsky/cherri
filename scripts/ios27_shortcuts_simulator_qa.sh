@@ -884,25 +884,50 @@ PY
       done
     ) &
     HANDSHAKE_PID=$!
+    stop_bg_pid() {
+      local pid="${1:-}"
+      if [ -n "$pid" ]; then
+        kill "$pid" 2>/dev/null || true
+        sleep 0.5
+        kill -9 "$pid" 2>/dev/null || true
+      fi
+    }
+    run_cmd_timeout() {
+      local timeout_sec="$1"
+      shift
+      python3 - "$timeout_sec" "$@" <<'PY'
+import subprocess, sys
+t = int(sys.argv[1])
+cmd = sys.argv[2:]
+try:
+    p = subprocess.run(cmd, timeout=t)
+    sys.exit(p.returncode)
+except subprocess.TimeoutExpired:
+    sys.stderr.write(f"command timed out after {t}s: {' '.join(cmd[:4])}\n")
+    sys.exit(124)
+PY
+    }
     cleanup_handshake() {
       if [ -n "${HANDSHAKE_PID:-}" ]; then
         touch "$ARTIFACT_DIR/editor/handshake-stop.txt" 2>/dev/null || true
-        kill "$HANDSHAKE_PID" 2>/dev/null || true
-        wait "$HANDSHAKE_PID" 2>/dev/null || true
+        stop_bg_pid "$HANDSHAKE_PID"
         HANDSHAKE_PID=""
       fi
       if [ -n "${SIM_LOG_PID:-}" ]; then
-        kill "$SIM_LOG_PID" 2>/dev/null || true
-        wait "$SIM_LOG_PID" 2>/dev/null || true
+        stop_bg_pid "$SIM_LOG_PID"
         SIM_LOG_PID=""
       fi
+      if [ -n "${PHASE4_LOG_PID:-}" ]; then
+        stop_bg_pid "$PHASE4_LOG_PID"
+        PHASE4_LOG_PID=""
+      fi
     }
-    trap cleanup_handshake EXIT
+    trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}"' EXIT
 
     XCRESULT_PATH="$ARTIFACT_DIR/tests/CherriSimulatorQA.xcresult"
     rm -rf "$XCRESULT_PATH"
 
-    xcodebuild test \
+    run_cmd_timeout 720 xcodebuild test \
       -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
       -scheme CherriSimulatorQAReceiver \
       -destination "platform=iOS Simulator,id=$UDID" \
@@ -1088,11 +1113,12 @@ PY
       fi
 
       if [ "$FOUND_NONCE" != "yes" ]; then
+        echo "=== Phase 4b: Post-XCTest simctl openurl dispatch ($TARGET_FIXTURE_ID) ==="
         # Now that xcodebuild test / UITests.xctrunner has exited (automationmode=0), dispatch outside XCUITest like ios27_runtime_poc.sh
         xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction") AND NOT (subsystem == "com.apple.Accessibility") AND NOT (subsystem == "com.apple.defaults")' --level info --style compact > "$PHASE4_SIM_LOG" 2>&1 &
         PHASE4_LOG_PID=$!
         sleep 1
-        xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+        run_cmd_timeout 15 xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
         sleep 1
         simctl_openurl_resilient "$UDID" "$RUN_URL" 2 >/dev/null 2>&1 || true
         for poll_idx in $(seq 1 15); do
@@ -1105,19 +1131,20 @@ PY
           fi
           sleep 1
         done
-        xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-openurl.png" 2>/dev/null || true
+        run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-openurl.png" >/dev/null 2>&1 || true
 
         if [ "$FOUND_NONCE" != "yes" ]; then
+          echo "=== Phase 4c: Post-XCTest plain run-shortcut fallback probe ==="
           simctl_openurl_resilient "$UDID" "$RUN_URL_PLAIN" 2 >/dev/null 2>&1 || true
           sleep 6
-          xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-plain-url.png" 2>/dev/null || true
+          run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-plain-url.png" >/dev/null 2>&1 || true
         fi
 
         if [ -n "${PHASE4_LOG_PID:-}" ]; then
-          kill "$PHASE4_LOG_PID" 2>/dev/null || true
-          wait "$PHASE4_LOG_PID" 2>/dev/null || true
+          stop_bg_pid "$PHASE4_LOG_PID"
           PHASE4_LOG_PID=""
         fi
+        echo "=== Phase 4b/c finished (FOUND_NONCE=$FOUND_NONCE) ==="
       fi
 
       # Evaluate callback & NDJSON trace using strict oracle rules (never hardcode BLOCKED_IMPORT!)
