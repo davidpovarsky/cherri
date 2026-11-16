@@ -527,29 +527,42 @@ if [ "$PROBE_LEVEL" != "preflight" ] && [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PAS
     exit 1
   fi
 
-  # Route 2: Unsigned .shortcut via simctl openurl (verify rejection of unsigned file)
-  ROUTE2_OUT="$(simctl_openurl_resilient "$UDID" "file://$UNSIGNED_FILE" 2)"
-  ROUTE2_RC=$?
-  sleep 2
-  xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route2-unsigned-openurl.png" 2>/dev/null || true
-  xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+  ROUTE1_RC=-1
+  ROUTE1_OUT=""
+  ROUTE2_RC=-1
+  ROUTE2_OUT=""
+  ROUTE4_RC=-1
+  ROUTE4_OUT=""
 
-  # Route 4: Exploratory undocumented shortcuts://import-shortcut (explicitly tagged UNDOCUMENTED)
-  ROUTE4_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://import-shortcut?name=CherriQAProbe" 2)"
-  ROUTE4_RC=$?
-  sleep 1
-  xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+  run_negative_and_scheme_probes() {
+    # Route 2: Unsigned .shortcut via simctl openurl (verify rejection of unsigned file)
+    ROUTE2_OUT="$(simctl_openurl_resilient "$UDID" "file://$UNSIGNED_FILE" 2)"
+    ROUTE2_RC=$?
+    sleep 2
+    xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route2-unsigned-openurl.png" 2>/dev/null || true
+    xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
-  # Route 1: Documented shortcuts://create-shortcut URL scheme
-  ROUTE1_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://create-shortcut" 2)"
-  ROUTE1_RC=$?
-  sleep 2
-  xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route1-create-shortcut.png" 2>/dev/null || true
-  if [ "$ROUTE1_RC" -eq 0 ]; then
-    GATE_SHORTCUTS_LAUNCHED="PASS"
-    GATE_EDITOR_OPENED="PASS"
-  fi
-  xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+    # Route 4: Exploratory undocumented shortcuts://import-shortcut (explicitly tagged UNDOCUMENTED)
+    ROUTE4_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://import-shortcut?name=CherriQAProbe" 2)"
+    ROUTE4_RC=$?
+    sleep 1
+    xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+
+    # Route 1: Documented shortcuts://create-shortcut URL scheme
+    ROUTE1_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://create-shortcut" 2)"
+    ROUTE1_RC=$?
+    sleep 2
+    xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route1-create-shortcut.png" 2>/dev/null || true
+    if [ "$ROUTE1_RC" -eq 0 ]; then
+      if [ "$GATE_SHORTCUTS_LAUNCHED" = "NOT_RUN" ]; then
+        GATE_SHORTCUTS_LAUNCHED="PASS"
+      fi
+      if [ "$GATE_EDITOR_OPENED" = "NOT_RUN" ]; then
+        GATE_EDITOR_OPENED="PASS"
+      fi
+    fi
+    xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+  }
 
   # Route 3: Sign EXACT preflight-validated unsigned plist via Cherri HubSign (or CHERRI_SIGNING_SERVER if configured)
   rm -f "$SIGNED_CANDIDATE" "$SIGNED_FILE"
@@ -678,7 +691,8 @@ PY
     ROUTE3_OUT="Blocked signing: $SIGN_OUT"
   fi
 
-  python3 - "$ARTIFACT_DIR/import-attempts.json" "$ROUTE1_RC" "$ROUTE1_OUT" "$ROUTE2_RC" "$ROUTE2_OUT" "$SIGN_RC" "$SIGN_OUT" "$ROUTE3_RC" "$ROUTE3_OUT" "$ROUTE4_RC" "$ROUTE4_OUT" "$SIGNED_ARTIFACT_VALID_AEA1" "$SIGNING_METHOD" "$SIGNED_SHA256" "$SIGNED_BYTE_SIZE" "$LEGACY_SIGNING_VERIFIED" "$SIGN_CMD_LABEL" <<'PY'
+  write_import_attempts_json() {
+    python3 - "$ARTIFACT_DIR/import-attempts.json" "$ROUTE1_RC" "$ROUTE1_OUT" "$ROUTE2_RC" "$ROUTE2_OUT" "$SIGN_RC" "$SIGN_OUT" "$ROUTE3_RC" "$ROUTE3_OUT" "$ROUTE4_RC" "$ROUTE4_OUT" "$SIGNED_ARTIFACT_VALID_AEA1" "$SIGNING_METHOD" "$SIGNED_SHA256" "$SIGNED_BYTE_SIZE" "$LEGACY_SIGNING_VERIFIED" "$SIGN_CMD_LABEL" <<'PY'
 import json
 import sys
 
@@ -745,6 +759,12 @@ attempts = {
 with open(out_path, "w", encoding="utf-8") as f:
     json.dump(attempts, f, indent=2)
 PY
+  }
+
+  if [ "$PROBE_LEVEL" = "import" ]; then
+    run_negative_and_scheme_probes
+    write_import_attempts_json
+  fi
 
   if [ "$SIGNED_ARTIFACT_VALID_AEA1" != "true" ]; then
     GATE_COMPILER_ARTIFACT_IMPORTED="BLOCKED_SIGNING"
@@ -892,6 +912,8 @@ doc = {
     "schemaVersion": "1.4",
     "importRequested": os.path.exists(os.path.join(ed, "request-signed-import.txt")),
     "importAck": read_ack("ack-signed-import.txt"),
+    "importRetried": os.path.exists(os.path.join(ed, "request-signed-import-retry.txt")),
+    "importRetryAck": read_ack("ack-signed-import-retry.txt"),
     "runRequested": os.path.exists(os.path.join(ed, "request-shortcut-run.txt")),
     "runAck": read_ack("ack-shortcut-run.txt"),
 }
@@ -1037,32 +1059,6 @@ PY
         sleep 1
       done
 
-      if [ "${FOUND_NONCE:-no}" != "yes" ] && [ -f "${RAW_SIM_LOG:-}" ]; then
-        python3 - "$UDID" "$ROOT_DIR" "$RAW_SIM_LOG" "$ARTIFACT_DIR/runtime/shortcuts-log-excerpt.txt" <<'PY' || true
-import re, sys
-udid, root_dir, in_path, out_path = sys.argv[1:5]
-lines = open(in_path, encoding="utf-8", errors="replace").read().splitlines()
-forbidden = re.compile(r"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._\-]+|AppleID|iCloudToken)")
-uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
-users_re = re.compile(r"/Users/[^/\s]+")
-filtered = []
-for ln in lines:
-    if udid:
-        ln = ln.replace(udid, "<UDID>")
-    if root_dir:
-        ln = ln.replace(root_dir, "<REPO_ROOT>")
-    ln = users_re.sub("/Users/<redacted>", ln)
-    ln = uuid_re.sub("<UUID>", ln)
-    if forbidden.search(ln):
-        continue
-    if any(k in ln.lower() for k in ("error", "fail", "warn", "shortcut", "callback", "cherriqa", "openurl", "denied", "allow", "workflow", "qa-functional", "trigger", "scene", "x-callback")):
-        filtered.append(ln[:300])
-with open(out_path, "w", encoding="utf-8") as f:
-    f.write("\n".join(filtered[-100:]) + ("\n" if filtered else ""))
-PY
-      fi
-      rm -f "${RAW_SIM_LOG:-}"
-
       # Evaluate callback & NDJSON trace using strict oracle rules (never hardcode BLOCKED_IMPORT!)
       RUNTIME_EVAL="$(python3 - "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" <<'PY'
 import json, sys
@@ -1149,6 +1145,37 @@ PY
       GATE_SHORTCUT_RUN_COMPLETED="$GATE_SHORTCUT_EXISTS_IN_LIBRARY"
       GATE_TRACE_CAPTURED="$GATE_SHORTCUT_EXISTS_IN_LIBRARY"
       RUNTIME_EVAL_REASON="Simulator Shortcuts library import blocked ($GATE_SHORTCUT_EXISTS_IN_LIBRARY); runtime execution skipped fail-closed."
+    fi
+
+    if [ "${GATE_SHORTCUT_RUN_COMPLETED:-}" != "PASS" ] && [ -f "${RAW_SIM_LOG:-}" ]; then
+      python3 - "$UDID" "$ROOT_DIR" "$RAW_SIM_LOG" "$ARTIFACT_DIR/runtime/shortcuts-log-excerpt.txt" <<'PY' || true
+import re, sys
+udid, root_dir, in_path, out_path = sys.argv[1:5]
+lines = open(in_path, encoding="utf-8", errors="replace").read().splitlines()
+forbidden = re.compile(r"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._\-]+|AppleID|iCloudToken)")
+uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
+users_re = re.compile(r"/Users/[^/\s]+")
+filtered = []
+for ln in lines:
+    if udid:
+        ln = ln.replace(udid, "<UDID>")
+    if root_dir:
+        ln = ln.replace(root_dir, "<REPO_ROOT>")
+    ln = users_re.sub("/Users/<redacted>", ln)
+    ln = uuid_re.sub("<UUID>", ln)
+    if forbidden.search(ln):
+        continue
+    if any(k in ln.lower() for k in ("error", "fail", "warn", "shortcut", "callback", "cherriqa", "openurl", "denied", "allow", "workflow", "qa-functional", "trigger", "scene", "x-callback")):
+        filtered.append(ln[:300])
+with open(out_path, "w", encoding="utf-8") as f:
+    f.write("\n".join(filtered[-100:]) + ("\n" if filtered else ""))
+PY
+    fi
+    rm -f "${RAW_SIM_LOG:-}"
+
+    if declare -F run_negative_and_scheme_probes >/dev/null 2>&1; then
+      run_negative_and_scheme_probes
+      write_import_attempts_json
     fi
   fi
 fi
