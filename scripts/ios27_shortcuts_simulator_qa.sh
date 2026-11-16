@@ -1077,23 +1077,48 @@ PY
     fi
 
     # Phase 4: Correlated Runtime Execution of Imported Shortcut via x-callback-url
+    PHASE4_SIM_LOG="$ARTIFACT_DIR/runtime/phase4-sim-log.txt"
+    rm -f "$PHASE4_SIM_LOG"
     if [ "$GATE_SHORTCUT_EXISTS_IN_LIBRARY" = "PASS" ]; then
       GATE_SHORTCUT_RUN_ATTEMPTED="PASS"
-      if [ "$DID_HANDSHAKE_RUN" != "true" ]; then
-        simctl_openurl_resilient "$UDID" "$RUN_URL" 2 >/dev/null 2>&1 || true
+      FOUND_NONCE="no"
+      if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
+        cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
+        FOUND_NONCE="$(python3 -c 'import json,sys; evs=json.load(open(sys.argv[1])); print("yes" if any((not e.get("receiverSelfTest")) and e.get("runId")==sys.argv[2] for e in evs) else "no")' "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" 2>/dev/null || echo "no")"
       fi
 
-      # Bounded adaptive polling for correlated callback event (up to 20s)
-      for poll_idx in $(seq 1 20); do
-        if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
-          cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
-          FOUND_NONCE="$(python3 -c 'import json,sys; evs=json.load(open(sys.argv[1])); print("yes" if any((not e.get("receiverSelfTest")) and e.get("runId")==sys.argv[2] for e in evs) else "no")' "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" 2>/dev/null || echo "no")"
-          if [ "$FOUND_NONCE" = "yes" ]; then
-            break
-          fi
-        fi
+      if [ "$FOUND_NONCE" != "yes" ]; then
+        # Now that xcodebuild test / UITests.xctrunner has exited (automationmode=0), dispatch outside XCUITest like ios27_runtime_poc.sh
+        xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction") AND NOT (subsystem == "com.apple.Accessibility") AND NOT (subsystem == "com.apple.defaults")' --level info --style compact > "$PHASE4_SIM_LOG" 2>&1 &
+        PHASE4_LOG_PID=$!
         sleep 1
-      done
+        xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+        sleep 1
+        simctl_openurl_resilient "$UDID" "$RUN_URL" 2 >/dev/null 2>&1 || true
+        for poll_idx in $(seq 1 15); do
+          if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
+            cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
+            FOUND_NONCE="$(python3 -c 'import json,sys; evs=json.load(open(sys.argv[1])); print("yes" if any((not e.get("receiverSelfTest")) and e.get("runId")==sys.argv[2] for e in evs) else "no")' "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" 2>/dev/null || echo "no")"
+            if [ "$FOUND_NONCE" = "yes" ]; then
+              break
+            fi
+          fi
+          sleep 1
+        done
+        xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-openurl.png" 2>/dev/null || true
+
+        if [ "$FOUND_NONCE" != "yes" ]; then
+          simctl_openurl_resilient "$UDID" "$RUN_URL_PLAIN" 2 >/dev/null 2>&1 || true
+          sleep 6
+          xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/phase4-after-plain-url.png" 2>/dev/null || true
+        fi
+
+        if [ -n "${PHASE4_LOG_PID:-}" ]; then
+          kill "$PHASE4_LOG_PID" 2>/dev/null || true
+          wait "$PHASE4_LOG_PID" 2>/dev/null || true
+          PHASE4_LOG_PID=""
+        fi
+      fi
 
       # Evaluate callback & NDJSON trace using strict oracle rules (never hardcode BLOCKED_IMPORT!)
       RUNTIME_EVAL="$(python3 - "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" <<'PY'
@@ -1183,8 +1208,12 @@ PY
       RUNTIME_EVAL_REASON="Simulator Shortcuts library import blocked ($GATE_SHORTCUT_EXISTS_IN_LIBRARY); runtime execution skipped fail-closed."
     fi
 
-    if [ "${GATE_SHORTCUT_RUN_COMPLETED:-}" != "PASS" ] && [ -f "${RAW_SIM_LOG:-}" ]; then
-      python3 - "$UDID" "$ROOT_DIR" "$RAW_SIM_LOG" "$ARTIFACT_DIR/runtime/shortcuts-log-excerpt.txt" <<'PY' || true
+    if [ "${GATE_SHORTCUT_RUN_COMPLETED:-}" != "PASS" ] && { [ -f "${PHASE4_SIM_LOG:-}" ] || [ -f "${RAW_SIM_LOG:-}" ]; }; then
+      LOG_SRC="${PHASE4_SIM_LOG:-}"
+      if [ ! -s "$LOG_SRC" ]; then
+        LOG_SRC="${RAW_SIM_LOG:-}"
+      fi
+      python3 - "$UDID" "$ROOT_DIR" "$LOG_SRC" "$ARTIFACT_DIR/runtime/shortcuts-log-excerpt.txt" <<'PY' || true
 import re, sys
 udid, root_dir, in_path, out_path = sys.argv[1:5]
 lines = open(in_path, encoding="utf-8", errors="replace").read().splitlines()
@@ -1215,24 +1244,16 @@ for ln in lines:
         continue
     if any(n in ln for n in noise):
         continue
-    low = ln.lower()
-    if any(k in low for k in (
-        "x-callback", "run-shortcut", "cherriqa", "openurl", "backgroundshortcutrunner",
-        "qa-functional", "qa-scroll", "qa-rtl", "wfworkflow", "vcdatastore", "daemontask",
-        "error", "fail", "denied", "allow", "trigger", "scene", "playback", "dialog",
-        "com.apple.shortcuts", "com.apple.workflowkit", "cherri", "shortcuts["
-    )):
-        filtered.append(ln[:320])
+    filtered.append(ln[:320])
 with open(out_path, "w", encoding="utf-8") as f:
-    kept = filtered[:80] + ["--- [truncated middle] ---"] + filtered[-370:] if len(filtered) > 450 else filtered
+    kept = filtered[:120] + ["--- [truncated middle] ---"] + filtered[-330:] if len(filtered) > 450 else filtered
     f.write("\n".join(kept) + ("\n" if kept else ""))
-print(f"scrubbed sim log excerpt: {len(filtered)} matching lines -> kept {len(kept)}")
-for ln in filtered[-40:]:
-    if any(k in ln.lower() for k in ("x-callback", "run-shortcut", "cherriqa", "openurl", "backgroundshortcutrunner", "qa-functional", "wfworkflow", "denied", "allow", "cherri")):
-        print("SIMLOG:", ln)
+print(f"scrubbed Phase4/sim log excerpt ({in_path}): {len(filtered)} lines -> kept {len(kept)}")
+for ln in filtered[:80]:
+    print("PHASE4LOG:", ln)
 PY
     fi
-    rm -f "${RAW_SIM_LOG:-}"
+    rm -f "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
 
     if declare -F run_negative_and_scheme_probes >/dev/null 2>&1; then
       run_negative_and_scheme_probes
