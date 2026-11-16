@@ -888,7 +888,9 @@ PY
       -scheme CherriSimulatorQAReceiver \
       -derivedDataPath "$DERIVED_DATA_PATH" \
       -destination "platform=iOS Simulator,id=$UDID" \
-      CODE_SIGNING_ALLOWED=NO \
+      CODE_SIGNING_ALLOWED=YES \
+      CODE_SIGNING_REQUIRED=NO \
+      CODE_SIGN_IDENTITY="-" \
       > "$ARTIFACT_DIR/builds/xcodebuild-build.log" 2>&1
     XCODEBUILD_BUILD_RC=$?
     echo "xcodebuild build-for-testing exit code: $XCODEBUILD_BUILD_RC"
@@ -965,7 +967,9 @@ PY
       -derivedDataPath "$DERIVED_DATA_PATH" \
       -destination "platform=iOS Simulator,id=$UDID" \
       -resultBundlePath "$XCRESULT_PATH" \
-      CODE_SIGNING_ALLOWED=NO \
+      CODE_SIGNING_ALLOWED=YES \
+      CODE_SIGNING_REQUIRED=NO \
+      CODE_SIGN_IDENTITY="-" \
       > "$ARTIFACT_DIR/builds/xcodebuild-test.log" 2>&1
     XCODEBUILD_TEST_RC=$?
     echo "xcodebuild test exit code: $XCODEBUILD_TEST_RC"
@@ -1162,6 +1166,11 @@ PY
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" org.cherrilang.qa.Receiver >/dev/null 2>&1 || true
         sleep 1
+        RECEIVER_BUNDLE_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
+        if [ -n "$RECEIVER_BUNDLE_PATH" ]; then
+          echo "=== ReceiverApp codesign metadata ==="
+          codesign -dvv "$RECEIVER_BUNDLE_PATH" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 12 || true
+        fi
         LAUNCH_RC=0
         LAUNCH_OUT="$( ( export SIMCTL_CHILD_CHERRI_TRIGGER_SHORTCUT_URL="$RUN_URL"; run_cmd_timeout 25 xcrun simctl launch "$UDID" org.cherrilang.qa.Receiver ) 2>&1 )" || LAUNCH_RC=$?
         echo "Phase4b simctl launch rc=$LAUNCH_RC out=$(printf '%s' "$LAUNCH_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-200)"
@@ -1203,10 +1212,12 @@ PY
             -destination "platform=iOS Simulator,id=$UDID" \
             -only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test04ConfirmPendingRuntimeDialog \
             -resultBundlePath "$CONFIRM_XCRESULT" \
-            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="-" \
             > "$ARTIFACT_DIR/builds/xcodebuild-confirm.log" 2>&1 || true
           if [ -f "$ARTIFACT_DIR/builds/xcodebuild-confirm.log" ]; then
-            sed "s/$UDID/<UDID>/g" "$ARTIFACT_DIR/builds/xcodebuild-confirm.log" | tail -n 20 || true
+            sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" "$ARTIFACT_DIR/builds/xcodebuild-confirm.log" | tail -n 60 || true
           fi
           rm -rf "$CONFIRM_XCRESULT" "$ARTIFACT_DIR/editor/confirm-dialog-mode.txt"
           for poll_idx in $(seq 1 10); do
@@ -1350,11 +1361,28 @@ noise = (
     "container_create_or_lookup_app_group_path",
     "com.apple.UIKit", "com.apple.BackBoard", "com.apple.FrontBoard",
     "com.apple.GenerativeModels", "com.apple.BacklightServices",
-    "com.apple.BoardServices", "libMobileGestalt.dylib", "com.apple.xpc:connection"
+    "com.apple.BoardServices", "libMobileGestalt.dylib", "com.apple.xpc:connection",
+    "com.apple.xpc:session", "com.apple.KeyboardArbiter", "com.apple.TextInputUI",
+    "com.apple.useractivity", "com.apple.containermanager", "com.apple.network:",
+    "com.apple.CloudKit", "com.apple.cloudkit", "com.apple.launchservices:datasep",
+    "com.apple.launchservices:privacy", "Error retrieving application record",
+    "ToolEmbeddingDatabase", "RunningBoardServices", "CoreSpotlight", "SpotlightSync",
+    "com.apple.ManagedConfiguration", "com.apple.purplebuddy", "PrototypeTools",
+    "com.apple.calls.callkit", "com.apple.UIIntelligenceSupport",
+    "com.apple.foundation.filecoordination", "Updating Key-Value Observers",
+    "Loading Preferences From User Session CFPrefsD", "CoreAnalytics",
+    "com.apple.CoreAnalytics", "com.apple.shortcuts:Files"
 )
 uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
 users_re = re.compile(r"/Users/[^/\s]+")
 filtered = []
+exec_lines = []
+exec_keywords = (
+    "CherriReceiver", "BackgroundShortcutRunner", "WFOutputAction",
+    "WorkflowExecution", "RunningLifecycle", "XCallback", "x-callback",
+    "taint", "appIdentifier", "destination", "cherriqa", "VoiceShortcutClient",
+    "WFXCallback", "openURL", "OpenURL", "WFWorkflow"
+)
 for ln in lines:
     if udid:
         ln = ln.replace(udid, "<UDID>")
@@ -1364,13 +1392,20 @@ for ln in lines:
     ln = uuid_re.sub("<UUID>", ln)
     if forbidden.search(ln):
         continue
-    if not ("CherriReceiver" in ln or "WorkflowKit" in ln or "Shortcuts" in ln or "BackgroundShortcutRunner" in ln) and any(n in ln for n in noise):
+    if "CherriReceiver" not in ln and any(n in ln for n in noise):
         continue
     filtered.append(ln[:320])
+    if any(k in ln for k in exec_keywords) and "ToolEmbedding" not in ln:
+        exec_lines.append(ln[:320])
 with open(out_path, "w", encoding="utf-8") as f:
     kept = filtered[:120] + ["--- [truncated middle] ---"] + filtered[-330:] if len(filtered) > 450 else filtered
     f.write("\n".join(kept) + ("\n" if kept else ""))
-print(f"scrubbed Phase4/sim log excerpt ({in_path}): {len(filtered)} lines -> kept {len(kept)}")
+exec_path = out_path.replace("shortcuts-log-excerpt.txt", "phase4-execution-log.txt")
+with open(exec_path, "w", encoding="utf-8") as ef:
+    ef.write("\n".join(exec_lines[-300:]) + ("\n" if exec_lines else ""))
+print(f"scrubbed Phase4/sim log excerpt ({in_path}): {len(filtered)} lines -> kept {len(kept)}, execLines={len(exec_lines)}")
+for ln in exec_lines[:80]:
+    print("PHASE4_EXEC:", ln)
 preview = filtered[:60] + (["---"] + filtered[-40:] if len(filtered) > 60 else [])
 for ln in preview:
     print("PHASE4LOG:", ln)
