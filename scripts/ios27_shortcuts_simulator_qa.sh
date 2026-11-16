@@ -492,7 +492,7 @@ wait_for_springboard_display() {
 import os, signal, subprocess, sys
 p = subprocess.Popen(["xcrun", "simctl", "io", sys.argv[1], "screenshot", sys.argv[2]], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
 try:
-    p.wait(timeout=12)
+    p.wait(timeout=25)
 except subprocess.TimeoutExpired:
     try: os.killpg(p.pid, signal.SIGKILL)
     except Exception: pass
@@ -517,7 +517,7 @@ PY
 ensure_sim_session_ready() {
   local target_udid="$1"
   local force_reboot="${2:-0}"
-  if [ "$force_reboot" -ne 1 ] && simctl_getenv_ok "$target_udid" && wait_for_springboard_display "$target_udid" 10; then
+  if [ "$force_reboot" -ne 1 ] && simctl_getenv_ok "$target_udid"; then
     return 0
   fi
   echo "Simulator session recovery triggered (force_reboot=$force_reboot); rebooting <UDID> cleanly..."
@@ -637,7 +637,7 @@ except Exception:
     pass
 time.sleep(2)
 PY
-  if ! wait_for_springboard_display "$UDID" 90; then
+  if ! wait_for_springboard_display "$UDID" 60 && ! simctl_getenv_ok "$UDID"; then
     ensure_sim_session_ready "$UDID" 1
   fi
   python3 - "$UDID" <<'PY' >/dev/null 2>&1 || true
@@ -1098,8 +1098,12 @@ PY
       cp "$PART1_RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events-part1.json" || true
     fi
     if [ "$XCODEBUILD_PART1_RC" -ne 0 ]; then
-      echo "Part1 exited with rc=$XCODEBUILD_PART1_RC; forcing clean Simulator session recovery before Phase 3b..."
-      ensure_sim_session_ready "$UDID" 1
+      if [ "$XCODEBUILD_PART1_RC" -eq 65 ] || ! simctl_getenv_ok "$UDID"; then
+        echo "Part1 exited with rc=$XCODEBUILD_PART1_RC; forcing clean Simulator session recovery before Phase 3b..."
+        ensure_sim_session_ready "$UDID" 1
+      else
+        echo "Part1 exited with rc=$XCODEBUILD_PART1_RC while CoreSimulator remains healthy; skipping destructive reboot."
+      fi
       if [ -n "${SIM_LOG_PID:-}" ] && ! kill -0 "$SIM_LOG_PID" 2>/dev/null; then
         xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "siriactionsd" || process == "SpringBoard" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction")' --level info --style compact >> "$RAW_SIM_LOG" 2>&1 &
         SIM_LOG_PID=$!
@@ -1193,13 +1197,9 @@ PY
       if [ -f "$ARTIFACT_DIR/editor/pre-import-screen.png" ]; then
         PRE_SCREEN_BYTES="$(wc -c < "$ARTIFACT_DIR/editor/pre-import-screen.png" | tr -d '[:space:]')"
       fi
-      if [ "${PRE_SCREEN_BYTES:-0}" -lt 120000 ]; then
-        echo "Phase 3b detected boot/respring/unhealthy screen (${PRE_SCREEN_BYTES} B); recovering SpringBoard before re-dispatching..."
-        if [ "${PRE_SCREEN_BYTES:-0}" -eq 0 ]; then
-          ensure_sim_session_ready "$UDID" 1
-        else
-          wait_for_springboard_display "$UDID" 90 || ensure_sim_session_ready "$UDID" 1
-        fi
+      if [ "${PRE_SCREEN_BYTES:-0}" -ge 1 ] && [ "${PRE_SCREEN_BYTES:-0}" -lt 120000 ]; then
+        echo "Phase 3b detected boot/respring screen (${PRE_SCREEN_BYTES} B); waiting for SpringBoard settle before re-dispatching..."
+        wait_for_springboard_display "$UDID" 90 || true
         run_cmd_timeout 20 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
         sleep 4
         _t3=$SECONDS
@@ -1216,7 +1216,10 @@ PY
           PRE_IMP_OUT="${PRE_IMP_OUT} | post_recovery=ok"
         fi
         sleep 2
-        run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/pre-import-screen.png" >/dev/null 2>&1 || true
+        run_cmd_timeout 25 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/pre-import-screen.png" >/dev/null 2>&1 || true
+      elif [ "${PRE_SCREEN_BYTES:-0}" -eq 0 ] && ! simctl_getenv_ok "$UDID"; then
+        echo "Phase 3b detected unhealthy CoreSimulator (0 B + getenv failed); recovering session..."
+        ensure_sim_session_ready "$UDID" 1
       fi
       printf 'rc=%s\nmethod=%s durationSec=%s %s\n' "$PRE_IMP_RC" "$PRE_IMP_METHOD" "$PRE_IMP_DT" "${PRE_IMP_OUT:0:180}" > "$ARTIFACT_DIR/editor/pre-import-ack.txt"
       echo "Phase 3b pre-import ($PRE_IMP_METHOD) rc=$PRE_IMP_RC durationSec=${PRE_IMP_DT}s out=$(printf '%s' "$PRE_IMP_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-180)"
