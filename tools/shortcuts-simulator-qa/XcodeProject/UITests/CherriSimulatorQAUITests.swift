@@ -380,14 +380,20 @@ final class CherriSimulatorQAUITests: XCTestCase {
             let ackURL = outDir.appendingPathComponent("ack-signed-import.txt")
             try? FileManager.default.removeItem(at: ackURL)
             try? expectedShortcutName.data(using: .utf8)?.write(to: reqURL, options: .atomic)
-            _ = waitForHandshakeFile(ackURL, timeout: 15.0)
 
             let sheetButtonLabels = ["Add Shortcut", "+ Add Shortcut", "Set Up Shortcut", "Replace", "Keep Both", "הוסף קיצור דרך"]
             let sheetPredicate = NSPredicate(format: "label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both' OR label == 'Replace'")
 
             var foundSheetBtn: XCUIElement? = nil
-            let sheetDeadline = Date().addingTimeInterval(12.0)
-            while Date() < sheetDeadline && foundSheetBtn == nil {
+            let overallDeadline = Date().addingTimeInterval(95.0)
+            var postAckDeadline: Date? = nil
+            while Date() < overallDeadline && foundSheetBtn == nil {
+                if postAckDeadline == nil && FileManager.default.fileExists(atPath: ackURL.path) {
+                    postAckDeadline = Date().addingTimeInterval(15.0)
+                }
+                if let ackEnd = postAckDeadline, Date() >= ackEnd {
+                    break
+                }
                 for targetApp in [shortcuts, springboard] {
                     for candidate in sheetButtonLabels {
                         let btn = targetApp.buttons[candidate].firstMatch
@@ -481,7 +487,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         // Step 2: Inspect All Shortcuts library for expectedShortcutName (with bounded wait after import)
         var shortcutExistsInLibrary = false
         var libraryCells: [String] = []
-        let libDeadline = Date().addingTimeInterval(expectSignedImport ? 8.0 : 2.0)
+        let libDeadline = Date().addingTimeInterval(expectSignedImport ? 15.0 : 2.0)
         while Date() < libDeadline {
             libraryCells.removeAll()
             let cellsQuery = shortcuts.collectionViews.cells
@@ -567,11 +573,25 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 // If tapping More or long-pressing opened a context menu with Edit / Edit Shortcut / Details, tap Edit
                 if !shortcuts.otherElements["editor"].exists {
                     let menuEditLabels = ["Edit", "Edit Shortcut"]
+                    var tappedMenuEdit = false
                     for lbl in menuEditLabels {
-                        let mBtn = shortcuts.buttons[lbl].firstMatch
-                        if mBtn.exists && mBtn.isHittable {
-                            mBtn.tap()
-                            Thread.sleep(forTimeInterval: 1.5)
+                        for appCandidate in [shortcuts, springboard] {
+                            let mBtn = appCandidate.buttons[lbl].firstMatch
+                            if mBtn.exists && mBtn.isHittable {
+                                mBtn.tap()
+                                tappedMenuEdit = true
+                                Thread.sleep(forTimeInterval: 1.5)
+                                break
+                            }
+                            let mText = appCandidate.staticTexts[lbl].firstMatch
+                            if mText.exists && mText.isHittable {
+                                mText.tap()
+                                tappedMenuEdit = true
+                                Thread.sleep(forTimeInterval: 1.5)
+                                break
+                            }
+                        }
+                        if tappedMenuEdit {
                             break
                         }
                     }
@@ -805,12 +825,14 @@ final class CherriSimulatorQAUITests: XCTestCase {
             let runAckURL = outDir.appendingPathComponent("ack-shortcut-run.txt")
             try? FileManager.default.removeItem(at: runAckURL)
             try? execRunNonce.data(using: .utf8)?.write(to: runReqURL, options: .atomic)
-            runtimeTriggerDispatched = waitForHandshakeFile(runAckURL, timeout: 12.0)
 
             let receiver = XCUIApplication(bundleIdentifier: "org.cherrilang.qa.Receiver")
             let confirmLabels = ["Always Allow", "Allow", "Open", "Allow Once", "Run", "Continue", "OK"]
-            let runDeadline = Date().addingTimeInterval(22.0)
+            let runDeadline = Date().addingTimeInterval(55.0)
             while Date() < runDeadline {
+                if !runtimeTriggerDispatched && FileManager.default.fileExists(atPath: runAckURL.path) {
+                    runtimeTriggerDispatched = true
+                }
                 for targetApp in [springboard, shortcuts] {
                     for lbl in confirmLabels {
                         let btn = targetApp.buttons[lbl].firstMatch
@@ -826,13 +848,14 @@ final class CherriSimulatorQAUITests: XCTestCase {
                     let matchesNonce = execRunNonce.isEmpty || (runIdLabel.exists && runIdLabel.label.contains(execRunNonce))
                     let completedStatus = statusLabel.exists && (statusLabel.label.contains("SUCCESS") || statusLabel.label.contains("ERROR") || statusLabel.label.contains("CANCELLED"))
                     if matchesNonce && completedStatus {
+                        runtimeTriggerDispatched = runtimeTriggerDispatched || FileManager.default.fileExists(atPath: runAckURL.path)
                         runtimeCallbackObservedInUI = true
                         let rtShot = XCUIScreen.main.screenshot()
                         try? rtShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-callback.png"), options: .atomic)
                         break
                     }
                 }
-                Thread.sleep(forTimeInterval: 0.5)
+                Thread.sleep(forTimeInterval: 0.4)
             }
         }
 

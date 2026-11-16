@@ -432,6 +432,44 @@ if [ "$GATE_SIMULATOR_BOOTED" = "PASS" ]; then
 fi
 rm -f "$ARTIFACT_DIR/sim-listapps.plist" "$ARTIFACT_DIR/sim-runtimes.json" "$ARTIFACT_DIR/sim-devicetypes.json" "$ARTIFACT_DIR/sim-devices.json"
 
+simctl_openurl_resilient() {
+  local target_udid="$1"
+  local target_url="$2"
+  local max_attempts="${3:-3}"
+  local fallback_file="${4:-}"
+  local attempt=1
+  local out=""
+  local rc=1
+  while [ "$attempt" -le "$max_attempts" ]; do
+    out="$(xcrun simctl openurl "$target_udid" "$target_url" 2>&1)"
+    rc=$?
+    if [ "$rc" -eq 0 ]; then
+      printf '%s' "$out"
+      return 0
+    fi
+    if echo "$out" | grep -Eqi "Connection interrupted|server died|NSMachErrorDomain|CoreSimulatorService"; then
+      open -g -a Simulator --args -CurrentDeviceUDID "$target_udid" >/dev/null 2>&1 || true
+      xcrun simctl boot "$target_udid" >/dev/null 2>&1 || true
+      xcrun simctl bootstatus "$target_udid" -b >/dev/null 2>&1 || true
+      xcrun simctl launch "$target_udid" com.apple.shortcuts >/dev/null 2>&1 || true
+    fi
+    sleep 2
+    attempt=$((attempt + 1))
+  done
+  if [ -n "$fallback_file" ] && [ -f "$fallback_file" ]; then
+    open -a Simulator "$fallback_file" >/dev/null 2>&1 || true
+  fi
+  printf '%s' "$out"
+  return "$rc"
+}
+
+if [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PASS" ]; then
+  open -g -a Simulator --args -CurrentDeviceUDID "$UDID" >/dev/null 2>&1 || true
+  sleep 2
+  xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+  sleep 2
+fi
+
 MASKED_UDID="$(echo "$UDID" | cut -c1-8)-REDACTED"
 python3 - "$ARTIFACT_DIR/environment.json" "$UNAME_OUT" "$SW_VERS_OUT" "$XCODE_SELECT_OUT" "$XCODEBUILD_VER_OUT" "$MASKED_UDID" "$DEVICE_NAME" "$RUNTIME_NAME" "$RUNTIME_VERSION" "$SHORTCUTS_BUNDLE_PRESENT" "$SOURCE_SHA" <<'PY'
 import json
@@ -490,20 +528,20 @@ if [ "$PROBE_LEVEL" != "preflight" ] && [ "$GATE_SHORTCUTS_APP_INSTALLED" = "PAS
   fi
 
   # Route 2: Unsigned .shortcut via simctl openurl (verify rejection of unsigned file)
-  ROUTE2_OUT="$(xcrun simctl openurl "$UDID" "file://$UNSIGNED_FILE" 2>&1)"
+  ROUTE2_OUT="$(simctl_openurl_resilient "$UDID" "file://$UNSIGNED_FILE" 2)"
   ROUTE2_RC=$?
   sleep 2
   xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route2-unsigned-openurl.png" 2>/dev/null || true
   xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
   # Route 4: Exploratory undocumented shortcuts://import-shortcut (explicitly tagged UNDOCUMENTED)
-  ROUTE4_OUT="$(xcrun simctl openurl "$UDID" "shortcuts://import-shortcut?name=CherriQAProbe" 2>&1)"
+  ROUTE4_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://import-shortcut?name=CherriQAProbe" 2)"
   ROUTE4_RC=$?
   sleep 1
   xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
 
   # Route 1: Documented shortcuts://create-shortcut URL scheme
-  ROUTE1_OUT="$(xcrun simctl openurl "$UDID" "shortcuts://create-shortcut" 2>&1)"
+  ROUTE1_OUT="$(simctl_openurl_resilient "$UDID" "shortcuts://create-shortcut" 2)"
   ROUTE1_RC=$?
   sleep 2
   xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/route1-create-shortcut.png" 2>/dev/null || true
@@ -757,7 +795,7 @@ PY
         if [ "$import_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import.txt" ]; then
           import_dispatched=1
           if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
-            IMP_OUT="$(xcrun simctl openurl "$UDID" "file://$SIGNED_FILE" 2>&1)"
+            IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 3 "$SIGNED_FILE")"
             IMP_RC=$?
             printf 'rc=%s\n%s\n' "$IMP_RC" "${IMP_OUT:0:256}" > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
           else
@@ -766,9 +804,9 @@ PY
         fi
         if [ "$run_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-shortcut-run.txt" ]; then
           run_dispatched=1
-          RUN_OUT="$(xcrun simctl openurl "$UDID" "$RUN_URL" 2>&1)"
+          RUN_OUT="$(simctl_openurl_resilient "$UDID" "$RUN_URL" 3)"
           RUN_RC=$?
-          printf 'rc=%s\n' "$RUN_RC" > "$ARTIFACT_DIR/editor/ack-shortcut-run.txt"
+          printf 'rc=%s\n%s\n' "$RUN_RC" "${RUN_OUT:0:256}" > "$ARTIFACT_DIR/editor/ack-shortcut-run.txt"
         fi
         [ -f "$ARTIFACT_DIR/editor/handshake-stop.txt" ] && break
         sleep 0.2
@@ -805,6 +843,41 @@ PY
     if [ -f "$ARTIFACT_DIR/editor/ack-shortcut-run.txt" ]; then
       DID_HANDSHAKE_RUN="true"
     fi
+    python3 - "$ARTIFACT_DIR/editor" "$UDID" "$ROOT_DIR" <<'PY'
+import json, os, re, sys
+ed, udid, root_dir = sys.argv[1:4]
+def read_ack(name):
+    p = os.path.join(ed, name)
+    if not os.path.exists(p):
+        return None
+    raw = open(p, encoding="utf-8", errors="replace").read()
+    if udid:
+        raw = raw.replace(udid, "<UDID>")
+    if root_dir:
+        raw = raw.replace(root_dir, "<REPO_ROOT>")
+    raw = re.sub(r"/Users/[^/\s]+", "/Users/<redacted>", raw)
+    lines = raw.splitlines()
+    rc = None
+    if lines and lines[0].startswith("rc="):
+        try:
+            rc = int(lines[0][3:].strip())
+        except Exception:
+            rc = None
+        msg = "\n".join(lines[1:]).strip()
+    else:
+        msg = raw.strip()
+    return {"rc": rc, "message": msg[:256]}
+
+doc = {
+    "schemaVersion": "1.4",
+    "importRequested": os.path.exists(os.path.join(ed, "request-signed-import.txt")),
+    "importAck": read_ack("ack-signed-import.txt"),
+    "runRequested": os.path.exists(os.path.join(ed, "request-shortcut-run.txt")),
+    "runAck": read_ack("ack-shortcut-run.txt"),
+}
+with open(os.path.join(ed, "handshake-status.json"), "w", encoding="utf-8") as f:
+    json.dump(doc, f, indent=2)
+PY
     rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
 
     if [ -d "$XCRESULT_PATH" ]; then
@@ -929,7 +1002,7 @@ PY
     if [ "$GATE_SHORTCUT_EXISTS_IN_LIBRARY" = "PASS" ]; then
       GATE_SHORTCUT_RUN_ATTEMPTED="PASS"
       if [ "$DID_HANDSHAKE_RUN" != "true" ]; then
-        xcrun simctl openurl "$UDID" "$RUN_URL" >/dev/null 2>&1 || true
+        simctl_openurl_resilient "$UDID" "$RUN_URL" 2 >/dev/null 2>&1 || true
       fi
 
       # Bounded adaptive polling for correlated callback event (up to 20s)
