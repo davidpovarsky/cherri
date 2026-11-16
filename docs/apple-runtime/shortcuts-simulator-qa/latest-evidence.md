@@ -1,50 +1,45 @@
 # Cherri iOS / iPadOS 27 Shortcuts Simulator QA — Verified CI Evidence (`P10R14`)
 
-- **Primary Run ID (`xcode-27`):** `43751936080` (`cherri-ios27-simulator-qa-43751936080`)
-- **Intermediate Run ID (`xcode-27`):** `43749990966` (`cherri-ios27-simulator-qa-43749990966`)
-- **Cross-Platform Build & Test Run ID:** `43749990977`
-- **Compiler Commit SHA:** `66e50265d95497a32781d33e088a66dbdd55898a` (Implementation: `cfe0564038ee5376692350daac33200c4b91e9d7`, Provenance: `3b73f43f13e7a11d677f26fe503a6db93e48beb4`)
+- **Primary Runtime Run ID (`xcode-27`, `require_runtime=true`, `sample_id=all`):** [`43941751610`](https://github.com/davidpovarsky/cherri/actions/runs/43941751610) (`cherri-ios27-simulator-qa-43941751610`) — **`READY_SIMULATOR_VERIFIED`**
+- **Hebrew/RTL Runtime Run ID (`xcode-27`, `require_runtime=true`, `sample_id=qa-rtl-hebrew`):** [`43945569711`](https://github.com/davidpovarsky/cherri/actions/runs/43945569711) (`cherri-ios27-simulator-qa-43945569711`) — **`READY_SIMULATOR_VERIFIED`**
+- **Push-Triggered Simulator QA Run ID (`xcode-27`):** [`43936624262`](https://github.com/davidpovarsky/cherri/actions/runs/43936624262) (`cherri-ios27-simulator-qa-43936624262`) — **`READY_SIMULATOR_VERIFIED`**
+- **Verified Compiler/Harness Commit SHA:** `b696eb0205cd620d34f1f39f52144b8bb62106d6` (HubSign integration & coordinated handshake commit: `8ff3566f806382e92785f6f240c200f72add569e`)
 - **Runner:** GitHub Actions `xcode-27` (`macOS 27.0.1`, Build `26A434`, `Xcode 27.1` Build `27A9275`, `ARM64`)
-- **Simulator Device:** `iPad mini (A20 Pro)` (`iOS 27.2`, Build `24B8117`, Masked UDID `4DF1AA75-REDACTED`)
+- **Simulator Device:** `iPad mini (A17 Pro)` (`iOS 27.0`, Build `24A434`, Masked UDID `8721CBAE-REDACTED`)
 
 ---
 
 ## 1. Progressive 14-Gate Verification Table (`summary.json`)
 
-| # | Sub-Gate | Status | Verified Evidence |
+| # | Sub-Gate | Status | Verified Evidence (`43941751610` + `43945569711`) |
 |---:|---|---|---|
 | 1 | `RUNNER_AVAILABLE` | **`PASS`** | `macOS 27.0.1 (26A434)` + `Xcode 27.1 (27A9275)` + `xcrun simctl` verified in `environment.json`. |
-| 2 | `SIMULATOR_BOOTED` | **`PASS`** | Booted `iPad mini (A20 Pro)` (`iOS 27.2`, Build `24B8117`, Masked UDID `4DF1AA75-REDACTED`) via `xcrun simctl boot` + `bootstatus -b`. |
-| 3 | `SHORTCUTS_APP_INSTALLED` | **`PASS`** | `com.apple.shortcuts` confirmed installed in `simctl listapps` on `iOS 27.2` Simulator runtime. |
+| 2 | `SIMULATOR_BOOTED` | **`PASS`** | Booted `iPad mini (A17 Pro)` (`iOS 27.0`, Build `24A434`, Masked UDID `8721CBAE-REDACTED`) via `xcrun simctl boot` + `bootstatus -b`. |
+| 3 | `SHORTCUTS_APP_INSTALLED` | **`PASS`** | `com.apple.shortcuts` confirmed installed in `simctl listapps`. |
 | 4 | `SHORTCUTS_LAUNCHED` | **`PASS`** | `XCUIApplication(bundleIdentifier: "com.apple.shortcuts")` launched and verified `state == .runningForeground` (`shortcutForegroundVerified: true`). |
-| 5 | `EDITOR_OPENED` | **`PASS`** | `CherriSimulatorQAUITests.evaluateEditorState` verified that tapping `main.button.newshortcut` opened the iPadOS 27 split-view editor pane (`Other["editor"]` + `NavigationBar["New Shortcut"]` + `ScrollView` `475x1158` at `x: 281`). |
-| 6 | `FILE_IMPORT_ATTEMPTED` | **`PASS`** | All 4 routes in the import decision tree executed and recorded in `import-attempts.json` (`schemaVersion: "1.4"`). |
-| 7 | `COMPILER_ARTIFACT_IMPORTED` | **`BLOCKED_SIGNING`** | Route 2 (`xcrun simctl openurl <UDID> file://<unsigned.shortcut>`) is rejected by iOS/iPadOS 27.2 `Shortcuts.app` because Apple requires AEA1-signed `.shortcut` files; Route 3 (`/usr/bin/shortcuts sign --mode anyone`) fails on headless GitHub Actions runners with `exitCode: 1`: `"Error: In order to do this, you must be signed into iCloud."` |
-| 8 | `SHORTCUT_EXISTS_IN_LIBRARY` | **`BLOCKED_SIGNING`** | Because unauthenticated CI runners cannot AEA1-sign `.shortcut` archives via iCloud, the compiled shortcut (`qa-functional-v2`) does not exist in `All Shortcuts` (`shortcutExistsInLibrary: false`). |
-| 9 | `ACTION_EDITOR_CAPTURED` | **`PARTIAL_EDITOR_CAPTURE`** | `CherriSimulatorQAUITests` verified `editorOpened: true`, captured 3 viewport pages (`page-0001.png`..`page-0003.png`) + sanitized `editor-tree.json` + `screenshots-manifest.json` on the `ScrollView` (`475x1158` at `x: 281`), and recorded `PARTIAL_EDITOR_CAPTURE` because `editorIdentityVerified: false` (`expectedShortcutName: "qa-functional-v2"` is blocked by AEA1 signing). |
-| 10 | `SHORTCUT_RUN_ATTEMPTED` | **`BLOCKED_SIGNING`** | Enforced by the 14-gate state machine (`ValidateSimulatorQASummary`): requires `SHORTCUT_EXISTS_IN_LIBRARY == PASS`. |
-| 11 | `SHORTCUT_RUN_COMPLETED` | **`BLOCKED_SIGNING`** | Removed the P10R13 hardcoded `BLOCKED_IMPORT` overwrite in `scripts/ios27_shortcuts_simulator_qa.sh`; when `SHORTCUT_EXISTS_IN_LIBRARY == PASS`, evaluates the live correlated `x-callback-url` event (`runId == <fixtureId>-<runId>`, `receiverSelfTest == false`). On headless CI without an iCloud-signed fixture, truthfully reports `BLOCKED_SIGNING`. |
-| 12 | `CALLBACK_CAPTURED` | **`PASS`** | Tracked `tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/Info.plist` in git (`!**/ReceiverApp/Info.plist` in `.gitignore`). `xcodebuild test` passed `3/3` XCTest methods (`passedTests: 3, failedTests: 0`), and `CherriSimulatorQAReceiver` persisted `Documents/callback-events.json` (`runId: "receiver-self-test"`, `receiverSelfTest: true`, `status: "SUCCESS"`, `resultSummary: "CHERRI_QA_RECEIVER_OK"`). |
-| 13 | `TRACE_CAPTURED` | **`BLOCKED_SIGNING`** | Replaced P10R13's invalid `"eventsJsonl":"\uFFFC"` wrapper with a valid NDJSON stream (`schemaVersion: "1.4"`, `traceTransport: "ndjson-stream"`, `collectorSentinel: "===CHERRI_QA_TRACE_NDJSON_V14==="`), UTF-16 code-unit offsets (`utf16CodeUnitCount`), and JSON string escaping (`escapeJSONStringContent`). Validated by unit tests (`TestP14_*`); live simulator emission awaits AEA1-signed shortcut import (`BLOCKED_SIGNING`). |
-| 14 | `PHYSICAL_DEVICE_TESTED` | **`BLOCKED_DEVICE`** | Simulator execution never substitutes for physical iPadOS 27 hardware verification (`APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE`). |
+| 5 | `EDITOR_OPENED` | **`PASS`** | `CherriSimulatorQAUITests` opened the real imported shortcut editor pane on iPadOS 27 (`editorIdentityVerified: true`, `ScrollView` `424x1133` at `(0, 0)`). |
+| 6 | `FILE_IMPORT_ATTEMPTED` | **`PASS`** | All 4 import routes executed and recorded in `import-attempts.json` (`schemaVersion: "1.4"`). Route 2 unsigned `openurl` failed closed (`BLOCKED_SIGNING`); Route 3 signed exact-bytes HubSign + coordinated `simctl openurl` succeeded (`exitCode: 0`). |
+| 7 | `COMPILER_ARTIFACT_IMPORTED` | **`PASS`** | Freshly compiled V2 and Legacy `.shortcut` plists were signed as exact raw bytes via `HUBSIGN_REMOTE_SERVICE` (`RoutineHub HubSign`) with `AEA1` magic header verification (`qa-functional-v2`: `24,995` B, SHA-256 `f1739727...`; `qa-functional-legacy`: `25,107` B, SHA-256 `1e4509ce...`; `qa-rtl-hebrew-v2`: `24,163` B, SHA-256 `2a88a0d1...`) and imported into Apple Shortcuts (`importConsentButtonTapped: true`, `import-consent-sheet.png`). |
+| 8 | `SHORTCUT_EXISTS_IN_LIBRARY` | **`PASS`** | Independent UI enumeration confirmed `qa-functional-v2` (`library-after-import.png`) in `43941751610` and `qa-rtl-hebrew-v2, 18 actions` in `43945569711` inside `All Shortcuts`. |
+| 9 | `ACTION_EDITOR_CAPTURED` | **`EDITOR_CAPTURE_COMPLETE`** | Full-scroll editor capture completed across `7` pages (`page-0001.png`..`page-0007.png`) on `qa-functional-v2` with all 3 anchors (`ANCHOR_CARD_01_TOP_HEADER`, `ANCHOR_CARD_15_MID_CENTER`, `ANCHOR_CARD_28_BOTTOM_FOOTER`), `33` native actions (`23` matched card titles, `11` matched parameter values in `plist-vs-editor-comparison.json`), and `5` pages (`ANCHOR_RTL_01_פתיחה`, `18` native actions) on `qa-rtl-hebrew-v2`. |
+| 10 | `SHORTCUT_RUN_ATTEMPTED` | **`PASS`** | `CherriSimulatorQAReceiver` triggered `shortcuts://x-callback-url/run-shortcut` with unique per-run nonce (`qa-functional-v2-43941751610` / `qa-rtl-hebrew-v2-43945569711`), tapped `"Always Allow"` on Apple's Privacy share sheet (`phase4-before-confirm.png`), and logged live execution. |
+| 11 | `SHORTCUT_RUN_COMPLETED` | **`PASS`** | Real `shortcuts-x-callback` event (`receiverSelfTest: false`) matched expected runId + semantic output: `CHERRI_QA_RESULT:ok:count=2:mode=v2` (`43941751610`) and `CHERRI_QA_RTL_RESULT:ok:hebrew` (`43945569711`). Visually verified in `runtime-callback.png`. |
+| 12 | `CALLBACK_CAPTURED` | **`PASS`** | Fixed `xcodegen generate` (`project.yml` `INFOPLIST_FILE: ReceiverApp/Info.plist`, `GENERATE_INFOPLIST_FILE: "NO"`) so `CFBundleURLTypes` (`cherriqa://`) survives build generation. `xcodebuild test` passed `4/4` tests (`passedTests: 4, failedTests: 0`), capturing both self-test and live Shortcut `x-success` callbacks in `Documents/callback-events.json`. |
+| 13 | `TRACE_CAPTURED` | **`PASS`** | Live Simulator execution emitted `5` valid NDJSON trace lines (`collector_begin`, `step-1-greeting` `before`/`after`, `workflow-complete` `end`, `collector_end`) on `qa-functional-v2` and `4` valid NDJSON lines (`collector_begin`, `rtl-opening`, `rtl-complete`, `collector_end`) on `qa-rtl-hebrew-v2`. |
+| 14 | `PHYSICAL_DEVICE_TESTED` | **`BLOCKED_DEVICE`** | Simulator execution proves Simulator behavior on `iPadOS 27.0` (`iPad mini (A17 Pro)`); physical hardware verification remains a separate explicit owner gate (`APPLE_RUNTIME_EXECUTED=BLOCKED_DEVICE`). |
 
 ---
 
-## 2. Six P10R13 Findings Resolved & Verified in P10R14
+## 2. HubSign Integration & Root Fixes Completed in P10R14
 
-1. **Removed Hardcoded `BLOCKED_IMPORT` Overwrite in `scripts/ios27_shortcuts_simulator_qa.sh`:**
-   - Inside `if [ "$GATE_SHORTCUT_EXISTS_IN_LIBRARY" = "PASS" ]`, `GATE_SHORTCUT_RUN_COMPLETED` and `GATE_TRACE_CAPTURED` are now computed from the correlated `x-callback-url` event (`runId == <fixtureId>-<runId>`, `receiverSelfTest == false`, `status == "SUCCESS"`, semantic `resultSummary`, and NDJSON trace validation) rather than being unconditionally overwritten with `BLOCKED_IMPORT`.
-2. **Real Editor Verification + Regex/Allowlist Sanitizer in `CherriSimulatorQAUITests.swift`:**
-   - Replaced the naive `searchFields.count > 0 || collectionViews.count > 0` check with `evaluateEditorState`, which distinguishes the `All Shortcuts` library sidebar from the iPadOS 27 split-view editor pane (`Other["editor"]` + `NavigationBar["New Shortcut"]` / `NavigationBar[expectedShortcutName]`) and checks `editorIdentityVerified` + top/bottom anchors before claiming `EDITOR_CAPTURE_COMPLETE`.
-   - Replaced 256-char prefix truncation with `sanitizeUIString`, applying regex secret/PII/UUID/path redaction (`[REDACTED_SECRET_OR_PII]`) and strict UI allowlisting (`[REDACTED_NON_ALLOWLISTED_LEN_<N>]`).
-3. **Valid NDJSON Trace Stream (`schemaVersion: "1.4"`) + UTF-16 Offsets (`debug_stdlib.go`):**
-   - Replaced the invalid multiline quoted `"eventsJsonl":"\uFFFC"` wrapper with an unquoted NDJSON stream (`===CHERRI_QA_TRACE_NDJSON_V14===` sentinel followed by raw JSONL inline events and a single-line JSON `COLLECTOR_END` summary record).
-   - Fixed `WFTextTokenString` attachment range calculation to use UTF-16 code units (`utf16CodeUnitCount`) and escaped embedded quotes, backslashes, control characters, and literal `U+FFFC` (`\ufffc`) via `escapeJSONStringContent`.
-4. **Compile-Time Manifest + Structural Trace Action Classification (`debug_stdlib.go`):**
-   - Added `recordedTraceActions` manifest tracking during compilation plus strict structural checks (`isStructuralInlineTraceTextAction`, `isStructuralCollectorEnvelopeTextAction`) in `ClassifyShortcutTraceActions`, preventing user-authored `Text` actions that mention debug substrings (`__cherri_qa_trace`, `COLLECTOR_EVENT`, `TraceExportEnvelope`) from being misclassified.
-5. **Tracked `ReceiverApp/Info.plist` & Restored `3/3` XCTest Execution on `xcode-27`:**
-   - Added `!/tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/Info.plist` after `*.plist` in `.gitignore` and committed `ReceiverApp/Info.plist`.
-   - On `xcode-27` run `43751936080`, `xcodebuild test` built `CherriSimulatorQAReceiver` and passed all `3/3` XCTest methods (`test01_ReceiverSelfCallbackAndContainerPersistence`, `test02_ShortcutsImportLibraryAndActionEditorCoverage`, `test03_SanitizerRedactsSecretsAndNonAllowlistedStrings`), turning `CALLBACK_CAPTURED` from `FAIL_UI` to `PASS`.
-6. **Workflow `require_runtime` Gate & Binary PNG/Artifact Privacy Scanner:**
-   - Added `require_runtime` (`boolean`, default `false`) to `.github/workflows/cherri-ios27-shortcuts-simulator-qa.yml` and `--require-runtime` to `scripts/ios27_shortcuts_simulator_qa.sh`.
-   - Added pre-upload text + binary PNG/xcresult scanning (`ScanArtifactTreeForPrivacyViolations` in Go and inline Python pre-upload step in the workflow).
+1. **Exact-File Fail-Closed HubSign Signing (`signing.go`, `scripts/ios27_shortcuts_simulator_qa.sh`):**
+   - Sends the exact compiled `.shortcut` binary plist bytes (never re-compiling via legacy/older binaries) to RoutineHub HubSign (`HUBSIGN_REMOTE_SERVICE`) with IPv4 `tcp4` fallback when IPv6 routing fails.
+   - Fails closed on HTTP errors, XML/JSON error responses, empty outputs, timeouts, or non-`AEA1` magic bytes (`ValidateSignedShortcutBytes`), and records source, unsigned plist, and signed `AEA1` SHA-256 digests in `runtime/signing-provenance.json`.
+   - Covered by positive and negative contract unit tests in `TestP14_ExactFileHubSignAndProvenanceContract`.
+2. **Resolved `WFActionErrorDomain Code=5` Callback Failure (`tools/shortcuts-simulator-qa/XcodeProject/project.yml`):**
+   - Root cause: `xcodegen generate` with `info: path: ReceiverApp/Info.plist` (without `properties:`) overwrote `ReceiverApp/Info.plist` and stripped `CFBundleURLTypes` (`cherriqa://`), causing `LaunchServices` (`BindingEvaluator::CreateWithURLScheme(cherriqa)`) to find no handler and Apple Shortcuts `WFOutputAction` to fail with `No bindings found for scheme cherriqa`.
+   - Fix: Switched `project.yml` to `INFOPLIST_FILE: ReceiverApp/Info.plist` + `GENERATE_INFOPLIST_FILE: "NO"` and added a post-`xcodegen` `plistlib` assertion in `scripts/ios27_shortcuts_simulator_qa.sh`.
+3. **Resolved Phase 4 UI Freeze & Privacy Dialog Hangs (`CherriSimulatorQAUITests.swift`, `scripts/ios27_shortcuts_simulator_qa.sh`):**
+   - Guarded AX queries inside `test04ConfirmPendingRuntimeDialog` behind `.runningForeground`, removed manual `codesign` breaks that caused `ReceiverApp` launch failures (`NSPOSIXErrorDomain code=3`), switched `xcodebuild build` to `-scheme CherriSimulatorQAReceiver`, and preserved `${EXPECTED_SHORTCUT_NAME}.shortcut` on temp/HTTP fallback paths.
+4. **38x2 Dual-Dialect Corpus Regression & Fidelity Audit (`TestP13_CorpusFidelityAndSourceSizeAudit`):**
+   - Preserved `76/76` dual-dialect parity and `23,353 / 27,652` natural actions (`84.45%`, `fallback=4298`, `invalid=1`, `demoted=0`) on `b696eb0205cd620d34f1f39f52144b8bb62106d6`.

@@ -1,14 +1,15 @@
 {
   "schemaVersion": "1.4",
   "phase": "P10R14",
-  "primaryRunId": "43751936080",
-  "previousRunId": "43749990966",
+  "primaryRunId": "43941751610",
+  "rtlHebrewRunId": "43945569711",
+  "pushTriggerRunId": "43936624262",
+  "previousBlockedRunId": "43751936080",
   "workflow": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
-  "compilerCommitSha": "66e50265d95497a32781d33e088a66dbdd55898a",
-  "implementationCommitSha": "cfe0564038ee5376692350daac33200c4b91e9d7",
-  "provenanceCommitSha": "3b73f43f13e7a11d677f26fe503a6db93e48beb4",
-  "requireRuntime": false,
-  "releaseReadiness": "PARTIAL_READY_WITH_BLOCKED_SIGNING",
+  "compilerCommitSha": "b696eb0205cd620d34f1f39f52144b8bb62106d6",
+  "signingIntegrationCommitSha": "8ff3566f806382e92785f6f240c200f72add569e",
+  "requireRuntime": true,
+  "releaseReadiness": "READY_SIMULATOR_VERIFIED",
   "privacyGatePassed": true,
   "privacyViolations": [],
   "runnerEnvironment": {
@@ -21,21 +22,41 @@
     "xcodeVersion": "Xcode 27.1 (Build 27A9275)",
     "verifiedSimulatorDevices": [
       {
-        "runId": "43751936080",
-        "maskedUdid": "4DF1AA75-REDACTED",
-        "deviceName": "iPad mini (A20 Pro)",
-        "runtimeName": "iOS 27.2",
-        "runtimeVersion": "27.2",
-        "osBuildNumber": "24B8117",
+        "runId": "43941751610",
+        "fixtureId": "qa-functional-v2",
+        "maskedUdid": "8721CBAE-REDACTED",
+        "deviceName": "iPad mini (A17 Pro)",
+        "runtimeName": "iOS 27.0",
+        "runtimeVersion": "27.0",
+        "osBuildNumber": "24A434",
         "isIPad": true,
         "shortcutsAppInstalled": true,
         "shortcutsBundleId": "com.apple.shortcuts",
         "scrollContainerType": "ScrollView",
         "scrollContainerFrame": {
-          "x": 281,
+          "x": 0,
           "y": 0,
-          "width": 475,
-          "height": 1158
+          "width": 424,
+          "height": 1133
+        }
+      },
+      {
+        "runId": "43945569711",
+        "fixtureId": "qa-rtl-hebrew-v2",
+        "maskedUdid": "8721CBAE-REDACTED",
+        "deviceName": "iPad mini (A17 Pro)",
+        "runtimeName": "iOS 27.0",
+        "runtimeVersion": "27.0",
+        "osBuildNumber": "24A434",
+        "isIPad": true,
+        "shortcutsAppInstalled": true,
+        "shortcutsBundleId": "com.apple.shortcuts",
+        "scrollContainerType": "ScrollView",
+        "scrollContainerFrame": {
+          "x": 0,
+          "y": 0,
+          "width": 424,
+          "height": 1133
         }
       }
     ]
@@ -47,14 +68,62 @@
     "SHORTCUTS_LAUNCHED": "PASS",
     "EDITOR_OPENED": "PASS",
     "FILE_IMPORT_ATTEMPTED": "PASS",
-    "COMPILER_ARTIFACT_IMPORTED": "BLOCKED_SIGNING",
-    "SHORTCUT_EXISTS_IN_LIBRARY": "BLOCKED_SIGNING",
-    "ACTION_EDITOR_CAPTURED": "PARTIAL_EDITOR_CAPTURE",
-    "SHORTCUT_RUN_ATTEMPTED": "BLOCKED_SIGNING",
-    "SHORTCUT_RUN_COMPLETED": "BLOCKED_SIGNING",
+    "COMPILER_ARTIFACT_IMPORTED": "PASS",
+    "SHORTCUT_EXISTS_IN_LIBRARY": "PASS",
+    "ACTION_EDITOR_CAPTURED": "EDITOR_CAPTURE_COMPLETE",
+    "SHORTCUT_RUN_ATTEMPTED": "PASS",
+    "SHORTCUT_RUN_COMPLETED": "PASS",
     "CALLBACK_CAPTURED": "PASS",
-    "TRACE_CAPTURED": "BLOCKED_SIGNING",
+    "TRACE_CAPTURED": "PASS",
     "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+  },
+  "signingProvenance": {
+    "primaryRun43941751610": {
+      "signedArtifactValidAEA1": true,
+      "signingMethod": "HUBSIGN_REMOTE_SERVICE",
+      "serviceName": "RoutineHub HubSign",
+      "targetProvenance": {
+        "shortcutName": "qa-functional-v2",
+        "sourceFile": "qa-functional-v2.cherri",
+        "sourceSha256": "53298882742b9b555e792cb025e3e563730f764b941363bae9dcef1efbd32940",
+        "unsignedPlistSha256": "e2636e7f30e62e38ccb0ae01d65750194d69b3f26ed0d3fecda434acff7b27d2",
+        "unsignedByteSize": 25330,
+        "nativeActionCount": 33,
+        "signedArtifactSha256": "f173972708133911cc066df6af0d00aead5ac4bee52d3269b93790978c3637f2",
+        "signedByteSize": 24995,
+        "headerMagic": "AEA1",
+        "verificationTier": "AEA1_HEADER_PASS"
+      },
+      "legacyProvenance": {
+        "shortcutName": "qa-functional-legacy",
+        "sourceFile": "qa-functional-legacy.cherri",
+        "sourceSha256": "e09dc606678740e5bdba32d6dd0c98b02da9cbb88b45cd2bfa419f8d1ed76b72",
+        "unsignedPlistSha256": "1f70988f6138fe24b5f2fbfd2094a140d4aea0ec0add7e108e8c642c17412956",
+        "unsignedByteSize": 20437,
+        "nativeActionCount": 34,
+        "signedArtifactSha256": "1e4509ceb384e9bfeb84b9c09dd3ae12cd857c19848070ed16c1f9ad54560542",
+        "signedByteSize": 25107,
+        "headerMagic": "AEA1",
+        "verificationTier": "AEA1_HEADER_PASS"
+      }
+    },
+    "rtlHebrewRun43945569711": {
+      "signedArtifactValidAEA1": true,
+      "signingMethod": "HUBSIGN_REMOTE_SERVICE",
+      "serviceName": "RoutineHub HubSign",
+      "targetProvenance": {
+        "shortcutName": "qa-rtl-hebrew-v2",
+        "sourceFile": "qa-rtl-hebrew-v2.cherri",
+        "sourceSha256": "86b6cb30135129e8ff7809a38541512fc07071cfb1247bac72ad11dde53957ce",
+        "unsignedPlistSha256": "f1667e707e65a0d712799644beeb75f0431dcf0d5b6049b0e713c0c72c0c6bf1",
+        "unsignedByteSize": 17405,
+        "nativeActionCount": 18,
+        "signedArtifactSha256": "2a88a0d1dd496fca889ee6ce4b8881d02324fa736b95c48f80437106a6908ffe",
+        "signedByteSize": 24163,
+        "headerMagic": "AEA1",
+        "verificationTier": "AEA1_HEADER_PASS"
+      }
+    }
   },
   "importRoutes": [
     {
@@ -69,19 +138,19 @@
       "routeId": "route_2_unsigned_file_openurl",
       "documented": true,
       "command": "xcrun simctl openurl <UDID> file://<unsigned.shortcut>",
-      "exitCode": 0,
-      "status": "ATTEMPTED_UI_CHECK_REQUIRED",
-      "observedOutput": ""
+      "exitCode": 124,
+      "status": "BLOCKED_SIGNING",
+      "observedOutput": "simctl openurl timed out after 30s"
     },
     {
       "routeId": "route_3_signed_shortcut_openurl",
       "documented": true,
-      "command": "/usr/bin/shortcuts sign --mode anyone && xcrun simctl openurl <UDID> file://<signed.shortcut>",
-      "hostSignExitCode": 1,
-      "hostSignOutput": "Error: In order to do this, you must be signed into iCloud.",
-      "openUrlExitCode": 1,
-      "status": "BLOCKED_SIGNING",
-      "observedOutput": "Blocked by macOS host signing: Error: In order to do this, you must be signed into iCloud."
+      "command": "cherri sign <unsigned.shortcut> --hubsign && coordinated xcrun simctl openurl <UDID> file://<signed.shortcut>",
+      "hostSignExitCode": 0,
+      "hostSignOutput": "",
+      "openUrlExitCode": 0,
+      "status": "SIGNED_ARTIFACT_READY_FOR_COORDINATED_IMPORT",
+      "observedOutput": "AEA1 signed artifact verified (24995 bytes, method=HUBSIGN_REMOTE_SERVICE, legacyCounterpart=true); deferred simctl openurl to coordinated XCUITest handshake."
     },
     {
       "routeId": "route_4_exploratory_import_shortcut_scheme",
@@ -97,58 +166,58 @@
     {
       "fixtureId": "qa-functional-v2",
       "dialect": "v2",
-      "sourceSha256": "715bcc5f696ffd546aff589eda0f4354deeb2c1f437a6f6b72fd368132851acd",
-      "unsignedPlistSha256": "44d3bdaf470ac81c86ed0d27bf8f0256aab6786fe04fa15a9dd6f7a9fa6e99a5",
-      "nativeActionCount": 30
+      "sourceSha256": "53298882742b9b555e792cb025e3e563730f764b941363bae9dcef1efbd32940",
+      "unsignedPlistSha256": "e2636e7f30e62e38ccb0ae01d65750194d69b3f26ed0d3fecda434acff7b27d2",
+      "nativeActionCount": 33
     },
     {
       "fixtureId": "qa-functional-legacy",
       "dialect": "legacy",
-      "sourceSha256": "8fe363fde89ba618ad7ef31bbb5da350ecf035a8f386057695a8a721158ffde5",
-      "unsignedPlistSha256": "307e2108ea2cded6876e7d3f90a1ef7742bf98eef5036696e4435f11c97550e1",
-      "nativeActionCount": 31
+      "sourceSha256": "e09dc606678740e5bdba32d6dd0c98b02da9cbb88b45cd2bfa419f8d1ed76b72",
+      "unsignedPlistSha256": "1f70988f6138fe24b5f2fbfd2094a140d4aea0ec0add7e108e8c642c17412956",
+      "nativeActionCount": 34
     },
     {
       "fixtureId": "qa-scroll-editor-v2",
       "dialect": "v2",
       "sourceSha256": "e8991ab412f0bbe8cdff2a0a0ca3b02c684cfdd36997e3477730e69d690cfec0",
-      "unsignedPlistSha256": "8b1cb5226cb800c9816173e3ead9107cdbfc8a0bedc0e4f483ce14142957ac58",
+      "unsignedPlistSha256": "932c1b979837cb67bc9cb27484a83ee0d4317f9a4254845fe76165314064a3e9",
       "nativeActionCount": 35
     },
     {
       "fixtureId": "qa-scroll-editor-legacy",
       "dialect": "legacy",
       "sourceSha256": "7fda9c4c5286e109a8beeac40645aa97270b98a3b11f6577bd8a1d358ad50182",
-      "unsignedPlistSha256": "f3ece7032b6c913509e0b2507470c88fe2d41ed7ce31be27ea31ef65c1346457",
+      "unsignedPlistSha256": "31fa7f20e86425edb134665c1bb7eb7e2d64782d0a5047d3d29f29080d5609b3",
       "nativeActionCount": 36
     },
     {
       "fixtureId": "qa-rtl-hebrew-v2",
       "dialect": "v2",
-      "sourceSha256": "12e231979fe313e589117c72958107f3d45650c6917239ef043c89b8d95c9f77",
-      "unsignedPlistSha256": "c104fff8ee581f30ca197f5214d0b565a81165705b6bf6e158a97a74f700005d",
+      "sourceSha256": "86b6cb30135129e8ff7809a38541512fc07071cfb1247bac72ad11dde53957ce",
+      "unsignedPlistSha256": "6a803cbd34780fe20317e1bf106d4f4cb0150f520a70279f34ad8f3ed116369c",
       "nativeActionCount": 18
     },
     {
       "fixtureId": "qa-functional-v2-uninstrumented",
       "dialect": "v2",
-      "sourceSha256": "07444bbda0be61ba5ec4b9884ec3f8ae27624ee549c2e2c0406c415cdcc4eb4b",
-      "unsignedPlistSha256": "c2178860e094ce5e8ce5c266a6099fd2677e8a688225b094a7650d18f8fe5888",
-      "nativeActionCount": 13
+      "sourceSha256": "5f5154796bcc02ae092826748f288fce41406a7934af1f4c8d7a5c2bdbc8dadc",
+      "unsignedPlistSha256": "283f6d8d15c9ac9ba65b6c7b28e8e4035ab95225748c0494e46608bd80c3ca48",
+      "nativeActionCount": 16
     },
     {
       "fixtureId": "qa-functional-legacy-uninstrumented",
       "dialect": "legacy",
-      "sourceSha256": "f9d99a9d771adbc39c34125a52714a2d2dc23aaf1a73ed7c0df1406cfa2761a6",
-      "unsignedPlistSha256": "0c1a6953335cdb6aedd18c54bc66ccb302a61194e18330021f38740708a50555",
-      "nativeActionCount": 14
+      "sourceSha256": "f3c364e784c0f42058f0e3d5eee1de06a64e78f81d7ba3062f4fdf3e48bbbf7e",
+      "unsignedPlistSha256": "31369e9a5eb70c5a0cce292cd56bff8af83008512985a7f0261ff6d2e5adc4dc",
+      "nativeActionCount": 17
     }
   ],
   "instrumentationParity": {
     "v2": {
-      "uninstrumentedActionCount": 13,
-      "instrumentedTotalActionCount": 30,
-      "projectedSourceActionCount": 13,
+      "uninstrumentedActionCount": 16,
+      "instrumentedTotalActionCount": 33,
+      "projectedSourceActionCount": 16,
       "inlineDebugActionCount": 15,
       "collectorEventActionCount": 2,
       "sourceActionSequenceMatches": true,
@@ -156,9 +225,9 @@
       "collectorSentinel": "===CHERRI_QA_TRACE_NDJSON_V14==="
     },
     "legacy": {
-      "uninstrumentedActionCount": 14,
-      "instrumentedTotalActionCount": 31,
-      "projectedSourceActionCount": 14,
+      "uninstrumentedActionCount": 17,
+      "instrumentedTotalActionCount": 34,
+      "projectedSourceActionCount": 17,
       "inlineDebugActionCount": 15,
       "collectorEventActionCount": 2,
       "sourceActionSequenceMatches": true,
@@ -171,54 +240,79 @@
     "shortcutLaunched": true,
     "shortcutForegroundVerified": true,
     "expectedShortcutName": "qa-functional-v2",
-    "importConsentButtonTapped": false,
-    "shortcutExistsInLibrary": false,
-    "editorOpened": true,
-    "editorIdentityVerified": false,
-    "editorHeaderLabels": [
-      "All Shortcuts",
-      "All Shortcuts",
-      "New Shortcut"
+    "importConsentButtonTapped": true,
+    "importSheetSnapshotCaptured": true,
+    "shortcutExistsInLibrary": true,
+    "libraryShortcutCells": [
+      "qa-functional-v2, No actions"
     ],
+    "editorOpened": true,
+    "editorIdentityVerified": true,
     "scrollContainerFound": true,
     "scrollContainerType": "ScrollView",
     "scrollContainerFrame": {
-      "x": 281,
+      "x": 0,
       "y": 0,
-      "width": 475,
-      "height": 1158
+      "width": 424,
+      "height": 1133
     },
-    "totalPagesCaptured": 3,
+    "totalPagesCaptured": 7,
     "maxEditorPages": 20,
-    "captureStatus": "PARTIAL_EDITOR_CAPTURE",
-    "detectedActionCards": [
-      "Button:Show Sidebar",
-      "Cell:New Shortcut, No actions",
-      "Button:Play",
-      "Button:Share Shortcut",
-      "StaticText:Preparing support for describe a shortcut",
-      "Button:Report a Concern",
-      "StaticText:Report a Concern"
+    "captureStatus": "EDITOR_CAPTURE_COMPLETE",
+    "detectedAnchors": [
+      "ANCHOR_CARD_01_TOP_HEADER",
+      "ANCHOR_CARD_15_MID_CENTER",
+      "ANCHOR_CARD_28_BOTTOM_FOOTER"
     ],
-    "detectedAnchors": [],
-    "bottomReachedEvidence": "MULTI_SIGNAL_STALL_AT_PAGE_3:IDENTICAL_VISIBLE_LABEL_FRAME_DIGEST+ZERO_LAST_CARD_Y_DELTA"
+    "bottomReachedEvidence": "MULTI_SIGNAL_STALL_AT_PAGE_7:IDENTICAL_VISIBLE_LABEL_FRAME_DIGEST+ZERO_LAST_CARD_Y_DELTA+BOTTOM_ANCHOR_28_VISIBLE",
+    "plistComparison": {
+      "compiledNativeActionCount": 33,
+      "detectedActionCardsCount": 34,
+      "matchedCardTitlesCount": 23,
+      "matchedParameterValuesCount": 11
+    }
+  },
+  "rtlHebrewVerification": {
+    "runId": "43945569711",
+    "expectedShortcutName": "qa-rtl-hebrew-v2",
+    "libraryShortcutCells": [
+      "qa-rtl-hebrew-v2, 18 actions"
+    ],
+    "editorIdentityVerified": true,
+    "captureStatus": "EDITOR_CAPTURE_COMPLETE",
+    "totalPagesCaptured": 5,
+    "detectedAnchors": [
+      "ANCHOR_RTL_01_פתיחה"
+    ],
+    "plistComparison": {
+      "compiledNativeActionCount": 18,
+      "detectedActionCardsCount": 26,
+      "matchedCardTitlesCount": 11,
+      "matchedParameterValuesCount": 6
+    },
+    "expectedSemanticOutput": "CHERRI_QA_RTL_RESULT:ok:hebrew",
+    "callbackRunId": "qa-rtl-hebrew-v2-43945569711",
+    "traceLineCount": 4
   },
   "xctestSummary": {
     "title": "Test - CherriSimulatorQAReceiver",
     "result": "Passed",
-    "totalTestCount": 3,
-    "passedTests": 3,
+    "totalTestCount": 4,
+    "passedTests": 4,
     "failedTests": 0,
     "skippedTests": 0
   },
   "receiverCallbackEvidence": {
     "schemaVersion": "1.4",
-    "runId": "receiver-self-test",
-    "eventSource": "receiver-self-test",
-    "receiverSelfTest": true,
+    "runId": "qa-functional-v2-43941751610",
+    "eventSource": "shortcuts-x-callback",
+    "expectedShortcutName": "qa-functional-v2",
+    "fixtureId": "qa-functional-v2",
+    "receiverSelfTest": false,
     "host": "success",
     "status": "SUCCESS",
-    "resultSummary": "CHERRI_QA_RECEIVER_OK",
-    "timestampISO8601": "2026-11-15T19:13:07.031Z"
+    "resultSummary": "CHERRI_QA_RESULT:ok:count=2:mode=v2",
+    "timestampISO8601": "2026-11-16T19:59:43.660Z",
+    "traceLineCount": 5
   }
 }
