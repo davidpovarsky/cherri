@@ -809,7 +809,7 @@ q = urllib.parse.quote
 x_success = f"cherriqa://success?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
 x_cancel = f"cherriqa://cancel?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
 x_error = f"cherriqa://error?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
-print(f"shortcuts://x-callback-url/run-shortcut?name={q(name)}&input=text&text=CHERRI_QA_INPUT&x-success={q(x_success, safe='')}&x-cancel={q(x_cancel, safe='')}&x-error={q(x_error, safe='')}")
+print(f"shortcuts://x-callback-url/run-shortcut?name={q(name)}&input=text&text=CHERRI_QA_INPUT&x-source=CherriSimulatorQAReceiver&x-success={q(x_success, safe='')}&x-cancel={q(x_cancel, safe='')}&x-error={q(x_error, safe='')}")
 PY
 )"
 
@@ -823,7 +823,7 @@ PY
 
     RAW_SIM_LOG="$ARTIFACT_DIR/runtime/raw-sim-log.txt"
     rm -f "$RAW_SIM_LOG"
-    xcrun simctl spawn "$UDID" log stream --predicate 'process == "Shortcuts" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver"' --level debug --style compact > "$RAW_SIM_LOG" 2>&1 &
+    xcrun simctl spawn "$UDID" log stream --predicate 'process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "siriactionsd" || process == "SpringBoard" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver"' --level debug --style compact > "$RAW_SIM_LOG" 2>&1 &
     SIM_LOG_PID=$!
 
     rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
@@ -1172,6 +1172,14 @@ import re, sys
 udid, root_dir, in_path, out_path = sys.argv[1:5]
 lines = open(in_path, encoding="utf-8", errors="replace").read().splitlines()
 forbidden = re.compile(r"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._\-]+|AppleID|iCloudToken)")
+noise = (
+    "ToolKitIndexing", "ToolKitDatabase", "approvedForPublicDrawerToDisplayActionIdentifier",
+    "ToolDatabaseWriter", "CFBundle:strings", "CFBundle:resources",
+    "com.apple.Accessibility", "com.apple.defaults:User Defaults",
+    "com.apple.AppleMediaServices", "com.apple.clouddocs", "com.apple.accounts",
+    "com.apple.foundation.filecoordination", "com.apple.launchservices:binding",
+    "com.apple.cloudkit.sim", "BackBoardServices", "FrontBoardServices:Workspace"
+)
 uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
 users_re = re.compile(r"/Users/[^/\s]+")
 filtered = []
@@ -1184,12 +1192,18 @@ for ln in lines:
     ln = uuid_re.sub("<UUID>", ln)
     if forbidden.search(ln):
         continue
-    if "ToolKitIndexing" in ln or "ToolKitDatabase" in ln or "approvedForPublicDrawerToDisplayActionIdentifier" in ln or "ToolDatabaseWriter" in ln or "CFBundle:strings" in ln or "CFBundle:resources" in ln:
+    if any(n in ln for n in noise):
         continue
-    if any(k in ln.lower() for k in ("error", "fail", "warn", "shortcut", "callback", "cherriqa", "openurl", "denied", "allow", "workflow", "qa-functional", "trigger", "scene", "x-callback", "run")):
-        filtered.append(ln[:300])
+    low = ln.lower()
+    if any(k in low for k in (
+        "x-callback", "run-shortcut", "cherriqa", "openurl", "backgroundshortcutrunner",
+        "qa-functional", "qa-scroll", "qa-rtl", "wfworkflow", "vcdatastore", "daemontask",
+        "error", "fail", "denied", "allow", "trigger", "scene", "playback", "dialog",
+        "com.apple.shortcuts", "com.apple.workflowkit"
+    )):
+        filtered.append(ln[:320])
 with open(out_path, "w", encoding="utf-8") as f:
-    kept = filtered[:40] + ["--- [truncated middle] ---"] + filtered[-110:] if len(filtered) > 150 else filtered
+    kept = filtered[:80] + ["--- [truncated middle] ---"] + filtered[-270:] if len(filtered) > 350 else filtered
     f.write("\n".join(kept) + ("\n" if kept else ""))
 PY
     fi

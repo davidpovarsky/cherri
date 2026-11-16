@@ -901,7 +901,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 }
             }
 
-            pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(25.0))
+            pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(20.0))
             if !runtimeCallbackObservedInUI && !capturedMidway {
                 capturedMidway = true
                 let midShot = XCUIScreen.main.screenshot()
@@ -911,7 +911,35 @@ final class CherriSimulatorQAUITests: XCTestCase {
                     receiver.launch()
                     runtimeTriggerDispatched = true
                     Thread.sleep(forTimeInterval: 2.5)
-                    pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(40.0))
+                    pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(20.0))
+                }
+            }
+            if !runtimeCallbackObservedInUI {
+                if let runURLStr = ProcessInfo.processInfo.environment["CHERRI_QA_RUN_URL"], !runURLStr.isEmpty {
+                    // Attempt 3: terminate Shortcuts to drop any iPadOS multi-window/hidden scene before ReceiverApp opens RUN_URL cleanly
+                    shortcuts.terminate()
+                    Thread.sleep(forTimeInterval: 1.5)
+                    receiver.launchArguments = ["--trigger-shortcut-url", runURLStr]
+                    receiver.launch()
+                    Thread.sleep(forTimeInterval: 2.5)
+                    pollRuntimeConfirmAndCallback(until: Date().addingTimeInterval(25.0))
+                }
+            }
+            if !runtimeCallbackObservedInUI {
+                // Diagnostic only: tap Play button on card if visible to verify UI execution independent of x-callback-url
+                let playBtn = shortcuts.buttons["Play, \(expectedShortcutName)"].firstMatch
+                if playBtn.exists && playBtn.isHittable {
+                    playBtn.tap()
+                    Thread.sleep(forTimeInterval: 6.0)
+                    for targetApp in [springboard, shortcuts] {
+                        let btn = targetApp.buttons.matching(confirmPredicate).firstMatch
+                        if btn.exists && btn.isHittable {
+                            btn.tap()
+                            Thread.sleep(forTimeInterval: 2.0)
+                        }
+                    }
+                    let playDiagShot = XCUIScreen.main.screenshot()
+                    try? playDiagShot.pngRepresentation.write(to: outDir.appendingPathComponent("runtime-play-tap-diag.png"), options: .atomic)
                 }
             }
             if !runtimeCallbackObservedInUI {
