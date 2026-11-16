@@ -1524,7 +1524,7 @@ import sys, urllib.parse
 print("cherriqa://trigger?target=" + urllib.parse.quote(sys.argv[1], safe=""))
 PY
 )"
-        run_cmd_timeout 15 xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+        # Keep Shortcuts warm so openURL enters scene(_:openURLContexts:) with active UIKit sourceApplication, after installing signed ReceiverApp
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" org.cherrilang.qa.Receiver >/dev/null 2>&1 || true
         sleep 1
         RECEIVER_BUILT_APP="$(find "$DERIVED_DATA_PATH/Build/Products" -maxdepth 3 -name "CherriSimulatorQAReceiver.app" -type d 2>/dev/null | head -n 1 || true)"
@@ -1533,15 +1533,27 @@ PY
           RECEIVER_BUNDLE_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
         fi
         if [ -n "$RECEIVER_BUNDLE_PATH" ] && [ -d "$RECEIVER_BUNDLE_PATH" ]; then
+          RECEIVER_XCENT="$QA_SCRATCH_DIR/receiver.entitlements"
+          cat > "$RECEIVER_XCENT" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>get-task-allow</key>
+	<true/>
+</dict>
+</plist>
+PLIST
           SIGNED_RECEIVER_TMP="$QA_SCRATCH_DIR/CherriSimulatorQAReceiver-signed.app"
           rm -rf "$SIGNED_RECEIVER_TMP"
           cp -R "$RECEIVER_BUNDLE_PATH" "$SIGNED_RECEIVER_TMP"
-          CS_OUT="$(codesign --force --sign - --identifier org.cherrilang.qa.Receiver "$SIGNED_RECEIVER_TMP" 2>&1 || true)"
+          CS_OUT="$(codesign --force --sign - --identifier org.cherrilang.qa.Receiver --entitlements "$RECEIVER_XCENT" "$SIGNED_RECEIVER_TMP" 2>&1 || true)"
           if [ -n "$RECEIVER_BUILT_APP" ] && [ -d "$RECEIVER_BUILT_APP" ]; then
-            codesign --force --sign - --identifier org.cherrilang.qa.Receiver "$RECEIVER_BUILT_APP" >/dev/null 2>&1 || true
+            codesign --force --sign - --identifier org.cherrilang.qa.Receiver --entitlements "$RECEIVER_XCENT" "$RECEIVER_BUILT_APP" >/dev/null 2>&1 || true
           fi
           INST_OUT="$(xcrun simctl install "$UDID" "$SIGNED_RECEIVER_TMP" 2>&1 || true)"
           rm -rf "$SIGNED_RECEIVER_TMP"
+          sleep 3
           INSTALLED_RECEIVER_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
           NEW_DATA_DIR="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver data 2>/dev/null || true)"
           [ -n "$NEW_DATA_DIR" ] && RECEIVER_DATA_DIR="$NEW_DATA_DIR"
@@ -1549,9 +1561,12 @@ PY
           [ -n "$CS_OUT" ] && printf '%s\n' "$CS_OUT" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 5 || true
           [ -n "$INST_OUT" ] && printf '%s\n' "$INST_OUT" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 5 || true
           codesign -dvv "${INSTALLED_RECEIVER_PATH:-$RECEIVER_BUNDLE_PATH}" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 12 || true
+          codesign -d --entitlements :- "${INSTALLED_RECEIVER_PATH:-$RECEIVER_BUNDLE_PATH}" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 20 || true
         else
           echo "=== ReceiverApp codesign + install skipped: bundle not found ==="
         fi
+        run_cmd_timeout 15 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+        sleep 2
         LAUNCH_RC=0
         LAUNCH_OUT="$( ( export SIMCTL_CHILD_CHERRI_TRIGGER_SHORTCUT_URL="$RUN_URL"; run_cmd_timeout 25 xcrun simctl launch "$UDID" org.cherrilang.qa.Receiver ) 2>&1 )" || LAUNCH_RC=$?
         echo "Phase4b simctl launch rc=$LAUNCH_RC out=$(printf '%s' "$LAUNCH_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-200)"
@@ -1744,25 +1759,32 @@ noise = (
     "com.apple.xpc:session", "com.apple.KeyboardArbiter", "com.apple.TextInputUI",
     "com.apple.useractivity", "com.apple.containermanager", "com.apple.network:",
     "com.apple.CloudKit", "com.apple.cloudkit", "com.apple.launchservices:datasep",
-    "com.apple.launchservices:privacy", "Error retrieving application record",
     "ToolEmbeddingDatabase", "RunningBoardServices", "CoreSpotlight", "SpotlightSync",
     "com.apple.ManagedConfiguration", "com.apple.purplebuddy", "PrototypeTools",
     "com.apple.calls.callkit", "com.apple.UIIntelligenceSupport",
     "com.apple.foundation.filecoordination", "Updating Key-Value Observers",
     "Loading Preferences From User Session CFPrefsD", "CoreAnalytics",
     "com.apple.CoreAnalytics", "com.apple.shortcuts:Files",
-    "com.apple.PlugInKit", "com.apple.launchservices:db", "com.apple.shortcuts:ActionRegistry"
+    "com.apple.PlugInKit", "com.apple.shortcuts:ActionRegistry"
 )
 uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
 users_re = re.compile(r"/Users/[^/\s]+")
 filtered = []
 exec_lines = []
+exec_spam = (
+    "processParameterStates", "requiresRemoteExecution",
+    "dismissPresentedContent", "Not reaching out to UI for dismissal",
+    "Adding 0 user activities", "Starting image proxy injection",
+    "ImageProxyInjection", "Reset extension request"
+)
 exec_keywords = (
     "CherriReceiver", "BackgroundShortcutRunner", "WFOutputAction",
     "WorkflowExecution", "RunningLifecycle", "XCallback", "x-callback",
     "taint", "appIdentifier", "destination app", "could not be determined",
     "cherriqa", "VoiceShortcutClient", "WFXCallback", "openURL",
-    "OpenURL", "WFLibraryRunCoordinator", "Shortcuts:URL", "WFWorkflow"
+    "OpenURL", "WFLibraryRunCoordinator", "Shortcuts:URL", "WFWorkflow",
+    "WFActionError", "contentDestination", "performDataAccessChecks",
+    "originator", "org.cherrilang", "Security", "LaunchServices", "ShortcutRunner"
 )
 for ln in lines:
     if udid:
@@ -1773,19 +1795,20 @@ for ln in lines:
     ln = uuid_re.sub("<UUID>", ln)
     if forbidden.search(ln):
         continue
-    if "CherriReceiver" not in ln and any(n in ln for n in noise):
+    if "CherriReceiver" not in ln and "org.cherrilang" not in ln and any(n in ln for n in noise):
         continue
     filtered.append(ln[:320])
-    if any(k in ln for k in exec_keywords) and "ToolEmbedding" not in ln:
+    if any(k in ln for k in exec_keywords) and "ToolEmbedding" not in ln and not any(sp in ln for sp in exec_spam):
         exec_lines.append(ln[:320])
 with open(out_path, "w", encoding="utf-8") as f:
-    kept = filtered[:120] + ["--- [truncated middle] ---"] + filtered[-330:] if len(filtered) > 450 else filtered
+    kept = filtered[:250] + ["--- [truncated middle] ---"] + filtered[-350:] if len(filtered) > 650 else filtered
     f.write("\n".join(kept) + ("\n" if kept else ""))
 exec_path = out_path.replace("shortcuts-log-excerpt.txt", "phase4-execution-log.txt")
+exec_kept = exec_lines[:250] + ["--- [truncated middle] ---"] + exec_lines[-350:] if len(exec_lines) > 650 else exec_lines
 with open(exec_path, "w", encoding="utf-8") as ef:
-    ef.write("\n".join(exec_lines[-300:]) + ("\n" if exec_lines else ""))
+    ef.write("\n".join(exec_kept) + ("\n" if exec_kept else ""))
 print(f"scrubbed Phase4/sim log excerpt ({in_path}): {len(filtered)} lines -> kept {len(kept)}, execLines={len(exec_lines)}")
-for ln in exec_lines[:100]:
+for ln in exec_kept[:120]:
     print("PHASE4_EXEC:", ln)
 preview = filtered[:60] + (["---"] + filtered[-40:] if len(filtered) > 60 else [])
 for ln in preview:
