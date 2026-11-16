@@ -334,13 +334,16 @@ prefer_ipad = (profile != "iphone-fallback")
 
 def runtime_rank(r):
     rid = r.get("identifier", "")
+    ver = str(r.get("version", ""))
     devs = devices_map.get(rid, [])
     has_avail_ipad = any("iPad" in d.get("name", "") and d.get("isAvailable", True) for d in devs)
     not_iphone_specific = ("iPhone" not in rid)
+    is_27_0 = 1 if ver.startswith("27.0") else 0
     return (
-        str(r.get("version", "")),
         1 if (has_avail_ipad if prefer_ipad else not has_avail_ipad) else 0,
         1 if (not_iphone_specific if prefer_ipad else True) else 0,
+        is_27_0,
+        ver,
     )
 
 ios_runtimes.sort(key=runtime_rank, reverse=True)
@@ -363,9 +366,14 @@ rt_devs = devices_map.get(rt_id, [])
 chosen_dev = None
 if prefer_ipad:
     for d in rt_devs:
-        if "iPad" in d.get("name", "") and d.get("isAvailable", True):
+        if "iPad mini" in d.get("name", "") and d.get("isAvailable", True):
             chosen_dev = d
             break
+    if not chosen_dev:
+        for d in rt_devs:
+            if "iPad" in d.get("name", "") and d.get("isAvailable", True):
+                chosen_dev = d
+                break
     if not chosen_dev:
         ipad_types = [dt for dt in devicetypes if "iPad" in dt.get("name", "")]
         if ipad_types:
@@ -1519,21 +1527,30 @@ PY
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" org.cherrilang.qa.Receiver >/dev/null 2>&1 || true
         sleep 1
-        RECEIVER_BUNDLE_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
+        RECEIVER_BUILT_APP="$(find "$DERIVED_DATA_PATH/Build/Products" -maxdepth 3 -name "CherriSimulatorQAReceiver.app" -type d 2>/dev/null | head -n 1 || true)"
+        RECEIVER_BUNDLE_PATH="${RECEIVER_BUILT_APP:-}"
+        if [ -z "$RECEIVER_BUNDLE_PATH" ] || [ ! -d "$RECEIVER_BUNDLE_PATH" ]; then
+          RECEIVER_BUNDLE_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
+        fi
         if [ -n "$RECEIVER_BUNDLE_PATH" ] && [ -d "$RECEIVER_BUNDLE_PATH" ]; then
-          SIGNED_RECEIVER_TMP="/tmp/cherri-receiver-signed-${RUN_ID}.app"
+          SIGNED_RECEIVER_TMP="$QA_SCRATCH_DIR/CherriSimulatorQAReceiver-signed.app"
           rm -rf "$SIGNED_RECEIVER_TMP"
           cp -R "$RECEIVER_BUNDLE_PATH" "$SIGNED_RECEIVER_TMP"
           CS_OUT="$(codesign --force --sign - --identifier org.cherrilang.qa.Receiver "$SIGNED_RECEIVER_TMP" 2>&1 || true)"
+          if [ -n "$RECEIVER_BUILT_APP" ] && [ -d "$RECEIVER_BUILT_APP" ]; then
+            codesign --force --sign - --identifier org.cherrilang.qa.Receiver "$RECEIVER_BUILT_APP" >/dev/null 2>&1 || true
+          fi
           INST_OUT="$(xcrun simctl install "$UDID" "$SIGNED_RECEIVER_TMP" 2>&1 || true)"
           rm -rf "$SIGNED_RECEIVER_TMP"
-          RECEIVER_BUNDLE_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
+          INSTALLED_RECEIVER_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
           NEW_DATA_DIR="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver data 2>/dev/null || true)"
           [ -n "$NEW_DATA_DIR" ] && RECEIVER_DATA_DIR="$NEW_DATA_DIR"
           echo "=== ReceiverApp codesign + install ==="
           [ -n "$CS_OUT" ] && printf '%s\n' "$CS_OUT" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 5 || true
           [ -n "$INST_OUT" ] && printf '%s\n' "$INST_OUT" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 5 || true
-          codesign -dvv "$RECEIVER_BUNDLE_PATH" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 12 || true
+          codesign -dvv "${INSTALLED_RECEIVER_PATH:-$RECEIVER_BUNDLE_PATH}" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 12 || true
+        else
+          echo "=== ReceiverApp codesign + install skipped: bundle not found ==="
         fi
         LAUNCH_RC=0
         LAUNCH_OUT="$( ( export SIMCTL_CHILD_CHERRI_TRIGGER_SHORTCUT_URL="$RUN_URL"; run_cmd_timeout 25 xcrun simctl launch "$UDID" org.cherrilang.qa.Receiver ) 2>&1 )" || LAUNCH_RC=$?
