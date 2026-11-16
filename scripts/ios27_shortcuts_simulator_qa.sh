@@ -434,12 +434,12 @@ rm -f "$ARTIFACT_DIR/sim-listapps.plist" "$ARTIFACT_DIR/sim-runtimes.json" "$ART
 
 ensure_sim_session_ready() {
   local target_udid="$1"
-  local spawn_rc=0
-  python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || spawn_rc=$?
+  local env_rc=0
+  python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || env_rc=$?
 import os, signal, subprocess, sys
 u = sys.argv[1]
 p = subprocess.Popen(
-    ["xcrun", "simctl", "spawn", u, "/usr/bin/true"],
+    ["xcrun", "simctl", "getenv", u, "HOME"],
     stdin=subprocess.DEVNULL,
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,
@@ -458,20 +458,22 @@ except subprocess.TimeoutExpired:
         pass
     sys.exit(124)
 PY
-  if [ "$spawn_rc" -eq 0 ]; then
+  if [ "$env_rc" -eq 0 ]; then
     return 0
   fi
-  echo "Simulator launchd_sim session unhealthy (spawn rc=$spawn_rc); rebooting <UDID> cleanly..."
+  echo "Simulator launchd_sim session unhealthy (getenv rc=$env_rc); rebooting <UDID> cleanly..."
   xcrun simctl shutdown "$target_udid" >/dev/null 2>&1 || true
   sleep 2
   xcrun simctl boot "$target_udid" >/dev/null 2>&1 || true
   xcrun simctl bootstatus "$target_udid" -b >/dev/null 2>&1 || true
+  open -g -a Simulator --args -CurrentDeviceUDID "$target_udid" >/dev/null 2>&1 || true
+  sleep 3
   local retry_rc=0
   python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || retry_rc=$?
 import os, signal, subprocess, sys
 u = sys.argv[1]
 p = subprocess.Popen(
-    ["xcrun", "simctl", "spawn", u, "/usr/bin/true"],
+    ["xcrun", "simctl", "getenv", u, "HOME"],
     stdin=subprocess.DEVNULL,
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,
@@ -486,7 +488,7 @@ except subprocess.TimeoutExpired:
         pass
     sys.exit(124)
 PY
-  echo "Simulator session post-reboot spawn check rc=$retry_rc"
+  echo "Simulator session post-reboot getenv check rc=$retry_rc"
   return 0
 }
 
@@ -1044,14 +1046,75 @@ PY
       ensure_sim_session_ready "$UDID"
       echo "=== Phase 3b: Pre-XCTest outside-runner signed .shortcut import openurl ==="
       run_cmd_timeout 20 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
-      sleep 3
+      sleep 4
+      PRE_IMP_METHOD="file_primary"
       PRE_IMP_T0=$SECONDS
       PRE_IMP_RC=0
-      PRE_IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 2 "$SIGNED_FILE" 1 45)" || PRE_IMP_RC=$?
+      PRE_IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 50)" || PRE_IMP_RC=$?
       PRE_IMP_DT=$((SECONDS - PRE_IMP_T0))
-      printf 'rc=%s\ndurationSec=%s %s\n' "$PRE_IMP_RC" "$PRE_IMP_DT" "${PRE_IMP_OUT:0:220}" > "$ARTIFACT_DIR/editor/pre-import-ack.txt"
-      echo "Phase 3b pre-import openurl rc=$PRE_IMP_RC durationSec=${PRE_IMP_DT}s out=$(printf '%s' "$PRE_IMP_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-160)"
+      if [ "$PRE_IMP_RC" -ne 0 ]; then
+        TMP_SIGNED_IMPORT="/tmp/cherri-import-${RUN_ID}.shortcut"
+        cp -f "$SIGNED_FILE" "$TMP_SIGNED_IMPORT"
+        PRE_IMP_METHOD="file_tmp"
+        _t1=$SECONDS
+        PRE_IMP2_RC=0
+        PRE_IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$TMP_SIGNED_IMPORT" 1 "" 0 35)" || PRE_IMP2_RC=$?
+        _dt1=$((SECONDS - _t1))
+        PRE_IMP_RC=$PRE_IMP2_RC
+        PRE_IMP_DT=$((PRE_IMP_DT + _dt1))
+        PRE_IMP_OUT="${PRE_IMP_OUT} | tmp=${PRE_IMP2_OUT}"
+        rm -f "$TMP_SIGNED_IMPORT"
+      fi
+      if [ "$PRE_IMP_RC" -ne 0 ]; then
+        PRE_IMP_METHOD="localhost_import_scheme_signed_aea1"
+        _t2=$SECONDS
+        PRE_IMP3_OUT="$(python3 - "$UDID" "$SIGNED_FILE" "$EXPECTED_SHORTCUT_NAME" <<'PY'
+import functools, http.server, os, signal, socketserver, subprocess, sys, threading, urllib.parse
+
+udid, signed_path, name = sys.argv[1:4]
+serve_dir = os.path.dirname(signed_path)
+fname = os.path.basename(signed_path)
+
+class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    def guess_type(self, path):
+        return "application/octet-stream"
+    def log_message(self, fmt, *args):
+        pass
+
+handler = functools.partial(QuietHandler, directory=serve_dir)
+httpd = socketserver.TCPServer(("127.0.0.1", 0), handler)
+port = httpd.server_address[1]
+t = threading.Thread(target=httpd.serve_forever, daemon=True)
+t.start()
+import_url = f"shortcuts://import-shortcut?url={urllib.parse.quote(f'http://127.0.0.1:{port}/{fname}', safe='')}&name={urllib.parse.quote(name, safe='')}"
+p = subprocess.Popen(["xcrun", "simctl", "openurl", udid, import_url], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
+try:
+    rc = p.wait(timeout=25)
+    out = (p.stdout.read() or b"").decode("utf-8", errors="replace")
+except subprocess.TimeoutExpired:
+    try: os.killpg(p.pid, signal.SIGKILL)
+    except Exception: pass
+    rc = 124
+    out = "localhost import-shortcut timed out after 25s"
+import time
+time.sleep(5)
+httpd.shutdown()
+httpd.server_close()
+print(f"rc={rc}")
+print(out.strip())
+sys.exit(rc)
+PY
+        )" || PRE_IMP3_RC=$?
+        PRE_IMP3_RC="${PRE_IMP3_RC:-0}"
+        _dt2=$((SECONDS - _t2))
+        PRE_IMP_RC=$PRE_IMP3_RC
+        PRE_IMP_DT=$((PRE_IMP_DT + _dt2))
+        PRE_IMP_OUT="${PRE_IMP_OUT} | http_scheme=${PRE_IMP3_OUT}"
+      fi
+      printf 'rc=%s\nmethod=%s durationSec=%s %s\n' "$PRE_IMP_RC" "$PRE_IMP_METHOD" "$PRE_IMP_DT" "${PRE_IMP_OUT:0:180}" > "$ARTIFACT_DIR/editor/pre-import-ack.txt"
+      echo "Phase 3b pre-import ($PRE_IMP_METHOD) rc=$PRE_IMP_RC durationSec=${PRE_IMP_DT}s out=$(printf '%s' "$PRE_IMP_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-180)"
       sleep 2
+      run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/pre-import-screen.png" >/dev/null 2>&1 || true
     fi
     (
       import_dispatched=0
