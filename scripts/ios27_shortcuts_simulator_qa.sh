@@ -435,7 +435,7 @@ rm -f "$ARTIFACT_DIR/sim-listapps.plist" "$ARTIFACT_DIR/sim-runtimes.json" "$ART
 simctl_openurl_resilient() {
   local target_udid="$1"
   local target_url="$2"
-  local max_attempts="${3:-3}"
+  local max_attempts="${3:-2}"
   local fallback_file="${4:-}"
   local attempt=1
   local out=""
@@ -445,13 +445,13 @@ simctl_openurl_resilient() {
 import subprocess, sys
 udid, url = sys.argv[1], sys.argv[2]
 try:
-    p = subprocess.run(["xcrun", "simctl", "openurl", udid, url], capture_output=True, text=True, timeout=45)
+    p = subprocess.run(["xcrun", "simctl", "openurl", udid, url], stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=20)
     sys.stdout.write((p.stdout or "") + (p.stderr or ""))
     sys.exit(p.returncode)
 except subprocess.TimeoutExpired as exc:
     out = (exc.stdout or b"").decode("utf-8", errors="replace") if isinstance(exc.stdout, bytes) else (exc.stdout or "")
     err = (exc.stderr or b"").decode("utf-8", errors="replace") if isinstance(exc.stderr, bytes) else (exc.stderr or "")
-    sys.stdout.write(f"simctl openurl timed out after 45s {out} {err}".strip())
+    sys.stdout.write(f"simctl openurl timed out after 20s {out} {err}".strip())
     sys.exit(124)
 PY
 )"
@@ -461,15 +461,31 @@ PY
       return 0
     fi
     if echo "$out" | grep -Eqi "Connection interrupted|server died|NSMachErrorDomain|CoreSimulatorService|timed out"; then
-      open -g -a Simulator --args -CurrentDeviceUDID "$target_udid" >/dev/null 2>&1 || true
-      xcrun simctl boot "$target_udid" >/dev/null 2>&1 || true
-      xcrun simctl launch "$target_udid" com.apple.shortcuts >/dev/null 2>&1 || true
+      python3 - "$target_udid" <<'PY' >/dev/null 2>&1 || true
+import subprocess, sys
+u = sys.argv[1]
+for cmd in (
+    ["open", "-g", "-a", "Simulator", "--args", "-CurrentDeviceUDID", u],
+    ["xcrun", "simctl", "boot", u],
+    ["xcrun", "simctl", "launch", u, "com.apple.shortcuts"],
+):
+    try:
+        subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, timeout=12)
+    except Exception:
+        pass
+PY
     fi
-    sleep 2
+    sleep 1
     attempt=$((attempt + 1))
   done
   if [ -n "$fallback_file" ] && [ -f "$fallback_file" ]; then
-    open -a Simulator "$fallback_file" >/dev/null 2>&1 || true
+    python3 - "$fallback_file" <<'PY' >/dev/null 2>&1 || true
+import subprocess, sys
+try:
+    subprocess.run(["open", "-a", "Simulator", sys.argv[1]], stdin=subprocess.DEVNULL, capture_output=True, timeout=12)
+except Exception:
+    pass
+PY
   fi
   printf '%s' "$out"
   return "$rc"
@@ -838,52 +854,6 @@ PY
     export TEST_RUNNER_CHERRI_QA_RUN_URL_MINIMAL="$RUN_URL_MINIMAL"
     export TEST_RUNNER_CHERRI_QA_RUN_URL_PLAIN="$RUN_URL_PLAIN"
 
-    RAW_SIM_LOG="$ARTIFACT_DIR/runtime/raw-sim-log.txt"
-    rm -f "$RAW_SIM_LOG"
-    xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "siriactionsd" || process == "SpringBoard" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction")' --level info --style compact > "$RAW_SIM_LOG" 2>&1 &
-    SIM_LOG_PID=$!
-
-    rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
-    (
-      import_dispatched=0
-      import_retried=0
-      run_dispatched=0
-      for _tick in $(seq 1 2400); do
-        if [ "$import_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import.txt" ]; then
-          import_dispatched=1
-          if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
-            _t0=$SECONDS
-            IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 3 "$SIGNED_FILE")"
-            IMP_RC=$?
-            _dt=$((SECONDS - _t0))
-            printf 'rc=%s\ndurationSec=%s %s\n' "$IMP_RC" "$_dt" "${IMP_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
-          else
-            printf 'rc=1\nNO_VALID_AEA1\n' > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
-          fi
-        fi
-        if [ "$import_retried" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import-retry.txt" ]; then
-          import_retried=1
-          if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
-            _t0=$SECONDS
-            IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 2 "$SIGNED_FILE")"
-            IMP2_RC=$?
-            _dt=$((SECONDS - _t0))
-            printf 'rc=%s\ndurationSec=%s %s\n' "$IMP2_RC" "$_dt" "${IMP2_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import-retry.txt"
-          fi
-        fi
-        if [ "$run_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-shortcut-run.txt" ]; then
-          run_dispatched=1
-          _t0=$SECONDS
-          RUN_OUT="$(simctl_openurl_resilient "$UDID" "$RUN_URL" 3)"
-          RUN_RC=$?
-          _dt=$((SECONDS - _t0))
-          printf 'rc=%s\ndurationSec=%s %s\n' "$RUN_RC" "$_dt" "${RUN_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-shortcut-run.txt"
-        fi
-        [ -f "$ARTIFACT_DIR/editor/handshake-stop.txt" ] && break
-        sleep 0.2
-      done
-    ) &
-    HANDSHAKE_PID=$!
     stop_bg_pid() {
       local pid="${1:-}"
       if [ -n "$pid" ]; then
@@ -907,6 +877,71 @@ except subprocess.TimeoutExpired:
     sys.exit(124)
 PY
     }
+
+    DERIVED_DATA_PATH="$ARTIFACT_DIR/builds/DerivedData"
+    XCRESULT_PATH="$ARTIFACT_DIR/tests/CherriSimulatorQA.xcresult"
+    rm -rf "$XCRESULT_PATH" "$DERIVED_DATA_PATH"
+
+    mkdir -p "$ARTIFACT_DIR/builds"
+    run_cmd_timeout 600 xcodebuild build-for-testing \
+      -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
+      -scheme CherriSimulatorQAReceiver \
+      -derivedDataPath "$DERIVED_DATA_PATH" \
+      -destination "platform=iOS Simulator,id=$UDID" \
+      CODE_SIGNING_ALLOWED=NO \
+      > "$ARTIFACT_DIR/builds/xcodebuild-build.log" 2>&1
+    XCODEBUILD_BUILD_RC=$?
+    echo "xcodebuild build-for-testing exit code: $XCODEBUILD_BUILD_RC"
+    if [ "$XCODEBUILD_BUILD_RC" -ne 0 ] && [ -f "$ARTIFACT_DIR/builds/xcodebuild-build.log" ]; then
+      sed "s/$UDID/<UDID>/g" "$ARTIFACT_DIR/builds/xcodebuild-build.log" | tail -n 30 || true
+    fi
+
+    RAW_SIM_LOG="$ARTIFACT_DIR/runtime/raw-sim-log.txt"
+    rm -f "$RAW_SIM_LOG"
+    xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "siriactionsd" || process == "SpringBoard" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction")' --level info --style compact > "$RAW_SIM_LOG" 2>&1 &
+    SIM_LOG_PID=$!
+
+    rm -f "$ARTIFACT_DIR/editor/request-"* "$ARTIFACT_DIR/editor/ack-"* "$ARTIFACT_DIR/editor/handshake-stop.txt"
+    (
+      import_dispatched=0
+      import_retried=0
+      run_dispatched=0
+      for _tick in $(seq 1 4000); do
+        if [ "$import_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import.txt" ]; then
+          import_dispatched=1
+          if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
+            _t0=$SECONDS
+            IMP_RC=0
+            IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 2 "$SIGNED_FILE")" || IMP_RC=$?
+            _dt=$((SECONDS - _t0))
+            printf 'rc=%s\ndurationSec=%s %s\n' "$IMP_RC" "$_dt" "${IMP_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
+          else
+            printf 'rc=1\nNO_VALID_AEA1\n' > "$ARTIFACT_DIR/editor/ack-signed-import.txt"
+          fi
+        fi
+        if [ "$import_retried" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-signed-import-retry.txt" ]; then
+          import_retried=1
+          if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
+            _t0=$SECONDS
+            IMP2_RC=0
+            IMP2_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 2 "$SIGNED_FILE")" || IMP2_RC=$?
+            _dt=$((SECONDS - _t0))
+            printf 'rc=%s\ndurationSec=%s %s\n' "$IMP2_RC" "$_dt" "${IMP2_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-signed-import-retry.txt"
+          fi
+        fi
+        if [ "$run_dispatched" -eq 0 ] && [ -f "$ARTIFACT_DIR/editor/request-shortcut-run.txt" ]; then
+          run_dispatched=1
+          _t0=$SECONDS
+          RUN_RC=0
+          RUN_OUT="$(simctl_openurl_resilient "$UDID" "$RUN_URL" 2)" || RUN_RC=$?
+          _dt=$((SECONDS - _t0))
+          printf 'rc=%s\ndurationSec=%s %s\n' "$RUN_RC" "$_dt" "${RUN_OUT:0:220}" > "$ARTIFACT_DIR/editor/ack-shortcut-run.txt"
+        fi
+        [ -f "$ARTIFACT_DIR/editor/handshake-stop.txt" ] && break
+        sleep 0.2
+      done
+    ) &
+    HANDSHAKE_PID=$!
     cleanup_handshake() {
       if [ -n "${HANDSHAKE_PID:-}" ]; then
         touch "$ARTIFACT_DIR/editor/handshake-stop.txt" 2>/dev/null || true
@@ -924,20 +959,19 @@ PY
     }
     trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}"' EXIT
 
-    DERIVED_DATA_PATH="$ARTIFACT_DIR/builds/DerivedData"
-    XCRESULT_PATH="$ARTIFACT_DIR/tests/CherriSimulatorQA.xcresult"
-    rm -rf "$XCRESULT_PATH" "$DERIVED_DATA_PATH"
-
-    run_cmd_timeout 720 xcodebuild test \
+    run_cmd_timeout 600 xcodebuild test-without-building \
       -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
       -scheme CherriSimulatorQAReceiver \
       -derivedDataPath "$DERIVED_DATA_PATH" \
       -destination "platform=iOS Simulator,id=$UDID" \
       -resultBundlePath "$XCRESULT_PATH" \
       CODE_SIGNING_ALLOWED=NO \
-      > "$ARTIFACT_DIR/tests/xcodebuild-test.log" 2>&1
+      > "$ARTIFACT_DIR/builds/xcodebuild-test.log" 2>&1
     XCODEBUILD_TEST_RC=$?
     echo "xcodebuild test exit code: $XCODEBUILD_TEST_RC"
+    if [ "$XCODEBUILD_TEST_RC" -ne 0 ] && [ -f "$ARTIFACT_DIR/builds/xcodebuild-test.log" ]; then
+      sed "s/$UDID/<UDID>/g" "$ARTIFACT_DIR/builds/xcodebuild-test.log" | tail -n 25 || true
+    fi
 
     cleanup_handshake
     trap - EXIT
