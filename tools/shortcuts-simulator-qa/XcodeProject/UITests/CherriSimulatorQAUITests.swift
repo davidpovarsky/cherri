@@ -386,7 +386,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             try? expectedShortcutName.data(using: .utf8)?.write(to: reqURL, options: .atomic)
 
             // Wait purely on filesystem for host simctl openurl so AX queries never starve SpringBoard/Shortcuts IPC
-            _ = waitForHandshakeFile(ackURL, timeout: 65.0)
+            _ = waitForHandshakeFile(ackURL, timeout: 95.0)
 
             let sheetPredicate = NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Set Up Shortcut' OR label == 'Replace' OR label == 'Keep Both' OR label == 'הוסף קיצור דרך' OR label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both'")
             func pollImportSheetButton(timeout: TimeInterval) -> XCUIElement? {

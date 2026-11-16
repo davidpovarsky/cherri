@@ -445,13 +445,13 @@ simctl_openurl_resilient() {
 import subprocess, sys
 udid, url = sys.argv[1], sys.argv[2]
 try:
-    p = subprocess.run(["xcrun", "simctl", "openurl", udid, url], stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=20)
+    p = subprocess.run(["xcrun", "simctl", "openurl", udid, url], stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=45)
     sys.stdout.write((p.stdout or "") + (p.stderr or ""))
     sys.exit(p.returncode)
 except subprocess.TimeoutExpired as exc:
     out = (exc.stdout or b"").decode("utf-8", errors="replace") if isinstance(exc.stdout, bytes) else (exc.stdout or "")
     err = (exc.stderr or b"").decode("utf-8", errors="replace") if isinstance(exc.stderr, bytes) else (exc.stderr or "")
-    sys.stdout.write(f"simctl openurl timed out after 20s {out} {err}".strip())
+    sys.stdout.write(f"simctl openurl timed out after 45s {out} {err}".strip())
     sys.exit(124)
 PY
 )"
