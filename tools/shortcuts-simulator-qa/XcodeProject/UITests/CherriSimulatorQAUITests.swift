@@ -1007,7 +1007,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         let deadline = Date().addingTimeInterval(22.0)
 
         while Date() < deadline {
-            for targetApp in [springboard, shortcuts] {
+            for targetApp in [springboard, shortcuts, receiver] {
                 let btn = targetApp.buttons.matching(confirmPredicate).firstMatch
                 if btn.exists && btn.isHittable {
                     btn.tap()

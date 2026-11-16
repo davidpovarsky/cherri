@@ -1120,17 +1120,37 @@ PY
         xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || process == "CherriSimulatorQAReceiver") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction") AND NOT (subsystem == "com.apple.Accessibility") AND NOT (subsystem == "com.apple.defaults")' --level info --style compact > "$PHASE4_SIM_LOG" 2>&1 &
         PHASE4_LOG_PID=$!
         sleep 1
+        TRIGGER_WRAPPER_URL="$(python3 - "$RUN_URL" <<'PY'
+import sys, urllib.parse
+print("cherriqa://trigger?target=" + urllib.parse.quote(sys.argv[1], safe=""))
+PY
+)"
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" org.cherrilang.qa.Receiver >/dev/null 2>&1 || true
         sleep 1
-        run_cmd_timeout 25 xcrun simctl launch "$UDID" org.cherrilang.qa.Receiver --trigger-shortcut-url "$RUN_URL" >/dev/null 2>&1 || true
-        for poll_idx in $(seq 1 15); do
+        LAUNCH_RC=0
+        LAUNCH_OUT="$( ( export SIMCTL_CHILD_CHERRI_TRIGGER_SHORTCUT_URL="$RUN_URL"; run_cmd_timeout 25 xcrun simctl launch "$UDID" org.cherrilang.qa.Receiver ) 2>&1 )" || LAUNCH_RC=$?
+        echo "Phase4b simctl launch rc=$LAUNCH_RC out=$(printf '%s' "$LAUNCH_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-200)"
+        FALLBACK_TRIGGER_SENT="no"
+        for poll_idx in $(seq 1 16); do
           if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
             cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
             FOUND_NONCE="$(python3 -c 'import json,sys; evs=json.load(open(sys.argv[1])); print("yes" if any((not e.get("receiverSelfTest")) and e.get("runId")==sys.argv[2] for e in evs) else "no")' "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" 2>/dev/null || echo "no")"
             if [ "$FOUND_NONCE" = "yes" ]; then
               run_cmd_timeout 15 xcrun simctl io "$UDID" screenshot "$ARTIFACT_DIR/editor/runtime-callback.png" >/dev/null 2>&1 || true
               break
+            fi
+          fi
+          if [ "$poll_idx" -eq 5 ] && [ "$FALLBACK_TRIGGER_SENT" = "no" ]; then
+            OPEN_OK="no"
+            if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/trigger-debug.txt" ] && grep -q "openCompletion=true" "$RECEIVER_DATA_DIR/Documents/trigger-debug.txt"; then
+              OPEN_OK="yes"
+            fi
+            if [ "$OPEN_OK" != "yes" ]; then
+              FALLBACK_TRIGGER_SENT="yes"
+              TRIG_RC=0
+              TRIG_OUT="$(run_cmd_timeout 15 xcrun simctl openurl "$UDID" "$TRIGGER_WRAPPER_URL" 2>&1)" || TRIG_RC=$?
+              echo "Phase4b fallback cherriqa://trigger openurl rc=$TRIG_RC out=$(printf '%s' "$TRIG_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-200)"
             fi
           fi
           sleep 1
@@ -1150,7 +1170,10 @@ PY
             -only-testing:CherriSimulatorQAUITests/CherriSimulatorQAUITests/test04ConfirmPendingRuntimeDialog \
             -resultBundlePath "$CONFIRM_XCRESULT" \
             CODE_SIGNING_ALLOWED=NO \
-            >> "$ARTIFACT_DIR/tests/xcodebuild-test.log" 2>&1 || true
+            > "$ARTIFACT_DIR/builds/xcodebuild-confirm.log" 2>&1 || true
+          if [ -f "$ARTIFACT_DIR/builds/xcodebuild-confirm.log" ]; then
+            sed "s/$UDID/<UDID>/g" "$ARTIFACT_DIR/builds/xcodebuild-confirm.log" | tail -n 20 || true
+          fi
           rm -rf "$CONFIRM_XCRESULT" "$ARTIFACT_DIR/editor/confirm-dialog-mode.txt"
           for poll_idx in $(seq 1 10); do
             if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
@@ -1170,6 +1193,11 @@ PY
         if [ -n "${PHASE4_LOG_PID:-}" ]; then
           stop_bg_pid "$PHASE4_LOG_PID"
           PHASE4_LOG_PID=""
+        fi
+        if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/trigger-debug.txt" ]; then
+          sed "s/$UDID/<UDID>/g" "$RECEIVER_DATA_DIR/Documents/trigger-debug.txt" > "$ARTIFACT_DIR/runtime/receiver-trigger-debug.txt" || true
+          echo "=== ReceiverApp trigger-debug.txt ==="
+          cat "$ARTIFACT_DIR/runtime/receiver-trigger-debug.txt" || true
         fi
         echo "=== Phase 4b finished (FOUND_NONCE=$FOUND_NONCE) ==="
       fi
@@ -1285,7 +1313,10 @@ noise = (
     "com.apple.appintents:Connection", "com.apple.shortcuts:AppIntentsMetadata",
     "Realizing settings extension", "SceneExtension", "FBSScene", "UIScene",
     "UIKeyboard", "RBSAssertion", "com.apple.runningboard", "CoreAnalytics",
-    "container_create_or_lookup_app_group_path"
+    "container_create_or_lookup_app_group_path",
+    "com.apple.UIKit", "com.apple.BackBoard", "com.apple.FrontBoard",
+    "com.apple.GenerativeModels", "com.apple.BacklightServices",
+    "com.apple.BoardServices", "libMobileGestalt.dylib", "com.apple.xpc:connection"
 )
 uuid_re = re.compile(r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
 users_re = re.compile(r"/Users/[^/\s]+")
@@ -1299,14 +1330,15 @@ for ln in lines:
     ln = uuid_re.sub("<UUID>", ln)
     if forbidden.search(ln):
         continue
-    if any(n in ln for n in noise):
+    if not ("CherriReceiver" in ln or "WorkflowKit" in ln or "Shortcuts" in ln or "BackgroundShortcutRunner" in ln) and any(n in ln for n in noise):
         continue
     filtered.append(ln[:320])
 with open(out_path, "w", encoding="utf-8") as f:
     kept = filtered[:120] + ["--- [truncated middle] ---"] + filtered[-330:] if len(filtered) > 450 else filtered
     f.write("\n".join(kept) + ("\n" if kept else ""))
 print(f"scrubbed Phase4/sim log excerpt ({in_path}): {len(filtered)} lines -> kept {len(kept)}")
-for ln in filtered[:80]:
+preview = filtered[:60] + (["---"] + filtered[-40:] if len(filtered) > 60 else [])
+for ln in preview:
     print("PHASE4LOG:", ln)
 PY
     fi
@@ -1320,7 +1352,7 @@ PY
 fi
 
 # Remove compiled binary, raw sim log, and raw .shortcut build intermediates before artifact upload
-rm -rf "$ARTIFACT_DIR/builds" "${RAW_SIM_LOG:-}"
+rm -rf "$ARTIFACT_DIR/builds" "$ARTIFACT_DIR/tests/"*.log "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
 
 # Write output-assertions.json and runtime-trace.jsonl
 python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" <<'PY'

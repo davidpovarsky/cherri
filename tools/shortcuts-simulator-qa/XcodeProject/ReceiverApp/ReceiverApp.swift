@@ -23,6 +23,31 @@ final class CallbackEventStore: ObservableObject {
     @Published var lastStatus: String = "IDLE"
     @Published var lastRunId: String = "none"
     @Published var lastResult: String = "none"
+    @Published var lastTriggerStatus: String = "idle"
+
+    var triggerDebugFileURL: URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return docs.appendingPathComponent("trigger-debug.txt")
+    }
+
+    func logTrigger(_ message: String) {
+        let clean = Self.containsForbiddenSecret(message) ? "[REDACTED_SECRET_OR_PII]" : message
+        NSLog("[CherriReceiver] %@", clean)
+        DispatchQueue.main.async {
+            self.lastTriggerStatus = String(clean.prefix(240))
+        }
+        let line = "\(formatter.string(from: Date())) \(clean)\n"
+        if let data = line.data(using: .utf8) {
+            if FileManager.default.fileExists(atPath: triggerDebugFileURL.path),
+               let handle = try? FileHandle(forWritingTo: triggerDebugFileURL) {
+                _ = try? handle.seekToEnd()
+                try? handle.write(contentsOf: data)
+                try? handle.close()
+            } else {
+                try? data.write(to: triggerDebugFileURL, options: .atomic)
+            }
+        }
+    }
 
     private let formatter: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
@@ -44,7 +69,9 @@ final class CallbackEventStore: ObservableObject {
         lastStatus = "IDLE"
         lastRunId = "none"
         lastResult = "none"
+        lastTriggerStatus = "idle"
         try? FileManager.default.removeItem(at: eventsFileURL)
+        try? FileManager.default.removeItem(at: triggerDebugFileURL)
         persist()
     }
 
@@ -195,6 +222,7 @@ struct CherriSimulatorQAReceiverApp: App {
     @StateObject private var store = CallbackEventStore.shared
     @State private var showShareSheet = false
     @State private var shareFileURL: URL?
+    @State private var didTriggerInitialURL = false
 
     var body: some Scene {
         WindowGroup {
@@ -214,6 +242,10 @@ struct CherriSimulatorQAReceiverApp: App {
 
                 Text("Callback Count: \(store.events.count)")
                     .accessibilityIdentifier("qa.receiver.callbackCount")
+
+                Text("Trigger: \(store.lastTriggerStatus)")
+                    .font(.caption)
+                    .accessibilityIdentifier("qa.receiver.triggerStatus")
 
                 Button("Trigger Self Callback") {
                     if let u = URL(string: "cherriqa://success?runId=receiver-self-test&selfTest=1&result=CHERRI_QA_RECEIVER_OK") {
@@ -241,6 +273,16 @@ struct CherriSimulatorQAReceiverApp: App {
             }
             .padding(24)
             .onOpenURL { url in
+                if url.scheme?.lowercased() == "cherriqa",
+                   url.host?.lowercased() == "trigger",
+                   let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                   let target = comps.queryItems?.first(where: { $0.name == "target" })?.value,
+                   !target.isEmpty {
+                    store.logTrigger("onOpenURL trigger received len=\(target.count)")
+                    triggerExternalShortcutURL(target, source: "onOpenURL", delay: 0.3)
+                    return
+                }
+                store.logTrigger("onOpenURL callback scheme=\(url.scheme ?? "nil") host=\(url.host ?? "nil")")
                 store.handleIncomingURL(url)
             }
             .onAppear {
@@ -249,8 +291,34 @@ struct CherriSimulatorQAReceiverApp: App {
         }
     }
 
+    private func triggerExternalShortcutURL(_ rawURL: String, source: String, delay: TimeInterval) {
+        guard let targetURL = URL(string: rawURL) else {
+            store.logTrigger("source=\(source) invalidURL len=\(rawURL.count)")
+            return
+        }
+        let canOpen = UIApplication.shared.canOpenURL(targetURL)
+        store.logTrigger("source=\(source) scheduling open scheme=\(targetURL.scheme ?? "nil") host=\(targetURL.host ?? "nil") canOpen=\(canOpen) delay=\(delay)")
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            UIApplication.shared.open(targetURL, options: [:]) { success in
+                self.store.logTrigger("source=\(source) UIApplication.openCompletion=\(success)")
+                if !success {
+                    if let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first {
+                        scene.open(targetURL, options: nil) { sceneSuccess in
+                            self.store.logTrigger("source=\(source) scene.openCompletion=\(sceneSuccess)")
+                        }
+                    } else {
+                        self.store.logTrigger("source=\(source) no UIWindowScene for fallback open")
+                    }
+                }
+            }
+        }
+    }
+
     private func handleLaunchArguments() {
         let args = ProcessInfo.processInfo.arguments
+        let envTrigger = ProcessInfo.processInfo.environment["CHERRI_TRIGGER_SHORTCUT_URL"]
+        let hasArgTrigger = args.contains("--trigger-shortcut-url")
+        store.logTrigger("onAppear argsCount=\(args.count) hasArgTrigger=\(hasArgTrigger) hasEnvTrigger=\(envTrigger != nil && !(envTrigger?.isEmpty ?? true))")
         if args.contains("--reset-callback-store") {
             store.resetStore()
         }
@@ -259,10 +327,13 @@ struct CherriSimulatorQAReceiverApp: App {
                 store.handleIncomingURL(u)
             }
         }
-        if let idx = args.firstIndex(of: "--trigger-shortcut-url"), idx + 1 < args.count,
-           let targetURL = URL(string: args[idx + 1]) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                UIApplication.shared.open(targetURL, options: [:], completionHandler: nil)
+        if !didTriggerInitialURL {
+            if let envURL = envTrigger, !envURL.isEmpty {
+                didTriggerInitialURL = true
+                triggerExternalShortcutURL(envURL, source: "env", delay: 0.8)
+            } else if let idx = args.firstIndex(of: "--trigger-shortcut-url"), idx + 1 < args.count {
+                didTriggerInitialURL = true
+                triggerExternalShortcutURL(args[idx + 1], source: "argv", delay: 0.8)
             }
         }
         if let idx = args.firstIndex(of: "--share-shortcut-path"), idx + 1 < args.count {
