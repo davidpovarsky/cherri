@@ -1115,23 +1115,28 @@ PY
       local signed_path="$2"
       local sc_name="$3"
       python3 - "$target_udid" "$signed_path" "$sc_name" <<'PY'
-import functools, http.server, os, signal, socketserver, subprocess, sys, threading, time, urllib.parse
+import functools, http.server, os, shutil, signal, socketserver, subprocess, sys, tempfile, threading, urllib.parse
 
 udid, spath, name = sys.argv[1:4]
-serve_dir = os.path.dirname(spath)
-fname = os.path.basename(spath)
+serve_tmp = tempfile.mkdtemp(prefix="cherri-http-import-")
+fname = f"{name}.shortcut"
+staged_path = os.path.join(serve_tmp, fname)
+shutil.copy2(spath, staged_path)
 served = threading.Event()
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header("Content-Disposition", f'attachment; filename="{fname}"')
+        super().end_headers()
     def do_GET(self):
         served.set()
         super().do_GET()
     def guess_type(self, path):
-        return "application/octet-stream"
+        return "application/x-apple-shortcut"
     def log_message(self, fmt, *args):
         pass
 
-handler = functools.partial(QuietHandler, directory=serve_dir)
+handler = functools.partial(QuietHandler, directory=serve_tmp)
 httpd = socketserver.TCPServer(("127.0.0.1", 0), handler)
 port = httpd.server_address[1]
 t = threading.Thread(target=httpd.serve_forever, daemon=True)
@@ -1152,6 +1157,7 @@ if rc == 0:
     served.wait(10)
 httpd.shutdown()
 httpd.server_close()
+shutil.rmtree(serve_tmp, ignore_errors=True)
 print(f"rc={rc} served={served.is_set()} {out.strip()}")
 sys.exit(rc)
 PY
@@ -1169,7 +1175,9 @@ PY
       PRE_IMP_OUT="$(simctl_openurl_resilient "$UDID" "file://$SIGNED_FILE" 1 "" 0 45)" || PRE_IMP_RC=$?
       PRE_IMP_DT=$((SECONDS - PRE_IMP_T0))
       if [ "$PRE_IMP_RC" -ne 0 ]; then
-        TMP_SIGNED_IMPORT="/tmp/cherri-import-${RUN_ID}.shortcut"
+        TMP_SIGNED_DIR="$QA_SCRATCH_DIR/import-named"
+        mkdir -p "$TMP_SIGNED_DIR"
+        TMP_SIGNED_IMPORT="$TMP_SIGNED_DIR/${EXPECTED_SHORTCUT_NAME}.shortcut"
         cp -f "$SIGNED_FILE" "$TMP_SIGNED_IMPORT"
         PRE_IMP_METHOD="file_tmp"
         _t1=$SECONDS
@@ -1179,7 +1187,7 @@ PY
         PRE_IMP_RC=$PRE_IMP2_RC
         PRE_IMP_DT=$((PRE_IMP_DT + _dt1))
         PRE_IMP_OUT="${PRE_IMP_OUT} | tmp=${PRE_IMP2_OUT}"
-        rm -f "$TMP_SIGNED_IMPORT"
+        rm -rf "$TMP_SIGNED_DIR"
       fi
       if [ "$PRE_IMP_RC" -ne 0 ]; then
         PRE_IMP_METHOD="localhost_import_scheme_signed_aea1"
@@ -1519,7 +1527,7 @@ PY
       if [ "$FOUND_NONCE" != "yes" ]; then
         echo "=== Phase 4b: Post-XCTest ReceiverApp x-callback-url dispatch ($TARGET_FIXTURE_ID) ==="
         # Outside UITests.xctrunner (automationmode=0), launch ReceiverApp so UIApplication.shared.open passes sourceApplication appIdentifier
-        xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "CherriSimulatorQAReceiver" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit") AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction") AND NOT (subsystem == "com.apple.Accessibility") AND NOT (subsystem == "com.apple.defaults") AND NOT (category IN {"ToolKitIndexing", "ToolKitDatabase", "ToolKitScheduler", "BackgroundTaskScheduler", "ActionRegistry", "Daemon"})' --level debug --style compact > "$PHASE4_SIM_LOG" 2>&1 &
+        xcrun simctl spawn "$UDID" log stream --predicate '(process == "Shortcuts" || process == "BackgroundShortcutRunner" || process == "CherriSimulatorQAReceiver" || subsystem == "com.apple.shortcuts" || subsystem == "com.apple.WorkflowKit" || (process == "lsd" && (eventMessage CONTAINS[c] "cherri" || eventMessage CONTAINS[c] "org.cherrilang"))) AND NOT (subsystem == "com.apple.dt.xctest") AND NOT (subsystem == "com.apple.xpc.transaction") AND NOT (subsystem == "com.apple.Accessibility") AND NOT (subsystem == "com.apple.defaults") AND NOT (category IN {"ToolKitIndexing", "ToolKitDatabase", "ToolKitScheduler", "BackgroundTaskScheduler", "ActionRegistry", "Daemon"})' --level debug --style compact > "$PHASE4_SIM_LOG" 2>&1 &
         PHASE4_LOG_PID=$!
         sleep 1
         TRIGGER_WRAPPER_URL="$(python3 - "$RUN_URL" <<'PY'
@@ -1527,7 +1535,7 @@ import sys, urllib.parse
 print("cherriqa://trigger?target=" + urllib.parse.quote(sys.argv[1], safe=""))
 PY
 )"
-        # Keep Shortcuts warm so openURL enters scene(_:openURLContexts:) with active UIKit sourceApplication, after installing Xcode-signed ReceiverApp
+        # Install Xcode-signed ReceiverApp FIRST, let LaunchServices index cherriqa://, then restart warm Shortcuts so Shortcuts gets fresh LSDatabase bindings
         run_cmd_timeout 15 xcrun simctl terminate "$UDID" org.cherrilang.qa.Receiver >/dev/null 2>&1 || true
         sleep 1
         RECEIVER_SIGNED_DD="$QA_SCRATCH_DIR/ReceiverSignedDD"
@@ -1536,7 +1544,7 @@ PY
         XCODE_RECV_RC=0
         run_cmd_timeout 90 xcodebuild build \
           -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
-          -target CherriSimulatorQAReceiver \
+          -scheme CherriSimulatorQAReceiver \
           -sdk iphonesimulator \
           -derivedDataPath "$RECEIVER_SIGNED_DD" \
           -destination "platform=iOS Simulator,id=$UDID" \
@@ -1568,17 +1576,23 @@ PY
             [ -n "$INST_OUT" ] && printf '%s\n' "$INST_OUT" | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 5 || true
           fi
         fi
-        sleep 3
+        sleep 5
         INSTALLED_RECEIVER_PATH="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver app 2>/dev/null || true)"
         NEW_DATA_DIR="$(xcrun simctl get_app_container "$UDID" org.cherrilang.qa.Receiver data 2>/dev/null || true)"
         [ -n "$NEW_DATA_DIR" ] && RECEIVER_DATA_DIR="$NEW_DATA_DIR"
         if [ -n "$INSTALLED_RECEIVER_PATH" ] && [ -d "$INSTALLED_RECEIVER_PATH" ]; then
           codesign -dvv "$INSTALLED_RECEIVER_PATH" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 12 || true
           codesign -d --entitlements :- "$INSTALLED_RECEIVER_PATH" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 20 || true
+          echo "=== ReceiverApp installed Info.plist ==="
+          plutil -p "$INSTALLED_RECEIVER_PATH/Info.plist" 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 45 || true
         fi
-        xcrun simctl appinfo "$UDID" org.cherrilang.qa.Receiver 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | grep -E "ApplicationType|CFBundle|Path|URLSchemes|cherriqa" | head -n 20 || true
+        echo "=== ReceiverApp simctl appinfo ==="
+        xcrun simctl appinfo "$UDID" org.cherrilang.qa.Receiver 2>&1 | sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" | head -n 35 || true
+        # Restart Shortcuts cleanly AFTER ReceiverApp install so Shortcuts loads updated LaunchServices bindings for cherriqa:// while remaining warm before openURL
+        run_cmd_timeout 15 xcrun simctl terminate "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+        sleep 2
         run_cmd_timeout 15 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
-        sleep 3
+        sleep 4
         LAUNCH_RC=0
         LAUNCH_OUT="$( ( export SIMCTL_CHILD_CHERRI_TRIGGER_SHORTCUT_URL="$RUN_URL"; run_cmd_timeout 25 xcrun simctl launch "$UDID" org.cherrilang.qa.Receiver ) 2>&1 )" || LAUNCH_RC=$?
         echo "Phase4b simctl launch rc=$LAUNCH_RC out=$(printf '%s' "$LAUNCH_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-200)"
@@ -1777,7 +1791,7 @@ noise = (
     "ToolDatabaseWriter", "CFBundle:strings", "CFBundle:resources",
     "com.apple.Accessibility", "com.apple.defaults:User Defaults",
     "com.apple.AppleMediaServices", "com.apple.clouddocs", "com.apple.accounts",
-    "com.apple.foundation.filecoordination", "com.apple.launchservices:binding",
+    "com.apple.foundation.filecoordination",
     "com.apple.cloudkit.sim", "BackBoardServices", "FrontBoardServices:Workspace",
     "com.apple.dt.xctest", "com.apple.xpc.transaction", "XC_kAXXCAttribute",
     "com.apple.runningboard:monitor", "com.apple.siri:Client",
@@ -1817,7 +1831,8 @@ exec_keywords = (
     "cherriqa", "VoiceShortcutClient", "WFXCallback", "openURL",
     "OpenURL", "WFLibraryRunCoordinator", "Shortcuts:URL", "WFWorkflow",
     "WFActionError", "contentDestination", "performDataAccessChecks",
-    "originator", "org.cherrilang", "Security", "LaunchServices", "ShortcutRunner"
+    "originator", "org.cherrilang", "Security", "LaunchServices", "ShortcutRunner",
+    "Interchange", "bindings", "lsd["
 )
 for ln in lines:
     if udid:
