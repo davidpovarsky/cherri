@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -218,17 +219,57 @@ func TestP15_CollectUsesExistingRepeatResultsWithoutAccumulator(t *testing.T) {
 		}
 		inputActions := actions[:start]
 		numbers, lists := p15ActionsNamed(inputActions, "number"), p15ActionsNamed(inputActions, "list")
-		if len(numbers) != size || len(lists) != 1 {
-			t.Fatalf("typed input construction lost values: N=%d Number=%d List=%d", size, len(numbers), len(lists))
-		}
-		for index, number := range numbers {
-			if fmt.Sprint(number.WFWorkflowActionParameters["WFNumberActionNumber"]) != fmt.Sprint(index) {
-				t.Fatalf("numeric input value changed at N=%d item=%d: %v", size, index, number)
+		if size == 0 {
+			if len(numbers) != 0 || len(lists) != 0 || strings.Join(actionSuffixes(inputActions), ",") != "nothing,setvariable,getvariable" {
+				t.Fatalf("empty input must use the existing cleared-variable bridge: %v", actionSuffixes(inputActions))
 			}
-		}
-		input := p15OutputReference(actions[start].WFWorkflowActionParameters["WFInput"])
-		if input["Type"] != "ActionOutput" || input["OutputUUID"] != lists[0].WFWorkflowActionParameters["UUID"] {
-			t.Fatalf("loop is not bound to the typed input List: %v", input)
+			data, err := json.Marshal(actions)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var wire []map[string]any
+			if err = json.Unmarshal(data, &wire); err != nil {
+				t.Fatal(err)
+			}
+			// Follow the exact Repeat input UUID through Get Variable to a
+			// prior Nothing -> Set Variable with no implicit input. This is
+			// structural proof; this test does not run Apple Shortcuts.
+			if _, err = p15EmptyOrigin(wire, start, p15EmptyParams(wire[start])["WFInput"]); err != nil {
+				t.Fatalf("empty collect input lost its cleared producer: %v", err)
+			}
+			for _, fault := range []string{"prior_input", "missing_nothing", "wrong_variable", "wrong_repeat_uuid", "duplicate_uuid"} {
+				if err = json.Unmarshal(data, &wire); err != nil {
+					t.Fatal(err)
+				}
+				switch fault {
+				case "prior_input":
+					p15EmptyParams(wire[1])["WFInput"] = "not empty"
+				case "missing_nothing":
+					wire[0]["WFWorkflowActionIdentifier"] = "is.workflow.actions.comment"
+				case "wrong_variable":
+					p15EmptyParams(wire[1])["WFVariableName"] = "unrelated"
+				case "wrong_repeat_uuid":
+					debugParamMap(debugParamMap(p15EmptyParams(wire[start])["WFInput"])["Value"])["OutputUUID"] = "unrelated"
+				case "duplicate_uuid":
+					p15EmptyParams(wire[1])["UUID"] = p15EmptyParams(wire[2])["UUID"]
+				}
+				if _, err = p15EmptyOrigin(wire, start, p15EmptyParams(wire[start])["WFInput"]); err == nil {
+					t.Fatalf("empty collect input oracle accepted %s mutation", fault)
+				}
+			}
+		} else {
+			if len(numbers) != size || len(lists) != 1 {
+				t.Fatalf("typed input construction lost values: N=%d Number=%d List=%d", size, len(numbers), len(lists))
+			}
+			for index, number := range numbers {
+				if fmt.Sprint(number.WFWorkflowActionParameters["WFNumberActionNumber"]) != fmt.Sprint(index) {
+					t.Fatalf("numeric input value changed at N=%d item=%d: %v", size, index, number)
+				}
+			}
+			input := p15OutputReference(actions[start].WFWorkflowActionParameters["WFInput"])
+			if input["Type"] != "ActionOutput" || input["OutputUUID"] != lists[0].WFWorkflowActionParameters["UUID"] {
+				t.Fatalf("loop is not bound to the typed input List: %v", input)
+			}
 		}
 		if len(actions[end+1:]) != 1 {
 			t.Fatalf("unexpected post-loop work: %v", actionSuffixes(actions[end+1:]))

@@ -116,3 +116,7 @@ All **47** original root public fixture byte hashes stayed identical. The clean 
 [The evidence audit](evidence/p15-variadic-3992d87/evidence-audit.json) binds eleven complete payload files by SHA-256. They include the complete formal Go JSON stream, its reconstructed source-bound receipt, clean regression/package streams, the exact public fixture hashes, and the original causal RED logs. Go output fragments were concatenated only within their owning test before extracting the receipt JSON.
 
 The singleton contamination RED and Legacy inline-producer loss remain visible in those logs. The former is assigned to the following registry-lifetime repair; this C03 result neither resets the singleton to hide it nor claims that it is fixed.
+
+## Subsequent Legacy producer repair
+
+The historical inline-action omission above is addressed independently by p15-legacy-inline-arguments.md. Its causal native/CLI checks preserve the original failure logs and the original public fixtures. The registry contamination is separately repaired by p15-registry-lifetime.md. Neither follow-up changes the scope or source binding of the original C03 receipt.

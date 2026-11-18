@@ -1339,7 +1339,9 @@ func collectDefinedAction() {
 		m.shortIdentifier = strings.ToLower(identifier)
 	}
 
-	advance()
+	// The declaration owns its line, not the first token of the next one.
+	// Advancing through a newline would make replaceLines erase the next call.
+	skipInlineWhitespace()
 
 	var setParams = collectAdditionalParams()
 

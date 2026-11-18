@@ -230,25 +230,25 @@ func handleFunctionArguments(functionsHeader *strings.Builder, identifier string
 }
 
 func makeFunctionRef(identifier *string) any {
+	previousAction, previousSaved := currentAction, savedAction
+	defer func() { currentAction, savedAction = previousAction, previousSaved }()
 	var function = functions[*identifier]
 	setCurrentAction(*identifier, &function.definition)
 
-	var arguments []actionArgument
-	var paramsSize = len(function.definition.parameters)
-	if paramsSize != 0 {
-		advance()
-		arguments = collectArguments()
-		currentAction.arguments = arguments
-
-		checkAction()
+	advance() // '('
+	skipWhitespace()
+	var arguments = collectArguments()
+	currentAction.arguments = arguments
+	checkAction()
+	if char != ')' {
+		parserError("Expected the end of the function arguments")
 	}
+	advance() // consume this call's ')', never a surrounding call or next line
 
 	function.callCount++
 	var variableIdentifier = fmt.Sprintf("_%s_cherri_call_%d", *identifier, function.callCount)
 	var functionCall = makeFunctionCall(identifier, &arguments)
 	insertReference(variableIdentifier, Dict, functionCall, true)
-
-	advanceUntil('\n')
 
 	var runSelfAction = makeActionValue("runSelf", []actionArgument{
 		{

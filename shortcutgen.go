@@ -281,7 +281,11 @@ func makeVariableValue(reference *WFActionReference, valueType tokenType, value 
 			emitLegacyScopedBlock(action.block, reference)
 			return
 		}
-		setCurrentAction(action.ident, actions[action.ident])
+		definition := action.def
+		if definition == nil {
+			definition = actions[action.ident]
+		}
+		setCurrentAction(action.ident, definition)
 		if action.ident == "rawAction" && len(action.args) > 0 {
 			if rawIdent, ok := getArgValue(action.args[0]).(string); ok {
 				currentAction.definition.overrideIdentifier = rawIdent

@@ -473,30 +473,3 @@ func emitLegacyScopedBlock(block *legacyScopedBlock, reference *WFActionReferenc
 		exit(err.Error())
 	}
 }
-
-func materializeLegacyScopedArgument(argument actionArgument) actionArgument {
-	if argument.valueType != Action {
-		return argument
-	}
-	call, ok := argument.value.(action)
-	if !ok || (legacyScopedParsing == nil && call.block == nil) {
-		return argument
-	}
-	if legacyScopedValueType(argument, variables, nil) == Nil {
-		parserError("E_BLOCK_VALUE_REQUIRED: a void action cannot be used as a scoped argument")
-	}
-	var name string
-	if legacyScopedParsing != nil {
-		name = legacyScopedParsing.block.bindingName()
-	} else {
-		// Only an explicit scoped call reaches this path outside a body.
-		name = call.block.prefix + "_argument"
-	}
-	definition := varValue{variableType: "Variable", valueType: Action, value: call, constant: true}
-	variables[name] = definition
-	if legacyScopedParsing != nil {
-		legacyScopedParsing.step.vars[name] = definition
-	}
-	tokens = append(tokens, token{typeof: Variable, ident: name, valueType: Action, value: call})
-	return actionArgument{valueType: Variable, value: varValue{variableType: "Variable", valueType: Action, value: name, constant: true}}
-}
