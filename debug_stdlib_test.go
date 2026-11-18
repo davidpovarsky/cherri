@@ -184,7 +184,7 @@ func TestDebugStdlibOutputUUIDIsPreserved(t *testing.T) {
 		t.Fatalf("got %d actions", len(calls))
 	}
 	params := calls[0].WFWorkflowActionParameters
-	if params["UUID"] != "EXPECTED-UUID" || params["CustomOutputName"] != "Debug Result" {
+	if params["UUID"] != "expected-uuid" || params["CustomOutputName"] != "Debug Result" {
 		t.Fatalf("result output metadata not preserved: %v", params)
 	}
 }

@@ -1,13 +1,6 @@
 import XCTest
 import CryptoKit
 
-struct SanitizedFrame: Codable {
-    let x: Double
-    let y: Double
-    let width: Double
-    let height: Double
-}
-
 struct SanitizedAccessibilityNode: Codable {
     let nodeIndex: Int
     let parentIndex: Int?
@@ -201,11 +194,8 @@ final class CherriSimulatorQAUITests: XCTestCase {
         func visit(_ snap: XCUIElementSnapshot, parentIdx: Int?, siblingIdx: Int) {
             let currentIdx = nodes.count
             let f = snap.frame
-            let geometryValid = [f.origin.x, f.origin.y, f.width, f.height].allSatisfy { $0.isFinite }
+            let geometryValid = QAEvidenceGeometry.isValid(f)
             let isVis = geometryValid && !f.isEmpty && f.width > 0 && f.height > 0 && viewport.intersects(f)
-            func finiteCoordinate(_ value: CGFloat) -> Double {
-                value.isFinite ? Double((value * 10).rounded() / 10) : 0
-            }
             func stableDigest(_ value: String) -> String {
                 SHA256.hash(data: Data(value.utf8)).map { String(format: "%02x", $0) }.joined()
             }
@@ -240,12 +230,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 label: sanitizeUIString(snap.label),
                 identifier: sanitizeUIString(snap.identifier),
                 value: sanitizeUIString(rawVal),
-                frame: SanitizedFrame(
-                    x: finiteCoordinate(f.origin.x),
-                    y: finiteCoordinate(f.origin.y),
-                    width: finiteCoordinate(f.size.width),
-                    height: finiteCoordinate(f.size.height)
-                ),
+                frame: SanitizedFrame(frame: f),
                 enabled: snap.isEnabled,
                 visible: isVis,
                 geometryValid: geometryValid,
@@ -733,7 +718,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
                         bestScore = score
                         scrollElement = el
                         scrollType = typeName
-                        scrollFrame = SanitizedFrame(x: f.origin.x, y: f.origin.y, width: f.width, height: f.height)
+                        scrollFrame = SanitizedFrame(frame: f)
                     }
                 }
             }
@@ -812,8 +797,8 @@ final class CherriSimulatorQAUITests: XCTestCase {
             screenshotManifest.append(ScreenshotManifestEntry(
                 pageIndex: page,
                 fileName: fileName,
-                viewportWidth: Double(appFrame.width),
-                viewportHeight: Double(appFrame.height),
+                viewportWidth: QAEvidenceGeometry.coordinate(appFrame.width),
+                viewportHeight: QAEvidenceGeometry.coordinate(appFrame.height),
                 visibleNodeCount: pageNodes.filter { $0.visible }.count,
                 visibleLabelFrameDigest: digest,
                 firstVisibleCardY: firstCardY,
@@ -848,14 +833,38 @@ final class CherriSimulatorQAUITests: XCTestCase {
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             var axTreePersisted = false
+            var persistencePhase = "ENCODE"
+            var persistenceDiagnostic: [String: Any] = [
+                "schemaVersion": "1.0",
+                "mergedNodeCount": allMergedNodes.count,
+                "invalidGeometryCount": allMergedNodes.filter { !$0.geometryValid }.count,
+                "errorCategory": "NONE"
+            ]
             do {
                 let treeData = try encoder.encode(allMergedNodes)
+                persistencePhase = "WRITE"
                 try treeData.write(to: outDir.appendingPathComponent("editor-tree.json"), options: .atomic)
                 axTreePersisted = !allMergedNodes.isEmpty
             } catch {
-                // Historical artifacts lack editor-tree.json; report encoding
-                // or write failures instead of substituting screenshot counts.
-                XCTFail("AX_TREE_PERSISTENCE_FAILED")
+                // Error values, localized descriptions and paths may contain
+                // private data. Keep only an explicit category and safe keys.
+                if case EncodingError.invalidValue(_, let context) = error {
+                    persistenceDiagnostic["errorCategory"] = "ENCODING_INVALID_VALUE"
+                    persistenceDiagnostic["codingPath"] = context.codingPath.map {
+                        $0.stringValue.range(of: "^[A-Za-z0-9_ ]{1,64}$", options: .regularExpression) != nil
+                            ? $0.stringValue : "REDACTED_KEY"
+                    }
+                } else {
+                    let nsError = error as NSError
+                    persistenceDiagnostic["errorCategory"] = persistencePhase == "WRITE" ? "WRITE_ERROR" : "ENCODING_ERROR"
+                    persistenceDiagnostic["errorCode"] = nsError.code
+                }
+                XCTFail("AX_TREE_PERSISTENCE_FAILED phase=\(persistencePhase)")
+            }
+            persistenceDiagnostic["phase"] = persistencePhase
+            persistenceDiagnostic["persisted"] = axTreePersisted
+            if let diagnosticData = try? JSONSerialization.data(withJSONObject: persistenceDiagnostic, options: [.prettyPrinted, .sortedKeys]) {
+                try? diagnosticData.write(to: outDir.appendingPathComponent("ax-persistence-diagnostics.json"), options: .atomic)
             }
             let hasTopAnchor = orderedAnchors.contains(where: { $0.contains("ANCHOR_CARD_01") || $0.contains("ANCHOR_RTL_01") })
             let hasBottomAnchor = orderedAnchors.contains(where: { $0.contains("ANCHOR_CARD_28") || $0.contains("ANCHOR_RTL_01") })

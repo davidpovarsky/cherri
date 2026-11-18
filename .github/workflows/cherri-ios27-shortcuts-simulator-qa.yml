@@ -94,6 +94,9 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - name: Verify Swift evidence serialization contracts
+        run: bash tools/shortcuts-simulator-qa/verify_foundation_contracts.sh
+
       - name: Run Go Simulator QA & Trace Oracle Unit Tests
         run: go test -v -run "TestP14_|TestP10_A1_|TestP13_SimulatorQA|TestDebug" .
 

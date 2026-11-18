@@ -741,7 +741,7 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 			"WFInput":        value,
 		}
 		if resultUUID != "" {
-			appendParams["UUID"] = strings.ToUpper(resultUUID)
+			appendParams["UUID"] = resultUUID
 		}
 		if resultName != "" {
 			appendParams["CustomOutputName"] = resultName
@@ -977,7 +977,7 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 			"WFInput":        debugOutputRefNamed(lineUUID, "Text"),
 		}
 		if resultUUID != "" {
-			appendParams["UUID"] = strings.ToUpper(resultUUID)
+			appendParams["UUID"] = resultUUID
 		}
 		if resultName != "" {
 			appendParams["CustomOutputName"] = resultName
@@ -999,8 +999,6 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		envelopeUUID := resultUUID
 		if envelopeUUID == "" {
 			envelopeUUID = strings.ToUpper(uuid.NewString())
-		} else {
-			envelopeUUID = strings.ToUpper(envelopeUUID)
 		}
 		envelopeParams := map[string]any{
 			"WFTextActionText": debugExportTraceEnvelopeToken(runID, combinedUUID),

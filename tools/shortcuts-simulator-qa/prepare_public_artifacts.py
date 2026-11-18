@@ -22,7 +22,7 @@ ALLOWED = {
     "tests/xcresult-summary.json", "editor/editor-action-coverage.json",
     "editor/screenshots-manifest.json", "editor/editor-actions.json",
     "editor/editor-comparison.json", "editor/editor-tree.json", "editor/editor-report.md",
-    "editor/plist-vs-editor-comparison.json", "editor/handshake-status.json", "docs/report.md",
+    "editor/plist-vs-editor-comparison.json", "editor/handshake-status.json", "editor/ax-persistence-diagnostics.json", "docs/report.md",
 }
 RAW_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".heic", ".webp", ".pdf", ".zip", ".tar", ".gz",
                 ".shortcut", ".plist", ".cherri", ".a", ".dylib", ".app", ".xcresult"}
