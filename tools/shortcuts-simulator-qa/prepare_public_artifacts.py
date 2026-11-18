@@ -19,6 +19,7 @@ ALLOWED = {
     "summary.json", "environment.json", "compiler-manifest.json", "import-attempts.json",
     "runtime/instrumentation-vs-original.json", "runtime/output-assertions.json",
     "runtime/signing-provenance.json", "runtime/callback-events.json", "runtime/runtime-trace.jsonl",
+    "runtime/http-probe-diagnostic.json",
     "tests/xcresult-summary.json", "editor/editor-action-coverage.json",
     "editor/screenshots-manifest.json", "editor/editor-actions.json",
     "editor/editor-comparison.json", "editor/editor-tree.json", "editor/editor-report.md",
@@ -147,6 +148,15 @@ def stage(root, output, trusted_sources):
                 raise ValueError("binary")
             if name.endswith(".json"):
                 parsed = json.loads(text)
+                if name == "runtime/http-probe-diagnostic.json":
+                    from retry_http_probe import validate_public_diagnostic
+                    try:
+                        validate_public_diagnostic(parsed,
+                            json.loads((root / "compiler-manifest.json").read_text(encoding="utf-8")),
+                            json.loads((root / "runtime/output-assertions.json").read_text(encoding="utf-8")))
+                    except (OSError, ValueError, TypeError, KeyError):
+                        failures.append({**entry, "reason": "INVALID_BOUNDED_HTTP_DIAGNOSTIC"})
+                        continue
                 if isinstance(parsed, dict) and parsed.get("publicationPolicy") == "LOCAL_ONLY_RAW_OCR":
                     failures.append({**entry, "reason": "RAW_OCR_NOT_PUBLIC"})
                     continue

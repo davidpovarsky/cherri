@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
+  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -48,6 +48,17 @@ QA_SCRATCH_DIR="${RUNNER_TEMP:-/tmp}/cherri-qa-scratch-${RUN_ID}"
 mkdir -p "$ARTIFACT_DIR/editor" "$ARTIFACT_DIR/runtime" "$ARTIFACT_DIR/tests" "$ARTIFACT_DIR/docs" "$ARTIFACT_DIR/builds" "$QA_SCRATCH_DIR"
 
 SOURCE_SHA="$(git rev-parse HEAD 2>/dev/null || echo "unknown")"
+HTTP_PROBE_PID=""
+HTTP_PROBE_STARTED="false"
+HTTP_PROBE_DIAGNOSTIC_RC=0
+stop_http_probe() {
+  if [ -n "$HTTP_PROBE_PID" ]; then
+    touch "$ARTIFACT_DIR/runtime/http-probe.stop"
+    wait "$HTTP_PROBE_PID" || true
+    HTTP_PROBE_PID=""
+  fi
+}
+trap 'stop_http_probe' EXIT
 
 echo "=== Cherri iPadOS 27 Simulator QA ($RUN_ID) ==="
 echo "Probe Level:        $PROBE_LEVEL"
@@ -77,6 +88,7 @@ GATE_PHYSICAL_DEVICE_TESTED="BLOCKED_DEVICE"
 # Select primary target fixture from SAMPLE_ID
 # Nested source paths are fixed here; an inherited environment cannot select a file.
 TARGET_SOURCE_RELATIVE=""
+HTTP_PROBE_ENABLED="false"
 case "$SAMPLE_ID" in
   qa-label-file-carrier)
     TARGET_FIXTURE_ID="qa-label-file-carrier-v2"
@@ -158,6 +170,41 @@ case "$SAMPLE_ID" in
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="qa-measure-release-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
+    ;;
+  qa-retry-control)
+    TARGET_FIXTURE_ID="qa-retry-control-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-retry-control-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_RETRY_CONTROL_RESULT:P15_HTTP_BODY_OK"
+    HTTP_PROBE_ENABLED="true"
+    ;;
+  qa-retry-http500)
+    TARGET_FIXTURE_ID="qa-retry-http500-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-retry-http500-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_RETRY_HTTP500_RESULT:P15_HTTP_BODY_OK"
+    HTTP_PROBE_ENABLED="true"
+    ;;
+  qa-retry-http404)
+    TARGET_FIXTURE_ID="qa-retry-http404-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-retry-http404-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_RETRY_HTTP404_RESULT:P15_HTTP_BODY_OK"
+    HTTP_PROBE_ENABLED="true"
+    ;;
+  qa-retry-http429)
+    TARGET_FIXTURE_ID="qa-retry-http429-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-retry-http429-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_RETRY_HTTP429_RESULT:P15_HTTP_BODY_OK"
+    HTTP_PROBE_ENABLED="true"
+    ;;
+  qa-retry-transport)
+    TARGET_FIXTURE_ID="qa-retry-transport-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-retry-transport-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_RETRY_TRANSPORT_RESULT:P15_HTTP_BODY_OK"
+    HTTP_PROBE_ENABLED="true"
     ;;
   qa-f01-diag-counter)
     TARGET_FIXTURE_ID="qa-f01-diag-counter-v2"
@@ -247,11 +294,18 @@ import subprocess
 import sys
 
 root_dir, artifact_dir, source_sha = sys.argv[1], sys.argv[2], sys.argv[3]
+sys.path.insert(0, os.path.join(root_dir, "tools", "shortcuts-simulator-qa"))
+from retry_http_probe import validate_fixture_graph
 cherri_bin = os.path.join(artifact_dir, "builds", "cherri")
 fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtures")
 builds_dir = os.path.join(artifact_dir, "builds")
 
 fixture_specs = [
+    ("qa-retry-control-v2", "qa-retry-control-v2.cherri", "v2"),
+    ("qa-retry-http500-v2", "qa-retry-http500-v2.cherri", "v2"),
+    ("qa-retry-http404-v2", "qa-retry-http404-v2.cherri", "v2"),
+    ("qa-retry-http429-v2", "qa-retry-http429-v2.cherri", "v2"),
+    ("qa-retry-transport-v2", "qa-retry-transport-v2.cherri", "v2"),
     ("qa-label-file-carrier-v2", "p15-label-probes/qa-label-file-carrier-v2.cherri", "v2"),
     ("qa-label-raw-empty-v2", "p15-label-probes/qa-label-raw-empty-v2.cherri", "v2"),
     ("qa-label-raw-grouping-v2", "p15-label-probes/qa-label-raw-grouping-v2.cherri", "v2"),
@@ -344,6 +398,7 @@ for fid, fname, dialect in fixture_specs:
         "dialect": dialect,
         "buildProfile": profile,
         "runtimeTraceExpectation": trace_expectation,
+        "httpProbeGraph": validate_fixture_graph(fid, actions),
         "releaseDiagnosticActionsAbsent": release_diagnostics_absent,
         "releaseBodyShapeVerified": release_body_verified,
         "sourceSha256": src_sha256,
@@ -1181,14 +1236,28 @@ PY
       exit 2
     fi
     EXEC_RUN_NONCE="${TARGET_FIXTURE_ID}-${RUN_ID}-${EXEC_RANDOM_NONCE}"
-    RUN_URL="$(python3 - "$EXPECTED_SHORTCUT_NAME" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" <<'PY'
+    SHORTCUT_INPUT_VALUE="CHERRI_QA_INPUT"
+    if [ "$HTTP_PROBE_ENABLED" = "true" ]; then
+      # Static source bytes are never rewritten: only reviewed loopback port/nonce
+      # enter through ShortcutInput. Keep this finite server alive through Phase 4B.
+      python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" serve --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA" >"$ARTIFACT_DIR/runtime/http-probe-server.log" 2>&1 &
+      HTTP_PROBE_PID=$!
+      HTTP_PROBE_STARTED="true"
+      SHORTCUT_INPUT_VALUE="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" input --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA")"
+      if [ "$?" -ne 0 ]; then
+        stop_http_probe
+        echo "ERROR: bounded HTTP probe did not bind its reviewed loopback endpoint" >&2
+        exit 2
+      fi
+    fi
+    RUN_URL="$(python3 - "$EXPECTED_SHORTCUT_NAME" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$SHORTCUT_INPUT_VALUE" <<'PY'
 import sys, urllib.parse
-name, run_nonce, fid = sys.argv[1:4]
+name, run_nonce, fid, input_text = sys.argv[1:5]
 q = urllib.parse.quote
 x_success = f"cherriqa://success?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
 x_cancel = f"cherriqa://cancel?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
 x_error = f"cherriqa://error?runId={q(run_nonce)}&fixtureId={q(fid)}&shortcutName={q(name)}&source=shortcuts-x-callback"
-print(f"shortcuts://x-callback-url/run-shortcut?name={q(name)}&input=text&text=CHERRI_QA_INPUT&x-source=CherriSimulatorQAReceiver&x-success={q(x_success, safe='')}&x-cancel={q(x_cancel, safe='')}&x-error={q(x_error, safe='')}")
+print(f"shortcuts://x-callback-url/run-shortcut?name={q(name)}&input=text&text={q(input_text, safe='')}&x-source=CherriSimulatorQAReceiver&x-success={q(x_success, safe='')}&x-cancel={q(x_cancel, safe='')}&x-error={q(x_error, safe='')}")
 PY
 )"
     RUN_URL_MINIMAL="$(python3 - "$EXPECTED_SHORTCUT_NAME" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" <<'PY'
@@ -1207,6 +1276,12 @@ print(f"shortcuts://run-shortcut?name={urllib.parse.quote(sys.argv[1])}")
 PY
 )"
 
+    if [ "$HTTP_PROBE_ENABLED" = "true" ]; then
+      # These fixtures need the exact endpoint input; a no-input fallback would
+      # test a different URL and cannot establish native HTTP behavior.
+      RUN_URL_MINIMAL=""
+      RUN_URL_PLAIN=""
+    fi
     export TEST_RUNNER_CHERRI_QA_SHARED_OUTPUT_DIR="$ARTIFACT_DIR/editor"
     export TEST_RUNNER_CHERRI_QA_MAX_EDITOR_PAGES="$MAX_EDITOR_PAGES"
     export TEST_RUNNER_CHERRI_QA_EXPECTED_SHORTCUT_NAME="$EXPECTED_SHORTCUT_NAME"
@@ -1497,7 +1572,7 @@ PY
         PHASE4_LOG_PID=""
       fi
     }
-    trap 'cleanup_handshake; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}" "${CONFIRM_XCRESULT:-}" "${QA_SCRATCH_DIR:-}"' EXIT
+    trap 'stop_http_probe; cleanup_handshake; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}" "${CONFIRM_XCRESULT:-}" "${QA_SCRATCH_DIR:-}"' EXIT
 
     run_cmd_timeout 900 xcodebuild test-without-building \
       -project "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/CherriSimulatorQA.xcodeproj" \
@@ -1515,7 +1590,7 @@ PY
     fi
 
     cleanup_handshake
-    trap - EXIT
+    trap 'stop_http_probe' EXIT
 
     DID_HANDSHAKE_RUN="false"
     if [ -f "$ARTIFACT_DIR/editor/ack-shortcut-run.txt" ]; then
@@ -2215,6 +2290,12 @@ if not os.path.exists(trace_jsonl_path):
         }) + "\n")
 PY
 
+if [ "$HTTP_PROBE_STARTED" = "true" ]; then
+  stop_http_probe
+  python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" diagnose --root "$ARTIFACT_DIR" --fixtures-dir "$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA"
+  HTTP_PROBE_DIAGNOSTIC_RC=$?
+fi
+
 # Legacy pattern scan only; raster safety is NOT established by this scan.
 # The separate publication gate quarantines all raster/archives/raw inputs.
 PRIVACY_SCAN_OUT="$(python3 - "$ARTIFACT_DIR" "$UDID" <<'PY'
@@ -2431,4 +2512,11 @@ if (gates.get("SHORTCUT_RUN_COMPLETED") != "PASS"
 PY
   REQUIRE_RUNTIME_RC=$?
   if [ "$REQUIRE_RUNTIME_RC" -ne 0 ]; then exit "$REQUIRE_RUNTIME_RC"; fi
+fi
+
+# Observation completeness is separate from the unchanged strict runtime gate.
+# In particular, an ERROR/cancel diagnostic never makes require_runtime pass.
+if [ "$HTTP_PROBE_DIAGNOSTIC_RC" -ne 0 ]; then
+  echo "ERROR: bounded HTTP diagnostic evidence was incomplete or rejected" >&2
+  exit "$HTTP_PROBE_DIAGNOSTIC_RC"
 fi

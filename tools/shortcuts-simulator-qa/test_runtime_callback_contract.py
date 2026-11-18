@@ -137,6 +137,26 @@ class CallbackContractTests(unittest.TestCase):
                                                releaseDiagnosticActionsAbsent=True, releaseBodyShapeVerified=True)
                 self.assertEqual(self.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
 
+    def test_retry_probes_keep_exact_fresh_result_and_normal_trace_contract(self):
+        import retry_http_probe as probe
+        for fid in probe.FIXTURES:
+            expected = probe.expected_marker(fid)
+            event = self.event()
+            event.update(fixtureId=fid, expectedShortcutName=fid, resultSummary=expected)
+            event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+            with self.subTest(fixture=fid):
+                result = self.verify([event], fid, expected)
+                self.assertEqual((result["runGate"], result["traceGate"]), ("PASS", "PASS"))
+                for key, value in (("status", "ERROR"), ("status", "CANCELLED"),
+                                   ("runId", "stale"), ("resultSummary", expected + "_WRONG"),
+                                   ("tracePayload", "")):
+                    result = self.verify([{**event, key: value}], fid, expected)
+                    self.assertEqual(result["traceGate" if key == "tracePayload" else "runGate"], "FAIL_RUNTIME", key)
+                manifest = self.manifest(fid)
+                manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE",
+                                               releaseDiagnosticActionsAbsent=True, releaseBodyShapeVerified=True)
+                self.assertEqual(self.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
+
     def test_source_fixture_and_self_test_mutations(self):
         for key, value in (("eventSource", "receiver-self-test"), ("fixtureId", "other"),
                            ("expectedShortcutName", "other"), ("receiverSelfTest", True),
