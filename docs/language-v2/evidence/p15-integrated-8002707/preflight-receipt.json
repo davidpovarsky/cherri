@@ -1,0 +1,41 @@
+{
+  "sourceSha": "800270786c5d02c7fd1f9a36ed1ac6d44d64ec3c",
+  "checks": [
+    {
+      "command": [
+        "py",
+        "-3",
+        "tools/p10r3/verify_consumer_compatibility.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 8.688,
+      "log": "preflight-0.log",
+      "sha256": "b1b2672bfaa6fc39ff344e52baf927aa539efbcc0e3e136fbb07deab07fa444f"
+    },
+    {
+      "command": [
+        "py",
+        "-3",
+        "tools/p10r3/verify_consumer_compatibility.py",
+        "--mutate-check"
+      ],
+      "exit": 0,
+      "seconds": 4.969,
+      "log": "preflight-1.log",
+      "sha256": "32d98ad206b2a91f48923d1e3fd56885f8fed97f2455a4dfa8fd5150c6c38db2"
+    },
+    {
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "run",
+        "./tools/language-schema",
+        "--verify-generated"
+      ],
+      "exit": 0,
+      "seconds": 1.828,
+      "log": "preflight-2.log",
+      "sha256": "7afe09f9dc2bfbf0e1697d8b4ff2d3baef785cd12f6aa057841d9bcb50964913"
+    }
+  ]
+}

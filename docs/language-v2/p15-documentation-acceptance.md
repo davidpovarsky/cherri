@@ -51,6 +51,11 @@ remained clean before and after both batches. Go Output fragments were joined
 per Test before parsing complete receipt lines.
 
 [evidence](evidence/p15-documentation-f3e32df/receipt.json) retains both scopes;
-D03 remains UNVERIFIED. The external docs runner's37 examples and12 cache
-controls are separate working validations until their docs commit is frozen.
+D03 remains UNVERIFIED. The external docs runner is now frozen at docs commit
+7a0c06e8a041b31a3aa5b4a260a256c9c6beef1f and compiler f3e32df0ae0eddc1aaad96628e70b8d5a759265c.
+Its fresh fetched binary, 37 example checks and 12 actual cache controls passed
+with the docs checkout clean before and after. The generated reference is
+byte-identical to that compiler's canonical source artifact. The remote branch
+SHA was read back after pushing. [External receipt](evidence/p15-docs-external-7a0c06e/receipt.json)
+retains exact commands, hashes and scope; it does not assert live site publication.
 The179-obligation aggregate has not been manually increased from these results.
