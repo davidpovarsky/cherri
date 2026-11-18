@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "10e7649049d81024962b5a9ebf593fa9b3bcdf99",
+  "sourceTreeCleanBeforeAndAfter": true,
+  "status": "PASS_LOCAL_AUDIT_PROTOCOL_ONLY",
+  "command": [
+    "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/shortcuts-simulator-qa",
+    "-p",
+    "test_native_continuation_audit.py",
+    "-v"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 9.156,
+  "testMethods": 9,
+  "actualAuditCLIControls": 3,
+  "nativeExecutionClaimed": false,
+  "nativePilotSourceCommit": "42e7d1cb94542557ada88201178bf9edfb4fa994",
+  "files": {
+    "tools/p10r15/audit_native_continuation.py": "480506a84622539ec7b835968ba26757a2b5af0cc3aff5526203f27227c0c87b",
+    "tools/shortcuts-simulator-qa/test_native_continuation_audit.py": "16f74643028ed8cc1210ba9664818abd171eb2108886980580e36d52e1122159",
+    "docs/apple-runtime/p10r15/native-continuation-probes.md": "d941e89e88dee6fe54255c56238040f78041cdc34525bddfd5b434e3af394f84"
+  },
+  "rawLogSha256": "54e18dd127b9f5bfe7cf90817e23b10cd8357492b7fab9ac7d371b32607bf41d",
+  "committedLogSha256": "11d984abdc3c07269a6621947cde253b77f15a3d37c062e9a1acf1c07576d88f",
+  "sentinelJobId": "job_776e4864234e",
+  "scope": "Nine synthetic protocol tests and three actual auditor CLI exits; no Apple execution or whole-QA-suite rerun claimed."
+}
