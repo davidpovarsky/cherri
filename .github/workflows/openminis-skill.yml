@@ -112,6 +112,11 @@ jobs:
           SKILL_DIR: ${{ github.workspace }}/skills/cherri-shortcuts
         run: sh skills/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out dist/skill-evidence.json
 
+      - name: Verify isolated compiler and docs drift diagnostics
+        env:
+          CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
+        run: sh skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh
+
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main
         continue-on-error: true

@@ -124,7 +124,7 @@ CACHED_CHERRI="$CHERRI_HOME/bin/cherri"
 validate_cherri_bin() {
   _cand=$1
   if [ -z "$_cand" ] || [ ! -f "$_cand" ]; then
-    echo "Cherri binary not found: ${_cand:-<empty>}" >&2
+    echo "[CHERRI_COMPILER_NOT_FOUND] Cherri binary not found: ${_cand:-<empty>}" >&2
     return 1
   fi
   chmod +x "$_cand" 2>/dev/null || true
@@ -210,14 +210,26 @@ validate_docs_dir() {
     return 1
   fi
   if [ "$_docs_fp" != "$MANIFEST_SCHEMA_FP" ]; then
-    echo "Cherri docs Schema Fingerprint mismatch: expected $MANIFEST_SCHEMA_FP, got $_docs_fp" >&2
+    echo "[CHERRI_STALE_DOCS_SCHEMA] Cherri docs Schema Fingerprint mismatch: expected $MANIFEST_SCHEMA_FP, got $_docs_fp" >&2
     return 1
   fi
 
-  if [ -d "$_docs/.git" ] && command -v git >/dev/null 2>&1; then
-    _docs_head=$(git -C "$_docs" rev-parse HEAD 2>/dev/null || true)
-    if is_hex_len "$CHERRI_DOCS_REF" 40 && [ -n "$_docs_head" ] && [ "$_docs_head" != "$CHERRI_DOCS_REF" ]; then
-      echo "Cherri docs commit mismatch in $_docs: expected $CHERRI_DOCS_REF, got $_docs_head" >&2
+  # Linked worktrees have a .git file; their pins need the same check as clones.
+  if [ -e "$_docs/.git" ]; then
+    if ! command -v git >/dev/null 2>&1; then
+      echo "[CHERRI_DOCS_GIT_UNAVAILABLE] Cannot validate Cherri docs commit without git" >&2
+      return 1
+    fi
+    if ! _docs_head=$(git -C "$_docs" rev-parse HEAD 2>/dev/null); then
+      echo "[CHERRI_DOCS_GIT_INVALID] Cannot resolve Cherri docs commit in $_docs" >&2
+      return 1
+    fi
+    if ! is_hex_len "$_docs_head" 40; then
+      echo "[CHERRI_DOCS_GIT_INVALID] Cherri docs returned an invalid commit in $_docs" >&2
+      return 1
+    fi
+    if is_hex_len "$CHERRI_DOCS_REF" 40 && [ "$_docs_head" != "$CHERRI_DOCS_REF" ]; then
+      echo "[CHERRI_STALE_DOCS_COMMIT] Cherri docs commit mismatch in $_docs: expected $CHERRI_DOCS_REF, got $_docs_head" >&2
       return 1
     fi
   fi

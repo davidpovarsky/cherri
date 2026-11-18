@@ -104,8 +104,9 @@ p.write_text(t, encoding="utf-8")
 ' "$STALE_DOCS_DIR/fork-language/actions.md"
 fi
 
-DOCTOR_OUTPUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" 2>&1 || true)
-if echo "$DOCTOR_OUTPUT" | grep -qi "Schema Fingerprint mismatch"; then
+DOCTOR_STATUS=0
+DOCTOR_OUTPUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" 2>&1) || DOCTOR_STATUS=$?
+if [ "$DOCTOR_STATUS" -ne 0 ] && printf '%s\n' "$DOCTOR_OUTPUT" | grep -Fq '[CHERRI_STALE_DOCS_SCHEMA]'; then
   echo "PASS: Causal isolation 3a verified: doctor.sh failed specifically on docs Schema Fingerprint mismatch."
 else
   echo "ERROR: doctor.sh did not fail with Schema Fingerprint mismatch! Output:" >&2
@@ -125,8 +126,9 @@ echo "Testing negative mutation 3b: mismatched docs git commit SHA..."
 git -C "$STALE_DOCS_DIR" config user.email "test@example.com"
 git -C "$STALE_DOCS_DIR" config user.name "Test"
 git -C "$STALE_DOCS_DIR" commit --allow-empty -m "mutated docs commit" >/dev/null 2>&1
-DOCTOR_COMMIT_OUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" 2>&1 || true)
-if echo "$DOCTOR_COMMIT_OUT" | grep -qi "docs commit mismatch"; then
+DOCTOR_STATUS=0
+DOCTOR_COMMIT_OUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$STALE_DOCS_DIR" sh "$SCRIPT_DIR/doctor.sh" 2>&1) || DOCTOR_STATUS=$?
+if [ "$DOCTOR_STATUS" -ne 0 ] && printf '%s\n' "$DOCTOR_COMMIT_OUT" | grep -Fq '[CHERRI_STALE_DOCS_COMMIT]'; then
   echo "PASS: Causal isolation 3b verified: doctor.sh failed specifically on docs commit mismatch."
 else
   echo "ERROR: doctor.sh did not fail with docs commit mismatch! Output:" >&2
@@ -136,8 +138,9 @@ fi
 
 # Mutation 3c: Tamper ONLY with explicit CHERRI_BIN while keeping docs and CHERRI_HOME valid
 echo "Testing negative mutation 3c: incompatible explicit CHERRI_BIN..."
-DOCTOR_BIN_OUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$TMP_HOME/docs" CHERRI_BIN="$TMP_HOME/nonexistent-cherri-bin" sh "$SCRIPT_DIR/doctor.sh" 2>&1 || true)
-if echo "$DOCTOR_BIN_OUT" | grep -qi "Explicit CHERRI_BIN is missing or incompatible"; then
+DOCTOR_STATUS=0
+DOCTOR_BIN_OUT=$(CHERRI_HOME="$TMP_HOME" CHERRI_DOCS_DIR="$TMP_HOME/docs" CHERRI_BIN="$TMP_HOME/nonexistent-cherri-bin" sh "$SCRIPT_DIR/doctor.sh" 2>&1) || DOCTOR_STATUS=$?
+if [ "$DOCTOR_STATUS" -ne 0 ] && printf '%s\n' "$DOCTOR_BIN_OUT" | grep -Fq '[CHERRI_COMPILER_NOT_FOUND]'; then
   echo "PASS: Causal isolation 3c verified: doctor.sh failed specifically on explicit CHERRI_BIN."
 else
   echo "ERROR: doctor.sh did not fail on incompatible explicit CHERRI_BIN! Output:" >&2
