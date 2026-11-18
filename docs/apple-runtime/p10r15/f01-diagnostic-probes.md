@@ -55,3 +55,7 @@ Run counter and predicate first to obtain independent controls for named-variabl
 A failed probe narrows the affected path only after its callback is correlated to its own compiled artifact. A passed simpler probe does not certify the omitted features. If all four pass, rerun the unchanged original local F01 fixture on the same candidate and investigate its combined path if necessary.
 
 **Native status at introduction: NOT_RUN for all four probes. Original signed F01 status: FAIL_RUNTIME, unresolved.** Neither compilation, graph checks, nor a successful diagnostic replaces the full local F01 side-effect oracle or the required final signed acceptance run.
+
+## Exact local execution receipt
+
+A clean checkout of `482eff24ae7d4e2b6dda96f2b272109728a38180` passed the focused production Go tests, all 28 harness contract tests, a new compiler build, and all four actual CLI compilations in SentinelX job `job_c88a7dc3534b`. The worktree was clean before and after execution. [The receipt and raw test outputs](../../evidence/p15-f01-diagnostics-482eff2/receipt.json) retain command exit codes, source and local unsigned-plist hashes, output hashes, test names, and durations. These unsigned hashes belong only to this local compile; signing and native execution remain pending.

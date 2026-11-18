@@ -1,0 +1,137 @@
+{
+  "sourceSha": "482eff24ae7d4e2b6dda96f2b272109728a38180",
+  "cleanBefore": true,
+  "nativeStatus": "NOT_RUN",
+  "originalF01Status": "FAIL_RUNTIME",
+  "commands": [
+    {
+      "argv": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=90s",
+        ".",
+        "-run",
+        "^TestP15F01(Diagnostic|LocalCounter)"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 3.437,
+      "outputSha256": "b0a9d7a4af983b37a006b615bbc29a4339046835d1948e5407b5bfe7ab45bbf9"
+    },
+    {
+      "argv": [
+        "py",
+        "-3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/shortcuts-simulator-qa",
+        "-p",
+        "test_*contract.py"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 27.997,
+      "outputSha256": "950a6467a0d028fe94f828b7a7be2e6a65789d132391fa52fe7c36ba874bc395"
+    },
+    {
+      "argv": [
+        "go",
+        "build",
+        "-o",
+        ".\\artifacts\\f01-native\\exact-482eff2\\cherri.exe",
+        "."
+      ],
+      "exitCode": 0,
+      "durationSeconds": 1.666,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        ".\\artifacts\\f01-native\\exact-482eff2\\cherri.exe",
+        "tools\\shortcuts-simulator-qa\\fixtures\\qa-f01-diag-counter-v2.cherri",
+        "--skip-sign",
+        "--output=.\\artifacts\\f01-native\\exact-482eff2\\qa-f01-diag-counter-v2.shortcut",
+        "--build-profile=debug"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.14,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        ".\\artifacts\\f01-native\\exact-482eff2\\cherri.exe",
+        "tools\\shortcuts-simulator-qa\\fixtures\\qa-f01-diag-predicate-v2.cherri",
+        "--skip-sign",
+        "--output=.\\artifacts\\f01-native\\exact-482eff2\\qa-f01-diag-predicate-v2.shortcut",
+        "--build-profile=debug"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.033,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        ".\\artifacts\\f01-native\\exact-482eff2\\cherri.exe",
+        "tools\\shortcuts-simulator-qa\\fixtures\\qa-f01-diag-control-v2.cherri",
+        "--skip-sign",
+        "--output=.\\artifacts\\f01-native\\exact-482eff2\\qa-f01-diag-control-v2.shortcut",
+        "--build-profile=debug"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.032,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        ".\\artifacts\\f01-native\\exact-482eff2\\cherri.exe",
+        "tools\\shortcuts-simulator-qa\\fixtures\\qa-f01-diag-logic-v2.cherri",
+        "--skip-sign",
+        "--output=.\\artifacts\\f01-native\\exact-482eff2\\qa-f01-diag-logic-v2.shortcut",
+        "--build-profile=debug"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.035,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "fixtures": [
+    {
+      "fixtureId": "qa-f01-diag-counter-v2",
+      "sourceSha256": "739103463ebf2de7e310dca933924c9560b14964572409e9a60a062e29bee881",
+      "unsignedPlistSha256": "42b80e75208107ea8aea30f1055102f5363b7de22ae20e12a8f38b2d63ff8166",
+      "nativeStatus": "NOT_RUN"
+    },
+    {
+      "fixtureId": "qa-f01-diag-predicate-v2",
+      "sourceSha256": "5056c5e2ceab80a6642c867e2a9d26d238be5f74a93a21f641a99e2a860f8a93",
+      "unsignedPlistSha256": "5f514737e7bd792d7a9386d3c6885fc273d1297379b8f5a1cdf2cfc73b7ee966",
+      "nativeStatus": "NOT_RUN"
+    },
+    {
+      "fixtureId": "qa-f01-diag-control-v2",
+      "sourceSha256": "9b64aa49cb6000e66623f74b418bc7b5305d423dc7f169a60eb76817cf6c8f53",
+      "unsignedPlistSha256": "001a04b05e7e81ef8dfe93fbcad7a22b5956416cc8ceaecf9ebe930ea4197579",
+      "nativeStatus": "NOT_RUN"
+    },
+    {
+      "fixtureId": "qa-f01-diag-logic-v2",
+      "sourceSha256": "f82b0131708ba28b5512190129ba9494f4adf7bb0523ccaf5606f613ceb7842e",
+      "unsignedPlistSha256": "bc66e5e6cbe46ed1ab558b1cb71aa7405245bec8ebc275453fb3b30db20c10fa",
+      "nativeStatus": "NOT_RUN"
+    }
+  ],
+  "cleanAfter": true,
+  "jobId": "job_c88a7dc3534b",
+  "platform": "Windows amd64",
+  "argvPathsNormalizedForPortability": true,
+  "rawReceiptSha256": "35d52e68cfec778a1bef710abc1c925fd69391335a8c5acd90d8f1a9ed80dfc2",
+  "topLevelGoTestPasses": [
+    "TestP15F01DiagnosticFixturesPreserveIsolation",
+    "TestP15F01DiagnosticOracleRejectsCausalMutations",
+    "TestP15F01LocalCounterFixtureNativeGraph",
+    "TestP15F01LocalCounterOracleRejectsMutations"
+  ],
+  "pythonTestCount": 28
+}
