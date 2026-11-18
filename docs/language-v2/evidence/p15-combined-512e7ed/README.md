@@ -1,0 +1,3 @@
+# Combined correctness checkpoint
+
+Exact source512e7ed73be3614d37d0a3a650b1274306feccc8 passed six internal packages (106 named results), focused compiler contracts (614 named results), generated schema verification, and all47 unchanged original Legacy fixtures:9 canonical parity plus38 normalized equivalence, zero failures/differences. All17 action cases passed. The worktree was clean before and after and all47 source hashes were preserved. Commands, durations, raw and committed digests are in receipt.json. This checkpoint repairs the earlier e9 custom-result failure and the menus/Date/nil compatibility failures without changing their originals. It is not a full179 or full Go/private corpus/Apple runtime/release claim.
