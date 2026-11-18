@@ -1,0 +1,377 @@
+{
+  "schemaVersion": 1,
+  "auditedAt": "2026-11-18T18:20:24.736255+00:00",
+  "runs": [
+    {
+      "runId": "44344880086",
+      "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44344880086",
+      "attempt": 1,
+      "compilerCommitSha": "52284f8ad179997bf35d41dde21a758dfc611059",
+      "workflowConclusion": "success",
+      "fixtureId": "qa-retry-http500-v2",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-retry-http500-v2.cherri",
+      "sourceSha256": "db4799cc6cd2bae4e46a8594784f0b127ebb18deb81b782bf8624595c4ae2f13",
+      "sourceHashMatchesImmutableGitBlob": true,
+      "unsignedPlistSha256": "e73e81e999fbf75d7fc957ffa833ee495b9d008ae29f4f54e97b1f825f28c82e",
+      "nativeActionCount": 16,
+      "signedArtifactSha256": "563b59f94bec9e0c5794d7f89c0a88503bba26db641dc25cec6dea520f724a7b",
+      "signingVerificationTier": "AEA1_HEADER_PASS",
+      "publishedFileCount": 21,
+      "publishedFiles": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "d4d0957f3936a05b90996dad9d20534bd5f92182a57b7386c21b03e8659e56ef",
+          "bytes": 90915
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "c8dd333d2493b68c07c6a9da951e31cf52ab6131628b30e74d35d8ed8f652e55",
+          "bytes": 857
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "8edf1069e4386178f1764a5116cfed77a0d99206c8f2c5284f8637187d741a36",
+          "bytes": 158
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "43a23efbb41115b36153ea069cf2e35e95f520a6ef604edf4ae50dcbff2f4afc",
+          "bytes": 2802
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "7a0d6fbee4ac37941c2b8409b8523e77e94ad4c7cdfd89d121a6d9e0b229adcc",
+          "bytes": 23956
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "d63c9e42ffe17168e2a04ff818acdbd4c06db6292426df6590612956314d101f",
+          "bytes": 17513
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "0dc5bb0f1bc7b3acc7de2a473bb965cfc4ff521d916f95048886ff8997dfbb07",
+          "bytes": 1345
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "13b0cc34cc60fa3faae1851461ec02a857d27791ff2a8e10fba58e2b3037089b",
+          "bytes": 1341421
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "a5d5aa084d64ecddca4accece30ca5e41c6e0976c14b91595095e80d76f7b047",
+          "bytes": 474
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "d63c9e42ffe17168e2a04ff818acdbd4c06db6292426df6590612956314d101f",
+          "bytes": 17513
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "e7e00235b2e0cf85dadcb4e0803aeee85f9a277bb2ee437f8546b1d14ecbddda",
+          "bytes": 2770
+        },
+        {
+          "path": "environment.json",
+          "sha256": "74baac0308c8502fceccbd93f484c9adaaa06b0c05c34d7286a7b57ab3ab835c",
+          "bytes": 786
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "a37f180803ae3c8d06358fa60812eac12d7752d64f1751c1e472ece37108bf61",
+          "bytes": 1686
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "fcfa94c7ae86996d4c47257948b057f4fb95af4225ed1b7d9ef51c4ac9712012",
+          "bytes": 2213
+        },
+        {
+          "path": "runtime/http-probe-diagnostic.json",
+          "sha256": "19f62d0bcca366662b9fb570f2d23ccd6f53d4ac41a7e9c8e7d060b46fbfdd50",
+          "bytes": 2074
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "206468ba2fe99ce5f65568201dd0e27c84be763ce380d53fa1a49a22377e863f",
+          "bytes": 1452
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "8c8532879f21f6450429bb64cf40ac941ed192dc632927730698f6cd7a4f0a1a",
+          "bytes": 997
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "70c5947a84af9ef1826b42e5aa90e7cfeedc31aa50faf0d2be54727eecef4bb3",
+          "bytes": 2043
+        },
+        {
+          "path": "summary.json",
+          "sha256": "8b45bc0bd6db6f18d0f8862c4eb4fae82a758ea38d48ff0db7dfbf5c6b44e4f5",
+          "bytes": 1128
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "93b689083ebb0b5c5f1348fee2be2b73b88e6c393e5e5aff568cbc8cfcb2c451",
+          "bytes": 984
+        }
+      ],
+      "publicationManifestSha256": "bf1ebe6d24eb325e23dbcdc71b55a31878fc459bd811cb020200e212fe4f4496",
+      "publishedFileHashesAndByteCountsVerified": true,
+      "publishedPathSetExact": true,
+      "runner": {
+        "macOS": "27.0.1",
+        "macOSBuild": "26A434",
+        "xcodeVersion": "27.1",
+        "xcodeBuild": "27A9275",
+        "simulatorDevice": "iPad mini (A17 Pro)",
+        "simulatorRuntime": "iOS 27.0"
+      },
+      "gates": {
+        "RUNNER_AVAILABLE": "PASS",
+        "SIMULATOR_BOOTED": "PASS",
+        "SHORTCUTS_APP_INSTALLED": "PASS",
+        "SHORTCUTS_LAUNCHED": "PASS",
+        "EDITOR_OPENED": "PASS",
+        "FILE_IMPORT_ATTEMPTED": "PASS",
+        "COMPILER_ARTIFACT_IMPORTED": "PASS",
+        "SHORTCUT_EXISTS_IN_LIBRARY": "PASS",
+        "ACTION_EDITOR_CAPTURED": "EDITOR_CAPTURE_COMPLETE",
+        "SHORTCUT_RUN_ATTEMPTED": "PASS",
+        "SHORTCUT_RUN_COMPLETED": "PASS",
+        "CALLBACK_CAPTURED": "PASS",
+        "TRACE_CAPTURED": "PASS",
+        "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+      },
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "correlatedShortcutCallbackCount": 1,
+      "allCompiledShortcutCallbackCount": 1,
+      "receiverSelfTestCount": 1,
+      "ordinaryRuntimeContractVerified": true,
+      "nativeCatchability": "NOT_PROVEN",
+      "sameRequestStatusValue": "NOT_PROVEN",
+      "retryImplemented": false,
+      "physicalDeviceProven": false,
+      "finding": "HTTP_500_BODY_RETURNED_AND_EXECUTION_CONTINUED",
+      "runtimeResult": "PASS",
+      "callbackStatus": "SUCCESS",
+      "freshRunNonce": "qa-retry-http500-v2-44344880086-9d0da69fb0a2d9c8e16a7c2db50c37df",
+      "exactResultSummary": "CHERRI_QA_RETRY_HTTP500_RESULT:P15_HTTP_BODY_OK",
+      "inlineTraceCount": 2,
+      "collectorTraceCount": 2,
+      "traceMatchesActualCallback": true,
+      "serverState": "STOPPED",
+      "primaryRequestCount": 1,
+      "continuationRequestCount": 1,
+      "observedServerEvents": [
+        {
+          "sequence": 1,
+          "route": "primary",
+          "method": "GET",
+          "status": 500,
+          "responseKind": "HTTP_STATUS",
+          "bodySha256": "560d93f155d20b54406a9984c9baefbe858889985c97400261c7e141cab101d5",
+          "receivedAt": "2026-11-18T17:41:29.966268Z",
+          "elapsedMilliseconds": 1316924,
+          "responseWriteCompleted": true
+        },
+        {
+          "sequence": 2,
+          "route": "continued",
+          "method": "GET",
+          "status": 200,
+          "responseKind": "HTTP_STATUS",
+          "bodySha256": "2e33feb2e2ec15bca6ef7e864d79b8f7606487eb6178592a47a440d95540c9fa",
+          "receivedAt": "2026-11-18T17:41:31.544674Z",
+          "elapsedMilliseconds": 1318502,
+          "responseWriteCompleted": true
+        }
+      ],
+      "serverReceiptHashFromPublishedDiagnostic": "69dc2b0fdf37ada6a2c746c957494c562d75ebb1ee6289bac85e2c7f68ccc292",
+      "scope": "A single observed HTTP 500 response returned its exact synthetic body and reached a separate continuation request. No retry or native catch operation exists in this fixture."
+    },
+    {
+      "runId": "44345179210",
+      "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44345179210",
+      "attempt": 1,
+      "compilerCommitSha": "52284f8ad179997bf35d41dde21a758dfc611059",
+      "workflowConclusion": "failure",
+      "fixtureId": "qa-retry-http404-v2",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-retry-http404-v2.cherri",
+      "sourceSha256": "ee040c5a628fd0e2b742c76a8c4e99340db7a7384148a5e89648fea500146181",
+      "sourceHashMatchesImmutableGitBlob": true,
+      "unsignedPlistSha256": "0da089ab8c7c823d38d82c417d21b1c66a78b9e413c577ce7d739f8e8802e84c",
+      "nativeActionCount": 16,
+      "signedArtifactSha256": "7bce115f233c46bee920ded11c190d40b2ea7e05504b078bee8fe5ff87eee09d",
+      "signingVerificationTier": "AEA1_HEADER_PASS",
+      "publishedFileCount": 21,
+      "publishedFiles": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "e2df54b3a3ee307664d912ce4c3171c65bd627e8b0a18a82883200bde3ee5a96",
+          "bytes": 90915
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "ee89f0b04bc42776d314ad29549b1d433776259362c140d19d6a8128474f917f",
+          "bytes": 883
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "24044d5858a0a53c9267f2d8dda90df58d0533cabe62a8583f2c78412428ee6e",
+          "bytes": 157
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "6018ed8372e6bc874901972fd604e59aa054e8f65a125397b422926d06eaa20b",
+          "bytes": 1526
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "6086de2ea1c54c574c335f6358a8fa8e3892c46307214e41d7d80991f51da132",
+          "bytes": 571
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "2229f9ecff70690b2dda5a29ff27c61bf304929f5e1373c2e90a34a5a7e74bd9",
+          "bytes": 8468
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "4dddc9459a125009b70f4f6cb1ea5ff23846ef47399916822fefc0e40e86c6de",
+          "bytes": 1288
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "0fdd980c3454857b5194d3cd9b44ea9519fd09a5fc89d5a86c543e53409f0f36",
+          "bytes": 96752
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "ff20928acf7ff790d8140f4a06fc0eb67f6313c84e622a1033e82ec49b440069",
+          "bytes": 668
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "2229f9ecff70690b2dda5a29ff27c61bf304929f5e1373c2e90a34a5a7e74bd9",
+          "bytes": 8468
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "41a5c063c182b454ba161c5a5b08111352349b90509406334e44b532191a1a6a",
+          "bytes": 1059
+        },
+        {
+          "path": "environment.json",
+          "sha256": "1c12aac25b1734b363180c1d81026b1838f77935b99beb9b6ac85405c1bece49",
+          "bytes": 786
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "9e8631aff3e75ad6bce1859ff97046d2ac1dfbe4303274c22e3e1fada9f792e8",
+          "bytes": 1670
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "b511b773f2cf92cc9dfce00a6e839ecfa1d0ecaaafcc673be69d5bfacc805394",
+          "bytes": 481
+        },
+        {
+          "path": "runtime/http-probe-diagnostic.json",
+          "sha256": "f15e73bd2907e827370c965012757dedb8cf6548688ea269499f43fbb8a93bf6",
+          "bytes": 231
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "0bf3bc94de436312fa616a1ed803106f5fe6b7a556b5b091b8f82747ab2b7057",
+          "bytes": 1358
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "4380e380eb8b490b45cf4ffcf267f4a7098e3a94bc4ebcf0ed092d38da1db0df",
+          "bytes": 258
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "44d4b1af5ad3b2d9d28e8bf2d8992230ba65d56c5741c3ba4d3095d1f63c8b58",
+          "bytes": 2043
+        },
+        {
+          "path": "summary.json",
+          "sha256": "37793ee02412afa2df7c17941ad84247fea1734cc239ff69fcf3ecd95b7ce4ef",
+          "bytes": 1158
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "89992c53456efb7b40ba41ebf9371fdfea916105c06822f59afde1d9b1b17290",
+          "bytes": 984
+        }
+      ],
+      "publicationManifestSha256": "0438167ab5ed40643ce8fafd3aaebb17a638f42a50a0ec755917fd40611840f6",
+      "publishedFileHashesAndByteCountsVerified": true,
+      "publishedPathSetExact": true,
+      "runner": {
+        "macOS": "27.0.1",
+        "macOSBuild": "26A434",
+        "xcodeVersion": "27.1",
+        "xcodeBuild": "27A9275",
+        "simulatorDevice": "iPad mini (A17 Pro)",
+        "simulatorRuntime": "iOS 27.0"
+      },
+      "gates": {
+        "RUNNER_AVAILABLE": "PASS",
+        "SIMULATOR_BOOTED": "PASS",
+        "SHORTCUTS_APP_INSTALLED": "PASS",
+        "SHORTCUTS_LAUNCHED": "PASS",
+        "EDITOR_OPENED": "PASS",
+        "FILE_IMPORT_ATTEMPTED": "PASS",
+        "COMPILER_ARTIFACT_IMPORTED": "BLOCKED_IMPORT",
+        "SHORTCUT_EXISTS_IN_LIBRARY": "BLOCKED_IMPORT",
+        "ACTION_EDITOR_CAPTURED": "PARTIAL_EDITOR_CAPTURE",
+        "SHORTCUT_RUN_ATTEMPTED": "BLOCKED_IMPORT",
+        "SHORTCUT_RUN_COMPLETED": "BLOCKED_IMPORT",
+        "CALLBACK_CAPTURED": "PASS",
+        "TRACE_CAPTURED": "BLOCKED_IMPORT",
+        "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+      },
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "correlatedShortcutCallbackCount": 0,
+      "allCompiledShortcutCallbackCount": 0,
+      "receiverSelfTestCount": 1,
+      "ordinaryRuntimeContractVerified": false,
+      "nativeCatchability": "NOT_PROVEN",
+      "sameRequestStatusValue": "NOT_PROVEN",
+      "retryImplemented": false,
+      "physicalDeviceProven": false,
+      "finding": "NOT_RUN_IMPORT_BLOCKED",
+      "runtimeResult": "NOT_RUN",
+      "callbackStatus": "NOT_OBSERVED",
+      "inlineTraceCount": 0,
+      "collectorTraceCount": 0,
+      "primaryRequestCount": "NOT_PROVEN_BY_PUBLISHED_DIAGNOSTIC",
+      "continuationRequestCount": "NOT_PROVEN_BY_PUBLISHED_DIAGNOSTIC",
+      "importHandshakeRetried": true,
+      "importAckReturnCode": 124,
+      "importRetryAckReturnCode": 124,
+      "scope": "The signed artifact was prepared, but import was not established. Only the Receiver self-test callback exists. This is no observation of native HTTP 404 behavior."
+    }
+  ],
+  "limits": [
+    "Published text artifacts only were independently rehashed; raw signed Shortcuts and raw server receipts remain quarantined.",
+    "The HTTP server status is external synthetic-server evidence, not a status value exposed to the running Shortcut.",
+    "Neither result proves transport-error catchability, a production retry macro, physical-device support, or 1:1 Editor Inspector closure."
+  ]
+}
