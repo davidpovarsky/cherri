@@ -11,9 +11,13 @@ import XCTest
 
 final class CherriEditorUITests: XCTestCase {
     var app: XCUIApplication!
+    private var syntheticSourceResetVerified = false
+    private var expectedSyntheticSource: String?
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        syntheticSourceResetVerified = false
+        expectedSyntheticSource = nil
         app = XCUIApplication()
         app.launchArguments.append(contentsOf: [
             "--uitesting",
@@ -24,7 +28,54 @@ final class CherriEditorUITests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
+        recordEditorReceipt(stage: "teardown")
         app = nil
+    }
+
+    private func waitForEditorValue(_ editor: XCUIElement, timeout: TimeInterval = 5,
+                                    matching predicate: @escaping (String) -> Bool) -> Bool {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard editor.exists, let value = editor.value as? String else { return false }
+            return predicate(value)
+        }, object: editor)
+        return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
+    }
+
+    /// Only reads source after this test has observed an empty reset. No app-wide
+    /// AX tree, document list, status message, screenshot, or private text is read.
+    private func recordEditorReceipt(stage: String) {
+        guard let app else { return }
+        let editor = app.textViews["cherriCodeEditor"]
+        let build = app.buttons["buildButton"]
+        let nameSeparators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
+        let method = name.components(separatedBy: nameSeparators).first { $0.hasPrefix("test") } ?? "unknown"
+        var receipt: [String: Any] = [
+            "schemaVersion": "1.0",
+            "testName": "CherriEditorUITests/\(method)",
+            "stage": stage,
+            "syntheticSourceResetVerified": syntheticSourceResetVerified,
+            "editorExists": editor.exists,
+            "editorHittable": editor.exists && editor.isHittable,
+            "buildExists": build.exists,
+            "buildEnabled": build.exists && build.isEnabled,
+            "compiledStatusExists": app.staticTexts["compiledStatusText"].exists,
+            "diagnosticStatusExists": app.staticTexts["diagnosticStatusText"].exists,
+            "diagnosticsBannerExists": app.otherElements["diagnosticsBanner"].exists,
+            "keyboardExists": app.keyboards.firstMatch.exists,
+        ]
+        if syntheticSourceResetVerified, editor.exists, let value = editor.value as? String {
+            receipt["actualSource"] = String(value.prefix(4096))
+            receipt["actualUTF16Length"] = (value as NSString).length
+            receipt["sourceTruncated"] = value.count > 4096
+            if let expected = expectedSyntheticSource {
+                receipt["expectedSource"] = String(expected.prefix(4096))
+                receipt["exactUTF16Match"] = Array(value.utf16) == Array(expected.utf16)
+            }
+        }
+        if let bytes = try? JSONSerialization.data(withJSONObject: receipt, options: [.sortedKeys]),
+           let json = String(data: bytes, encoding: .utf8) {
+            print("[CHERRI_UI_RECEIPT] \(json)")
+        }
     }
 
     @discardableResult
@@ -46,11 +97,21 @@ final class CherriEditorUITests: XCTestCase {
         return editor
     }
 
-    private func resetEditor(_ editor: XCUIElement) {
+    @discardableResult
+    private func resetEditor(_ editor: XCUIElement) -> Bool {
+        syntheticSourceResetVerified = false
+        expectedSyntheticSource = nil
         let clearBtn = app.buttons["clearEditorButton"]
-        if clearBtn.waitForExistence(timeout: 2) && clearBtn.isHittable {
-            clearBtn.tap()
+        guard clearBtn.waitForExistence(timeout: 2) && clearBtn.isHittable else {
+            XCTFail("Clear action must be available before entering a synthetic fixture")
+            return false
         }
+        clearBtn.tap()
+        let cleared = waitForEditorValue(editor) { $0.isEmpty }
+        XCTAssertTrue(cleared, "Editor reset must expose an empty source before synthetic typing")
+        syntheticSourceResetVerified = cleared
+        if cleared { recordEditorReceipt(stage: "empty-reset") }
+        return cleared
     }
 
     private func typeIntoEditor(_ editor: XCUIElement, _ text: String) {
@@ -60,11 +121,12 @@ final class CherriEditorUITests: XCTestCase {
     }
 
     private func setEditorContent(_ editor: XCUIElement, _ text: String) {
-        let currentVal = (editor.value as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        if !currentVal.isEmpty {
-            resetEditor(editor)
-        }
+        guard resetEditor(editor) else { return }
+        expectedSyntheticSource = text
         typeIntoEditor(editor, text)
+        let matches = waitForEditorValue(editor) { Array($0.utf16) == Array(text.utf16) }
+        recordEditorReceipt(stage: "typed-source")
+        XCTAssertTrue(matches, "Editor UTF-16 source must exactly match the typed synthetic fixture")
     }
 
     // E01 & RP40: Contextual completion display, selection, insertion, and successful compilation
@@ -94,6 +156,11 @@ final class CherriEditorUITests: XCTestCase {
 
         // Verify editor content reflects completed insertion and no trailing uncompleted prefix
         XCTAssertTrue(editor.waitForExistence(timeout: 5), "Editor must remain present after insertion")
+        let insertionCompleted = waitForEditorValue(editor) {
+            $0.contains("show") && !$0.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix("sho")
+        }
+        recordEditorReceipt(stage: "completion-insertion")
+        XCTAssertTrue(insertionCompleted, "Selected completion must finish updating the editor source")
         var editorValue = (editor.value as? String) ?? ""
         XCTAssertTrue(editorValue.contains("show"), "Editor text must reflect inserted action call")
         XCTAssertFalse(editorValue.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix("sho"), "Editor text must not end in incomplete prefix 'sho'")
@@ -230,10 +297,7 @@ final class CherriEditorUITests: XCTestCase {
     // E05: Editor responsiveness and stale edit isolation under continuous rapid typing
     func testE05EditorResponsivenessStaleEditsUI() throws {
         let editor = ensureEditorReady()
-        let currentVal = (editor.value as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        if !currentVal.isEmpty {
-            resetEditor(editor)
-        }
+        guard resetEditor(editor) else { return }
         editor.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         _ = app.keyboards.firstMatch.waitForExistence(timeout: 2)
 
@@ -242,6 +306,11 @@ final class CherriEditorUITests: XCTestCase {
             editor.typeText("let burstVar\(i) = \(i)\n")
         }
         editor.typeText("show(burstVar5)\n")
+        let expected = (1...5).map { "let burstVar\($0) = \($0)\n" }.joined() + "show(burstVar5)\n"
+        expectedSyntheticSource = expected
+        let exactSource = waitForEditorValue(editor) { Array($0.utf16) == Array(expected.utf16) }
+        recordEditorReceipt(stage: "rapid-typed-source")
+        XCTAssertTrue(exactSource, "Rapid typing must preserve the complete exact synthetic source")
 
         // Verify editor retains content and UI remains interactive
         XCTAssertTrue(editor.waitForExistence(timeout: 5), "Editor must remain interactive under rapid edits")
@@ -407,5 +476,15 @@ final class CherriEditorUITests: XCTestCase {
     func testNegativeMissingUIElementFailsClosed() throws {
         let nonexistentButton = app.buttons["nonexistentButton_MustNotExist"]
         XCTAssertFalse(nonexistentButton.waitForExistence(timeout: 1), "Nonexistent element must not report existence")
+    }
+
+    // Separates reset/cursor corruption from automatic delimiter insertion.
+    // Real keyboard typing is intentional; paste would evade token completion.
+    func testTypedSourceAndResetPreserveExactUTF16() throws {
+        let editor = ensureEditorReady()
+        setEditorContent(editor, "let previousLongName = 123456789\n")
+        setEditorContent(editor, "let n = 1\n")
+        setEditorContent(editor, "text(\"x\")\n")
+        print("[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT] Reset and keyboard input preserved exact UTF-16")
     }
 }
