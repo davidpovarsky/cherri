@@ -1,0 +1,471 @@
+{
+  "sourceCommit": "01182577c85bc4d94565af873e114839be62a9cd",
+  "sourceTreeCleanBeforeAndAfter": true,
+  "executedAt": "2026-11-18T20:33:31.205306+00:00",
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "3m",
+        "-run",
+        "^TestTypeOpaqueProductionEvidence$",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "rawLog": "formal-t04-custom.jsonl",
+      "rawLogSha256": "7f91edd64009abf656e2594c1a72e3643b80f6edd20ae91aefed039e318a716c",
+      "results": [
+        {
+          "test": "TestTypeOpaqueProductionEvidence",
+          "action": "pass",
+          "elapsed": 5.72
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 7.092
+        }
+      ],
+      "formalReceipt": {
+        "records": [
+          {
+            "evidence_id": "ev-local-T04-unit",
+            "requirements": [
+              "T04"
+            ],
+            "tier": "unit",
+            "implementation_sha": "01182577c85bc4d94565af873e114839be62a9cd",
+            "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeProduction",
+            "command": [
+              "go",
+              "test",
+              "-count=1",
+              "-json",
+              "-timeout",
+              "3m0s",
+              ".",
+              "-run",
+              "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+            ],
+            "exit_code": 0,
+            "result": "passed",
+            "assertions": {
+              "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+            },
+            "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+          },
+          {
+            "evidence_id": "ev-local-T04-service",
+            "requirements": [
+              "T04"
+            ],
+            "tier": "service",
+            "implementation_sha": "01182577c85bc4d94565af873e114839be62a9cd",
+            "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeService",
+            "command": [
+              "go",
+              "test",
+              "-count=1",
+              "-json",
+              "-timeout",
+              "3m0s",
+              ".",
+              "-run",
+              "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+            ],
+            "exit_code": 0,
+            "result": "passed",
+            "assertions": {
+              "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+            },
+            "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+          }
+        ],
+        "report": {
+          "timestamp": "2026-11-18T20:33:18Z",
+          "phase": "local",
+          "closure_complete": false,
+          "language_version": "2.0",
+          "schema_fingerprint": "",
+          "total_cases": 1,
+          "passed_cases": 1,
+          "failed_cases": 0,
+          "skipped_cases": 0,
+          "results": [
+            {
+              "id": "T04",
+              "group": "types",
+              "requirement": "Unknown differs from AnyContent and Void",
+              "test_level": "unit+service",
+              "executed_levels": [
+                "unit",
+                "service"
+              ],
+              "passed": true,
+              "status": "PASSED",
+              "detail": "All required tiers satisfied by verified evidence"
+            }
+          ]
+        },
+        "scope": "Only T04 authored assignment evidence, Void value rejection and actual Service diagnostics; native attachment compatibility is not a type guarantee, no Apple runtime or release closure",
+        "source_sha": "01182577c85bc4d94565af873e114839be62a9cd",
+        "source_tree_clean": true
+      },
+      "committedLogSha256": "7f91edd64009abf656e2594c1a72e3643b80f6edd20ae91aefed039e318a716c"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "4m",
+        "-run",
+        "^TestP15C01",
+        "."
+      ],
+      "exitCode": 0,
+      "rawLog": "call-order-compatibility.jsonl",
+      "rawLogSha256": "2dd23bb5ffe2f0ee5caa2544a6f767d3be5675cd06fdfeb7fad28ecca6f2999e",
+      "results": [
+        {
+          "test": "TestP15C01DefaultGuardStructure",
+          "action": "pass",
+          "elapsed": 0.05
+        },
+        {
+          "test": "TestP15C01CLIAndService",
+          "action": "pass",
+          "elapsed": 5.36
+        },
+        {
+          "test": "TestP15C01SnapshotBoundaries",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestP15C01NestedCustomResult",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestP15C01AggregateArgumentSnapshots",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestP15C01SourceOrderNativeStructure",
+          "action": "pass",
+          "elapsed": 0.03
+        },
+        {
+          "test": "TestP15C01SourceOrderFlow",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestP15C01DefaultEffectsOnce",
+          "action": "pass",
+          "elapsed": 0.02
+        },
+        {
+          "test": "TestP15C01ArgumentValueSnapshot",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 5.785
+        }
+      ],
+      "committedLogSha256": "2dd23bb5ffe2f0ee5caa2544a6f767d3be5675cd06fdfeb7fad28ecca6f2999e"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "4m",
+        "./internal/language/analysis",
+        "./internal/language/lower"
+      ],
+      "exitCode": 0,
+      "rawLog": "analysis-lower.jsonl",
+      "rawLogSha256": "c584e0b0ef0a0f364342d948d13033f4766a1b5f3a3eabf73e2e7249447243a0",
+      "results": [
+        {
+          "test": "TestAnalyzerAssignImmutable",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestAnalyzerReadBeforeInit",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerUnknownArgument",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerMissingArgument",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerDuplicateArgument",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerIfConditionBool",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerYieldOutsideValueBlock",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerLegacySyntax",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerValidProgram",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerCopyPaste",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerTruthiness",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerHotLoopWarning",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerGlobals",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerListPlusAssign",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMacActionInNonMacShortcut_Baseline",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMacActionInMacShortcut_Allowed",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestNonMacActionInMacShortcut_Error",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestNonMacActionInNonMacShortcut_Allowed",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestEmptyDictionaryKey_MapLiteral",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestEmptyDictionaryKey_IndexExpr",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestEmptyDictionaryKey_GetValueCall",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestExprTypesTracking",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMixedTargets_RejectsNonPortableActions",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestExplicitTargetString",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestUnspecifiedTarget_EmitsWarning",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestVersionBounds_MinVersion",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAcceptedForms_AcceptsVariableAttachment",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockInferredTypeAndLexicalScope",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockDiagnosticsAndBranchTypes",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockDoesNotReserveExistingFunctionName",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestTargetVersionSettersRetainCompatibility",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestTargetVersionSourceAccessorsKeepComponents",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 1.2650000000000001
+        },
+        {
+          "test": "TestMapIndexDynamicKeyLowering",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestListIndexDynamicLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexEmptyKeyLoweringError",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexUnicodeKeyLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexLetVarLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexNestedMapLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexDirectGetValueCall",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerBasicWorkflow",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerConditionalWorkflow",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerFunctionEnvelopeDefaultsAndVoidReturn",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerShortCircuitAndExpressionsAndSafeIndexing",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerTriggersWithParameters",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerUnusedFunctionDispatcherOmitted",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerListAppendVariable",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockRenamingPreservesSourceAndLiteralValues",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 1.468
+        }
+      ],
+      "committedLogSha256": "c584e0b0ef0a0f364342d948d13033f4766a1b5f3a3eabf73e2e7249447243a0"
+    }
+  ],
+  "causalFailures": [
+    {
+      "jobId": "job_7abf62cc1ef3",
+      "log": "custom-return-causal-red.jsonl",
+      "sha256": "1ed4bd2721fb94885d5f0d0bd78ee3adda02022c0372a641773d956c96ea5c8c"
+    },
+    {
+      "jobId": "job_1ea1f18715d6",
+      "log": "custom-return-candidate.jsonl",
+      "sha256": "14e96cb1ebbfc7f2c13c76dd8b53d7417ae76aa272ad3afb6e42e88f023831b0"
+    }
+  ],
+  "sentinelJobId": "job_b0cf0115e4ad"
+}
