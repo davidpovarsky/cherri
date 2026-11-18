@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "status": "BLOCKED_SIGNING_OBSERVED_BEFORE_NATIVE_EXECUTION",
+  "runId": 44367757213,
+  "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44367757213",
+  "sourceCommit": "42e7d1cb94542557ada88201178bf9edfb4fa994",
+  "fixtureId": "qa-number-comparison-diag-v2",
+  "fixtureSourceSha256": "b3d1bcf9782d8210b3f1756d6e0d104f02bcf2ea46db50593bc6e45b8a2cfe99",
+  "unsignedPlistSha256": "1deb51e209331f07c5e4d68de78443bcbc435e9beb122a1d47441e219c065196",
+  "nativeActionCount": 89,
+  "targetUnsignedByteSize": "NOT_PUBLISHED",
+  "targetSigningExitCode": 1,
+  "observedSigningFailures": [
+    {
+      "service": "Shortcuty Sign",
+      "httpStatus": 403,
+      "observedBodyClass": "HTML challenge"
+    },
+    {
+      "service": "RoutineHub HubSign",
+      "httpStatus": 500,
+      "observedBodyClass": "Internal server error"
+    },
+    {
+      "service": "macOS host Shortcuts CLI",
+      "result": "failed",
+      "reason": "TRUNCATED_NOT_INFERRED"
+    }
+  ],
+  "observedPhase2StartedAt": "2026-11-18T18:38:22.4930940Z",
+  "observedPhase3StartedAt": "2026-11-18T18:38:57.3076300Z",
+  "nativeExecutionObserved": false,
+  "correlatedTargetCallbacks": 0,
+  "legacyCounterpart": {
+    "schemaVersion": "1.4",
+    "compilerCommitSha": "42e7d1cb94542557ada88201178bf9edfb4fa994",
+    "signingMethod": "HUBSIGN_REMOTE_SERVICE",
+    "serviceName": "RoutineHub HubSign",
+    "shortcutName": "qa-functional-legacy",
+    "sourceFile": "qa-functional-legacy.cherri",
+    "sourceSha256": "e09dc606678740e5bdba32d6dd0c98b02da9cbb88b45cd2bfa419f8d1ed76b72",
+    "unsignedFile": "qa-functional-legacy.shortcut",
+    "unsignedPlistSha256": "b1bc3911442b44bab5a5de46b98408161459f3dbe4cd64c0640cef258efc5bc1",
+    "unsignedByteSize": 20437,
+    "nativeActionCount": 34,
+    "signedFile": "qa-functional-legacy-signed.shortcut",
+    "signedArtifactSha256": "7a04efadc51c5d114fa54c9cab0820dce79beb17df7248a7f2038259ab104250",
+    "signedByteSize": 25080,
+    "headerMagic": "AEA1",
+    "verificationTier": "AEA1_HEADER_PASS"
+  },
+  "publicationFilesIndependentlyHashed": 20,
+  "publicationFiles": [
+    {
+      "path": "compiler-manifest.json",
+      "sha256": "b8f34227fd4c4d8571d4eca2e9e7462227b9745ce6402cbd286efb1946150927",
+      "bytes": 188240
+    },
+    {
+      "path": "docs/report.md",
+      "sha256": "6e24f4b562b65a26f72e7fc99c9d58364451c185b5e6fe633f5e6347cfb11067",
+      "bytes": 897
+    },
+    {
+      "path": "editor/ax-persistence-diagnostics.json",
+      "sha256": "412c1659d43c5aafc9f1084fc7f3bf5f9ff52043ace096cedbda41e4dfbdadcd",
+      "bytes": 157
+    },
+    {
+      "path": "editor/editor-action-coverage.json",
+      "sha256": "5ea290df4116b1521d3ca7e734be4e5600a0449ef925ca4ae2afbb83551607a5",
+      "bytes": 1167
+    },
+    {
+      "path": "editor/editor-actions.json",
+      "sha256": "ea30fa6b696f16f1df3a76588ecda03a744a15c5f653dc0a90f36acbfe1edb93",
+      "bytes": 621
+    },
+    {
+      "path": "editor/editor-comparison.json",
+      "sha256": "a9d82898659e1130b82c119ed2870897d00742179af58fdd596943c18ffcd891",
+      "bytes": 46804
+    },
+    {
+      "path": "editor/editor-report.md",
+      "sha256": "de95a6bfeac7a5e703e446739c4e665398a971d258e7c70e5627edb5d6284ae7",
+      "bytes": 5047
+    },
+    {
+      "path": "editor/editor-tree.json",
+      "sha256": "bdf60475fabfe50dcf584c67e5a06486b800c289749169a1789a8334bee0d2a2",
+      "bytes": 59837
+    },
+    {
+      "path": "editor/handshake-status.json",
+      "sha256": "b81d12c932586e81a41cded2cbf82e5c4a59bcea9c8489069ada164f725564cc",
+      "bytes": 227
+    },
+    {
+      "path": "editor/plist-vs-editor-comparison.json",
+      "sha256": "a9d82898659e1130b82c119ed2870897d00742179af58fdd596943c18ffcd891",
+      "bytes": 46804
+    },
+    {
+      "path": "editor/screenshots-manifest.json",
+      "sha256": "bf158b57c03a2a4f46b61faf2e47851676be994a3ce67bdb57f0193679ba2b51",
+      "bytes": 492
+    },
+    {
+      "path": "environment.json",
+      "sha256": "bf6be8d8fd10ac8628df01c2e9c222ae4ac8a234a5f2173339d3b9d4ca46f39d",
+      "bytes": 787
+    },
+    {
+      "path": "import-attempts.json",
+      "sha256": "2ea9b018c3ab050b7a10b54aa920441d361e98c8e09f3ac3dd924cbe9951bf6c",
+      "bytes": 2470
+    },
+    {
+      "path": "runtime/callback-events.json",
+      "sha256": "46a0074cffe83b9361298df3b70227caa8487c14cb31534e096fa98f99f0b707",
+      "bytes": 481
+    },
+    {
+      "path": "runtime/instrumentation-vs-original.json",
+      "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+      "bytes": 7446
+    },
+    {
+      "path": "runtime/output-assertions.json",
+      "sha256": "947aa5573c9474d0ba9f73cbd72ffe97e9bee0a105f613c0c8a622c856fb2f13",
+      "bytes": 1443
+    },
+    {
+      "path": "runtime/runtime-trace.jsonl",
+      "sha256": "550035c46170a76bc92e21ffda9d6036eba558860268e377dbbaa4320be791ae",
+      "bytes": 269
+    },
+    {
+      "path": "runtime/signing-provenance.json",
+      "sha256": "ccbdc7c15d4e681c22db1a379172a9f20c5328c804e673984f8fe654920d1b9e",
+      "bytes": 1136
+    },
+    {
+      "path": "summary.json",
+      "sha256": "18c278b4a3c056cac74c9b834234e2fad7aecd1d39989854f28a32646f5e8879",
+      "bytes": 1181
+    },
+    {
+      "path": "tests/xcresult-summary.json",
+      "sha256": "9d4d49115873a2cdabd9ce277bd55270f439a9726fab5e4e0c441120c728af3e",
+      "bytes": 983
+    }
+  ],
+  "failedJobLogSha256": "0edfa4e5a70607844423640180e326f5d08e18ec8d662693c0ada96e7462e02b",
+  "failedJobLogBytes": 82756,
+  "independentAuditorStatus": {
+    "schemaVersion": 1,
+    "status": "FAIL_EVIDENCE_VALIDATION",
+    "sourceCommit": "42e7d1cb94542557ada88201178bf9edfb4fa994",
+    "runId": 44367757213,
+    "fixtureId": "qa-number-comparison-diag-v2",
+    "runtimeContractVerified": false,
+    "errorType": "ValueError",
+    "detail": "source provenance disagreement"
+  },
+  "rawLogHandling": "Retained in ignored host artifacts; only bounded signing status/phase/hash facts committed",
+  "notProven": [
+    "numeric comparison result",
+    "native failure cause",
+    "Apple runtime validity of the target",
+    "macOS fallback failure reason"
+  ],
+  "retryDispatched": false,
+  "publicationManifestSha256": "b47d13c85b7d3bf219dd99f4f30bcc7f2937b26d61121985d16446f9875f7928"
+}
