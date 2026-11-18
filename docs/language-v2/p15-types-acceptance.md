@@ -164,3 +164,9 @@ An independent read-only review found an additional valid case missing from the 
 ## T04 union follow-up: exact source execution
 
 The source at `44ff2199779f80126c9add57ef9d4b87ea623d22` was clean before and after the dedicated formal T04 execution (`job_67e084d9ea7a`). The production and service producers passed with all required tiers; the formal wrapper took 2.520 seconds (3.691 seconds for its package). The receipt and complete JSONL are in `evidence/p15-types-44ff219/`. The retained causal RED rejected an identical `Text | Number` return contract before the actual-union-first correction. Known union forwarding and annotated branch results now pass; narrowing and opaque union members remain rejected. This receipt covers that source and these local scopes only.
+
+## Declared custom-action result evidence
+
+The unchanged C01 nested custom-action result test exposed a concrete loss of an explicitly declared `Text` return type: action registration stored its display name but omitted the resolved semantic type. Registration now keeps the existing resolved type object. Missing return declarations remain opaque at the analyzer boundary; explicit `Unknown` and `AnyContent` do not acquire a concrete authored guarantee, and consumed `Void` remains invalid.
+
+Expanded T04 production and service controls cover declared Text, Number, union, List and Map results, exact consumed output UUIDs, and unknown/no-declaration/AnyContent/Void negatives. The union control also exposed a nil dereference in the existing lowerer result-identity decision. That decision now reads the already analyzed call result first and uses a nil-safe existing annotation fallback for lower-only callers. It does not parse a second type name, change custom wire parameters, or promise that the synthetic native identifiers are installed or satisfy their declared runtime contract.

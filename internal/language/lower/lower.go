@@ -5353,7 +5353,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	if actDecl, ok := l.actions[actionName]; ok {
 		uuid := l.GenerateUUID()
 		outputUUID := ""
-		hasValue := actDecl.ReturnType == nil || l.resolveTypeAnnotation(actDecl.ReturnType).Kind() != types.KindVoid
+		resultType := l.exprTypes[call]
+		if resultType == nil {
+			resultType = l.resolveTypeAnnotation(actDecl.ReturnType)
+		}
+		hasValue := resultType == nil || resultType.Kind() != types.KindVoid
 		if l.currentBindingName != "" || (!l.inExprStmt && hasValue) {
 			outputUUID = uuid
 		}

@@ -400,8 +400,10 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				})
 			}
 			retTypeName := "Void"
+			var retType types.Type
 			if d.ReturnType != nil {
-				retTypeName = a.resolveType(d.ReturnType).Name()
+				retType = a.resolveType(d.ReturnType)
+				retTypeName = retType.Name()
 			}
 			primaryParam := d.PrimaryParam
 			if primaryParam == "" && len(d.Parameters) > 0 {
@@ -415,6 +417,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 					Parameters:         actParams,
 					PrimaryParameterID: primaryParam,
 					OutputTypeName:     retTypeName,
+					OutputType:         retType,
 				})
 			}
 		case *syntax.ShortcutDecl:
