@@ -2453,6 +2453,19 @@
       "reason": "Repair the four Stage-3 demotions isolated after the List property safety guard.",
       "evidence": "Causal RED and 15 focused clean-source tests PASS on 89d18c1869b0bba8b532fc36ea367f700d41232d, recorded in docs/language-v2/evidence/p15-native-property-89d18c1. Full combined private boundary is running separately.",
       "note": "Immutable implementation ancestor; private input content is not exported and no pending runtime tier is inferred."
+    },
+    {
+      "name": "P10R15 staged require and File export diagnostics",
+      "locations": [
+        "tools/shortcuts-simulator-qa/fixtures/qa-require-zero-diag-v2.cherri",
+        "tools/shortcuts-simulator-qa/test_native_macro_diagnostic_contract.py",
+        "scripts/ios27_shortcuts_simulator_qa.sh"
+      ],
+      "firstForkCommit": "7ce528375a839081f0e311daaf7f3f8ae0145db6",
+      "change": "Add independent value and File pipeline controls while retaining the original strict acceptance sources and trace/result gates.",
+      "reason": "Localize actual signed require, label and export failures using the existing simulator pipeline.",
+      "evidence": "Exact integrated7ce5283:111Python tests, bash syntax and five actual CLI unsigned compilations PASS. Native diagnostics are dispatched separately; no Apple result inferred.",
+      "note": "Only synthetic fixtures may be signed or published."
     }
   ]
 }
