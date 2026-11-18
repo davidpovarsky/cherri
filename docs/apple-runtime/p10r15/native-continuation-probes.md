@@ -104,3 +104,39 @@ The raw plan, input token, key, trigger URLs and command output are not publishe
 The published diagnostic contains only hashes, reviewed phase/status fields and
 bounded source-bound results; its claims cannot be changed independently of the
 evidence. Native runtime evidence requires a separate fresh signed workflow.
+
+## Independent artifact audit
+
+The immutable pilot branch remains separate from audit implementation. Download
+the completed workflow's API metadata and its bounded publication artifact into
+an ignored directory, then run:
+
+    python3 tools/p10r15/audit_native_continuation.py --artifact artifacts/run/bounded --commit FULL_40_CHARACTER_SHA --run-id RUN_ID --fixture qa-number-comparison-diag-v2 --run-metadata artifacts/run/run-metadata.json --output artifacts/run/audit.json
+
+The metadata must identify this exact workflow, dispatch, run ID and source head.
+The auditor checks every published file's path, byte count and SHA-256 against
+the exact source publication allowlist, rejects extra files and links, and binds
+the selected Git fixture bytes to the compiler, signing and runtime manifests.
+These are provenance checks; signed AEA1 bytes are quarantined and the auditor
+does not claim independent cryptographic signature verification.
+
+It executes the canonical callback oracle extracted from that exact Git commit.
+A native SUCCESS callback carrying wrong numeric flags remains FAIL_RUNTIME.
+Numeric diagnostics retain all nine observed flags. HTTP raw-type categories are
+reported only from the exact executed literal trace branch after the normal
+oracle passes. Missing or ambiguous categories stay unobserved.
+
+For storage, both phase callbacks and their actual published traces are replayed
+independently with distinct nonces. The original helper from the exact source
+recomputes each phase observation. Writer-only evidence cannot prove cross-run
+storage. The source-validated public diagnostic binds the same Simulator,
+run-scoped key and dispatch order; raw launch/key inputs remain quarantined and
+are explicitly not independently inspected by this public-artifact audit.
+Deletion remains a read-branch request, without a separate deletion witness.
+
+Eight local causal oracle mutations run only when the observed baseline passes.
+A failing native baseline is preserved, without describing further already-failing
+mutations as causal evidence. The unit tests use explicitly synthetic protocol
+controls; they prove rejection and report behavior, not Apple execution.
+The auditor writes a report and exits 2 for a preserved runtime failure, or 3
+when evidence validation itself fails.
