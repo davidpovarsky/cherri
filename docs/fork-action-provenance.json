@@ -319,7 +319,9 @@
       "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
       "upstreamLocation": null,
       "forkLocations": [
-        "actions/basic.cherri"
+        "actions/basic.cherri",
+        "tools/language-schema/main.go",
+        "internal/language/schema/generated_registry.go"
       ],
       "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
       "change": "Added getType(variable input: 'WFInput', text ?fileType: 'WFFileType'): text to actions/basic.cherri.",
@@ -327,7 +329,9 @@
       "evidence": "batch-14 corpus evidence x5 in DeveloperKit, Home Screen Icon Creator.",
       "notes": [],
       "supersededByUpstream": null,
-      "history": []
+      "history": [
+        "2026-11-18: implementation 69913a285a13ecbf29281232d178ac75e448774b corrects this historical alias to Get File of Type, preserving gettypeaction/WFFileType. Legacy output is variable; canonical V2 output family is File. Independent WFGetTypeAction/public.data metadata and four real Legacy/V2 wire cases passed. Earlier type-introspection wording is historical and incorrect; typeOf uses getitemtype. Native Multiple=true is not scalar cardinality proof."
+      ]
     },
     {
       "name": "getTimeBetweenDates / addEvent / addReminder",
@@ -2068,6 +2072,83 @@
       "reason": "Source correctness does not establish behavior of old deployed binaries and wrappers.",
       "evidence": "Inactive R1 tuple has46/46 process cases:4 unsigned controls,42 negative rejections,0failures;12/12 entrypoint checks and causal compatibility/self-tests pass. All12 false-success cases from old live tuple are rejected. No live promotion yet.",
       "note": "Separate provenance recorded after immutable implementation commits. This entry does not certify full project completion or unexecuted Apple/physical tiers."
+    },
+    {
+      "name": "P10R15 bounded parser acceptance",
+      "locations": [
+        "internal/language/syntax/lexer.go",
+        "internal/language/syntax/parser.go",
+        "internal/language/syntax/format_precedence.go",
+        "tools/language-acceptance/parser_execution.go"
+      ],
+      "firstForkCommit": "b451d49852080d36298cad59a38a8310bf4b39de",
+      "change": "Correct parser progress, return boundaries, comparison grouping and Unicode identifier agreement; execute P01?P05 production evidence.",
+      "reason": "Original malformed f-string hung; comments and grouping errors were silently accepted or changed.",
+      "evidence": "Exact implementation branch acceptance package passed 47 top-level tests / 59 pass events, 0 fail/skip; source-bound receipt e8abea6. No native/UI acceptance inferred.",
+      "note": "Separate provenance commit; partial local evidence does not establish unexecuted native or physical acceptance."
+    },
+    {
+      "name": "P10R15 optional macro consumer fingerprint",
+      "locations": [
+        "skills/cherri-shortcuts/scripts/common.sh",
+        "tools/p10r15/verify_macro_compatibility.py"
+      ],
+      "firstForkCommit": "7dc8e765f9eede77fdce6a434b537ae0459cdd94",
+      "change": "Require a valid matching macro fingerprint in binary and docs when the manifest declares one; retain older-manifest compatibility.",
+      "reason": "The native action fingerprint alone cannot establish the compiler macro contract.",
+      "evidence": "22 actual compatibility cases passed; 9 negative mutations falsely succeeded on the baseline. Installed promotion remains separate.",
+      "note": "Separate provenance commit; partial local evidence does not establish unexecuted native or physical acceptance."
+    },
+    {
+      "name": "P10R15 bounded iOS failure evidence",
+      "locations": [
+        "ios/CherriUITests/CherriEditorUITests.swift",
+        "ios/scripts/collect_ios_test_evidence.py",
+        ".github/workflows/ios-build.yml"
+      ],
+      "firstForkCommit": "c1f9b667a2ee206eb4663c78d83d252e83503687",
+      "change": "Observe exact typed UTF-16 source after a verified empty reset and retain bounded evidence after failed xcodebuild tests.",
+      "reason": "R1 core integration passed but six editor UI tests failed without uploaded test evidence.",
+      "evidence": "12 collector tests passed on Windows and Linux; diagnostic Apple run 44234466807 uses original d2406cf1 source and remains pending.",
+      "note": "Separate provenance commit; partial local evidence does not establish unexecuted native or physical acceptance."
+    },
+    {
+      "name": "P10R15 macro identity and signed evidence recovery",
+      "locations": [
+        "debug_stdlib.go",
+        "p15_debug_uuid_identity_test.go",
+        "tools/shortcuts-simulator-qa/XcodeProject/Shared/EvidenceGeometry.swift",
+        "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/ReceiverApp.swift"
+      ],
+      "firstForkCommit": "0102da8ad779f9f5d5979ffa081475f1c095d52e",
+      "change": "Preserve frontend result UUID strings and serialize finite AX geometry with bounded error/payload diagnostics.",
+      "reason": "Actual Legacy fixture had a dangling case-modified trace binding; R1 AX persistence failed without a diagnostic cause.",
+      "evidence": "Corrected red/green tests cover three macro identities and all 16 ActionOutput bindings in each dialect. All focused Debug/P14 tests and 47 Python tests passed. Swift/native rerun 44235137367 pending; historical AX root cause not asserted.",
+      "note": "Separate provenance commit; partial local evidence does not establish unexecuted native or physical acceptance."
+    },
+    {
+      "name": "P10R15 source-bound macro roadmap evidence",
+      "locations": [
+        "tools/p10r15/generate_macro_contract_coverage.py",
+        "tools/p10r15/verify_macro_ledger_evidence.py"
+      ],
+      "firstForkCommit": "e988fd8c9ae95b165bac4d7ca046ce2bb0bd78cd",
+      "change": "Generate an eleven-child Asana ledger from real canonical metadata and actual CLI compile/import/recompile execution.",
+      "reason": "Descriptor presence or general collection support cannot certify all planned macros.",
+      "evidence": "On clean ab9 source: 12 CLI cases, 10 exact action roundtrips, 5 causal graph mutations and 19 verifier controls passed. All eleven children remain OPEN; regenerate on final source.",
+      "note": "Separate provenance commit; partial local evidence does not establish unexecuted native or physical acceptance."
+    },
+    {
+      "name": "P10R15 native dictionary values in V2 lists",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "p15_dictionary_list_test.go"
+      ],
+      "firstForkCommit": "dfcf7737091e1c50c91d4421d975fe5e0e2ffd54",
+      "change": "Materialize source dictionary values through existing native Dictionary producers and ordered List references.",
+      "reason": "R1 Bool/List serialized raw dictionary maps inside text item slots and returned a native error.",
+      "evidence": "Three authored binding forms failed before repair and passed afterward; 41 focused test events, full lowerer package and real CLI passed. Signed runtime and reserved-key follow-up remain open.",
+      "note": "Separate provenance commit; partial local evidence does not establish unexecuted native or physical acceptance."
     }
   ]
 }
