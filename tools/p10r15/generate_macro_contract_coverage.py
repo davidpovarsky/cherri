@@ -35,8 +35,8 @@ REQUIREMENTS = (
      ("Full false/zero/null/empty/native-object matrix and native failure/cancel proof are not established by this ledger.",)),
     ("label", "1220544718902445", "debugLog labels", ("debugLog",),
      "Stable per-entry labels without replacing the original raw object or its downstream UUID.",
-     "IMPLEMENTATION_GAP", (),
-     ("Per-entry label metadata, formatting, branch/repeat association and six-mode acceptance are missing.",)),
+     "PARTIAL_IMPLEMENTATION", ("Native file/object identity and six-mode label acceptance",),
+     ("Per-entry metadata and bounded source contracts are implemented; signed File-carrier byte identity still requires repair and acceptance.",)),
     ("export", "1220544665232213", "Local debugExport", ("debugExport",),
      "Local returned file; typed JSON/text or explicit opaque placeholders; safe escaping and default redaction.",
      "PARTIAL_IMPLEMENTATION", ("Apple returned-file/UTF-8/cardinality runtime evidence",),
@@ -50,7 +50,7 @@ REQUIREMENTS = (
      "PARTIAL_IMPLEMENTATION", ("Apple timing accuracy and error/cancel observation",),
      ("Legacy block syntax is deliberately rejected; structural UUID/timer checks are not native elapsed-time proof.",)),
     ("collect", "1220544651247337", "Typed collection", (),
-     "Use existing V2 for/yield and native Repeat Results without a second accumulator or standalone alias.",
+     "Use existing native Repeat Results without a second accumulator or standalone alias; account separately for typed input construction.",
      "EXISTING_V2_CONSTRUCT", ("Native empty/mixed/nested collection shape and performance observation",),
      ("No standalone collect alias is introduced. Compiled Repeat Results does not prove runtime flattening behavior.",)),
     ("cache", "1220544665232085", "Persistent TTL cache", ("cache",),
@@ -63,8 +63,8 @@ REQUIREMENTS = (
      ("No evidence establishes catchable transport failures; Alert plus Stop Shortcut is not exception handling.",)),
     ("paginate", "1220544665232021", "Bounded pagination", ("paginate",),
      "Explicit limits/cursor termination, typed aggregation and malformed/error/rate-limit/credential safeguards.",
-     "IMPLEMENTATION_GAP", ("Signed synthetic multi-page HTTP/schema/error observation",),
-     ("A bounded GET/body-cursor subset can use existing loops; generic response-status or retry behavior must not be invented.",)),
+     "BOUNDED_GET_IMPLEMENTATION", ("Signed synthetic multi-page HTTP/schema/error observation",),
+     ("The shared bounded GET/body-cursor implementation has page/item limits and cycle guards. Response headers/status, transport recovery, redirect limits and generic retry remain outside its proven contract.",)),
     ("profiles", "1220544607463126", "Debug and Release", ("debugLog", "require", "measure"),
      "Compile-time diagnostic removal while retaining semantic require checks and original native producers.",
      "PARTIAL_IMPLEMENTATION", ("Native result equivalence and debug-mode acceptance",),
@@ -187,6 +187,18 @@ def structural_checks(kind, profile, actions):
             str(params(loops[0]).get("WFControlFlowMode")) == "0" and str(params(loops[1]).get("WFControlFlowMode")) == "2")
         checks["consumerUsesRepeatResults"] = len(loops) == 2 and origin_matches(actions, params(loops[1]).get("UUID"))
         checks["noAccumulator"] = not named(actions, "appendvariable")
+    elif kind == "paginate":
+        requests = named(actions, "downloadurl")
+        loops = [a for a in named(actions, "repeat.count") if str(params(a).get("WFControlFlowMode")) == "0"]
+        checks["oneGETNode"] = len(requests) == 1 and params(requests[0]).get("WFHTTPMethod") == "GET"
+        checks["explicitPageBudget"] = len(loops) == 1 and str(params(loops[0]).get("WFRepeatCount")) == "3"
+        checks["nativeCycleHash"] = bool(named(actions, "hash"))
+        checks["typedDictionaryWitness"] = bool(named(actions, "getitemtype")) and bool(named(actions, "getvalueforkey"))
+        checks["semanticFailureStops"] = bool(named(actions, "alert")) and bool(named(actions, "exit"))
+    elif kind == "paginate-zero":
+        checks["zeroBudgetNoGET"] = not named(actions, "downloadurl")
+        checks["zeroBudgetNoLoop"] = not named(actions, "repeat.count") and not named(actions, "repeat.each")
+        checks["explicitEmptyResult"] = any(params(a).get("WFItems") == [] for a in named(actions, "list"))
     return {key: bool(value) for key, value in checks.items()}
 
 
@@ -218,6 +230,10 @@ def fixture_specs():
         {"id": "measure_v2_empty_rejected", "kind": "negative", "dialect": "v2", "profile": "debug",
          "source": 'let result = measure("empty") {}\n', "diagnostic": "E_BLOCK_VALUE_REQUIRED"},
     ))
+    for dialect in ("v2", "legacy"):
+        for kind, pages in (("paginate", 3), ("paginate-zero", 0)):
+            result.append({"id": kind + "_" + dialect, "kind": kind, "dialect": dialect,
+                           "profile": "debug", "source": 'paginate("https://example.invalid/p15/entry.json", "items", "next", ' + str(pages) + ', 6)\n'})
     return result
 
 
@@ -280,6 +296,7 @@ def check_mutations(outputs):
         ("measure_v2_debug", "duplicate_body", "oneTypedBodyProducer"),
         ("measure_v2_release", "retained_release_timer", "timerProfile"),
         ("collect_v2_1", "wrong_repeat_result", "consumerUsesRepeatResults"),
+        ("paginate_v2", "page_budget_changed", "explicitPageBudget"),
     )
     specs = {s["id"]: s for s in fixture_specs()}
     for case_id, mutation, expected in scenarios:
@@ -294,6 +311,8 @@ def check_mutations(outputs):
             params(changed[-1])["WFVariable"] = {"Value": {"Type": "ActionOutput", "OutputUUID": "missing-producer"}, "WFSerializationType": "WFTextTokenAttachment"}
         elif mutation == "duplicate_body":
             changed.insert(0, copy.deepcopy(named(changed, "dictionary")[0]))
+        elif mutation == "page_budget_changed":
+            next(a for a in named(changed, "repeat.count") if str(params(a).get("WFControlFlowMode")) == "0")["WFWorkflowActionParameters"]["WFRepeatCount"] = 4
         else:
             changed.insert(len(changed) - 1, {"WFWorkflowActionIdentifier": NATIVE_PREFIX + "gettimebetweendates", "WFWorkflowActionParameters": {}})
         spec = specs[case_id]
@@ -319,6 +338,7 @@ def build_rows(macros, cases):
         "blocks": ["measure_v2_debug", "measure_v2_release", "measure_legacy_unavailable", "measure_v2_empty_rejected"],
         "measure": ["measure_v2_debug", "measure_v2_release", "measure_legacy_unavailable"],
         "collect": ["collect_v2_0", "collect_v2_1", "collect_v2_100", "collect_v2_dictionary"],
+        "paginate": ["paginate_v2", "paginate_legacy", "paginate-zero_v2", "paginate-zero_legacy"],
         "profiles": ["require_v2_debug", "require_v2_release", "require_legacy_debug", "require_legacy_release", "measure_v2_debug", "measure_v2_release"],
         "qa": [c["id"] for c in cases],
     }
@@ -385,14 +405,22 @@ def refresh(repo):
             print(json.dumps({"case": row["id"], "verdict": row["verdict"]}), flush=True)
         mutations = check_mutations(outputs)
         by_id = {c["id"]: c for c in compiles}
-        counts = [by_id["collect_v2_" + str(n)].get("nativeActionCount") for n in (0, 1, 100)]
+        totals, loop_counts, numeric_inputs = [], [], []
+        for size in (0, 1, 100):
+            graph = outputs["collect_v2_" + str(size)] or []
+            boundaries = [i for i, action in enumerate(graph) if action_id(action) == NATIVE_PREFIX + "repeat.each"]
+            totals.append(len(graph))
+            loop_counts.append(boundaries[1] - boundaries[0] + 1 if len(boundaries) == 2 else None)
+            numeric_inputs.append(len(named(graph, "number")))
         profile_counts = {}
         for dialect in ("legacy", "v2"):
             debug = by_id["require_" + dialect + "_debug"].get("nativeActionIDs", {})
             release = by_id["require_" + dialect + "_release"].get("nativeActionIDs", {})
             profile_counts[dialect] = all(release.get(NATIVE_PREFIX + name, 0) == debug.get(NATIVE_PREFIX + name, 0) > 0
                                           for name in ("conditional", "alert", "exit", "getitemtype", "count"))
-        cross = {"constantCollectionActionCount": None not in counts and len(set(counts)) == 1,
+        cross = {"constantCollectionLoopActionCount": None not in loop_counts and len(set(loop_counts)) == 1 and loop_counts[0] > 0,
+                 "collectionLoopActionCounts": loop_counts, "collectionTotalActionCounts": totals,
+                 "numericInputActionCounts": numeric_inputs, "typedNumericInputCountsMatch": numeric_inputs == [0, 1, 100],
                  "requireGuardCountsDebugRelease": profile_counts}
         requirements = build_rows(macros, compiles)
         report = {"formatVersion": 1, "observedAtUtc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -414,7 +442,7 @@ def refresh(repo):
     if input_fingerprint(repo) != fingerprint:
         raise ValueError("SOURCE_CHANGED_DURING_EXECUTION")
     passed = all(c["verdict"] == "PASS" for c in compiles) and all(c["verdict"] == "PASS" for c in mutations)
-    passed = passed and docs_ok and native_ok and cross["constantCollectionActionCount"] and all(profile_counts.values())
+    passed = passed and docs_ok and native_ok and cross["constantCollectionLoopActionCount"] and cross["typedNumericInputCountsMatch"] and all(profile_counts.values())
     report["summary"] = {"asanaChildren": len(requirements), "open": len(requirements), "closed": 0,
                          "compilerMacros": len(macros), "compileChecks": len(compiles),
                          "compilePassed": sum(c["verdict"] == "PASS" for c in compiles),
@@ -449,7 +477,7 @@ def markdown(report):
     for row in report["requirements"]:
         lines.append("- " + row["name"] + ": " + " ".join(row["limitations"]) +
                      (" External prerequisites: " + "; ".join(row["externalPrerequisites"]) + "." if row["externalPrerequisites"] else ""))
-    lines.extend(["", "Standalone collect is deliberately not added. Existing for/yield evidence belongs to the typed collection requirement; it is not counted as a new canonical macro. Cache and retry have both missing source implementation and native prerequisites. Label and pagination still require ordinary implementation work. Local export has a bounded Text-only/default-redacted source subset; its native acceptance and remaining typed serialization contract stay open.", "",
+    lines.extend(["", "Standalone collect is deliberately not added. Existing for/yield evidence belongs to the typed collection requirement; it is not counted as a new canonical macro. Numeric input construction precedes the constant-size native loop and is counted separately. Cache and retry have both missing source implementation and native prerequisites. Label and bounded GET pagination have implementations with open native acceptance. Local export has a bounded Text-only/default-redacted source subset; its native acceptance and remaining typed serialization contract stay open.", "",
                   "Reproduce with python3 tools/p10r15/generate_macro_contract_coverage.py --refresh, then --verify. Every refresh builds the source and runs the actual CLI. Verification rejects source/producer drift and edited or incomplete evidence. The source SHA is the compiled revision before committing evidence, avoiding a self-referential commit pin.", ""])
     return "\n".join(lines)
 
@@ -471,7 +499,7 @@ def verify(report, repo):
         raise ValueError("MACRO_EXECUTION_FAILED")
     if any(c["verdict"] != "PASS" for c in report["compiles"] + report["causalMutations"]):
         raise ValueError("MACRO_CASE_FAILED")
-    if len(report["compiles"]) != len(fixture_specs()) or len(report["causalMutations"]) != 5:
+    if len(report["compiles"]) != len(fixture_specs()) or len(report["causalMutations"]) != 6:
         raise ValueError("MACRO_EXECUTION_COUNT_MISMATCH")
     if any(not m.get("positiveControl") or not m.get("faultRejected") for m in report["causalMutations"]):
         raise ValueError("MACRO_MUTATION_NOT_CAUSAL")
@@ -492,7 +520,7 @@ def verify(report, repo):
     if not report["canonicalDocs"]["macroFingerprintMatches"] or not report["nativeMetadata"]["contractMatches"]:
         raise ValueError("MACRO_CANONICAL_CONTRACT_FAILED")
     cross = report["crossCaseChecks"]
-    if not cross["constantCollectionActionCount"] or not all(cross["requireGuardCountsDebugRelease"].values()):
+    if not cross["constantCollectionLoopActionCount"] or not cross["typedNumericInputCountsMatch"] or not all(cross["requireGuardCountsDebugRelease"].values()):
         raise ValueError("MACRO_CROSS_CASE_CHECK_FAILED")
     names = [m["callableName"] for m in report["compilerMacros"]]
     if report["compilerMacroCount"] != len(names) or names != sorted(set(names)):
