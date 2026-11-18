@@ -1,0 +1,68 @@
+{
+  "sourceSHA": "b97d1ec80a463b1bf2c9ca1633dc19874434ec70",
+  "sourceCleanBeforeAndAfter": true,
+  "jobs": {
+    "causalBaseline": "job_eb5195d44eae",
+    "developmentGreen": "job_76bc869d06ec",
+    "cleanPipelineAndPackages": "job_fd0ee53dd224",
+    "cleanFormal": "job_04046b848ae3"
+  },
+  "sourceFiles": [
+    {
+      "path": "internal/language/enums/catalog.go",
+      "sha256": "d0f3b97cfef38391efc846e63573229992d761e7f95de0159011b32e60e6ac8e"
+    },
+    {
+      "path": "p15_enum_registry_test.go",
+      "sha256": "b63b9a59b8ddd591443f41c2a4efd3cce0cd043a486c7ceb3c77d4335832968d"
+    },
+    {
+      "path": "tools/language-acceptance/calls_execution.go",
+      "sha256": "eb6fd99d7eda6f73ffd763d3b82eed30b0d766d994621238c06edaa84e09ab4f"
+    },
+    {
+      "path": "docs/language-v2/p15-enums-acceptance.md",
+      "sha256": "d3229256950a883113c19714c42c1f06d45e7a9423f3c07cc539e81d9cd8dd08"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "baseline-red.log",
+      "bytes": 516,
+      "sha256": "32edeeaa65e4d21e4542ff78db1c29284110eaeca9f46493d13ef0da87953c9e"
+    },
+    {
+      "path": "pipeline.jsonl",
+      "bytes": 2840,
+      "sha256": "fa60d241e0ad8b474c962b04b6e436b50dd13be44d996fe9fb4a51c431571f23"
+    },
+    {
+      "path": "packages.jsonl",
+      "bytes": 39237,
+      "sha256": "64a278f63f1127c3766775c411958f66509b114b6609d1a47b5f9d9923a6ab7f"
+    },
+    {
+      "path": "verification.jsonl",
+      "bytes": 4822,
+      "sha256": "99f1d68b926e818dc472c379709fcc9c2ca8ac0e9fce8c37586c1e4fb7204235"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 6929,
+      "sha256": "22407113a0bd4b8d3946a261e6c055c15b9719a2ac5047ec018b3b1491069bbb"
+    },
+    {
+      "path": "formal-receipt.json",
+      "bytes": 3333,
+      "sha256": "7fe48db597f15d29f8f8c78a267b8caf58e6f93c30b55ccec5d8542725e5f84d"
+    },
+    {
+      "path": "verification-process.json",
+      "bytes": 261,
+      "sha256": "6658447263754091a26b1cec77d96aeb0f0084fe63fc62be187fea5269441075"
+    }
+  ],
+  "scope": "Only C04 supplied-registry enum domain repair; original P10 Legacy/V2 native-payload propagation, 505-action catalog/mobile/schema parity, analysis/service packages and formal unit+service producers. No Apple runtime, full release or V02 completion.",
+  "collectorNote": "The first formal collector incorrectly decoded an individual segmented Go Output event. The JSONL was retained and the formal command alone rerun with segment concatenation and an explicit process exit receipt.",
+  "releaseClosure": false
+}

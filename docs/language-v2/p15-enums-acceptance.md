@@ -98,3 +98,8 @@ and the new registry-isolation test before the catalog correction. The earlier
 attempt used an incorrect test helper method name and failed to build; that
 attempt is not counted as a behavioral reproduction. Exact committed-source
 verification is retained separately from the development run.
+
+Clean committed-source evidence for b97d1ec is retained in
+[evidence/p15-enums-b97d1ec/receipt.json](evidence/p15-enums-b97d1ec/receipt.json).
+The original propagation and 505-action parity checks, all analysis/service tests,
+and the five-producer C04 formal unit/service gate passed with a clean source tree.

@@ -1,0 +1,174 @@
+{
+  "sourceSHA": "b97d1ec80a463b1bf2c9ca1633dc19874434ec70",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "firstPipelineJob": "job_fd0ee53dd224",
+  "formalCollection": "Concatenated Go JSON Output segments before decoding receipt; formal gate rerun after collector error.",
+  "commands": [
+    {
+      "file": "pipeline.jsonl",
+      "sha256": "fa60d241e0ad8b474c962b04b6e436b50dd13be44d996fe9fb4a51c431571f23",
+      "bytes": 2840,
+      "passedTopLevelTests": [
+        "TestP10_CatalogCLIAndMobileRegistryParity",
+        "TestP10_AutomaticActionPropagation_Scenarios1To4",
+        "TestP15C04ProvidedRegistryEnumDomain"
+      ],
+      "failures": [],
+      "exitCode": 0,
+      "seconds": 8.836
+    },
+    {
+      "file": "packages.jsonl",
+      "sha256": "64a278f63f1127c3766775c411958f66509b114b6609d1a47b5f9d9923a6ab7f",
+      "bytes": 39237,
+      "passedTopLevelTests": [
+        "TestCompilerMacrosReachCompletionFromSharedMetadata",
+        "TestServiceAnalyze",
+        "TestServiceComplete",
+        "TestServiceHover",
+        "TestServiceContextualCallComplete",
+        "TestE01MultiDiagnosticAnalysis",
+        "TestE02CompletionHoverSignatureDefinition",
+        "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+        "TestE04FormatterPreservesCommentsAndSemantics",
+        "TestE05OutOfOrderVersionedEdits",
+        "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+        "TestE07BoundedVisualSourceEditAndRejection",
+        "TestAnalyzerAssignImmutable",
+        "TestAnalyzerReadBeforeInit",
+        "TestAnalyzerUnknownArgument",
+        "TestAnalyzerMissingArgument",
+        "TestAnalyzerDuplicateArgument",
+        "TestAnalyzerIfConditionBool",
+        "TestAnalyzerYieldOutsideValueBlock",
+        "TestAnalyzerLegacySyntax",
+        "TestAnalyzerValidProgram",
+        "TestAnalyzerCopyPaste",
+        "TestAnalyzerTruthiness",
+        "TestAnalyzerHotLoopWarning",
+        "TestAnalyzerGlobals",
+        "TestAnalyzerListPlusAssign",
+        "TestMacActionInNonMacShortcut_Baseline",
+        "TestMacActionInMacShortcut_Allowed",
+        "TestNonMacActionInMacShortcut_Error",
+        "TestNonMacActionInNonMacShortcut_Allowed",
+        "TestEmptyDictionaryKey_MapLiteral",
+        "TestEmptyDictionaryKey_IndexExpr",
+        "TestEmptyDictionaryKey_GetValueCall",
+        "TestExprTypesTracking",
+        "TestMixedTargets_RejectsNonPortableActions",
+        "TestExplicitTargetString",
+        "TestUnspecifiedTarget_EmitsWarning",
+        "TestVersionBounds_MinVersion",
+        "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+        "TestAcceptedForms_AcceptsVariableAttachment",
+        "TestScopedBlockInferredTypeAndLexicalScope",
+        "TestScopedBlockDiagnosticsAndBranchTypes",
+        "TestScopedBlockDoesNotReserveExistingFunctionName",
+        "TestTargetVersionSettersRetainCompatibility",
+        "TestTargetVersionSourceAccessorsKeepComponents"
+      ],
+      "failures": [],
+      "exitCode": 0,
+      "seconds": 2.998
+    },
+    {
+      "file": "verification.jsonl",
+      "sha256": "99f1d68b926e818dc472c379709fcc9c2ca8ac0e9fce8c37586c1e4fb7204235",
+      "bytes": 4822,
+      "passedTopLevelTests": [
+        "TestEnumProductionEvidence"
+      ],
+      "failures": [],
+      "exitCode": 0,
+      "seconds": 31.574
+    }
+  ],
+  "formal": {
+    "records": [
+      {
+        "evidence_id": "ev-local-C04-unit",
+        "requirements": [
+          "C04"
+        ],
+        "tier": "unit",
+        "implementation_sha": "b97d1ec80a463b1bf2c9ca1633dc19874434ec70",
+        "test_id": "github.com/electrikmilk/cherri:TestP15C04EnumResolutionProduction",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m",
+          ".",
+          "-run",
+          "^(TestP15C04EnumResolutionProduction|TestP15C04EnumServiceAndCLI|TestP15C04EnumContextsAndShadowing|TestP15C04EnumFunctionService|TestP15C04ProvidedRegistryEnumDomain)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService, TestP15C04ProvidedRegistryEnumDomain"
+        },
+        "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService, TestP15C04ProvidedRegistryEnumDomain"
+      },
+      {
+        "evidence_id": "ev-local-C04-service",
+        "requirements": [
+          "C04"
+        ],
+        "tier": "service",
+        "implementation_sha": "b97d1ec80a463b1bf2c9ca1633dc19874434ec70",
+        "test_id": "github.com/electrikmilk/cherri:TestP15C04EnumServiceAndCLI",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m",
+          ".",
+          "-run",
+          "^(TestP15C04EnumResolutionProduction|TestP15C04EnumServiceAndCLI|TestP15C04EnumContextsAndShadowing|TestP15C04EnumFunctionService|TestP15C04ProvidedRegistryEnumDomain)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService, TestP15C04ProvidedRegistryEnumDomain"
+        },
+        "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService, TestP15C04ProvidedRegistryEnumDomain"
+      }
+    ],
+    "report": {
+      "timestamp": "2026-11-18T16:50:35Z",
+      "phase": "local",
+      "closure_complete": false,
+      "language_version": "2.0",
+      "schema_fingerprint": "",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "results": [
+        {
+          "id": "C04",
+          "group": "calls",
+          "requirement": "Enum contextual and qualified members resolve",
+          "test_level": "unit+service",
+          "executed_levels": [
+            "unit",
+            "service"
+          ],
+          "passed": true,
+          "status": "PASSED",
+          "detail": "All required tiers satisfied by verified evidence"
+        }
+      ]
+    },
+    "scope": "Only C04 enum source resolution, exact serialized wire and shared service completion/diagnostic unit+service tiers; no Apple execution, full UI, C05 imported-unknown-enum contract or release closure.",
+    "source_sha": "b97d1ec80a463b1bf2c9ca1633dc19874434ec70",
+    "source_tree_clean": true
+  },
+  "releaseClosure": false
+}

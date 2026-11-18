@@ -1,0 +1,85 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-C04-unit",
+      "requirements": [
+        "C04"
+      ],
+      "tier": "unit",
+      "implementation_sha": "b97d1ec80a463b1bf2c9ca1633dc19874434ec70",
+      "test_id": "github.com/electrikmilk/cherri:TestP15C04EnumResolutionProduction",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15C04EnumResolutionProduction|TestP15C04EnumServiceAndCLI|TestP15C04EnumContextsAndShadowing|TestP15C04EnumFunctionService|TestP15C04ProvidedRegistryEnumDomain)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService, TestP15C04ProvidedRegistryEnumDomain"
+      },
+      "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService, TestP15C04ProvidedRegistryEnumDomain"
+    },
+    {
+      "evidence_id": "ev-local-C04-service",
+      "requirements": [
+        "C04"
+      ],
+      "tier": "service",
+      "implementation_sha": "b97d1ec80a463b1bf2c9ca1633dc19874434ec70",
+      "test_id": "github.com/electrikmilk/cherri:TestP15C04EnumServiceAndCLI",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15C04EnumResolutionProduction|TestP15C04EnumServiceAndCLI|TestP15C04EnumContextsAndShadowing|TestP15C04EnumFunctionService|TestP15C04ProvidedRegistryEnumDomain)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService, TestP15C04ProvidedRegistryEnumDomain"
+      },
+      "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService, TestP15C04ProvidedRegistryEnumDomain"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T16:50:35Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "C04",
+        "group": "calls",
+        "requirement": "Enum contextual and qualified members resolve",
+        "test_level": "unit+service",
+        "executed_levels": [
+          "unit",
+          "service"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only C04 enum source resolution, exact serialized wire and shared service completion/diagnostic unit+service tiers; no Apple execution, full UI, C05 imported-unknown-enum contract or release closure.",
+  "source_sha": "b97d1ec80a463b1bf2c9ca1633dc19874434ec70",
+  "source_tree_clean": true
+}
