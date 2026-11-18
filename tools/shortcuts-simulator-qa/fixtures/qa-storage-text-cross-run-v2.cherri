@@ -1,0 +1,40 @@
+shortcut "qa-storage-text-cross-run-v2" {
+    version: "27"
+}
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "storage-cross-run")
+let request = getDictionary(ShortcutInput)
+let phase = getValue(request, "phase")
+let runToken = getValue(request, "runToken")
+let key = text(f"cherri.qa.p15.storage.cross-run.{runToken}")
+let original = text(f"P15_STORAGE_CROSS_RUN:{runToken}:שָׁלוֹם 🍒 quote\" slash\\ newline\n")
+var phaseFlag = "INVALID_PHASE"
+var typeFlag = "TYPE_OK"
+var valueFlag = "VALUE_OK"
+if phase == "WRITE" {
+    phaseFlag = "WRITE"
+    storeValue(key, original, true)
+    let written = getStoredValue(key, true)
+    let expectedType = typeOf(original)
+    let actualType = typeOf(written)
+    if actualType != expectedType { typeFlag = "TYPE_FAIL" }
+    if written != original { valueFlag = "VALUE_FAIL" }
+} else {
+    if phase == "READ" {
+        phaseFlag = "READ"
+        let restored = getStoredValue(key, true)
+        let expectedType = typeOf(original)
+        let actualType = typeOf(restored)
+        if actualType != expectedType { typeFlag = "TYPE_FAIL" }
+        if restored != original { valueFlag = "VALUE_FAIL" }
+        deleteStoredValue(key, true)
+    }
+}
+let verdict = text(f"{phaseFlag}:{typeFlag}:{valueFlag}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "storage-cross-run")
+let traceEnvelope = debugExportTrace("qa-storage-text-cross-run-v2")
+let finalSummary = text(f"CHERRI_QA_STORAGE_CROSS_RUN_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

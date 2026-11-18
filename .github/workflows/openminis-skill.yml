@@ -155,6 +155,9 @@ jobs:
       - name: Validate native storage probe contracts
         run: python3 tools/p10r15/verify_storage_probes.py dist/cherri-linux-amd64 --output dist/storage-probe-validation.json
 
+      - name: Validate continuation probe graphs and strict two-run policy
+        run: python3 tools/p10r15/verify_native_continuation_probes.py dist/cherri-linux-amd64 --output dist/native-continuation-validation.json
+
       - name: Verify real CLI signing failures leave no artifact
         run: >-
           python3 tools/p10r15/verify_installed_signing.py
@@ -280,6 +283,16 @@ jobs:
         with:
           name: cherri-storage-probe-evidence
           path: dist/storage-probe-validation.json
+          if-no-files-found: warn
+
+      - name: Upload continuation probe source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-native-continuation-evidence
+          path: |
+            dist/native-continuation-validation.json
+            dist/continuation-python.log
           if-no-files-found: warn
 
       - name: Upload OpenMinis skill artifacts

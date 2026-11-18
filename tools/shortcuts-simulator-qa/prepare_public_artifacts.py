@@ -20,6 +20,7 @@ ALLOWED = {
     "runtime/instrumentation-vs-original.json", "runtime/output-assertions.json",
     "runtime/signing-provenance.json", "runtime/callback-events.json", "runtime/runtime-trace.jsonl",
     "runtime/http-probe-diagnostic.json",
+    "runtime/storage-cross-run-diagnostic.json", "runtime/storage-writer-trace.jsonl",
     "tests/xcresult-summary.json", "editor/editor-action-coverage.json",
     "editor/screenshots-manifest.json", "editor/editor-actions.json",
     "editor/editor-comparison.json", "editor/editor-tree.json", "editor/editor-report.md",
@@ -161,6 +162,13 @@ def stage(root, output, trusted_sources):
                             json.loads((root / "runtime/output-assertions.json").read_text(encoding="utf-8")))
                     except (OSError, ValueError, TypeError, KeyError):
                         failures.append({**entry, "reason": "INVALID_BOUNDED_HTTP_DIAGNOSTIC"})
+                        continue
+                if name == "runtime/storage-cross-run-diagnostic.json":
+                    from storage_cross_run import validate_public_diagnostic
+                    try:
+                        validate_public_diagnostic(parsed, root)
+                    except (OSError, ValueError, TypeError, KeyError):
+                        failures.append({**entry, "reason": "INVALID_BOUNDED_STORAGE_DIAGNOSTIC"})
                         continue
                 if isinstance(parsed, dict) and parsed.get("publicationPolicy") == "LOCAL_ONLY_RAW_OCR":
                     failures.append({**entry, "reason": "RAW_OCR_NOT_PUBLIC"})

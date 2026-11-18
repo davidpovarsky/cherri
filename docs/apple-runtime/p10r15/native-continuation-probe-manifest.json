@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "syntheticOnly": true,
+  "cacheImplemented": false,
+  "nativeExecuted": 0,
+  "crossRunTextStatus": "NOT_EXECUTED",
+  "publicHTTPConversionStatus": "NOT_EXECUTED",
+  "publicDataCommit": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+  "cases": [
+    {
+      "id": "qa-storage-text-cross-run-v2",
+      "sampleId": "qa-storage-text-cross-run",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-cross-run-v2.cherri",
+      "sourceSha256": "74be70ae304570aa3e17d3659ebbc4844b57a4376c96cceb01ab6ea73f5a3a61",
+      "expectedSummary": "CHERRI_QA_STORAGE_CROSS_RUN_RESULT:READ:TYPE_OK:VALUE_OK",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON"
+    },
+    {
+      "id": "qa-http-json-control-v2",
+      "sampleId": "qa-http-json-control",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-http-json-control-v2.cherri",
+      "sourceSha256": "c6c2cbb51d8e34c0caf55aa87bed1a50372155d7471f8a62a9e69532c0462e54",
+      "expectedSummary": "CHERRI_QA_HTTP_JSON_CONTROL_RESULT:DICTIONARY_OK:NEXT_OK:ITEMS_OK",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON"
+    },
+    {
+      "id": "qa-http-json-fetch-v2",
+      "sampleId": "qa-http-json-fetch",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-http-json-fetch-v2.cherri",
+      "sourceSha256": "325f64e30728020d96694817d8c3c0e1a969fbc6a2a12bc223bbaa84bcf87b39",
+      "expectedSummary": "CHERRI_QA_HTTP_JSON_FETCH_RESULT:DICTIONARY_OK:NEXT_OK:ITEMS_OK",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON"
+    },
+    {
+      "id": "qa-number-comparison-diag-v2",
+      "sampleId": "qa-number-comparison-diag",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-number-comparison-diag-v2.cherri",
+      "sourceSha256": "b3d1bcf9782d8210b3f1756d6e0d104f02bcf2ea46db50593bc6e45b8a2cfe99",
+      "expectedSummary": "CHERRI_QA_NUMBER_COMPARISON_RESULT:DEQ=Y:DNE=N:REQ=Y:RNE=N:BEQ=Y:BNE=N:ONE_NE_ZERO=Y:ZERO_NE_ONE=Y:ONE_EQ_ONE=Y",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON"
+    }
+  ],
+  "numericComparisonStatus": "NOT_EXECUTED"
+}
