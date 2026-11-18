@@ -1,0 +1,22 @@
+shortcut "qa-storage-delete-v2" {
+    version: "27"
+}
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "delete")
+var beforeFlag = "BEFORE_OK"
+var afterFlag = "NO_VALUE_OK"
+storeValue("cherri.qa.p15.storage.delete.35a6b60", "P15_STORAGE_DELETE_ME", true)
+let before = getStoredValue("cherri.qa.p15.storage.delete.35a6b60", true)
+if before != "P15_STORAGE_DELETE_ME" { beforeFlag = "BEFORE_FAIL" }
+deleteStoredValue("cherri.qa.p15.storage.delete.35a6b60", true)
+let after = getStoredValue("cherri.qa.p15.storage.delete.35a6b60", true)
+let afterCount = count(after)
+if afterCount != 0 { afterFlag = "VALUE_REMAINS" }
+let verdict = text(f"{beforeFlag}:{afterFlag}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "delete")
+let traceEnvelope = debugExportTrace("qa-storage-delete-v2")
+let finalSummary = text(f"CHERRI_QA_STORAGE_DELETE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

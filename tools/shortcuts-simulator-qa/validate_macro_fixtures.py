@@ -55,6 +55,9 @@ new_probes = {
     'qa-paginate-page-cap-v2': 'p15-paginate-probes',
     'qa-paginate-item-cap-v2': 'p15-paginate-probes',
     'qa-paginate-empty-v2': 'p15-paginate-probes',
+    'qa-storage-text-same-run-v2': '',
+    'qa-storage-scope-v2': '',
+    'qa-storage-delete-v2': '',
 }
 selected_ids = {'qa-require-v2', 'qa-measure-v2', 'qa-measure-release-v2', *new_probes}
 selected = {f['fixtureId']: f for f in manifest['fixtures'] if f['fixtureId'] in selected_ids}
@@ -64,7 +67,8 @@ assert selected['qa-measure-release-v2']['releaseDiagnosticActionsAbsent'] is Tr
 assert selected['qa-measure-release-v2']['releaseBodyShapeVerified'] is True
 for fid, folder in new_probes.items():
     entry = selected[fid]
-    assert entry['fileName'] == f'{folder}/{fid}.cherri', fid
+    expected_file = f'{folder}/{fid}.cherri' if folder else f'{fid}.cherri'
+    assert entry['fileName'] == expected_file, fid
     assert entry['dialect'] == 'v2' and entry['buildProfile'] == 'debug', fid
     assert entry['runtimeTraceExpectation'] == 'REQUIRED_NDJSON', fid
     assert entry['releaseDiagnosticActionsAbsent'] is False, fid
