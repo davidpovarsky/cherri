@@ -162,6 +162,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = append([]string{}, typeProductionPaths[row.ID]...)
 			row.PositiveAndNegative = res.Passed
 		}
+		if tests, ok := skillProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = []string{"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh", "p15_skill_acceptance_test.go"}
+			row.PositiveAndNegative = res.Passed
+		}
 		if tests, ok := cliProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = []string{"main.go", "args.go", "language_cli_adapter.go", "p15_cli_acceptance_test.go"}

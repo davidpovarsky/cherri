@@ -139,9 +139,7 @@ fi
 
 if [ "$DOCS_VALID" -eq 0 ]; then
   if [ "$OFFLINE" = "1" ]; then
-    if [ -d "$CHERRI_DOCS_DIR" ]; then
-      validate_docs_dir "$CHERRI_DOCS_DIR"
-    fi
+    validate_docs_dir "$CHERRI_DOCS_DIR"
   else
     if [ ! -d "$CHERRI_DOCS_DIR/.git" ] && ! command -v git >/dev/null 2>&1; then
       if command -v apk >/dev/null 2>&1; then

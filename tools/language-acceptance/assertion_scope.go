@@ -83,7 +83,6 @@ var incompleteLocalAssertions = map[string]string{
 	"K01":   "SKILL.md length does not unpack a package or run its self-test.",
 	"K02":   "Script substrings do not execute a fresh install or reject an incompatible binary.",
 	"K03":   "A compilerCommit key does not install that SHA or test checksums and atomic updates.",
-	"K04":   "A fingerprint substring does not exercise offline cache and docs mismatch behavior.",
 	"K05":   "Script length does not execute repair/build/import/edit/sign workflows.",
 	"CI01":  "Comparing two unequal literal strings does not execute a negative CI gate.",
 	"CI02":  "Nonempty IR for a runtime fixture is not an iOS runtime execution.",
