@@ -1,0 +1,103 @@
+{
+  "source_sha": "dd3c26668ae405005c03808729422bc2f7840057",
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-json",
+    "-count=1",
+    "-timeout=150s",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestEnumProductionEvidence$"
+  ],
+  "exit_code": 0,
+  "clean_before": true,
+  "clean_after": true,
+  "seconds": 19.468,
+  "sha256": "4c121377c4d4e8bb3773edc2d7e1eb1e9529f4d4545b53a2b8dfd7f362796b90",
+  "verification": {
+    "records": [
+      {
+        "evidence_id": "ev-local-C04-unit",
+        "requirements": [
+          "C04"
+        ],
+        "tier": "unit",
+        "implementation_sha": "dd3c26668ae405005c03808729422bc2f7840057",
+        "test_id": "github.com/electrikmilk/cherri:TestP15C04EnumResolutionProduction",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m",
+          ".",
+          "-run",
+          "^(TestP15C04EnumResolutionProduction|TestP15C04EnumServiceAndCLI|TestP15C04EnumContextsAndShadowing|TestP15C04EnumFunctionService)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
+        },
+        "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
+      },
+      {
+        "evidence_id": "ev-local-C04-service",
+        "requirements": [
+          "C04"
+        ],
+        "tier": "service",
+        "implementation_sha": "dd3c26668ae405005c03808729422bc2f7840057",
+        "test_id": "github.com/electrikmilk/cherri:TestP15C04EnumServiceAndCLI",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m",
+          ".",
+          "-run",
+          "^(TestP15C04EnumResolutionProduction|TestP15C04EnumServiceAndCLI|TestP15C04EnumContextsAndShadowing|TestP15C04EnumFunctionService)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
+        },
+        "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
+      }
+    ],
+    "report": {
+      "timestamp": "2026-11-18T15:52:43Z",
+      "phase": "local",
+      "closure_complete": false,
+      "language_version": "2.0",
+      "schema_fingerprint": "",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "results": [
+        {
+          "id": "C04",
+          "group": "calls",
+          "requirement": "Enum contextual and qualified members resolve",
+          "test_level": "unit+service",
+          "executed_levels": [
+            "unit",
+            "service"
+          ],
+          "passed": true,
+          "status": "PASSED",
+          "detail": "All required tiers satisfied by verified evidence"
+        }
+      ]
+    },
+    "scope": "Only C04 enum source resolution, exact serialized wire and shared service completion/diagnostic unit+service tiers; no Apple execution, full UI, C05 imported-unknown-enum contract or release closure.",
+    "source_sha": "dd3c26668ae405005c03808729422bc2f7840057",
+    "source_tree_clean": true
+  }
+}

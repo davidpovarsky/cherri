@@ -1,0 +1,29 @@
+{
+  "schema_version": "1",
+  "source_sha": "dd3c26668ae405005c03808729422bc2f7840057",
+  "job_id": "job_8964e28cbc6b",
+  "scope": "C04 native-domain alias validation and scoped completion follow-up; unit+service only",
+  "clean_before": true,
+  "clean_after": true,
+  "artifacts_sha256": {
+    "baseline-red.log": "963ecc6322e549bb8a4ee811e53200921e8425f0aaade7509cb2901cf49eec4d",
+    "verification.json": "466052bf46bb2d8b4e9c054e13688f2fdaf5f9c4f2bd91a60b3b34fd6ce1f485",
+    "verification.jsonl": "4c121377c4d4e8bb3773edc2d7e1eb1e9529f4d4545b53a2b8dfd7f362796b90"
+  },
+  "causal_red_job": "job_ba23ab1d5ab5",
+  "result": [
+    {
+      "id": "C04",
+      "group": "calls",
+      "requirement": "Enum contextual and qualified members resolve",
+      "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    }
+  ]
+}

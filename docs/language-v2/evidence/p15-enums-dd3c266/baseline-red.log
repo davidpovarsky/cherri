@@ -1,0 +1,35 @@
+=== RUN   TestP15C04EnumServiceAndCLI
+=== RUN   TestP15C04EnumServiceAndCLI/quoted_member
+=== RUN   TestP15C04EnumServiceAndCLI/native_source_alias
+=== RUN   TestP15C04EnumServiceAndCLI/native_bare
+=== RUN   TestP15C04EnumServiceAndCLI/native_empty
+=== RUN   TestP15C04EnumServiceAndCLI/native_dot_empty
+=== RUN   TestP15C04EnumServiceAndCLI/custom_nested_call
+=== RUN   TestP15C04EnumServiceAndCLI/custom_comment
+=== RUN   TestP15C04EnumServiceAndCLI/native_dot
+=== RUN   TestP15C04EnumServiceAndCLI/native_qualified
+=== RUN   TestP15C04EnumServiceAndCLI/native_named_multiline
+=== RUN   TestP15C04EnumServiceAndCLI/custom_dot
+=== RUN   TestP15C04EnumServiceAndCLI/custom_qualified
+=== RUN   TestP15C04EnumServiceAndCLI/custom_second_domain
+=== RUN   TestP15C04EnumServiceAndCLI/custom_unicode
+=== NAME  TestP15C04EnumServiceAndCLI
+    p15_enum_acceptance_test.go:251: unrelated enum leaked into non-enum context {Blue 3 enum Mode  Blue}
+--- FAIL: TestP15C04EnumServiceAndCLI (0.04s)
+    --- PASS: TestP15C04EnumServiceAndCLI/quoted_member (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_source_alias (0.01s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_bare (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_empty (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_dot_empty (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_nested_call (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_comment (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_dot (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_qualified (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_named_multiline (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_dot (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_qualified (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_second_domain (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_unicode (0.00s)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.240s
+FAIL
