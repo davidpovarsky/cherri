@@ -3,6 +3,7 @@ package main
 import "strings"
 
 var typeProductionTests = map[string][]string{
+	"T05": {"TestP15T05PresenceBinding", "TestP15T05PresenceNativeWire", "TestP15T05AuthoredNullRejected"},
 	"T09": {"TestP15T09ContentConversionEvidence", "TestP15T09ContentConversionNativeWire"},
 	"T04": {"TestP15T04OpaqueTypeProduction", "TestP15T04OpaqueTypeService"},
 	"T03": {"TestP15T03NumberStringSemanticSignature", "TestP15T03NumberStringNativeWire"},
@@ -11,6 +12,7 @@ var typeProductionTests = map[string][]string{
 	"T08": {"TestP15T08ConditionalCardinalityProduction", "TestP15T08ConditionalCardinalityService"},
 }
 var typeProductionTiers = map[string][]string{
+	"T05": {"unit", "native"},
 	"T09": {"unit", "native"},
 	"T04": {"unit", "service"},
 	"T03": {"unit", "native"},
@@ -19,12 +21,19 @@ var typeProductionTiers = map[string][]string{
 	"T08": {"unit", "service"},
 }
 var typeProductionPaths = map[string][]string{
+	"T05": {"internal/language/analysis/analyzer.go", "internal/language/syntax/parser.go", "internal/language/lower/lower.go", "language_backend_adapter.go", "language_typed_literal_adapter.go", "p15_optional_presence_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
 	"T09": {"internal/language/types/record_evidence.go", "internal/language/analysis/assignment_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "language_backend_adapter.go", "p15_content_conversion_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
 	"T04": {"internal/language/types/types.go", "internal/language/types/record_evidence.go", "internal/language/analysis/assignment_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/service/service.go", "p15_opaque_type_acceptance_test.go", "p15_record_acceptance_test.go"},
 	"T03": {"actions/basic.cherri", "actions/math.cherri", "internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "language_backend_adapter.go", "shortcutgen.go", "p15_number_text_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json", "docs/apple-runtime/macos-27/parameter-encodings.json", "docs/apple-runtime/macos-27/encoding-table.json"},
 	"T02": {"internal/language/analysis/analyzer.go", "internal/language/analysis/literal_arguments.go", "internal/language/lower/lower.go", "language_emit_adapter.go", "p15_types_acceptance_test.go"},
 	"T06": {"internal/language/types/types.go", "internal/language/types/record_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/syntax/parser.go", "internal/language/analysis/control_results.go", "p15_record_acceptance_test.go", "p15_control_type_acceptance_test.go"},
 	"T08": {"internal/language/analysis/analyzer.go", "internal/language/analysis/cardinality.go", "internal/language/service/service.go", "internal/language/service/call_result.go", "p15_cardinality_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
+}
+
+// The actual bounded tests execute, but the full JSON-null contract is still
+// listed in incompleteLocalAssertions and cannot produce formal tier records.
+func (r *Runner) runTypeOptionalPresenceRequirement() {
+	r.runTypeProduction("T05", "Optional presence differs from optional value and JSON null")
 }
 
 func (r *Runner) runTypeContentConversionRequirement() {
@@ -89,4 +98,20 @@ func typeProductionTestForTier(id, tier string) string {
 		return ""
 	}
 	return ""
+}
+
+// An executed rejection/ordinary-value test does not establish lossless native
+// JSON-null semantics. Do not let a caller relabel these bounded observations
+// into passing formal tiers while that required part of T05 is unsupported.
+func partialTypeProducer(id, testID string) bool {
+	if id != "T05" {
+		return false
+	}
+	for _, name := range typeProductionTests[id] {
+		full := "github.com/electrikmilk/cherri:" + name
+		if testID == full || strings.HasPrefix(testID, full+"/") {
+			return true
+		}
+	}
+	return false
 }

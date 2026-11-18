@@ -45,6 +45,7 @@ const (
 	CodeMissingArgument   = "E_MISSING_ARGUMENT"
 	CodePositionalArg     = "E_POSITIONAL_ARGUMENT"
 	CodeArgumentType      = "E_ARGUMENT_TYPE"
+	CodeNativeJSONNull    = "E_NATIVE_JSON_NULL"
 	CodeLiteralRequired   = "E_LITERAL_REQUIRED"
 	CodeEnumMember        = "E_ENUM_MEMBER"
 	CodeReturnType        = "E_RETURN_TYPE"
@@ -59,10 +60,10 @@ const (
 	CodeLegacySyntax      = "E_LEGACY_SYNTAX"
 
 	// Warnings
-	CodeShadowing       = "W_SHADOWING"
-	CodeUnverifiedType  = "W_UNVERIFIED_TYPE"
-	CodeUnverifiedForm  = "W_UNVERIFIED_FORM"
-	CodeUnusedSetup     = "W_UNUSED_SETUP"
+	CodeShadowing      = "W_SHADOWING"
+	CodeUnverifiedType = "W_UNVERIFIED_TYPE"
+	CodeUnverifiedForm = "W_UNVERIFIED_FORM"
+	CodeUnusedSetup    = "W_UNUSED_SETUP"
 )
 
 // Diagnostic represents a compiler or language-service diagnostic.

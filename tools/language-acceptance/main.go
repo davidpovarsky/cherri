@@ -26,7 +26,6 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/service"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
-	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 const (
@@ -910,6 +909,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				continue
 			}
 
+			if partialTypeProducer(reqID, rec.TestID) {
+				validationErrors = append(validationErrors, fmt.Sprintf("test_id %q is a partial producer and cannot satisfy the full %s contract", rec.TestID, reqID))
+			}
+
 			if evidenceMap != nil {
 				mapping, ok := evidenceMap.Mappings[reqID]
 				if ok {
@@ -1050,6 +1053,17 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			res.Status = "FAILED"
 			res.Detail = "Evidence record reported failure"
 			validationErrors = append(validationErrors, fmt.Sprintf("requirement %s has failed evidence record", id))
+		} else if id == "T05" && incompleteLocalAssertions[id] != "" {
+			res.Passed = false
+			res.Status = "NOT_RUN"
+			res.ExecutedLevels = nil
+			res.Detail = "Formal scope UNVERIFIED: " + incompleteLocalAssertions[id]
+			if phase == "local" {
+				skipped++
+			} else {
+				failed++
+				validationErrors = append(validationErrors, "requirement T05 has incomplete JSON-null semantics")
+			}
 		} else if allTiersSatisfied {
 			passed++
 			res.Passed = true
@@ -1496,10 +1510,8 @@ func (r *Runner) runTypes() {
 	// T04: Actual authored type guarantees, value use and service diagnostics.
 	r.runTypeOpaqueRequirement()
 
-	// T05: Optional presence differs from optional value and JSON null
-	optType := types.NewOptional(types.Text)
-	t05Passed := optType.Kind() == types.KindOptional && optType.Name() != types.Text.Name()
-	r.Record("T05", "types", "Optional presence differs from optional value and JSON null", "unit+native", []string{"unit", "native"}, t05Passed, "PASSED", "T? represented with explicit presence state in parameter binding")
+	// T05: Actual presence/serialization observations; JSON null remains open.
+	r.runTypeOptionalPresenceRequirement()
 
 	// T06: An annotation must not manufacture proof about external values.
 	r.runTypeRecordRequirement()

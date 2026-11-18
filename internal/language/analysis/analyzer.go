@@ -91,6 +91,7 @@ type Analyzer struct {
 	loopDepth              int
 	setupUses              map[*syntax.SetupDecl]int
 	allowedSetupExpression syntax.Expression
+	rawNativeDataContext   bool
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -1061,6 +1062,15 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 }
 
 func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scope) types.Type {
+	if a.rawNativeDataContext {
+		switch expr.(type) {
+		case *syntax.LiteralExpr, *syntax.ListExpr, *syntax.MapExpr:
+			// Only literal raw data inherits the escape boundary.
+		default:
+			a.rawNativeDataContext = false
+			defer func() { a.rawNativeDataContext = true }()
+		}
+	}
 	if a.resolveEnumExpression(expr, scope) {
 		return types.Text
 	}
@@ -1077,6 +1087,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		case syntax.TokenNone:
 			return types.NewOptional(types.Unknown)
 		case syntax.TokenNull:
+			if !a.rawNativeDataContext {
+				a.error(CodeNativeJSONNull, e.Span, "authored JSON null has no supported native value encoding; it cannot become none, empty text, or an omitted field")
+			}
 			return types.JsonNull
 		default:
 			return types.Unknown
@@ -1376,6 +1389,11 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 }
 
 func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
+	// Raw payload literals keep their explicit escape boundary. Nested ordinary
+	// calls still obey authored value rules and cannot inherit that exemption.
+	previousRawContext := a.rawNativeDataContext
+	a.rawNativeDataContext = false
+	defer func() { a.rawNativeDataContext = previousRawContext }()
 	if call.Block != nil {
 		return a.analyzeScopedBlockCall(call, scope)
 	}
@@ -1405,6 +1423,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	// 0. Check native escape / rawAction
 	if callName == "rawAction" || callName == "native.action" || callName == "action" ||
 		callName == "native.plist" || callName == "native.ref" || callName == "native.workflow" {
+		a.rawNativeDataContext = true
 		if (callName == "rawAction" || callName == "native.action") && call.PrimaryArg == nil {
 			hasIdentNamed := false
 			for _, nArg := range call.NamedArgs {
