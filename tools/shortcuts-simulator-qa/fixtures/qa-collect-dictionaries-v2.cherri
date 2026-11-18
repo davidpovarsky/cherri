@@ -1,0 +1,23 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "collect-dictionaries")
+let items = ["first", "second"]
+let results = for item in items {
+    yield {"name": item, "flag": false, "nested": ["a", "b"]}
+}
+let resultCount = count(results)
+let firstItem = getFirstItem(results)
+let lastItem = getLastItem(results)
+let firstName = getValue(dictionary: firstItem, key: "name")
+let lastName = getValue(dictionary: lastItem, key: "name")
+let nested = getValue(dictionary: firstItem, key: "nested")
+let dictionaryType = typeOf(firstItem)
+let nestedCount = count(nested)
+let nestedFirst = getFirstItem(nested)
+let nestedLast = getLastItem(nested)
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "collect-dictionaries")
+let traceEnvelope = debugExportTrace(runId: "qa-collect-dictionaries-v2")
+let finalSummary = text(f"CHERRI_QA_COLLECT_DICTIONARIES:count={resultCount}:first={firstName}:last={lastName}:type={dictionaryType}:nested={nestedCount}:{nestedFirst}:{nestedLast}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

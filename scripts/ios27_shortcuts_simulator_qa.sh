@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -78,6 +78,30 @@ GATE_PHYSICAL_DEVICE_TESTED="BLOCKED_DEVICE"
 # Nested source paths are fixed here; an inherited environment cannot select a file.
 TARGET_SOURCE_RELATIVE=""
 case "$SAMPLE_ID" in
+  qa-collect-counts-v2)
+    TARGET_FIXTURE_ID="qa-collect-counts-v2"
+    LEGACY_COUNTERPART_ID="qa-collect-counts-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-collect-counts-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99"
+    ;;
+  qa-collect-counts-legacy)
+    TARGET_FIXTURE_ID="qa-collect-counts-legacy"
+    LEGACY_COUNTERPART_ID="qa-collect-counts-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-collect-counts-legacy"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99"
+    ;;
+  qa-collect-dictionaries-v2)
+    TARGET_FIXTURE_ID="qa-collect-dictionaries-v2"
+    LEGACY_COUNTERPART_ID="qa-collect-dictionaries-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-collect-dictionaries-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_COLLECT_DICTIONARIES:count=2:first=first:last=second:type=Dictionary:nested=2:a:b"
+    ;;
+  qa-collect-dictionaries-legacy)
+    TARGET_FIXTURE_ID="qa-collect-dictionaries-legacy"
+    LEGACY_COUNTERPART_ID="qa-collect-dictionaries-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-collect-dictionaries-legacy"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_COLLECT_DICTIONARIES:count=2:first=first:last=second:type=Dictionary:nested=2:a:b"
+    ;;
   qa-label-file-carrier)
     TARGET_FIXTURE_ID="qa-label-file-carrier-v2"
     TARGET_SOURCE_RELATIVE="p15-label-probes/qa-label-file-carrier-v2.cherri"
@@ -252,6 +276,10 @@ fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtur
 builds_dir = os.path.join(artifact_dir, "builds")
 
 fixture_specs = [
+    ("qa-collect-counts-v2", "qa-collect-counts-v2.cherri", "v2"),
+    ("qa-collect-counts-legacy", "qa-collect-counts-legacy.cherri", "legacy"),
+    ("qa-collect-dictionaries-v2", "qa-collect-dictionaries-v2.cherri", "v2"),
+    ("qa-collect-dictionaries-legacy", "qa-collect-dictionaries-legacy.cherri", "legacy"),
     ("qa-label-file-carrier-v2", "p15-label-probes/qa-label-file-carrier-v2.cherri", "v2"),
     ("qa-label-raw-empty-v2", "p15-label-probes/qa-label-raw-empty-v2.cherri", "v2"),
     ("qa-label-raw-grouping-v2", "p15-label-probes/qa-label-raw-grouping-v2.cherri", "v2"),

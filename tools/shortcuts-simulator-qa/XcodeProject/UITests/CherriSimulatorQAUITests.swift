@@ -133,6 +133,10 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-export-redacted-v2",
         "qa-export-unsupported-file-v2",
         "qa-export-text-file-v2",
+        "qa-collect-counts-v2",
+        "qa-collect-counts-legacy",
+        "qa-collect-dictionaries-v2",
+        "qa-collect-dictionaries-legacy",
         "qa-f01-diag-counter-v2",
         "qa-f01-diag-predicate-v2",
         "qa-f01-diag-control-v2",
@@ -1078,6 +1082,10 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertEqual(sanitizeUIString("qa-export-redacted-v2"), "qa-export-redacted-v2")
         XCTAssertEqual(sanitizeUIString("qa-export-unsupported-file-v2"), "qa-export-unsupported-file-v2")
         XCTAssertEqual(sanitizeUIString("qa-export-text-file-v2"), "qa-export-text-file-v2")
+        XCTAssertEqual(sanitizeUIString("qa-collect-counts-v2"), "qa-collect-counts-v2")
+        XCTAssertEqual(sanitizeUIString("qa-collect-counts-legacy"), "qa-collect-counts-legacy")
+        XCTAssertEqual(sanitizeUIString("qa-collect-dictionaries-v2"), "qa-collect-dictionaries-v2")
+        XCTAssertEqual(sanitizeUIString("qa-collect-dictionaries-legacy"), "qa-collect-dictionaries-legacy")
         XCTAssertEqual(sanitizeUIString("qa-f01-diag-counter-v2"), "qa-f01-diag-counter-v2")
         XCTAssertEqual(sanitizeUIString("qa-f01-diag-predicate-v2"), "qa-f01-diag-predicate-v2")
         XCTAssertEqual(sanitizeUIString("qa-f01-diag-control-v2"), "qa-f01-diag-control-v2")

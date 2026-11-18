@@ -1,0 +1,22 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "collect-counts")
+// Existing native Repeat Results; no collect alias or accumulator.
+let emptyInput = []
+let emptyResults = for item in emptyInput { yield item }
+let emptyCount = count(emptyResults)
+let singleInput = ["one"]
+let singleResults = for item in singleInput { yield item }
+let singleCount = count(singleResults)
+let manyInput = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
+let manyResults = for item in manyInput { yield item }
+let manyCount = count(manyResults)
+let singleItem = getFirstItem(singleResults)
+let firstItem = getFirstItem(manyResults)
+let lastItem = getLastItem(manyResults)
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "collect-counts")
+let traceEnvelope = debugExportTrace(runId: "qa-collect-counts-v2")
+let finalSummary = text(f"CHERRI_QA_COLLECT_COUNTS:empty={emptyCount}:single={singleCount}:{singleItem}:many={manyCount}:{firstItem}:{lastItem}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
