@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_CLEAN_SOURCE_LOCAL_CONTINUATION_PROBES",
+  "sourceCommit": "e71ad189f8f1c2b3005c1b8245c11b4e8a009478",
+  "sourceTreeCleanAtExecution": true,
+  "sourceCommits": [
+    "6a5a229dc6017b1cbe0bd20581f3350eab949f93",
+    "e71ad189f8f1c2b3005c1b8245c11b4e8a009478"
+  ],
+  "productionCompilerChanged": false,
+  "appleRuntimeExecuted": 0,
+  "actualCLIFixtures": 4,
+  "exactNativeActionRoundtrips": 4,
+  "causalGraphFaultsRejected": 23,
+  "dedicatedPythonTests": 10,
+  "combinedPythonTests": 129,
+  "combinedPythonSeconds": 95.377,
+  "phase0CLIFixturesCompiled": 56,
+  "phase0CausalCompileMutations": {
+    "ignored-release-profile": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "missing-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "duplicated-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    }
+  },
+  "phase0CausalPublicationMutations": {
+    "nested-basename-flattened": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "unreviewed-same-basename": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "nested-path-traversal": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "stale-source-hash": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "source-identity-reassigned": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_ID_MISMATCH"
+    }
+  },
+  "shellSyntaxGate": "PASS",
+  "gitDiffCheck": "PASS",
+  "files": [
+    {
+      "path": "source-graph-validation.json",
+      "sha256": "971d042c6cc629d12df1c01e4e1fd27417dfccab22228972610181693e3d3649",
+      "bytes": 11101,
+      "sourceArtifactSha256": "8867fac1381d25c525f292179c07d9a161ff69499515cdc7998375649f5e3218",
+      "normalization": "UTF8_CRLF_TO_LF_ONLY"
+    },
+    {
+      "path": "continuation-python.log",
+      "sha256": "df738995a411f98647ed6101fd9bb45441b9c5558ff48a5456e45fdad1d97106",
+      "bytes": 1873,
+      "sourceArtifactSha256": "df738995a411f98647ed6101fd9bb45441b9c5558ff48a5456e45fdad1d97106",
+      "normalization": "UTF8_CRLF_TO_LF_ONLY"
+    },
+    {
+      "path": "full-python.log",
+      "sha256": "40a4c5fbcca06dbe99552ea093368899559f16219a93b35fa987bcd899160f1e",
+      "bytes": 21362,
+      "sourceArtifactSha256": "7d2386400e9b388d278bdda461db095b7985df2a1f975b32505f616810e33f17",
+      "normalization": "UTF8_CRLF_TO_LF_ONLY"
+    },
+    {
+      "path": "phase0-validation.json",
+      "sha256": "2db1d6637bd433b090637c0589662f0a812bedbb47eefcd5bb2cfa1599c05c22",
+      "bytes": 107288,
+      "sourceArtifactSha256": "95677766b64ed2ff5b6e72889abdb5db81fae8ecd9b756234b5c1c13afd624f6",
+      "normalization": "UTF8_CRLF_TO_LF_ONLY"
+    }
+  ],
+  "scope": "Source-bound actual native graphs, exact roundtrips, strict existing callback oracle and orchestration policy; no Apple runtime outcome.",
+  "review": "Independent read-only runtime-agent review found no concrete false-PASS/publication leak. Its pre-launch helper-failure concern was fixed and actual shell fault controls reject prepare/input/nonce failures.",
+  "retainedDevelopmentFailures": [
+    {
+      "job": "job_d9ff41acb98f",
+      "source": "6a5a229dc6017b1cbe0bd20581f3350eab949f93",
+      "reason": "Windows Path string inside git show SHA:path used backslashes; producer stopped before CLI assertions and minted no receipt. e71ad18 uses as_posix."
+    },
+    {
+      "job": "job_356ad69ecd52",
+      "reason": "Working combined suite had127 passes and one selector-extraction failure. New selectors now reuse canonical source-path derivation and required Legacy counterpart; strict set-eu selector checks and original regression pass."
+    },
+    {
+      "job": "job_a4eb85b02afd",
+      "reason": "First local cross-run policy positives rejected Windows CRLF oracle text against LF. Exact record comparison now normalizes CRLF only while retaining original trace byte hash."
+    },
+    {
+      "job": "job_71879efb5483",
+      "reason": "New helper-failure test initially overescaped its source-fragment newline. Corrected test executes the actual shell fragment and proves helper failures stop before continuation."
+    }
+  ],
+  "infrastructure": "One Sentinel MCP script request timed out without producing either expected log; fresh file checks preceded the later known execution. No native run was duplicated.",
+  "openNativeBoundaries": [
+    "Two external Stored Content Text invocations",
+    "Raw public HTTP response type and Get Dictionary conversion",
+    "Paired native Number operator behavior",
+    "TTL and typed cache remain unimplemented/unproven"
+  ]
+}

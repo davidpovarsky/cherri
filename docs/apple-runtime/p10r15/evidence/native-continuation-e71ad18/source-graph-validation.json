@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_CLEAN_SOURCE_AND_CLI_ONLY",
+  "sourceCommit": "e71ad189f8f1c2b3005c1b8245c11b4e8a009478",
+  "sourceTreeClean": true,
+  "compilerBinarySha256": "9b57302c6fcae74d90f82981fb81634a45d8da3725935897c8798451da5211cb",
+  "compilerBuildIdentity": {
+    "mode": "CONTROLLED_BUILD_FROM_CLEAN_COMMIT",
+    "vcsMetadata": "ABSENT_GIT_WORKTREE_FILE",
+    "command": [
+      "go",
+      "build",
+      "-buildvcs=true",
+      "-o",
+      "<reviewed ignored binary>",
+      "."
+    ]
+  },
+  "sourceFileSha256": {
+    "docs/apple-runtime/p10r15/native-continuation-probe-manifest.json": "2ff3682c698167364c6df7d57a60ae007d652cb27e6ae6a7703c72b684020724",
+    "tools/p10r15/verify_native_continuation_probes.py": "d275f35d88b2f4fd53b7595d4ddeb92be0f21793e14fc5358be9eeb545ff1ec9",
+    "tools/shortcuts-simulator-qa/storage_cross_run.py": "e27969b500e2a21ca9c7499d4be8f66a010e6501f9e37eb3f613f8e31d7423d5",
+    "tools/shortcuts-simulator-qa/test_storage_cross_run.py": "19067a60ce14c793ed137a20396e92e88b985d3881060358a35947eab49bc574",
+    "tools/shortcuts-simulator-qa/prepare_public_artifacts.py": "4b642768ff7ed195ba420954aa3730f7493a0648ace721958e5ba7d82bd41abd",
+    "scripts/ios27_shortcuts_simulator_qa.sh": "f64f2518112dd074cff6d857572664c79062dced3b84694094c26e012bc46351",
+    ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml": "23a9888da1df0c9d55271c6912c944d287efc60ef5da2c265cdc84a6fd9c4854",
+    ".github/workflows/openminis-skill.yml": "81d94055bf6590be73c764f98b0b68cd7c4fba896fef3531fbaec7016c76cf70",
+    "tools/shortcuts-simulator-qa/validate_macro_fixtures.py": "2b0e2f0a4734e3171732b44207e5d8c53e2f6eecd3fc8e6a10f7e7d29adaa037",
+    "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift": "2ae81015b62ed2302bc2d8ebdbe1aaf69160ed17aabfd0ce24402ec82a78d2c1",
+    "docs/apple-runtime/p10r15/native-continuation-probes.md": "9ac95401c9582460747d12cee5619cb4cc0bac339cb494f7a2537596a6ddaeb0",
+    "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-cross-run-v2.cherri": "74be70ae304570aa3e17d3659ebbc4844b57a4376c96cceb01ab6ea73f5a3a61",
+    "tools/shortcuts-simulator-qa/fixtures/qa-http-json-control-v2.cherri": "c6c2cbb51d8e34c0caf55aa87bed1a50372155d7471f8a62a9e69532c0462e54",
+    "tools/shortcuts-simulator-qa/fixtures/qa-http-json-fetch-v2.cherri": "325f64e30728020d96694817d8c3c0e1a969fbc6a2a12bc223bbaa84bcf87b39",
+    "tools/shortcuts-simulator-qa/fixtures/qa-number-comparison-diag-v2.cherri": "b3d1bcf9782d8210b3f1756d6e0d104f02bcf2ea46db50593bc6e45b8a2cfe99"
+  },
+  "actualCLIFixtures": [
+    {
+      "fixtureId": "qa-storage-text-cross-run-v2",
+      "sourceSha256": "74be70ae304570aa3e17d3659ebbc4844b57a4376c96cceb01ab6ea73f5a3a61",
+      "unsignedPlistSha256": "b4add6901af99026091c3ac0b0a16d10728afd4f4577813c97784df57809c596",
+      "graph": {
+        "nativeActions": 58,
+        "storageOperations": [
+          {
+            "native": "setstoredcontent",
+            "phaseContext": [
+              [
+                "WRITE",
+                false
+              ]
+            ]
+          },
+          {
+            "native": "getstoredcontent",
+            "phaseContext": [
+              [
+                "WRITE",
+                false
+              ]
+            ]
+          },
+          {
+            "native": "getstoredcontent",
+            "phaseContext": [
+              [
+                "WRITE",
+                true
+              ],
+              [
+                "READ",
+                false
+              ]
+            ]
+          },
+          {
+            "native": "deletestoredcontent",
+            "phaseContext": [
+              [
+                "WRITE",
+                true
+              ],
+              [
+                "READ",
+                false
+              ]
+            ]
+          }
+        ],
+        "sameKeyProducerEveryOperation": true,
+        "originalUnicodeTextReferencePreserved": true,
+        "nativeStorageExecuted": false
+      },
+      "rejectedGraphFaults": [
+        "extra-network",
+        "foreign-key",
+        "wrong-scope",
+        "delete-before-reader",
+        "read-replaced-by-text",
+        "wrong-phase"
+      ],
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "fixtureId": "qa-http-json-control-v2",
+      "sourceSha256": "c6c2cbb51d8e34c0caf55aa87bed1a50372155d7471f8a62a9e69532c0462e54",
+      "unsignedPlistSha256": "78838208d16a70b1ca8ab6f90c8dcfde8e3cf9846e5818d4115c561defcb6bf0",
+      "graph": {
+        "nativeActions": 55,
+        "fixedGETs": 0,
+        "actualResponseToGetDictionary": true,
+        "rawTypeDiagnostic": "TEXT_DICTIONARY_OTHER",
+        "nativeHTTPConversionExecuted": false
+      },
+      "rejectedGraphFaults": [
+        "extra-network",
+        "parsed-response-retarget",
+        "raw-type-retarget",
+        "next-selector"
+      ],
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "fixtureId": "qa-http-json-fetch-v2",
+      "sourceSha256": "325f64e30728020d96694817d8c3c0e1a969fbc6a2a12bc223bbaa84bcf87b39",
+      "unsignedPlistSha256": "0a0bba8004e7546ca9bf2db534bbb94ce5c60baec28a9ee211928650784c5aea",
+      "graph": {
+        "nativeActions": 55,
+        "fixedGETs": 1,
+        "actualResponseToGetDictionary": true,
+        "rawTypeDiagnostic": "TEXT_DICTIONARY_OTHER",
+        "nativeHTTPConversionExecuted": false
+      },
+      "rejectedGraphFaults": [
+        "extra-network",
+        "parsed-response-retarget",
+        "raw-type-retarget",
+        "next-selector",
+        "foreign-url",
+        "post-method",
+        "extra-header"
+      ],
+      "exactNativeActionRoundtrip": true
+    },
+    {
+      "fixtureId": "qa-number-comparison-diag-v2",
+      "sourceSha256": "b3d1bcf9782d8210b3f1756d6e0d104f02bcf2ea46db50593bc6e45b8a2cfe99",
+      "unsignedPlistSha256": "7bf42e70c895c4eb8e2e07ab8a7a97fe142834acf96e04d3a1a443186a824b94",
+      "graph": {
+        "nativeActions": 89,
+        "pairedSameProducerComparisons": 3,
+        "positiveOperatorControls": 3,
+        "conditions": [
+          {
+            "flag": "directEq",
+            "WFCondition": 4,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "direct",
+                  "OutputUUID": "002D59CB-0892-4177-814B-9E1002DD37A5",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "directNe",
+            "WFCondition": 5,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "direct",
+                  "OutputUUID": "002D59CB-0892-4177-814B-9E1002DD37A5",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "requiredEq",
+            "WFCondition": 4,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "required",
+                  "OutputUUID": "63803B97-0FC8-4711-A97A-037B5BD0AD56",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "requiredNe",
+            "WFCondition": 5,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "required",
+                  "OutputUUID": "63803B97-0FC8-4711-A97A-037B5BD0AD56",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "boundEq",
+            "WFCondition": 4,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "Type": "Variable",
+                  "VariableName": "bound"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "boundNe",
+            "WFCondition": 5,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "Type": "Variable",
+                  "VariableName": "bound"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "oneNeZero",
+            "WFCondition": 5,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "one",
+                  "OutputUUID": "0F319323-34AB-48CD-8F44-00C7761E8174",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "zeroNeOne",
+            "WFCondition": 5,
+            "WFNumberValue": 1.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "direct",
+                  "OutputUUID": "002D59CB-0892-4177-814B-9E1002DD37A5",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "oneEqOne",
+            "WFCondition": 4,
+            "WFNumberValue": 1.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "one",
+                  "OutputUUID": "0F319323-34AB-48CD-8F44-00C7761E8174",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          }
+        ],
+        "nativeNumericComparisonExecuted": false
+      },
+      "rejectedGraphFaults": [
+        "extra-network",
+        "paired-operator",
+        "number-as-string",
+        "required-retarget",
+        "positive-control-value",
+        "bound-retarget"
+      ],
+      "exactNativeActionRoundtrip": true
+    }
+  ],
+  "pythonTests": 10,
+  "pythonTranscriptSha256": "df738995a411f98647ed6101fd9bb45441b9c5558ff48a5456e45fdad1d97106",
+  "nativeExecuted": 0,
+  "cacheImplemented": false,
+  "productionCompilerChanged": false,
+  "scope": "Two-invocation orchestration, native graph identity and source roundtrip only; Apple outcomes require fresh native callbacks.",
+  "elapsedSeconds": 7.75
+}
