@@ -21,3 +21,7 @@ An early local draft used immutable bindings around nested calls. Actual emitted
 The Go test compiles the real source and checks native attachment shape, four distinct decoded producers, exact names, the immutable output name, absence of names on the other Set Name producers, the single mutable store, and all six readback edges. Nine independently altered graphs are rejected. Existing Python dispatch tests verify the exact allowlisted selector, source, expected result, fresh callback identity and mandatory Debug trace; each of the six flags is independently corrupted and rejected. Shell syntax is checked.
 
 The fixture digest and narrow scope are recorded in `file-name-binding-probe.json`. Local structure and harness tests do not establish Apple runtime behavior. A new exact-source signed run is required.
+
+## Clean-source verification
+
+Source64107873bfbcbc26b29efef5ada88720fc765c90 passed both actual File graph tests, nine graph corruptions, all three strict diagnostic contract families, and shell syntax, with a clean tree before and after. Receipts and logs are in evidence/file-name-6410787/. The Go raw log digest is b1b719377b4ab2365bfe72d48596511e8ad8544c5f290e4c9df70c199c52405d; the Python raw log digest is abb751c0548ddb855063491189222392997c56506c95c5838b2766c0967b07b8. Original raw logs are retained; any normalized committed derivative has its own digest. Native execution remains NOT_RUN.

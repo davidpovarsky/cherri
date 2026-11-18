@@ -1,0 +1,64 @@
+{
+  "source": "64107873bfbcbc26b29efef5ada88720fc765c90",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "records": [
+    {
+      "file": "clean-go.jsonl",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-p=2",
+        "-count=1",
+        "-json",
+        "-timeout=4m",
+        "-run",
+        "^TestP15RuntimeDiagnosticFile(NameBinding|Bytes)Graph$",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 5.735,
+      "sha256": "b1b719377b4ab2365bfe72d48596511e8ad8544c5f290e4c9df70c199c52405d",
+      "committedFile": "clean-go.jsonl",
+      "committedSha256": "b1b719377b4ab2365bfe72d48596511e8ad8544c5f290e4c9df70c199c52405d",
+      "normalization": "none"
+    },
+    {
+      "file": "clean-contracts.log",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "unittest",
+        "test_native_macro_diagnostic_contract",
+        "-v"
+      ],
+      "exit": 0,
+      "seconds": 17.953,
+      "sha256": "abb751c0548ddb855063491189222392997c56506c95c5838b2766c0967b07b8",
+      "committedFile": "clean-contracts.normalized.log",
+      "committedSha256": "1c8b304069e2051c98718bce03547146443a85409da683dfdead20f83cfc106b",
+      "normalization": "CRLF to LF in derivative only; raw retained unchanged locally"
+    },
+    {
+      "file": "clean-shell.log",
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "scripts/ios27_shortcuts_simulator_qa.sh"
+      ],
+      "exit": 0,
+      "seconds": 0.047,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "committedFile": "clean-shell.log",
+      "committedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalization": "none"
+    }
+  ],
+  "nativeRuntimeVerified": false,
+  "scope": "Actual compiler graph and strict workflow/callback contracts for new diagnostic; no Apple result.",
+  "draftControl": {
+    "status": "REJECTED_BEFORE_DISPATCH",
+    "sha256": "ce9ff5245e6c845e6ec32ab86049cc1baa9d8d44448d37592ef8354d42e7921f",
+    "scope": "Initial diagnostic did not isolate unnamed intermediate results; compiler behavior is not relabeled as a regression."
+  }
+}
