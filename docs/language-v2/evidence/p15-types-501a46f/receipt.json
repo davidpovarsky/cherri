@@ -1,0 +1,85 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-T08-unit",
+      "requirements": [
+        "T08"
+      ],
+      "tier": "unit",
+      "implementation_sha": "501a46f6db3c26971037ac4e87ab8f71e1c2251e",
+      "test_id": "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityProduction",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+      },
+      "detail": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+    },
+    {
+      "evidence_id": "ev-local-T08-service",
+      "requirements": [
+        "T08"
+      ],
+      "tier": "service",
+      "implementation_sha": "501a46f6db3c26971037ac4e87ab8f71e1c2251e",
+      "test_id": "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityService",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+      },
+      "detail": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T05:20:41Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "T08",
+        "group": "types",
+        "requirement": "Variant-dependent output type inferred from literal mode",
+        "test_level": "unit+service",
+        "executed_levels": [
+          "unit",
+          "service"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only T08 unit and service contract; native metadata and emitted wire are inspected locally, no Apple runtime, platform availability or release closure",
+  "source_sha": "501a46f6db3c26971037ac4e87ab8f71e1c2251e",
+  "source_tree_clean": true
+}

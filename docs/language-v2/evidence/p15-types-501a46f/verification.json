@@ -1,0 +1,22 @@
+{
+  "source_sha": "501a46f6db3c26971037ac4e87ab8f71e1c2251e",
+  "source_tree_clean": true,
+  "sentinel_job": "job_30ddabb0b1c3",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestTypeCardinalityProductionEvidence$"
+  ],
+  "exit_code": 0,
+  "raw_log_sha256": "e915c0f219661e964982a8df24352dbaa3caa99f63f90a9c2900502c067f0e4a",
+  "raw_log_bytes": 8832,
+  "tests_passed": [
+    "TestTypeCardinalityProductionEvidence"
+  ],
+  "scope": "T08 required unit and service tiers; no signed Apple execution or platform-availability claim"
+}

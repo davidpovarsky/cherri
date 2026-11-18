@@ -82,3 +82,7 @@ Commit b250282a269268610bbb865f847e1fbc8e82b57f was executed with a clean tree i
 ### T06 exact committed execution
 
 Clean implementation commit 642d276723cf6a80a5f3ba7f5165454ccafc42d5 passed its actual production producer and formal evidence validator in Sentinel job job_70670aceddf8. The bounded report contains one passed requirement (T06), zero failed/skipped, and closure_complete=false. Receipt and raw-log digest are under evidence/p15-types-642d276; unrelated requirements inherit no success.
+
+### T08 exact committed execution
+
+Clean implementation commit 501a46f6db3c26971037ac4e87ab8f71e1c2251e passed its actual unit/service producers and formal evidence validator in Sentinel job job_30ddabb0b1c3. The bounded report contains one passed requirement (T08), two tier records, zero failed/skipped, and closure_complete=false. Receipt and raw-log digest are under evidence/p15-types-501a46f.
