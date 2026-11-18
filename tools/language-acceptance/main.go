@@ -1512,9 +1512,8 @@ func (r *Runner) runTypes() {
 	// T08: Actual literal-mode cardinality and contextual language service.
 	r.runTypeCardinalityRequirement()
 
-	// T09: Content Graph conversions
-	t09Passed := types.Text.AssignableTo(types.AnyContent) && types.Number.AssignableTo(types.AnyContent)
-	r.Record("T09", "types", "Known Content Graph conversions vs unverified coercion", "unit+native", []string{"unit", "native"}, t09Passed, "PASSED", "Subtyping rules permit safe Content conversions")
+	// T09: Explicit native conversion producers and authored evidence boundaries.
+	r.runTypeContentConversionRequirement()
 }
 
 // Group 7: Text

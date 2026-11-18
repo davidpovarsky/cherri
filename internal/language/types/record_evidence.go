@@ -66,6 +66,12 @@ func recordFieldAssignable(source, target Type) bool {
 			return recordFieldAssignable(from.Key, to.Key) && recordFieldAssignable(from.Value, to.Value)
 		}
 	}
+	// Native parameter compatibility may request a Content Graph conversion.
+	// An authored annotation or record field does not emit that conversion.
+	if (source.Kind() == KindPrimitive || source.Kind() == KindContent) &&
+		(target.Kind() == KindPrimitive || target.Kind() == KindContent) {
+		return source.Equals(target)
+	}
 	return source.AssignableTo(target)
 }
 

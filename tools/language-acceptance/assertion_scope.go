@@ -27,7 +27,6 @@ var incompleteLocalAssertions = map[string]string{
 	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
 	"T05":  "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions.",
 	"T07":  "A helper implemented only in this runner does not exercise production platform-version comparison.",
-	"T09":  "Assignment to AnyContent does not validate known Content Graph conversions or reject unverified coercions.",
 	"S01":  "Nonempty IR does not inspect UTF-16 token offsets, combining marks, or round-trip values.",
 	"S03":  "Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits.",
 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
