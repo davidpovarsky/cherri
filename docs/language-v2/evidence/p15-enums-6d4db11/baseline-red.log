@@ -1,0 +1,72 @@
+=== RUN   TestP15C04EnumResolutionProduction
+=== RUN   TestP15C04EnumResolutionProduction/native_context_primary
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/native_context_named
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/native_qualified
+    p15_enum_acceptance_test.go:98: [ERROR] E_LITERAL_REQUIRED: parameter "sound" in call to "setBackgroundSound" requires a literal value or an eligible pure literal expression; runtime bindings and actions are not literals (p15-parser:1:20-1:41)
+=== RUN   TestP15C04EnumResolutionProduction/native_qualified_named
+    p15_enum_acceptance_test.go:98: [ERROR] E_LITERAL_REQUIRED: parameter "sound" in call to "setBackgroundSound" requires a literal value or an eligible pure literal expression; runtime bindings and actions are not literals (p15-parser:1:27-1:47)
+=== RUN   TestP15C04EnumResolutionProduction/custom_context
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/custom_named
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/custom_qualified
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/custom_empty
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/custom_quoted
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/custom_unicode
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/custom_default
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/custom_second_domain
+    p15_enum_acceptance_test.go:104: compile debug fixture (legacy=false): lowering error: unknown enum ""
+=== RUN   TestP15C04EnumResolutionProduction/qualified_expression
+=== RUN   TestP15C04EnumResolutionProduction/qualified_empty_expression
+    p15_enum_acceptance_test.go:106: qualified_empty_expression wire WFTextActionText = "Empty", want ""
+=== RUN   TestP15C04EnumResolutionProduction/lowercase_declared
+=== RUN   TestP15C04EnumResolutionProduction/native_missing
+    p15_enum_acceptance_test.go:129: want one E_ENUM_MEMBER at [19,27), got []analysis.Diagnostic(nil)
+=== RUN   TestP15C04EnumResolutionProduction/native_qualified_missing
+    p15_enum_acceptance_test.go:129: want one E_ENUM_MEMBER at [19,42), got []analysis.Diagnostic(nil)
+=== RUN   TestP15C04EnumResolutionProduction/custom_missing
+    p15_enum_acceptance_test.go:129: want one E_ENUM_MEMBER at [371,379), got []analysis.Diagnostic(nil)
+=== RUN   TestP15C04EnumResolutionProduction/qualified_missing
+    p15_enum_acceptance_test.go:129: want one E_ENUM_MEMBER at [368,380), got []analysis.Diagnostic(nil)
+=== RUN   TestP15C04EnumResolutionProduction/unknown_qualified
+    p15_enum_acceptance_test.go:129: want one E_ENUM_MEMBER at [5,22), got []analysis.Diagnostic(nil)
+=== RUN   TestP15C04EnumResolutionProduction/unbound_context
+    p15_enum_acceptance_test.go:129: want one E_ENUM_MEMBER at [13,18), got []analysis.Diagnostic(nil)
+=== RUN   TestP15C04EnumResolutionProduction/wrong_custom_wire
+    p15_enum_acceptance_test.go:129: want one E_ENUM_MEMBER at [371,385), got []analysis.Diagnostic(nil)
+=== RUN   TestP15C04EnumResolutionProduction/wrong_domain_member
+    p15_enum_acceptance_test.go:129: want one E_ENUM_MEMBER at [378,383), got []analysis.Diagnostic(nil)
+--- FAIL: TestP15C04EnumResolutionProduction (0.02s)
+    --- FAIL: TestP15C04EnumResolutionProduction/native_context_primary (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/native_context_named (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/native_qualified (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/native_qualified_named (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/custom_context (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/custom_named (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/custom_qualified (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/custom_empty (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/custom_quoted (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/custom_unicode (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/custom_default (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/custom_second_domain (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/qualified_expression (0.01s)
+    --- FAIL: TestP15C04EnumResolutionProduction/qualified_empty_expression (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/lowercase_declared (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/native_missing (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/native_qualified_missing (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/custom_missing (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/qualified_missing (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/unknown_qualified (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/unbound_context (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/wrong_custom_wire (0.00s)
+    --- FAIL: TestP15C04EnumResolutionProduction/wrong_domain_member (0.00s)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.258s
+FAIL

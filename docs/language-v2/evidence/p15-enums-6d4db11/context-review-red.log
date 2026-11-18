@@ -1,0 +1,11 @@
+=== RUN   TestP15C04EnumResolutionProduction
+=== RUN   TestP15C04EnumResolutionProduction/bare_enum_type
+    p15_enum_acceptance_test.go:138: want one E_ENUM_MEMBER at [29,33), got []analysis.Diagnostic(nil)
+=== RUN   TestP15C04EnumResolutionProduction/branch_raw_domain
+    p15_enum_acceptance_test.go:138: want one E_ENUM_MEMBER at [56,63), got []analysis.Diagnostic(nil)
+--- FAIL: TestP15C04EnumResolutionProduction (0.02s)
+    --- FAIL: TestP15C04EnumResolutionProduction/bare_enum_type (0.01s)
+    --- FAIL: TestP15C04EnumResolutionProduction/branch_raw_domain (0.00s)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.395s
+FAIL

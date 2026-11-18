@@ -1,0 +1,72 @@
+{
+  "schema_version": "1",
+  "source_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+  "job_id": "job_b713286ec98c",
+  "clean_before": true,
+  "clean_after": true,
+  "scope": "C04 source and shared service only; independent C02/T02/T06/T08 producer regression controls; no private corpus/native/UI/release closure",
+  "packages_passed": [
+    "github.com/electrikmilk/cherri/internal/language/syntax",
+    "github.com/electrikmilk/cherri/internal/language/analysis",
+    "github.com/electrikmilk/cherri/internal/language/service",
+    "github.com/electrikmilk/cherri/internal/language/lower"
+  ],
+  "package_top_level_passed": 70,
+  "production_evidence_tests": [
+    "TestCallArgumentsProductionEvidence",
+    "TestEnumProductionEvidence",
+    "TestTypeLiteralProductionEvidence",
+    "TestTypeRecordProductionEvidence",
+    "TestTypeCardinalityProductionEvidence"
+  ],
+  "implementation_files_sha256": {
+    "docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md": "b1f5ef3d507718fb4ca3ba0b84e7791e6c4c661614d6a75a194ce3444c72112e",
+    "docs/language-v2/p15-enums-acceptance.md": "be478b7001a633dcc24e49da28f2e998364d76ece46a2987221f1a490312222f",
+    "internal/language/analysis/analyzer.go": "1df6869fd5fbbdbf21026eff02ecf2ba5a2b56d504b39385a7b856a80363b114",
+    "internal/language/analysis/enums.go": "3385452c938c06cd0366a573bdbb630bdac3eadf8702fd27886ca8b3e71c4558",
+    "internal/language/analysis/function_arguments.go": "8dba23df06e3836025bea0b1f6e06c8e73e2b00cf5e5d5643c2f916be76a58a9",
+    "internal/language/enums/catalog.go": "a2865fb011758f19c69e8007ae30874c10d677ab34f61bbf65959e0345f0824c",
+    "internal/language/lower/enum_values.go": "8b73589ed750621c895b445bbffdeb66fa3132a5c37e56ed2330d91e2159e685",
+    "internal/language/lower/lower.go": "65a0c973e856b9a302447988d0e62480808842640c3cf99f254e50811be34ebe",
+    "internal/language/lower/scoped_blocks.go": "f1539e95bf51ed63f29eb0bb34bc42ebd03ca116ed0d120b64b3679a9e2087eb",
+    "internal/language/service/enum_completion.go": "57f3d3b667cedce17805f9b7a1ec57791bd08e6376ef94a4d53e9379d7ece45d",
+    "internal/language/service/service.go": "452dd50c10bab1be4fed81ccf759646c2c41ea62b0c011142087cb8b67ab53ba",
+    "internal/language/service/service_test.go": "bba514b226b23c681ed632c9fa6ac6f50a60a6eabf6eae6cad00a838aa1b5d27",
+    "internal/language/syntax/format.go": "b5b472f558008be0ac3579e753dafeac047101cede2c5457dd5ebe34b09abc40",
+    "internal/language/syntax/identifier.go": "b835ab0fb417908a85763169cf0736dde40743140b6583c8d813a42a49222369",
+    "internal/language/syntax/parser.go": "f434d61d36de07beebff0bcd54b29ff600b562cbd95a4e0562b3aad2281cc754",
+    "language_emit_adapter.go": "b9c50ed2066bb6ff34c7bc2730835d9bf2ab70b3c4c156dccde54995a6fe1bcc",
+    "p15_enum_acceptance_test.go": "2a71519639de5953996502371d777fe005cc9ea556e658ef34de8f9a36f469cd",
+    "tools/language-acceptance/assertion_scope.go": "91b2d969952bda56e53fe6c68eaca8084d444e4bf2e28f39581dbc8cd93d923b",
+    "tools/language-acceptance/calls_execution.go": "d6e6317e5a9408a49589dfe444a66fe18406a7e817eb233fb27035a187a40d87",
+    "tools/language-acceptance/calls_execution_test.go": "3a41aaca0b9d58947344bdd8e6878ea3e7ce9ed3904adba5b8ef9cf9dd4e8567",
+    "tools/language-acceptance/main.go": "8c180f820019473f398519f612d6396876d8ce3c1f578be22341d3814a06565b"
+  },
+  "artifacts_sha256": {
+    "baseline-red.log": "20d6775c72e205ac5f525f425d4fc3d5fd8cb2f0181d62ebae478b0d24e6880e",
+    "context-review-red.log": "8f25b3acbee31c7b2899be47f0d66ddc78e52901a3df4b8b22f73a243fffcbfa",
+    "packages.jsonl": "ab1a0928e9e5b82120d460ff44174f9a65caeef8bf0ef1038ac0354440398b1f",
+    "shadow-wire-red.log": "e8839e04a4bad08956034998a06913425d11c498ca13ba7cc76c30a0ae87910a",
+    "verification-all.json": "aef8551502d187d4e5abeb3853591b76eaad0b4656015eb251d43277d7e17e5f",
+    "verification.json": "74b589012ed246208c827d89e98a89dede3b90bd7be6a07661309d002d0d3629",
+    "verification.jsonl": "83ceb5e6839b49d26ee880369c05d9fa1691aa4e8b188ec23dcbf75fd7144187"
+  },
+  "C04_result": [
+    {
+      "id": "C04",
+      "group": "calls",
+      "requirement": "Enum contextual and qualified members resolve",
+      "test_level": "unit+service",
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "All required tiers satisfied by verified evidence"
+    }
+  ],
+  "causal_baseline_job": "job_20e5553ca3dc",
+  "context_review_red_job": "job_7e52e2df411f",
+  "shadow_wire_red_job": "job_ee746e2a4a39"
+}

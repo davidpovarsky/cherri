@@ -1,0 +1,485 @@
+{
+  "source_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+  "before": {
+    "sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+    "clean": true
+  },
+  "after": {
+    "sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+    "clean": true
+  },
+  "runs": [
+    {
+      "name": "packages",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=120s",
+        "./internal/language/analysis",
+        "./internal/language/syntax",
+        "./internal/language/lower",
+        "./internal/language/service"
+      ],
+      "exit_code": 0,
+      "seconds": 8.297,
+      "sha256": "ab1a0928e9e5b82120d460ff44174f9a65caeef8bf0ef1038ac0354440398b1f",
+      "file": "frozen-packages.jsonl",
+      "top_level_passed": [
+        "TestFormatterIdempotence",
+        "TestLexerBasicTokens",
+        "TestLexerFString",
+        "TestParseProgramStatements",
+        "TestParseFunctionDecl",
+        "TestParseNamedArgsCall",
+        "TestParseValueProducingIf",
+        "TestScopedBlockParseFormatAndUnicode",
+        "TestScopedBlockDoesNotConsumeControlBodies",
+        "TestScopedBlockNestedArgumentHasOwnBoundary",
+        "TestAnalyzerAssignImmutable",
+        "TestAnalyzerReadBeforeInit",
+        "TestAnalyzerUnknownArgument",
+        "TestAnalyzerMissingArgument",
+        "TestAnalyzerDuplicateArgument",
+        "TestAnalyzerIfConditionBool",
+        "TestAnalyzerYieldOutsideValueBlock",
+        "TestAnalyzerLegacySyntax",
+        "TestAnalyzerValidProgram",
+        "TestAnalyzerCopyPaste",
+        "TestAnalyzerTruthiness",
+        "TestAnalyzerHotLoopWarning",
+        "TestAnalyzerGlobals",
+        "TestAnalyzerListPlusAssign",
+        "TestMacActionInNonMacShortcut_Baseline",
+        "TestMacActionInMacShortcut_Allowed",
+        "TestNonMacActionInMacShortcut_Error",
+        "TestNonMacActionInNonMacShortcut_Allowed",
+        "TestEmptyDictionaryKey_MapLiteral",
+        "TestEmptyDictionaryKey_IndexExpr",
+        "TestEmptyDictionaryKey_GetValueCall",
+        "TestExprTypesTracking",
+        "TestMixedTargets_RejectsNonPortableActions",
+        "TestExplicitTargetString",
+        "TestUnspecifiedTarget_EmitsWarning",
+        "TestVersionBounds_MinVersion",
+        "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+        "TestAcceptedForms_AcceptsVariableAttachment",
+        "TestScopedBlockInferredTypeAndLexicalScope",
+        "TestScopedBlockDiagnosticsAndBranchTypes",
+        "TestScopedBlockDoesNotReserveExistingFunctionName",
+        "TestTargetVersionSettersRetainCompatibility",
+        "TestTargetVersionSourceAccessorsKeepComponents",
+        "TestCompilerMacrosReachCompletionFromSharedMetadata",
+        "TestServiceAnalyze",
+        "TestServiceComplete",
+        "TestServiceHover",
+        "TestServiceContextualCallComplete",
+        "TestE01MultiDiagnosticAnalysis",
+        "TestE02CompletionHoverSignatureDefinition",
+        "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+        "TestE04FormatterPreservesCommentsAndSemantics",
+        "TestE05OutOfOrderVersionedEdits",
+        "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+        "TestE07BoundedVisualSourceEditAndRejection",
+        "TestMapIndexDynamicKeyLowering",
+        "TestListIndexDynamicLowering",
+        "TestMapIndexEmptyKeyLoweringError",
+        "TestMapIndexUnicodeKeyLowering",
+        "TestMapIndexLetVarLowering",
+        "TestMapIndexNestedMapLowering",
+        "TestMapIndexDirectGetValueCall",
+        "TestLowerBasicWorkflow",
+        "TestLowerConditionalWorkflow",
+        "TestLowerFunctionEnvelopeDefaultsAndVoidReturn",
+        "TestLowerShortCircuitAndExpressionsAndSafeIndexing",
+        "TestLowerTriggersWithParameters",
+        "TestLowerUnusedFunctionDispatcherOmitted",
+        "TestLowerListAppendVariable",
+        "TestScopedBlockRenamingPreservesSourceAndLiteralValues"
+      ],
+      "packages_passed": [
+        "github.com/electrikmilk/cherri/internal/language/syntax",
+        "github.com/electrikmilk/cherri/internal/language/analysis",
+        "github.com/electrikmilk/cherri/internal/language/service",
+        "github.com/electrikmilk/cherri/internal/language/lower"
+      ],
+      "failures": []
+    },
+    {
+      "name": "formal",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=180s",
+        "./tools/language-acceptance",
+        "-run",
+        "^(TestEnumProductionEvidence|TestCallArgumentsProductionEvidence|TestTypeLiteralProductionEvidence|TestTypeRecordProductionEvidence|TestTypeCardinalityProductionEvidence)$"
+      ],
+      "exit_code": 0,
+      "seconds": 73.594,
+      "sha256": "83ceb5e6839b49d26ee880369c05d9fa1691aa4e8b188ec23dcbf75fd7144187",
+      "file": "frozen-formal.jsonl",
+      "top_level_passed": [
+        "TestCallArgumentsProductionEvidence",
+        "TestEnumProductionEvidence",
+        "TestTypeLiteralProductionEvidence",
+        "TestTypeRecordProductionEvidence",
+        "TestTypeCardinalityProductionEvidence"
+      ],
+      "packages_passed": [
+        "github.com/electrikmilk/cherri/tools/language-acceptance"
+      ],
+      "failures": []
+    }
+  ],
+  "receipts": {
+    "P15_ENUM_RECEIPT": {
+      "records": [
+        {
+          "evidence_id": "ev-local-C04-unit",
+          "requirements": [
+            "C04"
+          ],
+          "tier": "unit",
+          "implementation_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+          "test_id": "github.com/electrikmilk/cherri:TestP15C04EnumResolutionProduction",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m",
+            ".",
+            "-run",
+            "^(TestP15C04EnumResolutionProduction|TestP15C04EnumServiceAndCLI|TestP15C04EnumContextsAndShadowing|TestP15C04EnumFunctionService)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
+          },
+          "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
+        },
+        {
+          "evidence_id": "ev-local-C04-service",
+          "requirements": [
+            "C04"
+          ],
+          "tier": "service",
+          "implementation_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+          "test_id": "github.com/electrikmilk/cherri:TestP15C04EnumServiceAndCLI",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m",
+            ".",
+            "-run",
+            "^(TestP15C04EnumResolutionProduction|TestP15C04EnumServiceAndCLI|TestP15C04EnumContextsAndShadowing|TestP15C04EnumFunctionService)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
+          },
+          "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T15:40:31Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "C04",
+            "group": "calls",
+            "requirement": "Enum contextual and qualified members resolve",
+            "test_level": "unit+service",
+            "executed_levels": [
+              "unit",
+              "service"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only C04 enum source resolution, exact serialized wire and shared service completion/diagnostic unit+service tiers; no Apple execution, full UI, C05 imported-unknown-enum contract or release closure.",
+      "source_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+      "source_tree_clean": true
+    },
+    "P15_CALL_ARGUMENTS_RECEIPT": {
+      "records": [
+        {
+          "evidence_id": "ev-local-C02-unit",
+          "requirements": [
+            "C02"
+          ],
+          "tier": "unit",
+          "implementation_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+          "test_id": "github.com/electrikmilk/cherri:TestP15C02ArgumentDiagnosticsProduction",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m",
+            ".",
+            "-run",
+            "^(TestP15C02ArgumentDiagnosticsProduction|TestP15C02AcceptedBindingsProduction|TestP15C02ArgumentServiceAndCLI)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15C02ArgumentDiagnosticsProduction, TestP15C02AcceptedBindingsProduction, TestP15C02ArgumentServiceAndCLI"
+          },
+          "detail": "Executed production tests: TestP15C02ArgumentDiagnosticsProduction, TestP15C02AcceptedBindingsProduction, TestP15C02ArgumentServiceAndCLI"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T15:40:15Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "C02",
+            "group": "calls",
+            "requirement": "Duplicate, missing, unknown labels and extra positional arguments",
+            "test_level": "unit",
+            "executed_levels": [
+              "unit"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only C02 ordinary action/custom-action/user-function argument diagnostic contract; actual shared analysis, native serialization, CLI and service checks. No Apple execution, source effect ordering, variadic migration or release closure.",
+      "source_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+      "source_tree_clean": true
+    },
+    "P15_TYPE_LITERAL_RECEIPT": {
+      "records": [
+        {
+          "evidence_id": "ev-local-T02-unit",
+          "requirements": [
+            "T02"
+          ],
+          "tier": "unit",
+          "implementation_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+          "test_id": "github.com/electrikmilk/cherri:TestP15T02LiteralRequiredProduction",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m",
+            ".",
+            "-run",
+            "^(TestP15T02LiteralRequiredProduction)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15T02LiteralRequiredProduction"
+          },
+          "detail": "Executed production tests: TestP15T02LiteralRequiredProduction"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T15:40:44Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "T02",
+            "group": "types",
+            "requirement": "Runtime immutable output does not satisfy literal-required slot",
+            "test_level": "unit",
+            "executed_levels": [
+              "unit"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only T02 production unit contract; no native execution, external type guarantee, other T requirement or release closure",
+      "source_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+      "source_tree_clean": true
+    },
+    "P15_TYPE_RECORD_RECEIPT": {
+      "records": [
+        {
+          "evidence_id": "ev-local-T06-unit",
+          "requirements": [
+            "T06"
+          ],
+          "tier": "unit",
+          "implementation_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+          "test_id": "github.com/electrikmilk/cherri:TestP15T06RecordAnnotationsDoNotValidateExternalValues",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m",
+            ".",
+            "-run",
+            "^(TestP15T06RecordAnnotationsDoNotValidateExternalValues|TestP15T06RecordProofTypeRelations|TestP15T06ControlResultsRequireAllBranches)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches"
+          },
+          "detail": "Executed production tests: TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T15:40:58Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "T06",
+            "group": "types",
+            "requirement": "User record annotation is not runtime JSON validation",
+            "test_level": "unit",
+            "executed_levels": [
+              "unit"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only T06 production unit contract; static rejection of unvalidated external record guarantees, no runtime validator, native execution or release closure",
+      "source_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+      "source_tree_clean": true
+    },
+    "P15_TYPE_CARDINALITY_RECEIPT": {
+      "records": [
+        {
+          "evidence_id": "ev-local-T08-unit",
+          "requirements": [
+            "T08"
+          ],
+          "tier": "unit",
+          "implementation_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+          "test_id": "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityProduction",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m",
+            ".",
+            "-run",
+            "^(TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+          },
+          "detail": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+        },
+        {
+          "evidence_id": "ev-local-T08-service",
+          "requirements": [
+            "T08"
+          ],
+          "tier": "service",
+          "implementation_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+          "test_id": "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityService",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m",
+            ".",
+            "-run",
+            "^(TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+          },
+          "detail": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T15:41:10Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "T08",
+            "group": "types",
+            "requirement": "Variant-dependent output type inferred from literal mode",
+            "test_level": "unit+service",
+            "executed_levels": [
+              "unit",
+              "service"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only T08 unit and service contract; native metadata and emitted wire are inspected locally, no Apple runtime, platform availability or release closure",
+      "source_sha": "6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc",
+      "source_tree_clean": true
+    }
+  },
+  "scope": "C04 source and shared service only; independent C02/T02/T06/T08 producer regression controls; no private corpus/native/UI/release closure"
+}
