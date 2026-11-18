@@ -1,0 +1,82 @@
+{
+  "sourceSha": "aa55ba3d682fe47a8330f16f9b259cea2debf665",
+  "hostPlatform": "WindowsAMD64",
+  "startedAtUtc": "2026-11-18T04:39:58.286163+00:00",
+  "tests": [
+    {
+      "test": "TestP10R10CorpusMeasure",
+      "status": "PASS",
+      "exitCode": 0,
+      "wallSeconds": 145.547,
+      "logSha256": "292777fbf6d9c545ff3e18bcd92d8479b28621a6a143049e1da8778e1de8e72e",
+      "safeSummary": []
+    },
+    {
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+      "status": "PASS",
+      "exitCode": 0,
+      "wallSeconds": 176.39,
+      "logSha256": "dd48038b52dc3f1eedb6b77963c1a9a5368d181d7286a5bf645b1c75f4a8b3ff",
+      "safeSummary": [
+        "    p11_wire_fidelity_test.go:115: P11_WIRE_01 checked 38 files, 27652 total actions, 23353 NATURAL_VERIFIED"
+      ]
+    },
+    {
+      "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+      "status": "PASS",
+      "exitCode": 0,
+      "wallSeconds": 124.453,
+      "logSha256": "c111d51efc344a094d8244cfd788daccf88398741f1bfd450b8a70c6788dc26b",
+      "safeSummary": [
+        "    p13_fidelity_promotion_test.go:588: P10R13 Corpus Summary: total=27652 natural=23353 (84.45%, +863 vs P10R12) fallback=4298 invalid=1 demoted=0"
+      ]
+    }
+  ],
+  "corpusAggregate": {
+    "schemaVersion": "1.0.0",
+    "phase": "P10R13-Phase6",
+    "schemaFingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
+    "specimenCount": 38,
+    "totalActions": 27652,
+    "baselineP10R12Natural": 22490,
+    "baselineP10R12NaturalPct": 81.33,
+    "p10r13NaturalVerified": 23353,
+    "p10r13NaturalPct": 84.45,
+    "netPromotedActions": 863,
+    "p10r13ExactFallback": 4298,
+    "p10r13SourceInvalid": 1,
+    "totalDemotedActions": 0,
+    "dualDialectWireParity": "PASS (76/76 exact recursive plist match)",
+    "preOverlaySemanticParity": "PASS (100% of NATURAL_VERIFIED actions)",
+    "fallbackReasonCounts": {
+      "AMBIGUOUS_VARIANT": 46,
+      "CONTROL_REGION": 692,
+      "SOURCE_INVALID": 1,
+      "THIRD_PARTY_NO_CANONICAL_DEF": 137,
+      "UNKNOWN_NATIVE_ID": 13,
+      "UNREPRESENTABLE_PARAM": 3410
+    },
+    "totalInputPlistBytes": 62980131,
+    "totalLegacySourceBytes": 79816460,
+    "totalV2SourceBytes": 79942515,
+    "totalHeaderDirectiveBytes": 12133622,
+    "totalFallbackCallsBytes": 52644376,
+    "totalNaturalStatementBytes": 15051221,
+    "totalPlanDurationMs": 76404,
+    "totalLegacyCompileMs": 19088,
+    "totalV2CompileMs": 14464,
+    "peakHeapAllocBytes": 295548944,
+    "peakHeapSysBytes": 578519040,
+    "p95Method": "nearest-rank on 38 specimens; shared host wall timings are observational",
+    "p95": {
+      "planDurationMs": 9104,
+      "legacyCompileMs": 2242,
+      "v2CompileMs": 1402,
+      "legacySourceBytes": 9577577,
+      "v2SourceBytes": 9578495,
+      "maxSingleFallbackBytes": 9363417
+    }
+  },
+  "finishedAtUtc": "2026-11-18T04:47:24.809098+00:00",
+  "status": "PASS"
+}

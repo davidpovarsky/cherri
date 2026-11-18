@@ -125,3 +125,12 @@ The R1 signed jobs have now completed. Legacy run [44223774682](https://github.c
 - Docs merge ad9e8fa0fdef81c474bb6097bb198791882aa86b incorporates all four previously unique docs main commits. The only conflict was the board's additional verified R1 entry, which was preserved. Final source-bound generation, snippet pinning and CI remain to be rerun.
 
 Asana formal, Inspector, iOS and runtime tasks were updated with these scoped facts and remain OPEN. General typed label/export/cache/retry/pagination work is not declared hardware-blocked merely because source is absent. Synthetic label-carrier probes and a self-contained short-circuit counter diagnostic are under development. Physical-device proof remains BLOCKED_DEVICE. Production release is not ready.
+
+
+## Integrated corpus boundary and literal analysis ? 2026-11-18
+
+- Source aa55ba3d682fe47a8330f16f9b259cea2debf665: all three private corpus tests PASS, 38 inputs, 76 exact recursive native plist matches, 23,353/27,652 natural actions, 4,298 fallback, one preserved invalid source, zero demotion. Sanitized aggregate and nearest-rank source-size/timing metrics: `docs/apple-runtime/p10r15/private-corpus-aa55-aggregate.json`. Raw inputs/logs remain local.
+- This boundary includes generated guard compatibility and typed Dictionary/List reserved-key repairs. Report metadata now reads the current canonical schema fingerprint.
+- T02 source literal requirements integrated at a94ac1670078514a2f0b340bae86ca49502e4fa8; new production evidence rejects runtime expressions with E_LITERAL_REQUIRED while keeping established HTTP dynamic leaves. Formal179 final refresh remains pending other active type work.
+- Signed Legacy23ea902 rerun44238251950; Bool/List and local-counter F01 at256f6a639a6f2a47eee5350ffc062746da9bd752 run44239174499/44239178590. Pending results are not PASS.
+- All15 main-only compiler commits and all4 main-only docs commits remain preserved. Main and live consumers have not been advanced.

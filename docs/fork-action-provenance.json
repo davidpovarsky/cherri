@@ -2149,6 +2149,55 @@
       "reason": "R1 Bool/List serialized raw dictionary maps inside text item slots and returned a native error.",
       "evidence": "Three authored binding forms failed before repair and passed afterward; 41 focused test events, full lowerer package and real CLI passed. Signed runtime and reserved-key follow-up remain open.",
       "note": "Separate provenance commit; partial local evidence does not establish unexecuted native or physical acceptance."
+    },
+    {
+      "name": "P10R15 generated condition guard compatibility",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "p15_guard_compatibility_test.go"
+      ],
+      "firstForkCommit": "2f53dc4fa0aafb0a5733c715ad9b3470f4d0972f",
+      "change": "Align synthetic negation, Boolean, comparison and bounds guards with authored native If compatibility; preserve explicit modern and imported compatibility states.",
+      "reason": "Actual production defects and source-bound acceptance gaps found during the authorized P10R15 closure run.",
+      "evidence": "Seven integrated guard/F01 tests passed; seven causal native graph mutations rejected; signed runtime remains separate.",
+      "note": "Implementation SHA is an immutable ancestor; this separate metadata commit does not certify unexecuted native or physical tiers."
+    },
+    {
+      "name": "P10R15 typed authored Dictionary list identity",
+      "locations": [
+        "internal/language/lower/literal_list.go",
+        "language_typed_literal_adapter.go"
+      ],
+      "firstForkCommit": "c83a4d9e3a63ab3d1190ecbb7d07227604be8083",
+      "change": "Carry authored MapExpr identity through existing semantic/native codecs even when user keys resemble native serialization fields.",
+      "reason": "Actual production defects and source-bound acceptance gaps found during the authorized P10R15 closure run.",
+      "evidence": "Eight reserved-key cases and nested Dictionary were causal RED then GREEN; actual CLI and import/edit regressions passed; integrated private38x2 exact parity passed ataa55ba3.",
+      "note": "Implementation SHA is an immutable ancestor; this separate metadata commit does not certify unexecuted native or physical tiers."
+    },
+    {
+      "name": "P10R15 self-contained F01 signed differential",
+      "locations": [
+        "p15_short_circuit_local_test.go",
+        "p15_short_circuit_local_harness_test.go",
+        "scripts/ios27_shortcuts_simulator_qa.sh"
+      ],
+      "firstForkCommit": "256f6a639a6f2a47eee5350ffc062746da9bd752",
+      "change": "Add local counter short-circuit diagnostic with action-derived inputs and identical executed positive control, preserving original external-target fixture.",
+      "reason": "Actual production defects and source-bound acceptance gaps found during the authorized P10R15 closure run.",
+      "evidence": "Independent79-action body oracle and actual91-action signed wrapper compile passed; fresh signed run44239178590 pending; no native PASS inferred.",
+      "note": "Implementation SHA is an immutable ancestor; this separate metadata commit does not certify unexecuted native or physical tiers."
+    },
+    {
+      "name": "P10R15 schema-driven literal argument analysis",
+      "locations": [
+        "internal/language/analysis/literal_arguments.go",
+        "tools/language-acceptance/types_execution.go"
+      ],
+      "firstForkCommit": "a94ac1670078514a2f0b340bae86ca49502e4fa8",
+      "change": "Reject runtime expressions in compiler-declared or confirmed literal-only slots using E_LITERAL_REQUIRED; preserve supported pure literal folding and HTTP dynamic leaves.",
+      "reason": "Actual production defects and source-bound acceptance gaps found during the authorized P10R15 closure run.",
+      "evidence": "Causal production RED/GREEN, analyzer/service/lower and HTTP/require/Release tests passed; exact T02 formal producer passed on originalb250282; other type IDs remain open.",
+      "note": "Implementation SHA is an immutable ancestor; this separate metadata commit does not certify unexecuted native or physical tiers."
     }
   ]
 }
