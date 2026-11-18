@@ -1,0 +1,38 @@
+{
+  "sourceSha": "22040eaddba7adfbce82dd80c0e071c439ff2964",
+  "cleanBefore": true,
+  "startedAt": "2026-11-18T16:04:13.176406+00:00",
+  "checks": [
+    {
+      "name": "clean-producer-r2",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "./tools/language-acceptance",
+        "-run",
+        "^TestSkillOfflineProductionEvidence$",
+        "-count=1",
+        "-json",
+        "-timeout=9m"
+      ],
+      "exit": 0,
+      "seconds": 137.843,
+      "logSha256": "240602976d387ab0b00ea5d7fc8d71976b5439689266f4bf8b45b60ee888ada6"
+    },
+    {
+      "name": "skill-self-test",
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "--noprofile",
+        "--norc",
+        "skills/cherri-shortcuts/scripts/self-test.sh"
+      ],
+      "exit": 0,
+      "seconds": 186.969,
+      "logSha256": "fd4a030af073ff7f09dcdcbc799d7da065aee601ea5480584f4e018af3864c43"
+    }
+  ],
+  "cleanAfter": true,
+  "finishedAt": "2026-11-18T16:09:38.232437+00:00",
+  "pass": true
+}

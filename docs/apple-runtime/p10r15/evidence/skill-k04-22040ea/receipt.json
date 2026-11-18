@@ -1,0 +1,87 @@
+{
+  "sourceSha": "22040eaddba7adfbce82dd80c0e071c439ff2964",
+  "implementationCommits": [
+    "46800fefd43ef47f02dd4fd87f451030a46b7885",
+    "22040eaddba7adfbce82dd80c0e071c439ff2964"
+  ],
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "productionCompatibilityCases": 18,
+  "offlineCases": 9,
+  "oraclePassNames": [
+    "TestP15K04OfflineOracleRejectsBypasses/docs_schema_bypass",
+    "TestP15K04OfflineOracleRejectsBypasses/missing_docs_bypass",
+    "TestP15K04OfflineOracleRejectsBypasses/unexpected_offline_network",
+    "TestP15K04OfflineOracleRejectsBypasses"
+  ],
+  "existingSelfTestScenarios": 10,
+  "cleanVerification": {
+    "sourceSha": "22040eaddba7adfbce82dd80c0e071c439ff2964",
+    "cleanBefore": true,
+    "startedAt": "2026-11-18T16:04:13.176406+00:00",
+    "checks": [
+      {
+        "name": "clean-producer-r2",
+        "command": [
+          "C:\\Program Files\\Go\\bin\\go.exe",
+          "test",
+          "./tools/language-acceptance",
+          "-run",
+          "^TestSkillOfflineProductionEvidence$",
+          "-count=1",
+          "-json",
+          "-timeout=9m"
+        ],
+        "exit": 0,
+        "seconds": 137.843,
+        "logSha256": "240602976d387ab0b00ea5d7fc8d71976b5439689266f4bf8b45b60ee888ada6"
+      },
+      {
+        "name": "skill-self-test",
+        "command": [
+          "C:\\Program Files\\Git\\bin\\bash.exe",
+          "--noprofile",
+          "--norc",
+          "skills/cherri-shortcuts/scripts/self-test.sh"
+        ],
+        "exit": 0,
+        "seconds": 186.969,
+        "logSha256": "fd4a030af073ff7f09dcdcbc799d7da065aee601ea5480584f4e018af3864c43"
+      }
+    ],
+    "cleanAfter": true,
+    "finishedAt": "2026-11-18T16:09:38.232437+00:00",
+    "pass": true
+  },
+  "artifactHashes": {
+    "baseline-red.json": "376996c67f7259a315a68fac1c4c13183c9e05889f662a0176811617a0508390",
+    "baseline-red.jsonl": "4891f506ee9741911af9d4a6d9fa859f4f22cb71ed7bf1d3ab2f6ab72e3073bd",
+    "production-and-causal.log": "2be5b8250281f24996d1baa09ce20e2c539d719c9f2b102bc8a65e033dab351a",
+    "production-r2.log": "06c0d4ea9c3840ab30a1830ba70eff7966d205d595df4c90a4274552a480181a",
+    "acceptance-runner-tests.log": "2075f9c20ef53e0eab5f111282a9453e3faaca279a940769e4935116350cee91",
+    "clean-producer.log": "794715da4ccf482f809e1fdd4337d75d94559dfcf8bf4099dfe844e1e1eb1bd7",
+    "clean-verification.json": "89866afa2759e2ec906dea7cb40a1ddda288e64885b9b831fba6123426a93117",
+    "clean-producer-r2.log": "240602976d387ab0b00ea5d7fc8d71976b5439689266f4bf8b45b60ee888ada6",
+    "clean-verification-r2.json": "b660c4c073781f4eba46db9203c8f011769039aff952e35da92c7dd24c722071",
+    "skill-self-test.log": "fd4a030af073ff7f09dcdcbc799d7da065aee601ea5480584f4e018af3864c43"
+  },
+  "retainedFailures": [
+    {
+      "artifact": "baseline-red.jsonl",
+      "scope": "Actual previous setup returns success with missing offline docs; causal RED before source repair."
+    },
+    {
+      "artifact": "production-and-causal.log",
+      "scope": "Initial90-second shell process budget exceeded; production emitted18markers but returned failure. Healthy oracle and three causal mutants passed. Whole package not PASS."
+    },
+    {
+      "artifact": "acceptance-runner-tests.log",
+      "scope": "Full existing language-acceptance test package timed out after5minutes in TestFull179ContractRequirements_RejectsUnexecutedScenarioClosure while executingCLI; not a package PASS."
+    },
+    {
+      "artifact": "clean-producer.log",
+      "scope": "Nested production exit after205seconds under existing3-minute Go test budget; nested raw output was not retained by old runner, exact cause not independently classified. New bounded diagnostic tail prevents recurrence of this evidence loss."
+    }
+  ],
+  "scope": "Only K04 actual compatible cache, exact docs/schema/commit drift and missing-doc rejection with denied/observed network commands. No K01/K02/K03/K05 or installed consumer closure."
+}

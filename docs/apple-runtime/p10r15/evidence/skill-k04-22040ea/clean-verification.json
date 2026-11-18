@@ -1,0 +1,26 @@
+{
+  "sourceSha": "46800fefd43ef47f02dd4fd87f451030a46b7885",
+  "cleanBefore": true,
+  "startedAt": "2026-11-18T15:56:04.561697+00:00",
+  "checks": [
+    {
+      "name": "clean-producer",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "./tools/language-acceptance",
+        "-run",
+        "^TestSkillOfflineProductionEvidence$",
+        "-count=1",
+        "-json",
+        "-timeout=6m"
+      ],
+      "exit": 1,
+      "seconds": 216.438,
+      "logSha256": "794715da4ccf482f809e1fdd4337d75d94559dfcf8bf4099dfe844e1e1eb1bd7"
+    }
+  ],
+  "cleanAfter": true,
+  "finishedAt": "2026-11-18T15:59:41.273759+00:00",
+  "pass": false
+}

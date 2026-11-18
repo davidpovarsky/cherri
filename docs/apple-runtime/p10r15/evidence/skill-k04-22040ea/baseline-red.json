@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "expectedMissingDocsFailure": true,
+  "logSha256": "4891f506ee9741911af9d4a6d9fa859f4f22cb71ed7bf1d3ab2f6ab72e3073bd",
+  "tail": "=== RUN   TestP15K04OfflineCacheProduction\n    p15_skill_acceptance_test.go:79: real compiler offline compatibility failed: exit status 1\n        warning: in the working copy of 'fork-language/actions.md', LF will be replaced by CRLF the next time Git touches it\n        CHERRI_K04_CASE:offline_cache_healthy\n        CHERRI_K04_CASE:stale_schema_rejected\n        CHERRI_K04_CASE:restore_after_schema\n        CHERRI_K04_CASE:stale_docs_commit_rejected\n        CHERRI_K04_CASE:restore_after_commit\n        CHERRI_K04_CASE:incompatible_cache_rejected\n        CHERRI_K04_CASE:restore_cache\n        Using compatible cached Cherri: /tmp/tmp.VEUidSsFtD/home/bin/cherri\n        Cherri Compiler \u001b[32mv2.3.0\u001b[0m\n        Cherri ready: /tmp/tmp.VEUidSsFtD/home/bin/cherri\n        FAIL: expected offline failure: missing_docs_rejected (CHERRI_DOCS_MISSING)\n--- FAIL: TestP15K04OfflineCacheProduction (53.08s)\nFAIL\nFAIL\tgithub.com/electrikmilk/cherri\t53.313s\n"
+}
