@@ -58,7 +58,6 @@ func p15DateQuantityOracle(actions []ShortcutAction, unit, magnitude, condition 
 
 func p15DateQuantityNegatives() []struct{ source, span string } {
 	return []struct{ source, span string }{
-		{"if CurrentDate > qty(-1, \"days\") {}", "qty(-1, \"days\")"},
 		{"let duration=qty(3, \"hr\")\nif CurrentDate > duration {}", "duration"},
 		{"function qty(value:Number, unit:Text)->AnyContent{return Clipboard}\nif CurrentDate > qty(3, \"hr\") {}", "qty(3, \"hr\")"},
 		{"if CurrentDate > Clipboard {}", "Clipboard"},

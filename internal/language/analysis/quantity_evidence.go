@@ -40,12 +40,7 @@ func (a *Analyzer) isKnownDateDurationComparison(left types.Type, right syntax.E
 	if len(arguments) != 2 || a.registry == nil {
 		return false
 	}
-	magnitude, ok := arguments[0].(*syntax.LiteralExpr)
-	if !ok || magnitude.Type != syntax.TokenNumber {
-		return false
-	}
-	number, err := strconv.ParseFloat(magnitude.Value, 64)
-	if err != nil || math.IsNaN(number) || math.IsInf(number, 0) {
+	if !quantityScalarLiteral(arguments[0]) {
 		return false
 	}
 	unit, ok := arguments[1].(*syntax.LiteralExpr)
@@ -61,6 +56,22 @@ func (a *Analyzer) isKnownDateDurationComparison(left types.Type, right syntax.E
 		if unit.Value == known {
 			return true
 		}
+	}
+	return false
+}
+
+// Unary scalar signs are folded by the canonical lowerer. Runtime magnitude
+// producers remain outside this native parameter evidence boundary.
+func quantityScalarLiteral(expression syntax.Expression) bool {
+	switch value := expression.(type) {
+	case *syntax.LiteralExpr:
+		if value.Type != syntax.TokenNumber {
+			return false
+		}
+		number, err := strconv.ParseFloat(value.Value, 64)
+		return err == nil && !math.IsNaN(number) && !math.IsInf(number, 0)
+	case *syntax.UnaryExpr:
+		return (value.Op == syntax.TokenMinus || value.Op == syntax.TokenPlus) && quantityScalarLiteral(value.Operand)
 	}
 	return false
 }

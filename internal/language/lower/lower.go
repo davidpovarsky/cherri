@@ -3831,7 +3831,36 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
 
 		case syntax.TokenMinus:
-			if n, ok := operand.(float64); ok {
+			// Integer literals now retain their exact signed/unsigned width.
+			// Fold scalar negation before the existing runtime Math fallback.
+			integerOperand := e.Operand
+			for {
+				positive, ok := integerOperand.(*syntax.UnaryExpr)
+				if !ok || positive.Op != syntax.TokenPlus {
+					break
+				}
+				integerOperand = positive.Operand
+			}
+			if literal, ok := integerOperand.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNumber && !strings.ContainsAny(literal.Value, ".eE") {
+				if _, err := strconv.ParseUint(literal.Value, 10, 64); err != nil {
+					return nil, fmt.Errorf("negative integer literal exceeds signed 64-bit range")
+				}
+			}
+			switch n := operand.(type) {
+			case int64:
+				if n == -1<<63 {
+					return uint64(1) << 63, nil
+				}
+				return -n, nil
+			case uint64:
+				if n > uint64(1)<<63 {
+					return nil, fmt.Errorf("negative integer literal exceeds signed 64-bit range")
+				}
+				if n == uint64(1)<<63 {
+					return int64(-1 << 63), nil
+				}
+				return -int64(n), nil
+			case float64:
 				return -n, nil
 			}
 			uuid := l.GenerateUUID()
