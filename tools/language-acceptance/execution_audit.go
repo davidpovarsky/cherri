@@ -162,9 +162,14 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = []string{"main.go", "args.go", "language_cli_adapter.go", "p15_cli_acceptance_test.go"}
 			row.PositiveAndNegative = res.Passed
 		}
+		if tests, ok := schemaProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = []string{"actions", "tools/language-schema/main.go", "internal/language/schema/generated_registry.go", "p15_schema_production_test.go"}
+			row.PositiveAndNegative = res.Passed
+		}
 		if row.ID == "U03" {
 			row.TestNames = []string{"TestUpstreamPropagationRehearsal"}
-			row.ProductionPath = []string{"actions/web.cherri", "upstream_rehearsal_test.go", "internal/language/schema/generated_registry.go"}
+			row.ProductionPath = []string{"actions/web.cherri", "actions/calendar.cherri", "tools/language-schema/main.go", "upstream_rehearsal_test.go", "p15_schema_production_test.go", "internal/language/schema/generated_registry.go", "internal/language/analysis/analyzer.go", "internal/language/service/service.go"}
 			row.PositiveAndNegative = res.Passed
 		}
 		if row.ID == "N02" {

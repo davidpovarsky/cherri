@@ -21,7 +21,6 @@ var incompleteLocalAssertions = map[string]string{
 	"B01":   "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
 	"B02":   "The archived catalog count does not verify current definition identities and representative native outputs.",
 	"U01":   "Declaration/document existence does not establish preservation against the upstream baseline.",
-	"U02":   "A fixed fingerprint comparison does not execute regeneration or determinism checks.",
 	"U04":   "Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision.",
 	"V01":   "Action count does not prove snapshot timing or original producer identity.",
 	"V02":   "One immutable assignment diagnostic does not cover shadowing, scope, and read-before-initialization.",

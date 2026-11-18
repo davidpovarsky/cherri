@@ -1406,14 +1406,10 @@ func (r *Runner) runUpstream() {
 	u01Detail := "Upstream boundary documented in docs/language-v2/upstream-boundary.md; actions/*.cherri preserved intact"
 	r.Record("U01", "upstream", "Preserve upstream declaration files when build-time adapters suffice", "repository", []string{"repository"}, u01Passed, "PASSED", u01Detail)
 
-	// U02: Regenerate assembled schema deterministically
-	fp := r.reg.Fingerprint()
-	u02Passed := fp == "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d"
-	r.Record("U02", "upstream", "Regenerate assembled schema from original declarations and narrow facets", "unit+generation", []string{"unit", "generation"}, u02Passed, "PASSED", fmt.Sprintf("Schema fingerprint: %s (deterministic)", fp))
+	r.runSchemaGenerationRequirement()
 
 	// U03: Exercise the actual upstream edit/regenerate/restore rehearsal.
-	u03Passed, u03Detail := executeNamedProductionTests([]string{"TestUpstreamPropagationRehearsal"})
-	r.Record("U03", "upstream", "Simulate an upstream parameter change used by a facet", "integration", []string{"integration"}, u03Passed, "PASSED", u03Detail)
+	r.runSchemaPropagationRequirement()
 
 	// U04: Check normal public binary does not invoke legacy script parser
 	fU04 := source.NewFile("u04", "u04.cherri", 1, "const x = 1\n@y = 2\n#include 'foo'")
