@@ -1,0 +1,31 @@
+{
+  "status": "PASS_BOUNDED_NATIVE_CONTRACT",
+  "run_id": 44401936674,
+  "source_commit": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+  "fixture_id": "qa-nil-clear-v2",
+  "fresh_correlated_callbacks": 1,
+  "fresh_callback_status": "SUCCESS",
+  "exact_result": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
+  "run_gate": "PASS",
+  "trace_gate": "PASS",
+  "published_hashes_independently_rechecked": 20,
+  "inline_trace_records": 2,
+  "collector_trace_records": 2,
+  "trace_stages": [
+    "collector_begin",
+    "before",
+    "after",
+    "collector_end"
+  ],
+  "native_action_count": 28,
+  "source_sha256": "5acf0db40267630c067d21a61c297b653e5c58e31387fdc96ad60f721263f8d5",
+  "unsigned_plist_sha256": "b3ce8686b45002fc26d54b579adb49aadfad2ee2edda59693378932e02f43cbb",
+  "signed_artifact_sha256": "67ae90a548b32f151e87c7e854718a83ce4cdf73e232870a0235f4f62deffc36",
+  "signing_method": "HUBSIGN_REMOTE_SERVICE",
+  "published_signing_verification_tier": "AEA1_HEADER_PASS",
+  "github_artifact_digest_matches_download": true,
+  "causal_controls_rejected": 8,
+  "editor_status": "NEEDS_REVIEW",
+  "audit_sha256": "032666b66e1f754519580c43502a64f5718e2ae3b92cd8738dc90ef003ff3590",
+  "scope": "This exact nil binding/reset and explicit clear control on the recorded Simulator only; no physical-device or complete Inspector mapping claim."
+}

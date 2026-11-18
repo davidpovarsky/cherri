@@ -1,0 +1,7 @@
+{
+    "utc":  "2026-11-18T23:35:54.2304074Z",
+    "processId":  4620,
+    "commandLine":  "\"C:\\Program Files\\Go\\bin\\go.exe\" test -p 1 -json -count=1 -timeout=10m -run ^(TestPublicParserRouteProductionEvidence|TestEnumProductionEvidence|TestRealContractsLoadAndVerifyDigests|TestFull179ContractRequirements_RejectsUnexecutedScenarioClosure)$ ./tools/language-acceptance",
+    "reason":  "The supposedly focused meta-test invokes the complete 179 runner; stop this owned nested process tree and retain partial timeout evidence. Public integration 225 PASS is preserved. Rerun only actual U04 and enum producers without the full-runner meta-test.",
+    "action":  "taskkill owned process tree"
+}

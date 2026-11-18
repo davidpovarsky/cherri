@@ -1,0 +1,116 @@
+{
+  "sourceCommit": "df2bf074fb9a903f62ea878d90a27abe3baa7026",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "status": "FAIL_OR_INCOMPLETE",
+  "phases": [
+    {
+      "name": "public-integration",
+      "sourceCommit": "df2bf074fb9a903f62ea878d90a27abe3baa7026",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-p",
+        "1",
+        "-json",
+        "-count=1",
+        "-timeout=10m",
+        "-run",
+        "^(TestP15U04PublicFrontendRouteMatrix|TestP15CLIDefaultRejectsLegacyWithGuidance|TestP10_RegexQuantifiersPreserved|TestP10_IPadAcceptanceKit_CompileAndStructure|TestP10R2_A08_DispositionCodePathVerification|TestP10R_R08_FilterTwoLevelAndOrRoundTrip|TestP12.*CF05.*|TestP15C04EnumContextsAndShadowing|TestP15C04EnumFunctionService|TestP15.*(Paginate|Collect).*|TestP15Canonical.*|TestP15Filter.*|TestP15NativeReference.*|TestP15Distance.*|TestP15T05.*|TestP15Registry.*)$",
+        "."
+      ],
+      "startedAt": "2026-11-18T23:24:43.495618+00:00",
+      "finishedAt": "2026-11-18T23:26:23.286647+00:00",
+      "exitCode": 0,
+      "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\integration-df2bf07\\public-integration.jsonl",
+      "logSha256": "3cff653a36a4c4d9879e2b790b4e350b1eb83926c18dae56399fd4b673ce01da",
+      "namedCounts": {
+        "pass": 225,
+        "fail": 0,
+        "skip": 0
+      },
+      "failedTests": [],
+      "topLevelPassed": [
+        "TestP10_RegexQuantifiersPreserved",
+        "TestP10_IPadAcceptanceKit_CompileAndStructure",
+        "TestP10R2_A08_DispositionCodePathVerification",
+        "TestP10R_R08_FilterTwoLevelAndOrRoundTrip",
+        "TestP15CanonicalVariadicPositionBounds",
+        "TestP15CanonicalVariadicWireRejectsCorruption",
+        "TestP15CanonicalFixedParameterBoundsRemainClosed",
+        "TestP15CLIDefaultRejectsLegacyWithGuidance",
+        "TestP15CollectExistingLegacyAndV2Results",
+        "TestP15CollectSignedFixturesObserveNativeResults",
+        "TestP15DistanceIndependentNativeOutput",
+        "TestP15DistanceNumberProduction",
+        "TestP15EmptyListCollectInput",
+        "TestP15C04EnumContextsAndShadowing",
+        "TestP15C04EnumFunctionService",
+        "TestP15FilterCanonicalMetadataTransport",
+        "TestP15FilterMetadataMalformedFailsClosed",
+        "TestP15FilterSerializedNativeMetadataPreserved",
+        "TestP15FilterMetadataOracleRejectsCorruption",
+        "TestP15FilterMetadataNativeRoundTrip",
+        "TestP15ImportedCollectionHintDoesNotGuessVariants",
+        "TestP15V04CollectionAndOutputBindings",
+        "TestP15NativeReferenceOrderedOperandWire",
+        "TestP15NativeReferenceOperandDoesNotProveScalar",
+        "TestP15NativeReferenceNamespaceIdentity",
+        "TestP15NativeReferenceOperandValidationStillRequired",
+        "TestP15NativeReferenceStaticShapeControls",
+        "TestP15NativeReferenceDynamicShapeIsNotExempt",
+        "TestP15NativeReferenceMetadataStaysInline",
+        "TestP15NativeReferenceMalformedMetadataRejects",
+        "TestP15T05AuthoredNullRejected",
+        "TestP15T05PresenceBinding",
+        "TestP15T05PresenceNativeWire",
+        "TestP15PaginateNativeMetadataAndPublicBoundary",
+        "TestP15PaginateBothFrontendsProfilesAndTypedOutput",
+        "TestP15PaginateZeroBudgetsEmitNoRequest",
+        "TestP15PaginateAnalysisAndCompileRejectUnsupportedContracts",
+        "TestP15U04PublicFrontendRouteMatrix",
+        "TestP15RegistryRepeatedCompileIsolation",
+        "TestP15RegistryCustomOutputReferenceIsolation",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph",
+        "TestP15_CollectUsesExistingRepeatResultsWithoutAccumulator",
+        "TestP15_CollectTypedBodyHasSingleNativeProducer",
+        "TestP15_MeasureAndCollectReusableFixturesCompile"
+      ],
+      "tailOnFailure": ""
+    },
+    {
+      "name": "formal-u04-enum",
+      "sourceCommit": "df2bf074fb9a903f62ea878d90a27abe3baa7026",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-p",
+        "1",
+        "-json",
+        "-count=1",
+        "-timeout=10m",
+        "-run",
+        "^(TestPublicParserRouteProductionEvidence|TestEnumProductionEvidence|TestRealContractsLoadAndVerifyDigests|TestFull179ContractRequirements_RejectsUnexecutedScenarioClosure)$",
+        "./tools/language-acceptance"
+      ],
+      "startedAt": "2026-11-18T23:26:23.290134+00:00",
+      "finishedAt": "2026-11-18T23:35:55.423302+00:00",
+      "exitCode": 1,
+      "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\integration-df2bf07\\formal-u04-enum.jsonl",
+      "logSha256": "02fee65b142962c392425f94c62dbc844c3ca8721beec98a162c9b3d8d6fe757",
+      "namedCounts": {
+        "pass": 1,
+        "fail": 1,
+        "skip": 0
+      },
+      "failedTests": [
+        "TestEnumProductionEvidence"
+      ],
+      "topLevelPassed": [
+        "TestRealContractsLoadAndVerifyDigests"
+      ],
+      "tailOnFailure": "=== RUN   TestEnumProductionEvidence\n    calls_execution_test.go:12: C04 did not execute its contract: {ID:C04 Group:calls Requirement:Enum contextual and qualified members resolve TestLevel:unit+service ExecutedLevels:[unit service] Passed:false Status:FAILED Detail:Production tests failed or were not discovered: process=exit status 1; missing=[TestP15C04EnumResolutionProduction TestP15C04EnumServiceAndCLI TestP15C04EnumContextsAndShadowing TestP15C04EnumFunctionService TestP15C04ProvidedRegistryEnumDomain]; scanner=<nil>; output_tail=}\n--- FAIL: TestEnumProductionEvidence (240.20s)\n=== RUN   TestRealContractsLoadAndVerifyDigests\n--- PASS: TestRealContractsLoadAndVerifyDigests (0.20s)\n=== RUN   TestFull179ContractRequirements_RejectsUnexecutedScenarioClosure\n"
+    }
+  ],
+  "scope": "Focused public integration, U04/enum producers and mutation3b only; no full Go, private, native or release completion claim."
+}

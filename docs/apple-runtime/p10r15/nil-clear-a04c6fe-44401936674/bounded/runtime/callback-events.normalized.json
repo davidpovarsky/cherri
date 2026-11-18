@@ -1,0 +1,39 @@
+[
+  {
+    "eventSource" : "receiver-self-test",
+    "host" : "success",
+    "receiverSelfTest" : true,
+    "resultShape" : {
+      "collectorMarkerCount" : 0,
+      "inlineMarkerCount" : 0,
+      "nonemptyLineCount" : 1,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 21
+    },
+    "resultSummary" : "CHERRI_QA_RECEIVER_OK",
+    "runId" : "receiver-self-test",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-18T23:08:50.178Z"
+  },
+  {
+    "eventSource" : "shortcuts-x-callback",
+    "expectedShortcutName" : "qa-nil-clear-v2",
+    "fixtureId" : "qa-nil-clear-v2",
+    "host" : "success",
+    "receiverSelfTest" : false,
+    "resultShape" : {
+      "collectorMarkerCount" : 2,
+      "inlineMarkerCount" : 2,
+      "nonemptyLineCount" : 5,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 990
+    },
+    "resultSummary" : "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
+    "runId" : "qa-nil-clear-v2-44401936674-094482a86ed400da094b27270d2c8ee1",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-18T23:16:25.294Z",
+    "tracePayload" : "{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_begin\",\"runId\":\"qa-nil-clear-v2\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"before\",\"label\":\"nil-clear\",\"stepSequence\":3,\"actionIdentifier\":\"is.workflow.actions.setvariable\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"18 Nov 2026 at 11:15 PM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"after\",\"label\":\"nil-clear\",\"stepSequence\":21,\"actionIdentifier\":\"is.workflow.actions.comment\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"18 Nov 2026 at 11:15 PM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_end\",\"runId\":\"qa-nil-clear-v2\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}"
+  }
+]
