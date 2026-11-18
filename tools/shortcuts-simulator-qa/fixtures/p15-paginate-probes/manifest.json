@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "syntheticOnly": true,
+  "dataCommit": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+  "dataVerificationRequiredBeforeNative": true,
+  "pages": [
+    {
+      "fileName": "one.json",
+      "url": "https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/one.json",
+      "sha256": "25baf7da5af19f5f23a4790762c82502b39e90a17d0626e53e930b09d94efac1"
+    },
+    {
+      "fileName": "two.json",
+      "url": "https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/two.json",
+      "sha256": "860d1a91c62c5c23a3907d1f60ba51dc73a707f93f583d3ecf3a8d70dbcc3b0f"
+    },
+    {
+      "fileName": "three.json",
+      "url": "https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/three.json",
+      "sha256": "24a6a275baa7ba7c44697522242c30a835510eb2936a7dd1de0fa26f5cb38b4c"
+    },
+    {
+      "fileName": "empty.json",
+      "url": "https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/empty.json",
+      "sha256": "0343639fac1511a32a4c9a92c7655a6e9f9ad3a600fc6f30b5bdad6806160a97"
+    },
+    {
+      "fileName": "cycle-one.json",
+      "url": "https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/cycle-one.json",
+      "sha256": "b30ef0e3e441765620ade96ee85de63e8d11991bf855d4c69d4f9307e8f850df"
+    },
+    {
+      "fileName": "cycle-two.json",
+      "url": "https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/cycle-two.json",
+      "sha256": "1050efe2a12bf5c75583213c729691c799cd40cb73338abcba055d9bfc826277"
+    }
+  ],
+  "cases": [
+    {
+      "id": "qa-paginate-ordered-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-paginate-probes/qa-paginate-ordered-v2.cherri",
+      "sourceSha256": "605b48a83a35b24e2f718406f9a9831804c56283d0bd0304f53b3131ef191b97",
+      "dialect": "v2",
+      "scenario": "ordered",
+      "sampleId": "qa-paginate-ordered",
+      "expectedSummary": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ORDERED_OK",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "nativeRuntimeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-paginate-cycle-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-paginate-probes/qa-paginate-cycle-v2.cherri",
+      "sourceSha256": "0a3fabe4cfc289c9626450b0cf25ab3862b5eb2e0d7c11171dea834ee5a1e019",
+      "dialect": "v2",
+      "scenario": "cycle",
+      "sampleId": "qa-paginate-cycle",
+      "expectedSummary": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_CYCLE_OK",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "nativeRuntimeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-paginate-page-cap-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-paginate-probes/qa-paginate-page-cap-v2.cherri",
+      "sourceSha256": "80724216a284af131afd76f2670517afd81b5996135ee0a7de5d883b50dfe25c",
+      "dialect": "v2",
+      "scenario": "page-cap",
+      "sampleId": "qa-paginate-page-cap",
+      "expectedSummary": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_PAGE_CAP_OK",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "nativeRuntimeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-paginate-item-cap-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-paginate-probes/qa-paginate-item-cap-v2.cherri",
+      "sourceSha256": "cbbe588817a92efa8e406715ea0cc500fa7fb1d634fcaf34255ad6e52ed25a98",
+      "dialect": "v2",
+      "scenario": "item-cap",
+      "sampleId": "qa-paginate-item-cap",
+      "expectedSummary": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ITEM_CAP_OK",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "nativeRuntimeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-paginate-empty-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-paginate-probes/qa-paginate-empty-v2.cherri",
+      "sourceSha256": "894820fde74788c30bd7f0cbda4f1e25089f2b20c0dd920b12a730f73052dba0",
+      "dialect": "v2",
+      "scenario": "empty",
+      "sampleId": "qa-paginate-empty",
+      "expectedSummary": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_EMPTY_OK",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "nativeRuntimeStatus": "NOT_EXECUTED"
+    }
+  ],
+  "nativeRuntimeStatus": "NOT_EXECUTED",
+  "limitations": [
+    "Native GET response status/redirect/transport/cancellation behavior remains unverified",
+    "Nested null/empty collection cardinality is a required observed boundary, not a source-only guarantee",
+    "No private corpus, tokens or credentials in fixture data"
+  ]
+}

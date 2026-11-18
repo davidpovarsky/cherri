@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -101,6 +101,41 @@ case "$SAMPLE_ID" in
     LEGACY_COUNTERPART_ID="qa-collect-dictionaries-legacy"
     EXPECTED_SHORTCUT_NAME="qa-collect-dictionaries-legacy"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_COLLECT_DICTIONARIES:count=2:first=first:last=second:type=Dictionary:nested=2:a:b"
+    ;;
+  qa-paginate-ordered)
+    TARGET_FIXTURE_ID="qa-paginate-ordered-v2"
+    TARGET_SOURCE_RELATIVE="p15-paginate-probes/qa-paginate-ordered-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-paginate-ordered-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ORDERED_OK"
+    ;;
+  qa-paginate-cycle)
+    TARGET_FIXTURE_ID="qa-paginate-cycle-v2"
+    TARGET_SOURCE_RELATIVE="p15-paginate-probes/qa-paginate-cycle-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-paginate-cycle-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_CYCLE_OK"
+    ;;
+  qa-paginate-page-cap)
+    TARGET_FIXTURE_ID="qa-paginate-page-cap-v2"
+    TARGET_SOURCE_RELATIVE="p15-paginate-probes/qa-paginate-page-cap-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-paginate-page-cap-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_PAGE_CAP_OK"
+    ;;
+  qa-paginate-item-cap)
+    TARGET_FIXTURE_ID="qa-paginate-item-cap-v2"
+    TARGET_SOURCE_RELATIVE="p15-paginate-probes/qa-paginate-item-cap-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-paginate-item-cap-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ITEM_CAP_OK"
+    ;;
+  qa-paginate-empty)
+    TARGET_FIXTURE_ID="qa-paginate-empty-v2"
+    TARGET_SOURCE_RELATIVE="p15-paginate-probes/qa-paginate-empty-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-paginate-empty-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_EMPTY_OK"
     ;;
   qa-label-file-carrier)
     TARGET_FIXTURE_ID="qa-label-file-carrier-v2"
@@ -276,6 +311,11 @@ fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtur
 builds_dir = os.path.join(artifact_dir, "builds")
 
 fixture_specs = [
+    ("qa-paginate-ordered-v2", "p15-paginate-probes/qa-paginate-ordered-v2.cherri", "v2"),
+    ("qa-paginate-cycle-v2", "p15-paginate-probes/qa-paginate-cycle-v2.cherri", "v2"),
+    ("qa-paginate-page-cap-v2", "p15-paginate-probes/qa-paginate-page-cap-v2.cherri", "v2"),
+    ("qa-paginate-item-cap-v2", "p15-paginate-probes/qa-paginate-item-cap-v2.cherri", "v2"),
+    ("qa-paginate-empty-v2", "p15-paginate-probes/qa-paginate-empty-v2.cherri", "v2"),
     ("qa-collect-counts-v2", "qa-collect-counts-v2.cherri", "v2"),
     ("qa-collect-counts-legacy", "qa-collect-counts-legacy.cherri", "legacy"),
     ("qa-collect-dictionaries-v2", "qa-collect-dictionaries-v2.cherri", "v2"),
@@ -513,6 +553,18 @@ with open(os.path.join(artifact_dir, "runtime", "instrumentation-vs-original.jso
 PY
 FIXTURE_COMPILE_RC=$?
 if [ "$FIXTURE_COMPILE_RC" -ne 0 ]; then exit "$FIXTURE_COMPILE_RC"; fi
+
+# Verify only the explicitly selected paginate targets against immutable public
+# synthetic bytes before simulator/signing work. Other fixtures do not acquire
+# a network dependency on this page corpus.
+case "$SAMPLE_ID" in
+  qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty)
+    python3 "$ROOT_DIR/tools/p10r15/verify_paginate_probe_data.py" --root "$ROOT_DIR" --report "$ARTIFACT_DIR/runtime/paginate-data-verification.json"
+    PAGINATE_DATA_RC=$?
+    if [ "$PAGINATE_DATA_RC" -ne 0 ]; then exit "$PAGINATE_DATA_RC"; fi
+    ;;
+esac
+
 
 # ---------------------------------------------------------------------------
 # Phase 1: Preflight & Runner / Simulator Discovery

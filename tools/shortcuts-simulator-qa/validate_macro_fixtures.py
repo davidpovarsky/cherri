@@ -50,6 +50,11 @@ new_probes = {
     'qa-export-redacted-v2': 'p15-export-probes',
     'qa-export-unsupported-file-v2': 'p15-export-probes',
     'qa-export-text-file-v2': 'p15-export-probes',
+    'qa-paginate-ordered-v2': 'p15-paginate-probes',
+    'qa-paginate-cycle-v2': 'p15-paginate-probes',
+    'qa-paginate-page-cap-v2': 'p15-paginate-probes',
+    'qa-paginate-item-cap-v2': 'p15-paginate-probes',
+    'qa-paginate-empty-v2': 'p15-paginate-probes',
 }
 selected_ids = {'qa-require-v2', 'qa-measure-v2', 'qa-measure-release-v2', *new_probes}
 selected = {f['fixtureId']: f for f in manifest['fixtures'] if f['fixtureId'] in selected_ids}

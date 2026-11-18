@@ -52,7 +52,7 @@ class WorkflowInputContractTests(unittest.TestCase):
         script = (self.root / "scripts/ios27_shortcuts_simulator_qa.sh").read_text(encoding="utf-8")
         selector = script.split("# Select primary target fixture from SAMPLE_ID\n", 1)[1].split('TARGET_SOURCE_FILE=', 1)[0]
         selector += '\nprintf "%s\\n" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT"\n'
-        result = subprocess.run([self.bash, "-c", selector], env={**os.environ, "SAMPLE_ID": "qa-short-circuit-local"},
+        result = subprocess.run([self.bash, "-s"], input=selector, env={**os.environ, "SAMPLE_ID": "qa-short-circuit-local"},
                                 capture_output=True, text=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines(), ["qa-short-circuit-local-v2", "CHERRI_QA_F01_LOCAL_RESULT:P15_F01_LOCAL_OK:calls=1"])
@@ -72,7 +72,7 @@ class WorkflowInputContractTests(unittest.TestCase):
             with self.subTest(sample=sample):
                 self.assertEqual(self.validate(["runtime", "ipad-default", sample, "false", "1", "true"]).returncode, 0)
                 self.assertIn("          - " + sample + "\n", workflow)
-                result = subprocess.run([self.bash, "-c", selector],
+                result = subprocess.run([self.bash, "-s"], input=selector,
                     env={**os.environ, "SAMPLE_ID": sample, "ROOT_DIR": "/reviewed",
                          "TARGET_SOURCE_RELATIVE": "../../private.cherri"},
                     capture_output=True, text=True, timeout=10)
@@ -94,6 +94,11 @@ class WorkflowInputContractTests(unittest.TestCase):
             "qa-export-redacted": ("p15-export-probes", "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_REDACTED_OK"),
             "qa-export-unsupported-file": ("p15-export-probes", "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNSUPPORTED_FILE_OK"),
             "qa-export-text-file": ("p15-export-probes", "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_TEXT_FILE_OK"),
+            "qa-paginate-ordered": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ORDERED_OK"),
+            "qa-paginate-cycle": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_CYCLE_OK"),
+            "qa-paginate-page-cap": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_PAGE_CAP_OK"),
+            "qa-paginate-item-cap": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ITEM_CAP_OK"),
+            "qa-paginate-empty": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_EMPTY_OK"),
         }
         script = (self.root / "scripts/ios27_shortcuts_simulator_qa.sh").read_text(encoding="utf-8")
         selector = script.split("# Select primary target fixture from SAMPLE_ID\n", 1)[1].split('LEGACY_COUNTERPART_SOURCE=', 1)[0]
@@ -104,7 +109,7 @@ class WorkflowInputContractTests(unittest.TestCase):
             with self.subTest(sample=sample):
                 self.assertIn("          - " + sample + "\n", options)
                 self.assertEqual(self.validate(["full", "ipad-default", sample, "true", "20", "true"]).returncode, 0)
-                result = subprocess.run([self.bash, "-c", selector],
+                result = subprocess.run([self.bash, "-s"], input=selector,
                     env={**os.environ, "SAMPLE_ID": sample, "ROOT_DIR": "/reviewed",
                          "TARGET_SOURCE_RELATIVE": "../../private-input.cherri"},
                     capture_output=True, text=True, timeout=10)
@@ -113,14 +118,15 @@ class WorkflowInputContractTests(unittest.TestCase):
                 self.assertEqual(result.stdout.splitlines(), [fid,
                     "/reviewed/tools/shortcuts-simulator-qa/fixtures/" + folder + "/" + fid + ".cherri", fid, marker])
         # The optional relative source path must not affect existing root fixtures.
-        result = subprocess.run([self.bash, "-c", selector],
+        result = subprocess.run([self.bash, "-s"], input=selector,
             env={**os.environ, "SAMPLE_ID": "qa-functional", "ROOT_DIR": "/reviewed",
                  "TARGET_SOURCE_RELATIVE": "../../private-input.cherri"},
             capture_output=True, text=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines()[1], "/reviewed/tools/shortcuts-simulator-qa/fixtures/qa-functional-v2.cherri")
         for sample in ("qa-label-file-carrier-release", "qa-label-dictionary-carrier", "qa-export-unicode-legacy",
-                       "qa-export-private", "qa-export-unicode;exit 0", "../p15-export-probes/qa-export-empty"):
+                       "qa-export-private", "qa-export-unicode;exit 0", "../p15-export-probes/qa-export-empty",
+                       "qa-paginate-private", "qa-paginate-ordered-release", "qa-paginate-cycle;exit 0"):
             self.assertEqual(self.validate(["full", "ipad-default", sample, "true", "20", "true"]).returncode, 2)
 
     def test_out_of_range_noncanonical_and_overflow_are_rejected(self):
