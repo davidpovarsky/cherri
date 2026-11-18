@@ -1,0 +1,39 @@
+{
+  "sourceCommit": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+  "runId": 44401898941,
+  "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44401898941",
+  "fixtureId": "qa-collect-empty-split-v2",
+  "status": "BLOCKED_IMPORT_NO_COMPILED_SHORTCUT_CALLBACK",
+  "runtimeContractVerified": false,
+  "publishedHashesVerified": 20,
+  "sourceSha256": "15d1e0ab8bae11e87cc91d81ea1a9a3cc0466429956ad7bff9b6b18570854a3a",
+  "unsignedPlistSha256": "d9a7a0994d25d395684c0f023009bdb035ae1bbb2cabe0fbf21e6bc7c392cfb1",
+  "nativeActionCount": 31,
+  "publishedSigningMetadataConsistent": true,
+  "signedArtifactSha256": "b9d01ac939bb9020d32a12e6aad0293edb9fccab200dbea034e720141708acec",
+  "originalSignedBytesIndependentlyInspected": false,
+  "observedCallback": {
+    "matchingCallbacks": 0,
+    "identityVerified": false,
+    "status": "NOT_OBSERVED",
+    "runId": "qa-collect-empty-split-v2-44401898941-dac2e075ffb0993a36e4b8926b9a2537",
+    "timestampISO8601": "",
+    "resultSummary": null,
+    "resultSummarySha256": null
+  },
+  "canonicalOracleReplay": {
+    "runGate": "FAIL_RUNTIME",
+    "traceGate": "FAIL_RUNTIME",
+    "reason": "no non-self-test callback for runId qa-collect-empty-split-v2-44401898941-dac2e075ffb0993a36e4b8926b9a2537",
+    "targetFixtureId": "qa-collect-empty-split-v2",
+    "compilerCommitSha": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+    "buildProfile": "debug",
+    "traceExpectation": "REQUIRED_NDJSON",
+    "releaseBuildVerified": false,
+    "sourceSha256": "15d1e0ab8bae11e87cc91d81ea1a9a3cc0466429956ad7bff9b6b18570854a3a",
+    "unsignedPlistSha256": "d9a7a0994d25d395684c0f023009bdb035ae1bbb2cabe0fbf21e6bc7c392cfb1"
+  },
+  "failingFullAuditBoundary": "Existing continuation auditor does not yet allow this fixture; output assertions also contain UNKNOWN source/build profile on the blocked-import path. No full audit PASS is claimed.",
+  "sourceProvenanceDisagreement": true,
+  "scope": "Independent bounded publication/source/signing-metadata consistency and failure-oracle replay only; no compiler behavior or Apple runtime success."
+}

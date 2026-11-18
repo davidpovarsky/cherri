@@ -1,0 +1,30 @@
+{
+  "sourceSha": "ae7f8773eb318e9673d000599af313a4ede30485",
+  "runId": 44402799497,
+  "linuxJobId": 135150026633,
+  "linuxFullGoStatus": "FAIL",
+  "nixBuildStatus": "PASS",
+  "macOSJobStatusAtObservation": "QUEUED",
+  "rawLogSha256": "fa551dacdb36fbbd7a266d77b2b2fa9ecae05cf71e7895e48048ecab9145cb86",
+  "failedTopLevelTests": [
+    "TestEnumProductionEvidence",
+    "TestP10R2_A08_DispositionCodePathVerification",
+    "TestP10R_R08_FilterTwoLevelAndOrRoundTrip",
+    "TestP10_IPadAcceptanceKit_CompileAndStructure",
+    "TestP10_IsolatedCompilerMutationGate",
+    "TestP12_CF_05_NumericPropertyAndDistanceOrder",
+    "TestP15C04EnumContextsAndShadowing",
+    "TestP15C04EnumServiceAndCLI",
+    "TestP15PaginateNativeMetadataAndPublicBoundary",
+    "TestP15_CollectUsesExistingRepeatResultsWithoutAccumulator"
+  ],
+  "knownFailureClasses": [
+    "typed Dictionary representation reached filter builder expecting plain map/predicate vector",
+    "old regex mutation no longer reaches protected V2 literal serializer",
+    "numeric native import output/property type evidence missing",
+    "C04 fixtures relied on unproved AnyContent/Unknown to Text narrowing",
+    "shared registry contamination changed catalog denominator",
+    "size-zero collect structure oracle still expected old native List action"
+  ],
+  "scope": "Observed Linux job only; original raw log remains on authorized host. No full cross-platform CI success."
+}

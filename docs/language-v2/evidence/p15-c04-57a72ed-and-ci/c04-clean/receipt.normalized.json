@@ -1,0 +1,78 @@
+{
+  "sourceSha": "57a72ed05f97158c85d2ed591801b439041caa41",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "steps": [
+    {
+      "name": "c04-related-production",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "-run",
+        "^TestP15(C04|T09|T08|T04|Registry)",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 31.625,
+      "counts": {
+        "pass": 161,
+        "fail": 0,
+        "skip": 0
+      },
+      "rawLogSha256": "9edf97a1a90e07524c14a49a03e2b9670aa0fdcb88dd89eb514f5ad8246aabcc",
+      "failedTests": []
+    },
+    {
+      "name": "c04-formal-proof",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "-run",
+        "^(TestEnumProductionEvidence|TestTypeContentConversionProductionEvidence|TestTypeCardinalityProductionEvidence)$",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "seconds": 19.344,
+      "counts": {
+        "pass": 3,
+        "fail": 0,
+        "skip": 0
+      },
+      "rawLogSha256": "18c0134432df548c8f3066ad6e37b7b6515eca4ac34446c411a747e8184d05c8",
+      "failedTests": []
+    },
+    {
+      "name": "type-and-service-regressions",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "./internal/language/analysis",
+        "./internal/language/service",
+        "./internal/language/schema"
+      ],
+      "exitCode": 0,
+      "seconds": 11.922,
+      "counts": {
+        "pass": 60,
+        "fail": 0,
+        "skip": 0
+      },
+      "rawLogSha256": "ff6793dc556a4f081c9700f7b68a5420a3e15b9650711b78d50447013ccedb50",
+      "failedTests": []
+    }
+  ],
+  "scope": "Explicit C04 fixture contracts plus unchanged type rejection and native wire oracles; no compiler relaxation and no Apple runtime claim",
+  "status": "PASS"
+}
