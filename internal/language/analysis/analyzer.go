@@ -62,22 +62,24 @@ func (s *Scope) LookupLocal(name string) (*Symbol, bool) {
 
 // Analyzer performs semantic analysis on a parsed Program.
 type Analyzer struct {
-	registry          *schema.Registry
-	diagnostics       []Diagnostic
-	currentFn         *syntax.FunctionDecl
-	inValueBlk        bool
-	topLevelVars      map[string]source.Span
-	yieldedTypes      []types.Type
-	importStack       []string
-	isMacTarget       *bool
-	exprTypes         map[syntax.Expression]types.Type
-	targets           []string
-	hasExplicitTarget bool
-	minTargetVersion  float64
-	maxTargetVersion  float64
-	userFunctions     map[string]bool
-	enumNames         map[string]bool
-	loopDepth         int
+	registry               *schema.Registry
+	diagnostics            []Diagnostic
+	currentFn              *syntax.FunctionDecl
+	inValueBlk             bool
+	topLevelVars           map[string]source.Span
+	yieldedTypes           []types.Type
+	importStack            []string
+	isMacTarget            *bool
+	exprTypes              map[syntax.Expression]types.Type
+	targets                []string
+	hasExplicitTarget      bool
+	minTargetVersion       float64
+	maxTargetVersion       float64
+	minTargetVersionSource string
+	maxTargetVersionSource string
+	userFunctions          map[string]bool
+	enumNames              map[string]bool
+	loopDepth              int
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -150,7 +152,8 @@ func (a *Analyzer) SetTargets(targets []string) {
 	}
 }
 
-// MinTargetVersion returns the declared minimum target OS version.
+// MinTargetVersion returns the legacy float projection of the minimum target.
+// Use MinTargetVersionString when minor/patch component precision matters.
 func (a *Analyzer) MinTargetVersion() float64 {
 	return a.minTargetVersion
 }
@@ -158,9 +161,14 @@ func (a *Analyzer) MinTargetVersion() float64 {
 // SetMinTargetVersion sets the minimum target OS version.
 func (a *Analyzer) SetMinTargetVersion(v float64) {
 	a.minTargetVersion = v
+	a.minTargetVersionSource = legacyTargetVersionText(v)
 }
 
-// MaxTargetVersion returns the declared maximum target OS version.
+// MinTargetVersionString returns the complete declared minimum version.
+func (a *Analyzer) MinTargetVersionString() string { return a.minTargetVersionSource }
+
+// MaxTargetVersion returns the legacy float projection of the maximum target.
+// Use MaxTargetVersionString when minor/patch component precision matters.
 func (a *Analyzer) MaxTargetVersion() float64 {
 	return a.maxTargetVersion
 }
@@ -168,7 +176,11 @@ func (a *Analyzer) MaxTargetVersion() float64 {
 // SetMaxTargetVersion sets the maximum target OS version.
 func (a *Analyzer) SetMaxTargetVersion(v float64) {
 	a.maxTargetVersion = v
+	a.maxTargetVersionSource = legacyTargetVersionText(v)
 }
+
+// MaxTargetVersionString returns the complete declared maximum version.
+func (a *Analyzer) MaxTargetVersionString() string { return a.maxTargetVersionSource }
 
 // Diagnostics returns all diagnostics produced during analysis.
 func (a *Analyzer) Diagnostics() []Diagnostic {
@@ -585,17 +597,9 @@ func (a *Analyzer) analyzeShortcutDecl(sd *syntax.ShortcutDecl) {
 				}
 			}
 		case "minVersion", "iosVersion", "clientVersion", "version":
-			if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
-				if v, err := strconv.ParseFloat(lit.Value, 64); err == nil {
-					a.minTargetVersion = v
-				}
-			}
+			a.analyzeTargetVersion(f.Name, f.Value, false)
 		case "maxVersion":
-			if lit, ok := f.Value.(*syntax.LiteralExpr); ok {
-				if v, err := strconv.ParseFloat(lit.Value, 64); err == nil {
-					a.maxTargetVersion = v
-				}
-			}
+			a.analyzeTargetVersion(f.Name, f.Value, true)
 		}
 	}
 }
@@ -1349,12 +1353,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return types.Unknown
 	}
 
-	if a.minTargetVersion > 0 && actionSchema.MinVersion > 0 && actionSchema.MinVersion > a.minTargetVersion {
-		a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q requires minimum version %v, but shortcut target version is %v", callName, actionSchema.MinVersion, a.minTargetVersion))
-	}
-	if a.maxTargetVersion > 0 && actionSchema.MaxVersion > 0 && actionSchema.MaxVersion < a.maxTargetVersion {
-		a.error(CodeUnsupportedTarget, call.Span, fmt.Sprintf("action %q is unsupported above version %v (shortcut target version is %v)", callName, actionSchema.MaxVersion, a.maxTargetVersion))
-	}
+	a.checkTargetVersion(actionSchema, callName, call.Span)
 	if a.hasExplicitTarget {
 		for _, target := range a.targets {
 			tl := strings.ToLower(target)

@@ -517,7 +517,7 @@ Next smallest independently verifiable batch:
 | T04 | Unknown vs AnyContent vs Void | LOCAL_PASS | P2 |
 | T05 | Optional presence vs value/null | LOCAL_PASS | P2 |
 | T06 | Record annotation not validation | LOCAL_PASS | P2 |
-| T07 | Platform version comparisons | LOCAL_PASS | P2,P4 |
+| T07 | Platform version comparisons | LOCAL_PARTIAL | Production source components verified; platform version metadata pending |
 | T08 | Variant-dependent output types | LOCAL_PASS | P4 |
 | T09 | Content graph coercion status | LOCAL_PASS | P1,P4 |
 | S01 | Text references after Hebrew/emoji | PENDING_IOS_RUNTIME | P2,P7 |

@@ -70,7 +70,7 @@ T08 records its required unit and service tiers with their actual distinct produ
 | T04 | Distinct type names alone do not establish Unknown/AnyContent/Void behavior; production diagnostics and service evidence remain required. |
 | T05 | Optional type construction alone does not prove omission versus explicit optional value and JSON null in native serialization. |
 | T06 | Dedicated production unit producer rejects unvalidated external record guarantees; no runtime validator or native execution is claimed. |
-| T07 | The production analyzer currently parses and compares target versions as float64. The schema helper compares components but is not used there. Existing action min/max metadata is also float64 and lacks independent per-platform version facets. No T07 pass is claimed. |
+| T07 | Production source versions now retain and compare components (see correction below). Existing action min/max metadata remains float64 and lacks independent per-platform version facets. No formal T07 pass is claimed. |
 | T08 | Dedicated chooseFromList unit/service producer checks native mode facts, emitted wire, actual call types and contextual editor behavior; no signed runtime or platform-availability claim. |
 
 No native runtime, UI, platform availability or release closure is inferred from this local type work.
@@ -100,3 +100,15 @@ Validation before commit: job_4e31d2bac06d passed all T02/T06/T08 production tes
 ### Strengthened T06 exact execution
 
 Clean implementation commit b0d949f4914be45bc50dbd345ff0f475f248969d passed the strengthened formal T06 producer in Sentinel job job_16b88642fee9. Its actual command names all three required production tests, including the final-control-branch regression. The bounded unit report has one passed requirement, zero failed/skipped, and closure_complete=false. Receipt and raw-log digest are under evidence/p15-types-b0d949f.
+
+## Generic version comparison correction (T07 remains partial)
+
+The production analyzer previously converted authored version literals to `float64`: `16.10` became `16.1`, `16.02` was compared as a fractional number, and a three-component literal such as `16.1.9` failed conversion and silently removed the bound. The same defect affected a maximum such as `26.0.1`. Baseline regression job `job_b3e3a1292e02` reproduced those failures through real canonical actions and the language service.
+
+The analyzer now retains the complete source spelling, validates literal dotted decimal components, and uses the existing production `schema.CompareVersions` helper. Empty, malformed, nonliteral, negative, or overflowing bounds produce `E_TARGET_VALUE_SHAPE` at the value. An unsupported action produces `E_UNSUPPORTED_TARGET` at the call, preserving the complete authored version in its diagnostic. An explicit zero bound is checked; an absent bound still uses the existing default. Incomplete editor metadata retains parser recovery. Existing numeric setters/accessors remain compatible; new string accessors expose the preserved components. A float setter or float action-schema field cannot recover digits already lost before the analyzer receives it.
+
+`TestP15TargetVersionComponentsProduction` covers 31 analyzer/actual-compile cases across all four existing minimum-field aliases and the maximum field, using the canonical `isCharging` 16.2 requirement and `askLLM` 26 min/max declarations. It checks exact diagnostic spans, absence of native emission on failure, actual native identifiers/variant parameters on success, and a wrong-diagnostic mutation. Another 26 invalid-bound cases verify fail-closed behavior. Service tests change the same document through accepted, unsupported, malformed, recovered, and incomplete states. Analysis-package tests exercise existing float setters and precise source accessors.
+
+The focused production batch passed in `job_0dc229141886`. After adding editor recovery and setter controls, `job_9e6ed60d9a97` passed the complete analysis, service, and lower packages plus the production version regression selection. No platform metadata, canonical schema, native action declaration, compiler profile, or schema fingerprint changes are included.
+
+**This corrects generic source-version decisions only. T07's per-platform contract remains UNVERIFIED:** the schema still exposes generic float min/max fields and lacks independently evidenced platform-specific version facts. These tests do not justify adding a formal T07 pass or asserting Apple runtime availability for an operating system.
