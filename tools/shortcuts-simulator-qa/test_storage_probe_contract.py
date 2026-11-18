@@ -69,6 +69,25 @@ class StorageProbeContractTests(unittest.TestCase):
                     releaseDiagnosticActionsAbsent=True,releaseBodyShapeVerified=True)
                 self.assertEqual(self.callback.verify([event],fid,expected,manifest)["runGate"], "FAIL_RUNTIME")
 
+    def test_compiler_identity_rejects_unproved_or_mismatched_binaries(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("storage_probe_producer", ROOT/"tools/p10r15/verify_storage_probes.py")
+        producer = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(producer)
+        sha = "a" * 40
+        good = "\tvcs.revision=" + sha + "\n\tvcs.modified=false\n"
+        self.assertEqual(producer.verify_build_identity(good, sha, False, False)["mode"], "COMPILER_VCS_METADATA")
+        self.assertEqual(producer.verify_build_identity("", sha, True, True)["mode"], "CONTROLLED_BUILD_FROM_CLEAN_COMMIT")
+        for info, rebuilt, worktree in [
+            ("", False, True), ("", False, False), ("", True, False),
+            (good.replace(sha, "b" * 40), True, True),
+            (good.replace("modified=false", "modified=true"), True, True),
+            (good.replace("\tvcs.modified=false\n", ""), True, True),
+        ]:
+            with self.subTest(info=info, rebuilt=rebuilt, worktree=worktree):
+                with self.assertRaises(RuntimeError):
+                    producer.verify_build_identity(info, sha, rebuilt, worktree)
+
     def test_manifest_and_unicode_preserve_the_unproven_boundary(self):
         self.assertTrue(self.manifest["syntheticOnly"])
         self.assertTrue(self.manifest["sameRunOnly"])
