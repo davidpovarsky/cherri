@@ -27,3 +27,17 @@ The validation runs the real producers in both default and explicit-export
 modes, compares the tracked reports before and after, checks both exported
 505-entry JSON reports, and retains raw command receipts outside the checkout.
 This output repair provides no Apple runtime or overall release assertion.
+
+## Acceptance CLI report destinations
+
+An explicit --out now keeps the generated requirements map beside the resolved
+report file instead of also overwriting the tracked historical map. The default
+local path and explicit --build-evidence-map command remain available.
+A failed map build or write now reports an error and exits unsuccessfully.
+
+The actual CLI control first reproduced a hidden mapping-write failure by
+placing a directory at the output filename. After repair it reports the cause
+and preserves that directory. A normal external output produces all 179 map
+rows without changing the tracked map. Both controls use an empty final
+manifest, which correctly remains incomplete and unsuccessful; they provide
+output-integrity evidence, not acceptance of any language requirement.

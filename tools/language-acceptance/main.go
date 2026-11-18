@@ -1300,19 +1300,23 @@ func main() {
 		}
 	}
 
-	// Generate and update requirements-evidence-map.json covering all 94 acceptance, 52 repair, and 33 recovery gates
+	// Keep an explicit report destination self-contained. The historical local
+	// default and explicit --build-evidence-map command retain their paths.
 	evidenceMap, mapErr := BuildRequirementsEvidenceMap(contracts)
-	if mapErr == nil {
-		if explicitEvidence == "" {
-			testsMapPath := filepath.Join("tests", "language-v2", "requirements-evidence-map.json")
-			_ = WriteRequirementsEvidenceMap(evidenceMap, testsMapPath)
-		}
-		outDir := explicitOut
-		if outDir != "" {
-			if fi, err := os.Stat(outDir); err == nil && !fi.IsDir() {
-				outDir = filepath.Dir(outDir)
-			}
-			_ = WriteRequirementsEvidenceMap(evidenceMap, filepath.Join(outDir, "requirements-evidence-map.json"))
+	if mapErr != nil {
+		fmt.Fprintf(os.Stderr, "Failed to build evidence map: %v\n", mapErr)
+		os.Exit(1)
+	}
+	mapPath := ""
+	if explicitOut != "" {
+		mapPath = filepath.Join(filepath.Dir(outPath), "requirements-evidence-map.json")
+	} else if explicitEvidence == "" {
+		mapPath = filepath.Join("tests", "language-v2", "requirements-evidence-map.json")
+	}
+	if mapPath != "" {
+		if err := WriteRequirementsEvidenceMap(evidenceMap, mapPath); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to write evidence map: %v\n", err)
+			os.Exit(1)
 		}
 	}
 
