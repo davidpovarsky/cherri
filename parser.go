@@ -817,6 +817,7 @@ func collectArgument(argIndex *int, param *parameterDefinition, paramsSize *int)
 		valueType: valueType,
 		value:     value,
 	}
+	argument = materializeLegacyScopedArgument(argument)
 	if !param.infinite && (valueType != Nil && value != nil) {
 		checkArg(param, &argument)
 	}
@@ -866,7 +867,7 @@ func collectVariable(constant bool) {
 	reachable()
 
 	var identifier = collectIdentifier()
-	availableIdentifier(&identifier)
+	availableIdentifierWithShadow(&identifier, legacyScopedMayShadow(identifier, constant))
 
 	var valueType tokenType
 	var value any
@@ -875,6 +876,9 @@ func collectVariable(constant bool) {
 	case strings.Contains(lookAheadUntil('\n'), "="):
 		collectVariableModifier(constant, &varType)
 
+		if legacyScopedControlResultAhead() {
+			parserError("E_BLOCK_LEGACY_CONTROL_VALUE: use a local variable and final yield; a Legacy control-result declaration inside a scoped body is not yet supported")
+		}
 		if collectControlFlowOutput(&identifier, &constant) {
 			return
 		}
@@ -892,6 +896,11 @@ func collectVariable(constant bool) {
 		collectType(&valueType, &value, '\n')
 	case constant:
 		parserError("Constants must be initialized with a value.")
+	}
+
+	if legacyScopedParsing != nil {
+		legacyScopedAppendBinding(identifier, varType, valueType, value, constant)
+		return
 	}
 
 	if constant && valueType == Variable {
@@ -2075,7 +2084,17 @@ func collectActionCall() {
 }
 
 func collectAction(identifier *string) (value action) {
+	if legacyScopedParsing != nil {
+		previousAction, previousSaved := currentAction, savedAction
+		defer func() { currentAction, savedAction = previousAction, previousSaved }()
+	}
+	if legacyScopedParsing != nil && *identifier == "rawAction" {
+		parserError("E_BLOCK_RAW_NATIVE: raw native calls use absolute variable names and cannot promise lexical block scope")
+	}
 	if _, found := actions[*identifier]; !found {
+		if legacyScopedBlockAvailable(*identifier) {
+			return collectLegacyScopedBlockAction(*identifier)
+		}
 		if diagnostic := legacyScopedBlockDiagnostic(*identifier); diagnostic != "" {
 			parserError(diagnostic)
 		}

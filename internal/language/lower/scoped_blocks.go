@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
@@ -59,40 +60,34 @@ func (l *Lowerer) lowerScopedBlockCall(call *syntax.CallExpr) (interface{}, erro
 	// Iterations reuse their own key sequentially; nested measurements cannot
 	// overwrite one another's start time.
 	timerLabel := label.Value + ":" + renamer.prefix
-	if err := l.emitBlockTimer("debugStartTimer", timerLabel, call); err != nil {
-		return nil, err
-	}
-	for index, statement := range body.Statements {
-		if index == len(body.Statements)-1 {
-			break
-		}
-		if err := l.lowerStatement(statement); err != nil {
-			return nil, err
-		}
-	}
-	l.inExprStmt = false
-	result, err := l.lowerExpression(resultExpr)
-	if err != nil {
-		return nil, err
-	}
-	resultToken := l.materializeToAttachment(result)
-	if resultToken == nil {
-		return nil, fmt.Errorf("E_BLOCK_VALUE_REQUIRED at %s: the final expression did not produce a native value", resultExpr.NodeSpan())
-	}
-	if resultToken.Type != "ActionOutput" {
-		// Freeze mutable/system values at the body boundary. CurrentDate must not
-		// be read again after the timing work, nor may a later assignment retarget
-		// the value returned by a completed measurement.
-		resultToken = l.emitBlockValueAlias(resultToken)
-	}
-	if err := l.emitBlockTimer("debugStopTimer", timerLabel, call); err != nil {
-		return nil, err
-	}
-	// The timer's elapsed Number must not become implicit Repeat Results or the
-	// next action's input. Get Variable forwards the object without Text/Number
-	// coercion. Explicit consumers still reference the original body producer.
-	l.emitBlockValueAlias(resultToken)
-	return resultToken, nil
+	return backend.EmitScopedMeasure(
+		timerLabel,
+		func(name, key string) error { return l.emitBlockTimer(name, key, call) },
+		func() (*ir.AttachmentToken, error) {
+			for index, statement := range body.Statements {
+				if index == len(body.Statements)-1 {
+					break
+				}
+				if err := l.lowerStatement(statement); err != nil {
+					return nil, err
+				}
+			}
+			l.inExprStmt = false
+			result, err := l.lowerExpression(resultExpr)
+			if err != nil {
+				return nil, err
+			}
+			value := l.materializeToAttachment(result)
+			if value == nil {
+				return nil, fmt.Errorf("E_BLOCK_VALUE_REQUIRED at %s: the final expression did not produce a native value", resultExpr.NodeSpan())
+			}
+			return value, nil
+		},
+		func(value *ir.AttachmentToken) bool { return value.Type == "ActionOutput" },
+		func(value *ir.AttachmentToken, final bool) (*ir.AttachmentToken, error) {
+			return l.emitBlockValueAlias(value), nil
+		},
+	)
 }
 
 func (l *Lowerer) emitBlockTimer(name, label string, original *syntax.CallExpr) error {

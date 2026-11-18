@@ -88,6 +88,7 @@ func resetCompilerState() {
 	lineIdx = 0
 	lineCharIdx = -1
 	tokens = []token{}
+	legacyScopedParsing = nil
 
 	// Control flow and comments.
 	controlFlowGroups = map[int]controlFlowGroup{}

@@ -126,6 +126,10 @@ func generateActions() {
 			makeCommentAction(t.value.(string))
 		case Action:
 			var tokenAction = t.value.(action)
+			if tokenAction.block != nil {
+				emitLegacyScopedBlock(tokenAction.block, &WFActionReference{})
+				continue
+			}
 			if actions[tokenAction.ident] == nil {
 				exit(fmt.Sprintf("Undefined action '%s'", tokenAction.ident))
 			}
@@ -273,6 +277,10 @@ func makeVariableValue(reference *WFActionReference, valueType tokenType, value 
 	case Action:
 		var valuePtr = *value
 		var action = valuePtr.(action)
+		if action.block != nil {
+			emitLegacyScopedBlock(action.block, reference)
+			return
+		}
 		setCurrentAction(action.ident, actions[action.ident])
 		if action.ident == "rawAction" && len(action.args) > 0 {
 			if rawIdent, ok := getArgValue(action.args[0]).(string); ok {

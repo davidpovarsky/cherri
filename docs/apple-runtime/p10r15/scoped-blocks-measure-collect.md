@@ -116,9 +116,11 @@ nested-list shape beyond the existing loop behavior.
   are rejected when their absolute variable names or global scope cannot be
   reconciled with lexical block guarantees. Ordinary native imports outside
   these new blocks remain on their existing path.
-- Legacy receives `E_V2_SCOPED_BLOCK`. Its supported alternative is explicit
-  debugStartTimer/debugStopTimer calls around a saved result. This release
-  does not pretend the V2 trailing-block syntax is Legacy syntax.
+- Legacy now uses the existing parser/token backend with the shared measure
+  lifecycle. Its final value is a call or explicit final `yield`; nested
+  control-result declarations remain unsupported. See
+  [Legacy scoped bodies](legacy-scoped-blocks.md) for syntax, native-reference
+  guarantees and the remaining block/runtime boundaries.
 
 ## Evidence and remaining acceptance
 

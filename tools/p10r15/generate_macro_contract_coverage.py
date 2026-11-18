@@ -44,11 +44,11 @@ REQUIREMENTS = (
     ("blocks", "1220544718901241", "Shared typed block facility", ("measure",),
      "Scoped typed block/IR, one evaluation, shadowing, value/void, nesting and explicit unavailable-dialect diagnostics.",
      "PARTIAL_IMPLEMENTATION", (),
-     ("The implemented V2 measure value block is a bounded subset; general void/early-error blocks and a safe Legacy route remain open.",)),
+     ("V2 and Legacy share the once-body/typed-result measure policy. General parameterized/void/early-error blocks and Legacy control-result declarations remain open.",)),
     ("measure", "1220544665232149", "Measure typed value", ("measure",),
      "Evaluate the body once, preserve its native result and remove only timing instrumentation in Release.",
      "PARTIAL_IMPLEMENTATION", ("Apple timing accuracy and error/cancel observation",),
-     ("Legacy block syntax is deliberately rejected; structural UUID/timer checks are not native elapsed-time proof.",)),
+     ("Legacy uses a final yield or value-producing call through existing structured tokens. Structural UUID/timer checks are not native elapsed-time, abort or cancellation proof.",)),
     ("collect", "1220544651247337", "Typed collection", (),
      "Use existing native Repeat Results without a second accumulator or standalone alias; account separately for typed input construction.",
      "EXISTING_V2_CONSTRUCT", ("Native empty/mixed/nested collection shape and performance observation",),
@@ -142,7 +142,7 @@ def output_ref(value):
     if not isinstance(value, dict):
         return ""
     body = value.get("Value", value)
-    if not isinstance(body, dict) or body.get("Type") != "ActionOutput":
+    if not isinstance(body, dict) or body.get("Type") != "ActionOutput" or body.get("Aggrandizements"):
         return ""
     return body.get("OutputUUID", "")
 
@@ -150,18 +150,31 @@ def output_ref(value):
 def origin_matches(actions, producer):
     if not actions or action_id(actions[-1]) != NATIVE_PREFIX + "getvariable":
         return False
-    producers = {params(a).get("UUID"): a for a in actions if params(a).get("UUID")}
+    producers = {}
+    for index, action in enumerate(actions):
+        identity = params(action).get("UUID")
+        if identity:
+            if identity in producers:
+                return False
+            producers[identity] = (index, action)
     current = output_ref(params(actions[-1]).get("WFVariable"))
+    consumer_index = len(actions) - 1
     seen = set()
-    while current and current != producer:
-        if current in seen:
+    while current:
+        if current in seen or current not in producers:
             return False
         seen.add(current)
-        action = producers.get(current, {})
+        index, action = producers[current]
+        if index >= consumer_index:
+            return False
+        if current == producer:
+            return bool(producer)
         if action_id(action) != NATIVE_PREFIX + "getvariable":
             return False
+        consumer_index = index
         current = output_ref(params(action).get("WFVariable"))
-    return bool(producer) and current == producer
+    return False
+
 
 
 def structural_checks(kind, profile, actions):
@@ -215,9 +228,11 @@ def fixture_specs():
     measure = ('let result = measure("P15 typed \u05e9\u05dc\u05d5\u05dd") {\n'
                '    let payload = {"flag": false, "nested": [1, {"name": "typed"}]}\n'
                '    payload\n}\ngetVariable(result)\n')
-    for profile in ("debug", "release"):
-        result.append({"id": "measure_v2_" + profile, "kind": "measure", "dialect": "v2",
-                       "profile": profile, "source": measure})
+    for dialect in ("v2", "legacy"):
+        body = measure if dialect == "v2" else measure.replace("let ", "const ").replace("    payload\n", "    yield payload\n")
+        for profile in ("debug", "release"):
+            result.append({"id": "measure_" + dialect + "_" + profile, "kind": "measure", "dialect": dialect,
+                           "profile": profile, "source": body})
     for size in (0, 1, 100):
         source = "let result = for item in [" + ",".join(str(i) for i in range(size)) + "] { yield item }\ngetVariable(result)\n"
         result.append({"id": "collect_v2_" + str(size), "kind": "collect", "dialect": "v2",
@@ -225,8 +240,10 @@ def fixture_specs():
     result.append({"id": "collect_v2_dictionary", "kind": "collect", "dialect": "v2",
         "profile": "debug", "source": 'let result = for item in [1, 2] { yield {"name": "typed", "flag": false} }\ngetVariable(result)\n'})
     result.extend((
-        {"id": "measure_legacy_unavailable", "kind": "negative", "dialect": "legacy", "profile": "debug",
-         "source": 'measure("scope") { text("body") }\n', "diagnostic": "E_V2_SCOPED_BLOCK"},
+        {"id": "measure_legacy_empty_rejected", "kind": "negative", "dialect": "legacy", "profile": "debug",
+         "source": 'measure("empty") {}\n', "diagnostic": "E_BLOCK_VALUE_REQUIRED"},
+        {"id": "measure_legacy_control_value_rejected", "kind": "negative", "dialect": "legacy", "profile": "debug",
+         "source": 'measure("control") {\nconst value = if 1 == 1 {\ntext("body")\n}\nyield value\n}\n', "diagnostic": "E_BLOCK_LEGACY_CONTROL_VALUE"},
         {"id": "measure_v2_empty_rejected", "kind": "negative", "dialect": "v2", "profile": "debug",
          "source": 'let result = measure("empty") {}\n', "diagnostic": "E_BLOCK_VALUE_REQUIRED"},
     ))
@@ -295,6 +312,8 @@ def check_mutations(outputs):
         ("require_v2_release", "lost_output_uuid", "originalUUIDPassthrough"),
         ("measure_v2_debug", "duplicate_body", "oneTypedBodyProducer"),
         ("measure_v2_release", "retained_release_timer", "timerProfile"),
+        ("measure_legacy_debug", "scoped_alias_cycle", "originalUUIDPassthrough"),
+        ("measure_legacy_release", "scoped_result_coercion", "originalUUIDPassthrough"),
         ("collect_v2_1", "wrong_repeat_result", "consumerUsesRepeatResults"),
         ("paginate_v2", "page_budget_changed", "explicitPageBudget"),
     )
@@ -311,6 +330,11 @@ def check_mutations(outputs):
             params(changed[-1])["WFVariable"] = {"Value": {"Type": "ActionOutput", "OutputUUID": "missing-producer"}, "WFSerializationType": "WFTextTokenAttachment"}
         elif mutation == "duplicate_body":
             changed.insert(0, copy.deepcopy(named(changed, "dictionary")[0]))
+        elif mutation == "scoped_alias_cycle":
+            alias = named(changed, "getvariable")[-2]
+            params(alias)["WFVariable"] = {"Value": {"Type": "ActionOutput", "OutputUUID": params(alias)["UUID"]}, "WFSerializationType": "WFTextTokenAttachment"}
+        elif mutation == "scoped_result_coercion":
+            params(changed[-1])["WFVariable"]["Value"]["Aggrandizements"] = [{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}]
         elif mutation == "page_budget_changed":
             next(a for a in named(changed, "repeat.count") if str(params(a).get("WFControlFlowMode")) == "0")["WFWorkflowActionParameters"]["WFRepeatCount"] = 4
         else:
@@ -335,11 +359,11 @@ def build_rows(macros, cases):
     rows = []
     links = {
         "require": ["require_v2_debug", "require_v2_release", "require_legacy_debug", "require_legacy_release"],
-        "blocks": ["measure_v2_debug", "measure_v2_release", "measure_legacy_unavailable", "measure_v2_empty_rejected"],
-        "measure": ["measure_v2_debug", "measure_v2_release", "measure_legacy_unavailable"],
+        "blocks": ["measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release", "measure_legacy_empty_rejected", "measure_legacy_control_value_rejected", "measure_v2_empty_rejected"],
+        "measure": ["measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release"],
         "collect": ["collect_v2_0", "collect_v2_1", "collect_v2_100", "collect_v2_dictionary"],
         "paginate": ["paginate_v2", "paginate_legacy", "paginate-zero_v2", "paginate-zero_legacy"],
-        "profiles": ["require_v2_debug", "require_v2_release", "require_legacy_debug", "require_legacy_release", "measure_v2_debug", "measure_v2_release"],
+        "profiles": ["require_v2_debug", "require_v2_release", "require_legacy_debug", "require_legacy_release", "measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release"],
         "qa": [c["id"] for c in cases],
     }
     for key, task, title, wanted, requirement, state, external, limitations in REQUIREMENTS:
@@ -499,7 +523,7 @@ def verify(report, repo):
         raise ValueError("MACRO_EXECUTION_FAILED")
     if any(c["verdict"] != "PASS" for c in report["compiles"] + report["causalMutations"]):
         raise ValueError("MACRO_CASE_FAILED")
-    if len(report["compiles"]) != len(fixture_specs()) or len(report["causalMutations"]) != 6:
+    if len(report["compiles"]) != len(fixture_specs()) or len(report["causalMutations"]) != 8:
         raise ValueError("MACRO_EXECUTION_COUNT_MISMATCH")
     if any(not m.get("positiveControl") or not m.get("faultRejected") for m in report["causalMutations"]):
         raise ValueError("MACRO_MUTATION_NOT_CAUSAL")

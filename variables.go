@@ -84,8 +84,12 @@ func init() {
 }
 
 func availableIdentifier(identifier *string) {
+	availableIdentifierWithShadow(identifier, false)
+}
+
+func availableIdentifierWithShadow(identifier *string, allowConstantShadow bool) {
 	if v, found := variables[*identifier]; found {
-		if v.constant {
+		if v.constant && !allowConstantShadow {
 			parserError(fmt.Sprintf("Cannot redefine constant '%s'.", *identifier))
 		}
 		if v.repeatItem {

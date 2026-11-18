@@ -179,7 +179,7 @@ func TestP15_MeasureFreezesCurrentDateBeforeStoppingTimer(t *testing.T) {
 	}
 }
 
-func TestP15_MeasureRejectsUnprovenFormsAndLegacyBoundary(t *testing.T) {
+func TestP15_MeasureRejectsUnprovenForms(t *testing.T) {
 	for _, test := range []struct{ source, diagnostic string }{
 		{`let result = measure("empty") {}`, "E_BLOCK_VALUE_REQUIRED"},
 		{`let result = measure("void") { wait(1) }`, "E_BLOCK_VALUE_REQUIRED"},
@@ -191,9 +191,6 @@ func TestP15_MeasureRejectsUnprovenFormsAndLegacyBoundary(t *testing.T) {
 		if _, err := CompileSourceToPlist("negative-measure.cherri", test.source); err == nil || !strings.Contains(err.Error(), test.diagnostic) {
 			t.Fatalf("expected %s for %s, got %v", test.diagnostic, test.source, err)
 		}
-	}
-	if _, err := compileLegacySourceToRawMapInMemoryWithProfile(`measure("scope") { text("body") }`, BuildProfileDebug); err == nil || !strings.Contains(err.Error(), "E_V2_SCOPED_BLOCK") {
-		t.Fatalf("Legacy boundary diagnostic missing: %v", err)
 	}
 }
 

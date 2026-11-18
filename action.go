@@ -63,6 +63,8 @@ type action struct {
 	def *actionDefinition
 	// args are each of the arguments collected between the actions' parenthesis.
 	args []actionArgument
+	// block carries an already parsed inline body for compiler constructs.
+	block *legacyScopedBlock
 }
 
 // checkFunc is a function that can be passed a collected actions arguments as a slice of actionArgument and the current action's definition.
