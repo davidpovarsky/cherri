@@ -1,12 +1,12 @@
 package main
 
 var callProductionTests = map[string][]string{
-	"C04": {"TestP15C04EnumResolutionProduction", "TestP15C04EnumServiceAndCLI", "TestP15C04EnumContextsAndShadowing", "TestP15C04EnumFunctionService"},
+	"C04": {"TestP15C04EnumResolutionProduction", "TestP15C04EnumServiceAndCLI", "TestP15C04EnumContextsAndShadowing", "TestP15C04EnumFunctionService", "TestP15C04ProvidedRegistryEnumDomain"},
 	"C02": {"TestP15C02ArgumentDiagnosticsProduction", "TestP15C02AcceptedBindingsProduction", "TestP15C02ArgumentServiceAndCLI"},
 }
 
 var callProductionPaths = map[string][]string{
-	"C04": {"internal/language/enums/catalog.go", "internal/language/syntax/parser.go", "internal/language/syntax/format.go", "internal/language/analysis/enums.go", "internal/language/analysis/function_arguments.go", "internal/language/lower/enum_values.go", "internal/language/lower/lower.go", "language_emit_adapter.go", "internal/language/service/enum_completion.go", "p15_enum_acceptance_test.go"},
+	"C04": {"internal/language/enums/catalog.go", "internal/language/syntax/parser.go", "internal/language/syntax/format.go", "internal/language/analysis/enums.go", "internal/language/analysis/function_arguments.go", "internal/language/lower/enum_values.go", "internal/language/lower/lower.go", "language_emit_adapter.go", "internal/language/service/enum_completion.go", "p15_enum_acceptance_test.go", "p15_enum_registry_test.go"},
 	"C02": {"internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/schema/schema.go", "internal/language/lower/lower.go", "internal/language/service/service.go", "language_cli_adapter.go", "p15_call_acceptance_test.go"},
 }
 

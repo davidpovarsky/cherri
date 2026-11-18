@@ -66,3 +66,35 @@ Independent review found that the service declaration collector omitted the stru
 The review follow-up passed all four production enum tests and selected shared service regression tests in job_1d1fe7ed3628. The new alias controls confirm the native allowed-value check was already retained; the only production change is the three-line structured-block declaration walk.
 
 The exact clean follow-up source dd3c26668ae405005c03808729422bc2f7840057 passed the C04 producer in job_8964e28cbc6b (19.468 seconds), including all four real production tests and both required tiers. See [follow-up receipt](evidence/p15-enums-dd3c266/receipt.json), [exact record](evidence/p15-enums-dd3c266/verification.json), [raw output](evidence/p15-enums-dd3c266/verification.jsonl), and [scoped-shadow causal failure](evidence/p15-enums-dd3c266/baseline-red.log). Earlier receipts remain bound to their original source SHAs.
+
+
+## Supplied registry enum domains: full-suite regression follow-up
+
+The complete integration run exposed a missing registry input: an action can
+provide its enum name and allowed wire values on ParameterSchema without
+also registering a global enum in Registry.AllEnums. The existing P10
+automatic action propagation test supplied exactly that contract. C04's new
+catalog incorrectly treated the absent global entry as an empty domain and
+rejected the valid "Accurate" value.
+
+The shared catalog now includes explicit enum values carried by the supplied
+registry's action parameters. Registry enum members and parameter members are
+combined without changing the registry. Each call still validates the resolved
+wire against its own parameter's allowed values; a broader action cannot widen
+another action that shares the enum name. Source enum declarations retain their
+existing override behavior and the independent native allowed-wire check.
+
+TestP15C04ProvidedRegistryEnumDomain exercises a separate registry with no global
+enum declaration: exact literal, contextual, qualified and empty wire values;
+six unknown-member or narrower-domain rejections; and actual shared service
+completion followed by re-analysis. It also checks that neither the supplied
+registry nor the default registry is mutated. The original
+TestP10_AutomaticActionPropagation_Scenarios1To4 retains its Legacy/V2 actual
+native-payload comparison. The new test is included in the C04 production
+evidence producer; no other formal ID is promoted by this repair.
+
+Causal reproduction: job_eb5195d44eae failed both the original P10 scenario
+and the new registry-isolation test before the catalog correction. The earlier
+attempt used an incorrect test helper method name and failed to build; that
+attempt is not counted as a behavioral reproduction. Exact committed-source
+verification is retained separately from the development run.

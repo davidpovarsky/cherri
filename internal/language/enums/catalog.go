@@ -23,6 +23,29 @@ func New(registry *schema.Registry, program *syntax.Program) Catalog {
 				catalog[name] = append(catalog[name], Member{Name: value, WireValue: value})
 			}
 		}
+		// Dynamically supplied action schemas may carry their complete enum
+		// domain on ParameterSchema without a separate Registry.AllEnums entry.
+		// Union those explicit wire values into the shared catalog; each call
+		// still validates against its own parameter's narrower EnumValues.
+		for _, action := range registry.AllActions() {
+			for _, parameter := range action.Parameters {
+				if parameter.EnumName == "" {
+					continue
+				}
+				for _, value := range parameter.EnumValues {
+					found := false
+					for _, member := range catalog[parameter.EnumName] {
+						if member.Name == value {
+							found = true
+							break
+						}
+					}
+					if !found {
+						catalog[parameter.EnumName] = append(catalog[parameter.EnumName], Member{Name: value, WireValue: value})
+					}
+				}
+			}
+		}
 	}
 	if program != nil {
 		for _, declaration := range program.Declarations {
