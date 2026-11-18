@@ -1,0 +1,7 @@
+# Immutable Pack source reproduction
+
+The released optional Pack at 141b9cc96cf1df3f9d1593548dc49ae8a46a256a declares definition_source_sha 2456327cc941f6ae89c870833d3d5f70109d693c and Pure Original bcc0095754e2cc0baaeb4d93dae172b8153b4716 in its existing manifest. Reproduction now reads those immutable action declarations. It still checks every generated module against the original module hashes, the seven classification buckets, and all15 Go-only classifications.
+
+The prospective generator continues to read current enhanced compiler declarations by default. Current getType/Get File of Type has the corrected variable return annotation, while the old optional Pack retains its original text declaration. This difference is documented; no old module, Pure branch, Pack version or historical hash is rewritten. Generated manifests explicitly distinguish current-worktree input from immutable Pack input.
+
+Actual baseline: the previous consumer verifier failed on the basic.cherri byte delta. Four production controls now reproduce all20 module hashes, reject a corrupted generated module, reject missing or wrong definition provenance, and confirm that prospective generation retains the corrected return annotation. The consumer native drift matrix also rejected all8 mutations. The local matrix has7 PASS rows and a separate external Remote Builder blocker; static bridge/UI rows do not establish Apple runtime or installed consumer acceptance.

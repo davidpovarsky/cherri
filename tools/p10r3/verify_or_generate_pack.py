@@ -163,13 +163,29 @@ def gather_pure_upstream_declarations() -> tuple[dict, dict]:
     return merged, files
 
 
-def gather_p10_declarations(p10_root: pathlib.Path = REPO_ROOT) -> tuple[dict, dict]:
+def gather_p10_declarations(
+    p10_root: pathlib.Path = REPO_ROOT, definition_source_commit: str | None = None,
+) -> tuple[dict, dict]:
     merged = {}
     files = {}
-    actions_dir = p10_root / "actions"
-    for file_path in sorted(actions_dir.glob("*.cherri")):
-        stem = file_path.stem
-        content = file_path.read_text(encoding="utf-8")
+    if definition_source_commit is None:
+        sources = [
+            (file_path.stem, file_path.read_text(encoding="utf-8"))
+            for file_path in sorted((p10_root / "actions").glob("*.cherri"))
+        ]
+    else:
+        # Reproduce a published Pack from its declared immutable inputs. The
+        # prospective generator still defaults to current working declarations.
+        names = subprocess.check_output(
+            ["git", "ls-tree", "--name-only", f"{definition_source_commit}:actions"],
+            cwd=REPO_ROOT, text=True, encoding="utf-8",
+        ).splitlines()
+        sources = [
+            (pathlib.PurePosixPath(name).stem,
+             git_show_text(definition_source_commit, f"actions/{name}"))
+            for name in sorted(names) if name.endswith(".cherri")
+        ]
+    for stem, content in sources:
         for key, block in parse_declarations(content).items():
             merged[key] = block
             files[key] = stem
@@ -239,7 +255,10 @@ def build_7_category_classification_table(
     }
 
 
-def generate_pack(out_dir: pathlib.Path, p10_root: pathlib.Path = REPO_ROOT) -> dict:
+def generate_pack(
+    out_dir: pathlib.Path, p10_root: pathlib.Path = REPO_ROOT,
+    definition_source_commit: str | None = None,
+) -> dict:
     """Deterministically generates the Pure+Pack extension directory (`modules/*.cherri`,
     `manifest.json`, `LIMITATIONS.md`, `checksums.sha256`) from Pure Original (`bcc0095`)
     and P10 `.cherri` definitions."""
@@ -248,7 +267,7 @@ def generate_pack(out_dir: pathlib.Path, p10_root: pathlib.Path = REPO_ROOT) -> 
     modules_dir.mkdir(parents=True, exist_ok=True)
 
     old_decls, old_files = gather_pure_upstream_declarations()
-    new_decls, new_files = gather_p10_declarations(p10_root)
+    new_decls, new_files = gather_p10_declarations(p10_root, definition_source_commit)
     ident_map = load_catalog_identifier_map(p10_root)
 
     counts = collections.Counter()
@@ -334,6 +353,8 @@ def generate_pack(out_dir: pathlib.Path, p10_root: pathlib.Path = REPO_ROOT) -> 
         "pure_source_sha": PURE_COMMIT,
         "pure_source_tree": PURE_TREE,
         "definition_source_branch": "agent/cherri-p10-apple-actions-coverage",
+        "definition_source_sha": definition_source_commit,
+        "definition_source_scope": "IMMUTABLE_PACK_INPUT" if definition_source_commit else "CURRENT_WORKTREE",
         "status": "GENERATED_FROM_P10_DECLARATIVE_ACTIONS",
         "module_sha256": module_sha256,
         "summary": dict(counts),
@@ -413,7 +434,9 @@ def verify_generated_pack(
     mutated_modules: dict = None,
 ) -> list[str]:
     """Generates the Pack from scratch in a temporary directory and verifies:
-    1. All 20 generated modules/*.cherri match the committed 141b9cc Pack modules byte-for-byte.
+    1. Reproduce all 20 modules from the Pack manifest's immutable definition_source_sha,
+       and match committed 141b9cc module hashes byte-for-byte. Current enhanced
+       declarations remain inputs to --generate, not the old Pack release.
     2. All 7 required classification categories are present and populated.
     3. All 15 Go-only actions match p10-pack-15-go-only-audit.json.
     4. Zero hardcoded container paths exist anywhere in tools/.
@@ -421,16 +444,28 @@ def verify_generated_pack(
     errors = verify_15_go_only_consistency()
     mutated_modules = mutated_modules or {}
 
+    ref_manifest = json.loads(git_show_text(PACK_COMMIT, "extensions/cherri-apple-actions-pack/manifest.json"))
+    definition_sha = ref_manifest.get("definition_source_sha", "")
+    if not isinstance(definition_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", definition_sha):
+        return errors + ["Pinned Pack manifest has no valid immutable definition_source_sha"]
+    source_object = subprocess.run(
+        ["git", "cat-file", "-e", f"{definition_sha}^{{commit}}"],
+        cwd=REPO_ROOT, capture_output=True,
+    )
+    if source_object.returncode:
+        return errors + ["Pinned Pack definition_source_sha commit object is unavailable"]
+
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = pathlib.Path(tmp)
-        gen_manifest = generate_pack(tmp_path, p10_root=p10_root)
+        gen_manifest = generate_pack(
+            tmp_path, p10_root=p10_root, definition_source_commit=definition_sha,
+        )
 
         # Apply test mutations if requested
         for mod_file, bad_content in mutated_modules.items():
             (tmp_path / "modules" / mod_file).write_text(bad_content, encoding="utf-8")
 
         # Compare generated modules against 141b9cc modules
-        ref_manifest = json.loads(git_show_text(PACK_COMMIT, "extensions/cherri-apple-actions-pack/manifest.json"))
         ref_mod_hashes = ref_manifest.get("module_sha256", {})
         gen_mod_files = sorted((tmp_path / "modules").glob("*.cherri"))
 
@@ -508,7 +543,7 @@ def main():
     parser.add_argument(
         "--verify-generated",
         action="store_true",
-        help="Generate Pack in a temp directory and verify byte-for-byte parity with 141b9cc + 7 classifications",
+        help="Reproduce pinned Pack definition_source_sha and verify 141b9cc module bytes + 7 classifications",
     )
     parser.add_argument("--json", action="store_true", help="Print pack summary JSON")
     args = parser.parse_args()
@@ -542,7 +577,7 @@ def main():
                 print(f"ERROR: {e}", file=sys.stderr)
             sys.exit(1)
         print(
-            "SUCCESS: Deterministically generated Pure+Pack from P10 .cherri sources; "
+            "SUCCESS: Deterministically reproduced Pure+Pack from its declared immutable source; "
             "verified 20/20 modules match 141b9cc byte-for-byte, all 7 classification buckets populated, "
             "and 15/15 Go-only actions verified."
         )

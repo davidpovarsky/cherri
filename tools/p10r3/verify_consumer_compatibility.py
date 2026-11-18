@@ -246,7 +246,7 @@ def evaluate(inp, run_pack_generator=True):
     if run_pack_generator:
         import verify_or_generate_pack as pack_ver
         errs = pack_ver.verify_generated_pack(p10_root=REPO_ROOT)
-        pack_checks.append((errs == [], f"deterministic generator byte-parity with 141b9cc ({len(errs)} drift errors)"))
+        pack_checks.append((errs == [], f"pinned definition-source reproduction byte-parity with 141b9cc ({len(errs)} drift errors)"))
     row("Pure+Pack", inp["packSha"], f"P10 catalog @ {head[:12]}", pack_checks)
 
     return rows
