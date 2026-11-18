@@ -44,3 +44,30 @@ go test -count=1 -run 'TestP14_|TestP13_SimulatorQA|TestP10_A1_' .
 ```
 
 Rollback: revert this coherent harness commit on the feature branch. It makes no signer, private corpus, production server, installed device or default-branch changes.
+
+## Follow-up: dispatch and report contracts
+
+Workflow inputs are transferred through environment variables into quoted shell arguments. This prevents a string input from being evaluated as shell source. An explicit `capture_full_editor=false` survives GitHub's fallback expression. Page limits accept only canonical integers 1 through 20; oversized integer strings and unsupported modes fail before compilation or simulator side effects.
+
+Each invocation generates a 128-bit random suffix for the runtime nonce. GitHub reruns retain their run ID, so the earlier deterministic fixture/run-ID combination alone could not distinguish an old callback from a new attempt. The receiver's existing nonce field and launch URL are reused.
+
+The output assertion report now requires the strict oracle's acceptance and the same exact source, fixture, Shortcut name, nonce, and semantic output. A stale or unrelated SUCCESS event cannot set `compiledShortcutCallbackVerified=true`. ERROR and CANCELLED remain separately observed statuses, with causes unverified. Trace validation requires schema 1.4, a single ordered collector envelope, exact collector identity, native action identifiers, valid field types, and increasing sequence numbers for these linear fixtures. Unknown, malformed, repeated or out-of-order records cannot silently pass. The report explicitly records `typedValueCoverage=UNKNOWN_AT_TRACE_EVENT` and `perActionCoverageVerified=false`; this closes validation defects without pretending the exporter records all typed values.
+
+## Exact-candidate CI handoff
+
+The existing `build-test.yml` automatically runs on `agent/**` pushes. Its Linux and macOS jobs build and test, run the discovery and parity gates, and verify the P10 registry/coverage/release gates. Its Nix job runs `nix build`, which includes the package checks. Avoid a duplicate manual Build & Test dispatch when the push run already exists for the same commit.
+
+The signed simulator workflow has push filters for P13/P14 branches and is explicitly dispatched for P15. Its runner label is `xcode-27`, timeout is 45 minutes, repository permission is read-only, and distinct sample IDs have separate concurrency groups. `sample_id=all` compiles the synthetic fixture set but executes `qa-functional-v2` as its primary target; it is not a runtime matrix.
+
+For a fixed integration branch at the candidate commit:
+
+```sh
+gh workflow run cherri-ios27-shortcuts-simulator-qa.yml \
+  --repo davidpovarsky/cherri --ref <candidate-branch> \
+  -f probe_level=full -f device_profile=ipad-default \
+  -f sample_id=qa-functional-legacy -f capture_full_editor=true \
+  -f max_editor_pages=20 -f require_runtime=true \
+  -f upload_sanitized_artifacts=true
+```
+
+Use separate dispatches for `qa-bool-list` and `qa-short-circuit` after the compiler repair is integrated. Record each run's `headSha`, jobs, conclusion and published manifest. A workflow run on a different SHA cannot close the candidate's gate. New pushes to the same branch can cancel Build & Test; keep the candidate fixed while its checks run. Only the text publication directory is uploaded, subject to the existing quarantine gate. No new Apple runtime success is asserted by this handoff.

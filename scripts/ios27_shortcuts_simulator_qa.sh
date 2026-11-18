@@ -35,7 +35,7 @@ case "$REQUIRE_RUNTIME" in
   true|false) ;;
   *) echo "ERROR: Invalid REQUIRE_RUNTIME '$REQUIRE_RUNTIME'" >&2; exit 2 ;;
 esac
-if ! [[ "$MAX_EDITOR_PAGES" =~ ^[0-9]+$ ]] || [ "$MAX_EDITOR_PAGES" -lt 1 ] || [ "$MAX_EDITOR_PAGES" -gt 20 ]; then
+if ! [[ "$MAX_EDITOR_PAGES" =~ ^([1-9]|1[0-9]|20)$ ]]; then
   echo "ERROR: MAX_EDITOR_PAGES must be an integer in 1..20 (got '$MAX_EDITOR_PAGES')" >&2
   exit 2
 fi
@@ -1005,7 +1005,14 @@ print("Verified ReceiverApp/Info.plist URL schemes:", schemes)
 PY
     popd >/dev/null
 
-    EXEC_RUN_NONCE="${TARGET_FIXTURE_ID}-${RUN_ID}"
+    # A GitHub rerun reuses RUN_ID. A fresh random suffix prevents old callbacks
+    # from a previous attempt or a retained simulator container satisfying this run.
+    EXEC_RANDOM_NONCE="$(python3 -c 'import secrets; print(secrets.token_hex(16))')"
+    if ! [[ "$EXEC_RANDOM_NONCE" =~ ^[0-9a-f]{32}$ ]]; then
+      echo "ERROR: could not generate a fresh runtime nonce" >&2
+      exit 2
+    fi
+    EXEC_RUN_NONCE="${TARGET_FIXTURE_ID}-${RUN_ID}-${EXEC_RANDOM_NONCE}"
     RUN_URL="$(python3 - "$EXPECTED_SHORTCUT_NAME" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" <<'PY'
 import sys, urllib.parse
 name, run_nonce, fid = sys.argv[1:4]
@@ -1673,6 +1680,10 @@ except Exception as exc:
     print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": f"failed to read callback-events.json: {exc}"}))
     sys.exit(0)
 
+if not isinstance(events, list) or not all(isinstance(e, dict) for e in events):
+    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": "callback store is not an array of event objects"}))
+    sys.exit(0)
+
 matched = [e for e in events if not e.get("receiverSelfTest") and e.get("runId") == expected_nonce]
 if len(matched) == 0:
     print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": f"no non-self-test callback for runId {expected_nonce}"}))
@@ -1691,44 +1702,71 @@ if ev.get("status") != "SUCCESS":
 
 summary_text = ev.get("resultSummary") or ""
 trace_text = ev.get("tracePayload") or ""
-combined = (summary_text + "\n" + trace_text).strip()
+if not isinstance(summary_text, str) or not isinstance(trace_text, str):
+    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": "callback result/trace must be text"}))
+    sys.exit(0)
 if expected_out and summary_text.strip() != expected_out:
-    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": f"expected output {expected_out!r} not in {summary_text!r}"}))
+    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": "callback result does not exactly match expected output"}))
     sys.exit(0)
 
 # Validate NDJSON trace lines
-raw_lines = [l.strip() for l in (trace_text or summary_text).splitlines() if l.strip() and l.strip() != "===CHERRI_QA_TRACE_NDJSON_V14==="]
+raw_lines = [l.strip() for l in trace_text.splitlines() if l.strip() and l.strip() != "===CHERRI_QA_TRACE_NDJSON_V14==="]
 valid_records = []
 has_begin = False
 has_end = False
 inline_count = 0
+last_step_sequence = -1
 trace_err = None
 
 for idx, line in enumerate(raw_lines):
-    if not (line.startswith("{") and line.endswith("}")):
-        continue
     try:
         rec = json.loads(line)
-    except Exception as exc:
-        trace_err = f"line {idx+1} invalid JSON: {exc}"
+    except (ValueError, TypeError):
+        trace_err = f"line {idx+1} invalid JSON"
+        break
+    if not isinstance(rec, dict) or rec.get("schemaVersion") != "1.4":
+        trace_err = f"line {idx+1} invalid trace schema"
+        break
+    if has_end:
+        trace_err = f"line {idx+1} occurs after collector_end"
         break
     kind = rec.get("kind")
     stage = rec.get("stage")
     if kind == "COLLECTOR_EVENT":
-        if rec.get("runId") and rec.get("runId") != expected_trace_run_id:
-            trace_err = f"collector runId mismatch: {rec.get('runId')} != {expected_trace_run_id}"
+        if rec.get("runId") != expected_trace_run_id:
+            trace_err = f"collector runId missing or mismatched at line {idx+1}"
             break
-        if stage == "collector_begin":
+        if stage == "collector_begin" and idx == 0 and not has_begin:
             has_begin = True
-        elif stage == "collector_end":
+        elif stage == "collector_end" and has_begin and inline_count > 0:
             has_end = True
+        else:
+            trace_err = f"invalid collector order/stage at line {idx+1}"
+            break
         valid_records.append(rec)
     elif kind == "INLINE_DEBUG_ACTION":
-        if stage not in ("before", "after", "error", "end") or not rec.get("timestamp") or rec.get("stepSequence", -1) < 0:
+        step = rec.get("stepSequence")
+        stamp = rec.get("timestamp")
+        aid = rec.get("actionIdentifier")
+        value_type = rec.get("valueType")
+        if (not has_begin or stage not in ("before", "after", "error", "end")
+                or not isinstance(stamp, str) or not stamp.strip()
+                or type(step) is not int or step < 0
+                or not isinstance(aid, str) or not aid.startswith("is.workflow.actions.")
+                or not isinstance(value_type, str) or not value_type):
             trace_err = f"invalid INLINE_DEBUG_ACTION record at line {idx+1}"
             break
+        # The fixture stream is linear. Duplicate/regressing records indicate
+        # replay or misordered export, not evidence of an additional action.
+        if step <= last_step_sequence:
+            trace_err = f"duplicate or regressing stepSequence at line {idx+1}"
+            break
+        last_step_sequence = step
         inline_count += 1
         valid_records.append(rec)
+    else:
+        trace_err = f"unknown trace record kind at line {idx+1}"
+        break
 
 if not trace_err and (not has_begin or not has_end or inline_count == 0):
     trace_err = f"incomplete trace stream (begin={has_begin}, end={has_end}, inlineCount={inline_count})"
@@ -1853,12 +1891,12 @@ fi
 rm -rf "$ARTIFACT_DIR/builds" "$ARTIFACT_DIR/tests/"*.log "$ARTIFACT_DIR/tests/"*.xcresult "${QA_SCRATCH_DIR:-}" "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
 
 # Write output-assertions.json and runtime-trace.jsonl
-python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" <<'PY'
+python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "${EXEC_RUN_NONCE:-}" <<'PY'
 import json
 import os
 import sys
 
-artifact_dir, run_status, cb_status, trace_status, reason, fid, expected_out = sys.argv[1:8]
+artifact_dir, run_status, cb_status, trace_status, reason, fid, expected_out, expected_nonce = sys.argv[1:9]
 cb_path = os.path.join(artifact_dir, "runtime", "callback-events.json")
 events = []
 if os.path.exists(cb_path):
@@ -1867,21 +1905,39 @@ if os.path.exists(cb_path):
     except Exception:
         events = []
 
-self_cb_ok = any(e.get("receiverSelfTest") and e.get("status") == "SUCCESS" for e in events)
-shortcut_cb_ok = any((not e.get("receiverSelfTest")) and e.get("status") == "SUCCESS" for e in events)
+if not isinstance(events, list) or not all(isinstance(e, dict) for e in events):
+    events = []
+self_cb_ok = any(e.get("receiverSelfTest") is True and e.get("eventSource") == "receiver-self-test" and e.get("status") == "SUCCESS" for e in events)
+correlated = [e for e in events if e.get("receiverSelfTest") is False
+              and expected_nonce and e.get("runId") == expected_nonce
+              and e.get("eventSource") == "shortcuts-x-callback"
+              and e.get("fixtureId") == fid and e.get("expectedShortcutName") == fid]
+# Reporting must never relax the production oracle's result. An unrelated,
+# stale or rejected SUCCESS event is not a verified compiled-Shortcut callback.
+shortcut_cb_ok = (run_status == "PASS" and len(correlated) == 1
+                  and correlated[0].get("status") == "SUCCESS"
+                  and isinstance(correlated[0].get("resultSummary"), str)
+                  and correlated[0]["resultSummary"].strip() == expected_out)
+observed_status = correlated[0].get("status") if len(correlated) == 1 else None
+if observed_status not in ("SUCCESS", "ERROR", "CANCELLED"):
+    observed_status = "UNKNOWN"
 
 assertions = {
-    "schemaVersion": "1.4",
+    "schemaVersion": "1.5",
     "targetFixtureId": fid,
+    "expectedRunId": expected_nonce,
     "expectedSemanticOutput": expected_out,
     "shortcutRunCompletedGate": run_status,
     "callbackCapturedGate": cb_status,
     "traceCapturedGate": trace_status,
     "receiverSelfCallbackVerified": self_cb_ok,
     "compiledShortcutCallbackVerified": shortcut_cb_ok,
-    "compiledShortcutRuntimeExecuted": (run_status == "PASS"),
+    "compiledShortcutRuntimeExecuted": shortcut_cb_ok,
+    "observedCorrelatedCallbackStatus": observed_status,
+    "typedValueCoverage": "UNKNOWN_AT_TRACE_EVENT",
+    "perActionCoverageVerified": False,
     "diagnosticReason": reason,
-    "notes": "Receiver cherriqa:// self-test callback is tracked separately from compiled Shortcut x-callback-url completion; SHORTCUT_RUN_COMPLETED=PASS requires non-self-test correlated runId + expected output."
+    "notes": "Receiver self-test and compiled Shortcut callbacks are separate. Verified runtime requires the strict oracle plus exact source, fixture, fresh nonce and output. ERROR/CANCELLED are observed outcomes, never substituted for SUCCESS; their causes remain unverified. Inline trace events do not establish typed per-action coverage."
 }
 with open(os.path.join(artifact_dir, "runtime", "output-assertions.json"), "w", encoding="utf-8") as f:
     json.dump(assertions, f, indent=2)

@@ -100,15 +100,21 @@ jobs:
       - name: Run iPadOS 27 Simulator Shortcuts QA Orchestrator
         env:
           CHERRI_SIGNING_SERVER: ${{ secrets.CHERRI_SIGNING_SERVER }}
+          QA_PROBE_LEVEL: ${{ inputs.probe_level || 'full' }}
+          QA_DEVICE_PROFILE: ${{ inputs.device_profile || 'ipad-default' }}
+          QA_SAMPLE_ID: ${{ inputs.sample_id || 'all' }}
+          QA_CAPTURE_FULL_EDITOR: ${{ github.event_name == 'workflow_dispatch' && toJSON(inputs.capture_full_editor) || 'true' }}
+          QA_MAX_EDITOR_PAGES: ${{ inputs.max_editor_pages || '20' }}
+          QA_REQUIRE_RUNTIME: ${{ inputs.require_runtime == true && 'true' || 'false' }}
         run: |
           chmod +x scripts/ios27_shortcuts_simulator_qa.sh
           ./scripts/ios27_shortcuts_simulator_qa.sh \
-            "${{ inputs.probe_level || 'full' }}" \
-            "${{ inputs.device_profile || 'ipad-default' }}" \
-            "${{ inputs.sample_id || 'all' }}" \
-            "${{ inputs.capture_full_editor || 'true' }}" \
-            "${{ inputs.max_editor_pages || '20' }}" \
-            "${{ inputs.require_runtime || 'false' }}"
+            "$QA_PROBE_LEVEL" \
+            "$QA_DEVICE_PROFILE" \
+            "$QA_SAMPLE_ID" \
+            "$QA_CAPTURE_FULL_EDITOR" \
+            "$QA_MAX_EDITOR_PAGES" \
+            "$QA_REQUIRE_RUNTIME"
 
       - name: Stage synthetic text artifacts; quarantine raster and raw inputs
         id: privacy_gate
