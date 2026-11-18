@@ -171,10 +171,11 @@ type AcceptanceReport struct {
 }
 
 type Runner struct {
-	reg     *schema.Registry
-	implSHA string
-	results map[string]CaseResult
-	records []EvidenceRecord
+	reg          *schema.Registry
+	implSHA      string
+	results      map[string]CaseResult
+	records      []EvidenceRecord
+	observations []LocalSmokeObservation
 }
 
 func resolveRepoRoot() string {
@@ -231,6 +232,9 @@ func NewRunner() *Runner {
 }
 
 func (r *Runner) Record(id, group, req, level string, executedLevels []string, passed bool, status, detail string) {
+	if r.recordIncompleteScope(id, group, req, level, executedLevels, passed, detail) {
+		return
+	}
 	var localPassed = passed
 	if !passed && status == "PASSED" {
 		status = "FAILED"
@@ -1408,12 +1412,9 @@ func (r *Runner) runUpstream() {
 	u02Passed := fp == "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d"
 	r.Record("U02", "upstream", "Regenerate assembled schema from original declarations and narrow facets", "unit+generation", []string{"unit", "generation"}, u02Passed, "PASSED", fmt.Sprintf("Schema fingerprint: %s (deterministic)", fp))
 
-	// U03: Simulate upstream parameter change
-	cmdU03 := exec.Command("go", "test", "-run", "TestUpstreamPropagationRehearsal", ".")
-	cmdU03.Dir = resolveRepoRoot()
-	outU03, errU03 := cmdU03.CombinedOutput()
-	u03Passed := errU03 == nil
-	r.Record("U03", "upstream", "Simulate an upstream parameter change used by a facet", "integration", []string{"integration"}, u03Passed, "PASSED", fmt.Sprintf("Upstream parameter propagation rehearsal passed: %s", strings.TrimSpace(string(outU03))))
+	// U03: Exercise the actual upstream edit/regenerate/restore rehearsal.
+	u03Passed, u03Detail := executeNamedProductionTests([]string{"TestUpstreamPropagationRehearsal"})
+	r.Record("U03", "upstream", "Simulate an upstream parameter change used by a facet", "integration", []string{"integration"}, u03Passed, "PASSED", u03Detail)
 
 	// U04: Check normal public binary does not invoke legacy script parser
 	fU04 := source.NewFile("u04", "u04.cherri", 1, "const x = 1\n@y = 2\n#include 'foo'")
@@ -2011,19 +2012,11 @@ func (r *Runner) runNative() {
 	r05Passed := len(wfR05.Actions) == 1
 	r.Record("R05", "native", "Opaque/native regions, exports and workflow fallback", "unit+native-roundtrip", []string{"unit", "native-roundtrip"}, r05Passed, "PASSED", "Native workflow representation retains whole-workflow fallback capability")
 
-	// R06: Format intake
-	samplePlist := `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>WFWorkflowActions</key><array/></dict></plist>`
-	r06Passed := strings.Contains(samplePlist, "WFWorkflowActions")
-	r.Record("R06", "native", "XML/binary/unsigned Shortcut/JSON workflow intake", "integration", []string{"integration"}, r06Passed, "PASSED", "Importer accepts XML plist, binary plist, and unsigned .shortcut files")
-
-	// R07: Single-property edit vs collateral change
-	nodeR07 := &ir.NativeActionNode{
-		AppleIdentifier: "is.workflow.actions.alert",
-		Parameters:      map[string]any{"WFAlertActionTitle": "Old"},
-	}
-	nodeR07.Parameters["WFAlertActionTitle"] = "New"
-	r07Passed := nodeR07.Parameters["WFAlertActionTitle"] == "New"
-	r.Record("R07", "native", "Intended single-property edit vs collateral structural change", "integration", []string{"integration"}, r07Passed, "PASSED", "Structural delta comparison ensures untouched nodes remain invariant")
+	// R06/R07 must execute import and editable-source production paths.
+	r06Passed, r06Detail := executeNamedProductionTests(r06ProductionTests)
+	r.Record("R06", "native", "XML/binary/unsigned Shortcut/JSON workflow intake", "integration", []string{"integration"}, r06Passed, "PASSED", r06Detail)
+	r07Passed, r07Detail := executeNamedProductionTests(r07ProductionTests)
+	r.Record("R07", "native", "Intended single-property edit vs collateral structural change", "integration", []string{"integration"}, r07Passed, "PASSED", r07Detail)
 }
 
 // Group 16: Editor / Service
@@ -2282,7 +2275,7 @@ func (r *Runner) runCIVerification() {
 			Detail: fmt.Sprintf("All 4 required GitHub Actions workflows succeeded on exact SHA %s", r.implSHA),
 		})
 	}
-	if res, ok := r.results["CI03"]; ok {
+	if res, ok := r.results["CI03"]; ok && res.Status != "NOT_RUN" {
 		res.ExecutedLevels = append(res.ExecutedLevels, "ci")
 		res.Passed = true
 		res.Status = "PASSED"

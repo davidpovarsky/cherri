@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -22,16 +23,24 @@ var f01RequiredTests = []string{
 	"TestP15F01HybridEditedPredicateGuardsRHS",
 }
 
-// The acceptance runner executes the production compiler regressions, and
-// verifies discovery. A successful process with no matching tests is not proof.
-func executeF01ProductionTests() (bool, string) {
+var r06ProductionTests = []string{"TestP15R06ProductionImportFormats", "TestHYB18_SignedShortcutContainerRejected", "TestHYB20_TrailingGarbageAfterJSONRootRejected", "TestHYB21_MalformedActionEntriesRejectedWithExactIndex"}
+var r07ProductionTests = []string{"TestSEM28_UserEditOnNaturalActionIsolated", "TestSEM29_UserEditInsideControlRegionIsolated", "TestSEM30_OnlyTargetActionChangesAndNoCollateralDelta", "TestSEM34_TamperDetectionAndStrictCompareAsymmetry"}
+
+// Execute named production tests with explicit discovery checks. Exit status
+// alone cannot prove that any required scenario was selected.
+func executeNamedProductionTests(required []string) (bool, string) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 4*time.Minute)
 	defer cancel()
-	var cmd = exec.CommandContext(ctx, "go", "test", "-count=1", "-json", "-timeout", "3m", ".", "-run", "^TestP15F01")
+	var alternatives []string
+	for _, name := range required {
+		alternatives = append(alternatives, regexp.QuoteMeta(name))
+	}
+	var cmd = exec.CommandContext(ctx, "go", "test", "-count=1", "-json", "-timeout", "3m", ".", "-run", "^("+strings.Join(alternatives, "|")+")$")
 	cmd.Dir = resolveRepoRoot()
 	var output, err = cmd.CombinedOutput()
 	var seen = make(map[string]bool)
 	var scanner = bufio.NewScanner(bytes.NewReader(output))
+	scanner.Buffer(make([]byte, 4096), 2*1024*1024)
 	for scanner.Scan() {
 		var event struct {
 			Action string
@@ -42,15 +51,20 @@ func executeF01ProductionTests() (bool, string) {
 		}
 	}
 	var missing []string
-	for _, name := range f01RequiredTests {
+	for _, name := range required {
 		if !seen[name] {
 			missing = append(missing, name)
 		}
 	}
 	if err != nil || scanner.Err() != nil || len(missing) != 0 {
-		return false, fmt.Sprintf("Production F01 tests failed or were not discovered: process=%v; missing=%v; scanner=%v", err, missing, scanner.Err())
+		return false, fmt.Sprintf("Production tests failed or were not discovered: process=%v; missing=%v; scanner=%v", err, missing, scanner.Err())
 	}
-	return true, fmt.Sprintf("%d production compiler tests passed: decoded native guard placement, once-only RHS, false/true predicates, static missing-target elimination, negative wire mutations; signed runtime still required", len(f01RequiredTests))
+	return true, "Executed production tests: " + strings.Join(required, ", ")
+}
+
+func executeF01ProductionTests() (bool, string) {
+	ok, detail := executeNamedProductionTests(f01RequiredTests)
+	return ok, detail + "; signed runtime still required"
 }
 
 type ExecutionAuditRow struct {
@@ -70,6 +84,9 @@ type ExecutionAuditRow struct {
 }
 
 func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string) error {
+	if err := writeLocalObservations(runner, filepath.Join(filepath.Dir(outPath), "acceptance-local-observations.json")); err != nil {
+		return err
+	}
 	var mapping, err = BuildRequirementsEvidenceMap(contracts)
 	if err != nil {
 		return err
@@ -112,6 +129,21 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 					}
 				}
 			}
+		}
+		if gap := incompleteLocalAssertions[row.ID]; gap != "" {
+			row.Blocker = gap
+			row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
+			row.Scope = "Observed smoke only; no formal acceptance tier proven"
+		}
+		if row.ID == "R06" {
+			row.TestNames = append([]string{}, r06ProductionTests...)
+			row.ProductionPath = []string{"import_fidelity.go", "hybrid_import.go", "mobile_compiler.go"}
+			row.PositiveAndNegative = res.Passed
+		}
+		if row.ID == "R07" {
+			row.TestNames = append([]string{}, r07ProductionTests...)
+			row.ProductionPath = []string{"semantic_import_planner.go", "hybrid_import.go", "import_provenance.go"}
+			row.PositiveAndNegative = res.Passed
 		}
 		if row.ID == "F01" {
 			row.ProductionPath = []string{"internal/language/syntax/parser.go", "internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "internal/language/lower/short_circuit.go", "language_backend_adapter.go"}
