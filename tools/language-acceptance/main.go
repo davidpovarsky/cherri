@@ -1170,8 +1170,31 @@ func main() {
 		}
 	}
 
-	if buildEvidenceMapPath == "" && explicitOut != "" && strings.Contains(explicitOut, "requirements-evidence-map.json") {
-		buildEvidenceMapPath = explicitOut
+	// Operation selection is explicit. An output filename must never bypass
+	// final evidence validation or collide with a generated companion artifact.
+	if buildEvidenceMapPath != "" && (explicitEvidence != "" || generateManifestPath != "" || phase != "local") {
+		fmt.Fprintln(os.Stderr, "Evidence-map generation cannot be combined with evidence validation or a non-local phase.")
+		os.Exit(1)
+	}
+	outPath := explicitOut
+	if outPath == "" {
+		outPath = filepath.Join("docs", "language-v2", "acceptance-results.json")
+	} else {
+		fi, err := os.Stat(outPath)
+		if err == nil && fi.IsDir() {
+			outPath = filepath.Join(outPath, "acceptance-results.json")
+		} else if strings.HasSuffix(outPath, "/") || strings.HasSuffix(outPath, "\\") {
+			outPath = filepath.Join(outPath, "acceptance-results.json")
+		}
+	}
+
+	if buildEvidenceMapPath == "" {
+		switch strings.ToLower(filepath.Base(outPath)) {
+		case "requirements-evidence-map.json", "acceptance-local-evidence.json",
+			"acceptance-local-observations.json", "acceptance-execution-audit.json":
+			fmt.Fprintf(os.Stderr, "Output filename is reserved for generated evidence: %s; choose another report filename or use --build-evidence-map explicitly.\n", outPath)
+			os.Exit(1)
+		}
 	}
 
 	contracts, err := LoadAllContracts(explicitContract, explicitRepairContract, explicitGates)
@@ -1272,18 +1295,6 @@ func main() {
 		_ = os.WriteFile(filepath.Join(evidenceDir, "local-runner-evidence.json"), evBytes, 0644)
 
 		report, valErr = ValidateAndAggregateWithPhase(allLocalContracts(contracts), runner.results, runner.reg.Fingerprint(), phase)
-	}
-
-	outPath := explicitOut
-	if outPath == "" {
-		outPath = filepath.Join("docs", "language-v2", "acceptance-results.json")
-	} else {
-		fi, err := os.Stat(outPath)
-		if err == nil && fi.IsDir() {
-			outPath = filepath.Join(outPath, "acceptance-results.json")
-		} else if strings.HasSuffix(outPath, "/") || strings.HasSuffix(outPath, "\\") {
-			outPath = filepath.Join(outPath, "acceptance-results.json")
-		}
 	}
 
 	outBytes, _ := json.MarshalIndent(report, "", "  ")

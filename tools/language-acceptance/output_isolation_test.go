@@ -115,3 +115,111 @@ func TestAcceptanceCLIOutputIsolationAndWriteFailure(t *testing.T) {
 		})
 	}
 }
+
+func TestAcceptanceCLIOutputNameCannotBypassFinalValidation(t *testing.T) {
+	root, err := filepath.Abs(resolveRepoRoot())
+	if err != nil {
+		t.Fatal(err)
+	}
+	tmp := t.TempDir()
+	binary := filepath.Join(tmp, "acceptance-name-control")
+	if runtime.GOOS == "windows" {
+		binary += ".exe"
+	}
+	build := exec.Command("go", "build", "-o", binary, "./tools/language-acceptance")
+	build.Dir = root
+	if out, err := build.CombinedOutput(); err != nil {
+		t.Fatalf("build actual CLI: %v\n%s", err, out)
+	}
+	evidence := filepath.Join(tmp, "empty-final-evidence.json")
+	if err := os.WriteFile(evidence, []byte("{}\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	run := func(args ...string) ([]byte, error) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, binary, args...)
+		cmd.Dir = root
+		out, err := cmd.CombinedOutput()
+		if ctx.Err() != nil {
+			t.Fatalf("CLI timed out: %v", ctx.Err())
+		}
+		return out, err
+	}
+	t.Run("substring-does-not-select-generation", func(t *testing.T) {
+		dir := filepath.Join(tmp, "requirements-evidence-map.json-report-directory")
+		if err := os.Mkdir(dir, 0755); err != nil {
+			t.Fatal(err)
+		}
+		outPath := filepath.Join(dir, "final.json")
+		out, err := run("--phase=final", "--evidence="+evidence, "--out="+outPath)
+		if err == nil {
+			t.Fatalf("output filename bypassed final validation; exit=0, output=%s", out)
+		}
+		var report AcceptanceReport
+		data, err := os.ReadFile(outPath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := json.Unmarshal(data, &report); err != nil {
+			t.Fatal(err)
+		}
+		if report.TotalCases != 179 || report.ClosureComplete {
+			t.Fatalf("final report replaced by another artifact: %+v", report)
+		}
+	})
+	for _, name := range []string{
+		"requirements-evidence-map.json", "REQUIREMENTS-EVIDENCE-MAP.JSON",
+		"acceptance-local-evidence.json", "acceptance-local-observations.json",
+		"acceptance-execution-audit.json",
+	} {
+		t.Run("reserved-"+name, func(t *testing.T) {
+			outPath := filepath.Join(t.TempDir(), name)
+			marker := []byte("preexisting-output-must-stay\n")
+			if err := os.WriteFile(outPath, marker, 0644); err != nil {
+				t.Fatal(err)
+			}
+			out, err := run("--phase=final", "--evidence="+evidence, "--out="+outPath)
+			if err == nil || !bytes.Contains(out, []byte("Output filename is reserved")) {
+				t.Errorf("reserved output did not fail closed: error=%v", err)
+			}
+			after, err := os.ReadFile(outPath)
+			if err != nil || !bytes.Equal(marker, after) {
+				t.Errorf("reserved output changed existing bytes: %v", err)
+			}
+		})
+	}
+	t.Run("explicit-generation-remains-available", func(t *testing.T) {
+		target := filepath.Join(t.TempDir(), "requirements-evidence-map.json")
+		out, err := run("--build-evidence-map", target)
+		if err != nil {
+			t.Fatalf("explicit generation failed: %v\n%s", err, out)
+		}
+		data, err := os.ReadFile(target)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var mapping RequirementsEvidenceMapFile
+		if err := json.Unmarshal(data, &mapping); err != nil {
+			t.Fatal(err)
+		}
+		if mapping.TotalRequirements != 179 {
+			t.Fatalf("generated mapping count: %d", mapping.TotalRequirements)
+		}
+	})
+	t.Run("generation-cannot-hide-final-evidence-check", func(t *testing.T) {
+		target := filepath.Join(t.TempDir(), "requirements-evidence-map.json")
+		marker := []byte("existing-map-must-stay\n")
+		if err := os.WriteFile(target, marker, 0644); err != nil {
+			t.Fatal(err)
+		}
+		out, err := run("--phase=final", "--evidence="+evidence, "--build-evidence-map", target)
+		if err == nil || !bytes.Contains(out, []byte("Evidence-map generation cannot be combined")) {
+			t.Errorf("map-only mode hid final validation: error=%v", err)
+		}
+		data, err := os.ReadFile(target)
+		if err != nil || !bytes.Equal(marker, data) {
+			t.Errorf("ambiguous mode changed existing map: %v", err)
+		}
+	})
+}

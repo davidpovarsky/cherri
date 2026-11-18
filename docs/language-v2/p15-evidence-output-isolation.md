@@ -58,3 +58,17 @@ four unfinished top-level acceptance-package tests. Only those four were rerun
 at the same clean source and passed. Their actual PASS-event union equals the
 63 discovered tests. The original40-minute failure remains recorded separately
 in evidence/p15-integrated-8002707/segmented-coverage.json.
+
+## Final-verification mode cannot depend on an output name
+
+Independent review found that any --out containing the historical map filename
+silently selected map generation and returned success before final validation.
+Actual CLI controls reproduced both the bypass and overwriting of reserved
+companion-artifact names.
+
+Only explicit --build-evidence-map now selects generation. It cannot be mixed
+with final/evidence validation. Report names reserved for generated map/audit/
+observation files fail before writing, including equivalent uppercase names.
+A directory whose name merely contains the map filename remains a normal
+report destination. Explicit standalone map generation still produces all179
+rows. Empty final evidence continues to fail, regardless of the report path.
