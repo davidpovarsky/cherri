@@ -1,0 +1,971 @@
+{
+  "sourceSha": "b2e79fbd931c11cff8cf4622095c400248ad6d0b",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "actualNormalCloneBuild": true,
+  "binaryVcsRevision": "b2e79fbd931c11cff8cf4622095c400248ad6d0b",
+  "binaryVcsModified": false,
+  "binarySha256": "51f5857fdaa06219a2742d964115992c9111d2812b15711373ba1ab0cc2dabf8",
+  "capabilities": {
+    "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+    "compilerMacros": [
+      {
+        "id": "debugAssert",
+        "callableName": "debugAssert",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.conditional",
+        "primaryParameterId": "condition",
+        "parameters": [
+          {
+            "id": "condition",
+            "label": "condition",
+            "displayName": "Condition",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": false,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "omissionPolicy": "emit",
+            "wireKey": "WFInput",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "message",
+            "label": "message",
+            "displayName": "Message",
+            "type": "text",
+            "rawType": "string",
+            "optional": true,
+            "acceptedForms": [
+              "string",
+              "interpolation",
+              "expression",
+              "reference"
+            ],
+            "default": "Assertion failed",
+            "omissionPolicy": "omit",
+            "wireKey": "WFAlertActionMessage",
+            "codec": "textToken",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFAlertActionMessage",
+          "WFInput"
+        ],
+        "docs": {
+          "title": "Assert Condition",
+          "description": "Stop the Shortcut with a message when the condition is false.",
+          "category": "debug",
+          "insertionSnippet": "debugAssert(condition: <#bool#>)"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugClearLogs",
+        "callableName": "debugClearLogs",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.setvariable",
+        "parameters": null,
+        "docs": {
+          "title": "Clear Debug Logs",
+          "description": "Reset the execution-local debug log to an empty value.",
+          "category": "debug",
+          "insertionSnippet": "debugClearLogs()"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugExport",
+        "callableName": "debugExport",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.setitemname",
+        "primaryParameterId": "format",
+        "parameters": [
+          {
+            "id": "format",
+            "label": "format",
+            "displayName": "Format",
+            "type": "Text",
+            "rawType": "rawstring",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "default": "json",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugExportFormat",
+            "enumValues": [
+              "json",
+              "text"
+            ],
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "includeDates",
+            "label": "includeDates",
+            "displayName": "Include Dates (unsupported)",
+            "type": "Bool",
+            "rawType": "bool",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugExportDates",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "includeTypes",
+            "label": "includeTypes",
+            "displayName": "Include Native Types",
+            "type": "Bool",
+            "rawType": "bool",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "default": "true",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugExportTypes",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "redactSensitive",
+            "label": "redactSensitive",
+            "displayName": "Redact All Payloads",
+            "type": "Bool",
+            "rawType": "bool",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "default": "true",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugExportRedact",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "outputType": "File",
+        "rawOutputType": "variable",
+        "docs": {
+          "title": "Export Local Debug File",
+          "description": "Return one local JSON/text File without saving, sharing or uploading. Fully redacts payloads by default. Explicit redactSensitive:false exports only Text as base64-encoded UTF-8; other payloads report UNSUPPORTED_PAYLOAD_TYPE. Dates/labels are not collected; includeDates:true is rejected. Options are compile-time literals. Native runtime acceptance remains required.",
+          "category": "debug",
+          "insertionSnippet": "debugExport()"
+        },
+        "builtin": true,
+        "compilerConstruct": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugExportTrace",
+        "callableName": "debugExportTrace",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.gettext",
+        "primaryParameterId": "runId",
+        "parameters": [
+          {
+            "id": "runId",
+            "label": "runId",
+            "displayName": "Run ID",
+            "type": "text",
+            "rawType": "string",
+            "optional": true,
+            "acceptedForms": [
+              "string"
+            ],
+            "default": "cherri-qa-run",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugTraceRunID",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFDebugTraceRunID"
+        ],
+        "outputType": "text",
+        "rawOutputType": "string",
+        "docs": {
+          "title": "Export QA Structured Trace Snapshot",
+          "description": "Combine the execution-local QA trace buffer into a deterministic JSON envelope for QA inspection or callback export without mutating __cherri_debug_log.",
+          "category": "debug",
+          "insertionSnippet": "debugExportTrace(runId: \"qa-run-1\")"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugFinish",
+        "callableName": "debugFinish",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.previewdocument",
+        "primaryParameterId": "withDates",
+        "parameters": [
+          {
+            "id": "withDates",
+            "label": "withDates",
+            "displayName": "With Dates",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugWithDates",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "showLogsAsText",
+            "label": "showLogsAsText",
+            "displayName": "Show Logs As Text",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugShowLogsAsText",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFDebugShowLogsAsText",
+          "WFDebugWithDates"
+        ],
+        "docs": {
+          "title": "Finish Debug Session",
+          "description": "Preview native objects with optional Creation Date names or display text with showLogsAsText.",
+          "category": "debug",
+          "insertionSnippet": "debugFinish()"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugLog",
+        "callableName": "debugLog",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.appendvariable",
+        "primaryParameterId": "withDates",
+        "parameters": [
+          {
+            "id": "withDates",
+            "label": "withDates",
+            "displayName": "With Dates",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugWithDates",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "showLogs",
+            "label": "showLogs",
+            "displayName": "Show Logs",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugShowLogs",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "showLogsAsText",
+            "label": "showLogsAsText",
+            "displayName": "Show Logs As Text",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugShowLogsAsText",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFDebugShowLogs",
+          "WFDebugShowLogsAsText",
+          "WFDebugWithDates",
+          "WFVariableName"
+        ],
+        "outputType": "text",
+        "rawOutputType": "string",
+        "docs": {
+          "title": "Debug Log",
+          "description": "Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows.",
+          "category": "debug",
+          "insertionSnippet": "debugLog()"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugLogPrevious",
+        "callableName": "debugLogPrevious",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.appendvariable",
+        "primaryParameterId": "withDates",
+        "parameters": [
+          {
+            "id": "withDates",
+            "label": "withDates",
+            "displayName": "With Dates",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugWithDates",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "showLogs",
+            "label": "showLogs",
+            "displayName": "Show Logs",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugShowLogs",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "showLogsAsText",
+            "label": "showLogsAsText",
+            "displayName": "Show Logs As Text",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugShowLogsAsText",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFDebugShowLogs",
+          "WFDebugShowLogsAsText",
+          "WFDebugWithDates"
+        ],
+        "outputType": "text",
+        "rawOutputType": "string",
+        "docs": {
+          "title": "Log Previous Result",
+          "description": "Alias for debugLog with optional withDates/showLogs/showLogsAsText.",
+          "category": "debug",
+          "insertionSnippet": "debugLogPrevious()"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugShowLogs",
+        "callableName": "debugShowLogs",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.previewdocument",
+        "primaryParameterId": "withDates",
+        "parameters": [
+          {
+            "id": "withDates",
+            "label": "withDates",
+            "displayName": "With Dates",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugWithDates",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "showLogsAsText",
+            "label": "showLogsAsText",
+            "displayName": "Show Logs As Text",
+            "type": "bool",
+            "rawType": "bool",
+            "optional": true,
+            "acceptedForms": [
+              "bool",
+              "expression",
+              "reference"
+            ],
+            "default": "false",
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugShowLogsAsText",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFDebugShowLogsAsText",
+          "WFDebugWithDates"
+        ],
+        "docs": {
+          "title": "Show Debug Logs",
+          "description": "Preview native objects, naming items by Creation Date when enabled; use showLogsAsText for text formatting.",
+          "category": "debug",
+          "insertionSnippet": "debugShowLogs()"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugStartTimer",
+        "callableName": "debugStartTimer",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.date",
+        "primaryParameterId": "label",
+        "parameters": [
+          {
+            "id": "label",
+            "label": "label",
+            "displayName": "Label",
+            "type": "text",
+            "rawType": "string",
+            "optional": false,
+            "acceptedForms": [
+              "string",
+              "interpolation",
+              "expression",
+              "reference"
+            ],
+            "omissionPolicy": "emit",
+            "wireKey": "WFDebugTimerLabel",
+            "codec": "textToken",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFDebugTimerLabel"
+        ],
+        "docs": {
+          "title": "Start Debug Timer",
+          "description": "Remember the current time under a compile-time label.",
+          "category": "debug",
+          "insertionSnippet": "debugStartTimer(label: <#text#>)"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugStopTimer",
+        "callableName": "debugStopTimer",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.gettimebetweendates",
+        "primaryParameterId": "label",
+        "parameters": [
+          {
+            "id": "label",
+            "label": "label",
+            "displayName": "Label",
+            "type": "text",
+            "rawType": "string",
+            "optional": false,
+            "acceptedForms": [
+              "string",
+              "interpolation",
+              "expression",
+              "reference"
+            ],
+            "omissionPolicy": "emit",
+            "wireKey": "WFDebugTimerLabel",
+            "codec": "textToken",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFDebugTimerLabel"
+        ],
+        "outputType": "number",
+        "rawOutputType": "float",
+        "docs": {
+          "title": "Stop Debug Timer",
+          "description": "Measure elapsed seconds and append the result to the execution-local log.",
+          "category": "debug",
+          "insertionSnippet": "debugStopTimer(label: <#text#>)"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugTrace",
+        "callableName": "debugTrace",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.appendvariable",
+        "primaryParameterId": "value",
+        "parameters": [
+          {
+            "id": "value",
+            "label": "value",
+            "displayName": "Value",
+            "type": "text",
+            "rawType": "string",
+            "optional": false,
+            "acceptedForms": [
+              "string",
+              "interpolation",
+              "expression",
+              "reference"
+            ],
+            "omissionPolicy": "emit",
+            "wireKey": "WFInput",
+            "codec": "textToken",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFInput"
+        ],
+        "outputType": "text",
+        "rawOutputType": "string",
+        "docs": {
+          "title": "Trace Value and Time",
+          "description": "Append current time followed by a value to the execution-local debug log.",
+          "category": "debug",
+          "insertionSnippet": "debugTrace(value: <#text#>)"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "debugTraceEvent",
+        "callableName": "debugTraceEvent",
+        "module": "debug",
+        "appleIdentifier": "is.workflow.actions.appendvariable",
+        "primaryParameterId": "stage",
+        "parameters": [
+          {
+            "id": "stage",
+            "label": "stage",
+            "displayName": "Stage",
+            "type": "text",
+            "rawType": "string",
+            "optional": false,
+            "acceptedForms": [
+              "string"
+            ],
+            "omissionPolicy": "emit",
+            "wireKey": "WFDebugTraceStage",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "label",
+            "label": "label",
+            "displayName": "Label",
+            "type": "text",
+            "rawType": "string",
+            "optional": true,
+            "acceptedForms": [
+              "string"
+            ],
+            "omissionPolicy": "omit",
+            "wireKey": "WFDebugTraceLabel",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "emittedKeys": [
+          "WFDebugTraceLabel",
+          "WFDebugTraceStage"
+        ],
+        "outputType": "text",
+        "rawOutputType": "string",
+        "docs": {
+          "title": "Record QA Structured Trace Event",
+          "description": "Append a structured JSONL trace record (stage, label, step sequence, and CurrentDate timestamp) to the execution-local QA trace buffer without mutating __cherri_debug_log.",
+          "category": "debug",
+          "insertionSnippet": "debugTraceEvent(stage: \"after\", label: \"step-1\")"
+        },
+        "builtin": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "measure",
+        "callableName": "measure",
+        "module": "debug",
+        "appleIdentifier": "",
+        "primaryParameterId": "label",
+        "parameters": [
+          {
+            "id": "label",
+            "label": "label",
+            "displayName": "Label",
+            "type": "text",
+            "rawType": "string",
+            "optional": false,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "outputType": "AnyContent",
+        "docs": {
+          "title": "Measure Block",
+          "description": "V2 scoped value block. Evaluate once, log elapsed seconds through existing native timers, and return the original typed value. Runtime timing accuracy remains platform-dependent.",
+          "category": "debug",
+          "insertionSnippet": "measure(\"label\") { <#expression#> }"
+        },
+        "builtin": true,
+        "compilerConstruct": true,
+        "scopedBlock": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "paginate",
+        "callableName": "paginate",
+        "module": "web",
+        "appleIdentifier": "is.workflow.actions.getvariable",
+        "primaryParameterId": "startURL",
+        "parameters": [
+          {
+            "id": "startURL",
+            "label": "startURL",
+            "displayName": "Initial HTTP(S) URL",
+            "type": "Text",
+            "rawType": "rawstring",
+            "optional": false,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "omissionPolicy": "omit",
+            "wireKey": "WFPaginateStartURL",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "itemsKey",
+            "label": "itemsKey",
+            "displayName": "Dictionary items key",
+            "type": "Text",
+            "rawType": "rawstring",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "default": "items",
+            "omissionPolicy": "omit",
+            "wireKey": "WFPaginateItemsKey",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "nextKey",
+            "label": "nextKey",
+            "displayName": "Next URL or sibling filename key",
+            "type": "Text",
+            "rawType": "rawstring",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "default": "next",
+            "omissionPolicy": "omit",
+            "wireKey": "WFPaginateNextKey",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "maxPages",
+            "label": "maxPages",
+            "displayName": "Maximum native GET invocations (0..100)",
+            "type": "Number",
+            "rawType": "number",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "default": "20",
+            "omissionPolicy": "omit",
+            "wireKey": "WFPaginateMaxPages",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "maxItems",
+            "label": "maxItems",
+            "displayName": "Maximum returned Dictionary items (0..10000)",
+            "type": "Number",
+            "rawType": "number",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "default": "1000",
+            "omissionPolicy": "omit",
+            "wireKey": "WFPaginateMaxItems",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "outputType": "List<Map<Text, AnyContent>>",
+        "rawOutputType": "array",
+        "docs": {
+          "title": "Paginate Bounded Dictionary Pages",
+          "description": "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. No headers, Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
+          "category": "web",
+          "insertionSnippet": "paginate(\"https://example.invalid/pages/one.json\")"
+        },
+        "builtin": true,
+        "compilerConstruct": true,
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "require",
+        "callableName": "require",
+        "module": "control",
+        "appleIdentifier": "is.workflow.actions.getvariable",
+        "primaryParameterId": "value",
+        "parameters": [
+          {
+            "id": "value",
+            "label": "value",
+            "displayName": "Value",
+            "type": "AnyContent",
+            "rawType": "variable",
+            "optional": false,
+            "omissionPolicy": "emit",
+            "wireKey": "WFInput",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "type",
+            "label": "type",
+            "displayName": "Native Category",
+            "type": "Text",
+            "rawType": "rawstring",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "omissionPolicy": "omit",
+            "wireKey": "WFRequireType",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "nonEmpty",
+            "label": "nonEmpty",
+            "displayName": "Nonempty",
+            "type": "Bool",
+            "rawType": "bool",
+            "optional": true,
+            "literal": true,
+            "acceptedForms": [
+              "literal"
+            ],
+            "omissionPolicy": "omit",
+            "wireKey": "WFRequireNonEmpty",
+            "evidenceStatus": "inferred"
+          },
+          {
+            "id": "message",
+            "label": "message",
+            "displayName": "Failure Message",
+            "type": "Text",
+            "rawType": "string",
+            "optional": true,
+            "omissionPolicy": "omit",
+            "wireKey": "WFAlertActionMessage",
+            "codec": "textToken",
+            "evidenceStatus": "inferred"
+          }
+        ],
+        "outputType": "AnyContent",
+        "rawOutputType": "variable",
+        "docs": {
+          "title": "Require Typed Value",
+          "description": "Validate text, number or dictionary native content and optional nonempty character/key/item count, then return the original value. Type and nonEmpty are compile-time literals.",
+          "category": "control",
+          "insertionSnippet": "require(<#value#>, nonEmpty: true)"
+        },
+        "builtin": true,
+        "compilerConstruct": true,
+        "evidenceStatus": "inferred"
+      }
+    ],
+    "languageVersion": "2.0",
+    "catalogSchemaVersion": "3.0",
+    "protocolVersion": "1.0",
+    "schemaFingerprint": "9f86a7ea68cbad58b6d262e458759d54f1f1089876fede3dcdc9b8ee4f2087b2",
+    "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+    "actionCount": 505,
+    "features": [
+      "let_var_bindings",
+      "named_call_arguments",
+      "f_strings",
+      "raw_strings",
+      "typed_collections",
+      "value_producing_blocks",
+      "ast_functions",
+      "native_preservation",
+      "shared_analysis_service",
+      "zero_based_indexing",
+      "compiler_macro_metadata",
+      "compile_time_build_profiles"
+    ]
+  },
+  "checks": [
+    {
+      "name": "build",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "build",
+        "-buildvcs=true",
+        "-trimpath",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r4-b2e79fb\\cherri.exe",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 13.0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "vcs",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "version",
+        "-m",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r4-b2e79fb\\cherri.exe"
+      ],
+      "exit": 0,
+      "seconds": 0.266,
+      "sha256": "1b871d3c9ae19ac6cac754757cb215605c81ea80e2cd4617fe18d555e8d61df5"
+    },
+    {
+      "name": "capabilities",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r4-b2e79fb\\cherri.exe",
+        "--capabilities-json"
+      ],
+      "exit": 0,
+      "seconds": 0.235,
+      "sha256": "488a88d4f7464ecc07ea158a59bf5765c1a85f6d037004ddae40634035665481"
+    },
+    {
+      "name": "schema",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "run",
+        "./tools/language-schema",
+        "--verify-generated"
+      ],
+      "exit": 0,
+      "seconds": 15.203,
+      "sha256": "7afe09f9dc2bfbf0e1697d8b4ff2d3baef785cd12f6aa057841d9bcb50964913"
+    },
+    {
+      "name": "reference",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "run",
+        "./tools/language-docs",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 2.844,
+      "sha256": "f39991d49a5dfbd3cd6181b65df824477df8798965935f3726f285a946d15433"
+    },
+    {
+      "name": "catalog-default",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=10m",
+        "-run",
+        "^(TestP10_VerifyAndRecord505CatalogExecution|TestP10_ParameterContractMatrix_AllCatalogActions|TestP10_ParameterContract_NegativeMutations)$",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 25.86,
+      "sha256": "0bea69b3b9622587174c80997265e706b64e1dee188041f9f3f8d8cd7843288d"
+    },
+    {
+      "name": "catalog-export",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=10m",
+        "-run",
+        "^(TestP10_VerifyAndRecord505CatalogExecution|TestP10_ParameterContractMatrix_AllCatalogActions)$",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 19.703,
+      "sha256": "82ba4fd4c790a8b112f2eba3225754337e6e700671e270df76ad701b2f36c9f4"
+    }
+  ],
+  "catalogExports": {
+    "p10-505-execution-evidence.json": {
+      "sha256": "6a99ea3f0e541b4dca416f6cfdef775a7492eef118ddc33f9cc5632398d4aeb8",
+      "count": 505
+    },
+    "p10-505-parameter-contract-evidence.json": {
+      "sha256": "d2292b5a9a22a9838a655625fd5b5c5be94cb410f11fb08aff60a038108019e3",
+      "count": 505
+    }
+  },
+  "scope": "Immutable compiler candidate and complete existing505 catalog producers with default/export output isolation. No private corpus/native runtime/final release claim."
+}

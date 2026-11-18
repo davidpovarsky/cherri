@@ -1,0 +1,37 @@
+{
+  "source": "c82084b7ba75b74bb814f9e780c6fd36cb90f039",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestAcceptanceCLIOutputIsolationAndWriteFailure$",
+    "./tools/language-acceptance"
+  ],
+  "exit": 0,
+  "seconds": 7.328,
+  "logSha256": "0048ecd06ea755183bb3aedbd739451816d2bfbfa5c3eae7b306e8882ee22879",
+  "baseline": {
+    "sourceParent": "b2e79fbd931c11cff8cf4622095c400248ad6d0b",
+    "testOnlyChange": true,
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout=3m",
+      "-run",
+      "^TestAcceptanceCLIOutputIsolationAndWriteFailure$",
+      "./tools/language-acceptance"
+    ],
+    "exit": 1,
+    "seconds": 7.766,
+    "sha256": "06fda113450ec9aed562b2943b9368ec2831e242905109ad63823a74b5fb8689",
+    "expectedCausalFailure": "mandatory map write failure was hidden"
+  },
+  "scope": "Actual CLI output locations, complete179-row mapping and causal write failure. Empty final evidence remains unsuccessful; no language obligation marked PASS."
+}

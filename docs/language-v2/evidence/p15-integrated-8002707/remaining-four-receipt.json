@@ -1,0 +1,34 @@
+{
+  "source": "800270786c5d02c7fd1f9a36ed1ac6d44d64ec3c",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=15m",
+    "-run",
+    "^(TestSkillPackageProductionEvidence|TestTypeLiteralProductionEvidence|TestTypeRecordProductionEvidence|TestTypeCardinalityProductionEvidence)$",
+    "./tools/language-acceptance"
+  ],
+  "startedAt": "2026-11-18T19:43:20.854219+00:00",
+  "finishedAt": "2026-11-18T19:46:44.376601+00:00",
+  "seconds": 203.515,
+  "exit": 0,
+  "requiredTests": [
+    "TestSkillPackageProductionEvidence",
+    "TestTypeLiteralProductionEvidence",
+    "TestTypeRecordProductionEvidence",
+    "TestTypeCardinalityProductionEvidence"
+  ],
+  "passedRequired": [
+    "TestSkillPackageProductionEvidence",
+    "TestTypeLiteralProductionEvidence",
+    "TestTypeRecordProductionEvidence",
+    "TestTypeCardinalityProductionEvidence"
+  ],
+  "failed": [],
+  "logSha256": "5fd48aa772b2765203274d5d8fe7082a5a3ee1218c497f6e58f1ff767b01d39e",
+  "scope": "Only the four top-level tests not completed by the original 40-minute Windows suite. Original timeout/source mutation remain recorded; this is a segmented continuation, not a rewritten full-suite PASS."
+}

@@ -1,0 +1,18 @@
+{
+  "sourceParent": "b2e79fbd931c11cff8cf4622095c400248ad6d0b",
+  "testOnlyChange": true,
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestAcceptanceCLIOutputIsolationAndWriteFailure$",
+    "./tools/language-acceptance"
+  ],
+  "exit": 1,
+  "seconds": 7.766,
+  "sha256": "06fda113450ec9aed562b2943b9368ec2831e242905109ad63823a74b5fb8689",
+  "expectedCausalFailure": "mandatory map write failure was hidden"
+}
