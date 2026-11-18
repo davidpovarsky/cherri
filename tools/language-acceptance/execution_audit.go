@@ -87,7 +87,14 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 	if err := writeLocalObservations(runner, filepath.Join(filepath.Dir(outPath), "acceptance-local-observations.json")); err != nil {
 		return err
 	}
-	var mapping, err = BuildRequirementsEvidenceMap(contracts)
+	evidence, err := json.MarshalIndent(runner.records, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err = os.WriteFile(filepath.Join(filepath.Dir(outPath), "acceptance-local-evidence.json"), append(evidence, '\n'), 0644); err != nil {
+		return err
+	}
+	mapping, err := BuildRequirementsEvidenceMap(contracts)
 	if err != nil {
 		return err
 	}
@@ -125,7 +132,7 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 				for _, id := range record.Requirements {
 					if id == declared.ID {
 						row.TestNames = appendUniqueAudit(row.TestNames, record.TestID)
-						row.Evidence = appendUniqueAudit(row.Evidence, "artifacts/backend-recovery/evidence/local-runner-evidence.json#"+record.EvidenceID)
+						row.Evidence = appendUniqueAudit(row.Evidence, "acceptance-local-evidence.json#"+record.EvidenceID)
 					}
 				}
 			}
@@ -134,6 +141,24 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.Blocker = gap
 			row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
 			row.Scope = "Observed smoke only; no formal acceptance tier proven"
+		}
+		if row.ID == "U03" {
+			row.TestNames = []string{"TestUpstreamPropagationRehearsal"}
+			row.ProductionPath = []string{"actions/web.cherri", "upstream_rehearsal_test.go", "internal/language/schema/generated_registry.go"}
+			row.PositiveAndNegative = res.Passed
+		}
+		if row.ID == "N02" {
+			row.TestNames = []string{"tools/language-acceptance:runNumbers"}
+			row.ProductionPath = []string{"internal/language/analysis/analyzer.go"}
+		}
+		if row.ID == "M05" {
+			row.TestNames = []string{"tools/language-acceptance:runMetadata"}
+			row.ProductionPath = []string{"internal/language/migrate/migrate.go", "internal/language/lower/lower.go"}
+		}
+		if row.ID == "E07" {
+			row.TestNames = []string{"tools/language-acceptance:runEditor"}
+			row.ProductionPath = []string{"internal/language/service/service.go"}
+			row.PositiveAndNegative = res.Status == "PENDING_EXTERNAL"
 		}
 		if row.ID == "R06" {
 			row.TestNames = append([]string{}, r06ProductionTests...)

@@ -656,7 +656,7 @@ func ValidateAndAggregateWithPhase(contract *ContractFile, results map[string]Ca
 			} else {
 				validationErrors = append(validationErrors, fmt.Sprintf("case %s failed assertion", c.ID))
 			}
-		} else if phase == "local" && res.Status == "NOT_RUN" && len(res.ExecutedLevels) == 0 {
+		} else if phase == "local" && isExplicitSkipped && len(res.ExecutedLevels) == 0 {
 			// Preserve an honest unexecuted obligation without calling it an
 			// assertion failure or claiming that any local assertion passed.
 			skipped++
@@ -2196,7 +2196,7 @@ func (r *Runner) runVerification() {
 // Group 21: Evaluation
 func (r *Runner) runEvaluation() {
 	// AI01: Held-out equal-budget model evaluation harness
-	r.Record("AI01", "evaluation", "Held-out equal-budget old/new model evaluation harness", "evaluation", []string{"evaluation"}, false, "AI_EVAL_NOT_RUN", "Harness prepared; external model evaluation API endpoint not configured per Section 22.5")
+	r.Record("AI01", "evaluation", "Held-out equal-budget old/new model evaluation harness", "evaluation", nil, false, "AI_EVAL_NOT_RUN", "Harness prepared; external model evaluation API endpoint not configured per Section 22.5")
 }
 
 // Group 22: Delivery
