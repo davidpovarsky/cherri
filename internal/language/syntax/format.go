@@ -336,14 +336,14 @@ func (f *Formatter) formatStatement(stmt Statement) {
 			f.buf.WriteString(s.ItemVar)
 		}
 		f.buf.WriteString(" in ")
-		f.formatExpression(s.Iterable)
+		f.formatControlExpression(s.Iterable)
 		f.buf.WriteString(" ")
 		f.formatBlockStmt(s.BodyBlock, false)
 	case *RepeatStmt:
 		f.writeIndent()
 		f.buf.WriteString("repeat ")
 		if s.Count != nil {
-			f.formatExpression(s.Count)
+			f.formatControlExpression(s.Count)
 		} else {
 			f.buf.WriteString("none")
 		}
@@ -401,7 +401,7 @@ func (f *Formatter) formatIfStmt(s *IfStmt, withIndent bool) {
 	if s.Modern {
 		f.buf.WriteString("modern: ")
 	}
-	f.formatExpression(s.Condition)
+	f.formatControlExpression(s.Condition)
 	f.buf.WriteString(" ")
 	f.formatBlockStmt(s.ThenBlock, false)
 	if s.ElseBlock != nil {
@@ -472,6 +472,10 @@ func (f *Formatter) formatExpression(expr Expression) {
 			first = false
 		}
 		f.buf.WriteString(")")
+		if e.Block != nil {
+			f.buf.WriteString(" ")
+			f.formatBlockStmt(e.Block.Body, false)
+		}
 	case *UnaryExpr:
 		opStr := "!"
 		if e.Op == TokenMinus {
@@ -558,13 +562,13 @@ func (f *Formatter) formatExpression(expr Expression) {
 			f.buf.WriteString(e.ItemVar)
 		}
 		f.buf.WriteString(" in ")
-		f.formatExpression(e.Iterable)
+		f.formatControlExpression(e.Iterable)
 		f.buf.WriteString(" ")
 		f.formatBlockStmt(e.BodyBlock, false)
 	case *RepeatStmt:
 		f.buf.WriteString("repeat ")
 		if e.Count != nil {
-			f.formatExpression(e.Count)
+			f.formatControlExpression(e.Count)
 		} else {
 			f.buf.WriteString("none")
 		}
@@ -611,7 +615,7 @@ func (f *Formatter) formatMenuHeader(s *MenuStmt) {
 func (f *Formatter) formatMenuCaseHeader(c MenuCase) {
 	f.buf.WriteString("case ")
 	if c.Value != nil {
-		f.formatExpression(c.Value)
+		f.formatControlExpression(c.Value)
 	} else {
 		fmt.Fprintf(&f.buf, "%q", c.Label)
 	}
@@ -685,4 +689,3 @@ func escapeFStringPart(s string) string {
 	}
 	return sb.String()
 }
-

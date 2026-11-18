@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "stage": "P15 scoped value blocks / measure / existing collection",
+  "verifiedAtUTC": "2026-11-18T03:09:03.490955+00:00",
+  "workingTreeBaseCommit": "05acd16d1b3a1b7526744199158e2539876cb72e",
+  "status": "LOCAL_VERIFIED_NATIVE_PENDING",
+  "checks": {
+    "focusedRootAndLanguageTests": {
+      "topLevelPassed": 44,
+      "exitCode": 0,
+      "durationSeconds": 12.61
+    },
+    "fullLanguagePackages": {
+      "packages": [
+        "syntax",
+        "analysis",
+        "lower",
+        "schema",
+        "service"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 7.03
+    },
+    "canonicalSchemaGenerator": {
+      "command": "go run ./tools/language-schema --verify-generated",
+      "exitCode": 0,
+      "generatedChangeRequired": false
+    },
+    "actualCLI": {
+      "positiveFixtures": 2,
+      "negativeLegacyExitCode": 1,
+      "negativeDiagnostic": "E_V2_SCOPED_BLOCK",
+      "exitCode": 0
+    }
+  },
+  "sourceSha256": {
+    "internal/language/syntax/ast.go": "673486e84672c59f012fc488644adad28fc387b2f972eba2c6d14cb8df8bc183",
+    "internal/language/syntax/parser.go": "840617978c6c5bbdbac87e990df1f384ac8f30479042cfb975eac94ab6396fd0",
+    "internal/language/syntax/format.go": "a38c0abba210270efdebf84471c4ef18aa6633a79c53f838c2c2153bf4d2df85",
+    "internal/language/syntax/scoped_blocks.go": "5972534228f5792af730d5c14db0e7d5b35362fc9defb171cae4c7964f673806",
+    "internal/language/syntax/scoped_blocks_test.go": "6fe2f1d013f63b60e86e16415c8e0dcccf14889f10ac932e19b5cb23f2815a7c",
+    "internal/language/analysis/analyzer.go": "8a42bd040d34df2da46d7a7bfd1987a106d5725dd55068256f2aef6a218016c0",
+    "internal/language/analysis/scoped_blocks.go": "4789cb4b08272cecbc61e101bd96ee74c823c4f0c45c72957396809fa6e3bab8",
+    "internal/language/analysis/scoped_blocks_test.go": "a02db920fc4b225a2b445962d41f617d80a06c4f8b359f7a30d24e60243a88a1",
+    "internal/language/lower/lower.go": "41053dfa0b8068da80e9fccc66b46fc8e0db240fa85e18583534092d25f82b61",
+    "internal/language/lower/scoped_blocks.go": "26803376d170f0b448bf6ddb3c21edef51ce0ba697412913d4fdcacd3f48724a",
+    "internal/language/lower/scoped_blocks_test.go": "7d74d77bdef0f7a1696fa3b331ae8aa0872055dd58b1cdf059f4ce7a97694d80",
+    "internal/language/schema/schema.go": "da390072f1a135eb4974aa03fcca4dad486f7cc90f409a754b7d06ebbe552fa0",
+    "internal/language/schema/scoped_blocks.go": "caf85e5896fe728082b8fe0df6995b5433be5c5a7a31634b67556e38515fe350",
+    "parser.go": "94f0b65d941ba5d60a7a92dc44b7ef7b339d73e20bd8961d840895271f1629f6",
+    "scoped_blocks_legacy.go": "a79b053ea5c396b10efb9a0326051d43b7c051cba60f00bd812a1842ad55258b",
+    "p15_scoped_blocks_test.go": "0075af8c649598710261d6b47f1e963d41b1ed7e8a21db0663eda93077a00793",
+    "tests/language-v2/v2-measure-runtime.cherri": "06e0814ac94d81fefeced262dae3ad9487f513e487aecad135d075e4cd0a12aa",
+    "tests/language-v2/v2-collect-existing-repeat-results.cherri": "8d18119b19d183026939694658412164b74110f9e99f5093269531fcc09b7b6d"
+  },
+  "compiledFixtures": {
+    "v2-measure-runtime": {
+      "nativeActionCount": 38,
+      "unsignedPlistSha256": "f1563d4d78a7c3402276656099688556b0fff026726f74c20e041247576fc28c",
+      "runtimeStatus": "NOT_RUN"
+    },
+    "v2-collect-existing-repeat-results": {
+      "nativeActionCount": 20,
+      "unsignedPlistSha256": "0725b65c935f3dca433b89574ea86724ac31ff01387a243416122d302b54db61",
+      "runtimeStatus": "NOT_RUN"
+    }
+  },
+  "observedGraphCounts": {
+    "measureDictionaryDebug": 7,
+    "measureDictionaryRelease": 3,
+    "collectionForYield": {
+      "N0": 6,
+      "N1": 6,
+      "N100": 6
+    }
+  },
+  "appleRuntime": "NOT_RUN",
+  "physicalDevice": "BLOCKED_DEVICE",
+  "typedBlockRoadmap": "PARTIAL_ZERO_ARGUMENT_VALUE_BLOCKS_ONLY",
+  "collectionShapeAndTiming": "NATIVE_EVIDENCE_PENDING"
+}

@@ -34,12 +34,13 @@ const (
 
 // Parser parses Cherri v2 source tokens into an AST.
 type Parser struct {
-	file     *source.File
-	lexer    *Lexer
-	curr     Token
-	peek     Token
-	errors   []ParseError
-	comments []source.Trivia
+	file                  *source.File
+	lexer                 *Lexer
+	curr                  Token
+	peek                  Token
+	errors                []ParseError
+	comments              []source.Trivia
+	suppressTrailingBlock bool
 }
 
 func (p *Parser) collectComments(tok Token) {
@@ -1106,7 +1107,7 @@ func (p *Parser) parseIfStmt() *IfStmt {
 		p.advance() // :
 		modern = true
 	}
-	cond := p.parseExpression(precNone)
+	cond := p.parseControlExpression()
 	thenBlock := p.parseBlockStmt()
 
 	var elseBlock Statement
@@ -1156,7 +1157,7 @@ func (p *Parser) parseForStmt() *ForStmt {
 	}
 
 	p.expect(TokenIn)
-	iter := p.parseExpression(precNone)
+	iter := p.parseControlExpression()
 	body := p.parseBlockStmt()
 
 	return &ForStmt{
@@ -1179,13 +1180,13 @@ func (p *Parser) parseRepeatStmt() *RepeatStmt {
 		if p.match(TokenNone) {
 			count = nil
 		} else {
-			count = p.parseExpression(precNone)
+			count = p.parseControlExpression()
 		}
 	} else {
 		if p.match(TokenNone) {
 			count = nil
 		} else {
-			count = p.parseExpression(precNone)
+			count = p.parseControlExpression()
 		}
 		if p.match(TokenAs) {
 			idxTok, _ := p.expect(TokenIdent)
@@ -1314,7 +1315,7 @@ func (p *Parser) parseMenuStmt() *MenuStmt {
 			}
 		case TokenIdent, TokenNumber:
 			if p.curr.Type == TokenIdent && (p.peek.Type == TokenDot || p.peek.Type == TokenLBracket || p.peek.Type == TokenLParen) {
-				valExpr = p.parseExpression(precNone)
+				valExpr = p.parseControlExpression()
 				if valExpr != nil {
 					labelSpan = valExpr.NodeSpan()
 				}
@@ -1324,7 +1325,7 @@ func (p *Parser) parseMenuStmt() *MenuStmt {
 				labelSpan = tok.Span
 			}
 		default:
-			valExpr = p.parseExpression(precNone)
+			valExpr = p.parseControlExpression()
 			if valExpr != nil {
 				labelSpan = valExpr.NodeSpan()
 			}
@@ -1393,6 +1394,16 @@ func (p *Parser) parseExprStmt() *ExprStmt {
 
 // --- Pratt Expression Parsing ---
 
+// A brace following an unparenthesized control operand belongs to that control
+// statement. Parenthesize a block call used as the operand to disambiguate it.
+func (p *Parser) parseControlExpression() Expression {
+	previous := p.suppressTrailingBlock
+	p.suppressTrailingBlock = true
+	expr := p.parseExpression(precNone)
+	p.suppressTrailingBlock = previous
+	return expr
+}
+
 func (p *Parser) parseExpression(minPrec int) Expression {
 	left := p.parsePrefix()
 	if left == nil {
@@ -1459,7 +1470,10 @@ func (p *Parser) parsePrefix() Expression {
 
 	case TokenLParen:
 		p.advance()
+		previous := p.suppressTrailingBlock
+		p.suppressTrailingBlock = false
 		expr := p.parseExpression(precNone)
+		p.suppressTrailingBlock = previous
 		p.expect(TokenRParen)
 		return expr
 
@@ -1656,6 +1670,8 @@ func (p *Parser) parseInfix(left Expression) Expression {
 
 func (p *Parser) parseCallExpr(callee Expression) *CallExpr {
 	p.advance() // (
+	previous := p.suppressTrailingBlock
+	p.suppressTrailingBlock = false // Nested arguments have their own parentheses.
 	call := &CallExpr{
 		Callee: callee,
 	}
@@ -1706,7 +1722,13 @@ func (p *Parser) parseCallExpr(callee Expression) *CallExpr {
 	}
 
 	endTok, _ := p.expect(TokenRParen)
+	p.suppressTrailingBlock = previous
 	call.Span = callee.NodeSpan().Merge(endTok.Span)
+	if !previous && p.curr.Type == TokenLBrace && !p.currHasLeadingNewline() {
+		body := p.parseBlockStmt()
+		call.Block = &ScopedBlock{Span: body.Span, Body: body}
+		call.Span = call.Span.Merge(body.Span)
+	}
 	return call
 }
 
@@ -1728,4 +1750,3 @@ func (p *Parser) currHasLeadingNewline() bool {
 	}
 	return false
 }
-

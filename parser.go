@@ -2076,6 +2076,9 @@ func collectActionCall() {
 
 func collectAction(identifier *string) (value action) {
 	if _, found := actions[*identifier]; !found {
+		if diagnostic := legacyScopedBlockDiagnostic(*identifier); diagnostic != "" {
+			parserError(diagnostic)
+		}
 		if *identifier != "" {
 			checkMissingStandardInclude(identifier, true)
 			args.Args["action"] = *identifier

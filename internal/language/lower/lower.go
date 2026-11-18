@@ -4734,6 +4734,14 @@ func (l *Lowerer) toSemanticValue(val interface{}) backend.SemanticValue {
 }
 
 func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
+	if call.Block != nil {
+		return l.lowerScopedBlockCall(call)
+	}
+	if name, ok := call.Callee.(*syntax.IdentExpr); ok {
+		if action, found := l.registry.LookupAction(name.Name); found && action.ScopedBlock && l.functions[name.Name] == nil {
+			return nil, fmt.Errorf("E_BLOCK_REQUIRED at %s: %s requires a trailing scoped block", call.Span, name.Name)
+		}
+	}
 	var actionName string
 	switch c := call.Callee.(type) {
 	case *syntax.IdentExpr:

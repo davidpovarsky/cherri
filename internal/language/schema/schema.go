@@ -93,6 +93,7 @@ type ActionSchema struct {
 	Builtin            bool                 `json:"builtin,omitempty"`
 	Custom             bool                 `json:"custom,omitempty"`
 	CompilerConstruct  bool                 `json:"compilerConstruct,omitempty"`
+	ScopedBlock        bool                 `json:"scopedBlock,omitempty"`
 	EvidenceStatus     EvidenceStatus       `json:"evidenceStatus,omitempty"`
 	StaticParameters   map[string]any       `json:"staticParameters,omitempty"`
 	MacOnly            bool                 `json:"macOnly,omitempty"`

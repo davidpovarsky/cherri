@@ -1,0 +1,19 @@
+var verdict = "P15_MEASURE_OK"
+debugStartTimer("fixture-total")
+let payload = measure("same-label") {
+    wait(1)
+    let inner = measure("same-label") {
+        let nativeValue = {"name": "body", "flag": false, "items": ["first", "second"]}
+        nativeValue
+    }
+    inner
+}
+let elapsed = debugStopTimer("fixture-total")
+let name = getValue(dictionary: payload, key: "name")
+let items = getValue(dictionary: payload, key: "items")
+let itemCount = count(items)
+if name != "body" { verdict = "P15_MEASURE_WRONG_VALUE" }
+if itemCount != 2 { verdict = "P15_MEASURE_WRONG_LIST" }
+if elapsed < 1 { verdict = "P15_MEASURE_ELAPSED_TOO_SMALL" }
+if elapsed > 8 { verdict = "P15_MEASURE_ELAPSED_TOO_LARGE" }
+return verdict

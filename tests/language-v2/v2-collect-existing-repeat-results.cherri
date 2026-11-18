@@ -1,0 +1,12 @@
+let items = ["first", "second"]
+let results = for item in items {
+    yield {"name": item, "flag": false}
+}
+let first = getFirstItem(results)
+let last = getLastItem(results)
+let firstName = getValue(dictionary: first, key: "name")
+let lastName = getValue(dictionary: last, key: "name")
+var verdict = "P15_COLLECT_OK"
+if firstName != "first" { verdict = "P15_COLLECT_ORDER_FIRST" }
+if lastName != "second" { verdict = "P15_COLLECT_ORDER_LAST" }
+return verdict

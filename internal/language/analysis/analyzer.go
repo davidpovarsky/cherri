@@ -652,6 +652,9 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if s.Value != nil {
 			valType = a.analyzeExpression(s.Value, scope)
 		}
+		if call, ok := s.Value.(*syntax.CallExpr); ok && call.Block != nil && valType != nil && valType.Kind() == types.KindVoid {
+			a.error("E_BLOCK_VOID_VALUE", call.Span, "a void scoped block cannot initialize a binding; end the block with an explicit value")
+		}
 
 		declType := valType
 		if s.TypeExpr != nil {
@@ -1249,6 +1252,15 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 }
 
 func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
+	if call.Block != nil {
+		return a.analyzeScopedBlockCall(call, scope)
+	}
+	if name, ok := call.Callee.(*syntax.IdentExpr); ok {
+		if action, found := a.registry.LookupAction(name.Name); found && action.ScopedBlock && !a.userFunctions[name.Name] {
+			a.error("E_BLOCK_REQUIRED", call.Span, "this compiler construct requires a trailing scoped block on the same line")
+			return types.Unknown
+		}
+	}
 	var callName string
 	switch c := call.Callee.(type) {
 	case *syntax.IdentExpr:
