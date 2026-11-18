@@ -34,6 +34,24 @@ var internalDirectoryPath = os.ExpandEnv("$HOME/.cherri")
 const unsignedEnd = "_unsigned.shortcut"
 const darwin = runtime.GOOS == "darwin"
 
+// compileLegacyCLIFile retains the existing Legacy file pipeline for both CLI forms.
+func compileLegacyCLIFile(path string) {
+	filePath = path
+	filename = checkFile(filePath)
+	if args.Using("load-all-actions") {
+		loadStandardActions()
+	}
+	handleFile()
+	initParse()
+	profile, profileErr := normalizeBuildProfile(BuildProfile(args.Value("build-profile")))
+	if profileErr != nil {
+		exit(profileErr.Error())
+		return
+	}
+	generateShortcutWithProfile(profile)
+	createShortcut()
+}
+
 func main() {
 	if HandleLanguageV2CLI() {
 		os.Exit(0)
@@ -41,37 +59,25 @@ func main() {
 
 	filePath = fileArg()
 	if filePath != "" {
+		mode, modeErr := compileLanguageModeFromArgs()
+		if modeErr != nil {
+			fmt.Fprintf(os.Stderr, "Compilation error: %v\n", modeErr)
+			os.Exit(1)
+		}
+		if mode == "legacy" {
+			compileLegacyCLIFile(filePath)
+			return
+		}
 		filename = checkFile(filePath)
-		if !args.Using("legacy") {
-			// Compile via Cherri v2 pipeline
-			outPath := ""
-			if args.Using("output") {
-				outPath = args.Value("output")
-			}
-			skipSign := args.Using("skip-sign") || (!darwin && !args.Using("hubsign") && !args.Using("signing-server"))
-			if err := CompileFileV2(filePath, outPath, skipSign); err != nil {
-				fmt.Fprintf(os.Stderr, "Compilation error: %v\n", err)
-				os.Exit(1)
-			}
-			return
+		outPath := ""
+		if args.Using("output") {
+			outPath = args.Value("output")
 		}
-
-		if args.Using("load-all-actions") {
-			loadStandardActions()
+		skipSign := args.Using("skip-sign") || (!darwin && !args.Using("hubsign") && !args.Using("signing-server"))
+		if err := CompileFileV2(filePath, outPath, skipSign); err != nil {
+			fmt.Fprintf(os.Stderr, "Compilation error: %v\n", err)
+			os.Exit(1)
 		}
-
-		handleFile()
-
-		initParse()
-
-		profile, profileErr := normalizeBuildProfile(BuildProfile(args.Value("build-profile")))
-		if profileErr != nil {
-			exit(profileErr.Error())
-			return
-		}
-		generateShortcutWithProfile(profile)
-
-		createShortcut()
 		return
 	}
 

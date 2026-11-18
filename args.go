@@ -4,9 +4,16 @@
 
 package main
 
-import "github.com/electrikmilk/args-parser"
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/electrikmilk/args-parser"
+)
 
 func init() {
+	preserveCLIOptionValues(os.Args[1:], args.Args)
 	args.CustomUsage = "[FILE]"
 	args.Register(args.Argument{
 		Name:        "version",
@@ -190,4 +197,49 @@ func init() {
 		ExpectsValue: true,
 		Values:       []string{"legacy", "v2"},
 	})
+}
+
+// preserveCLIOptionValues repairs the dependency parser's split-at-every-equals
+// behavior without changing its option aliases or last-occurrence precedence.
+func preserveCLIOptionValues(argv []string, parsed map[string]string) {
+	last := make(map[string]string)
+	for _, raw := range argv {
+		if !strings.HasPrefix(raw, "-") {
+			continue
+		}
+		option := strings.TrimPrefix(raw, "-")
+		if strings.HasPrefix(raw, "--") {
+			option = strings.TrimPrefix(raw, "--")
+		}
+		key, value, _ := strings.Cut(option, "=")
+		last[key] = value
+	}
+	for key, value := range last {
+		if strings.Contains(value, "=") {
+			parsed[key] = value
+		}
+	}
+}
+
+// compileLanguageModeFromArgs is shared by file and compile subcommand forms.
+// Import has its own mode handling and does not call this compile-only selector.
+func compileLanguageModeFromArgs() (string, error) {
+	mode := "v2"
+	if args.Using("mode") {
+		mode = strings.ToLower(strings.TrimSpace(args.Value("mode")))
+		switch mode {
+		case "":
+			return "", fmt.Errorf("--mode requires 'legacy' or 'v2'")
+		case "legacy", "v2":
+		default:
+			return "", fmt.Errorf("unsupported compile mode %q: expected 'legacy' or 'v2'", mode)
+		}
+	}
+	if args.Using("legacy") {
+		if args.Using("mode") && mode != "legacy" {
+			return "", fmt.Errorf("conflicting compile mode: --legacy cannot be combined with --mode=%s", mode)
+		}
+		mode = "legacy"
+	}
+	return mode, nil
 }

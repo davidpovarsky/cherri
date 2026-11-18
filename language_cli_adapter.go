@@ -91,11 +91,31 @@ func HandleLanguageV2CLI() bool {
 			}
 		}
 		if compPath == "" {
-			fmt.Fprintf(os.Stderr, "Usage: cherri compile <file.cherri> [--output <path>] [--skip-sign] [--hubsign]\n")
+			fmt.Fprintf(os.Stderr, "Usage: cherri compile <file.cherri> [--mode=legacy|v2] [--legacy] [--output <path>] [--skip-sign] [--hubsign]\n")
 			os.Exit(1)
 		}
 		if !darwin && !strings.Contains(strings.Join(os.Args, " "), "--hubsign") && !args.Using("signing-server") {
 			skipSign = true
+		}
+		mode, modeErr := compileLanguageModeFromArgs()
+		if modeErr != nil {
+			fmt.Fprintf(os.Stderr, "Compilation error: %v\n", modeErr)
+			os.Exit(1)
+		}
+		if mode == "legacy" {
+			if args.Args == nil {
+				args.Args = make(map[string]string)
+			}
+			if outPath != "" {
+				args.Args["output"] = outPath
+			}
+			if skipSign {
+				args.Args["skip-sign"] = ""
+			} else {
+				delete(args.Args, "skip-sign")
+			}
+			compileLegacyCLIFile(compPath)
+			return true
 		}
 		if err := CompileFileV2(compPath, outPath, skipSign); err != nil {
 			fmt.Fprintf(os.Stderr, "Compilation error: %v\n", err)
