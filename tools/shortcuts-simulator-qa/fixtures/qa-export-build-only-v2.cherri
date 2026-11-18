@@ -1,0 +1,18 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "export-build-only")
+// Same Unicode payload and export options as the historical failed probe.
+let original = text("quote \" backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET")
+debugLog()
+let artifact = debugExport("json", false, false, false)
+
+let actualName = getName(artifact)
+var nameStatus = "bad"
+if actualName == "cherri-debug.json" { nameStatus = "ok" }
+let semanticResult = text(f"CHERRI_QA_EXPORT_BUILD_ONLY:NAME={nameStatus}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "export-build-only")
+let traceEnvelope = debugExportTrace(runId: "qa-export-build-only-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

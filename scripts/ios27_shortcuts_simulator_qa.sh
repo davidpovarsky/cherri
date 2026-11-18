@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -212,6 +212,36 @@ case "$SAMPLE_ID" in
     EXPECTED_SHORTCUT_NAME="qa-export-text-file-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_TEXT_FILE_OK"
     ;;
+  qa-require-zero-diag)
+    TARGET_FIXTURE_ID="qa-require-zero-diag-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-require-zero-diag-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_REQUIRE_ZERO_DIAG:L=ok:D=ok:R=ok:B=ok"
+    ;;
+  qa-label-file-controls)
+    TARGET_FIXTURE_ID="qa-label-file-controls-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-label-file-controls-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_LABEL_FILE_CONTROLS:B=ok:V=ok:VT=ok:L=ok:T=ok:R=ok:S=ok"
+    ;;
+  qa-export-file-control)
+    TARGET_FIXTURE_ID="qa-export-file-control-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-file-control-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_FILE_CONTROL:NAME=ok:TEXT=ok"
+    ;;
+  qa-export-build-only)
+    TARGET_FIXTURE_ID="qa-export-build-only-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-build-only-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_BUILD_ONLY:NAME=ok"
+    ;;
+  qa-export-parse-only)
+    TARGET_FIXTURE_ID="qa-export-parse-only-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-parse-only-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_PARSE_ONLY:SCHEMA=ok:COUNT=ok"
+    ;;
   qa-require)
     TARGET_FIXTURE_ID="qa-require-v2"
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
@@ -395,6 +425,11 @@ fixture_specs = [
     ("qa-f01-diag-predicate-v2", "qa-f01-diag-predicate-v2.cherri", "v2"),
     ("qa-f01-diag-control-v2", "qa-f01-diag-control-v2.cherri", "v2"),
     ("qa-f01-diag-logic-v2", "qa-f01-diag-logic-v2.cherri", "v2"),
+    ("qa-require-zero-diag-v2", "qa-require-zero-diag-v2.cherri", "v2"),
+    ("qa-label-file-controls-v2", "qa-label-file-controls-v2.cherri", "v2"),
+    ("qa-export-file-control-v2", "qa-export-file-control-v2.cherri", "v2"),
+    ("qa-export-build-only-v2", "qa-export-build-only-v2.cherri", "v2"),
+    ("qa-export-parse-only-v2", "qa-export-parse-only-v2.cherri", "v2"),
     ("qa-require-v2", "qa-require-v2.cherri", "v2"),
     ("qa-measure-v2", "qa-measure-v2.cherri", "v2"),
     ("qa-measure-release-v2", "qa-measure-release-v2.cherri", "v2"),

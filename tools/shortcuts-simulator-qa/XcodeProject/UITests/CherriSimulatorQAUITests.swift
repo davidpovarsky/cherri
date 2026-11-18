@@ -146,6 +146,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-f01-diag-predicate-v2",
         "qa-f01-diag-control-v2",
         "qa-f01-diag-logic-v2",
+        "qa-require-zero-diag-v2",
+        "qa-label-file-controls-v2",
+        "qa-export-file-control-v2",
+        "qa-export-build-only-v2",
+        "qa-export-parse-only-v2",
         "qa-retry-control-v2",
         "qa-retry-http500-v2",
         "qa-retry-http404-v2",
@@ -1106,6 +1111,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertEqual(sanitizeUIString("qa-f01-diag-predicate-v2"), "qa-f01-diag-predicate-v2")
         XCTAssertEqual(sanitizeUIString("qa-f01-diag-control-v2"), "qa-f01-diag-control-v2")
         XCTAssertEqual(sanitizeUIString("qa-f01-diag-logic-v2"), "qa-f01-diag-logic-v2")
+        XCTAssertEqual(sanitizeUIString("qa-require-zero-diag-v2"), "qa-require-zero-diag-v2")
+        XCTAssertEqual(sanitizeUIString("qa-label-file-controls-v2"), "qa-label-file-controls-v2")
+        XCTAssertEqual(sanitizeUIString("qa-export-file-control-v2"), "qa-export-file-control-v2")
+        XCTAssertEqual(sanitizeUIString("qa-export-build-only-v2"), "qa-export-build-only-v2")
+        XCTAssertEqual(sanitizeUIString("qa-export-parse-only-v2"), "qa-export-parse-only-v2")
         XCTAssertEqual(sanitizeUIString("qa-retry-control-v2"), "qa-retry-control-v2")
         XCTAssertEqual(sanitizeUIString("qa-retry-http500-v2"), "qa-retry-http500-v2")
         XCTAssertEqual(sanitizeUIString("qa-retry-http404-v2"), "qa-retry-http404-v2")

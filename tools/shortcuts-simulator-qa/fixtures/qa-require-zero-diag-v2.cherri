@@ -1,0 +1,23 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "require-zero-diag")
+// Independent native Number controls; no output-to-text value proof.
+var literal = 0
+let direct = number(0)
+let required = require(0, type: "number", nonEmpty: true, message: "number zero rejected")
+var bound = required
+var literalStatus = "bad"
+var directStatus = "bad"
+var requiredStatus = "bad"
+var boundStatus = "bad"
+if literal == 0 { literalStatus = "ok" }
+if direct == 0 { directStatus = "ok" }
+if required == 0 { requiredStatus = "ok" }
+if bound == 0 { boundStatus = "ok" }
+let semanticResult = text(f"CHERRI_QA_REQUIRE_ZERO_DIAG:L={literalStatus}:D={directStatus}:R={requiredStatus}:B={boundStatus}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "require-zero-diag")
+let traceEnvelope = debugExportTrace(runId: "qa-require-zero-diag-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
