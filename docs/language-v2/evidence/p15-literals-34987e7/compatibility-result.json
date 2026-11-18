@@ -1,0 +1,29 @@
+[
+  {
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-run",
+      "^Test(P15(S02|L01|L03|DictionaryList|NumericList|C01|C02|C04|V02|V04|R0|Require|AC01)|CODEC|NATIVE_Ref|Debug|BuildProfile|IOS003)",
+      "-v",
+      "."
+    ],
+    "returncode": 0,
+    "durationSeconds": 37.149,
+    "logSha256": "051b229245f18a5d68774e93137fccc7ab0a72ab6837c056319424041d7ca844",
+    "log": "artifacts/literal-collections-be960c1/compatibility-0.log"
+  },
+  {
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "./internal/language/lower"
+    ],
+    "returncode": 0,
+    "durationSeconds": 4.198,
+    "logSha256": "7e0852df9c058c7a2b7ad44b884506ffe8a66a323852c708adb6c7943e62896a",
+    "log": "artifacts/literal-collections-be960c1/compatibility-1.log"
+  }
+]

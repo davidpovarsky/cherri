@@ -1,0 +1,179 @@
+=== RUN   TestP15S02ExactLiteralBytes
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/immutable
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/mutable
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/list
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/dictionary
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/dictionary_in_list
+=== RUN   TestP15S02ExactLiteralBytes/json/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/json/immutable
+=== RUN   TestP15S02ExactLiteralBytes/json/mutable
+=== RUN   TestP15S02ExactLiteralBytes/json/list
+=== RUN   TestP15S02ExactLiteralBytes/json/dictionary
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{9, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/json/dictionary_in_list
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{9, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/javascript/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/javascript/immutable
+=== RUN   TestP15S02ExactLiteralBytes/javascript/mutable
+=== RUN   TestP15S02ExactLiteralBytes/javascript/list
+=== RUN   TestP15S02ExactLiteralBytes/javascript/dictionary
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{23, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/javascript/dictionary_in_list
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{23, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/css/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/css/immutable
+=== RUN   TestP15S02ExactLiteralBytes/css/mutable
+=== RUN   TestP15S02ExactLiteralBytes/css/list
+=== RUN   TestP15S02ExactLiteralBytes/css/dictionary
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{45, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/css/dictionary_in_list
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{45, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/immutable
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/mutable
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/list
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/dictionary
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{0, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}, "{13, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}, "{2, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}, "{4, 1}":map[string]interface {}{"Aggrandizements":[]interface {}{map[string]interface {}{"PropertyName":"key", "Type":"WFPropertyVariableAggrandizement"}}, "Type":"Variable", "VariableName":"name"}, "{6, 1}":map[string]interface {}{"Aggrandizements":[]interface {}{map[string]interface {}{"CoercionItemClass":"WFStringContentItem", "Type":"WFCoercionVariableAggrandizement"}}, "Type":"Variable", "VariableName":"name"}, "{9, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_in_list
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{0, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}, "{13, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}, "{2, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}, "{4, 1}":map[string]interface {}{"Aggrandizements":[]interface {}{map[string]interface {}{"PropertyName":"key", "Type":"WFPropertyVariableAggrandizement"}}, "Type":"Variable", "VariableName":"name"}, "{6, 1}":map[string]interface {}{"Aggrandizements":[]interface {}{map[string]interface {}{"CoercionItemClass":"WFStringContentItem", "Type":"WFCoercionVariableAggrandizement"}}, "Type":"Variable", "VariableName":"name"}, "{9, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/immutable
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/mutable
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/list
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{20, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_in_list
+    p15_literal_collections_acceptance_test.go:184: Dictionary key "payload": ordinary literal acquired native attachments: map[string]interface {}{"{20, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+=== RUN   TestP15S02ExactLiteralBytes/literal_dictionary_key
+    p15_literal_collections_acceptance_test.go:209: literal Dictionary key was interpreted: value=map[string]interface {}(nil) error=Dictionary key 0: ordinary literal acquired native attachments: map[string]interface {}{"{0, 1}":map[string]interface {}{"Type":"Variable", "VariableName":"name"}}
+--- FAIL: TestP15S02ExactLiteralBytes (0.05s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/action_argument (0.02s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/dictionary (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/list (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/json/dictionary (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/json/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/list (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/javascript/dictionary (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/javascript/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/list (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/css/dictionary (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/css/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/list (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/native_looking_braces/dictionary (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/list (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_in_list (0.00s)
+    --- FAIL: TestP15S02ExactLiteralBytes/literal_dictionary_key (0.00s)
+=== RUN   TestP15L01NestedDictionaryShape
+=== RUN   TestP15L01NestedDictionaryShape/immutable
+    p15_literal_collections_acceptance_test.go:252: Dictionary key "emptyList": missing explicit array elements: map[string]interface {}{"WFSerializationType":"WFArrayParameterState"}
+=== RUN   TestP15L01NestedDictionaryShape/mutable
+    p15_literal_collections_acceptance_test.go:252: Dictionary key "emptyList": missing explicit array elements: map[string]interface {}{"WFSerializationType":"WFArrayParameterState"}
+=== RUN   TestP15L01NestedDictionaryShape/assignment
+    p15_literal_collections_acceptance_test.go:252: Dictionary key "emptyList": missing explicit array elements: map[string]interface {}{"WFSerializationType":"WFArrayParameterState"}
+=== RUN   TestP15L01NestedDictionaryShape/dictionary_in_list
+    p15_literal_collections_acceptance_test.go:252: Dictionary key "emptyList": missing explicit array elements: map[string]interface {}{"WFSerializationType":"WFArrayParameterState"}
+--- FAIL: TestP15L01NestedDictionaryShape (0.01s)
+    --- FAIL: TestP15L01NestedDictionaryShape/immutable (0.00s)
+    --- FAIL: TestP15L01NestedDictionaryShape/mutable (0.00s)
+    --- FAIL: TestP15L01NestedDictionaryShape/assignment (0.00s)
+    --- FAIL: TestP15L01NestedDictionaryShape/dictionary_in_list (0.00s)
+=== RUN   TestP15L01NestedNativeListObservation
+    p15_literal_collections_acceptance_test.go:269: actual nested native List graph:
+        [
+          {
+            "WFWorkflowActionIdentifier": "is.workflow.actions.list",
+            "WFWorkflowActionParameters": {
+              "CustomOutputName": "data",
+              "UUID": "94D7174E-C643-4C9B-AE3C-CB6BF0159534",
+              "WFItems": [
+                {
+                  "WFItemType": 0,
+                  "WFValue": []
+                },
+                {
+                  "WFItemType": 0,
+                  "WFValue": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "WFItemType": 0,
+                  "WFValue": [
+                    [
+                      3
+                    ],
+                    []
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "WFWorkflowActionIdentifier": "is.workflow.actions.getvariable",
+            "WFWorkflowActionParameters": {
+              "WFVariable": {
+                "Value": {
+                  "OutputName": "data",
+                  "OutputUUID": "94D7174E-C643-4C9B-AE3C-CB6BF0159534",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          }
+        ]
+--- PASS: TestP15L01NestedNativeListObservation (0.00s)
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate_raw_spelling
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate_nested
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_text
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_bool
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_list
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_map
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_dynamic_text
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/map_number
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/map_bool
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/map_list
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/map_map
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/valid_controls
+--- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics (0.02s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate_raw_spelling (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate_nested (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_text (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_bool (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_list (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_map (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_dynamic_text (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/map_number (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/map_bool (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/map_list (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/map_map (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/valid_controls (0.01s)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.404s
+FAIL
