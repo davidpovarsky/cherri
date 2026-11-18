@@ -35,11 +35,10 @@ The Python contracts execute the real shell selector through Bash stdin, the act
 After committing a clean source checkout:
 
 ~~~text
-go build -o dist/storage-probe-compiler.exe .
-py -3 -X utf8 tools/p10r15/verify_storage_probes.py dist/storage-probe-compiler.exe
+py -3 -X utf8 tools/p10r15/verify_storage_probes.py dist/storage-probe-compiler.exe --build
 ~~~
 
-The producer verifies the compiler's exact VCS revision and clean flag, binds reviewed source bytes to HEAD, runs the focused Go and Python gates, executes the real Phase 0 CLI compilation, and losslessly imports/rebuilds all three storage graphs with exact native action equality. The resulting ignored receipt can be copied into a separate evidence commit; it records source identity, hashes, counts and the explicit native limits. It never signs or simulates storage.
+The producer binds reviewed source bytes to clean HEAD, builds the ignored local binary with an explicit recorded command when requested, runs the focused Go and Python gates, executes the real Phase 0 CLI compilation, and losslessly imports/rebuilds all three storage graphs with exact native action equality. A supplied prebuilt compiler must embed the matching VCS revision and clean flag. The installed Go 1.25.6 toolchain recognizes a Git directory but omits VCS fields for this checkout's Git worktree file; only an explicit controlled rebuild may use that bounded case, and the receipt labels embedded VCS metadata as absent. Wrong/dirty revisions and unbuilt binaries with missing identity remain rejected. The resulting ignored receipt can be copied into a separate evidence commit; it records source identity, hashes, counts and the explicit native limits. It never signs or simulates storage.
 
 ## Work still required
 

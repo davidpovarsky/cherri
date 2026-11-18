@@ -35,9 +35,24 @@ def checked(argv, label, timeout=180):
     return result
 
 
+def verify_build_identity(build_info, source_sha, controlled_rebuild, git_file):
+    revision = re.search(r"vcs\.revision=(\S+)", build_info)
+    modified = re.search(r"vcs\.modified=(\S+)", build_info)
+    if revision:
+        if revision.group(1) != source_sha or not modified or modified.group(1) != "false":
+            raise RuntimeError("compiler VCS revision or dirty flag differs from the clean source")
+        return {"mode": "COMPILER_VCS_METADATA", "vcsRevision": source_sha, "vcsModified": False}
+    if not controlled_rebuild or not git_file:
+        raise RuntimeError("compiler VCS identity missing; a Git worktree requires explicit --build")
+    return {"mode": "CONTROLLED_BUILD_FROM_CLEAN_COMMIT",
+            "vcsMetadata": "ABSENT_GIT_WORKTREE_FILE",
+            "command": ["go", "build", "-buildvcs=true", "-o", "<reviewed ignored binary>", "."]}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("compiler", type=Path)
+    parser.add_argument("--build", action="store_true", help="rebuild the ignored local compiler from the verified clean source")
     parser.add_argument("--output", type=Path,
                         default=ROOT / "artifacts/p15-storage-probes/validation.json")
     args = parser.parse_args()
@@ -76,9 +91,13 @@ def main():
         bound[relative] = hashlib.sha256(data).hexdigest()
     for case in cases:
         assert bound[case["path"]] == case["sourceSha256"], "manifest source hash drift"
+    if args.build:
+        relative_binary = compiler.relative_to(ROOT)
+        checked(["git", "check-ignore", "--", relative_binary], "owned ignored build output")
+        checked(["go", "build", "-buildvcs=true", "-o", compiler, "."], "controlled clean-source build")
     build_info = checked(["go", "version", "-m", compiler], "compiler build identity").stdout
-    assert "vcs.revision=" + source_sha in build_info, "compiler was not built at this exact source commit"
-    assert "vcs.modified=false" in build_info, "compiler was built from a dirty checkout"
+    build_identity = verify_build_identity(build_info, source_sha, args.build, (ROOT / ".git").is_file())
+    build_identity["goVersion"] = checked(["go", "version"], "toolchain identity").stdout.strip()
 
     go_result = checked(["go", "test", "-count=1", "-timeout=5m", "-json",
                          "-run", "^TestP15Storage", "."], "storage Go contracts", 330)
@@ -132,7 +151,7 @@ def main():
     report = {
         "schemaVersion": 1, "status": "PASS_COMMITTED_SOURCE_AND_CLI_ONLY",
         "sourceCommit": source_sha, "workingTreeDirty": False,
-        "compilerBinarySha256": sha256(compiler),
+        "compilerBinarySha256": sha256(compiler), "compilerBuildIdentity": build_identity,
         "sourceCheckoutBinding": {"status": "MATCHES_COMMIT_BYTES", "files": len(bound), "sha256": bound},
         "goTests": {"passed": go_passes, "causalGraphMutations": 18,
                     "primitiveFrontendProfileConfigurations": 4, "logSha256": sha256(go_log)},
@@ -157,6 +176,7 @@ def main():
         "retainedDevelopmentFailures": [
             "First Go test build used typed ShortcutAction where the graph oracle required canonical plist maps; fixed by the existing plist marshal/unmarshal codec.",
             "First Legacy primitive fixture omitted its existing actions/storage include; explicit include restored the intended Legacy contract.",
+            "The first clean-source producer rejected missing compiler VCS metadata. Installed Go1.25.6 recognizes a .git directory, while this checkout uses a .git worktree file; explicit controlled rebuild records clean Git source and binary hash without inventing embedded VCS fields.",
             "One read/status Sentinel exec was not executed: automatic approval review failed with thread-store metadata recovery deadline; narrower reads and later normally reviewed execution succeeded."
         ],
         "elapsedSeconds": round(time.monotonic() - started, 3),
