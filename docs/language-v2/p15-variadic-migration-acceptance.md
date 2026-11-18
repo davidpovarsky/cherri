@@ -99,3 +99,20 @@ Two observations are outside the C03 closure claim:
 2. Action declarations currently mutate the shared default registry. Compiling a custom action named url in one process can contaminate a later unrelated compilation. The complete RED log is retained. The C03 custom declaration proof uses actual independent CLI processes; the separate registry-lifetime repair must prove repeated-compilation and multi-document independence.
 
 No signing request, shortcut installation, Apple execution, private corpus upload or release action is part of this component's tests.
+
+
+## Clean immutable execution receipt
+
+Implementation source: **3992d87cfe0f884b0d01268907dc64df7a0da6bf**. Base: **58c7b0d67fb8917c9a1305101d66293c4e476ec4**. The checkout was clean before and after job **job_b4f524a8e8a8**.
+
+| Actual command scope | Result | Wall time |
+| --- | --- | --- |
+| Named C03 formal producer, executing all fifteen C03 production families | PASS; unit and native-structure evidence accepted | 11.596 s |
+| Nearby C01/C02/nil/VCard/menus production regressions | 125 named results PASS | 10.464 s |
+| Complete analysis, migrate, schema and lower package tests | 64 named results PASS | 4.654 s |
+
+All **47** original root public fixture byte hashes stayed identical. The clean formal receipt contains only C03's requirement result; it does not close the release. The earlier working-tree validation had 299 selected production results PASS, including the C03 scenarios; it is retained separately and is not relabeled as a clean-source receipt.
+
+[The evidence audit](evidence/p15-variadic-3992d87/evidence-audit.json) binds eleven complete payload files by SHA-256. They include the complete formal Go JSON stream, its reconstructed source-bound receipt, clean regression/package streams, the exact public fixture hashes, and the original causal RED logs. Go output fragments were concatenated only within their owning test before extracting the receipt JSON.
+
+The singleton contamination RED and Legacy inline-producer loss remain visible in those logs. The former is assigned to the following registry-lifetime repair; this C03 result neither resets the singleton to hide it nor claims that it is fixed.
