@@ -569,7 +569,7 @@ func TestP15AC01ConstructGrammarAudit(t *testing.T) {
 			continue
 		}
 		t.Run(entry.Name, func(t *testing.T) {
-			source := entry.InsertionSnippet
+			source := p15FilledConstructSnippet(t, entry.Name, entry.InsertionSnippet)
 			if entry.Name == "appendVariable" {
 				source = "var variable = []\n" + source
 			}

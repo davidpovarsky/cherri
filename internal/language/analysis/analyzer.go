@@ -23,6 +23,7 @@ type Symbol struct {
 	Initialized     bool
 	Span            source.Span
 	Function        *syntax.FunctionDecl
+	Setup           *syntax.SetupDecl
 	EnumDeclaration bool
 	EnumType        string
 	flowType        types.Type
@@ -88,6 +89,8 @@ type Analyzer struct {
 	enumContexts           map[syntax.Expression]string
 	enumErrors             map[syntax.Expression]bool
 	loopDepth              int
+	setupUses              map[*syntax.SetupDecl]int
+	allowedSetupExpression syntax.Expression
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -314,6 +317,7 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
 // Analyze performs full semantic verification of a Program.
 func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.expandCopyPaste(prog)
+	a.setupUses = make(map[*syntax.SetupDecl]int)
 
 	scope := NewScope(nil)
 	a.topLevelVars = make(map[string]source.Span)
@@ -356,11 +360,15 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate function declaration %q", d.Name))
 			}
 		case *syntax.SetupDecl:
+			a.setupUses[d] = 0
 			var sType types.Type = types.Text
 			if d.TypeExpr != nil {
 				sType = a.resolveType(d.TypeExpr)
 			}
-			if !scope.Define(&Symbol{Name: d.Name, Type: sType, Initialized: true, Span: d.Span}) {
+			if !sType.Equals(types.Text) {
+				a.error(CodeSetupBinding, d.Span, "setup currently requires Text; its native import-question default is a text value")
+			}
+			if !scope.Define(&Symbol{Name: d.Name, Type: sType, Initialized: true, Span: d.Span, Setup: d}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate setup declaration %q", d.Name))
 			}
 		case *syntax.EnumDecl:
@@ -457,6 +465,11 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.predefineImportProvenanceSymbols(prog.Statements, scope)
 	for _, stmt := range prog.Statements {
 		a.analyzeStatement(stmt, scope)
+	}
+	for declaration, uses := range a.setupUses {
+		if uses == 0 {
+			a.warn(CodeUnusedSetup, declaration.Span, fmt.Sprintf("setup %q is unused and emits no import question", declaration.Name))
+		}
 	}
 }
 
@@ -1077,6 +1090,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			return types.Unknown
 		}
 		sym, found := scope.Lookup(e.Name)
+		if found && sym.Setup != nil && a.allowedSetupExpression != expr {
+			a.error(CodeSetupBinding, e.Span, "setup must bind directly to one native action parameter; aliases, expressions and function arguments are unsupported")
+		}
 		if !found {
 			if a.currentFn != nil {
 				if _, isTopVar := a.topLevelVars[e.Name]; isTopVar {
@@ -1475,7 +1491,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), "empty dictionary key is not allowed")
 				}
 			}
-			argType := unwrapDynamicOptional(a.analyzeEnumArgument(primParam, call.PrimaryArg, scope, callName))
+			argType := unwrapDynamicOptional(a.analyzeSetupArgument(actionSchema, primParam, call.PrimaryArg, scope, callName))
 			if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
 				if !(primParam.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(call.PrimaryArg)) &&
 					!isAttachmentCapableTextParamSchema(actionSchema.AppleIdentifier, primParam.WireKey, call.PrimaryArg) {
@@ -1548,7 +1564,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			}
 		}
 
-		argType := unwrapDynamicOptional(a.analyzeEnumArgument(param, nArg.Value, scope, callName))
+		argType := unwrapDynamicOptional(a.analyzeSetupArgument(actionSchema, param, nArg.Value, scope, callName))
 		if param.Type != nil && argType != nil && !argType.AssignableTo(param.Type) {
 			if !(param.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(nArg.Value)) &&
 				!isAttachmentCapableTextParamSchema(actionSchema.AppleIdentifier, param.WireKey, nArg.Value) {

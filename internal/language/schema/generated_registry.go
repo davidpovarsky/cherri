@@ -168,7 +168,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a calendar with `name`.",
 				Category: "",
 				Subcategory: "Calendars",
-				InsertionSnippet: "addCalendar(Ask)",
+				InsertionSnippet: "addCalendar(<#name#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -203,7 +203,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add a new calendar event.",
 				Category: "",
 				Subcategory: "Calendars",
-				InsertionSnippet: "addEvent(Ask)",
+				InsertionSnippet: "addEvent(<#title#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -351,7 +351,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add an item to a list or variable.",
 				Category: "",
 				Subcategory: "Lists",
-				InsertionSnippet: "addItemToList(Ask, Ask)",
+				InsertionSnippet: "addItemToList(<#item#>, <#list#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -451,7 +451,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add a new reminder.",
 				Category: "",
 				Subcategory: "Reminders",
-				InsertionSnippet: "addReminder(Ask)",
+				InsertionSnippet: "addReminder(<#title#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -703,7 +703,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add `input` to books. `input` is expected to be a PDF or epub file.",
 				Category: "",
 				Subcategory: "Books",
-				InsertionSnippet: "addToBooks(Ask)",
+				InsertionSnippet: "addToBooks(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -738,7 +738,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add a frame to a GIF.",
 				Category: "",
 				Subcategory: "GIFs",
-				InsertionSnippet: "addToGIF(Ask, Ask)",
+				InsertionSnippet: "addToGIF(<#image#>, <#gif#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -845,7 +845,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add music to library.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "addToMusic(Ask)",
+				InsertionSnippet: "addToMusic(<#songs#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -880,7 +880,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Playlists",
-				InsertionSnippet: "addToPlaylist(Ask, Ask)",
+				InsertionSnippet: "addToPlaylist(<#playlistName#>, <#songs#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -929,7 +929,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add a link to the reading list.",
 				Category: "web",
 				Subcategory: "Safari",
-				InsertionSnippet: "addToReadingList(Ask)",
+				InsertionSnippet: "addToReadingList(<#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -964,7 +964,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add a location to Weather app.",
 				Category: "",
 				Subcategory: "Weather",
-				InsertionSnippet: "addWeatherLocation(Ask)",
+				InsertionSnippet: "addWeatherLocation(<#location#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1000,7 +1000,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Adjust a date or get the start of a time period.",
 				Category: "",
 				Subcategory: "Dates",
-				InsertionSnippet: "adjustDate(Ask, Ask)",
+				InsertionSnippet: "adjustDate(<#date#>, <#operation#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1068,7 +1068,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Adjust the tone of the text using Apple Intelligence Writing Tools.",
 				Category: "",
 				Subcategory: "Writing Tools",
-				InsertionSnippet: "adjustTextTone(Ask, Ask)",
+				InsertionSnippet: "adjustTextTone(<#text#>, <#tone#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1119,7 +1119,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Prompt the user to AirDrop `input`.",
 				Category: "",
 				Subcategory: "AirDrop",
-				InsertionSnippet: "airdrop(Ask)",
+				InsertionSnippet: "airdrop(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1155,7 +1155,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Shows an alert with text and optional title and an OK button to proceed.",
 				Category: "",
 				Subcategory: "Notifications",
-				InsertionSnippet: "alert(Ask)",
+				InsertionSnippet: "alert(<#alert#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFAlertActionCancelButtonShown": false,
@@ -1209,7 +1209,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Capitalizes the text with alternating case.",
 				Category: "",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "alternatingCase(Ask)",
+				InsertionSnippet: "alternatingCase(<#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"Show-text": true,
@@ -1248,7 +1248,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Append text to a note.",
 				Category: "",
 				Subcategory: "Notes",
-				InsertionSnippet: "appendNote(Ask, Ask)",
+				InsertionSnippet: "appendNote(<#note#>, <#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1298,7 +1298,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Append text to a file.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "appendToFile(Ask, Ask)",
+				InsertionSnippet: "appendToFile(<#filePath#>, <#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFAppendFileWriteMode": "Append",
@@ -1382,7 +1382,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Ask Chat GPT using a prompt. Follow up will open a follow-up prompt to the model.",
 				Category: "",
 				Subcategory: "Language Models",
-				InsertionSnippet: "askChatGPT(Ask)",
+				InsertionSnippet: "askChatGPT(<#prompt#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFLLMModel": "ChatGPT",
@@ -1455,7 +1455,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Ask a private cloud compute LLM using a prompt. Follow up will open a follow-up prompt to the model.",
 				Category: "",
 				Subcategory: "Language Models",
-				InsertionSnippet: "askCloudLLM(Ask)",
+				InsertionSnippet: "askCloudLLM(<#prompt#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFLLMModel": "Private Cloud Compute",
@@ -1527,7 +1527,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Ask an On-Device LLM using a prompt. Follow up will open a follow-up prompt to the model.",
 				Category: "",
 				Subcategory: "Language Models",
-				InsertionSnippet: "askDeviceModel(Ask)",
+				InsertionSnippet: "askDeviceModel(<#prompt#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFLLMModel": "Apple Intelligence on Device",
@@ -1599,7 +1599,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Ask a Cloud AI model using a prompt. Follow up will open a follow-up prompt to the model.",
 				Category: "",
 				Subcategory: "Language Models",
-				InsertionSnippet: "askLLM(Ask)",
+				InsertionSnippet: "askLLM(<#prompt#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -1685,7 +1685,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Ask a Private Cloud AI model using a prompt. Follow up will open a follow-up prompt to the model. Allow search uses Broad World Knowledge, allowing the model to search the web for up-to-date information.",
 				Category: "",
 				Subcategory: "Language Models",
-				InsertionSnippet: "askModel(Ask)",
+				InsertionSnippet: "askModel(<#prompt#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFLLMModel": "Apple Intelligence",
@@ -1772,7 +1772,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Ask a Private Cloud Pro AI model with increased reasoning using a prompt. May require subscription. Follow up will open a follow-up prompt to the model. Allow search uses Broad World Knowledge, allowing the model to search the web for up-to-date information.",
 				Category: "",
 				Subcategory: "Language Models",
-				InsertionSnippet: "askProModel(Ask)",
+				InsertionSnippet: "askProModel(<#prompt#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFLLMModel": "Apple Intelligence Pro",
@@ -1859,7 +1859,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Base 64 decodes input.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "base64Decode(Ask)",
+				InsertionSnippet: "base64Decode(<#input#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFEncodeMode": "Decode",
@@ -1913,7 +1913,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Base 64 encodes input.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "base64Encode(Ask)",
+				InsertionSnippet: "base64Encode(<#encodeInput#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFEncodeMode": "Encode",
@@ -1968,7 +1968,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Perform various calculation operations using one or two operands.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "calculate(Ask, Ask)",
+				InsertionSnippet: "calculate(<#operation#>, <#operandOne#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFMathOperation": "…",
@@ -2037,7 +2037,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Call a contact.",
 				Category: "",
 				Subcategory: "Phone",
-				InsertionSnippet: "call(Ask)",
+				InsertionSnippet: "call(<#contact#>)",
 			},
 			StaticParameters: map[string]any{
 				"IntentAppDefinition": map[string]any{
@@ -2100,7 +2100,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Capitalizes the text with sentence case.",
 				Category: "",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "capitalize(Ask)",
+				InsertionSnippet: "capitalize(<#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"Show-text": true,
@@ -2141,7 +2141,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Capitalizes every word in the text.",
 				Category: "",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "capitalizeAll(Ask)",
+				InsertionSnippet: "capitalizeAll(<#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"Show-text": true,
@@ -2182,7 +2182,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Always round a number up to a specified rounding place.",
 				Category: "",
 				Subcategory: "Rounding",
-				InsertionSnippet: "ceil(Ask)",
+				InsertionSnippet: "ceil(<#number#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFRoundMode": "Always Round Up",
@@ -2251,7 +2251,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Prompts the user to choose from a list.",
 				Category: "",
 				Subcategory: "Lists",
-				InsertionSnippet: "chooseFromList(Ask)",
+				InsertionSnippet: "chooseFromList(<#list#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2350,7 +2350,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "combineImages(Ask)",
+				InsertionSnippet: "combineImages(<#images#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2417,7 +2417,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add an explicit comment.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "comment(Ask)",
+				InsertionSnippet: "comment(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2453,7 +2453,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Shows an alert with text and optional title. It displays an OK button to proceed, and a cancel button that stops the Shortcut.",
 				Category: "",
 				Subcategory: "Notifications",
-				InsertionSnippet: "confirm(Ask)",
+				InsertionSnippet: "confirm(<#alert#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFAlertActionCancelButtonShown": true,
@@ -2505,7 +2505,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Connect to file server at `url`.",
 				Category: "",
 				Subcategory: "Server",
-				InsertionSnippet: "connectToServer(Ask)",
+				InsertionSnippet: "connectToServer(<#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2566,7 +2566,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Uses Match Text to check if text is within subject.",
 				Category: "text",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "containsText(Ask, Ask)",
+				InsertionSnippet: "containsText(<#subject#>, <#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2630,7 +2630,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Display input as a content graph.",
 				Category: "",
 				Subcategory: "Output",
-				InsertionSnippet: "contentGraph(Ask)",
+				InsertionSnippet: "contentGraph(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2665,7 +2665,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Convert image to another format, compression quality, and/or remove metadata.",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "convertImage(Ask, Ask)",
+				InsertionSnippet: "convertImage(<#image#>, <#format#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2746,7 +2746,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "math",
 				Subcategory: "Measurement",
-				InsertionSnippet: "convertMeasurement(Ask, Ask, Ask)",
+				InsertionSnippet: "convertMeasurement(<#measurement#>, <#unitType#>, <#unit#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2812,7 +2812,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Converts a date from one time zone to another.",
 				Category: "",
 				Subcategory: "Dates",
-				InsertionSnippet: "convertTimeZone(Ask, Ask, Ask)",
+				InsertionSnippet: "convertTimeZone(<#date#>, <#sourceTimeZone#>, <#destinationTimeZone#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2876,7 +2876,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Convert image to a JPEG.",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "convertToJPEG(Ask)",
+				InsertionSnippet: "convertToJPEG(<#image#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFImageFormat": "JPEG",
@@ -2943,7 +2943,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "convertToUSDZ(Ask)",
+				InsertionSnippet: "convertToUSDZ(<#file#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -2980,7 +2980,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Corrects the spelling of the provided text.",
 				Category: "",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "correctSpelling(Ask)",
+				InsertionSnippet: "correctSpelling(<#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"Show-text": true,
@@ -3019,7 +3019,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Returns a count of `type` of items in `input`.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "count(Ask)",
+				InsertionSnippet: "count(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3071,7 +3071,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Creates an alarm at a specific time with a name, snooze allowance, and applicable weekdays.",
 				Category: "calendar",
 				Subcategory: "Alarms",
-				InsertionSnippet: "createAlarm(Ask, Ask)",
+				InsertionSnippet: "createAlarm(<#name#>, <#time#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "Clock",
@@ -3155,7 +3155,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "createAlbum(Ask)",
+				InsertionSnippet: "createAlbum(<#name#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3204,7 +3204,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a folder within the Shortcuts folder or within a `#ref` to a folder.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "createFolder(Ask)",
+				InsertionSnippet: "createFolder(<#path#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3254,7 +3254,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a new music playlist.",
 				Category: "",
 				Subcategory: "Playlists",
-				InsertionSnippet: "createPlaylist(Ask)",
+				InsertionSnippet: "createPlaylist(<#name#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3358,7 +3358,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "shortcuts",
 				Subcategory: "",
-				InsertionSnippet: "createShortcutLink(Ask)",
+				InsertionSnippet: "createShortcutLink(<#shortcut#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "Shortcuts",
@@ -3399,7 +3399,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "cropImage(Ask)",
+				InsertionSnippet: "cropImage(<#image#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3579,7 +3579,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Mask an image with a custom image mask.",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "customImageMask(Ask, Ask)",
+				InsertionSnippet: "customImageMask(<#image#>, <#customMaskImage#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFMaskType": "Custom Image",
@@ -3632,7 +3632,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Specify custom image overlay configuration.",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "customImageOverlay(Ask, Ask)",
+				InsertionSnippet: "customImageOverlay(<#image#>, <#overlayImage#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFShouldShowImageEditor": false,
@@ -3814,7 +3814,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a date value from `date`. Example: October 5, 2022.",
 				Category: "",
 				Subcategory: "Dates",
-				InsertionSnippet: "date(Ask)",
+				InsertionSnippet: "date(<#date#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFDateActionMode": "Specified Date",
@@ -3853,7 +3853,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Returns the definition of the word.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "define(Ask)",
+				InsertionSnippet: "define(<#word#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3888,7 +3888,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Deletes an alarm.",
 				Category: "calendar",
 				Subcategory: "Alarms",
-				InsertionSnippet: "deleteAlarm(Ask)",
+				InsertionSnippet: "deleteAlarm(<#alarm#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "Clock",
@@ -3929,7 +3929,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Delete a file or multiple files.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "deleteFiles(Ask)",
+				InsertionSnippet: "deleteFiles(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -3980,7 +3980,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "deletePhotos(Ask)",
+				InsertionSnippet: "deletePhotos(<#photos#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4016,7 +4016,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Delete previously stored content, optionally globally or specific to the Shortcut.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "deleteStoredValue(Ask)",
+				InsertionSnippet: "deleteStoredValue(<#key#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4067,7 +4067,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Detect the language of the text in `input`.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "detectLanguage(Ask)",
+				InsertionSnippet: "detectLanguage(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4146,7 +4146,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Download the contents of a URL.",
 				Category: "",
 				Subcategory: "HTTP",
-				InsertionSnippet: "downloadURL(Ask)",
+				InsertionSnippet: "downloadURL(<#url#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFHTTPMethod": "GET",
@@ -4214,7 +4214,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Edit a detail of an event. Provide an event, a detail to modify, and a new value for that detail.",
 				Category: "calendar",
 				Subcategory: "Calendars",
-				InsertionSnippet: "editEvent(Ask, Ask)",
+				InsertionSnippet: "editEvent(<#event#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4296,7 +4296,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Edit a detail of a reminder. Provide a reminder, a detail to modify, and a new value for that detail.",
 				Category: "calendar",
 				Subcategory: "Reminders",
-				InsertionSnippet: "editReminder(Ask, Ask)",
+				InsertionSnippet: "editReminder(<#reminder#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4378,7 +4378,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Ejects a disk or mounted image.",
 				Category: "",
 				Subcategory: "Disks",
-				InsertionSnippet: "ejectDisk(Ask)",
+				InsertionSnippet: "ejectDisk(<#disk#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4413,7 +4413,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create an email address value.",
 				Category: "contacts",
 				Subcategory: "Email",
-				InsertionSnippet: "emailAddress(Ask)",
+				InsertionSnippet: "emailAddress(<#email#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4449,7 +4449,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Embed file at path as base 64 text.",
 				Category: "builtin",
 				Subcategory: "",
-				InsertionSnippet: "embedFile(Ask)",
+				InsertionSnippet: "embedFile(<#filePath#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4485,7 +4485,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Encode audio to a different format and/or speed.",
 				Category: "",
 				Subcategory: "Audio",
-				InsertionSnippet: "encodeAudio(Ask)",
+				InsertionSnippet: "encodeAudio(<#audio#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFMediaAudioOnly": true,
@@ -4557,7 +4557,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Encode a video to a different format, size and/or speed.",
 				Category: "",
 				Subcategory: "Video Editing",
-				InsertionSnippet: "encodeVideo(Ask)",
+				InsertionSnippet: "encodeVideo(<#video#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4655,7 +4655,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the expanded version of a URL. For instance, returns the full URL for a short URL, or the URL which a URL immediately redirects to, etc.",
 				Category: "",
 				Subcategory: "URLs",
-				InsertionSnippet: "expandURL(Ask)",
+				InsertionSnippet: "expandURL(<#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4690,7 +4690,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Extract files from the archive `file`.",
 				Category: "",
 				Subcategory: "Archives",
-				InsertionSnippet: "extractArchive(Ask)",
+				InsertionSnippet: "extractArchive(<#file#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4726,7 +4726,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "extractImageText(Ask)",
+				InsertionSnippet: "extractImageText(<#image#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4762,7 +4762,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Starts a FaceTime audio or video call with the contact.",
 				Category: "",
 				Subcategory: "Phone",
-				InsertionSnippet: "facetimeCall(Ask)",
+				InsertionSnippet: "facetimeCall(<#contact#>)",
 			},
 			StaticParameters: map[string]any{
 				"IntentAppDefinition": map[string]any{
@@ -4842,7 +4842,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Insert a `#ref` to a file.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "file(Ask)",
+				InsertionSnippet: "file(<#file#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -4879,7 +4879,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Send a `method` file request to `url` with `body` and optional `headers.",
 				Category: "",
 				Subcategory: "HTTP",
-				InsertionSnippet: "fileRequest(Ask)",
+				InsertionSnippet: "fileRequest(<#url#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFHTTPBodyType": "File",
@@ -4977,7 +4977,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Returns the size of a file.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "fileSize(Ask, Ask)",
+				InsertionSnippet: "fileSize(<#file#>, <#format#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFFileSizeIncludeUnits": false,
@@ -5498,7 +5498,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Filter the provided files with various filters.",
 				Category: "documents",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "filterFiles(Ask)",
+				InsertionSnippet: "filterFiles(<#files#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6145,7 +6145,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Find SMS/iMessage conversation.",
 				Category: "",
 				Subcategory: "Email & SMS Messaging",
-				InsertionSnippet: "findConversation(Ask)",
+				InsertionSnippet: "findConversation(<#search#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6180,7 +6180,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Find email.",
 				Category: "",
 				Subcategory: "Email & SMS Messaging",
-				InsertionSnippet: "findEmail(Ask)",
+				InsertionSnippet: "findEmail(<#search#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6215,7 +6215,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Find SMS/iMessage message.",
 				Category: "",
 				Subcategory: "Email & SMS Messaging",
-				InsertionSnippet: "findMessage(Ask)",
+				InsertionSnippet: "findMessage(<#search#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6316,7 +6316,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "flipImage(Ask, Ask)",
+				InsertionSnippet: "flipImage(<#image#>, <#direction#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6369,7 +6369,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Always round a number down to a specified rounding place.",
 				Category: "",
 				Subcategory: "Rounding",
-				InsertionSnippet: "floor(Ask)",
+				InsertionSnippet: "floor(<#number#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFRoundMode": "Always Round Down",
@@ -6439,7 +6439,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Send a `method` request to `url` with `body` and optional `headers.",
 				Category: "",
 				Subcategory: "HTTP",
-				InsertionSnippet: "formRequest(Ask)",
+				InsertionSnippet: "formRequest(<#url#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFHTTPBodyType": "Form",
@@ -6539,7 +6539,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Format a date using a standard or custom format.",
 				Category: "",
 				Subcategory: "Formatting",
-				InsertionSnippet: "formatDate(Ask)",
+				InsertionSnippet: "formatDate(<#date#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFTimeFormatStyle": "None",
@@ -6609,7 +6609,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Format number based on decimal place.",
 				Category: "",
 				Subcategory: "Numbers",
-				InsertionSnippet: "formatNumber(Ask)",
+				InsertionSnippet: "formatNumber(<#number#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6661,7 +6661,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Format a time using a standard or custom format.",
 				Category: "",
 				Subcategory: "Formatting",
-				InsertionSnippet: "formatTime(Ask)",
+				InsertionSnippet: "formatTime(<#time#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFDateFormatStyle": "None",
@@ -6717,7 +6717,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Format a timestamp using standard formats and/or a custom date format.",
 				Category: "",
 				Subcategory: "Formatting",
-				InsertionSnippet: "formatTimestamp(Ask)",
+				InsertionSnippet: "formatTimestamp(<#date#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6843,7 +6843,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Generate an Image with a prompt using the Image Playground app.",
 				Category: "intelligence",
 				Subcategory: "Image Playground",
-				InsertionSnippet: "generateImage(Ask)",
+				InsertionSnippet: "generateImage(<#prompt#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -6928,7 +6928,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Generate a summary of key points of text using Apple Intelligence Writing Tools.",
 				Category: "",
 				Subcategory: "Writing Tools",
-				InsertionSnippet: "generateKeyPoints(Ask)",
+				InsertionSnippet: "generateKeyPoints(<#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"summaryType": "createKeyPoints",
@@ -6967,7 +6967,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Generate list from text  using Apple Intelligence Writing Tools.",
 				Category: "",
 				Subcategory: "Writing Tools",
-				InsertionSnippet: "generateList(Ask)",
+				InsertionSnippet: "generateList(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7003,7 +7003,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Generate a proofread version of text using Apple Intelligence Writing Tools.",
 				Category: "",
 				Subcategory: "Writing Tools",
-				InsertionSnippet: "generateProofread(Ask)",
+				InsertionSnippet: "generateProofread(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7039,7 +7039,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Generate a rewritten version of text using Apple Intelligence Writing Tools.",
 				Category: "",
 				Subcategory: "Writing Tools",
-				InsertionSnippet: "generateRewrite(Ask)",
+				InsertionSnippet: "generateRewrite(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7075,7 +7075,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Generate a summarized version of text using Apple Intelligence Writing Tools.",
 				Category: "",
 				Subcategory: "Writing Tools",
-				InsertionSnippet: "generateSummary(Ask)",
+				InsertionSnippet: "generateSummary(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7111,7 +7111,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Generate table from text using Apple Intelligence Writing Tools.",
 				Category: "",
 				Subcategory: "Writing Tools",
-				InsertionSnippet: "generateTable(Ask)",
+				InsertionSnippet: "generateTable(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7146,7 +7146,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get addresses from `input`.",
 				Category: "",
 				Subcategory: "Addresses",
-				InsertionSnippet: "getAddresses(Ask)",
+				InsertionSnippet: "getAddresses(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7224,7 +7224,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about an App Store app.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getAppStoreDetail(Ask, Ask)",
+				InsertionSnippet: "getAppStoreDetail(<#app#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7367,7 +7367,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get article from webpage.",
 				Category: "",
 				Subcategory: "Articles",
-				InsertionSnippet: "getArticle(Ask)",
+				InsertionSnippet: "getArticle(<#webpage#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7402,7 +7402,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about an article.",
 				Category: "",
 				Subcategory: "Articles",
-				InsertionSnippet: "getArticleDetail(Ask, Ask)",
+				InsertionSnippet: "getArticleDetail(<#article#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7472,7 +7472,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail of the current Cellular network.",
 				Category: "",
 				Subcategory: "Wireless",
-				InsertionSnippet: "getCellularDetail(Ask)",
+				InsertionSnippet: "getCellularDetail(<#detail#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFNetworkDetailsNetwork": "Cellular",
@@ -7558,7 +7558,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a contact.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getContactDetail(Ask, Ask)",
+				InsertionSnippet: "getContactDetail(<#contact#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7610,7 +7610,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get contacts from input.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getContacts(Ask)",
+				InsertionSnippet: "getContacts(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7809,7 +7809,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get dates from input.",
 				Category: "",
 				Subcategory: "Dates",
-				InsertionSnippet: "getDates(Ask)",
+				InsertionSnippet: "getDates(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7844,7 +7844,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about current device.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getDeviceDetail(Ask)",
+				InsertionSnippet: "getDeviceDetail(<#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -7979,7 +7979,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the dictionary from `input`.",
 				Category: "",
 				Subcategory: "Dictionaries",
-				InsertionSnippet: "getDictionary(Ask)",
+				InsertionSnippet: "getDictionary(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8213,7 +8213,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get emails from input.",
 				Category: "",
 				Subcategory: "Email",
-				InsertionSnippet: "getEmails(Ask)",
+				InsertionSnippet: "getEmails(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8249,7 +8249,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Detects emoji in the text and returns its name.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getEmojiName(Ask)",
+				InsertionSnippet: "getEmojiName(<#emoji#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8285,7 +8285,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get episodes of a podcast show.",
 				Category: "",
 				Subcategory: "Podcasts",
-				InsertionSnippet: "getEpisodesForPodcast(Ask)",
+				InsertionSnippet: "getEpisodesForPodcast(<#podcast#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8321,7 +8321,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail of the current Ethernet network.",
 				Category: "",
 				Subcategory: "Wireless",
-				InsertionSnippet: "getEthernetDetail(Ask)",
+				InsertionSnippet: "getEthernetDetail(<#detail#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFNetworkDetailsNetwork": "Ethernet",
@@ -8361,7 +8361,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about an event attendee.",
 				Category: "",
 				Subcategory: "Calendars",
-				InsertionSnippet: "getEventAttendeeDetail(Ask, Ask)",
+				InsertionSnippet: "getEventAttendeeDetail(<#attendee#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8412,7 +8412,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail of an event.",
 				Category: "",
 				Subcategory: "Calendars",
-				InsertionSnippet: "getEventDetail(Ask, Ask)",
+				InsertionSnippet: "getEventDetail(<#event#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8506,7 +8506,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get file from a path in the Shortcuts folder or within a `#ref` to a folder.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "getFile(Ask)",
+				InsertionSnippet: "getFile(<#path#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8586,7 +8586,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a file.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "getFileDetail(Ask, Ask)",
+				InsertionSnippet: "getFileDetail(<#file#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8638,7 +8638,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a file from a folder. Prepend path with a `~` to access the home folder on macOS.",
 				Category: "documents",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "getFileFromFolder(Ask, Ask)",
+				InsertionSnippet: "getFileFromFolder(<#folder#>, <#path#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8702,7 +8702,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a link for the provided file.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "getFileLink(Ask)",
+				InsertionSnippet: "getFileLink(<#file#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8739,7 +8739,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get first item in a list.",
 				Category: "",
 				Subcategory: "Lists",
-				InsertionSnippet: "getFirstItem(Ask)",
+				InsertionSnippet: "getFirstItem(<#list#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFItemSpecifier": "First Item",
@@ -8797,7 +8797,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get contents of a folder.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "getFolderContents(Ask)",
+				InsertionSnippet: "getFolderContents(<#folder#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8849,7 +8849,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Gets a number of GIFs from Giphy for a search query.",
 				Category: "",
 				Subcategory: "Giphy",
-				InsertionSnippet: "getGifs(Ask)",
+				InsertionSnippet: "getGifs(<#query#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFGiphyShowPicker": false,
@@ -8917,7 +8917,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the halfway point between two locations.",
 				Category: "",
 				Subcategory: "Maps",
-				InsertionSnippet: "getHalfwayPoint(Ask, Ask)",
+				InsertionSnippet: "getHalfwayPoint(<#firstLocation#>, <#secondLocation#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -8967,7 +8967,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the date of a holiday, optionally specifically for a few past or future years.",
 				Category: "",
 				Subcategory: "Dates",
-				InsertionSnippet: "getHolidayDate(Ask)",
+				InsertionSnippet: "getHolidayDate(<#holiday#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9059,7 +9059,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about an image.",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "getImageDetail(Ask, Ask)",
+				InsertionSnippet: "getImageDetail(<#image#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9110,7 +9110,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get frames from a GIF.",
 				Category: "",
 				Subcategory: "GIFs",
-				InsertionSnippet: "getImageFrames(Ask)",
+				InsertionSnippet: "getImageFrames(<#image#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9146,7 +9146,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Detect images in input",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "getImages(Ask)",
+				InsertionSnippet: "getImages(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9183,7 +9183,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get only the keys from the `dictionary`.",
 				Category: "",
 				Subcategory: "Dictionaries",
-				InsertionSnippet: "getKeys(Ask)",
+				InsertionSnippet: "getKeys(<#dictionary#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFGetDictionaryValueType": "All Keys",
@@ -9243,7 +9243,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the last item in a list.",
 				Category: "",
 				Subcategory: "Lists",
-				InsertionSnippet: "getLastItem(Ask)",
+				InsertionSnippet: "getLastItem(<#list#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFItemSpecifier": "Last Item",
@@ -9281,7 +9281,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getLatestBursts(Ask)",
+				InsertionSnippet: "getLatestBursts(<#count#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9316,7 +9316,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getLatestLivePhotos(Ask)",
+				InsertionSnippet: "getLatestLivePhotos(<#count#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9351,7 +9351,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getLatestPhotos(Ask)",
+				InsertionSnippet: "getLatestPhotos(<#count#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9401,7 +9401,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getLatestScreenshots(Ask)",
+				InsertionSnippet: "getLatestScreenshots(<#count#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9436,7 +9436,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getLatestVideos(Ask)",
+				InsertionSnippet: "getLatestVideos(<#count#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9473,7 +9473,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get item from `list` at `index`. Keep in mind Shortcuts starts counting indexes at 1.",
 				Category: "",
 				Subcategory: "Lists",
-				InsertionSnippet: "getListItem(Ask, Ask)",
+				InsertionSnippet: "getListItem(<#list#>, <#index#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFItemSpecifier": "Item At Index",
@@ -9527,7 +9527,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get items from a `list` between two indexes. Keep in mind Shortcuts starts counting indexes at 1.",
 				Category: "",
 				Subcategory: "Lists",
-				InsertionSnippet: "getListItems(Ask, Ask, Ask)",
+				InsertionSnippet: "getListItems(<#list#>, <#start#>, <#end#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFItemSpecifier": "Items in Range",
@@ -9636,7 +9636,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a location.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getLocationDetail(Ask, Ask)",
+				InsertionSnippet: "getLocationDetail(<#location#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9687,7 +9687,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a link for a location.",
 				Category: "",
 				Subcategory: "Maps",
-				InsertionSnippet: "getMapsLink(Ask)",
+				InsertionSnippet: "getMapsLink(<#location#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9723,7 +9723,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get match group at `index` in `matches`.",
 				Category: "",
 				Subcategory: "Regular Expressions",
-				InsertionSnippet: "getMatchGroup(Ask, Ask)",
+				InsertionSnippet: "getMatchGroup(<#matches#>, <#index#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFGetGroupType": "Group At Index",
@@ -9776,7 +9776,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get all groups in `matches`.",
 				Category: "",
 				Subcategory: "Regular Expressions",
-				InsertionSnippet: "getMatchGroups(Ask)",
+				InsertionSnippet: "getMatchGroups(<#matches#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFGetGroupType": "All Groups",
@@ -9836,7 +9836,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a song.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getMusicDetail(Ask, Ask)",
+				InsertionSnippet: "getMusicDetail(<#music#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9887,7 +9887,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the name of an item.",
 				Category: "",
 				Subcategory: "Items",
-				InsertionSnippet: "getName(Ask)",
+				InsertionSnippet: "getName(<#item#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9938,7 +9938,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get numbers from input.",
 				Category: "",
 				Subcategory: "Numbers",
-				InsertionSnippet: "getNumbers(Ask)",
+				InsertionSnippet: "getNumbers(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -9973,7 +9973,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the object of `class` from a variable.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getObjectOfClass(Ask, Ask)",
+				InsertionSnippet: "getObjectOfClass(<#class#>, <#from#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10064,7 +10064,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get text from PDF.",
 				Category: "pdf",
 				Subcategory: "",
-				InsertionSnippet: "getPDFText(Ask)",
+				InsertionSnippet: "getPDFText(<#pdfFile#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10159,7 +10159,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the parent directory of the input directory.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "getParentDirectory(Ask)",
+				InsertionSnippet: "getParentDirectory(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10195,7 +10195,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a parked car.",
 				Category: "",
 				Subcategory: "Maps",
-				InsertionSnippet: "getParkedCarDetail(Ask, Ask)",
+				InsertionSnippet: "getParkedCarDetail(<#car#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10268,7 +10268,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get phone numbers from input.",
 				Category: "",
 				Subcategory: "Phone",
-				InsertionSnippet: "getPhoneNumbers(Ask)",
+				InsertionSnippet: "getPhoneNumbers(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10304,7 +10304,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Gets songs from a playlist",
 				Category: "",
 				Subcategory: "Playlists",
-				InsertionSnippet: "getPlaylistSongs(Ask)",
+				InsertionSnippet: "getPlaylistSongs(<#playlistName#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10339,7 +10339,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Podcasts",
-				InsertionSnippet: "getPodcastDetail(Ask, Ask)",
+				InsertionSnippet: "getPodcastDetail(<#podcast#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10390,7 +10390,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a podcast episode.",
 				Category: "",
 				Subcategory: "Podcasts",
-				InsertionSnippet: "getPodcastEpisodeDetail(Ask, Ask)",
+				InsertionSnippet: "getPodcastEpisodeDetail(<#episode#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10461,7 +10461,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get RSS feed contents at URL. Limited by number of items.",
 				Category: "",
 				Subcategory: "RSS",
-				InsertionSnippet: "getRSS(Ask, Ask)",
+				InsertionSnippet: "getRSS(<#items#>, <#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10510,7 +10510,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get feeds from multiple URLs.",
 				Category: "",
 				Subcategory: "RSS",
-				InsertionSnippet: "getRSSFeeds(Ask)",
+				InsertionSnippet: "getRSSFeeds(<#urls#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10547,7 +10547,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get random item from list.",
 				Category: "",
 				Subcategory: "Lists",
-				InsertionSnippet: "getRandomItem(Ask)",
+				InsertionSnippet: "getRandomItem(<#list#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFItemSpecifier": "Random Item",
@@ -10585,7 +10585,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail of a reminder.",
 				Category: "",
 				Subcategory: "Reminders",
-				InsertionSnippet: "getReminderDetail(Ask, Ask)",
+				InsertionSnippet: "getReminderDetail(<#reminder#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10637,7 +10637,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Rich Text",
-				InsertionSnippet: "getRichTextFromHTML(Ask)",
+				InsertionSnippet: "getRichTextFromHTML(<#html#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10673,7 +10673,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Rich Text",
-				InsertionSnippet: "getRichTextFromMarkdown(Ask)",
+				InsertionSnippet: "getRichTextFromMarkdown(<#markdown#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10750,7 +10750,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a Shazam result.",
 				Category: "",
 				Subcategory: "Shazam",
-				InsertionSnippet: "getShazamDetail(Ask, Ask)",
+				InsertionSnippet: "getShazamDetail(<#input#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10801,7 +10801,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a Shortcut.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getShortcutDetail(Ask, Ask)",
+				InsertionSnippet: "getShortcutDetail(<#shortcut#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10889,7 +10889,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get previously stored content, optionally globally or specific to the Shortcut.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getStoredValue(Ask)",
+				InsertionSnippet: "getStoredValue(<#key#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10940,7 +10940,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get text from input.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getText(Ask)",
+				InsertionSnippet: "getText(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -10976,7 +10976,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getTextFromImage(Ask)",
+				InsertionSnippet: "getTextFromImage(<#image#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11171,7 +11171,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Return file content of the requested UTI from input. May return multiple items; use typeOf to inspect content types.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getType(Ask)",
+				InsertionSnippet: "getType(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11220,7 +11220,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a URL.",
 				Category: "",
 				Subcategory: "URLs",
-				InsertionSnippet: "getURLDetail(Ask, Ask)",
+				InsertionSnippet: "getURLDetail(<#url#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11271,7 +11271,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the headers from a URL.",
 				Category: "",
 				Subcategory: "URLs",
-				InsertionSnippet: "getURLHeaders(Ask)",
+				InsertionSnippet: "getURLHeaders(<#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11307,7 +11307,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get URLs from `input`.",
 				Category: "",
 				Subcategory: "URLs",
-				InsertionSnippet: "getURLs(Ask)",
+				InsertionSnippet: "getURLs(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11479,7 +11479,7 @@ func initDefaultRegistry() *Registry {
 				Description: "For constants only, otherwise `dictionary['key']` syntax should be used.",
 				Category: "",
 				Subcategory: "Dictionaries",
-				InsertionSnippet: "getValue(Ask, Ask)",
+				InsertionSnippet: "getValue(<#dictionary#>, <#key#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11544,7 +11544,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get only the values from the `dictionary`.",
 				Category: "",
 				Subcategory: "Dictionaries",
-				InsertionSnippet: "getValues(Ask)",
+				InsertionSnippet: "getValues(<#dictionary#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFGetDictionaryValueType": "All Values",
@@ -11583,7 +11583,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Retrieves the value of a variable.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "getVariable(Ask)",
+				InsertionSnippet: "getVariable(<#variable#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11644,7 +11644,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a weather forecast.",
 				Category: "",
 				Subcategory: "Weather",
-				InsertionSnippet: "getWeatherDetail(Ask, Ask)",
+				InsertionSnippet: "getWeatherDetail(<#weather#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11762,7 +11762,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail about a provided webpage.",
 				Category: "",
 				Subcategory: "Safari",
-				InsertionSnippet: "getWebPageDetail(Ask, Ask)",
+				InsertionSnippet: "getWebPageDetail(<#webpage#>, <#detail#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11813,7 +11813,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get contents of Webpage from Safari.",
 				Category: "",
 				Subcategory: "Safari",
-				InsertionSnippet: "getWebpageContents(Ask)",
+				InsertionSnippet: "getWebpageContents(<#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -11849,7 +11849,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get a detail of the current WiFi network.",
 				Category: "",
 				Subcategory: "Wireless",
-				InsertionSnippet: "getWifiDetail(Ask)",
+				InsertionSnippet: "getWifiDetail(<#detail#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFNetworkDetailsNetwork": "Wi-Fi",
@@ -11987,7 +11987,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Generate a hash of type using input.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "hash(Ask)",
+				InsertionSnippet: "hash(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12078,7 +12078,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Hide an app.",
 				Category: "device",
 				Subcategory: "Apps",
-				InsertionSnippet: "hideApp(Ask)",
+				InsertionSnippet: "hideApp(<#appID#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12113,7 +12113,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Broadcast a message to HomePod or other Home devices.",
 				Category: "",
 				Subcategory: "Intercom",
-				InsertionSnippet: "intercom(Ask)",
+				InsertionSnippet: "intercom(<#message#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12215,7 +12215,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Join text by a combiner.",
 				Category: "text",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "joinText(Ask)",
+				InsertionSnippet: "joinText(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12266,7 +12266,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Send a `method` JSON request to `url` with `body` and optional `headers.",
 				Category: "",
 				Subcategory: "HTTP",
-				InsertionSnippet: "jsonRequest(Ask)",
+				InsertionSnippet: "jsonRequest(<#url#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFHTTPBodyType": "JSON",
@@ -12404,7 +12404,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Kill an app.",
 				Category: "device",
 				Subcategory: "Apps",
-				InsertionSnippet: "killApp(Ask)",
+				InsertionSnippet: "killApp(<#appID#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFAskToSaveChanges": false,
@@ -12443,7 +12443,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Label a file.",
 				Category: "documents",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "labelFile(Ask, Ask)",
+				InsertionSnippet: "labelFile(<#file#>, <#color#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12519,7 +12519,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create an immutable array of text.",
 				Category: "basic",
 				Subcategory: "Lists",
-				InsertionSnippet: "list(Ask)",
+				InsertionSnippet: "list(<#listItem#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12609,7 +12609,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a location value.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "location(Ask)",
+				InsertionSnippet: "location(<#location#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12645,7 +12645,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Lock an application.",
 				Category: "",
 				Subcategory: "System",
-				InsertionSnippet: "lockApp(Ask)",
+				InsertionSnippet: "lockApp(<#app#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12739,7 +12739,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Transforms the text to all lowercase.",
 				Category: "",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "lowercase(Ask)",
+				InsertionSnippet: "lowercase(<#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"Show-text": true,
@@ -12844,7 +12844,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create an archive of `files` named `name` in `format`.",
 				Category: "",
 				Subcategory: "Archives",
-				InsertionSnippet: "makeArchive(Ask)",
+				InsertionSnippet: "makeArchive(<#files#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -12913,7 +12913,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a new disk image.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "makeDiskImage(Ask, Ask)",
+				InsertionSnippet: "makeDiskImage(<#name#>, <#contents#>)",
 			},
 			StaticParameters: map[string]any{
 				"SizeToFit": true,
@@ -12981,7 +12981,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "GIFs",
-				InsertionSnippet: "makeGIF(Ask)",
+				InsertionSnippet: "makeGIF(<#input#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFMakeGIFActionAutoSize": true,
@@ -13078,7 +13078,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Make HTML from Rich Text.",
 				Category: "",
 				Subcategory: "Rich Text",
-				InsertionSnippet: "makeHTML(Ask)",
+				InsertionSnippet: "makeHTML(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13128,7 +13128,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Returns an image of the provided PDF.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "makeImageFromPDFPage(Ask)",
+				InsertionSnippet: "makeImageFromPDFPage(<#pdf#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13210,7 +13210,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "makeImageFromRichText(Ask, Ask, Ask)",
+				InsertionSnippet: "makeImageFromRichText(<#pdf#>, <#width#>, <#height#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13274,7 +13274,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Make Markdown from Rich Text.",
 				Category: "",
 				Subcategory: "Rich Text",
-				InsertionSnippet: "makeMarkdown(Ask)",
+				InsertionSnippet: "makeMarkdown(<#richText#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13309,7 +13309,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Make a PDF file using the provided input.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "makePDF(Ask)",
+				InsertionSnippet: "makePDF(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13432,7 +13432,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "QR Codes",
-				InsertionSnippet: "makeQRCode(Ask)",
+				InsertionSnippet: "makeQRCode(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13530,7 +13530,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a shortcut.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "makeShortcut(Ask)",
+				InsertionSnippet: "makeShortcut(<#name#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13583,7 +13583,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a new disk image of a specific size.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "makeSizedDiskImage(Ask, Ask)",
+				InsertionSnippet: "makeSizedDiskImage(<#name#>, <#contents#>)",
 			},
 			StaticParameters: map[string]any{
 				"SizeToFit": false,
@@ -13667,7 +13667,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Creates custom spoken audio from text with controls for rate and pitch.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "makeSpokenAudio(Ask)",
+				InsertionSnippet: "makeSpokenAudio(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13759,7 +13759,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "builtin",
 				Subcategory: "",
-				InsertionSnippet: "makeVCard(Ask, Ask)",
+				InsertionSnippet: "makeVCard(<#title#>, <#subtitle#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13824,7 +13824,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "GIFs",
-				InsertionSnippet: "makeVideoFromGIF(Ask)",
+				InsertionSnippet: "makeVideoFromGIF(<#gif#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13874,7 +13874,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Opens document in a markup editor.",
 				Category: "",
 				Subcategory: "Editing",
-				InsertionSnippet: "markup(Ask)",
+				InsertionSnippet: "markup(<#document#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13909,7 +13909,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Mask an image with another image.",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "maskImage(Ask, Ask)",
+				InsertionSnippet: "maskImage(<#image#>, <#type#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -13974,7 +13974,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Use regular expressions to match text. Use raw text (single quotes) to match using an regular expression with braces to avoid conflicts with the regular expression syntax.",
 				Category: "",
 				Subcategory: "Regular Expressions",
-				InsertionSnippet: "matchText(Ask, Ask)",
+				InsertionSnippet: "matchText(<#regexPattern#>, <#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14039,7 +14039,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "math",
 				Subcategory: "Measurement",
-				InsertionSnippet: "measurement(Ask, Ask, Ask)",
+				InsertionSnippet: "measurement(<#magnitude#>, <#unitType#>, <#unit#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14106,7 +14106,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Mounts a disk image.",
 				Category: "",
 				Subcategory: "Disks",
-				InsertionSnippet: "mountDiskImage(Ask)",
+				InsertionSnippet: "mountDiskImage(<#diskImage#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14142,7 +14142,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Move a file or folder to a new destination folder.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "moveFile(Ask, Ask)",
+				InsertionSnippet: "moveFile(<#file#>, <#folder#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14207,7 +14207,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Move a window to a defined position.",
 				Category: "",
 				Subcategory: "Windows",
-				InsertionSnippet: "moveWindow(Ask, Ask)",
+				InsertionSnippet: "moveWindow(<#window#>, <#position#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14316,7 +14316,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Stop and output `output`. Respond with response if there is nowhere to output.",
 				Category: "",
 				Subcategory: "Output",
-				InsertionSnippet: "mustOutput(Ask, Ask)",
+				InsertionSnippet: "mustOutput(<#output#>, <#response#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFNoOutputSurfaceBehavior": "Respond",
@@ -14369,7 +14369,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a new contact.",
 				Category: "contacts",
 				Subcategory: "",
-				InsertionSnippet: "newContact(Ask, Ask, Ask, Ask, Ask, Ask)",
+				InsertionSnippet: "newContact(<#firstName#>, <#lastName#>, <#phoneNumber#>, <#emailAddress#>, <#company#>, <#notes#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14524,7 +14524,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a number value.",
 				Category: "",
 				Subcategory: "Numbers",
-				InsertionSnippet: "number(Ask)",
+				InsertionSnippet: "number(<#number#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14560,7 +14560,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Open an app.",
 				Category: "device",
 				Subcategory: "Apps",
-				InsertionSnippet: "openApp(Ask)",
+				InsertionSnippet: "openApp(<#appID#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14610,7 +14610,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Opens a book in Books. `target` is expected to be a book reference.",
 				Category: "documents",
 				Subcategory: "Books",
-				InsertionSnippet: "openBook(Ask)",
+				InsertionSnippet: "openBook(<#target#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "Books",
@@ -14652,7 +14652,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "web",
 				Subcategory: "",
-				InsertionSnippet: "openCustomXCallbackURL(Ask)",
+				InsertionSnippet: "openCustomXCallbackURL(<#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14743,7 +14743,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Open a file.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "openFile(Ask)",
+				InsertionSnippet: "openFile(<#file#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14822,7 +14822,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Open a location in maps.",
 				Category: "",
 				Subcategory: "Maps",
-				InsertionSnippet: "openInMaps(Ask)",
+				InsertionSnippet: "openInMaps(<#location#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14871,7 +14871,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Open note in the Notes app.",
 				Category: "",
 				Subcategory: "Notes",
-				InsertionSnippet: "openNote(Ask)",
+				InsertionSnippet: "openNote(<#note#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14906,7 +14906,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Reminders",
-				InsertionSnippet: "openRemindersList(Ask)",
+				InsertionSnippet: "openRemindersList(<#list#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14942,7 +14942,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Open a shortcut in the Shortcuts app.",
 				Category: "shortcuts",
 				Subcategory: "",
-				InsertionSnippet: "openShortcut(Ask)",
+				InsertionSnippet: "openShortcut(<#shortcutName#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -14978,7 +14978,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Open URL in default browser.",
 				Category: "",
 				Subcategory: "URLs",
-				InsertionSnippet: "openURL(Ask)",
+				InsertionSnippet: "openURL(<#url#>)",
 			},
 			StaticParameters: map[string]any{
 				"Show-WFInput": true,
@@ -15016,7 +15016,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "URLs",
-				InsertionSnippet: "openXCallbackURL(Ask)",
+				InsertionSnippet: "openXCallbackURL(<#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -15051,7 +15051,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Returns a compressed version of the PDF.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "optimizePDF(Ask)",
+				InsertionSnippet: "optimizePDF(<#pdfFile#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -15086,7 +15086,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Stop and output `output`. Do nothing if there is nowhere to output.",
 				Category: "",
 				Subcategory: "Output",
-				InsertionSnippet: "output(Ask)",
+				InsertionSnippet: "output(<#output#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -15122,7 +15122,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Stop and output `output`. Copy to the clipboard if there is nowhere to output.",
 				Category: "",
 				Subcategory: "Output",
-				InsertionSnippet: "outputOrClipboard(Ask)",
+				InsertionSnippet: "outputOrClipboard(<#output#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFNoOutputSurfaceBehavior": "Copy to Clipboard",
@@ -15161,7 +15161,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Overlay an image on top of another image.",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "overlayImage(Ask, Ask)",
+				InsertionSnippet: "overlayImage(<#image#>, <#overlayImage#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFShouldShowImageEditor": true,
@@ -15214,7 +15214,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Overlay text on top of an image.",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "overlayText(Ask, Ask)",
+				InsertionSnippet: "overlayText(<#image#>, <#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -15587,7 +15587,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a phone number value.",
 				Category: "contacts",
 				Subcategory: "Phone",
-				InsertionSnippet: "phoneNumber(Ask)",
+				InsertionSnippet: "phoneNumber(<#number#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -15662,7 +15662,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Plays an audiobook in Books. `target` is expected to be a book or audiobook reference.",
 				Category: "documents",
 				Subcategory: "Books",
-				InsertionSnippet: "playAudiobook(Ask)",
+				InsertionSnippet: "playAudiobook(<#target#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "Books",
@@ -15704,7 +15704,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add music to the end of the queue.",
 				Category: "",
 				Subcategory: "Playback",
-				InsertionSnippet: "playLater(Ask)",
+				InsertionSnippet: "playLater(<#music#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFWhenToPlay": "Later",
@@ -15742,7 +15742,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Set music to play with modes for shuffle and repeat.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "playMusic(Ask)",
+				InsertionSnippet: "playMusic(<#music#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -15811,7 +15811,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Add music to play next in the queue.",
 				Category: "",
 				Subcategory: "Playback",
-				InsertionSnippet: "playNext(Ask)",
+				InsertionSnippet: "playNext(<#music#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFWhenToPlay": "Next",
@@ -15849,7 +15849,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Podcasts",
-				InsertionSnippet: "playPodcast(Ask)",
+				InsertionSnippet: "playPodcast(<#podcast#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -15898,7 +15898,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Play a sound.",
 				Category: "",
 				Subcategory: "Audio",
-				InsertionSnippet: "playSound(Ask)",
+				InsertionSnippet: "playSound(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -15990,7 +15990,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Prepend text to a file.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "prependToFile(Ask, Ask)",
+				InsertionSnippet: "prependToFile(<#filePath#>, <#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFAppendFileWriteMode": "Prepend",
@@ -16072,7 +16072,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Print input to a printer.",
 				Category: "",
 				Subcategory: "Printing",
-				InsertionSnippet: "print(Ask)",
+				InsertionSnippet: "print(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16108,7 +16108,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Ask for input with prompt, with optional inputType and defaultValue.",
 				Category: "basic",
 				Subcategory: "Notifications",
-				InsertionSnippet: "prompt(Ask)",
+				InsertionSnippet: "prompt(<#prompt#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16219,7 +16219,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Preview `input` in Quick Look.",
 				Category: "",
 				Subcategory: "Output",
-				InsertionSnippet: "quicklook(Ask)",
+				InsertionSnippet: "quicklook(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16308,7 +16308,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Quit an app.",
 				Category: "device",
 				Subcategory: "Apps",
-				InsertionSnippet: "quitApp(Ask)",
+				InsertionSnippet: "quitApp(<#appID#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16344,7 +16344,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Returns a random number between `min` and `max`.",
 				Category: "",
 				Subcategory: "Numbers",
-				InsertionSnippet: "randomNumber(Ask, Ask)",
+				InsertionSnippet: "randomNumber(<#min#>, <#max#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16394,7 +16394,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "rawAction(Ask)",
+				InsertionSnippet: "rawAction(<#identifier#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16607,7 +16607,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "removeBackground(Ask)",
+				InsertionSnippet: "removeBackground(<#image#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16658,7 +16658,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Remove a detail from a contact.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "removeContactDetail(Ask, Ask)",
+				InsertionSnippet: "removeContactDetail(<#contact#>, <#detail#>)",
 			},
 			StaticParameters: map[string]any{
 				"Mode": "Remove",
@@ -16712,7 +16712,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Remove an event.",
 				Category: "",
 				Subcategory: "Calendars",
-				InsertionSnippet: "removeEvents(Ask)",
+				InsertionSnippet: "removeEvents(<#events#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16762,7 +16762,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "removeFromAlbum(Ask, Ask)",
+				InsertionSnippet: "removeFromAlbum(<#photo#>, <#album#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16811,7 +16811,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Reminders",
-				InsertionSnippet: "removeReminders(Ask)",
+				InsertionSnippet: "removeReminders(<#reminders#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16846,7 +16846,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Remove a location from the Weather app.",
 				Category: "",
 				Subcategory: "Weather",
-				InsertionSnippet: "removeWeatherLocation(Ask)",
+				InsertionSnippet: "removeWeatherLocation(<#location#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16881,7 +16881,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "rename(Ask, Ask)",
+				InsertionSnippet: "rename(<#file#>, <#newName#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16931,7 +16931,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "renameAlbum(Ask, Ask)",
+				InsertionSnippet: "renameAlbum(<#album#>, <#newTitle#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -16981,7 +16981,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Replace `find` in `subject`, optionally using a regular expression or case insensitive search. Use raw text (single quotes) to match using an regular expression with braces to avoid conflicts with the regular expression syntax.",
 				Category: "",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "replaceText(Ask, Ask, Ask)",
+				InsertionSnippet: "replaceText(<#find#>, <#replacement#>, <#subject#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17074,7 +17074,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "resizeImage(Ask, Ask)",
+				InsertionSnippet: "resizeImage(<#image#>, <#width#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17138,7 +17138,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "resizeImageByLongestEdge(Ask, Ask)",
+				InsertionSnippet: "resizeImageByLongestEdge(<#image#>, <#length#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFImageResizeKey": "Longest Edge",
@@ -17191,7 +17191,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "resizeImageByPercent(Ask, Ask)",
+				InsertionSnippet: "resizeImageByPercent(<#image#>, <#percentage#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFImageResizeKey": "Percentage",
@@ -17244,7 +17244,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Resize a window to defined size.",
 				Category: "",
 				Subcategory: "Windows",
-				InsertionSnippet: "resizeWindow(Ask, Ask)",
+				InsertionSnippet: "resizeWindow(<#window#>, <#configuration#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17359,7 +17359,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "reveal(Ask)",
+				InsertionSnippet: "reveal(<#files#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17395,7 +17395,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Rotate an image or a video",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "rotateMedia(Ask, Ask)",
+				InsertionSnippet: "rotateMedia(<#media#>, <#degrees#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17446,7 +17446,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Rounds number to specified rounding place.",
 				Category: "",
 				Subcategory: "Rounding",
-				InsertionSnippet: "round(Ask)",
+				InsertionSnippet: "round(<#number#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFRoundMode": "Normal",
@@ -17516,7 +17516,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Run a shortcut from this shortcut, with optional input.",
 				Category: "shortcuts",
 				Subcategory: "",
-				InsertionSnippet: "run(Ask)",
+				InsertionSnippet: "run(<#shortcutName#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17566,7 +17566,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Scripts",
-				InsertionSnippet: "runAppleScript(Ask)",
+				InsertionSnippet: "runAppleScript(<#script#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17616,7 +17616,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Scripts",
-				InsertionSnippet: "runJSAutomation(Ask)",
+				InsertionSnippet: "runJSAutomation(<#script#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17665,7 +17665,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Run some custom JavaScript on the current webpage in Safari.",
 				Category: "",
 				Subcategory: "Safari",
-				InsertionSnippet: "runJavaScriptOnWebpage(Ask)",
+				InsertionSnippet: "runJavaScriptOnWebpage(<#javascript#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17715,7 +17715,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Run an SSH script using connection details.",
 				Category: "",
 				Subcategory: "Server",
-				InsertionSnippet: "runSSHScript(Ask, Ask, Ask, Ask, Ask, Ask)",
+				InsertionSnippet: "runSSHScript(<#script#>, <#input#>, <#host#>, <#port#>, <#user#>, <#authType#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17851,7 +17851,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Run the current Shortcut with optional output.",
 				Category: "shortcuts",
 				Subcategory: "",
-				InsertionSnippet: "runSelf(Ask)",
+				InsertionSnippet: "runSelf(<#output#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17887,7 +17887,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Scripts",
-				InsertionSnippet: "runShellScript(Ask)",
+				InsertionSnippet: "runShellScript(<#script#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -17982,7 +17982,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Save `content` to `path`, optionally into a referenced `folder`.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "saveFile(Ask, Ask)",
+				InsertionSnippet: "saveFile(<#path#>, <#content#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFAskWhereToSave": false,
@@ -18065,7 +18065,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Prompt the user to choose a location to save the file.",
 				Category: "",
 				Subcategory: "Files & Folders",
-				InsertionSnippet: "saveFilePrompt(Ask)",
+				InsertionSnippet: "saveFilePrompt(<#file#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18115,7 +18115,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "savePhoto(Ask)",
+				InsertionSnippet: "savePhoto(<#image#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18166,7 +18166,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Save a file to Dropbox. Requires user to setup Dropbox account in Shortcuts app.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "saveToDropbox(Ask, Ask)",
+				InsertionSnippet: "saveToDropbox(<#file#>, <#path#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFAskWhereToSave": false,
@@ -18234,7 +18234,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Prompt to save a file to Dropbox. Requires user to setup Dropbox account in Shortcuts app.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "saveToDropboxPrompt(Ask)",
+				InsertionSnippet: "saveToDropboxPrompt(<#file#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFAskWhereToSave": true,
@@ -18339,7 +18339,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get results from search on iOS or iPadOS, and Spotlight on macOS.",
 				Category: "",
 				Subcategory: "Search",
-				InsertionSnippet: "search(Ask)",
+				InsertionSnippet: "search(<#query#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18404,7 +18404,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "searchAppStore(Ask)",
+				InsertionSnippet: "searchAppStore(<#query#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18495,7 +18495,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Gets GIFs from Giphy for a search query.",
 				Category: "",
 				Subcategory: "Giphy",
-				InsertionSnippet: "searchGiphy(Ask)",
+				InsertionSnippet: "searchGiphy(<#query#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18545,7 +18545,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Searches passwords in the Passwords app.",
 				Category: "",
 				Subcategory: "Passwords",
-				InsertionSnippet: "searchPasswords(Ask)",
+				InsertionSnippet: "searchPasswords(<#query#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18581,7 +18581,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "searchPhotos(Ask)",
+				InsertionSnippet: "searchPhotos(<#criteria#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18616,7 +18616,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Podcasts",
-				InsertionSnippet: "searchPodcasts(Ask)",
+				InsertionSnippet: "searchPodcasts(<#query#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18708,7 +18708,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Search the users Shortcuts.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "searchShortcuts(Ask)",
+				InsertionSnippet: "searchShortcuts(<#query#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18744,7 +18744,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Opens Spotlight search, optionally with search criteria.",
 				Category: "device",
 				Subcategory: "Spotlight",
-				InsertionSnippet: "searchSpotlight(Ask)",
+				InsertionSnippet: "searchSpotlight(<#criteria#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "Spotlight",
@@ -18786,7 +18786,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Voice Memos",
-				InsertionSnippet: "searchVoiceMemos(Ask)",
+				InsertionSnippet: "searchVoiceMemos(<#search#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18821,7 +18821,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Search the web using a provided search engine and query.",
 				Category: "",
 				Subcategory: "Safari",
-				InsertionSnippet: "searchWeb(Ask, Ask)",
+				InsertionSnippet: "searchWeb(<#engine#>, <#query#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -18872,7 +18872,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Search for music or media on iTunes.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "searchiTunes(Ask)",
+				InsertionSnippet: "searchiTunes(<#query#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19319,7 +19319,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Send an email to a contact.",
 				Category: "",
 				Subcategory: "Email & SMS Messaging",
-				InsertionSnippet: "sendEmail(Ask, Ask, Ask, Ask)",
+				InsertionSnippet: "sendEmail(<#contact#>, <#from#>, <#subject#>, <#body#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19468,7 +19468,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Send an SMS/iMessage to a contact.",
 				Category: "",
 				Subcategory: "Email & SMS Messaging",
-				InsertionSnippet: "sendMessage(Ask, Ask)",
+				InsertionSnippet: "sendMessage(<#contact#>, <#message#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19584,7 +19584,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Connectivity",
-				InsertionSnippet: "setAirplaneMode(Ask)",
+				InsertionSnippet: "setAirplaneMode(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19620,7 +19620,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Turn announce notifications on or off.",
 				Category: "",
 				Subcategory: "Notifications",
-				InsertionSnippet: "setAnnounceNotifications(Ask)",
+				InsertionSnippet: "setAnnounceNotifications(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19655,7 +19655,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "setAutoAnswerCalls(Ask)",
+				InsertionSnippet: "setAutoAnswerCalls(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19728,7 +19728,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Hearing",
-				InsertionSnippet: "setBackgroundSounds(Ask)",
+				InsertionSnippet: "setBackgroundSounds(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19763,7 +19763,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "setBackgroundSoundsVolume(Ask)",
+				InsertionSnippet: "setBackgroundSoundsVolume(<#volume#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19798,7 +19798,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Connectivity",
-				InsertionSnippet: "setBluetooth(Ask)",
+				InsertionSnippet: "setBluetooth(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19833,7 +19833,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Display",
-				InsertionSnippet: "setBrightness(Ask)",
+				InsertionSnippet: "setBrightness(<#brightness#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19868,7 +19868,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Connectivity",
-				InsertionSnippet: "setCellularData(Ask)",
+				InsertionSnippet: "setCellularData(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19903,7 +19903,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setClassicInvert(Ask)",
+				InsertionSnippet: "setClassicInvert(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -19938,7 +19938,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Set the contents of the clipboard.",
 				Category: "",
 				Subcategory: "Clipboard",
-				InsertionSnippet: "setClipboard(Ask)",
+				InsertionSnippet: "setClipboard(<#value#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20002,7 +20002,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Hearing",
-				InsertionSnippet: "setClosedCaptionsSDH(Ask)",
+				InsertionSnippet: "setClosedCaptionsSDH(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20037,7 +20037,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setColorFilters(Ask)",
+				InsertionSnippet: "setColorFilters(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20072,7 +20072,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setContrast(Ask)",
+				InsertionSnippet: "setContrast(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20192,7 +20192,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Personal Hotspot",
-				InsertionSnippet: "setHotspot(Ask)",
+				InsertionSnippet: "setHotspot(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20228,7 +20228,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Update the password to your personal hotspot.",
 				Category: "",
 				Subcategory: "HotSpot",
-				InsertionSnippet: "setHotspotPassword(Ask)",
+				InsertionSnippet: "setHotspotPassword(<#newPassword#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20263,7 +20263,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Hearing",
-				InsertionSnippet: "setLEDFlash(Ask)",
+				InsertionSnippet: "setLEDFlash(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20298,7 +20298,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Hearing",
-				InsertionSnippet: "setLeftRightBalance(Ask)",
+				InsertionSnippet: "setLeftRightBalance(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20347,7 +20347,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Hearing",
-				InsertionSnippet: "setLiveCaptions(Ask)",
+				InsertionSnippet: "setLiveCaptions(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20383,7 +20383,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Battery",
-				InsertionSnippet: "setLowPowerMode(Ask)",
+				InsertionSnippet: "setLowPowerMode(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20419,7 +20419,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Hearing",
-				InsertionSnippet: "setMediaBackgroundSounds(Ask)",
+				InsertionSnippet: "setMediaBackgroundSounds(<#status#>)",
 			},
 			StaticParameters: map[string]any{
 				"setting": "whenMediaIsPlaying",
@@ -20458,7 +20458,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Metadata",
-				InsertionSnippet: "setMetadata(Ask)",
+				InsertionSnippet: "setMetadata(<#media#>)",
 			},
 			StaticParameters: map[string]any{
 				"Metadata": true,
@@ -20580,7 +20580,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Hearing",
-				InsertionSnippet: "setMonoAudio(Ask)",
+				InsertionSnippet: "setMonoAudio(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20615,7 +20615,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Set the name of an item.",
 				Category: "",
 				Subcategory: "Items",
-				InsertionSnippet: "setName(Ask, Ask)",
+				InsertionSnippet: "setName(<#item#>, <#name#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20679,7 +20679,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Display",
-				InsertionSnippet: "setNightShift(Ask)",
+				InsertionSnippet: "setNightShift(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20714,7 +20714,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Set AirPods noise control / listening mode.",
 				Category: "",
 				Subcategory: "Audio",
-				InsertionSnippet: "setNoiseControlMode(Ask)",
+				InsertionSnippet: "setNoiseControlMode(<#mode#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20764,7 +20764,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Display",
-				InsertionSnippet: "setOrientationLock(Ask)",
+				InsertionSnippet: "setOrientationLock(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20800,7 +20800,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Set the location and notes for your parked car.",
 				Category: "",
 				Subcategory: "Maps",
-				InsertionSnippet: "setParkedCar(Ask)",
+				InsertionSnippet: "setParkedCar(<#location#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20863,7 +20863,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Route audio to a playback destination.",
 				Category: "",
 				Subcategory: "Playback",
-				InsertionSnippet: "setPlaybackDestination(Ask)",
+				InsertionSnippet: "setPlaybackDestination(<#route#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20913,7 +20913,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setReduceMotion(Ask)",
+				InsertionSnippet: "setReduceMotion(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20948,7 +20948,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setReduceTransparency(Ask)",
+				InsertionSnippet: "setReduceTransparency(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -20984,7 +20984,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Turn silence unknown callers on or off.",
 				Category: "",
 				Subcategory: "Phone",
-				InsertionSnippet: "setSilenceUnknownCallers(Ask)",
+				InsertionSnippet: "setSilenceUnknownCallers(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21020,7 +21020,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Turns silent mode on or off.",
 				Category: "settings",
 				Subcategory: "Silent Mode",
-				InsertionSnippet: "setSilentMode(Ask)",
+				InsertionSnippet: "setSilentMode(<#state#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "ShortcutsActions",
@@ -21061,7 +21061,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setSmartInvert(Ask)",
+				InsertionSnippet: "setSmartInvert(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21136,7 +21136,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "setStageManager(Ask)",
+				InsertionSnippet: "setStageManager(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21258,7 +21258,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "setSwitchControl(Ask)",
+				InsertionSnippet: "setSwitchControl(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21293,7 +21293,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Sets the system text size.",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setTextSize(Ask)",
+				InsertionSnippet: "setTextSize(<#size#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21330,7 +21330,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Display",
-				InsertionSnippet: "setTrueTone(Ask)",
+				InsertionSnippet: "setTrueTone(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21365,7 +21365,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Connect, disconnect, or toggle a VPN configuration.",
 				Category: "",
 				Subcategory: "VPN",
-				InsertionSnippet: "setVPN(Ask)",
+				InsertionSnippet: "setVPN(<#operation#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21431,7 +21431,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Set the value of `key` to `value` in `dictionary`.",
 				Category: "",
 				Subcategory: "Dictionaries",
-				InsertionSnippet: "setValue(Ask, Ask, Ask)",
+				InsertionSnippet: "setValue(<#dictionary#>, <#key#>, <#value#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21494,7 +21494,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setVoiceControl(Ask)",
+				InsertionSnippet: "setVoiceControl(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21529,7 +21529,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "setVolume(Ask)",
+				InsertionSnippet: "setVolume(<#volume#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21578,7 +21578,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Sets the device wallpaper to `input`.",
 				Category: "",
 				Subcategory: "Wallpaper",
-				InsertionSnippet: "setWallpaper(Ask)",
+				InsertionSnippet: "setWallpaper(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21697,7 +21697,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setWhitePoint(Ask)",
+				InsertionSnippet: "setWhitePoint(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21732,7 +21732,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Connectivity",
-				InsertionSnippet: "setWifi(Ask)",
+				InsertionSnippet: "setWifi(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21810,7 +21810,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Vision",
-				InsertionSnippet: "setZoom(Ask)",
+				InsertionSnippet: "setZoom(<#status#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21845,7 +21845,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Prompt the user to share `input`.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "share(Ask)",
+				InsertionSnippet: "share(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21880,7 +21880,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Show `input`.",
 				Category: "",
 				Subcategory: "Output",
-				InsertionSnippet: "show(Ask)",
+				InsertionSnippet: "show(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21935,7 +21935,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Show `event` in the calendar app.",
 				Category: "",
 				Subcategory: "Calendars",
-				InsertionSnippet: "showInCalendar(Ask)",
+				InsertionSnippet: "showInCalendar(<#event#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -21970,7 +21970,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "showIniTunes(Ask)",
+				InsertionSnippet: "showIniTunes(<#product#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22005,7 +22005,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Shows a custom notification message.",
 				Category: "",
 				Subcategory: "Notifications",
-				InsertionSnippet: "showNotification(Ask)",
+				InsertionSnippet: "showNotification(<#body#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22103,7 +22103,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Show webpage using Safari.",
 				Category: "",
 				Subcategory: "Safari",
-				InsertionSnippet: "showWebpage(Ask)",
+				InsertionSnippet: "showWebpage(<#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22269,7 +22269,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Speaks the provided text, optionally in another language.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "speak(Ask)",
+				InsertionSnippet: "speak(<#prompt#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22376,7 +22376,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Split apps across the screen.",
 				Category: "device",
 				Subcategory: "Apps",
-				InsertionSnippet: "splitApps(Ask, Ask)",
+				InsertionSnippet: "splitApps(<#firstAppID#>, <#secondAppID#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22443,7 +22443,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Splits a PDF into pages.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "splitPDF(Ask)",
+				InsertionSnippet: "splitPDF(<#pdf#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22480,7 +22480,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Split text by a separator.",
 				Category: "text",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "splitText(Ask)",
+				InsertionSnippet: "splitText(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22694,7 +22694,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Perform a statistical operation on `input`.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "statistic(Ask, Ask)",
+				InsertionSnippet: "statistic(<#operation#>, <#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22820,7 +22820,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Store content by a key, optionally globally or specific to the Shortcut.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "storeValue(Ask, Ask)",
+				InsertionSnippet: "storeValue(<#key#>, <#value#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22884,7 +22884,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a location value with an address.",
 				Category: "",
 				Subcategory: "Addresses",
-				InsertionSnippet: "streetAddress(Ask, Ask, Ask, Ask, Ask, Ask)",
+				InsertionSnippet: "streetAddress(<#addressLine2#>, <#addressLine2#>, <#city#>, <#state#>, <#country#>, <#zipCode#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -22990,7 +22990,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Image Editing",
-				InsertionSnippet: "stripImageMetadata(Ask)",
+				InsertionSnippet: "stripImageMetadata(<#image#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFImageFormat": "Match Input",
@@ -23030,7 +23030,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "Metadata",
-				InsertionSnippet: "stripMediaMetadata(Ask)",
+				InsertionSnippet: "stripMediaMetadata(<#media#>)",
 			},
 			StaticParameters: map[string]any{
 				"Metadata": true,
@@ -23292,7 +23292,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "text(Ask)",
+				InsertionSnippet: "text(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -23329,7 +23329,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Capitalizes the text with Title Case.",
 				Category: "",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "titleCase(Ask)",
+				InsertionSnippet: "titleCase(<#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"Show-text": true,
@@ -23393,7 +23393,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Toggle an alarm.",
 				Category: "calendar",
 				Subcategory: "Alarms",
-				InsertionSnippet: "toggleAlarm(Ask)",
+				InsertionSnippet: "toggleAlarm(<#alarm#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "Clock",
@@ -24410,7 +24410,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Transcribes text from the provided audio.",
 				Category: "text",
 				Subcategory: "",
-				InsertionSnippet: "transcribeText(Ask)",
+				InsertionSnippet: "transcribeText(<#audio#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "ShortcutsActions",
@@ -24452,7 +24452,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Translate text.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "translate(Ask, Ask)",
+				InsertionSnippet: "translate(<#text#>, <#to#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -24520,7 +24520,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Prompts the user to trim the video.",
 				Category: "",
 				Subcategory: "Video Editing",
-				InsertionSnippet: "trimVideo(Ask)",
+				InsertionSnippet: "trimVideo(<#video#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -24556,7 +24556,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Trim any whitespace from the start and end of `text`.",
 				Category: "",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "trimWhitespace(Ask)",
+				InsertionSnippet: "trimWhitespace(<#text#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -24592,7 +24592,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Turn off an alarm.",
 				Category: "calendar",
 				Subcategory: "Alarms",
-				InsertionSnippet: "turnOffAlarm(Ask)",
+				InsertionSnippet: "turnOffAlarm(<#alarm#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "Clock",
@@ -24652,7 +24652,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Turn on an alarm.",
 				Category: "calendar",
 				Subcategory: "Alarms",
-				InsertionSnippet: "turnOnAlarm(Ask)",
+				InsertionSnippet: "turnOnAlarm(<#alarm#>)",
 			},
 			AppIntent: &AppIntentDescriptor{
 				Name: "Clock",
@@ -24712,7 +24712,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Get the type of input.",
 				Category: "",
 				Subcategory: "",
-				InsertionSnippet: "typeOf(Ask)",
+				InsertionSnippet: "typeOf(<#input#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -24748,7 +24748,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "contacts",
 				Subcategory: "",
-				InsertionSnippet: "updateContact(Ask, Ask, Ask)",
+				InsertionSnippet: "updateContact(<#contact#>, <#detail#>, <#value#>)",
 			},
 			StaticParameters: map[string]any{
 				"Mode": "Set",
@@ -24818,7 +24818,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Transforms the text to all uppercase.",
 				Category: "",
 				Subcategory: "Text Editing",
-				InsertionSnippet: "uppercase(Ask)",
+				InsertionSnippet: "uppercase(<#text#>)",
 			},
 			StaticParameters: map[string]any{
 				"Show-text": true,
@@ -24857,7 +24857,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Create a URL value.",
 				Category: "web",
 				Subcategory: "URLs",
-				InsertionSnippet: "url(Ask)",
+				InsertionSnippet: "url(<#url#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -24894,7 +24894,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Decode text from URL encoding.",
 				Category: "",
 				Subcategory: "URLs",
-				InsertionSnippet: "urlDecode(Ask)",
+				InsertionSnippet: "urlDecode(<#input#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFEncodeMode": "Decode",
@@ -24934,7 +24934,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Encode text for a URL.",
 				Category: "",
 				Subcategory: "URLs",
-				InsertionSnippet: "urlEncode(Ask)",
+				InsertionSnippet: "urlEncode(<#input#>)",
 			},
 			StaticParameters: map[string]any{
 				"WFEncodeMode": "Encode",
@@ -25008,7 +25008,7 @@ func initDefaultRegistry() *Registry {
 				Description: "Wait a specified number of seconds.",
 				Category: "",
 				Subcategory: "Control Flow",
-				InsertionSnippet: "wait(Ask)",
+				InsertionSnippet: "wait(<#seconds#>)",
 			},
 			Parameters: []ParameterSchema{
 				{
@@ -25063,7 +25063,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "controlflow",
 				Subcategory: "",
-				InsertionSnippet: "if (Ask) {\n\t\n}",
+				InsertionSnippet: "if (<#condition#>) {\n\t\n}",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -25105,7 +25105,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "controlflow",
 				Subcategory: "",
-				InsertionSnippet: "repeat (Ask) {\n\t\n}",
+				InsertionSnippet: "repeat (<#count#>) {\n\t\n}",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -25126,7 +25126,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "controlflow",
 				Subcategory: "",
-				InsertionSnippet: "for item in Ask {\n\t\n}",
+				InsertionSnippet: "for item in <#items#> {\n\t\n}",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -25147,7 +25147,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "controlflow",
 				Subcategory: "",
-				InsertionSnippet: "var variable = Ask",
+				InsertionSnippet: "var variable = <#value#>",
 			},
 			Parameters: []ParameterSchema{
 			},
@@ -25168,7 +25168,7 @@ func initDefaultRegistry() *Registry {
 				Description: "",
 				Category: "controlflow",
 				Subcategory: "",
-				InsertionSnippet: "variable += Ask",
+				InsertionSnippet: "variable += <#value#>",
 			},
 			Parameters: []ParameterSchema{
 			},

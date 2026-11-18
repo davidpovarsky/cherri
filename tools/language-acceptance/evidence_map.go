@@ -253,6 +253,13 @@ func deriveAcceptanceTestIDs(id, group string) []string {
 		}
 		return ids
 	}
+	if tests, ok := metadataProductionTests[id]; ok {
+		ids := make([]string, 0, len(tests))
+		for _, test := range tests {
+			ids = append(ids, "github.com/electrikmilk/cherri:"+test)
+		}
+		return ids
+	}
 	if tests, ok := catalogProductionTests[id]; ok {
 		ids := make([]string, 0, len(tests))
 		for _, test := range tests {

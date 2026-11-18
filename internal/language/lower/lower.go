@@ -67,6 +67,8 @@ type Lowerer struct {
 	bindings                map[string]BindingRef
 	functions               map[string]*syntax.FunctionDecl
 	setupQuestions          map[string]*syntax.SetupDecl
+	setupBindings           map[string]*setupQuestionLoweringBinding
+	setupDeclarationOrder   []*setupQuestionLoweringBinding
 	enums                   map[string]*syntax.EnumDecl
 	types                   map[string]*syntax.TypeDecl
 	actions                 map[string]*syntax.ActionDecl
@@ -404,6 +406,11 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 	if l.exprTypes == nil || l.enumValues == nil {
 		analyzer := analysis.NewAnalyzer(l.registry)
 		analyzer.Analyze(prog)
+		for _, diagnostic := range analyzer.Diagnostics() {
+			if diagnostic.Code == analysis.CodeSetupBinding && diagnostic.Severity == analysis.SeverityError {
+				return fmt.Errorf("%s: %s", diagnostic.Code, diagnostic.Message)
+			}
+		}
 		if l.exprTypes == nil {
 			l.exprTypes = analyzer.ExprTypes()
 		}
@@ -438,6 +445,11 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 			if d.DefaultValue != "" {
 				q["DefaultValue"] = d.DefaultValue
 			}
+			if l.setupBindings == nil {
+				l.setupBindings = map[string]*setupQuestionLoweringBinding{}
+			}
+			l.setupBindings[d.Name] = &setupQuestionLoweringBinding{question: q}
+			l.setupDeclarationOrder = append(l.setupDeclarationOrder, l.setupBindings[d.Name])
 			l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, q)
 			if l.session != nil {
 				l.session.AddImportQuestion(q)
@@ -478,7 +490,10 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		if err != nil {
 			return err
 		}
-		return l.emitErr
+		if l.emitErr != nil {
+			return l.emitErr
+		}
+		return l.finalizeSetupQuestionBindings()
 	}
 
 	// 3. Process statements in source order
@@ -502,7 +517,10 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 		l.session.SetMetadata("inputContentItemClasses", l.workflow.InputContentItemClasses)
 	}
 
-	return l.emitErr
+	if l.emitErr != nil {
+		return l.emitErr
+	}
+	return l.finalizeSetupQuestionBindings()
 }
 
 // LowerProgram compiles an AST Program into NativeWorkflow IR.
@@ -966,12 +984,10 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 				}
 			case "targets":
 				if list, ok := f.Value.(*syntax.ListExpr); ok {
-					var targets []string
 					hasMac := false
 					hasNonMac := false
 					for _, el := range list.Elements {
 						if lit, ok := el.(*syntax.LiteralExpr); ok {
-							targets = append(targets, lit.Value)
 							v := strings.ToLower(lit.Value)
 							if v == "mac" || v == "macos" {
 								hasMac = true
@@ -980,9 +996,7 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 							}
 						}
 					}
-					if len(targets) > 0 {
-						l.workflow.WorkflowTypes = targets
-					}
+					// OS targets constrain availability; only from controls native workflow surfaces.
 					if hasMac && !hasNonMac {
 						val := true
 						l.isMac = &val
@@ -1154,19 +1168,6 @@ func (l *Lowerer) lowerShortcutHeader(d *syntax.ShortcutDecl) error {
 		}
 	}
 	return nil
-}
-
-func (l *Lowerer) bindSetupQuestion(qName string, wireKey string) {
-	for idx, existingQ := range l.workflow.ImportQuestions {
-		if existingQ["ParameterKey"] == qName {
-			l.workflow.ImportQuestions[idx]["ActionIndex"] = len(l.workflow.Actions)
-			l.workflow.ImportQuestions[idx]["ParameterKey"] = wireKey
-			break
-		}
-	}
-	if l.session != nil {
-		l.session.BindImportQuestion(qName, wireKey)
-	}
 }
 
 func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWorkflow, error) {
@@ -5598,6 +5599,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	uuid := l.GenerateUUID()
 	prevInExprStmt := l.inExprStmt
 	l.inExprStmt = false
+	var setupArguments []setupQuestionArgument
 
 	if l.session != nil {
 		callArgs := make([]backend.CallArgument, 0, len(call.NamedArgs)+1)
@@ -5643,10 +5645,8 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 						wireKey = primParam.Label
 					}
 				}
-				if ident, isIdent := call.PrimaryArg.(*syntax.IdentExpr); isIdent {
-					if _, isSetup := l.setupQuestions[ident.Name]; isSetup {
-						l.bindSetupQuestion(ident.Name, wireKey)
-					}
+				if name, isSetup := l.directSetupQuestion(call.PrimaryArg); isSetup {
+					setupArguments = append(setupArguments, setupQuestionArgument{name, wireKey})
 				}
 				callArgs = append(callArgs, backend.CallArgument{
 					ParameterID: wireKey,
@@ -5723,10 +5723,8 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 						wireKey = param.Label
 					}
 				}
-				if ident, isIdent := nArg.Value.(*syntax.IdentExpr); isIdent {
-					if _, isSetup := l.setupQuestions[ident.Name]; isSetup {
-						l.bindSetupQuestion(ident.Name, wireKey)
-					}
+				if name, isSetup := l.directSetupQuestion(nArg.Value); isSetup {
+					setupArguments = append(setupArguments, setupQuestionArgument{name, wireKey})
 				}
 				pos := matchedIdx
 				if pos < 0 {
@@ -5763,6 +5761,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		outUUID, err := l.session.EmitResolvedCall(resolvedCall)
 		if err != nil {
 			return nil, err
+		}
+		for _, argument := range setupArguments {
+			if err := l.bindSetupQuestion(argument.name, argument.wireKey, uuid); err != nil {
+				return nil, err
+			}
 		}
 
 		if outUUID != "" {
@@ -5837,31 +5840,8 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				node.Parameters[wireKey] = primVal
 			}
 
-			if ident, isIdent := call.PrimaryArg.(*syntax.IdentExpr); isIdent {
-				if setupQ, isSetup := l.setupQuestions[ident.Name]; isSetup {
-					found := false
-					for idx, existingQ := range l.workflow.ImportQuestions {
-						if existingQ["ParameterKey"] == ident.Name {
-							l.workflow.ImportQuestions[idx]["ActionIndex"] = len(l.workflow.Actions)
-							l.workflow.ImportQuestions[idx]["ParameterKey"] = wireKey
-							found = true
-							break
-						}
-					}
-					if !found {
-						qMap := map[string]interface{}{
-							"ActionIndex":  len(l.workflow.Actions),
-							"ParameterKey": wireKey,
-							"Text":         setupQ.Prompt,
-							"DefaultValue": setupQ.DefaultValue,
-							"Category":     "Parameter",
-						}
-						l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, qMap)
-					}
-					if setupQ.DefaultValue != "" {
-						node.Parameters[wireKey] = setupQ.DefaultValue
-					}
-				}
+			if name, isSetup := l.directSetupQuestion(call.PrimaryArg); isSetup {
+				setupArguments = append(setupArguments, setupQuestionArgument{name, wireKey})
 			}
 		}
 	}
@@ -5927,36 +5907,18 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				node.Parameters[wireKey] = val
 			}
 
-			if ident, isIdent := nArg.Value.(*syntax.IdentExpr); isIdent {
-				if setupQ, isSetup := l.setupQuestions[ident.Name]; isSetup {
-					found := false
-					for idx, existingQ := range l.workflow.ImportQuestions {
-						if existingQ["ParameterKey"] == ident.Name {
-							l.workflow.ImportQuestions[idx]["ActionIndex"] = len(l.workflow.Actions)
-							l.workflow.ImportQuestions[idx]["ParameterKey"] = wireKey
-							found = true
-							break
-						}
-					}
-					if !found {
-						qMap := map[string]interface{}{
-							"ActionIndex":  len(l.workflow.Actions),
-							"ParameterKey": wireKey,
-							"Text":         setupQ.Prompt,
-							"DefaultValue": setupQ.DefaultValue,
-							"Category":     "Parameter",
-						}
-						l.workflow.ImportQuestions = append(l.workflow.ImportQuestions, qMap)
-					}
-					if setupQ.DefaultValue != "" {
-						node.Parameters[wireKey] = setupQ.DefaultValue
-					}
-				}
+			if name, isSetup := l.directSetupQuestion(nArg.Value); isSetup {
+				setupArguments = append(setupArguments, setupQuestionArgument{name, wireKey})
 			}
 		}
 	}
 
 	l.emitAction(node)
+	for _, argument := range setupArguments {
+		if err := l.bindSetupQuestion(argument.name, argument.wireKey, uuid); err != nil {
+			return nil, err
+		}
+	}
 
 	if node.OutputUUID != "" {
 		return &ir.AttachmentToken{

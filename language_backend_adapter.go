@@ -32,6 +32,8 @@ type CanonicalBackendSession struct {
 	buildProfile             BuildProfile
 	nativeActionResults      map[string]*nativeActionResultBinding
 	exactNativeParameterMaps map[uintptr]bool
+	importQuestionBindings   []importQuestionBinding
+	resolvedQuestionNodes    map[string]map[string]any
 }
 
 func NewCanonicalBackendSession() *CanonicalBackendSession {
@@ -199,6 +201,15 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 		WFWorkflowActionParameters: params,
 	}
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, action)
+	if len(s.importQuestionBindings) > 0 && call.NodeID != "" {
+		if s.resolvedQuestionNodes == nil {
+			s.resolvedQuestionNodes = map[string]map[string]any{}
+		}
+		if _, exists := s.resolvedQuestionNodes[call.NodeID]; exists {
+			return "", fmt.Errorf("E_SETUP_BINDING: duplicate emitted call node")
+		}
+		s.resolvedQuestionNodes[call.NodeID] = params
+	}
 	return outputUUID, nil
 }
 
@@ -971,6 +982,7 @@ func (s *CanonicalBackendSession) AddImportQuestion(q map[string]any) {
 	defVal, _ := q["DefaultValue"].(string)
 	category, _ := q["Category"].(string)
 
+	s.importQuestionBindings = append(s.importQuestionBindings, importQuestionBinding{name: paramKey, questionIndex: len(s.shortcut.WFWorkflowImportQuestions)})
 	s.shortcut.WFWorkflowImportQuestions = append(s.shortcut.WFWorkflowImportQuestions, WFQuestion{
 		ActionIndex:  actionIndex,
 		ParameterKey: paramKey,
@@ -980,17 +992,10 @@ func (s *CanonicalBackendSession) AddImportQuestion(q map[string]any) {
 	})
 }
 
-func (s *CanonicalBackendSession) BindImportQuestion(questionName string, wireKey string) {
-	for idx, q := range s.shortcut.WFWorkflowImportQuestions {
-		if q.ParameterKey == questionName {
-			s.shortcut.WFWorkflowImportQuestions[idx].ActionIndex = len(s.shortcut.WFWorkflowActions)
-			s.shortcut.WFWorkflowImportQuestions[idx].ParameterKey = wireKey
-			break
-		}
-	}
-}
-
 func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
+	if err := s.finalizeImportQuestions(); err != nil {
+		return nil, err
+	}
 	if err := s.validateNativeActionResults(); err != nil {
 		return nil, err
 	}

@@ -1700,11 +1700,7 @@ func (r *Runner) runFunctions() {
 
 // Group 12: Metadata
 func (r *Runner) runMetadata() {
-	// M01: Header target/icon/source
-	srcM01 := "shortcut \"Test\" {\n    icon: { glyph: 59789, color: 4282601983 }\n}"
-	wfM01, errM01 := lowerSrc(r.reg, srcM01)
-	m01Passed := errM01 == nil && wfM01.IconGlyph == 59789
-	r.Record("M01", "metadata", "Header target/input/output/no-input/icon/source surfaces", "unit+native-roundtrip", []string{"unit", "native-roundtrip"}, m01Passed, "PASSED", "Shortcut header parsed and icon glyph/color lowered into NativeWorkflow")
+	r.runMetadataRequirement("M01")
 
 	// M02: Main body explicit return and Void fallthrough
 	wfM02Explicit, errM02Explicit := lowerSrc(r.reg, "return \"done\"")
@@ -1712,20 +1708,8 @@ func (r *Runner) runMetadata() {
 	m02Passed := errM02Explicit == nil && wfM02Explicit.HasExplicitReturn && errM02Void == nil && !wfM02Void.HasExplicitReturn
 	r.Record("M02", "metadata", "Main body explicit return and Void fallthrough", "native+iOS", []string{"native"}, m02Passed, "PASSED", "Explicit return emits is.workflow.actions.output and Void fallthrough omits output")
 
-	// M03: Setup question binds by node/parameter
-	srcM03 := "setup apiKey: Text {\n    prompt: \"Enter API Key\"\n}"
-	fM03 := source.NewFile("m03", "m03.cherri", 1, srcM03)
-	pM03 := syntax.NewParser(fM03)
-	progM03 := pM03.ParseProgram()
-	wfM03, errM03 := lowerSrc(r.reg, srcM03)
-	m03Passed := len(progM03.Declarations) == 1 && errM03 == nil && len(wfM03.ImportQuestions) > 0
-	r.Record("M03", "metadata", "Setup question binds by node/parameter through lowering", "unit+native-roundtrip", []string{"unit", "native-roundtrip"}, m03Passed, "PASSED", "setup declaration parsed and lowered into ImportQuestions")
-
-	// M04: Invalid setup use/reuse
-	srcM04 := "setup k: Text { prompt: \"A\" }\nsetup k: Text { prompt: \"B\" }"
-	diagsM04 := analyzeSrc(r.reg, srcM04)
-	m04Passed := len(diagsM04) > 0
-	r.Record("M04", "metadata", "Invalid setup use/reuse and Ask Each Time insertion", "unit+service", []string{"unit", "service"}, m04Passed, "PASSED", "Setup questions validated against duplicate name constraints")
+	r.runMetadataRequirement("M03")
+	r.runMetadataRequirement("M04")
 
 	// M05: Seven existing trigger families migrate without install claims and lower with exact parameters
 	legacyM05 := `#trigger battery 80

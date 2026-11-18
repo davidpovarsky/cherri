@@ -225,9 +225,11 @@ func (m *testMockSession) SetMetadata(name string, value any) {
 		m.meta[name] = value
 	}
 }
-func (m *testMockSession) AddImportQuestion(question map[string]any)              {}
-func (m *testMockSession) BindImportQuestion(questionName string, wireKey string) {}
-func (m *testMockSession) Finalize() ([]byte, error)                              { return nil, nil }
+func (m *testMockSession) AddImportQuestion(question map[string]any) {}
+func (m *testMockSession) BindImportQuestion(questionName string, wireKey string, nodeID string) error {
+	return nil
+}
+func (m *testMockSession) Finalize() ([]byte, error) { return nil, nil }
 
 func TestLowerTriggersWithParameters(t *testing.T) {
 	code := `shortcut "Automations" {
@@ -357,5 +359,3 @@ mutable += "z"
 		t.Fatalf("expected is.workflow.actions.appendvariable in emitted actions")
 	}
 }
-
-

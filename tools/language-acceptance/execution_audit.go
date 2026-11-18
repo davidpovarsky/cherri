@@ -188,6 +188,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = append([]string{}, bindingProductionPaths[row.ID]...)
 			row.PositiveAndNegative = res.Passed
 		}
+		if tests, ok := metadataProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = append([]string{}, metadataProductionPaths[row.ID]...)
+			row.PositiveAndNegative = res.Passed
+		}
 		if tests, ok := nativePreservationProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = append([]string{}, nativePreservationProductionPaths...)

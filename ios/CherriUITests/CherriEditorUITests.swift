@@ -164,9 +164,9 @@ final class CherriEditorUITests: XCTestCase {
 
         // Verify editor content reflects completed insertion and no trailing uncompleted prefix
         XCTAssertTrue(editor.waitForExistence(timeout: 5), "Editor must remain present after insertion")
-        expectedSyntheticSource = "show(Ask)"
+        expectedSyntheticSource = "show(<#input#>)"
         let insertionCompleted = waitForEditorValue(editor) {
-            Array($0.utf16) == Array("show(Ask)".utf16)
+            Array($0.utf16) == Array("show(<#input#>)".utf16)
         }
         recordEditorReceipt(stage: "completion-insertion")
         XCTAssertTrue(insertionCompleted, "Selected completion must finish updating the editor source")
@@ -174,17 +174,20 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(editorValue.contains("show"), "Editor text must reflect inserted action call")
         XCTAssertFalse(editorValue.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix("sho"), "Editor text must not end in incomplete prefix 'sho'")
 
-        // The selected catalog snippet is already a complete source program.
-        // Compile those exact inserted bytes without replacing them or typing at
-        // an unverified UIKit caret position.
+        // Compile the exact inserted bytes first. An editor hole is not an
+        // implicit Ask Each Time request, and must produce a diagnostic.
         let buildBtn = app.buttons["buildButton"]
         XCTAssertTrue(buildBtn.waitForExistence(timeout: 5), "Build button must exist in toolbar")
         buildBtn.tap()
 
-        let compiledStatus = app.staticTexts["compiledStatusText"]
-        XCTAssertTrue(compiledStatus.waitForExistence(timeout: 8), "Compiled status must appear upon successful compilation")
         let diagStatus = app.staticTexts["diagnosticStatusText"]
-        XCTAssertFalse(diagStatus.exists, "No compilation diagnostic must exist for valid inserted code")
+        XCTAssertTrue(diagStatus.waitForExistence(timeout: 8), "Unfilled insertion must be rejected")
+        XCTAssertFalse(app.staticTexts["compiledStatusText"].exists, "Unfilled insertion must not compile")
+        let filledSource = editorValue.replacingOccurrences(of: "<#input#>", with: "\"P15_INSERTED\"")
+        setEditorContent(editor, filledSource)
+        buildBtn.tap()
+        XCTAssertTrue(app.staticTexts["compiledStatusText"].waitForExistence(timeout: 8), "Explicitly filled insertion must compile")
+        XCTAssertFalse(diagStatus.exists, "Filled insertion must clear the earlier diagnostic")
 
         print("[CHECKPOINT:E01_COMPLETION_INSERTED] Contextual completion candidate selected, inserted, and verified in editor")
     }
@@ -205,16 +208,21 @@ final class CherriEditorUITests: XCTestCase {
                       "Search must expose the exact show action; no fallback cell is allowed")
         exactAction.tap()
 
-        expectedSyntheticSource = "show(Ask)"
-        let exact = waitForEditorValue(editor) { Array($0.utf16) == Array("show(Ask)".utf16) }
+        expectedSyntheticSource = "show(<#input#>)"
+        let exact = waitForEditorValue(editor) { Array($0.utf16) == Array("show(<#input#>)".utf16) }
         recordEditorReceipt(stage: "completion-insertion")
         XCTAssertTrue(exact, "Palette selection must replace only the captured sho prefix")
         let build = app.buttons["buildButton"]
         XCTAssertTrue(build.waitForExistence(timeout: 5) && build.isHittable)
         build.tap()
+        XCTAssertTrue(app.staticTexts["diagnosticStatusText"].waitForExistence(timeout: 8), "Unfilled palette input must be rejected")
+        XCTAssertFalse(app.staticTexts["compiledStatusText"].exists)
+        let insertedSource = (editor.value as? String) ?? ""
+        setEditorContent(editor, insertedSource.replacingOccurrences(of: "<#input#>", with: "\"P15_PALETTE\""))
+        build.tap()
         XCTAssertTrue(app.staticTexts["compiledStatusText"].waitForExistence(timeout: 8))
         XCTAssertFalse(app.staticTexts["diagnosticStatusText"].exists)
-        print("[CHECKPOINT:E01_PALETTE_EXACT] Exact palette action replaced the captured prefix and compiled")
+        print("[CHECKPOINT:E01_PALETTE_EXACT] Exact palette action replaced the prefix; unfilled input failed and explicitly filled input compiled")
     }
 
     // E02: Multiple diagnostics rendering with accurate inline indicators and ranges

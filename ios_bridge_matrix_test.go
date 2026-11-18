@@ -109,7 +109,7 @@ func TestIOS003_PaletteActionSnippetsInV2(t *testing.T) {
 	// Test compilation of all compiler construct snippets in v2 mode
 	for _, construct := range compilerConstructs {
 		t.Run("construct_"+construct.Name, func(t *testing.T) {
-			src := construct.InsertionSnippet + "\n"
+			src := p15FilledConstructSnippet(t, construct.Name, construct.InsertionSnippet) + "\n"
 			if construct.Name == "appendVariable" {
 				src = "var variable = Ask\n" + src
 			}

@@ -167,6 +167,6 @@ type Session interface {
 	RenameOutput(outputUUID string, newName string)
 	SetMetadata(name string, value any)
 	AddImportQuestion(question map[string]any)
-	BindImportQuestion(questionName string, wireKey string)
+	BindImportQuestion(questionName string, wireKey string, nodeID string) error
 	Finalize() ([]byte, error)
 }

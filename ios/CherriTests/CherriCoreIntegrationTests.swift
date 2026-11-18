@@ -51,24 +51,45 @@ final class CherriCoreIntegrationTests: XCTestCase {
         XCTAssertEqual(showAction.shortcutIdentifier, "is.workflow.actions.showresult")
     }
 
+    private func assertUnfilledSnippetRejected(_ source: String) async throws {
+        do {
+            _ = try await CherriCompiler.compile(source: source, name: "Unfilled Palette")
+            XCTFail("An unfilled editor hole must not become an Ask Each Time prompt")
+        } catch is CompilationDiagnostic {
+            // The expected parser diagnostic proves no native program was returned.
+        }
+    }
+
     func testPaletteSnippetSuppliesRequiredArguments() async throws {
         _ = try await CherriCompiler.compile(
             source: "show(\"Initialize catalog\")\n",
             name: "Snippet Test"
         )
         let actions = try await CherriCompiler.actionCatalog()
-
         let show = try XCTUnwrap(actions.first(where: { $0.name == "show" }))
-        XCTAssertEqual(show.insertionSnippet, "show(Ask)")
-        _ = try await CherriCompiler.compile(source: show.insertionSnippet, name: "Exact Show Snippet")
+        XCTAssertEqual(show.insertionSnippet, "show(<#input#>)")
+        try await assertUnfilledSnippetRejected(show.insertionSnippet)
+        _ = try await CherriCompiler.compile(
+            source: show.insertionSnippet.replacingOccurrences(of: "<#input#>", with: "\"P15_INPUT\""),
+            name: "Explicitly Filled Show Snippet"
+        )
 
         let alert = try XCTUnwrap(actions.first(where: { $0.name == "alert" }))
-        XCTAssertEqual(alert.insertionSnippet, "alert(Ask)")
-        _ = try await CherriCompiler.compile(source: alert.insertionSnippet + "\n", name: "Alert Snippet")
+        XCTAssertEqual(alert.insertionSnippet, "alert(<#alert#>)")
+        try await assertUnfilledSnippetRejected(alert.insertionSnippet)
+        _ = try await CherriCompiler.compile(
+            source: alert.insertionSnippet.replacingOccurrences(of: "<#alert#>", with: "\"P15_ALERT\""),
+            name: "Explicitly Filled Alert Snippet"
+        )
 
         let pdf = try XCTUnwrap(actions.first(where: { $0.name == "getPDFText" }))
-        XCTAssertTrue(pdf.insertionSnippet.contains("Ask"))
-        _ = try await CherriCompiler.compile(source: pdf.insertionSnippet + "\n", name: "PDF Snippet")
+        XCTAssertEqual(pdf.insertionSnippet, "getPDFText(<#pdfFile#>)")
+        try await assertUnfilledSnippetRejected(pdf.insertionSnippet)
+        // An explicitly authored Ask remains supported; the palette never chooses it.
+        _ = try await CherriCompiler.compile(
+            source: pdf.insertionSnippet.replacingOccurrences(of: "<#pdfFile#>", with: "Ask"),
+            name: "Explicit Ask Control"
+        )
     }
 
     func testVisualMetadataDecompileRoundTrip() async throws {
@@ -205,8 +226,10 @@ final class CherriCoreIntegrationTests: XCTestCase {
         let show = try XCTUnwrap(visible.prefix(8).first { $0.label == "show" })
         XCTAssertEqual(request.matchingItems(items, prefix: "noSuchSyntheticAction"), [])
         XCTAssertEqual(request.matchingItems(items, prefix: nil), items)
-        XCTAssertEqual(show.insertText, "show(Ask)")
-        _ = try await CherriCompiler.compile(source: try XCTUnwrap(show.insertText), name: "Current Completion")
+        XCTAssertEqual(show.insertText, "show(<#input#>)")
+        let insertion = try XCTUnwrap(show.insertText)
+        try await assertUnfilledSnippetRejected(insertion)
+        _ = try await CherriCompiler.compile(source: insertion.replacingOccurrences(of: "<#input#>", with: "\"P15_COMPLETION\""), name: "Current Completion")
     }
 
     func testCherriCompleteReturnsContextualItems() async throws {
