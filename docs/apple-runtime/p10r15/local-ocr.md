@@ -51,3 +51,12 @@ These are not human-reviewed Apple screenshot ground truth, broad OCR accuracy m
 - Pinned upstream model source: https://github.com/tesseract-ocr/tessdata_fast/tree/87416418657359cb625c412a48b6e1d6d41c29bd
 
 No paid image model or private Apple API is used.
+
+
+## Actual Apple preflight failure and CPU rerun
+
+Run44240787251 at e9c21eb56294f0fe57c133288bfedbc775d3ae32 compiled the Swift helper and failed actual Vision execution with VISION_REQUEST_FAILED/code0. No OCR or native-runtime PASS is assigned to that run. Publication staging also failed because orchestration had not created the raw artifact root.
+
+The follow-up explicitly queries supported compute-stage devices and selects a supported CPU for each stage (the documented CPU-only property is used only on older macOS). Revision3, accurate recognition, language settings and the exact generated-text oracle are unchanged. Failure diagnostics now retain a safe phase and bounded known error-domain/code chain, never localized messages, recognized text or paths. This is a candidate compatibility repair, not a proven diagnosis of the original error; the new exact-SHA Apple run must succeed before claiming Apple OCR execution.
+
+Apple references: https://developer.apple.com/documentation/vision/vnrequest/supportedcomputestagedevices ; https://developer.apple.com/documentation/vision/vnrequest/setcomputedevice(_:for:) ; https://developer.apple.com/documentation/coreml/mlcomputedevice .
