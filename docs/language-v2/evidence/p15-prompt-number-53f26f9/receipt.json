@@ -1,0 +1,90 @@
+{
+  "sourceSHA": "53f26f981695c088182655ea14145fba2e7d298f",
+  "sourceTreeCleanBefore": true,
+  "sourceTreeCleanAfter": true,
+  "batches": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "./internal/language/analysis",
+        "./internal/language/service"
+      ],
+      "exitCode": 0,
+      "counts": {
+        "pass": 45,
+        "fail": 0,
+        "skip": 0
+      },
+      "failed": [],
+      "file": "batch-1.jsonl",
+      "sha256": "ba2f8fbf7ebd7ab528dd175f1c1a8912d1bfdbdab24d20704bd6c7d60e608a9f"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "-run",
+        "^(TestP15PromptNumber.*|TestP15T08ConditionalCardinality.*|TestP12_PAR_04_PromptMultilineBoolDefaultAndInputTypeAbsence)$",
+        "."
+      ],
+      "exitCode": 0,
+      "counts": {
+        "pass": 42,
+        "fail": 0,
+        "skip": 0
+      },
+      "failed": [],
+      "file": "batch-2.jsonl",
+      "sha256": "fcc83812cf18113ef415fd95302d296c3ce91542662a5a404406c1a81367ed49"
+    }
+  ],
+  "utc": "2026-11-18T22:24:19.479985+00:00",
+  "scope": "Literal Number Ask result evidence; local production analyzer/service/native serialization and strict dual-dialect import only",
+  "cleanJob": "job_998b8e393652",
+  "baselineJob": "job_fc46c4ed7120",
+  "developmentFailure": "Initial wire oracle expected a bare attachment instead of the existing conditional Variable wrapper; shadowed .Number exercised the existing content-view syntax; missing enum member correctly emitted E_ENUM_MEMBER. Tests corrected to inspect actual wrapper, dynamic record field, and rejected schema member without changing production for those assumptions.",
+  "hostOnlySingleInput": {
+    "job": "job_c2d63e31f9bc",
+    "sourceScope": "candidate production diff identical to 53f26f9; diagnostic overlay only records compiler errors",
+    "inputs": 1,
+    "totalActions": 449,
+    "before": {
+      "natural": 413,
+      "fallback": 36,
+      "invalid": 0,
+      "demotions": 3
+    },
+    "after": {
+      "natural": 416,
+      "fallback": 33,
+      "invalid": 0,
+      "demotions": 0
+    },
+    "rawSha256": "a1b367f3cc61303a08f6d7d640c4fc199479da2b66fced451664924df436d23e",
+    "rawPublished": false,
+    "completeCorpusVerified": false
+  },
+  "independentReview": {
+    "agent": "core_acceptance",
+    "scope": "read-only cardinality refinement and focused metadata/descriptor/mode tests",
+    "concreteDefectReported": false,
+    "testsExecutedByReviewer": false
+  },
+  "files": {
+    "baseline-red.jsonl": "3f4b6d98148c851a8a5b87259913df116fceabc02b1174b145a5159334d196b8",
+    "batch-1.jsonl": "ba2f8fbf7ebd7ab528dd175f1c1a8912d1bfdbdab24d20704bd6c7d60e608a9f",
+    "batch-2.jsonl": "fcc83812cf18113ef415fd95302d296c3ce91542662a5a404406c1a81367ed49",
+    "candidate-green.jsonl": "c737c7c9033218bf18ffce2561b76eb91203187a04993cf1ff22ce43e0c47315",
+    "development-oracle-assumptions.jsonl": "a436f931eea17a711ddf7ab4683a15ccd209da05f6b0caa17adbbb9f7ccb8ffb",
+    "summary.json": "332cc87d8a902ca0fcdbe5332b599ef722ffeebb0c7506db5de24d94c646d76a"
+  }
+}

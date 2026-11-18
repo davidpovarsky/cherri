@@ -1,0 +1,51 @@
+{
+  "sourceSHA": "53f26f981695c088182655ea14145fba2e7d298f",
+  "sourceTreeCleanBefore": true,
+  "sourceTreeCleanAfter": true,
+  "batches": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "./internal/language/analysis",
+        "./internal/language/service"
+      ],
+      "exitCode": 0,
+      "counts": {
+        "pass": 45,
+        "fail": 0,
+        "skip": 0
+      },
+      "failed": [],
+      "file": "batch-1.jsonl",
+      "sha256": "ba2f8fbf7ebd7ab528dd175f1c1a8912d1bfdbdab24d20704bd6c7d60e608a9f"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "-run",
+        "^(TestP15PromptNumber.*|TestP15T08ConditionalCardinality.*|TestP12_PAR_04_PromptMultilineBoolDefaultAndInputTypeAbsence)$",
+        "."
+      ],
+      "exitCode": 0,
+      "counts": {
+        "pass": 42,
+        "fail": 0,
+        "skip": 0
+      },
+      "failed": [],
+      "file": "batch-2.jsonl",
+      "sha256": "fcc83812cf18113ef415fd95302d296c3ce91542662a5a404406c1a81367ed49"
+    }
+  ],
+  "utc": "2026-11-18T22:24:19.479985+00:00"
+}
