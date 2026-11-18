@@ -1,6 +1,6 @@
 # Compiler build profiles
 
-P10R15 adds an explicit `--build-profile=debug|release` option to the existing compiler. The default is `debug`, preserving existing diagnostic expansions. For Legacy source use `--legacy`; `--mode=legacy` is the import dialect selector and does not select the Legacy compilation path.
+P10R15 adds an explicit `--build-profile=debug|release` option to the existing compiler. The default is `debug`, preserving existing diagnostic expansions. For Legacy source use `--legacy` or `--mode=legacy`. The explicit mode selector is honored by both the direct file and `compile` subcommand routes; V2 remains the default. Conflicting or invalid mode selections fail without producing an artifact.
 
 ```sh
 cherri workflow.cherri --skip-sign --build-profile=release
@@ -20,7 +20,7 @@ The Go V2 entrypoint is `CompileSourceToPlistWithOptions(filePath, source, Compi
 - Six new test functions exercise the production Legacy and V2 compilers, source-effect preservation, exact producer/consumer edges, consumed timer rejection, nested reference mutation, invalid options and sequential profile isolation.
 - All existing Debug Stdlib tests pass, including all six display modes in both dialects. Combined command: `go test -count=1 -timeout 3m . -run '^TestBuildProfile|^TestDebugStdlib' -v` (exit 0).
 - Actual Windows CLI executable, eight controlled executions: Legacy uses `--legacy`; V2 uses the default frontend. Each dialect passed debug, release, omitted-profile default and invalid-profile rejection. The fixture emitted 7/4 actions in Legacy debug/release and 10/7 in V2; default equals debug. Both preserve the assertion message and source markers; release contains no diagnostic marker or appendvariable. Both invalid-profile executions return exit 1 and create no output.
-- Independent native plist parsing verifies the actual CLI artifacts. Raw evidence remains in the local P10R15 evidence directory. Initial `--mode=legacy` CLI probes were recognized as V2 and replaced by the explicit `--legacy` runs; those initial probes are not Legacy evidence.
+- Independent native plist parsing verifies the actual CLI artifacts. Raw evidence remains in the local P10R15 evidence directory. Before the CLI mode correction, initial `--mode=legacy` probes were recognized as V2 and replaced by explicit `--legacy` runs; those initial probes are not Legacy evidence. The subsequent CLI option suite separately exercises the corrected explicit mode selectors in both CLI forms; see cli-options-validation.md.
 
 ## Remaining gates
 
