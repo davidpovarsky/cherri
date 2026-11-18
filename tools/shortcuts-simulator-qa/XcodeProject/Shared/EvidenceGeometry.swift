@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 /// Serialization must remain finite even for an off-screen AX sentinel frame.
 /// Multiplying a finite CGFloat by ten can itself overflow before rounding.
