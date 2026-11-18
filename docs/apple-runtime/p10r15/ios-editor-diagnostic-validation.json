@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "1.0",
+  "createdAt": "2026-11-18T04:00:23.471382+00:00",
+  "baselineSha": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+  "purpose": "Diagnostic iOS evidence preservation and exact keyboard input verification; not UI acceptance",
+  "historicalRun": {
+    "runId": "44223787270",
+    "logKind": "GitHub failure-log excerpt, not complete raw xcodetest.log",
+    "logSha256": "7fbfbafe45d20d29faa52f5e7f9963a615dd9ea83a986a10b7c1c968a079546b",
+    "logBytes": 65965,
+    "observedCases": {
+      "CherriCoreIntegrationTests/testActionCatalogUsesCompilerDefinitions": "passed",
+      "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract": "passed",
+      "CherriCoreIntegrationTests/testBuildProfilesPreserveSourceThroughCABI": "passed",
+      "CherriCoreIntegrationTests/testCherriAnalyzeReturnsMultipleDiagnostics": "passed",
+      "CherriCoreIntegrationTests/testCherriCompleteReturnsContextualItems": "passed",
+      "CherriCoreIntegrationTests/testCompileProducesShortcutPlist": "passed",
+      "CherriCoreIntegrationTests/testE01ContextualCompletionService": "passed",
+      "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis": "passed",
+      "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition": "passed",
+      "CherriCoreIntegrationTests/testE02MultiDiagnosticAnalysisService": "passed",
+      "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing": "passed",
+      "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics": "passed",
+      "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits": "passed",
+      "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew": "passed",
+      "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection": "passed",
+      "CherriCoreIntegrationTests/testEveryCatalogActionEmptyCallReturnsWithoutCrashingBridge": "passed",
+      "CherriCoreIntegrationTests/testPaletteSnippetSuppliesRequiredArguments": "passed",
+      "CherriCoreIntegrationTests/testRP40SwiftIntegrationService": "passed",
+      "CherriCoreIntegrationTests/testRepeatedCompileResetsIncludedActions": "passed",
+      "CherriCoreIntegrationTests/testShortcutPlistEditorAppliesPreviewEdits": "passed",
+      "CherriCoreIntegrationTests/testSimpleCompileDecompileRoundTrip": "passed",
+      "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis": "passed",
+      "CherriCoreIntegrationTests/testV2LanguageLetAndFStringCompile": "passed",
+      "CherriCoreIntegrationTests/testVisualMetadataDecompileRoundTrip": "passed",
+      "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI": "failed",
+      "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI": "failed",
+      "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI": "passed",
+      "CherriEditorUITests/testE03EditorActionsHoverRenameUI": "failed",
+      "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI": "failed",
+      "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI": "failed",
+      "CherriEditorUITests/testE07VisualParameterEditingCanvasUI": "failed",
+      "CherriEditorUITests/testNegativeMissingUIElementFailsClosed": "passed",
+      "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed": "passed"
+    },
+    "servicePass": 24,
+    "uiPass": 3,
+    "uiFail": 6
+  },
+  "localChecks": [
+    {
+      "name": "collector-causal-unit-and-CLI",
+      "command": [
+        "py",
+        "-3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ios/scripts",
+        "-p",
+        "test_collect_ios_test_evidence.py",
+        "-v"
+      ],
+      "environment": "Windows SentinelX isolated worktree",
+      "result": "PASS",
+      "tests": 12,
+      "exitCode": 0
+    },
+    {
+      "name": "collector-causal-unit-and-CLI",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ios/scripts",
+        "-p",
+        "test_collect_ios_test_evidence.py",
+        "-v"
+      ],
+      "environment": "Linux scratch exact source mirror",
+      "result": "PASS",
+      "tests": 12,
+      "exitCode": 0
+    },
+    {
+      "name": "workflow-yaml-and-bash-syntax",
+      "environment": "Linux scratch exact source mirror",
+      "result": "PASS",
+      "runSteps": 11
+    },
+    {
+      "name": "git-diff-check",
+      "result": "PASS",
+      "exitCode": 0
+    }
+  ],
+  "platformChecks": {
+    "swiftBuild": "NOT_RUN",
+    "uiRuntime": "NOT_RUN",
+    "sixR1UIFailures": "OPEN",
+    "nativeSelectedRange": "UNKNOWN"
+  },
+  "privacy": {
+    "rawLogsPublished": false,
+    "screenshotsPublished": false,
+    "sourceRequiresVerifiedEmptyReset": true,
+    "artifacts": [
+      "xcodetest.log",
+      "ios-test-evidence.json",
+      "ios-test-diagnostics.json"
+    ],
+    "failedProcessAcceptanceRecords": 0
+  },
+  "changedSourceSha256": {
+    ".github/workflows/ios-build.yml": "c6d996505353d35f6f0277d3ba7c38d5e634dd86858a605532c1a3fb38b7ae11",
+    "ios/CherriUITests/CherriEditorUITests.swift": "43069e2b3b56485decca48f27fa1f9578ddb2f9bf87a2cefa998b422bf468265",
+    "ios/scripts/collect_ios_test_evidence.py": "e79b576395e0ccaa3d6cf9a092d587be7f6384bfc69c6160e6191466a8179ab1",
+    "ios/scripts/test_collect_ios_test_evidence.py": "26514979d1ea1ca481533ffa0f1e162ce2d196292926efb536a02e431f02902e",
+    "docs/apple-runtime/p10r15/ios-editor-failure-diagnostics.md": "51efc6e8d22ed0d11cb0cd5404a2fef643dedbc7e2892102007c34cd1d394caf"
+  }
+}
