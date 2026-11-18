@@ -79,6 +79,43 @@ class PublicArtifactTests(unittest.TestCase):
         self.assertEqual(len(result["quarantined"]), 2)
         self.assertFalse((self.output / "environment.json").exists())
 
+    def test_long_ax_tree_compact_lossless_and_pretty_exceeds_privacy_limit(self):
+        # A long, entirely synthetic 20-page capture must remain complete.
+        # Compact text is not redaction and never relaxes the 10 MiB gate.
+        nodes = [
+            {
+                "nodeIndex": i, "parentIndex": i - 1 if i else None,
+                "siblingOrder": i % 6, "sourceScreenIndex": i // 800,
+                "elementTypeRaw": 42, "elementTypeName": "StaticText",
+                "label": "ANCHOR_" + "x" * 256,
+                "identifier": "[REDACTED_NON_ALLOWLISTED_LEN_400]",
+                "value": "[REDACTED_NON_ALLOWLISTED_LEN_300]",
+                "frame": {"x": 100.5, "y": 221.7, "width": 640.0, "height": 37.0},
+                "enabled": True, "visible": True, "geometryValid": True,
+                "identifierDigest": "a" * 64, "nativeUUIDDigests": [],
+                "nativeActionIdentifier": None, "actionContainerHint": False,
+            }
+            for i in range(12000)
+        ]
+        pretty = json.dumps(nodes, ensure_ascii=False, indent=2, sort_keys=True)
+        compact = json.dumps(nodes, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+        self.assertGreater(len(pretty.encode("utf-8")), 10 * 1024 * 1024)
+        self.assertLess(len(compact.encode("utf-8")), 10 * 1024 * 1024)
+        path = self.root / "editor/editor-tree.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(pretty, encoding="utf-8")
+        with self.assertRaisesRegex(PublicationBlocked, "TEXT_SIZE_LIMIT"):
+            self.publish()
+        self.assertFalse(self.output.exists())
+        # Staging the complete compact bytes, not a prefix/subset, must succeed.
+        path.write_text(compact, encoding="utf-8")
+        published = self.publish()
+        self.assertTrue(published["publicationGatePassed"])
+        staged = json.loads((self.output / "editor/editor-tree.json").read_text(encoding="utf-8"))
+        self.assertEqual(staged, nodes)
+        self.assertEqual(staged[-1]["nodeIndex"], 11999)
+        self.assertEqual(staged[-1]["parentIndex"], 11998)
+
     def test_ax_callback_plist_nested_json_canaries_block_or_quarantine(self):
         self.write("editor/editor-tree.json", [{"value": "CHERRI_PRIVATE_CANARY_not_for_logs"}])
         with self.assertRaises(PublicationBlocked) as caught:
