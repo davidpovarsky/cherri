@@ -61,6 +61,29 @@ def bound_manifest(root=ROOT):
     return manifest, sha(manifest_path.read_bytes())
 
 
+def source_commit_binding(root, manifest):
+    """Require every probe input and this verifier to exist byte-exact in HEAD."""
+    root = Path(root)
+    result = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True)
+    if result.returncode:
+        raise ValueError("PAGINATE_SOURCE_COMMIT_UNAVAILABLE")
+    commit = result.stdout.decode("ascii").strip()
+    paths = [MANIFEST, "tools/p10r15/verify_paginate_probe_data.py"]
+    paths += [DATA_DIRECTORY + "/" + name for name in DATA_FILES]
+    paths += [case["path"] for case in manifest["cases"]]
+    digest = hashlib.sha256()
+    for path in sorted(paths):
+        result = subprocess.run(["git", "-C", str(root), "show", commit + ":" + path], capture_output=True)
+        if result.returncode:
+            raise ValueError("PAGINATE_SOURCE_NOT_IN_COMMIT")
+        content = (root/path).read_bytes()
+        if result.stdout != content:
+            raise ValueError("PAGINATE_SOURCE_COMMIT_BYTES_MISMATCH")
+        digest.update(path.encode("utf-8") + b"\0" + content + b"\0")
+    return {"status": "MATCHES_COMMIT_BYTES", "commit": commit,
+            "files": len(paths), "sourceFingerprint": digest.hexdigest()}
+
+
 def fetch(url):
     request = urllib.request.Request(url, headers={"User-Agent": "Cherri-Synthetic-Paginate-QA/1"})
     with urllib.request.urlopen(request, timeout=20) as response:
@@ -98,9 +121,11 @@ def main():
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text('{"status":"RUNNING_PUBLIC_DATA_VERIFICATION","nativeExecuted":0}\n', encoding="utf-8")
     try:
+        manifest, _ = bound_manifest(args.root)
+        binding = source_commit_binding(args.root, manifest)
         report = verify(args.root)
-        report["compilerSourceCommit"] = subprocess.check_output(
-            ["git", "-C", str(args.root), "rev-parse", "HEAD"], text=True).strip()
+        report["compilerSourceCommit"] = binding["commit"]
+        report["sourceCheckoutBinding"] = binding
     except Exception as error:
         # Deliberately retain only the exception category. URLs and response
         # bodies must not be included in an error receipt or callback.

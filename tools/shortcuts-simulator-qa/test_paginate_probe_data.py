@@ -126,5 +126,40 @@ class PaginateProbeDataTests(unittest.TestCase):
         self.assertEqual(result.stdout, "NATIVE_STAGE_REACHED\n")
 
 
+    def test_commit_binding_rejects_ignored_missing_staged_and_modified_inputs(self):
+        import subprocess
+        verifier = self.root/"tools/p10r15/verify_paginate_probe_data.py"
+        verifier.parent.mkdir(parents=True, exist_ok=True)
+        verifier.write_bytes((ROOT/"tools/p10r15/verify_paginate_probe_data.py").read_bytes())
+        hooks = self.root/"empty-hooks"
+        hooks.mkdir()
+        def git(*args):
+            result = subprocess.run(["git", "-C", str(self.root), "-c", "core.autocrlf=false",
+                "-c", "core.hooksPath="+str(hooks), "-c", "user.name=Cherri Probe Test",
+                "-c", "user.email=synthetic@example.invalid", *args], capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", errors="replace"))
+        git("init", "-q")
+        missing = self.manifest["cases"][-1]["path"]
+        (self.root/".gitignore").write_text(missing+"\n", encoding="utf-8")
+        git("add", ".")
+        git("commit", "-qm", "Synthetic missing fixture boundary")
+        with self.assertRaisesRegex(ValueError, "PAGINATE_SOURCE_NOT_IN_COMMIT"):
+            MODULE.source_commit_binding(self.root, self.manifest)
+        git("add", "-f", missing)
+        with self.assertRaisesRegex(ValueError, "PAGINATE_SOURCE_NOT_IN_COMMIT"):
+            MODULE.source_commit_binding(self.root, self.manifest)
+        git("commit", "-qm", "Synthetic complete fixture boundary")
+        self.assertEqual(MODULE.source_commit_binding(self.root, self.manifest)["status"], "MATCHES_COMMIT_BYTES")
+        changed = self.root/self.manifest["cases"][0]["path"]
+        changed.write_bytes(changed.read_bytes()+b"\n// synthetic local mutation\n")
+        with self.assertRaisesRegex(ValueError, "PAGINATE_SOURCE_COMMIT_BYTES_MISMATCH"):
+            MODULE.source_commit_binding(self.root, self.manifest)
+        git("add", self.manifest["cases"][0]["path"])
+        with self.assertRaisesRegex(ValueError, "PAGINATE_SOURCE_COMMIT_BYTES_MISMATCH"):
+            MODULE.source_commit_binding(self.root, self.manifest)
+        git("commit", "-qm", "Synthetic restored commit binding")
+        self.assertEqual(MODULE.source_commit_binding(self.root, self.manifest)["status"], "MATCHES_COMMIT_BYTES")
+
+
 if __name__ == "__main__":
     unittest.main()
