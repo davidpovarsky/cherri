@@ -1,0 +1,16 @@
+test_reader_timeout_preserves_evidence_through_actual_final_reporting (test_storage_cross_run.StorageCrossRunContractTests.test_reader_timeout_preserves_evidence_through_actual_final_reporting) ... ERROR
+
+======================================================================
+ERROR: test_reader_timeout_preserves_evidence_through_actual_final_reporting (test_storage_cross_run.StorageCrossRunContractTests.test_reader_timeout_preserves_evidence_through_actual_final_reporting)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-project-closure-20261118\tools\shortcuts-simulator-qa\test_storage_cross_run.py", line 234, in test_reader_timeout_preserves_evidence_through_actual_final_reporting
+    cross.validate_public_diagnostic(report, self.root)
+  File "C:\Users\DAVID\Code\cherri-p10r15-project-closure-20261118\tools\shortcuts-simulator-qa\storage_cross_run.py", line 291, in validate_public_diagnostic
+    raise ValueError("CROSS_RUN_DIAGNOSTIC_NOT_BOUND_TO_ACTUAL_PHASE_EVIDENCE")
+ValueError: CROSS_RUN_DIAGNOSTIC_NOT_BOUND_TO_ACTUAL_PHASE_EVIDENCE
+
+----------------------------------------------------------------------
+Ran 1 test in 0.367s
+
+FAILED (errors=1)

@@ -15,3 +15,7 @@ Final reporting now preserves the absence of the storage reader trace. The exist
 All 140 Python QA/inspector/publication tests passed against the working source in 133.781 seconds, raw log SHA-256 `694085173afba683cff923c84c04fa61ed045ae4e5970539be5295fc06927fcc`. A source-bound clean receipt follows separately.
 
 This repairs reporting and artifact availability. It does not establish native storage persistence, typed archives, cache, TTL, deletion, cross-shortcut isolation, or physical-device behavior. The original native timeout and failed workflow remain failures; a new immutable-source native run is required.
+
+## Clean source receipt
+
+Exact source436331ebb164ac362c00d216d41caf8770d19fc9 passed all46 storage, callback, and publication tests in64.406s with a clean tree before and after. Raw log SHA-256:886f476b89071d6e8123d418e240a9f9296f132025393e53e709c027fbae0d7d. Source-bound receipts and explicitly normalized log derivatives are in evidence/storage-publication-436331e/. Original raw bytes are retained unchanged locally.

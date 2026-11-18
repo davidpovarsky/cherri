@@ -1,0 +1,82 @@
+{
+  "source": "436331ebb164ac362c00d216d41caf8770d19fc9",
+  "records": [
+    {
+      "phase": "baseline",
+      "receipt": {
+        "sourceParent": "76c65fbf73f24bdc6d28465559948829f40dbe05",
+        "testOnlyChange": true,
+        "command": [
+          "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+          "-m",
+          "unittest",
+          "test_storage_cross_run.StorageCrossRunContractTests.test_reader_timeout_preserves_evidence_through_actual_final_reporting",
+          "-v"
+        ],
+        "exit": 1,
+        "seconds": 0.672,
+        "sha256": "92823b4c578305eeaa56da64effa224a50cb350c700fe37ceb930c18b28ef666"
+      },
+      "rawLogSha256": "92823b4c578305eeaa56da64effa224a50cb350c700fe37ceb930c18b28ef666",
+      "rawLogBytes": 1281,
+      "committedLog": "baseline.normalized.log",
+      "committedLogSha256": "37f664416e33391c292cfeffe6371fe39fd5be85bbdfea68686764568ea32c72",
+      "normalization": "CRLF to LF for committed derivative; original raw log remains unchanged locally"
+    },
+    {
+      "phase": "repaired",
+      "receipt": {
+        "sourceParent": "76c65fbf73f24bdc6d28465559948829f40dbe05",
+        "workingTreeSourceRepair": true,
+        "command": [
+          "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/shortcuts-simulator-qa",
+          "-p",
+          "test_*.py",
+          "-v"
+        ],
+        "exit": 0,
+        "seconds": 133.781,
+        "sha256": "694085173afba683cff923c84c04fa61ed045ae4e5970539be5295fc06927fcc"
+      },
+      "rawLogSha256": "694085173afba683cff923c84c04fa61ed045ae4e5970539be5295fc06927fcc",
+      "rawLogBytes": 23693,
+      "committedLog": "repaired.normalized.log",
+      "committedLogSha256": "11cf4526e3289c0b1b458015f1d8843938b42e7803026b60fdad0968619a8a3b",
+      "normalization": "CRLF to LF for committed derivative; original raw log remains unchanged locally"
+    },
+    {
+      "phase": "clean",
+      "receipt": {
+        "source": "436331ebb164ac362c00d216d41caf8770d19fc9",
+        "sourceCleanBefore": true,
+        "sourceCleanAfter": true,
+        "command": [
+          "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+          "-m",
+          "unittest",
+          "test_storage_cross_run",
+          "test_runtime_callback_contract",
+          "test_public_artifacts",
+          "-v"
+        ],
+        "exit": 0,
+        "seconds": 64.406,
+        "sha256": "886f476b89071d6e8123d418e240a9f9296f132025393e53e709c027fbae0d7d",
+        "scope": "Actual storage/callback/publication protocol checks only; no new native storage success."
+      },
+      "rawLogSha256": "886f476b89071d6e8123d418e240a9f9296f132025393e53e709c027fbae0d7d",
+      "rawLogBytes": 7984,
+      "committedLog": "clean.normalized.log",
+      "committedLogSha256": "fc6b4375580dd8a9dfb79deb63cbc3c5bdc90d7b78bed497fc1bed360029df0a",
+      "normalization": "CRLF to LF for committed derivative; original raw log remains unchanged locally"
+    }
+  ],
+  "nativeRuntimeVerified": false,
+  "nativeFailurePreserved": 44367783153,
+  "scope": "Actual Python reporting/strict oracle/publication control code, not native storage implementation."
+}

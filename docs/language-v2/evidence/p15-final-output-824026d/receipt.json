@@ -1,0 +1,47 @@
+{
+  "source": "824026d3eaad904dcf5e1825123bfd0ed33930be",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "-run",
+    "^TestAcceptanceCLIOutput",
+    "./tools/language-acceptance"
+  ],
+  "exit": 0,
+  "seconds": 8.093,
+  "sha256": "53c97b0ca55dd4ad9e99140508dce0c3d6a08d08ad7e508626387880edf88515",
+  "baseline": {
+    "sourceParent": "e9da6c1438589527da8535d3e068444adc366a98",
+    "testOnlyChange": true,
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout=3m",
+      "-run",
+      "^TestAcceptanceCLIOutputNameCannotBypassFinalValidation$",
+      "./tools/language-acceptance"
+    ],
+    "exit": 1,
+    "seconds": 7.532,
+    "sha256": "fcb7f7870960fbabcfbb24f03fa18ae683806c3e2380d73e56fdc85297687056",
+    "failed": [
+      "TestAcceptanceCLIOutputNameCannotBypassFinalValidation/substring-does-not-select-generation",
+      "TestAcceptanceCLIOutputNameCannotBypassFinalValidation/reserved-requirements-evidence-map.json",
+      "TestAcceptanceCLIOutputNameCannotBypassFinalValidation/reserved-REQUIREMENTS-EVIDENCE-MAP.JSON",
+      "TestAcceptanceCLIOutputNameCannotBypassFinalValidation/reserved-acceptance-local-evidence.json",
+      "TestAcceptanceCLIOutputNameCannotBypassFinalValidation/reserved-acceptance-local-observations.json",
+      "TestAcceptanceCLIOutputNameCannotBypassFinalValidation/reserved-acceptance-execution-audit.json",
+      "TestAcceptanceCLIOutputNameCannotBypassFinalValidation/generation-cannot-hide-final-evidence-check",
+      "TestAcceptanceCLIOutputNameCannotBypassFinalValidation",
+      "github.com/electrikmilk/cherri/tools/language-acceptance"
+    ]
+  },
+  "scope": "Real CLI filename/mode bypass and output-collision controls plus preserved explicit map generation. Empty final evidence remains invalid; no language requirement acceptance is inferred."
+}
