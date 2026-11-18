@@ -1,6 +1,7 @@
 import Foundation
 import CoreGraphics
 import CoreText
+import CoreML
 import ImageIO
 import Vision
 
@@ -22,6 +23,8 @@ request.revision = VNRecognizeTextRequestRevision3
 request.recognitionLevel = .accurate
 request.usesLanguageCorrection = false
 request.automaticallyDetectsLanguage = false
+var phase = "LANGUAGE_QUERY"
+var cpuStageCount = 0
 do {
     let supported = try request.supportedRecognitionLanguages().sorted()
     let exact = supported.first { $0.caseInsensitiveCompare(requested) == .orderedSame }
@@ -32,6 +35,23 @@ do {
               "recognitionLevel": "accurate"], code: 3)
     }
     request.recognitionLanguages = [language]
+    // Explicit CPU selection avoids assuming a usable GPU/Neural Engine on
+    // virtualized macOS runners. Keep the same accurate revision and oracle.
+    phase = "COMPUTE_DEVICE_QUERY"
+    if #available(macOS 14.0, *) {
+        let stages = try request.supportedComputeStageDevices
+        guard !stages.isEmpty else { emit(["status": "CPU_COMPUTE_UNAVAILABLE"], code: 3) }
+        for (stage, devices) in stages {
+            guard let cpu = devices.first(where: { if case .cpu = $0 { return true }; return false }) else {
+                emit(["status": "CPU_COMPUTE_UNAVAILABLE"], code: 3)
+            }
+            request.setComputeDevice(cpu, for: stage)
+            cpuStageCount += 1
+        }
+    } else {
+        request.usesCPUOnly = true
+    }
+    phase = "IMAGE_PREPARATION"
     let image: CGImage
     if selfTest {
         guard let context = CGContext(data: nil, width: 1000, height: 240, bitsPerComponent: 8,
@@ -59,6 +79,7 @@ do {
     guard image.width > 0, image.height > 0, image.width <= 16384, image.height <= 16384 else {
         emit(["status": "IMAGE_UNREADABLE"], code: 2)
     }
+    phase = "RECOGNITION"
     try VNImageRequestHandler(cgImage: image, options: [:]).perform([request])
     let results = request.results ?? []
     guard results.count <= 1000 else { emit(["status": "SEGMENT_LIMIT"], code: 2) }
@@ -81,6 +102,7 @@ do {
     if selfTest {
         let exact = segments.count == 1 && segments.first?["text"] as? String == "CHERRI QA 12345"
         emit(["status": exact ? "PASS" : "FAIL", "engine": "APPLE_VISION", "revision": request.revision,
+              "computePolicy": "CPU_ONLY", "cpuStageCount": cpuStageCount,
               "recognitionLevel": "accurate", "exactGeneratedTextMatched": exact,
               "proofTier": "GENERATED_TEXT_OCR_ONLY", "nativeEditorProof": false,
               "supportedLanguages": supported, "chosenLanguage": language,
@@ -88,6 +110,7 @@ do {
              code: exact ? 0 : 2)
     }
     emit(["status": "OBSERVED", "engine": "APPLE_VISION", "revision": request.revision,
+          "computePolicy": "CPU_ONLY", "cpuStageCount": cpuStageCount,
           "recognitionLevel": "accurate", "languageCorrection": false,
           "supportedLanguages": supported, "chosenLanguage": language,
           "imageWidth": image.width, "imageHeight": image.height,
@@ -95,5 +118,14 @@ do {
           "segments": segments])
 } catch {
     // Localized errors may contain image paths or recognized text.
-    emit(["status": "VISION_REQUEST_FAILED", "errorCode": (error as NSError).code], code: 2)
+    let knownDomains = Set(["com.apple.Vision", "VNErrorDomain", "NSOSStatusErrorDomain", "NSCocoaErrorDomain", "com.apple.CoreML"])
+    var chain: [[String: Any]] = []
+    var current: NSError? = error as NSError
+    while let item = current, chain.count < 4 {
+        chain.append(["domain": knownDomains.contains(item.domain) ? item.domain : "OTHER", "code": item.code])
+        current = item.userInfo[NSUnderlyingErrorKey] as? NSError
+    }
+    emit(["status": "VISION_REQUEST_FAILED", "errorCode": (error as NSError).code,
+          "phase": phase, "computePolicy": "CPU_ONLY", "cpuStageCount": cpuStageCount,
+          "errorChain": chain], code: 2)
 }
