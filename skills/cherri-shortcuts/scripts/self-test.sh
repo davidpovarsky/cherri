@@ -156,6 +156,9 @@ cat > "$MOCK_DOCS_REPO/fork-language/actions.md" <<EOF
 **Catalog Schema:** $MANIFEST_CATALOG_VERSION  
 **Schema Fingerprint:** \`$MANIFEST_SCHEMA_FP\`  
 EOF
+if [ -n "$MANIFEST_MACRO_FP" ]; then
+  printf '\n**Compiler Macro Fingerprint:** `%s`\n' "$MANIFEST_MACRO_FP" >> "$MOCK_DOCS_REPO/fork-language/actions.md"
+fi
 git -C "$MOCK_DOCS_REPO" init -q
 git -C "$MOCK_DOCS_REPO" config user.email "test@cherri.local"
 git -C "$MOCK_DOCS_REPO" config user.name "Cherri Skill Test"
@@ -168,12 +171,17 @@ SKILL_TEST_COPY="$TMP/skill-copy"
 mkdir -p "$SKILL_TEST_COPY"
 cp -R "$SKILL_DIR/." "$SKILL_TEST_COPY/"
 rm -rf "$SKILL_TEST_COPY/bin"
+MACRO_MANIFEST_LINE=""
+if [ -n "$MANIFEST_MACRO_FP" ]; then
+  MACRO_MANIFEST_LINE="  \"macroFingerprint\": \"$MANIFEST_MACRO_FP\","
+fi
 cat > "$SKILL_TEST_COPY/compatibility-manifest.json" <<EOF
 {
   "skillVersion": "2.0.0",
   "languageVersion": "$MANIFEST_LANG_VERSION",
   "catalogSchemaVersion": "$MANIFEST_CATALOG_VERSION",
   "schemaFingerprint": "$MANIFEST_SCHEMA_FP",
+$MACRO_MANIFEST_LINE
   "codecFingerprint": "$MANIFEST_CODEC_FP",
   "compilerRepo": "$MOCK_COMPILER_REPO",
   "compilerCommit": "$PINNED_COMPILER_SHA",
@@ -415,7 +423,8 @@ if [ -n "$EVIDENCE_OUT" ]; then
         "compiler_commit": "$MANIFEST_COMPILER_COMMIT",
         "docs_commit": "$MANIFEST_DOCS_COMMIT",
         "schema_fingerprint": "$MANIFEST_SCHEMA_FP",
-        "codec_fingerprint": "$MANIFEST_CODEC_FP"
+        "codec_fingerprint": "$MANIFEST_CODEC_FP",
+        "macro_fingerprint": "$MANIFEST_MACRO_FP"
       },
       "detail": "All 10 Skill packaging, compatibility, offline, mismatch, atomic update, and immutable ref scenarios passed"
     },
@@ -441,7 +450,8 @@ if [ -n "$EVIDENCE_OUT" ]; then
         "compiler_commit": "$MANIFEST_COMPILER_COMMIT",
         "docs_commit": "$MANIFEST_DOCS_COMMIT",
         "schema_fingerprint": "$MANIFEST_SCHEMA_FP",
-        "codec_fingerprint": "$MANIFEST_CODEC_FP"
+        "codec_fingerprint": "$MANIFEST_CODEC_FP",
+        "macro_fingerprint": "$MANIFEST_MACRO_FP"
       },
       "detail": "All 10 Skill CLI integration, offline cache, mismatch rejection, and atomic update scenarios passed"
     }

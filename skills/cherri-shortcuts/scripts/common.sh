@@ -65,6 +65,7 @@ load_compatibility_manifest() {
   MANIFEST_CATALOG_VERSION=$(json_extract_string "$MANIFEST_RAW" "catalogSchemaVersion")
   MANIFEST_SCHEMA_FP=$(json_extract_string "$MANIFEST_RAW" "schemaFingerprint")
   MANIFEST_CODEC_FP=$(json_extract_string "$MANIFEST_RAW" "codecFingerprint")
+  MANIFEST_MACRO_FP=$(json_extract_string "$MANIFEST_RAW" "macroFingerprint")
   MANIFEST_COMPILER_REPO=$(json_extract_string "$MANIFEST_RAW" "compilerRepo")
   MANIFEST_COMPILER_COMMIT=$(json_extract_string "$MANIFEST_RAW" "compilerCommit")
   MANIFEST_DOCS_REPO=$(json_extract_string "$MANIFEST_RAW" "docsRepo")
@@ -87,6 +88,14 @@ load_compatibility_manifest() {
       return 1
     fi
   fi
+  # Old releases had no separate compiler macro contract. Once declared, it is
+  # mandatory and cannot silently degrade to the native action fingerprint.
+  if printf '%s\n' "$MANIFEST_RAW" | grep -q '"macroFingerprint"[[:space:]]*:'; then
+    if ! is_hex_len "$MANIFEST_MACRO_FP" 64; then
+      echo "[CHERRI_MACRO_MANIFEST_INVALID] Compatibility manifest has missing or invalid macroFingerprint" >&2
+      return 1
+    fi
+  fi
   if [ -z "$MANIFEST_COMPILER_COMMIT" ] || ! is_hex_len "$MANIFEST_COMPILER_COMMIT" 40; then
     echo "Compatibility manifest has missing or non-immutable compilerCommit: ${MANIFEST_COMPILER_COMMIT:-<empty>}" >&2
     return 1
@@ -96,7 +105,7 @@ load_compatibility_manifest() {
     return 1
   fi
 
-  export MANIFEST_LANG_VERSION MANIFEST_CATALOG_VERSION MANIFEST_SCHEMA_FP MANIFEST_CODEC_FP
+  export MANIFEST_LANG_VERSION MANIFEST_CATALOG_VERSION MANIFEST_SCHEMA_FP MANIFEST_CODEC_FP MANIFEST_MACRO_FP
   export MANIFEST_COMPILER_REPO MANIFEST_COMPILER_COMMIT MANIFEST_DOCS_REPO MANIFEST_DOCS_COMMIT
   return 0
 }
@@ -146,6 +155,7 @@ validate_cherri_bin() {
   _actual_cat=$(json_extract_string "$_cap_out" "catalogSchemaVersion")
   _actual_fp=$(json_extract_string "$_cap_out" "schemaFingerprint")
   _actual_codec_fp=$(json_extract_string "$_cap_out" "codecFingerprint")
+  _actual_macro_fp=$(json_extract_string "$_cap_out" "macroFingerprint")
 
   if [ "$_actual_lang" != "$MANIFEST_LANG_VERSION" ]; then
     echo "Cherri languageVersion mismatch in $_cand: expected $MANIFEST_LANG_VERSION, got ${_actual_lang:-<missing>}" >&2
@@ -170,6 +180,21 @@ validate_cherri_bin() {
     fi
     if [ -n "$MANIFEST_CODEC_FP" ] && [ "$_actual_codec_fp" != "$MANIFEST_CODEC_FP" ]; then
       echo "Cherri codecFingerprint mismatch in $_cand: expected $MANIFEST_CODEC_FP, got $_actual_codec_fp" >&2
+      return 1
+    fi
+  fi
+
+  if [ -n "$MANIFEST_MACRO_FP" ]; then
+    if [ -z "$_actual_macro_fp" ]; then
+      echo "[CHERRI_MACRO_FINGERPRINT_MISSING] Cherri binary does not expose the required macroFingerprint" >&2
+      return 1
+    fi
+    if ! is_hex_len "$_actual_macro_fp" 64; then
+      echo "[CHERRI_MACRO_FINGERPRINT_INVALID] Cherri binary returned a malformed macroFingerprint" >&2
+      return 1
+    fi
+    if [ "$_actual_macro_fp" != "$MANIFEST_MACRO_FP" ]; then
+      echo "[CHERRI_MACRO_FINGERPRINT_MISMATCH] Cherri macroFingerprint mismatch: expected $MANIFEST_MACRO_FP, got $_actual_macro_fp" >&2
       return 1
     fi
   fi
@@ -212,6 +237,22 @@ validate_docs_dir() {
   if [ "$_docs_fp" != "$MANIFEST_SCHEMA_FP" ]; then
     echo "[CHERRI_STALE_DOCS_SCHEMA] Cherri docs Schema Fingerprint mismatch: expected $MANIFEST_SCHEMA_FP, got $_docs_fp" >&2
     return 1
+  fi
+
+  if [ -n "$MANIFEST_MACRO_FP" ]; then
+    _docs_macro_fp=$(sed -n 's/.*\*\*Compiler Macro Fingerprint:\*\*[[:space:]]*`\([^`]*\)`.*/\1/p' "$_actions_md" | tr -d '\r' | head -n 1)
+    if [ -z "$_docs_macro_fp" ]; then
+      echo "[CHERRI_DOCS_MACRO_FINGERPRINT_MISSING] Cherri docs do not expose the required Compiler Macro Fingerprint" >&2
+      return 1
+    fi
+    if ! is_hex_len "$_docs_macro_fp" 64; then
+      echo "[CHERRI_DOCS_MACRO_FINGERPRINT_INVALID] Cherri docs have a malformed Compiler Macro Fingerprint" >&2
+      return 1
+    fi
+    if [ "$_docs_macro_fp" != "$MANIFEST_MACRO_FP" ]; then
+      echo "[CHERRI_STALE_DOCS_MACROS] Cherri docs Compiler Macro Fingerprint mismatch: expected $MANIFEST_MACRO_FP, got $_docs_macro_fp" >&2
+      return 1
+    fi
   fi
 
   # Linked worktrees have a .git file; their pins need the same check as clones.

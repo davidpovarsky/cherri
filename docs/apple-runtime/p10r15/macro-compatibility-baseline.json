@@ -1,0 +1,190 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-18T03:46:01Z",
+  "scope": "ACTUAL_COMPILER_CANONICAL_DOCS_ISOLATED_SINGLE_FIELD_MUTATIONS",
+  "compilerCommit": "ab9a264ba370890397d74042e00c11a3b4c84ffd",
+  "compilerSHA256": "efc455de4f28d2a0bc58079932474d9d228a2d2d3fa3b331900c884c9c3313fb",
+  "macroFingerprint": "f63d8b0a323c7045af4abf20723684506c9f63b9d31776a408c39766e7c2cf44",
+  "macroCount": 13,
+  "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+  "canonicalDocsSHA256": "dcc90981ef64f7782c8f246653209941e3206606f3b9234578b0dd8c7c5690a5",
+  "skillCommonSHA256": "537d7bf7707cadaa079b28947226e1b2cbe9aafcf87f03d47e6d15de073163d7",
+  "legacyCompilerCommit": null,
+  "legacyCompilerSHA256": null,
+  "livePromotion": false,
+  "results": [
+    {
+      "case": "actual_healthy_tuple",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.354,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "healthy_capabilities_proxy",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.208,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "compiler_macro_missing",
+      "exitCode": 0,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_MISSING",
+      "verdict": "FAIL",
+      "seconds": 0.182,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "compiler_restore_after_missing",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.177,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "compiler_macro_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_INVALID",
+      "verdict": "FAIL",
+      "seconds": 0.173,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "compiler_restore_after_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.187,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "compiler_macro_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_MISMATCH",
+      "verdict": "FAIL",
+      "seconds": 0.172,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "compiler_restore_after_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.209,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "manifest_macro_empty",
+      "exitCode": 0,
+      "expectedDiagnostic": "CHERRI_MACRO_MANIFEST_INVALID",
+      "verdict": "FAIL",
+      "seconds": 0.444,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "manifest_restore_after_empty",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.388,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "manifest_macro_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": "CHERRI_MACRO_MANIFEST_INVALID",
+      "verdict": "FAIL",
+      "seconds": 0.443,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "manifest_restore_after_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.415,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "manifest_macro_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_MISMATCH",
+      "verdict": "FAIL",
+      "seconds": 0.444,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "manifest_restore_after_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.4,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "docs_macro_missing",
+      "exitCode": 0,
+      "expectedDiagnostic": "CHERRI_DOCS_MACRO_FINGERPRINT_MISSING",
+      "verdict": "FAIL",
+      "seconds": 0.404,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "docs_restore_after_missing",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.398,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "docs_macro_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": "CHERRI_DOCS_MACRO_FINGERPRINT_INVALID",
+      "verdict": "FAIL",
+      "seconds": 0.411,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "docs_restore_after_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.387,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "docs_macro_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": "CHERRI_STALE_DOCS_MACROS",
+      "verdict": "FAIL",
+      "seconds": 0.363,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "docs_restore_after_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.367,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "old_manifest_without_macro_field",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.373,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: ab9a264ba370890397d74042e00c11a3b4c84ffd\nPinned docs commit: b23f1be88fea9be247e779f19f9baadf843d82e8\nCherri: /mnt/c/Users/DAVID/Code/cherri-p10r15-macro-consumer-check-20261118/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    }
+  ],
+  "summary": {
+    "checks": 21,
+    "passed": 12,
+    "failed": 9
+  }
+}

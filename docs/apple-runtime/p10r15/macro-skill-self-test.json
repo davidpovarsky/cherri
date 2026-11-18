@@ -1,0 +1,58 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-skill-self-test-packaging-ab9a264ba370890397d74042e00c11a3b4c84ffd",
+      "requirements": ["K01", "RP42", "RP44", "RP45", "RP49", "BRG30"],
+      "tier": "skill-package",
+      "implementation_sha": "ab9a264ba370890397d74042e00c11a3b4c84ffd",
+      "test_id": "skills/cherri-shortcuts/scripts/self-test.sh",
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "scenario_1_fresh_immutable_install": "passed",
+        "scenario_2_compatible_cached_offline": "passed",
+        "scenario_3_incompatible_cached_offline_rejected": "passed",
+        "scenario_4_compatible_cache_wins_over_stale_bundled": "passed",
+        "scenario_5_explicit_incompatible_cherri_bin_rejected": "passed",
+        "scenario_6_same_lang_wrong_schema_fp_rejected": "passed",
+        "scenario_7_missing_or_malformed_schema_fp_rejected": "passed",
+        "scenario_8_docs_sha_or_fp_mismatch_rejected": "passed",
+        "scenario_9_atomic_update_preserves_working_binary": "passed",
+        "scenario_10_branch_advance_preserves_pinned_commit": "passed",
+        "compiler_commit": "ab9a264ba370890397d74042e00c11a3b4c84ffd",
+        "docs_commit": "a38b62b819e48fea73dfd0636eb6de4dd08c2713",
+        "schema_fingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+        "codec_fingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+        "macro_fingerprint": "f63d8b0a323c7045af4abf20723684506c9f63b9d31776a408c39766e7c2cf44"
+      },
+      "detail": "All 10 Skill packaging, compatibility, offline, mismatch, atomic update, and immutable ref scenarios passed"
+    },
+    {
+      "evidence_id": "ev-skill-self-test-integration-ab9a264ba370890397d74042e00c11a3b4c84ffd",
+      "requirements": ["K02", "K03", "K04", "K05", "D03", "RP44", "RP45", "RP46", "BRG30"],
+      "tier": "integration",
+      "implementation_sha": "ab9a264ba370890397d74042e00c11a3b4c84ffd",
+      "test_id": "skills/cherri-shortcuts/scripts/self-test.sh",
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "scenario_1_fresh_immutable_install": "passed",
+        "scenario_2_compatible_cached_offline": "passed",
+        "scenario_3_incompatible_cached_offline_rejected": "passed",
+        "scenario_4_compatible_cache_wins_over_stale_bundled": "passed",
+        "scenario_5_explicit_incompatible_cherri_bin_rejected": "passed",
+        "scenario_6_same_lang_wrong_schema_fp_rejected": "passed",
+        "scenario_7_missing_or_malformed_schema_fp_rejected": "passed",
+        "scenario_8_docs_sha_or_fp_mismatch_rejected": "passed",
+        "scenario_9_atomic_update_preserves_working_binary": "passed",
+        "scenario_10_branch_advance_preserves_pinned_commit": "passed",
+        "compiler_commit": "ab9a264ba370890397d74042e00c11a3b4c84ffd",
+        "docs_commit": "a38b62b819e48fea73dfd0636eb6de4dd08c2713",
+        "schema_fingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+        "codec_fingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+        "macro_fingerprint": "f63d8b0a323c7045af4abf20723684506c9f63b9d31776a408c39766e7c2cf44"
+      },
+      "detail": "All 10 Skill CLI integration, offline cache, mismatch rejection, and atomic update scenarios passed"
+    }
+  ]
+}

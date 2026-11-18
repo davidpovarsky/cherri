@@ -15,6 +15,9 @@ if BIN=$(resolve_cherri); then
   if validate_cherri_bin "$BIN"; then
     printf 'Cherri Language: v%s ready\n' "$MANIFEST_LANG_VERSION"
     printf 'Schema fingerprint: %s (verified)\n' "$MANIFEST_SCHEMA_FP"
+    if [ -n "$MANIFEST_MACRO_FP" ]; then
+      printf 'Compiler macro fingerprint: %s (verified)\n' "$MANIFEST_MACRO_FP"
+    fi
     if [ -n "$MANIFEST_CODEC_FP" ]; then
       printf 'Codec fingerprint: %s (verified)\n' "$MANIFEST_CODEC_FP"
     fi

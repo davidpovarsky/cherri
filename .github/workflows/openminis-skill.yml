@@ -118,6 +118,19 @@ jobs:
           CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
         run: sh skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh
 
+      - name: Verify optional compiler macro compatibility
+        run: |
+          go run ./tools/language-docs dist/macro-actions-reference.md
+          dist/cherri-linux-amd64 --capabilities-json > dist/macro-capabilities.json
+          MACRO_FP=$(python3 -c 'import json; print(json.load(open("dist/macro-capabilities.json"))["macroFingerprint"])')
+          python3 tools/p10r15/verify_macro_compatibility.py \
+            --compiler dist/cherri-linux-amd64 \
+            --compiler-commit "$GITHUB_SHA" \
+            --skill skills/cherri-shortcuts \
+            --docs-reference dist/macro-actions-reference.md \
+            --expected-macro-fingerprint "$MACRO_FP" \
+            --report dist/macro-compatibility-isolation.json
+
       - name: Verify real CLI signing failures leave no artifact
         run: >-
           python3 tools/p10r15/verify_installed_signing.py
@@ -203,6 +216,14 @@ jobs:
         with:
           name: cherri-signing-fault-evidence
           path: dist/signing-protocol-exit-evidence.json
+          if-no-files-found: ignore
+
+      - name: Upload compiler macro compatibility evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-macro-compatibility-evidence
+          path: dist/macro-compatibility-isolation.json
           if-no-files-found: ignore
 
       - name: Upload OpenMinis skill artifacts
