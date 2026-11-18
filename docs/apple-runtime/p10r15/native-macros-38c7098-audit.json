@@ -1,0 +1,814 @@
+{
+  "schemaVersion": "1.0",
+  "auditedAtUtc": "2026-11-18T14:24:08.368581+00:00",
+  "sourceSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+  "scope": "Exact published synthetic runtime receipts; no private corpus, raster or signed raw files copied.",
+  "runs": [
+    {
+      "runId": "44253536149",
+      "url": "https://github.com/davidpovarsky/cherri/actions/runs/44253536149",
+      "sourceSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+      "fixture": "qa-require-v2",
+      "sourceSha256": "728e5ff33382febb27980daeaf61323d2248185d758b52a2eae3d774960dc33f",
+      "unsignedPlistSha256": "10ecc091dad5a0a2040b271643558d0417c602d8a993ea52025ffe0eb37caec7",
+      "signedArtifactSha256": "c68234c6c62a6b6a95e0fb00a4b19faa5a938ff59b1e2872f15bfcfe0fb7f2f7",
+      "nativeActionCount": 143,
+      "workflowConclusion": "failure",
+      "runtimeVerdict": "FAIL_EXACT_RESULT",
+      "callbackStatus": "SUCCESS",
+      "expectedResult": "CHERRI_QA_REQUIRE_RESULT:P15_REQUIRE_OK",
+      "actualResult": "CHERRI_QA_REQUIRE_RESULT:P15_REQUIRE_ZERO",
+      "exactFreshNonce": true,
+      "traceExpectation": "REQUIRED_NDJSON",
+      "traceObserved": "UNVERIFIED",
+      "traceRecords": 1,
+      "inlineRecords": 0,
+      "collectorRecords": 1,
+      "editorGate": "EDITOR_CAPTURE_COMPLETE",
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "publication": {
+        "hashedFiles": 20,
+        "files": [
+          {
+            "path": "compiler-manifest.json",
+            "sha256": "73531ad65dcb78d40d19838767cc39f9b4e27d3c609d2d5045122b54d1723764",
+            "bytes": 85220
+          },
+          {
+            "path": "docs/report.md",
+            "sha256": "ee703806d963778db512eb244ec00e62224c28bf5adf324eedf832475ed87c94",
+            "bytes": 850
+          },
+          {
+            "path": "editor/ax-persistence-diagnostics.json",
+            "sha256": "9a716ee30cb846f23374bae9abe1e3f39721dc1586b0697ee59b6cd070de55d7",
+            "bytes": 159
+          },
+          {
+            "path": "editor/editor-action-coverage.json",
+            "sha256": "4b0ebfa762158af10b13b535137965479df355324747861fb47c8b910ec06505",
+            "bytes": 2823
+          },
+          {
+            "path": "editor/editor-actions.json",
+            "sha256": "d35f7e5a9eb814ddfe1d86152f8bfee7722bdb6e9a7bc9f72e18582ca8a88891",
+            "bytes": 132431
+          },
+          {
+            "path": "editor/editor-comparison.json",
+            "sha256": "b52a0a6b0fd5248599b9553dde428de346bb2990d27a5c79774f21bbaf8796cd",
+            "bytes": 123964
+          },
+          {
+            "path": "editor/editor-report.md",
+            "sha256": "3518e85222b99461e9dbc8121f8c2e94400ea897c18304d15a0f2d91eac7ddb2",
+            "bytes": 8190
+          },
+          {
+            "path": "editor/editor-tree.json",
+            "sha256": "f44f40f6d2b483a0a5f889f0e45eddba993b87caac1ae8a2cf7eceec7e69a3b1",
+            "bytes": 5803686
+          },
+          {
+            "path": "editor/handshake-status.json",
+            "sha256": "e351a57d3113add447bfe4ad59bc5ae9f6e39672736250181cd7b23bbc098ccd",
+            "bytes": 330
+          },
+          {
+            "path": "editor/plist-vs-editor-comparison.json",
+            "sha256": "b52a0a6b0fd5248599b9553dde428de346bb2990d27a5c79774f21bbaf8796cd",
+            "bytes": 123964
+          },
+          {
+            "path": "editor/screenshots-manifest.json",
+            "sha256": "47f3481708e0d95ddcb6140c30fd0cf3b1b5ff44980f0830a7d0082ee07b851b",
+            "bytes": 9719
+          },
+          {
+            "path": "environment.json",
+            "sha256": "52236bfc6e9e432f0c98165499b111ac2ed55e3abe024f0945020e1c50997d77",
+            "bytes": 786
+          },
+          {
+            "path": "import-attempts.json",
+            "sha256": "b3f83c6d09708dfe07b3475dd6a7520633ec3d1bc04cc03f029b6ab2c5eed942",
+            "bytes": 1670
+          },
+          {
+            "path": "runtime/callback-events.json",
+            "sha256": "7459a137e50a47fe3ebb630862bf225a32dd905fc80b06f0bc0eaf8da2eac981",
+            "bytes": 2167
+          },
+          {
+            "path": "runtime/instrumentation-vs-original.json",
+            "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+            "bytes": 7446
+          },
+          {
+            "path": "runtime/output-assertions.json",
+            "sha256": "faf66ef84ba914069c5d40b2663562dce5c58103f1c1f026b612f52be5b10781",
+            "bytes": 1448
+          },
+          {
+            "path": "runtime/runtime-trace.jsonl",
+            "sha256": "e7fa137fbfd63308302d902d32eaac0c3ee358bb2e5b519386b11ae35710b1ea",
+            "bytes": 205
+          },
+          {
+            "path": "runtime/signing-provenance.json",
+            "sha256": "44f27f95b1c0d9ed72c8474edf1f6024c024044a2e0f07eac3e05cdd7b20ba84",
+            "bytes": 2020
+          },
+          {
+            "path": "summary.json",
+            "sha256": "1a7bdf628f338366378f01c5d0984d225a48380d534b8582a938b662d13a3374",
+            "bytes": 1117
+          },
+          {
+            "path": "tests/xcresult-summary.json",
+            "sha256": "e022dea7845d607a8db7c626692307fc2fd815c801fefe36c89b3d68c22d1b67",
+            "bytes": 984
+          }
+        ],
+        "quarantinedFilesAbsent": 31,
+        "rasterFilesPublished": 0,
+        "pixelRedactionClaimed": false
+      }
+    },
+    {
+      "runId": "44253540250",
+      "url": "https://github.com/davidpovarsky/cherri/actions/runs/44253540250",
+      "sourceSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+      "fixture": "qa-measure-v2",
+      "sourceSha256": "fc9f10474d5ce2ee7fd557f4b1bc48d72e2ae290c39679392d0448d9cd514879",
+      "unsignedPlistSha256": "875dce7caee638d3292df7fc5f944696467ed1e4fe7eab4ed5650efc6fd2f500",
+      "signedArtifactSha256": "9d85ad2fda2e7bf3460e032e54d6d033fdc919823852c26004961d5510b95624",
+      "nativeActionCount": 66,
+      "workflowConclusion": "success",
+      "runtimeVerdict": "PASS",
+      "callbackStatus": "SUCCESS",
+      "expectedResult": "CHERRI_QA_MEASURE_RESULT:P15_MEASURE_OK",
+      "actualResult": "CHERRI_QA_MEASURE_RESULT:P15_MEASURE_OK",
+      "exactFreshNonce": true,
+      "traceExpectation": "REQUIRED_NDJSON",
+      "traceObserved": "NDJSON_VERIFIED",
+      "traceRecords": 4,
+      "inlineRecords": 2,
+      "collectorRecords": 2,
+      "editorGate": "EDITOR_CAPTURE_COMPLETE",
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "publication": {
+        "hashedFiles": 20,
+        "files": [
+          {
+            "path": "compiler-manifest.json",
+            "sha256": "9bb0612f258eafb3c8b31357bbfd8f7958c973ec06fe444fcc9d1d8a6f254991",
+            "bytes": 85220
+          },
+          {
+            "path": "docs/report.md",
+            "sha256": "14e3cb67d7a1ec74fb3686609e9d7dfe6cbde278b3f0c6b0396418dfc7b627d1",
+            "bytes": 857
+          },
+          {
+            "path": "editor/ax-persistence-diagnostics.json",
+            "sha256": "3f43e11e223d97b621b9f8c2774798472a7553a1d63db1cf6051dc4be82d1895",
+            "bytes": 158
+          },
+          {
+            "path": "editor/editor-action-coverage.json",
+            "sha256": "56ddafd9b22e353de626e0f9ef8ae59f225afdb899ef19dbb3281b906c8cb862",
+            "bytes": 2856
+          },
+          {
+            "path": "editor/editor-actions.json",
+            "sha256": "7801a5ed4d83aff8cd4d139e8162e07e1bfb0a8d2875802e1c03b906e9fef6af",
+            "bytes": 66276
+          },
+          {
+            "path": "editor/editor-comparison.json",
+            "sha256": "00e16d62eb42f9cc477a87393332d77904eb1b3dee8dc91697f15e31209f6ca8",
+            "bytes": 62442
+          },
+          {
+            "path": "editor/editor-report.md",
+            "sha256": "590f97b103faf324cc9f536692d9b12d730feb84ad075302b66a132f73e0772a",
+            "bytes": 4124
+          },
+          {
+            "path": "editor/editor-tree.json",
+            "sha256": "7219d5ee4785aee386fcd36fb4da3c416f87794595bc4a3bd50526519d93982b",
+            "bytes": 3277674
+          },
+          {
+            "path": "editor/handshake-status.json",
+            "sha256": "e351a57d3113add447bfe4ad59bc5ae9f6e39672736250181cd7b23bbc098ccd",
+            "bytes": 330
+          },
+          {
+            "path": "editor/plist-vs-editor-comparison.json",
+            "sha256": "00e16d62eb42f9cc477a87393332d77904eb1b3dee8dc91697f15e31209f6ca8",
+            "bytes": 62442
+          },
+          {
+            "path": "editor/screenshots-manifest.json",
+            "sha256": "3cc8b3faad79d69bf081839b26d5ec45238c5a64872051ca5ec4a2c99b90511e",
+            "bytes": 5723
+          },
+          {
+            "path": "environment.json",
+            "sha256": "2f372a8271ad231c259d105bd081e93629a351f1da1469076071ec232840e391",
+            "bytes": 787
+          },
+          {
+            "path": "import-attempts.json",
+            "sha256": "418202f1f6caa99db540df4796104449e2b211703cbdd424fe716973e9e45582",
+            "bytes": 1686
+          },
+          {
+            "path": "runtime/callback-events.json",
+            "sha256": "c2f51766111fb0eacf617538932ddcc983d9d2f20f8dc21b959bc361590f028c",
+            "bytes": 2164
+          },
+          {
+            "path": "runtime/instrumentation-vs-original.json",
+            "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+            "bytes": 7446
+          },
+          {
+            "path": "runtime/output-assertions.json",
+            "sha256": "c5f309ae6ad00c17edec3bd2930a399caf09f0960379ea15ccddd0df30eaf1d3",
+            "bytes": 1432
+          },
+          {
+            "path": "runtime/runtime-trace.jsonl",
+            "sha256": "29b8dff702a66b99e9ac0da1271c8ebf803cf1af30da59d6178d7f4b7095c530",
+            "bytes": 974
+          },
+          {
+            "path": "runtime/signing-provenance.json",
+            "sha256": "ee0ad51d88481eec8fb7c1c27784cab6ceb5b2f42883cbc855ed510a79f8bc4e",
+            "bytes": 2019
+          },
+          {
+            "path": "summary.json",
+            "sha256": "a17b6ec6ef74a6026944878bd620a2607cff05fd7a31e30cc4fcf03b5c044cd6",
+            "bytes": 1122
+          },
+          {
+            "path": "tests/xcresult-summary.json",
+            "sha256": "7ef49255f91cfb4a9e4c4eef62d987bdd5959bb5bf7ccaf08b4e9bbb629e7a28",
+            "bytes": 982
+          }
+        ],
+        "quarantinedFilesAbsent": 21,
+        "rasterFilesPublished": 0,
+        "pixelRedactionClaimed": false
+      }
+    },
+    {
+      "runId": "44253544008",
+      "url": "https://github.com/davidpovarsky/cherri/actions/runs/44253544008",
+      "sourceSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+      "fixture": "qa-measure-release-v2",
+      "sourceSha256": "acdc671cff1426c1cfdf09fd29f505c8c3cb505fcfe28c68d9c9fbbffb6958ee",
+      "unsignedPlistSha256": "d5c2becfeabff0ea48b8e24bd13a9ab3c91c5f891e6dc6239853c5657554ee88",
+      "signedArtifactSha256": "fbeb6a7f2b2ce59ca00a921dd142da3429c17fd1723ab0717ee0645e1657b7db",
+      "nativeActionCount": 38,
+      "workflowConclusion": "success",
+      "runtimeVerdict": "PASS",
+      "callbackStatus": "SUCCESS",
+      "expectedResult": "CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK",
+      "actualResult": "CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK",
+      "exactFreshNonce": true,
+      "traceExpectation": "ABSENT_RELEASE",
+      "traceObserved": "ABSENT",
+      "traceRecords": 0,
+      "inlineRecords": 0,
+      "collectorRecords": 0,
+      "editorGate": "EDITOR_CAPTURE_COMPLETE",
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "publication": {
+        "hashedFiles": 20,
+        "files": [
+          {
+            "path": "compiler-manifest.json",
+            "sha256": "89a42b6d2dfb3ccaa139846a03f81a036b101ed985eb2e4410111c86ceac45d4",
+            "bytes": 85220
+          },
+          {
+            "path": "docs/report.md",
+            "sha256": "ba008b22aa47f2573e5f398c4f9f8bef29e3c8c500c93ed3bc9a5b466149199a",
+            "bytes": 875
+          },
+          {
+            "path": "editor/ax-persistence-diagnostics.json",
+            "sha256": "0a05789c7bec5dda62acefdaea8473abd38f82715c322ef25e21ef7cccb3bab0",
+            "bytes": 158
+          },
+          {
+            "path": "editor/editor-action-coverage.json",
+            "sha256": "bbb52bcedc40928910598e441ec6a48a915fc6cde7fdea4afafe2b60d2253fdd",
+            "bytes": 2471
+          },
+          {
+            "path": "editor/editor-actions.json",
+            "sha256": "c45471613f88701c26f0517d7d7d205931a195b13d4d4ce43936d04679685028",
+            "bytes": 43588
+          },
+          {
+            "path": "editor/editor-comparison.json",
+            "sha256": "b2749d85ed3389bbfb5ca333963eab1b0f0905cb04eb362c3c398423eb3f73dd",
+            "bytes": 34397
+          },
+          {
+            "path": "editor/editor-report.md",
+            "sha256": "794e0c6c7baa0e4ecf1a8f54a6486288461d609b927075bea9349d006faa5fa6",
+            "bytes": 2539
+          },
+          {
+            "path": "editor/editor-tree.json",
+            "sha256": "dad32b635ae6cabb6f1463ddfcb8b46bc8e0e3dcc12b343a54a45d04e5b463e8",
+            "bytes": 2008289
+          },
+          {
+            "path": "editor/handshake-status.json",
+            "sha256": "eec363797af1d4ee11fbdb012214ffccd841987a1769244ee3c6cb3ed256d2f5",
+            "bytes": 292
+          },
+          {
+            "path": "editor/plist-vs-editor-comparison.json",
+            "sha256": "b2749d85ed3389bbfb5ca333963eab1b0f0905cb04eb362c3c398423eb3f73dd",
+            "bytes": 34397
+          },
+          {
+            "path": "editor/screenshots-manifest.json",
+            "sha256": "ae2d3edb83c72e87cfa7982d8311599ff55096ee2ec845ebd5a34c67249c20b8",
+            "bytes": 3859
+          },
+          {
+            "path": "environment.json",
+            "sha256": "42b0197a46b88892d6cd51fc344c7622cf2cd39b908eb55bb0b67549a4b492db",
+            "bytes": 786
+          },
+          {
+            "path": "import-attempts.json",
+            "sha256": "3a0ef24c060df5fa4c0070b5f9328aa53a9732f53469fe9a5e9f4b0ac1798e10",
+            "bytes": 1686
+          },
+          {
+            "path": "runtime/callback-events.json",
+            "sha256": "9397523b59674d0f7ddec021a53f12a8038d8a20f9e743e3399c219a155760a1",
+            "bytes": 1142
+          },
+          {
+            "path": "runtime/instrumentation-vs-original.json",
+            "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+            "bytes": 7446
+          },
+          {
+            "path": "runtime/output-assertions.json",
+            "sha256": "9ce7339581e6269d318a257a984a989c6a2e4c2bd59cf41fd12d5149b960afa2",
+            "bytes": 1494
+          },
+          {
+            "path": "runtime/runtime-trace.jsonl",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          {
+            "path": "runtime/signing-provenance.json",
+            "sha256": "ba28fdf499c65108b8d5e4c1058fb96166a33fb122a7cf611c3972d21575b01b",
+            "bytes": 2051
+          },
+          {
+            "path": "summary.json",
+            "sha256": "5341adb81a90ead3069262717a34a428f550fb90e25b653a348d080ccb7aa5f6",
+            "bytes": 1149
+          },
+          {
+            "path": "tests/xcresult-summary.json",
+            "sha256": "17a9107c36589a791e29cdcce05d2267a4276eb48f7008bcadf14eb1bc2954b7",
+            "bytes": 984
+          }
+        ],
+        "quarantinedFilesAbsent": 17,
+        "rasterFilesPublished": 0,
+        "pixelRedactionClaimed": false
+      }
+    },
+    {
+      "runId": "44253547965",
+      "url": "https://github.com/davidpovarsky/cherri/actions/runs/44253547965",
+      "sourceSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+      "fixture": "qa-collect-counts-v2",
+      "sourceSha256": "86e612043d5a914af787733ffc3209d3e51f9352e1d5a5fb423856c7ee996ee8",
+      "unsignedPlistSha256": "c6ce9abdf4f7670f40a81e649307ab832eefb5c4133b02eb86106619e2b0926d",
+      "signedArtifactSha256": "9bfb1aa95a576460198bdfb36a29e03bff72b18cc2b3023d72acd1e47ceaba81",
+      "nativeActionCount": 34,
+      "workflowConclusion": "failure",
+      "runtimeVerdict": "FAIL_EXACT_RESULT",
+      "callbackStatus": "SUCCESS",
+      "expectedResult": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99",
+      "actualResult": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100::",
+      "exactFreshNonce": true,
+      "traceExpectation": "REQUIRED_NDJSON",
+      "traceObserved": "UNVERIFIED",
+      "traceRecords": 1,
+      "inlineRecords": 0,
+      "collectorRecords": 1,
+      "editorGate": "PARTIAL_EDITOR_CAPTURE",
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "publication": {
+        "hashedFiles": 20,
+        "files": [
+          {
+            "path": "compiler-manifest.json",
+            "sha256": "d6eacc12e05c63df452c4aa98b228e84b53af33b5745f3430b75480cde7e525a",
+            "bytes": 85220
+          },
+          {
+            "path": "docs/report.md",
+            "sha256": "a7bed43d47bf16951c8999c29152b5c09ca1a13fe0fc77d901616e35451cc17e",
+            "bytes": 849
+          },
+          {
+            "path": "editor/ax-persistence-diagnostics.json",
+            "sha256": "24b5a05c77501feb0a4c842056ca1d0687d72588fe8830e1eb5e7abb05f8f4bb",
+            "bytes": 158
+          },
+          {
+            "path": "editor/editor-action-coverage.json",
+            "sha256": "caecda972978ae125b4544a1607bb1c9879324e6839be898d96a791ae9e6494e",
+            "bytes": 2043
+          },
+          {
+            "path": "editor/editor-actions.json",
+            "sha256": "2870c7673c973abd85d4b7f997493a85ac45860a31d40d85c92b731b262aaae8",
+            "bytes": 538
+          },
+          {
+            "path": "editor/editor-comparison.json",
+            "sha256": "0e4df85dd5c9a67d84781860f18e39f5270d167e6f272ef9b3c7f774543a4b97",
+            "bytes": 17648
+          },
+          {
+            "path": "editor/editor-report.md",
+            "sha256": "0425f83ed5499f5841237ef64a2e53a96a0f39bc281c78607e25c217ef0f457e",
+            "bytes": 2188
+          },
+          {
+            "path": "editor/editor-tree.json",
+            "sha256": "7a4a345d5cd522877e7bfb5eb3db556513177d7f62ca0c4e1e9f32691dcadc6f",
+            "bytes": 897381
+          },
+          {
+            "path": "editor/handshake-status.json",
+            "sha256": "d0e4ff1134f17a98ac60bb8652cec0df7cf4ce9ec1455ef99d106ed2dec57c15",
+            "bytes": 292
+          },
+          {
+            "path": "editor/plist-vs-editor-comparison.json",
+            "sha256": "0e4df85dd5c9a67d84781860f18e39f5270d167e6f272ef9b3c7f774543a4b97",
+            "bytes": 17648
+          },
+          {
+            "path": "editor/screenshots-manifest.json",
+            "sha256": "388884296856bc64fdb789dd0752c0fb03c126f4d71ba8723cd7405e11f57ecf",
+            "bytes": 1615
+          },
+          {
+            "path": "environment.json",
+            "sha256": "aa9afb18bb46d8a19d1a8b06027e455f252e5e3ab9e31557323cf89777b4ebee",
+            "bytes": 786
+          },
+          {
+            "path": "import-attempts.json",
+            "sha256": "4237cc33a57d40ebdbd0ea27878338be14413af51d2cf191c9886bacec6979fa",
+            "bytes": 1686
+          },
+          {
+            "path": "runtime/callback-events.json",
+            "sha256": "d732cad4c0dc1b7f251db2e8774c91b64b89472f8b544e87d1497a70d77af547",
+            "bytes": 2231
+          },
+          {
+            "path": "runtime/instrumentation-vs-original.json",
+            "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+            "bytes": 7446
+          },
+          {
+            "path": "runtime/output-assertions.json",
+            "sha256": "d0551f7346430f97624200194d342735ad3ddc7c414e1a5afda3b38c8c42912f",
+            "bytes": 1482
+          },
+          {
+            "path": "runtime/runtime-trace.jsonl",
+            "sha256": "600c64c3509cacbcef279e035b780ca022cf718f3903810d246816f42b06a44d",
+            "bytes": 212
+          },
+          {
+            "path": "runtime/signing-provenance.json",
+            "sha256": "6562902ce2024a0719f13f7f784e93290cab170f0a77320acb21599bcee33306",
+            "bytes": 2065
+          },
+          {
+            "path": "summary.json",
+            "sha256": "0c6f66a809ceaac2fddf7532c43e81f8a877325be08c1272da34891aa40076f6",
+            "bytes": 1123
+          },
+          {
+            "path": "tests/xcresult-summary.json",
+            "sha256": "5108b6fc4d4de8f3a664cfcebc319fb2ea87aa430cfdfb8096c6f1b45e39737b",
+            "bytes": 984
+          }
+        ],
+        "quarantinedFilesAbsent": 15,
+        "rasterFilesPublished": 0,
+        "pixelRedactionClaimed": false
+      }
+    },
+    {
+      "runId": "44253551852",
+      "url": "https://github.com/davidpovarsky/cherri/actions/runs/44253551852",
+      "sourceSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+      "fixture": "qa-collect-dictionaries-v2",
+      "sourceSha256": "42d9b0b13604f022760095ffd691f4170f837043c44eb36d3ddaf9e0c8f29fcc",
+      "unsignedPlistSha256": "59abc58f797721916f2c4163993c0ac0c71d25629d587cbe3c2b481e6daf485f",
+      "signedArtifactSha256": "0394636bdb885c9d860934ffce900a831240cd8f598f75cca556ed38896a5156",
+      "nativeActionCount": 28,
+      "workflowConclusion": "success",
+      "runtimeVerdict": "PASS",
+      "callbackStatus": "SUCCESS",
+      "expectedResult": "CHERRI_QA_COLLECT_DICTIONARIES:count=2:first=first:last=second:type=Dictionary:nested=2:a:b",
+      "actualResult": "CHERRI_QA_COLLECT_DICTIONARIES:count=2:first=first:last=second:type=Dictionary:nested=2:a:b",
+      "exactFreshNonce": true,
+      "traceExpectation": "REQUIRED_NDJSON",
+      "traceObserved": "NDJSON_VERIFIED",
+      "traceRecords": 4,
+      "inlineRecords": 2,
+      "collectorRecords": 2,
+      "editorGate": "EDITOR_CAPTURE_COMPLETE",
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "publication": {
+        "hashedFiles": 20,
+        "files": [
+          {
+            "path": "compiler-manifest.json",
+            "sha256": "485141e4a1eb2c5cdb44b1f320ae676de197f2f0669b2974a45fa760839ecbfc",
+            "bytes": 85220
+          },
+          {
+            "path": "docs/report.md",
+            "sha256": "350f00b838196712a1427f362832a83940e47f722fafb690b3b35d6e38af7bb0",
+            "bytes": 857
+          },
+          {
+            "path": "editor/ax-persistence-diagnostics.json",
+            "sha256": "c1bef6aad3ee3adeccbf480fb82fe5cb5de15d64e9650c0699442b8e80a3600b",
+            "bytes": 158
+          },
+          {
+            "path": "editor/editor-action-coverage.json",
+            "sha256": "67933e1e627a15128586caf4888d6d9afe2f77ea8a31d6e497a0f2a8fc447494",
+            "bytes": 2945
+          },
+          {
+            "path": "editor/editor-actions.json",
+            "sha256": "2e2490e8fd1f4dd015457f5e57ca82416dd4617a9f3d418a4f3017e913527bcb",
+            "bytes": 32222
+          },
+          {
+            "path": "editor/editor-comparison.json",
+            "sha256": "cf18e27aed96e4ccfb6f1dad0d7f85543fee8e27785b1c35a384a6a3fc2e8ec7",
+            "bytes": 26904
+          },
+          {
+            "path": "editor/editor-report.md",
+            "sha256": "cb0dacc7972955cb028ca9262578e878a087a14f05be3d2a643fc59d1725ea05",
+            "bytes": 2026
+          },
+          {
+            "path": "editor/editor-tree.json",
+            "sha256": "9cd59b6371c955e1981c074ae8715c21809578da3f339de1341966220777c296",
+            "bytes": 1782725
+          },
+          {
+            "path": "editor/handshake-status.json",
+            "sha256": "301b1b49fac0dc612a8b6b816049a9ad222b90ab2db50388982995bd4bade54c",
+            "bytes": 423
+          },
+          {
+            "path": "editor/plist-vs-editor-comparison.json",
+            "sha256": "cf18e27aed96e4ccfb6f1dad0d7f85543fee8e27785b1c35a384a6a3fc2e8ec7",
+            "bytes": 26904
+          },
+          {
+            "path": "editor/screenshots-manifest.json",
+            "sha256": "ac31fc81b434bf022167904d1c42d2595bee9f0d31e7dbc52ce088894b4cbf2a",
+            "bytes": 3262
+          },
+          {
+            "path": "environment.json",
+            "sha256": "77f0140ed845f63903d57fdb7ef255c521d302fe44c2e47471615b82279bb404",
+            "bytes": 786
+          },
+          {
+            "path": "import-attempts.json",
+            "sha256": "fe3d89bf329f0a60fcdabab283bbec63a71c5d0ef116d3e1b3070edee63ce307",
+            "bytes": 1686
+          },
+          {
+            "path": "runtime/callback-events.json",
+            "sha256": "34365500312c41a896bfda615c8b86277b506762e6529517b75f88114d265c4b",
+            "bytes": 2308
+          },
+          {
+            "path": "runtime/instrumentation-vs-original.json",
+            "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+            "bytes": 7446
+          },
+          {
+            "path": "runtime/output-assertions.json",
+            "sha256": "12f1b54b6d42825fcf35da2921a4069a023cc2c55257c1b964b158934b421981",
+            "bytes": 1510
+          },
+          {
+            "path": "runtime/runtime-trace.jsonl",
+            "sha256": "db89ada8128132e74a6235d1ea9cbd5e8ee9cca4628a5dcc496a595fcf95e028",
+            "bytes": 1026
+          },
+          {
+            "path": "runtime/signing-provenance.json",
+            "sha256": "dc3fa02952ad8bf86b005ab0e40a2dded55e2c200977fbc03b758377b04c4452",
+            "bytes": 2111
+          },
+          {
+            "path": "summary.json",
+            "sha256": "2a8f7f944eff5da5db81c157a40a33500ff878cf40c229aee412ad00fd1aa3ec",
+            "bytes": 1135
+          },
+          {
+            "path": "tests/xcresult-summary.json",
+            "sha256": "624a80a6c110b529e5f26f08b1b6358dd7dd37919c9cef4df2804939b80e104b",
+            "bytes": 984
+          }
+        ],
+        "quarantinedFilesAbsent": 16,
+        "rasterFilesPublished": 0,
+        "pixelRedactionClaimed": false
+      }
+    },
+    {
+      "runId": "44253555776",
+      "url": "https://github.com/davidpovarsky/cherri/actions/runs/44253555776",
+      "sourceSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+      "fixture": "qa-collect-counts-legacy",
+      "sourceSha256": "efb5758b930edf21d0eafb4fd85a963807489f2c5b2342777752c675d0bf12b8",
+      "unsignedPlistSha256": "69295b1dc9bbd5b55615fc94e8a1a9aca089a3cd3222921cfa0c4a975b713efe",
+      "signedArtifactSha256": "86252afc0481b89f59bf93eefe91099fda47f351eb6f13aec7a736df88d2da97",
+      "nativeActionCount": 239,
+      "workflowConclusion": "success",
+      "runtimeVerdict": "PASS",
+      "callbackStatus": "SUCCESS",
+      "expectedResult": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99",
+      "actualResult": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99",
+      "exactFreshNonce": true,
+      "traceExpectation": "REQUIRED_NDJSON",
+      "traceObserved": "NDJSON_VERIFIED",
+      "traceRecords": 4,
+      "inlineRecords": 2,
+      "collectorRecords": 2,
+      "editorGate": "PARTIAL_EDITOR_CAPTURE",
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "physicalDevice": "BLOCKED_DEVICE",
+      "publication": {
+        "hashedFiles": 20,
+        "files": [
+          {
+            "path": "compiler-manifest.json",
+            "sha256": "fc4551953b4e6c08ef4ba336e5da4c0a47429c24449c6ae485bc58d38da281d2",
+            "bytes": 85220
+          },
+          {
+            "path": "docs/report.md",
+            "sha256": "49d1529bf6107d05fa9773294521a1b3d615521292d0837e4cefb779d8e96ac1",
+            "bytes": 833
+          },
+          {
+            "path": "editor/ax-persistence-diagnostics.json",
+            "sha256": "ae6679fd7eace6826caf8b25bf28b798443e8c8ee9d104e69c47f9134a3aea6a",
+            "bytes": 159
+          },
+          {
+            "path": "editor/editor-action-coverage.json",
+            "sha256": "78c2cac2eb85f60c670998f3fd1c7bae3b1c7e1ec6141c509895db05810a0271",
+            "bytes": 1980
+          },
+          {
+            "path": "editor/editor-actions.json",
+            "sha256": "15bd50e1a62163feb75d0bbaa5031cd636a70852808825b94afe82ea9badb432",
+            "bytes": 152297
+          },
+          {
+            "path": "editor/editor-comparison.json",
+            "sha256": "cf9ecb03fe1ef88f7554e6ca4ee9b309df26fa8a82d90f8efdf413dc94cf9fef",
+            "bytes": 199320
+          },
+          {
+            "path": "editor/editor-report.md",
+            "sha256": "e622bae74f35d9a8aa6cd6e457d222d35c31c3c95cf53f999c1dd60a6cf5aefe",
+            "bytes": 13786
+          },
+          {
+            "path": "editor/editor-tree.json",
+            "sha256": "af62ab05a7a09b0dd2993281e3441cdc7615bc3f25ab0a0b0bc686db08327aa5",
+            "bytes": 4612257
+          },
+          {
+            "path": "editor/handshake-status.json",
+            "sha256": "e5cbe9f3c9370c226d7c1e6acb2041fd954daac7277f1fca55fa7ab38ffe3f0d",
+            "bytes": 330
+          },
+          {
+            "path": "editor/plist-vs-editor-comparison.json",
+            "sha256": "cf9ecb03fe1ef88f7554e6ca4ee9b309df26fa8a82d90f8efdf413dc94cf9fef",
+            "bytes": 199320
+          },
+          {
+            "path": "editor/screenshots-manifest.json",
+            "sha256": "7a873a135915900b15429c9bba26f2af145bb9afd39f1a893b3e610fb8fc1342",
+            "bytes": 9910
+          },
+          {
+            "path": "environment.json",
+            "sha256": "3ec1a1501dabc8e8dedc59c72feed62852b3951a4f11e651cf52df4402a4e7d1",
+            "bytes": 786
+          },
+          {
+            "path": "import-attempts.json",
+            "sha256": "f869554d79d8e4feb7cfc1230065c7997d118786067a2efc76fc3825d7b17c3b",
+            "bytes": 1688
+          },
+          {
+            "path": "runtime/callback-events.json",
+            "sha256": "dbe0ae62edb2348a08f41d43b5ec0b319d3ac4a9412ecb6fcfa66659d27477ed",
+            "bytes": 2255
+          },
+          {
+            "path": "runtime/instrumentation-vs-original.json",
+            "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+            "bytes": 7446
+          },
+          {
+            "path": "runtime/output-assertions.json",
+            "sha256": "8b379947d0d853245f7db348c375680800fd57ddae495e0844ac40c00e32ddbd",
+            "bytes": 1474
+          },
+          {
+            "path": "runtime/runtime-trace.jsonl",
+            "sha256": "3eefc47b5d086026e2be2ae767c3341a7ba8537b69b7721aa3b906ac4eb8ba99",
+            "bytes": 1011
+          },
+          {
+            "path": "runtime/signing-provenance.json",
+            "sha256": "9e39e196cd1598384ba5e938132367eca0e6602cf6493ec4b6c29440846bfbf0",
+            "bytes": 1238
+          },
+          {
+            "path": "summary.json",
+            "sha256": "346577f9c297682ec48c8c00f3528158678b2084ee995ebc10f49d397cc98a71",
+            "bytes": 1109
+          },
+          {
+            "path": "tests/xcresult-summary.json",
+            "sha256": "649ce0e24d49eac81b34cba9ee76e52a898858c2922cd4839dcd61c7f7529a33",
+            "bytes": 984
+          }
+        ],
+        "quarantinedFilesAbsent": 29,
+        "rasterFilesPublished": 0,
+        "pixelRedactionClaimed": false
+      }
+    },
+    {
+      "runId": "44253559464",
+      "url": "https://github.com/davidpovarsky/cherri/actions/runs/44253559464",
+      "sourceSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+      "workflowConclusion": "cancelled",
+      "runtimeVerdict": "UNVERIFIED_NO_PUBLISHED_ARTIFACT",
+      "publishedArtifactCount": 0
+    }
+  ],
+  "summary": {
+    "runtimePass": 4,
+    "runtimeFail": 2,
+    "unverified": 1,
+    "projectClosure": false
+  }
+}
