@@ -32,8 +32,8 @@ p15_enum_acceptance_test.go contains these producers:
 
 | Producer | Actual assertions |
 | --- | --- |
-| TestP15C04EnumResolutionProduction | 15 exact native-wire cases, including canonical native identifiers/keys independently anchored in actions/a11y.cherri; contextual and qualified source/native values; omission/default, empty, quoted and Unicode wires; source format/recompile identity; 17 invalid member/domain/declaration cases with exact diagnostics and zero emitted bytes; wrong-wire and wrong-diagnostic controls |
-| TestP15C04EnumServiceAndCLI | 13 real completion replacements compiled to independently expected native values; active parameter, lowercase qualifier, empty prefix, existing dot, multiline, nested call, comment, quoted comma and Unicode contexts; unrelated-domain rejection; invalid-completion mutation rejection; all invalid cases through service edits and real CLI JSON/exit/range checks, followed by corrected document analysis |
+| TestP15C04EnumResolutionProduction | 17 exact native-wire cases, including canonical native identifiers/keys independently anchored in actions/a11y.cherri; contextual and qualified source/native values; omission/default, empty, quoted and Unicode wires; source format/recompile identity; 20 invalid member/domain/declaration cases with exact diagnostics and zero emitted bytes; wrong-wire and wrong-diagnostic controls |
+| TestP15C04EnumServiceAndCLI | 15 real completion replacements compiled to independently expected native values; active parameter, lowercase qualifier, empty prefix, existing dot, multiline, nested call, comment, quoted comma and Unicode contexts; unrelated-domain rejection; invalid-completion mutation rejection; all invalid cases through service edits and real CLI JSON/exit/range checks, followed by corrected document analysis |
 | TestP15C04EnumContextsAndShadowing | Binding/assignment/optional/default/function return/if/scoped-measure contexts; inferred Text and exact resolved values; format/recompile; quoted source member declarations; four required/defaulted uppercase/lowercase/native-name lexical dictionary shadow controls with original-producer/key wire and mutation checks |
 | TestP15C04EnumFunctionService | Four contextual or qualified user-function replacements, including the public underscore alias; actual native function-envelope Text item and exact empty wire; separate explicit empty and nonempty argument controls |
 
@@ -56,3 +56,11 @@ Final expanded source/CLI/service controls and existing C02/custom-enum compatib
 ## Immutable source receipt
 
 Exact clean source 6d4db11adaa5a8a7d1fd44b5f68c4792c26127bc passed the complete analysis/syntax/lower/service packages (70 top-level tests) and all five C04/C02/T02/T06/T08 evidence producers in job_b713286ec98c. Both required C04 tiers are verified; the source was clean before and after. See [receipt and hashes](evidence/p15-enums-6d4db11/receipt.json), [the C04 record](evidence/p15-enums-6d4db11/verification.json), [raw package output](evidence/p15-enums-6d4db11/packages.jsonl), [raw producer output](evidence/p15-enums-6d4db11/verification.jsonl), and [the full bounded verification](evidence/p15-enums-6d4db11/verification-all.json). The three retained RED logs reproduce the original enum defects, contextual validation gaps, and typed shadow reference defect. This receipt does not certify unexecuted native/UI tiers or release completion.
+
+## Review follow-up: native domains and scoped completion
+
+The native parameter keeps its actual ParameterSchema.EnumValues after source-name resolution. Two valid source aliases of backgroundSound map to the canonical Ocean wire; contextual, qualified and raw invalid native wires are rejected through compilation, service and CLI. A source enum does not replace the native action\'s allowed-value gate.
+
+Independent review found that the service declaration collector omitted the structured body of a scoped call. Job_ba23ab1d5ab5 reproduced an enum completion leaking through a measure-local value shadow. The collector now walks the existing body with its lexical span. A negative inside the block and a positive after its end check both scope boundaries. No macro lowering, native serializer or canonical catalog changes are needed for this follow-up.
+
+The review follow-up passed all four production enum tests and selected shared service regression tests in job_1d1fe7ed3628. The new alias controls confirm the native allowed-value check was already retained; the only production change is the three-line structured-block declaration walk.

@@ -23,6 +23,8 @@ const p15C04Declarations = "enum Mode { Blue = \"native-blue\", Empty = \"\", Qu
 	"identifier: \"com.example.p15.enum\"\n" +
 	"bindings: { mode: {key: \"Mode\", codec: \"text\"}, note: {key: \"Note\", codec: \"text\"}, other: {key: \"Other\", codec: \"text\"} }\n}\n"
 
+const p15C04NativeAlias = "enum backgroundSound { Coast = \"Ocean\" }\n"
+
 type p15C04WireCase struct{ name, source, id, key, want string }
 
 var p15C04WireCases = []p15C04WireCase{
@@ -41,6 +43,8 @@ var p15C04WireCases = []p15C04WireCase{
 	{"qualified_expression", p15C04Declarations + "text(Mode.Blue)", "is.workflow.actions.gettext", "WFTextActionText", "native-blue"},
 	{"qualified_empty_expression", p15C04Declarations + "text(Mode.Empty)", "is.workflow.actions.gettext", "WFTextActionText", ""},
 	{"lowercase_declared", "enum tone { Low = \"low-wire\" }\naction c04Tone(value:tone) {identifier:\"com.example.p15.tone\"}\nc04Tone(tone.Low)", "com.example.p15.tone", "value", "low-wire"},
+	{"native_source_alias_context", p15C04NativeAlias + "setBackgroundSound(.Coast)", "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundIntent", "backgroundSound", "Ocean"},
+	{"native_source_alias_qualified", p15C04NativeAlias + "setBackgroundSound(backgroundSound.Coast)", "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundIntent", "backgroundSound", "Ocean"},
 }
 
 func p15C04Wire(actions []ShortcutAction, tc p15C04WireCase) error {
@@ -62,6 +66,9 @@ func p15C04Wire(actions []ShortcutAction, tc p15C04WireCase) error {
 }
 
 var p15C04Invalid = []struct{ name, source, argument, code string }{
+	{"native_domain_override_context", "enum backgroundSound { Coast=\"not-native\" }\nsetBackgroundSound(.Coast)", ".Coast", analysis.CodeEnumMember},
+	{"native_domain_override_qualified", "enum backgroundSound { Coast=\"not-native\" }\nsetBackgroundSound(backgroundSound.Coast)", "backgroundSound.Coast", analysis.CodeEnumMember},
+	{"native_domain_override_literal", "enum backgroundSound { Coast=\"not-native\" }\nsetBackgroundSound(\"not-native\")", "\"not-native\"", analysis.CodeEnumMember},
 	{"bare_enum_type", "enum Mode {Blue=\"wire\"}\ntext(Mode)", "Mode", analysis.CodeEnumMember},
 	{"branch_raw_domain", "enum Mode {Blue=\"wire\"}\nlet value:Mode=if number(0)==1 {\"wrong\"} else {.Blue}", "\"wrong\"", analysis.CodeEnumMember},
 	{"function_member", p15C04Function + "c04Function(.Missing)", ".Missing", analysis.CodeEnumMember},
@@ -181,6 +188,8 @@ func TestP15C04EnumServiceAndCLI(t *testing.T) {
 		wire                         p15C04WireCase
 	}{
 		{"quoted_member", "enum Space {\"space name\"=\"wire-space\"}\naction c04Space(value:Space){identifier:\"com.example.p15.space\"}\nc04Space(sp|)", "space name", "Space", p15C04WireCase{"quoted_member", "", "com.example.p15.space", "value", "wire-space"}},
+		{"native_source_alias", p15C04NativeAlias + "setBackgroundSound(.Co|)", "Coast", "backgroundSound", p15C04WireCases[0]},
+		{"scope_ends_at_block", p15C04Declarations + "let choice=measure(\"scope\") {let Mode={\"Blue\":\"dynamic\"}; Mode.Blue}\nc04Pick(Mode.Bl|)", "Blue", "Mode", p15C04WireCases[4]},
 		{"native_bare", "setBackgroundSound(O|)", "Ocean", "backgroundSound", p15C04WireCases[0]},
 		{"native_empty", "setBackgroundSound(|)", "Ocean", "backgroundSound", p15C04WireCases[0]},
 		{"native_dot_empty", "setBackgroundSound(.|)", "Ocean", "backgroundSound", p15C04WireCases[0]},
@@ -233,7 +242,7 @@ func TestP15C04EnumServiceAndCLI(t *testing.T) {
 			}
 		})
 	}
-	for _, marked := range []string{p15C04Declarations + "c04Pick(note: |)", "let object={\"Blue\":\"dynamic\"}\ntext(object.|)", p15C04Declarations + "function c04Shadow(Mode:Map<Text,Text>)->Text{return Mode.|}", p15C04Declarations + "c04Pick(mode: \"Bl|\")"} {
+	for _, marked := range []string{p15C04Declarations + "c04Pick(note: |)", "let object={\"Blue\":\"dynamic\"}\ntext(object.|)", p15C04Declarations + "function c04Shadow(Mode:Map<Text,Text>)->Text{return Mode.|}", p15C04Declarations + "let choice=measure(\"scope\") { let Mode={\"Blue\":\"dynamic\"}; Mode.B| }", p15C04Declarations + "c04Pick(mode: \"Bl|\")"} {
 		offset := strings.Index(marked, "|")
 		text := strings.Replace(marked, "|", "", 1)
 		svc.OpenDocument(uri, 30, text)

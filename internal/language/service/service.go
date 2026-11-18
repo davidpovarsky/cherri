@@ -679,6 +679,9 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 			for _, arg := range e.NamedArgs {
 				walkExpr(arg.Value)
 			}
+			if e.Block != nil && e.Block.Body != nil {
+				walkStmt(e.Block.Body, e.Block.Body.Span)
+			}
 		case *syntax.MemberExpr:
 			walkExpr(e.Target)
 		case *syntax.IndexExpr:
