@@ -1,0 +1,22 @@
+{
+  "source_sha": "642d276723cf6a80a5f3ba7f5165454ccafc42d5",
+  "source_tree_clean": true,
+  "sentinel_job": "job_70670aceddf8",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestTypeRecordProductionEvidence$"
+  ],
+  "exit_code": 0,
+  "raw_log_sha256": "e2645079659892d0240ca584d27884d4d40dc82218956f5f9900ece7a0b7d13d",
+  "raw_log_bytes": 6914,
+  "tests_passed": [
+    "TestTypeRecordProductionEvidence"
+  ],
+  "scope": "T06 required unit tier only; external records rejected statically, no native validator or release closure"
+}

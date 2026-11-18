@@ -57,3 +57,7 @@ No native runtime, UI, platform availability or release closure is inferred from
 ## Exact committed execution
 
 Commit b250282a269268610bbb865f847e1fbc8e82b57f was executed with a clean tree in Sentinel job job_7aa9e96b50ee. The actual named production producer and formal evidence validator passed. The bounded report has one passed requirement (T02), zero failed/skipped, and closure_complete=false. The receipt and raw-log verification digest are retained under evidence/p15-types-b250282. No other type requirement inherits this result.
+
+### T06 exact committed execution
+
+Clean implementation commit 642d276723cf6a80a5f3ba7f5165454ccafc42d5 passed its actual production producer and formal evidence validator in Sentinel job job_70670aceddf8. The bounded report contains one passed requirement (T06), zero failed/skipped, and closure_complete=false. Receipt and raw-log digest are under evidence/p15-types-642d276; unrelated requirements inherit no success.

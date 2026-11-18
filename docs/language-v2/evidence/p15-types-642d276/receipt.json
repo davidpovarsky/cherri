@@ -1,0 +1,58 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-T06-unit",
+      "requirements": [
+        "T06"
+      ],
+      "tier": "unit",
+      "implementation_sha": "642d276723cf6a80a5f3ba7f5165454ccafc42d5",
+      "test_id": "github.com/electrikmilk/cherri:TestP15T06RecordAnnotationsDoNotValidateExternalValues",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15T06RecordAnnotationsDoNotValidateExternalValues|TestP15T06RecordProofTypeRelations)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations"
+      },
+      "detail": "Executed production tests: TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T05:08:01Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "T06",
+        "group": "types",
+        "requirement": "User record annotation is not runtime JSON validation",
+        "test_level": "unit",
+        "executed_levels": [
+          "unit"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only T06 production unit contract; static rejection of unvalidated external record guarantees, no runtime validator, native execution or release closure",
+  "source_sha": "642d276723cf6a80a5f3ba7f5165454ccafc42d5",
+  "source_tree_clean": true
+}
