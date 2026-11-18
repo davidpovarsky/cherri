@@ -1,0 +1,576 @@
+{
+  "sourceCommit": "beb807df24394d680c3178e6b91eee8037c6af1d",
+  "sourceTreeCleanBeforeAndAfter": true,
+  "executedAt": "2026-11-18T21:39:00.718945+00:00",
+  "formalT05Status": "UNVERIFIED",
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "5m",
+        "-run",
+        "^TestTypeOptionalPresenceBoundedEvidence$",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "rawLog": "formal-t05-bounded.jsonl",
+      "rawLogSha256": "1e06a9614964cfbc6ed3c93f1bec0a05fe6aaa435466e3e099c7547e0211b4de",
+      "results": [
+        {
+          "test": "TestTypeOptionalPresenceBoundedEvidence",
+          "action": "pass",
+          "elapsed": 2.89
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 3.972
+        }
+      ],
+      "boundedReceipts": [
+        {
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15T05PresenceBinding|TestP15T05PresenceNativeWire|TestP15T05AuthoredNullRejected)$"
+          ],
+          "observations": [
+            {
+              "id": "T05",
+              "passed": true,
+              "historically_claimed_levels": [
+                "unit",
+                "native-structure"
+              ],
+              "observed_smoke_detail": "Executed production tests: TestP15T05PresenceBinding, TestP15T05PresenceNativeWire, TestP15T05AuthoredNullRejected",
+              "coverage_gap": "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved."
+            }
+          ],
+          "records": [],
+          "report": {
+            "timestamp": "2026-11-18T21:38:52Z",
+            "phase": "local",
+            "closure_complete": false,
+            "language_version": "2.0",
+            "schema_fingerprint": "",
+            "total_cases": 1,
+            "passed_cases": 0,
+            "failed_cases": 0,
+            "skipped_cases": 1,
+            "results": [
+              {
+                "id": "T05",
+                "group": "types",
+                "requirement": "Optional presence differs from optional value and JSON null",
+                "test_level": "unit+native-structure",
+                "passed": false,
+                "status": "NOT_RUN",
+                "detail": "Formal scope UNVERIFIED: Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved."
+              }
+            ]
+          },
+          "scope": "Actual authored presence/empty/false/zero native fields and unsupported-null rejection only; full T05 JSON-null/optional-container semantics remain UNVERIFIED, no Apple runtime or closure",
+          "source_sha": "beb807df24394d680c3178e6b91eee8037c6af1d",
+          "source_tree_clean": true
+        }
+      ],
+      "committedLogSha256": "1e06a9614964cfbc6ed3c93f1bec0a05fe6aaa435466e3e099c7547e0211b4de"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "5m",
+        "./internal/language/types",
+        "./internal/language/analysis",
+        "./internal/language/service",
+        "./internal/language/syntax",
+        "./internal/language/lower"
+      ],
+      "exitCode": 0,
+      "rawLog": "type-packages.jsonl",
+      "rawLogSha256": "729aaa948f0b7d203f3143f7fa8d350610fa640c4612678e690597a7f8179e29",
+      "results": [
+        {
+          "test": "TestFormatterIdempotence",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLexerBasicTokens",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLexerFString",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestParseProgramStatements",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestParseFunctionDecl",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestParseNamedArgsCall",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestParseValueProducingIf",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockParseFormatAndUnicode",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockDoesNotConsumeControlBodies",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockNestedArgumentHasOwnBoundary",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 1.396
+        },
+        {
+          "test": "TestAnalyzerAssignImmutable",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerReadBeforeInit",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerUnknownArgument",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerMissingArgument",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerDuplicateArgument",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerIfConditionBool",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerYieldOutsideValueBlock",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerLegacySyntax",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerValidProgram",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerCopyPaste",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerTruthiness",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerHotLoopWarning",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerGlobals",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerListPlusAssign",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMacActionInNonMacShortcut_Baseline",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMacActionInMacShortcut_Allowed",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestNonMacActionInMacShortcut_Error",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestNonMacActionInNonMacShortcut_Allowed",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestEmptyDictionaryKey_MapLiteral",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestEmptyDictionaryKey_IndexExpr",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestEmptyDictionaryKey_GetValueCall",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestExprTypesTracking",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMixedTargets_RejectsNonPortableActions",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestExplicitTargetString",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestUnspecifiedTarget_EmitsWarning",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestVersionBounds_MinVersion",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAcceptedForms_AcceptsVariableAttachment",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockInferredTypeAndLexicalScope",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockDiagnosticsAndBranchTypes",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockDoesNotReserveExistingFunctionName",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestTargetVersionSettersRetainCompatibility",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestTargetVersionSourceAccessorsKeepComponents",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 2.103
+        },
+        {
+          "test": "TestMapIndexDynamicKeyLowering",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestListIndexDynamicLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexEmptyKeyLoweringError",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexUnicodeKeyLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexLetVarLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexNestedMapLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexDirectGetValueCall",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerBasicWorkflow",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerConditionalWorkflow",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerFunctionEnvelopeDefaultsAndVoidReturn",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerShortCircuitAndExpressionsAndSafeIndexing",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerTriggersWithParameters",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerUnusedFunctionDispatcherOmitted",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerListAppendVariable",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockRenamingPreservesSourceAndLiteralValues",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 2.132
+        },
+        {
+          "test": "TestCompilerMacrosReachCompletionFromSharedMetadata",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestServiceAnalyze",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestServiceComplete",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestServiceHover",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestServiceContextualCallComplete",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestE01MultiDiagnosticAnalysis",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE02CompletionHoverSignatureDefinition",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE04FormatterPreservesCommentsAndSemantics",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE05OutOfOrderVersionedEdits",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE07BoundedVisualSourceEditAndRejection",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 2.348
+        },
+        {
+          "test": "TestTypeAssignability",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 3.009
+        }
+      ],
+      "boundedReceipts": [],
+      "committedLogSha256": "729aaa948f0b7d203f3143f7fa8d350610fa640c4612678e690597a7f8179e29"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "5m",
+        "-run",
+        "^TestP15(T05.*|DateComparisonMigrationCLIParity)$",
+        "."
+      ],
+      "exitCode": 0,
+      "rawLog": "presence-native-and-date-cli.jsonl",
+      "rawLogSha256": "9b9f8e7d18f96eb573314303e5620816c9e168f673010a40c2aee8a4996b41f5",
+      "results": [
+        {
+          "test": "TestP15DateComparisonMigrationCLIParity",
+          "action": "pass",
+          "elapsed": 1.88
+        },
+        {
+          "test": "TestP15T05AuthoredNullRejected",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestP15T05PresenceBinding",
+          "action": "pass",
+          "elapsed": 0.02
+        },
+        {
+          "test": "TestP15T05PresenceNativeWire",
+          "action": "pass",
+          "elapsed": 0.02
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 2.1310000000000002
+        }
+      ],
+      "boundedReceipts": [],
+      "committedLogSha256": "9b9f8e7d18f96eb573314303e5620816c9e168f673010a40c2aee8a4996b41f5"
+    }
+  ],
+  "retainedDevelopmentEvidence": [
+    {
+      "file": "t05-presence-baseline.jsonl",
+      "jobId": "job_47bfe6ba9816",
+      "kind": "actual source/wire observations",
+      "sha256": "1efd0818a3f2aa4cc70d103a3576e51a2fbe3668453602cd8cf6da609fe72e63"
+    },
+    {
+      "file": "t05-null-causal-red-v2.jsonl",
+      "jobId": "job_70c2a85edfbe",
+      "kind": "corrected causal authored-null RED",
+      "sha256": "1254a1f0ff5682865ed3240203c4c4b8299c4e88b62bec9947c1c3d469c40c1c"
+    },
+    {
+      "file": "t05-formal-candidate-v2.jsonl",
+      "jobId": "job_fa0e21e8c3b8",
+      "kind": "invalid-manifest error with misleading T05 pass count",
+      "sha256": "91c8fd49c9745137a9c0a744c6c8b771db7536f2eacd62f828918a56625efec7"
+    },
+    {
+      "file": "t05-null-causal-red.jsonl",
+      "jobId": "job_e80a065af85b",
+      "kind": "test-only Position field error, not compiler evidence",
+      "sha256": "268f04fb545ca7a33d09cee0b74057d292b1ba4673cce82722a4938023e37f3a"
+    },
+    {
+      "file": "t05-formal-candidate.jsonl",
+      "jobId": "job_0b12092bb2ff",
+      "kind": "removed-smoke unused import build correction",
+      "sha256": "b1545beb32d37fe1d120b2c7bf06159f0c96c8202146724eab1d8eb3e3914d86"
+    }
+  ],
+  "remainingGaps": [
+    "No supported lossless native JsonNull representation",
+    "Historical raw-native null omission unchanged",
+    "Optional container none/presence semantics incomplete",
+    "No native optional-variable clearing proof"
+  ],
+  "sentinelJobId": "job_5821ab7e5158"
+}
