@@ -2605,6 +2605,86 @@
       "reason": "Actual late-docs overwrite, handled-signal backup loss and promoted-cache fallback counterexamples required production fixes.",
       "evidence": "Clean b1a1e23 K02/K03/K04 initial receipts retained; later b1 signal/fallback RED supersedes its incomplete K03 contract. Follow-up 924fa7d2a99ee3a9a3ffa1413dee727c9e436fa9 integrates a08b538 correction; expanded clean K03 producerPASS including ten actual TERM boundaries and direct promoted-cache rejection. See skill-install-k02-k03.md.",
       "note": "No power-loss, concurrent-reader atomicity, packaged binary, signing, remote installed consumer or release closure claim."
+    },
+    {
+      "name": "P10R15 call argument evaluation order and value snapshots",
+      "locations": [
+        "internal/language/lower/call_arguments.go",
+        "internal/language/analysis/binding_flow.go",
+        "p15_call_order_test.go"
+      ],
+      "firstForkCommit": "d0dd45e0a23c988cdd618ffb24ff3ba8cd3f15d7",
+      "change": "Evaluate explicit arguments once in source order, snapshot an earlier value before later visible writes and evaluate omitted defaults only in the function dispatcher.",
+      "reason": "Real named-argument flow, duplicate-default evaluation and consumed nested output identity counterexamples.",
+      "evidence": "Clean7289b9c C01 unit+native-structure producerPASS with9production tests,60package tests and63focused compatibility tests. Exact combinedfb93cfb preserves60package/144named root PASS events.",
+      "note": "Immutable integrated implementation ancestor. Scoped source evidence does not close unexecuted Apple, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 stable synthesized native Number names",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "p15_numeric_list_test.go"
+      ],
+      "firstForkCommit": "f01c1f5f8d0253e18ea6dc9dffb972dd39b4b9fb",
+      "change": "Assign deterministic distinct UI output names to synthesized Number producers and preserve matching attachment names.",
+      "reason": "Preserve the independently developed Asana-linked correction b2b3e80 while retaining V02 lexical state and C01 evaluation behavior.",
+      "evidence": "Exactfb93cfb Number/statistic/C01/V02/raw combined checksPASS; producer-name corruption is rejected. Native UUID and value checks remain separate from display-name stability.",
+      "note": "Immutable integrated implementation ancestor. Scoped source evidence does not close unexecuted Apple, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 compact complete synthetic AX publication",
+      "locations": [
+        "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift",
+        "tools/shortcuts-simulator-qa/test_public_artifacts.py"
+      ],
+      "firstForkCommit": "fb93cfb1dae4ca3130a744e16bebcc67a8ac9b20",
+      "change": "Serialize every already-sanitized AX node compactly, retaining indices, parent links, geometry and pages without changing privacy or size limits.",
+      "reason": "Preserve Asana-linked full-tree correction59742e3; pretty indentation alone exceeded the existing publication limit.",
+      "evidence": "Exactfb93cfb14publication testsPASS, including full12000-node equality and oversized pretty-form rejection. This is local publication proof; no fresh Swift/Inspector runtime result inferred.",
+      "note": "Immutable integrated implementation ancestor. Scoped source evidence does not close unexecuted Apple, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 cross-run storage and differential native probes",
+      "locations": [
+        "tools/shortcuts-simulator-qa/storage_cross_run.py",
+        "tools/p10r15/verify_native_continuation_probes.py",
+        "tools/shortcuts-simulator-qa/fixtures/qa-number-comparison-diag-v2.cherri"
+      ],
+      "firstForkCommit": "061cbbb9dae14e344a0c0186ef11cd2e5a81e93a",
+      "change": "Extend the existing receiver/workflow with separate correlated storage writer/reader dispatches, fixed HTTP conversion controls and paired numeric equality/inequality operands.",
+      "reason": "Resolve observed native storage, HTTP conversion and zero-comparison behavior using exact synthetic fixtures without changing the original acceptance oracles.",
+      "evidence": "Exacte71ad18 clean4CLI graphs/4native-action roundtrips/23causalgraphfaults,10orchestration controls,129Python tests and56Phase0 compilesPASS. New native pilots are independently owned at42e7d1c; no native pass inherited.",
+      "note": "Immutable integrated implementation ancestor. Scoped source evidence does not close unexecuted Apple, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 immutable Skill package and unpacked execution",
+      "locations": [
+        "tools/p10r15/package_skill.py",
+        "p15_skill_packaging_test.go",
+        ".github/workflows/openminis-skill.yml",
+        "skills/cherri-shortcuts/scripts/self-test.sh"
+      ],
+      "firstForkCommit": "2c50d913cfe2225ab65f88c9077277d2518d885f",
+      "change": "Build packages from exact Git blobs and manifest-pinned clean compiler binaries; verify ZIP inventory/bytes/modes and run unpacked wrappers; keep generic wrapper observations distinct from formal acceptance.",
+      "reason": "Current development binaries were copied into packages declaring another source pin, and a smoke report asserted broader contracts than it executed.",
+      "evidence": "Clean46299 K01 producerPASS191.94s; actual41121 source/Windows/Linux packages verified with real unpacked Windows110.266s and Linux18.453s runs. Reader correction4f54fed rejects5corruptions and recovers original split Go Output without rerunning or changing the test.",
+      "note": "Immutable integrated implementation ancestor. Scoped source evidence does not close unexecuted Apple, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 exact unknown native action envelopes",
+      "locations": [
+        "native_action_envelope.go",
+        "internal/language/backend/native_envelope.go",
+        "internal/language/lower/native_action_envelope.go",
+        "raw_actions.go",
+        "hybrid_import.go",
+        "p15_native_envelope_test.go"
+      ],
+      "firstForkCommit": "f9477ca9fa085b5529496df39624cb0edfd05b34",
+      "change": "Retain complete opaque action envelopes through existing native records, raw escape APIs and the canonical serializer; reject incompatible identifier/parameter declarations and consumed invalid identities.",
+      "reason": "Unknown action sibling metadata was silently lost by lossless import and caused hybrid parity failure in all8format/frontend/fidelity routes.",
+      "evidence": "Clean46c609 source60top-level/217pass events and canonical generation checksPASS. Clean afc52fd executes7formal contracts V04/C05/R01-R05 with9tierrecords and23evidencecorruptions rejected; integrated5ebfd2c/0e5d7a0, receiptsc1ce984. Combinedprivate0e5d7a0 PASS all3tests:38originals unchanged,76exacttrees,23353natural,0demotions and100%pre-overlay parity under new9f86a7 schema.",
+      "note": "Immutable integrated implementation ancestor. Scoped source evidence does not close unexecuted Apple, physical, installed-consumer or final release gates."
     }
   ]
 }
