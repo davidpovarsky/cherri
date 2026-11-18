@@ -6,10 +6,7 @@ package main
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"slices"
 	"strings"
 	"testing"
@@ -157,16 +154,7 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 
 	report.ParameterDimensionSummaries = buildParameterDimensionSummaries(contractResults)
 
-	outPath := filepath.Join("docs", "apple-runtime", "p10", "p10-505-execution-evidence.json")
-	rawJSON, err := json.MarshalIndent(report, "", "  ")
-	if err != nil {
-		t.Fatalf("failed to marshal execution report: %v", err)
-	}
-	if err := os.WriteFile(outPath, append(rawJSON, '\n'), 0644); err != nil {
-		if _, gitErr := os.Stat(".git"); gitErr == nil {
-			t.Fatalf("failed to write %s: %v", outPath, err)
-		}
-	}
+	writeP10CatalogEvidence(t, "p10-505-execution-evidence.json", report)
 	t.Logf("505 Catalog Execution Summary: Legacy=%d/505, V2=%d/505, ParamContract=%d/505, Decompile=%d/505, StructuralRoundTrip=%d/505, NativeSpecimenParity=%d/505, RuntimeExecuted=%d/505",
 		report.LegacyPassCount, report.V2PassCount, report.ParameterContractPassCount, report.DecompilePassCount, report.StructuralRoundTripCount, report.NativeSpecimenParityCount, report.AppleRuntimeExecutedCount)
 }

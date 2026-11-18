@@ -674,16 +674,16 @@ type ParameterContractResult struct {
 }
 
 type ParameterDimensionSummary struct {
-	Dimension          string `json:"dimension"`
-	TotalCatalog       int    `json:"totalCatalog"`
-	ConstructsExcluded int    `json:"constructsExcluded"`
-	Eligible           int    `json:"eligible"`
-	Tested             int    `json:"tested"`
-	Pass               int    `json:"pass"`
-	Fail               int    `json:"fail"`
-	NotApplicable      int    `json:"notApplicable"`
-	NotTested          int    `json:"notTested"`
-	Blocked            int    `json:"blocked"`
+	Dimension          string         `json:"dimension"`
+	TotalCatalog       int            `json:"totalCatalog"`
+	ConstructsExcluded int            `json:"constructsExcluded"`
+	Eligible           int            `json:"eligible"`
+	Tested             int            `json:"tested"`
+	Pass               int            `json:"pass"`
+	Fail               int            `json:"fail"`
+	NotApplicable      int            `json:"notApplicable"`
+	NotTested          int            `json:"notTested"`
+	Blocked            int            `json:"blocked"`
 	SubKindBreakdown   map[string]int `json:"subKindBreakdown,omitempty"`
 }
 
@@ -1701,6 +1701,29 @@ func buildParameterDimensionSummaries(entries []ParameterContractResult) []Param
 	return summaries
 }
 
+// writeP10CatalogEvidence keeps ordinary test runs read-only with respect to the
+// checkout. Explicit evidence collection can select a durable output directory;
+// it does not change any catalog assertions or imply native runtime coverage.
+func writeP10CatalogEvidence(t *testing.T, name string, artifact any) {
+	t.Helper()
+	dir := os.Getenv("CHERRI_CATALOG_EVIDENCE_DIR")
+	if dir == "" {
+		dir = t.TempDir()
+	}
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		t.Fatalf("create catalog evidence directory: %v", err)
+	}
+	outPath := filepath.Join(dir, name)
+	rawJSON, err := json.MarshalIndent(artifact, "", "  ")
+	if err != nil {
+		t.Fatalf("marshal catalog evidence %s: %v", name, err)
+	}
+	if err := os.WriteFile(outPath, append(rawJSON, '\n'), 0644); err != nil {
+		t.Fatalf("write catalog evidence %s: %v", outPath, err)
+	}
+	t.Logf("Catalog evidence: %s", outPath)
+}
+
 func TestP10_ParameterContractMatrix_AllCatalogActions(t *testing.T) {
 	resetCompilerStateFully()
 	schema.ResetDefaultRegistry()
@@ -1751,16 +1774,7 @@ func TestP10_ParameterContractMatrix_AllCatalogActions(t *testing.T) {
 			ds.Dimension, ds.TotalCatalog, ds.ConstructsExcluded, ds.Eligible, ds.Tested, ds.Pass, ds.Fail, ds.NotApplicable, ds.NotTested, ds.SubKindBreakdown)
 	}
 
-	outPath := filepath.Join("docs", "apple-runtime", "p10", "p10-505-parameter-contract-evidence.json")
-	rawJSON, err := json.MarshalIndent(artifact, "", "  ")
-	if err != nil {
-		t.Fatalf("failed to marshal parameter contract artifact: %v", err)
-	}
-	if err := os.WriteFile(outPath, append(rawJSON, '\n'), 0644); err != nil {
-		if _, gitErr := os.Stat(".git"); gitErr == nil {
-			t.Fatalf("failed to write %s: %v", outPath, err)
-		}
-	}
+	writeP10CatalogEvidence(t, "p10-505-parameter-contract-evidence.json", artifact)
 }
 
 // TestP10_ParameterContract_NegativeMutations verifies all 9 mandatory negative mutations from Part B6:
