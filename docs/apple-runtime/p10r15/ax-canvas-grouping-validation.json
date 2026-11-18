@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "status": "PASS_OBSERVATION_REPAIR_ONLY",
+  "sourceRun": 44238251950,
+  "sourceCommit": "23ea902b21b9049b6a89873e985c902073ed2d41",
+  "sourceRunURL": "https://github.com/davidpovarsky/cherri/actions/runs/44238251950",
+  "publishedTreeSha256": "1438ace26cada9d9e1fd75fe81dd179ce4b8899d6c1c4cf55815f8e5776d4499",
+  "publishedNodeCount": 4403,
+  "independentExpectedNativeActions": 34,
+  "before": {
+    "count": 8,
+    "nodeIds": [
+      "p2:n252",
+      "p2:n264",
+      "p2:n276",
+      "p2:n288",
+      "p3:n148",
+      "p3:n160",
+      "p3:n172",
+      "p3:n184"
+    ],
+    "containerRoles": {
+      "Cell": 8
+    },
+    "issues": [
+      "PAGE_OVERLAP_WITHOUT_STABLE_IDENTITY"
+    ]
+  },
+  "after": {
+    "pageObservationCount": 61,
+    "pageCounts": {
+      "1": 8,
+      "2": 10,
+      "3": 11,
+      "4": 11,
+      "5": 7,
+      "6": 7,
+      "7": 7
+    },
+    "containerRoles": {
+      "Other": 61
+    },
+    "nativeIdentityExposedCount": 0,
+    "uniqueNativeActionCount": null,
+    "issues": [
+      "PAGE_OVERLAP_WITHOUT_STABLE_IDENTITY"
+    ],
+    "nativeOneToOneStatus": "UNKNOWN_AX_UNEXPOSED",
+    "nativeParameterMatchStatus": "UNKNOWN_UNBOUND",
+    "actionIdsInferredFromExpectedPlan": false
+  },
+  "fixture": {
+    "path": "tools/shortcuts-simulator-qa/testdata/legacy-ax-groups-44238251950.json",
+    "sha256": "b52918b9409457a9a6a5a15c71137e7ea08a7501372543f983c40eb4a87ff126",
+    "exactCopiedNodes": 340,
+    "sourceNodeEqualityVerified": true,
+    "scope": "EXACT_SANITIZED_AX_SUBTREES_NOT_A_COMPLETE_EDITOR_CAPTURE"
+  },
+  "validation": {
+    "suiteCommand": "py -3 -m unittest discover -s tools/shortcuts-simulator-qa -p 'test_*.py' -v",
+    "passed": 74,
+    "failed": 0,
+    "initialRed": {
+      "passed": 2,
+      "failed": 6,
+      "scope": "Initial eight real-tree tests against pre-repair extractor"
+    },
+    "causalControls": [
+      "array input reorder preserves observed hierarchy",
+      "removed header roles cannot promote Dictionary parameter rows",
+      "removed actual editable Number title rejects that group",
+      "duplicate node identity rejects page",
+      "conflicting sibling order is reported",
+      "overlapping group geometry is reported",
+      "repeated page remains separate without native identity",
+      "reordered or duplicated expected plan cannot supply identity",
+      "visible anchor without native identity stays AX_UNEXPOSED"
+    ]
+  },
+  "limitations": [
+    "61 is a count of visible page observations, not unique native actions.",
+    "Page overlap is unresolved because no observed outer group exposes a stable native identity.",
+    "Visible text does not bind a native parameter to an expected positional row without native identity.",
+    "This replay does not rerun Shortcuts, sign a new artifact, or close the Inspector release gate."
+  ]
+}

@@ -73,6 +73,8 @@ def extract_cards(nodes, coverage):
             if parent is not None and parent not in indexed:
                 issues.append(f"ORPHAN_NODE_PAGE_{page}")
             children[parent].append(node["nodeIndex"])
+        for siblings in children.values():
+            siblings.sort(key=lambda idx: (indexed[idx].get("siblingOrder", idx), idx))
 
         def descendants(idx):
             result, seen, pending = [], {idx}, list(children[idx])
@@ -109,13 +111,73 @@ def extract_cards(nodes, coverage):
                 node = indexed.get(node.get("parentIndex"))
             return False
 
+        canvas_ids = {n["nodeIndex"] for n in page_nodes
+                      if n.get("elementTypeName") in {"ScrollView", "CollectionView", "Table"}
+                      and frame(n) and all(abs(a - b) <= 1 for a, b in zip(frame(n), canvas))}
+
+        def single_other_chain(node):
+            seen = set()
+            while node and node["nodeIndex"] not in seen:
+                seen.add(node["nodeIndex"])
+                child_ids = children[node["nodeIndex"]]
+                if len(child_ids) != 1 or indexed[child_ids[0]].get("elementTypeName") != "Other":
+                    return node
+                node = indexed[child_ids[0]]
+            return None
+
+        def canvas_group(node):
+            # Actual iPadOS AX exposes action regions as unlabelled Other
+            # siblings, not Cells. Recognize their header/body hierarchy only;
+            # this is grouping evidence, never a native identifier or UUID.
+            if node.get("elementTypeName") != "Other" or node.get("parentIndex") not in canvas_ids:
+                return False
+            branch = single_other_chain(node)
+            if not branch:
+                return False
+            direct = [indexed[i] for i in children[branch["nodeIndex"]]]
+            if not any(n.get("elementTypeName") == "Button" for n in direct):
+                branch = single_other_chain(direct[0]) if direct and direct[0].get("elementTypeName") == "Other" else None
+            if not branch or not contains(frame(node), frame(branch)):
+                return False
+            bounds, header = frame(node), frame(branch)
+            if header[2] < bounds[2] * .45 or not 0 <= header[1] - bounds[1] <= max(2, bounds[2] * .05):
+                return False
+            direct_buttons = [indexed[i] for i in children[branch["nodeIndex"]]
+                              if indexed[i].get("elementTypeName") == "Button"]
+            title_nodes = [n for n in descendants(branch["nodeIndex"])
+                           if n.get("elementTypeName") in {"StaticText", "TextView", "TextField"}]
+            direct_button_ids = {n["nodeIndex"] for n in direct_buttons}
+            # Number's title is an editable Button below the title Other chain;
+            # it has no StaticText. Require that separate nested title branch,
+            # not a title name taken from the expected native plan.
+            nested_title_buttons = [n for n in descendants(branch["nodeIndex"])
+                                    if n.get("elementTypeName") == "Button"
+                                    and n["nodeIndex"] not in direct_button_ids
+                                    and contains(header, frame(n))]
+            return bool(direct_buttons and (title_nodes or nested_title_buttons or len(direct_buttons) >= 3))
+
+        def nested_parameter_table(node):
+            current, seen = indexed.get(node.get("parentIndex")), set()
+            while current and current["nodeIndex"] not in seen:
+                seen.add(current["nodeIndex"])
+                if current["nodeIndex"] in canvas_ids:
+                    return False
+                if current.get("elementTypeName") == "Table":
+                    return True
+                current = indexed.get(current.get("parentIndex"))
+            return False
+
+        group_ids = {n["nodeIndex"] for n in page_nodes if canvas_group(n)}
         candidates = []
         for node in page_nodes:
             bounds = frame(node)
             role = node.get("elementTypeName")
             if not node.get("visible") or node.get("geometryValid") is False or chrome_ancestor(node) or not canvas_ancestor(node):
                 continue
-            if role != "Cell" and not node.get("actionContainerHint", False):
+            if role != "Cell" and not node.get("actionContainerHint", False) and node["nodeIndex"] not in group_ids:
+                continue
+            if (role == "Cell" and nested_parameter_table(node)
+                    and not (node.get("actionContainerHint") or node.get("nativeActionIdentifier") or node.get("nativeUUIDDigests"))):
                 continue
             if not bounds or not intersects(canvas, bounds) or bounds[2] < canvas[2] * .45:
                 continue
@@ -130,10 +192,10 @@ def extract_cards(nodes, coverage):
             containing = [p for p, descendants_ in candidates if p is not node and node in descendants_]
             if containing:
                 innermost_parent = min(containing, key=lambda p: frame(p)[2] * frame(p)[3])
-                if innermost_parent.get("actionContainerHint"):
+                if innermost_parent.get("actionContainerHint") or innermost_parent["nodeIndex"] in group_ids:
                     continue
             inner_cards = [n for n, _ in candidates if n is not node and n in nested]
-            if inner_cards and not node.get("actionContainerHint"):
+            if inner_cards and not node.get("actionContainerHint") and node["nodeIndex"] not in group_ids:
                 continue
             visible = [n for n in [node] + nested if n.get("visible") and intersects(canvas, frame(n))]
             texts = []
@@ -147,6 +209,8 @@ def extract_cards(nodes, coverage):
             cards.append({
                 "page": page, "nodeId": f"p{page}:n{node['nodeIndex']}",
                 "containerRole": node.get("elementTypeName"), "frame": node.get("frame"),
+                "containerEvidence": "AX_CANVAS_GROUP" if node["nodeIndex"] in group_ids else "AX_EXPLICIT_CONTAINER",
+                "siblingOrder": node.get("siblingOrder"),
                 "texts": texts, "nativeUUIDDigests": identities,
                 "nativeIdentifiers": native_ids,
                 "stableIdentifierDigest": node.get("identifierDigest"),
@@ -154,6 +218,16 @@ def extract_cards(nodes, coverage):
                 "evidence": [{"kind": "AX", "page": page, "nodeId": f"p{page}:n{node['nodeIndex']}"}],
             })
         cards.sort(key=lambda c: (c["frame"]["y"], c["frame"]["x"], c["nodeId"]))
+        groups = [card for card in cards if card["containerEvidence"] == "AX_CANVAS_GROUP"]
+        orders = [card.get("siblingOrder") for card in groups]
+        if any(not isinstance(order, int) for order in orders) or any(a >= b for a, b in zip(orders, orders[1:])):
+            issues.append(f"AX_GROUP_ORDER_CONFLICT_PAGE_{page}")
+        for index, left in enumerate(groups):
+            a = frame(left)
+            for right in groups[index + 1:]:
+                b = frame(right)
+                if intersects(a, b) and min(a[1] + a[3], b[1] + b[3]) - max(a[1], b[1]) > 1:
+                    issues.append(f"AX_GROUP_OVERLAP_PAGE_{page}")
         by_page.append(cards)
 
     observed = []
@@ -239,7 +313,10 @@ def inspect(document, nodes, coverage, fixture, run_id, source_sha, node_error=N
             identity_conflict = bool((card["nativeUUIDDigests"] and not uuid_seen) or (card["nativeIdentifiers"] and not id_seen))
             for parameter in values:
                 seen = parameter["value"] in card["texts"]
-                row["visibleParameters"].append({**parameter, "status": "MATCH" if seen else "HIDDEN", "evidence": card["evidence"] if seen else []})
+                bound = bool((uuid_seen or id_seen) and not identity_conflict)
+                parameter_status = "MATCH" if seen and bound else "AX_UNEXPOSED" if seen else "HIDDEN"
+                row["visibleParameters"].append({**parameter, "status": parameter_status,
+                    "observedTextPresent": seen, "evidence": card["evidence"] if seen else []})
             all_values_seen = all(p["status"] == "MATCH" for p in row["visibleParameters"])
             if identity_conflict:
                 row["status"] = "MISMATCH"
@@ -258,6 +335,9 @@ def inspect(document, nodes, coverage, fixture, run_id, source_sha, node_error=N
     complete = bool(native) and not issues and counts["MATCH"] == len(native)
     common = {"schemaVersion": VERSION, "fixtureId": fixture, "runId": run_id, "compilerSha": source_sha,
               "expectedNativeActionCount": len(native), "observedCardCount": len(cards),
+              "observedCardCountScope": "PAGE_OBSERVATIONS_WITH_UNRESOLVED_IDENTITY" if any(
+                  issue in issues for issue in ("PAGE_OVERLAP_WITHOUT_STABLE_IDENTITY",
+                    "REUSED_AX_IDENTIFIER_WITH_DIFFERENT_IDENTITY", "NONUNIQUE_AX_IDENTIFIER")) else "AX_CONTAINERS",
               "status": "PASS" if complete else "NEEDS_REVIEW", "issues": issues,
               "proofTier": "AX_NATIVE_COMPARISON", "ocrUsed": False}
     comparison = {**common, "actions": rows, "summary": {"matched": counts["MATCH"],
