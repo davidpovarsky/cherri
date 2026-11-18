@@ -39,7 +39,8 @@ The actual orchestrator invokes
 before simulator/signing work. The verifier checks:
 
 - Full immutable data SHA, exact reviewed page and fixture paths, checkout
-  hashes and source URLs.
+  hashes and source URLs. Every page, fixture, manifest and the verifier must
+  exist byte-exact in HEAD; ignored, merely staged or modified files are rejected.
 - Six real HTTP 200 responses with exact URLs, no redirect, bounded bytes and
   matching SHA256. No credentials or private content are sent.
 - Source-byte binding, including the literal Unicode expected by the ordered
@@ -90,3 +91,12 @@ Native runtime, native HTTP response status/error/cancellation behavior,
 redirect handling, actual request observations and physical iPad acceptance
 remain separate requirements. A local data download or fixture compilation
 does not satisfy them.
+
+### Retained ignored-source staging failure
+
+The first local harness commit omitted five new `.cherri` fixtures because the
+repository ignore rules excluded them from ordinary directory staging. This was
+caught before handoff or dispatch. The follow-up adds each reviewed source
+explicitly and verifies the committed bytes before any public-data request.
+A causal temporary Git repository test retains the ignored/missing, staged-only
+and modified/staged-again failures plus restored committed controls.

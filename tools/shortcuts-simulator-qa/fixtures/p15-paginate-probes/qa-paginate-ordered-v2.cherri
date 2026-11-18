@@ -1,0 +1,56 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "ordered")
+var verdict = "P15_PAGINATE_ORDERED_OK"
+let rows = paginate("https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/one.json", maxPages: 3, maxItems: 10)
+let rowCount = count(rows)
+if rowCount != 2 { verdict = "P15_PAGINATE_ORDER_COUNT_FAIL" }
+let first = getFirstItem(rows)
+let last = getLastItem(rows)
+let witness = {"value": false}
+let dictionaryType = typeOf(witness)
+let firstType = typeOf(first)
+let lastType = typeOf(last)
+if firstType != dictionaryType { verdict = "P15_PAGINATE_FIRST_TYPE_FAIL" }
+if lastType != dictionaryType { verdict = "P15_PAGINATE_LAST_TYPE_FAIL" }
+let firstId = getValue(first, "id")
+let lastId = getValue(last, "id")
+if firstId != 1 { verdict = "P15_PAGINATE_FIRST_ID_FAIL" }
+if lastId != 3 { verdict = "P15_PAGINATE_LAST_ID_FAIL" }
+let numberWitness = number(0)
+let numberType = typeOf(numberWitness)
+let idType = typeOf(firstId)
+if idType != numberType { verdict = "P15_PAGINATE_NUMBER_TYPE_FAIL" }
+let originalText = getValue(first, "text")
+let expectedText = text("שָׁלוֹם 🍒")
+let originalTextType = typeOf(originalText)
+let textType = typeOf(expectedText)
+if originalTextType != textType { verdict = "P15_PAGINATE_TEXT_TYPE_FAIL" }
+if originalText != expectedText { verdict = "P15_PAGINATE_שָׁלוֹם 🍒_FAIL" }
+let flag = getValue(first, "active")
+let boolWitness = getValue(witness, "value")
+let flagType = typeOf(flag)
+let boolType = typeOf(boolWitness)
+if flagType != boolType { verdict = "P15_PAGINATE_BOOL_TYPE_FAIL" }
+if flag != false { verdict = "P15_PAGINATE_BOOL_VALUE_FAIL" }
+let zero = getValue(first, "zero")
+let zeroType = typeOf(zero)
+if zeroType != numberType { verdict = "P15_PAGINATE_ZERO_TYPE_FAIL" }
+if zero != 0 { verdict = "P15_PAGINATE_ZERO_VALUE_FAIL" }
+let nested = getValue(first, "nested")
+let nestedType = typeOf(nested)
+if nestedType != dictionaryType { verdict = "P15_PAGINATE_NESTED_TYPE_FAIL" }
+let nestedList = getValue(nested, "list")
+let nestedCount = count(nestedList)
+if nestedCount != 5 { verdict = "P15_PAGINATE_NESTED_COUNT_FAIL" }
+let nestedLast = getLastItem(nestedList)
+let nestedLastType = typeOf(nestedLast)
+if nestedLastType != dictionaryType { verdict = "P15_PAGINATE_NESTED_LAST_TYPE_FAIL" }
+let nestedValue = getValue(nestedLast, "key")
+if nestedValue != "synthetic" { verdict = "P15_PAGINATE_NESTED_VALUE_FAIL" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "ordered")
+let traceEnvelope = debugExportTrace("qa-paginate-ordered-v2")
+let finalSummary = text(f"CHERRI_QA_PAGINATE_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

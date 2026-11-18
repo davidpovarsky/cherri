@@ -1,0 +1,19 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "empty")
+var verdict = "P15_PAGINATE_EMPTY_OK"
+let emptyRows = paginate("https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/empty.json", maxPages: 3, maxItems: 10)
+let emptyCount = count(emptyRows)
+if emptyCount != 0 { verdict = "P15_PAGINATE_EMPTY_COUNT_FAIL" }
+let noPages = paginate("https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/one.json", maxPages: 0, maxItems: 10)
+let noPagesCount = count(noPages)
+if noPagesCount != 0 { verdict = "P15_PAGINATE_ZERO_PAGES_FAIL" }
+let noItems = paginate("https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/one.json", maxPages: 3, maxItems: 0)
+let noItemsCount = count(noItems)
+if noItemsCount != 0 { verdict = "P15_PAGINATE_ZERO_ITEMS_FAIL" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "empty")
+let traceEnvelope = debugExportTrace("qa-paginate-empty-v2")
+let finalSummary = text(f"CHERRI_QA_PAGINATE_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
