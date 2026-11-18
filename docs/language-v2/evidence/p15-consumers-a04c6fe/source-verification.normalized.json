@@ -1,0 +1,129 @@
+{
+  "sourceCommit": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+  "sourceRoot": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\source",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "steps": [
+    {
+      "name": "type-packages",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "./internal/language/types",
+        "./internal/language/analysis",
+        "./internal/language/service"
+      ],
+      "exit": 0,
+      "seconds": 5.625,
+      "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\type-packages.log",
+      "sha256": "0b9210bd98aa570daac2d08eab3f6fd063e0ff0a200503c9e2dc970ef9abaf7e",
+      "namedPass": 46,
+      "namedFail": []
+    },
+    {
+      "name": "integrated-graphs",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "^TestP15(T09|RuntimeDiagnosticFileNameBinding|NilClear)",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 11.5,
+      "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\integrated-graphs.log",
+      "sha256": "ccc8f52460167a60a644d624900ff16f5c06bc5c2f08be0e2de8fc4b88d1dfbd",
+      "namedPass": 43,
+      "namedFail": []
+    },
+    {
+      "name": "native-diagnostic-contracts",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/shortcuts-simulator-qa",
+        "-p",
+        "test_native_macro_diagnostic_contract.py"
+      ],
+      "exit": 0,
+      "seconds": 18.782,
+      "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\native-diagnostic-contracts.log",
+      "sha256": "e92b7d7fd55d304f3bb2611819fb4106d9bf42cbe8b0bda32698d6410488e5cc"
+    },
+    {
+      "name": "shell-syntax",
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "scripts/ios27_shortcuts_simulator_qa.sh"
+      ],
+      "exit": 0,
+      "seconds": 0.062,
+      "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\shell-syntax.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "legacy47",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "run",
+        "./tools/legacy-parity",
+        "--output=C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\legacy-parity-results.json"
+      ],
+      "exit": 0,
+      "seconds": 15.516,
+      "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\legacy47.log",
+      "sha256": "cbc57de1ee86f9c8b8530387fc28e27ba5bf564c3932b253075ebecfc759c294"
+    },
+    {
+      "name": "schema-generated",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "run",
+        "./tools/language-schema",
+        "--verify-generated"
+      ],
+      "exit": 0,
+      "seconds": 5.281,
+      "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\schema-generated.log",
+      "sha256": "7afe09f9dc2bfbf0e1697d8b4ff2d3baef785cd12f6aa057841d9bcb50964913"
+    },
+    {
+      "name": "build",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "build",
+        "-buildvcs=true",
+        "-trimpath",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\cherri.exe",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 9.797,
+      "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "unchangedLegacyFixtureCount": 47,
+  "legacyFixtureDirectory": "tests",
+  "binarySha256": "bacc7d1e0175c019f4bf577acd8d57e634c27868a6a3aad0d8131ab953349b7c",
+  "vcsMetadata": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\cherri.exe: go1.25.6\n\tpath\tgithub.com/electrikmilk/cherri\n\tmod\tgithub.com/electrikmilk/cherri\tv1.3.3-0.20261118212350-a04c6feede79\t\n\tdep\tdario.cat/mergo\tv1.0.2\th1:85+piFYR1tMbRrLcDwR18y4UKJ3aH1Tbzi24VRW1TK8=\n\tdep\tgithub.com/Microsoft/go-winio\tv0.6.2\th1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=\n\tdep\tgithub.com/ProtonMail/go-crypto\tv1.3.0\th1:ILq8+Sf5If5DCpHQp4PbZdS1J7HDFRXz/+xKBiRGFrw=\n\tdep\tgithub.com/cloudflare/circl\tv1.6.1\th1:zqIqSPIndyBh1bjLVVDHMPpVKqp8Su/V+6MeDzzQBQ0=\n\tdep\tgithub.com/cyphar/filepath-securejoin\tv0.5.1\th1:eYgfMq5yryL4fbWfkLpFFy2ukSELzaJOTaUTuh+oF48=\n\tdep\tgithub.com/dustin/go-humanize\tv1.0.1\th1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=\n\tdep\tgithub.com/electrikmilk/args-parser\tv1.1.3\th1:66xFYBDmsO3mZvIM1ThO/AV/3zTRwfE45A21akaQ1Zc=\n\tdep\tgithub.com/emirpasic/gods\tv1.18.1\th1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=\n\tdep\tgithub.com/glebarez/go-sqlite\tv1.22.0\th1:uAcMJhaA6r3LHMTFgP0SifzgXg46yJkgxqyuyec+ruQ=\n\tdep\tgithub.com/go-git/gcfg\tv1.5.1-0.20230307220236-3a3c6141e376\th1:+zs/tPmkDkHx3U66DAb0lQFJrpS6731Oaa12ikc+DiI=\n\tdep\tgithub.com/go-git/go-billy/v5\tv5.6.2\th1:6Q86EsPXMa7c3YZ3aLAQsMA0VlWmy43r6FHqa/UNbRM=\n\tdep\tgithub.com/go-git/go-git/v5\tv5.16.3\th1:Z8BtvxZ09bYm/yYNgPKCzgWtaRqDTgIKRgIRHBfU6Z8=\n\tdep\tgithub.com/golang/groupcache\tv0.0.0-20241129210726-2c02b8208cf8\th1:f+oWsMOmNPc8JmEHVZIycC7hBoQxHH9pNKQORJNozsQ=\n\tdep\tgithub.com/google/uuid\tv1.6.0\th1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=\n\tdep\tgithub.com/jbenet/go-context\tv0.0.0-20150711004518-d14ea06fba99\th1:BQSFePA1RWJOlocH6Fxy8MmwDt+yVQYULKfN0RoTN8A=\n\tdep\tgithub.com/kevinburke/ssh_config\tv1.4.0\th1:6xxtP5bZ2E4NF5tuQulISpTO2z8XbtH8cg1PWkxoFkQ=\n\tdep\tgithub.com/klauspost/cpuid/v2\tv2.3.0\th1:S4CRMLnYUhGeDFDqkGriYKdfoFlDnMtqTiI/sFzhA9Y=\n\tdep\tgithub.com/mattn/go-isatty\tv0.0.20\th1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=\n\tdep\tgithub.com/pjbgf/sha1cd\tv0.5.0\th1:a+UkboSi1znleCDUNT3M5YxjOnN1fz2FhN48FlwCxs0=\n\tdep\tgithub.com/remyoudompheng/bigfft\tv0.0.0-20230129092748-24d4a6f8daec\th1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=\n\tdep\tgithub.com/sergi/go-diff\tv1.4.0\th1:n/SP9D5ad1fORl+llWyN+D6qoUETXNZARKjyY2/KVCw=\n\tdep\tgithub.com/skeema/knownhosts\tv1.3.2\th1:EDL9mgf4NzwMXCTfaxSD/o/a5fxDw/xL9nkU28JjdBg=\n\tdep\tgithub.com/xanzy/ssh-agent\tv0.3.3\th1:+/15pJfg/RsTxqYcX6fHqOXZwwMP+2VyYWJeWM2qQFM=\n\tdep\tgolang.org/x/crypto\tv0.43.0\th1:dduJYIi3A3KOfdGOHX8AVZ/jGiyPa3IbBozJ5kNuE04=\n\tdep\tgolang.org/x/net\tv0.46.0\th1:giFlY12I07fugqwPuWJi68oOnpfqFnJIJzaIIm2JVV4=\n\tdep\tgolang.org/x/sys\tv0.37.0\th1:fdNQudmxPjkdUTPnLn5mdQv7Zwvbvpaxqs831goi9kQ=\n\tdep\tgopkg.in/warnings.v0\tv0.1.2\th1:wFXVbFY8DY5/xOe1ECiWdKCzZlxgshcYVNkBHstARME=\n\tdep\thowett.net/plist\tv1.0.1\th1:37GdZ8tP09Q35o9ych3ehygcsL+HqKSwzctveSlarvM=\n\tdep\tmodernc.org/libc\tv1.37.6\th1:orZH3c5wmhIQFTXF+Nt+eeauyd+ZIt2BX6ARe+kD+aw=\n\tdep\tmodernc.org/mathutil\tv1.6.0\th1:fRe9+AmYlaej+64JsEEhoWuAYBkOtQiMEU7n/XgfYi4=\n\tdep\tmodernc.org/memory\tv1.7.2\th1:Klh90S215mmH8c9gO98QxQFsY+W451E8AnzjoE2ee1E=\n\tdep\tmodernc.org/sqlite\tv1.28.0\th1:Zx+LyDDmXczNnEQdvPuEfcFVA2ZPyaD7UCZDjef3BHQ=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=containermaxprocs=0,decoratemappings=0,tlssha1=1,updatemaxprocs=0,x509sha256skid=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n\tbuild\tvcs=git\n\tbuild\tvcs.revision=a04c6feede79358ee642a1ae27f0a0da8f995ad7\n\tbuild\tvcs.time=2026-11-18T21:23:50Z\n\tbuild\tvcs.modified=false\n",
+  "nativeExecution": "PENDING",
+  "timestampUTC": "2026-11-18T21:27:11.742180+00:00",
+  "harnessContinuation": {
+    "priorJob": "job_ff0d59248b78",
+    "priorExit": 1,
+    "cause": "Post-test fixture checksum lookup incorrectly treated basenames as repository-root paths; all seven executed commands exited zero. Continued against original tests/ fixture paths without rerunning or changing evidence.",
+    "continuationReverifiedEveryLogHash": true
+  },
+  "pushedRef": "refs/heads/staging/cherri-p10r15-source-r10-20261118",
+  "remoteReadback": "a04c6feede79358ee642a1ae27f0a0da8f995ad7\trefs/heads/staging/cherri-p10r15-source-r10-20261118"
+}
