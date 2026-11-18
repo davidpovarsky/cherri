@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -69,26 +70,49 @@ func TestP15U04PublicFrontendRouteMatrix(t *testing.T) {
 				if !ok {
 					t.Fatalf("no decoded action array: %T", workflow["WFWorkflowActions"])
 				}
-				producer, consumer := 0, 0
-				for _, item := range actions {
+				typed := make([]map[string]any, len(actions))
+				for index, item := range actions {
 					action, ok := item.(map[string]any)
 					if !ok {
 						t.Fatalf("malformed action: %T", item)
 					}
-					parameters, _ := action["WFWorkflowActionParameters"].(map[string]any)
-					switch action["WFWorkflowActionIdentifier"] {
-					case "is.workflow.actions.gettext":
-						if parameters["WFTextActionText"] == tc.marker {
-							producer++
-						}
-					case "is.workflow.actions.showresult":
-						consumer++
-					}
+					typed[index] = action
 				}
-				if producer != 1 || consumer != 1 {
-					t.Fatalf("wrong public-source native result: producer=%d consumer=%d actions=%#v", producer, consumer, actions)
+				if err := p15U04PublicSourceWire(typed, tc.marker); err != nil {
+					t.Fatal(err)
+				}
+				broken := p15V02CorruptLastReference(t, typed, false)
+				if err := p15U04PublicSourceWire(broken, tc.marker); err == nil {
+					t.Fatal("wrong native output reference satisfied the public route oracle")
 				}
 			})
 		}
 	}
+}
+
+func p15U04PublicSourceWire(actions []map[string]any, marker string) error {
+	producerCount, consumerCount := 0, 0
+	producerID := ""
+	var consumer map[string]any
+	for _, action := range actions {
+		parameters, _ := action["WFWorkflowActionParameters"].(map[string]any)
+		switch action["WFWorkflowActionIdentifier"] {
+		case "is.workflow.actions.gettext":
+			if parameters["WFTextActionText"] == marker {
+				producerCount++
+				producerID, _ = parameters["UUID"].(string)
+			}
+		case "is.workflow.actions.showresult":
+			consumerCount++
+			consumer = parameters
+		}
+	}
+	if producerCount != 1 || consumerCount != 1 || producerID == "" {
+		return fmt.Errorf("wrong public-source result: producers=%d consumers=%d producerUUID=%q", producerCount, consumerCount, producerID)
+	}
+	outputs, variables := p15V02NativeReferences(consumer["Text"])
+	if len(outputs) != 1 || outputs[0] != producerID || len(variables) != 0 {
+		return fmt.Errorf("Show Result lost exact source identity: outputs=%v variables=%v want=%q", outputs, variables, producerID)
+	}
+	return nil
 }
