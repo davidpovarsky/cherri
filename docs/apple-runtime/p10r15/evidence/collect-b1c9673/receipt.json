@@ -1,0 +1,83 @@
+{
+  "sourceSha": "b1c967347a6c7a50358fafd70a3644178a294261",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "productionTests": [
+    {
+      "name": "go-clean",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-count=1",
+        "-json",
+        "-run",
+        "^TestP15Collect",
+        "."
+      ],
+      "exitCode": 0,
+      "logSha256": "056e1e3216bd64dbb53ecb94b741fc4d5d92c25cabe37ad5e09e065375a3e085"
+    },
+    {
+      "name": "python-clean",
+      "command": [
+        "py",
+        "-3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/shortcuts-simulator-qa",
+        "-p",
+        "test_collect_native_contract.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "logSha256": "066e9de2d81c5875707a0eed92968ce14c6eaad5d2da6bee3662364b456879d7"
+    }
+  ],
+  "fixtureCompilesAndExactRoundtrips": [
+    {
+      "fixture": "qa-collect-counts-legacy",
+      "dialect": "legacy",
+      "sourceSha256": "efb5758b930edf21d0eafb4fd85a963807489f2c5b2342777752c675d0bf12b8",
+      "nativeActions": 239,
+      "unsignedSha256": "64d7c7f8e83b344928bd9b5be1aae6246d5cd900457733fb10f1287aa787c939",
+      "exactNativeRoundtrip": true,
+      "nativeExecution": "NOT_RUN"
+    },
+    {
+      "fixture": "qa-collect-counts-v2",
+      "dialect": "v2",
+      "sourceSha256": "86e612043d5a914af787733ffc3209d3e51f9352e1d5a5fb423856c7ee996ee8",
+      "nativeActions": 34,
+      "unsignedSha256": "38aaa4c6cf32cbd2b7fbae639ca4d7d1742940d5ca54a79c250ba0cfa5754048",
+      "exactNativeRoundtrip": true,
+      "nativeExecution": "NOT_RUN"
+    },
+    {
+      "fixture": "qa-collect-dictionaries-legacy",
+      "dialect": "legacy",
+      "sourceSha256": "2da2a27b1fee46ae97bdb2261ff80a19b3e928fe355fc3acb984e4037c46c3cc",
+      "nativeActions": 35,
+      "unsignedSha256": "8cf625c666d9e13ecd65eaf9506faf0dc75cad9c43788913cd85730dbe051cea",
+      "exactNativeRoundtrip": true,
+      "nativeExecution": "NOT_RUN"
+    },
+    {
+      "fixture": "qa-collect-dictionaries-v2",
+      "dialect": "v2",
+      "sourceSha256": "42d9b0b13604f022760095ffd691f4170f837043c44eb36d3ddaf9e0c8f29fcc",
+      "nativeActions": 28,
+      "unsignedSha256": "a8cb12328b3f2979b0d9a8345b2a400b42f8efc6f2318f12acaaf49a15c3cfb2",
+      "exactNativeRoundtrip": true,
+      "nativeExecution": "NOT_RUN"
+    }
+  ],
+  "precommitFullPythonSuite": {
+    "tests": 83,
+    "passed": true,
+    "logSha256": "44d8fe0057a0732dc22c20b85d83833860a6314531ab578f1d4a94cd1b7a5ad9"
+  },
+  "nativeExecution": "NOT_RUN",
+  "initialTestCorrections": "Legacy literal input construction is outside the constant Repeat Results region; native typeOf action is getitemtype. Neither correction changes compiler behavior."
+}
