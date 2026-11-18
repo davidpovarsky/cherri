@@ -1,0 +1,156 @@
+{
+  "sourceCommit": "8f42d0c261d413af4ffe348605b24c7eb958bdc5",
+  "sourceTreeCleanBeforeAndAfter": true,
+  "executedAt": "2026-11-18T20:43:11.324744+00:00",
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "3m",
+        "-run",
+        "^TestTypeOpaqueProductionEvidence$",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "rawLog": "formal-t04-date.jsonl",
+      "rawLogSha256": "2a2bc059281eb08203973ea1005f1cdbc5fbf5c8fb0923713c3ac217edd9e87f",
+      "results": [
+        {
+          "test": "TestTypeOpaqueProductionEvidence",
+          "action": "pass",
+          "elapsed": 3.65
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 5.14
+        }
+      ],
+      "formalReceipt": {
+        "records": [
+          {
+            "evidence_id": "ev-local-T04-unit",
+            "requirements": [
+              "T04"
+            ],
+            "tier": "unit",
+            "implementation_sha": "8f42d0c261d413af4ffe348605b24c7eb958bdc5",
+            "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeProduction",
+            "command": [
+              "go",
+              "test",
+              "-count=1",
+              "-json",
+              "-timeout",
+              "3m0s",
+              ".",
+              "-run",
+              "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+            ],
+            "exit_code": 0,
+            "result": "passed",
+            "assertions": {
+              "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+            },
+            "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+          },
+          {
+            "evidence_id": "ev-local-T04-service",
+            "requirements": [
+              "T04"
+            ],
+            "tier": "service",
+            "implementation_sha": "8f42d0c261d413af4ffe348605b24c7eb958bdc5",
+            "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeService",
+            "command": [
+              "go",
+              "test",
+              "-count=1",
+              "-json",
+              "-timeout",
+              "3m0s",
+              ".",
+              "-run",
+              "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+            ],
+            "exit_code": 0,
+            "result": "passed",
+            "assertions": {
+              "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+            },
+            "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+          }
+        ],
+        "report": {
+          "timestamp": "2026-11-18T20:43:06Z",
+          "phase": "local",
+          "closure_complete": false,
+          "language_version": "2.0",
+          "schema_fingerprint": "",
+          "total_cases": 1,
+          "passed_cases": 1,
+          "failed_cases": 0,
+          "skipped_cases": 0,
+          "results": [
+            {
+              "id": "T04",
+              "group": "types",
+              "requirement": "Unknown differs from AnyContent and Void",
+              "test_level": "unit+service",
+              "executed_levels": [
+                "unit",
+                "service"
+              ],
+              "passed": true,
+              "status": "PASSED",
+              "detail": "All required tiers satisfied by verified evidence"
+            }
+          ]
+        },
+        "scope": "Only T04 authored assignment evidence, Void value rejection and actual Service diagnostics; native attachment compatibility is not a type guarantee, no Apple runtime or release closure",
+        "source_sha": "8f42d0c261d413af4ffe348605b24c7eb958bdc5",
+        "source_tree_clean": true
+      },
+      "committedLogSha256": "2a2bc059281eb08203973ea1005f1cdbc5fbf5c8fb0923713c3ac217edd9e87f"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "3m",
+        "-run",
+        "^TestP15DateComparisonMigrationCLIParity$",
+        "."
+      ],
+      "exitCode": 0,
+      "rawLog": "date-cli-parity.jsonl",
+      "rawLogSha256": "dc251ac2a6a454a48feba36a632ca51c0f7279792f9f74b30b728afb5d549695",
+      "results": [
+        {
+          "test": "TestP15DateComparisonMigrationCLIParity",
+          "action": "pass",
+          "elapsed": 2.41
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 2.662
+        }
+      ],
+      "committedLogSha256": "dc251ac2a6a454a48feba36a632ca51c0f7279792f9f74b30b728afb5d549695"
+    }
+  ],
+  "causalRed": {
+    "jobId": "job_6ec455f6411e",
+    "rawLogSha256": "b869cec8888377a4da24afa40572c929939f169cd51956142f02a0c19150347b",
+    "observed": "Exact original date-comparisons fixture migration rejected qty at generated line80; Legacy path already passed"
+  },
+  "sentinelJobId": "job_e03549775b12"
+}
