@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"unicode"
 
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/schema"
@@ -940,7 +939,7 @@ func isValidNewIdent(name string) bool {
 	}
 	for i, r := range name {
 		if i == 0 {
-			if !unicode.IsLetter(r) && r != '_' {
+			if !syntax.IsIdentifierStart(r) {
 				return false
 			}
 		} else if !isIdentChar(r) {
@@ -1153,5 +1152,5 @@ func (s *Service) ApplyVisualSourceEdit(src string, actionIndex int, paramLabel 
 }
 
 func isIdentChar(r rune) bool {
-	return r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r) || unicode.IsMark(r)
+	return syntax.IsIdentifierContinue(r)
 }

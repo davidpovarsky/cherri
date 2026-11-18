@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 )
@@ -37,11 +36,11 @@ var cliProductionTests = map[string][]string{
 func executeNamedProductionTests(required []string) (bool, string) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 4*time.Minute)
 	defer cancel()
-	var alternatives []string
-	for _, name := range required {
-		alternatives = append(alternatives, regexp.QuoteMeta(name))
+	if len(required) == 0 {
+		return false, "No production tests were selected"
 	}
-	var cmd = exec.CommandContext(ctx, "go", "test", "-count=1", "-json", "-timeout", "3m", ".", "-run", "^("+strings.Join(alternatives, "|")+")$")
+	command := productionTestCommand(required)
+	var cmd = exec.CommandContext(ctx, command[0], command[1:]...)
 	cmd.Dir = resolveRepoRoot()
 	var output, err = cmd.CombinedOutput()
 	var seen = make(map[string]bool)
@@ -147,6 +146,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.Blocker = gap
 			row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
 			row.Scope = "Observed smoke only; no formal acceptance tier proven"
+		}
+		if tests, ok := parserProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = []string{"internal/language/syntax/lexer.go", "internal/language/syntax/parser.go", "internal/language/syntax/format.go", "internal/language/service/service.go", "p15_parser_acceptance_test.go"}
+			row.PositiveAndNegative = res.Passed
 		}
 		if tests, ok := cliProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)

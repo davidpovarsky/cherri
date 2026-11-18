@@ -19,6 +19,7 @@ type Lexer struct {
 	src          string
 	pos          int // byte offset
 	fStringStack []fStringState
+	pendingError *Token
 }
 
 // NewLexer creates a new Lexer for a source file.
@@ -75,6 +76,12 @@ func (l *Lexer) NextToken() Token {
 	}
 
 	leadingTrivia := l.skipWhitespaceAndComments()
+	if l.pendingError != nil {
+		token := *l.pendingError
+		l.pendingError = nil
+		token.Leading = leadingTrivia
+		return token
+	}
 
 	startPos := l.pos
 	if l.pos >= len(l.src) {
@@ -310,7 +317,8 @@ func (l *Lexer) scanFStringChunkToken() Token {
 				sb.WriteRune('}')
 				continue
 			}
-			span := l.file.SpanForOffsets(startPos, l.pos+1)
+			span := l.file.SpanForOffsets(l.pos, l.pos+1)
+			l.nextRune() // Every error token must advance; otherwise recovery loops forever.
 			return Token{Type: TokenError, Text: "Unescaped '}' in f-string", Span: span}
 		}
 
@@ -547,6 +555,9 @@ func (l *Lexer) skipWhitespaceAndComments() []source.Trivia {
 				}
 			}
 			span := l.file.SpanForOffsets(start, l.pos)
+			if depth > 0 {
+				l.pendingError = &Token{Type: TokenError, Text: "Unterminated block comment", Span: span}
+			}
 			trivia = append(trivia, source.Trivia{
 				Kind: source.TriviaBlockComment,
 				Text: l.src[start:l.pos],
@@ -561,10 +572,16 @@ func (l *Lexer) skipWhitespaceAndComments() []source.Trivia {
 	return trivia
 }
 
-func isIdentStart(r rune) bool {
+// IsIdentifierStart and IsIdentifierContinue are shared by syntax and editor
+// services. Preserve exact code points; combining marks continue an identifier
+// but cannot start one, and format controls are excluded.
+func IsIdentifierStart(r rune) bool {
 	return r == '_' || unicode.IsLetter(r)
 }
 
-func isIdentContinue(r rune) bool {
-	return r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r)
+func IsIdentifierContinue(r rune) bool {
+	return IsIdentifierStart(r) || unicode.IsDigit(r) || unicode.IsMark(r)
 }
+
+func isIdentStart(r rune) bool    { return IsIdentifierStart(r) }
+func isIdentContinue(r rune) bool { return IsIdentifierContinue(r) }

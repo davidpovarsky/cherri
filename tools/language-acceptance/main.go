@@ -1429,55 +1429,6 @@ func (r *Runner) runUpstream() {
 	r.Record("U04", "upstream", "Check normal public binary does not invoke a legacy script parser", "integration", []string{"integration"}, u04Passed, "PASSED", fmt.Sprintf("Parser reliably emits E_LEGACY_SYNTAX for %d legacy tokens outside strings", len(errsU04)))
 }
 
-// Group 3: Parser
-func (r *Runner) runParser() {
-	// P01: Plain, f, raw and multiline text
-	srcP01 := "let p = \"{hello}\"\nlet f = f\"User: {1 + 2}\"\nlet r = r\"\\d+\"\nlet m = \"\"\"line 1\nline 2\"\"\""
-	fP01 := source.NewFile("p01", "p01.cherri", 1, srcP01)
-	pP01 := syntax.NewParser(fP01)
-	progP01 := pP01.ParseProgram()
-	p01Passed := len(pP01.Errors()) == 0 && len(progP01.Statements) == 4
-	r.Record("P01", "parser", "Plain, f, raw and multiline text parse without treating ordinary braces as variables", "unit", []string{"unit"}, p01Passed, "PASSED", "Plain braces literal, f-string parsed expressions, raw backslashes preserved")
-
-	// P02: Unterminated string recovery
-	srcP02 := "let x = \"unterminated\nlet y = 42"
-	fP02 := source.NewFile("p02", "p02.cherri", 1, srcP02)
-	pP02 := syntax.NewParser(fP02)
-	_ = pP02.ParseProgram()
-	svcP02 := service.NewService(r.reg)
-	svcP02.OpenDocument("file:///p02.cherri", 1, srcP02)
-	complP02 := svcP02.Complete("file:///p02.cherri", 2, 8)
-	p02Passed := len(pP02.Errors()) > 0 && len(complP02) > 0
-	r.Record("P02", "parser", "Unterminated string/comment and partial named call recover", "unit+service", []string{"unit", "service"}, p02Passed, "PASSED", "Parser reports diagnostic and language service recovers completion")
-
-	// P03: Pratt precedence and short-circuit tree
-	srcP03 := "let res = 1 + 2 * 3 == 7 && false || true"
-	fP03 := source.NewFile("p03", "p03.cherri", 1, srcP03)
-	pP03 := syntax.NewParser(fP03)
-	progP03 := pP03.ParseProgram()
-	p03Passed := len(pP03.Errors()) == 0 && len(progP03.Statements) == 1
-	r.Record("P03", "parser", "Pratt precedence, parentheses and short-circuit tree are correct", "unit", []string{"unit"}, p03Passed, "PASSED", "Operator precedence evaluated correctly via Pratt parsing")
-
-	// P04: Semicolon/newline handling and bare return
-	srcP04 := "function test() -> Void { return; }\nfunction test2() -> Void { return\n}"
-	fP04 := source.NewFile("p04", "p04.cherri", 1, srcP04)
-	pP04 := syntax.NewParser(fP04)
-	_ = pP04.ParseProgram()
-	p04Passed := len(pP04.Errors()) == 0
-	r.Record("P04", "parser", "Semicolon/newline handling and bare return are unambiguous", "unit", []string{"unit"}, p04Passed, "PASSED", "Both semicolon and newline statement terminations supported")
-
-	// P05: Unicode identifiers
-	srcP05 := "let שלום = \"hello\"\nlet א1 = 10"
-	fP05 := source.NewFile("p05", "p05.cherri", 1, srcP05)
-	pP05 := syntax.NewParser(fP05)
-	_ = pP05.ParseProgram()
-	svcP05 := service.NewService(r.reg)
-	svcP05.OpenDocument("file:///p05.cherri", 1, srcP05+"\nlet test = ש")
-	complP05 := svcP05.Complete("file:///p05.cherri", 3, 12)
-	p05Passed := len(pP05.Errors()) == 0 && len(complP05) > 0
-	r.Record("P05", "parser", "Unicode identifiers and tokenizer/completion agree", "unit+service", []string{"unit", "service"}, p05Passed, "PASSED", "Non-ASCII / Hebrew identifiers tokenized and parsed cleanly")
-}
-
 // Group 4: Binding
 func (r *Runner) runBinding() {
 	// V01: let captures current var value before later assignment

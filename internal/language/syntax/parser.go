@@ -41,6 +41,7 @@ type Parser struct {
 	errors                []ParseError
 	comments              []source.Trivia
 	suppressTrailingBlock bool
+	parenthesized         map[Expression]bool
 }
 
 func (p *Parser) collectComments(tok Token) {
@@ -55,8 +56,9 @@ func (p *Parser) collectComments(tok Token) {
 func NewParser(file *source.File) *Parser {
 	l := NewLexer(file)
 	p := &Parser{
-		file:  file,
-		lexer: l,
+		file:          file,
+		lexer:         l,
+		parenthesized: make(map[Expression]bool),
 	}
 	p.curr = p.lexer.NextToken()
 	p.collectComments(p.curr)
@@ -1047,7 +1049,7 @@ func (p *Parser) parseAssignStmt() *AssignStmt {
 func (p *Parser) parseReturnStmt() *ReturnStmt {
 	startTok := p.advance() // return
 	var val Expression
-	if p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
+	if p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && !p.currHasLeadingNewline() {
 		val = p.parseExpression(precNone)
 	}
 	p.match(TokenSemicolon)
@@ -1410,7 +1412,7 @@ func (p *Parser) parseExpression(minPrec int) Expression {
 		return nil
 	}
 
-	for minPrec < p.getInfixPrecedence(p.curr.Type) {
+	for minPrec < infixPrecedence(p.curr.Type) {
 		left = p.parseInfix(left)
 	}
 
@@ -1475,6 +1477,9 @@ func (p *Parser) parsePrefix() Expression {
 		expr := p.parseExpression(precNone)
 		p.suppressTrailingBlock = previous
 		p.expect(TokenRParen)
+		if expr != nil {
+			p.parenthesized[expr] = true
+		}
 		return expr
 
 	case TokenLBracket:
@@ -1570,6 +1575,9 @@ func (p *Parser) parseFString() *FStringExpr {
 		if p.curr.Type == TokenError {
 			errTok := p.advance()
 			p.errorAt(errTok.Span, errTok.Text)
+			if p.curr.Type == TokenFStringEnd {
+				p.advance()
+			}
 			return &FStringExpr{
 				Span:  startTok.Span.Merge(errTok.Span),
 				Parts: parts,
@@ -1588,7 +1596,7 @@ func (p *Parser) parseFString() *FStringExpr {
 	}
 }
 
-func (p *Parser) getInfixPrecedence(tt TokenType) int {
+func infixPrecedence(tt TokenType) int {
 	switch tt {
 	case TokenOr:
 		return precOr
@@ -1653,11 +1661,14 @@ func (p *Parser) parseInfix(left Expression) Expression {
 		return p.parseCallExpr(left)
 
 	default:
-		prec := p.getInfixPrecedence(opTok.Type)
+		prec := infixPrecedence(opTok.Type)
 		p.advance()
 		right := p.parseExpression(prec)
 		if right == nil {
 			return left
+		}
+		if isComparisonOperator(opTok.Type) && (p.unparenthesizedComparison(left) || p.unparenthesizedComparison(right)) {
+			p.errorAt(opTok.Span, "chained comparisons require explicit parentheses or a logical operator")
 		}
 		return &BinaryExpr{
 			Span:  left.NodeSpan().Merge(right.NodeSpan()),

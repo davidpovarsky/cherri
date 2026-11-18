@@ -440,7 +440,7 @@ func (f *Formatter) formatExpression(expr Expression) {
 	case *IdentExpr:
 		f.buf.WriteString(e.Name)
 	case *MemberExpr:
-		f.formatExpression(e.Target)
+		f.formatPostfixTarget(e.Target)
 		fmt.Fprintf(&f.buf, ".%s", e.Property)
 	case *EnumMemberExpr:
 		if e.TypeName != "" {
@@ -449,12 +449,12 @@ func (f *Formatter) formatExpression(expr Expression) {
 			fmt.Fprintf(&f.buf, ".%s", e.Member)
 		}
 	case *IndexExpr:
-		f.formatExpression(e.Target)
+		f.formatPostfixTarget(e.Target)
 		f.buf.WriteString("[")
 		f.formatExpression(e.Index)
 		f.buf.WriteString("]")
 	case *CallExpr:
-		f.formatExpression(e.Callee)
+		f.formatPostfixTarget(e.Callee)
 		f.buf.WriteString("(")
 		first := true
 		if e.PrimaryArg != nil {
@@ -492,7 +492,7 @@ func (f *Formatter) formatExpression(expr Expression) {
 			f.formatExpression(e.Operand)
 		}
 	case *BinaryExpr:
-		f.formatExpression(e.Left)
+		f.formatBinaryOperand(e.Left, e.Op, false)
 		f.buf.WriteString(" ")
 		opStr := "+"
 		switch e.Op {
@@ -531,7 +531,7 @@ func (f *Formatter) formatExpression(expr Expression) {
 		}
 		f.buf.WriteString(opStr)
 		f.buf.WriteString(" ")
-		f.formatExpression(e.Right)
+		f.formatBinaryOperand(e.Right, e.Op, true)
 	case *ListExpr:
 		f.buf.WriteString("[")
 		for i, el := range e.Elements {
