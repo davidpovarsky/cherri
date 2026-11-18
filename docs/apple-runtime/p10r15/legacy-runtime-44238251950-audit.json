@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "runId": "44238251950",
+  "sourceSha": "23ea902b21b9049b6a89873e985c902073ed2d41",
+  "artifactId": 14399413787,
+  "runtime": {
+    "status": "VERIFIED",
+    "expectedOutput": "CHERRI_QA_RESULT:ok:count=2:mode=legacy",
+    "freshCallbackRunId": "qa-functional-legacy-44238251950-78221881d4aca3cb0a68011191487254",
+    "callbackTimestamp": "2026-11-18T05:05:48.569Z",
+    "separateSelfTests": 1,
+    "compiledCallbacks": 1,
+    "traceEventCount": 5,
+    "collectorEvents": 2,
+    "inlineStages": [
+      "before",
+      "after",
+      "end"
+    ],
+    "callbackTraceEqualsFile": true,
+    "typedValues": "UNKNOWN_AT_TRACE_EVENT",
+    "perActionCoverage": false
+  },
+  "beforeAfter": {
+    "priorRunId": "44223774682",
+    "sameSourceSha256": "e09dc606678740e5bdba32d6dd0c98b02da9cbb88b45cd2bfa419f8d1ed76b72",
+    "priorTraceGate": "FAIL_RUNTIME",
+    "currentTraceGate": "PASS",
+    "priorNativeActions": 34,
+    "currentNativeActions": 34,
+    "interpretation": "Actual Legacy trace export is restored for the same source. This is consistent with the independently tested exact UUID producer/consumer binding fix; run comparison alone does not isolate every concurrent harness change."
+  },
+  "editor": {
+    "persisted": true,
+    "nodes": 4403,
+    "invalidGeometry": 0,
+    "errorCategory": "NONE",
+    "pages": 7,
+    "anchors": 3,
+    "expectedActions": 34,
+    "observedCards": 8,
+    "matched": 0,
+    "status": "NEEDS_REVIEW",
+    "actionStatuses": {
+      "AX_UNEXPOSED": 8,
+      "NOT_FOUND": 26
+    },
+    "issues": [
+      "ACTION_COUNT_MISMATCH",
+      "PAGE_OVERLAP_WITHOUT_STABLE_IDENTITY"
+    ],
+    "ocrUsed": false
+  },
+  "privacy": {
+    "publishedFilesVerified": 20,
+    "quarantinedPathsAbsent": 17,
+    "rasterFilesPublished": 0,
+    "pixelRedactionVerified": false
+  },
+  "hashes": {
+    "compiler-manifest.json": "64e8266aadb1f5f950f34f87180d7304dbe0f07691fa82e978b1672aa58762f4",
+    "docs/report.md": "33ac0b7009f607610282396caa104e316f71cc13843ef21e22cde5c4c84d546d",
+    "editor/ax-persistence-diagnostics.json": "1fc3e220c772d7fac49a338f2cafb289ea7c0433dc0e659d9cad8aad636993f1",
+    "editor/editor-action-coverage.json": "8d79f98e5754037462f416c7f0df56c51fceb953c00ba829dca4ddddde5c084c",
+    "editor/editor-actions.json": "ffb663d1bc486e85bc68119959f0d8ca6af46c300a68c2bb40cb21d1cfb9d198",
+    "editor/editor-comparison.json": "b438d6109377a649fb31dc57db6b45cd6dc52f518d2e1e52a1bfb1893bfb1c8b",
+    "editor/editor-report.md": "15602086c05b687265cbd6f4378af89edac4d3e4e29c7ed277f0c4534cb72fe5",
+    "editor/editor-tree.json": "1438ace26cada9d9e1fd75fe81dd179ce4b8899d6c1c4cf55815f8e5776d4499",
+    "editor/handshake-status.json": "e801cdffccde8e898b7156474a1e1738f434e87074e238657c5521b60aa8b081",
+    "editor/plist-vs-editor-comparison.json": "b438d6109377a649fb31dc57db6b45cd6dc52f518d2e1e52a1bfb1893bfb1c8b",
+    "editor/screenshots-manifest.json": "d44bf61b4eac47a161711a796e66517c776ca44ca10d11690ec37ec7a2b153c9",
+    "environment.json": "6cfc32ed33199c8ff277bf233c83cb6f8b517c99c5eb3486aa032f37db7db17a",
+    "import-attempts.json": "e8b3fe088fb0beef087e2bf1caf346f99e4f29edd61e07e2f72dbd6f12550877",
+    "runtime/callback-events.json": "0579c22e8d8e61bfabad438223bd4f304569754780d92f727abb9d2db15fbeb3",
+    "runtime/instrumentation-vs-original.json": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+    "runtime/output-assertions.json": "8dfef4c2f2d74db4334d4b37cfdc73247c3f903f6563e81f3feed22521fa5d29",
+    "runtime/runtime-trace.jsonl": "e6b73f92decd14fc07d5acae85913a4c3ad1a639674cfcb88bce1157f09bd26f",
+    "runtime/signing-provenance.json": "696516220da759b94ab19f81933b2ce994e9d8cb12569cb64c37fe9cb2babbc1",
+    "summary.json": "1d442d642b082588664ca450a7e16811aa73b7a99b261419d4d6479a3747663e",
+    "tests/xcresult-summary.json": "7eae941f433ef1de4b3296ad8807de0ba565f81a315445e4cc32569f45a4b050"
+  },
+  "signingNote": "Target and counterpart were independently signed. Exact source23ea902 copies the target into builds/signed before reusing the candidate file. The imported target is retained; distinct HubSign signatures do not establish a binding defect.",
+  "workflowUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44238251950",
+  "publishedArtifactName": "cherri-ios27-simulator-qa-44238251950",
+  "publishedArtifactUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44238251950/artifacts/14399413787",
+  "auditScope": "Published synthetic text artifacts only. No raster, private host path or raw OCR included."
+}
