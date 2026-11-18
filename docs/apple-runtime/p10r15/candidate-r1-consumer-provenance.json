@@ -1,0 +1,201 @@
+{
+  "candidateHome": "/home/chatgpt-agent/workspaces/cherri-remote/jobs/p10r15-consumer-validation-r1-d00bc0b9/remote-home",
+  "candidateScriptSHA256": {
+    "active.json": "b4c1094cb6af89461a060809d63c1e1a338f634fb14e98980ccbc392b1460af6",
+    "bin/cherri-remote-legacy.sh": "30555e34209de65899b4980eeaa4bbca6aef3d91fd17d2c93f9e433eecce965b",
+    "bin/cherri-remote-runner.sh": "868027da3bc117a67b3ea728f2f132e72a878b0ec8ef7b4b20355de1f891d3bb",
+    "bin/cherri-shortcut-lint.py": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f"
+  },
+  "docsCommit": "78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d",
+  "liveHashesAfter": {
+    "active.json": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+    "bin/cherri-remote-legacy.sh": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+    "bin/cherri-remote-runner.sh": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+    "bin/cherri-shortcut-lint.py": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f"
+  },
+  "liveHashesBefore": {
+    "active.json": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+    "bin/cherri-remote-legacy.sh": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+    "bin/cherri-remote-runner.sh": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+    "bin/cherri-shortcut-lint.py": "51ffca98be2275f4015931e15d73251fff7f7041fb323c9b7aa6973eb57a454f"
+  },
+  "livePromotion": false,
+  "skillPackage": {
+    "copiedFromSourceCommit": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+    "manifestOnlyOverrides": {
+      "compilerCommit": {
+        "after": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+        "before": "1204e1f7dfac7af8df0813d1514fac629765af69"
+      },
+      "docsCommit": {
+        "after": "78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d",
+        "before": "a38b62b819e48fea73dfd0636eb6de4dd08c2713"
+      }
+    },
+    "manifestSHA256": "aef6df857c735754f65823b02dac9e2b4a536af834eb3672a909e475f0661f20",
+    "releasePackageCommit": null
+  },
+  "sourceCommit": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+  "status": "INACTIVE_R1_VALIDATION_ONLY",
+  "syncPolicy": "Disabled in inactive validation copy; existing P10/P9 fallback cannot activate.",
+  "observedAtUtc": "2026-11-18T03:13:56Z",
+  "compilerSHA256": "69cf16013de62c85119ee1fbe650af27b488c61317852f3bc49e66319d2a0746",
+  "compilerBuild": {
+    "sourceCommit": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+    "cleanDetachedWorktree": true,
+    "GOOS": "linux",
+    "GOARCH": "arm64",
+    "CGO_ENABLED": "0",
+    "flags": "-trimpath -ldflags=-s -w",
+    "sentinelJob": "job_fa6308477daa",
+    "transferSHA256Verified": true
+  },
+  "docsCI": {
+    "headSha": "78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d",
+    "status": "success",
+    "runId": 44225555435,
+    "url": "https://github.com/davidpovarsky/cherrilang.org/actions/runs/44225555435"
+  },
+  "checks": {
+    "compatibilityIsolation": {
+      "status": "PASS",
+      "count": 9,
+      "remotePid": 812683,
+      "scope": "Source-checkout script with actual candidate binary"
+    },
+    "skillSelfTest": {
+      "status": "PASS",
+      "installCacheAtomicScenarios": 10,
+      "remotePid": 812683,
+      "records": [
+        {
+          "evidence_id": "ev-skill-self-test-packaging-d00bc0b9e9a4d8c460623de3d883680b94289e04",
+          "requirements": [
+            "K01",
+            "RP42",
+            "RP44",
+            "RP45",
+            "RP49",
+            "BRG30"
+          ],
+          "tier": "skill-package",
+          "implementation_sha": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+          "test_id": "skills/cherri-shortcuts/scripts/self-test.sh",
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "scenario_1_fresh_immutable_install": "passed",
+            "scenario_2_compatible_cached_offline": "passed",
+            "scenario_3_incompatible_cached_offline_rejected": "passed",
+            "scenario_4_compatible_cache_wins_over_stale_bundled": "passed",
+            "scenario_5_explicit_incompatible_cherri_bin_rejected": "passed",
+            "scenario_6_same_lang_wrong_schema_fp_rejected": "passed",
+            "scenario_7_missing_or_malformed_schema_fp_rejected": "passed",
+            "scenario_8_docs_sha_or_fp_mismatch_rejected": "passed",
+            "scenario_9_atomic_update_preserves_working_binary": "passed",
+            "scenario_10_branch_advance_preserves_pinned_commit": "passed",
+            "compiler_commit": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+            "docs_commit": "78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d",
+            "schema_fingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+            "codec_fingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e"
+          },
+          "detail": "All 10 Skill packaging, compatibility, offline, mismatch, atomic update, and immutable ref scenarios passed"
+        },
+        {
+          "evidence_id": "ev-skill-self-test-integration-d00bc0b9e9a4d8c460623de3d883680b94289e04",
+          "requirements": [
+            "K02",
+            "K03",
+            "K04",
+            "K05",
+            "D03",
+            "RP44",
+            "RP45",
+            "RP46",
+            "BRG30"
+          ],
+          "tier": "integration",
+          "implementation_sha": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+          "test_id": "skills/cherri-shortcuts/scripts/self-test.sh",
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "scenario_1_fresh_immutable_install": "passed",
+            "scenario_2_compatible_cached_offline": "passed",
+            "scenario_3_incompatible_cached_offline_rejected": "passed",
+            "scenario_4_compatible_cache_wins_over_stale_bundled": "passed",
+            "scenario_5_explicit_incompatible_cherri_bin_rejected": "passed",
+            "scenario_6_same_lang_wrong_schema_fp_rejected": "passed",
+            "scenario_7_missing_or_malformed_schema_fp_rejected": "passed",
+            "scenario_8_docs_sha_or_fp_mismatch_rejected": "passed",
+            "scenario_9_atomic_update_preserves_working_binary": "passed",
+            "scenario_10_branch_advance_preserves_pinned_commit": "passed",
+            "compiler_commit": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+            "docs_commit": "78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d",
+            "schema_fingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+            "codec_fingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e"
+          },
+          "detail": "All 10 Skill CLI integration, offline cache, mismatch rejection, and atomic update scenarios passed"
+        }
+      ]
+    },
+    "entrypoints": {
+      "checks": 12,
+      "passed": 12,
+      "failed": 0,
+      "remotePid": 827167
+    },
+    "signingFaults": {
+      "checks": 46,
+      "controlsPassed": 4,
+      "negativesRejected": 42,
+      "failures": 0,
+      "remotePid": 816831
+    }
+  },
+  "macroContract": {
+    "status": "NOT_EXPOSED_BY_R1",
+    "macroFingerprint": null,
+    "checkedAgainstManifest": false
+  },
+  "knownLimitations": [
+    "R1 predates CLI option and filename-signing corrections and final gate refresh.",
+    "The copied Skill changes only compiler/docs manifest pins; it has no new release package commit.",
+    "Candidate sync is deliberately disabled; no active service or registration is changed.",
+    "No Apple signature-validity, Apple runtime, installed iOS app, or physical iPad claim."
+  ],
+  "authoringPackageAdditionalSearch": {
+    "job": "job_962b8c4f8ae0",
+    "maxDepth": 4,
+    "glob": "*.zip",
+    "namePattern": "authoring|patterns|install.agent",
+    "roots": [
+      {
+        "name": "Desktop",
+        "zipCount": 1,
+        "matches": 0
+      },
+      {
+        "name": "Documents",
+        "zipCount": 6,
+        "matches": 0
+      },
+      {
+        "name": "Downloads",
+        "zipCount": 291,
+        "matches": 0
+      },
+      {
+        "name": "OneDrive/Documents",
+        "zipCount": 0,
+        "matches": 0
+      },
+      {
+        "name": "OneDrive/Desktop",
+        "zipCount": 0,
+        "matches": 0
+      }
+    ],
+    "conclusion": "NOT_LOCATED_WITHIN_BOUNDED_SEARCH"
+  }
+}

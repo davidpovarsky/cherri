@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import re
 import shutil
 import subprocess
 import tempfile
@@ -78,6 +79,9 @@ def main():
         provenance["skillBuildSha256"] = digest(opts.skill / "scripts/build.sh")
     if opts.remote_home:
         provenance["installedTuple"] = json.loads((opts.remote_home / "active.json").read_text())
+        remote_label = provenance["installedTuple"].get("label")
+        if not isinstance(remote_label, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", remote_label):
+            parser.error("remote active label must be one safe path component")
         provenance["remoteLegacySha256"] = digest(opts.remote_home / "bin/cherri-remote-legacy.sh")
         provenance["remoteRunnerSha256"] = digest(opts.remote_home / "bin/cherri-remote-runner.sh")
 
@@ -128,14 +132,14 @@ def main():
                 if surface == "remote_legacy_copy":
                     source_dir = work / "jobs"
                     output_dir = work / "outputs"
-                    for path in [source_dir, output_dir, work / "bin", work / "config", work / "tmp", work / "source", work / "p10"]:
+                    for path in [source_dir, output_dir, work / "bin", work / "config", work / "tmp", work / "source", work / remote_label]:
                         path.mkdir(parents=True, exist_ok=True)
                     for name_in_bin in ["cherri-remote-runner.sh", "cherri-shortcut-lint.py"]:
                         shutil.copy2(opts.remote_home / "bin" / name_in_bin, work / "bin" / name_in_bin)
                     shutil.copy2(opts.remote_home / "active.json", work / "active.json")
                     shutil.copy2(opts.remote_home / "config/default-language-mode", work / "config/default-language-mode")
-                    (work / "source/p10").symlink_to(opts.remote_home / "source/p10", target_is_directory=True)
-                    (work / "p10/runtime").symlink_to(opts.remote_home / "p10/runtime", target_is_directory=True)
+                    (work / "source" / remote_label).symlink_to(opts.remote_home / "source" / remote_label, target_is_directory=True)
+                    (work / remote_label / "runtime").symlink_to(opts.remote_home / remote_label / "runtime", target_is_directory=True)
                     wrapper = (opts.remote_home / "bin/cherri-remote-legacy.sh").read_text()
                     assert wrapper.count("--hubsign") == 1, "unexpected wrapper signing invocation"
                     wrapper_path = work / "bin/cherri-remote-legacy.sh"

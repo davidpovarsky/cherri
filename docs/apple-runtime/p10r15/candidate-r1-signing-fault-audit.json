@@ -1,0 +1,595 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-18T03:07:57Z",
+  "scope": "ACTUAL_CLI_AND_ENDPOINT_INSTRUMENTED_WRAPPER_COPIES_LOOPBACK_ONLY",
+  "appleCryptographicValidation": "NOT_TESTED",
+  "privateCorpusUsed": false,
+  "provenance": {
+    "compilerSha256": "69cf16013de62c85119ee1fbe650af27b488c61317852f3bc49e66319d2a0746",
+    "capabilities": {
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "protocolVersion": "1.0",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "actionCount": 505,
+      "features": [
+        "let_var_bindings",
+        "named_call_arguments",
+        "f_strings",
+        "raw_strings",
+        "typed_collections",
+        "value_producing_blocks",
+        "ast_functions",
+        "native_preservation",
+        "shared_analysis_service",
+        "zero_based_indexing"
+      ]
+    },
+    "skillManifest": {
+      "skillVersion": "2.0.0",
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+      "compilerCommit": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+      "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+      "docsCommit": "78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d"
+    },
+    "skillBuildSha256": "e377d4d589a84002f021224839a564ff3a5d224b299c398b6c8d248cff2a3d0f",
+    "installedTuple": {
+      "compilerCommit": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+      "docsCommit": "78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d",
+      "label": "p15-r1",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+      "skillSourceHead": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+      "sourceBranch": "agent/cherri-p10r15-validation-r1-20261118"
+    },
+    "remoteLegacySha256": "30555e34209de65899b4980eeaa4bbca6aef3d91fd17d2c93f9e433eecce965b",
+    "remoteRunnerSha256": "868027da3bc117a67b3ea728f2f132e72a878b0ec8ef7b4b20355de1f891d3bb"
+  },
+  "results": [
+    {
+      "surface": "cli_v2",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.017,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        },
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_v2",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.02,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.019,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.019,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing server error: synthetic fault (TEST)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.02,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.018,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned empty response\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.019,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.018,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted base64 signed payload: illegal base64 data at input byte 0\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.019,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.018,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.019,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "timeout",
+      "exitCode": 1,
+      "seconds": 45.017,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing request timeout: Post \"http://127.0.0.1:37251/shortcuty.app/sign\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.038,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 1964,
+          "magicHex": "3c3f786d",
+          "sha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.041,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.04,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.04,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing server error: synthetic fault (TEST)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.038,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.04,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned empty response\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.04,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.039,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: corrupted base64 signed payload: illegal base64 data at input byte 0\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.039,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.039,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.04,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.085,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": "<isolated-audit>/skill_copy/unsigned_control/result.shortcut\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.101,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\nSigned compilation failed for: <isolated-audit>/skill_copy/xml/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.099,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\nSigned compilation failed for: <isolated-audit>/skill_copy/html/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.102,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing server error: synthetic fault (TEST)\nSigned compilation failed for: <isolated-audit>/skill_copy/json_error/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.103,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\nSigned compilation failed for: <isolated-audit>/skill_copy/non_200/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.098,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned empty response\nSigned compilation failed for: <isolated-audit>/skill_copy/empty/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.102,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\nSigned compilation failed for: <isolated-audit>/skill_copy/corrupt_json/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.103,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted base64 signed payload: illegal base64 data at input byte 0\nSigned compilation failed for: <isolated-audit>/skill_copy/corrupt_base64/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.103,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\nSigned compilation failed for: <isolated-audit>/skill_copy/digest_mismatch/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.103,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\nSigned compilation failed for: <isolated-audit>/skill_copy/header_only/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.103,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\nSigned compilation failed for: <isolated-audit>/skill_copy/zero_archive/fixture.cherri\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.25,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 1964,
+          "magicHex": "3c3f786d",
+          "sha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nCHERRI_LANGUAGE=legacy\nCHERRI_BRANCH=agent/cherri-p10r15-validation-r1-20261118\nBUILD_ARTIFACT=<isolated-audit>/remote_legacy_copy/unsigned_control/outputs/fixture-p15-r1-legacy-20261118T030703-818251.shortcut\nd5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade  <isolated-audit>/remote_legacy_copy/unsigned_control/outputs/fixture-p15-r1-legacy-20261118T030703-818251.shortcut\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/unsigned_control/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/unsigned_control/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/unsigned_control/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.283,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/xml/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/xml/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/xml/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.285,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/html/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/html/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/html/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.295,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing server error: synthetic fault (TEST)\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/json_error/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/json_error/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/json_error/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.283,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/non_200/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/non_200/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/non_200/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.281,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing service returned empty response\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/empty/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/empty/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/empty/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.285,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/corrupt_json/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/corrupt_json/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/corrupt_json/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.288,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: corrupted base64 signed payload: illegal base64 data at input byte 0\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/corrupt_base64/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/corrupt_base64/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/corrupt_base64/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.286,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/digest_mismatch/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/digest_mismatch/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/digest_mismatch/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.287,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/header_only/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/header_only/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/header_only/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.289,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/zero_archive/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/zero_archive/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/zero_archive/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "timeout",
+      "exitCode": 1,
+      "seconds": 45.316,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing request timeout: Post \"http://127.0.0.1:44545/shortcuty.app/sign\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/timeout/source/p15-r1/skills/cherri-shortcuts\nPinned compiler commit: d00bc0b9e9a4d8c460623de3d883680b94289e04\nPinned docs commit: 78d6cc8bc408504a5d9e7abfd1a7120f02a22c4d\nCherri: <isolated-audit>/remote_legacy_copy/timeout/p15-r1/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/timeout/p15-r1/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    }
+  ],
+  "summary": {
+    "checks": 46,
+    "controlsPassed": 4,
+    "negativesRejected": 42,
+    "failures": 0
+  }
+}
