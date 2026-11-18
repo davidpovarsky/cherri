@@ -58,6 +58,10 @@ final class CherriCoreIntegrationTests: XCTestCase {
         )
         let actions = try await CherriCompiler.actionCatalog()
 
+        let show = try XCTUnwrap(actions.first(where: { $0.name == "show" }))
+        XCTAssertEqual(show.insertionSnippet, "show(Ask)")
+        _ = try await CherriCompiler.compile(source: show.insertionSnippet, name: "Exact Show Snippet")
+
         let alert = try XCTUnwrap(actions.first(where: { $0.name == "alert" }))
         XCTAssertEqual(alert.insertionSnippet, "alert(Ask)")
         _ = try await CherriCompiler.compile(source: alert.insertionSnippet + "\n", name: "Alert Snippet")

@@ -20,6 +20,9 @@ fi
 (
   cd "$IOS_DIR"
   xcodegen generate
+  xcodebuild -project Cherri.xcodeproj -scheme Cherri -resolvePackageDependencies \
+    -clonedSourcePackagesDirPath .build/SourcePackages
+  python3 scripts/prepare_editor_dependency.py --receipt .build/editor-dependency-receipt.json
 )
 
 echo "Generated $IOS_DIR/Cherri.xcodeproj"

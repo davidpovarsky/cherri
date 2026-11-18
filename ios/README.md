@@ -56,14 +56,14 @@ Because the current compiler uses package-level mutable state, the mobile bridge
 
 ## Building without a Mac
 
-The repository's **iOS Build** GitHub Actions workflow is the reference build environment. Development branches under `agent/**` and `main` are built once per push, with stale iOS runs cancelled automatically. The workflow performs:
+The repository's **iOS Build** GitHub Actions workflow is the reference build environment. It runs on `main` pushes and explicit workflow dispatches; a development branch must be selected explicitly for dispatch. Stale iOS runs for the same ref are cancelled automatically. The workflow performs:
 
 1. Existing Cherri Go tests.
 2. `preview-shortcut` web bundle build.
 3. Cherri Go C archive builds for iPhone arm64 and iOS Simulator arm64 + x86_64.
 4. Universal Simulator archive and XCFramework creation.
 5. XcodeGen project generation.
-6. Swift Package resolution.
+6. Swift Package resolution and exact-revision editor patch verification.
 7. Unsigned iOS Simulator app build with `xcodebuild`.
 
 This validates the source and integration without requiring a local Mac or Apple signing identity.
@@ -75,10 +75,28 @@ When a Mac is available:
 ```sh
 brew install xcodegen
 bash ios/scripts/bootstrap.sh
-open ios/Cherri.xcodeproj
+cd ios
+python3 scripts/prepare_editor_dependency.py --check-only
+xcodebuild -project Cherri.xcodeproj -scheme Cherri \
+  -clonedSourcePackagesDirPath .build/SourcePackages \
+  -disableAutomaticPackageResolution \
+  -configuration Debug -sdk iphonesimulator \
+  -destination 'generic/platform=iOS Simulator' \
+  -derivedDataPath .build/simulator CODE_SIGNING_ALLOWED=NO build
+open Cherri.xcodeproj
 ```
 
 The generated project is disposable; regenerate it after changing `project.yml`.
+Bootstrap resolves the pinned packages into `ios/.build/SourcePackages` and applies
+Cherri's verified editor input patch there. Keep the two package flags above on
+subsequent build and test commands. CI uses this same prepared checkout and checks
+its exact source hashes before every native build/test.
+
+You may open the generated project to edit and inspect sources after bootstrap.
+A direct Xcode GUI build can select a different SwiftPM checkout; automatic patch
+application in that alternate cache is not covered. Use the prepared command
+above for the reproducible app, and rerun bootstrap after resetting package
+caches. Do not treat an unprepared GUI build as verification of this editor fix.
 
 ## Preview updates
 
@@ -87,6 +105,14 @@ The app pins `preview-shortcut` in `WebPreview/package.json`. To take an upstrea
 ## Editor updates
 
 `CodeEditorView` is pinned by revision in `project.yml` for reproducible builds. The Cherri language configuration lives in `CherriApp/Editor/CherriLanguage.swift` and should continue to track Cherri's own tokens and the existing VS Code grammar rather than becoming an independent language definition.
+
+The pin remains `5386056ab53d43363083cb96069715a9608aa048`. The bounded patch in
+`DependencyPatches/CodeEditorView/generated-closers.json` fixes UIKit typing of
+known auto-generated delimiter suffixes without replacing the editor. The
+installer verifies the Git revision, original Git blobs and original/patched
+SHA-256 values, and refuses unexpected files. It is idempotent. See
+[`DependencyPatches/CodeEditorView/README.md`](DependencyPatches/CodeEditorView/README.md)
+for scope and native validation requirements.
 
 CodeEditorView currently provides its code-completion service on macOS, not iOS. iOS completion should therefore be implemented as a thin Cherri-specific UI backed by the compiler's existing action definitions instead of replacing the editor.
 

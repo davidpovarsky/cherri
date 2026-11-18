@@ -67,6 +67,19 @@ class IOSTestEvidenceTests(unittest.TestCase):
         self.assertEqual(diagnostic["uiFailures"][0]["sourceLine"], 98)
         self.assertNotIn("/Users/runner", "".join(outputs.values()))
 
+    def test_native_editor_input_failure_keeps_only_location_and_test_identity(self):
+        target = "CherriTests.CherriEditorInputTests"
+        method = "testAuthoredCloserIsNeverConsumed"
+        log = (f"Test Case '-[{target} {method}]' started.\n"
+               f"/Users/runner/CherriEditorInputTests.swift:65: error: -[{target} {method}] : PRIVATE_MESSAGE\n"
+               f"Test Case '-[{target} {method}]' failed (0.123 seconds).\n")
+        diagnostic, records, outputs = self.collect(log, 65)
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
+        self.assertEqual(diagnostic["uiFailures"], [{"testId": "CherriEditorInputTests/" + method, "sourceLine": 65}])
+        self.assertNotIn("PRIVATE_MESSAGE", "".join(outputs.values()))
+        self.assertNotIn("/Users/runner", "".join(outputs.values()))
+
     def test_checkpoint_outside_case_or_inside_another_case_cannot_pass(self):
         log = self.checkpoint + "\n" + self.block() + self.block(method="testUnrelated", body=self.checkpoint)
         self.assertEqual(self.collect(log)[1], [])

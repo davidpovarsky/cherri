@@ -131,7 +131,11 @@ jobs:
           github_token: ${{ github.token }}
       - name: Resolve Swift packages
         working-directory: ios
-        run: xcodebuild -project Cherri.xcodeproj -scheme Cherri -resolvePackageDependencies
+        run: |
+          xcodebuild -project Cherri.xcodeproj -scheme Cherri -resolvePackageDependencies \
+            -clonedSourcePackagesDirPath .build/SourcePackages
+          python3 scripts/prepare_editor_dependency.py --receipt .build/editor-dependency-receipt.json
+          python3 -m unittest discover -s scripts -p 'test_prepare_editor_dependency.py' -v
 
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main
@@ -145,8 +149,11 @@ jobs:
         working-directory: ios
         run: |
           set +e
+          python3 scripts/prepare_editor_dependency.py --check-only || exit $?
           xcodebuild \
             -project Cherri.xcodeproj \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -disableAutomaticPackageResolution \
             -scheme Cherri \
             -configuration Debug \
             -sdk iphonesimulator \
@@ -215,8 +222,11 @@ jobs:
           xcrun simctl spawn "$SIMULATOR_UDID" defaults write -g ConnectHardwareKeyboard -bool NO 2>/dev/null || true
 
           set +e
+          python3 scripts/prepare_editor_dependency.py --check-only || exit $?
           xcodebuild \
             -project Cherri.xcodeproj \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -disableAutomaticPackageResolution \
             -scheme Cherri \
             -configuration Debug \
             -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
@@ -266,8 +276,11 @@ jobs:
         working-directory: ios
         run: |
           set +e
+          python3 scripts/prepare_editor_dependency.py --check-only || exit $?
           xcodebuild \
             -project Cherri.xcodeproj \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -disableAutomaticPackageResolution \
             -scheme Cherri \
             -configuration Release \
             -sdk iphoneos \

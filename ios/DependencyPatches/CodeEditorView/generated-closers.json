@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "patchId": "cherri-p15-generated-closers-v1",
+  "repository": "https://github.com/mchakravarty/CodeEditorView.git",
+  "revision": "5386056ab53d43363083cb96069715a9608aa048",
+  "files": [
+    {
+      "path": "Sources/CodeEditorView/CodeStorage.swift",
+      "originalGitBlob": "45352f1b11d6cc4767298f62feedbe2b441ea1f5",
+      "originalSha256": "993a84a7ae3f02f788dda749d61aae853061c3cdfccd3639fc351f51bd7cb1aa",
+      "patchedSha256": "e8305f89139f1dcc6df9e1350e7d8d87c194161784c7ad4d05a1443a3d6f0562",
+      "replacements": [
+        {
+          "old": "  // MARK: Initialisers\n",
+          "new": "  #if os(iOS) || os(visionOS)\n  // P15: track only the exact token-completion suffix (including generated\n  // newline/comment delimiters), never equal authored text.\n  private var generatedClosingBrackets: [Int: unichar] = [:]\n\n  func forgetGeneratedClosingBrackets() {\n    generatedClosingBrackets.removeAll()\n  }\n\n  func rememberGeneratedClosingBrackets(in range: NSRange) {\n    guard range.location >= 0, range.length >= 0, NSMaxRange(range) <= length else { return }\n    let source = string as NSString\n    for index in range.location..<NSMaxRange(range) {\n      let unit = source.character(at: index)\n      generatedClosingBrackets[index] = unit\n    }\n  }\n\n  func consumeGeneratedClosingBracket(_ replacement: String, at range: NSRange) -> Bool {\n    guard range.length == 0, range.location >= 0, range.location < length,\n          replacement.utf16.count == 1, let unit = replacement.utf16.first,\n          generatedClosingBrackets[range.location] == unit,\n          (string as NSString).character(at: range.location) == unit else { return false }\n    generatedClosingBrackets.removeValue(forKey: range.location)\n    return true\n  }\n\n  private func adjustGeneratedClosingBrackets(for range: NSRange, replacement: String) {\n    // Deletion/replacement invalidates provenance. Ordinary typed insertion shifts it.\n    guard range.length == 0, !replacement.isEmpty else {\n      forgetGeneratedClosingBrackets()\n      return\n    }\n    let delta = (replacement as NSString).length\n    generatedClosingBrackets = Dictionary(uniqueKeysWithValues: generatedClosingBrackets.map {\n      (index, unit) in (index >= range.location ? index + delta : index, unit)\n    })\n  }\n  #endif\n\n  // MARK: Initialisers\n"
+        },
+        {
+          "old": "  override func replaceCharacters(in range: NSRange, with str: String) {\n\n    beginEditing()",
+          "new": "  override func replaceCharacters(in range: NSRange, with str: String) {\n\n    #if os(iOS) || os(visionOS)\n    adjustGeneratedClosingBrackets(for: range, replacement: str)\n    #endif\n    beginEditing()"
+        }
+      ]
+    },
+    {
+      "path": "Sources/CodeEditorView/CodeStorageDelegate.swift",
+      "originalGitBlob": "00847ef4005d966eb5f8619ce0cd65b504cbaef4",
+      "originalSha256": "c820cd31f9f286fa3f3950d3e31ca237c656afb06fe47ff2784a1c9762e8cfdb",
+      "patchedSha256": "e413fe874975b8121ef45e3cac9aa2cf80dce6c5c94c56d5a14996090b706ea5",
+      "replacements": [
+        {
+          "old": "        codeStorage.replaceCharacters(in: NSRange(location: index + 1, length: 0), with: string)\n",
+          "new": "        codeStorage.replaceCharacters(in: NSRange(location: index + 1, length: 0), with: string)\n        #if os(iOS) || os(visionOS)\n        codeStorage.rememberGeneratedClosingBrackets(in: NSRange(location: index + 1, length: string.utf16.count))\n        #endif\n"
+        }
+      ]
+    },
+    {
+      "path": "Sources/CodeEditorView/CodeView.swift",
+      "originalGitBlob": "9736d4eda78ff883e681892f664ce41d8b071e2c",
+      "originalSha256": "19379fc7cdede4160b89496447952dce0784a49c0ed175b957cb400285833ca5",
+      "patchedSha256": "7145f8da4611fdc97720a73497a05a4c8dbcfdcc4e2ace7d640363d9d2835d3c",
+      "replacements": [
+        {
+          "old": "  // NB: Trying to do tiling and minimap adjusting on specific events, instead of here, leads to lots of tricky corner\n",
+          "new": "  // P15: only direct keyboard typing may consume a known generated closer.\n  fileprivate var processingDirectInsertion = false\n  fileprivate var directInsertionSelection: NSRange?\n  private var processingPaste = false\n\n  override func insertText(_ text: String) {\n    let storage = optCodeStorage\n    if directInsertionSelection != selectedRange || selectedRange.length != 0 ||\n        markedTextRange != nil || text.count != 1 || processingPaste {\n      storage?.forgetGeneratedClosingBrackets()\n    }\n    let wasProcessing = processingDirectInsertion\n    processingDirectInsertion = true\n    defer {\n      directInsertionSelection = selectedRange\n      processingDirectInsertion = wasProcessing\n    }\n    if !processingPaste, markedTextRange == nil,\n       storage?.consumeGeneratedClosingBracket(text, at: selectedRange) == true {\n      selectedRange = NSRange(location: selectedRange.location + 1, length: 0)\n      return\n    }\n    super.insertText(text)\n  }\n\n  override func deleteBackward() {\n    optCodeStorage?.forgetGeneratedClosingBrackets()\n    directInsertionSelection = nil\n    super.deleteBackward()\n  }\n\n  override func paste(_ sender: Any?) {\n    optCodeStorage?.forgetGeneratedClosingBrackets()\n    directInsertionSelection = nil\n    processingPaste = true\n    defer { processingPaste = false }\n    super.paste(sender)\n  }\n\n  // NB: Trying to do tiling and minimap adjusting on specific events, instead of here, leads to lots of tricky corner\n"
+        },
+        {
+          "old": "  func textViewDidChangeSelection(_ textView: UITextView) {\n    guard let codeView = textView as? CodeView else { return }\n\n    selectionDidChange?(textView)",
+          "new": "  func textViewDidChangeSelection(_ textView: UITextView) {\n    guard let codeView = textView as? CodeView else { return }\n\n    if !codeView.processingDirectInsertion, codeView.directInsertionSelection != codeView.selectedRange {\n      codeView.optCodeStorage?.forgetGeneratedClosingBrackets()\n      codeView.directInsertionSelection = nil\n    }\n    selectionDidChange?(textView)"
+        }
+      ]
+    }
+  ]
+}
