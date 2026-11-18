@@ -202,6 +202,56 @@ class StorageCrossRunContractTests(unittest.TestCase):
                     stage(self.root, Path(self.temp.name) / ("public-" + key),
                           {cross.FIXTURE + ".cherri": "b" * 64})
 
+    def test_reader_timeout_preserves_evidence_through_actual_final_reporting(self):
+        # Exercise actual reporting after a synthetic receiver timeout.
+        # This protocol control does not establish native storage behavior.
+        times = iter((0, 46))
+        self.assertFalse(cross.dispatch_reader(
+            self.root, UDID, self.receiver,
+            runner=lambda *args, **kwargs: subprocess.CompletedProcess(args[0], 0),
+            monotonic=lambda: next(times),
+            sleeper=lambda _: self.fail("bounded timeout must not sleep")))
+        oracle = self.execute_oracle("READ")
+        self.assertEqual(oracle["runGate"], "FAIL_RUNTIME")
+        self.assertEqual(oracle["traceGate"], "FAIL_RUNTIME")
+        trace = self.root / "runtime/runtime-trace.jsonl"
+        self.assertFalse(trace.exists())
+        writer_trace = (self.root / "runtime/storage-writer-trace.jsonl").read_bytes()
+        report = cross.build_report(self.root)
+        self.assertFalse(report["crossRunTextVerified"])
+        self.assertEqual(report["dispatchResult"], "CALLBACK_TIMEOUT")
+        self.assertEqual(report["reader"]["traceSha256"], "")
+        cross.write_json(self.root / "runtime" / cross.DIAGNOSTIC_FILE, report)
+        result = subprocess.run(
+            [sys.executable, "-c", self.oracle.assertion_program, str(self.root),
+             "FAIL_RUNTIME", "PASS", "FAIL_RUNTIME",
+             "two separate storage invocations did not both satisfy strict callback/trace/order",
+             cross.FIXTURE, cross.marker("READ"), self.plan["readerNonce"], json.dumps(oracle)],
+            capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        # Exercise the real equality gate before checking convenience properties.
+        # A synthetic collector fallback used to change the bound trace hash here.
+        cross.validate_public_diagnostic(report, self.root)
+        self.assertFalse(trace.exists())
+        self.assertEqual((self.root / "runtime/storage-writer-trace.jsonl").read_bytes(), writer_trace)
+        assertions = cross.read_json(self.root / "runtime/output-assertions.json")
+        self.assertFalse(assertions["runtimeContractVerified"])
+        self.assertFalse(assertions["compiledShortcutRuntimeExecuted"])
+        self.assertEqual(assertions["shortcutRunCompletedGate"], "FAIL_RUNTIME")
+        cross.write_json(self.root / "summary.json", {"privacyGatePassed": True})
+        publication = stage(self.root, Path(self.temp.name) / "public-timeout",
+                            {cross.FIXTURE + ".cherri": "b" * 64})
+        published = {item["path"] for item in publication["published"]}
+        self.assertIn("runtime/" + cross.DIAGNOSTIC_FILE, published)
+        self.assertNotIn("runtime/runtime-trace.jsonl", published)
+        self.assertNotIn("runtime/" + cross.PLAN_FILE, published)
+        # Reporting a timeout remains publishable; fabricating success does not.
+        cross.write_json(self.root / "runtime" / cross.DIAGNOSTIC_FILE,
+                         {**report, "crossRunTextVerified": True})
+        with self.assertRaises(PublicationBlocked):
+            stage(self.root, Path(self.temp.name) / "public-forged-timeout",
+                  {cross.FIXTURE + ".cherri": "b" * 64})
+
     def test_shell_helper_failures_stop_before_native_launch(self):
         script = (ROOT / "scripts/ios27_shortcuts_simulator_qa.sh").read_text(encoding="utf-8")
         start = script.index('    if [ "$STORAGE_CROSS_RUN_ENABLED" = "true" ]; then\n      python3')

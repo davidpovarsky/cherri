@@ -2501,7 +2501,10 @@ with open(os.path.join(artifact_dir, "runtime", "output-assertions.json"), "w", 
     json.dump(assertions, f, indent=2)
 
 trace_jsonl_path = os.path.join(artifact_dir, "runtime", "runtime-trace.jsonl")
-if not os.path.exists(trace_jsonl_path):
+# A missing storage reader trace is evidence bound by the earlier phase report.
+# Preserve that absence after a timeout; a collector fallback would change its
+# hash without observing a native reader callback and block truthful publication.
+if not os.path.exists(trace_jsonl_path) and fid != "qa-storage-text-cross-run-v2":
     with open(trace_jsonl_path, "w", encoding="utf-8") as f:
         if fid == "qa-measure-release-v2":
             # No collector is executed by the Release fixture.
