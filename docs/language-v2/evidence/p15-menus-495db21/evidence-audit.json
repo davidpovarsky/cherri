@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "implementation_commit": "495db211bcf9dd02459ad1e3fb4305c8b3fd580f",
+  "parent_commit": "e9da6c1438589527da8535d3e068444adc366a98",
+  "jobs": {
+    "red": "job_bd43c9b33826",
+    "clean": "job_8f66ef1a1508",
+    "parent_replay": "job_01840c7b4332"
+  },
+  "red_scope": "unchanged parent production source plus uncommitted added regression tests; not a clean-tree final receipt",
+  "menus_status": "PROVEN_EQUIVALENT",
+  "full_differential_gate": "FAILED",
+  "remaining_failure_names": [
+    "date-comparisons.cherri",
+    "nil.cherri"
+  ],
+  "remaining_failures_reproduced_on_parent": true,
+  "source_clean_before_after": true,
+  "canonical_inputs_unchanged": true,
+  "no_signing_or_native_execution": true,
+  "no_formal_179_closure_promotion": true,
+  "files": [
+    {
+      "path": "clean-analysis-migrate.jsonl",
+      "sha256": "908278447c14d5b80f0c5df8d043d205576d46360e9396b9604d84d3af834f1c",
+      "bytes": 36784
+    },
+    {
+      "path": "clean-execution-receipt.json",
+      "sha256": "26144fe47edcd463a44c3d8890d447d4313e64da6f0a60eb8d6c57bd75870b41",
+      "bytes": 10096
+    },
+    {
+      "path": "clean-focused-production.jsonl",
+      "sha256": "707084dd3f974bb7c3b4e15b837d1b952a2c2571f784c3d053bbaada44e5ea0f",
+      "bytes": 78803
+    },
+    {
+      "path": "clean-legacy-parity-results.json",
+      "sha256": "1e682748ae6e90a13228820dfceb78f7cfa8cfe77c4ba2c230f3e9ac82ff7d77",
+      "bytes": 18590
+    },
+    {
+      "path": "clean-legacy-parity.log",
+      "sha256": "9db273f830a8b5a725f3591f60126006b33b2b7dae3bfe93be953ac9f3f9cecf",
+      "bytes": 7103
+    },
+    {
+      "path": "parent-execution-receipt.json",
+      "sha256": "43a6c761ab2ee759dfe57aa1b4b800629b0704bbbec53fef2c29d6165b393f99",
+      "bytes": 3138
+    },
+    {
+      "path": "parent-legacy-parity-results.json",
+      "sha256": "3cd5e55a88a966ff4a231486d2eeecc8dff9536593314745c1ab73803d1a5430",
+      "bytes": 18923
+    },
+    {
+      "path": "parent-legacy-parity.log",
+      "sha256": "adbce1114c2ac1a6ea688fa145e0cb50c515b910b06f8fc77e630ac9c178b4d7",
+      "bytes": 7372
+    },
+    {
+      "path": "red-regression-tests.jsonl",
+      "sha256": "27b3419281ec41db9cb70ce8636076461884cefabf8846920a5d273bdc3df610",
+      "bytes": 13103
+    }
+  ]
+}

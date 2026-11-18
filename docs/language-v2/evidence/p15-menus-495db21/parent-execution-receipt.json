@@ -1,0 +1,78 @@
+{
+  "source_commit": "e9da6c1438589527da8535d3e068444adc366a98",
+  "comparison_source_commit": "495db211bcf9dd02459ad1e3fb4305c8b3fd580f",
+  "scope": "causal parent-source differential replay",
+  "checks": [
+    {
+      "name": "build",
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-menus-tokenstring\\baseline-e9da6c1\\cherri.exe",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 1.923,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "legacy-parity",
+      "command": [
+        "go",
+        "run",
+        "./tools/legacy-parity",
+        "--output=C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-menus-tokenstring\\baseline-e9da6c1\\legacy-parity-results.json"
+      ],
+      "exit_code": 1,
+      "seconds": 8.455,
+      "sha256": "adbce1114c2ac1a6ea688fa145e0cb50c515b910b06f8fc77e630ac9c178b4d7"
+    }
+  ],
+  "parity_counts": {
+    "total_fixtures": 47,
+    "verified_parity": 9,
+    "proven_equivalent": 35,
+    "upstream_baseline_fails": 0,
+    "migration_fails": 0,
+    "v2_compile_fails": 3,
+    "parity_differences": 0,
+    "total_actions_tested": 17,
+    "actions_passed_both": 17
+  },
+  "failed_fixtures": [
+    {
+      "name": "date-comparisons.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\date-comparisons.cherri",
+      "status": "V2_COMPILE_FAIL",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "Compilation error: semantic error [E_ARGUMENT_TYPE]: comparison requires Number or Date, got AnyContent at C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-legacy-parity-3061681129\\date-comparisons_v2.cherri:80:18-80:30"
+    },
+    {
+      "name": "menus.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\menus.cherri",
+      "status": "V2_COMPILE_FAIL",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "Compilation error: semantic error [E_LITERAL_REQUIRED]: parameter \"title\" in call to \"makeVCard\" requires a literal value or an eligible pure literal expression; runtime bindings and actions are not literals at C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-legacy-parity-3061681129\\menus_v2.cherri:8:24-8:36"
+    },
+    {
+      "name": "nil.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\nil.cherri",
+      "status": "V2_COMPILE_FAIL",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "Compilation error: semantic error [E_ARGUMENT_TYPE]: value of type Unknown is not assignable to variable \"media\" of type File at C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-legacy-parity-3061681129\\nil_v2.cherri:6:9-6:12"
+    }
+  ],
+  "source_clean_after": true,
+  "restored_head": "495db211bcf9dd02459ad1e3fb4305c8b3fd580f",
+  "restored_clean": true
+}

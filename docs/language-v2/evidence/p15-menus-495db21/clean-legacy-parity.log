@@ -1,0 +1,85 @@
+=== Cherri Legacy <-> v2 Differential Parity Runner ===
+Discovered 47 original test fixtures in tests/*.cherri
+
+  [PASS]  a11y.cherri                         => Parity Verified (Bit-for-bit Plist Match)
+  [PASS]  ai.cherri                           => Parity Verified (Bit-for-bit Plist Match)
+  [EQUIV] arrays.cherri                       => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] automations.cherri                  => Proven Semantic Equivalence (SSA / Norm Verified)
+  [PASS]  calendar.cherri                     => Parity Verified (Bit-for-bit Plist Match)
+  [EQUIV] conditionals.cherri                 => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] control-flow-output.cherri          => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] copy-paste.cherri                   => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] corpus-batch001.cherri              => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] crypto.cherri                       => Proven Semantic Equivalence (SSA / Norm Verified)
+  [FAIL]  date-comparisons.cherri             => V2 Compile Failed: Compilation error: semantic error [E_ARGUMENT_TYPE]: comparison requires Number or Date, got AnyContent at C:\Users\DAVID\AppData\Local\Temp\cherri-legacy-parity-743878483\date-comparisons_v2.cherri:80:18-80:30
+  [EQUIV] decomp-expected.cherri              => Proven Semantic Equivalence (SSA / Norm Verified)
+  [PASS]  definitions.cherri                  => Parity Verified (Bit-for-bit Plist Match)
+  [EQUIV] dictionary.cherri                   => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] empty-types.cherri                  => Proven Semantic Equivalence (SSA / Norm Verified)
+  [PASS]  enum.cherri                         => Parity Verified (Bit-for-bit Plist Match)
+  [EQUIV] functions.cherri                    => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] getas-typecast.cherri               => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] globals.cherri                      => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] hello-world.cherri                  => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] images.cherri                       => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] import-questions.cherri             => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] include-actions.cherri              => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] include.cherri                      => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] includes.cherri                     => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] math.cherri                         => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] measurements.cherri                 => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] menus.cherri                        => Proven Semantic Equivalence (SSA / Norm Verified)
+  [FAIL]  nil.cherri                          => V2 Compile Failed: Compilation error: semantic error [E_ARGUMENT_TYPE]: value of type Unknown is not assignable to variable "media" of type File at C:\Users\DAVID\AppData\Local\Temp\cherri-legacy-parity-743878483\nil_v2.cherri:6:9-6:12
+  [EQUIV] numbers.cherri                      => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] qty-color.cherri                    => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] raw-action-output-capture.cherri    => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] raw-action-variable-values.cherri   => Proven Semantic Equivalence (SSA / Norm Verified)
+  [PASS]  raw-action.cherri                   => Parity Verified (Bit-for-bit Plist Match)
+  [EQUIV] repeats.cherri                      => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] shortcuts.cherri                    => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] smol.cherri                         => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] split-screen.cherri                 => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] standard.cherri                     => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] storage.cherri                      => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] text.cherri                         => Proven Semantic Equivalence (SSA / Norm Verified)
+  [PASS]  toggle-set.cherri                   => Parity Verified (Bit-for-bit Plist Match)
+  [EQUIV] types.cherri                        => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] variable-interpolation-utf16.cherri => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] variables.cherri                    => Proven Semantic Equivalence (SSA / Norm Verified)
+  [EQUIV] web.cherri                          => Proven Semantic Equivalence (SSA / Norm Verified)
+  [PASS]  zz-action-identifiers.cherri        => Parity Verified (Bit-for-bit Plist Match)
+
+--- Testing Newly Added Apple Actions in Both Modes ---
+  [PASS] action getParkedCarLocation      => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action scanBarcode               => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action filterPhotos              => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action searchiTunes              => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action intercom                  => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action getCurrentApp             => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action getSelectedText           => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action getUpcomingEvents         => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action addCalendar               => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action getType                   => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action getTravelTime             => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action storeValue                => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action getStoredValue            => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action deleteStoredValue         => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action askModel                  => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action askProModel               => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+  [PASS] action askDeviceModel            => Legacy: OK, v2: OK, Plist: PARITY_VERIFIED
+
+Saved machine-readable parity report to: C:\Users\DAVID\Code\cherri-p10r15-call-acceptance-20261118\artifacts\p15-menus-tokenstring\exact-495db21\legacy-parity-results.json
+
+=== SUMMARY ===
+Total Fixtures:        47
+Verified Parity:       8
+Proven Equivalent:     37
+Upstream Baseline Fail:0
+Migration Fails:       0
+V2 Compile Fails:      2
+Parity Differences:    0
+New Actions Tested:    17
+Actions Passed Both:   17
+
+FAILURE: Differential parity gate check failed.
+exit status 1

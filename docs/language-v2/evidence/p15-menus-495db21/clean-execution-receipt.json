@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "source_commit": "495db211bcf9dd02459ad1e3fb4305c8b3fd580f",
+  "source_clean_before": true,
+  "started_at": "2026-11-18T20:14:22.663891+00:00",
+  "host": "windows",
+  "checks": [
+    {
+      "name": "focused-production",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=5m",
+        "-run",
+        "^TestP15(VCard|MenusMigration|T02|C02)",
+        "."
+      ],
+      "exit_code": 0,
+      "wall_seconds": 7.137,
+      "log": "focused-production.jsonl",
+      "sha256": "707084dd3f974bb7c3b4e15b837d1b952a2c2571f784c3d053bbaada44e5ea0f",
+      "top_level_tests": [
+        {
+          "name": "TestP15C02ArgumentDiagnosticsProduction",
+          "status": "pass",
+          "seconds": 0.03
+        },
+        {
+          "name": "TestP15C02AcceptedBindingsProduction",
+          "status": "pass",
+          "seconds": 0.04
+        },
+        {
+          "name": "TestP15C02ArgumentServiceAndCLI",
+          "status": "pass",
+          "seconds": 2.89
+        },
+        {
+          "name": "TestP15T02LiteralRequiredProduction",
+          "status": "pass",
+          "seconds": 0.02
+        },
+        {
+          "name": "TestP15VCardTokenStringProduction",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestP15VCardTokenStringCapabilityMetadata",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestP15VCardLiteralBoundary",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestP15MenusMigrationCLIParity",
+          "status": "pass",
+          "seconds": 1.86
+        }
+      ],
+      "named_pass": 91,
+      "named_fail": 0,
+      "named_skip": 0
+    },
+    {
+      "name": "analysis-migrate",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=5m",
+        "./internal/language/analysis",
+        "./internal/language/migrate"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 2.859,
+      "log": "analysis-migrate.jsonl",
+      "sha256": "908278447c14d5b80f0c5df8d043d205576d46360e9396b9604d84d3af834f1c",
+      "top_level_tests": [
+        {
+          "name": "TestMigrateTriggersSevenFamilies",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestMigrateUnknownTriggerFailsClosed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateUnknownDirectiveFailsClosed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateRefPreservation",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateCorruptRefFailsClosed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateMetadataAndDefines",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateStdfuncAndIncludes",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateTypedVariablesAndRepeats",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateMenus",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateCopyPastePreserved",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerAssignImmutable",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestAnalyzerReadBeforeInit",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerUnknownArgument",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerMissingArgument",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerDuplicateArgument",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerIfConditionBool",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerYieldOutsideValueBlock",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerLegacySyntax",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerValidProgram",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerCopyPaste",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerTruthiness",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerHotLoopWarning",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerGlobals",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerListPlusAssign",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMacActionInNonMacShortcut_Baseline",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMacActionInMacShortcut_Allowed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestNonMacActionInMacShortcut_Error",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestNonMacActionInNonMacShortcut_Allowed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestEmptyDictionaryKey_MapLiteral",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestEmptyDictionaryKey_IndexExpr",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestEmptyDictionaryKey_GetValueCall",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestExprTypesTracking",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMixedTargets_RejectsNonPortableActions",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestExplicitTargetString",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestUnspecifiedTarget_EmitsWarning",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestVersionBounds_MinVersion",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAcceptedForms_AcceptsVariableAttachment",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestScopedBlockInferredTypeAndLexicalScope",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestScopedBlockDiagnosticsAndBranchTypes",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestScopedBlockDoesNotReserveExistingFunctionName",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestTargetVersionSettersRetainCompatibility",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestTargetVersionSourceAccessorsKeepComponents",
+          "status": "pass",
+          "seconds": 0
+        }
+      ],
+      "named_pass": 43,
+      "named_fail": 0,
+      "named_skip": 0
+    },
+    {
+      "name": "build",
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-menus-tokenstring\\exact-495db21\\cherri.exe",
+        "."
+      ],
+      "exit_code": 0,
+      "wall_seconds": 2.062,
+      "log": "build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "legacy-parity",
+      "command": [
+        "go",
+        "run",
+        "./tools/legacy-parity",
+        "--output=C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-menus-tokenstring\\exact-495db21\\legacy-parity-results.json"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 11.6,
+      "log": "legacy-parity.log",
+      "sha256": "9db273f830a8b5a725f3591f60126006b33b2b7dae3bfe93be953ac9f3f9cecf"
+    }
+  ],
+  "inputs": {
+    "tests/menus.cherri": "5553044bc94cc455bb33d022386b2ad8b92e92a558bb20de454f5ac71f78cf22",
+    "tests/fixtures-manifest.json": "6814fe32437c7077a3f591017719eaaf92a4859bda40f405251c466b113517f8",
+    "internal/language/schema/generated_registry.go": "a0b98aeb2a3b18e4648222df3b4972542189867971b5c722d8dc99929736444a",
+    "tools/legacy-parity/main.go": "895fda5843d1feef2d6cdc7f66f1eff0d384e52b53edcb6579a1d37e7bba4682"
+  },
+  "scope": "actual compile/native structure and existing public differential parity only; no signing or Apple runtime",
+  "compiler_sha256": "fce51af7c6e22ba56e159843d4d8eee0c7ccf51d0ce404fb48584837da40f257",
+  "parity_counts": {
+    "total_fixtures": 47,
+    "verified_parity": 8,
+    "proven_equivalent": 37,
+    "upstream_baseline_fails": 0,
+    "migration_fails": 0,
+    "v2_compile_fails": 2,
+    "parity_differences": 0,
+    "total_actions_tested": 17,
+    "actions_passed_both": 17
+  },
+  "menus": {
+    "name": "menus.cherri",
+    "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\menus.cherri",
+    "status": "PROVEN_EQUIVALENT",
+    "legacy_ok": true,
+    "migrated_ok": true,
+    "v2_compile_ok": true,
+    "equal": true
+  },
+  "parity_report_sha256": "1e682748ae6e90a13228820dfceb78f7cfa8cfe77c4ba2c230f3e9ac82ff7d77",
+  "source_clean_after": true,
+  "source_head_after": "495db211bcf9dd02459ad1e3fb4305c8b3fd580f",
+  "inputs_unchanged": true,
+  "completed_at": "2026-11-18T20:14:46.630561+00:00",
+  "exit_code": 1
+}

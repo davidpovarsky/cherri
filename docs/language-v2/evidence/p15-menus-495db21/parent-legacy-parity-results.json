@@ -1,0 +1,595 @@
+{
+  "timestamp": "2026-11-18T20:15:41Z",
+  "total_fixtures": 47,
+  "verified_parity": 9,
+  "proven_equivalent": 35,
+  "upstream_baseline_fails": 0,
+  "migration_fails": 0,
+  "v2_compile_fails": 3,
+  "parity_differences": 0,
+  "total_actions_tested": 17,
+  "actions_passed_both": 17,
+  "fixtures": [
+    {
+      "name": "a11y.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\a11y.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "ai.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\ai.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "arrays.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\arrays.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "automations.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\automations.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "calendar.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\calendar.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "conditionals.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\conditionals.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "control-flow-output.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\control-flow-output.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "copy-paste.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\copy-paste.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "corpus-batch001.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\corpus-batch001.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "crypto.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\crypto.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "date-comparisons.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\date-comparisons.cherri",
+      "status": "V2_COMPILE_FAIL",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "Compilation error: semantic error [E_ARGUMENT_TYPE]: comparison requires Number or Date, got AnyContent at C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-legacy-parity-3061681129\\date-comparisons_v2.cherri:80:18-80:30"
+    },
+    {
+      "name": "decomp-expected.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\decomp-expected.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "definitions.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\definitions.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "dictionary.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\dictionary.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "empty-types.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\empty-types.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "enum.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\enum.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "functions.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\functions.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "getas-typecast.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\getas-typecast.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "globals.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\globals.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "hello-world.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\hello-world.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "images.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\images.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "import-questions.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\import-questions.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "include-actions.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\include-actions.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "include.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\include.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "includes.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\includes.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "math.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\math.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "measurements.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\measurements.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "menus.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\menus.cherri",
+      "status": "V2_COMPILE_FAIL",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "Compilation error: semantic error [E_LITERAL_REQUIRED]: parameter \"title\" in call to \"makeVCard\" requires a literal value or an eligible pure literal expression; runtime bindings and actions are not literals at C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-legacy-parity-3061681129\\menus_v2.cherri:8:24-8:36"
+    },
+    {
+      "name": "nil.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\nil.cherri",
+      "status": "V2_COMPILE_FAIL",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "Compilation error: semantic error [E_ARGUMENT_TYPE]: value of type Unknown is not assignable to variable \"media\" of type File at C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-legacy-parity-3061681129\\nil_v2.cherri:6:9-6:12"
+    },
+    {
+      "name": "numbers.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\numbers.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "qty-color.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\qty-color.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "raw-action-output-capture.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\raw-action-output-capture.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "raw-action-variable-values.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\raw-action-variable-values.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "raw-action.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\raw-action.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "repeats.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\repeats.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "shortcuts.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\shortcuts.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "smol.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\smol.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "split-screen.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\split-screen.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "standard.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\standard.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "storage.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\storage.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "text.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\text.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "toggle-set.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\toggle-set.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "types.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\types.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "variable-interpolation-utf16.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\variable-interpolation-utf16.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "variables.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\variables.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "web.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\web.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "zz-action-identifiers.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\zz-action-identifiers.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    }
+  ],
+  "actions": [
+    {
+      "callable_name": "getParkedCarLocation",
+      "category": "location",
+      "apple_id": "is.workflow.actions.getparkedcarlocation",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "scanBarcode",
+      "category": "images",
+      "apple_id": "is.workflow.actions.scanbarcode",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "filterPhotos",
+      "category": "photos",
+      "apple_id": "is.workflow.actions.filter.photos",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "searchiTunes",
+      "category": "music",
+      "apple_id": "is.workflow.actions.searchitunes",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "intercom",
+      "category": "device",
+      "apple_id": "is.workflow.actions.intercom",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getCurrentApp",
+      "category": "mac",
+      "apple_id": "is.workflow.actions.getcurrentapp",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getSelectedText",
+      "category": "mac",
+      "apple_id": "is.workflow.actions.getselectedtext",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getUpcomingEvents",
+      "category": "calendar",
+      "apple_id": "is.workflow.actions.getupcomingevents",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "addCalendar",
+      "category": "calendar",
+      "apple_id": "is.workflow.actions.addnewcalendar",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getType",
+      "category": "basic",
+      "apple_id": "is.workflow.actions.gettypeaction",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getTravelTime",
+      "category": "location",
+      "apple_id": "is.workflow.actions.gettraveltime",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "storeValue",
+      "category": "storage",
+      "apple_id": "is.workflow.actions.setstoredcontent",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getStoredValue",
+      "category": "storage",
+      "apple_id": "is.workflow.actions.getstoredcontent",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "deleteStoredValue",
+      "category": "storage",
+      "apple_id": "is.workflow.actions.deletestoredcontent",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "askModel",
+      "category": "intelligence",
+      "apple_id": "is.workflow.actions.askllm",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "askProModel",
+      "category": "intelligence",
+      "apple_id": "is.workflow.actions.askllm",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "askDeviceModel",
+      "category": "intelligence",
+      "apple_id": "is.workflow.actions.askllm",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    }
+  ]
+}
