@@ -1,0 +1,55 @@
+{
+  "sourceSha": "f3e32df0ae0eddc1aaad96628e70b8d5a759265c",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "batches": [
+    {
+      "batch": "formal",
+      "sourceSha": "f3e32df0ae0eddc1aaad96628e70b8d5a759265c",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "./tools/language-acceptance",
+        "-run",
+        "^Test(GeneratedDocumentation|ExecutableDocumentation)ProductionEvidence$",
+        "-count=1",
+        "-json",
+        "-timeout=8m"
+      ],
+      "exit": 0,
+      "seconds": 68.766,
+      "namedEvents": {
+        "pass": 2
+      },
+      "sha256": "251e091b4efd5da7c24d0c4a50ab33bb09184fd4959bc3d47e6f2bcffdd24042"
+    },
+    {
+      "batch": "skill-search",
+      "sourceSha": "f3e32df0ae0eddc1aaad96628e70b8d5a759265c",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        ".",
+        "-run",
+        "^TestP15D03.*$",
+        "-count=1",
+        "-json",
+        "-timeout=8m"
+      ],
+      "exit": 0,
+      "seconds": 14.843,
+      "namedEvents": {
+        "pass": 5
+      },
+      "sha256": "f16ce79f93a016fdb4e338e5a8c8e6d63510518eb10c3801caf5d494eb294766"
+    }
+  ],
+  "formalRequirements": [
+    "D01",
+    "D02"
+  ],
+  "formalTierRecords": 3,
+  "skillSearchScopeOnly": true,
+  "D03FormalStatus": "UNVERIFIED",
+  "scope": "Clean source; actual D01/D02 production contracts and5 Skill search controls. External docs37/caches12 have separate source/compiler receipts; no release/Apple/publication claim."
+}

@@ -38,3 +38,19 @@ search index, the installed Skill or iOS application behavior.
 Working-tree validations precede the implementation commit. Clean-SHA receipts
 are added separately. No Apple runtime, publication, installed-consumer or
 overall release completion is inferred from these documentation contracts.
+
+## Clean implementation receipt
+
+The dedicated producer ran on clean immutable f3e32df0ae0eddc1aaad96628e70b8d5a759265c
+(job_ebe020ae60be). D01 and D02 passed with exactly three tier records; every
+record binds that source and its actual named producer. The formal wrapper
+took68.766seconds and its JSONL SHA256 is
+251e091b4efd5da7c24d0c4a50ab33bb09184fd4959bc3d47e6f2bcffdd24042.
+Five independent Skill search controls then passed in14.843seconds. Source
+remained clean before and after both batches. Go Output fragments were joined
+per Test before parsing complete receipt lines.
+
+[evidence](evidence/p15-documentation-f3e32df/receipt.json) retains both scopes;
+D03 remains UNVERIFIED. The external docs runner's37 examples and12 cache
+controls are separate working validations until their docs commit is frozen.
+The179-obligation aggregate has not been manually increased from these results.
