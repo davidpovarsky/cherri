@@ -297,7 +297,7 @@ func (r *Runner) Record(id, group, req, level string, executedLevels []string, p
 
 	for _, el := range executedLevels {
 		if el == "packaging" || el == "skill-package" {
-			// skill-package tier must be emitted by skills/cherri-shortcuts/scripts/self-test.sh in skill-evidence.json
+			// A dedicated verified package producer supplies this tier; generic smoke records cannot.
 			continue
 		}
 		r.records = append(r.records, EvidenceRecord{
@@ -2027,11 +2027,7 @@ func (r *Runner) runDocs() {
 
 // Group 19: Skill
 func (r *Runner) runSkill() {
-	// K01: Complete updated package and self-test
-	skillFile := resolveRepoPath(filepath.Join("skills", "cherri-shortcuts", "SKILL.md"))
-	skillBytes, errSkill := os.ReadFile(skillFile)
-	k01Passed := errSkill == nil && len(skillBytes) > 100
-	r.Record("K01", "skill", "Complete updated package and unpacked self-test", "packaging", []string{"packaging"}, k01Passed, "PASSED", "skills/cherri-shortcuts/SKILL.md packaged with v2 architecture")
+	r.runSkillPackageRequirement()
 
 	r.runSkillInstallRequirement()
 	r.runSkillUpdateRequirement()

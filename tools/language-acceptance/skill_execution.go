@@ -3,6 +3,7 @@ package main
 // Real installs and isolated failures execute the production shell scripts with
 // actual compiler binaries, controlled Git refs and byte-preservation assertions.
 var skillProductionTests = map[string][]string{
+	"K01": {"TestP15K01UnpackedPackageContract"},
 	"K02": {"TestP15SkillFreshPinnedInstall", "TestP15K02ActualCacheAndBundleSelection"},
 	"K03": {
 		"TestP15SkillFreshPinnedInstall",
@@ -19,6 +20,7 @@ var skillProductionTests = map[string][]string{
 }
 
 var skillProductionPaths = map[string][]string{
+	"K01": {"tools/p10r15/package_skill.py", "p15_skill_packaging_test.go", "skills/cherri-shortcuts/scripts/self-test.sh", ".github/workflows/openminis-skill.yml"},
 	"K02": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "p15_skill_installation_test.go"},
 	"K03": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "p15_skill_installation_test.go", "p15_skill_signal_test.go"},
 	"K04": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh", "p15_skill_acceptance_test.go"},
@@ -42,4 +44,23 @@ func (r *Runner) runSkillUpdateRequirement() {
 }
 func (r *Runner) runSkillOfflineRequirement() {
 	r.runSkillProductionRequirement("K04", "Offline compatible cache and docs mismatch")
+}
+
+// The packaging tier is emitted only after actual archive verification, unpacked
+// execution and causal corruption tests. Generic Record intentionally omits it.
+func (r *Runner) runSkillPackageRequirement() {
+	tests := skillProductionTests["K01"]
+	passed, detail := executeNamedProductionTests(tests)
+	r.Record("K01", "skill", "Complete updated package and unpacked self-test", "packaging", []string{"skill-package"}, passed, "PASSED", detail)
+	result, exitCode := "failed", 1
+	if passed {
+		result, exitCode = "passed", 0
+	}
+	r.records = append(r.records, EvidenceRecord{
+		EvidenceID: "ev-local-K01-skill-package", Requirements: []string{"K01"},
+		Tier: "skill-package", ImplementationSHA: r.implSHA,
+		TestID:  "github.com/electrikmilk/cherri:" + tests[0],
+		Command: productionTestCommand(tests), ExitCode: exitCode, Result: result,
+		Assertions: map[string]string{"assertion": detail}, Detail: detail,
+	})
 }

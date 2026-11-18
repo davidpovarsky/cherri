@@ -398,65 +398,22 @@ printf '  [PASS] Scenario 10: branch advance did not alter pinned installed vers
 
 if [ -n "$EVIDENCE_OUT" ]; then
   mkdir -p "$(dirname -- "$EVIDENCE_OUT")"
-  IMPL_SHA="${GITHUB_SHA:-$(git -C "$SKILL_DIR/../.." rev-parse HEAD 2>/dev/null || printf '%s' "$MANIFEST_COMPILER_COMMIT")}"
+  # A wrapper smoke run does not itself prove ZIP integrity, real transactional
+  # installs, published docs or signing. Dedicated producers own those contracts.
   cat > "$EVIDENCE_OUT" <<EOF
 {
-  "records": [
-    {
-      "evidence_id": "ev-skill-self-test-packaging-$IMPL_SHA",
-      "requirements": ["K01", "RP42", "RP44", "RP45", "RP49", "BRG30"],
-      "tier": "skill-package",
-      "implementation_sha": "$IMPL_SHA",
-      "test_id": "skills/cherri-shortcuts/scripts/self-test.sh",
-      "exit_code": 0,
-      "result": "passed",
-      "assertions": {
-        "scenario_1_fresh_immutable_install": "passed",
-        "scenario_2_compatible_cached_offline": "passed",
-        "scenario_3_incompatible_cached_offline_rejected": "passed",
-        "scenario_4_compatible_cache_wins_over_stale_bundled": "passed",
-        "scenario_5_explicit_incompatible_cherri_bin_rejected": "passed",
-        "scenario_6_same_lang_wrong_schema_fp_rejected": "passed",
-        "scenario_7_missing_or_malformed_schema_fp_rejected": "passed",
-        "scenario_8_docs_sha_or_fp_mismatch_rejected": "passed",
-        "scenario_9_atomic_update_preserves_working_binary": "passed",
-        "scenario_10_branch_advance_preserves_pinned_commit": "passed",
-        "compiler_commit": "$MANIFEST_COMPILER_COMMIT",
-        "docs_commit": "$MANIFEST_DOCS_COMMIT",
-        "schema_fingerprint": "$MANIFEST_SCHEMA_FP",
-        "codec_fingerprint": "$MANIFEST_CODEC_FP",
-        "macro_fingerprint": "$MANIFEST_MACRO_FP"
-      },
-      "detail": "All 10 Skill packaging, compatibility, offline, mismatch, atomic update, and immutable ref scenarios passed"
-    },
-    {
-      "evidence_id": "ev-skill-self-test-integration-$IMPL_SHA",
-      "requirements": ["K02", "K03", "K04", "K05", "D03", "RP44", "RP45", "RP46", "BRG30"],
-      "tier": "integration",
-      "implementation_sha": "$IMPL_SHA",
-      "test_id": "skills/cherri-shortcuts/scripts/self-test.sh",
-      "exit_code": 0,
-      "result": "passed",
-      "assertions": {
-        "scenario_1_fresh_immutable_install": "passed",
-        "scenario_2_compatible_cached_offline": "passed",
-        "scenario_3_incompatible_cached_offline_rejected": "passed",
-        "scenario_4_compatible_cache_wins_over_stale_bundled": "passed",
-        "scenario_5_explicit_incompatible_cherri_bin_rejected": "passed",
-        "scenario_6_same_lang_wrong_schema_fp_rejected": "passed",
-        "scenario_7_missing_or_malformed_schema_fp_rejected": "passed",
-        "scenario_8_docs_sha_or_fp_mismatch_rejected": "passed",
-        "scenario_9_atomic_update_preserves_working_binary": "passed",
-        "scenario_10_branch_advance_preserves_pinned_commit": "passed",
-        "compiler_commit": "$MANIFEST_COMPILER_COMMIT",
-        "docs_commit": "$MANIFEST_DOCS_COMMIT",
-        "schema_fingerprint": "$MANIFEST_SCHEMA_FP",
-        "codec_fingerprint": "$MANIFEST_CODEC_FP",
-        "macro_fingerprint": "$MANIFEST_MACRO_FP"
-      },
-      "detail": "All 10 Skill CLI integration, offline cache, mismatch rejection, and atomic update scenarios passed"
-    }
-  ]
+  "records": [],
+  "observations": {
+    "status": "PASS_WRAPPER_SELF_TEST",
+    "actual_cli_operations": ["version", "actions", "catalog", "unsigned-build", "decompile", "recompile", "prepare-edit", "reject-AEA1-input"],
+    "mock_installation_scenarios": 10,
+    "declared_compiler_pin": "$MANIFEST_COMPILER_COMMIT",
+    "declared_docs_pin": "$MANIFEST_DOCS_COMMIT",
+    "schema_fingerprint": "$MANIFEST_SCHEMA_FP",
+    "codec_fingerprint": "$MANIFEST_CODEC_FP",
+    "macro_fingerprint": "$MANIFEST_MACRO_FP",
+    "scope": "Wrapper execution and mock installation controls only. Package integrity, actual installer transactions and full edit/sign contracts are separately verified."
+  }
 }
 EOF
 fi

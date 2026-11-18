@@ -25,7 +25,7 @@ permissions:
 jobs:
   build-test-package:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
 
     steps:
       - name: Live Activity · refresh
@@ -111,7 +111,7 @@ jobs:
         env:
           CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
           SKILL_DIR: ${{ github.workspace }}/skills/cherri-shortcuts
-        run: sh skills/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out dist/skill-evidence.json
+        run: sh skills/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out dist/skill-wrapper-observations.json
 
       - name: Verify isolated compiler and docs drift diagnostics
         env:
@@ -187,18 +187,53 @@ jobs:
           device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
-      - name: Test ARM64 binary in Alpine
+      - name: Package immutable source and pinned runtime
+        run: |
+          PIN=$(python3 -c 'import json; print(json.load(open("skills/cherri-shortcuts/compatibility-manifest.json"))["compilerCommit"])')
+          git fetch --no-tags origin "$PIN"
+          PINNED_SOURCE="$RUNNER_TEMP/cherri-skill-pinned-source"
+          git -c core.autocrlf=false clone --quiet --shared --no-checkout "$PWD" "$PINNED_SOURCE"
+          git -C "$PINNED_SOURCE" config core.autocrlf false
+          git -C "$PINNED_SOURCE" checkout --quiet --detach "$PIN"
+          test "$(git -C "$PINNED_SOURCE" rev-parse HEAD)" = "$PIN"
+          test -z "$(git -C "$PINNED_SOURCE" status --porcelain)"
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go -C "$PINNED_SOURCE" build -buildvcs=true -trimpath -ldflags='-s -w' -o "$PWD/dist/cherri-pinned-linux-arm64" .
+          test -z "$(git -C "$PINNED_SOURCE" status --porcelain)"
+          python3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind source --archive dist/cherri-shortcuts-skill-source.zip --report dist/skill-source-integrity.json
+          python3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --report dist/skill-runtime-integrity.json
+          python3 tools/p10r15/package_skill.py verify --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --unpack dist/unpacked-arm64 --report dist/skill-unpacked-integrity.json
+
+      - name: Test unpacked pinned ARM64 package in Alpine
         run: |
           docker run --rm --platform linux/arm64 \
             -v "$PWD:/repo" \
             alpine:3.22 \
             sh -c '
               apk add --no-cache git >/dev/null &&
-              chmod +x /repo/dist/cherri-linux-arm64 &&
-              CHERRI_BIN=/repo/dist/cherri-linux-arm64 \
-              SKILL_DIR=/repo/skills/cherri-shortcuts \
-              sh /repo/skills/cherri-shortcuts/scripts/self-test.sh --skip-setup
+              CHERRI_HOME=/tmp/cherri-package-empty-home \
+              SKILL_DIR=/repo/dist/unpacked-arm64/cherri-shortcuts \
+              sh /repo/dist/unpacked-arm64/cherri-shortcuts/scripts/self-test.sh --skip-setup --evidence-out /repo/dist/skill-package-arm64-observations.json
             '
+
+      - name: Execute actual package acceptance and retain scoped evidence
+        run: |
+          go test ./tools/language-acceptance -run '^TestSkillPackageProductionEvidence$' -count=1 -json -timeout=12m > dist/skill-package-producer.jsonl
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          receipts = []
+          for line in Path("dist/skill-package-producer.jsonl").read_text().splitlines():
+              event = json.loads(line)
+              output = event.get("Output", "")
+              marker = "P15_SKILL_PACKAGE_RECEIPT:"
+              if marker in output:
+                  receipts.append(json.loads(output.split(marker, 1)[1]))
+          assert len(receipts) == 1, "missing or duplicate actual package receipt"
+          receipt = receipts[0]
+          assert receipt["source_tree_clean"] and receipt["report"]["passed_cases"] == 1
+          assert all(record["requirements"] == ["K01"] for record in receipt["records"])
+          Path("dist/skill-evidence.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
 
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main
@@ -208,27 +243,6 @@ jobs:
           device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
-      - name: Package source and ready-to-import OpenMinis skill
-        run: |
-          rm -rf dist/package-source dist/package-arm64
-          mkdir -p dist/package-source dist/package-arm64/cherri-shortcuts/bin
-
-          cp -R skills/cherri-shortcuts dist/package-source/cherri-shortcuts
-          cp -R skills/cherri-shortcuts/. dist/package-arm64/cherri-shortcuts/
-          cp dist/cherri-linux-arm64 dist/package-arm64/cherri-shortcuts/bin/cherri
-          cp LICENSE dist/package-arm64/cherri-shortcuts/LICENSE.cherri
-
-          (
-            cd dist/package-source
-            zip -qry ../cherri-shortcuts-skill-source.zip cherri-shortcuts
-          )
-          (
-            cd dist/package-arm64
-            zip -qry ../cherri-shortcuts-openminis-arm64.zip cherri-shortcuts
-          )
-
-          ls -lh dist/*.zip dist/cherri-linux-*
-
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main
         continue-on-error: true
@@ -305,5 +319,11 @@ jobs:
             dist/cherri-linux-arm64
             dist/cherri-linux-amd64
             dist/skill-evidence.json
+            dist/skill-wrapper-observations.json
+            dist/skill-package-arm64-observations.json
+            dist/skill-source-integrity.json
+            dist/skill-runtime-integrity.json
+            dist/skill-unpacked-integrity.json
+            dist/skill-package-producer.jsonl
           if-no-files-found: error
           retention-days: 30

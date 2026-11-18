@@ -76,7 +76,6 @@ var incompleteLocalAssertions = map[string]string{
 	"D01":   "Fingerprint presence does not compare every generated signature with the schema.",
 	"D02":   "The selected docs test parses/analyzes examples; it does not execute their production compilation/runtime.",
 	"D03":   "File existence does not verify active fork docs, publication, and upstream separation.",
-	"K01":   "SKILL.md length does not unpack a package or run its self-test.",
 	"K05":   "Script length does not execute repair/build/import/edit/sign workflows.",
 	"CI01":  "Comparing two unequal literal strings does not execute a negative CI gate.",
 	"CI02":  "Nonempty IR for a runtime fixture is not an iOS runtime execution.",

@@ -39,7 +39,7 @@ func productionTestTimeout(required []string) time.Duration {
 		if strings.HasPrefix(name, "TestP15K03") {
 			return 12 * time.Minute
 		}
-		if strings.HasPrefix(name, "TestP15K02") || strings.HasPrefix(name, "TestP15K04") || name == "TestP15SkillFreshPinnedInstall" {
+		if strings.HasPrefix(name, "TestP15K01") || strings.HasPrefix(name, "TestP15K02") || strings.HasPrefix(name, "TestP15K04") || name == "TestP15SkillFreshPinnedInstall" {
 			budget = 6 * time.Minute
 		}
 	}

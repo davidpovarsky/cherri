@@ -19,3 +19,9 @@ func TestSkillUpdateProductionEvidence(t *testing.T) {
 		"P15_SKILL_UPDATE_RECEIPT:",
 		"Only exact clean pinned source installation, pre-execution download checksum, controlled late validation/promotion rollback and successful update. No power-loss, concurrent-reader, packaging, signing, or live-consumer claim.")
 }
+
+func TestSkillPackageProductionEvidence(t *testing.T) {
+	testNamedProductionEvidence(t, "K01", skillProductionTests["K01"], nil, (*Runner).runSkillPackageRequirement,
+		"P15_SKILL_PACKAGE_RECEIPT:",
+		"Only committed source/runtime ZIP inventory, actual clean pinned compiler provenance, unpacked real CLI self-test and rejected archive/source corruption. No remote installation, native runtime, signing or broad repair/release closure.")
+}

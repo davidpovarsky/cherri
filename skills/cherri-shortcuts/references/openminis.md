@@ -92,3 +92,20 @@ the primary behavior.
 - The macOS Shortcuts Toolkit SQLite database is not automatically available inside iSH. Decompile uses `--no-toolkit` by default. A user-supplied Toolkit DB can be used manually with Cherri's `--toolkit` option.
 - Third-party app actions depend on Cherri definitions, packages, raw actions, or a supplied Toolkit database.
 - Network is required for first source setup/docs cloning, package installation, Git packages, iCloud imports, and remote signing.
+
+## Package provenance and verification
+
+Ready-to-import packages contain the compiler from the immutable compilerCommit
+in compatibility-manifest.json. The ZIP includes its commit receipt and SHA-256
+digest, plus a package-manifest.json inventory of committed Skill files, source
+commit, docs pin and runtime platform. The source-only ZIP contains no compiler.
+
+The release workflow verifies ZIP bytes against the committed Git tree and
+trusted compiler build, then runs the existing self-test from the unpacked ARM64
+package. A current development compiler cannot be packaged under a different
+manifest pin merely because its language/schema capabilities happen to match.
+
+The wrapper self-test report distinguishes actual compile/decompile/prepare-edit
+checks from its ten mock installation scenarios. Dedicated acceptance producers
+cover package integrity and real installation failures; a wrapper smoke result
+does not claim signing, published docs or broader roadmap completion.

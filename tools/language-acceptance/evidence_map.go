@@ -114,7 +114,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	if hasLevel(tiers, "ci") {
 		*testIDs = append(*testIDs, "tools/language-acceptance:runCI", "github-actions:Build & Test", "github-actions:OpenMinis Skill")
 	}
-	if hasLevel(tiers, "skill-package") {
+	if hasLevel(tiers, "skill-package") && id != "K01" {
 		*testIDs = append(*testIDs, "skills/cherri-shortcuts/scripts/self-test.sh")
 	}
 }
