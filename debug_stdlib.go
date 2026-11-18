@@ -23,20 +23,24 @@ const debugQATraceVariableName = "__cherri_qa_trace"
 const debugQACollectorSentinel = "===CHERRI_QA_TRACE_NDJSON_V14==="
 
 type debugInstrumentationManifest struct {
-	inlineUUIDs    map[string]bool
-	collectorUUIDs map[string]bool
-	inlineIndices  map[int]bool
-	collectorIdxs  map[int]bool
+	inlineUUIDs     map[string]bool
+	collectorUUIDs  map[string]bool
+	inlineIndices   map[int]bool
+	collectorIdxs   map[int]bool
+	strippedOutputs map[string]string
+	strippedMacros  map[string]bool
 }
 
 var currentDebugInstrumentation debugInstrumentationManifest
 
 func resetDebugInstrumentationManifest() {
 	currentDebugInstrumentation = debugInstrumentationManifest{
-		inlineUUIDs:    make(map[string]bool),
-		collectorUUIDs: make(map[string]bool),
-		inlineIndices:  make(map[int]bool),
-		collectorIdxs:  make(map[int]bool),
+		inlineUUIDs:     make(map[string]bool),
+		collectorUUIDs:  make(map[string]bool),
+		inlineIndices:   make(map[int]bool),
+		collectorIdxs:   make(map[int]bool),
+		strippedOutputs: make(map[string]string),
+		strippedMacros:  make(map[string]bool),
 	}
 }
 

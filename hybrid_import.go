@@ -449,6 +449,10 @@ func resolveLegacyErrorSourceLine(src string) int {
 }
 
 func compileLegacySourceToRawMapInMemory(src string) (result map[string]any, err error) {
+	return compileLegacySourceToRawMapInMemoryWithProfile(src, BuildProfileDebug)
+}
+
+func compileLegacySourceToRawMapInMemoryWithProfile(src string, profile BuildProfile) (result map[string]any, err error) {
 	mobileCompileMu.Lock()
 	defer mobileCompileMu.Unlock()
 
@@ -484,7 +488,7 @@ func compileLegacySourceToRawMapInMemory(src string) (result map[string]any, err
 	contents = src
 
 	initParse()
-	generateShortcut()
+	generateShortcutWithProfile(profile)
 
 	merged := mergeWorkflowHeaderMapWithDialect(
 		"legacy",

@@ -167,6 +167,7 @@ func resetCompilerState() {
 	currentAction = actionReference{}
 	savedAction = actionReference{}
 	resetDebugInstrumentationManifest()
+	legacyActiveBuildProfile = BuildProfileDebug
 	appIds = nil
 	pasteables = nil
 	repeatItemIndex = 1

@@ -29,6 +29,7 @@ type CanonicalBackendSession struct {
 	hasRawWorkflow    bool
 	rawWorkflowExact  bool
 	exactActionParams map[int]bool
+	buildProfile      BuildProfile
 }
 
 func NewCanonicalBackendSession() *CanonicalBackendSession {
@@ -38,9 +39,10 @@ func NewCanonicalBackendSession() *CanonicalBackendSession {
 	sc.WFWorkflowTypes = schema.DefaultWorkflowTypes()
 	sc.WFWorkflowInputContentItemClasses = schema.DefaultInputContentItemClasses()
 	return &CanonicalBackendSession{
-		tx:       tx,
-		cleanup:  cleanup,
-		shortcut: sc,
+		tx:           tx,
+		cleanup:      cleanup,
+		shortcut:     sc,
+		buildProfile: BuildProfileDebug,
 	}
 }
 
@@ -138,11 +140,11 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 
 	if isDebugStdlibMacro(ident) {
 		macroName := ident
-		expanded, err := resolveDebugMacroCall(macroName, params, s.shortcut.WFWorkflowActions, call.OutputUUID, call.OutputName)
+		expanded, err := resolveCompilerMacroCall(macroName, params, s.shortcut.WFWorkflowActions, call.OutputUUID, call.OutputName, s.buildProfile)
 		if err != nil {
 			return "", err
 		}
-		if debugMacroRequestsDates(macroName, params) {
+		if s.buildProfile != BuildProfileRelease && debugMacroRequestsDates(macroName, params) {
 			withDates, _, backfillErr := backfillDebugLogDates(s.shortcut.WFWorkflowActions)
 			if backfillErr != nil {
 				return "", backfillErr
@@ -951,6 +953,9 @@ func (s *CanonicalBackendSession) BindImportQuestion(questionName string, wireKe
 }
 
 func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
+	if err := validateReleaseMacroReferences(s.shortcut.WFWorkflowActions, s.buildProfile); err != nil {
+		return nil, err
+	}
 	if s.hasRawWorkflow || len(s.rawWorkflow) > 0 {
 		if !s.rawWorkflowExact {
 			if len(s.shortcut.WFWorkflowTypes) == 0 {

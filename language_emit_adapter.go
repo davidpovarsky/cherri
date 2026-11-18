@@ -324,6 +324,15 @@ func collectV2CompileErrorLines(filePath string, content string) ([]int, error) 
 
 // CompileSourceToPlistWithModules compiles Cherri v2 source code with optional virtual modules.
 func CompileSourceToPlistWithModules(filePath string, content string, virtualModules map[string]string) ([]byte, error) {
+	return CompileSourceToPlistWithOptions(filePath, content, CompileOptions{VirtualModules: virtualModules})
+}
+
+// CompileSourceToPlistWithOptions applies an isolated build profile and module map.
+func CompileSourceToPlistWithOptions(filePath string, content string, options CompileOptions) ([]byte, error) {
+	var profile, profileErr = normalizeBuildProfile(options.BuildProfile)
+	if profileErr != nil {
+		return nil, profileErr
+	}
 	file := source.NewFile(source.DocumentID(filePath), filePath, 1, content)
 	parser := syntax.NewParser(file)
 	prog := parser.ParseProgram()
@@ -341,13 +350,14 @@ func CompileSourceToPlistWithModules(filePath string, content string, virtualMod
 	}
 
 	session := NewCanonicalBackendSession()
+	session.buildProfile = profile
 	defer session.Close()
 
 	lowerer := lower.NewLowererWithSession(reg, session)
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
 	lowerer.SetBaseFilePath(filePath)
-	if virtualModules != nil {
-		lowerer.SetVirtualModules(virtualModules)
+	if options.VirtualModules != nil {
+		lowerer.SetVirtualModules(options.VirtualModules)
 	}
 	lowerer.SetExprTypes(analyzer.ExprTypes())
 	if err := lowerer.LowerProgramToSession(prog); err != nil {
@@ -364,7 +374,11 @@ func CompileFileV2(filePath string, targetOutPath string, skipSign bool) error {
 		return err
 	}
 
-	plistBytes, err := CompileSourceToPlist(filePath, string(content))
+	var profile, profileErr = normalizeBuildProfile(BuildProfile(args.Value("build-profile")))
+	if profileErr != nil {
+		return profileErr
+	}
+	plistBytes, err := CompileSourceToPlistWithOptions(filePath, string(content), CompileOptions{BuildProfile: profile})
 	if err != nil {
 		return err
 	}

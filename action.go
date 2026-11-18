@@ -278,11 +278,11 @@ func makeAction(arguments []actionArgument, reference *WFActionReference) {
 			outputName = reference.CustomOutputName
 		}
 		macroName := currentAction.identifier
-		expanded, err := resolveDebugMacroCall(macroName, params, shortcut.WFWorkflowActions, outputUUID, outputName)
+		expanded, err := resolveCompilerMacroCall(macroName, params, shortcut.WFWorkflowActions, outputUUID, outputName, legacyActiveBuildProfile)
 		if err != nil {
 			exit(err.Error())
 		}
-		if debugMacroRequestsDates(macroName, params) {
+		if legacyActiveBuildProfile != BuildProfileRelease && debugMacroRequestsDates(macroName, params) {
 			withDates, inserted, backfillErr := backfillDebugLogDates(shortcut.WFWorkflowActions)
 			if backfillErr != nil {
 				exit(backfillErr.Error())

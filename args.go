@@ -32,6 +32,13 @@ func init() {
 		Description: "Create plist file, preprocessed file, print debug and stack traces.",
 	})
 	args.Register(args.Argument{
+		Name:         "build-profile",
+		Description:  "Compile diagnostic macros in debug (default), or omit them in release while preserving assertions and source effects.",
+		Values:       []string{"debug", "release"},
+		DefaultValue: "debug",
+		ExpectsValue: true,
+	})
+	args.Register(args.Argument{
 		Name:        "derive-uuids",
 		Description: "Output deterministic UUIDs.",
 	})

@@ -64,7 +64,12 @@ func main() {
 
 		initParse()
 
-		generateShortcut()
+		profile, profileErr := normalizeBuildProfile(BuildProfile(args.Value("build-profile")))
+		if profileErr != nil {
+			exit(profileErr.Error())
+			return
+		}
+		generateShortcutWithProfile(profile)
 
 		createShortcut()
 		return

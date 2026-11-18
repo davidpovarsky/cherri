@@ -31,6 +31,18 @@ func BuildWorkflowHeader() Shortcut {
 }
 
 func generateShortcut() {
+	generateShortcutWithProfile(BuildProfileDebug)
+}
+
+func generateShortcutWithProfile(profile BuildProfile) {
+	var selected, profileErr = normalizeBuildProfile(profile)
+	if profileErr != nil {
+		exit(profileErr.Error())
+		return
+	}
+	var previousProfile = legacyActiveBuildProfile
+	legacyActiveBuildProfile = selected
+	defer func() { legacyActiveBuildProfile = previousProfile }()
 	if args.Using("debug") {
 		fmt.Print("Generating Shortcut data...")
 	}
@@ -60,6 +72,9 @@ func generateShortcut() {
 	)
 
 	generateActions()
+	if err := validateReleaseMacroReferences(shortcut.WFWorkflowActions, selected); err != nil {
+		exit(err.Error())
+	}
 
 	// Must run after generateActions(): question.actionIndex is only populated
 	// once each action referencing it has actually been generated.
