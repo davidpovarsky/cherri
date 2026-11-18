@@ -4855,6 +4855,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	// Check native escape: native.action, action, rawAction
 	if actionName == "native.action" || actionName == "action" || actionName == "rawAction" {
 		uuid := l.GenerateUUID()
+		explicitOutputUUID := false
 		outputUUID := ""
 		if l.currentBindingName != "" {
 			outputUUID = uuid
@@ -4926,6 +4927,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					return nil, err
 				}
 				node.OutputUUID = fmt.Sprint(val)
+				explicitOutputUUID = true
 			} else if arg.Label == "outputName" || arg.Label == "customOutputName" {
 				val, err := l.lowerExpression(arg.Value)
 				if err != nil {
@@ -4956,7 +4958,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		if l.emitErr != nil {
 			return nil, l.emitErr
 		}
-		return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: uuid}, nil
+		return l.captureNativeActionResult(node, uuid, explicitOutputUUID)
 	}
 	if actionName == "native.plist" {
 		var targetExpr syntax.Expression

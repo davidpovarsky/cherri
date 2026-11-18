@@ -22,14 +22,16 @@ import (
 var v2LiteralInlineBraceRegex = regexp.MustCompile(`\{@?[a-zA-Z_][a-zA-Z0-9_]*(?:\['.*?'\])?(?:\..*?)?\}`)
 
 type CanonicalBackendSession struct {
-	tx                *BackendTransaction
-	cleanup           func()
-	shortcut          Shortcut
-	rawWorkflow       map[string]any
-	hasRawWorkflow    bool
-	rawWorkflowExact  bool
-	exactActionParams map[int]bool
-	buildProfile      BuildProfile
+	tx                       *BackendTransaction
+	cleanup                  func()
+	shortcut                 Shortcut
+	rawWorkflow              map[string]any
+	hasRawWorkflow           bool
+	rawWorkflowExact         bool
+	exactActionParams        map[int]bool
+	buildProfile             BuildProfile
+	nativeActionResults      map[string]*nativeActionResultBinding
+	exactNativeParameterMaps map[uintptr]bool
 }
 
 func NewCanonicalBackendSession() *CanonicalBackendSession {
@@ -65,6 +67,20 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	def, ident, ok := lookupCanonicalAction(call)
 	if !ok || def == nil {
 		return "", fmt.Errorf("canonical definition not found for action %q: typed actions must resolve canonically", call.DefinitionID)
+	}
+
+	// Resolve only compiler-private native result handles at this actual
+	// consumption boundary. Exact raw producer parameters remain untouched.
+	// Removed diagnostics have evaluated their argument effects, but emit no
+	// consumer; the existing profile path still validates their options below.
+	if s.buildProfile != BuildProfileRelease || !isRemovableDiagnosticMacro(ident) {
+		for index := range call.Arguments {
+			value, err := s.resolveNativeActionResultValue(call.Arguments[index].Value)
+			if err != nil {
+				return "", err
+			}
+			call.Arguments[index].Value = value.(backend.SemanticValue)
+		}
 	}
 
 	// Prepare arguments for canonical action matching definition parameters
@@ -355,6 +371,7 @@ func (s *CanonicalBackendSession) EmitExactRawAction(appleIdentifier string, par
 		}
 	}
 
+	s.rememberExactNativeParameters(clonedParams)
 	s.shortcut.WFWorkflowActions = append(s.shortcut.WFWorkflowActions, ShortcutAction{
 		WFWorkflowActionIdentifier: appleIdentifier,
 		WFWorkflowActionParameters: clonedParams,
@@ -543,7 +560,11 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 	}
 	cleanParams := make(map[string]any, len(params))
 	for k, v := range params {
-		cleanParams[k] = sanitizeRawParamValue(v)
+		resolved, err := s.resolveNativeActionResultValue(v)
+		if err != nil {
+			return "", err
+		}
+		cleanParams[k] = sanitizeRawParamValue(resolved)
 	}
 	for k, v := range cleanParams {
 		if k == "WFWorkflow" ||
@@ -816,9 +837,15 @@ func (s *CanonicalBackendSession) emitRaw(appleIdentifier string, params map[str
 }
 
 func (s *CanonicalBackendSession) RenameOutput(outputUUID string, newName string) {
+	if binding, found := s.nativeActionResults[outputUUID]; found {
+		if !binding.exact && binding.params != nil {
+			binding.params["CustomOutputName"] = newName
+		}
+		return
+	}
 	for i := range s.shortcut.WFWorkflowActions {
 		params := s.shortcut.WFWorkflowActions[i].WFWorkflowActionParameters
-		if params != nil {
+		if params != nil && !s.isExactNativeParameters(params) {
 			if uuid, ok := params["UUID"].(string); ok && uuid == outputUUID {
 				params["CustomOutputName"] = newName
 				return
@@ -964,6 +991,9 @@ func (s *CanonicalBackendSession) BindImportQuestion(questionName string, wireKe
 }
 
 func (s *CanonicalBackendSession) Finalize() ([]byte, error) {
+	if err := s.validateNativeActionResults(); err != nil {
+		return nil, err
+	}
 	if err := validateReleaseMacroReferences(s.shortcut.WFWorkflowActions, s.buildProfile); err != nil {
 		return nil, err
 	}
