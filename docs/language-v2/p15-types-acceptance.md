@@ -96,3 +96,7 @@ The analyzer now determines each branch's final explicit result with the existin
 TestP15T06ControlResultsRequireAllBranches covers ten negative/control variants, exact return diagnostics, complete compilation blocked before bytes, wrong-code rejection, verified-record positive branches/loops, and five actual mixed-control type/compile checks. The formal T06 producer now requires this test alongside its original authored-value and structural-relation tests.
 
 Validation before commit: job_4e31d2bac06d passed all T02/T06/T08 production tests in 0.276 seconds. Job_00866dd28cfe passed full analysis/service/lower packages (0.911 / 0.965 / 0.896 seconds), existing Require/Measure/ShortCircuit/GeneratedGuard matching tests (0.365 seconds), and all three formal type evidence producers (6.518 seconds). No native runtime or overall release closure is inferred.
+
+### Strengthened T06 exact execution
+
+Clean implementation commit b0d949f4914be45bc50dbd345ff0f475f248969d passed the strengthened formal T06 producer in Sentinel job job_16b88642fee9. Its actual command names all three required production tests, including the final-control-branch regression. The bounded unit report has one passed requirement, zero failed/skipped, and closure_complete=false. Receipt and raw-log digest are under evidence/p15-types-b0d949f.

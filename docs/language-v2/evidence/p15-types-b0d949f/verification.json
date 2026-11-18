@@ -1,0 +1,22 @@
+{
+  "source_sha": "b0d949f4914be45bc50dbd345ff0f475f248969d",
+  "source_tree_clean": true,
+  "sentinel_job": "job_16b88642fee9",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestTypeRecordProductionEvidence$"
+  ],
+  "exit_code": 0,
+  "raw_log_sha256": "edd1655cb4ddccf31b9703944d896cdd0b0e37d1658403d60d13044f232b81a6",
+  "raw_log_bytes": 7180,
+  "tests_passed": [
+    "TestTypeRecordProductionEvidence"
+  ],
+  "scope": "Strengthened T06 unit producer requires authored values, record relations and final-control-branch tests; no runtime validator or release closure"
+}
