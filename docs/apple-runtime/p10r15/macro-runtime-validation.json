@@ -1,0 +1,218 @@
+{
+  "schemaVersion": "1.0",
+  "stage": "P15 require / measure signed-runtime harness",
+  "status": "LOCAL_VERIFIED_APPLE_RUNTIME_PENDING",
+  "checks": {
+    "focusedGo": {
+      "topLevelPassed": 20,
+      "exitCode": 0,
+      "combinedGoBuildCLIDurationSeconds": 13.19
+    },
+    "pythonHarness": {
+      "testsPassed": 47,
+      "pythonExitCode": 0,
+      "durationSeconds": 14.656,
+      "combinedJobExitCodeBeforeWhitespaceFix": 2,
+      "followingWhitespaceFailure": "Only trailing blank lines at EOF; normalized and git diff --check subsequently passed"
+    },
+    "actualCLI": {
+      "compiledFixtures": 12,
+      "exitCode": 0,
+      "relativePathInvocationVerified": true,
+      "causalMutationsExpectedRejectionCount": 3
+    },
+    "bashSyntax": {
+      "exitCode": 0
+    },
+    "finalWhitespace": {
+      "exitCode": 0
+    }
+  },
+  "requiredDependencies": {
+    "scopedBlocks": "091d87aba174bf46c6e75d7db000d3d2f5399e25",
+    "require": "b4dcd69ba91a29c1db6011c9ca1ec3b966b0aec1",
+    "canonicalGetType": "cb1c5f3debd0ee757c1f84175af3cee4282dc015",
+    "nativePredicateFollowup": "5db2097c4d2c19d3e8bfdd4de16a730fb1ced3a7"
+  },
+  "appleRuntime": "NOT_RUN",
+  "swiftHarnessPlatformBuild": "NOT_RUN",
+  "physicalDevice": "BLOCKED_DEVICE",
+  "finalIntegratedCandidateMustBeRebuiltAndRun": true,
+  "verifiedAtUTC": "2026-11-18T03:34:37.058826+00:00",
+  "compilerWorkingTreeBaseCommit": "53250ef59c940cfaf21e57c3bfa53215b6fc018d",
+  "harnessValidatedBeforeCommit": true,
+  "sourceSha256": {
+    ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml": "4f98e3716ffb5c4243733d1f003b546da5d02daeda9702937f85269742580f14",
+    "scripts/ios27_shortcuts_simulator_qa.sh": "9ad7beaf7211336ce5e49dbc0c3dd194992c0fe58a83c5b2ad88bde202fb164a",
+    "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift": "611153a13bd22a9d7f8acddddb1930a26b67fd67769670e8ef7247a3b3a23d0d",
+    "tools/shortcuts-simulator-qa/fixtures/qa-short-circuit-v2.cherri": "ac71d4b09360e8793f167bb5b58b5df161ada9e5da15906c81735efff1de3147",
+    "tools/shortcuts-simulator-qa/test_runtime_callback_contract.py": "9d4cd9078370bce347108ca5b502eb75692bca80cdafc656cecf307991b4fe94",
+    "tools/shortcuts-simulator-qa/test_workflow_input_contract.py": "7bd791080c673d460d6f4cd20df5bbfccf00f358538389a773b6e96e84341402",
+    "tools/shortcuts-simulator-qa/fixtures/qa-require-v2.cherri": "728e5ff33382febb27980daeaf61323d2248185d758b52a2eae3d774960dc33f",
+    "tools/shortcuts-simulator-qa/fixtures/qa-measure-v2.cherri": "fc9f10474d5ce2ee7fd557f4b1bc48d72e2ae290c39679392d0448d9cd514879",
+    "tools/shortcuts-simulator-qa/fixtures/qa-measure-release-v2.cherri": "acdc671cff1426c1cfdf09fd29f505c8c3cb505fcfe28c68d9c9fbbffb6958ee",
+    "tools/shortcuts-simulator-qa/validate_macro_fixtures.py": "04c3e7084cc21e40b13d4c83f5e7bb3c26710a259946df3d231853ff0c2997a1",
+    "docs/apple-runtime/p10r15/macro-runtime-harness.md": "4cfe27fa2a211fbaac8db8ac3b0e44c2f5ebc71ba24aa177b390b5f9d40c7493",
+    "p15_macro_runtime_fixtures_test.go": "7ec777668a0d09d27e2d93350c7c716879da7d4b2858707120b15265d1733041"
+  },
+  "fixtures": [
+    {
+      "fixtureId": "qa-functional-v2",
+      "fileName": "qa-functional-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "53298882742b9b555e792cb025e3e563730f764b941363bae9dcef1efbd32940",
+      "unsignedPlistSha256": "9de8d69c7bd11e1628e47f08b1c94c700e1e40c7cdd2de28fcba1f6535433fa7",
+      "nativeActionCount": 33
+    },
+    {
+      "fixtureId": "qa-functional-legacy",
+      "fileName": "qa-functional-legacy.cherri",
+      "dialect": "legacy",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "e09dc606678740e5bdba32d6dd0c98b02da9cbb88b45cd2bfa419f8d1ed76b72",
+      "unsignedPlistSha256": "a657f1a608bf69a382f126d0b54133b5589ca69946cf2b130c31ac40ecebad30",
+      "nativeActionCount": 34
+    },
+    {
+      "fixtureId": "qa-scroll-editor-v2",
+      "fileName": "qa-scroll-editor-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "e8991ab412f0bbe8cdff2a0a0ca3b02c684cfdd36997e3477730e69d690cfec0",
+      "unsignedPlistSha256": "319174e063380fb61638468bec6549c152ad70007f4687ab14396d145b03930f",
+      "nativeActionCount": 35
+    },
+    {
+      "fixtureId": "qa-scroll-editor-legacy",
+      "fileName": "qa-scroll-editor-legacy.cherri",
+      "dialect": "legacy",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "7fda9c4c5286e109a8beeac40645aa97270b98a3b11f6577bd8a1d358ad50182",
+      "unsignedPlistSha256": "b130891d2a328bac254266a00862ff7e6727eddb0de4ddb9a3e9d9a4a5b98d0b",
+      "nativeActionCount": 36
+    },
+    {
+      "fixtureId": "qa-rtl-hebrew-v2",
+      "fileName": "qa-rtl-hebrew-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "86b6cb30135129e8ff7809a38541512fc07071cfb1247bac72ad11dde53957ce",
+      "unsignedPlistSha256": "567175c3177a420e2d76faafb33e056da05122d7071539bb3d8cee0900db7376",
+      "nativeActionCount": 18
+    },
+    {
+      "fixtureId": "qa-bool-list-v2",
+      "fileName": "qa-bool-list-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "8337913a2b3b888bdfbba1abbfc28ddc8ce63b87a7383531a3ac03cab0b49e00",
+      "unsignedPlistSha256": "d244a0e8da65182c0ac3f716c7e9d24fe0d6c15c645fe9a48eb32a3631161546",
+      "nativeActionCount": 30
+    },
+    {
+      "fixtureId": "qa-short-circuit-v2",
+      "fileName": "qa-short-circuit-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "ac71d4b09360e8793f167bb5b58b5df161ada9e5da15906c81735efff1de3147",
+      "unsignedPlistSha256": "32b004d2e12fbc606d7154549802eb90e71a522a06d8f450637a21a919be85cc",
+      "nativeActionCount": 154
+    },
+    {
+      "fixtureId": "qa-require-v2",
+      "fileName": "qa-require-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "728e5ff33382febb27980daeaf61323d2248185d758b52a2eae3d774960dc33f",
+      "unsignedPlistSha256": "d98252efc9e2dcad5617371648bf2a9a34da72a150669d7f335cc978e034f6ee",
+      "nativeActionCount": 143
+    },
+    {
+      "fixtureId": "qa-measure-v2",
+      "fileName": "qa-measure-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "fc9f10474d5ce2ee7fd557f4b1bc48d72e2ae290c39679392d0448d9cd514879",
+      "unsignedPlistSha256": "3d89c8adedc6c9af0ce28f43ed0cf2fbcdcafa66251c6aa59a09228b34117826",
+      "nativeActionCount": 66
+    },
+    {
+      "fixtureId": "qa-measure-release-v2",
+      "fileName": "qa-measure-release-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "release",
+      "runtimeTraceExpectation": "ABSENT_RELEASE",
+      "releaseDiagnosticActionsAbsent": true,
+      "releaseBodyShapeVerified": true,
+      "sourceSha256": "acdc671cff1426c1cfdf09fd29f505c8c3cb505fcfe28c68d9c9fbbffb6958ee",
+      "unsignedPlistSha256": "b0c9b188d92e87fef1e92bd887e66b51a070b4a00e02409906e50c049432a291",
+      "nativeActionCount": 38
+    },
+    {
+      "fixtureId": "qa-functional-v2-uninstrumented",
+      "fileName": "qa-functional-v2-uninstrumented.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "5f5154796bcc02ae092826748f288fce41406a7934af1f4c8d7a5c2bdbc8dadc",
+      "unsignedPlistSha256": "49ac4f2388a46e629b80ad510bf6bb77d77df174d371ebff8a501cf00fd41bd2",
+      "nativeActionCount": 16
+    },
+    {
+      "fixtureId": "qa-functional-legacy-uninstrumented",
+      "fileName": "qa-functional-legacy-uninstrumented.cherri",
+      "dialect": "legacy",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "f3c364e784c0f42058f0e3d5eee1de06a64e78f81d7ba3062f4fdf3e48bbbf7e",
+      "unsignedPlistSha256": "8fd100f7c687c397bdc875fe1d152e740d2b566130e8a85337da813fc1062745",
+      "nativeActionCount": 17
+    }
+  ],
+  "causalCompileMutations": {
+    "ignored-release-profile": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "missing-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "duplicated-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    }
+  }
+}

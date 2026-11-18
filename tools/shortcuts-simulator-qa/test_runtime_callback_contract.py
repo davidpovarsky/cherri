@@ -20,6 +20,14 @@ class CallbackContractTests(unittest.TestCase):
         start = script.index("<<'PY'\n", start) + len("<<'PY'\n")
         end = script.index("\nPY\n", start)
         cls.assertion_program = script[start:end]
+        start = script.index("# Write summary.json and docs/report.md")
+        start = script.index("<<'PY'\n", start) + len("<<'PY'\n")
+        end = script.index("\nPY\n", start)
+        cls.summary_program = script[start:end]
+        start = script.index('if [ "$REQUIRE_RUNTIME" = "true" ]; then')
+        start = script.index("<<'PY'\n", start) + len("<<'PY'\n")
+        end = script.index("\nPY\n", start)
+        cls.required_program = script[start:end]
 
     def event(self):
         records = [
@@ -32,12 +40,23 @@ class CallbackContractTests(unittest.TestCase):
                 "expectedShortcutName": "qa-unit", "runId": "fresh-run", "status": "SUCCESS",
                 "resultSummary": "CHERRI_QA_EXPECTED", "tracePayload": "\n".join(map(json.dumps, records))}
 
-    def verify(self, events):
+    def manifest(self, fid="qa-unit"):
+        release = fid == "qa-measure-release-v2"
+        return {"syntheticOnly": True, "compilerCommitSha": "a" * 40, "fixtures": [{
+            "fixtureId": fid, "buildProfile": "release" if release else "debug",
+            "runtimeTraceExpectation": "ABSENT_RELEASE" if release else "REQUIRED_NDJSON",
+            "releaseDiagnosticActionsAbsent": release, "releaseBodyShapeVerified": release,
+            "sourceSha256": "b" * 64, "unsignedPlistSha256": "c" * 64,
+        }]}
+
+    def verify(self, events, fid="qa-unit", expected="CHERRI_QA_EXPECTED", manifest=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "events.json").write_text(json.dumps(events), encoding="utf-8")
+            (root / "manifest.json").write_text(json.dumps(self.manifest(fid) if manifest is None else manifest), encoding="utf-8")
             result = subprocess.run([sys.executable, "-c", self.program, str(root / "events.json"),
-                                     "fresh-run", "qa-unit", "CHERRI_QA_EXPECTED", str(root / "trace.jsonl")],
+                                     "fresh-run", fid, expected, str(root / "trace.jsonl"),
+                                     str(root / "manifest.json"), "a" * 40],
                                     capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
             return json.loads(result.stdout)
@@ -115,16 +134,20 @@ class CallbackContractTests(unittest.TestCase):
             self.assertEqual(self.verify([event])["traceGate"], "FAIL_RUNTIME", (key, value))
         self.assertEqual(self.verify([self.event()])["traceGate"], "PASS")
 
-    def report(self, events, run_status="PASS"):
+    def report(self, events, run_status="PASS", fid="qa-unit", expected="CHERRI_QA_EXPECTED",
+               trace_status="PASS", oracle=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "runtime").mkdir()
             (root / "runtime/callback-events.json").write_text(json.dumps(events), encoding="utf-8")
             result = subprocess.run([sys.executable, "-c", self.assertion_program, str(root), run_status,
-                                     "PASS", "PASS", "synthetic diagnostic", "qa-unit", "CHERRI_QA_EXPECTED", "fresh-run"],
+                                     "PASS", trace_status, "synthetic diagnostic", fid, expected, "fresh-run",
+                                     json.dumps(self.verify(events, fid, expected) if oracle is None else oracle)],
                                     capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
-            return json.loads((root / "runtime/output-assertions.json").read_text(encoding="utf-8"))
+            report = json.loads((root / "runtime/output-assertions.json").read_text(encoding="utf-8"))
+            report["_traceFileText"] = (root / "runtime/runtime-trace.jsonl").read_text(encoding="utf-8")
+            return report
 
     def test_report_requires_same_callback_identity_and_oracle_acceptance(self):
         report = self.report([self.event()])
@@ -149,6 +172,123 @@ class CallbackContractTests(unittest.TestCase):
             report = self.report([event], "FAIL_RUNTIME")
             self.assertEqual(report["observedCorrelatedCallbackStatus"], status)
             self.assertFalse(report["compiledShortcutCallbackVerified"])
+
+    release_id = "qa-measure-release-v2"
+    release_expected = "CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
+
+    def release_event(self):
+        event = self.event()
+        event.update(fixtureId=self.release_id, expectedShortcutName=self.release_id,
+                     resultSummary=self.release_expected, tracePayload=None)
+        return event
+
+    def verify_release(self, events, manifest=None):
+        return self.verify(events, self.release_id, self.release_expected, manifest)
+
+    def test_release_absence_is_explicit_and_not_a_trace_pass(self):
+        for payload in (None, ""):
+            event = self.release_event()
+            event["tracePayload"] = payload
+            result = self.verify_release([event])
+            self.assertEqual(result["runGate"], "PASS")
+            self.assertEqual(result["traceGate"], "NOT_APPLICABLE_RELEASE")
+            self.assertIs(result["releaseBuildVerified"], True)
+            report = self.report([event], fid=self.release_id, expected=self.release_expected,
+                                 trace_status="NOT_APPLICABLE_RELEASE")
+            self.assertIs(report["runtimeContractVerified"], True)
+            self.assertEqual(report["traceObserved"], "ABSENT")
+            self.assertEqual(report["_traceFileText"], "")
+        event = self.event()
+        event["tracePayload"] = None
+        self.assertEqual(self.verify([event])["traceGate"], "FAIL_RUNTIME")
+
+    def test_release_unexpected_trace_and_nontext_values_fail(self):
+        for payload in (" ", "garbage", self.event()["tracePayload"], False, 0, [], {}):
+            event = self.release_event()
+            event["tracePayload"] = payload
+            self.assertEqual(self.verify_release([event])["runGate"], "FAIL_RUNTIME", payload)
+
+    def test_release_exact_callback_identity_output_and_no_replay_still_required(self):
+        for key, value in (("eventSource", "receiver-self-test"), ("receiverSelfTest", True),
+                           ("runId", "stale"), ("fixtureId", "qa-measure-v2"),
+                           ("expectedShortcutName", "qa-measure-v2"), ("status", "ERROR"),
+                           ("status", "CANCELLED"), ("resultSummary", "P15_MEASURE_RELEASE_OK")):
+            event = self.release_event()
+            event[key] = value
+            self.assertEqual(self.verify_release([event])["runGate"], "FAIL_RUNTIME", key)
+        self.assertEqual(self.verify_release([self.release_event(), self.release_event()])["runGate"], "FAIL_RUNTIME")
+
+    def test_release_requires_exact_compiler_profile_manifest_proof(self):
+        for key, value in (("buildProfile", "debug"), ("runtimeTraceExpectation", "REQUIRED_NDJSON"),
+                           ("releaseDiagnosticActionsAbsent", False), ("releaseBodyShapeVerified", False),
+                           ("sourceSha256", ""), ("unsignedPlistSha256", "wrong"),
+                           ("fixtureId", "qa-measure-v2")):
+            manifest = self.manifest(self.release_id)
+            manifest["fixtures"][0][key] = value
+            self.assertEqual(self.verify_release([self.release_event()], manifest)["runGate"], "FAIL_RUNTIME", key)
+        for key, value in (("compilerCommitSha", "stale"), ("syntheticOnly", False), ("fixtures", [])):
+            manifest = self.manifest(self.release_id)
+            manifest[key] = value
+            self.assertEqual(self.verify_release([self.release_event()], manifest)["runGate"], "FAIL_RUNTIME", key)
+        manifest = self.manifest(self.release_id)
+        manifest["fixtures"].append(manifest["fixtures"][0].copy())
+        self.assertEqual(self.verify_release([self.release_event()], manifest)["runGate"], "FAIL_RUNTIME")
+        manifest = self.manifest()
+        manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE",
+                                        releaseDiagnosticActionsAbsent=True, releaseBodyShapeVerified=True)
+        event = self.event()
+        event["tracePayload"] = None
+        self.assertEqual(self.verify([event], manifest=manifest)["runGate"], "FAIL_RUNTIME")
+
+    def test_release_report_cannot_promote_missing_or_mismatched_oracle(self):
+        oracle = self.verify_release([self.release_event()])
+        for key, value in (("releaseBuildVerified", False), ("buildProfile", "debug"),
+                           ("traceGate", "PASS"), ("targetFixtureId", "qa-unit"), ("runGate", "FAIL_RUNTIME")):
+            wrong = {**oracle, key: value}
+            report = self.report([self.release_event()], fid=self.release_id, expected=self.release_expected,
+                                 trace_status="NOT_APPLICABLE_RELEASE", oracle=wrong)
+            self.assertFalse(report["runtimeContractVerified"], key)
+            self.assertFalse(report["compiledShortcutCallbackVerified"], key)
+
+    def summarize(self, report, trace_status="NOT_APPLICABLE_RELEASE", run_status="PASS"):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "runtime").mkdir()
+            (root / "docs").mkdir()
+            (root / "runtime/output-assertions.json").write_text(json.dumps(report), encoding="utf-8")
+            gates = ["PASS"] * 14
+            gates[8] = "EDITOR_CAPTURE_COMPLETE"
+            gates[10] = run_status
+            gates[12] = trace_status
+            gates[13] = "BLOCKED_DEVICE"
+            result = subprocess.run([sys.executable, "-c", self.summary_program, str(root), "synthetic-run", "a" * 40,
+                                     "true", *gates, ""], capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            summary_path = root / "summary.json"
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            required = subprocess.run([sys.executable, "-c", self.required_program, str(summary_path)],
+                                      capture_output=True, text=True, timeout=10)
+            return summary, required.returncode
+
+    def test_summary_and_required_gate_only_accept_verified_release_absence(self):
+        report = self.report([self.release_event()], fid=self.release_id, expected=self.release_expected,
+                             trace_status="NOT_APPLICABLE_RELEASE")
+        summary, code = self.summarize(report)
+        self.assertEqual(code, 0)
+        self.assertEqual(summary["gates"]["TRACE_CAPTURED"], "NOT_APPLICABLE_RELEASE")
+        self.assertEqual(summary["releaseReadiness"], "RUNTIME_VERIFIED_EDITOR_NEEDS_REVIEW")
+        for key, value in (("runtimeContractVerified", False), ("targetFixtureId", "qa-unit"),
+                           ("compilerCommitSha", "stale"), ("buildProfile", "debug"),
+                           ("traceObserved", "NDJSON_VERIFIED"), ("releaseBuildVerified", False)):
+            summary, code = self.summarize({**report, key: value})
+            self.assertEqual(code, 1, key)
+            self.assertEqual(summary["gates"]["TRACE_CAPTURED"], "FAIL_RUNTIME", key)
+        self.assertEqual(self.summarize(report, run_status="FAIL_RUNTIME")[1], 1)
+        self.assertEqual(self.summarize(report, trace_status="PASS")[1], 1)
+        normal_report = self.report([self.event()])
+        self.assertEqual(self.summarize(normal_report, trace_status="PASS")[1], 0)
+        self.assertEqual(self.summarize({**normal_report, "compilerCommitSha": "stale"}, trace_status="PASS")[1], 1)
+        self.assertEqual(self.summarize(normal_report)[1], 1)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,23 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "require")
+var verdict = "P15_REQUIRE_OK"
+let zero = require(0, type: "number", nonEmpty: true, message: "number zero rejected")
+if zero != 0 { verdict = "P15_REQUIRE_ZERO" }
+let flag = require(false, nonEmpty: true, message: "false rejected")
+if flag { verdict = "P15_REQUIRE_FALSE" }
+let textValue = require(text("typed"), type: "text", nonEmpty: true, message: "text rejected")
+if textValue != "typed" { verdict = "P15_REQUIRE_TEXT" }
+let dictionary = require({"key": "typed"}, type: "dictionary", nonEmpty: true, message: "dictionary rejected")
+if dictionary["key"] != "typed" { verdict = "P15_REQUIRE_DICTIONARY" }
+let singleton = require([""], nonEmpty: true, message: "singleton list rejected")
+if count(singleton) != 1 { verdict = "P15_REQUIRE_LIST" }
+let nativeFile = base64Decode("AQ==")
+let fileValue = require(nativeFile, nonEmpty: true, message: "file rejected")
+if count(fileValue) != 1 { verdict = "P15_REQUIRE_FILE" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "require")
+let traceEnvelope = debugExportTrace(runId: "qa-require-v2")
+let finalSummary = text(f"CHERRI_QA_REQUIRE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

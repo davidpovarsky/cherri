@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit) ;;
+  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-require|qa-measure|qa-measure-release) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -76,6 +76,24 @@ GATE_PHYSICAL_DEVICE_TESTED="BLOCKED_DEVICE"
 
 # Select primary target fixture from SAMPLE_ID
 case "$SAMPLE_ID" in
+  qa-require)
+    TARGET_FIXTURE_ID="qa-require-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-require-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_REQUIRE_RESULT:P15_REQUIRE_OK"
+    ;;
+  qa-measure)
+    TARGET_FIXTURE_ID="qa-measure-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-measure-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_MEASURE_RESULT:P15_MEASURE_OK"
+    ;;
+  qa-measure-release)
+    TARGET_FIXTURE_ID="qa-measure-release-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-measure-release-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
+    ;;
   qa-short-circuit)
     TARGET_FIXTURE_ID="qa-short-circuit-v2"
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
@@ -121,6 +139,8 @@ LEGACY_COUNTERPART_SOURCE="$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures/${LEG
 # ---------------------------------------------------------------------------
 echo "=== Phase 0: Building Cherri & Compiling Synthetic Fixtures ==="
 go build -o "$ARTIFACT_DIR/builds/cherri" .
+BUILD_RC=$?
+if [ "$BUILD_RC" -ne 0 ]; then exit "$BUILD_RC"; fi
 
 python3 - "$ROOT_DIR" "$ARTIFACT_DIR" "$SOURCE_SHA" <<'PY'
 import hashlib
@@ -144,6 +164,9 @@ fixture_specs = [
     ("qa-rtl-hebrew-v2", "qa-rtl-hebrew-v2.cherri", "v2"),
     ("qa-bool-list-v2", "qa-bool-list-v2.cherri", "v2"),
     ("qa-short-circuit-v2", "qa-short-circuit-v2.cherri", "v2"),
+    ("qa-require-v2", "qa-require-v2.cherri", "v2"),
+    ("qa-measure-v2", "qa-measure-v2.cherri", "v2"),
+    ("qa-measure-release-v2", "qa-measure-release-v2.cherri", "v2"),
     ("qa-functional-v2-uninstrumented", "qa-functional-v2-uninstrumented.cherri", "v2"),
     ("qa-functional-legacy-uninstrumented", "qa-functional-legacy-uninstrumented.cherri", "legacy"),
 ]
@@ -151,7 +174,20 @@ fixture_specs = [
 manifest_entries = []
 compiled_actions_by_id = {}
 
+def native_strings(value):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            yield from native_strings(key)
+            yield from native_strings(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from native_strings(item)
+
 for fid, fname, dialect in fixture_specs:
+    profile = "release" if fid == "qa-measure-release-v2" else "debug"
+    trace_expectation = "ABSENT_RELEASE" if profile == "release" else "REQUIRED_NDJSON"
     fpath = os.path.join(fixtures_dir, fname)
     with open(fpath, "rb") as f:
         src_bytes = f.read()
@@ -161,7 +197,7 @@ for fid, fname, dialect in fixture_specs:
     shutil.copyfile(fpath, build_src)
     out_base = os.path.join(builds_dir, fid)
     out_shortcut = out_base + ".shortcut"
-    cmd = [cherri_bin, build_src, "--skip-sign", f"--output={out_shortcut}"]
+    cmd = [cherri_bin, build_src, "--skip-sign", f"--output={out_shortcut}", f"--build-profile={profile}"]
     if dialect == "legacy":
         cmd.append("--legacy")
     proc = subprocess.run(cmd, cwd=builds_dir, capture_output=True, text=True)
@@ -176,10 +212,30 @@ for fid, fname, dialect in fixture_specs:
     compiled_actions_by_id[fid] = actions
 
     action_ids = [a.get("WFWorkflowActionIdentifier", "") for a in actions]
+    release_diagnostics_absent = False
+    release_body_verified = False
+    if profile == "release":
+        # Inspect the emitted graph independently of the CLI flag. An ignored
+        # profile flag must not permit the absence of runtime trace evidence.
+        release_diagnostics_absent = not any(
+            "__cherri_debug_" in item or "__cherri_qa_trace" in item
+            or item == "is.workflow.actions.gettimebetweendates"
+            for item in native_strings(actions)
+        )
+        release_body_verified = (
+            action_ids.count("is.workflow.actions.delay") == 1
+            and action_ids.count("is.workflow.actions.dictionary") == 1
+        )
+        if not release_diagnostics_absent or not release_body_verified:
+            raise RuntimeError("Release measure fixture retained diagnostics or lost/duplicated its native body")
     manifest_entries.append({
         "fixtureId": fid,
         "fileName": fname,
         "dialect": dialect,
+        "buildProfile": profile,
+        "runtimeTraceExpectation": trace_expectation,
+        "releaseDiagnosticActionsAbsent": release_diagnostics_absent,
+        "releaseBodyShapeVerified": release_body_verified,
         "sourceSha256": src_sha256,
         "unsignedPlistSha256": plist_sha256,
         "nativeActionCount": len(actions),
@@ -317,6 +373,8 @@ for dialect in ("v2", "legacy"):
 with open(os.path.join(artifact_dir, "runtime", "instrumentation-vs-original.json"), "w", encoding="utf-8") as f:
     json.dump({"schemaVersion": "1.4", "comparisons": comparisons}, f, indent=2)
 PY
+FIXTURE_COMPILE_RC=$?
+if [ "$FIXTURE_COMPILE_RC" -ne 0 ]; then exit "$FIXTURE_COMPILE_RC"; fi
 
 # ---------------------------------------------------------------------------
 # Phase 1: Preflight & Runner / Simulator Discovery
@@ -1670,43 +1728,97 @@ PY
       fi
 
       # Evaluate callback & NDJSON trace using strict oracle rules (never hardcode BLOCKED_IMPORT!)
-      RUNTIME_EVAL="$(python3 - "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" <<'PY'
-import json, sys
+      RUNTIME_EVAL="$(python3 - "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" "$ARTIFACT_DIR/compiler-manifest.json" "$SOURCE_SHA" <<'PY'
+import json, re, sys
 
-cb_path, expected_nonce, expected_trace_run_id, expected_out, trace_out_path = sys.argv[1:6]
+cb_path, expected_nonce, expected_trace_run_id, expected_out, trace_out_path, manifest_path, expected_sha = sys.argv[1:8]
+profile = "UNKNOWN"
+trace_expectation = "REQUIRED_NDJSON"
+release_build_verified = False
+source_sha256 = ""
+unsigned_sha256 = ""
+
+def result(run_gate, trace_gate, reason):
+    print(json.dumps({
+        "runGate": run_gate, "traceGate": trace_gate, "reason": reason,
+        "targetFixtureId": expected_trace_run_id, "compilerCommitSha": expected_sha,
+        "buildProfile": profile, "traceExpectation": trace_expectation,
+        "releaseBuildVerified": release_build_verified,
+        "sourceSha256": source_sha256, "unsignedPlistSha256": unsigned_sha256,
+    }))
+
+try:
+    manifest = json.load(open(manifest_path, encoding="utf-8"))
+    assert re.fullmatch(r"[0-9a-f]{40}", expected_sha) and expected_nonce
+    assert manifest.get("syntheticOnly") is True and manifest.get("compilerCommitSha") == expected_sha
+    fixtures = manifest.get("fixtures")
+    assert isinstance(fixtures, list) and all(isinstance(f, dict) for f in fixtures)
+    entries = [f for f in fixtures if f.get("fixtureId") == expected_trace_run_id]
+    assert len(entries) == 1
+    fixture = entries[0]
+    source_sha256 = fixture.get("sourceSha256", "")
+    unsigned_sha256 = fixture.get("unsignedPlistSha256", "")
+    assert isinstance(source_sha256, str) and re.fullmatch(r"[0-9a-f]{64}", source_sha256)
+    assert isinstance(unsigned_sha256, str) and re.fullmatch(r"[0-9a-f]{64}", unsigned_sha256)
+    profile = fixture.get("buildProfile")
+    trace_expectation = fixture.get("runtimeTraceExpectation")
+    if expected_trace_run_id == "qa-measure-release-v2":
+        assert expected_out == "CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
+        assert profile == "release" and trace_expectation == "ABSENT_RELEASE"
+        assert fixture.get("releaseDiagnosticActionsAbsent") is True
+        assert fixture.get("releaseBodyShapeVerified") is True
+        release_build_verified = True
+    else:
+        assert profile == "debug" and trace_expectation == "REQUIRED_NDJSON"
+except (OSError, ValueError, TypeError, AttributeError, AssertionError) as exc:
+    result("FAIL_RUNTIME", "FAIL_RUNTIME", f"compiler manifest/runtime profile contract rejected: {type(exc).__name__}")
+    sys.exit(0)
 try:
     events = json.load(open(cb_path, encoding="utf-8"))
 except Exception as exc:
-    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": f"failed to read callback-events.json: {exc}"}))
+    result("FAIL_RUNTIME", "FAIL_RUNTIME", f"failed to read callback-events.json: {exc}")
     sys.exit(0)
 
 if not isinstance(events, list) or not all(isinstance(e, dict) for e in events):
-    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": "callback store is not an array of event objects"}))
+    result("FAIL_RUNTIME", "FAIL_RUNTIME", "callback store is not an array of event objects")
     sys.exit(0)
 
 matched = [e for e in events if not e.get("receiverSelfTest") and e.get("runId") == expected_nonce]
 if len(matched) == 0:
-    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": f"no non-self-test callback for runId {expected_nonce}"}))
+    result("FAIL_RUNTIME", "FAIL_RUNTIME", f"no non-self-test callback for runId {expected_nonce}")
     sys.exit(0)
 if len(matched) > 1:
-    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": f"duplicate callback replay ({len(matched)}) for runId {expected_nonce}"}))
+    result("FAIL_RUNTIME", "FAIL_RUNTIME", f"duplicate callback replay ({len(matched)}) for runId {expected_nonce}")
     sys.exit(0)
 
 ev = matched[0]
 if ev.get("receiverSelfTest") is not False or ev.get("eventSource") != "shortcuts-x-callback" or ev.get("fixtureId") != expected_trace_run_id or ev.get("expectedShortcutName") != expected_trace_run_id:
-    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": "callback source or fixture identity mismatch"}))
+    result("FAIL_RUNTIME", "FAIL_RUNTIME", "callback source or fixture identity mismatch")
     sys.exit(0)
 if ev.get("status") != "SUCCESS":
-    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": f"callback status={ev.get('status')} error={ev.get('errorMessage')}"}))
+    result("FAIL_RUNTIME", "FAIL_RUNTIME", f"callback status={ev.get('status')} error={ev.get('errorMessage')}")
     sys.exit(0)
 
-summary_text = ev.get("resultSummary") or ""
-trace_text = ev.get("tracePayload") or ""
+summary_text = ev.get("resultSummary")
+trace_text = ev.get("tracePayload")
+# Codable omits nil optional tracePayload when no trace was returned. False,
+# zero, lists and dictionaries are not accepted as an absent trace.
+if trace_text is None:
+    trace_text = ""
 if not isinstance(summary_text, str) or not isinstance(trace_text, str):
-    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": "callback result/trace must be text"}))
+    result("FAIL_RUNTIME", "FAIL_RUNTIME", "callback result/trace must be text")
     sys.exit(0)
 if expected_out and summary_text.strip() != expected_out:
-    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": "callback result does not exactly match expected output"}))
+    result("FAIL_RUNTIME", "FAIL_RUNTIME", "callback result does not exactly match expected output")
+    sys.exit(0)
+
+if release_build_verified:
+    if trace_text != "":
+        result("FAIL_RUNTIME", "FAIL_RUNTIME", "unexpected trace in the explicit Release fixture")
+    else:
+        # An empty file is absence evidence, never a fabricated collector event.
+        open(trace_out_path, "w", encoding="utf-8").close()
+        result("PASS", "NOT_APPLICABLE_RELEASE", "verified Release build, exact fresh body/result callback and absent trace")
     sys.exit(0)
 
 # Validate NDJSON trace lines
@@ -1772,12 +1884,12 @@ if not trace_err and (not has_begin or not has_end or inline_count == 0):
     trace_err = f"incomplete trace stream (begin={has_begin}, end={has_end}, inlineCount={inline_count})"
 
 if trace_err:
-    print(json.dumps({"runGate": "PASS", "traceGate": "FAIL_RUNTIME", "reason": trace_err}))
+    result("PASS", "FAIL_RUNTIME", trace_err)
 else:
     with open(trace_out_path, "w", encoding="utf-8") as tf:
         for r in valid_records:
             tf.write(json.dumps(r, ensure_ascii=False) + "\n")
-    print(json.dumps({"runGate": "PASS", "traceGate": "PASS", "reason": "verified correlated callback output and NDJSON trace"}))
+    result("PASS", "PASS", "verified correlated callback output and NDJSON trace")
 PY
 )"
       GATE_SHORTCUT_RUN_COMPLETED="$(echo "$RUNTIME_EVAL" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("runGate","FAIL_RUNTIME"))')"
@@ -1891,12 +2003,18 @@ fi
 rm -rf "$ARTIFACT_DIR/builds" "$ARTIFACT_DIR/tests/"*.log "$ARTIFACT_DIR/tests/"*.xcresult "${QA_SCRATCH_DIR:-}" "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
 
 # Write output-assertions.json and runtime-trace.jsonl
-python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "${EXEC_RUN_NONCE:-}" <<'PY'
+python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "${EXEC_RUN_NONCE:-}" "${RUNTIME_EVAL:-}" <<'PY'
 import json
 import os
 import sys
 
-artifact_dir, run_status, cb_status, trace_status, reason, fid, expected_out, expected_nonce = sys.argv[1:9]
+artifact_dir, run_status, cb_status, trace_status, reason, fid, expected_out, expected_nonce, oracle_json = sys.argv[1:10]
+try:
+    oracle = json.loads(oracle_json)
+    if not isinstance(oracle, dict):
+        oracle = {}
+except (ValueError, TypeError):
+    oracle = {}
 cb_path = os.path.join(artifact_dir, "runtime", "callback-events.json")
 events = []
 if os.path.exists(cb_path):
@@ -1918,6 +2036,27 @@ shortcut_cb_ok = (run_status == "PASS" and len(correlated) == 1
                   and correlated[0].get("status") == "SUCCESS"
                   and isinstance(correlated[0].get("resultSummary"), str)
                   and correlated[0]["resultSummary"].strip() == expected_out)
+release_trace_absent = (len(correlated) == 1
+                        and (correlated[0].get("tracePayload") is None
+                             or correlated[0].get("tracePayload") == ""))
+release_contract = (fid == "qa-measure-release-v2"
+                    and expected_out == "CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
+                    and oracle.get("targetFixtureId") == fid
+                    and oracle.get("buildProfile") == "release"
+                    and oracle.get("traceExpectation") == "ABSENT_RELEASE"
+                    and oracle.get("releaseBuildVerified") is True
+                    and oracle.get("runGate") == "PASS"
+                    and oracle.get("traceGate") == "NOT_APPLICABLE_RELEASE"
+                    and trace_status == "NOT_APPLICABLE_RELEASE"
+                    and release_trace_absent)
+normal_contract = (fid != "qa-measure-release-v2" and trace_status == "PASS"
+                   and oracle.get("targetFixtureId") == fid
+                   and oracle.get("buildProfile") == "debug"
+                   and oracle.get("traceExpectation") == "REQUIRED_NDJSON"
+                   and oracle.get("runGate") == "PASS" and oracle.get("traceGate") == "PASS")
+runtime_contract_verified = shortcut_cb_ok and (release_contract or normal_contract)
+if fid == "qa-measure-release-v2" and not release_contract:
+    shortcut_cb_ok = False
 observed_status = correlated[0].get("status") if len(correlated) == 1 else None
 if observed_status not in ("SUCCESS", "ERROR", "CANCELLED"):
     observed_status = "UNKNOWN"
@@ -1925,6 +2064,14 @@ if observed_status not in ("SUCCESS", "ERROR", "CANCELLED"):
 assertions = {
     "schemaVersion": "1.5",
     "targetFixtureId": fid,
+    "compilerCommitSha": oracle.get("compilerCommitSha", "UNKNOWN"),
+    "compiledSourceSha256": oracle.get("sourceSha256", ""),
+    "unsignedPlistSha256": oracle.get("unsignedPlistSha256", ""),
+    "buildProfile": oracle.get("buildProfile", "UNKNOWN"),
+    "traceExpectation": oracle.get("traceExpectation", "REQUIRED_NDJSON"),
+    "releaseBuildVerified": oracle.get("releaseBuildVerified") is True,
+    "runtimeContractVerified": runtime_contract_verified,
+    "traceObserved": "ABSENT" if release_contract else ("NDJSON_VERIFIED" if normal_contract else "UNVERIFIED"),
     "expectedRunId": expected_nonce,
     "expectedSemanticOutput": expected_out,
     "shortcutRunCompletedGate": run_status,
@@ -1945,6 +2092,9 @@ with open(os.path.join(artifact_dir, "runtime", "output-assertions.json"), "w", 
 trace_jsonl_path = os.path.join(artifact_dir, "runtime", "runtime-trace.jsonl")
 if not os.path.exists(trace_jsonl_path):
     with open(trace_jsonl_path, "w", encoding="utf-8") as f:
+        if fid == "qa-measure-release-v2":
+            # No collector is executed by the Release fixture.
+            sys.exit(0)
         f.write(json.dumps({
             "schemaVersion": "1.4",
             "kind": "COLLECTOR_EVENT",
@@ -2028,12 +2178,38 @@ if gates["SHORTCUT_EXISTS_IN_LIBRARY"] != "PASS":
     gates["SHORTCUT_RUN_ATTEMPTED"] = gates["SHORTCUT_EXISTS_IN_LIBRARY"]
     gates["SHORTCUT_RUN_COMPLETED"] = gates["SHORTCUT_EXISTS_IN_LIBRARY"]
     gates["TRACE_CAPTURED"] = gates["SHORTCUT_EXISTS_IN_LIBRARY"]
-if gates["SHORTCUT_RUN_COMPLETED"] != "PASS" and gates["TRACE_CAPTURED"] == "PASS":
+if gates["SHORTCUT_RUN_COMPLETED"] != "PASS" and gates["TRACE_CAPTURED"] in ("PASS", "NOT_APPLICABLE_RELEASE"):
+    gates["TRACE_CAPTURED"] = "FAIL_RUNTIME"
+
+try:
+    assertions = json.load(open(os.path.join(artifact_dir, "runtime", "output-assertions.json"), encoding="utf-8"))
+    if not isinstance(assertions, dict):
+        assertions = {}
+except (OSError, ValueError):
+    assertions = {}
+release_absence_verified = (
+    assertions.get("targetFixtureId") == "qa-measure-release-v2"
+    and assertions.get("compilerCommitSha") == sha
+    and assertions.get("buildProfile") == "release"
+    and assertions.get("traceExpectation") == "ABSENT_RELEASE"
+    and assertions.get("traceObserved") == "ABSENT"
+    and assertions.get("releaseBuildVerified") is True
+    and assertions.get("runtimeContractVerified") is True
+)
+normal_trace_verified = (gates["TRACE_CAPTURED"] == "PASS"
+                         and assertions.get("targetFixtureId") != "qa-measure-release-v2"
+                         and assertions.get("compilerCommitSha") == sha
+                         and assertions.get("buildProfile") == "debug"
+                         and assertions.get("traceExpectation") == "REQUIRED_NDJSON"
+                         and assertions.get("runtimeContractVerified") is True)
+trace_requirement_met = (normal_trace_verified
+                         or (gates["TRACE_CAPTURED"] == "NOT_APPLICABLE_RELEASE" and release_absence_verified))
+if gates["TRACE_CAPTURED"] in ("PASS", "NOT_APPLICABLE_RELEASE") and not trace_requirement_met:
     gates["TRACE_CAPTURED"] = "FAIL_RUNTIME"
 
 if (
     gates["SHORTCUT_RUN_COMPLETED"] == "PASS"
-    and gates["TRACE_CAPTURED"] == "PASS"
+    and trace_requirement_met
     and gates["ACTION_EDITOR_CAPTURED"] == "EDITOR_CAPTURE_COMPLETE"
 ):
     readiness = "READY_SIMULATOR_VERIFIED"
@@ -2075,6 +2251,11 @@ summary = {
     "runId": run_id,
     "compilerCommitSha": sha,
     "requireRuntime": (req_rt == "true"),
+    "targetFixtureId": assertions.get("targetFixtureId", "UNKNOWN"),
+    "buildProfile": assertions.get("buildProfile", "UNKNOWN"),
+    "traceExpectation": assertions.get("traceExpectation", "REQUIRED_NDJSON"),
+    "traceRequirementMet": trace_requirement_met,
+    "runtimeContractVerified": assertions.get("runtimeContractVerified") is True,
     "releaseReadiness": readiness,
     "privacyGatePassed": privacy_passed,
     "privacyScope": "SYNTHETIC_TEXT_AND_BYTE_PATTERNS_ONLY",
@@ -2116,8 +2297,28 @@ echo "=== QA Run Complete: $ARTIFACT_DIR/summary.json ==="
 cat "$ARTIFACT_DIR/summary.json"
 
 if [ "$REQUIRE_RUNTIME" = "true" ]; then
-  if [ "$GATE_SHORTCUT_RUN_COMPLETED" != "PASS" ] || [ "$GATE_TRACE_CAPTURED" != "PASS" ]; then
-    echo "ERROR: require_runtime=true but SHORTCUT_RUN_COMPLETED=$GATE_SHORTCUT_RUN_COMPLETED TRACE_CAPTURED=$GATE_TRACE_CAPTURED" >&2
-    exit 1
-  fi
+  python3 - "$ARTIFACT_DIR/summary.json" <<'PY'
+import json, sys
+
+summary = json.load(open(sys.argv[1], encoding="utf-8"))
+gates = summary.get("gates", {})
+release_absence = (summary.get("targetFixtureId") == "qa-measure-release-v2"
+                   and summary.get("buildProfile") == "release"
+                   and summary.get("traceExpectation") == "ABSENT_RELEASE"
+                   and summary.get("runtimeContractVerified") is True
+                   and summary.get("traceRequirementMet") is True
+                   and gates.get("TRACE_CAPTURED") == "NOT_APPLICABLE_RELEASE")
+normal_trace = (summary.get("targetFixtureId") != "qa-measure-release-v2"
+                and summary.get("buildProfile") == "debug"
+                and summary.get("traceExpectation") == "REQUIRED_NDJSON"
+                and summary.get("traceRequirementMet") is True
+                and gates.get("TRACE_CAPTURED") == "PASS")
+if (gates.get("SHORTCUT_RUN_COMPLETED") != "PASS"
+        or summary.get("runtimeContractVerified") is not True
+        or not (normal_trace or release_absence)):
+    print("ERROR: require_runtime=true but exact runtime/trace contract was not verified", file=sys.stderr)
+    sys.exit(1)
+PY
+  REQUIRE_RUNTIME_RC=$?
+  if [ "$REQUIRE_RUNTIME_RC" -ne 0 ]; then exit "$REQUIRE_RUNTIME_RC"; fi
 fi

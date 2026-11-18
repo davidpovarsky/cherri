@@ -143,7 +143,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
 
     private static let allowlistedPrefixes: [String] = [
         "CHERRI_QA_", "ANCHOR_", "qa.", "qa-functional", "qa-scroll-editor",
-        "qa-rtl-hebrew", "qa-bool-list", "qa-short-circuit", "Cherri QA", "===CHERRI_QA_TRACE_NDJSON_V14===",
+        "qa-rtl-hebrew", "qa-bool-list", "qa-short-circuit", "qa-require", "qa-measure", "Cherri QA", "===CHERRI_QA_TRACE_NDJSON_V14===",
         "ElementType_", "Vertical scroll bar", "Horizontal scroll bar",
         "_TtGC7SwiftUI", "More, qa-", "More, New Shortcut", "Edit, New Shortcut",
         "Edit, qa-", "Open, qa-", "Play, qa-", "Preparing support for"

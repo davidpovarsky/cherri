@@ -39,6 +39,12 @@ class WorkflowInputContractTests(unittest.TestCase):
             result = self.validate(["full", "ipad-default", "qa-functional-legacy", "false", pages, "true"])
             self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_only_explicit_macro_fixture_choices_are_accepted(self):
+        for fixture in ("qa-require", "qa-measure", "qa-measure-release"):
+            self.assertEqual(self.validate(["full", "ipad-default", fixture, "true", "20", "true"]).returncode, 0)
+        for fixture in ("qa-unit-release", "qa-functional-release", "qa-measure-release;exit 0"):
+            self.assertEqual(self.validate(["full", "ipad-default", fixture, "true", "20", "true"]).returncode, 2)
+
     def test_out_of_range_noncanonical_and_overflow_are_rejected(self):
         for pages in ("0", "21", "01", "-1", "1.0", " 1", "1 ", "9" * 200, "1\n2", "$(exit 0)"):
             result = self.validate(["full", "ipad-default", "qa-bool-list", "true", pages, "true"])

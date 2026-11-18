@@ -6,9 +6,11 @@ var truth = true
 var verdict = "P15_F01_OK"
 if flag { verdict = "P15_FALSE_AS_PRESENT" }
 if !truth { verdict = "P15_NEGATED_TRUE" }
-if flag == true && run("CHERRI_P15_MISSING_AND", input: true) == true { verdict = "P15_AND_BRANCH" }
+if flag == true && run("CHERRI_P15_MISSING_AND", input: true) == true {
+    verdict = "P15_AND_BRANCH"
+}
 if truth == true || run("CHERRI_P15_MISSING_OR", input: true) == true {
-    comment("CHERRI_QA_OR_CORRECT")
+    comment("CHERRI_QA_P15_OR_CORRECT")
 } else {
     verdict = "P15_OR_BRANCH"
 }
@@ -17,6 +19,18 @@ let b = true || (run("CHERRI_P15_STATIC_OR", input: true) == true)
 if a { verdict = "P15_STATIC_AND" }
 if !b { verdict = "P15_STATIC_OR" }
 if (flag && truth) || !truth { verdict = "P15_PRECEDENCE" }
+let helperFalse: Bool = isTrue(flag)
+if helperFalse { verdict = "P15_HELPER_FALSE" }
+if !isTrue(truth) { verdict = "P15_NEGATED_IS_TRUE" }
+if !isFalse(flag) { verdict = "P15_NEGATED_IS_FALSE" }
+let sample = text("alpha")
+if modern: truth == true && !(sample beginsWith "z") {
+    comment("CHERRI_QA_P15_NEGATED_PREFIX_CORRECT")
+} else {
+    verdict = "P15_NEGATED_PREFIX"
+}
+let range: Bool = isBetween(2, 1, 3)
+if !range { verdict = "P15_RANGE_VALUE" }
 comment("ANCHOR_CARD_15_MID_CENTER")
 debugTraceEvent(stage: "after", label: "short-circuit")
 let traceEnvelope = debugExportTrace(runId: "qa-short-circuit-v2")

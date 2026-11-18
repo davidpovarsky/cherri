@@ -1,0 +1,25 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+var verdict = "P15_MEASURE_RELEASE_OK"
+var outerRuns = 0
+var innerRuns = 0
+let payload = measure("same-label") {
+    outerRuns += 1
+    wait(1)
+    let inner = measure("same-label") {
+        innerRuns += 1
+        let nativeValue = {"name": "body", "flag": false, "items": ["first", "second"]}
+        nativeValue
+    }
+    inner
+}
+let name = getValue(dictionary: payload, key: "name")
+let items = getValue(dictionary: payload, key: "items")
+let itemCount = count(items)
+if name != "body" { verdict = "P15_MEASURE_WRONG_VALUE" }
+if itemCount != 2 { verdict = "P15_MEASURE_WRONG_LIST" }
+if outerRuns != 1 { verdict = "P15_MEASURE_OUTER_COUNT" }
+if innerRuns != 1 { verdict = "P15_MEASURE_INNER_COUNT" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+let finalSummary = text(f"CHERRI_QA_MEASURE_RELEASE_RESULT:{verdict}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

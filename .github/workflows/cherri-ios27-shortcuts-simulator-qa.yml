@@ -46,6 +46,9 @@ on:
           - qa-functional-legacy
           - qa-bool-list
           - qa-short-circuit
+          - qa-require
+          - qa-measure
+          - qa-measure-release
           - qa-scroll-editor
           - qa-rtl-hebrew
       capture_full_editor:
@@ -59,7 +62,7 @@ on:
         default: "20"
         type: string
       require_runtime:
-        description: "Fail closed with non-zero exit if SHORTCUT_RUN_COMPLETED or TRACE_CAPTURED is not PASS"
+        description: "Require exact runtime proof and NDJSON trace, or verified trace absence for the explicit Release fixture"
         required: false
         default: false
         type: boolean
