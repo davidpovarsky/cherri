@@ -1,0 +1,40 @@
+{
+  "change": "debugExport semantic text segments use EncodeTextSegmentsShared; the exporter has no separate text wire serializer.",
+  "initialObservation": {
+    "cause": "The first test inspected json.Marshal of plist-tag-only structs, whose JSON keys do not represent native plist wire keys.",
+    "diagnostic": "canonical Unicode text serialization changed",
+    "exitCode": 1,
+    "job": "job_35f015d90143",
+    "resolution": "Decode actual plist serialization, preserving exact Unicode text, UTF-16 ranges {7, 1}/{11, 1}, producer UUIDs and output names. No native payload expectation was relaxed.",
+    "test": "TestP15DebugExportCanonicalTextCodecUTF16Identity"
+  },
+  "nativeExecuted": 0,
+  "nativeLimit": "Shared codec and graph/model validation do not prove Shortcuts execution, Content Graph cardinality or native file contents.",
+  "schemaVersion": 1,
+  "sourceParentCommit": "c9577977477295ae38c6dddd71c35812f486a5eb",
+  "status": "PASS_SOURCE_AND_MODEL_ONLY",
+  "validatedFileSha256": {
+    "debug_export.go": "069d17a9808f421980628972079ba0807ff6cedf65ae8e9e3ce728e7f9ad92f9",
+    "p15_debug_export_test.go": "4f62b14f8b0ebcfdc1d6b04b465d31bdfe8a0e2e7d32bbc4968e4f5e4a426d7c",
+    "shared_codec.go": "400db0c068bab109b3988dc2ef073e9b93c64e6e037be28e81cf0ff5836afb8a"
+  },
+  "verified": {
+    "causalFaults": 6,
+    "cliCompiles": 16,
+    "cliNegatives": 16,
+    "exactNativeActionRoundtrips": 16,
+    "exitCode": 0,
+    "goCommand": "go test -json -count=1 -run TestP15DebugExport .",
+    "goElapsedSeconds": 0.49,
+    "goFailEvents": 0,
+    "goLogSha256": "fbc76a731e45d39d842558eba13025667c02ebc96880a40d4f894f7aa9e0138d",
+    "goPassEvents": 14,
+    "goSkipEvents": 0,
+    "goTopLevelPass": 6,
+    "independentModelCases": 80,
+    "job": "job_656325e6052d",
+    "nativeProbeCompiles": 12,
+    "producerCommand": "py -3 -X utf8 tools/p10r15/verify_debug_export.py --repo .",
+    "producerEvidence": "docs/apple-runtime/p10r15/debug-export-validation.json"
+  }
+}

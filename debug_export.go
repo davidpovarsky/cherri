@@ -95,31 +95,29 @@ func (b *debugExportExpansion) produce(id string, params map[string]any) WFTextT
 	return debugOutputRef(out)
 }
 
-// Every dynamic field in an export JSON string is output from native Base64
-// Encode with line breaks disabled. No raw user value is interpolated into JSON.
-// A string chunk is authored by this compiler; a Value chunk is an exact native
-// reference. Offsets use Apple's UTF-16 attachment ranges.
-func debugExportTextToken(parts ...any) map[string]any {
-	var content strings.Builder
-	attachments := make(map[string]any)
+// Every dynamic JSON field is native Base64 Encode output with no line breaks.
+// This helper only assembles semantic segments; the canonical shared codec owns
+// serialization, placeholder creation and UTF-16 attachment ranges.
+func debugExportTextToken(parts ...any) any {
+	segments := make([]backend.TextSegment, 0, len(parts))
 	for _, part := range parts {
 		switch value := part.(type) {
 		case string:
-			content.WriteString(value)
+			segments = append(segments, backend.TextSegment{Text: value})
 		case WFTextTokenAttachment:
-			key := fmt.Sprintf("{%d, 1}", utf16CodeUnitCount(content.String()))
-			content.WriteString("\uFFFC")
-			attachments[key] = value.Value
+			ref := value.Value
+			if value.WFSerializationType != "WFTextTokenAttachment" || ref.Type != "ActionOutput" ||
+				ref.OutputUUID == "" || len(ref.Aggrandizements) != 0 {
+				panic("debug export requires an exact untransformed internal output reference")
+			}
+			segments = append(segments, backend.TextSegment{IsExpr: true, Reference: &backend.Reference{
+				Kind: backend.RefActionResult, ProducerID: ref.OutputUUID, ProducerName: ref.OutputName,
+			}})
 		default:
-			panic("invalid internal debug export token component")
+			panic("invalid internal debug export text segment")
 		}
 	}
-	return map[string]any{
-		"WFSerializationType": "WFTextTokenString",
-		"Value": map[string]any{
-			"string": content.String(), "attachmentsByRange": attachments,
-		},
-	}
+	return EncodeTextSegmentsShared(segments)
 }
 
 func (b *debugExportExpansion) base64(input any) WFTextTokenAttachment {

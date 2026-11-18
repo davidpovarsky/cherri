@@ -10,6 +10,7 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/types"
+	"howett.net/plist"
 )
 
 func TestP15DebugExportCanonicalNativeMetadata(t *testing.T) {
@@ -185,5 +186,33 @@ func TestP15DebugExportRedactionRejectsNilAndDynamic(t *testing.T) {
 				t.Fatalf("nonliteral option %s=%T accepted; it must not weaken default redaction", key, raw)
 			}
 		}
+	}
+}
+
+func TestP15DebugExportCanonicalTextCodecUTF16Identity(t *testing.T) {
+	encoded, err := plist.Marshal(debugExportTextToken("\u05e9\u05dc\u05d5\u05dd\U0001f352 ", debugOutputRefNamed("EXACT-A", "Value-A"), " / ", debugOutputRefNamed("EXACT-B", "Value-B")), plist.XMLFormat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var token map[string]any
+	if _, err := plist.Unmarshal(encoded, &token); err != nil {
+		t.Fatal(err)
+	}
+	value := debugParamMap(token["Value"])
+	if token["WFSerializationType"] != "WFTextTokenString" || value["string"] != "\u05e9\u05dc\u05d5\u05dd\U0001f352 \uFFFC / \uFFFC" {
+		t.Fatal("canonical Unicode text serialization changed")
+	}
+	ranges := debugParamMap(value["attachmentsByRange"])
+	if len(ranges) != 2 {
+		t.Fatal("attachment count changed")
+	}
+	for key, expected := range map[string]string{"{7, 1}": "A", "{11, 1}": "B"} {
+		ref := debugParamMap(ranges[key])
+		if ref["Type"] != "ActionOutput" || ref["OutputUUID"] != "EXACT-"+expected || ref["OutputName"] != "Value-"+expected {
+			t.Fatalf("canonical UTF-16 range or exact UUID/name changed: %s %v", key, ref)
+		}
+	}
+	if literal := debugExportTextToken("literal", " only"); literal != "literal only" {
+		t.Fatalf("literal-only text bypassed canonical normalization: %v", literal)
 	}
 }
