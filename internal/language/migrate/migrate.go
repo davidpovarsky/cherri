@@ -348,6 +348,7 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 	}
 
 	var outLines []string
+	legacyBindingLines := make(map[int]string)
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
 
@@ -374,6 +375,7 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 			case "bool", "boolean":
 				defVal = " = false"
 			}
+			legacyBindingLines[len(outLines)+1] = varName
 			outLines = append(outLines, fmt.Sprintf("%svar %s: %s%s", indent, varName, typeName, defVal))
 			continue
 		}
@@ -466,6 +468,7 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 						keyword = "var"
 					}
 					line = fmt.Sprintf("%s%s %s =%s", indent, keyword, varName, rhs)
+					legacyBindingLines[len(outLines)+1] = varName
 				} else {
 					line = fmt.Sprintf("%s%s =%s", indent, varName, rhs)
 				}
@@ -635,6 +638,7 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 	p := syntax.NewParser(file)
 	prog := p.ParseProgram()
 	if len(p.Errors()) == 0 {
+		preserveLegacyOptionalBindings(prog, result, legacyBindingLines, strings.Count(outHeader.String(), "\n"), reg)
 		return syntax.Format(prog), diags, nil
 	}
 
