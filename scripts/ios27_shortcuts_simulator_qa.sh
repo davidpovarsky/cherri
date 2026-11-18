@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
+  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -159,6 +159,30 @@ case "$SAMPLE_ID" in
     EXPECTED_SHORTCUT_NAME="qa-measure-release-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
     ;;
+  qa-f01-diag-counter)
+    TARGET_FIXTURE_ID="qa-f01-diag-counter-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-f01-diag-counter-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F01_DIAG_COUNTER:calls=1"
+    ;;
+  qa-f01-diag-predicate)
+    TARGET_FIXTURE_ID="qa-f01-diag-predicate-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-f01-diag-predicate-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F01_DIAG_PREDICATE:P15_F01_PREDICATE_OK"
+    ;;
+  qa-f01-diag-control)
+    TARGET_FIXTURE_ID="qa-f01-diag-control-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-f01-diag-control-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F01_DIAG_CONTROL:P15_F01_CONTROL_OK:calls=1"
+    ;;
+  qa-f01-diag-logic)
+    TARGET_FIXTURE_ID="qa-f01-diag-logic-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-f01-diag-logic-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F01_DIAG_LOGIC:P15_F01_LOGIC_OK"
+    ;;
   qa-short-circuit-local)
     TARGET_FIXTURE_ID="qa-short-circuit-local-v2"
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
@@ -245,6 +269,10 @@ fixture_specs = [
     ("qa-bool-list-v2", "qa-bool-list-v2.cherri", "v2"),
     ("qa-short-circuit-v2", "qa-short-circuit-v2.cherri", "v2"),
     ("qa-short-circuit-local-v2", "qa-short-circuit-local-v2.cherri", "v2"),
+    ("qa-f01-diag-counter-v2", "qa-f01-diag-counter-v2.cherri", "v2"),
+    ("qa-f01-diag-predicate-v2", "qa-f01-diag-predicate-v2.cherri", "v2"),
+    ("qa-f01-diag-control-v2", "qa-f01-diag-control-v2.cherri", "v2"),
+    ("qa-f01-diag-logic-v2", "qa-f01-diag-logic-v2.cherri", "v2"),
     ("qa-require-v2", "qa-require-v2.cherri", "v2"),
     ("qa-measure-v2", "qa-measure-v2.cherri", "v2"),
     ("qa-measure-release-v2", "qa-measure-release-v2.cherri", "v2"),

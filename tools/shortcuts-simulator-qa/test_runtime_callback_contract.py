@@ -80,6 +80,29 @@ class CallbackContractTests(unittest.TestCase):
         manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE")
         self.assertEqual(self.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
 
+    def test_f01_diagnostic_success_needs_exact_fresh_result_and_trace(self):
+        cases = {
+            "qa-f01-diag-counter-v2": "CHERRI_QA_F01_DIAG_COUNTER:calls=1",
+            "qa-f01-diag-predicate-v2": "CHERRI_QA_F01_DIAG_PREDICATE:P15_F01_PREDICATE_OK",
+            "qa-f01-diag-control-v2": "CHERRI_QA_F01_DIAG_CONTROL:P15_F01_CONTROL_OK:calls=1",
+            "qa-f01-diag-logic-v2": "CHERRI_QA_F01_DIAG_LOGIC:P15_F01_LOGIC_OK"
+        }
+        for fid, expected in cases.items():
+            with self.subTest(fixture=fid):
+                event = self.event()
+                event.update(fixtureId=fid, expectedShortcutName=fid, resultSummary=expected)
+                event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+                observed = self.verify([event], fid, expected)
+                self.assertEqual((observed["runGate"], observed["traceGate"]), ("PASS", "PASS"))
+                for mutation in (
+                    {**event, "status": "ERROR", "errorCode": "1"},
+                    {**event, "resultSummary": expected + "_WRONG"},
+                    {**event, "resultSummary": expected.replace("calls=1", "calls=2")} if "calls=1" in expected else {**event, "resultSummary": expected.replace("_OK", "_WRONG")},
+                    {**event, "runId": "stale-run"},
+                    {**event, "fixtureId": "qa-short-circuit-local-v2"},
+                ):
+                    self.assertEqual(self.verify([mutation], fid, expected)["runGate"], "FAIL_RUNTIME")
+                self.assertEqual(self.verify([{**event, "tracePayload": ""}], fid, expected)["traceGate"], "FAIL_RUNTIME")
 
     def test_label_export_probes_require_exact_fresh_summary_and_normal_trace(self):
         cases = {

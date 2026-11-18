@@ -1,0 +1,22 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "f01-diag-logic")
+// Synthetic isolation probe. Its success does not close F01.
+let zero = number(0)
+let one = number(1)
+var flag: Bool = zero == 1
+var truth: Bool = one == 1
+var verdict = "P15_F01_LOGIC_OK"
+let andValue: Bool = flag && (if truth { yield true } else { yield false })
+let orValue: Bool = truth || (if truth { yield true } else { yield false })
+let controlValue: Bool = if truth { yield true } else { yield false }
+if andValue { verdict = "P15_F01_LOGIC_AND_WRONG" }
+if !orValue { verdict = "P15_F01_LOGIC_OR_WRONG" }
+if !controlValue { verdict = "P15_F01_LOGIC_CONTROL_WRONG" }
+let semanticResult = text(verdict)
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "f01-diag-logic")
+let traceEnvelope = debugExportTrace(runId: "qa-f01-diag-logic-v2")
+let finalSummary = text(f"CHERRI_QA_F01_DIAG_LOGIC:{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

@@ -57,6 +57,31 @@ class WorkflowInputContractTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines(), ["qa-short-circuit-local-v2", "CHERRI_QA_F01_LOCAL_RESULT:P15_F01_LOCAL_OK:calls=1"])
 
+    def test_f01_diagnostics_bind_four_exact_independent_targets(self):
+        cases = {
+            "qa-f01-diag-counter": "CHERRI_QA_F01_DIAG_COUNTER:calls=1",
+            "qa-f01-diag-predicate": "CHERRI_QA_F01_DIAG_PREDICATE:P15_F01_PREDICATE_OK",
+            "qa-f01-diag-control": "CHERRI_QA_F01_DIAG_CONTROL:P15_F01_CONTROL_OK:calls=1",
+            "qa-f01-diag-logic": "CHERRI_QA_F01_DIAG_LOGIC:P15_F01_LOGIC_OK"
+        }
+        script = (self.root / "scripts/ios27_shortcuts_simulator_qa.sh").read_text(encoding="utf-8")
+        selector = script.split("# Select primary target fixture from SAMPLE_ID\n", 1)[1].split("LEGACY_COUNTERPART_SOURCE=", 1)[0]
+        selector += '\nprintf "%s\\n" "$TARGET_FIXTURE_ID" "$TARGET_SOURCE_FILE" "$EXPECTED_SHORTCUT_NAME" "$EXPECTED_SEMANTIC_OUTPUT" "$LEGACY_COUNTERPART_ID"\n'
+        workflow = (self.root / ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml").read_text(encoding="utf-8")
+        for sample, expected in cases.items():
+            with self.subTest(sample=sample):
+                self.assertEqual(self.validate(["runtime", "ipad-default", sample, "false", "1", "true"]).returncode, 0)
+                self.assertIn("          - " + sample + "\n", workflow)
+                result = subprocess.run([self.bash, "-c", selector],
+                    env={**os.environ, "SAMPLE_ID": sample, "ROOT_DIR": "/reviewed",
+                         "TARGET_SOURCE_RELATIVE": "../../private.cherri"},
+                    capture_output=True, text=True, timeout=10)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                fid = sample + "-v2"
+                self.assertEqual(result.stdout.splitlines(), [fid,
+                    "/reviewed/tools/shortcuts-simulator-qa/fixtures/" + fid + ".cherri", fid, expected, "qa-functional-legacy"])
+        for sample in ("qa-f01-diag-private", "qa-f01-diag-counter-release", "qa-f01-diag-logic;exit 0"):
+            self.assertEqual(self.validate(["runtime", "ipad-default", sample, "false", "1", "true"]).returncode, 2)
 
     def test_label_export_choices_bind_exact_reviewed_nested_source(self):
         cases = {

@@ -1,0 +1,13 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "f01-diag-counter")
+// Synthetic isolation probe. Its success does not close F01.
+var calls = 0
+calls += 1
+let semanticResult = text(f"calls={calls}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "f01-diag-counter")
+let traceEnvelope = debugExportTrace(runId: "qa-f01-diag-counter-v2")
+let finalSummary = text(f"CHERRI_QA_F01_DIAG_COUNTER:{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

@@ -133,6 +133,10 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-export-redacted-v2",
         "qa-export-unsupported-file-v2",
         "qa-export-text-file-v2",
+        "qa-f01-diag-counter-v2",
+        "qa-f01-diag-predicate-v2",
+        "qa-f01-diag-control-v2",
+        "qa-f01-diag-logic-v2",
         "all_shortcuts_library", "ellipsis.circle.fill", "plus.circle.fill",
         "magnifyingglass", "Dictate", "Comment", "Text", "Number", "Dictionary",
         "Get Dictionary Value", "Get Value", "Get Value for Key", "Current Date",
@@ -1074,6 +1078,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertEqual(sanitizeUIString("qa-export-redacted-v2"), "qa-export-redacted-v2")
         XCTAssertEqual(sanitizeUIString("qa-export-unsupported-file-v2"), "qa-export-unsupported-file-v2")
         XCTAssertEqual(sanitizeUIString("qa-export-text-file-v2"), "qa-export-text-file-v2")
+        XCTAssertEqual(sanitizeUIString("qa-f01-diag-counter-v2"), "qa-f01-diag-counter-v2")
+        XCTAssertEqual(sanitizeUIString("qa-f01-diag-predicate-v2"), "qa-f01-diag-predicate-v2")
+        XCTAssertEqual(sanitizeUIString("qa-f01-diag-control-v2"), "qa-f01-diag-control-v2")
+        XCTAssertEqual(sanitizeUIString("qa-f01-diag-logic-v2"), "qa-f01-diag-logic-v2")
+        XCTAssertTrue(sanitizeUIString("qa-f01-diag-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
         XCTAssertTrue(sanitizeUIString("qa-export-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
         XCTAssertTrue(sanitizeUIString("qa-label-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
     }
