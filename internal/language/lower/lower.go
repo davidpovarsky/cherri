@@ -4991,7 +4991,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		if targetExpr == nil {
 			return nil, fmt.Errorf("native.plist requires a plist expression or dictionary")
 		}
-		val, err := l.lowerExpression(targetExpr)
+		val, err := l.lowerInlineNativeData(targetExpr)
 		if err != nil {
 			return nil, fmt.Errorf("failed to lower native.plist data: %w", err)
 		}
@@ -5044,7 +5044,13 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 
 		for _, arg := range call.NamedArgs {
-			val, err := l.lowerExpression(arg.Value)
+			var val interface{}
+			var err error
+			if arg.Label == "aggrandizements" || arg.Label == "propertyUserInfo" {
+				val, err = l.lowerInlineNativeData(arg.Value)
+			} else {
+				val, err = l.lowerExpression(arg.Value)
+			}
 			if err != nil {
 				return nil, fmt.Errorf("failed to lower native.ref argument %s: %w", arg.Label, err)
 			}
@@ -5069,12 +5075,16 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 						rawVal = nested
 					}
 				}
-				if list, ok := rawVal.([]any); ok {
-					for _, item := range list {
-						if m, ok := item.(map[string]any); ok {
-							aggrs = append(aggrs, m)
-						}
+				list, ok := rawVal.([]any)
+				if !ok {
+					return nil, fmt.Errorf("native.ref aggrandizements must be an inline list of dictionaries, got %T", rawVal)
+				}
+				for index, item := range list {
+					m, ok := item.(map[string]any)
+					if !ok {
+						return nil, fmt.Errorf("native.ref aggrandizements item %d must be a dictionary, got %T", index, item)
 					}
+					aggrs = append(aggrs, m)
 				}
 			case "coerce", "coercion":
 				aggrs = append(aggrs, map[string]interface{}{

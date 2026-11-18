@@ -574,7 +574,14 @@ func TestNATIVE_Ref_ChainedMultiLevelAggrandizements(t *testing.T) {
 		t.Fatalf("failed to unmarshal plist: %v", err)
 	}
 
-	act := rawMap["WFWorkflowActions"].([]any)[0].(map[string]any)
+	actions := rawMap["WFWorkflowActions"].([]any)
+	if len(actions) != 1 {
+		t.Fatalf("native reference metadata added runtime producers: got %d actions", len(actions))
+	}
+	act := actions[0].(map[string]any)
+	if act["WFWorkflowActionIdentifier"] != "com.apple.custom.chained_refs" {
+		t.Fatal("native action identity changed")
+	}
 	params := act["WFWorkflowActionParameters"].(map[string]any)
 	deepRef := params["DeepRef"].(map[string]any)
 
@@ -816,4 +823,3 @@ func extractTokenStr(val any) string {
 	}
 	return strings.TrimSpace(fmt.Sprint(val))
 }
-

@@ -46,3 +46,12 @@ func (l *Lowerer) lowerListExpression(expr *syntax.ListExpr, nativeItems bool) (
 	}
 	return list, nil
 }
+
+// Raw native metadata is inline plist data, not an authored runtime List.
+// Reuse the existing recursive Dictionary-array path without creating actions.
+func (l *Lowerer) lowerInlineNativeData(expr syntax.Expression) (interface{}, error) {
+	if list, ok := expr.(*syntax.ListExpr); ok {
+		return l.lowerListExpression(list, false)
+	}
+	return l.lowerExpression(expr)
+}
