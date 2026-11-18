@@ -2435,9 +2435,10 @@ fi
 rm -rf "$ARTIFACT_DIR/builds" "$ARTIFACT_DIR/tests/"*.log "$ARTIFACT_DIR/tests/"*.xcresult "${QA_SCRATCH_DIR:-}" "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
 
 # Write output-assertions.json and runtime-trace.jsonl
-python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "${EXEC_RUN_NONCE:-}" "${RUNTIME_EVAL:-}" <<'PY'
+python3 - "$ARTIFACT_DIR" "$GATE_SHORTCUT_RUN_COMPLETED" "$GATE_CALLBACK_CAPTURED" "$GATE_TRACE_CAPTURED" "${RUNTIME_EVAL_REASON:-}" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "${EXEC_RUN_NONCE:-}" "${RUNTIME_EVAL:-}" "$ARTIFACT_DIR/compiler-manifest.json" "$SOURCE_SHA" <<'PY'
 import json
 import os
+import re
 import sys
 
 artifact_dir, run_status, cb_status, trace_status, reason, fid, expected_out, expected_nonce, oracle_json = sys.argv[1:10]
@@ -2447,6 +2448,43 @@ try:
         oracle = {}
 except (ValueError, TypeError):
     oracle = {}
+
+# An import failure can prevent the callback oracle from running. Preserve
+# independently validated compiler facts without inventing oracle PASS gates.
+# A partial/invalid manifest never produces a partially trusted provenance tuple.
+if not oracle and len(sys.argv) == 12:
+    manifest_path, expected_sha = sys.argv[10:12]
+    try:
+        manifest = json.load(open(manifest_path, encoding="utf-8"))
+        assert re.fullmatch(r"[0-9a-f]{40}", expected_sha)
+        assert manifest.get("syntheticOnly") is True
+        assert manifest.get("compilerCommitSha") == expected_sha
+        fixtures = manifest.get("fixtures")
+        assert isinstance(fixtures, list) and all(isinstance(f, dict) for f in fixtures)
+        entries = [f for f in fixtures if f.get("fixtureId") == fid]
+        assert len(entries) == 1
+        fixture = entries[0]
+        source_hash = fixture.get("sourceSha256")
+        unsigned_hash = fixture.get("unsignedPlistSha256")
+        assert isinstance(source_hash, str) and re.fullmatch(r"[0-9a-f]{64}", source_hash)
+        assert isinstance(unsigned_hash, str) and re.fullmatch(r"[0-9a-f]{64}", unsigned_hash)
+        profile = fixture.get("buildProfile")
+        trace_expectation = fixture.get("runtimeTraceExpectation")
+        release_verified = fid == "qa-measure-release-v2"
+        if release_verified:
+            assert expected_out == "CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
+            assert profile == "release" and trace_expectation == "ABSENT_RELEASE"
+            assert fixture.get("releaseDiagnosticActionsAbsent") is True
+            assert fixture.get("releaseBodyShapeVerified") is True
+        else:
+            assert profile == "debug" and trace_expectation == "REQUIRED_NDJSON"
+        oracle = {"targetFixtureId": fid, "compilerCommitSha": expected_sha,
+                  "sourceSha256": source_hash, "unsignedPlistSha256": unsigned_hash,
+                  "buildProfile": profile, "traceExpectation": trace_expectation,
+                  "releaseBuildVerified": release_verified}
+    except (OSError, ValueError, TypeError, AttributeError, AssertionError):
+        oracle = {}
+
 cb_path = os.path.join(artifact_dir, "runtime", "callback-events.json")
 events = []
 if os.path.exists(cb_path):

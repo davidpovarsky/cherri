@@ -233,14 +233,17 @@ class CallbackContractTests(unittest.TestCase):
         self.assertEqual(self.verify([self.event()])["traceGate"], "PASS")
 
     def report(self, events, run_status="PASS", fid="qa-unit", expected="CHERRI_QA_EXPECTED",
-               trace_status="PASS", oracle=None):
+               trace_status="PASS", oracle=None, manifest=None, compiler_sha="a" * 40):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "runtime").mkdir()
             (root / "runtime/callback-events.json").write_text(json.dumps(events), encoding="utf-8")
+            manifest_path = root / "compiler-manifest.json"
+            manifest_path.write_text(json.dumps(self.manifest(fid) if manifest is None else manifest), encoding="utf-8")
             result = subprocess.run([sys.executable, "-c", self.assertion_program, str(root), run_status,
                                      "PASS", trace_status, "synthetic diagnostic", fid, expected, "fresh-run",
-                                     json.dumps(self.verify(events, fid, expected) if oracle is None else oracle)],
+                                     json.dumps(self.verify(events, fid, expected) if oracle is None else oracle),
+                                     str(manifest_path), compiler_sha],
                                     capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
             report = json.loads((root / "runtime/output-assertions.json").read_text(encoding="utf-8"))
@@ -262,6 +265,77 @@ class CallbackContractTests(unittest.TestCase):
             self.assertFalse(report["compiledShortcutCallbackVerified"], (key, value))
             self.assertFalse(report["compiledShortcutRuntimeExecuted"], (key, value))
         self.assertFalse(self.report([self.event(), self.event()])["compiledShortcutCallbackVerified"])
+
+
+    def test_blocked_report_preserves_validated_compile_provenance(self):
+        for fid, expected in (("qa-unit", "CHERRI_QA_EXPECTED"),
+                              (self.release_id, self.release_expected)):
+            with self.subTest(fixture=fid):
+                report = self.report([], run_status="BLOCKED_IMPORT", fid=fid, expected=expected,
+                                     trace_status="BLOCKED_IMPORT", oracle={})
+                self.assertEqual(report["compilerCommitSha"], "a" * 40)
+                self.assertEqual(report["compiledSourceSha256"], "b" * 64)
+                self.assertEqual(report["unsignedPlistSha256"], "c" * 64)
+                self.assertEqual(report["buildProfile"], "release" if fid == self.release_id else "debug")
+                self.assertEqual(report["shortcutRunCompletedGate"], "BLOCKED_IMPORT")
+                self.assertFalse(report["runtimeContractVerified"])
+                self.assertFalse(report["compiledShortcutRuntimeExecuted"])
+                self.assertFalse(report["compiledShortcutCallbackVerified"])
+                self.assertEqual(report["traceObserved"], "UNVERIFIED")
+                _, code = self.summarize(report, trace_status="BLOCKED_IMPORT", run_status="BLOCKED_IMPORT")
+                self.assertEqual(code, 1)
+
+    def test_blocked_report_provenance_never_promotes_callback_or_trace(self):
+        events = [self.event(), {"receiverSelfTest": True, "eventSource": "receiver-self-test",
+                                "status": "SUCCESS"}]
+        report = self.report(events, run_status="BLOCKED_IMPORT", trace_status="BLOCKED_IMPORT", oracle={})
+        self.assertEqual(report["compilerCommitSha"], "a" * 40)
+        self.assertTrue(report["receiverSelfCallbackVerified"])
+        self.assertFalse(report["runtimeContractVerified"])
+        self.assertFalse(report["compiledShortcutCallbackVerified"])
+        self.assertFalse(report["compiledShortcutRuntimeExecuted"])
+        self.assertEqual(report["traceObserved"], "UNVERIFIED")
+
+    def test_blocked_report_rejects_untrusted_compile_provenance(self):
+        invalid = [None, [], {}, "not an object"]
+        for field, value in (("compilerCommitSha", "d" * 40), ("syntheticOnly", False),
+                             ("fixtures", [])):
+            manifest = self.manifest()
+            manifest[field] = value
+            invalid.append(manifest)
+        for field, value in (("fixtureId", "other"), ("sourceSha256", ""),
+                             ("unsignedPlistSha256", "bad"), ("buildProfile", "release"),
+                             ("runtimeTraceExpectation", "ABSENT_RELEASE")):
+            manifest = self.manifest()
+            manifest["fixtures"][0][field] = value
+            invalid.append(manifest)
+        duplicate = self.manifest()
+        duplicate["fixtures"].append(duplicate["fixtures"][0].copy())
+        invalid.append(duplicate)
+        for manifest in invalid:
+            # None deliberately serializes as JSON null rather than the helper default.
+            if manifest is None:
+                manifest = {"fixtures": None}
+            with self.subTest(manifest=manifest):
+                report = self.report([], run_status="BLOCKED_IMPORT", trace_status="BLOCKED_IMPORT",
+                                     oracle={}, manifest=manifest)
+                self.assertEqual(report["compilerCommitSha"], "UNKNOWN")
+                self.assertEqual(report["compiledSourceSha256"], "")
+                self.assertEqual(report["unsignedPlistSha256"], "")
+                self.assertFalse(report["runtimeContractVerified"])
+        report = self.report([], run_status="BLOCKED_IMPORT", oracle={}, compiler_sha="bad")
+        self.assertEqual(report["compilerCommitSha"], "UNKNOWN")
+
+    def test_blocked_report_release_compile_proof_stays_explicit(self):
+        for field in ("releaseDiagnosticActionsAbsent", "releaseBodyShapeVerified"):
+            manifest = self.manifest(self.release_id)
+            manifest["fixtures"][0][field] = False
+            report = self.report([], run_status="BLOCKED_IMPORT", fid=self.release_id,
+                                 expected=self.release_expected, trace_status="BLOCKED_IMPORT",
+                                 oracle={}, manifest=manifest)
+            self.assertEqual(report["compilerCommitSha"], "UNKNOWN")
+            self.assertFalse(report["releaseBuildVerified"])
+            self.assertFalse(report["runtimeContractVerified"])
 
     def test_report_preserves_observed_error_cancel_without_promoting_success(self):
         for status in ("ERROR", "CANCELLED"):
