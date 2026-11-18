@@ -1,0 +1,39 @@
+{
+  "sourceSha": "7991ea61ffb627fae566c297452e828a912cec49",
+  "sourceCleanBefore": true,
+  "startedAt": "2026-11-18T19:22:22.625748+00:00",
+  "commands": [
+    {
+      "argv": [
+        "go",
+        "test",
+        "-count=1",
+        "-run",
+        "^TestMetadataProductionEvidence$",
+        "-v",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 76.247678,
+      "logSha256": "6d97181c28952715e559c798a09e54f0683d8a70f78a9afeb409e5057bad3ca0",
+      "logBytes": 7684,
+      "logFile": "formal.log"
+    },
+    {
+      "argv": [
+        "go",
+        "run",
+        "./tools/language-schema",
+        "--verify-generated"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 19.105591,
+      "logSha256": "7afe09f9dc2bfbf0e1697d8b4ff2d3baef785cd12f6aa057841d9bcb50964913",
+      "logBytes": 115,
+      "logFile": "schema-verify.log"
+    }
+  ],
+  "sourceCleanAfter": true,
+  "finishedAt": "2026-11-18T19:23:58.202366+00:00",
+  "passed": true
+}

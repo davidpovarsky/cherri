@@ -57,3 +57,15 @@ go run ./tools/language-schema --verify-generated
 ```
 
 The generated schema comes from the existing live canonical generator and retains the same 505 actions. No acceptance status is established by this document alone; exact clean-source test and formal-producer receipts accompany the source commit.
+
+
+## Clean source receipt
+
+Immutable source `7991ea61ffb627fae566c297452e828a912cec49` passed the named M01/M03/M04 production proof with six required-tier records. The shared verifier rejected twelve detached, missing or incomplete evidence mutations. The source tree was clean before and after the run, and canonical schema verification passed.
+
+- [Command and hash receipt](evidence/p15-metadata-7991ea6/receipt.json)
+- [Production records and bounded scope](evidence/p15-metadata-7991ea6/production-evidence.json)
+- [Complete formal proof log](evidence/p15-metadata-7991ea6/formal.log)
+- [Canonical schema verification](evidence/p15-metadata-7991ea6/schema-verify.log)
+
+Before this clean proof, the complete analysis, lowerer, schema, service and schema-generator test packages passed, followed by the focused root metadata/mobile/C01/V02/native-envelope/native-result/R01-R05 regression selection. The clean formal proof does not convert those local executions into Swift UI or Apple import-question UI evidence.
