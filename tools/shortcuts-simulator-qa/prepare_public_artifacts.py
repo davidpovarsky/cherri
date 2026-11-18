@@ -9,7 +9,7 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import shutil
 import tempfile
@@ -36,6 +36,21 @@ CANARY = re.compile(r"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|
 MAGIC = (b"\x89PNG\r\n\x1a\n", b"\xff\xd8\xff", b"GIF8", b"%PDF", b"PK\x03\x04", b"AEA1", b"bplist")
 
 
+# Source hashes are trusted only for these reviewed nested synthetic files.
+# Do not replace this explicit list with rglob, basename flattening or directory-wide trust.
+TRUSTED_NESTED_FIXTURES = (
+    "p15-label-probes/qa-label-file-carrier-v2.cherri",
+    "p15-label-probes/qa-label-raw-empty-v2.cherri",
+    "p15-label-probes/qa-label-raw-grouping-v2.cherri",
+    "p15-export-probes/qa-export-unicode-v2.cherri",
+    "p15-export-probes/qa-export-empty-v2.cherri",
+    "p15-export-probes/qa-export-thousand-v2.cherri",
+    "p15-export-probes/qa-export-redacted-v2.cherri",
+    "p15-export-probes/qa-export-unsupported-file-v2.cherri",
+    "p15-export-probes/qa-export-text-file-v2.cherri",
+)
+
+
 class PublicationBlocked(ValueError):
     pass
 
@@ -49,21 +64,48 @@ def safe_path(path):
     return value if re.fullmatch(r"[A-Za-z0-9_./-]{1,180}", value) and not CANARY.search(value) else "path-sha256:" + sha(value.encode())
 
 
+def trusted_fixture_sources(fixtures):
+    fixtures = Path(fixtures)
+    if fixtures.is_symlink() or not fixtures.is_dir():
+        raise PublicationBlocked("FIXTURE_SOURCE_ROOT_INVALID")
+    trusted = {}
+    for path in sorted(fixtures.glob("qa-*.cherri")):
+        if path.is_symlink():
+            raise PublicationBlocked("FIXTURE_SOURCE_SYMLINK")
+        if path.is_file():
+            trusted[path.name] = sha(path.read_bytes())
+    for name in TRUSTED_NESTED_FIXTURES:
+        path = fixtures / name
+        # Every component below the trusted checkout root must be an actual
+        # directory/file. A same-hash link is not reviewed source provenance.
+        if any((fixtures / Path(*Path(name).parts[:end])).is_symlink()
+               for end in range(1, len(Path(name).parts) + 1)):
+            raise PublicationBlocked("FIXTURE_SOURCE_SYMLINK")
+        if path.is_file():
+            trusted[name] = sha(path.read_bytes())
+    return trusted
+
+
 def verify_synthetic_manifest(root, trusted_sources):
     manifest_path = root / "compiler-manifest.json"
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         raise PublicationBlocked("SYNTHETIC_PROVENANCE_MISSING") from exc
-    if manifest.get("syntheticOnly") is not True:
+    if not isinstance(manifest, dict) or manifest.get("syntheticOnly") is not True:
         raise PublicationBlocked("SYNTHETIC_PROVENANCE_REQUIRED")
     fixtures = manifest.get("fixtures", [])
-    if not fixtures or len({f.get("fixtureId") for f in fixtures}) != len(fixtures):
+    if (not isinstance(fixtures, list) or not fixtures
+            or any(not isinstance(f, dict) or not isinstance(f.get("fixtureId"), str) for f in fixtures)
+            or len({f["fixtureId"] for f in fixtures}) != len(fixtures)):
         raise PublicationBlocked("FIXTURE_MANIFEST_INVALID")
     for fixture in fixtures:
         file_name = fixture.get("fileName")
-        if file_name not in trusted_sources or fixture.get("sourceSha256") != trusted_sources[file_name]:
+        if (not isinstance(file_name, str) or file_name not in trusted_sources
+                or fixture.get("sourceSha256") != trusted_sources[file_name]):
             raise PublicationBlocked("FIXTURE_SOURCE_HASH_MISMATCH")
+        if fixture["fixtureId"] != PurePosixPath(file_name).stem:
+            raise PublicationBlocked("FIXTURE_SOURCE_ID_MISMATCH")
     summary_path = root / "summary.json"
     try:
         summary = json.loads(summary_path.read_text(encoding="utf-8"))
@@ -150,8 +192,8 @@ def main():
     parser.add_argument("--fixtures-dir", required=True)
     args = parser.parse_args()
     fixtures = Path(args.fixtures_dir)
-    trusted = {p.name: sha(p.read_bytes()) for p in fixtures.glob("qa-*.cherri") if p.is_file() and not p.is_symlink()}
     try:
+        trusted = trusted_fixture_sources(fixtures)
         manifest = stage(args.root, args.output, trusted)
     except (OSError, PublicationBlocked) as exc:
         print(str(exc))

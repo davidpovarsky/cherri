@@ -35,7 +35,9 @@
       "question": "Can existing Dictionary transport preserve an opaque binary File's native type, bytes and original object?",
       "nativeStatus": "NOT_EXECUTED",
       "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
-      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-label-file-carrier",
+      "expectedCallbackSummary": "CHERRI_QA_LABEL_PROBE_RESULT:P15_LABEL_FILE_CARRIER_OK"
     },
     {
       "id": "qa-label-file-carrier-legacy",
@@ -79,7 +81,9 @@
       "question": "Does raw Add to Variable flatten a two-item source then a scalar into three entries, demonstrating why a one-label-per-call sidecar is unsafe?",
       "nativeStatus": "NOT_EXECUTED",
       "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
-      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-label-raw-grouping",
+      "expectedCallbackSummary": "CHERRI_QA_LABEL_PROBE_RESULT:P15_LABEL_RAW_GROUPING_OK"
     },
     {
       "id": "qa-label-raw-grouping-legacy",
@@ -101,7 +105,9 @@
       "question": "Does logging an empty native List produce zero raw entries without a native missing-input error?",
       "nativeStatus": "NOT_EXECUTED",
       "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
-      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-label-raw-empty",
+      "expectedCallbackSummary": "CHERRI_QA_LABEL_PROBE_RESULT:P15_LABEL_RAW_EMPTY_OK"
     },
     {
       "id": "qa-label-raw-empty-legacy",
@@ -114,5 +120,7 @@
       "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
       "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
     }
-  ]
+  ],
+  "explicitSignedQASelectionCount": 3,
+  "runtimeTracePolicy": "REQUIRED_NDJSON_FOR_EVERY_EXPLICIT_SELECTION"
 }

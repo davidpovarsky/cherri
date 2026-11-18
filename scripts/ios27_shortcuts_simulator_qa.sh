@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-require|qa-measure|qa-measure-release) ;;
+  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -75,7 +75,72 @@ GATE_TRACE_CAPTURED="NOT_RUN"
 GATE_PHYSICAL_DEVICE_TESTED="BLOCKED_DEVICE"
 
 # Select primary target fixture from SAMPLE_ID
+# Nested source paths are fixed here; an inherited environment cannot select a file.
+TARGET_SOURCE_RELATIVE=""
 case "$SAMPLE_ID" in
+  qa-label-file-carrier)
+    TARGET_FIXTURE_ID="qa-label-file-carrier-v2"
+    TARGET_SOURCE_RELATIVE="p15-label-probes/qa-label-file-carrier-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-label-file-carrier-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_LABEL_PROBE_RESULT:P15_LABEL_FILE_CARRIER_OK"
+    ;;
+  qa-label-raw-empty)
+    TARGET_FIXTURE_ID="qa-label-raw-empty-v2"
+    TARGET_SOURCE_RELATIVE="p15-label-probes/qa-label-raw-empty-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-label-raw-empty-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_LABEL_PROBE_RESULT:P15_LABEL_RAW_EMPTY_OK"
+    ;;
+  qa-label-raw-grouping)
+    TARGET_FIXTURE_ID="qa-label-raw-grouping-v2"
+    TARGET_SOURCE_RELATIVE="p15-label-probes/qa-label-raw-grouping-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-label-raw-grouping-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_LABEL_PROBE_RESULT:P15_LABEL_RAW_GROUPING_OK"
+    ;;
+  qa-export-unicode)
+    TARGET_FIXTURE_ID="qa-export-unicode-v2"
+    TARGET_SOURCE_RELATIVE="p15-export-probes/qa-export-unicode-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-unicode-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNICODE_OK"
+    ;;
+  qa-export-empty)
+    TARGET_FIXTURE_ID="qa-export-empty-v2"
+    TARGET_SOURCE_RELATIVE="p15-export-probes/qa-export-empty-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-empty-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_EMPTY_OK"
+    ;;
+  qa-export-thousand)
+    TARGET_FIXTURE_ID="qa-export-thousand-v2"
+    TARGET_SOURCE_RELATIVE="p15-export-probes/qa-export-thousand-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-thousand-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_THOUSAND_OK"
+    ;;
+  qa-export-redacted)
+    TARGET_FIXTURE_ID="qa-export-redacted-v2"
+    TARGET_SOURCE_RELATIVE="p15-export-probes/qa-export-redacted-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-redacted-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_REDACTED_OK"
+    ;;
+  qa-export-unsupported-file)
+    TARGET_FIXTURE_ID="qa-export-unsupported-file-v2"
+    TARGET_SOURCE_RELATIVE="p15-export-probes/qa-export-unsupported-file-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-unsupported-file-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNSUPPORTED_FILE_OK"
+    ;;
+  qa-export-text-file)
+    TARGET_FIXTURE_ID="qa-export-text-file-v2"
+    TARGET_SOURCE_RELATIVE="p15-export-probes/qa-export-text-file-v2.cherri"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-text-file-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_TEXT_FILE_OK"
+    ;;
   qa-require)
     TARGET_FIXTURE_ID="qa-require-v2"
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
@@ -137,7 +202,7 @@ case "$SAMPLE_ID" in
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_RESULT:ok:count=2:mode=v2"
     ;;
 esac
-TARGET_SOURCE_FILE="$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures/${TARGET_FIXTURE_ID}.cherri"
+TARGET_SOURCE_FILE="$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures/${TARGET_SOURCE_RELATIVE:-${TARGET_FIXTURE_ID}.cherri}"
 LEGACY_COUNTERPART_SOURCE="$ROOT_DIR/tools/shortcuts-simulator-qa/fixtures/${LEGACY_COUNTERPART_ID}.cherri"
 
 # ---------------------------------------------------------------------------
@@ -163,6 +228,15 @@ fixtures_dir = os.path.join(root_dir, "tools", "shortcuts-simulator-qa", "fixtur
 builds_dir = os.path.join(artifact_dir, "builds")
 
 fixture_specs = [
+    ("qa-label-file-carrier-v2", "p15-label-probes/qa-label-file-carrier-v2.cherri", "v2"),
+    ("qa-label-raw-empty-v2", "p15-label-probes/qa-label-raw-empty-v2.cherri", "v2"),
+    ("qa-label-raw-grouping-v2", "p15-label-probes/qa-label-raw-grouping-v2.cherri", "v2"),
+    ("qa-export-unicode-v2", "p15-export-probes/qa-export-unicode-v2.cherri", "v2"),
+    ("qa-export-empty-v2", "p15-export-probes/qa-export-empty-v2.cherri", "v2"),
+    ("qa-export-thousand-v2", "p15-export-probes/qa-export-thousand-v2.cherri", "v2"),
+    ("qa-export-redacted-v2", "p15-export-probes/qa-export-redacted-v2.cherri", "v2"),
+    ("qa-export-unsupported-file-v2", "p15-export-probes/qa-export-unsupported-file-v2.cherri", "v2"),
+    ("qa-export-text-file-v2", "p15-export-probes/qa-export-text-file-v2.cherri", "v2"),
     ("qa-functional-v2", "qa-functional-v2.cherri", "v2"),
     ("qa-functional-legacy", "qa-functional-legacy.cherri", "legacy"),
     ("qa-scroll-editor-v2", "qa-scroll-editor-v2.cherri", "v2"),
@@ -201,6 +275,7 @@ for fid, fname, dialect in fixture_specs:
     src_sha256 = hashlib.sha256(src_bytes).hexdigest()
 
     build_src = os.path.join(builds_dir, fname)
+    os.makedirs(os.path.dirname(build_src), exist_ok=True)
     shutil.copyfile(fpath, build_src)
     out_base = os.path.join(builds_dir, fid)
     out_shortcut = out_base + ".shortcut"

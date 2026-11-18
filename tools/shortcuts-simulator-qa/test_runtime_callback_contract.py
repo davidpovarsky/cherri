@@ -80,6 +80,40 @@ class CallbackContractTests(unittest.TestCase):
         manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE")
         self.assertEqual(self.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
 
+
+    def test_label_export_probes_require_exact_fresh_summary_and_normal_trace(self):
+        cases = {
+            "qa-label-file-carrier-v2": "CHERRI_QA_LABEL_PROBE_RESULT:P15_LABEL_FILE_CARRIER_OK",
+            "qa-label-raw-empty-v2": "CHERRI_QA_LABEL_PROBE_RESULT:P15_LABEL_RAW_EMPTY_OK",
+            "qa-label-raw-grouping-v2": "CHERRI_QA_LABEL_PROBE_RESULT:P15_LABEL_RAW_GROUPING_OK",
+            "qa-export-unicode-v2": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNICODE_OK",
+            "qa-export-empty-v2": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_EMPTY_OK",
+            "qa-export-thousand-v2": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_THOUSAND_OK",
+            "qa-export-redacted-v2": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_REDACTED_OK",
+            "qa-export-unsupported-file-v2": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNSUPPORTED_FILE_OK",
+            "qa-export-text-file-v2": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_TEXT_FILE_OK",
+        }
+        for fid, expected in cases.items():
+            with self.subTest(fixture=fid):
+                event = self.event()
+                event.update(fixtureId=fid, expectedShortcutName=fid, resultSummary=expected)
+                event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+                result = self.verify([event], fid, expected)
+                self.assertEqual((result["runGate"], result["traceGate"]), ("PASS", "PASS"))
+                for key, value in (("resultSummary", expected + "_WRONG"), ("status", "ERROR"),
+                                   ("status", "CANCELLED"), ("runId", "stale"),
+                                   ("eventSource", "receiver-self-test"), ("fixtureId", "qa-other"),
+                                   ("expectedShortcutName", "qa-other"), ("receiverSelfTest", True)):
+                    result = self.verify([{**event, key: value}], fid, expected)
+                    self.assertEqual(result["runGate"], "FAIL_RUNTIME", (fid, key))
+                for payload in ("", event["tracePayload"].replace(fid, "stale-fixture")):
+                    self.assertEqual(self.verify([{**event, "tracePayload": payload}], fid, expected)["traceGate"], "FAIL_RUNTIME")
+                self.assertEqual(self.verify([event, event], fid, expected)["runGate"], "FAIL_RUNTIME")
+                manifest = self.manifest(fid)
+                manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE",
+                                               releaseDiagnosticActionsAbsent=True, releaseBodyShapeVerified=True)
+                self.assertEqual(self.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
+
     def test_source_fixture_and_self_test_mutations(self):
         for key, value in (("eventSource", "receiver-self-test"), ("fixtureId", "other"),
                            ("expectedShortcutName", "other"), ("receiverSelfTest", True),

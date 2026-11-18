@@ -16,7 +16,10 @@
       "dialect": "v2",
       "scenario": "empty",
       "expectedVerdict": "P15_EXPORT_EMPTY_OK",
-      "nativeStatus": "NOT_EXECUTED"
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-empty",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_EMPTY_OK"
     },
     {
       "id": "qa-export-unicode-v2",
@@ -24,7 +27,10 @@
       "dialect": "v2",
       "scenario": "unicode",
       "expectedVerdict": "P15_EXPORT_UNICODE_OK",
-      "nativeStatus": "NOT_EXECUTED"
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-unicode",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNICODE_OK"
     },
     {
       "id": "qa-export-thousand-v2",
@@ -32,7 +38,10 @@
       "dialect": "v2",
       "scenario": "thousand",
       "expectedVerdict": "P15_EXPORT_THOUSAND_OK",
-      "nativeStatus": "NOT_EXECUTED"
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-thousand",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_THOUSAND_OK"
     },
     {
       "id": "qa-export-redacted-v2",
@@ -40,7 +49,10 @@
       "dialect": "v2",
       "scenario": "redacted",
       "expectedVerdict": "P15_EXPORT_REDACTED_OK",
-      "nativeStatus": "NOT_EXECUTED"
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-redacted",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_REDACTED_OK"
     },
     {
       "id": "qa-export-unsupported-file-v2",
@@ -48,7 +60,10 @@
       "dialect": "v2",
       "scenario": "unsupported-file",
       "expectedVerdict": "P15_EXPORT_UNSUPPORTED_FILE_OK",
-      "nativeStatus": "NOT_EXECUTED"
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-unsupported-file",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNSUPPORTED_FILE_OK"
     },
     {
       "id": "qa-export-text-file-v2",
@@ -56,7 +71,10 @@
       "dialect": "v2",
       "scenario": "text-file",
       "expectedVerdict": "P15_EXPORT_TEXT_FILE_OK",
-      "nativeStatus": "NOT_EXECUTED"
+      "nativeStatus": "NOT_EXECUTED",
+      "registration": "EXPLICIT_SIGNED_QA_ALLOWLIST",
+      "sampleId": "qa-export-text-file",
+      "expectedCallbackSummary": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_TEXT_FILE_OK"
     },
     {
       "id": "qa-export-empty-legacy",
@@ -106,5 +124,7 @@
       "expectedVerdict": "P15_EXPORT_TEXT_FILE_OK",
       "nativeStatus": "NOT_EXECUTED"
     }
-  ]
+  ],
+  "explicitSignedQASelectionCount": 6,
+  "runtimeTracePolicy": "REQUIRED_NDJSON_FOR_EVERY_EXPLICIT_SELECTION"
 }

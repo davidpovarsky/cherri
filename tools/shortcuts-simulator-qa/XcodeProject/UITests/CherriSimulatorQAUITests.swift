@@ -123,6 +123,16 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "Continue", "Get Started", "Not Now", "Close", "Dismiss", "Report",
         "About This Shortcut", "Can Run When Locked", "Shortcut Details",
         "No Shortcuts", "Toolbar", "BackButton", "main.button.newshortcut",
+        // Exact reviewed synthetic probe names; no new arbitrary-label prefix.
+        "qa-label-file-carrier-v2",
+        "qa-label-raw-empty-v2",
+        "qa-label-raw-grouping-v2",
+        "qa-export-unicode-v2",
+        "qa-export-empty-v2",
+        "qa-export-thousand-v2",
+        "qa-export-redacted-v2",
+        "qa-export-unsupported-file-v2",
+        "qa-export-text-file-v2",
         "all_shortcuts_library", "ellipsis.circle.fill", "plus.circle.fill",
         "magnifyingglass", "Dictate", "Comment", "Text", "Number", "Dictionary",
         "Get Dictionary Value", "Get Value", "Get Value for Key", "Current Date",
@@ -1055,6 +1065,17 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertEqual(sanitizeUIString("ANCHOR_CARD_01_TOP_HEADER"), "ANCHOR_CARD_01_TOP_HEADER")
         XCTAssertEqual(sanitizeUIString("CHERRI_QA_RESULT:ok:count=2:mode=v2"), "CHERRI_QA_RESULT:ok:count=2:mode=v2")
         XCTAssertEqual(sanitizeUIString("All Shortcuts"), "All Shortcuts")
+        XCTAssertEqual(sanitizeUIString("qa-label-file-carrier-v2"), "qa-label-file-carrier-v2")
+        XCTAssertEqual(sanitizeUIString("qa-label-raw-empty-v2"), "qa-label-raw-empty-v2")
+        XCTAssertEqual(sanitizeUIString("qa-label-raw-grouping-v2"), "qa-label-raw-grouping-v2")
+        XCTAssertEqual(sanitizeUIString("qa-export-unicode-v2"), "qa-export-unicode-v2")
+        XCTAssertEqual(sanitizeUIString("qa-export-empty-v2"), "qa-export-empty-v2")
+        XCTAssertEqual(sanitizeUIString("qa-export-thousand-v2"), "qa-export-thousand-v2")
+        XCTAssertEqual(sanitizeUIString("qa-export-redacted-v2"), "qa-export-redacted-v2")
+        XCTAssertEqual(sanitizeUIString("qa-export-unsupported-file-v2"), "qa-export-unsupported-file-v2")
+        XCTAssertEqual(sanitizeUIString("qa-export-text-file-v2"), "qa-export-text-file-v2")
+        XCTAssertTrue(sanitizeUIString("qa-export-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
+        XCTAssertTrue(sanitizeUIString("qa-label-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
     }
 
     func test04ConfirmPendingRuntimeDialog() throws {

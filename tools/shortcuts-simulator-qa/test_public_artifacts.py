@@ -5,7 +5,7 @@ import tempfile
 import unittest
 import zlib
 
-from prepare_public_artifacts import PublicationBlocked, sha, stage
+from prepare_public_artifacts import PublicationBlocked, sha, stage, trusted_fixture_sources
 
 
 def raster_secret(hebrew=False, contrast=255):
@@ -116,6 +116,84 @@ class PublicArtifactTests(unittest.TestCase):
         self.write("unexpected.json", {"unverified": "not public"})
         self.publish()
         self.assertFalse((self.output / "unexpected.json").exists())
+
+
+    def test_nested_source_trust_is_explicit_relative_and_content_bound(self):
+        fixtures = Path(self.temp.name) / "fixtures"
+        fixtures.mkdir()
+        approved = [
+            "p15-label-probes/qa-label-file-carrier-v2.cherri",
+            "p15-label-probes/qa-label-raw-empty-v2.cherri",
+            "p15-label-probes/qa-label-raw-grouping-v2.cherri",
+            "p15-export-probes/qa-export-unicode-v2.cherri",
+            "p15-export-probes/qa-export-empty-v2.cherri",
+            "p15-export-probes/qa-export-thousand-v2.cherri",
+            "p15-export-probes/qa-export-redacted-v2.cherri",
+            "p15-export-probes/qa-export-unsupported-file-v2.cherri",
+            "p15-export-probes/qa-export-text-file-v2.cherri",
+        ]
+        unknown = ["private/qa-export-unicode-v2.cherri", "p15-export-probes/qa-private.cherri",
+                   "p15-label-probes/qa-label-dictionary-carrier-v2.cherri",
+                   "p15-export-probes/qa-export-empty-legacy.cherri"]
+        for index, name in enumerate(approved + unknown):
+            p = fixtures / name
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text("synthetic-" + str(index), encoding="utf-8")
+        self.trusted = trusted_fixture_sources(fixtures)
+        self.assertEqual(set(self.trusted), set(approved))
+        self.assertNotIn("qa-export-unicode-v2.cherri", self.trusted)
+        entries = [{"fixtureId": Path(name).stem, "fileName": name,
+                    "sourceSha256": sha((fixtures / name).read_bytes())} for name in approved]
+        self.write("compiler-manifest.json", {"syntheticOnly": True, "fixtures": entries})
+        # Reviewed source hash does not authorize publishing its source/plist.
+        raw = self.root / "builds/p15-export-probes"
+        raw.mkdir(parents=True)
+        (raw / "qa-export-unicode-v2.cherri").write_bytes((fixtures / approved[3]).read_bytes())
+        (raw / "qa-export-unicode-v2.shortcut").write_bytes(b"<plist>synthetic</plist>")
+        result = self.publish()
+        self.assertEqual(len(result["quarantined"]), 2)
+        self.assertTrue((self.output / "compiler-manifest.json").is_file())
+        self.assertFalse((self.output / "builds").exists())
+
+    def test_nested_path_alias_hash_and_identity_mutations_are_rejected(self):
+        name = "p15-export-probes/qa-export-unicode-v2.cherri"
+        self.trusted = {name: sha(b"reviewed synthetic")}
+        valid = {"fixtureId": "qa-export-unicode-v2", "fileName": name, "sourceSha256": self.trusted[name]}
+        cases = [
+            ({**valid, "fileName": "qa-export-unicode-v2.cherri"}, "FIXTURE_SOURCE_HASH_MISMATCH"),
+            ({**valid, "fileName": "private/qa-export-unicode-v2.cherri"}, "FIXTURE_SOURCE_HASH_MISMATCH"),
+            ({**valid, "fileName": "p15-export-probes/../qa-export-unicode-v2.cherri"}, "FIXTURE_SOURCE_HASH_MISMATCH"),
+            ({**valid, "sourceSha256": sha(b"changed source")}, "FIXTURE_SOURCE_HASH_MISMATCH"),
+            ({**valid, "fixtureId": "qa-label-file-carrier-v2"}, "FIXTURE_SOURCE_ID_MISMATCH"),
+        ]
+        for entry, diagnostic in cases:
+            with self.subTest(entry=entry):
+                self.write("compiler-manifest.json", {"syntheticOnly": True, "fixtures": [entry]})
+                with self.assertRaisesRegex(PublicationBlocked, diagnostic):
+                    self.publish()
+                self.assertFalse(self.output.exists())
+
+    def test_nested_source_symlink_and_directory_symlink_are_not_trusted(self):
+        fixtures = Path(self.temp.name) / "fixtures"
+        reviewed_dir = fixtures / "p15-export-probes"
+        reviewed_dir.mkdir(parents=True)
+        target = Path(self.temp.name) / "synthetic.cherri"
+        target.write_text("same-hash synthetic", encoding="utf-8")
+        source = reviewed_dir / "qa-export-unicode-v2.cherri"
+        try:
+            source.symlink_to(target)
+        except (OSError, NotImplementedError):
+            self.skipTest("Host cannot create symlinks; this negative must run on Linux/macOS CI")
+        with self.assertRaisesRegex(PublicationBlocked, "FIXTURE_SOURCE_SYMLINK"):
+            trusted_fixture_sources(fixtures)
+        source.unlink()
+        reviewed_dir.rmdir()
+        outside = Path(self.temp.name) / "outside"
+        outside.mkdir()
+        (outside / source.name).write_bytes(target.read_bytes())
+        reviewed_dir.symlink_to(outside, target_is_directory=True)
+        with self.assertRaisesRegex(PublicationBlocked, "FIXTURE_SOURCE_SYMLINK"):
+            trusted_fixture_sources(fixtures)
 
     def test_output_never_overwrites_existing_evidence(self):
         self.output.mkdir()

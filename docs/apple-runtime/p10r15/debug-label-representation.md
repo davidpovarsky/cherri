@@ -24,7 +24,7 @@ Each row has an explicit V2 and Legacy source under tools/shortcuts-simulator-qa
 | raw-grouping | Logging two items then one scalar yields raw counts two then three | 29 / 35 |
 | raw-empty | Logging an empty List yields zero entries without a native missing-input failure | 22 / 24 |
 
-The fixture's OK marker is emitted only after its explicit conditions. A failed type/value assertion changes the marker; a native exception or missing callback is not a pass. Before/after trace, exact fixture ID and existing anchor conventions are present. These files are deliberately outside the default runtime allowlist. The current signed harness must register a selected target with its exact expected callback/source and fresh nonce; copying one into an unrelated known target would invalidate provenance.
+The fixture's OK marker is emitted only after its explicit conditions. A failed type/value assertion changes the marker; a native exception or missing callback is not a pass. Before/after trace, exact fixture ID and existing anchor conventions are present. Three V2 probes now have explicit signed-QA selections: qa-label-file-carrier, qa-label-raw-empty and qa-label-raw-grouping. Each binds its reviewed nested source hash, exact expected callback and fresh nonce, and requires normal NDJSON trace. The remaining probes stay outside the runtime allowlist. Registration does not establish native execution; copying a probe into an unrelated known target would invalidate provenance.
 
 Suggested first selected target: qa-label-file-carrier-v2. Expected success marker: P15_LABEL_FILE_CARRIER_OK, in the CHERRI_QA_LABEL_PROBE_RESULT envelope. That result alone would not establish Image/Date/mixed-list behavior or completion of the full label feature.
 
