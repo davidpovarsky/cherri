@@ -3,6 +3,7 @@ package main
 import "strings"
 
 var typeProductionTests = map[string][]string{
+	"T09": {"TestP15T09ContentConversionEvidence", "TestP15T09ContentConversionNativeWire"},
 	"T04": {"TestP15T04OpaqueTypeProduction", "TestP15T04OpaqueTypeService"},
 	"T03": {"TestP15T03NumberStringSemanticSignature", "TestP15T03NumberStringNativeWire"},
 	"T02": {"TestP15T02LiteralRequiredProduction"},
@@ -10,6 +11,7 @@ var typeProductionTests = map[string][]string{
 	"T08": {"TestP15T08ConditionalCardinalityProduction", "TestP15T08ConditionalCardinalityService"},
 }
 var typeProductionTiers = map[string][]string{
+	"T09": {"unit", "native"},
 	"T04": {"unit", "service"},
 	"T03": {"unit", "native"},
 	"T02": {"unit"},
@@ -17,11 +19,16 @@ var typeProductionTiers = map[string][]string{
 	"T08": {"unit", "service"},
 }
 var typeProductionPaths = map[string][]string{
+	"T09": {"internal/language/types/record_evidence.go", "internal/language/analysis/assignment_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "language_backend_adapter.go", "p15_content_conversion_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
 	"T04": {"internal/language/types/types.go", "internal/language/types/record_evidence.go", "internal/language/analysis/assignment_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/service/service.go", "p15_opaque_type_acceptance_test.go", "p15_record_acceptance_test.go"},
 	"T03": {"actions/basic.cherri", "actions/math.cherri", "internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "language_backend_adapter.go", "shortcutgen.go", "p15_number_text_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json", "docs/apple-runtime/macos-27/parameter-encodings.json", "docs/apple-runtime/macos-27/encoding-table.json"},
 	"T02": {"internal/language/analysis/analyzer.go", "internal/language/analysis/literal_arguments.go", "internal/language/lower/lower.go", "language_emit_adapter.go", "p15_types_acceptance_test.go"},
 	"T06": {"internal/language/types/types.go", "internal/language/types/record_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/syntax/parser.go", "internal/language/analysis/control_results.go", "p15_record_acceptance_test.go", "p15_control_type_acceptance_test.go"},
 	"T08": {"internal/language/analysis/analyzer.go", "internal/language/analysis/cardinality.go", "internal/language/service/service.go", "internal/language/service/call_result.go", "p15_cardinality_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
+}
+
+func (r *Runner) runTypeContentConversionRequirement() {
+	r.runTypeProduction("T09", "Known Content Graph conversions vs unverified coercion")
 }
 
 func (r *Runner) runTypeOpaqueRequirement() {
@@ -49,7 +56,7 @@ func (r *Runner) runTypeProduction(id, requirement string) {
 	r.Record(id, "types", requirement, strings.Join(tiers, "+"), parseRequiredTiers(strings.Join(tiers, "+")), passed, "PASSED", detail)
 	for i := first; i < len(r.records); i++ {
 		r.records[i].Command = productionTestCommand(tests)
-		if id == "T03" && r.records[i].Tier == "native-structure" {
+		if (id == "T03" || id == "T09") && r.records[i].Tier == "native-structure" {
 			r.records[i].TestID = "github.com/electrikmilk/cherri:" + tests[1]
 		}
 		// T08's service tier is produced by the actual Service APIs test.
@@ -63,7 +70,7 @@ func (r *Runner) runTypeProduction(id, requirement string) {
 // Resolve the producer from the existing named test inventory, not a second
 // catalog. Other type requirements retain their current authorization policy.
 func typeProductionTestForTier(id, tier string) string {
-	if id != "T03" && id != "T04" {
+	if id != "T03" && id != "T04" && id != "T09" {
 		return ""
 	}
 	tests := typeProductionTests[id]
@@ -71,7 +78,7 @@ func typeProductionTestForTier(id, tier string) string {
 	case "unit":
 		return "github.com/electrikmilk/cherri:" + tests[0]
 	case "native-structure":
-		if id == "T03" {
+		if id == "T03" || id == "T09" {
 			return "github.com/electrikmilk/cherri:" + tests[1]
 		}
 	case "service":

@@ -10,6 +10,10 @@ import (
 	"testing"
 )
 
+func TestTypeContentConversionProductionEvidence(t *testing.T) {
+	testTypeProductionEvidence(t, "T09", (*Runner).runTypeContentConversionRequirement, "P15_TYPE_CONTENT_CONVERSION_RECEIPT:", "Only T09 authored conversion evidence and exact emitted native conversion producers; native metadata is inspected locally, no arbitrary safe cast, Apple runtime, general cardinality or release closure")
+}
+
 func TestTypeOpaqueProductionEvidence(t *testing.T) {
 	testTypeProductionEvidence(t, "T04", (*Runner).runTypeOpaqueRequirement, "P15_TYPE_OPAQUE_RECEIPT:", "Only T04 authored assignment evidence, Void value rejection and actual Service diagnostics; native attachment compatibility is not a type guarantee, no Apple runtime or release closure")
 }
@@ -31,7 +35,7 @@ func TestTypeCardinalityProductionEvidence(t *testing.T) {
 func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), receiptLabel, scope string) {
 	tests := typeProductionTests[id]
 	producerByTier := map[string]string{}
-	if id == "T03" {
+	if id == "T03" || id == "T09" {
 		producerByTier["native-structure"] = tests[1]
 	}
 	if id == "T08" || id == "T04" {
@@ -91,7 +95,7 @@ func testNamedProductionEvidence(t *testing.T, id string, tests []string, produc
 	if len(tiers) > 1 {
 		mutations = append(mutations, "missing_required_tier")
 	}
-	if id == "T03" || id == "T04" {
+	if id == "T03" || id == "T04" || id == "T09" {
 		mutations = append(mutations, "cross_tier_producer")
 	}
 	for _, mutation := range mutations {
