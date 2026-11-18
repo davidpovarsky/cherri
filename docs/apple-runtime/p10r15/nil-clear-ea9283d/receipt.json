@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "sourceSha": "ea9283d0f81b338a19699bf07ba169e7875442e0",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "scope": "Actual local compiler, independent native graph, strict callback oracle and publication gates; Apple runtime not executed",
+  "compilerSha256": "380e3d855187828d31ab22b8258870ff636503fcd2cd93b6e7b97b4ade96d8fc",
+  "compilerVCSRevision": "ea9283d0f81b338a19699bf07ba169e7875442e0",
+  "compilerVCSModified": false,
+  "fixture": {
+    "fixtureId": "qa-nil-clear-v2",
+    "fileName": "qa-nil-clear-v2.cherri",
+    "dialect": "v2",
+    "buildProfile": "debug",
+    "runtimeTraceExpectation": "REQUIRED_NDJSON",
+    "httpProbeGraph": null,
+    "releaseDiagnosticActionsAbsent": false,
+    "releaseBodyShapeVerified": false,
+    "sourceSha256": "5acf0db40267630c067d21a61c297b653e5c58e31387fdc96ad60f721263f8d5",
+    "unsignedPlistSha256": "704d65a6db22de4b2b2e7e066de3f7240f44b552a08a7374471c6111eddb2fa5",
+    "nativeActionCount": 28,
+    "actionIdentifiers": [
+      "is.workflow.actions.comment",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.setvariable",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.appendvariable",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.setvariable",
+      "is.workflow.actions.count",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.setvariable",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.setvariable",
+      "is.workflow.actions.count",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.nothing",
+      "is.workflow.actions.setvariable",
+      "is.workflow.actions.count",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.setvariable",
+      "is.workflow.actions.count",
+      "is.workflow.actions.comment",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.appendvariable",
+      "is.workflow.actions.text.combine",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.gettext",
+      "is.workflow.actions.comment",
+      "is.workflow.actions.output"
+    ]
+  },
+  "expectedResult": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
+  "nativeWireObserved": {
+    "bindingCount": "OMITTED_INPUT_WITHOUT_NOTHING",
+    "assignmentCount": "OMITTED_INPUT_WITHOUT_NOTHING",
+    "controlCount": "EXPLICIT_NOTHING_THEN_SET",
+    "presentCount": "EXACT_NONEMPTY_TEXT_PRODUCER"
+  },
+  "graphTests": 2,
+  "causalGraphMutationsRejected": 11,
+  "strictPythonTests": 33,
+  "phaseZero": {
+    "status": "PASS_LOCAL_COMPILATION_AND_GATES_ONLY",
+    "actualCLIFixturesCompiled": 57,
+    "newExplicitSignedQASelections": 22,
+    "causalCompileMutations": {
+      "ignored-release-profile": {
+        "exitCode": 1,
+        "expectedRejectionVerified": true
+      },
+      "missing-body": {
+        "exitCode": 1,
+        "expectedRejectionVerified": true
+      },
+      "duplicated-body": {
+        "exitCode": 1,
+        "expectedRejectionVerified": true
+      }
+    },
+    "causalPublicationMutations": {
+      "nested-basename-flattened": {
+        "expectedRejectionVerified": true,
+        "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+      },
+      "unreviewed-same-basename": {
+        "expectedRejectionVerified": true,
+        "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+      },
+      "nested-path-traversal": {
+        "expectedRejectionVerified": true,
+        "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+      },
+      "stale-source-hash": {
+        "expectedRejectionVerified": true,
+        "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+      },
+      "source-identity-reassigned": {
+        "expectedRejectionVerified": true,
+        "diagnostic": "FIXTURE_SOURCE_ID_MISMATCH"
+      }
+    },
+    "publication": {
+      "publishedTextFiles": 3,
+      "quarantinedRawFiles": 167,
+      "rasterPublicationAllowed": false
+    },
+    "appleRuntime": "NOT_RUN",
+    "signing": "NOT_RUN"
+  },
+  "executionJob": "job_0d7a735b8a08",
+  "commands": [
+    {
+      "label": "build",
+      "command": [
+        "go",
+        "build",
+        "-buildvcs=true",
+        "-trimpath",
+        "-o",
+        "{OWNED_CHECKOUT}\\artifacts\\nil-clear-d61b59b\\clean-ea9283d\\cherri.exe",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 12.901
+    },
+    {
+      "label": "binary-vcs",
+      "command": [
+        "go",
+        "version",
+        "-m",
+        "{OWNED_CHECKOUT}\\artifacts\\nil-clear-d61b59b\\clean-ea9283d\\cherri.exe"
+      ],
+      "exitCode": 0,
+      "seconds": 0.151
+    },
+    {
+      "label": "nil-graph",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-run",
+        "^TestP15NilClearDiagnostic",
+        "-v",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 9.253
+    },
+    {
+      "label": "nil-oracle",
+      "command": [
+        "py",
+        "-3",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "-v",
+        "test_native_macro_diagnostic_contract",
+        "test_workflow_input_contract",
+        "test_runtime_callback_contract"
+      ],
+      "exitCode": 0,
+      "seconds": 67.613
+    },
+    {
+      "label": "phase0",
+      "command": [
+        "py",
+        "-3",
+        "-X",
+        "utf8",
+        "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+        "{CLEAN_SOURCE}",
+        "{OWNED_CHECKOUT}\\artifacts\\nil-clear-d61b59b\\clean-ea9283d\\cherri.exe"
+      ],
+      "exitCode": 0,
+      "seconds": 8.135
+    },
+    {
+      "label": "shell-syntax",
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "scripts/ios27_shortcuts_simulator_qa.sh"
+      ],
+      "exitCode": 0,
+      "seconds": 0.057
+    }
+  ],
+  "publishedArtifacts": {
+    "nil-graph.log": {
+      "sha256": "de71fc2687d1058c33a62871949e88c70f35e4aa09a9eb14546a6caf13581309",
+      "bytes": 2423
+    },
+    "nil-oracle.log": {
+      "sha256": "0c722a54f8da63b6c6725904318ee177e8af398c125e33aff94475432e788fe4",
+      "bytes": 6081
+    },
+    "phase0.log": {
+      "sha256": "0425408a8fbde868acc31d5f9db777a5cf9c6a8f24e4c4de4c1a716b92b7f6cb",
+      "bytes": 1318
+    },
+    "binary-vcs.log": {
+      "sha256": "e729d99bf6d9bce6970a7269e1255a93be6ffe4828120fb59e378fae04f4be82",
+      "bytes": 3444
+    }
+  },
+  "appleRuntime": "NOT_RUN",
+  "signing": "NOT_RUN",
+  "nativeAbsenceProven": false,
+  "logSanitization": "Host paths replaced by placeholders; trailing whitespace removed from go version output only."
+}

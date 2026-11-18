@@ -1,0 +1,29 @@
+=== RUN   TestP15NilClearDiagnosticNativeGraph
+    p15_nil_clear_probe_test.go:156: P15_NIL_CLEAR_PROBE:{"nativeActionCount":28,"nilForms":{"assignmentCount":"OMITTED_INPUT_WITHOUT_NOTHING","bindingCount":"OMITTED_INPUT_WITHOUT_NOTHING","controlCount":"EXPLICIT_NOTHING_THEN_SET"},"runtimeObserved":false}
+--- PASS: TestP15NilClearDiagnosticNativeGraph (0.02s)
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/missing_seed
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/wrong_count_variable
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/constant_count
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/no_control_nothing
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/control_inherits_input
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/present_lost_input
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/hardcoded_summary
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/swapped_summary_fields
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/missing_count_uuid
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/removed_initial_store
+=== RUN   TestP15NilClearDiagnosticRejectsFalseObservations/retargeted_initial_store
+--- PASS: TestP15NilClearDiagnosticRejectsFalseObservations (0.01s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/missing_seed (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/wrong_count_variable (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/constant_count (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/no_control_nothing (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/control_inherits_input (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/present_lost_input (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/hardcoded_summary (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/swapped_summary_fields (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/missing_count_uuid (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/removed_initial_store (0.00s)
+    --- PASS: TestP15NilClearDiagnosticRejectsFalseObservations/retargeted_initial_store (0.00s)
+PASS
+ok  	github.com/electrikmilk/cherri	0.255s
