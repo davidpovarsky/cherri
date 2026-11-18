@@ -1656,7 +1656,7 @@ func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.
 	// support runtime leaf values. Preserve that established codec contract.
 	dictionaryContainer := param.WireKey == "WFJSONValues" || param.WireKey == "WFFormValues" || param.WireKey == "WFHTTPHeaders"
 	if !dictionaryContainer && requiresLiteralArgument(param) {
-		if !eligibleLiteralArgument(arg) {
+		if !eligibleLiteralArgument(arg) && !acceptsLiteralTokenString(param, arg) {
 			a.error(CodeLiteralRequired, arg.NodeSpan(), fmt.Sprintf("parameter %q in call to %q requires a literal value or an eligible pure literal expression; runtime bindings and actions are not literals", param.Label, callName))
 		}
 		return

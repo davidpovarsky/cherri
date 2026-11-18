@@ -8,8 +8,10 @@ import (
 )
 
 // A compiler-declared literal requirement is authoritative even when the native
-// accepted-form evidence is inferred. Otherwise enforce only confirmed slots
-// whose complete accepted-form set excludes both references and token strings.
+// accepted-form evidence is inferred. An explicit tokenString capability may
+// additionally accept an authored template, but never a bare runtime reference.
+// Otherwise enforce only confirmed slots whose complete accepted-form set
+// excludes both references and token strings.
 func requiresLiteralArgument(param *schema.ParameterSchema) bool {
 	if param.Literal {
 		return true
@@ -29,6 +31,25 @@ func requiresLiteralArgument(param *schema.ParameterSchema) bool {
 		}
 	}
 	return literal
+}
+
+// A literal string-template parameter can retain runtime interpolation only
+// when the canonical serializer explicitly declares tokenString support. Keep
+// this separate from literal purity: a bare binding, action, or concatenation
+// remains ineligible, and confirmed literal-only enum fields remain closed.
+func acceptsLiteralTokenString(param *schema.ParameterSchema, expr syntax.Expression) bool {
+	if !param.Literal {
+		return false
+	}
+	if _, ok := expr.(*syntax.FStringExpr); !ok {
+		return false
+	}
+	for _, form := range param.AcceptedForms {
+		if form == "tokenString" {
+			return true
+		}
+	}
+	return false
 }
 
 // Eligible expressions are deliberately limited to values that the existing
