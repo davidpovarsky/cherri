@@ -1,0 +1,528 @@
+{
+  "schema_version": 1,
+  "source_commit": "4e83628b5778c48fc1cb6a449eb35100bde320c2",
+  "baseline_commit": "76c65fbf73f24bdc6d28465559948829f40dbe05",
+  "source_clean_before": true,
+  "started_at": "2026-11-18T20:46:13.340435+00:00",
+  "checks": [
+    {
+      "name": "focused-production",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=5m",
+        "-run",
+        "^TestP15(Nil|VCard|MenusMigration|T02|C02|T04)",
+        "."
+      ],
+      "exit_code": 0,
+      "wall_seconds": 7.363,
+      "log": "focused-production.jsonl",
+      "sha256": "74bd6c509692171edfb57a1fff4ff41ba4a05b2eddd0cb8c4ef4d044bfbd4b23",
+      "top_level_tests": [
+        {
+          "name": "TestP15C02ArgumentDiagnosticsProduction",
+          "status": "pass",
+          "seconds": 0.03
+        },
+        {
+          "name": "TestP15C02AcceptedBindingsProduction",
+          "status": "pass",
+          "seconds": 0.04
+        },
+        {
+          "name": "TestP15C02ArgumentServiceAndCLI",
+          "status": "pass",
+          "seconds": 2.81
+        },
+        {
+          "name": "TestP15NilExplicitOptionalWireControl",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestP15NilMigrationOptionalEvidence",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestP15NilMigrationKeepsAuthoredContracts",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestP15NilMigrationStructuredScopeEvidence",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestP15NilMigrationLoopAndParameterMask",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestP15NilMigrationOriginalCLIParity",
+          "status": "pass",
+          "seconds": 2.07
+        },
+        {
+          "name": "TestP15T04OpaqueTypeProduction",
+          "status": "pass",
+          "seconds": 0.05
+        },
+        {
+          "name": "TestP15T04OpaqueTypeService",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestP15T02LiteralRequiredProduction",
+          "status": "pass",
+          "seconds": 0.04
+        },
+        {
+          "name": "TestP15VCardTokenStringProduction",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestP15VCardTokenStringCapabilityMetadata",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestP15VCardLiteralBoundary",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestP15MenusMigrationCLIParity",
+          "status": "pass",
+          "seconds": 0.14
+        }
+      ],
+      "named_pass": 151,
+      "named_fail": 0,
+      "named_skip": 0
+    },
+    {
+      "name": "analysis-migrate-types",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=5m",
+        "./internal/language/analysis",
+        "./internal/language/migrate",
+        "./internal/language/types"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 3.697,
+      "log": "analysis-migrate-types.jsonl",
+      "sha256": "9196e5de880be65f1478bd6ac6e9641de75d2c3372a7b4806372a3e063a41160",
+      "top_level_tests": [
+        {
+          "name": "TestTypeAssignability",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerAssignImmutable",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestAnalyzerReadBeforeInit",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerUnknownArgument",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerMissingArgument",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerDuplicateArgument",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerIfConditionBool",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerYieldOutsideValueBlock",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerLegacySyntax",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerValidProgram",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerCopyPaste",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerTruthiness",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerHotLoopWarning",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerGlobals",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAnalyzerListPlusAssign",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMacActionInNonMacShortcut_Baseline",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMacActionInMacShortcut_Allowed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestNonMacActionInMacShortcut_Error",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestNonMacActionInNonMacShortcut_Allowed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestEmptyDictionaryKey_MapLiteral",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestEmptyDictionaryKey_IndexExpr",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestEmptyDictionaryKey_GetValueCall",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestExprTypesTracking",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMixedTargets_RejectsNonPortableActions",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestExplicitTargetString",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestUnspecifiedTarget_EmitsWarning",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestVersionBounds_MinVersion",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestAcceptedForms_AcceptsVariableAttachment",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestScopedBlockInferredTypeAndLexicalScope",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestScopedBlockDiagnosticsAndBranchTypes",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestScopedBlockDoesNotReserveExistingFunctionName",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestTargetVersionSettersRetainCompatibility",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestTargetVersionSourceAccessorsKeepComponents",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateTriggersSevenFamilies",
+          "status": "pass",
+          "seconds": 0.01
+        },
+        {
+          "name": "TestMigrateUnknownTriggerFailsClosed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateUnknownDirectiveFailsClosed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateRefPreservation",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateCorruptRefFailsClosed",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateMetadataAndDefines",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateStdfuncAndIncludes",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateTypedVariablesAndRepeats",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateMenus",
+          "status": "pass",
+          "seconds": 0
+        },
+        {
+          "name": "TestMigrateCopyPastePreserved",
+          "status": "pass",
+          "seconds": 0
+        }
+      ],
+      "named_pass": 44,
+      "named_fail": 0,
+      "named_skip": 0
+    },
+    {
+      "name": "build",
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-nil-migration\\exact-4e83628\\cherri.exe",
+        "."
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.719,
+      "log": "build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "actual-nil-migration",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-nil-migration\\exact-4e83628\\cherri.exe",
+        "migrate",
+        "tests/nil.cherri"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.097,
+      "log": "actual-nil-migration.log",
+      "sha256": "3d59eb46317c6869217e5fb46e63a061ea0b3f8511a90340e8e9f50d960bce74"
+    },
+    {
+      "name": "actual-legacy-compile",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-nil-migration\\exact-4e83628\\cherri.exe",
+        "tests/nil.cherri",
+        "--legacy",
+        "--skip-sign",
+        "--load-all-actions",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-nil-migration\\exact-4e83628\\nil-legacy.shortcut"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.054,
+      "log": "actual-legacy-compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "actual-v2-compile",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-nil-migration\\exact-4e83628\\cherri.exe",
+        "compile",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-nil-migration\\exact-4e83628\\nil-v2.cherri",
+        "--skip-sign",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-nil-migration\\exact-4e83628\\nil-v2.shortcut"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.038,
+      "log": "actual-v2-compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "legacy-parity",
+      "command": [
+        "go",
+        "run",
+        "./tools/legacy-parity",
+        "--output=C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\artifacts\\p15-nil-migration\\exact-4e83628\\legacy-parity-results.json"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 9.31,
+      "log": "legacy-parity.log",
+      "sha256": "1084a962f86eb3130b077264254ec835aa3a06edbb73412f79eed0af764ddbd3"
+    }
+  ],
+  "fixture_hashes": {
+    "a11y.cherri": "a4ee6d37f4be70b1653ec30fdc32bdbf04f4562317e30fb4e7a5cf2b0659b80a",
+    "ai.cherri": "e686009d519343198acb22d26caaabb401d650c2fca9c179e39b29fef81559b1",
+    "arrays.cherri": "5607eb669c089818b6550d5a68e574bb0f511c5ed26e5ee118253c8f39dfde38",
+    "automations.cherri": "a1a352db27868e91361c22f53348ece197d5598efcc38b338ba349423331cb21",
+    "calendar.cherri": "08d251c8c5ced1d5bcecceb9930e065e6b8652e1c8ce3e7f24f0110300cd833e",
+    "conditionals.cherri": "8587f51e502a40a1a70084037b96c913d8530f32dd07590da47d005006878664",
+    "control-flow-output.cherri": "878899971d23f066b7420b833572483136763e884cb970050c534becc0f6a3ef",
+    "copy-paste.cherri": "9b88b90a6904978bfdf3d6af50fe5848f106bd437e00c129bb967bc9f9a32b6c",
+    "corpus-batch001.cherri": "c5f09c9b2c13a71ec85994f57b1abfc3893ab1f3f2659ee0f0901539ef5933a6",
+    "crypto.cherri": "06a3cfd589e3014775b1040752fb9aff810aefced72f7f929f83ea6c96a5f8cb",
+    "date-comparisons.cherri": "fab1acd179c522c71384edf2e1f4e5c0019f25d0b79e664375e0180ae2fdbd28",
+    "decomp-expected.cherri": "abda3bf960130f893365953d32d701c4732a1c3f428b49df146155ffaff99a3a",
+    "definitions.cherri": "806df13de7d44333901f9e0c639f0ffaf421a96aaedce9ad34ffd19203749d99",
+    "dictionary.cherri": "5b55f8b297e8c5c67441c36374ba4aec655a3a3f1e8dcf62c471ca486118340a",
+    "empty-types.cherri": "45c5946e135345a771ce1a29fa71ac9bc7589681bed08ef262eda1249e707ebe",
+    "enum.cherri": "86c2485fdc7ae253b8a189a59201b6170242a3798753cc01f7912787b0416534",
+    "functions.cherri": "491058f3eebfdac8ea38499442f0af659859ef1fbcb67aa75451863820bff1e9",
+    "getas-typecast.cherri": "d15d88ce4407a5905197efc45c9a15b2f9ad047edc465cc871c28aac954160fd",
+    "globals.cherri": "7a4f60b3e80e2efb5946e0d6f4b6ee2fe62057240bff001953b79e8ad0e3be2e",
+    "hello-world.cherri": "7235077389f0348f5cbb7d9789fcba2694bb47bd430d58c79a88399f455bba8e",
+    "images.cherri": "08a9cc265f699be616b5e501280aae10aa9dd046ceb32a41d83884072aad859b",
+    "import-questions.cherri": "c1cb9a217766826a829476931cbe81f25a229b11071553e33ecd04f722534006",
+    "include-actions.cherri": "bb1027f759490b8ad36ca1f62d6763890da2948af89d8d14f2a15fc2d6c3ba98",
+    "include.cherri": "5bed3bf6f29a13b13fc39f2778cf8165c019856359b6673214c86c5cdd2c7099",
+    "includes.cherri": "c487b154005ffc2ae7fa1cb785206424006781310ead312e82a13f93f8c306d8",
+    "math.cherri": "cb6a602318ba61fc29349a8a35767c21a0027774d27be0fe36a6fc3d4d173adb",
+    "measurements.cherri": "5a8b1abc24ac94f61b988bf0ead70870811a2afffde103006f3f2f53e524bf0f",
+    "menus.cherri": "5553044bc94cc455bb33d022386b2ad8b92e92a558bb20de454f5ac71f78cf22",
+    "nil.cherri": "40c258b02c635dfbb35d44c52734371a4eae01e6d8491736450593074bc3014f",
+    "numbers.cherri": "26b7531bdba48ba4df46e36e38a10ad1328767b1b5f26a301a810b81d4b7003f",
+    "qty-color.cherri": "a9e91dbab8c40df74ee4af6f77fc7cbaf35ea57303118e566de000aa7fc854a0",
+    "raw-action-output-capture.cherri": "ea2bdce01f755fb9a32187e581db088e6e91c5295d724ccb21c46489e7b00c98",
+    "raw-action-variable-values.cherri": "6d5943b78a6497ec80e6fec00b12cd31a05bd05ef5401a38db4ae2e588303282",
+    "raw-action.cherri": "4f9d8821c9d0f41ae66c451d3305ca811d944f7dcd001aa285c1710dab6420d6",
+    "repeats.cherri": "99a8919f3ce7a79fde9d7e06be1a6176952d6b2e8e85a302d399b5848a3f3ad3",
+    "shortcuts.cherri": "3b5558ba23a16a5491a3d08de2a4fe08ef3963d7d69fb02ec9043d38730ebb8f",
+    "smol.cherri": "52d2afc60f9bdd431ddec9e5e15b5dfbca30d8f3f02cc23efd6e1de21ef74ee6",
+    "split-screen.cherri": "405950279de14d3499da3bdfb265123c7d70ec46c2c670ed84a1996bb2ca7a43",
+    "standard.cherri": "d3e88c351f4d6152fda9783212110074c810f767fba6f9148d3178f2f30ae15b",
+    "storage.cherri": "f42f95d04a780e3a0e893823102a65871ddec1197f5ee526d305665ac223d4f8",
+    "text.cherri": "9568f6fb3779daeaa4870705e001ceff93f0d23fb7f7794cc6e3132e769ed9f3",
+    "toggle-set.cherri": "9bab8842f32a66080c6c6b15fca37cb24199b06d5d3845ca59d1b67221013d74",
+    "types.cherri": "493cefd7271879c941cc215227a821cb5d59e675ba404e1a53ca15fdc0565f7f",
+    "variable-interpolation-utf16.cherri": "911aaad7fead6a960c58b3222c41a574f88400fd93625bb6b5992f1a7a5219c2",
+    "variables.cherri": "09a8ff3711d27aa7c0e4e79e93e17eeff22c5f85edc8603f854d12467eadbfb7",
+    "web.cherri": "de3fc6af9e289af2ae84daa1019d7aebd2df1339298cf60ba56aebe90cc550a2",
+    "zz-action-identifiers.cherri": "6bad35cdca689ecd4b67a3648c83896a17f709c3a15f12cc582045486ac091a7"
+  },
+  "scope": "source typing, actual CLI and native structure; no signing/native runtime",
+  "compiler_sha256": "36332055c585989c980cff1fac2cb3f72dc733834ce260c1fde134a113641441",
+  "parity_counts": {
+    "total_fixtures": 47,
+    "verified_parity": 8,
+    "proven_equivalent": 38,
+    "upstream_baseline_fails": 0,
+    "migration_fails": 0,
+    "v2_compile_fails": 1,
+    "parity_differences": 0,
+    "total_actions_tested": 17,
+    "actions_passed_both": 17
+  },
+  "nil_fixture": {
+    "name": "nil.cherri",
+    "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\nil.cherri",
+    "status": "PROVEN_EQUIVALENT",
+    "legacy_ok": true,
+    "migrated_ok": true,
+    "v2_compile_ok": true,
+    "equal": true
+  },
+  "failed_fixtures": [
+    {
+      "name": "date-comparisons.cherri",
+      "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-call-acceptance-20261118\\tests\\date-comparisons.cherri",
+      "status": "V2_COMPILE_FAIL",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "Compilation error: semantic error [E_ARGUMENT_TYPE]: comparison requires Number or Date, got AnyContent at C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-legacy-parity-2544486032\\date-comparisons_v2.cherri:80:18-80:30"
+    }
+  ],
+  "synthetic_files": [
+    {
+      "path": "nil-v2.cherri",
+      "sha256": "3d59eb46317c6869217e5fb46e63a061ea0b3f8511a90340e8e9f50d960bce74",
+      "bytes": 277
+    },
+    {
+      "path": "nil-legacy.shortcut",
+      "sha256": "f9e5ead81a5b2529b7152e178f2de6c3d0ac42d16a91c565328b41095e82e011",
+      "bytes": 8735
+    },
+    {
+      "path": "nil-v2.shortcut",
+      "sha256": "080792bbbb508cf09a9e799dfb3db85580c4725abdc3f24f83c95ea3b0a39902",
+      "bytes": 9296
+    }
+  ],
+  "source_clean_after": true,
+  "source_head_after": "4e83628b5778c48fc1cb6a449eb35100bde320c2",
+  "all_47_fixture_bytes_unchanged": true,
+  "completed_at": "2026-11-18T20:46:35.876592+00:00",
+  "exit_code": 1
+}

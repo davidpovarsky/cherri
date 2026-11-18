@@ -18,4 +18,14 @@ Production controls exercise File, Number, Text, false, zero, header offsets, ty
 
 This is source typing and native-structure evidence. Existing V2 nil assignment emits Set Variable with omitted WFInput; Legacy also emits a preceding Nothing action. The existing normalized comparator accepts that established difference. This migration change makes no Apple runtime clearing claim and does not change that emitter. A signed runtime check is a separate obligation.
 
-A clean immutable execution receipt will follow the implementation commit.
+## Clean immutable receipt
+
+Implementation source: 4e83628b5778c48fc1cb6a449eb35100bde320c2, based on 76c65fbf73f24bdc6d28465559948829f40dbe05. The [evidence audit](evidence/p15-nil-4e83628/evidence-audit.json) binds all raw execution files and retained synthetic native outputs.
+
+- Six new nil-focused families passed, including 29 named results in their focused run. On the clean commit, the complete selected nil, menus, C02, T02, and T04 production command passed 151 named results.
+- The full analysis, migration, and types packages passed 44 named results.
+- The actual migrate CLI produced the explicit File? declaration; the actual Legacy and V2 compiler commands completed. The retained source and both unsigned native artifacts are hash-bound to that clean compiler.
+- The canonical nil fixture is PROVEN_EQUIVALENT through existing normalization. All 47 original fixture byte hashes remained unchanged, and the source tree stayed clean before and after.
+- All 17 representative action parity cases passed. The full differential gate remains FAILED on this exact base: 46 of 47 fixture paths passed, with only the already known date-comparisons.cherri type failure remaining. There were zero migration failures and zero emitted parity differences.
+
+The clean gate did not include the independently developed Date repair. Its combined-source rerun is separate. No broad type relation, native reset guarantee, private-corpus result, or complete release closure is inferred.

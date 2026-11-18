@@ -1,0 +1,24 @@
+// compile-only: nil/empty value syntax
+var media: File? = getFile(nil)
+
+setMetadata(media, artwork: nil, title: "Title")
+
+media = nil
+
+repeat none as n {
+}
+
+for null in nil {
+    nothing()
+}
+
+menu(nil) {
+    case "" {
+        nothing()
+    }
+}
+
+let int = 5
+
+if int == nil {
+}
