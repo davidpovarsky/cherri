@@ -8562,9 +8562,9 @@ url(url: Text, url: Text)
 
 ## Compiler macros
 
-**Compiler Macro Fingerprint:** `f3c8ab73e6e923d52ed39e6c01d5fe57445e4104c2786458a4bf56ed0254bf5b`
+**Compiler Macro Fingerprint:** `1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec`
 
-**Compiler Macros:** 14
+**Compiler Macros:** 15
 
 These compiler expansions are listed separately from the native Apple catalog. Signatures below describe V2 named arguments; existing Legacy positional forms remain available unless a scoped block is required. A metadata entry does not certify Apple runtime behavior.
 
@@ -8734,6 +8734,22 @@ measure(label: text) { <#value#> } -> AnyContent
 | Parameter | Type | Optional | Literal required | Default |
 |---|---|---|---|---|
 | `label` | `text` | false | true | - |
+
+### `paginate`
+
+Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. No headers, Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.
+
+```cherri
+paginate(startURL: Text, itemsKey?: Text = "items", nextKey?: Text = "next", maxPages?: Number = "20", maxItems?: Number = "1000") -> List<Map<Text, AnyContent>>
+```
+
+| Parameter | Type | Optional | Literal required | Default |
+|---|---|---|---|---|
+| `startURL` | `Text` | false | true | - |
+| `itemsKey` | `Text` | true | true | items |
+| `nextKey` | `Text` | true | true | next |
+| `maxPages` | `Number` | true | true | 20 |
+| `maxItems` | `Number` | true | true | 1000 |
 
 ### `require`
 
