@@ -52,7 +52,7 @@ class WorkflowInputContractTests(unittest.TestCase):
         script = (self.root / "scripts/ios27_shortcuts_simulator_qa.sh").read_text(encoding="utf-8")
         selector = script.split("# Select primary target fixture from SAMPLE_ID\n", 1)[1].split('TARGET_SOURCE_FILE=', 1)[0]
         selector += '\nprintf "%s\\n" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT"\n'
-        result = subprocess.run([self.bash, "-c", selector], env={**os.environ, "SAMPLE_ID": "qa-short-circuit-local"},
+        result = subprocess.run([self.bash, "-s"], input=selector, env={**os.environ, "SAMPLE_ID": "qa-short-circuit-local"},
                                 capture_output=True, text=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines(), ["qa-short-circuit-local-v2", "CHERRI_QA_F01_LOCAL_RESULT:P15_F01_LOCAL_OK:calls=1"])
@@ -72,7 +72,7 @@ class WorkflowInputContractTests(unittest.TestCase):
             with self.subTest(sample=sample):
                 self.assertEqual(self.validate(["runtime", "ipad-default", sample, "false", "1", "true"]).returncode, 0)
                 self.assertIn("          - " + sample + "\n", workflow)
-                result = subprocess.run([self.bash, "-c", selector],
+                result = subprocess.run([self.bash, "-s"], input=selector,
                     env={**os.environ, "SAMPLE_ID": sample, "ROOT_DIR": "/reviewed",
                          "TARGET_SOURCE_RELATIVE": "../../private.cherri"},
                     capture_output=True, text=True, timeout=10)
@@ -82,6 +82,33 @@ class WorkflowInputContractTests(unittest.TestCase):
                     "/reviewed/tools/shortcuts-simulator-qa/fixtures/" + fid + ".cherri", fid, expected, "qa-functional-legacy"])
         for sample in ("qa-f01-diag-private", "qa-f01-diag-counter-release", "qa-f01-diag-logic;exit 0"):
             self.assertEqual(self.validate(["runtime", "ipad-default", sample, "false", "1", "true"]).returncode, 2)
+
+    def test_retry_choices_bind_exact_source_and_enable_only_bounded_endpoint(self):
+        import retry_http_probe as probe
+        script = (self.root / "scripts/ios27_shortcuts_simulator_qa.sh").read_text(encoding="utf-8")
+        selector = script.split("# Select primary target fixture from SAMPLE_ID\n", 1)[1].split("LEGACY_COUNTERPART_SOURCE=", 1)[0]
+        selector += '\nprintf "%s\\n" "$TARGET_FIXTURE_ID" "$TARGET_SOURCE_FILE" "$EXPECTED_SEMANTIC_OUTPUT" "$HTTP_PROBE_ENABLED"\n'
+        workflow = (self.root / ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml").read_text(encoding="utf-8")
+        for fid in probe.FIXTURES:
+            sample = fid.removesuffix("-v2")
+            with self.subTest(sample=sample):
+                self.assertIn("          - " + sample + "\n", workflow)
+                self.assertEqual(self.validate(["runtime", "ipad-default", sample, "false", "1", "true"]).returncode, 0)
+                result = subprocess.run([self.bash, "-s"], input=selector,
+                    env={**os.environ, "SAMPLE_ID": sample, "ROOT_DIR": "/reviewed",
+                         "TARGET_SOURCE_RELATIVE": "../../private.cherri", "HTTP_PROBE_ENABLED": "inherited"},
+                    capture_output=True, text=True, timeout=10)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.splitlines(), [fid,
+                    "/reviewed/tools/shortcuts-simulator-qa/fixtures/" + fid + ".cherri",
+                    probe.expected_marker(fid), "true"])
+        for sample in ("qa-retry-private", "qa-retry-control-release", "qa-retry-control;exit 0"):
+            self.assertEqual(self.validate(["runtime", "ipad-default", sample, "false", "1", "true"]).returncode, 2)
+        result = subprocess.run([self.bash, "-s"], input=selector,
+            env={**os.environ, "SAMPLE_ID": "qa-functional", "ROOT_DIR": "/reviewed", "HTTP_PROBE_ENABLED": "true"},
+            capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.splitlines()[-1], "false")
 
     def test_label_export_choices_bind_exact_reviewed_nested_source(self):
         cases = {
@@ -104,7 +131,7 @@ class WorkflowInputContractTests(unittest.TestCase):
             with self.subTest(sample=sample):
                 self.assertIn("          - " + sample + "\n", options)
                 self.assertEqual(self.validate(["full", "ipad-default", sample, "true", "20", "true"]).returncode, 0)
-                result = subprocess.run([self.bash, "-c", selector],
+                result = subprocess.run([self.bash, "-s"], input=selector,
                     env={**os.environ, "SAMPLE_ID": sample, "ROOT_DIR": "/reviewed",
                          "TARGET_SOURCE_RELATIVE": "../../private-input.cherri"},
                     capture_output=True, text=True, timeout=10)
@@ -113,7 +140,7 @@ class WorkflowInputContractTests(unittest.TestCase):
                 self.assertEqual(result.stdout.splitlines(), [fid,
                     "/reviewed/tools/shortcuts-simulator-qa/fixtures/" + folder + "/" + fid + ".cherri", fid, marker])
         # The optional relative source path must not affect existing root fixtures.
-        result = subprocess.run([self.bash, "-c", selector],
+        result = subprocess.run([self.bash, "-s"], input=selector,
             env={**os.environ, "SAMPLE_ID": "qa-functional", "ROOT_DIR": "/reviewed",
                  "TARGET_SOURCE_RELATIVE": "../../private-input.cherri"},
             capture_output=True, text=True, timeout=10)

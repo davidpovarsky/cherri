@@ -141,6 +141,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-f01-diag-predicate-v2",
         "qa-f01-diag-control-v2",
         "qa-f01-diag-logic-v2",
+        "qa-retry-control-v2",
+        "qa-retry-http500-v2",
+        "qa-retry-http404-v2",
+        "qa-retry-http429-v2",
+        "qa-retry-transport-v2",
         "all_shortcuts_library", "ellipsis.circle.fill", "plus.circle.fill",
         "magnifyingglass", "Dictate", "Comment", "Text", "Number", "Dictionary",
         "Get Dictionary Value", "Get Value", "Get Value for Key", "Current Date",
@@ -1090,6 +1095,12 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertEqual(sanitizeUIString("qa-f01-diag-predicate-v2"), "qa-f01-diag-predicate-v2")
         XCTAssertEqual(sanitizeUIString("qa-f01-diag-control-v2"), "qa-f01-diag-control-v2")
         XCTAssertEqual(sanitizeUIString("qa-f01-diag-logic-v2"), "qa-f01-diag-logic-v2")
+        XCTAssertEqual(sanitizeUIString("qa-retry-control-v2"), "qa-retry-control-v2")
+        XCTAssertEqual(sanitizeUIString("qa-retry-http500-v2"), "qa-retry-http500-v2")
+        XCTAssertEqual(sanitizeUIString("qa-retry-http404-v2"), "qa-retry-http404-v2")
+        XCTAssertEqual(sanitizeUIString("qa-retry-http429-v2"), "qa-retry-http429-v2")
+        XCTAssertEqual(sanitizeUIString("qa-retry-transport-v2"), "qa-retry-transport-v2")
+        XCTAssertTrue(sanitizeUIString("qa-retry-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
         XCTAssertTrue(sanitizeUIString("qa-f01-diag-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
         XCTAssertTrue(sanitizeUIString("qa-export-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
         XCTAssertTrue(sanitizeUIString("qa-label-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)

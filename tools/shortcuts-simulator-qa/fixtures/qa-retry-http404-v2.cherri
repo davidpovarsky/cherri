@@ -1,0 +1,14 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "retry-http404")
+// The harness supplies only a validated loopback port and fresh nonce.
+// This is one HTTP operation plus a separate continuation observation, not retry().
+let response = downloadURL(f"http://127.0.0.1:{ShortcutInput}/http404")
+downloadURL(f"http://127.0.0.1:{ShortcutInput}/continued")
+let semanticResult = text(f"CHERRI_QA_RETRY_HTTP404_RESULT:{response}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "retry-http404")
+let traceEnvelope = debugExportTrace(runId: "qa-retry-http404-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "1.0",
+  "scope": "LOCAL_HTTP_HELPER_AND_COMPILER_GRAPH_VALIDATION_NOT_APPLE_RUNTIME_PROOF",
+  "asanaTaskId": "1220544651247273",
+  "baseCommitSha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+  "compiler": {
+    "compilerCommitSha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "compilerBinarySha256": "be7d917420789b6bbe4e9ba985eb77c751c246217f3a3f33d1aeb2c73b45061f",
+    "actualCLICompileStatus": "PASS",
+    "nativeExecutionStatus": "NOT_RUN",
+    "fixtures": [
+      {
+        "fixtureId": "qa-retry-control-v2",
+        "sourceSha256": "60bfbb0a3e96cf736dd6089949b0ff9532600e0dc91b61eae3cc662f426e3ed4",
+        "unsignedPlistSha256": "919e7cb2bda22ac1a1b67252bcd45c672b880187f26fefd01d96d6d0ffe9e11e",
+        "nativeActionCount": 16,
+        "httpProbeGraph": {
+          "verified": true,
+          "httpActionCount": 2,
+          "method": "GET",
+          "primaryIndex": 5,
+          "continuationIndex": 6,
+          "summaryIndex": 7,
+          "primaryUUIDDigest": "a4b05644fb925c4284050c37928f06dcf152db6fc465a624b2a3c2ce1c715248",
+          "continuationUUIDDigest": null,
+          "retryActionCount": 0,
+          "nativeErrorCatchAdded": false
+        }
+      },
+      {
+        "fixtureId": "qa-retry-http500-v2",
+        "sourceSha256": "db4799cc6cd2bae4e46a8594784f0b127ebb18deb81b782bf8624595c4ae2f13",
+        "unsignedPlistSha256": "e4d672973443bd0b0fa87fed5a44c6599935cb8dd6e3a5d378893aee8b62e4f7",
+        "nativeActionCount": 16,
+        "httpProbeGraph": {
+          "verified": true,
+          "httpActionCount": 2,
+          "method": "GET",
+          "primaryIndex": 5,
+          "continuationIndex": 6,
+          "summaryIndex": 7,
+          "primaryUUIDDigest": "0ec7f28f6e29f2c2cc22b6cd742452b01214d432cc5f043b51277dc6f2bf082c",
+          "continuationUUIDDigest": null,
+          "retryActionCount": 0,
+          "nativeErrorCatchAdded": false
+        }
+      },
+      {
+        "fixtureId": "qa-retry-http404-v2",
+        "sourceSha256": "ee040c5a628fd0e2b742c76a8c4e99340db7a7384148a5e89648fea500146181",
+        "unsignedPlistSha256": "f12f696d325b96c76852a5e8b13042d9fa376342dc18d347605410472281d5c2",
+        "nativeActionCount": 16,
+        "httpProbeGraph": {
+          "verified": true,
+          "httpActionCount": 2,
+          "method": "GET",
+          "primaryIndex": 5,
+          "continuationIndex": 6,
+          "summaryIndex": 7,
+          "primaryUUIDDigest": "0fb44860dc856515e59d64c7aae02f756b29eb75b3a8af839598d31ad0e5cbd0",
+          "continuationUUIDDigest": null,
+          "retryActionCount": 0,
+          "nativeErrorCatchAdded": false
+        }
+      },
+      {
+        "fixtureId": "qa-retry-http429-v2",
+        "sourceSha256": "02f8d3e95cb3eac5c8739b57fe630a167aa07452ea3fcc740f2130985cbc9d84",
+        "unsignedPlistSha256": "6484734c93751c27033517ede25bcde3a33d577486710ca3fad736daff440ba3",
+        "nativeActionCount": 16,
+        "httpProbeGraph": {
+          "verified": true,
+          "httpActionCount": 2,
+          "method": "GET",
+          "primaryIndex": 5,
+          "continuationIndex": 6,
+          "summaryIndex": 7,
+          "primaryUUIDDigest": "f015fc1b4879389aaa5dcd01175d4395ebe6723a86a012843774c1c22f3dbc36",
+          "continuationUUIDDigest": null,
+          "retryActionCount": 0,
+          "nativeErrorCatchAdded": false
+        }
+      },
+      {
+        "fixtureId": "qa-retry-transport-v2",
+        "sourceSha256": "f6e2651d8a9c9819a5510017ce05a34c3bc6db3581e51f6db213bf15a3b230a4",
+        "unsignedPlistSha256": "8a425fd2df2d1db783abc8da90e853d501dac05bf3458d88417780913b3d09ea",
+        "nativeActionCount": 16,
+        "httpProbeGraph": {
+          "verified": true,
+          "httpActionCount": 2,
+          "method": "GET",
+          "primaryIndex": 5,
+          "continuationIndex": 6,
+          "summaryIndex": 7,
+          "primaryUUIDDigest": "dd25e949fe2a3b30a850ca879875174f68c478cf77c44f96e9d1c4a914ef8291",
+          "continuationUUIDDigest": null,
+          "retryActionCount": 0,
+          "nativeErrorCatchAdded": false
+        }
+      }
+    ]
+  },
+  "localPythonSuite": {
+    "command": "py -3 -m unittest discover -s tools/shortcuts-simulator-qa -p test_*.py -v",
+    "testsRun": 98,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "successful": true,
+    "durationSeconds": 38.328,
+    "finishedAt": "2026-11-18T06:43:19.957109+00:00"
+  },
+  "localPythonLogSha256": "4821f716d84e01472dcb567005897edf51a4a4363cdace6f4ec4aa7b187795d7",
+  "shellSyntax": "PASS",
+  "embeddedPythonSyntax": {
+    "status": "PASS",
+    "blocks": 20
+  },
+  "independentReview": "Read-only second-agent review found no endpoint binding/evidence/privacy defect; recommended rejecting nonempty HTTP headers, implemented with causal mutation.",
+  "causalNegativeControls": [
+    "altered source/compiler/unsigned digests",
+    "stale or duplicate callback nonce",
+    "wrong loopback host/port/fixture",
+    "unexpected public fields",
+    "public diagnostic status tampering",
+    "nonempty HTTP headers",
+    "wrong URL attachment/type/range",
+    "primary UUID and summary producer mutation",
+    "extra HTTP/retry action",
+    "negative elapsed time",
+    "expired server",
+    "unreviewed request",
+    "trace missing",
+    "ERROR/CANCELLED preserved as ordinary runtime failure",
+    "raw server data excluded from publication"
+  ],
+  "observedLocalCorrections": [
+    "Rejected negative first-event elapsed time after causal mutation failed.",
+    "Moved extracted selector programs to Bash stdin after Windows command-line truncation; production selection assertions unchanged.",
+    "Checked missing trace against traceGate, preserving separate run/trace contract; no production gate relaxed."
+  ],
+  "sourceMetadataSha256": {
+    "docs/apple-runtime/macos-27/builtin-actions.json": "8fb303591888bcb01fe5935b1571d590add428c9bd044f0ab52dcdf99490571a",
+    "docs/apple-runtime/macos-27/parameter-encodings.json": "9b153807299ae503ed2f9f665ab17ffbe650a4f6defec9f81eb0deac5a9e7969",
+    "actions/web.cherri": "96c52949f4f3b6549c9df607c08961b6a710b0af7697d72e6dda08a4f33fb711",
+    "p10_http_json_test.go": "bfc0304ca82b1be3e7b0c81bedb26837a828272ae7ba716a0b9ed03367456c09",
+    "testdata/native-specimens/manifest.json": "154f1885c221c35730da4dd7f79ddb9f499b5c3c93ef9e1ad972b3a2130f4925"
+  },
+  "testedFileSha256": {
+    "scripts/ios27_shortcuts_simulator_qa.sh": "f38ce165b9b93a897642efd87dd8ed8fd6c9582fecab0883cd4662092b6e70b5",
+    ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml": "3dbe15a6bd3d3c50d9bb5a6364ff8700bce24e6dd26f68fa9fcc08403a79c34b",
+    "tools/shortcuts-simulator-qa/retry_http_probe.py": "be2e04df7366bdf4919275aa51f9f6e1d26f31a318d2c938e5e68c778c3efd4e",
+    "tools/shortcuts-simulator-qa/test_retry_http_probe.py": "9e2db97f242813f9f6af7513f38641476dafe354515194aa2306815bf6218ed2",
+    "tools/shortcuts-simulator-qa/prepare_public_artifacts.py": "a40e0b4d5d99e2ce298553fe6cc89b77cf777b2f10492cb412dee737194b058f",
+    "tools/shortcuts-simulator-qa/test_runtime_callback_contract.py": "a99e7df379b4a5483274f6d5498b8b2ea4af0d16c708b7d54a9dcde3703464b3",
+    "tools/shortcuts-simulator-qa/test_workflow_input_contract.py": "f2d21b13cf020d3a1e1a3db00a3a43af12f9ba0e5bd721485cdeec9b34ce912a",
+    "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift": "56cfd9d88cea9f12ab89e983de1bf72c9f79aae3486bfcf96d49f5d9d9eab0bd",
+    "tools/shortcuts-simulator-qa/testdata/retry-control-compiled-graph.json": "1f6b963a125fbd0dcdf85d81ae955b2d0eb469d3a7055b0dc5dc1aa22e0b468b"
+  },
+  "nativeControlStatus": "NOT_RUN",
+  "otherNativeCases": "NOT_RUN_CONTROL_PROOF_REQUIRED_FIRST",
+  "nativeCatchability": "NOT_PROVEN",
+  "sameRequestStatusValue": "NOT_PROVEN",
+  "retryImplemented": false,
+  "physicalDeviceStatus": "BLOCKED_DEVICE"
+}
