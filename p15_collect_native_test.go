@@ -11,7 +11,6 @@ import (
 // An accumulator or an unrolled body is a different graph and is rejected.
 func TestP15CollectExistingLegacyAndV2Results(t *testing.T) {
 	for _, legacy := range []bool{false, true} {
-		baseline := -1
 		loopBaseline := -1
 		for _, size := range []int{0, 1, 100} {
 			items := make([]string, size)
@@ -23,11 +22,8 @@ func TestP15CollectExistingLegacyAndV2Results(t *testing.T) {
 				source = "@items = [" + strings.Join(items, ",") + "]\nconst results = for item in @items { getVariable(@item) }\ngetVariable(results)"
 			}
 			actions := compileDebugFixture(t, source, legacy)
-			if baseline < 0 {
-				baseline = len(actions)
-			}
-			if !legacy && len(actions) != baseline {
-				t.Fatalf("V2 N=%d: literal or collection unrolled", size)
+			if !legacy && len(p15ActionsNamed(actions, "number")) != size {
+				t.Fatalf("V2 N=%d: missing/repeated native numeric input producer", size)
 			}
 			loops := p15ActionsNamed(actions, "repeat.each")
 			if len(loops) != 2 || loops[0].WFWorkflowActionParameters["GroupingIdentifier"] != loops[1].WFWorkflowActionParameters["GroupingIdentifier"] {
@@ -61,9 +57,9 @@ func TestP15CollectExistingLegacyAndV2Results(t *testing.T) {
 			if last.WFWorkflowActionIdentifier != "is.workflow.actions.getvariable" || p15OutputReference(last.WFWorkflowActionParameters["WFVariable"])["OutputUUID"] != loops[1].WFWorkflowActionParameters["UUID"] {
 				t.Fatal("result consumer no longer references native Repeat Results")
 			}
-			// Legacy constructs its input array with appends before the loop.
-			// Report that real cost separately; it is not a collection accumulator.
-			t.Logf("legacy=%t N=%d nativeActions=%d loopActions=%d loopAccumulatorActions=0 inputAppendActions=%d", legacy, size, len(actions), loopBaseline, len(p15ActionsNamed(actions, "appendvariable")))
+			// Numeric input materialization precedes the constant-size loop in both
+			// dialects. Report its real cost separately from collection itself.
+			t.Logf("legacy=%t N=%d nativeActions=%d loopActions=%d loopAccumulatorActions=0 inputAppendActions=%d inputNumberActions=%d", legacy, size, len(actions), loopBaseline, len(p15ActionsNamed(actions, "appendvariable")), len(p15ActionsNamed(actions, "number")))
 		}
 	}
 }

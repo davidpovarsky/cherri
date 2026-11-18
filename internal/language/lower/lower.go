@@ -2092,36 +2092,13 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 			OutputName: "Number",
 		}
 	case int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8:
-		var n float64
-		switch num := v.(type) {
-		case int:
-			n = float64(num)
-		case int64:
-			n = float64(num)
-		case int32:
-			n = float64(num)
-		case int16:
-			n = float64(num)
-		case int8:
-			n = float64(num)
-		case uint:
-			n = float64(num)
-		case uint64:
-			n = float64(num)
-		case uint32:
-			n = float64(num)
-		case uint16:
-			n = float64(num)
-		case uint8:
-			n = float64(num)
-		}
 		node := &ir.NativeActionNode{
 			NodeID:          uuid,
 			AppleIdentifier: "is.workflow.actions.number",
 			OutputUUID:      uuid,
 			OutputName:      "Number",
 			Parameters: map[string]interface{}{
-				"WFNumberActionNumber": n,
+				"WFNumberActionNumber": v,
 			},
 		}
 		l.emitAction(node)
@@ -2218,6 +2195,13 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 func (l *Lowerer) formatWFListItems(items []interface{}) []interface{} {
 	formatted := make([]interface{}, len(items))
 	for i, it := range items {
+		// WFContentArrayParameter text rows accept text or native references.
+		// Raw numeric plist scalars in those rows become empty native values.
+		// Reuse the ordinary Number producer, retaining type, order and precision.
+		switch it.(type) {
+		case float64, int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8:
+			it = l.materializeToAttachment(it)
+		}
 		if m, ok := it.(map[string]interface{}); ok {
 			if m["WFItemType"] != nil {
 				// Preserve explicitly serialized native/import content rows.
