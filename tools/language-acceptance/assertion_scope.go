@@ -33,7 +33,6 @@ var incompleteLocalAssertions = map[string]string{
 	"C04":   "A string enum value and nonempty completion do not establish contextual and qualified member resolution.",
 	"C05":   "An IR parameter comparison does not execute native import and round-trip preservation.",
 	"T01":   "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
-	"T02":   "Number-to-Text assignment rejection does not exercise a literal-required action parameter.",
 	"T03":   "Finding a codec and a nonempty IR does not verify the number-as-text wire value.",
 	"T04":   "Different type names do not test Unknown/AnyContent/Void behavior in analysis and service.",
 	"T05":   "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions.",

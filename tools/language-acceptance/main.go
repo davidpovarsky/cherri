@@ -1516,17 +1516,7 @@ func (r *Runner) runTypes() {
 	t01Passed := okBase64 && actBase64.StaticParameters != nil && errT01 == nil && len(wfT01.Actions) > 0
 	r.Record("T01", "types", "Typed defaults preserve false/zero/empty text/list/map vs omission", "unit+native+iOS", []string{"unit", "native"}, t01Passed, "PASSED", "Default values retained across lowering and wire emission")
 
-	// T02: Runtime immutable output does not satisfy literal slot
-	srcT02 := "let x = 1 + 2\nlet y: Text = x"
-	diagsT02 := analyzeSrc(r.reg, srcT02)
-	t02Passed := false
-	for _, d := range diagsT02 {
-		if d.Code == "E_ARGUMENT_TYPE" {
-			t02Passed = true
-			break
-		}
-	}
-	r.Record("T02", "types", "Runtime immutable output does not satisfy literal-required slot", "unit", []string{"unit"}, t02Passed, "PASSED", "Type mismatch diagnosed when Number assigned to Text")
+	r.runTypeLiteralRequirement()
 
 	// T03: Semantic Number with number-as-text codec
 	numCodecFound := false

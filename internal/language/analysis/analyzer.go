@@ -1419,16 +1419,16 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			}
 			// Enum validation for primary argument
 			if primParam.Codec == "enum" && len(primParam.EnumValues) > 0 {
-				if lit, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit {
+				if literalValue, isLiteral := literalTextValue(call.PrimaryArg); isLiteral {
 					foundVal := false
 					for _, ev := range primParam.EnumValues {
-						if ev == lit.Value {
+						if ev == literalValue {
 							foundVal = true
 							break
 						}
 					}
 					if !foundVal {
-						a.error(CodeEnumMember, call.PrimaryArg.NodeSpan(), fmt.Sprintf("invalid enum value %q for parameter %q; valid choices: %s", lit.Value, primParam.Label, strings.Join(primParam.EnumValues, ", ")))
+						a.error(CodeEnumMember, call.PrimaryArg.NodeSpan(), fmt.Sprintf("invalid enum value %q for parameter %q; valid choices: %s", literalValue, primParam.Label, strings.Join(primParam.EnumValues, ", ")))
 					}
 				}
 			}
@@ -1504,16 +1504,16 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 
 		// Enum validation
 		if param.Codec == "enum" && len(param.EnumValues) > 0 {
-			if lit, isLit := nArg.Value.(*syntax.LiteralExpr); isLit {
+			if literalValue, isLiteral := literalTextValue(nArg.Value); isLiteral {
 				foundVal := false
 				for _, ev := range param.EnumValues {
-					if ev == lit.Value {
+					if ev == literalValue {
 						foundVal = true
 						break
 					}
 				}
 				if !foundVal {
-					a.error(CodeEnumMember, nArg.Value.NodeSpan(), fmt.Sprintf("invalid enum value %q for parameter %q; valid choices: %s", lit.Value, param.Label, strings.Join(param.EnumValues, ", ")))
+					a.error(CodeEnumMember, nArg.Value.NodeSpan(), fmt.Sprintf("invalid enum value %q for parameter %q; valid choices: %s", literalValue, param.Label, strings.Join(param.EnumValues, ", ")))
 				}
 			}
 		}
@@ -1536,7 +1536,19 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 }
 
 func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.Expression, callName string) {
-	if param == nil || len(param.AcceptedForms) == 0 {
+	if param == nil {
+		return
+	}
+	// HTTP dictionary fields require a literal outer container but explicitly
+	// support runtime leaf values. Preserve that established codec contract.
+	dictionaryContainer := param.WireKey == "WFJSONValues" || param.WireKey == "WFFormValues" || param.WireKey == "WFHTTPHeaders"
+	if !dictionaryContainer && requiresLiteralArgument(param) {
+		if !eligibleLiteralArgument(arg) {
+			a.error(CodeLiteralRequired, arg.NodeSpan(), fmt.Sprintf("parameter %q in call to %q requires a literal value or an eligible pure literal expression; runtime bindings and actions are not literals", param.Label, callName))
+		}
+		return
+	}
+	if len(param.AcceptedForms) == 0 {
 		return
 	}
 	hasLiteral := false
