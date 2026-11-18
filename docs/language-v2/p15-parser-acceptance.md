@@ -146,3 +146,18 @@ U04 therefore stays **UNVERIFIED**. This batch neither rewrites the historical
 contract nor removes the explicit Legacy route. Its audit blocker names the
 D005 conflict. Existing CL01, CL02 and CL03 producers and their evidence remain
 unchanged.
+
+## Clean-commit execution receipt
+
+The complete language-acceptance package passed on clean commit
+`9e1ef5f13cf5cf5e9b05ce9594ee927764e85522`: 47 top-level tests, 59 passing
+test events including subtests, zero failed/skipped test events, 74.110 seconds.
+The preserved Go JSON log contains the package's terminal pass event.
+Receipt extraction reassembled Go's split output chunks before decoding the
+test-emitted JSON; no test result was replaced or rerun for this extraction.
+
+- [Five-contract receipt](evidence/p15-parser-9e1ef5f/receipt.json)
+- [Verification and raw-log digest](evidence/p15-parser-9e1ef5f/verification.json)
+
+This receipt names its tested source commit. It does not claim that a later
+cherry-pick or final integrated commit has already passed the full project.
