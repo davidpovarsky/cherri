@@ -1,0 +1,173 @@
+{
+  "scope": "F01_DIAGNOSTIC_NATIVE_ATTEMPTS_NO_COMPILER_SEMANTIC_OUTCOME",
+  "compilerCommitSha": "867261a3ad6ceac113690f5be01f3d576d572759",
+  "control": {
+    "runId": 44325510946,
+    "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44325510946",
+    "fixtureId": "qa-f01-diag-control-v2",
+    "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-f01-diag-control-v2.cherri",
+    "sourceSha256": "9b64aa49cb6000e66623f74b418bc7b5305d423dc7f169a60eb76817cf6c8f53",
+    "unsignedPlistSha256": "16eb0ee4450ff5f7f724c784e5f4beed906b30b516040743cc696a6b94195b82",
+    "nativeActionCount": 42,
+    "signedHeader": "AEA1",
+    "signedArtifactSha256": "bd19ad8e4c5a225882955483432d21bc41b9f2ed6482b5facf85d4e84a500b66",
+    "runNonce": "qa-f01-diag-control-v2-44325510946-b60f1a11a3b545e195d22b9f29d0ebb4",
+    "importGate": "BLOCKED_IMPORT",
+    "runtimeGate": "BLOCKED_IMPORT",
+    "traceGate": "BLOCKED_IMPORT",
+    "compiledShortcutRuntimeExecuted": false,
+    "compiledShortcutCallbackCount": 0,
+    "receiverSelfTestCallbackCount": 1,
+    "runRequested": false,
+    "editorIdentityVerified": false,
+    "libraryShortcutCells": [],
+    "editorPageCount": 1,
+    "editorInspectorStatus": "NEEDS_REVIEW",
+    "handshake": {
+      "schemaVersion": "1.4",
+      "preImportAttempted": true,
+      "preImportAck": {
+        "rc": 0,
+        "message": "method=localhost_import_scheme_signed_aea1 durationSec=90 simctl openurl timed out after 45s | tmp=simctl openurl timed out after 30s | http_scheme=rc=0 served=False"
+      },
+      "importRequested": true,
+      "importAck": {
+        "rc": 124,
+        "message": "durationSec=50 simctl openurl timed out after 45s"
+      },
+      "importRetried": true,
+      "importRetryAck": {
+        "rc": 124,
+        "message": "durationSec=63 simctl openurl timed out after 35s | http_scheme=rc=124 served=False localhost import-shortcut timed out after 25s"
+      },
+      "runRequested": false,
+      "runAck": null
+    },
+    "harnessXCTestPassed": 4,
+    "publication": {
+      "verifiedFiles": 20,
+      "fileHashes": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "0f53416ecbb4305ff7054fbb7f2b8e6382e4a6964657bb2dd1eeb096cc822f46",
+          "bytes": 77717
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "9c00cc39937561252c06c0e2ff39a7e8e5e89506ff85d7218cd4c959813b4646",
+          "bytes": 871
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "412c1659d43c5aafc9f1084fc7f3bf5f9ff52043ace096cedbda41e4dfbdadcd",
+          "bytes": 157
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "b803ed792c3e636aa048635d974f9391953a9b29d70a045433c041aea8d06c7f",
+          "bytes": 1155
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "7b96d1478288e9d844c6bb09dad71d1699b255b419d795a2a20d1a50e60add5e",
+          "bytes": 609
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "f15ae4c1146b8b9cf9bf6868942f65e6bc0d39d0d24b7c9e6f43d5e9935c4187",
+          "bytes": 23007
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "e410aa26a5175f54427fba9d9a7043d6d7c41e01ddba064a02d411563da6ebc0",
+          "bytes": 2637
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "bdf60475fabfe50dcf584c67e5a06486b800c289749169a1789a8334bee0d2a2",
+          "bytes": 59837
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "f4cf6e83cb223f7177fbe7bb5ac1fbc2283d7886f27cba6f8e215882257139c4",
+          "bytes": 667
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "f15ae4c1146b8b9cf9bf6868942f65e6bc0d39d0d24b7c9e6f43d5e9935c4187",
+          "bytes": 23007
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "36f580b5622711f147730f7b1673ce59783d4ba297bdca3d5b7fd031e55748db",
+          "bytes": 492
+        },
+        {
+          "path": "environment.json",
+          "sha256": "d4e13904601bcd27e681cd2c94f019a3598f81763d87d93b451deab1fdc21e01",
+          "bytes": 786
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "ec0e67d5c70c93f7846183d503e39a9c0d1ea744922bb6a3867a28043a1868f8",
+          "bytes": 1686
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "1de466da39fd40d85549baf91d6b31ef4687ce66190a12613ed1aaccdc9d89e4",
+          "bytes": 481
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "1f9d046f5887378811a2126b2e8866f49a5fdffc3a160a7bf3550dcf994c9682",
+          "bytes": 1370
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "fe39122eaa251a7b4fd8428cf9fbc61e465b5b5ee8771a9973d445d82b953665",
+          "bytes": 261
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "7916315b4f56e246472f0fd6de938b7797fb93fc45ebb2ca50beba7756cbbd23",
+          "bytes": 2055
+        },
+        {
+          "path": "summary.json",
+          "sha256": "edbf4b3d521bb9476722db27fd193623d54bb4fe7b18ed391f6a4eb4299b832c",
+          "bytes": 1149
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "fcb9f4d94f69dc53057d61c88f3f0ceffe1d20bb1dcc911208ca5c5d66b13ddd",
+          "bytes": 984
+        }
+      ],
+      "quarantinedFileCount": 8,
+      "rasterFilesPublished": 0
+    }
+  },
+  "logicAttempt1": {
+    "runId": 44325518117,
+    "attempt": 1,
+    "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44325518117/attempts/1",
+    "jobConclusion": "cancelled",
+    "runnerId": 0,
+    "recordedSteps": 0,
+    "publishedArtifactCount": 0,
+    "failureAnnotation": "The job was not acquired by Runner of type hosted even after multiple attempts",
+    "nativeOutcome": "NOT_RUN"
+  },
+  "limits": [
+    "Control signing does not prove library import or runtime execution.",
+    "Four passing XCTest harness tests do not promote the blocked native runtime gate.",
+    "Only receiver self-test callback exists; it cannot satisfy the compiled-target contract.",
+    "The previous local-F01 semantic failure remains unresolved.",
+    "Logic attempt2 is a separate execution at the same immutable source and is not included in this report."
+  ]
+}
