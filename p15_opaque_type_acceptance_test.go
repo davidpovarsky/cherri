@@ -45,6 +45,7 @@ func p15T04NegativeCases() []struct{ name, source, span, code string } {
 }
 
 func TestP15T04OpaqueTypeProduction(t *testing.T) {
+	t.Run("date_quantity", p15T04CheckDateQuantities)
 	t.Run("declared_custom_results", p15T04CheckCustomDeclaredResults)
 	if types.Unknown.Equals(types.AnyContent) || types.Unknown.Equals(types.Void) || types.AnyContent.Equals(types.Void) {
 		t.Fatal("semantic categories collapsed")
@@ -101,6 +102,7 @@ func TestP15T04OpaqueTypeProduction(t *testing.T) {
 }
 
 func TestP15T04OpaqueTypeService(t *testing.T) {
+	t.Run("date_quantity", p15T04CheckDateQuantityService)
 	t.Run("declared_custom_results", p15T04CheckCustomDeclaredResultsService)
 	svc := service.NewService(nil)
 	uri := "file:///p15-t04-service.cherri"

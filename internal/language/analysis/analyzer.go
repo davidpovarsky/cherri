@@ -1273,8 +1273,8 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			if !isComparable(leftType) {
 				a.error(CodeArgumentType, e.Left.NodeSpan(), fmt.Sprintf("comparison requires Number or Date, got %s", leftType))
 			}
-			if !isComparable(rightType) {
-				a.error(CodeArgumentType, e.Right.NodeSpan(), fmt.Sprintf("comparison requires Number or Date, got %s", rightType))
+			if !isComparable(rightType) && !a.isKnownDateDurationComparison(leftType, e.Right, e.Op, scope) {
+				a.error(CodeArgumentType, e.Right.NodeSpan(), fmt.Sprintf("comparison requires Number, Date, or a known date duration, got %s", rightType))
 			}
 			return types.Bool
 
