@@ -24,3 +24,15 @@ Base: `3754f555433c93201ea48a68d89408532780b34f`.
 The signed R1 F01 sample returned an error. Its source includes intentionally missing Run Shortcut targets to detect eager RHS execution. Native static validation of those targets and the predicate compatibility difference are separate hypotheses. Structural parity and successful compilation do not establish which caused that error.
 
 F01 runtime acceptance remains open until an exact candidate is signed, installed, and executed with a correlated callback. A separate self-contained counter diagnostic is being added without replacing or weakening the original missing-target fixture. No private corpus contents are included here.
+
+## Separate self-contained F01 diagnostic
+
+`tests/language-v2/v2-short-circuit-local-runtime.cherri` returns the exact successful result `P15_F01_LOCAL_OK:calls=1`. It has no Run Shortcut target or network action. It uses action-derived zero/one values to compute runtime Boolean bindings, two skipped RHS blocks (`false && rhs`, `true || rhs`), and an identical directly evaluated RHS as a positive control. Both branches of that RHS increment the observable counter once and yield a Boolean.
+
+The native graph test verifies the original number producers and comparison outputs; precise AND/OR guard branches; all six possible branch-local Math/Set Variable updates; exact producer UUIDs; Boolean yields; the one initial counter store; all six failure observations; the success initialization; and the returned verdict/counter attachments. It rejects eager RHS, wrong increment, cross-wired update, missing positive control, external target, hidden counter, and altered success-marker mutations.
+
+This test is a native graph oracle, not an Apple execution emulator. The signed target will be wrapped separately with trace/callback evidence. The original missing-target fixture remains unchanged.
+
+The standalone source compiled through the actual CLI in Sentinel job `job_64048ccbee9a` and produced 79 actions. The CLI placed its output beside the source; the synthetic artifact was copied to the external evidence directory for inspection. The initial graph inspection hit a console encoding error while printing the final token string; the artifact had already been decoded and saved, and an ASCII-safe follow-up verified the final output attachments. No native execution is inferred from compilation.
+
+The complete lower package passed in Sentinel job `job_95369479263c` (0.791 seconds). Initial local graph and six mutation tests passed in `job_47080e180225` (0.177 seconds); the final bounded rerun includes the additional success-marker mutation and the original F01/guard tests.

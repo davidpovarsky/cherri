@@ -1,0 +1,42 @@
+shortcut "Cherri P15 F01 Local" {
+    version: "27"
+}
+// Synthetic self-contained diagnostic: no Run Shortcut target or network.
+let zero = number(0)
+let one = number(1)
+var flag: Bool = zero == 1
+var truth: Bool = one == 1
+var calls = 0
+var verdict = "P15_F01_LOCAL_OK"
+
+let andValue: Bool = flag && (if truth {
+    calls += 1
+    yield true
+} else {
+    calls += 1
+    yield false
+})
+if andValue { verdict = "P15_F01_LOCAL_AND_VALUE" }
+if calls != 0 { verdict = "P15_F01_LOCAL_AND_EAGER" }
+
+let orValue: Bool = truth || (if truth {
+    calls += 1
+    yield true
+} else {
+    calls += 1
+    yield false
+})
+if !orValue { verdict = "P15_F01_LOCAL_OR_VALUE" }
+if calls != 0 { verdict = "P15_F01_LOCAL_OR_EAGER" }
+
+// Identical RHS as a positive control: its observable update must execute once.
+let controlValue: Bool = if truth {
+    calls += 1
+    yield true
+} else {
+    calls += 1
+    yield false
+}
+if !controlValue { verdict = "P15_F01_LOCAL_CONTROL_VALUE" }
+if calls != 1 { verdict = "P15_F01_LOCAL_CONTROL_COUNT" }
+return f"{verdict}:calls={calls}"
