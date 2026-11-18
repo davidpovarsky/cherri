@@ -1,0 +1,481 @@
+{
+  "source_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+  "source_tree_clean_before": true,
+  "source_tree_clean_after": true,
+  "command": [
+    "go",
+    "test",
+    "-p",
+    "2",
+    "-count=1",
+    "-v",
+    "-run",
+    "^TestNativePreservationProductionEvidence$",
+    "./tools/language-acceptance"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 32.337,
+  "log_sha256": "9645a6d03a63c3b94bdc9726bfa1ee8ed655f5fc393231efa5b475614546cc23",
+  "receipts": [
+    {
+      "records": [
+        {
+          "evidence_id": "ev-local-V04-unit",
+          "requirements": [
+            "V04"
+          ],
+          "tier": "unit",
+          "implementation_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+          "test_id": "github.com/electrikmilk/cherri:TestP15V04CollectionAndOutputBindings",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15V04CollectionAndOutputBindings)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15V04CollectionAndOutputBindings"
+          },
+          "detail": "Executed production tests: TestP15V04CollectionAndOutputBindings"
+        },
+        {
+          "evidence_id": "ev-local-V04-native-structure",
+          "requirements": [
+            "V04"
+          ],
+          "tier": "native-structure",
+          "implementation_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+          "test_id": "github.com/electrikmilk/cherri:TestP15V04CollectionAndOutputBindings",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15V04CollectionAndOutputBindings)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15V04CollectionAndOutputBindings"
+          },
+          "detail": "Executed production tests: TestP15V04CollectionAndOutputBindings"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T18:19:08Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "V04",
+            "group": "binding",
+            "requirement": "let binds lists/maps/action outputs without old const restrictions",
+            "test_level": "unit+native-structure",
+            "executed_levels": [
+              "unit",
+              "native-structure"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only V04 source/import/serialized-native contract with positive and causal negative checks; no Apple runtime execution, unknown-action availability, other acceptance ID, linked repair gate or release closure.",
+      "source_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+      "source_tree_clean": true
+    },
+    {
+      "records": [
+        {
+          "evidence_id": "ev-local-C05-native-roundtrip",
+          "requirements": [
+            "C05"
+          ],
+          "tier": "native-roundtrip",
+          "implementation_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+          "test_id": "github.com/electrikmilk/cherri:TestP15C05UnknownEnumNativeImport",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15C05UnknownEnumNativeImport|TestP15NativeRoundTripOracleRejectsCorruption)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption"
+          },
+          "detail": "Executed production tests: TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T18:19:10Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "C05",
+            "group": "calls",
+            "requirement": "Unknown enum wire value survives native import",
+            "test_level": "native-roundtrip",
+            "executed_levels": [
+              "native-roundtrip"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only C05 source/import/serialized-native contract with positive and causal negative checks; no Apple runtime execution, unknown-action availability, other acceptance ID, linked repair gate or release closure.",
+      "source_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+      "source_tree_clean": true
+    },
+    {
+      "records": [
+        {
+          "evidence_id": "ev-local-R01-native-roundtrip",
+          "requirements": [
+            "R01"
+          ],
+          "tier": "native-roundtrip",
+          "implementation_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+          "test_id": "github.com/electrikmilk/cherri:TestP15R01UnknownNativeFieldsRoundTrip",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15R01UnknownNativeFieldsRoundTrip|TestP15NativeActionEnvelopePreservesExactSource|TestP15NativeActionEnvelopeOldParametersRemainData|TestP15NativeActionEnvelopeRejectsConflicts|TestP15NativeActionEnvelopeBeforeOverlayAndCompatibilityRenderers|TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit|TestP15NativeActionEnvelopePrivateIdentityCannotEscape|TestP15NativeActionEnvelopeLegacyArity|TestP15NativeRoundTripOracleRejectsCorruption)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15R01UnknownNativeFieldsRoundTrip, TestP15NativeActionEnvelopePreservesExactSource, TestP15NativeActionEnvelopeOldParametersRemainData, TestP15NativeActionEnvelopeRejectsConflicts, TestP15NativeActionEnvelopeBeforeOverlayAndCompatibilityRenderers, TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit, TestP15NativeActionEnvelopePrivateIdentityCannotEscape, TestP15NativeActionEnvelopeLegacyArity, TestP15NativeRoundTripOracleRejectsCorruption"
+          },
+          "detail": "Executed production tests: TestP15R01UnknownNativeFieldsRoundTrip, TestP15NativeActionEnvelopePreservesExactSource, TestP15NativeActionEnvelopeOldParametersRemainData, TestP15NativeActionEnvelopeRejectsConflicts, TestP15NativeActionEnvelopeBeforeOverlayAndCompatibilityRenderers, TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit, TestP15NativeActionEnvelopePrivateIdentityCannotEscape, TestP15NativeActionEnvelopeLegacyArity, TestP15NativeRoundTripOracleRejectsCorruption"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T18:19:13Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "R01",
+            "group": "native",
+            "requirement": "Unknown action and unknown nested/top-level fields round-trip",
+            "test_level": "native-roundtrip",
+            "executed_levels": [
+              "native-roundtrip"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only R01 source/import/serialized-native contract with positive and causal negative checks; no Apple runtime execution, unknown-action availability, other acceptance ID, linked repair gate or release closure.",
+      "source_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+      "source_tree_clean": true
+    },
+    {
+      "records": [
+        {
+          "evidence_id": "ev-local-R02-native-roundtrip",
+          "requirements": [
+            "R02"
+          ],
+          "tier": "native-roundtrip",
+          "implementation_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+          "test_id": "github.com/electrikmilk/cherri:TestP15R02KnownNativeUnmodeledVariants",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15R02KnownNativeUnmodeledVariants|TestP15NativeRoundTripOracleRejectsCorruption)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15R02KnownNativeUnmodeledVariants, TestP15NativeRoundTripOracleRejectsCorruption"
+          },
+          "detail": "Executed production tests: TestP15R02KnownNativeUnmodeledVariants, TestP15NativeRoundTripOracleRejectsCorruption"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T18:19:16Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "R02",
+            "group": "native",
+            "requirement": "Known identifier with unmodeled value/static variant",
+            "test_level": "native-roundtrip",
+            "executed_levels": [
+              "native-roundtrip"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only R02 source/import/serialized-native contract with positive and causal negative checks; no Apple runtime execution, unknown-action availability, other acceptance ID, linked repair gate or release closure.",
+      "source_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+      "source_tree_clean": true
+    },
+    {
+      "records": [
+        {
+          "evidence_id": "ev-local-R03-native-roundtrip",
+          "requirements": [
+            "R03"
+          ],
+          "tier": "native-roundtrip",
+          "implementation_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+          "test_id": "github.com/electrikmilk/cherri:TestP15R03OrderedAggrandizementsRoundTrip",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15R03OrderedAggrandizementsRoundTrip|TestP15NativeRoundTripOracleRejectsCorruption)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15R03OrderedAggrandizementsRoundTrip, TestP15NativeRoundTripOracleRejectsCorruption"
+          },
+          "detail": "Executed production tests: TestP15R03OrderedAggrandizementsRoundTrip, TestP15NativeRoundTripOracleRejectsCorruption"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T18:19:19Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "R03",
+            "group": "native",
+            "requirement": "Coercion-only/property-only/chained aggrandizements",
+            "test_level": "native-roundtrip",
+            "executed_levels": [
+              "native-roundtrip"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only R03 source/import/serialized-native contract with positive and causal negative checks; no Apple runtime execution, unknown-action availability, other acceptance ID, linked repair gate or release closure.",
+      "source_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+      "source_tree_clean": true
+    },
+    {
+      "records": [
+        {
+          "evidence_id": "ev-local-R04-native-roundtrip",
+          "requirements": [
+            "R04"
+          ],
+          "tier": "native-roundtrip",
+          "implementation_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+          "test_id": "github.com/electrikmilk/cherri:TestP15R04ImportedOmissionAndExplicitValues",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15R04ImportedOmissionAndExplicitValues|TestP15NativeActionEnvelopePreservesExactSource|TestP15NativeRoundTripOracleRejectsCorruption)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15R04ImportedOmissionAndExplicitValues, TestP15NativeActionEnvelopePreservesExactSource, TestP15NativeRoundTripOracleRejectsCorruption"
+          },
+          "detail": "Executed production tests: TestP15R04ImportedOmissionAndExplicitValues, TestP15NativeActionEnvelopePreservesExactSource, TestP15NativeRoundTripOracleRejectsCorruption"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T18:19:21Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "R04",
+            "group": "native",
+            "requirement": "Original missing parameters not default-filled",
+            "test_level": "native-roundtrip",
+            "executed_levels": [
+              "native-roundtrip"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only R04 source/import/serialized-native contract with positive and causal negative checks; no Apple runtime execution, unknown-action availability, other acceptance ID, linked repair gate or release closure.",
+      "source_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+      "source_tree_clean": true
+    },
+    {
+      "records": [
+        {
+          "evidence_id": "ev-local-R05-unit",
+          "requirements": [
+            "R05"
+          ],
+          "tier": "unit",
+          "implementation_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+          "test_id": "github.com/electrikmilk/cherri:TestP15R05RawExportsAndInvalidBoundary",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15R05RawExportsAndInvalidBoundary|TestP15R05OpaqueRegionsAndWorkflowFallback|TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit|TestP15RawNativeResultFinalizationRejectsIdentityCorruption)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15R05RawExportsAndInvalidBoundary, TestP15R05OpaqueRegionsAndWorkflowFallback, TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit, TestP15RawNativeResultFinalizationRejectsIdentityCorruption"
+          },
+          "detail": "Executed production tests: TestP15R05RawExportsAndInvalidBoundary, TestP15R05OpaqueRegionsAndWorkflowFallback, TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit, TestP15RawNativeResultFinalizationRejectsIdentityCorruption"
+        },
+        {
+          "evidence_id": "ev-local-R05-native-roundtrip",
+          "requirements": [
+            "R05"
+          ],
+          "tier": "native-roundtrip",
+          "implementation_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+          "test_id": "github.com/electrikmilk/cherri:TestP15R05RawExportsAndInvalidBoundary",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15R05RawExportsAndInvalidBoundary|TestP15R05OpaqueRegionsAndWorkflowFallback|TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit|TestP15RawNativeResultFinalizationRejectsIdentityCorruption)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15R05RawExportsAndInvalidBoundary, TestP15R05OpaqueRegionsAndWorkflowFallback, TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit, TestP15RawNativeResultFinalizationRejectsIdentityCorruption"
+          },
+          "detail": "Executed production tests: TestP15R05RawExportsAndInvalidBoundary, TestP15R05OpaqueRegionsAndWorkflowFallback, TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit, TestP15RawNativeResultFinalizationRejectsIdentityCorruption"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T18:19:24Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "R05",
+            "group": "native",
+            "requirement": "Opaque/native regions, exports and workflow fallback",
+            "test_level": "unit+native-roundtrip",
+            "executed_levels": [
+              "unit",
+              "native-roundtrip"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Only R05 source/import/serialized-native contract with positive and causal negative checks; no Apple runtime execution, unknown-action availability, other acceptance ID, linked repair gate or release closure.",
+      "source_sha": "afc52fdccf9f073ad1a0f9b2d78a5da674094b40",
+      "source_tree_clean": true
+    }
+  ]
+}

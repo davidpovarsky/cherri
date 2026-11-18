@@ -1,0 +1,47 @@
+{
+  "compiler_base_sha": "96a88031d1907f6ae54574e0ec34a34e9f03d675",
+  "baseline_scope": "Original compiler with newly authored synthetic production tests; not a clean-source acceptance receipt.",
+  "baseline_log_sha256": "aca919cbb0b9cf121f1c84f59a25571ab2dd00e1f1bac24d171cde8bc9224b7b",
+  "isolated_difference": "P15UnknownActionField beside the native action identifier and parameters",
+  "without_outer_field_control": "8/8 XML/binary x hybrid/lossless x Legacy/V2 routes passed",
+  "with_outer_field": "8/8 routes failed before the exact-envelope correction",
+  "observed_failures": [
+    "p15_native_acceptance_test.go:51: unknown-tree format=1 hybrid/legacy import: plan hybrid import: hybrid import failed fail-closed parity check with zero natural actions remaining",
+    "p15_native_acceptance_test.go:51: unknown-tree format=1 hybrid/v2 import: plan hybrid import: hybrid import failed fail-closed parity check with zero natural actions remaining",
+    "p15_native_acceptance_test.go:62: unknown-tree format=1 lossless/legacy: native tree changed at .WFWorkflowActions[0].P15UnknownActionField: missing in rebuilt",
+    "p15_native_acceptance_test.go:62: unknown-tree format=1 lossless/v2: native tree changed at .WFWorkflowActions[0].P15UnknownActionField: missing in rebuilt",
+    "p15_native_acceptance_test.go:51: unknown-tree format=2 hybrid/legacy import: plan hybrid import: hybrid import failed fail-closed parity check with zero natural actions remaining",
+    "p15_native_acceptance_test.go:51: unknown-tree format=2 hybrid/v2 import: plan hybrid import: hybrid import failed fail-closed parity check with zero natural actions remaining",
+    "p15_native_acceptance_test.go:62: unknown-tree format=2 lossless/legacy: native tree changed at .WFWorkflowActions[0].P15UnknownActionField: missing in rebuilt",
+    "p15_native_acceptance_test.go:62: unknown-tree format=2 lossless/v2: native tree changed at .WFWorkflowActions[0].P15UnknownActionField: missing in rebuilt"
+  ],
+  "compatibility_renderer_red_log_sha256": "ef6c0ce4b4b3c5192a66d884a2d075ec85fef5fac74a6bcaef09a1fcde04fb46",
+  "compatibility_renderer_cause": "Both older map-based lossless renderers omitted the outer field before any import overlay; both now reuse the exact-envelope form.",
+  "canonical_registry_entries": 505,
+  "canonical_registry_generated_and_verified": true,
+  "local_regression_log_sha256": "be61673b0d49b1ae4a86b5e60ce8b85b0b7d6201340e11d0f58759c7a3de0c37",
+  "local_regression_top_level_passes": 60,
+  "local_regression_all_pass_events": 217,
+  "follow_up_arity_control_log_sha256": "42a065ba5bc528671421a91f35fe047fc5fc6e1a5b8bbcbeb43097eec43b132a",
+  "formal_receipt_label_failure_preserved": {
+    "source_sha": "57bf5562294eb394295e7e0549f51e997128a7d8",
+    "log_sha256": "65b825435e656f00ce2a0d00d75852ad78980341cf1c44c0ca6ffdbc571bf0bb",
+    "result": "V04 production test passed but its unnormalized native tier was rejected; six other receipts passed. Existing parseRequiredTiers corrected the producer label, with no verifier change."
+  },
+  "production_mutation_controls": [
+    "10 independent full-native-tree corruptions rejected",
+    "5 V04 producer/type/reference corruptions rejected",
+    "11 malformed/conflicting explicit envelope inputs rejected",
+    "extra Legacy argument after nil third slot rejected by helper and actual compile",
+    "consumed missing and ambiguous raw output identities rejected",
+    "opaque compiler-private output reference rejected; matching ordinary text retained"
+  ],
+  "evidence_mutation_controls": {
+    "wrong_producer": 7,
+    "missing_record": 7,
+    "wrong_contract": 7,
+    "missing_required_tier": 2
+  },
+  "native_runtime_observed": false,
+  "private_corpus_reverified_by_this_agent": false
+}
