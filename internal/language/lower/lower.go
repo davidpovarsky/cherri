@@ -1735,19 +1735,23 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 
 	if b.Mutable {
 		wfVarName := l.effectiveVariableName(b.Name)
-		// Emit is.workflow.actions.setvariable
-		params := map[string]interface{}{
-			"WFVariableName": wfVarName,
+		if isEmptyRuntimeList(val) {
+			l.emitClearedVariable(wfVarName)
+		} else {
+			// Emit is.workflow.actions.setvariable
+			params := map[string]interface{}{
+				"WFVariableName": wfVarName,
+			}
+			if att := l.materializeToAttachment(val); att != nil {
+				params["WFInput"] = att
+			}
+			node := &ir.NativeActionNode{
+				NodeID:          l.GenerateUUID(),
+				AppleIdentifier: "is.workflow.actions.setvariable",
+				Parameters:      params,
+			}
+			l.emitAction(node)
 		}
-		if att := l.materializeToAttachment(val); att != nil {
-			params["WFInput"] = att
-		}
-		node := &ir.NativeActionNode{
-			NodeID:          l.GenerateUUID(),
-			AppleIdentifier: "is.workflow.actions.setvariable",
-			Parameters:      params,
-		}
-		l.emitAction(node)
 		var bType types.Type
 		if b.TypeExpr != nil {
 			bType = l.resolveTypeAnnotation(b.TypeExpr)
@@ -1881,6 +1885,10 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 					l.emitAction(node)
 				}
 			case []interface{}:
+				if len(v) == 0 {
+					l.materializeEmptyList(uuid, b.Name)
+					break
+				}
 				node := &ir.NativeActionNode{
 					NodeID:          uuid,
 					AppleIdentifier: "is.workflow.actions.list",
@@ -2058,6 +2066,11 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 		}
 	}
 
+	if a.Op == syntax.TokenAssign && isEmptyRuntimeList(finalVal) {
+		l.emitClearedVariable(wfVarName)
+		return nil
+	}
+
 	params := map[string]interface{}{
 		"WFVariableName": wfVarName,
 	}
@@ -2200,6 +2213,9 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 			OutputName: "Dictionary",
 		}
 	case []interface{}:
+		if len(v) == 0 {
+			return l.materializeEmptyList(uuid, "List")
+		}
 		node := &ir.NativeActionNode{
 			NodeID:          uuid,
 			AppleIdentifier: "is.workflow.actions.list",

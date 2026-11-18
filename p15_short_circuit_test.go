@@ -28,7 +28,12 @@ func p15CompiledActions(t *testing.T, body string) []map[string]any {
 }
 
 func p15Param(a map[string]any) map[string]any {
-	return a["WFWorkflowActionParameters"].(map[string]any)
+	// Native actions such as Nothing legitimately omit the parameter envelope.
+	// A present but malformed envelope still fails the type assertion below.
+	if parameters, present := a["WFWorkflowActionParameters"]; present {
+		return parameters.(map[string]any)
+	}
+	return nil
 }
 
 func p15Int(v any) int {

@@ -99,17 +99,18 @@ func p15DiagnosticReferencesValid(actions p15DiagnosticGraph) error {
 }
 
 func p15ValidateCollectEmptyDiagnostic(actions p15DiagnosticGraph) error {
-	if len(actions) != 29 {
+	if len(actions) != 31 {
 		return fmt.Errorf("unexpected action count: %d", len(actions))
 	}
 	if err := p15DiagnosticReferencesValid(actions); err != nil {
 		return err
 	}
 	wantKinds := map[int]string{
-		5: "list", 6: "repeat.each", 7: "setvariable", 8: "getvariable",
-		9: "repeat.each", 10: "count", 11: "count", 12: "nothing",
-		13: "setvariable", 14: "repeat.each", 15: "setvariable",
-		16: "getvariable", 17: "repeat.each", 18: "count", 19: "list", 20: "count",
+		5: "nothing", 6: "setvariable", 7: "getvariable",
+		8: "repeat.each", 9: "setvariable", 10: "getvariable",
+		11: "repeat.each", 12: "count", 13: "count", 14: "nothing",
+		15: "setvariable", 16: "repeat.each", 17: "setvariable",
+		18: "getvariable", 19: "repeat.each", 20: "count", 21: "list", 22: "count",
 	}
 	for i, kind := range wantKinds {
 		if actions[i]["WFWorkflowActionIdentifier"] != "is.workflow.actions."+kind {
@@ -117,16 +118,18 @@ func p15ValidateCollectEmptyDiagnostic(actions p15DiagnosticGraph) error {
 		}
 	}
 	p := func(i int) map[string]any { return p15DiagnosticParams(actions, i) }
-	empty, ok := p(5)["WFItems"].([]any)
-	if !ok || len(empty) != 0 {
-		return fmt.Errorf("direct List must contain zero rows")
+	// The authored [] now uses the existing clearing mechanism. Both direct
+	// Count and Repeat input must retain this exact immutable producer.
+	private, err := p15EmptyOrigin(actions, 8, p(8)["WFInput"])
+	if err != nil || private == "__cherri_qa_cleared_empty" || len(p(5)) != 0 {
+		return fmt.Errorf("authored empty List clearing changed: %v", err)
 	}
-	if p(6)["WFControlFlowMode"] != float64(0) || p(9)["WFControlFlowMode"] != float64(2) ||
-		p(6)["GroupingIdentifier"] != p(9)["GroupingIdentifier"] ||
-		p15DiagnosticValue(p(6)["WFInput"])["OutputUUID"] != p(5)["UUID"] {
+	if p(8)["WFControlFlowMode"] != float64(0) || p(11)["WFControlFlowMode"] != float64(2) ||
+		p(8)["GroupingIdentifier"] != p(11)["GroupingIdentifier"] ||
+		p15DiagnosticValue(p(8)["WFInput"])["OutputUUID"] != p(7)["UUID"] {
 		return fmt.Errorf("empty List Repeat edge changed")
 	}
-	for consumer, producer := range map[int]int{10: 9, 11: 5, 18: 17, 20: 19} {
+	for consumer, producer := range map[int]int{12: 11, 13: 7, 20: 19, 22: 21} {
 		value := p15DiagnosticValue(p(consumer)["Input"])
 		if value["Type"] != "ActionOutput" || value["OutputUUID"] != p(producer)["UUID"] {
 			return fmt.Errorf("count %d no longer consumes producer %d", consumer, producer)
@@ -135,18 +138,18 @@ func p15ValidateCollectEmptyDiagnostic(actions p15DiagnosticGraph) error {
 			return fmt.Errorf("count input gained a coercion")
 		}
 	}
-	if len(p(12)) != 0 || !reflect.DeepEqual(p(13), map[string]any{"WFVariableName": "__cherri_qa_cleared_empty"}) {
+	if len(p(14)) != 0 || !reflect.DeepEqual(p(15), map[string]any{"WFVariableName": "__cherri_qa_cleared_empty"}) {
 		return fmt.Errorf("Nothing followed by implicit Set Variable clearing changed")
 	}
-	if p(14)["GroupingIdentifier"] != p(17)["GroupingIdentifier"] ||
-		p(14)["WFControlFlowMode"] != float64(0) || p(17)["WFControlFlowMode"] != float64(2) ||
-		p15DiagnosticValue(p(14)["WFInput"])["VariableName"] != "__cherri_qa_cleared_empty" ||
-		p15DiagnosticValue(p(15)["WFInput"])["VariableName"] != "Repeat Item" ||
-		p(15)["WFVariableName"] != "__cherri_qa_cleared_item" ||
-		p15DiagnosticValue(p(16)["WFVariable"])["VariableName"] != "__cherri_qa_cleared_item" {
+	if p(16)["GroupingIdentifier"] != p(19)["GroupingIdentifier"] ||
+		p(16)["WFControlFlowMode"] != float64(0) || p(19)["WFControlFlowMode"] != float64(2) ||
+		p15DiagnosticValue(p(16)["WFInput"])["VariableName"] != "__cherri_qa_cleared_empty" ||
+		p15DiagnosticValue(p(17)["WFInput"])["VariableName"] != "Repeat Item" ||
+		p(17)["WFVariableName"] != "__cherri_qa_cleared_item" ||
+		p15DiagnosticValue(p(18)["WFVariable"])["VariableName"] != "__cherri_qa_cleared_item" {
 		return fmt.Errorf("cleared-variable Repeat flow changed")
 	}
-	positive, ok := p(19)["WFItems"].([]any)
+	positive, ok := p(21)["WFItems"].([]any)
 	if !ok || len(positive) != 1 {
 		return fmt.Errorf("positive empty-Text control must contain one row")
 	}
@@ -154,7 +157,7 @@ func p15ValidateCollectEmptyDiagnostic(actions p15DiagnosticGraph) error {
 	if row["WFItemType"] != float64(0) || row["WFValue"] != "" {
 		return fmt.Errorf("positive control is not one empty Text")
 	}
-	token, _ := p(26)["WFTextActionText"].(map[string]any)
+	token, _ := p(28)["WFTextActionText"].(map[string]any)
 	value, _ := token["Value"].(map[string]any)
 	if token["WFSerializationType"] != "WFTextTokenString" ||
 		value["string"] != "CHERRI_QA_COLLECT_EMPTY_SPLIT:direct=\uFFFC:repeat=\uFFFC:cleared=\uFFFC:emptyText=\uFFFC\n\uFFFC" {
@@ -167,7 +170,7 @@ func p15ValidateCollectEmptyDiagnostic(actions p15DiagnosticGraph) error {
 		name, _ := ref["OutputName"].(string)
 		got[name] = ref["OutputUUID"]
 	}
-	for name, index := range map[string]int{"directCount": 11, "collectedCount": 10, "clearedCount": 18, "emptyTextCount": 20} {
+	for name, index := range map[string]int{"directCount": 13, "collectedCount": 12, "clearedCount": 20, "emptyTextCount": 22} {
 		if got[name] != p(index)["UUID"] {
 			return fmt.Errorf("summary no longer reports independent %s", name)
 		}
@@ -184,26 +187,31 @@ func TestP15RuntimeDiagnosticCollectEmptyGraph(t *testing.T) {
 		name string
 		edit func(p15DiagnosticGraph)
 	}{
-		{"missing empty rows", func(a p15DiagnosticGraph) { delete(p15DiagnosticParams(a, 5), "WFItems") }},
+		{"missing authored clear target", func(a p15DiagnosticGraph) { delete(p15DiagnosticParams(a, 6), "WFVariableName") }},
 		{"empty becomes singleton", func(a p15DiagnosticGraph) {
-			p15DiagnosticParams(a, 5)["WFItems"] = []any{map[string]any{"WFItemType": float64(0), "WFValue": ""}}
+			a[7]["WFWorkflowActionIdentifier"] = "is.workflow.actions.list"
+			p15DiagnosticParams(a, 7)["WFItems"] = []any{map[string]any{"WFItemType": float64(0), "WFValue": ""}}
 		}},
 		{"direct count uses Repeat result", func(a p15DiagnosticGraph) {
-			p15DiagnosticValue(p15DiagnosticParams(a, 11)["Input"])["OutputUUID"] = p15DiagnosticParams(a, 9)["UUID"]
+			p15DiagnosticValue(p15DiagnosticParams(a, 13)["Input"])["OutputUUID"] = p15DiagnosticParams(a, 11)["UUID"]
 		}},
 		{"collected count uses input", func(a p15DiagnosticGraph) {
-			p15DiagnosticValue(p15DiagnosticParams(a, 10)["Input"])["OutputUUID"] = p15DiagnosticParams(a, 5)["UUID"]
+			p15DiagnosticValue(p15DiagnosticParams(a, 12)["Input"])["OutputUUID"] = p15DiagnosticParams(a, 7)["UUID"]
 		}},
-		{"clearing Nothing replaced", func(a p15DiagnosticGraph) { a[12]["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext" }},
+		{"authored clearing Nothing replaced", func(a p15DiagnosticGraph) { a[5]["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext" }},
+		{"authored clear gains prior input", func(a p15DiagnosticGraph) {
+			p15DiagnosticParams(a, 6)["WFInput"] = p15DiagnosticParams(a, 8)["WFInput"]
+		}},
+		{"clearing Nothing replaced", func(a p15DiagnosticGraph) { a[14]["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext" }},
 		{"clear gains prior input", func(a p15DiagnosticGraph) {
-			p15DiagnosticParams(a, 13)["WFInput"] = p15DiagnosticParams(a, 6)["WFInput"]
+			p15DiagnosticParams(a, 15)["WFInput"] = p15DiagnosticParams(a, 8)["WFInput"]
 		}},
 		{"cleared Count redirected", func(a p15DiagnosticGraph) {
-			p15DiagnosticValue(p15DiagnosticParams(a, 18)["Input"])["OutputUUID"] = p15DiagnosticParams(a, 9)["UUID"]
+			p15DiagnosticValue(p15DiagnosticParams(a, 20)["Input"])["OutputUUID"] = p15DiagnosticParams(a, 11)["UUID"]
 		}},
-		{"cleared Repeat group changed", func(a p15DiagnosticGraph) { p15DiagnosticParams(a, 17)["GroupingIdentifier"] = "wrong-group" }},
-		{"singleton empty Text removed", func(a p15DiagnosticGraph) { p15DiagnosticParams(a, 19)["WFItems"] = []any{} }},
-		{"empty List loses producer UUID", func(a p15DiagnosticGraph) { delete(p15DiagnosticParams(a, 5), "UUID") }},
+		{"cleared Repeat group changed", func(a p15DiagnosticGraph) { p15DiagnosticParams(a, 19)["GroupingIdentifier"] = "wrong-group" }},
+		{"singleton empty Text removed", func(a p15DiagnosticGraph) { p15DiagnosticParams(a, 21)["WFItems"] = []any{} }},
+		{"empty List loses producer UUID", func(a p15DiagnosticGraph) { delete(p15DiagnosticParams(a, 7), "UUID") }},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
