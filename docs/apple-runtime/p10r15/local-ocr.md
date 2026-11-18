@@ -60,3 +60,10 @@ Run44240787251 at e9c21eb56294f0fe57c133288bfedbc775d3ae32 compiled the Swift he
 The follow-up explicitly queries supported compute-stage devices and selects a supported CPU for each stage (the documented CPU-only property is used only on older macOS). Revision3, accurate recognition, language settings and the exact generated-text oracle are unchanged. Failure diagnostics now retain a safe phase and bounded known error-domain/code chain, never localized messages, recognized text or paths. This is a candidate compatibility repair, not a proven diagnosis of the original error; the new exact-SHA Apple run must succeed before claiming Apple OCR execution.
 
 Apple references: https://developer.apple.com/documentation/vision/vnrequest/supportedcomputestagedevices ; https://developer.apple.com/documentation/vision/vnrequest/setcomputedevice(_:for:) ; https://developer.apple.com/documentation/coreml/mlcomputedevice .
+
+
+## Independent optional OCR acceptance
+
+CPU run44244671547 at56808fc still failed actual RECOGNITION/code0 after selecting one supported CPU stage. This does not establish a compiler or platform cause. The next diagnostic run retains the primary revision3 oracle, adds revision2 as a separate generated-image diagnostic, and emits only safe technical error-domain/code plus a fixed diagnostic vocabulary, not localized error messages.
+
+The existing workflow now exposes verify_local_ocr=false by default. Setting it true runs this independent optional-feature acceptance and propagates the primary failure unchanged. Ordinary signed execution continues using AX (OCRUsed=false); its14 existing runtime/privacy gates remain mandatory. This separates an unused optional OCR feature from native compiler execution, without declaring OCR successful or suppressing its requested test failure. Actual OCR remains OPEN until its selected exact-SHA preflight passes.
