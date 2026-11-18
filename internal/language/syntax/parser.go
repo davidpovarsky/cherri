@@ -486,7 +486,7 @@ func (p *Parser) parseEnumDecl() *EnumDecl {
 		var span source.Span
 		if p.curr.Type == TokenString {
 			sTok := p.advance()
-			name = strings.Trim(sTok.Text, `"'`)
+			name = sTok.Text
 			span = sTok.Span
 		} else {
 			mTok, ok := p.expect(TokenIdent)
@@ -499,7 +499,7 @@ func (p *Parser) parseEnumDecl() *EnumDecl {
 		wire := name
 		if p.match(TokenAssign) {
 			wireTok, _ := p.expect(TokenString)
-			wire = strings.Trim(wireTok.Text, `"'`)
+			wire = wireTok.Text
 		}
 		members = append(members, EnumMember{
 			Span:      span,

@@ -1479,14 +1479,8 @@ func (r *Runner) runCalls() {
 	c03Passed := len(diagsC03) == 0 && errC03 == nil && len(wfC03.Actions) > 0
 	r.Record("C03", "calls", "Variadic source API migrates to explicit named list", "unit+native", []string{"unit", "native"}, c03Passed, "PASSED", "Variadic arguments mapped to typed parameter schemas")
 
-	// C04: Enum contextual and qualified members
-	srcC04 := "setBackgroundSound(\"Ocean\")"
-	diagsC04 := analyzeSrc(r.reg, srcC04)
-	svcC04 := service.NewService(r.reg)
-	svcC04.OpenDocument("file:///c04.cherri", 1, "setBackgroundSound(")
-	complC04 := svcC04.Complete("file:///c04.cherri", 1, 20)
-	c04Passed := len(diagsC04) == 0 && len(complC04) > 0
-	r.Record("C04", "calls", "Enum contextual and qualified members resolve", "unit+service", []string{"unit", "service"}, c04Passed, "PASSED", "Enum values validated against schema enum domain and surfaced in completions")
+	// C04: Actual enum analysis, serialization and shared-service producers.
+	r.runEnumRequirement()
 
 	// C05: Unknown enum wire value survives native import
 	srcC05 := "native.action(identifier: \"is.workflow.actions.custom\", parameters: {\"EnumKey\": \"CustomUnmodeledValue\"})"

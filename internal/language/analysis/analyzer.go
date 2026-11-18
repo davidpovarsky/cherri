@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/electrikmilk/cherri/internal/language/enums"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
@@ -16,12 +17,14 @@ import (
 
 // Symbol represents a declared entity.
 type Symbol struct {
-	Name        string
-	Type        types.Type
-	Mutable     bool
-	Initialized bool
-	Span        source.Span
-	Function    *syntax.FunctionDecl
+	Name            string
+	Type            types.Type
+	Mutable         bool
+	Initialized     bool
+	Span            source.Span
+	Function        *syntax.FunctionDecl
+	EnumDeclaration bool
+	EnumType        string
 }
 
 // Scope represents a lexical scope.
@@ -79,6 +82,10 @@ type Analyzer struct {
 	maxTargetVersionSource string
 	userFunctions          map[string]bool
 	enumNames              map[string]bool
+	enumCatalog            enums.Catalog
+	enumValues             map[syntax.Expression]string
+	enumContexts           map[syntax.Expression]string
+	enumErrors             map[syntax.Expression]bool
 	loopDepth              int
 }
 
@@ -311,6 +318,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.topLevelVars = make(map[string]source.Span)
 	a.userFunctions = make(map[string]bool)
 	a.enumNames = make(map[string]bool)
+	a.prepareEnums(prog)
 
 	// Builtin namespace symbols
 	scope.Define(&Symbol{Name: "system", Type: types.Unknown, Initialized: true})
@@ -356,7 +364,14 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 			}
 		case *syntax.EnumDecl:
 			a.enumNames[d.Name] = true
-			if !scope.Define(&Symbol{Name: d.Name, Type: types.Text, Initialized: true, Span: d.Span}) {
+			seenMembers := make(map[string]bool)
+			for _, member := range d.Members {
+				if seenMembers[member.Name] {
+					a.error(CodeDuplicateName, member.Span, fmt.Sprintf("duplicate enum member %q", member.Name))
+				}
+				seenMembers[member.Name] = true
+			}
+			if !scope.Define(&Symbol{Name: d.Name, Type: types.Text, Initialized: true, Span: d.Span, EnumDeclaration: true}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate enum declaration %q", d.Name))
 			}
 		case *syntax.ActionDecl:
@@ -366,11 +381,13 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				if p.TypeExpr != nil {
 					pType = a.resolveType(p.TypeExpr)
 				}
+				enumName := a.enumCatalog.TypeName(p.TypeExpr)
+				binding := d.Bindings[p.Name]
 				actParams = append(actParams, schema.ParameterSchema{
-					ID:       p.Name,
-					Label:    p.Name,
-					Type:     pType,
+					ID: p.Name, Label: p.Name, Type: pType, TypeName: pType.Name(),
 					Optional: p.Optional || p.DefaultExpr != nil,
+					EnumName: enumName, EnumValues: a.enumCatalog.Values(enumName),
+					WireKey: binding.WireKey, Codec: binding.Codec,
 				})
 			}
 			retTypeName := "Void"
@@ -419,8 +436,19 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 
 	// Pass 2: Analyze functions
 	for _, decl := range prog.Declarations {
-		if fn, ok := decl.(*syntax.FunctionDecl); ok {
-			a.analyzeFunction(fn, scope)
+		switch declaration := decl.(type) {
+		case *syntax.FunctionDecl:
+			a.analyzeFunction(declaration, scope)
+		case *syntax.ActionDecl:
+			for _, parameter := range declaration.Parameters {
+				if parameter.DefaultExpr != nil {
+					actual := a.analyzeEnumContext(parameter.DefaultExpr, scope, a.enumCatalog.TypeName(parameter.TypeExpr))
+					expected := a.resolveType(parameter.TypeExpr)
+					if actual != nil && !actual.AssignableTo(expected) {
+						a.error(CodeArgumentType, parameter.DefaultExpr.NodeSpan(), fmt.Sprintf("default value of type %s is not assignable to parameter type %s", actual, expected))
+					}
+				}
+			}
 		}
 	}
 
@@ -611,13 +639,14 @@ func (a *Analyzer) analyzeFunction(fn *syntax.FunctionDecl, parentScope *Scope) 
 	for _, p := range fn.Parameters {
 		pType := a.resolveType(p.TypeExpr)
 		if p.DefaultExpr != nil {
-			defType := a.analyzeExpression(p.DefaultExpr, fnScope)
+			defType := a.analyzeEnumContext(p.DefaultExpr, fnScope, a.enumCatalog.TypeName(p.TypeExpr))
 			if defType != nil && !defType.AssignableTo(pType) {
 				a.error(CodeArgumentType, p.DefaultExpr.NodeSpan(), fmt.Sprintf("default value of type %s is not assignable to parameter type %s", defType, pType))
 			}
 		}
 		fnScope.Define(&Symbol{
 			Name:        p.Name,
+			EnumType:    a.enumCatalog.TypeName(p.TypeExpr),
 			Type:        pType,
 			Mutable:     false,
 			Initialized: true,
@@ -655,7 +684,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 	case *syntax.BindingStmt:
 		var valType types.Type
 		if s.Value != nil {
-			valType = a.analyzeExpression(s.Value, scope)
+			valType = a.analyzeEnumContext(s.Value, scope, a.enumCatalog.TypeName(s.TypeExpr))
 		}
 		if call, ok := s.Value.(*syntax.CallExpr); ok && call.Block != nil && valType != nil && valType.Kind() == types.KindVoid {
 			a.error("E_BLOCK_VOID_VALUE", call.Span, "a void scoped block cannot initialize a binding; end the block with an explicit value")
@@ -694,6 +723,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 
 		scope.Define(&Symbol{
 			Name:        s.Name,
+			EnumType:    a.enumCatalog.TypeName(s.TypeExpr),
 			Type:        declType,
 			Mutable:     s.Mutable,
 			Initialized: s.Value != nil,
@@ -715,7 +745,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			return
 		}
 
-		valType := a.analyzeExpression(s.Value, scope)
+		valType := a.analyzeEnumContext(s.Value, scope, sym.EnumType)
 		if valType != nil && sym.Type != nil {
 			if s.Op == syntax.TokenPlusAssign {
 				if listType, ok := sym.Type.(types.ListType); ok {
@@ -737,7 +767,11 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 	case *syntax.ReturnStmt:
 		var retType types.Type = types.Void
 		if s.Value != nil {
-			retType = a.analyzeExpression(s.Value, scope)
+			enumName := ""
+			if a.currentFn != nil {
+				enumName = a.enumCatalog.TypeName(a.currentFn.ReturnType)
+			}
+			retType = a.analyzeEnumContext(s.Value, scope, enumName)
 		}
 		if a.currentFn != nil && a.currentFn.ReturnType != nil {
 			expected := a.resolveType(a.currentFn.ReturnType)
@@ -963,6 +997,9 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 		return types.Unknown
 	}
 	t := a.analyzeExpressionInternal(expr, scope)
+	if name := a.enumContexts[expr]; name != "" {
+		a.validateEnumValue(expr, name, a.enumCatalog.Values(name))
+	}
 	if a.exprTypes != nil {
 		a.exprTypes[expr] = t
 	}
@@ -970,6 +1007,9 @@ func (a *Analyzer) analyzeExpression(expr syntax.Expression, scope *Scope) types
 }
 
 func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scope) types.Type {
+	if a.resolveEnumExpression(expr, scope) {
+		return types.Text
+	}
 
 	switch e := expr.(type) {
 	case *syntax.LiteralExpr:
@@ -1017,6 +1057,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			a.error(CodeUnknownName, e.Span, fmt.Sprintf("unknown identifier %q", e.Name))
 			return types.Unknown
 		}
+		if sym.EnumDeclaration {
+			a.enumDiagnostic(e, fmt.Sprintf("enum %q is a type; select a member", e.Name))
+		}
 		if !sym.Initialized {
 			a.error(CodeReadBeforeInit, e.Span, fmt.Sprintf("variable %q read before initialization", e.Name))
 		}
@@ -1053,16 +1096,10 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		}
 
 	case *syntax.EnumMemberExpr:
-		if e.TypeName != "" && !a.enumNames[e.TypeName] {
-			if _, found := scope.Lookup(e.TypeName); found {
-				return a.analyzeExpressionInternal(&syntax.MemberExpr{
-					Span:     e.Span,
-					Target:   &syntax.IdentExpr{Span: e.Span, Name: e.TypeName},
-					Property: e.Member,
-				}, scope)
-			}
-		}
-		return types.Text
+		// An uppercase lexical value is parsed with enum-shaped syntax.
+		return a.analyzeExpressionInternal(&syntax.MemberExpr{
+			Span: e.Span, Target: &syntax.IdentExpr{Span: e.Span, Name: e.TypeName}, Property: e.Member,
+		}, scope)
 
 	case *syntax.IndexExpr:
 		targetType := a.analyzeExpression(e.Target, scope)
@@ -1292,14 +1329,15 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			a.warn("W_PERF", call.Span, fmt.Sprintf("calling user-defined function %q inside a loop incurs 'Run Shortcut' overhead; consider inlining or restructuring if performance is critical", callName))
 		}
 		// Evaluate arguments
-		if call.PrimaryArg != nil {
-			a.analyzeExpression(call.PrimaryArg, scope)
-		}
-		for _, nArg := range call.NamedArgs {
-			a.analyzeExpression(nArg.Value, scope)
-		}
 		if sym.Function != nil {
-			a.checkUserFunctionArguments(sym.Function, call)
+			a.checkUserFunctionArguments(sym.Function, call, scope)
+		} else {
+			if call.PrimaryArg != nil {
+				a.analyzeExpression(call.PrimaryArg, scope)
+			}
+			for _, argument := range call.NamedArgs {
+				a.analyzeExpression(argument.Value, scope)
+			}
 		}
 		return sym.Type
 	}
@@ -1398,29 +1436,14 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), "empty dictionary key is not allowed")
 				}
 			}
-			a.checkAcceptedForms(primParam, call.PrimaryArg, callName)
-			argType := unwrapDynamicOptional(a.analyzeExpression(call.PrimaryArg, scope))
+			argType := unwrapDynamicOptional(a.analyzeEnumArgument(primParam, call.PrimaryArg, scope, callName))
 			if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
 				if !(primParam.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(call.PrimaryArg)) &&
 					!isAttachmentCapableTextParamSchema(actionSchema.AppleIdentifier, primParam.WireKey, call.PrimaryArg) {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", primParam.Label, primParam.Type, argType))
 				}
 			}
-			// Enum validation for primary argument
-			if primParam.Codec == "enum" && len(primParam.EnumValues) > 0 {
-				if literalValue, isLiteral := literalTextValue(call.PrimaryArg); isLiteral {
-					foundVal := false
-					for _, ev := range primParam.EnumValues {
-						if ev == literalValue {
-							foundVal = true
-							break
-						}
-					}
-					if !foundVal {
-						a.error(CodeEnumMember, call.PrimaryArg.NodeSpan(), fmt.Sprintf("invalid enum value %q for parameter %q; valid choices: %s", literalValue, primParam.Label, strings.Join(primParam.EnumValues, ", ")))
-					}
-				}
-			}
+
 		}
 	}
 
@@ -1486,8 +1509,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			}
 		}
 
-		a.checkAcceptedForms(param, nArg.Value, callName)
-		argType := unwrapDynamicOptional(a.analyzeExpression(nArg.Value, scope))
+		argType := unwrapDynamicOptional(a.analyzeEnumArgument(param, nArg.Value, scope, callName))
 		if param.Type != nil && argType != nil && !argType.AssignableTo(param.Type) {
 			if !(param.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(nArg.Value)) &&
 				!isAttachmentCapableTextParamSchema(actionSchema.AppleIdentifier, param.WireKey, nArg.Value) {
@@ -1495,21 +1517,6 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			}
 		}
 
-		// Enum validation
-		if param.Codec == "enum" && len(param.EnumValues) > 0 {
-			if literalValue, isLiteral := literalTextValue(nArg.Value); isLiteral {
-				foundVal := false
-				for _, ev := range param.EnumValues {
-					if ev == literalValue {
-						foundVal = true
-						break
-					}
-				}
-				if !foundVal {
-					a.error(CodeEnumMember, nArg.Value.NodeSpan(), fmt.Sprintf("invalid enum value %q for parameter %q; valid choices: %s", literalValue, param.Label, strings.Join(param.EnumValues, ", ")))
-				}
-			}
-		}
 	}
 
 	// Step 6: Validate requiredness
@@ -1535,8 +1542,11 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 }
 
 func (a *Analyzer) checkAcceptedForms(param *schema.ParameterSchema, arg syntax.Expression, callName string) {
-	if param == nil {
+	if param == nil || a.enumErrors[arg] {
 		return
+	}
+	if value, resolved := a.enumValues[arg]; resolved {
+		arg = &syntax.LiteralExpr{Span: arg.NodeSpan(), Type: syntax.TokenString, Value: value}
 	}
 	// HTTP dictionary fields require a literal outer container but explicitly
 	// support runtime leaf values. Preserve that established codec contract.
@@ -1635,6 +1645,9 @@ func (a *Analyzer) resolveType(t syntax.TypeAnnotation) types.Type {
 		}
 		if ta.Namespace != "" {
 			return types.NewEntity(ta.Namespace, ta.Name)
+		}
+		if a.enumCatalog.Has(ta.Name) {
+			return types.Text
 		}
 		return types.Unknown
 

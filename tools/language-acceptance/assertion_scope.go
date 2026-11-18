@@ -28,7 +28,6 @@ var incompleteLocalAssertions = map[string]string{
 	"V04":   "Successful list/map lowering does not inspect action-output bindings and native payload types.",
 	"C01":   "Literal argument lowering does not prove source evaluation order with observable calls.",
 	"C03":   "getUpcomingEvents(3) does not exercise variadic-to-named-list migration.",
-	"C04":   "A string enum value and nonempty completion do not establish contextual and qualified member resolution.",
 	"C05":   "An IR parameter comparison does not execute native import and round-trip preservation.",
 	"T01":   "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
 	"T03":   "Finding a codec and a nonempty IR does not verify the number-as-text wire value.",

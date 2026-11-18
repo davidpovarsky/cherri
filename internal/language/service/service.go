@@ -246,8 +246,6 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 
 	var callIdent string
 	usedLabels := make(map[string]bool)
-	trimmedPrefix := strings.TrimSpace(linePrefix)
-	isDot := strings.HasSuffix(trimmedPrefix, ".")
 
 	if openParen >= 0 {
 		// Find call identifier right before '('
@@ -284,15 +282,7 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 						InsertText:    p.Label + ": ",
 					})
 				}
-				for _, ev := range p.EnumValues {
-					items = append(items, CompletionItem{
-						Label:         "." + ev,
-						Kind:          CompletionKindEnum,
-						Detail:        fmt.Sprintf("enum %s (%s)", p.EnumName, p.Label),
-						Documentation: p.DisplayName,
-						InsertText:    "." + ev,
-					})
-				}
+
 			}
 		}
 		if doc.Program != nil {
@@ -317,19 +307,8 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 		}
 	}
 
-	// 2. If dot prefix, offer general enum members
-	if isDot {
-		for enumName, vals := range s.registry.AllEnums() {
-			for _, v := range vals {
-				items = append(items, CompletionItem{
-					Label:      "." + v,
-					Kind:       CompletionKindEnum,
-					Detail:     "enum " + enumName,
-					InsertText: "." + v,
-				})
-			}
-		}
-	}
+	// 2. Members of only the active enum domain.
+	items = append(items, s.enumCompletions(doc, line, col)...)
 
 	// 3. Local variable & function completions
 	if doc.Program != nil {

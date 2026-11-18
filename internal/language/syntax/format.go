@@ -177,10 +177,14 @@ func (f *Formatter) formatDeclaration(decl Declaration) {
 		f.indent++
 		for i, m := range d.Members {
 			f.writeIndent()
-			if m.WireValue != "" && m.WireValue != m.Name {
-				fmt.Fprintf(&f.buf, "%s = %q", m.Name, m.WireValue)
+			name := m.Name
+			if !IsIdentifier(name) {
+				name = fmt.Sprintf("%q", name)
+			}
+			if m.WireValue != m.Name {
+				fmt.Fprintf(&f.buf, "%s = %q", name, m.WireValue)
 			} else {
-				f.buf.WriteString(m.Name)
+				f.buf.WriteString(name)
 			}
 			if i < len(d.Members)-1 {
 				f.buf.WriteString(",")

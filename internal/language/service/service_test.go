@@ -87,11 +87,11 @@ func TestServiceContextualCallComplete(t *testing.T) {
 		t.Errorf("expected to find parameter completion for resizeImage arguments")
 	}
 
-	// Test dot completion for enums
+	// Enum members require an actual domain; a bare dot is ambiguous.
 	dotURI := "file:///dot.cherri"
-	dotCode := `.`
+	dotCode := `setBackgroundSound(.`
 	svc.OpenDocument(dotURI, 1, dotCode)
-	dotItems := svc.Complete(dotURI, 1, 2)
+	dotItems := svc.Complete(dotURI, 1, len(dotCode)+1)
 	foundEnum := false
 	for _, it := range dotItems {
 		if it.Kind == CompletionKindEnum {
@@ -100,7 +100,13 @@ func TestServiceContextualCallComplete(t *testing.T) {
 		}
 	}
 	if !foundEnum {
-		t.Errorf("expected to find enum completion after dot")
+		t.Errorf("expected to find enum completion after contextual dot")
+	}
+	svc.OpenDocument(dotURI, 2, ".")
+	for _, item := range svc.Complete(dotURI, 1, 2) {
+		if item.Kind == CompletionKindEnum {
+			t.Fatal("ambiguous standalone dot offered unrelated enum")
+		}
 	}
 }
 
@@ -223,4 +229,3 @@ func TestE07BoundedVisualSourceEditAndRejection(t *testing.T) {
 		t.Fatalf("expected out-of-range action index to be rejected")
 	}
 }
-

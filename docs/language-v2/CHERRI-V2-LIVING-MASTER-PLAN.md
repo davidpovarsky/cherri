@@ -509,7 +509,7 @@ Next smallest independently verifiable batch:
 | C01 | Named argument effects/source order | LOCAL_PASS | P2 |
 | C02 | Required/duplicate/unknown arguments | LOCAL_PASS | Actual C02 producer: compiler, CLI/service ranges, causal negative controls |
 | C03 | Explicit variadic list API | LOCAL_PASS | P2 |
-| C04 | Enum contextual/qualified resolution | LOCAL_PASS | P2 |
+| C04 | Enum contextual/qualified resolution | LOCAL_PASS | Actual C04 producer: exact enum wire/type, contextual replacement, CLI/service diagnostics and causal controls; see p15-enums-acceptance.md |
 | C05 | Unknown enum wire round-trip | LOCAL_PASS | P2,P3 |
 | T01 | Typed defaults false/zero/empty | PENDING_IOS_RUNTIME | P2,P7 |
 | T02 | Literal-only requirements | LOCAL_PASS | P2 |

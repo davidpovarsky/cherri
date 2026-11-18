@@ -83,6 +83,7 @@ type Lowerer struct {
 	emitErr               error
 	isMac                 *bool
 	exprTypes             map[syntax.Expression]types.Type
+	enumValues            map[syntax.Expression]string
 	inExprStmt            bool
 	hasImportProvenance   bool
 	provenanceUUIDs       map[string]string
@@ -142,6 +143,9 @@ func (l *Lowerer) SetBaseFilePath(path string) {
 func (l *Lowerer) SetExprTypes(exprTypes map[syntax.Expression]types.Type) {
 	l.exprTypes = exprTypes
 }
+
+// SetEnumValues supplies exact enum literals resolved without AST mutation.
+func (l *Lowerer) SetEnumValues(values map[syntax.Expression]string) { l.enumValues = values }
 
 // SetIsMac sets the target platform constraint (macOS if true, non-Mac if false, unconstrained if nil).
 func (l *Lowerer) SetIsMac(isMac *bool) {
@@ -383,10 +387,15 @@ func (l *Lowerer) emitMenuEnd(groupUUID string, outputUUID string) *ir.NativeAct
 // LowerProgramToSession compiles an AST Program into the configured backend.Session.
 func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
-	if l.exprTypes == nil {
+	if l.exprTypes == nil || l.enumValues == nil {
 		analyzer := analysis.NewAnalyzer(l.registry)
 		analyzer.Analyze(prog)
-		l.exprTypes = analyzer.ExprTypes()
+		if l.exprTypes == nil {
+			l.exprTypes = analyzer.ExprTypes()
+		}
+		if l.enumValues == nil {
+			l.enumValues = analyzer.EnumValues()
+		}
 		if l.isMac == nil {
 			l.isMac = analyzer.IsMacTarget()
 		}
@@ -1396,6 +1405,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 					argItemUUID = numUUID
 				}
 				l.bindings[param.Name] = BindingRef{
+					Type:       l.resolveTypeAnnotation(param.TypeExpr),
 					IsVariable: false,
 					OutputUUID: argItemUUID,
 					OutputName: param.Name,
@@ -1427,6 +1437,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 					argItemUUID = numUUID
 				}
 				l.bindings[param.Name] = BindingRef{
+					Type:       l.resolveTypeAnnotation(param.TypeExpr),
 					IsVariable: false,
 					OutputUUID: argItemUUID,
 					OutputName: param.Name,
@@ -1643,6 +1654,12 @@ func (l *Lowerer) resolveTypeAnnotation(t syntax.TypeAnnotation) types.Type {
 		}
 		if ta.Namespace != "" {
 			return types.NewEntity(ta.Namespace, ta.Name)
+		}
+		if _, found := l.enums[ta.Name]; found {
+			return types.Text
+		}
+		if _, found := l.registry.LookupEnum(ta.Name); found {
+			return types.Text
 		}
 	case *syntax.OptionalTypeAnnotation:
 		if inner := l.resolveTypeAnnotation(ta.Inner); inner != nil {
@@ -2454,6 +2471,9 @@ func flattenCompoundCondition(expr syntax.Expression, op syntax.TokenType) []syn
 }
 
 func (l *Lowerer) isPolymorphicContainerLookupExpr(expr syntax.Expression) bool {
+	if _, resolved := l.enumValues[expr]; resolved {
+		return false
+	}
 	if expr == nil {
 		return false
 	}
@@ -3596,6 +3616,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 	if expr == nil {
 		return nil, nil
 	}
+	if value, resolved := l.enumValues[expr]; resolved {
+		return value, nil
+	}
 
 	switch e := expr.(type) {
 	case *syntax.IfStmt:
@@ -4088,16 +4111,8 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		}
 
 	case *syntax.EnumMemberExpr:
-		if enumDecl, isEnum := l.enums[e.TypeName]; isEnum {
-			for _, m := range enumDecl.Members {
-				if m.Name == e.Member {
-					if m.WireValue != "" {
-						return m.WireValue, nil
-					}
-					return m.Name, nil
-				}
-			}
-			return nil, fmt.Errorf("enum %q has no member %q", e.TypeName, e.Member)
+		if value, found, err := l.qualifiedEnumValue(e.TypeName, e.Member); found {
+			return value, err
 		}
 		if e.TypeName != "" {
 			return l.lowerExpression(&syntax.MemberExpr{
@@ -4110,16 +4125,8 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 
 	case *syntax.MemberExpr:
 		if targetIdent, ok := e.Target.(*syntax.IdentExpr); ok {
-			if enumDecl, isEnum := l.enums[targetIdent.Name]; isEnum {
-				for _, m := range enumDecl.Members {
-					if m.Name == e.Property {
-						if m.WireValue != "" {
-							return m.WireValue, nil
-						}
-						return m.Name, nil
-					}
-				}
-				return nil, fmt.Errorf("enum %q has no member %q", targetIdent.Name, e.Property)
+			if value, found, err := l.qualifiedEnumValue(targetIdent.Name, e.Property); found {
+				return value, err
 			}
 			if targetIdent.Name == "system" {
 				switch e.Property {
