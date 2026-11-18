@@ -111,10 +111,10 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 				}
 			}
 			if pos < len(def.parameters) && def.parameters[pos].infinite && providedIndices[pos] {
-				args = append(args, convertCallArgToActionArg(callArg))
+				args = append(args, convertCallArgForCanonicalParameter(callArg, def.parameters[pos].key))
 				providedIndices[len(args)-1] = true
 			} else {
-				args[pos] = convertCallArgToActionArg(callArg)
+				args[pos] = convertCallArgForCanonicalParameter(callArg, def.parameters[pos].key)
 				providedIndices[pos] = true
 			}
 		}
