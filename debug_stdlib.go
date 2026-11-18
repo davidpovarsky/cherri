@@ -46,7 +46,7 @@ func resetDebugInstrumentationManifest() {
 
 func recordDebugExpandedActions(macroName string, startIdx int, expanded []ShortcutAction) {
 	// Semantic guards remain source actions even though they share macro dispatch.
-	if macroName == "require" {
+	if macroName == "require" || macroName == "paginate" {
 		return
 	}
 	if currentDebugInstrumentation.inlineUUIDs == nil {
@@ -547,6 +547,7 @@ func init() { registerDebugStdlibActions() }
 
 func registerDebugStdlibActions() {
 	registerRequireMacro()
+	registerPaginateMacro()
 	registerDebugExportMacro()
 	actions["debugLog"] = &actionDefinition{
 		identifier:  "appendvariable",
@@ -638,7 +639,7 @@ func registerDebugStdlibActions() {
 // third-party App Intents and similarly named user functions remain untouched.
 func isDebugStdlibMacro(name string) bool {
 	switch name {
-	case "require", "debugLog", "debugShowLogs", "debugClearLogs", "debugTrace", "debugAssert", "debugStartTimer", "debugStopTimer", "debugFinish", "debugLogPrevious", "debugTraceEvent", "debugExportTrace", "debugExport":
+	case "require", "paginate", "debugLog", "debugShowLogs", "debugClearLogs", "debugTrace", "debugAssert", "debugStartTimer", "debugStopTimer", "debugFinish", "debugLogPrevious", "debugTraceEvent", "debugExportTrace", "debugExport":
 		return true
 	default:
 		return false
@@ -717,6 +718,8 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 	switch name {
 	case "require":
 		return buildRequireMacroActions(params, resultUUID, resultName)
+	case "paginate":
+		return buildPaginateMacroActions(params, resultUUID, resultName)
 	case "debugExport":
 		return buildDebugExportActions(params, resultUUID, resultName)
 	case "debugLog":

@@ -1514,6 +1514,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	if actionSchema.CallableName == "require" && actionSchema.CompilerConstruct {
 		return a.requireOutputType(call)
 	}
+	if actionSchema.CallableName == "paginate" && actionSchema.CompilerConstruct {
+		a.checkPaginateArguments(call, boundArguments)
+	}
 	if result, specialized := a.variantOutputType(actionSchema, boundArguments); specialized {
 		return result
 	}

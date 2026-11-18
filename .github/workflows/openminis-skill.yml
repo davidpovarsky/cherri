@@ -142,6 +142,11 @@ jobs:
           go test -count=1 -timeout=5m -run '^TestP15DebugExport' .
           python3 tools/p10r15/verify_debug_export.py --report dist/debug-export-validation.json
 
+      - name: Validate bounded GET pagination
+        run: |
+          go test -count=1 -timeout=5m -run '^TestP15Paginate' .
+          python3 tools/p10r15/verify_paginate.py --report dist/paginate-validation.json
+
       - name: Verify real CLI signing failures leave no artifact
         run: >-
           python3 tools/p10r15/verify_installed_signing.py
@@ -251,6 +256,14 @@ jobs:
         with:
           name: cherri-debug-export-evidence
           path: dist/debug-export-validation.json
+          if-no-files-found: warn
+
+      - name: Upload bounded GET pagination evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-paginate-evidence
+          path: dist/paginate-validation.json
           if-no-files-found: warn
 
       - name: Upload OpenMinis skill artifacts
