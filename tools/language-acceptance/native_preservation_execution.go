@@ -54,7 +54,8 @@ func (r *Runner) runNativePreservationRequirement(id string) {
 	tests := nativePreservationProductionTests[id]
 	passed, detail := executeNamedProductionTests(tests)
 	first := len(r.records)
-	r.Record(id, spec.group, spec.title, strings.Join(spec.tiers, "+"), spec.tiers, passed, "PASSED", detail)
+	level := strings.Join(spec.tiers, "+")
+	r.Record(id, spec.group, spec.title, level, parseRequiredTiers(level), passed, "PASSED", detail)
 	for index := first; index < len(r.records); index++ {
 		r.records[index].Command = productionTestCommand(tests)
 	}
