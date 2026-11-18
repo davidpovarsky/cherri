@@ -2,7 +2,7 @@
 
 ## Contract and observed defects
 
-The immutable C02 requirement in `tests/language-v2/acceptance-contract.json` is ?Duplicate, missing, unknown labels and extra positional arguments,? with a unit tier and specific stable diagnostics at parameter ranges.
+The immutable C02 requirement in `tests/language-v2/acceptance-contract.json` is "Duplicate, missing, unknown labels and extra positional arguments," with a unit tier and specific stable diagnostics at parameter ranges.
 
 The previous local runner checked one unknown label. A production regression matrix found additional defects:
 
@@ -40,3 +40,7 @@ The focused production batch passed in `job_e8b2cbddea0a`. The expanded Unicode/
 The C02 runner now executes all three named producers and binds its unit record to their command and the actual source SHA. Its evidence test rejects an unrelated producer, an absent record and the wrong contract. The generated audit still has all 179 requirement rows, and no unexecuted sibling requirement inherits C02's result. The historical single-label smoke observation no longer supplies C02 evidence.
 
 This closes only the tested C02 unit contract when its complete production command passes on the recorded source. C01 effect ordering, C03 variadic migration, native execution of functions, special native escape constructs, and release closure have separate requirements. The contract file and other requirement statuses are unchanged.
+
+## Immutable source receipt
+
+The production-evidence command was rerun on clean source `70cd603e31f547e907c0ba2d9a4978b21e012665` in job `job_6dd2d8845d70`. It exited zero and passed the C02 producer plus the existing T02, T06 and T08 producer checks. The source-bound C02 record satisfies its unit tier; the audit retains independent statuses for all other requirements. See [the receipt and artifact hashes](evidence/p15-calls-70cd603/receipt.json), [the exact formal record](evidence/p15-calls-70cd603/verification.json), [raw Go JSON output](evidence/p15-calls-70cd603/verification.jsonl), and [the causal baseline failures](evidence/p15-calls-70cd603/baseline-red.log).

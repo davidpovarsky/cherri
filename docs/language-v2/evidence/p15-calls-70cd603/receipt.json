@@ -1,0 +1,32 @@
+{
+  "sourceSha": "70cd603e31f547e907c0ba2d9a4978b21e012665",
+  "sourceTreeCleanBefore": true,
+  "sourceTreeCleanAfter": true,
+  "verificationJob": "job_6dd2d8845d70",
+  "baselineJob": "job_8efc71829c64",
+  "actualCommand": {
+    "sourceSha": "70cd603e31f547e907c0ba2d9a4978b21e012665",
+    "cleanBefore": true,
+    "cleanAfter": true,
+    "argv": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-json",
+      "-count=1",
+      "-timeout=120s",
+      "./tools/language-acceptance",
+      "-run",
+      "^(TestCallArgumentsProductionEvidence|TestType.*ProductionEvidence)$"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 12.704,
+    "rawSha256": "26f7af72cd8c01db62718deae1de6c5eade69749d957e93fc176b1c8cad5daba"
+  },
+  "scope": "C02 unit contract only; the C02 producer executes real analyzer, native emission, service edits and CLI JSON checks. Existing T02/T06/T08 producer regressions also passed. Apple runtime and other contracts remain separate.",
+  "extractorNote": "The first extractor attempted to decode one chunked Go test Output event. It failed after retaining the raw output. This successful rerun joins all relevant Output events before JSON raw_decode; no first-attempt receipt was published.",
+  "files": {
+    "baseline-red.log": "f94433734079d6d1534a3f939a2ca62df877bf95338ae805def371575e9c6ad7",
+    "verification.json": "3ecd1f732020a965c036ea7d717268755502a84d93ae0bc5a935e88681d2b897",
+    "verification.jsonl": "26f7af72cd8c01db62718deae1de6c5eade69749d957e93fc176b1c8cad5daba"
+  }
+}

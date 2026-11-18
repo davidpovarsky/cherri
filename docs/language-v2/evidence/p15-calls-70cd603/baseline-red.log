@@ -1,0 +1,38 @@
+--- FAIL: TestP15C02ArgumentDiagnosticsProduction (0.01s)
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/native_extra_positional (0.00s)
+        p15_call_acceptance_test.go:87: want one E_POSITIONAL_ARGUMENT at [27,28), got []analysis.Diagnostic(nil)
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/native_extra_after_named (0.00s)
+        p15_call_acceptance_test.go:87: want one E_POSITIONAL_ARGUMENT at [35,36), got []analysis.Diagnostic(nil)
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_missing (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_duplicate_named (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_duplicate_primary (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_unknown (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_extra_positional (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_extra_with_reserved_name (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_alias_duplicate (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_ambiguous_alias_reuse (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_zero_arity (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_zero_unknown (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/function_required_optional_value (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: []
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/custom_primary_missing_other (0.00s)
+        p15_call_acceptance_test.go:87: diagnostic named wrong parameter: missing required argument "b" in call to "c02Native"
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/custom_primary_duplicate (0.00s)
+        p15_call_acceptance_test.go:87: want one E_DUPLICATE_ARGUMENT at [221,231), got []analysis.Diagnostic{analysis.Diagnostic{Code:"E_DUPLICATE_ARGUMENT", Severity:0, Span:source.Span{Document:"p15-parser", Start:source.Position{Line:7, Column:23, UTF16Column:23, ByteOffset:214, UTF16Offset:208}, End:source.Position{Line:7, Column:28, UTF16Column:28, ByteOffset:219, UTF16Offset:213}}, Message:"duplicate argument for parameter \"a\" in call to \"c02Native\""}}
+    --- FAIL: TestP15C02ArgumentDiagnosticsProduction/custom_unknown (0.00s)
+        p15_call_acceptance_test.go:87: want exactly one error: [[ERROR] E_DUPLICATE_ARGUMENT: duplicate argument for parameter "a" in call to "c02Native" (p15-parser:7:23-7:28) [ERROR] E_UNKNOWN_ARGUMENT: unknown argument label "mystery" in call to "c02Native" (p15-parser:7:30-7:40) [ERROR] E_MISSING_ARGUMENT: missing required argument "b" in call to "c02Native" (p15-parser:7:1-7:41)]
+--- FAIL: TestP15C02AcceptedBindingsProduction (0.00s)
+    p15_call_acceptance_test.go:143: [ERROR] E_DUPLICATE_ARGUMENT: duplicate argument for parameter "a" in call to "c02Native" (p15-parser:6:23-6:28)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.161s
+FAIL

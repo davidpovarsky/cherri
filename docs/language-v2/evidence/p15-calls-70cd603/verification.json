@@ -1,0 +1,82 @@
+{
+  "sourceSha": "70cd603e31f547e907c0ba2d9a4978b21e012665",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "argv": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-json",
+    "-count=1",
+    "-timeout=120s",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestCallArgumentsProductionEvidence|TestType.*ProductionEvidence)$"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 12.704,
+  "rawSha256": "26f7af72cd8c01db62718deae1de6c5eade69749d957e93fc176b1c8cad5daba",
+  "topLevelPasses": [
+    "TestCallArgumentsProductionEvidence",
+    "TestTypeLiteralProductionEvidence",
+    "TestTypeRecordProductionEvidence",
+    "TestTypeCardinalityProductionEvidence"
+  ],
+  "formalC02Receipt": {
+    "records": [
+      {
+        "evidence_id": "ev-local-C02-unit",
+        "requirements": [
+          "C02"
+        ],
+        "tier": "unit",
+        "implementation_sha": "70cd603e31f547e907c0ba2d9a4978b21e012665",
+        "test_id": "github.com/electrikmilk/cherri:TestP15C02ArgumentDiagnosticsProduction",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m",
+          ".",
+          "-run",
+          "^(TestP15C02ArgumentDiagnosticsProduction|TestP15C02AcceptedBindingsProduction|TestP15C02ArgumentServiceAndCLI)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15C02ArgumentDiagnosticsProduction, TestP15C02AcceptedBindingsProduction, TestP15C02ArgumentServiceAndCLI"
+        },
+        "detail": "Executed production tests: TestP15C02ArgumentDiagnosticsProduction, TestP15C02AcceptedBindingsProduction, TestP15C02ArgumentServiceAndCLI"
+      }
+    ],
+    "report": {
+      "timestamp": "2026-11-18T06:48:09Z",
+      "phase": "local",
+      "closure_complete": false,
+      "language_version": "2.0",
+      "schema_fingerprint": "",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "results": [
+        {
+          "id": "C02",
+          "group": "calls",
+          "requirement": "Duplicate, missing, unknown labels and extra positional arguments",
+          "test_level": "unit",
+          "executed_levels": [
+            "unit"
+          ],
+          "passed": true,
+          "status": "PASSED",
+          "detail": "All required tiers satisfied by verified evidence"
+        }
+      ]
+    },
+    "scope": "Only C02 ordinary action/custom-action/user-function argument diagnostic contract; actual shared analysis, native serialization, CLI and service checks. No Apple execution, source effect ordering, variadic migration or release closure.",
+    "source_sha": "70cd603e31f547e907c0ba2d9a4978b21e012665",
+    "source_tree_clean": true
+  }
+}
