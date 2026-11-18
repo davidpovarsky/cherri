@@ -1,0 +1,104 @@
+{
+  "apple_runtime_proved": false,
+  "clean_job_id": "job_2a53c4717f48",
+  "clean_receipt_verified": true,
+  "component": "Legacy inline native arguments and parser cursor boundaries",
+  "evidence_classification": {
+    "baseline-57a-ci-controls.jsonl": "unchanged collect zero-size oracle failure; unchanged paginate denominator passes",
+    "baseline-57a-inline.jsonl": "actual compiler baseline: healthy explicit controls and seven causal failing inline/control/function cases",
+    "baseline-selected-void-shadow.jsonl": "disproved accepted-source shadow concern: stopStopwatch declaration rejected as duplicate; seven valid boundary tests pass",
+    "baseline-typed-shadow.jsonl": "test refinement: duplicate show declaration rejected; calculate enum was not declared literal-only",
+    "candidate-expanded-boundaries-retry.jsonl": "actual mutable-argument ordering failure plus two missing-include test controls, retained without reclassification as product failures",
+    "candidate-expanded-boundaries.jsonl": "infrastructure-only: linker disk-full before any named test ran",
+    "candidate-expanded.jsonl": "working source batch:385 named passes",
+    "candidate-initial.jsonl": "initial working implementation:22 named passes before expanded boundary probes",
+    "candidate-snapshot.jsonl": "33 named passes; actual adjacent custom-declaration call erased (zero producers/consumers)",
+    "clean-root.jsonl": "exact clean immutable source:385 named passes, zero failures/skips"
+  },
+  "files": [
+    {
+      "bytes": 18518,
+      "path": "baseline-57a-inline.jsonl",
+      "sha256": "acf0ef6f8180e5f22c242f47d521f7001f8771e07ae0ac1ccf68e5b39fa91843"
+    },
+    {
+      "bytes": 2476,
+      "path": "baseline-57a-ci-controls.jsonl",
+      "sha256": "b62de89d8dd8c57848ca9a99c365b78d0576d922af6c9afc5d57fae233615f87"
+    },
+    {
+      "bytes": 19226,
+      "path": "candidate-initial.jsonl",
+      "sha256": "030f4b68a030304636fa8c0434af18e7fd029f99f26c1b44f6c9abfa7b3893e8"
+    },
+    {
+      "bytes": 905,
+      "path": "candidate-expanded-boundaries.jsonl",
+      "sha256": "754de05f669fcda50dbadae2dd13985b97d5ae34238729255a5ef27b5b27895e"
+    },
+    {
+      "bytes": 10661,
+      "path": "candidate-expanded-boundaries-retry.jsonl",
+      "sha256": "f8776996e6e79e1c3a4b7f2563931f3e3cb75b6e5d9634c0b4e0369229388e93"
+    },
+    {
+      "bytes": 10019,
+      "path": "baseline-typed-shadow.jsonl",
+      "sha256": "b1e05045009d55022f9519b0dde2bbb16b20aec36c72a4f616224e4796d21764"
+    },
+    {
+      "bytes": 9600,
+      "path": "baseline-selected-void-shadow.jsonl",
+      "sha256": "0858f0212aa6c181d120f760d30c633b109c6e5556ef9471a82edcc91c198c94"
+    },
+    {
+      "bytes": 29415,
+      "path": "candidate-snapshot.jsonl",
+      "sha256": "451697d5ddd8f0822b755df0d14051d54baa3ba5463c8842b83f45e8b3afedd1"
+    },
+    {
+      "bytes": 329276,
+      "path": "candidate-expanded.jsonl",
+      "sha256": "d51025c23e9632c1337cdc34669681fccbc476365be4fb63e57a448409263660"
+    },
+    {
+      "bytes": 329267,
+      "path": "clean-root.jsonl",
+      "sha256": "b852d5e1a550daaf43e19d11f9c55aa88ea8d47dba1a5405048bdf735f831a55"
+    },
+    {
+      "bytes": 6098,
+      "path": "clean-execution-receipt.json",
+      "sha256": "e0abb164f31d3ece6f027a2164a2111266957dade7c8e9d7c0da1b56203f471f"
+    }
+  ],
+  "formal_acceptance_ids_promoted": [],
+  "format_version": 1,
+  "named_pass_count": 385,
+  "named_skip_count": 0,
+  "original_public_fixture_count": 47,
+  "original_public_fixtures_unchanged": true,
+  "peer_review": {
+    "agent": "runtime_inspector",
+    "execution_claim": false,
+    "findings": "No concrete defect found in frozen changed ranges; accepted-source shadow concern withdrawn after actual duplicate-declaration rejection",
+    "scope": "parent action context, function cursor, earlier-argument staging, captured native definition and interpolation suffix preservation"
+  },
+  "private_corpus_requested": false,
+  "signing_requested": false,
+  "source_files_sha256": {
+    "action.go": "9ae61c7d007793c92154aef69732653a4bbeb13bc33897d98455b56cf1d88f90",
+    "docs/language-v2/p15-legacy-inline-arguments.md": "ef1b69780ad4ff1479debe2b992233fa7e2fdc43595008dd03f5b9590d3cbebe",
+    "docs/language-v2/p15-variadic-migration-acceptance.md": "9f683f30deaf597c93431c72723eee12e8c428718ba380673ca46df5594557ce",
+    "functions.go": "2edc499d643130123331e3baa0b6662cae7124d7443ebde526bd5f7e0dd9ca63",
+    "legacy_inline_arguments.go": "83502275dece3bf252197a1901b72ef47fa1f8b8cdd66e829f0cb82f0e52693e",
+    "p15_legacy_inline_test.go": "46e87ff4eecf87fa46fe91f92bfabac604e2c5f4522d46d41d3fd47c87dcffc2",
+    "p15_scoped_blocks_test.go": "f6b359bc7013a3fa3f744c9306d3ea4b5191680b61e81223cc3c9b8691b04585",
+    "parser.go": "8cb41f9219c1b8a5212ab86836ccb57fb8305365cdba88dd6ebf108ad35e6294",
+    "scoped_blocks_legacy.go": "4dabbceb4121bca8ac9cff622b22817f0bc34de4b2734fbe5536b9231e7ce354",
+    "shortcutgen.go": "7ed0216c40d0aa3e547530f3fd4f7e1736e4eaf1e0e724bb7c2d337265b3f56e"
+  },
+  "source_parent": "57a72ed05f97158c85d2ed591801b439041caa41",
+  "source_sha": "1244f448408bc7680a5160e2445c7dbc4914a6ab",
+  "working_job_id": "job_0025da9becaa"
+}
