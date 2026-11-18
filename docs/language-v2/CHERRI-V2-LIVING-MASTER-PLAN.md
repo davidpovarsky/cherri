@@ -978,3 +978,5 @@ The canonical eight-callable variadic API now has an AST migration to explicit n
 ## Registry lifetime follow-up after C03
 
 The C03 singleton-contamination evidence is now addressed by isolated analyzer registries and per-document service lookups. Successful, failed and diagnostic-only compilations cannot register source actions into the canonical catalog; local shadows and typed native producer references remain supported. Repeated callable replacement now removes stale native index entries. The working component batch passed 305 root and 85 internal named tests, with clean immutable-source receipts to follow. See p15-registry-lifetime.md. No new full-contract or Apple-runtime completion is claimed. The general Legacy inline-argument producer omission is a separate remaining repair.
+
+Registry clean follow-up: exact 48e0c965f5e40595ee76ff9e3d180d7459597721 passed 305 root and 85 internal named tests in job_b8aac1411e41; 47 original public fixture hashes were unchanged and the source was clean before/after. Source-bound payloads and their audit are under evidence/p15-registry-48e0c96. No new formal ID or native-runtime claim is added.
