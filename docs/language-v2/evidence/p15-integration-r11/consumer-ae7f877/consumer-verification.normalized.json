@@ -1,0 +1,57 @@
+{
+  "sourceCommit": "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+  "docsCommit": "e408a29c2238da6618bf52a2f248d83dce2ab2f1",
+  "consumerCommit": "ae7f8773eb318e9673d000599af313a4ede30485",
+  "consumerRef": "refs/heads/agent/cherri-p10r15-project-closure-20261118",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "steps": [
+    {
+      "name": "consumer-matrix",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "tools/p10r3/verify_consumer_compatibility.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 14.219,
+      "sha256": "b1b2672bfaa6fc39ff344e52baf927aa539efbcc0e3e136fbb07deab07fa444f"
+    },
+    {
+      "name": "consumer-drift-controls",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "tools/p10r3/verify_consumer_compatibility.py",
+        "--mutate-check"
+      ],
+      "exit": 0,
+      "seconds": 5.328,
+      "sha256": "32d98ad206b2a91f48923d1e3fd56885f8fed97f2455a4dfa8fd5150c6c38db2"
+    },
+    {
+      "name": "macro-compatibility",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "tools/p10r15/verify_macro_compatibility.py",
+        "--compiler",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\cherri.exe",
+        "--compiler-commit",
+        "a04c6feede79358ee642a1ae27f0a0da8f995ad7",
+        "--skill",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-project-closure-20261118\\skills\\cherri-shortcuts",
+        "--docs-reference",
+        "C:\\Users\\DAVID\\Code\\cherrilang-p10r15-docs-contracts-20261118\\fork-language\\actions.md",
+        "--expected-macro-fingerprint",
+        "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+        "--report",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\consumer-gates\\macro-compatibility.json"
+      ],
+      "exit": 0,
+      "seconds": 79.266,
+      "sha256": "731bcbadf4d3a6d6a11557a0b43e560a291701fcea0b39456cac8f59a0dfcb68"
+    }
+  ],
+  "remoteReadback": "ae7f8773eb318e9673d000599af313a4ede30485\trefs/heads/agent/cherri-p10r15-project-closure-20261118",
+  "timestampUTC": "2026-11-18T21:34:02.457392+00:00",
+  "completeRelease": false
+}

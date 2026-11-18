@@ -1,0 +1,81 @@
+{
+  "sourceSha": "9b032ebf756ed8a7a130967fdb7c234c017f0672",
+  "cleanBefore": true,
+  "steps": [
+    {
+      "name": "r11-language-packages",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "./internal/language/analysis",
+        "./internal/language/schema",
+        "./internal/language/syntax",
+        "./internal/language/migrate",
+        "./internal/language/lower",
+        "./internal/language/types",
+        "./internal/language/service"
+      ],
+      "exitCode": 0,
+      "seconds": 9.5,
+      "logSha256": "ebc9821ebe74ac93cbdc6f5de77a35538a69e82040d7e13b9a65481f0eecce66",
+      "testCounts": {
+        "pass": 87,
+        "fail": 0,
+        "skip": 0
+      },
+      "failedTests": []
+    },
+    {
+      "name": "r11-combined-production",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "-run",
+        "^(TestP15C03LegacyWireControl|TestP15C03NamedListNativeStructure|TestP15C03MigrationStructure|TestP15C03LiteralOracleMutations|TestP15C03ElementOrderAndReferences|TestP15C03PackBoundaries|TestP15C03DynamicContactAndAppBoundary|TestP15C03OriginalCLIParity|TestP15C03SingletonReferencesAndTemplates|TestP15C03TemplateMixturesFailClosed|TestP15C03NestedMigrationAndSourceIdentity|TestP15C03EmptyIsNotAnEmptyItem|TestP15C03ListTypeEvidence|TestP15C03CustomActionShadow|TestP15C03PackElementSnapshot|TestP15S01ExactUTF16TokensAndLiteralBytes|TestP15S01UnicodeOracleRejectsCorruption|TestP15S01UnicodeNativeRoundTrip|TestP15T05AuthoredNullRejected|TestP15T05PresenceBinding|TestP15T05PresenceNativeWire|TestP15T09ContentConversionEvidence|TestP15T09ContentConversionNativeWire)$",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 22.157,
+      "logSha256": "801ef14c958de19b2e1e9b676f8c1ad2bd40f324459235a2c7e31e43ee1514c8",
+      "testCounts": {
+        "pass": 295,
+        "fail": 0,
+        "skip": 0
+      },
+      "failedTests": []
+    },
+    {
+      "name": "r11-formal-producer-contracts",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "15m",
+        "-run",
+        "^(TestVariadicMigrationProductionEvidence|TestTypeOptionalPresenceBoundedEvidence|TestUnicodeTextProductionEvidence)$",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "seconds": 23.531,
+      "logSha256": "5b446628295794645c62b2a16849849e66646079727017afc8f590f8d454fa83",
+      "testCounts": {
+        "pass": 10,
+        "fail": 0,
+        "skip": 0
+      },
+      "failedTests": []
+    }
+  ],
+  "cleanAfter": true,
+  "status": "PASS"
+}

@@ -1,0 +1,40 @@
+{
+  "sourceSha": "ae7f8773eb318e9673d000599af313a4ede30485",
+  "hostPlatform": "WindowsAMD64",
+  "startedAtUtc": "2026-11-18T21:47:57.351054+00:00",
+  "finishedAtUtc": "2026-11-18T21:59:06.330979+00:00",
+  "wallSeconds": 668.968,
+  "exitCode": 1,
+  "tests": {
+    "TestP10R10CorpusMeasure": [
+      "pass"
+    ],
+    "TestP11_WIRE_01_Fresh38x2NativeActionWire": [
+      "pass"
+    ],
+    "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate": [
+      "fail"
+    ],
+    "TestP13_CorpusFidelityAndSourceSizeAudit": [
+      "fail"
+    ]
+  },
+  "rawLogSha256": "0eee361fef9418f872784f72b5ff04a3c91ff030eaa99ee305b9e5d5a52c9f93",
+  "originalInputsUnchanged": true,
+  "privateSpecimenCount": 38,
+  "cleanBefore": true,
+  "reportGenerationChangedTrackedFiles": false,
+  "cleanAfterReportRestore": true,
+  "scope": "Private originals, identities, generated per-specimen reports and raw logs remain on the authorized host. Only aggregate counters/timings may be published.",
+  "performanceScope": "Observed shared-host timing; not an isolated hardware benchmark.",
+  "status": "FAIL",
+  "generatedReports": "NOT_REFRESHED: the P13 threshold failure occurs before report writing; old tracked reports are not evidence of this run.",
+  "observedFailure": {
+    "P12": "3 Stage-3 V2_LINE_COMPILE_ERROR demotions",
+    "P13": {
+      "naturalVerified": 23255,
+      "requiredMinimum": 23340
+    }
+  },
+  "artifactPolicy": "Private originals, specimen identities, raw logs and per-specimen reports are not published."
+}

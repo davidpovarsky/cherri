@@ -1,0 +1,53 @@
+Loaded verified acceptance contracts (94 acceptance, 52 repair, 33 gates)
+Executing Acceptance Contract runner (phase: local)...
+
+==================================================
+ACCEPTANCE RESULTS SUMMARY (Phase: local):
+Total Requirements: 179
+Passed:             44
+Failed:             1
+Skipped / Pending:  134
+Closure Complete:   false
+Report written to:  C:\Users\DAVID\Code\cherri-p10r15-evidence-20261118\integrated-ae7f877\formal-179\acceptance-results.json
+VALIDATION ERROR:   acceptance validation failed: case C04 failed: Production tests failed or were not discovered: process=exit status 1; missing=[TestP15C04EnumServiceAndCLI TestP15C04EnumContextsAndShadowing]; scanner=<nil>; output_tail=age":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/measure_result","Output":"--- PASS: TestP15C04EnumContextsAndShadowing/measure_result (0.00s)\n"}
+{"Time":"2026-11-18T23:46:20.3794166+02:00","Action":"pass","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/measure_result","Elapsed":0}
+{"Time":"2026-11-18T23:46:20.3794166+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/quoted_member"}
+{"Time":"2026-11-18T23:46:20.3794166+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/quoted_member","Output":"=== RUN   TestP15C04EnumContextsAndShadowing/quoted_member\n"}
+{"Time":"2026-11-18T23:46:20.3811837+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/quoted_member","Output":"--- PASS: TestP15C04EnumContextsAndShadowing/quoted_member (0.00s)\n"}
+{"Time":"2026-11-18T23:46:20.3811837+02:00","Action":"pass","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/quoted_member","Elapsed":0}
+{"Time":"2026-11-18T23:46:20.3811837+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode"}
+{"Time":"2026-11-18T23:46:20.3811837+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode","Output":"=== RUN   TestP15C04EnumContextsAndShadowing/shadow_Mode\n"}
+{"Time":"2026-11-18T23:46:20.381736+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode","Output":"    p15_enum_acceptance_test.go:367: [ERROR] E_RETURN_TYPE: return value of type Unknown does not match expected return type Text (p15-parser:2:47-2:63)\n"}
+{"Time":"2026-11-18T23:46:20.381736+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode","Output":"--- FAIL: TestP15C04EnumContextsAndShadowing/shadow_Mode (0.00s)\n"}
+{"Time":"2026-11-18T23:46:20.381736+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode","Elapsed":0}
+{"Time":"2026-11-18T23:46:20.381736+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode_=_{\"Blue\":\"fallback\"}"}
+{"Time":"2026-11-18T23:46:20.381736+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode_=_{\"Blue\":\"fallback\"}","Output":"=== RUN   TestP15C04EnumContextsAndShadowing/shadow_Mode_=_{\"Blue\":\"fallback\"}\n"}
+{"Time":"2026-11-18T23:46:20.3822795+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode_=_{\"Blue\":\"fallback\"}","Output":"    p15_enum_acceptance_test.go:367: [ERROR] E_RETURN_TYPE: return value of type Unknown does not match expected return type Text (p15-parser:2:69-2:85)\n"}
+{"Time":"2026-11-18T23:46:20.3822795+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode_=_{\"Blue\":\"fallback\"}","Output":"--- FAIL: TestP15C04EnumContextsAndShadowing/shadow_Mode_=_{\"Blue\":\"fallback\"} (0.00s)\n"}
+{"Time":"2026-11-18T23:46:20.3822795+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_Mode_=_{\"Blue\":\"fallback\"}","Elapsed":0}
+{"Time":"2026-11-18T23:46:20.3822795+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_tone"}
+{"Time":"2026-11-18T23:46:20.3822795+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_tone","Output":"=== RUN   TestP15C04EnumContextsAndShadowing/shadow_tone\n"}
+{"Time":"2026-11-18T23:46:20.3828574+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_tone","Output":"    p15_enum_acceptance_test.go:367: [ERROR] E_RETURN_TYPE: return value of type Unknown does not match expected return type Text (p15-parser:2:47-2:63)\n"}
+{"Time":"2026-11-18T23:46:20.3828574+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_tone","Output":"--- FAIL: TestP15C04EnumContextsAndShadowing/shadow_tone (0.00s)\n"}
+{"Time":"2026-11-18T23:46:20.3828574+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_tone","Elapsed":0}
+{"Time":"2026-11-18T23:46:20.3828574+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_backgroundSound"}
+{"Time":"2026-11-18T23:46:20.3828574+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_backgroundSound","Output":"=== RUN   TestP15C04EnumContextsAndShadowing/shadow_backgroundSound\n"}
+{"Time":"2026-11-18T23:46:20.3828574+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_backgroundSound","Output":"    p15_enum_acceptance_test.go:367: [ERROR] E_RETURN_TYPE: return value of type Unknown does not match expected return type Text (p15-parser:2:58-2:85)\n"}
+{"Time":"2026-11-18T23:46:20.3834375+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_backgroundSound","Output":"--- FAIL: TestP15C04EnumContextsAndShadowing/shadow_backgroundSound (0.00s)\n"}
+{"Time":"2026-11-18T23:46:20.3834375+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing/shadow_backgroundSound","Elapsed":0}
+{"Time":"2026-11-18T23:46:20.3889343+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing","Output":"--- FAIL: TestP15C04EnumContextsAndShadowing (0.04s)\n"}
+{"Time":"2026-11-18T23:46:20.3889343+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumContextsAndShadowing","Elapsed":0.04}
+{"Time":"2026-11-18T23:46:20.389507+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumFunctionService"}
+{"Time":"2026-11-18T23:46:20.389507+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumFunctionService","Output":"=== RUN   TestP15C04EnumFunctionService\n"}
+{"Time":"2026-11-18T23:46:20.4192819+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumFunctionService","Output":"--- PASS: TestP15C04EnumFunctionService (0.03s)\n"}
+{"Time":"2026-11-18T23:46:20.4207155+02:00","Action":"pass","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04EnumFunctionService","Elapsed":0.03}
+{"Time":"2026-11-18T23:46:20.4207155+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04ProvidedRegistryEnumDomain"}
+{"Time":"2026-11-18T23:46:20.4207155+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04ProvidedRegistryEnumDomain","Output":"=== RUN   TestP15C04ProvidedRegistryEnumDomain\n"}
+{"Time":"2026-11-18T23:46:20.4212775+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04ProvidedRegistryEnumDomain","Output":"--- PASS: TestP15C04ProvidedRegistryEnumDomain (0.00s)\n"}
+{"Time":"2026-11-18T23:46:20.4212775+02:00","Action":"pass","Package":"github.com/electrikmilk/cherri","Test":"TestP15C04ProvidedRegistryEnumDomain","Elapsed":0}
+{"Time":"2026-11-18T23:46:20.4212775+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Output":"FAIL\n"}
+{"Time":"2026-11-18T23:46:20.4270709+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Output":"FAIL\tgithub.com/electrikmilk/cherri\t3.655s\n"}
+{"Time":"2026-11-18T23:46:20.4270709+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Elapsed":3.6550000000000002}
+
+==================================================
+exit status 1
