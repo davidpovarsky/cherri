@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/enums"
+	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
@@ -17,16 +18,17 @@ import (
 
 // Symbol represents a declared entity.
 type Symbol struct {
-	Name            string
-	Type            types.Type
-	Mutable         bool
-	Initialized     bool
-	Span            source.Span
-	Function        *syntax.FunctionDecl
-	Setup           *syntax.SetupDecl
-	EnumDeclaration bool
-	EnumType        string
-	flowType        types.Type
+	Name                  string
+	Type                  types.Type
+	Mutable               bool
+	Initialized           bool
+	Span                  source.Span
+	Function              *syntax.FunctionDecl
+	Setup                 *syntax.SetupDecl
+	EnumDeclaration       bool
+	EnumType              string
+	flowType              types.Type
+	nativeReferenceTarget bool
 }
 
 // Scope represents a lexical scope.
@@ -91,6 +93,8 @@ type Analyzer struct {
 	loopDepth              int
 	setupUses              map[*syntax.SetupDecl]int
 	allowedSetupExpression syntax.Expression
+	nativeNamespace        *Symbol
+	nativeReferenceCalls   map[syntax.Expression]bool
 }
 
 // NewAnalyzer creates a new Analyzer with the action registry.
@@ -318,6 +322,7 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
 func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.expandCopyPaste(prog)
 	a.setupUses = make(map[*syntax.SetupDecl]int)
+	a.nativeReferenceCalls = make(map[syntax.Expression]bool)
 
 	scope := NewScope(nil)
 	a.topLevelVars = make(map[string]source.Span)
@@ -327,18 +332,19 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 
 	// Builtin namespace symbols
 	scope.Define(&Symbol{Name: "system", Type: types.Unknown, Initialized: true})
-	scope.Define(&Symbol{Name: "native", Type: types.Unknown, Initialized: true})
+	a.nativeNamespace = &Symbol{Name: "native", Type: types.Unknown, Initialized: true}
+	scope.Define(a.nativeNamespace)
 	scope.Define(&Symbol{Name: "builtin", Type: types.Unknown, Initialized: true})
-	scope.Define(&Symbol{Name: "Clipboard", Type: types.AnyContent, Initialized: true})
-	scope.Define(&Symbol{Name: "ShortcutInput", Type: types.AnyContent, Initialized: true})
-	scope.Define(&Symbol{Name: "Ask", Type: types.Unknown, Initialized: true})
-	scope.Define(&Symbol{Name: "Device", Type: types.NewMap(types.Text, types.AnyContent), Initialized: true})
-	scope.Define(&Symbol{Name: "CurrentDate", Type: types.Date, Initialized: true})
-	scope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true})
-	scope.Define(&Symbol{Name: "RepeatItem", Type: types.AnyContent, Initialized: true})
+	scope.Define(&Symbol{Name: "Clipboard", Type: types.AnyContent, Initialized: true, nativeReferenceTarget: true})
+	scope.Define(&Symbol{Name: "ShortcutInput", Type: types.AnyContent, Initialized: true, nativeReferenceTarget: true})
+	scope.Define(&Symbol{Name: "Ask", Type: types.Unknown, Initialized: true, nativeReferenceTarget: true})
+	scope.Define(&Symbol{Name: "Device", Type: types.NewMap(types.Text, types.AnyContent), Initialized: true, nativeReferenceTarget: true})
+	scope.Define(&Symbol{Name: "CurrentDate", Type: types.Date, Initialized: true, nativeReferenceTarget: true})
+	scope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, nativeReferenceTarget: true})
+	scope.Define(&Symbol{Name: "RepeatItem", Type: types.AnyContent, Initialized: true, nativeReferenceTarget: true})
 	for i := 2; i <= 10; i++ {
-		scope.Define(&Symbol{Name: fmt.Sprintf("RepeatIndex%d", i), Type: types.Number, Initialized: true})
-		scope.Define(&Symbol{Name: fmt.Sprintf("RepeatItem%d", i), Type: types.AnyContent, Initialized: true})
+		scope.Define(&Symbol{Name: fmt.Sprintf("RepeatIndex%d", i), Type: types.Number, Initialized: true, nativeReferenceTarget: true})
+		scope.Define(&Symbol{Name: fmt.Sprintf("RepeatItem%d", i), Type: types.AnyContent, Initialized: true, nativeReferenceTarget: true})
 	}
 
 	for _, stmt := range prog.Statements {
@@ -532,11 +538,21 @@ func (a *Analyzer) predefineImportProvenanceSymbols(stmts []syntax.Statement, sc
 			case "Arr", "List":
 				symType = types.NewList(types.AnyContent)
 			}
+			uuid, _ := entry["UUID"].(string)
+			name, _ := entry["VariableName"].(string)
+			if name == "" {
+				name, _ = entry["OutputName"].(string)
+			}
+			if name == "" {
+				name = symName
+			}
+			_, referenceError := ir.NormalizeNativeReferenceKind(kind, uuid, name)
 			scope.Define(&Symbol{
-				Name:        symName,
-				Type:        symType,
-				Mutable:     mutable,
-				Initialized: true,
+				nativeReferenceTarget: referenceError == nil && (kind == "Variable" || strings.TrimSpace(uuid) != ""),
+				Name:                  symName,
+				Type:                  symType,
+				Mutable:               mutable,
+				Initialized:           true,
 			})
 		}
 	}
@@ -662,12 +678,13 @@ func (a *Analyzer) analyzeFunction(fn *syntax.FunctionDecl, parentScope *Scope) 
 			}
 		}
 		fnScope.Define(&Symbol{
-			Name:        p.Name,
-			EnumType:    a.enumCatalog.TypeName(p.TypeExpr),
-			Type:        pType,
-			Mutable:     false,
-			Initialized: true,
-			Span:        p.Span,
+			nativeReferenceTarget: true,
+			Name:                  p.Name,
+			EnumType:              a.enumCatalog.TypeName(p.TypeExpr),
+			Type:                  pType,
+			Mutable:               false,
+			Initialized:           true,
+			Span:                  p.Span,
 		})
 	}
 
@@ -743,12 +760,13 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		}
 
 		symbol := &Symbol{
-			Name:        s.Name,
-			EnumType:    a.enumCatalog.TypeName(s.TypeExpr),
-			Type:        declType,
-			Mutable:     s.Mutable,
-			Initialized: s.Value != nil,
-			Span:        s.Span,
+			nativeReferenceTarget: s.Value != nil && !isVoidValue(valType),
+			Name:                  s.Name,
+			EnumType:              a.enumCatalog.TypeName(s.TypeExpr),
+			Type:                  declType,
+			Mutable:               s.Mutable,
+			Initialized:           s.Value != nil,
+			Span:                  s.Span,
 		}
 		narrowAssignedValue(symbol, valType)
 		scope.Define(symbol)
@@ -855,13 +873,13 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			elemType = listType.Element
 		}
 		if s.IndexVar != "" && s.IndexVar != "_" {
-			forScope.Define(&Symbol{Name: s.IndexVar, Type: types.Number, Initialized: true, Span: s.Span})
+			forScope.Define(&Symbol{Name: s.IndexVar, Type: types.Number, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
 		}
 		if s.ItemVar != "" && s.ItemVar != "_" {
-			forScope.Define(&Symbol{Name: s.ItemVar, Type: elemType, Initialized: true, Span: s.Span})
+			forScope.Define(&Symbol{Name: s.ItemVar, Type: elemType, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
 		}
-		forScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, Span: s.Span})
-		forScope.Define(&Symbol{Name: "RepeatItem", Type: elemType, Initialized: true, Span: s.Span})
+		forScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
+		forScope.Define(&Symbol{Name: "RepeatItem", Type: elemType, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
 		entry := captureBindingFlow(scope)
 		invalidateLoopRefinements(s.BodyBlock, forScope)
 		a.loopDepth++
@@ -878,9 +896,9 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			a.error(CodeArgumentType, s.Count.NodeSpan(), fmt.Sprintf("repeat count requires Number, got %s", cntType))
 		}
 		if s.IndexVar != "" && s.IndexVar != "_" {
-			repScope.Define(&Symbol{Name: s.IndexVar, Type: types.Number, Initialized: true, Span: s.Span})
+			repScope.Define(&Symbol{Name: s.IndexVar, Type: types.Number, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
 		}
-		repScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, Span: s.Span})
+		repScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, nativeReferenceTarget: true, Span: s.Span})
 		entry := captureBindingFlow(scope)
 		invalidateLoopRefinements(s.BodyBlock, repScope)
 		a.loopDepth++
@@ -1270,10 +1288,10 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 				}
 				return false
 			}
-			if !isComparable(leftType) {
+			if !isComparable(leftType) && !a.nativeReferenceCalls[e.Left] {
 				a.error(CodeArgumentType, e.Left.NodeSpan(), fmt.Sprintf("comparison requires Number or Date, got %s", leftType))
 			}
-			if !isComparable(rightType) && !a.isKnownDateDurationComparison(leftType, e.Right, e.Op, scope) {
+			if !isComparable(rightType) && !a.nativeReferenceCalls[e.Right] && !a.isKnownDateDurationComparison(leftType, e.Right, e.Op, scope) {
 				a.error(CodeArgumentType, e.Right.NodeSpan(), fmt.Sprintf("comparison requires Number, Date, or a known date duration, got %s", rightType))
 			}
 			return types.Bool
@@ -1376,6 +1394,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 }
 
 func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
+	delete(a.nativeReferenceCalls, call)
 	if call.Block != nil {
 		return a.analyzeScopedBlockCall(call, scope)
 	}
@@ -1391,6 +1410,11 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		callName = c.Name
 	case *syntax.MemberExpr:
 		if targetIdent, ok := c.Target.(*syntax.IdentExpr); ok && targetIdent.Name == "native" {
+			resolved, found := scope.Lookup(targetIdent.Name)
+			if !found || resolved != a.nativeNamespace {
+				a.error(CodeUnknownAction, call.Callee.NodeSpan(), "native namespace is shadowed; this member is not a built-in native escape")
+				return types.Unknown
+			}
 			callName = "native." + c.Property
 		} else {
 			a.analyzeExpression(call.Callee, scope)
@@ -1405,6 +1429,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	// 0. Check native escape / rawAction
 	if callName == "rawAction" || callName == "native.action" || callName == "action" ||
 		callName == "native.plist" || callName == "native.ref" || callName == "native.workflow" {
+		diagnosticStart := len(a.diagnostics)
 		if (callName == "rawAction" || callName == "native.action") && call.PrimaryArg == nil {
 			hasIdentNamed := false
 			for _, nArg := range call.NamedArgs {
@@ -1422,6 +1447,18 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		}
 		for _, nArg := range call.NamedArgs {
 			a.analyzeExpression(nArg.Value, scope)
+		}
+		if callName == "native.ref" {
+			// A validated explicit reference may retain an imported ordered
+			// operand without claiming a scalar type. Dynamic shapes remain
+			// subject to the ordinary Number/Date requirement.
+			validArguments := true
+			for _, diagnostic := range a.diagnostics[diagnosticStart:] {
+				if diagnostic.Severity == SeverityError {
+					validArguments = false
+				}
+			}
+			a.nativeReferenceCalls[call] = validArguments && a.validNativeReferenceOperand(call, scope)
 		}
 		return types.AnyContent
 	}
