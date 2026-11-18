@@ -1,0 +1,75 @@
+{
+  "sourceSha": "bbc60bc0c0fef4c8e56f831615486c5ec0f3543f",
+  "hostPlatform": "WindowsAMD64",
+  "startedAtUtc": "2026-11-18T14:46:54.491567+00:00",
+  "tests": [
+    {
+      "test": "TestP10R10CorpusMeasure",
+      "status": "PASS",
+      "exitCode": 0,
+      "discovered": true,
+      "wallSeconds": 151.578,
+      "logSha256": "64ab4034dd981c15a24beabf02b955533f798fb6b17d857213014ef368d4a5b5",
+      "safeSummary": []
+    },
+    {
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+      "status": "PASS",
+      "exitCode": 0,
+      "discovered": true,
+      "wallSeconds": 158.625,
+      "logSha256": "4f2d5bab2d23a7b12cf62252a0d4affb03172704ec3802851a994b595ce3cc25",
+      "safeSummary": [
+        "p11_wire_fidelity_test.go:115: P11_WIRE_01 checked 38 files, 27652 total actions, 23353 NATURAL_VERIFIED"
+      ]
+    },
+    {
+      "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+      "status": "PASS",
+      "exitCode": 0,
+      "discovered": true,
+      "wallSeconds": 115.781,
+      "logSha256": "4fa0a5dafd2632292e0971f31dd100203666be9abc5b12cc7bc1c6e2760e6eb7",
+      "safeSummary": [
+        "p13_fidelity_promotion_test.go:588: P10R13 Corpus Summary: total=27652 natural=23353 (84.45%, +863 vs P10R12) fallback=4298 invalid=1 demoted=0"
+      ]
+    }
+  ],
+  "scope": "Private originals, identities, generated per-specimen reports and raw logs remain on authorized host; only aggregate counts and timings leave this boundary.",
+  "corpusAggregate": {
+    "schemaFingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
+    "specimenCount": 38,
+    "totalActions": 27652,
+    "p10r13NaturalVerified": 23353,
+    "p10r13NaturalPct": 84.45,
+    "p10r13ExactFallback": 4298,
+    "p10r13SourceInvalid": 1,
+    "totalDemotedActions": 0,
+    "dualDialectWireParity": "PASS (76/76 exact recursive plist match)",
+    "preOverlaySemanticParity": "PASS (100% of NATURAL_VERIFIED actions)",
+    "totalInputPlistBytes": 62980131,
+    "totalLegacySourceBytes": 79820016,
+    "totalV2SourceBytes": 79945891,
+    "totalHeaderDirectiveBytes": 12133622,
+    "totalFallbackCallsBytes": 52644376,
+    "totalNaturalStatementBytes": 15054597,
+    "totalPlanDurationMs": 71028,
+    "totalLegacyCompileMs": 18088,
+    "totalV2CompileMs": 13904,
+    "peakHeapAllocBytes": 188753152,
+    "peakHeapSysBytes": 616235008
+  },
+  "p95NearestRank": {
+    "planDurationMs": 8674,
+    "legacyCompileMs": 2313,
+    "v2CompileMs": 1737,
+    "inputPlistBytes": 9115042,
+    "legacySourceBytes": 9577577,
+    "v2SourceBytes": 9578495
+  },
+  "performanceScope": "Observed on shared Windows host; not an isolated hardware benchmark.",
+  "originalInputsUnchanged": true,
+  "cleanAfterReportRestore": true,
+  "finishedAtUtc": "2026-11-18T14:54:00.777598+00:00",
+  "status": "PASS"
+}
