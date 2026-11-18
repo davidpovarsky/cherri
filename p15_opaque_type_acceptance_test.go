@@ -19,6 +19,8 @@ func p15T04NegativeCases() []struct{ name, source, span, code string } {
 		{"function_argument", "function accept(value: Number) -> Number { return value }\naccept(Clipboard)", "Clipboard", analysis.CodeArgumentType},
 		{"function_default", "function accept(value: Number = Clipboard) -> Number { return value }", "Clipboard", analysis.CodeArgumentType},
 		{"function_return", "function make() -> Number { return Clipboard }", "return Clipboard", analysis.CodeReturnType},
+		{"union_narrowing", "function narrow(value: Text | Number) -> Text { return value }", "return value", analysis.CodeReturnType},
+		{"union_opaque_member", "function claim(value: Unknown | Number) -> Text | Number { return value }", "return value", analysis.CodeReturnType},
 		{"mutable_assignment", "var value: Number = 1\nvalue = Clipboard", "Clipboard", analysis.CodeArgumentType},
 		{"list_annotation", "let values: List<Number> = [Clipboard]", "[Clipboard]", analysis.CodeArgumentType},
 		{"map_annotation", "let values: Map<Text, Number> = {\"value\": Clipboard}", "{\"value\": Clipboard}", analysis.CodeArgumentType},
@@ -81,6 +83,8 @@ func TestP15T04OpaqueTypeProduction(t *testing.T) {
 	}
 	for _, source := range []string{
 		"let content:AnyContent=Clipboard\nshow(content)",
+		"function identity(value: Text | Number) -> Text | Number { return value }\nshow(identity(1))",
+		"let claimed: Text | Number = if true { yield \"text\" } else { yield 1 }\nshow(claimed)",
 		"let values: List<Number> = []\nshow(values)",
 		"let values: Map<Text, Number> = {}\nshow(values)",
 		"let value: AnyContent? = Clipboard\nshow(value)",
@@ -134,6 +138,14 @@ func TestP15T04OpaqueTypeService(t *testing.T) {
 			if !found {
 				t.Errorf("%s service lost precise opaque category %s", tc.name, category)
 			}
+		}
+	}
+	unionSource := "function identity(value: Text | Number) -> Text | Number { return value }\nshow(identity(1))"
+	svc.OpenDocument(uri, 99, unionSource)
+	diagnostics, _ = svc.Analyze(uri)
+	for _, d := range diagnostics {
+		if d.Severity == analysis.SeverityError {
+			t.Fatal("same known union rejected by service", d)
 		}
 	}
 	corrected := "let concrete:Number=number(Clipboard)\nwait(concrete)"

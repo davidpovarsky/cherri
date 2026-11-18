@@ -156,3 +156,7 @@ Clean source `fd63e4f1ffd3b87a632392163a784f02be11044a` passed `TestTypeNumberSt
 ### T04 exact committed execution
 
 Clean source `07f5e294e6cdfd7c31587ac9ed36a5a99ab4ffe4` passed its actual unit/service production wrapper in `job_51538dbb53f6` (5.720 seconds; package 7.314 seconds). The tree was clean before and after. Two distinct producer records satisfy T04 alone; missing and cross-tier evidence substitutions fail, and `closure_complete=false` remains. The raw JSONL digest is `0705399b6c1775e82000b5ddf8384da38c18c3c4b415ea51517c80fabef4a3c8`. The source-bound receipt, raw-log digest and normalized committed log are in `evidence/p15-types-07f5e29/`. No Apple runtime or complete catalog guarantee is inferred.
+
+### T04 follow-up: known union assignment order
+
+An independent read-only review found an additional valid case missing from the initial bounded producer: identical known `Text | Number` function contracts. Actual `job_f90c227ba74a` reproduced rejection with `E_RETURN_TYPE` even though source and target were the same union. The authored wrapper now follows the existing structural relation's ordering: every source alternative must match the destination, and different source alternatives may select different target alternatives. Known function identity and annotated If union results are positive controls; narrowing a mixed union to Text and promoting an Unknown member remain rejected in compiler and Service. The prior 07f5e29 receipt is retained for its original scope, not treated as proof for this subsequently added case.

@@ -12,6 +12,16 @@ func assignmentHasEvidence(actual, expected types.Type, expression syntax.Expres
 	if expected == nil || actual == nil {
 		return false
 	}
+	// Every possible source member must fit the destination, but members may
+	// select different destination alternatives. Check source unions first.
+	if union, ok := actual.(types.UnionType); ok {
+		for _, member := range union.Members {
+			if !assignmentHasEvidence(member, expected, expression) {
+				return false
+			}
+		}
+		return true
+	}
 	if union, ok := expected.(types.UnionType); ok {
 		for _, member := range union.Members {
 			if assignmentHasEvidence(actual, member, expression) {
