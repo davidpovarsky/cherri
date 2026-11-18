@@ -3,22 +3,29 @@ package main
 import "strings"
 
 var typeProductionTests = map[string][]string{
+	"T04": {"TestP15T04OpaqueTypeProduction", "TestP15T04OpaqueTypeService"},
 	"T03": {"TestP15T03NumberStringSemanticSignature", "TestP15T03NumberStringNativeWire"},
 	"T02": {"TestP15T02LiteralRequiredProduction"},
 	"T06": {"TestP15T06RecordAnnotationsDoNotValidateExternalValues", "TestP15T06RecordProofTypeRelations", "TestP15T06ControlResultsRequireAllBranches"},
 	"T08": {"TestP15T08ConditionalCardinalityProduction", "TestP15T08ConditionalCardinalityService"},
 }
 var typeProductionTiers = map[string][]string{
+	"T04": {"unit", "service"},
 	"T03": {"unit", "native"},
 	"T02": {"unit"},
 	"T06": {"unit"},
 	"T08": {"unit", "service"},
 }
 var typeProductionPaths = map[string][]string{
+	"T04": {"internal/language/types/types.go", "internal/language/types/record_evidence.go", "internal/language/analysis/assignment_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/service/service.go", "p15_opaque_type_acceptance_test.go", "p15_record_acceptance_test.go"},
 	"T03": {"actions/basic.cherri", "actions/math.cherri", "internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "language_backend_adapter.go", "shortcutgen.go", "p15_number_text_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json", "docs/apple-runtime/macos-27/parameter-encodings.json", "docs/apple-runtime/macos-27/encoding-table.json"},
 	"T02": {"internal/language/analysis/analyzer.go", "internal/language/analysis/literal_arguments.go", "internal/language/lower/lower.go", "language_emit_adapter.go", "p15_types_acceptance_test.go"},
 	"T06": {"internal/language/types/types.go", "internal/language/types/record_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/syntax/parser.go", "internal/language/analysis/control_results.go", "p15_record_acceptance_test.go", "p15_control_type_acceptance_test.go"},
 	"T08": {"internal/language/analysis/analyzer.go", "internal/language/analysis/cardinality.go", "internal/language/service/service.go", "internal/language/service/call_result.go", "p15_cardinality_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
+}
+
+func (r *Runner) runTypeOpaqueRequirement() {
+	r.runTypeProduction("T04", "Unknown differs from AnyContent and Void")
 }
 
 func (r *Runner) runTypeNumberStringRequirement() {
@@ -46,17 +53,17 @@ func (r *Runner) runTypeProduction(id, requirement string) {
 			r.records[i].TestID = "github.com/electrikmilk/cherri:" + tests[1]
 		}
 		// T08's service tier is produced by the actual Service APIs test.
-		if id == "T08" && r.records[i].Tier == "service" {
+		if (id == "T08" || id == "T04") && r.records[i].Tier == "service" {
 			r.records[i].TestID = "github.com/electrikmilk/cherri:" + tests[1]
 		}
 	}
 }
 
-// A semantic analysis producer cannot stand in for T03's decoded native wire.
+// A semantic analysis producer cannot stand in for a required wire or service producer.
 // Resolve the producer from the existing named test inventory, not a second
 // catalog. Other type requirements retain their current authorization policy.
 func typeProductionTestForTier(id, tier string) string {
-	if id != "T03" {
+	if id != "T03" && id != "T04" {
 		return ""
 	}
 	tests := typeProductionTests[id]
@@ -64,8 +71,15 @@ func typeProductionTestForTier(id, tier string) string {
 	case "unit":
 		return "github.com/electrikmilk/cherri:" + tests[0]
 	case "native-structure":
-		return "github.com/electrikmilk/cherri:" + tests[1]
+		if id == "T03" {
+			return "github.com/electrikmilk/cherri:" + tests[1]
+		}
+	case "service":
+		if id == "T04" {
+			return "github.com/electrikmilk/cherri:" + tests[1]
+		}
 	default:
 		return ""
 	}
+	return ""
 }

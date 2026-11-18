@@ -34,6 +34,22 @@ A separate genuine evidence-gate defect was reproduced in `job_eebffce213d6`: a 
 
 Only T03's unit and native-structure obligations are eligible for this producer. Signed runtime, numeric precision, other type contracts and overall release closure remain unproven by these tests. The exact clean source execution receipt is recorded separately after commit.
 
+## T04: opaque type knowledge, value use and actual service diagnostics
+
+The named production tests distinguish canonical Unknown (for example an opaque selection result), AnyContent (external Clipboard content), explicit Number conversion output, and Void statements. They execute the real analyzer, complete compiler and Service APIs. The formal producer requires a distinct unit and service test identifier; missing or substituted tiers cannot mint a pass.
+
+Causal RED `job_e50f39223916` demonstrated 13 unchecked paths: Unknown/AnyContent could acquire concrete or Void annotations, typed function arguments/defaults/returns, mutable contracts and homogeneous collection types; opaque arithmetic and captured/coerced Void could also manufacture values. Existing Void arithmetic rejection was a positive control. Earlier `job_0888bb58e0bc` used a nonexistent action name and never reached this contract; it is a fixture error, not compiler evidence.
+
+Authored type guarantees now reuse the existing recursive structural evidence relation. They are separate from the existing native parameter attachment compatibility: sending an attachment to a native action does not establish a user annotation. No cast, action, serializer, registry or runtime validator is introduced. Numeric arithmetic requires existing numeric evidence, or an explicit native conversion producer. Void remains valid as a statement but is rejected in the tested value positions: bindings, argument values, views/indexes, containers, interpolation and operators.
+
+Explicit empty List and Map literals retain their vacuous element/value compatibility; opaque collections are not considered empty merely because their element type is Unknown. Optional destinations accept an existing value under the inner contract, and an explicit `none` literal remains an absence only for an Optional destination. This preserves existing optional authoring without conflating JSON null with omission; T05's serialization contract remains separate. An uncommitted hardening candidate rejected an eligible empty List (`job_768e9c04463a`); the correction is limited to the authored empty literal and optional destination rules and has paired opaque negatives.
+
+The historical T06 positive `let payload: JsonValue = ShortcutInput` was an unvalidated external-content assertion. T04 now tests its rejection explicitly. T06 retains a positive JsonValue-to-JsonValue function forwarding case, together with its unchanged record rejection and native-content controls. This does not turn a JSON annotation into runtime validation.
+
+Service checks inspect actual contextual Unknown/Void returns, exact diagnostic category and span for AnyContent/Unknown/Void, and replacement of an invalid source with an explicit Number conversion without stale errors. Each negative also requires complete compilation to stop before native bytes, with causal wrong-span controls. This producer claims only unit/service behavior of the canonical type model; it does not validate every catalog output declaration, Apple conversion success, signed runtime or release closure.
+
+Working validation before the final source freeze: all 61 internal types/analysis/service/lower top-level tests passed in `job_c74e8fc3c377`. Its root compatibility run exposed the obsolete JsonValue assumption above. After correction, `job_dae3efa2574a` passed 21 root production families (including T02/T03/T06/T08, V02, raw bindings and Legacy scoped values) and all five named type evidence wrappers. Final exact clean source evidence follows separately.
+
 ## T06: record annotations require prior structural evidence
 
 The original probe constructed a RecordType in memory. The replacement executes authored annotations through the parser, analyzer and complete compiler. Opaque external input, Run Shortcut output, a native dictionary content view and require's dictionary-category guard cannot establish a user-defined record shape. The rule follows optional, List, Map and union wrappers; it does not convert those values or insert a runtime validator.
@@ -81,7 +97,7 @@ T08 records its required unit and service tiers with their actual distinct produ
 | T01 | Explicit false/zero/empty/default presence and signed iOS behavior require dedicated evidence; the old base64 smoke is not formal proof. |
 | T02 | Dedicated production unit producer described above; clean exact-commit receipt is recorded separately after commit. |
 | T03 | Dedicated semantic and decoded native-wire producers verify exact number-as-text values and producer identity; strict tier authorization, no Apple runtime or precision claim. |
-| T04 | Distinct type names alone do not establish Unknown/AnyContent/Void behavior; production diagnostics and service evidence remain required. |
+| T04 | Dedicated authored-assignment and value-use unit/service producers; strict tier authorization, preserved native attachment compatibility, no runtime conversion promise. |
 | T05 | Optional type construction alone does not prove omission versus explicit optional value and JSON null in native serialization. |
 | T06 | Dedicated production unit producer rejects unvalidated external record guarantees; no runtime validator or native execution is claimed. |
 | T07 | Production source versions now retain and compare components (see correction below). Existing action min/max metadata remains float64 and lacks independent per-platform version facets. No formal T07 pass is claimed. |
@@ -132,3 +148,7 @@ Exact verification receipt: clean source `d06b885f6a89469b53ed1cbdadd7dc48644161
 ### T03 exact committed execution
 
 Clean source `fd63e4f1ffd3b87a632392163a784f02be11044a` passed `TestTypeNumberStringProductionEvidence` in `job_84ee7fa5b43b` (producer 3.710 seconds, package 5.564 seconds). The actual producer executes both semantic and decoded native-wire tests, rejects missing and substituted tier evidence, and emits two records for T03 alone. The report retains `closure_complete=false`. Receipt and verified JSONL are in `evidence/p15-types-fd63e4f/`. The first clean-run receipt collector failed while treating a chunked Go output event as complete JSON; this documented rerun joins the test output correctly and exits zero. Neither stage makes an Apple runtime or numeric precision claim.
+
+### T04 final working source validation
+
+`job_f5068ddc9e7c` passed the final source before commit: 21 root production families, all 61 internal types/analysis/service/lower top-level tests, and the T04 formal unit/service producer. The root selection completed in 6.690 seconds, internal packages in 1.261-1.669 seconds each, and formal producer package in 4.575 seconds. No test failed or skipped in these selected commands. The exact clean source receipt is separate.

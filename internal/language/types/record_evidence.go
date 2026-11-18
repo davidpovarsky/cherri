@@ -68,3 +68,13 @@ func recordFieldAssignable(source, target Type) bool {
 	}
 	return source.AssignableTo(target)
 }
+
+// HasAssignmentEvidence checks an authored type guarantee using the existing
+// structural evidence relation. It does not insert or promise a Content Graph
+// conversion; native parameter attachment compatibility stays independent.
+func HasAssignmentEvidence(source, target Type) bool {
+	if source == nil || target == nil {
+		return false
+	}
+	return recordFieldAssignable(source, target)
+}

@@ -25,7 +25,6 @@ var incompleteLocalAssertions = map[string]string{
 	"V03":  "Nonempty lowering does not prove that the clipboard is captured exactly once.",
 	"C03":  "getUpcomingEvents(3) does not exercise variadic-to-named-list migration.",
 	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
-	"T04":  "Different type names do not test Unknown/AnyContent/Void behavior in analysis and service.",
 	"T05":  "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions.",
 	"T07":  "A helper implemented only in this runner does not exercise production platform-version comparison.",
 	"T09":  "Assignment to AnyContent does not validate known Content Graph conversions or reject unverified coercions.",

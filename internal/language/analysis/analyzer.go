@@ -453,7 +453,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				if parameter.DefaultExpr != nil {
 					actual := a.analyzeEnumContext(parameter.DefaultExpr, scope, a.enumCatalog.TypeName(parameter.TypeExpr))
 					expected := a.resolveType(parameter.TypeExpr)
-					if actual != nil && !actual.AssignableTo(expected) {
+					if actual != nil && !assignmentHasEvidence(actual, expected, parameter.DefaultExpr) {
 						a.error(CodeArgumentType, parameter.DefaultExpr.NodeSpan(), fmt.Sprintf("default value of type %s is not assignable to parameter type %s", actual, expected))
 					}
 				}
@@ -654,7 +654,7 @@ func (a *Analyzer) analyzeFunction(fn *syntax.FunctionDecl, parentScope *Scope) 
 		pType := a.resolveType(p.TypeExpr)
 		if p.DefaultExpr != nil {
 			defType := a.analyzeEnumContext(p.DefaultExpr, fnScope, a.enumCatalog.TypeName(p.TypeExpr))
-			if defType != nil && !defType.AssignableTo(pType) {
+			if defType != nil && !assignmentHasEvidence(defType, pType, p.DefaultExpr) {
 				a.error(CodeArgumentType, p.DefaultExpr.NodeSpan(), fmt.Sprintf("default value of type %s is not assignable to parameter type %s", defType, pType))
 			}
 		}
@@ -700,14 +700,18 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if s.Value != nil {
 			valType = a.analyzeEnumContext(s.Value, scope, a.enumCatalog.TypeName(s.TypeExpr))
 		}
-		if call, ok := s.Value.(*syntax.CallExpr); ok && call.Block != nil && valType != nil && valType.Kind() == types.KindVoid {
-			a.error("E_BLOCK_VOID_VALUE", call.Span, "a void scoped block cannot initialize a binding; end the block with an explicit value")
+		if isVoidValue(valType) {
+			if call, ok := s.Value.(*syntax.CallExpr); ok && call.Block != nil {
+				a.error("E_BLOCK_VOID_VALUE", call.Span, "a void scoped block cannot initialize a binding; end the block with an explicit value")
+			} else if s.Value != nil {
+				a.error(CodeArgumentType, s.Value.NodeSpan(), "Void has no value to bind")
+			}
 		}
 
 		declType := valType
 		if s.TypeExpr != nil {
 			annotated := a.resolveType(s.TypeExpr)
-			if valType != nil && !valType.AssignableTo(annotated) {
+			if s.Value != nil && valType != nil && !assignmentHasEvidence(valType, annotated, s.Value) {
 				a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("type %s is not assignable to declared type %s", valType, annotated))
 			}
 			declType = annotated
@@ -768,13 +772,13 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if valType != nil && sym.Type != nil {
 			if s.Op == syntax.TokenPlusAssign {
 				if listType, ok := sym.Type.(types.ListType); ok {
-					if !valType.AssignableTo(listType.Element) && !valType.AssignableTo(sym.Type) && valType.Kind() != types.KindUnknown {
+					if !assignmentHasEvidence(valType, listType.Element, s.Value) && !assignmentHasEvidence(valType, sym.Type, s.Value) {
 						a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to list element of type %s", valType, listType.Element))
 					}
-				} else if !valType.AssignableTo(sym.Type) {
+				} else if !assignmentHasEvidence(valType, sym.Type, s.Value) {
 					a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
 				}
-			} else if !valType.AssignableTo(sym.Type) {
+			} else if !assignmentHasEvidence(valType, sym.Type, s.Value) {
 				a.error(CodeArgumentType, s.Value.NodeSpan(), fmt.Sprintf("value of type %s is not assignable to variable %q of type %s", valType, s.Name, sym.Type))
 			}
 		}
@@ -795,7 +799,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		}
 		if a.currentFn != nil && a.currentFn.ReturnType != nil {
 			expected := a.resolveType(a.currentFn.ReturnType)
-			if !retType.AssignableTo(expected) {
+			if !assignmentHasEvidence(retType, expected, s.Value) {
 				a.error(CodeReturnType, s.Span, fmt.Sprintf("return value of type %s does not match expected return type %s", retType, expected))
 			}
 		}
@@ -1078,7 +1082,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 	case *syntax.FStringExpr:
 		for _, part := range e.Parts {
 			if part.IsExpr {
-				a.analyzeExpression(part.Expr, scope)
+				if isVoidValue(a.analyzeExpression(part.Expr, scope)) {
+					a.error(CodeArgumentType, part.Expr.NodeSpan(), "Void cannot be interpolated as a value")
+				}
 			}
 		}
 		return types.Text
@@ -1117,6 +1123,10 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 
 	case *syntax.MemberExpr:
 		targetType := a.analyzeExpression(e.Target, scope)
+		if isVoidValue(targetType) {
+			a.error(CodeArgumentType, e.Target.NodeSpan(), "Void has no content view or property")
+			return types.Unknown
+		}
 		if rec, ok := targetType.(types.RecordType); ok {
 			if f, exists := rec.Fields[e.Property]; exists {
 				return f.Type
@@ -1154,6 +1164,14 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 	case *syntax.IndexExpr:
 		targetType := a.analyzeExpression(e.Target, scope)
 		idxType := a.analyzeExpression(e.Index, scope)
+		if isVoidValue(idxType) {
+			a.error(CodeArgumentType, e.Index.NodeSpan(), "Void cannot be an index value")
+			return types.Unknown
+		}
+		if isVoidValue(targetType) {
+			a.error(CodeArgumentType, e.Target.NodeSpan(), "Void has no indexable value")
+			return types.Unknown
+		}
 		if litKey, ok := e.Index.(*syntax.LiteralExpr); ok && litKey.Value == "" {
 			a.error(CodeArgumentType, litKey.Span, "empty dictionary key is not allowed")
 		}
@@ -1183,11 +1201,15 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 
 	case *syntax.UnaryExpr:
 		opType := a.analyzeExpression(e.Operand, scope)
+		if isVoidValue(opType) {
+			a.error(CodeArgumentType, e.Operand.NodeSpan(), "operator requires a value, got Void")
+			return types.Unknown
+		}
 		if e.Op == syntax.TokenBang {
 			return types.Bool
 		}
 		if e.Op == syntax.TokenMinus || e.Op == syntax.TokenPlus {
-			if opType != nil && !opType.AssignableTo(types.Number) && opType.Kind() != types.KindUnknown {
+			if opType != nil && !types.HasAssignmentEvidence(opType, types.Number) {
 				a.error(CodeArgumentType, e.Operand.NodeSpan(), fmt.Sprintf("unary '-' requires Number, got %s", opType))
 			}
 			return types.Number
@@ -1203,15 +1225,27 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 			rightType = a.analyzeExpression(e.Right, scope)
 		}
 
+		voidOperand := false
+		if isVoidValue(leftType) {
+			a.error(CodeArgumentType, e.Left.NodeSpan(), "operator requires a value, got Void")
+			voidOperand = true
+		}
+		if isVoidValue(rightType) {
+			a.error(CodeArgumentType, e.Right.NodeSpan(), "operator requires a value, got Void")
+			voidOperand = true
+		}
+		if voidOperand {
+			return types.Unknown
+		}
 		switch e.Op {
 		case syntax.TokenPlus, syntax.TokenMinus, syntax.TokenStar, syntax.TokenSlash, syntax.TokenPercent:
-			if e.Op == syntax.TokenPlus && leftType != nil && rightType != nil && leftType.AssignableTo(types.Text) && rightType.AssignableTo(types.Text) {
+			if e.Op == syntax.TokenPlus && leftType != nil && rightType != nil && types.HasAssignmentEvidence(leftType, types.Text) && types.HasAssignmentEvidence(rightType, types.Text) {
 				return types.Text
 			}
-			if leftType != nil && !leftType.AssignableTo(types.Number) && leftType.Kind() != types.KindUnknown {
+			if leftType != nil && !types.HasAssignmentEvidence(leftType, types.Number) {
 				a.error(CodeArgumentType, e.Left.NodeSpan(), fmt.Sprintf("numeric operator requires Number, got %s", leftType))
 			}
-			if rightType != nil && !rightType.AssignableTo(types.Number) && rightType.Kind() != types.KindUnknown {
+			if rightType != nil && !types.HasAssignmentEvidence(rightType, types.Number) {
 				a.error(CodeArgumentType, e.Right.NodeSpan(), fmt.Sprintf("numeric operator requires Number, got %s", rightType))
 			}
 			if (e.Op == syntax.TokenSlash || e.Op == syntax.TokenPercent) && isZeroNumberLiteral(e.Right) {
@@ -1225,10 +1259,10 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		case syntax.TokenLess, syntax.TokenLessEqual, syntax.TokenGreater, syntax.TokenGreaterEqual:
 			isComparable := func(t types.Type) bool {
 				t = unwrapOptionalType(t)
-				if t == nil || t.Kind() == types.KindUnknown || t.Kind() == types.KindAnyContent {
-					return true
+				if t == nil {
+					return false
 				}
-				if t.AssignableTo(types.Number) || t.AssignableTo(types.Date) {
+				if types.HasAssignmentEvidence(t, types.Number) || types.HasAssignmentEvidence(t, types.Date) {
 					return true
 				}
 				return false
@@ -1251,7 +1285,11 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 	case *syntax.ListExpr:
 		elements := make([]types.Type, 0, len(e.Elements))
 		for _, el := range e.Elements {
-			elements = append(elements, a.analyzeExpression(el, scope))
+			elementType := a.analyzeExpression(el, scope)
+			if isVoidValue(elementType) {
+				a.error(CodeArgumentType, el.NodeSpan(), "Void cannot be stored as a list value")
+			}
+			elements = append(elements, elementType)
 		}
 		return types.NewList(types.NewUnion(elements...))
 
@@ -1268,8 +1306,15 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 				}
 				seenKeys[litKey.Value] = true
 			}
-			a.analyzeExpression(entry.Key, scope)
-			values = append(values, a.analyzeExpression(entry.Value, scope))
+			keyType := a.analyzeExpression(entry.Key, scope)
+			valueType := a.analyzeExpression(entry.Value, scope)
+			if isVoidValue(keyType) {
+				a.error(CodeArgumentType, entry.Key.NodeSpan(), "Void cannot be a dictionary key")
+			}
+			if isVoidValue(valueType) {
+				a.error(CodeArgumentType, entry.Value.NodeSpan(), "Void cannot be stored as a dictionary value")
+			}
+			values = append(values, valueType)
 		}
 		return types.NewMap(types.Text, types.NewUnion(values...))
 
@@ -1492,7 +1537,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 				}
 			}
 			argType := unwrapDynamicOptional(a.analyzeSetupArgument(actionSchema, primParam, call.PrimaryArg, scope, callName))
-			if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
+			if isVoidValue(argType) {
+				a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), "Void cannot be passed as an argument value")
+			} else if primParam.Type != nil && argType != nil && !argType.AssignableTo(primParam.Type) {
 				if !(primParam.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(call.PrimaryArg)) &&
 					!isAttachmentCapableTextParamSchema(actionSchema.AppleIdentifier, primParam.WireKey, call.PrimaryArg) {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", primParam.Label, primParam.Type, argType))
@@ -1565,7 +1612,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		}
 
 		argType := unwrapDynamicOptional(a.analyzeSetupArgument(actionSchema, param, nArg.Value, scope, callName))
-		if param.Type != nil && argType != nil && !argType.AssignableTo(param.Type) {
+		if isVoidValue(argType) {
+			a.error(CodeArgumentType, nArg.Value.NodeSpan(), "Void cannot be passed as an argument value")
+		} else if param.Type != nil && argType != nil && !argType.AssignableTo(param.Type) {
 			if !(param.Type == types.Number && argType == types.Text && isNumericLiteralOrTokenString(nArg.Value)) &&
 				!isAttachmentCapableTextParamSchema(actionSchema.AppleIdentifier, param.WireKey, nArg.Value) {
 				a.error(CodeArgumentType, nArg.Value.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Label, param.Type, argType))

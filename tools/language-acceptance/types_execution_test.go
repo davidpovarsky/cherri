@@ -10,6 +10,10 @@ import (
 	"testing"
 )
 
+func TestTypeOpaqueProductionEvidence(t *testing.T) {
+	testTypeProductionEvidence(t, "T04", (*Runner).runTypeOpaqueRequirement, "P15_TYPE_OPAQUE_RECEIPT:", "Only T04 authored assignment evidence, Void value rejection and actual Service diagnostics; native attachment compatibility is not a type guarantee, no Apple runtime or release closure")
+}
+
 func TestTypeNumberStringProductionEvidence(t *testing.T) {
 	testTypeProductionEvidence(t, "T03", (*Runner).runTypeNumberStringRequirement, "P15_TYPE_NUMBER_STRING_RECEIPT:", "Only T03 public Number semantics and actual native string/reference wire; no Apple execution, numeric precision promise, unrelated type contract or release closure")
 }
@@ -30,7 +34,7 @@ func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), rece
 	if id == "T03" {
 		producerByTier["native-structure"] = tests[1]
 	}
-	if id == "T08" {
+	if id == "T08" || id == "T04" {
 		producerByTier["service"] = tests[1]
 	}
 	testNamedProductionEvidence(t, id, tests, producerByTier, run, receiptLabel, scope)
@@ -87,7 +91,7 @@ func testNamedProductionEvidence(t *testing.T, id string, tests []string, produc
 	if len(tiers) > 1 {
 		mutations = append(mutations, "missing_required_tier")
 	}
-	if id == "T03" {
+	if id == "T03" || id == "T04" {
 		mutations = append(mutations, "cross_tier_producer")
 	}
 	for _, mutation := range mutations {

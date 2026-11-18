@@ -82,7 +82,8 @@ func TestP15T06RecordAnnotationsDoNotValidateExternalValues(t *testing.T) {
 		"function take(person: {name: Text}) -> Void { comment(\"ok\") }\nfunction forward(person: {name: Text}) -> Void { take(person) }",
 		"function take(prefix: Text, _person: {name: Text}) -> Void { comment(prefix) }\nfunction forward(person: {name: Text}) -> Void { take(\"ok\", person: person) }",
 		"function plain(value: AnyContent) -> Void { show(value) }\nplain(ShortcutInput)",
-		"let payload: JsonValue = ShortcutInput\nshow(payload)",
+		// T04 rejects a bare external-content annotation as JSON validation.
+		"function jsonIdentity(payload: JsonValue) -> JsonValue { return payload }",
 		"let n: Number=number(3)\nlet s: Text=text(\"ok\")\nshow(n)\nshow(s)",
 	} {
 		for _, d := range p15TypeDiagnostics(t, src) {

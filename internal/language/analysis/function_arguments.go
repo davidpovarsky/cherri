@@ -60,11 +60,15 @@ func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syn
 		}
 		param := fn.Parameters[parameterIndex]
 		actual := a.analyzeEnumContext(argument, scope, a.enumCatalog.TypeName(param.TypeExpr))
+		if isVoidValue(actual) {
+			a.error(CodeArgumentType, argument.NodeSpan(), "Void cannot be passed as an argument value")
+			return
+		}
 		if param.TypeExpr == nil {
 			return
 		}
 		expected := a.resolveType(param.TypeExpr)
-		if actual != nil && !actual.AssignableTo(expected) {
+		if actual != nil && !assignmentHasEvidence(actual, expected, argument) {
 			a.error(CodeArgumentType, argument.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Name, expected, actual))
 		}
 	}

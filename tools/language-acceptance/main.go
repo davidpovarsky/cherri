@@ -1483,9 +1483,8 @@ func (r *Runner) runTypes() {
 	// T03: Public Number semantics and exact native string/reference wire.
 	r.runTypeNumberStringRequirement()
 
-	// T04: Unknown differs from AnyContent and Void
-	t04Passed := types.Unknown.Name() != types.AnyContent.Name() && types.Unknown.Name() != types.Void.Name()
-	r.Record("T04", "types", "Unknown differs from AnyContent and Void", "unit+service", []string{"unit", "service"}, t04Passed, "PASSED", "Semantic distinction between Unknown, AnyContent, and Void preserved")
+	// T04: Actual authored type guarantees, value use and service diagnostics.
+	r.runTypeOpaqueRequirement()
 
 	// T05: Optional presence differs from optional value and JSON null
 	optType := types.NewOptional(types.Text)
