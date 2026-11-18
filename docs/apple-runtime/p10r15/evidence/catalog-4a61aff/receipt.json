@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_CLEAN_SOURCE_LOCAL_B02_AC01",
+  "sourceCommit": "4a61aff7e1967f3d94dc4ccaccc9235ebb5e572d",
+  "sourceTreeCleanAtExecution": true,
+  "productionRegistryChanged": false,
+  "counts": {
+    "archivedDefinitions": 461,
+    "capturedNativeOutputs": 1010,
+    "changedMetadataRows": 193,
+    "compilerMacrosOutsideNativeCatalog": 15,
+    "constructs": 8,
+    "currentDefinitions": 505,
+    "currentSharedNativeIdentityGroups": 78,
+    "newDefinitions": 44,
+    "retainedIdentities": 461,
+    "verifiedRoundtrips": 505
+  },
+  "evidenceFiles": [
+    {
+      "path": "catalog-baseline-reconciliation.json",
+      "sha256": "2d3c556c3978918d1e5d9687246671e2d9c6544631405672729db431441b91c5",
+      "bytes": 1679500
+    },
+    {
+      "path": "production-go.jsonl",
+      "sha256": "13c9f1bdd4f98bf009511b8f7f0040160f7daa01db2e694776ae3e1ee91c536f",
+      "bytes": 39021
+    },
+    {
+      "path": "formal-go.jsonl",
+      "sha256": "60c06c711f88c18745e395478f8c1caab9bcd4d596567919e723165accb4e020",
+      "bytes": 6879
+    }
+  ],
+  "goTestSummary": [
+    {
+      "file": "production-go.jsonl",
+      "passEvents": 24,
+      "topLevelPasses": [
+        "TestP15B02AC01CatalogMigrationAndNativeOutputs",
+        "TestP15B02AC01RejectsCatalogIdentityFaults",
+        "TestP15B02AC01RejectsNativeCaptureFaults",
+        "TestP15AC01ConstructGrammarAudit"
+      ],
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "formal-go.jsonl",
+      "passEvents": 2,
+      "topLevelPasses": [
+        "TestCatalogBaselineProductionEvidence",
+        "TestCatalogAccountingProductionEvidence"
+      ],
+      "failed": [],
+      "skipped": []
+    }
+  ],
+  "formalEvidence": {
+    "TestCatalogBaselineProductionEvidence": {
+      "records": [
+        {
+          "evidence_id": "ev-local-B02-repository",
+          "requirements": [
+            "B02"
+          ],
+          "tier": "repository",
+          "implementation_sha": "4a61aff7e1967f3d94dc4ccaccc9235ebb5e572d",
+          "test_id": "github.com/electrikmilk/cherri:TestP15B02AC01CatalogMigrationAndNativeOutputs",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15B02AC01CatalogMigrationAndNativeOutputs|TestP15B02AC01RejectsCatalogIdentityFaults|TestP15B02AC01RejectsNativeCaptureFaults)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults"
+          },
+          "detail": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T17:16:09Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "B02",
+            "group": "baseline",
+            "requirement": "Capture baseline catalog, definition identities and representative native outputs",
+            "test_level": "repository",
+            "executed_levels": [
+              "repository"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Archived definition identity reconciliation and current representative native output capture only; no historical plist parity or runtime claim",
+      "source_sha": "4a61aff7e1967f3d94dc4ccaccc9235ebb5e572d",
+      "source_tree_clean": true
+    },
+    "TestCatalogAccountingProductionEvidence": {
+      "records": [
+        {
+          "evidence_id": "ev-local-AC01-generation",
+          "requirements": [
+            "AC01"
+          ],
+          "tier": "generation",
+          "implementation_sha": "4a61aff7e1967f3d94dc4ccaccc9235ebb5e572d",
+          "test_id": "github.com/electrikmilk/cherri:TestP15B02AC01CatalogMigrationAndNativeOutputs",
+          "command": [
+            "go",
+            "test",
+            "-count=1",
+            "-json",
+            "-timeout",
+            "3m0s",
+            ".",
+            "-run",
+            "^(TestP15B02AC01CatalogMigrationAndNativeOutputs|TestP15B02AC01RejectsCatalogIdentityFaults|TestP15B02AC01RejectsNativeCaptureFaults|TestP15AC01ConstructGrammarAudit|TestP15U02GeneratedSchemaProduction)$"
+          ],
+          "exit_code": 0,
+          "result": "passed",
+          "assertions": {
+            "assertion": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15AC01ConstructGrammarAudit, TestP15U02GeneratedSchemaProduction"
+          },
+          "detail": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15AC01ConstructGrammarAudit, TestP15U02GeneratedSchemaProduction"
+        }
+      ],
+      "report": {
+        "timestamp": "2026-11-18T17:17:03Z",
+        "phase": "local",
+        "closure_complete": false,
+        "language_version": "2.0",
+        "schema_fingerprint": "",
+        "total_cases": 1,
+        "passed_cases": 1,
+        "failed_cases": 0,
+        "skipped_cases": 0,
+        "results": [
+          {
+            "id": "AC01",
+            "group": "schema",
+            "requirement": "All baseline definitions/variants/constructs accounted for",
+            "test_level": "generation",
+            "executed_levels": [
+              "generation"
+            ],
+            "passed": true,
+            "status": "PASSED",
+            "detail": "All required tiers satisfied by verified evidence"
+          }
+        ]
+      },
+      "scope": "Complete canonical definition/variant membership, real construct grammar and actual regenerated schema; no Apple runtime or release closure",
+      "source_sha": "4a61aff7e1967f3d94dc4ccaccc9235ebb5e572d",
+      "source_tree_clean": true
+    }
+  },
+  "causalControls": {
+    "identityFaults": 7,
+    "nativeCaptureFaults": 5,
+    "constructSyntaxPositives": 8,
+    "constructCallNegatives": 24,
+    "formalAntiMintControls": 6
+  },
+  "scope": "B02 repository and AC01 generation only; no Apple runtime or global release closure",
+  "retainedFinding": "Initial producer's label-only uniqueness assumption rejected existing baseline getDeviceUsage/streetAddress duplicate labels. Current occurrence-based matching records each label/wire pair and adds a causal collapsed-occurrence rejection; no canonical declaration was changed.",
+  "infrastructureObservation": "Intermittent SentinelX -32603 internal errors returned before the attempted final patch/commit. Read-only checks verified no partial change; a narrow supported script_run completed the reviewed commit. The unexecuted optional patch was not included."
+}
