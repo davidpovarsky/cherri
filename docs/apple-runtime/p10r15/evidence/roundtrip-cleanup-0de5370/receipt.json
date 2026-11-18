@@ -1,0 +1,25 @@
+{
+  "sourceSha": "0de5370d9ad19cdd8fc8f87275ea825a769e4055",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "testBinarySha256": "627e79893bfa8d8341be60836adc6f0aad78c42c9c6f534b7c9240d2bee712d8",
+  "cases": [
+    {
+      "case": "success",
+      "actualExit": 0,
+      "expectedExit": 0,
+      "temporaryCompilerDirsAfter": 0,
+      "unrelatedControlPreserved": true,
+      "logSha256": "822df714e32e48ee0a124fa688c8f26b85816692488ec179b4d380e3328f6270"
+    },
+    {
+      "case": "forced-build-failure",
+      "actualExit": 1,
+      "expectedExit": 1,
+      "temporaryCompilerDirsAfter": 0,
+      "unrelatedControlPreserved": true,
+      "logSha256": "17682cda41538bd3444d9a06ac008d748057db5aeaf996b7338385cc2770f69b"
+    }
+  ],
+  "scope": "Actual compiled test process, real compiler roundtrips and real Go-build failure. Normal success/failure exits clean the shared compiler directory; forced process termination/panic is not promised."
+}
