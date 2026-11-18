@@ -1,0 +1,491 @@
+{
+  "schemaVersion": "1.0",
+  "scope": "AUTHENTIC_IOS_SIMULATOR_TEST_RUN_EXACT_COMMIT",
+  "runId": "44248146483",
+  "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44248146483",
+  "implementationSha": "d695bc028d60c5e0186bc1e765d37d6291f92202",
+  "workflowConclusion": "success",
+  "xcodebuildExitCode": 0,
+  "nativeTests": {
+    "total": 50,
+    "passed": 50,
+    "failed": 0,
+    "incomplete": 0,
+    "byClass": {
+      "CherriCoreIntegrationTests": 26,
+      "CherriEditorInputTests": 12,
+      "CherriEditorUITests": 12
+    }
+  },
+  "testDeclarationsMatchObservedResults": true,
+  "testResults": [
+    {
+      "testId": "CherriCoreIntegrationTests/testActionCatalogUsesCompilerDefinitions",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testBuildProfilesPreserveSourceThroughCABI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testCherriAnalyzeReturnsMultipleDiagnostics",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testCherriCompleteReturnsContextualItems",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testCompileProducesShortcutPlist",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testCompletionRequestBindsExactUTF16SourceAndCaret",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE01ContextualCompletionService",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE01MultiDiagnosticAnalysis",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE02CompletionHoverSignatureDefinition",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE02MultiDiagnosticAnalysisService",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testEveryCatalogActionEmptyCallReturnsWithoutCrashingBridge",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testExactShoCompletionUsesCurrentBridgeSnapshot",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testPaletteSnippetSuppliesRequiredArguments",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testRP40SwiftIntegrationService",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testRepeatedCompileResetsIncludedActions",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testShortcutPlistEditorAppliesPreviewEdits",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testSimpleCompileDecompileRoundTrip",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testV2LanguageLetAndFStringCompile",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriCoreIntegrationTests/testVisualMetadataDecompileRoundTrip",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testAuthoredCloserIsNeverConsumed",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testCommentGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testCurlyBlockGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testDeletionInvalidatesGeneratedProvenance",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testDictionaryGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testGeneratedCloserSurvivesUntilMatchingKeyAndIsConsumedOnce",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testListGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testMultiCharacterInsertionDoesNotConsumeGeneratedText",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testNestedGeneratedClosersAndCompleteRealInput",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testSelectionMovementInvalidatesGeneratedProvenance",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testSingleCharacterPasteDoesNotConsumeGeneratedText",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorInputTests/testUnicodeUTF16OffsetsPreserveGeneratedCloser",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testGeneratedCloserCompletesAndOvertypesWithRealKeyboard",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testNegativeMissingUIElementFailsClosed",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testNegativeSyntaxErrorRejectsCompilationFailsClosed",
+      "observedStatus": "passed"
+    },
+    {
+      "testId": "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16",
+      "observedStatus": "passed"
+    }
+  ],
+  "strictSourceChecks": {
+    "verifiedEmptyResets": 19,
+    "typedAndCompletionReceiptCount": 22,
+    "allExactUTF16Matches": true,
+    "inlineCompletion": "show(Ask)",
+    "paletteCompletion": "show(Ask)",
+    "uiFailureCount": 0
+  },
+  "nativeInputCases": [
+    {
+      "fixtureId": "nested-call",
+      "testId": "CherriEditorInputTests/testNestedGeneratedClosersAndCompleteRealInput",
+      "expectedSource": "text(text(\"x\"))\n",
+      "actualSourceSha256": "ad2efe27845837b075f50c03e35e98a5db3b7385551a9db086127209b5936358",
+      "exactUTF16Match": true,
+      "utf16Length": 16,
+      "selectionLocation": 16,
+      "selectionLength": 0,
+      "retainedReceiptCount": 33
+    },
+    {
+      "fixtureId": "list",
+      "testId": "CherriEditorInputTests/testListGeneratedClosersAndCompleteRealInput",
+      "expectedSource": "let xs = [1, 2]\n",
+      "actualSourceSha256": "196b396c873d98f95c0a6500fe867fa22bc1d7245862ac8e2c053a1fd5a6bb24",
+      "exactUTF16Match": true,
+      "utf16Length": 16,
+      "selectionLocation": 16,
+      "selectionLength": 0,
+      "retainedReceiptCount": 33
+    },
+    {
+      "fixtureId": "dictionary",
+      "testId": "CherriEditorInputTests/testDictionaryGeneratedClosersAndCompleteRealInput",
+      "expectedSource": "let d = {\"value\": 1}\n",
+      "actualSourceSha256": "b6e78b4f8613b303dd9b22e900d2b2e0823a064dcae985b27a76c4a9972a0d57",
+      "exactUTF16Match": true,
+      "utf16Length": 21,
+      "selectionLocation": 21,
+      "selectionLength": 0,
+      "retainedReceiptCount": 41
+    },
+    {
+      "fixtureId": "curly-block",
+      "testId": "CherriEditorInputTests/testCurlyBlockGeneratedClosersAndCompleteRealInput",
+      "expectedSource": "if true {\ntext(\"x\")\n}\n",
+      "actualSourceSha256": "3d2d42596af680326b95bb3b56b5f78e332b2c7ca92cabe085af8f4bac56f737",
+      "exactUTF16Match": true,
+      "utf16Length": 22,
+      "selectionLocation": 22,
+      "selectionLength": 0,
+      "retainedReceiptCount": 45
+    },
+    {
+      "fixtureId": "block-comment",
+      "testId": "CherriEditorInputTests/testCommentGeneratedClosersAndCompleteRealInput",
+      "expectedSource": "/* block */\ntext(\"x\")\n",
+      "actualSourceSha256": "b7b1158f370e28889a5923a5111f74aacba2fd69fe76dbfcc78ec8586c3a443f",
+      "exactUTF16Match": true,
+      "utf16Length": 22,
+      "selectionLocation": 22,
+      "selectionLength": 0,
+      "retainedReceiptCount": 45
+    }
+  ],
+  "retainedInputReceiptCount": 197,
+  "missingIndividualInputReceipts": [
+    {
+      "fixtureId": "dictionary",
+      "stage": "before-key",
+      "keyIndex": 11
+    },
+    {
+      "fixtureId": "dictionary",
+      "stage": "after-key",
+      "keyIndex": 6
+    }
+  ],
+  "acceptanceEvidenceRecordCount": 18,
+  "evidenceRecords": [
+    {
+      "evidenceId": "ev-ios-ui-testBRG27EditorRealWorldWorkflowUI",
+      "requirements": [
+        "BRG27"
+      ],
+      "testId": "CherriUITests/testBRG27EditorRealWorldWorkflowUI",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-ui-testE01CompletionDisplayAndInsertionUI",
+      "requirements": [
+        "E01",
+        "RP40"
+      ],
+      "testId": "CherriUITests/testE01CompletionDisplayAndInsertionUI",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-ui-testE02DiagnosticsRenderingAndNavigationUI",
+      "requirements": [
+        "E02"
+      ],
+      "testId": "CherriUITests/testE02DiagnosticsRenderingAndNavigationUI",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-ui-testE03EditorActionsHoverRenameUI",
+      "requirements": [
+        "E03"
+      ],
+      "testId": "CherriUITests/testE03EditorActionsHoverRenameUI",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-ui-testE05EditorResponsivenessStaleEditsUI",
+      "requirements": [
+        "E05"
+      ],
+      "testId": "CherriUITests/testE05EditorResponsivenessStaleEditsUI",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-ui-testE06BidirectionalHebrewEmojiUI",
+      "requirements": [
+        "E06"
+      ],
+      "testId": "CherriUITests/testE06BidirectionalHebrewEmojiUI",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-ui-testE07VisualParameterEditingCanvasUI",
+      "requirements": [
+        "E07",
+        "RP41",
+        "BRG28"
+      ],
+      "testId": "CherriUITests/testE07VisualParameterEditingCanvasUI",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testBRG25SharedAnalysisBridgeContract",
+      "requirements": [
+        "BRG25"
+      ],
+      "testId": "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-build-BRG25",
+      "requirements": [
+        "BRG25"
+      ],
+      "testId": "CherriCoreIntegrationTests/testBRG25SharedAnalysisBridgeContract",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testE01ContextualCompletionService",
+      "requirements": [
+        "E01"
+      ],
+      "testId": "CherriCoreIntegrationTests/testE01ContextualCompletionService",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testE02MultiDiagnosticAnalysisService",
+      "requirements": [
+        "E02"
+      ],
+      "testId": "CherriCoreIntegrationTests/testE02MultiDiagnosticAnalysisService",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+      "requirements": [
+        "E03"
+      ],
+      "testId": "CherriCoreIntegrationTests/testE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testE04FormatterPreservesCommentsAndSemantics",
+      "requirements": [
+        "E04",
+        "RP39"
+      ],
+      "testId": "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testE05OutOfOrderVersionedEdits",
+      "requirements": [
+        "E05"
+      ],
+      "testId": "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testE06UTF16DiagnosticSpansEmojiAndHebrew",
+      "requirements": [
+        "E06"
+      ],
+      "testId": "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testE07BoundedVisualSourceEditAndRejection",
+      "requirements": [
+        "E07",
+        "RP41",
+        "BRG28"
+      ],
+      "testId": "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testRP40SwiftIntegrationService",
+      "requirements": [
+        "RP40"
+      ],
+      "testId": "CherriCoreIntegrationTests/testRP40SwiftIntegrationService",
+      "result": "passed"
+    },
+    {
+      "evidenceId": "ev-ios-service-testUnicodeIdentifierCompilationAndAnalysis",
+      "requirements": [
+        "P05"
+      ],
+      "testId": "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis",
+      "result": "passed"
+    }
+  ],
+  "artifactName": "ios-build-evidence",
+  "artifactSha256": {
+    "ios-test-diagnostics.json": "1b63f302737af9c1dd5cbde2e340e53af56161b47e79967ddbd02b553b606cd8",
+    "ios-test-evidence.json": "890b2115a4a93e5aa70ce1376b9cc08a714aa4f3f051fa383a67c34f3f263ace",
+    "xcodetest.log": "f370e2b19e489fcb5bc2dad3b4d918ccf9b2bf7bc8aedb9d72ec4ad2c018fefc"
+  },
+  "sourceSha256": {
+    "ios/CherriTests/CherriCoreIntegrationTests.swift": "e95406fa828acf8e10123ed634ab84421d783829e5c84d7c88d75d1347dfcfa6",
+    "ios/CherriTests/CherriEditorInputTests.swift": "ac83d055c731a0118df8a494fc15051d47eb2c328d34199560458920ea014cbf",
+    "ios/CherriUITests/CherriEditorUITests.swift": "9f64dc42521a130522ceed00626368440ab48358fda6111cea6020bfc1e1a6df",
+    "ios/CherriApp/Editor/CherriCompletionRequest.swift": "2e3ee055450b527a05a8970d41bab515969e41e6dee42bd32131393117553592",
+    "ios/CherriApp/Editor/CherriEditorView.swift": "108110b1af857c26f223039ede5e1f12cf0135bb288978f9a4e9d3f81ca602f3",
+    "ios/DependencyPatches/CodeEditorView/generated-closers.json": "83df712c1a7038f4aa476ea669409ef2260069ef8f4cd5bb4affcf339f241d0e",
+    "ios/scripts/prepare_editor_dependency.py": "e59f9471999436e56d85ffc1c572d388b4b0b41a2c13e10970288b7013479955",
+    "ios/scripts/collect_ios_test_evidence.py": "6a1cb9206f6c79dc0ccceaed341a7f4b00c5674a150d077bc5262f516d45f680",
+    ".github/workflows/ios-build.yml": "64a5ac499cac28b458777f4d1e0e650f2bfb339c59d48d503d988ba407685caa"
+  },
+  "dependencyPatch": {
+    "patchId": "cherri-p15-generated-closers-v1",
+    "repository": "https://github.com/mchakravarty/CodeEditorView.git",
+    "revision": "5386056ab53d43363083cb96069715a9608aa048",
+    "manifestSha256": "83df712c1a7038f4aa476ea669409ef2260069ef8f4cd5bb4affcf339f241d0e"
+  },
+  "nativeRuntimeEventCount": 0,
+  "privacy": {
+    "rawLogsPublished": false,
+    "screenshotsPublished": false,
+    "sourceRequiresVerifiedEmptyReset": true
+  },
+  "limits": [
+    "Proof applies to exact d695 commit; a later final integration needs its own gates.",
+    "All five former combined-loop sources pass independently with exact final source. The prior incomplete combined-test cause remains unknown.",
+    "197 bounded input receipts are retained; two individual dictionary before/after events are absent. No complete per-keystroke-log claim is made.",
+    "E03/E07 teardown compares against their earlier pre-edit source and is false after intentional tested rename/visual edits; all initial typing assertions and tests passed.",
+    "E04 formatter evidence is service-level; no E04 UI test is claimed.",
+    "Physical device execution is not established by this Simulator run."
+  ]
+}
