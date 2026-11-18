@@ -110,13 +110,15 @@ type SourceEditResponse struct {
 
 // CapabilitiesResponse is emitted by `cherri --capabilities-json`.
 type CapabilitiesResponse struct {
-	LanguageVersion      string   `json:"languageVersion"`
-	CatalogSchemaVersion string   `json:"catalogSchemaVersion"`
-	ProtocolVersion      string   `json:"protocolVersion"`
-	SchemaFingerprint    string   `json:"schemaFingerprint"`
-	CodecFingerprint     string   `json:"codecFingerprint"`
-	ActionCount          int      `json:"actionCount"`
-	Features             []string `json:"features"`
+	MacroFingerprint     string                 `json:"macroFingerprint"`
+	CompilerMacros       []*schema.ActionSchema `json:"compilerMacros"`
+	LanguageVersion      string                 `json:"languageVersion"`
+	CatalogSchemaVersion string                 `json:"catalogSchemaVersion"`
+	ProtocolVersion      string                 `json:"protocolVersion"`
+	SchemaFingerprint    string                 `json:"schemaFingerprint"`
+	CodecFingerprint     string                 `json:"codecFingerprint"`
+	ActionCount          int                    `json:"actionCount"`
+	Features             []string               `json:"features"`
 }
 
 // ToDiagnosticItem converts an internal Diagnostic to a wire protocol DiagnosticItem.
@@ -148,6 +150,8 @@ func BuildCapabilities(reg *schema.Registry) CapabilitiesResponse {
 		CatalogSchemaVersion: schema.CatalogSchemaVersion,
 		ProtocolVersion:      ProtocolVersion,
 		SchemaFingerprint:    reg.Fingerprint(),
+		MacroFingerprint:     reg.CompilerMacroFingerprint(),
+		CompilerMacros:       reg.CompilerMacros(),
 		CodecFingerprint:     backend.CodecFingerprint(),
 		ActionCount:          len(reg.AllActions()),
 		Features: []string{
@@ -161,6 +165,8 @@ func BuildCapabilities(reg *schema.Registry) CapabilitiesResponse {
 			"native_preservation",
 			"shared_analysis_service",
 			"zero_based_indexing",
+			"compiler_macro_metadata",
+			"compile_time_build_profiles",
 		},
 	}
 }

@@ -10,7 +10,7 @@ func init() {
 		PrimaryParameterID: "label",
 		Parameters: []ParameterSchema{{
 			ID: "label", Label: "label", DisplayName: "Label", Type: types.Text,
-			TypeName: "text", RawType: "string", AcceptedForms: []string{"string"},
+			TypeName: "text", RawType: "string", Literal: true, AcceptedForms: []string{"literal"},
 			EvidenceStatus: EvidenceInferred,
 		}},
 		OutputType: types.AnyContent, OutputTypeName: "AnyContent",

@@ -355,7 +355,7 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 	}
 
 	// 4. Action completions
-	for _, a := range s.registry.AllActions() {
+	for _, a := range append(s.registry.AllActions(), s.registry.CompilerMacros()...) {
 		items = append(items, CompletionItem{
 			Label:         a.CallableName,
 			Kind:          CompletionKindFunction,
@@ -1155,4 +1155,3 @@ func (s *Service) ApplyVisualSourceEdit(src string, actionIndex int, paramLabel 
 func isIdentChar(r rune) bool {
 	return r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r) || unicode.IsMark(r)
 }
-
