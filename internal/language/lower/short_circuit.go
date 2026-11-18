@@ -85,11 +85,18 @@ func (l *Lowerer) nativePredicateReference(expr syntax.Expression) bool {
 
 func (l *Lowerer) nativePredicateClauses(clauses []syntax.Expression, allowPresence bool) bool {
 	for _, expr := range clauses {
+		negated := false
 		if unary, ok := expr.(*syntax.UnaryExpr); ok && unary.Op == syntax.TokenBang {
 			expr = unary.Operand
+			negated = true
 		}
 		switch e := expr.(type) {
 		case *syntax.BinaryExpr:
+			// These operators have no native inverse in lowerConditionClause.
+			// Compute and negate their Boolean result in the lazy branch instead.
+			if negated && (e.Op == syntax.TokenBeginsWith || e.Op == syntax.TokenEndsWith) {
+				return false
+			}
 			switch e.Op {
 			case syntax.TokenEqual, syntax.TokenNotEqual, syntax.TokenGreater,
 				syntax.TokenGreaterEqual, syntax.TokenLess, syntax.TokenLessEqual,
@@ -103,6 +110,11 @@ func (l *Lowerer) nativePredicateClauses(clauses []syntax.Expression, allowPrese
 		case *syntax.CallExpr:
 			if allowPresence && l.nativePredicateReference(e) && (!l.isBooleanCondition(e) || l.importedPresenceOperand(e)) {
 				continue
+			}
+			// Negated helper predicates produce a Boolean value; treating that
+			// value as Has No Value would make false indistinguishable from true.
+			if negated {
+				return false
 			}
 			var id, ok = e.Callee.(*syntax.IdentExpr)
 			if !ok || !l.nativePredicateOperand(e.PrimaryArg) {

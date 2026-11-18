@@ -3718,6 +3718,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		return l.lowerFString(e)
 
 	case *syntax.CallExpr:
+		if isNativeConditionPredicate(e) {
+			return l.lowerNativePredicateValue(e)
+		}
 		return l.lowerCall(e)
 
 	case *syntax.ListExpr:
