@@ -1,0 +1,834 @@
+{
+  "formatVersion": 1,
+  "observedAtUTC": "2026-11-18T16:12:47.327618+00:00",
+  "asanaTasks": [
+    "1220544718901241",
+    "1220544665232149"
+  ],
+  "status": "PASS_SOURCE_AND_NATIVE_GRAPH_ONLY",
+  "sourceCommit": "6d9faaf4167f48333123dfdd61205ba43963de4d",
+  "baselineCommit": "bbc60bc0c0fef4c8e56f831615486c5ec0f3543f",
+  "sourceFilesSHA256": {
+    "action.go": "d97f6d580d36fe302333beccecdb74d266426a46b658be2c0d90275ab7f818ab",
+    "compiler_state.go": "5874cb7c6e5f7196f95c5a991b2debb5499cc25980818e6c2409021f2ebdac80",
+    "docs/apple-runtime/p10r15/legacy-scoped-blocks.md": "aa1b773fcdbae8c80b2e0d792260bacde918d39f45eae1db6809b17860fad4a5",
+    "docs/apple-runtime/p10r15/scoped-blocks-measure-collect.md": "3d0cf0d4c21931653476e67e82d169c191245acb6677337639ef7214b1fdb064",
+    "internal/language/backend/scoped_measure.go": "7cd36c5a5107cbb49875f62dc159a13f6184649523f3130f2d55200fff629276",
+    "internal/language/backend/scoped_measure_test.go": "f454a81a1a16d3643e984e2fb894e5c459fb3eb928a795fe37b6db2c05193624",
+    "internal/language/lower/scoped_blocks.go": "11bd57d0b9c1d593e7ea0080d02792060192ade30c21046432cab277e700155f",
+    "p15_scoped_blocks_legacy_test.go": "36a35c67c74de95099e5d5ba0deaf778f157895a138676b6b9dabb3df35fe956",
+    "p15_scoped_blocks_test.go": "3623abc67ebda1ce32f6f65c8ad68feb351ca761993eba65a47db397464a23d2",
+    "parser.go": "a01d5ab2202f3a3774669383a5229089abbd89e1898375e27a1fe6875e2c6088",
+    "scoped_blocks_legacy.go": "3df515a251259969ac699d0fb301cca0344acdc5b5d46a40217252696619b9d3",
+    "shortcutgen.go": "0943410c926c812dbc9936e4cc9bae7717a66cf1cbcddca05341628541327f54",
+    "tools/p10r15/generate_macro_contract_coverage.py": "dd8d568c9df4af3b8a090eaf5d50293777eb95f1d7a2f0885d6e445af185532a",
+    "variables.go": "b6e3f9f7cf3b2d7ada01d345b2ef0d97fc40368453ddccd206407c367fc33e5d"
+  },
+  "worktreeCleanBeforeCLIExecution": true,
+  "sourceFingerprint": "b194e4ad30b2a7bed1c094ca77bb14a574bc327208e0d90d4cf8cf3ba8dd0924",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+  "compilerSHA256": "048756b740ca5a881a4b17c90b267f74daf4f55e3af92372ae615da3c0cba02c",
+  "goVersion": "go version go1.25.6 windows/amd64",
+  "buildCommand": [
+    "go",
+    "build",
+    "-trimpath",
+    "-o",
+    "<temporary-compiler>",
+    "."
+  ],
+  "focusedProduction": {
+    "log": "dist/legacy-blocks-focused-source-6d9faaf.jsonl",
+    "logSHA256": "db62d03629b88d37706fa4febd53ca08bab7a4d02356c16f58538793c0bb0879",
+    "testEvents": {
+      "pass": 40
+    },
+    "packages": [
+      {
+        "Action": "pass",
+        "Package": "github.com/electrikmilk/cherri",
+        "Elapsed": 0.572
+      }
+    ]
+  },
+  "fullLowerAndBackend": {
+    "log": "dist/legacy-blocks-packages-source-6d9faaf.jsonl",
+    "logSHA256": "151d7ec7bfdf76e65e54236f8ad825784ece0f2f7d0f0dd5a525b0d08e391591",
+    "testEvents": {
+      "pass": 27
+    },
+    "packages": [
+      {
+        "Action": "pass",
+        "Package": "github.com/electrikmilk/cherri/internal/language/backend",
+        "Elapsed": 0.64
+      },
+      {
+        "Action": "pass",
+        "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+        "Elapsed": 2.859
+      }
+    ]
+  },
+  "actualCLI": {
+    "summary": {
+      "asanaChildren": 11,
+      "open": 11,
+      "closed": 0,
+      "compilerMacros": 15,
+      "compileChecks": 19,
+      "compilePassed": 19,
+      "causalMutationChecks": 8,
+      "structuralExecutionVerdict": "PASS",
+      "releaseCompletion": "OPEN"
+    },
+    "positiveExactNativeActionRoundtrips": 16,
+    "cases": [
+      {
+        "id": "require_v2_debug",
+        "kind": "require",
+        "dialect": "v2",
+        "profile": "debug",
+        "sourceSHA256": "b0aba086a8a9f76c97d52a944083d2018d6c35ebc4f30db3cd1c73e873ee72d6",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "9cfaa610de08549ceb3ee1371c7f9efede733d8122393ef74ac2d78b3c57d8ae",
+        "nativeActionCount": 21,
+        "nativeActionIDs": {
+          "is.workflow.actions.alert": 3,
+          "is.workflow.actions.appendvariable": 1,
+          "is.workflow.actions.conditional": 6,
+          "is.workflow.actions.count": 2,
+          "is.workflow.actions.exit": 3,
+          "is.workflow.actions.getitemtype": 2,
+          "is.workflow.actions.gettext": 2,
+          "is.workflow.actions.getvariable": 2
+        },
+        "structuralChecks": {
+          "oneOriginalProducer": true,
+          "originalUUIDPassthrough": true,
+          "canonicalGetType": true,
+          "semanticGuardRetained": true,
+          "diagnosticProfile": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "require_v2_release",
+        "kind": "require",
+        "dialect": "v2",
+        "profile": "release",
+        "sourceSHA256": "b0aba086a8a9f76c97d52a944083d2018d6c35ebc4f30db3cd1c73e873ee72d6",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "3ca110ff276dcacf00d674c88274007cf1d80a49760ef50368780c8f409dc2a6",
+        "nativeActionCount": 20,
+        "nativeActionIDs": {
+          "is.workflow.actions.alert": 3,
+          "is.workflow.actions.conditional": 6,
+          "is.workflow.actions.count": 2,
+          "is.workflow.actions.exit": 3,
+          "is.workflow.actions.getitemtype": 2,
+          "is.workflow.actions.gettext": 2,
+          "is.workflow.actions.getvariable": 2
+        },
+        "structuralChecks": {
+          "oneOriginalProducer": true,
+          "originalUUIDPassthrough": true,
+          "canonicalGetType": true,
+          "semanticGuardRetained": true,
+          "diagnosticProfile": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "require_legacy_debug",
+        "kind": "require",
+        "dialect": "legacy",
+        "profile": "debug",
+        "sourceSHA256": "9945c7aa42522d50fb851c8c229a4dac4b32081fd1ec90404ec6448b2ff257e8",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "b3346790b3abed482415b5bb1624fd28ecb75e9832cd2744a7a4071a7c647630",
+        "nativeActionCount": 21,
+        "nativeActionIDs": {
+          "is.workflow.actions.alert": 3,
+          "is.workflow.actions.appendvariable": 1,
+          "is.workflow.actions.conditional": 6,
+          "is.workflow.actions.count": 2,
+          "is.workflow.actions.exit": 3,
+          "is.workflow.actions.getitemtype": 2,
+          "is.workflow.actions.gettext": 2,
+          "is.workflow.actions.getvariable": 2
+        },
+        "structuralChecks": {
+          "oneOriginalProducer": true,
+          "originalUUIDPassthrough": true,
+          "canonicalGetType": true,
+          "semanticGuardRetained": true,
+          "diagnosticProfile": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "require_legacy_release",
+        "kind": "require",
+        "dialect": "legacy",
+        "profile": "release",
+        "sourceSHA256": "9945c7aa42522d50fb851c8c229a4dac4b32081fd1ec90404ec6448b2ff257e8",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "f60adb0b0c1976edd88ef21485fdfb6c5106193f9437bd848c129ecf0845980a",
+        "nativeActionCount": 20,
+        "nativeActionIDs": {
+          "is.workflow.actions.alert": 3,
+          "is.workflow.actions.conditional": 6,
+          "is.workflow.actions.count": 2,
+          "is.workflow.actions.exit": 3,
+          "is.workflow.actions.getitemtype": 2,
+          "is.workflow.actions.gettext": 2,
+          "is.workflow.actions.getvariable": 2
+        },
+        "structuralChecks": {
+          "oneOriginalProducer": true,
+          "originalUUIDPassthrough": true,
+          "canonicalGetType": true,
+          "semanticGuardRetained": true,
+          "diagnosticProfile": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "measure_v2_debug",
+        "kind": "measure",
+        "dialect": "v2",
+        "profile": "debug",
+        "sourceSHA256": "ea344a273d1b02009310382f30292b37917ac7aec084458baed6c6213c9f7932",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "97d6eccf6c6242d3986f205201524ba87b60682295d12245cd37da0f4b10a4b7",
+        "nativeActionCount": 7,
+        "nativeActionIDs": {
+          "is.workflow.actions.appendvariable": 1,
+          "is.workflow.actions.dictionary": 1,
+          "is.workflow.actions.gettimebetweendates": 1,
+          "is.workflow.actions.getvariable": 3,
+          "is.workflow.actions.setvariable": 1
+        },
+        "structuralChecks": {
+          "oneTypedBodyProducer": true,
+          "originalUUIDPassthrough": true,
+          "noTextNumberCoercion": true,
+          "timerProfile": true,
+          "releaseNoDiagnosticAppend": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "measure_v2_release",
+        "kind": "measure",
+        "dialect": "v2",
+        "profile": "release",
+        "sourceSHA256": "ea344a273d1b02009310382f30292b37917ac7aec084458baed6c6213c9f7932",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "0fc9613d98ac0516f3be799ed7f157f925c1defddfc60813ffd8ce5e13fd1846",
+        "nativeActionCount": 3,
+        "nativeActionIDs": {
+          "is.workflow.actions.dictionary": 1,
+          "is.workflow.actions.getvariable": 2
+        },
+        "structuralChecks": {
+          "oneTypedBodyProducer": true,
+          "originalUUIDPassthrough": true,
+          "noTextNumberCoercion": true,
+          "timerProfile": true,
+          "releaseNoDiagnosticAppend": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "measure_legacy_debug",
+        "kind": "measure",
+        "dialect": "legacy",
+        "profile": "debug",
+        "sourceSHA256": "f92def7306044a1c6265bfc254e7a874bb03cdf8145eeeada9baa115ef7edc36",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "a676613a3ba93f4e4d43a62901601ed5d42596fa1e3865ee7ef3874ed4abf4ef",
+        "nativeActionCount": 7,
+        "nativeActionIDs": {
+          "is.workflow.actions.appendvariable": 1,
+          "is.workflow.actions.dictionary": 1,
+          "is.workflow.actions.gettimebetweendates": 1,
+          "is.workflow.actions.getvariable": 3,
+          "is.workflow.actions.setvariable": 1
+        },
+        "structuralChecks": {
+          "oneTypedBodyProducer": true,
+          "originalUUIDPassthrough": true,
+          "noTextNumberCoercion": true,
+          "timerProfile": true,
+          "releaseNoDiagnosticAppend": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "measure_legacy_release",
+        "kind": "measure",
+        "dialect": "legacy",
+        "profile": "release",
+        "sourceSHA256": "f92def7306044a1c6265bfc254e7a874bb03cdf8145eeeada9baa115ef7edc36",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "31e4686e2b17945d6983bab8ce0ca5556047ef07500704c2b37e70dbd7ae1101",
+        "nativeActionCount": 3,
+        "nativeActionIDs": {
+          "is.workflow.actions.dictionary": 1,
+          "is.workflow.actions.getvariable": 2
+        },
+        "structuralChecks": {
+          "oneTypedBodyProducer": true,
+          "originalUUIDPassthrough": true,
+          "noTextNumberCoercion": true,
+          "timerProfile": true,
+          "releaseNoDiagnosticAppend": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "collect_v2_0",
+        "kind": "collect",
+        "dialect": "v2",
+        "profile": "debug",
+        "sourceSHA256": "f8675e2411fac9ab8f0379aa96bb49b8b89034fc5c2fdb85a0bfdf17071b9a87",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "e0330f25d2d441d84ec544fdb8967d650868e7de3c4a3d595ecc294d651c18e5",
+        "nativeActionCount": 6,
+        "nativeActionIDs": {
+          "is.workflow.actions.getvariable": 2,
+          "is.workflow.actions.list": 1,
+          "is.workflow.actions.repeat.each": 2,
+          "is.workflow.actions.setvariable": 1
+        },
+        "structuralChecks": {
+          "pairedRepeatRegion": true,
+          "consumerUsesRepeatResults": true,
+          "noAccumulator": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "collect_v2_1",
+        "kind": "collect",
+        "dialect": "v2",
+        "profile": "debug",
+        "sourceSHA256": "1087da25dc32de3ce33f75d614d8144da080be2fbde4eb39359769730e2e4b28",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "381153bbaa5981f93031646985e0e0674ba8f25506797618c3700aacb1d18d7c",
+        "nativeActionCount": 7,
+        "nativeActionIDs": {
+          "is.workflow.actions.getvariable": 2,
+          "is.workflow.actions.list": 1,
+          "is.workflow.actions.number": 1,
+          "is.workflow.actions.repeat.each": 2,
+          "is.workflow.actions.setvariable": 1
+        },
+        "structuralChecks": {
+          "pairedRepeatRegion": true,
+          "consumerUsesRepeatResults": true,
+          "noAccumulator": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "collect_v2_100",
+        "kind": "collect",
+        "dialect": "v2",
+        "profile": "debug",
+        "sourceSHA256": "633eccd830b8696e1760bad7bffab29d116f30ebccc536f2014dea4afa9651a2",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "588e04b166747abfea7886730af82c1d8f2f06817f7e132210e2b50097d09c50",
+        "nativeActionCount": 106,
+        "nativeActionIDs": {
+          "is.workflow.actions.getvariable": 2,
+          "is.workflow.actions.list": 1,
+          "is.workflow.actions.number": 100,
+          "is.workflow.actions.repeat.each": 2,
+          "is.workflow.actions.setvariable": 1
+        },
+        "structuralChecks": {
+          "pairedRepeatRegion": true,
+          "consumerUsesRepeatResults": true,
+          "noAccumulator": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "collect_v2_dictionary",
+        "kind": "collect",
+        "dialect": "v2",
+        "profile": "debug",
+        "sourceSHA256": "421d705ebbcac1fa3b52b184187a2512cc767c1a5867c2373ae9d686e6fed334",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "0859d6b3ab2ba79018b7139056a71139d3cd8062626da4891ce9a5a50d4fbdeb",
+        "nativeActionCount": 8,
+        "nativeActionIDs": {
+          "is.workflow.actions.dictionary": 1,
+          "is.workflow.actions.getvariable": 1,
+          "is.workflow.actions.list": 1,
+          "is.workflow.actions.number": 2,
+          "is.workflow.actions.repeat.each": 2,
+          "is.workflow.actions.setvariable": 1
+        },
+        "structuralChecks": {
+          "pairedRepeatRegion": true,
+          "consumerUsesRepeatResults": true,
+          "noAccumulator": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "measure_legacy_empty_rejected",
+        "kind": "negative",
+        "dialect": "legacy",
+        "profile": "debug",
+        "sourceSHA256": "811f38a791cac57b9f1675515f90a6aa2023434231a6b059641f376ebdfe7c73",
+        "exitCode": 1,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "expectedDiagnostic": "E_BLOCK_VALUE_REQUIRED",
+        "noArtifact": true,
+        "verdict": "PASS"
+      },
+      {
+        "id": "measure_legacy_control_value_rejected",
+        "kind": "negative",
+        "dialect": "legacy",
+        "profile": "debug",
+        "sourceSHA256": "ba01deae9a8943fe49d9bf3d2c7d2851c890261b53c043a431b971ae831314fe",
+        "exitCode": 1,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "expectedDiagnostic": "E_BLOCK_LEGACY_CONTROL_VALUE",
+        "noArtifact": true,
+        "verdict": "PASS"
+      },
+      {
+        "id": "measure_v2_empty_rejected",
+        "kind": "negative",
+        "dialect": "v2",
+        "profile": "debug",
+        "sourceSHA256": "39d62d99ee936d1c416b82a2353c5ce07b9ef88445e47ce9f13643fc7f1dff38",
+        "exitCode": 1,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "expectedDiagnostic": "E_BLOCK_VALUE_REQUIRED",
+        "noArtifact": true,
+        "verdict": "PASS"
+      },
+      {
+        "id": "paginate_v2",
+        "kind": "paginate",
+        "dialect": "v2",
+        "profile": "debug",
+        "sourceSHA256": "c2d102ceaeac5aad6713ba85c6d205117be662d57af2fef507fe6e5cae3dd490",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "75d1e1b400573318d90af03683f090c8fb78a3ff438e6bd2af1f5c129d7aa721",
+        "nativeActionCount": 182,
+        "nativeActionIDs": {
+          "is.workflow.actions.alert": 19,
+          "is.workflow.actions.appendvariable": 2,
+          "is.workflow.actions.conditional": 70,
+          "is.workflow.actions.count": 8,
+          "is.workflow.actions.detect.dictionary": 1,
+          "is.workflow.actions.dictionary": 1,
+          "is.workflow.actions.downloadurl": 1,
+          "is.workflow.actions.exit": 19,
+          "is.workflow.actions.getitemfromlist": 1,
+          "is.workflow.actions.getitemtype": 5,
+          "is.workflow.actions.gettext": 4,
+          "is.workflow.actions.getvalueforkey": 3,
+          "is.workflow.actions.getvariable": 14,
+          "is.workflow.actions.hash": 4,
+          "is.workflow.actions.list": 2,
+          "is.workflow.actions.number": 3,
+          "is.workflow.actions.repeat.count": 2,
+          "is.workflow.actions.repeat.each": 6,
+          "is.workflow.actions.setvariable": 17
+        },
+        "structuralChecks": {
+          "oneGETNode": true,
+          "explicitPageBudget": true,
+          "nativeCycleHash": true,
+          "typedDictionaryWitness": true,
+          "semanticFailureStops": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "paginate-zero_v2",
+        "kind": "paginate-zero",
+        "dialect": "v2",
+        "profile": "debug",
+        "sourceSHA256": "c084ab94c6b86f41ca9e836363e0c378c2235a605a770efa07d091267aa9e669",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "bfc451753ad2fe737a7bc623bdedfc0a6e953bf18069ac4e7980bb3732071ee1",
+        "nativeActionCount": 3,
+        "nativeActionIDs": {
+          "is.workflow.actions.getvariable": 1,
+          "is.workflow.actions.list": 1,
+          "is.workflow.actions.setvariable": 1
+        },
+        "structuralChecks": {
+          "zeroBudgetNoGET": true,
+          "zeroBudgetNoLoop": true,
+          "explicitEmptyResult": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "paginate_legacy",
+        "kind": "paginate",
+        "dialect": "legacy",
+        "profile": "debug",
+        "sourceSHA256": "c2d102ceaeac5aad6713ba85c6d205117be662d57af2fef507fe6e5cae3dd490",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "20c250325a25636c2bcc173091fc16b9bb5eda3de797a8d8c0270adcd00a7ab7",
+        "nativeActionCount": 182,
+        "nativeActionIDs": {
+          "is.workflow.actions.alert": 19,
+          "is.workflow.actions.appendvariable": 2,
+          "is.workflow.actions.conditional": 70,
+          "is.workflow.actions.count": 8,
+          "is.workflow.actions.detect.dictionary": 1,
+          "is.workflow.actions.dictionary": 1,
+          "is.workflow.actions.downloadurl": 1,
+          "is.workflow.actions.exit": 19,
+          "is.workflow.actions.getitemfromlist": 1,
+          "is.workflow.actions.getitemtype": 5,
+          "is.workflow.actions.gettext": 4,
+          "is.workflow.actions.getvalueforkey": 3,
+          "is.workflow.actions.getvariable": 14,
+          "is.workflow.actions.hash": 4,
+          "is.workflow.actions.list": 2,
+          "is.workflow.actions.number": 3,
+          "is.workflow.actions.repeat.count": 2,
+          "is.workflow.actions.repeat.each": 6,
+          "is.workflow.actions.setvariable": 17
+        },
+        "structuralChecks": {
+          "oneGETNode": true,
+          "explicitPageBudget": true,
+          "nativeCycleHash": true,
+          "typedDictionaryWitness": true,
+          "semanticFailureStops": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      },
+      {
+        "id": "paginate-zero_legacy",
+        "kind": "paginate-zero",
+        "dialect": "legacy",
+        "profile": "debug",
+        "sourceSHA256": "c084ab94c6b86f41ca9e836363e0c378c2235a605a770efa07d091267aa9e669",
+        "exitCode": 0,
+        "signedRuntime": "NOT_EXECUTED",
+        "physicalDevice": "NOT_EXECUTED",
+        "unsignedSHA256": "5600aa1982d66b6e2963c7fd4487dcfa59c053212fc00ec863267d95dc06dad3",
+        "nativeActionCount": 3,
+        "nativeActionIDs": {
+          "is.workflow.actions.getvariable": 1,
+          "is.workflow.actions.list": 1,
+          "is.workflow.actions.setvariable": 1
+        },
+        "structuralChecks": {
+          "zeroBudgetNoGET": true,
+          "zeroBudgetNoLoop": true,
+          "explicitEmptyResult": true
+        },
+        "decompile": {
+          "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+          "importExitCode": 0,
+          "recompileExitCode": 0,
+          "nativeActionsExact": true,
+          "macroSourceReconstruction": "NOT_CLAIMED"
+        },
+        "verdict": "PASS"
+      }
+    ],
+    "causalMutations": [
+      {
+        "case": "require_v2_debug",
+        "mutation": "wrong_type_action",
+        "intendedCheck": "canonicalGetType",
+        "positiveControl": true,
+        "faultRejected": true,
+        "verdict": "PASS"
+      },
+      {
+        "case": "require_v2_release",
+        "mutation": "lost_output_uuid",
+        "intendedCheck": "originalUUIDPassthrough",
+        "positiveControl": true,
+        "faultRejected": true,
+        "verdict": "PASS"
+      },
+      {
+        "case": "measure_v2_debug",
+        "mutation": "duplicate_body",
+        "intendedCheck": "oneTypedBodyProducer",
+        "positiveControl": true,
+        "faultRejected": true,
+        "verdict": "PASS"
+      },
+      {
+        "case": "measure_v2_release",
+        "mutation": "retained_release_timer",
+        "intendedCheck": "timerProfile",
+        "positiveControl": true,
+        "faultRejected": true,
+        "verdict": "PASS"
+      },
+      {
+        "case": "measure_legacy_debug",
+        "mutation": "scoped_alias_cycle",
+        "intendedCheck": "originalUUIDPassthrough",
+        "positiveControl": true,
+        "faultRejected": true,
+        "verdict": "PASS"
+      },
+      {
+        "case": "measure_legacy_release",
+        "mutation": "scoped_result_coercion",
+        "intendedCheck": "originalUUIDPassthrough",
+        "positiveControl": true,
+        "faultRejected": true,
+        "verdict": "PASS"
+      },
+      {
+        "case": "collect_v2_1",
+        "mutation": "wrong_repeat_result",
+        "intendedCheck": "consumerUsesRepeatResults",
+        "positiveControl": true,
+        "faultRejected": true,
+        "verdict": "PASS"
+      },
+      {
+        "case": "paginate_v2",
+        "mutation": "page_budget_changed",
+        "intendedCheck": "explicitPageBudget",
+        "positiveControl": true,
+        "faultRejected": true,
+        "verdict": "PASS"
+      }
+    ],
+    "completeLocalLedger": "artifacts/p15-legacy-blocks/macro-ledger/macro-contract-coverage.json",
+    "completeLocalLedgerSHA256": "8f2cc2da6aa79f714e5456efbf58ebb0a0546b73e2302fd53c1e7c9087c15198",
+    "verification": "Existing producer --refresh and --verify both passed on sourceCommit before any test-only follow-up."
+  },
+  "collectTestOnlyRepair": {
+    "commit": "c809361c8c0d5dea78a01766e3378b2b9e6c4624",
+    "productionFilesChanged": [],
+    "cases": [
+      {
+        "inputItems": 0,
+        "totalActions": 6,
+        "inputConstructionActions": 1,
+        "repeatRegionActions": 4,
+        "resultConsumerActions": 1
+      },
+      {
+        "inputItems": 1,
+        "totalActions": 7,
+        "inputConstructionActions": 2,
+        "repeatRegionActions": 4,
+        "resultConsumerActions": 1
+      },
+      {
+        "inputItems": 100,
+        "totalActions": 106,
+        "inputConstructionActions": 101,
+        "repeatRegionActions": 4,
+        "resultConsumerActions": 1
+      }
+    ],
+    "checks": [
+      "original numeric input values",
+      "Repeat Each bound to original typed input List UUID",
+      "four-action native loop region",
+      "balanced grouping",
+      "consumer bound to Repeat Results UUID",
+      "no accumulator"
+    ]
+  },
+  "independentReview": {
+    "scope": "Immutable source token capture, lexical frames, imported hints, nested action state and canonical native-reference lifecycle",
+    "finding": "No concrete blocking defect identified",
+    "executionClaimed": false
+  },
+  "retainedDraftObservations": [
+    {
+      "log": "dist/legacy-blocks-initial-build.log",
+      "logSHA256": "1c276e63d22c40452ad84b8868bea3be701b616a17ba78bdb1a514a2564e0ce4",
+      "observation": "Draft compile rejected an any-to-WFTextTokenAttachment return; corrected with the existing canonical codec's typed wrapper."
+    },
+    {
+      "log": "dist/legacy-blocks-file-input.log",
+      "logSHA256": "97523003c1fd63db11dbfc3e86adbf04d9f59bbe07451a24dd62c81c61e32e05",
+      "observation": "An insufficient outer-File-UUID test passed while its nested Text argument had vanished and WFInput was empty; strengthened input-producer validation and structured once-only argument materialization repaired this path."
+    },
+    {
+      "log": "dist/legacy-blocks-controls-r1.log",
+      "logSHA256": "99d7fae6cce64a8a8ce0c2270f670786b98b45b141dcd96b0f681db07bbde86d",
+      "observation": "Existing Legacy literal-left condition generation raised int-to-varValue conversion; the supported variable-input condition was used in the control-flow fixture. No ordinary Legacy conditional syntax expansion is claimed."
+    },
+    {
+      "log": "dist/legacy-blocks-contracts-r4.log",
+      "logSHA256": "48a660ef2d691fa4ccfb9b1ed80576398c6b92f3f630735dfffc0841669fe13b",
+      "observation": "The old collect test falsely called additional numeric input producers body unrolling at N=1; source compiler behavior was unchanged by the separate test-only repair."
+    },
+    {
+      "log": "dist/collect-region-test-only-r1.log",
+      "logSHA256": "ef459b61a2a4208b28adbf2ebed1cd79911fb40c68573846cdfeebc6ea7ac896",
+      "observation": "Corrected test passed for N0/1/100, checking typed input List identity and values separately from the existing four-action Repeat Results region."
+    }
+  ],
+  "boundaries": [
+    "General parameterized/void/early-exit blocks remain open",
+    "Legacy control-result declarations inside blocks explicitly rejected",
+    "Primitive construction keeps existing frontend contracts",
+    "No catch/retry/finally/cancellation mechanism",
+    "No signed Legacy measure acceptance in this receipt",
+    "No physical-device acceptance",
+    "No private-corpus run in this stage; root owns the full corpus gate",
+    "All eleven existing macro children remain OPEN"
+  ]
+}
