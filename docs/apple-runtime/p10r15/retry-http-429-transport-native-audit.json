@@ -1,0 +1,442 @@
+{
+  "schemaVersion": 1,
+  "auditedAt": "2026-11-18T19:12:16.048680+00:00",
+  "runs": [
+    {
+      "runId": "44345197107",
+      "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44345197107",
+      "attempt": 1,
+      "compilerCommitSha": "52284f8ad179997bf35d41dde21a758dfc611059",
+      "workflowConclusion": "success",
+      "fixtureId": "qa-retry-http429-v2",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-retry-http429-v2.cherri",
+      "sourceSha256": "02f8d3e95cb3eac5c8739b57fe630a167aa07452ea3fcc740f2130985cbc9d84",
+      "sourceHashMatchesImmutableGitBlob": true,
+      "unsignedPlistSha256": "d393ce7f1d0fdadad6d98cf80a7f621bb6e2ef732c29ee5ba95cf51e055f2df0",
+      "nativeActionCount": 16,
+      "signedArtifactSha256": "c4a670a7b2242c4710e875c626518b759aa1a5c8ffa8d08ad6820b255b2e481a",
+      "signingVerificationTier": "AEA1_HEADER_PASS",
+      "publishedFileCount": 21,
+      "publishedFiles": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "09c2e081ac68beb3d3f17e55ed8b910b2e4df5d7b1de5150ce736205b258a191",
+          "bytes": 90915
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "e393c88cdd67d66f63b3f5710a86244374260808c2db4c8ca02b1d167e48003a",
+          "bytes": 857
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "28fd3639f3d3ce2d586c1e7e58f106d0681b3a999b111e3cad5bd20a5f84cd0b",
+          "bytes": 158
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "15e213fa9a7c39bebd933db26c38e62d87573038b2827bc3ba54755c4511bb3a",
+          "bytes": 2773
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "44d34b49d701c6ef415028fde0992d66a44106d4a38661b377426c5c44b7eb6a",
+          "bytes": 23956
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "8db6945fdf462c8ae3d574938fc8985efff80f9073a5539f3a2f6123e71ad6da",
+          "bytes": 17513
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "0dc5bb0f1bc7b3acc7de2a473bb965cfc4ff521d916f95048886ff8997dfbb07",
+          "bytes": 1345
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "8092490adf4d6ab4d21da05ed9144fb05dc4cb25e80b3601a25fcc3b321c860f",
+          "bytes": 1293429
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "379f44a4e5de28063ca1278a17dbd4b11cdf223298c0a8b42cf0b19f8753c0f0",
+          "bytes": 474
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "8db6945fdf462c8ae3d574938fc8985efff80f9073a5539f3a2f6123e71ad6da",
+          "bytes": 17513
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "3c91b3f0c7748c3f8235911df359ba971fd49d42d0f54231858041fc903c5cef",
+          "bytes": 2770
+        },
+        {
+          "path": "environment.json",
+          "sha256": "9bac13e4c9cbaca159ca6c61388aceaaab68f460dd0f675206f4dd81562d4975",
+          "bytes": 786
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "1fc53f869ae0cf78d37e71aeeb5d6a5375bddc6e7273fb96287c3a7ab2bcd56a",
+          "bytes": 1686
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "5a8fadcc611fe23d326ec6e9bff2c2ce7bf0fe7816df1014e058fadbf230164a",
+          "bytes": 2213
+        },
+        {
+          "path": "runtime/http-probe-diagnostic.json",
+          "sha256": "04e180ca42355f3107630ccd063dfd2459f35d3e6f7f1f79a4ab969d04c21654",
+          "bytes": 2074
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "4bd3980f73fc08cc2f262269bb83e027f7d586471d579cb3db882c02dcbfe49d",
+          "bytes": 1452
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "a3235beb63003c50a7aab8fe023bb1ac77411a8c8c8ce57cee892183468781dc",
+          "bytes": 997
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "d9639373d2b33a469edf9578912b70c9c9b2afe7001c26d49a61e9ec8c07ec94",
+          "bytes": 2043
+        },
+        {
+          "path": "summary.json",
+          "sha256": "701345de0f721731ee0e06f0657ae12fa3e4c18ba996a2bc086dcff2560c697c",
+          "bytes": 1128
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "f18c1030efb6839359137f0042a2a343009a809bb834c20d5994eb00c1ffe27d",
+          "bytes": 984
+        }
+      ],
+      "publicationManifestSha256": "8648b4ea0da6913acbcfee5d5d127b5cbc7490d5215d3714ccccadd2e36809a3",
+      "publishedFileHashesAndByteCountsVerified": true,
+      "publishedPathSetExact": true,
+      "runner": {
+        "macOS": "27.0.1",
+        "macOSBuild": "26A434",
+        "xcodeVersion": "27.1",
+        "xcodeBuild": "27A9275",
+        "simulatorDevice": "iPad mini (A17 Pro)",
+        "simulatorRuntime": "iOS 27.0"
+      },
+      "gates": {
+        "RUNNER_AVAILABLE": "PASS",
+        "SIMULATOR_BOOTED": "PASS",
+        "SHORTCUTS_APP_INSTALLED": "PASS",
+        "SHORTCUTS_LAUNCHED": "PASS",
+        "EDITOR_OPENED": "PASS",
+        "FILE_IMPORT_ATTEMPTED": "PASS",
+        "COMPILER_ARTIFACT_IMPORTED": "PASS",
+        "SHORTCUT_EXISTS_IN_LIBRARY": "PASS",
+        "ACTION_EDITOR_CAPTURED": "EDITOR_CAPTURE_COMPLETE",
+        "SHORTCUT_RUN_ATTEMPTED": "PASS",
+        "SHORTCUT_RUN_COMPLETED": "PASS",
+        "CALLBACK_CAPTURED": "PASS",
+        "TRACE_CAPTURED": "PASS",
+        "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+      },
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "correlatedShortcutCallbackCount": 1,
+      "allCompiledShortcutCallbackCount": 1,
+      "receiverSelfTestCount": 1,
+      "ordinaryRuntimeContractVerified": true,
+      "independentExactSourceOracleReplay": {
+        "runGate": "PASS",
+        "traceGate": "PASS",
+        "reason": "verified correlated callback output and NDJSON trace",
+        "targetFixtureId": "qa-retry-http429-v2",
+        "compilerCommitSha": "52284f8ad179997bf35d41dde21a758dfc611059",
+        "buildProfile": "debug",
+        "traceExpectation": "REQUIRED_NDJSON",
+        "releaseBuildVerified": false,
+        "sourceSha256": "02f8d3e95cb3eac5c8739b57fe630a167aa07452ea3fcc740f2130985cbc9d84",
+        "unsignedPlistSha256": "d393ce7f1d0fdadad6d98cf80a7f621bb6e2ef732c29ee5ba95cf51e055f2df0"
+      },
+      "oracleSourceSha256": "d8e1912eebd749e34ea599de8d4eb1ab7e9a4534a237fb32282a325081d9c3de",
+      "nativeCatchability": "NOT_PROVEN",
+      "sameRequestStatusValue": "NOT_PROVEN",
+      "retryImplemented": false,
+      "physicalDeviceProven": false,
+      "finding": "HTTP_429_BODY_RETURNED_AND_EXECUTION_CONTINUED",
+      "runtimeResult": "PASS",
+      "callbackStatus": "SUCCESS",
+      "freshRunNonce": "qa-retry-http429-v2-44345197107-f8e15778f1696d9b00b1764996837ded",
+      "exactResultSummary": "CHERRI_QA_RETRY_HTTP429_RESULT:P15_HTTP_BODY_OK",
+      "inlineTraceCount": 2,
+      "collectorTraceCount": 2,
+      "traceMatchesActualCallback": true,
+      "serverState": "STOPPED",
+      "primaryRequestCount": 1,
+      "continuationRequestCount": 1,
+      "observedServerEvents": [
+        {
+          "sequence": 1,
+          "route": "primary",
+          "method": "GET",
+          "status": 429,
+          "responseKind": "HTTP_STATUS",
+          "bodySha256": "560d93f155d20b54406a9984c9baefbe858889985c97400261c7e141cab101d5",
+          "receivedAt": "2026-11-18T18:57:53.589918Z",
+          "elapsedMilliseconds": 1540654,
+          "responseWriteCompleted": true
+        },
+        {
+          "sequence": 2,
+          "route": "continued",
+          "method": "GET",
+          "status": 200,
+          "responseKind": "HTTP_STATUS",
+          "bodySha256": "2e33feb2e2ec15bca6ef7e864d79b8f7606487eb6178592a47a440d95540c9fa",
+          "receivedAt": "2026-11-18T18:57:54.778275Z",
+          "elapsedMilliseconds": 1541841,
+          "responseWriteCompleted": true
+        }
+      ],
+      "serverReceiptHashFromPublishedDiagnostic": "a2008a3cf406b32aa93147907920e921ad0f41266b422e99bb02af7dbd150c0a",
+      "scope": "A single observed HTTP 429 response returned its exact synthetic body and reached a separate continuation request. No retry or native catch operation exists in this fixture."
+    },
+    {
+      "runId": "44345223487",
+      "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44345223487",
+      "attempt": 1,
+      "compilerCommitSha": "52284f8ad179997bf35d41dde21a758dfc611059",
+      "workflowConclusion": "failure",
+      "fixtureId": "qa-retry-transport-v2",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-retry-transport-v2.cherri",
+      "sourceSha256": "f6e2651d8a9c9819a5510017ce05a34c3bc6db3581e51f6db213bf15a3b230a4",
+      "sourceHashMatchesImmutableGitBlob": true,
+      "unsignedPlistSha256": "100ff431c07f95a7eaefd4176eb294f2c6ebea1ecaa250b16880789ffc546442",
+      "nativeActionCount": 16,
+      "signedArtifactSha256": "ebcbb581434af7d4402a5c440a933b932509db540d1c518e467fd99f10549d19",
+      "signingVerificationTier": "AEA1_HEADER_PASS",
+      "publishedFileCount": 21,
+      "publishedFiles": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "d5967f3716c4847e990859c2e62d6e5781a78f99ebb81cbf5a5bcdcc4a419ff8",
+          "bytes": 90915
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "92c7c247128d90c98ead84785f8a3b53b0a7bdb44ab7765b26789f77fc5c125f",
+          "bytes": 850
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "956cb58ebaf2579f5c9e7a5211a657fab77b767b83dea934f442ded3b800247c",
+          "bytes": 158
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "8af8420907c8acec1ca70e8f0a998f2a87d4b2f081e3e0601bcaae3964893863",
+          "bytes": 2722
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "cdb27b5dbb2946aaf0968e533d0ebc392ad56d6afeb79a65b7a651b3af9205bd",
+          "bytes": 23974
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "52a64c732fb125edfb890467bc2fcc666fda1c19291bed7f00876916bd437d07",
+          "bytes": 17531
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "0dc5bb0f1bc7b3acc7de2a473bb965cfc4ff521d916f95048886ff8997dfbb07",
+          "bytes": 1345
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "d6ae6e7aa96325865e50ebafba2f9ec2b4a95b63deb5c40463a4fcd48586b9d9",
+          "bytes": 1380784
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "f513c6aa80bb8e933dfc2db15da46ad04cd694234e8a15c771557f34edf451ea",
+          "bytes": 330
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "52a64c732fb125edfb890467bc2fcc666fda1c19291bed7f00876916bd437d07",
+          "bytes": 17531
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "ad5b6da99e87dc44be9c762398e311dd79560372d9ffd6142a468132de2f0904",
+          "bytes": 2770
+        },
+        {
+          "path": "environment.json",
+          "sha256": "25b1fb435ab6ef8de71c0ee3d405df530542ba41ef59eb5636e4bcca0a9411a0",
+          "bytes": 787
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "1d7b6d2aaaca95c6b1e8dc8a4d42d8ec3db51df89fe8fa9d21b1fa8d407b9a15",
+          "bytes": 1686
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "355a5c205baeb1af04c329f49730ada6883cb6aed2a0d7e3307a4f862265864e",
+          "bytes": 959
+        },
+        {
+          "path": "runtime/http-probe-diagnostic.json",
+          "sha256": "1b8a884c8eaf95b35670a6cba4aa7f31f4313f60a026692f378dd41274e5ea9f",
+          "bytes": 2271
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "720b77fa136831b166810039e00752a66e14ad68b35be6ca96fe453bd5142b20",
+          "bytes": 1479
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "aea0f26e800ebd44144649cca8bbbe869e35a1bd8b42eea02f0c9854b45bf373",
+          "bytes": 220
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "cfcfc2c84a50838c79772c945d975a9bde162657ccbbdf6ae40cd777cfc51e45",
+          "bytes": 2051
+        },
+        {
+          "path": "summary.json",
+          "sha256": "a4e5c36b60e8c05028070d993c2273a9df53a70c07e3d70fd49e404e5bed95e3",
+          "bytes": 1125
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "892a61967042214816ba272638652029fc84605bdc7505cf7d9d92020202103a",
+          "bytes": 984
+        }
+      ],
+      "publicationManifestSha256": "d1d7dd5f9fe0c6e9b3df02f4093c21f0e8767a831e0baa7b584121e261db7450",
+      "publishedFileHashesAndByteCountsVerified": true,
+      "publishedPathSetExact": true,
+      "runner": {
+        "macOS": "27.0.1",
+        "macOSBuild": "26A434",
+        "xcodeVersion": "27.1",
+        "xcodeBuild": "27A9275",
+        "simulatorDevice": "iPad mini (A17 Pro)",
+        "simulatorRuntime": "iOS 27.0"
+      },
+      "gates": {
+        "RUNNER_AVAILABLE": "PASS",
+        "SIMULATOR_BOOTED": "PASS",
+        "SHORTCUTS_APP_INSTALLED": "PASS",
+        "SHORTCUTS_LAUNCHED": "PASS",
+        "EDITOR_OPENED": "PASS",
+        "FILE_IMPORT_ATTEMPTED": "PASS",
+        "COMPILER_ARTIFACT_IMPORTED": "PASS",
+        "SHORTCUT_EXISTS_IN_LIBRARY": "PASS",
+        "ACTION_EDITOR_CAPTURED": "EDITOR_CAPTURE_COMPLETE",
+        "SHORTCUT_RUN_ATTEMPTED": "PASS",
+        "SHORTCUT_RUN_COMPLETED": "FAIL_RUNTIME",
+        "CALLBACK_CAPTURED": "PASS",
+        "TRACE_CAPTURED": "FAIL_RUNTIME",
+        "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+      },
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "correlatedShortcutCallbackCount": 1,
+      "allCompiledShortcutCallbackCount": 1,
+      "receiverSelfTestCount": 1,
+      "ordinaryRuntimeContractVerified": false,
+      "independentExactSourceOracleReplay": {
+        "runGate": "FAIL_RUNTIME",
+        "traceGate": "FAIL_RUNTIME",
+        "reason": "callback status=ERROR error=[REDACTED_NON_ALLOWLISTED_LEN_32]",
+        "targetFixtureId": "qa-retry-transport-v2",
+        "compilerCommitSha": "52284f8ad179997bf35d41dde21a758dfc611059",
+        "buildProfile": "debug",
+        "traceExpectation": "REQUIRED_NDJSON",
+        "releaseBuildVerified": false,
+        "sourceSha256": "f6e2651d8a9c9819a5510017ce05a34c3bc6db3581e51f6db213bf15a3b230a4",
+        "unsignedPlistSha256": "100ff431c07f95a7eaefd4176eb294f2c6ebea1ecaa250b16880789ffc546442"
+      },
+      "oracleSourceSha256": "d8e1912eebd749e34ea599de8d4eb1ab7e9a4534a237fb32282a325081d9c3de",
+      "nativeCatchability": "NOT_PROVEN",
+      "sameRequestStatusValue": "NOT_PROVEN",
+      "retryImplemented": false,
+      "physicalDeviceProven": false,
+      "finding": "TRANSPORT_ERROR_WITH_MULTIPLE_PRIMARY_REQUESTS_NO_CONTINUATION",
+      "runtimeResult": "FAIL_RUNTIME",
+      "callbackStatus": "ERROR",
+      "numericErrorCode": "-1005",
+      "freshRunNonce": "qa-retry-transport-v2-44345223487-f5491cd30b758db9660b8161d1ffe5e2",
+      "inlineTraceCount": 0,
+      "collectorFailureRecordCount": 1,
+      "callbackTraceCount": 0,
+      "primaryRequestCount": 3,
+      "continuationRequestCount": 0,
+      "observedServerEvents": [
+        {
+          "sequence": 1,
+          "route": "primary",
+          "method": "GET",
+          "status": null,
+          "responseKind": "CONNECTION_CLOSED",
+          "bodySha256": null,
+          "receivedAt": "2026-11-18T18:46:06.531834Z",
+          "elapsedMilliseconds": 830079,
+          "responseWriteCompleted": true
+        },
+        {
+          "sequence": 2,
+          "route": "primary",
+          "method": "GET",
+          "status": null,
+          "responseKind": "CONNECTION_CLOSED",
+          "bodySha256": null,
+          "receivedAt": "2026-11-18T18:46:06.671320Z",
+          "elapsedMilliseconds": 830217,
+          "responseWriteCompleted": true
+        },
+        {
+          "sequence": 3,
+          "route": "primary",
+          "method": "GET",
+          "status": null,
+          "responseKind": "CONNECTION_CLOSED",
+          "bodySha256": null,
+          "receivedAt": "2026-11-18T18:46:06.746248Z",
+          "elapsedMilliseconds": 830294,
+          "responseWriteCompleted": true
+        }
+      ],
+      "diagnosticObservationComplete": false,
+      "diagnosticStatus": "MULTIPLE_REQUESTS_OBSERVED",
+      "serverReceiptHashFromPublishedDiagnostic": "73a91e3d176886b2b13bbf2bc583ab00c13e5b28ba294f523a876f8f3f91c8e6",
+      "scope": "The imported fixture was invoked and a fresh native ERROR was observed after three synthetic connection closures. No continuation receipt or inline callback trace exists; the published collector records the failure. Repeated primary GETs do not establish compiler retries or catchability."
+    }
+  ],
+  "limits": [
+    "Published text artifacts only were independently rehashed; raw signed Shortcuts and raw server receipts remain quarantined.",
+    "The HTTP server status is external synthetic-server evidence, not a status value exposed to the running Shortcut.",
+    "Neither result proves transport-error catchability, a production retry macro, physical-device support, or 1:1 Editor Inspector closure.",
+    "The transport diagnostic intentionally remains incomplete because more than one primary request was observed."
+  ]
+}
