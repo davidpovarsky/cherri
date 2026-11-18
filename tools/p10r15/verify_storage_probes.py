@@ -110,7 +110,7 @@ def main():
     sys.path.insert(0, str(QA))
     test_modules = ["test_storage_probe_contract", "test_workflow_input_contract",
                     "test_runtime_callback_contract", "test_collect_native_contract",
-                    "test_prepare_public_artifacts"]
+                    "test_public_artifacts"]
     test_environment = {**os.environ, "PYTHONPATH": str(QA)}
     py_result = subprocess.run([sys.executable, "-X", "utf8", "-m", "unittest", "-v", *test_modules],
                                cwd=ROOT, env=test_environment, capture_output=True,
