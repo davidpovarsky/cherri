@@ -1,0 +1,58 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-T02-unit",
+      "requirements": [
+        "T02"
+      ],
+      "tier": "unit",
+      "implementation_sha": "b250282a269268610bbb865f847e1fbc8e82b57f",
+      "test_id": "github.com/electrikmilk/cherri:TestP15T02LiteralRequiredProduction",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15T02LiteralRequiredProduction)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15T02LiteralRequiredProduction"
+      },
+      "detail": "Executed production tests: TestP15T02LiteralRequiredProduction"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T04:48:25Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "T02",
+        "group": "types",
+        "requirement": "Runtime immutable output does not satisfy literal-required slot",
+        "test_level": "unit",
+        "executed_levels": [
+          "unit"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only T02 production unit contract; no native execution, external type guarantee, other T requirement or release closure",
+  "source_sha": "b250282a269268610bbb865f847e1fbc8e82b57f",
+  "source_tree_clean": true
+}

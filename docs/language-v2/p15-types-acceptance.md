@@ -34,3 +34,7 @@ The acceptance runner executes the named production test and records only the co
 | T08 | Production analysis currently returns fixed ActionSchema output types. Separate aliases do not establish literal-mode-dependent single/multiple cardinality. No T08 pass is claimed without a concrete verified producer. |
 
 No native runtime, UI, platform availability or release closure is inferred from this local type work.
+
+## Exact committed execution
+
+Commit b250282a269268610bbb865f847e1fbc8e82b57f was executed with a clean tree in Sentinel job job_7aa9e96b50ee. The actual named production producer and formal evidence validator passed. The bounded report has one passed requirement (T02), zero failed/skipped, and closure_complete=false. The receipt and raw-log verification digest are retained under evidence/p15-types-b250282. No other type requirement inherits this result.
