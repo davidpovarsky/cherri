@@ -1311,9 +1311,15 @@ func (p *Parser) parseMenuStmt() *MenuStmt {
 			tok, _ := p.expect(TokenString)
 			label = tok.Text
 			labelSpan = tok.Span
-		case TokenNone, TokenNull:
+		case TokenNone:
 			tok := p.advance()
 			label = ""
+			labelSpan = tok.Span
+		case TokenNull:
+			// Preserve JSON null for semantic validation instead of turning it
+			// into the empty-label spelling reserved for none.
+			tok := p.advance()
+			valExpr = &LiteralExpr{Span: tok.Span, Type: tok.Type, Value: tok.Text}
 			labelSpan = tok.Span
 		case TokenFStringStart:
 			valExpr = p.parseFString()

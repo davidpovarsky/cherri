@@ -25,7 +25,7 @@ var incompleteLocalAssertions = map[string]string{
 	"V03":  "Nonempty lowering does not prove that the clipboard is captured exactly once.",
 	"C03":  "getUpcomingEvents(3) does not exercise variadic-to-named-list migration.",
 	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
-	"T05":  "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions.",
+	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
 	"T07":  "A helper implemented only in this runner does not exercise production platform-version comparison.",
 	"S01":  "Nonempty IR does not inspect UTF-16 token offsets, combining marks, or round-trip values.",
 	"S03":  "Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits.",
