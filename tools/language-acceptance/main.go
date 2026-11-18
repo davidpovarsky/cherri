@@ -1436,12 +1436,8 @@ func (r *Runner) runBinding() {
 	v03Passed := errV03 == nil && len(wfV03.Actions) > 0
 	r.Record("V03", "binding", "System clipboard read captured once", "unit+native+iOS", []string{"unit", "native"}, v03Passed, "PASSED", "Clipboard reference materialized cleanly into AttachmentToken")
 
-	// V04: let binds collections and action outputs
-	srcV04 := "let items = [1, 2, 3]\nlet cfg = {\"host\": \"localhost\"}"
-	diagsV04 := analyzeSrc(r.reg, srcV04)
-	wfV04, errV04 := lowerSrc(r.reg, srcV04)
-	v04Passed := len(diagsV04) == 0 && errV04 == nil && wfV04 != nil
-	r.Record("V04", "binding", "let binds lists/maps/action outputs without old const restrictions", "unit+native", []string{"unit", "native"}, v04Passed, "PASSED", "let binds List and Map literals cleanly with type inference")
+	// V04: Execute the actual source/import/native-format production proof.
+	r.runNativePreservationRequirement("V04")
 }
 
 // Group 5: Calls
@@ -1462,11 +1458,8 @@ func (r *Runner) runCalls() {
 	// C04: Actual enum analysis, serialization and shared-service producers.
 	r.runEnumRequirement()
 
-	// C05: Unknown enum wire value survives native import
-	srcC05 := "native.action(identifier: \"is.workflow.actions.custom\", parameters: {\"EnumKey\": \"CustomUnmodeledValue\"})"
-	wfC05, errC05 := lowerSrc(r.reg, srcC05)
-	c05Passed := errC05 == nil && len(wfC05.Actions) == 1 && wfC05.Actions[0].Parameters["EnumKey"] == "CustomUnmodeledValue"
-	r.Record("C05", "calls", "Unknown enum wire value survives native import", "native-roundtrip", []string{"native-roundtrip"}, c05Passed, "PASSED", "Native round-trip preserves unmodeled/unknown wire enum values")
+	// C05: Execute the actual source/import/native-format production proof.
+	r.runNativePreservationRequirement("C05")
 }
 
 // Group 6: Types
@@ -1867,44 +1860,10 @@ func (r *Runner) runSchema() {
 
 // Group 15: Native Preservation
 func (r *Runner) runNative() {
-	// R01: Unknown action round-trip
-	srcR01 := "native.action(identifier: \"com.apple.custom\", parameters: {\"foo\": \"bar\"})"
-	wfR01, errR01 := lowerSrc(r.reg, srcR01)
-	r01Passed := errR01 == nil && len(wfR01.Actions) == 1 && wfR01.Actions[0].AppleIdentifier == "com.apple.custom"
-	r.Record("R01", "native", "Unknown action and unknown nested/top-level fields round-trip", "native-roundtrip", []string{"native-roundtrip"}, r01Passed, "PASSED", "native.action escape creates NativeActionNode preserving raw parameters")
-
-	// R02: Known identifier with unmodeled value
-	srcR02 := "native.action(identifier: \"is.workflow.actions.alert\", parameters: {\"CustomUnmodeled\": 12345})"
-	wfR02, errR02 := lowerSrc(r.reg, srcR02)
-	r02Passed := errR02 == nil && len(wfR02.Actions) == 1 && fmt.Sprintf("%v", wfR02.Actions[0].Parameters["CustomUnmodeled"]) == "12345"
-	r.Record("R02", "native", "Known identifier with unmodeled value/static variant", "native-roundtrip", []string{"native-roundtrip"}, r02Passed, "PASSED", "Native parameters dictionary preserves unmodeled properties")
-
-	// R03: Aggrandizements
-	tokR03 := ir.AttachmentToken{
-		Type: "Clipboard",
-		Aggrandizements: []map[string]any{
-			{"Type": "WFPropertyVariableAggrandizement", "PropertyName": "Name"},
-		},
+	// R01-R05 execute real import/compile/serialized-native scenarios.
+	for _, id := range []string{"R01", "R02", "R03", "R04", "R05"} {
+		r.runNativePreservationRequirement(id)
 	}
-	r03Passed := len(tokR03.Aggrandizements) == 1
-	r.Record("R03", "native", "Coercion-only/property-only/chained aggrandizements", "native-roundtrip", []string{"native-roundtrip"}, r03Passed, "PASSED", "AttachmentToken preserves Aggrandizements array across serialization")
-
-	// R04: Original missing parameters not default-filled
-	paramR04 := schema.ParameterSchema{
-		ID:             "optP",
-		OmissionPolicy: schema.OmitPolicyOmit,
-	}
-	r04Passed := paramR04.OmissionPolicy == schema.OmitPolicyOmit
-	r.Record("R04", "native", "Original missing parameters not default-filled", "native-roundtrip", []string{"native-roundtrip"}, r04Passed, "PASSED", "OmissionPolicy omits unsupplied parameters unless explicitly required")
-
-	// R05: Opaque regions and workflow fallback
-	wfR05 := &ir.NativeWorkflow{
-		Actions: []*ir.NativeActionNode{
-			{AppleIdentifier: "is.workflow.actions.showresult"},
-		},
-	}
-	r05Passed := len(wfR05.Actions) == 1
-	r.Record("R05", "native", "Opaque/native regions, exports and workflow fallback", "unit+native-roundtrip", []string{"unit", "native-roundtrip"}, r05Passed, "PASSED", "Native workflow representation retains whole-workflow fallback capability")
 
 	// R06/R07 must execute import and editable-source production paths.
 	r06Passed, r06Detail := executeNamedProductionTests(r06ProductionTests)
