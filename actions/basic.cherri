@@ -50,8 +50,8 @@ action 'getvariable' getVariable(variable variable: 'WFVariable'): variable
 // [Doc]: Get Type: Get the type of input.
 action 'getitemtype' typeOf(variable input: 'WFInput'): text
 
-// [Doc]: Get Type: Get the type of input.
-action 'gettypeaction' getType(variable input: 'WFInput', text ?fileType: 'WFFileType'): text
+// [Doc]: Get File of Type: Return file content of the requested UTI from input. May return multiple items; use typeOf to inspect content types.
+action 'gettypeaction' getType(variable input: 'WFInput', text ?fileType: 'WFFileType'): variable
 
 
 // [Doc]: Get Object of Class: Get the object of `class` from a variable.

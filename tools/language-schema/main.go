@@ -161,6 +161,10 @@ var facets = map[string]ActionFacet{
 			"date": "Date",
 		},
 	},
+	"getType": {
+		PrimaryParameterID: "input",
+		OutputTypeOverride: "File",
+	},
 	"getParentDirectory": {
 		PrimaryParameterID: "input",
 		OutputTypeOverride: "File",

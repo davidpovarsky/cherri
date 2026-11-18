@@ -120,6 +120,13 @@ The differential normalizer (`shortcutcompare`) was updated with strict, evidenc
 
 ## 5. Apple Shortcut Actions Parity (17/17)
 
+**2026-11-18 correction:** The earlier prose mislabeled `getType` as
+`getitemtype`. The preserved `getType` alias emits `gettypeaction` (Get File of
+Type); `typeOf` emits `getitemtype` (Get Type). See
+[p15-gettype-contract.md](p15-gettype-contract.md) for the current metadata,
+wire and inference evidence. This correction does not claim a new Apple
+runtime execution of the historical parity gate.
+
 All 17 newly added actions verified 100% equal across Legacy and v2 engines:
 
 1. `getParkedCarLocation`: `is.workflow.actions.getparkedcarlocation` (PARITY_VERIFIED)
@@ -131,7 +138,7 @@ All 17 newly added actions verified 100% equal across Legacy and v2 engines:
 7. `getSelectedText`: `is.workflow.actions.getselectedtext` (PARITY_VERIFIED)
 8. `getUpcomingEvents`: `is.workflow.actions.getupcomingevents` (PARITY_VERIFIED)
 9. `addCalendar`: `is.workflow.actions.addnewcalendar` (PARITY_VERIFIED)
-10. `getType`: `is.workflow.actions.getitemtype` (PARITY_VERIFIED)
+10. `getType`: `is.workflow.actions.gettypeaction` (PARITY_VERIFIED; native identifier corrected in prose on 2026-11-18)
 11. `getTravelTime`: `is.workflow.actions.gettraveltime` (PARITY_VERIFIED)
 12. `storeValue`: `is.workflow.actions.savedata` (PARITY_VERIFIED)
 13. `getStoredValue`: `is.workflow.actions.getdata` (PARITY_VERIFIED)

@@ -2,7 +2,7 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d`  
+**Schema Fingerprint:** `6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce`  
 **Total Actions:** 505  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
@@ -4124,14 +4124,14 @@ getTravelTime(destination: AnyContent, customLocation?: AnyContent, mode?: Text,
 
 ### `getType`
 
-**Title:** Get Type  
+**Title:** Get File of Type  
 **Apple Identifier:** `is.workflow.actions.gettypeaction`  
-**Returns:** `Text`  
+**Returns:** `File`  
 
-Get the type of input.
+Return file content of the requested UTI from input. May return multiple items; use typeOf to inspect content types.
 
 ```cherri
-getType(input: AnyContent, fileType?: Text) -> Text
+getType(input: AnyContent, fileType?: Text) -> File
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
