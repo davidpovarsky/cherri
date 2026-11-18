@@ -131,6 +131,12 @@ jobs:
             --expected-macro-fingerprint "$MACRO_FP" \
             --report dist/macro-compatibility-isolation.json
 
+      - name: Execute source-bound macro contract coverage
+        run: |
+          python3 tools/p10r15/generate_macro_contract_coverage.py --refresh --out-dir dist/macro-contracts
+          python3 tools/p10r15/generate_macro_contract_coverage.py --verify --out-dir dist/macro-contracts
+          python3 tools/p10r15/verify_macro_ledger_evidence.py --repo . --ledger-dir dist/macro-contracts --report dist/macro-contracts/verifier-audit.json
+
       - name: Verify real CLI signing failures leave no artifact
         run: >-
           python3 tools/p10r15/verify_installed_signing.py
@@ -224,6 +230,14 @@ jobs:
         with:
           name: cherri-macro-compatibility-evidence
           path: dist/macro-compatibility-isolation.json
+          if-no-files-found: ignore
+
+      - name: Upload macro contract evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-macro-contract-evidence
+          path: dist/macro-contracts/
           if-no-files-found: ignore
 
       - name: Upload OpenMinis skill artifacts
