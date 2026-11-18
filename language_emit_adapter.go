@@ -365,6 +365,10 @@ func CompileSourceToPlistWithOptions(filePath string, content string, options Co
 		return nil, fmt.Errorf("lowering error: %w", err)
 	}
 
+	if options.RequireAuthoredWorkflow && session.hasRawWorkflow {
+		return nil, fmt.Errorf("[CHERRI_EDIT_POLICY_REQUIRED] Native workflow provenance requires an original and explicit allowed-delta policy before signing")
+	}
+
 	return session.Finalize()
 }
 
@@ -379,12 +383,17 @@ func CompileFileV2(filePath string, targetOutPath string, skipSign bool) error {
 	if profileErr != nil {
 		return profileErr
 	}
-	plistBytes, err := CompileSourceToPlistWithOptions(filePath, string(content), CompileOptions{BuildProfile: profile})
+	plistBytes, err := CompileSourceToPlistWithOptions(filePath, string(content), CompileOptions{BuildProfile: profile, RequireAuthoredWorkflow: args.Using("require-authored-workflow")})
 	if err != nil {
 		return err
 	}
 
 	base := strings.TrimSuffix(filePath, ".cherri")
+	// An explicit unsigned destination is the complete output contract. Do not
+	// overwrite a sibling source artifact while callers stage a verified build.
+	if skipSign && targetOutPath != "" {
+		return os.WriteFile(targetOutPath, plistBytes, 0644)
+	}
 	unsignedPath := base + "_unsigned.shortcut"
 	if err := os.WriteFile(unsignedPath, plistBytes, 0644); err != nil {
 		return err

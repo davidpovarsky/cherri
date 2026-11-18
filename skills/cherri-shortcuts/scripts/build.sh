@@ -57,10 +57,6 @@ if [ "$MODE" = signed ]; then
   if [ -z "$ORIGINAL" ] && [ -f "$SOURCE_DIR/../original/shortcut.plist" ]; then
     ORIGINAL="$SOURCE_DIR/../original/shortcut.plist"
   fi
-  if [ -z "$ORIGINAL" ] && grep -Eq '^[[:space:]]*(#workflowheader([[:space:]]|$)|native[[:space:]]*\.[[:space:]]*workflow[[:space:]]*\()' "$SOURCE_ABS"; then
-    echo "[CHERRI_EDIT_POLICY_REQUIRED] Imported source requires --original and --allowed-delta before signing." >&2
-    exit 2
-  fi
 fi
 if [ -n "$ORIGINAL" ] || [ -n "$POLICY" ]; then
   if [ -z "$ORIGINAL" ] || [ -z "$POLICY" ] || [ ! -f "$ORIGINAL" ] || [ ! -f "$POLICY" ]; then
@@ -82,7 +78,14 @@ UNSIGNED="$STAGE/verified-unsigned.shortcut"
 
 # The explicit V2 compile command writes exactly this file. No sibling-file
 # discovery, preexisting output deletion, or second compilation is needed.
-"$CHERRI_BIN_RESOLVED" compile "$SOURCE_ABS" --skip-sign "--output=$UNSIGNED" --no-ansi
+# With no immutable original, the canonical session must prove this compilation
+# did not load native workflow provenance (including through local modules).
+# The decision comes from actual lowering, independent of source formatting.
+set -- compile "$SOURCE_ABS" --skip-sign "--output=$UNSIGNED" --no-ansi
+if [ "$MODE" = signed ] && [ -z "$ORIGINAL" ]; then
+  set -- "$@" --require-authored-workflow
+fi
+"$CHERRI_BIN_RESOLVED" "$@"
 [ -s "$UNSIGNED" ] || { echo "Unsigned compilation produced no Shortcut." >&2; exit 1; }
 if [ -n "$ORIGINAL" ]; then
   if ! GATE=$("$CHERRI_BIN_RESOLVED" verify-edit "$ORIGINAL" "$UNSIGNED" "--allowed-delta=$POLICY" --json 2>&1); then

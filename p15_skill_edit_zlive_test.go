@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"crypto/sha256"
 	"debug/buildinfo"
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/electrikmilk/cherri/internal/shortcutcompare"
 )
@@ -22,7 +25,11 @@ func TestP15K05LiveSigning(t *testing.T) {
 	if p15InstallGit(t, ".", "status", "--porcelain") != "" {
 		t.Fatal("live signing receipt requires immutable clean source")
 	}
-	f := p15NewEditFixture(t)
+	root, err := filepath.Abs(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f := p15NewEditFixtureWithBinary(t, p15EditBuildPinnedCompiler(t, root, head))
 	info, err := buildinfo.ReadFile(f.binary)
 	if err != nil {
 		t.Fatal(err)
@@ -123,4 +130,35 @@ func TestP15K05LiveSigning(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log("P15_K05_LIVE_SIGNING_RECEIPT:" + string(compact))
+}
+
+// Go on a linked Windows worktree can omit VCS metadata. Use the existing
+// packaging-test build recipe: a clean normal clone at the exact immutable
+// commit, with the binary outside it, then verify the binary and tree again.
+func p15EditBuildPinnedCompiler(t *testing.T, root, commit string) string {
+	t.Helper()
+	tmp := t.TempDir()
+	clone := filepath.Join(tmp, "source")
+	p15InstallGit(t, root, "clone", "--quiet", "--shared", "--no-checkout", root, clone)
+	p15InstallGit(t, clone, "config", "core.autocrlf", "false")
+	p15InstallGit(t, clone, "checkout", "--quiet", "--detach", commit)
+	if p15InstallGit(t, clone, "rev-parse", "HEAD") != commit || p15InstallGit(t, clone, "status", "--porcelain") != "" {
+		t.Fatal("pinned compiler clone is not exact and clean")
+	}
+	binary := filepath.Join(tmp, "compiler")
+	if isWindowsRuntime() {
+		binary += ".exe"
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "go", "build", "-buildvcs=true", "-trimpath", "-o", binary, ".")
+	cmd.Dir = clone
+	cmd.Env = append(p15InstallEnv(nil), "GOFLAGS=", "GOWORK=off")
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("actual clean compiler build: %v\n%s", err, out)
+	}
+	if p15InstallGit(t, clone, "status", "--porcelain") != "" {
+		t.Fatal("compiler source changed during build")
+	}
+	return binary
 }

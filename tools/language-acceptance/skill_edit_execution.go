@@ -10,12 +10,14 @@ func init() {
 		"TestP15K05RepairBuildImportEdit",
 		"TestP15K05SigningGateAndExactInput",
 		"TestP15K05PrepareRequiresComparator",
+		"TestP15K05CopiedImportRequiresPolicy",
 	}
 	skillProductionPaths["K05"] = []string{
 		"skills/cherri-shortcuts/scripts/prepare-edit.sh",
 		"skills/cherri-shortcuts/scripts/decompile.sh",
 		"skills/cherri-shortcuts/scripts/build.sh",
 		"edit_cli_adapter.go", "internal/shortcutcompare/edit.go",
+		"build_profile.go", "language_emit_adapter.go", "language_cli_adapter.go", "main.go",
 		"p15_skill_edit_test.go", "p15_skill_edit_zlive_test.go",
 	}
 }

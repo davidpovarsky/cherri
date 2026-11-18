@@ -142,7 +142,10 @@ sh "$SKILL_DIR/scripts/build.sh" WORKSPACE/source/shortcut.cherri WORKSPACE/buil
    The wrapper signs the exact verified unsigned bytes and preserves the
    original and previous delivery on failure. Missing comparison support or any
    unlisted metadata, identity, reference or typed-value change blocks signing.
-   For a copied imported source, pass the original path explicitly.
+   For a copied imported source, pass the original path explicitly. Without
+   an original, signed builds require the canonical compiler to reject any
+   native workflow provenance, including through local modules. Changing
+   comments or formatting cannot turn an imported edit into a new workflow.
 
 8. Verify the signed result starts with `AEA1` (the wrapper checks this).
 9. Return BOTH the edited `.cherri` and the signed `.shortcut`. If anything

@@ -25,6 +25,11 @@ type p15EditFixture struct {
 
 func p15NewEditFixture(t *testing.T) p15EditFixture {
 	t.Helper()
+	return p15NewEditFixtureWithBinary(t, roundTripBinary(t))
+}
+
+func p15NewEditFixtureWithBinary(t *testing.T, binary string) p15EditFixture {
+	t.Helper()
 	root := t.TempDir()
 	skill := filepath.Join(root, "skill")
 	for _, relative := range []string{"compatibility-manifest.json", "scripts/common.sh",
@@ -32,7 +37,7 @@ func p15NewEditFixture(t *testing.T) p15EditFixture {
 		p15InstallWrite(t, filepath.Join(skill, relative),
 			p15InstallRead(t, filepath.Join("skills/cherri-shortcuts", relative)))
 	}
-	f := p15EditFixture{root: root, skill: skill, home: filepath.Join(root, "empty-home"), binary: roundTripBinary(t)}
+	f := p15EditFixture{root: root, skill: skill, home: filepath.Join(root, "empty-home"), binary: binary}
 	f.env = map[string]string{"SKILL_DIR": filepath.ToSlash(skill), "CHERRI_HOME": filepath.ToSlash(f.home),
 		"CHERRI_BIN": filepath.ToSlash(f.binary)}
 	return f
@@ -78,7 +83,7 @@ func p15EditDocument(t *testing.T, path string) map[string]any {
 }
 
 func TestP15K05BuildPreservesExistingFiles(t *testing.T) {
-	for _, test := range []string{"source_destination_alias", "invalid_source_keeps_previous_output", "healthy_unsigned_control"} {
+	for _, test := range []string{"source_destination_alias", "invalid_source_keeps_previous_output", "healthy_unsigned_control", "healthy_unsigned_keeps_sibling", "legacy_explicit_guard", "legacy_filename_guard"} {
 		t.Run(test, func(t *testing.T) {
 			f := p15NewEditFixture(t)
 			source := f.source(t, "source", "P15_K05_ORIGINAL")
@@ -105,6 +110,31 @@ func TestP15K05BuildPreservesExistingFiles(t *testing.T) {
 				now, e := os.ReadFile(output)
 				if e != nil || string(now) != string(old) {
 					t.Errorf("failed build destroyed prior delivery: read=%v before=%x after=%x", e, sha256.Sum256(old), sha256.Sum256(now))
+				}
+			case "legacy_explicit_guard", "legacy_filename_guard":
+				p15InstallWrite(t, source, []byte("show(\"P15_LEGACY_GUARD\")\n"))
+				argv := []string{source, "--legacy", "--require-authored-workflow", "--skip-sign", "--output=" + output, "--no-ansi"}
+				if test == "legacy_explicit_guard" {
+					argv = append([]string{"compile"}, argv...)
+				}
+				cmd := exec.Command(f.binary, argv...)
+				out, err := cmd.CombinedOutput()
+				if err == nil || !strings.Contains(string(out), "CHERRI_EDIT_POLICY_REQUIRED") {
+					t.Fatalf("Legacy route ignored the authored-workflow guard: err=%v output=%s", err, out)
+				}
+				if string(p15InstallRead(t, output)) != string(old) {
+					t.Fatal("rejected Legacy guard route changed previous output")
+				}
+			case "healthy_unsigned_keeps_sibling":
+				sibling := strings.TrimSuffix(source, ".cherri") + "_unsigned.shortcut"
+				previousSibling := []byte("P15_UNRELATED_EXISTING_WORKSPACE_OUTPUT")
+				p15InstallWrite(t, sibling, previousSibling)
+				out, err := f.run(t, "build", p15EditPath(source), p15EditPath(output), "--unsigned")
+				if err != nil {
+					t.Fatalf("healthy actual staged output: %v\\n%s", err, out)
+				}
+				if string(p15InstallRead(t, sibling)) != string(previousSibling) {
+					t.Fatal("explicit staged output overwrote unrelated existing source sibling")
 				}
 			case "healthy_unsigned_control":
 				out, err := f.run(t, "build", p15EditPath(source), p15EditPath(output), "--unsigned")
@@ -447,5 +477,66 @@ func TestP15K05ExplicitLegacyImportRemainsAvailable(t *testing.T) {
 	}
 	if !reflect.DeepEqual(p15EditDocument(t, original), p15EditDocument(t, target)) {
 		t.Fatal("explicit Legacy wrapper/control round trip changed native document")
+	}
+}
+
+func TestP15K05CopiedImportRequiresPolicy(t *testing.T) {
+	f := p15NewEditFixture(t)
+	_, generated, original, originalBytes := f.prepare(t)
+	imported := string(p15InstallRead(t, generated))
+	p15InstallWrite(t, filepath.Join(f.root, "copied-module.cherri"), []byte("function importedBody() {\n"+imported+"\n}\n"))
+	p15InstallWrite(t, filepath.Join(f.root, "authored-module.cherri"), []byte("function authoredBody() { show(\"P15_NEW_MODULE\") }\n"))
+	requests := make(chan struct{}, 8)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests <- struct{}{}
+		http.Error(w, "P15_UNAUTHORIZED_SIGNING_REACHED", 503)
+	}))
+	defer server.Close()
+	f.env["CHERRI_SIGNING_SERVER"] = server.URL + "/sign?response=json"
+	for _, item := range []struct {
+		name, source string
+		imported     bool
+	}{
+		{"leading_comment", "/* copied provenance */ " + imported, true},
+		{"split_tokens", strings.Replace(imported, "native.workflow(", "native\n.\nworkflow(", 1), true},
+		{"grouped_native", strings.Replace(imported, "native.workflow(", "(native).workflow(", 1), true},
+		{"local_module_provenance", "import \"copied-module.cherri\" as copied\ncopied.importedBody()\n", true},
+		{"authored_module_control", "import \"authored-module.cherri\" as authored\nauthored.authoredBody()\n", false},
+		{"authored_string_control", "let value = text(\"native.workflow( is ordinary text\")\nshow(value)\n", false},
+		{"authored_comment_control", "/* native.workflow( ordinary comment */\nshow(\"P15_NEW_AUTHORED\")\n", false},
+	} {
+		t.Run(item.name, func(t *testing.T) {
+			source := filepath.Join(f.root, "copied-"+item.name+".cherri")
+			p15InstallWrite(t, source, []byte(item.source))
+			// Establish that the actual V2 production compiler accepts the exact
+			// copied source before asking the wrapper to enforce its edit policy.
+			f.compile(t, source, filepath.Join(f.root, "control-"+item.name+".shortcut"))
+			output := filepath.Join(f.root, "delivery-"+item.name+".shortcut")
+			before := []byte("P15_PREVIOUS_DELIVERY")
+			p15InstallWrite(t, output, before)
+			capture := f.observe(t, false)
+			_ = os.Remove(capture.log)
+			out, err := f.run(t, "build", p15EditPath(source), p15EditPath(output), "--signed")
+			if err == nil {
+				t.Fatalf("synthetic rejected signer unexpectedly finalized: %s", out)
+			}
+			log, _ := os.ReadFile(capture.log)
+			reached := false
+			select {
+			case <-requests:
+				reached = true
+			default:
+			}
+			if item.imported {
+				if reached || strings.Contains(string(log), "sign\n") || !strings.Contains(out, "CHERRI_EDIT_POLICY_REQUIRED") {
+					t.Fatalf("copied native provenance bypassed original/policy gate: reached=%v log=%s output=%s", reached, log, out)
+				}
+			} else if !reached || !strings.Contains(out, "P15_UNAUTHORIZED_SIGNING_REACHED") {
+				t.Fatalf("new authored source was falsely classified as imported: reached=%v output=%s", reached, out)
+			}
+			if string(p15InstallRead(t, output)) != string(before) || string(p15InstallRead(t, original)) != string(originalBytes) {
+				t.Fatal("rejected finalization mutated previous output or original")
+			}
+		})
 	}
 }

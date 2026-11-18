@@ -36,6 +36,10 @@ const darwin = runtime.GOOS == "darwin"
 
 // compileLegacyCLIFile retains the existing Legacy file pipeline for both CLI forms.
 func compileLegacyCLIFile(path string) {
+	if args.Using("require-authored-workflow") {
+		fmt.Fprintln(os.Stderr, "[CHERRI_EDIT_POLICY_REQUIRED] Authored-workflow verification requires the V2 compilation route.")
+		os.Exit(1)
+	}
 	filePath = path
 	filename = checkFile(filePath)
 	if args.Using("load-all-actions") {

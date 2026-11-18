@@ -17,7 +17,8 @@ remains available through `decompile.sh --mode=legacy` and the public Legacy CLI
 workspace. `build.sh` compiles to a temporary directory beside the requested
 output, retains any previous output while validation/signing runs, and promotes
 the completed result only after success. Source/output and original/output
-aliases are rejected.
+aliases are rejected. An explicit unsigned output writes only the named file;
+an unrelated existing `SOURCE_unsigned.shortcut` is preserved.
 
 The new thin `cherri verify-edit` command reuses
 `internal/shortcutcompare` and the existing plist decoder. It compares every
@@ -51,7 +52,14 @@ their edited source requires an explicit policy. An imported source copied
 elsewhere must also name the original explicitly. A missing comparison
 entrypoint, invalid policy or any unlisted change stops finalization before a
 signing request. New authored workflows continue to use the ordinary build
-wrapper.
+wrapper. For a signed build without an original, the wrapper passes
+`--require-authored-workflow` into the same V2 compilation. Its canonical
+session rejects actual `native.workflow` provenance after lowering and before
+finalization, including provenance loaded by a called module function. Comments,
+newlines and grouped names cannot change this check. Both Legacy CLI entry
+forms reject this V2-only guard explicitly. This is a workflow-origin guard
+over retained provenance; it cannot reconstruct an original that was removed
+from the source.
 
 A successful remote service response and container validation are
 **signing-service evidence**. They do not establish Apple signature validity,
@@ -60,7 +68,8 @@ importability, installed-consumer behavior or Shortcut runtime results.
 ## Actual execution producers
 
 - `TestP15K05BuildPreservesExistingFiles`: actual wrapper source/output alias,
-  failed compilation with a previous delivery, and healthy unsigned control.
+  failed compilation with a previous delivery, healthy unsigned control,
+  unchanged unrelated sibling output and both rejected Legacy guard routes.
 - `TestP15K05PreparePreservesOriginal`: real preparation and an attempted second
   original in the same workspace.
 - `TestP15K05RepairBuildImportEdit`: binary plist import, V2 diagnostic and
@@ -73,9 +82,16 @@ importability, installed-consumer behavior or Shortcut runtime results.
   file. These controlled service failures never count as successful signing.
 - `TestP15K05PrepareRequiresComparator`: a removed comparison entrypoint blocks
   preparation and retains the input/workspace.
+- `TestP15K05CopiedImportRequiresPolicy`: actual compile controls for copied
+  provenance under a leading block comment, split tokens, grouped native target
+  and a called local module. Every imported form must be blocked before any
+  signing request; authored text, comment and local-module controls still reach
+  the controlled rejected signer.
 - `TestP15K05LiveSigning`: opt-in real configured service execution, exact clean
   compiler VCS identity, source/original/gated-input/request-input/signed hashes,
-  validation tier and retained synthetic artifacts.
+  validation tier and retained synthetic artifacts. A temporary clean normal
+  clone at the immutable source commit supplies a VCS-stamped binary; the test
+  keeps the exact revision/clean-tree guard on linked-worktree hosts.
 
 The shared comparator tests independently reject historical parity relaxations
 and ambiguous policies. `TestSkillEditSkippedLiveTestIsNotEvidence` executes the
@@ -116,3 +132,24 @@ On unchanged production source fb93cfb1dae4ca3130a744e16bebcc67a8ac9b20:
 The healthy baseline build and first preparation succeeded. The recorded RED
 observations and later GREEN executions are kept separate from immutable
 source-bound receipts. No private corpus inputs are used.
+
+## Follow-up causal findings
+
+The first clean `9e6d661` formal attempt passed its local workflow tests but
+stopped before signing: the linked-worktree compiler lacked Go VCS fields.
+Its actual failure is retained; no signing-service outcome is inferred from
+that attempt. The normal-clone build recipe follows the existing K01 producer.
+
+Independent review then identified a shell-regex provenance bypass. Actual
+production tests confirmed that a same-line comment, split native member tokens
+or a grouped native target compiled and reached a loopback signer without an
+original/policy. The canonical session guard fixes this route. A called imported
+module function is covered by the same guard, while authored controls pass.
+
+A separate actual test confirmed that the existing public unsigned compiler
+overwrote `SOURCE_unsigned.shortcut` even when given an explicit staged output.
+The explicit-output path now writes only its requested destination. Review also
+found the ordinary filename Legacy route ignored the guard; its actual causal
+RED and the healthy explicit Legacy rejection control precede the shared
+Legacy-entry fix. None of these loopback or pre-request failures is recorded as
+successful remote signing.

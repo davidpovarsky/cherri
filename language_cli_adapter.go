@@ -24,6 +24,10 @@ import (
 
 func init() {
 	args.Register(args.Argument{
+		Name:        "require-authored-workflow",
+		Description: "Reject imported native workflow provenance before finalizing a V2 compilation.",
+	})
+	args.Register(args.Argument{
 		Name:        "capabilities-json",
 		Description: "Print language v2.0 capabilities and schema metadata as JSON.",
 	})

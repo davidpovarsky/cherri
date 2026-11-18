@@ -18,6 +18,9 @@ const (
 type CompileOptions struct {
 	BuildProfile   BuildProfile
 	VirtualModules map[string]string
+	// RequireAuthoredWorkflow rejects native.workflow provenance before any output
+	// is finalized. Edit workflows instead supply an original and exact policy.
+	RequireAuthoredWorkflow bool
 }
 
 var legacyActiveBuildProfile = BuildProfileDebug
