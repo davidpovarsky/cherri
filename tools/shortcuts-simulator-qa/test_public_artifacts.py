@@ -131,10 +131,17 @@ class PublicArtifactTests(unittest.TestCase):
             "p15-export-probes/qa-export-redacted-v2.cherri",
             "p15-export-probes/qa-export-unsupported-file-v2.cherri",
             "p15-export-probes/qa-export-text-file-v2.cherri",
+            "p15-paginate-probes/qa-paginate-ordered-v2.cherri",
+            "p15-paginate-probes/qa-paginate-cycle-v2.cherri",
+            "p15-paginate-probes/qa-paginate-page-cap-v2.cherri",
+            "p15-paginate-probes/qa-paginate-item-cap-v2.cherri",
+            "p15-paginate-probes/qa-paginate-empty-v2.cherri",
         ]
         unknown = ["private/qa-export-unicode-v2.cherri", "p15-export-probes/qa-private.cherri",
                    "p15-label-probes/qa-label-dictionary-carrier-v2.cherri",
-                   "p15-export-probes/qa-export-empty-legacy.cherri"]
+                   "p15-export-probes/qa-export-empty-legacy.cherri",
+                   "p15-paginate-probes/qa-paginate-private.cherri",
+                   "private/qa-paginate-ordered-v2.cherri"]
         for index, name in enumerate(approved + unknown):
             p = fixtures / name
             p.parent.mkdir(parents=True, exist_ok=True)

@@ -49,6 +49,11 @@ TRUSTED_NESTED_FIXTURES = (
     "p15-export-probes/qa-export-redacted-v2.cherri",
     "p15-export-probes/qa-export-unsupported-file-v2.cherri",
     "p15-export-probes/qa-export-text-file-v2.cherri",
+    "p15-paginate-probes/qa-paginate-ordered-v2.cherri",
+    "p15-paginate-probes/qa-paginate-cycle-v2.cherri",
+    "p15-paginate-probes/qa-paginate-page-cap-v2.cherri",
+    "p15-paginate-probes/qa-paginate-item-cap-v2.cherri",
+    "p15-paginate-probes/qa-paginate-empty-v2.cherri",
 )
 
 

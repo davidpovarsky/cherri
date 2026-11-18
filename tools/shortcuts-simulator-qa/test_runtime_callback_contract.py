@@ -115,6 +115,11 @@ class CallbackContractTests(unittest.TestCase):
             "qa-export-redacted-v2": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_REDACTED_OK",
             "qa-export-unsupported-file-v2": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNSUPPORTED_FILE_OK",
             "qa-export-text-file-v2": "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_TEXT_FILE_OK",
+            "qa-paginate-ordered-v2": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ORDERED_OK",
+            "qa-paginate-cycle-v2": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_CYCLE_OK",
+            "qa-paginate-page-cap-v2": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_PAGE_CAP_OK",
+            "qa-paginate-item-cap-v2": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ITEM_CAP_OK",
+            "qa-paginate-empty-v2": "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_EMPTY_OK",
         }
         for fid, expected in cases.items():
             with self.subTest(fixture=fid):

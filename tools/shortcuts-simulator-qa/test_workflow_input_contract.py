@@ -121,6 +121,11 @@ class WorkflowInputContractTests(unittest.TestCase):
             "qa-export-redacted": ("p15-export-probes", "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_REDACTED_OK"),
             "qa-export-unsupported-file": ("p15-export-probes", "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_UNSUPPORTED_FILE_OK"),
             "qa-export-text-file": ("p15-export-probes", "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_TEXT_FILE_OK"),
+            "qa-paginate-ordered": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ORDERED_OK"),
+            "qa-paginate-cycle": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_CYCLE_OK"),
+            "qa-paginate-page-cap": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_PAGE_CAP_OK"),
+            "qa-paginate-item-cap": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_ITEM_CAP_OK"),
+            "qa-paginate-empty": ("p15-paginate-probes", "CHERRI_QA_PAGINATE_PROBE_RESULT:P15_PAGINATE_EMPTY_OK"),
         }
         script = (self.root / "scripts/ios27_shortcuts_simulator_qa.sh").read_text(encoding="utf-8")
         selector = script.split("# Select primary target fixture from SAMPLE_ID\n", 1)[1].split('LEGACY_COUNTERPART_SOURCE=', 1)[0]
@@ -147,7 +152,8 @@ class WorkflowInputContractTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines()[1], "/reviewed/tools/shortcuts-simulator-qa/fixtures/qa-functional-v2.cherri")
         for sample in ("qa-label-file-carrier-release", "qa-label-dictionary-carrier", "qa-export-unicode-legacy",
-                       "qa-export-private", "qa-export-unicode;exit 0", "../p15-export-probes/qa-export-empty"):
+                       "qa-export-private", "qa-export-unicode;exit 0", "../p15-export-probes/qa-export-empty",
+                       "qa-paginate-private", "qa-paginate-ordered-release", "qa-paginate-cycle;exit 0"):
             self.assertEqual(self.validate(["full", "ipad-default", sample, "true", "20", "true"]).returncode, 2)
 
     def test_out_of_range_noncanonical_and_overflow_are_rejected(self):

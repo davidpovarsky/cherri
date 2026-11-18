@@ -25,7 +25,7 @@ class CollectNativeContractTests(unittest.TestCase):
         for fid, expected in CASES.items():
             with self.subTest(fixture=fid):
                 self.assertEqual(self.workflow.validate(["runtime", "ipad-default", fid, "false", "1", "true"]).returncode, 0)
-                result = subprocess.run([self.workflow.bash, "-c", selector],
+                result = subprocess.run([self.workflow.bash, "-s"], input=selector,
                     env={**os.environ, "SAMPLE_ID": fid, "ROOT_DIR": "/reviewed",
                          "TARGET_SOURCE_RELATIVE": "../../private.cherri"},
                     capture_output=True, text=True, timeout=10)
