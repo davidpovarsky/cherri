@@ -36,3 +36,7 @@ The receiver additionally records only a validated numeric native error code and
 - Physical device: BLOCKED_DEVICE.
 
 The Swift validator includes an old-rounding overflow control, strict JSON nonfinite rejection, actual helper encode/decode, normal geometry controls, numeric error rejection and raw-payload absence checks. It is not a substitute for XCUI or native Shortcuts execution.
+
+## First actual Apple validator result and repair
+
+Run 44235137367 at source 11e3475a52b2bc64db444e917e3623a3161257f1 failed before native execution: the Foundation-only Swift files used CoreGraphics CGRect extensions without importing CoreGraphics. The original failed log is retained. Both the shared geometry helper and its command-line validator now import CoreGraphics explicitly; no assertion, finite-geometry check or runtime gate has been removed. This is a source repair awaiting the next actual Apple compile and execution. No runtime result is attributed to the failed early run.
