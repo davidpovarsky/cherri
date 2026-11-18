@@ -1,0 +1,618 @@
+{
+  "scope": "NATIVE_COLLECTION_R5_AUDIT_AND_EXACT_SOURCE_GRAPH_COMPARISON",
+  "nativeCountRuns": [
+    {
+      "runId": 44253547965,
+      "compilerCommitSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+      "sourceSha256": "86e612043d5a914af787733ffc3209d3e51f9352e1d5a5fb423856c7ee996ee8",
+      "unsignedPlistSha256": "c6ce9abdf4f7670f40a81e649307ab832eefb5c4133b02eb86106619e2b0926d",
+      "nativeActionCount": 34,
+      "expectedResult": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99",
+      "actualResult": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100::",
+      "callbackStatus": "SUCCESS",
+      "runNonce": "qa-collect-counts-v2-44253547965-913d49d6ab1ae3cb4ad074f9c86cb9b2",
+      "ordinaryRuntimeGate": "FAIL_RUNTIME",
+      "ordinaryTraceGate": "FAIL_RUNTIME",
+      "verifiedPublishedFiles": 20,
+      "publishedFiles": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "d6eacc12e05c63df452c4aa98b228e84b53af33b5745f3430b75480cde7e525a",
+          "bytes": 85220
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "a7bed43d47bf16951c8999c29152b5c09ca1a13fe0fc77d901616e35451cc17e",
+          "bytes": 849
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "24b5a05c77501feb0a4c842056ca1d0687d72588fe8830e1eb5e7abb05f8f4bb",
+          "bytes": 158
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "caecda972978ae125b4544a1607bb1c9879324e6839be898d96a791ae9e6494e",
+          "bytes": 2043
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "2870c7673c973abd85d4b7f997493a85ac45860a31d40d85c92b731b262aaae8",
+          "bytes": 538
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "0e4df85dd5c9a67d84781860f18e39f5270d167e6f272ef9b3c7f774543a4b97",
+          "bytes": 17648
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "0425f83ed5499f5841237ef64a2e53a96a0f39bc281c78607e25c217ef0f457e",
+          "bytes": 2188
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "7a4a345d5cd522877e7bfb5eb3db556513177d7f62ca0c4e1e9f32691dcadc6f",
+          "bytes": 897381
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "d0e4ff1134f17a98ac60bb8652cec0df7cf4ce9ec1455ef99d106ed2dec57c15",
+          "bytes": 292
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "0e4df85dd5c9a67d84781860f18e39f5270d167e6f272ef9b3c7f774543a4b97",
+          "bytes": 17648
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "388884296856bc64fdb789dd0752c0fb03c126f4d71ba8723cd7405e11f57ecf",
+          "bytes": 1615
+        },
+        {
+          "path": "environment.json",
+          "sha256": "aa9afb18bb46d8a19d1a8b06027e455f252e5e3ab9e31557323cf89777b4ebee",
+          "bytes": 786
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "4237cc33a57d40ebdbd0ea27878338be14413af51d2cf191c9886bacec6979fa",
+          "bytes": 1686
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "d732cad4c0dc1b7f251db2e8774c91b64b89472f8b544e87d1497a70d77af547",
+          "bytes": 2231
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "d0551f7346430f97624200194d342735ad3ddc7c414e1a5afda3b38c8c42912f",
+          "bytes": 1482
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "600c64c3509cacbcef279e035b780ca022cf718f3903810d246816f42b06a44d",
+          "bytes": 212
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "6562902ce2024a0719f13f7f784e93290cab170f0a77320acb21599bcee33306",
+          "bytes": 2065
+        },
+        {
+          "path": "summary.json",
+          "sha256": "0c6f66a809ceaac2fddf7532c43e81f8a877325be08c1272da34891aa40076f6",
+          "bytes": 1123
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "5108b6fc4d4de8f3a664cfcebc319fb2ea87aa430cfdfb8096c6f1b45e39737b",
+          "bytes": 984
+        }
+      ],
+      "quarantinedFileCount": 15,
+      "observedInlineEvents": 2,
+      "observedCollectorEvents": 2,
+      "compiledSourceBindingVerified": true,
+      "inspectorStatus": "NEEDS_REVIEW"
+    },
+    {
+      "runId": 44326198585,
+      "compilerCommitSha": "71a3e2d67751bccd762b9627b148c28ece60621d",
+      "sourceSha256": "86e612043d5a914af787733ffc3209d3e51f9352e1d5a5fb423856c7ee996ee8",
+      "unsignedPlistSha256": "9aa10afe1bfdcd504d2e3b141ca488606b1a2b5e4010e003fa605e77d0773600",
+      "nativeActionCount": 134,
+      "expectedResult": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99",
+      "actualResult": "CHERRI_QA_COLLECT_COUNTS:empty=1:single=1:one:many=100:0:99",
+      "callbackStatus": "SUCCESS",
+      "runNonce": "qa-collect-counts-v2-44326198585-5b13d334b0ce07e270783b3905ed5839",
+      "ordinaryRuntimeGate": "FAIL_RUNTIME",
+      "ordinaryTraceGate": "FAIL_RUNTIME",
+      "verifiedPublishedFiles": 20,
+      "publishedFiles": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "6180a7c3a4a087991075dad1c9454cc3233e43d5fdf5ad77147157f978067eb5",
+          "bytes": 147976
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "8a2a1b18d323335fac0f9823d1ffa800ff07f566684611add07a1b3680afcb50",
+          "bytes": 849
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "e764e13be2f3ba2263fe97cffb220dd5698e5fb23a275b048a4c05d3d030ecbe",
+          "bytes": 158
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "ac15cea3e1f1f3bea70edfb96c3a39870fa23e66dafa2cbec46f21038ad6d92b",
+          "bytes": 1924
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "08727bceaff794e9409cbebb17dffd8c2334443552f82a7939745f6d7d4bc673",
+          "bytes": 45566
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "e8661799b97c6432a1f010125b8409de47b90784afefd167695006ab666d387b",
+          "bytes": 90800
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "359ac7847333dbc9f1e425c4730ca16cc1bf0416be7741df1d6aa53fcef097c9",
+          "bytes": 7330
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "558552d2d7cafcaa92cf7faa98731fd7cd6ba207daa925b95bb5ae3bbd0aa71c",
+          "bytes": 1767009
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "f4441a5f892491e5e95bc085dc49202f9058285d7eefcf76a08facf9de812d26",
+          "bytes": 424
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "e8661799b97c6432a1f010125b8409de47b90784afefd167695006ab666d387b",
+          "bytes": 90800
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "774f878207a33899aa91105aa128b407ccff026202fae395ac4ffb9eac7a0766",
+          "bytes": 3015
+        },
+        {
+          "path": "environment.json",
+          "sha256": "a09cef7e348b724845284485279eee025337468cb1e5440f57f6d87bb622b26f",
+          "bytes": 786
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "a42f26b1c7d1deb670dd25071050a138037d1cc475957ff4f33276eabf4b3dc3",
+          "bytes": 1686
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "136f11b5313e500a2ec53e1ca1b9d9977a4b77f3506bef95202cb2bceab3d7e2",
+          "bytes": 2235
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "cff06ed55d3dfe6f92dfe7f71469add4d60d49ed307406915c135e329fc516d7",
+          "bytes": 1482
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "600c64c3509cacbcef279e035b780ca022cf718f3903810d246816f42b06a44d",
+          "bytes": 212
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "df109038aa42126f36ffb523eb241417e658dd5811a683c710ea4dbe34d00e24",
+          "bytes": 2067
+        },
+        {
+          "path": "summary.json",
+          "sha256": "2c3286aee57fbb1e12df3d17602c6a07c19115ab04c2502b50618df00969268c",
+          "bytes": 1123
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "c564f8ecb768f8dd62fc37bef2beec84c06c683bfe47f2b3cce884a61baa4d44",
+          "bytes": 984
+        }
+      ],
+      "quarantinedFileCount": 18,
+      "observedInlineEvents": 2,
+      "observedCollectorEvents": 2,
+      "compiledSourceBindingVerified": true,
+      "inspectorStatus": "NEEDS_REVIEW"
+    }
+  ],
+  "environmentReceipts": [
+    {
+      "runId": 44253547965,
+      "hostOS": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+      "xcodeVersion": "Xcode 27.1\nBuild version 27A9275",
+      "architecture": "arm64",
+      "deviceName": "iPad mini (A17 Pro)",
+      "simulatorOS": "27.0",
+      "simulatorBuild": "24A434",
+      "platform": "iOS Simulator"
+    },
+    {
+      "runId": 44326198585,
+      "hostOS": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+      "xcodeVersion": "Xcode 27.1\nBuild version 27A9275",
+      "architecture": "arm64",
+      "deviceName": "iPad mini (A17 Pro)",
+      "simulatorOS": "27.0",
+      "simulatorBuild": "24A434",
+      "platform": "iOS Simulator"
+    }
+  ],
+  "recordedVersionFieldsEqual": true,
+  "numericOutcome": {
+    "before": "many=100::",
+    "after": "many=100:0:99",
+    "status": "OBSERVED_NUMERIC_ENDPOINT_REPAIR"
+  },
+  "emptyOutcome": {
+    "before": 0,
+    "after": 1,
+    "required": 0,
+    "status": "UNRESOLVED_NATIVE_CARDINALITY_FAILURE",
+    "compilerRegressionCauseProven": false
+  },
+  "exactLocalBuilds": [
+    {
+      "compilerCommitSha": "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e",
+      "sourceArchiveSha256": "08a56f2f4390f555c97537f84b76df01fa77144a5a13dcfeb6ba32e6059e4e96",
+      "compilerBinarySha256": "afd6c4fa0eb5f5e9740ff0788ad64cf73fd420240fd3a705ccbe652412d93234",
+      "fixtureSourceSha256": "86e612043d5a914af787733ffc3209d3e51f9352e1d5a5fb423856c7ee996ee8",
+      "unsignedPlistSha256": "581ed64e43b55f1f5901c673437b92d7c087575d3fa02b7123e8ea74241e5cda",
+      "nativeActionCount": 34,
+      "actualCLICompileStatus": "PASS"
+    },
+    {
+      "compilerCommitSha": "71a3e2d67751bccd762b9627b148c28ece60621d",
+      "sourceArchiveSha256": "9ad5f61f196c2e92b95483707aea856d516108e20c106b12cb550e998be474f8",
+      "compilerBinarySha256": "2b2a0e273ab340bbe13e687dd1af3eced828b57e27ada1793c5a8fc46121ba8f",
+      "fixtureSourceSha256": "86e612043d5a914af787733ffc3209d3e51f9352e1d5a5fb423856c7ee996ee8",
+      "unsignedPlistSha256": "118938988f421b39332fafe89390d08809b7412fdfaeb305480d50c7a76c2fd3",
+      "nativeActionCount": 134,
+      "actualCLICompileStatus": "PASS"
+    }
+  ],
+  "graphComparison": {
+    "scope": "EXACT_COMMIT_LOCAL_CLI_REPRODUCTION_NOT_EXACT_SIGNED_BYTES",
+    "prefixActionCount": 17,
+    "prefixEqualAfterUUIDNormalization": true,
+    "prefixNormalizedSha256": [
+      "0bd194a04128f9f9bbcc4c48df16fc5b9ccc714652bae07cc7bf3e0c232bc38c",
+      "0bd194a04128f9f9bbcc4c48df16fc5b9ccc714652bae07cc7bf3e0c232bc38c"
+    ],
+    "emptyInputRepeatAndCount": [
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.list",
+        "WFWorkflowActionParameters": {
+          "CustomOutputName": "emptyInput",
+          "UUID": "ACTION_5",
+          "WFItems": []
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.repeat.each",
+        "WFWorkflowActionParameters": {
+          "GroupingIdentifier": "GROUP_6",
+          "WFControlFlowMode": 0,
+          "WFInput": {
+            "Value": {
+              "OutputName": "emptyInput",
+              "OutputUUID": "ACTION_5",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          }
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+        "WFWorkflowActionParameters": {
+          "WFInput": {
+            "Value": {
+              "Type": "Variable",
+              "VariableName": "Repeat Item"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "WFVariableName": "item"
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.getvariable",
+        "WFWorkflowActionParameters": {
+          "UUID": "ACTION_8",
+          "WFVariable": {
+            "Value": {
+              "Type": "Variable",
+              "VariableName": "item"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          }
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.repeat.each",
+        "WFWorkflowActionParameters": {
+          "CustomOutputName": "emptyResults",
+          "GroupingIdentifier": "GROUP_6",
+          "UUID": "ACTION_9",
+          "WFControlFlowMode": 2
+        }
+      },
+      {
+        "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+        "WFWorkflowActionParameters": {
+          "CustomOutputName": "emptyCount",
+          "Input": {
+            "Value": {
+              "OutputName": "emptyResults",
+              "OutputUUID": "ACTION_9",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          },
+          "UUID": "ACTION_10"
+        }
+      }
+    ],
+    "summaryReferences": [
+      [
+        {
+          "OutputName": "emptyCount",
+          "OutputUUID": "ACTION_10",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "singleCount",
+          "OutputUUID": "ACTION_16",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "singleItem",
+          "OutputUUID": "ACTION_23",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "manyCount",
+          "OutputUUID": "ACTION_22",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "firstItem",
+          "OutputUUID": "ACTION_24",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "lastItem",
+          "OutputUUID": "ACTION_25",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "traceEnvelope",
+          "OutputUUID": "ACTION_30",
+          "Type": "ActionOutput"
+        }
+      ],
+      [
+        {
+          "OutputName": "emptyCount",
+          "OutputUUID": "ACTION_10",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "singleCount",
+          "OutputUUID": "ACTION_16",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "singleItem",
+          "OutputUUID": "ACTION_123",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "manyCount",
+          "OutputUUID": "ACTION_122",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "firstItem",
+          "OutputUUID": "ACTION_124",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "lastItem",
+          "OutputUUID": "ACTION_125",
+          "Type": "ActionOutput"
+        },
+        {
+          "OutputName": "traceEnvelope",
+          "OutputUUID": "ACTION_130",
+          "Type": "ActionOutput"
+        }
+      ]
+    ],
+    "builds": [
+      {
+        "compiler": "38c7098",
+        "actionCount": 34,
+        "duplicateProducerUUIDs": 0,
+        "danglingOutputUUIDs": 0,
+        "summary": [
+          {
+            "index": 31,
+            "action": {
+              "WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
+              "WFWorkflowActionParameters": {
+                "CustomOutputName": "finalSummary",
+                "UUID": "ACTION_31",
+                "WFTextActionText": {
+                  "Value": {
+                    "attachmentsByRange": {
+                      "{31, 1}": {
+                        "OutputName": "emptyCount",
+                        "OutputUUID": "ACTION_10",
+                        "Type": "ActionOutput"
+                      },
+                      "{40, 1}": {
+                        "OutputName": "singleCount",
+                        "OutputUUID": "ACTION_16",
+                        "Type": "ActionOutput"
+                      },
+                      "{42, 1}": {
+                        "OutputName": "singleItem",
+                        "OutputUUID": "ACTION_23",
+                        "Type": "ActionOutput"
+                      },
+                      "{49, 1}": {
+                        "OutputName": "manyCount",
+                        "OutputUUID": "ACTION_22",
+                        "Type": "ActionOutput"
+                      },
+                      "{51, 1}": {
+                        "OutputName": "firstItem",
+                        "OutputUUID": "ACTION_24",
+                        "Type": "ActionOutput"
+                      },
+                      "{53, 1}": {
+                        "OutputName": "lastItem",
+                        "OutputUUID": "ACTION_25",
+                        "Type": "ActionOutput"
+                      },
+                      "{55, 1}": {
+                        "OutputName": "traceEnvelope",
+                        "OutputUUID": "ACTION_30",
+                        "Type": "ActionOutput"
+                      }
+                    },
+                    "string": "CHERRI_QA_COLLECT_COUNTS:empty=\ufffc:single=\ufffc:\ufffc:many=\ufffc:\ufffc:\ufffc\n\ufffc"
+                  },
+                  "WFSerializationType": "WFTextTokenString"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "compiler": "71a3e2d",
+        "actionCount": 134,
+        "duplicateProducerUUIDs": 0,
+        "danglingOutputUUIDs": 0,
+        "summary": [
+          {
+            "index": 131,
+            "action": {
+              "WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
+              "WFWorkflowActionParameters": {
+                "CustomOutputName": "finalSummary",
+                "UUID": "ACTION_131",
+                "WFTextActionText": {
+                  "Value": {
+                    "attachmentsByRange": {
+                      "{31, 1}": {
+                        "OutputName": "emptyCount",
+                        "OutputUUID": "ACTION_10",
+                        "Type": "ActionOutput"
+                      },
+                      "{40, 1}": {
+                        "OutputName": "singleCount",
+                        "OutputUUID": "ACTION_16",
+                        "Type": "ActionOutput"
+                      },
+                      "{42, 1}": {
+                        "OutputName": "singleItem",
+                        "OutputUUID": "ACTION_123",
+                        "Type": "ActionOutput"
+                      },
+                      "{49, 1}": {
+                        "OutputName": "manyCount",
+                        "OutputUUID": "ACTION_122",
+                        "Type": "ActionOutput"
+                      },
+                      "{51, 1}": {
+                        "OutputName": "firstItem",
+                        "OutputUUID": "ACTION_124",
+                        "Type": "ActionOutput"
+                      },
+                      "{53, 1}": {
+                        "OutputName": "lastItem",
+                        "OutputUUID": "ACTION_125",
+                        "Type": "ActionOutput"
+                      },
+                      "{55, 1}": {
+                        "OutputName": "traceEnvelope",
+                        "OutputUUID": "ACTION_130",
+                        "Type": "ActionOutput"
+                      }
+                    },
+                    "string": "CHERRI_QA_COLLECT_COUNTS:empty=\ufffc:single=\ufffc:\ufffc:many=\ufffc:\ufffc:\ufffc\n\ufffc"
+                  },
+                  "WFSerializationType": "WFTextTokenString"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "provenCauseOfEmptyResultDifference": "NONE_FROM_THIS_GRAPH_COMPARISON"
+  },
+  "legacyLocalEncoding": {
+    "scope": "LOCAL_EXACT_71_COMPILER_REPRODUCTION_NOT_NEW_NATIVE_EXECUTION",
+    "actionCount": 239,
+    "emptyProducer": "is.workflow.actions.nothing",
+    "emptyStoreParameters": {
+      "WFVariableName": "emptyInput"
+    },
+    "explicitWFInputOnStore": false,
+    "repeatInputKind": "Variable",
+    "repeatInputName": "emptyInput"
+  },
+  "legacyDictionaryRun": {
+    "runId": 44326208135,
+    "compilerCommitSha": "71a3e2d67751bccd762b9627b148c28ece60621d",
+    "workflowConclusion": "failure",
+    "jobConclusion": "cancelled",
+    "runnerId": 0,
+    "recordedSteps": 0,
+    "publishedArtifacts": 0,
+    "checkAnnotation": "The job was not acquired by Runner of type hosted even after multiple attempts",
+    "nativeOutcome": "NOT_RUN"
+  },
+  "limits": [
+    "A correlated SUCCESS callback with the wrong semantic output still fails ordinary runtime and trace gates.",
+    "Inline and collector events observed in the raw callback do not override the failed ordinary trace gate.",
+    "The two identical normalized first17-action graphs do not prove identical native import/editor state.",
+    "Same recorded OS/Xcode/device versions do not prove identical runner state.",
+    "Local reproduction hashes differ from signed-run plist hashes because generated native UUIDs are fresh.",
+    "No V2 empty encoding production change is justified by this audit alone."
+  ],
+  "nextDiagnostic": "Separate exact native counts for List[], its Repeat Results, the existing cleared-variable mechanism, and singleton empty Text; expected 0/0/0/1. Original acceptance fixture remains unchanged."
+}
