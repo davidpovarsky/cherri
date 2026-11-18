@@ -18,6 +18,7 @@ struct CherriEditorView: View {
     @State private var paletteCompletionContext: CompletionContext?
     @State private var paletteInsertionSource: String?
     @State private var contextualCompletions: [CherriCompletionItem] = []
+    @State private var completedRequest: CherriCompletionRequest?
     @State private var hoverText: String?
     @State private var signatureText: String?
     @State private var definitionText: String?
@@ -95,8 +96,8 @@ struct CherriEditorView: View {
         .task(id: diagnostics.map(\.id)) {
             refreshDiagnostic()
         }
-        .task(id: editPosition.selections.first) {
-            await refreshContextualCompletions()
+        .task(id: completionRequest) {
+            await refreshContextualCompletions(for: completionRequest)
         }
         .sheet(isPresented: $showActionPalette, onDismiss: commitPaletteSelection) {
             ActionPaletteView(actions: actions) { action in
@@ -242,10 +243,10 @@ struct CherriEditorView: View {
             }
             .fixedSize(horizontal: false, vertical: true)
 
-            if !contextualCompletions.isEmpty {
+            if !currentContextualCompletions.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
-                        ForEach(contextualCompletions.prefix(8)) { item in
+                        ForEach(currentContextualCompletions.prefix(8)) { item in
                             Button {
                                 insertItem(item, replacing: completionContext?.range)
                             } label: {
@@ -472,17 +473,31 @@ struct CherriEditorView: View {
         return (line, col)
     }
 
-    private func refreshContextualCompletions() async {
-        guard let selection = editPosition.selections.first else {
-            contextualCompletions = []
+    private var completionRequest: CherriCompletionRequest {
+        CherriCompletionRequest(source: text, selection: editPosition.selections.first)
+    }
+
+    private var currentContextualCompletions: [CherriCompletionItem] {
+        guard completedRequest == completionRequest else { return [] }
+        return completionRequest.matchingItems(contextualCompletions, prefix: completionContext?.prefix)
+    }
+
+    private func refreshContextualCompletions(for request: CherriCompletionRequest) async {
+        guard let position = request.position else {
+            if request == completionRequest {
+                contextualCompletions = []
+                completedRequest = request
+            }
             return
         }
-        let (line, col) = lineAndColumn(at: selection.location)
-        if let items = try? await CherriCompiler.complete(source: text, line: line, column: col), !items.isEmpty {
-            contextualCompletions = items
-        } else {
-            contextualCompletions = []
-        }
+        let items = (try? await CherriCompiler.complete(
+            source: request.source, line: position.line, column: position.column
+        )) ?? []
+        // Source edits can precede selection notifications. Both invalidate the
+        // old request; a cancelled bridge call cannot publish stale candidates.
+        guard !Task.isCancelled, request == completionRequest else { return }
+        contextualCompletions = items
+        completedRequest = request
     }
 
     private func refreshDiagnostic() {

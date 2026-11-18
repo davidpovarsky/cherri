@@ -70,13 +70,21 @@ CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTe
 FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriEditorInputTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
 TEST_NAME = re.compile(r"^CherriEditorUITests/(test[A-Za-z0-9_]+)$")
 PRIVATE_TEXT = re.compile(r"(?i)(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._-]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|/Users/[^/\s]+|[A-Z]:\\Users\\[^\\\s]+)")
-STAGES = {"empty-reset", "typed-source", "completion-insertion", "rapid-typed-source", "teardown"}
+STAGES = {"empty-reset", "typed-source", "completion-insertion", "rapid-typed-source", "teardown", "completion-candidates"}
 BOOL_FIELDS = {
     "editorExists", "editorHittable", "buildExists", "buildEnabled",
     "compiledStatusExists", "diagnosticStatusExists", "diagnosticsBannerExists", "keyboardExists",
+    "showCompletionExists", "showCompletionHittable", "showSuggestionExists", "showSuggestionHittable",
 }
 CHECKPOINTS = {entry[2] for entry in ui_test_map.values()} | {"[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT]", "[CHECKPOINT:E01_PALETTE_EXACT]"}
 RECEIPT_PREFIX = "[CHERRI_UI_RECEIPT] "
+INPUT_PREFIX = "[CHERRI_INPUT_RECEIPT] "
+RUNTIME_PREFIX = "[CHERRI_NATIVE_RUNTIME_EVENT] "
+INPUT_FIXTURES = {"nested-call", "list", "dictionary", "curly-block", "block-comment"}
+INPUT_TEST_NAME = re.compile(r"^CherriEditorInputTests/test[A-Za-z0-9_]+$")
+CANDIDATE_ID = re.compile(r"^(?:completionItem|suggestionItem)_[A-Za-z_][A-Za-z0-9_]{0,95}$")
+RUNTIME_SOURCE = re.compile(r"(?P<file>CodeStorage(?:Delegate)?|CodeView|Tokeniser|LineMap|ContiguousArrayBuffer|StringUTF16View)\.swift:(?P<line>[0-9]{1,6})")
+
 
 
 def safe_receipt(line):
@@ -109,20 +117,84 @@ def safe_receipt(line):
         for key in ("exactUTF16Match", "sourceTruncated"):
             if type(raw.get(key)) is bool:
                 receipt[key] = raw[key]
+        if (raw["testName"] == "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI"
+                and receipt.get("actualSource") == "sho"):
+            candidates = raw.get("completionCandidateIdentifiers")
+            if isinstance(candidates, list):
+                receipt["completionCandidateIdentifiers"] = [
+                    value for value in candidates[:8] if isinstance(value, str) and CANDIDATE_ID.fullmatch(value)]
     else:
         receipt["sourceOmittedReason"] = "EMPTY_RESET_NOT_VERIFIED"
     return receipt
 
 
+def safe_input_receipt(line, active_test):
+    try:
+        raw = json.loads(line[len(INPUT_PREFIX):])
+    except (ValueError, TypeError):
+        return None
+    if (not isinstance(raw, dict) or raw.get("schemaVersion") != "1.0"
+            or raw.get("testName") != active_test or not isinstance(active_test, str)
+            or not INPUT_TEST_NAME.fullmatch(active_test)
+            or raw.get("isolatedSyntheticEditor") is not True
+            or raw.get("fixtureId") not in INPUT_FIXTURES
+            or raw.get("stage") not in {"before-key", "after-key", "fixture-complete"}):
+        return None
+    receipt = {key: raw[key] for key in (
+        "schemaVersion", "testName", "isolatedSyntheticEditor", "fixtureId", "stage")}
+    for key in ("keyIndex", "actualUTF16Length", "selectionLocation", "selectionLength"):
+        if type(raw.get(key)) is not int or not 0 <= raw[key] <= 100000:
+            return None
+        receipt[key] = raw[key]
+    units = raw.get("inputUTF16")
+    if not isinstance(units, list) or len(units) > 8 or any(type(unit) is not int or not 0 <= unit <= 65535 for unit in units):
+        return None
+    receipt["inputUTF16"] = units
+    source = raw.get("actualSource")
+    if not isinstance(source, str):
+        return None
+    receipt["actualSource"] = source if len(source.encode("utf-8")) <= 16384 and not PRIVATE_TEXT.search(source) else "[REDACTED_UNEXPECTED_CONTENT]"
+    return receipt
+
+
+def safe_runtime_event(line, active_test):
+    if not active_test:
+        return None
+    categories = (
+        ("Fatal error: Index out of range", "INDEX_OUT_OF_RANGE"),
+        ("Fatal error: String index is out of bounds", "STRING_INDEX_OUT_OF_BOUNDS"),
+        ("NSRangeException", "NS_RANGE_EXCEPTION"),
+        ("NSInternalInconsistencyException", "NS_INTERNAL_INCONSISTENCY"),
+        ("Fatal error:", "RUNTIME_FATAL_ERROR"),
+        ("Restarting after unexpected exit, crash, or test timeout", "XCTEST_HOST_RESTART"),
+    )
+    code = next((code for marker, code in categories if marker in line), None)
+    if not code:
+        return None
+    record = {"testId": active_test, "code": code}
+    if match := RUNTIME_SOURCE.search(line):
+        record.update(sourceFile=match["file"] + ".swift", sourceLine=int(match["line"]))
+    return record
+
+
 def bounded_log(raw_text):
     lines, receipts, failures = [], [], []
     case_events = 0
+    input_events = 0
+    runtime_events = 0
+    active_test = None
     for raw_line in raw_text.splitlines():
         line = raw_line.strip()
-        if CASE_LINE.fullmatch(line):
+        if case := CASE_LINE.fullmatch(line):
+            active_test = (case.group(1).split(".")[1] + "/" + case.group(2)) if case.group(3) == "started." else None
             case_events += 1
             if case_events <= 512:
                 lines.append(line)
+        elif line.startswith(INPUT_PREFIX) and input_events < 512:
+            receipt = safe_input_receipt(line, active_test)
+            if receipt:
+                input_events += 1
+                lines.append(INPUT_PREFIX + json.dumps(receipt, ensure_ascii=False, sort_keys=True))
         elif line.startswith(RECEIPT_PREFIX) and len(receipts) < 64:
             receipt = safe_receipt(line)
             if receipt:
@@ -133,6 +205,9 @@ def bounded_log(raw_text):
             if len(failures) < 64:
                 failures.append(record)
                 lines.append("[CHERRI_UI_FAILURE] " + json.dumps(record, sort_keys=True))
+        elif runtime_events < 64 and (event := safe_runtime_event(line, active_test)):
+            runtime_events += 1
+            lines.append(RUNTIME_PREFIX + json.dumps(event, sort_keys=True))
         else:
             for marker in CHECKPOINTS:
                 if line.startswith(marker):
@@ -270,6 +345,8 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path):
         "xcodebuildExitCode": xcode_exit, "runStatus": run_status,
         "rawLogPresent": raw_present, "sanitizedLogSha256": log_sha,
         "testResults": test_results, "uiReceipts": receipts, "uiFailures": failures,
+        "inputReceipts": [json.loads(line[len(INPUT_PREFIX):]) for line in log_text.splitlines() if line.startswith(INPUT_PREFIX)],
+        "nativeRuntimeEvents": [json.loads(line[len(RUNTIME_PREFIX):]) for line in log_text.splitlines() if line.startswith(RUNTIME_PREFIX)],
         "privacy": {"rawLogsPublished": False, "screenshotsPublished": False,
                     "sourceRequiresVerifiedEmptyReset": True},
     }

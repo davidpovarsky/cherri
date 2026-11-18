@@ -67,6 +67,18 @@ final class CherriEditorUITests: XCTestCase {
             receipt["actualSource"] = String(value.prefix(4096))
             receipt["actualUTF16Length"] = (value as NSString).length
             receipt["sourceTruncated"] = value.count > 4096
+            // Only the fixed E01 synthetic prefix permits candidate identifiers.
+            // No document-wide AX tree or candidate detail/label is captured.
+            if method == "testE01CompletionDisplayAndInsertionUI", value == "sho" {
+                receipt["showCompletionExists"] = app.buttons["completionItem_show"].exists
+                receipt["showCompletionHittable"] = app.buttons["completionItem_show"].exists && app.buttons["completionItem_show"].isHittable
+                receipt["showSuggestionExists"] = app.buttons["suggestionItem_show"].exists
+                receipt["showSuggestionHittable"] = app.buttons["suggestionItem_show"].exists && app.buttons["suggestionItem_show"].isHittable
+                let candidates = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ OR identifier BEGINSWITH %@",
+                    "completionItem_", "suggestionItem_")).allElementsBoundByIndex
+                receipt["completionCandidateIdentifiers"] = Array(candidates.prefix(8)).map(\.identifier)
+            }
+
             if let expected = expectedSyntheticSource {
                 receipt["expectedSource"] = String(expected.prefix(4096))
                 receipt["exactUTF16Match"] = Array(value.utf16) == Array(expected.utf16)
@@ -145,6 +157,7 @@ final class CherriEditorUITests: XCTestCase {
         } else if showSuggestion.waitForExistence(timeout: 3) && showSuggestion.isHittable {
             showSuggestion.tap()
         } else {
+            recordEditorReceipt(stage: "completion-candidates")
             XCTFail("Exact contextual candidate show must be visible and hittable")
             return
         }

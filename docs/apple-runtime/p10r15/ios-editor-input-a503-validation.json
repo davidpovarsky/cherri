@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "runId": 44242289253,
+  "runURL": "https://github.com/davidpovarsky/cherri/actions/runs/44242289253",
+  "implementationSha": "a5032e7090079f5673a51ab64e4211c4bf8dbef0",
+  "runConclusion": "failure",
+  "xcodebuildExitCode": 65,
+  "acceptanceRecords": 0,
+  "observedTestCounts": {
+    "CherriCoreIntegrationTests": {
+      "passed": 24
+    },
+    "CherriEditorInputTests": {
+      "passed": 7,
+      "incomplete": 1
+    },
+    "CherriEditorUITests": {
+      "passed": 11,
+      "failed": 1
+    }
+  },
+  "observedFailures": [
+    {
+      "testId": "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+      "sourceLine": 148
+    }
+  ],
+  "boundedFiles": [
+    {
+      "path": "ios-test-diagnostics.json",
+      "bytes": 39039,
+      "sha256": "1a7a8143ff2822f8cdf46eccdd9de625f6b962e75dec35a61ffe91670a151526"
+    },
+    {
+      "path": "ios-test-evidence.json",
+      "bytes": 20,
+      "sha256": "6c1db664439054b14cf5baade95beb5c1b194266ecf60003a2aab24c85fd8359"
+    },
+    {
+      "path": "xcodetest.log",
+      "bytes": 38118,
+      "sha256": "e9a50878cc8249e31f813787218e484597a10bb15eb12daddc036e21c61122ec"
+    }
+  ],
+  "nativeFindings": {
+    "formerSixParenthesisRegressions": "PASS_IN_ACTUAL_UI",
+    "paletteExactShow": "PASS_IN_ACTUAL_UI",
+    "realKeyboardAutomaticCompletionAndOvertype": "PASS_IN_ACTUAL_UI",
+    "pinnedCodeViewBuildAndTestability": "PASS_IN_ACTUAL_BUILD",
+    "nestedFixtureLoop": "INCOMPLETE_CAUSE_UNKNOWN",
+    "inlineCompletion": "FAIL_EXACT_CANDIDATE_ABSENT_OR_NOT_HITTABLE"
+  },
+  "followup": {
+    "completionConsumer": "Filter typed prefix before limiting the full service result; bind requests and display to exact UTF16 source plus caret.",
+    "nestedControls": "Split the same five source fixtures into separate tests with bounded per-key receipts; no assertions removed and no unproven dependency repair.",
+    "boundedDiagnostics": "Only known native error categories and reviewed source basenames/line numbers; no raw reason, raw logs, images or private paths.",
+    "localPythonTests": {
+      "passed": 27,
+      "failed": 0
+    },
+    "nativeFollowup": "NOT_RUN_AT_COMMIT"
+  },
+  "limitations": [
+    "Partial native success is not a successful workflow or a release gate.",
+    "Current published evidence cannot determine why the nested fixture loop lacked an end event.",
+    "New completion and per-key diagnostics require the next immutable native run."
+  ],
+  "typedSourceMismatches": [],
+  "postActionSourceDifferences": [
+    {
+      "testId": "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+      "stage": "teardown",
+      "scope": "Teardown compares against the earlier typed source; these passing tests intentionally rename or visually edit it."
+    },
+    {
+      "testId": "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+      "stage": "teardown",
+      "scope": "Teardown compares against the earlier typed source; these passing tests intentionally rename or visually edit it."
+    }
+  ]
+}
