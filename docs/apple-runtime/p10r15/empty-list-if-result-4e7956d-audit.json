@@ -1,0 +1,532 @@
+{
+  "schemaVersion": 1,
+  "auditedAt": "2026-11-18T20:06:53.133204+00:00",
+  "runs": [
+    {
+      "runId": "44346443743",
+      "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44346443743",
+      "attempt": 1,
+      "workflowPath": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+      "compilerCommitSha": "4e7956d2519307861fe703a11fbe401fc9faca05",
+      "workflowConclusion": "failure",
+      "fixtureId": "qa-collect-empty-split-v2",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-collect-empty-split-v2.cherri",
+      "sourceSha256": "15d1e0ab8bae11e87cc91d81ea1a9a3cc0466429956ad7bff9b6b18570854a3a",
+      "sourceHashMatchesImmutableGitBlob": true,
+      "unsignedPlistSha256": "553b404a0d2ead25e55665ab896d1f9964197422a24b3441d517b77fcd84b284",
+      "nativeActionCount": 29,
+      "signedArtifactSha256": "299fc990d3bb44e721fef7275a3531861f036bf13ee9133ffd4a2eafe9ca8303",
+      "signingVerificationTier": "AEA1_HEADER_PASS",
+      "publishedFileCount": 20,
+      "publishedFiles": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "7d232e00bdb24f7bea23f1c43c8d98cc9b5c7cda9aef6aedd629bcfa7b5aa897",
+          "bytes": 98426
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "8cf31f7fbb5b58999d9ee6f9dc6df24c17eba3f405c29ff69e0a5a6a931b97f7",
+          "bytes": 850
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "346804c36086b0fa049b00a5f9666a6732649be8d6c81f5e414572a08d1230b1",
+          "bytes": 158
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "54c0cdb8f1cb0a71d3ed155bfa7edafdeacde53f82684cf843513e54c3eb4563",
+          "bytes": 2986
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "de95ce825c3269057cc584606a63742c2e4d7fe05bde75e1327e93d29339c962",
+          "bytes": 29992
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "4e01211455efcbd48d0d2e05754ad2fb08c137329a079a44e72c7e3aad2055f3",
+          "bytes": 25935
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "4fc9bb9745d66889faab6b8eda8e3c239489c8bf439f190a80d30f32566ca854",
+          "bytes": 2035
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "2dfb5616f498e3daa28492470688ff3a9d2e835ef28383602b580c70cf5969fa",
+          "bytes": 1624907
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "93c718a041898e374c0c84639a2a2fce2d78233406d1f91e74b07f59f65aae9c",
+          "bytes": 474
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "4e01211455efcbd48d0d2e05754ad2fb08c137329a079a44e72c7e3aad2055f3",
+          "bytes": 25935
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "b3c068237cc335d92e0b50713436f24cd97077cfbe924eed9322034ec123b061",
+          "bytes": 3267
+        },
+        {
+          "path": "environment.json",
+          "sha256": "5fa06f817bf2351fc9f941d943195f13386f1d48921e45d634475f738d2cfc00",
+          "bytes": 786
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "d70f6a455b3ad67310d2dc5866f399fb6e6a13ea6c9e137d6d353621faf2f966",
+          "bytes": 1686
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "a3dc4fbb6a706e95eae1a14edca9e32cfef63a5bc7fc39e37c153d0edf391866",
+          "bytes": 2279
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "58833092f5611130352cfb4cfa2afb628f4196298a3c4a84a5dc955c0a379b42",
+          "bytes": 1502
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "ccdb1daf2b578af133ed5ff030e94faf687bd45d8f90582d58e36e1e8059ed76",
+          "bytes": 217
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "21c540dd8152ba8fb26e0a889bbb86494c25f324d33b269b92da18763a7ea33c",
+          "bytes": 2067
+        },
+        {
+          "path": "summary.json",
+          "sha256": "340f4212a30caf10e92e05df432c92de477e734e8716cdde3c200e738c168525",
+          "bytes": 1129
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "1ce7630714d59f47bc968513c78c4273b04002bac9b55002096ef259fb1b21e4",
+          "bytes": 984
+        }
+      ],
+      "publicationManifestSha256": "8d1927633b300cc40ea11c115f547ef071c99fd9ef9bd39c462adeac32d996d3",
+      "publishedFileHashesAndByteCountsVerified": true,
+      "publishedPathSetExact": true,
+      "gates": {
+        "RUNNER_AVAILABLE": "PASS",
+        "SIMULATOR_BOOTED": "PASS",
+        "SHORTCUTS_APP_INSTALLED": "PASS",
+        "SHORTCUTS_LAUNCHED": "PASS",
+        "EDITOR_OPENED": "PASS",
+        "FILE_IMPORT_ATTEMPTED": "PASS",
+        "COMPILER_ARTIFACT_IMPORTED": "PASS",
+        "SHORTCUT_EXISTS_IN_LIBRARY": "PASS",
+        "ACTION_EDITOR_CAPTURED": "EDITOR_CAPTURE_COMPLETE",
+        "SHORTCUT_RUN_ATTEMPTED": "PASS",
+        "SHORTCUT_RUN_COMPLETED": "FAIL_RUNTIME",
+        "CALLBACK_CAPTURED": "PASS",
+        "TRACE_CAPTURED": "FAIL_RUNTIME",
+        "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+      },
+      "freshRunNonce": "qa-collect-empty-split-v2-44346443743-5f73279e68daa4bc1a42e418811060e6",
+      "correlatedCallbackCount": 1,
+      "receiverSelfTestCount": 1,
+      "callbackStatus": "SUCCESS",
+      "expectedSemanticOutput": "CHERRI_QA_COLLECT_EMPTY_SPLIT:direct=0:repeat=0:cleared=0:emptyText=1",
+      "actualSemanticOutput": "CHERRI_QA_COLLECT_EMPTY_SPLIT:direct=1:repeat=1:cleared=0:emptyText=1",
+      "callbackInlineTraceCount": 2,
+      "callbackCollectorTraceCount": 2,
+      "persistedTraceRecordCount": 1,
+      "persistedTraceMatchesCallback": false,
+      "ordinaryRuntimeContractVerified": false,
+      "independentExactSourceOracleReplay": {
+        "runGate": "FAIL_RUNTIME",
+        "traceGate": "FAIL_RUNTIME",
+        "reason": "callback result does not exactly match expected output",
+        "targetFixtureId": "qa-collect-empty-split-v2",
+        "compilerCommitSha": "4e7956d2519307861fe703a11fbe401fc9faca05",
+        "buildProfile": "debug",
+        "traceExpectation": "REQUIRED_NDJSON",
+        "releaseBuildVerified": false,
+        "sourceSha256": "15d1e0ab8bae11e87cc91d81ea1a9a3cc0466429956ad7bff9b6b18570854a3a",
+        "unsignedPlistSha256": "553b404a0d2ead25e55665ab896d1f9964197422a24b3441d517b77fcd84b284"
+      },
+      "oracleSourceSha256": "0f9b3cf8dd349b0d262060b1b50e228fca7d115d757ab2c3993c641c7aa87ffa",
+      "runner": {
+        "macOS": "27.0.1",
+        "macOSBuild": "26A434",
+        "xcodeVersion": "27.1",
+        "xcodeBuild": "27A9275",
+        "simulatorDevice": "iPad mini (A17 Pro)",
+        "simulatorRuntime": "iOS 27.0"
+      },
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "physicalDeviceProven": false
+    },
+    {
+      "runId": "44346470843",
+      "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44346470843",
+      "attempt": 1,
+      "workflowPath": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+      "compilerCommitSha": "4e7956d2519307861fe703a11fbe401fc9faca05",
+      "workflowConclusion": "success",
+      "fixtureId": "qa-f01-ifresult-let-v2",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-f01-ifresult-let-v2.cherri",
+      "sourceSha256": "ca087dae7c6728647763a2b22ccc405b335ce8c3a5cb8d444b9eb6379fbd6d04",
+      "sourceHashMatchesImmutableGitBlob": true,
+      "unsignedPlistSha256": "6f0599123fb00edf7727f27771d667bec592e26c43e72efe267d5d50bfcf5851",
+      "nativeActionCount": 32,
+      "signedArtifactSha256": "98cef442daccea1ac2c4d50d01d324e90f55f1212b4a379937f203d7148fbe88",
+      "signingVerificationTier": "AEA1_HEADER_PASS",
+      "publishedFileCount": 20,
+      "publishedFiles": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "717b13a7386d4c8ba421dff366ec8228bf3f96f8c6ea0497316b3c44a4dd2eb9",
+          "bytes": 98426
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "7c230add7a3831f4721926a96f5e35c0c383863482ee7cca86dcb855362a6f81",
+          "bytes": 857
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "4728ce4eea2dab8e5e5e82082f689b386b820d17c8527cf3b24cf8743faf93ac",
+          "bytes": 158
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "e005b0d368af2fb881cbf3b281598d3e7d8688f5f00d8a0ba10c42f02e287f14",
+          "bytes": 2922
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "5251aca7e199cb929be1715edbd6fbb0db9b0ef279991854cd9fdd8e327a69b8",
+          "bytes": 34779
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "d665c73befa8874bed3750f429b0ae55e51d83b84f8a4e9479a3faefcab44316",
+          "bytes": 29875
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "da3cfe7bcccd74c538c526466c13ce8cd147b587417a75ea5ade0caf3579759d",
+          "bytes": 2208
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "e27d0ceaf9514b270677b207f8c1d789227c3e865d0470ee54203ebf2c0b9412",
+          "bytes": 1313362
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "82edd63109557d82befca5dcf9f134e58e67ed32bcc2f6e1f15029fa0fdcd613",
+          "bytes": 292
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "d665c73befa8874bed3750f429b0ae55e51d83b84f8a4e9479a3faefcab44316",
+          "bytes": 29875
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "b7f9482e831940b8f9b06ea7c989284e1a6d4d86698a0f4c451214fa825daa80",
+          "bytes": 3274
+        },
+        {
+          "path": "environment.json",
+          "sha256": "68609e9fee8d436affe929481ce09b7e2801fd4669bc5db1d509abdf679e584b",
+          "bytes": 786
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "6028609824a52dba156bd587df1cc47b5f20baa502f02520bb75959ec9c4cf58",
+          "bytes": 1686
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "dd9c588f8177e543612d485d1b1baef8f521bf40bc43b58403d19e251dec4620",
+          "bytes": 2224
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "cfcfbefee32fe7319e4144a8e94dfe2675554375965b1dd7873a4b75be4af65b",
+          "bytes": 1453
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "b292a43c07c987eaafabac1bc40ca0b759337e4736b9eb6840dbce39ccdad942",
+          "bytes": 1004
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "d01f036571c93c0fcb611c821c871e1b9e3e4eec78dfe13cbb71e4457fed737d",
+          "bytes": 2055
+        },
+        {
+          "path": "summary.json",
+          "sha256": "072fa86701f5cc065a21cc4aaf07603ac4ecd80ead63599d5c8ef1c759fcfea9",
+          "bytes": 1131
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "9edd94cf1f33d41073154bf1873df0459fd2bf24ba0a9c44da15a0aacb1cfdee",
+          "bytes": 984
+        }
+      ],
+      "publicationManifestSha256": "458c251e62440453584ff2c802c938cabdedb549f662950dd54b060a654c6c33",
+      "publishedFileHashesAndByteCountsVerified": true,
+      "publishedPathSetExact": true,
+      "gates": {
+        "RUNNER_AVAILABLE": "PASS",
+        "SIMULATOR_BOOTED": "PASS",
+        "SHORTCUTS_APP_INSTALLED": "PASS",
+        "SHORTCUTS_LAUNCHED": "PASS",
+        "EDITOR_OPENED": "PASS",
+        "FILE_IMPORT_ATTEMPTED": "PASS",
+        "COMPILER_ARTIFACT_IMPORTED": "PASS",
+        "SHORTCUT_EXISTS_IN_LIBRARY": "PASS",
+        "ACTION_EDITOR_CAPTURED": "EDITOR_CAPTURE_COMPLETE",
+        "SHORTCUT_RUN_ATTEMPTED": "PASS",
+        "SHORTCUT_RUN_COMPLETED": "PASS",
+        "CALLBACK_CAPTURED": "PASS",
+        "TRACE_CAPTURED": "PASS",
+        "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+      },
+      "freshRunNonce": "qa-f01-ifresult-let-v2-44346470843-2bd66e2ddf2bf7ec7506fb7db84bf239",
+      "correlatedCallbackCount": 1,
+      "receiverSelfTestCount": 1,
+      "callbackStatus": "SUCCESS",
+      "expectedSemanticOutput": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
+      "actualSemanticOutput": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
+      "callbackInlineTraceCount": 2,
+      "callbackCollectorTraceCount": 2,
+      "persistedTraceRecordCount": 4,
+      "persistedTraceMatchesCallback": true,
+      "ordinaryRuntimeContractVerified": true,
+      "independentExactSourceOracleReplay": {
+        "runGate": "PASS",
+        "traceGate": "PASS",
+        "reason": "verified correlated callback output and NDJSON trace",
+        "targetFixtureId": "qa-f01-ifresult-let-v2",
+        "compilerCommitSha": "4e7956d2519307861fe703a11fbe401fc9faca05",
+        "buildProfile": "debug",
+        "traceExpectation": "REQUIRED_NDJSON",
+        "releaseBuildVerified": false,
+        "sourceSha256": "ca087dae7c6728647763a2b22ccc405b335ce8c3a5cb8d444b9eb6379fbd6d04",
+        "unsignedPlistSha256": "6f0599123fb00edf7727f27771d667bec592e26c43e72efe267d5d50bfcf5851"
+      },
+      "oracleSourceSha256": "0f9b3cf8dd349b0d262060b1b50e228fca7d115d757ab2c3993c641c7aa87ffa",
+      "runner": {
+        "macOS": "27.0.1",
+        "macOSBuild": "26A434",
+        "xcodeVersion": "27.1",
+        "xcodeBuild": "27A9275",
+        "simulatorDevice": "iPad mini (A17 Pro)",
+        "simulatorRuntime": "iOS 27.0"
+      },
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "physicalDeviceProven": false
+    },
+    {
+      "runId": "44346497175",
+      "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44346497175",
+      "attempt": 1,
+      "workflowPath": ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml",
+      "compilerCommitSha": "4e7956d2519307861fe703a11fbe401fc9faca05",
+      "workflowConclusion": "success",
+      "fixtureId": "qa-f01-ifresult-var-v2",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-f01-ifresult-var-v2.cherri",
+      "sourceSha256": "e0f49a9d2138da7f4ac49cbd1dac97d353e340218385d185b374421fb950702a",
+      "sourceHashMatchesImmutableGitBlob": true,
+      "unsignedPlistSha256": "39638e89e7ffa86ff733597ba6c730ffc44d40cc3890fd93c0b1aba31b57fd5d",
+      "nativeActionCount": 33,
+      "signedArtifactSha256": "ee8526b3f55c494a8818d517e8cc8be0628f7abae72ebe360ffef1cc9ad91b38",
+      "signingVerificationTier": "AEA1_HEADER_PASS",
+      "publishedFileCount": 20,
+      "publishedFiles": [
+        {
+          "path": "compiler-manifest.json",
+          "sha256": "0dda60d6052a383a9d4788a0450f5109d9e654db51662847982d55c0565407d9",
+          "bytes": 98426
+        },
+        {
+          "path": "docs/report.md",
+          "sha256": "9ab1278de272cb337613fd9a0661919ee97dc691bfd0a75a7fc4d71d73391217",
+          "bytes": 857
+        },
+        {
+          "path": "editor/ax-persistence-diagnostics.json",
+          "sha256": "24f3d07a5c488fe2eb0014f7456cedf62db3136139e031b20341a56a969c1055",
+          "bytes": 158
+        },
+        {
+          "path": "editor/editor-action-coverage.json",
+          "sha256": "5c9417db6dc45e029d8702afa57f752c066290959c0dc577ddef459d54309b21",
+          "bytes": 2907
+        },
+        {
+          "path": "editor/editor-actions.json",
+          "sha256": "f09b444ac9d5eb3e2bd7b79eef6081e48ea863bd2663ea5bb7eab0aed61dcc13",
+          "bytes": 36300
+        },
+        {
+          "path": "editor/editor-comparison.json",
+          "sha256": "698a8ed9fb070fa380b30e8517396de1263bb7cec8039fc05e9b24e29abf6ea6",
+          "bytes": 30772
+        },
+        {
+          "path": "editor/editor-report.md",
+          "sha256": "080b1a6a562f15461ceb169f9f0bbd1b7dfcddcea016958bc1df24f4139b0edf",
+          "bytes": 2264
+        },
+        {
+          "path": "editor/editor-tree.json",
+          "sha256": "0d29f71e877d242c5003b502495bf952a02df63c5dc2d79fdb0ebc37f0a07daf",
+          "bytes": 1616968
+        },
+        {
+          "path": "editor/handshake-status.json",
+          "sha256": "4a7d4c64c90427f9fc362b15fb2d003903c341f9f0a0c91e9b59a114e5795c22",
+          "bytes": 474
+        },
+        {
+          "path": "editor/plist-vs-editor-comparison.json",
+          "sha256": "698a8ed9fb070fa380b30e8517396de1263bb7cec8039fc05e9b24e29abf6ea6",
+          "bytes": 30772
+        },
+        {
+          "path": "editor/screenshots-manifest.json",
+          "sha256": "4ebed4d910fb3ff61ef6f6879069da508b98af8808f6e30b691d978620fe4350",
+          "bytes": 3233
+        },
+        {
+          "path": "environment.json",
+          "sha256": "793d8b3caa679625e69799bbfe6231da3e88303bf8294af6b178151ffba909a4",
+          "bytes": 787
+        },
+        {
+          "path": "import-attempts.json",
+          "sha256": "f3b9e53ebb8c840169dcd1677c2c2cb23c41a396c99aff2e01a25102f3013caf",
+          "bytes": 1686
+        },
+        {
+          "path": "runtime/callback-events.json",
+          "sha256": "193b97c58398ec66d4612c42582bad3e4257d077ed04fa1965be35362e8e31f3",
+          "bytes": 2224
+        },
+        {
+          "path": "runtime/instrumentation-vs-original.json",
+          "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b",
+          "bytes": 7446
+        },
+        {
+          "path": "runtime/output-assertions.json",
+          "sha256": "160b97a16f2632caf95f47f59e4ce0ed25a643fff3cb3963de7f812eb1baa320",
+          "bytes": 1453
+        },
+        {
+          "path": "runtime/runtime-trace.jsonl",
+          "sha256": "338dba18c58aaa2f32254ac385baaa7c3e0d128a732588a5c9c7f1cbde828cdc",
+          "bytes": 1004
+        },
+        {
+          "path": "runtime/signing-provenance.json",
+          "sha256": "a24866439639e6b94eada2c19f69577eeeaf8eeb30870628285a2089ba3c59eb",
+          "bytes": 2055
+        },
+        {
+          "path": "summary.json",
+          "sha256": "2dafd2ff62e7136b56b4c9ff38cc405b785babd772ea500afd40ec65514f796a",
+          "bytes": 1131
+        },
+        {
+          "path": "tests/xcresult-summary.json",
+          "sha256": "8cbb9ac9b2e54f511609f47ffaf30f2d143af77cf53930643c64660d2aef0de4",
+          "bytes": 984
+        }
+      ],
+      "publicationManifestSha256": "26aad061640c24237eebdba296137ee76b9badb3078caca79e2dad0e100e9412",
+      "publishedFileHashesAndByteCountsVerified": true,
+      "publishedPathSetExact": true,
+      "gates": {
+        "RUNNER_AVAILABLE": "PASS",
+        "SIMULATOR_BOOTED": "PASS",
+        "SHORTCUTS_APP_INSTALLED": "PASS",
+        "SHORTCUTS_LAUNCHED": "PASS",
+        "EDITOR_OPENED": "PASS",
+        "FILE_IMPORT_ATTEMPTED": "PASS",
+        "COMPILER_ARTIFACT_IMPORTED": "PASS",
+        "SHORTCUT_EXISTS_IN_LIBRARY": "PASS",
+        "ACTION_EDITOR_CAPTURED": "EDITOR_CAPTURE_COMPLETE",
+        "SHORTCUT_RUN_ATTEMPTED": "PASS",
+        "SHORTCUT_RUN_COMPLETED": "PASS",
+        "CALLBACK_CAPTURED": "PASS",
+        "TRACE_CAPTURED": "PASS",
+        "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+      },
+      "freshRunNonce": "qa-f01-ifresult-var-v2-44346497175-2b0a489adbeadcf49b13e1a2f74a8f29",
+      "correlatedCallbackCount": 1,
+      "receiverSelfTestCount": 1,
+      "callbackStatus": "SUCCESS",
+      "expectedSemanticOutput": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
+      "actualSemanticOutput": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
+      "callbackInlineTraceCount": 2,
+      "callbackCollectorTraceCount": 2,
+      "persistedTraceRecordCount": 4,
+      "persistedTraceMatchesCallback": true,
+      "ordinaryRuntimeContractVerified": true,
+      "independentExactSourceOracleReplay": {
+        "runGate": "PASS",
+        "traceGate": "PASS",
+        "reason": "verified correlated callback output and NDJSON trace",
+        "targetFixtureId": "qa-f01-ifresult-var-v2",
+        "compilerCommitSha": "4e7956d2519307861fe703a11fbe401fc9faca05",
+        "buildProfile": "debug",
+        "traceExpectation": "REQUIRED_NDJSON",
+        "releaseBuildVerified": false,
+        "sourceSha256": "e0f49a9d2138da7f4ac49cbd1dac97d353e340218385d185b374421fb950702a",
+        "unsignedPlistSha256": "39638e89e7ffa86ff733597ba6c730ffc44d40cc3890fd93c0b1aba31b57fd5d"
+      },
+      "oracleSourceSha256": "0f9b3cf8dd349b0d262060b1b50e228fca7d115d757ab2c3993c641c7aa87ffa",
+      "runner": {
+        "macOS": "27.0.1",
+        "macOSBuild": "26A434",
+        "xcodeVersion": "27.1",
+        "xcodeBuild": "27A9275",
+        "simulatorDevice": "iPad mini (A17 Pro)",
+        "simulatorRuntime": "iOS 27.0"
+      },
+      "editorInspectorStatus": "NEEDS_REVIEW",
+      "physicalDeviceProven": false
+    }
+  ],
+  "findings": [
+    "Within one correlated synthetic invocation, direct List[] and Repeat results from it each counted one; cleared-variable Repeat results counted zero; singleton empty Text counted one.",
+    "Both let-bound and var-bound ordinary If-expression results reached the exact marker. This falsifies the narrow hypothesis that naming/directly consuming End If output alone causes the earlier local-F01 failure.",
+    "Original collect and local-F01 strict fixtures remain unchanged and failed. No new production empty-List fix or complete short-circuit runtime closure is established by these controls."
+  ],
+  "limits": [
+    "Only published bounded text files were independently rehashed; raw signed/unsigned Shortcut bytes remain quarantined and their hashes are published provenance.",
+    "For the wrong-marker collect result, the strict runtime/trace gates remain FAIL_RUNTIME. Its actual callback carried four trace records, while the published strict trace intentionally contains one terminal failure record.",
+    "Editor Inspector remains NEEDS_REVIEW and no physical-device or release closure is inferred."
+  ]
+}
