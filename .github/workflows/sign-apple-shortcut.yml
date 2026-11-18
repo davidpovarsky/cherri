@@ -1,0 +1,35 @@
+name: Sign Apple Shortcut
+on:
+  workflow_dispatch:
+    inputs:
+      shortcut_url:
+        description: Public HTTPS URL of an unsigned .shortcut file
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  sign-shortcut:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - name: Download unsigned shortcut
+        env:
+          SHORTCUT_URL: ${{ inputs.shortcut_url }}
+        run: |
+          set -euo pipefail
+          [[ "$SHORTCUT_URL" == https://* ]] || exit 1
+          curl --fail --location --silent --show-error --max-time 60 --max-filesize 1048576 "$SHORTCUT_URL" -o input.shortcut
+          plutil -lint input.shortcut
+      - name: Sign with macOS Shortcuts
+        run: |
+          set -euo pipefail
+          shortcuts sign --input input.shortcut --output signed.shortcut --mode anyone
+          test "$(head -c 4 signed.shortcut)" = AEA1
+          shasum -a 256 signed.shortcut
+      - name: Upload signed file
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-apple-shortcut
+          path: signed.shortcut
+          if-no-files-found: error

@@ -1,0 +1,6 @@
+// Ministry of Transport GetRoutes raw API test
+const endpoint = "https://api.bus.gov.il/prod/route-planner-prod/api/he/RoutePlanning/GetRoutes"
+const payload = {"route":{"origin":{"addressDetails":{"label":"Origin"},"coordinates":{"lat":31.816248029158483,"lng":35.20336705952881}},"destination":{"addressDetails":{"label":"Destination"},"coordinates":{"lat":31.75501,"lng":35.21998}},"stop":null,"options":{"isAccessible":false,"changes":true,"transportations":["bus","privateBus","lightRail","regionalTrain"],"sortBy":0,"maxTravelTime":600,"maxWalkTime":120,"transportationsForInitialUse":["bus","carmelit","lightRail","publicTaxi","rahbalit","train"],"arrivalTime":null,"departureTime":"2026-10-18T06:30:00.000Z"}},"returnedRouteOptions":{"language":"he","isFutureSearch":true}}
+const headers = {"Content-Type":"application/json","Accept":"application/json, text/plain, */*","Origin":"https://route.bus.gov.il","Referer":"https://route.bus.gov.il/","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"}
+const response = jsonRequest(endpoint, method: "POST", body: payload, headers: headers)
+quicklook(response)
