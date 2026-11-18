@@ -1880,6 +1880,81 @@
       "reason": "Milestone P10R14 closure of all 6 P10R13 simulator QA, trace serialization, classifier collision, editor false-positive, and privacy gate findings while preserving 505 public catalog actions and 84.45% natural corpus fidelity.",
       "evidence": "go test -count=1 -timeout=20m ./... PASS (including TestP14_*, TestP13_*, TestDebugStdlib*, TestDebugTimer*, TestP13_CorpusFidelityAndSourceSizeAudit 23,353/27,652 = 84.45% natural verified), skills/cherri-shortcuts/scripts/self-test.sh --skip-setup 10/10 PASS.",
       "note": "Milestone P10R14 provenance metadata recorded in separate follow-up commit referencing implementation commit cfe0564038ee5376692350daac33200c4b91e9d7."
+    },
+    {
+      "name": "P10R15 guarded authored predicates and truthful acceptance evidence",
+      "locations": [
+        "internal/language/lower/short_circuit.go",
+        "internal/language/lower/lower.go",
+        "p15_short_circuit_test.go",
+        "p15_hybrid_conditions_test.go",
+        "p15_intake_acceptance_test.go",
+        "tools/language-acceptance/execution_audit.go",
+        "tools/language-acceptance/assertion_scope.go"
+      ],
+      "firstForkCommit": "e49d707fe5bbd1922834987e5de0503737687fbe",
+      "change": "Preflight native predicates before lowering; guard side-effectful RHS and use Boolean value semantics for authored bindings; retain exact imported symbol presence. Execute named production checks and separate shallow smoke observations from formal obligations.",
+      "reason": "False RHS calls and false-present Bool branches were observed before repair; historical report fields and linked IDs could claim unsupported success.",
+      "evidence": "Focused production-path regression tests and RED/GREEN hybrid edit reproduction; runtime F01 and complete94/RP52/BRG33 acceptance remain separate. Corrections 9c15325acb22296e68ec870fffef0d3eda71ccb0 and c2400eb1c227c388784900d3b68649bbc0d1cfc9.",
+      "note": "Metadata is recorded separately after immutable integrated implementation commits. No release-complete claim."
+    },
+    {
+      "name": "P10R15 explicit compiler and mobile build profiles",
+      "locations": [
+        "build_profile.go",
+        "build_profile_test.go",
+        "action.go",
+        "language_backend_adapter.go",
+        "mobile_compiler.go",
+        "ios_bridge.go",
+        "ios/CherriApp/Compiler/CherriCompiler.swift"
+      ],
+      "firstForkCommit": "8be3ea09563c530f49dd167ab97296185752d872",
+      "change": "Shared debug/release macro dispatch omits diagnostics, preserves source effects and assertions, rejects consumed removed results, and exposes isolated options to mobile/Swift while preserving old ABI defaults.",
+      "reason": "Release output must not carry compiler diagnostic actions or dangling references; diagnostic removal must preserve application semantics.",
+      "evidence": "Six profile production regression functions, eight actual CLI cases and new Go mobile bridge isolation plus IOS001..006 passed. Swift CABI test awaits existing iOS workflow; mobile implementation 311bac1c75dfad1fa5c8d4930d6213e11c7b97cb.",
+      "note": "Metadata is recorded separately after immutable integrated implementation commits. No release-complete claim."
+    },
+    {
+      "name": "P10R15 independent AX inspection and synthetic text publication gate",
+      "locations": [
+        "tools/shortcuts-simulator-qa/editor_inspector.py",
+        "tools/shortcuts-simulator-qa/prepare_public_artifacts.py",
+        "scripts/ios27_shortcuts_simulator_qa.sh",
+        ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml"
+      ],
+      "firstForkCommit": "b199be57cbadc384a4fa962e42088a84aa06af84",
+      "change": "Add independent native-plist versus AX-container reports; quarantine raster/raw/archives; verify synthetic source hashes; harden dispatch values and nonce/schema/source/fixture-bound callback evidence.",
+      "reason": "Historical34 counted UI strings did not prove33 native cards; byte scans do not prove pixel secrecy; stale callback summaries could claim false success.",
+      "evidence": "40 Python controls PASS plus focused Go workflow contracts and real CLI compilation. Hardening implementation 104d57e9c31690444fd067cb4676d32222b0f9c2. Fresh signed runtime, exact visible mapping and physical iPad remain unverified.",
+      "note": "Metadata is recorded separately after immutable integrated implementation commits. No release-complete claim."
+    },
+    {
+      "name": "P10R15 canonical catalog coverage ledger",
+      "locations": [
+        "tools/p10r3/generate_action_contract_coverage.py",
+        "tools/p10r3/test_action_contract_coverage.py",
+        "docs/apple-runtime/p10r15/action-contract-coverage.json"
+      ],
+      "firstForkCommit": "239d4a6d0b68d316f50bc1857a366b4928327f94",
+      "change": "Generate505 per-entry compiler/native/runtime/consumer obligations from the existing canonical registry and source-bound actual execution receipts.",
+      "reason": "A named catalog entry or structural compile pass is not independent native/runtime evidence.",
+      "evidence": "Fresh505 execution with497callables,382unique nativeIDs,8constructs and12negative/positive controls PASS; native variants and device states remain explicit gaps.",
+      "note": "Metadata is recorded separately after immutable integrated implementation commits. No release-complete claim."
+    },
+    {
+      "name": "P10R15 causal Skill and installed signing compatibility probes",
+      "locations": [
+        "skills/cherri-shortcuts/scripts/common.sh",
+        "skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh",
+        "tools/p10r15/verify_installed_signing.py",
+        ".github/workflows/openminis-skill.yml"
+      ],
+      "firstForkCommit": "d664087d14d58fdfa57d57d7dbea05847837b1ac",
+      "change": "Validate linked worktree docs pins and malformed Git metadata; isolate precise diagnostics with real compilers; exercise actual CLI and copied wrapper signing fault paths through loopback multipart endpoints.",
+      "reason": "Existing stale-doc checks could fail for unrelated causes, and an old installed compiler could report malformed signed results as success.",
+      "evidence": "Nine causal Skill checks and existing10scenarios PASS. Current source34signing cases:3unsigned controls,31negative rejections. Old installed46cases:12false successes preserved as failures; no live promotion or cryptographic validity claimed. Signing probe implementation 4ad9813cde1cc7c226b0bb3f93b8ef5bce0b4ac6.",
+      "note": "Metadata is recorded separately after immutable integrated implementation commits. No release-complete claim."
     }
   ]
 }
