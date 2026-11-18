@@ -66,7 +66,7 @@
       "group": "upstream",
       "requirement": "Check normal public binary does not invoke a legacy script parser",
       "minimum_test_level": "integration",
-      "expected": "New source path is singular; legacy reference importer is build-time/migration-only",
+      "expected": "Default and explicit V2 source paths use the V2 frontend without automatic Legacy fallback; explicit Legacy selection remains supported; invalid or conflicting modes fail closed",
       "negative_case": false,
       "status": "PLANNED_NOT_EXECUTED"
     },

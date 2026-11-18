@@ -221,6 +221,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = append([]string{}, skillProductionPaths[row.ID]...)
 			row.PositiveAndNegative = res.Passed
 		}
+		if tests, ok := upstreamRouteProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = append([]string{}, upstreamRouteProductionPaths...)
+			row.PositiveAndNegative = res.Passed
+		}
 		if tests, ok := cliProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = []string{"main.go", "args.go", "language_cli_adapter.go", "p15_cli_acceptance_test.go"}

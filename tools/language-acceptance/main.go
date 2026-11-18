@@ -29,7 +29,7 @@ import (
 )
 
 const (
-	ExpectedContractSHA256   = "3c427d654759f2b09f61f288778dba3a7c53e195e04af9b03677d9c9ba8a5a0a"
+	ExpectedContractSHA256   = "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e"
 	ExpectedAcceptanceSHA256 = "3c427d654759f2b09f61f288778dba3a7c53e195e04af9b03677d9c9ba8a5a0a"
 	ExpectedRepairSHA256     = "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
 	ExpectedGatesSHA256      = "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
@@ -1441,18 +1441,8 @@ func (r *Runner) runUpstream() {
 	// U03: Exercise the actual upstream edit/regenerate/restore rehearsal.
 	r.runSchemaPropagationRequirement()
 
-	// U04: Check normal public binary does not invoke legacy script parser
-	fU04 := source.NewFile("u04", "u04.cherri", 1, "const x = 1\n@y = 2\n#include 'foo'")
-	pU04 := syntax.NewParser(fU04)
-	pU04.ParseProgram()
-	errsU04 := pU04.Errors()
-	u04Passed := len(errsU04) >= 3
-	for _, e := range errsU04 {
-		if !strings.Contains(e.Message, "E_LEGACY_SYNTAX") {
-			u04Passed = false
-		}
-	}
-	r.Record("U04", "upstream", "Check normal public binary does not invoke a legacy script parser", "integration", []string{"integration"}, u04Passed, "PASSED", fmt.Sprintf("Parser reliably emits E_LEGACY_SYNTAX for %d legacy tokens outside strings", len(errsU04)))
+	// U04 follows the explicit P10R15 default-V2 / opt-in-Legacy contract.
+	r.runPublicParserRouteRequirement()
 }
 
 // Group 4: Binding

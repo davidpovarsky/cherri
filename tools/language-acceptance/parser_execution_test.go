@@ -103,8 +103,8 @@ func TestParserAcceptanceProductionEvidence(t *testing.T) {
 		} else if row.Status == "PASS" {
 			t.Fatalf("unexecuted obligation inherited parser success: %+v", row)
 		}
-		if row.ID == "U04" && (row.Status != "UNVERIFIED" || !strings.Contains(row.Blocker, "D005")) {
-			t.Fatalf("ambiguous historical U04 contract was silently closed: %+v", row)
+		if row.ID == "U04" && (row.Status != "UNVERIFIED" || row.PositiveAndNegative || len(row.Evidence) != 0) {
+			t.Fatalf("unexecuted public CLI route inherited parser-only success: %+v", row)
 		}
 	}
 

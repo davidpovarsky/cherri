@@ -20,7 +20,6 @@ type LocalSmokeObservation struct {
 var incompleteLocalAssertions = map[string]string{
 	"B01":  "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
 	"U01":  "Declaration/document existence does not establish preservation against the upstream baseline.",
-	"U04":  "Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision.",
 	"V01":  "Action count does not prove snapshot timing or original producer identity.",
 	"V03":  "Nonempty lowering does not prove that the clipboard is captured exactly once.",
 	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
