@@ -1076,20 +1076,70 @@ func TestP10_SSoTNegativeDriftDetection(t *testing.T) {
 
 	t.Run("10_Pure_Pack_Generator_Drift_Against_Modified_Cherri_Source", func(t *testing.T) {
 		defer restoreWorkspace()
-		mut := string(origBasic) + "\naction 'drift.pack' driftPackAction(text x: 'WFX')\n"
-		_ = os.WriteFile(basicPath, []byte(mut), 0644)
-
 		repoRoot, err := os.Getwd()
 		if err != nil {
 			t.Fatal(err)
 		}
 		packScript := filepath.Join(repoRoot, "tools", "p10r3", "verify_or_generate_pack.py")
-		cmd := exec.Command("python", packScript, "--verify-generated", "--p10-root", ws)
+		runPack := func(arguments ...string) []byte {
+			t.Helper()
+			cmd := exec.Command("python", append([]string{packScript}, arguments...)...)
+			cmd.Dir = repoRoot
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("Pack command %v failed: %v\n%s", arguments, err, out)
+			}
+			return out
+		}
+		// --verify-generated reproduces the published Pack from its own pinned
+		// definition SHA. Prospective --generate consumes the supplied worktree.
+		// Exercise both contracts, including a real byte-drift rejection.
+		runPack("--verify-generated", "--p10-root", ws)
+		before := filepath.Join(t.TempDir(), "before")
+		after := filepath.Join(t.TempDir(), "after")
+		restored := filepath.Join(t.TempDir(), "restored")
+		runPack("--generate", "--out-dir", before, "--p10-root", ws)
+		mut := string(origBasic) + "\naction 'drift.pack' driftPackAction(text x: 'WFX')\n"
+		if err := os.WriteFile(basicPath, []byte(mut), 0644); err != nil {
+			t.Fatal(err)
+		}
+		runPack("--verify-generated", "--p10-root", ws)
+		runPack("--generate", "--out-dir", after, "--p10-root", ws)
+		restoreWorkspace()
+		runPack("--generate", "--out-dir", restored, "--p10-root", ws)
+
+		// Read actual generated artifacts and call the existing immutable
+		// verifier's fault hook. No parallel generator or weakening of hashes.
+		program := `import hashlib, importlib.util, json, pathlib, sys
+script, workspace, before, after, restored = map(pathlib.Path, sys.argv[1:])
+def snapshot(root):
+    return {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in (root / "modules").glob("*.cherri")}
+first, changed, final = snapshot(before), snapshot(after), snapshot(restored)
+assert first == final, "restored declarations did not restore prospective module bytes"
+assert set(first) == set(changed), "synthetic action unexpectedly changed module membership"
+assert first["basic.cherri"] != changed["basic.cherri"], "prospective generator ignored changed basic.cherri"
+assert {k for k in first if first[k] != changed[k]} == {"basic.cherri"}, "unrelated prospective modules changed"
+original = (before / "modules/basic.cherri").read_text(encoding="utf-8")
+modified = (after / "modules/basic.cherri").read_text(encoding="utf-8")
+assert "driftPackAction" not in original and "driftPackAction" in modified and "'drift.pack'" in modified
+for root in (before, after, restored):
+    manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["definition_source_scope"] == "CURRENT_WORKTREE" and manifest["definition_source_sha"] is None
+spec = importlib.util.spec_from_file_location("pack", script)
+pack = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(pack)
+errors = pack.verify_generated_pack(p10_root=workspace, mutated_modules={"basic.cherri": "// synthetic corrupt module\\n"})
+assert errors and any("Generated Pack module drift in basic.cherri:" in e for e in errors), errors
+assert not pack.verify_generated_pack(p10_root=workspace), "restored immutable control failed"
+print("IMMUTABLE_PIN_STABLE; PROSPECTIVE_ACTION_PROPAGATED; MODULE_BYTE_DRIFT_REJECTED; RESTORED_BYTES_MATCH")
+`
+		cmd := exec.Command("python", "-c", program, packScript, ws, before, after, restored)
 		cmd.Dir = repoRoot
 		out, err := cmd.CombinedOutput()
-		if err == nil {
-			t.Fatalf("10_Pure_Pack_Generator_Drift: expected verify_or_generate_pack.py --verify-generated to fail closed on drifted basic.cherri, but it passed:\n%s", string(out))
+		if err != nil {
+			t.Fatalf("Pack provenance/causal controls: %v\n%s", err, out)
 		}
+		t.Log(strings.TrimSpace(string(out)))
 	})
 }
-

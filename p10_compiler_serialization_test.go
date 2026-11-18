@@ -450,7 +450,29 @@ statistic("` + op + `", input: nums)
 
 			recompiledPlist := r.compileSource("ser_stat_v2_recomp_"+opClean, decomp)
 			recompiledDoc := loadRoundTripDocument(t, recompiledPlist)
-			assertActionsStructurallyEqual(t, doc, recompiledDoc)
+			// The repaired numeric List has one typed Number producer per row.
+			// Semantic import gives duplicate UI names distinct source identifiers;
+			// compare its actual producer/value/consumer graph, not those UI labels.
+			p15CheckStatisticDocument(t, doc, op)
+			p15CheckStatisticDocument(t, recompiledDoc, op)
+
+			// Exact metadata preservation belongs to the existing hybrid importer.
+			// Keep strict structural equality, including CustomOutputName and all
+			// attachment names/UUID relationships, through that public CLI route.
+			hybridPath := filepath.Join(r.dir, "ser_stat_v2_hybrid_"+opClean+".cherri")
+			r.runCherri("statistic hybrid import", "--import="+plistPath,
+				"--mode=v2", "--fidelity=hybrid", "-o="+hybridPath, "--no-ansi")
+			hybrid, readErr := os.ReadFile(hybridPath)
+			if readErr != nil {
+				t.Fatal(readErr)
+			}
+			if !strings.Contains(string(hybrid), "statistic(") {
+				t.Fatalf("hybrid import lost natural statistic call: %s", hybrid)
+			}
+			hybridRecompiled := r.compileSource("ser_stat_v2_hybrid_recomp_"+opClean, string(hybrid))
+			hybridDoc := loadRoundTripDocument(t, hybridRecompiled)
+			p15CheckStatisticDocument(t, hybridDoc, op)
+			assertActionsStructurallyEqual(t, doc, hybridDoc)
 		})
 
 		t.Run("legacy-"+opClean, func(t *testing.T) {
