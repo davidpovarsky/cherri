@@ -23,6 +23,16 @@ FIXTURES = (
     "qa-http-json-fetch-v2", "qa-number-comparison-diag-v2",
 )
 MANIFEST = "docs/apple-runtime/p10r15/native-continuation-probe-manifest.json"
+# Reviewed synthetic selectors use their immutable orchestration contract.
+# They never derive the expected result from the downloaded artifact.
+REVIEWED_SELECTORS = {
+    "qa-collect-empty-split-v2": "qa-collect-empty-split",
+    "qa-collect-counts-v2": "qa-collect-counts-v2",
+    "qa-nil-clear-v2": "qa-nil-clear",
+    "qa-file-name-binding-v2": "qa-file-name-binding",
+    "qa-number-coercion-control-v2": "qa-number-coercion-control",
+}
+FIXTURES += tuple(REVIEWED_SELECTORS)
 SHELL = "scripts/ios27_shortcuts_simulator_qa.sh"
 STORAGE = "tools/shortcuts-simulator-qa/storage_cross_run.py"
 PUBLISHER = "tools/shortcuts-simulator-qa/prepare_public_artifacts.py"
@@ -41,6 +51,41 @@ def constant(source, name):
                and any(isinstance(t, ast.Name) and t.id == name for t in n.targets)]
     require(len(matches) == 1, "exact source constant unavailable: " + name)
     return ast.literal_eval(matches[0])
+
+
+
+def reviewed_case(commit, fid):
+    """Resolve one source-bound contract; do not execute shell or trust runtime input."""
+    require(fid in FIXTURES, "unreviewed fixture")
+    if fid not in REVIEWED_SELECTORS:
+        cases = [c for c in json.loads(source_bytes(commit, MANIFEST))["cases"] if c["id"] == fid]
+        require(len(cases) == 1, "ambiguous source fixture")
+        return cases[0]
+    shell = source_bytes(commit, SHELL).decode("utf-8")
+    selector = REVIEWED_SELECTORS[fid]
+    blocks = re.findall(r"(?ms)^  " + re.escape(selector) + r"\)\n(.*?)^    ;;[ \t]*$", shell)
+    require(len(blocks) == 1, "reviewed selector missing or ambiguous")
+    def assignment(name):
+        values = re.findall(r'^    ' + re.escape(name) + r'="([^"\r\n]*)"$', blocks[0], re.M)
+        require(len(values) == 1, "source selector assignment missing or ambiguous: " + name)
+        return values[0]
+    require(assignment("TARGET_FIXTURE_ID") == fid, "source selector fixture mismatch")
+    require(assignment("EXPECTED_SHORTCUT_NAME") in (fid, "$TARGET_FIXTURE_ID"),
+            "source selector shortcut identity mismatch")
+    expected = assignment("EXPECTED_SEMANTIC_OUTPUT")
+    require(expected.startswith("CHERRI_QA_") and not any(c in expected for c in ("$", chr(96), "\\", "\n")),
+            "expected result must be an immutable source literal")
+    marker = 'python3 - "$ROOT_DIR" "$ARTIFACT_DIR" "$SOURCE_SHA"'
+    require(shell.count(marker) == 1, "fixture compilation entry point ambiguous")
+    start = shell.index("<<'PY'\n", shell.index(marker)) + len("<<'PY'\n")
+    program = shell[start:shell.index("\nPY\n", start)]
+    specs = constant(program, "fixture_specs")
+    matching = [row for row in specs if row[0] == fid]
+    filename = fid + ".cherri"
+    require(matching == [(fid, filename, "v2")], "source fixture compilation identity mismatch")
+    path = "tools/shortcuts-simulator-qa/fixtures/" + filename
+    return {"id": fid, "path": path, "sourceSha256": digest(source_bytes(commit, path)),
+            "expectedSummary": expected, "contractSource": SHELL}
 
 
 def oracle_program(shell):
@@ -111,8 +156,11 @@ def observation(events, nonce, fid):
 
 
 def numeric_flags(summary):
-    prefix = "CHERRI_QA_NUMBER_COMPARISON_RESULT:"
-    if not isinstance(summary, str) or not summary.startswith(prefix):
+    if not isinstance(summary, str):
+        return None
+    prefix = next((p for p in ("CHERRI_QA_NUMBER_COMPARISON_RESULT:",
+                               "CHERRI_QA_NUMBER_COERCION_RESULT:") if summary.startswith(p)), None)
+    if prefix is None:
         return None
     values = summary[len(prefix):].split(":")
     if len(values) != len(FIELDS):
@@ -247,10 +295,10 @@ def audit(artifact, commit, run_id, fid, metadata):
             "run or synthetic privacy contract missing")
     require(summary.get("targetFixtureId") == assertions.get("targetFixtureId") == fid,
             "fixture identity disagreement")
-    cases = [c for c in json.loads(source_bytes(commit, MANIFEST))["cases"] if c["id"] == fid]
+    case = reviewed_case(commit, fid)
     entries = [f for f in compiler["fixtures"] if f.get("fixtureId") == fid]
-    require(len(cases) == len(entries) == 1, "ambiguous source fixture")
-    case, source = cases[0], entries[0]
+    require(len(entries) == 1, "ambiguous source fixture")
+    source = entries[0]
     target = signing.get("targetProvenance", {})
     source_sha = digest(source_bytes(commit, case["path"]))
     require(source_sha == case["sourceSha256"] == source.get("sourceSha256")
@@ -324,7 +372,7 @@ def audit(artifact, commit, run_id, fid, metadata):
     }
     if storage:
         report["storage"] = storage_report
-    if fid == FIXTURES[3]:
+    if fid in (FIXTURES[3], "qa-number-coercion-control-v2"):
         report["observedNumericFlags"] = numeric_flags(observed["resultSummary"])
         report["expectedNumericFlags"] = numeric_flags(case["expectedSummary"])
     if fid in FIXTURES[1:3]:

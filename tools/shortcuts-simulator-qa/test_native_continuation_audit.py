@@ -181,6 +181,62 @@ class NativeContinuationAuditTests(unittest.TestCase):
                      expected.replace("DNE=N", "DNE=X"), expected.replace("DEQ=Y:DNE=N", "DNE=N:DEQ=Y")):
             self.assertIsNone(audit.numeric_flags(text))
 
+
+    def test_reviewed_selector_contracts_bind_exact_source_and_expected_literals(self):
+        expected = {
+            "qa-collect-empty-split-v2": "CHERRI_QA_COLLECT_EMPTY_SPLIT:direct=0:repeat=0:cleared=0:emptyText=1",
+            "qa-collect-counts-v2": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99",
+            "qa-nil-clear-v2": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
+            "qa-file-name-binding-v2": "CHERRI_QA_FILE_NAME_BINDING:L=ok:V=ok:I=ok:LT=ok:VT=ok:IT=ok",
+            "qa-number-coercion-control-v2": "CHERRI_QA_NUMBER_COERCION_RESULT:DEQ=Y:DNE=N:REQ=Y:RNE=N:BEQ=Y:BNE=N:ONE_NE_ZERO=Y:ZERO_NE_ONE=Y:ONE_EQ_ONE=Y",
+        }
+        for fid, output in expected.items():
+            with self.subTest(fid=fid):
+                case = audit.reviewed_case(COMMIT, fid)
+                self.assertEqual(case["expectedSummary"], output)
+                self.assertEqual(case["sourceSha256"], audit.digest(audit.source_bytes(COMMIT, case["path"])))
+        with self.assertRaisesRegex(ValueError, "unreviewed"):
+            audit.reviewed_case(COMMIT, "private-unreviewed-fixture")
+
+    def test_source_selector_identity_and_literal_faults_are_rejected(self):
+        fid = "qa-number-coercion-control-v2"
+        original = audit.source_bytes
+        shell = original(COMMIT, audit.SHELL).decode("utf-8")
+        label = "  qa-number-coercion-control)\n"
+        block = shell[shell.index(label):shell.index("    ;;", shell.index(label)) + len("    ;;")]
+        changes = {
+            "duplicate_selector": shell.replace(block, block + "\n" + block),
+            "wrong_fixture": shell.replace('TARGET_FIXTURE_ID="' + fid + '"', 'TARGET_FIXTURE_ID="qa-other"'),
+            "wrong_shortcut": shell.replace('EXPECTED_SHORTCUT_NAME="' + fid + '"', 'EXPECTED_SHORTCUT_NAME="qa-other"'),
+            "dynamic_expected": shell.replace("CHERRI_QA_NUMBER_COERCION_RESULT:DEQ=Y", "CHERRI_QA_NUMBER_COERCION_RESULT:$UNTRUSTED"),
+            "wrong_compile_file": shell.replace('"' + fid + '.cherri"', '"qa-other.cherri"'),
+        }
+        for name, changed in changes.items():
+            with self.subTest(name=name):
+                def read(commit, path):
+                    return changed.encode("utf-8") if path == audit.SHELL else original(commit, path)
+                with patch.object(audit, "source_bytes", side_effect=read):
+                    with self.assertRaises(ValueError):
+                        audit.reviewed_case(COMMIT, fid)
+
+    def test_new_numeric_selector_uses_unchanged_strict_oracle(self):
+        # Pure synthetic protocol metadata, deliberately not an Apple receipt.
+        fid = "qa-number-coercion-control-v2"
+        with patch(__name__ + ".FID", fid):
+            self.case = audit.reviewed_case(COMMIT, fid)
+            self.setUp()
+            self.publish_control()
+            report = self.run_audit()
+            self.assertTrue(report["runtimeContractVerified"])
+            self.assertEqual(report["expectedNumericFlags"]["RNE"], "N")
+            self.event["resultSummary"] = self.case["expectedSummary"].replace("RNE=N", "RNE=Y")
+            self.summary["runtimeContractVerified"] = self.assertions["runtimeContractVerified"] = False
+            self.publish_control()
+            report = self.run_audit()
+            self.assertEqual(report["status"], "FAIL_RUNTIME_PRESERVED")
+            self.assertEqual(report["observedNumericFlags"]["RNE"], "Y")
+
+
     def test_http_type_requires_exactly_one_executed_literal_branch(self):
         def records(labels):
             return b"\n".join(json.dumps({"kind": "INLINE_DEBUG_ACTION", "label": label}).encode() for label in labels)
