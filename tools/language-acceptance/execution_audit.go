@@ -26,6 +26,12 @@ var f01RequiredTests = []string{
 var r06ProductionTests = []string{"TestP15R06ProductionImportFormats", "TestHYB18_SignedShortcutContainerRejected", "TestHYB20_TrailingGarbageAfterJSONRootRejected", "TestHYB21_MalformedActionEntriesRejectedWithExactIndex"}
 var r07ProductionTests = []string{"TestSEM28_UserEditOnNaturalActionIsolated", "TestSEM29_UserEditInsideControlRegionIsolated", "TestSEM30_OnlyTargetActionChangesAndNoCollateralDelta", "TestSEM34_TamperDetectionAndStrictCompareAsymmetry"}
 
+var cliProductionTests = map[string][]string{
+	"CL01": {"TestP15CLIJSONCommandsAndExitStatus"},
+	"CL02": {"TestP15CLIAnalysisHasNoExternalEffects"},
+	"CL03": {"TestP15CLIDefaultRejectsLegacyWithGuidance"},
+}
+
 // Execute named production tests with explicit discovery checks. Exit status
 // alone cannot prove that any required scenario was selected.
 func executeNamedProductionTests(required []string) (bool, string) {
@@ -141,6 +147,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.Blocker = gap
 			row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
 			row.Scope = "Observed smoke only; no formal acceptance tier proven"
+		}
+		if tests, ok := cliProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = []string{"main.go", "args.go", "language_cli_adapter.go", "p15_cli_acceptance_test.go"}
+			row.PositiveAndNegative = res.Passed
 		}
 		if row.ID == "U03" {
 			row.TestNames = []string{"TestUpstreamPropagationRehearsal"}

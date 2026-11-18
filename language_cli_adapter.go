@@ -392,7 +392,7 @@ func HandleLanguageV2CLI() bool {
 			}
 		}
 
-		isJSON := args.Using("json") || strings.Contains(strings.Join(os.Args, " "), "--json")
+		isJSON := args.Using("json")
 		if isJSON {
 			var wireDiags []protocol.DiagnosticItem
 			for _, d := range diags {

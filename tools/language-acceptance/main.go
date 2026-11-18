@@ -22,7 +22,6 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/lower"
 	"github.com/electrikmilk/cherri/internal/language/migrate"
-	"github.com/electrikmilk/cherri/internal/language/protocol"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/service"
 	"github.com/electrikmilk/cherri/internal/language/source"
@@ -2093,22 +2092,17 @@ func (r *Runner) runEditor() {
 
 // Group 17: CLI
 func (r *Runner) runCLI() {
-	// CL01: JSON commands
-	caps := protocol.BuildCapabilities(r.reg)
-	cl01Passed := caps.LanguageVersion == "2.0" && caps.ActionCount == 505
-	r.Record("CL01", "cli", "JSON commands emit parseable response and reliable exit status", "integration", []string{"integration"}, cl01Passed, "PASSED", "cherri --capabilities-json emits valid JSON capabilities")
-
-	// CL02: Analysis never signs
-	beforeStat, _ := os.ReadDir(".")
-	_ = analyzeSrc(r.reg, "show(\"no sign\")")
-	afterStat, _ := os.ReadDir(".")
-	cl02Passed := len(beforeStat) == len(afterStat)
-	r.Record("CL02", "cli", "Analysis never emits/signs/executes/installs", "security+integration", []string{"security", "integration"}, cl02Passed, "PASSED", "cherri check analyzes pure AST/types without invoking sign or write")
-
-	// CL03: Rejects legacy syntax
-	migrated := migrate.MigrateSource("@foo = 1\n#include 'actions/web'")
-	cl03Passed := !strings.Contains(migrated, "@") && !strings.Contains(migrated, "#include")
-	r.Record("CL03", "cli", "Normal production path rejects legacy public syntax", "integration", []string{"integration"}, cl03Passed, "PASSED", "Legacy syntax rejected with E_LEGACY_SYNTAX; migrate tool converts to v2")
+	for _, scenario := range []struct {
+		id, requirement, level string
+		levels                 []string
+	}{
+		{"CL01", "JSON commands emit parseable response and reliable exit status", "integration", []string{"integration"}},
+		{"CL02", "Analysis never emits/signs/executes/installs", "security+integration", []string{"security", "integration"}},
+		{"CL03", "Normal production path rejects legacy public syntax", "integration", []string{"integration"}},
+	} {
+		passed, detail := executeNamedProductionTests(cliProductionTests[scenario.id])
+		r.Record(scenario.id, "cli", scenario.requirement, scenario.level, scenario.levels, passed, "PASSED", detail)
+	}
 }
 
 // Group 18: Docs
