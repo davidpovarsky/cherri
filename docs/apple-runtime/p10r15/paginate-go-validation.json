@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_SOURCE_TESTS_ONLY",
+  "sourceCommit": "f5d88ad8c398beee1a6dc26894673c538288b9ad",
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^TestP15Paginate",
+    "."
+  ],
+  "exitCode": 0,
+  "topLevelTests": 4,
+  "testPassEvents": 8,
+  "failedEvents": 0,
+  "skippedEvents": 0,
+  "elapsedSeconds": 0.257,
+  "logSha256": "0bf4f68b1feba11c596e9c9a448a3a6cb7ebe7bdb4d4d6907f5f52e9643f03db",
+  "passedTests": [
+    "TestP15PaginateNativeMetadataAndPublicBoundary",
+    "TestP15PaginateBothFrontendsProfilesAndTypedOutput/legacy=false/debug",
+    "TestP15PaginateBothFrontendsProfilesAndTypedOutput/legacy=false/release",
+    "TestP15PaginateBothFrontendsProfilesAndTypedOutput/legacy=true/debug",
+    "TestP15PaginateBothFrontendsProfilesAndTypedOutput/legacy=true/release",
+    "TestP15PaginateBothFrontendsProfilesAndTypedOutput",
+    "TestP15PaginateZeroBudgetsEmitNoRequest",
+    "TestP15PaginateAnalysisAndCompileRejectUnsupportedContracts"
+  ],
+  "nativeExecuted": 0,
+  "independentReadOnlyReview": {
+    "reviewer": "core_acceptance",
+    "scope": [
+      "paginate_macro.go",
+      "internal/language/schema/paginate.go",
+      "internal/language/analysis/paginate.go"
+    ],
+    "result": "No concrete producer-order/control-group defect found; native cardinality/conversion/redirect behavior remains open",
+    "executedAdditionalTests": false
+  }
+}

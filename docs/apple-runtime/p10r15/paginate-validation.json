@@ -1,0 +1,2380 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_SOURCE_AND_MODEL_ONLY",
+  "featureStatus": "PARTIAL_SOURCE_IMPLEMENTED_PENDING_NATIVE",
+  "nativeRuntimeStatus": "NOT_EXECUTED",
+  "sourceCommit": "f5d88ad8c398beee1a6dc26894673c538288b9ad",
+  "worktreeDirtyBeforeEvidence": false,
+  "sourceFingerprint": "783d98f03f128c23f71a679acff132d9d3122c2e8c613a548f23c8ff21455af8",
+  "compilerSha256": "67af436c4ad4b4bf149e7265fbcbe3c64f52d77e32c9d78ffb98c2b338bb1aa5",
+  "schemaFingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+  "macroDescriptor": {
+    "id": "paginate",
+    "callableName": "paginate",
+    "module": "web",
+    "appleIdentifier": "is.workflow.actions.getvariable",
+    "primaryParameterId": "startURL",
+    "parameters": [
+      {
+        "id": "startURL",
+        "label": "startURL",
+        "displayName": "Initial HTTP(S) URL",
+        "type": "Text",
+        "rawType": "rawstring",
+        "optional": false,
+        "literal": true,
+        "acceptedForms": [
+          "literal"
+        ],
+        "omissionPolicy": "omit",
+        "wireKey": "WFPaginateStartURL",
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "itemsKey",
+        "label": "itemsKey",
+        "displayName": "Dictionary items key",
+        "type": "Text",
+        "rawType": "rawstring",
+        "optional": true,
+        "literal": true,
+        "acceptedForms": [
+          "literal"
+        ],
+        "default": "items",
+        "omissionPolicy": "omit",
+        "wireKey": "WFPaginateItemsKey",
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "nextKey",
+        "label": "nextKey",
+        "displayName": "Next URL or sibling filename key",
+        "type": "Text",
+        "rawType": "rawstring",
+        "optional": true,
+        "literal": true,
+        "acceptedForms": [
+          "literal"
+        ],
+        "default": "next",
+        "omissionPolicy": "omit",
+        "wireKey": "WFPaginateNextKey",
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "maxPages",
+        "label": "maxPages",
+        "displayName": "Maximum native GET invocations (0..100)",
+        "type": "Number",
+        "rawType": "number",
+        "optional": true,
+        "literal": true,
+        "acceptedForms": [
+          "literal"
+        ],
+        "default": "20",
+        "omissionPolicy": "omit",
+        "wireKey": "WFPaginateMaxPages",
+        "evidenceStatus": "inferred"
+      },
+      {
+        "id": "maxItems",
+        "label": "maxItems",
+        "displayName": "Maximum returned Dictionary items (0..10000)",
+        "type": "Number",
+        "rawType": "number",
+        "optional": true,
+        "literal": true,
+        "acceptedForms": [
+          "literal"
+        ],
+        "default": "1000",
+        "omissionPolicy": "omit",
+        "wireKey": "WFPaginateMaxItems",
+        "evidenceStatus": "inferred"
+      }
+    ],
+    "outputType": "List<Map<Text, AnyContent>>",
+    "rawOutputType": "array",
+    "docs": {
+      "title": "Paginate Bounded Dictionary Pages",
+      "description": "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. No headers, Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
+      "category": "web",
+      "insertionSnippet": "paginate(\"https://example.invalid/pages/one.json\")"
+    },
+    "builtin": true,
+    "compilerConstruct": true,
+    "evidenceStatus": "inferred"
+  },
+  "nativeMetadata": {
+    "path": "docs/apple-runtime/macos-27/builtin-actions.json",
+    "sha256": "8fb303591888bcb01fe5935b1571d590add428c9bd044f0ab52dcdf99490571a",
+    "platform": "macOS 27 metadata; does not establish iPad runtime"
+  },
+  "scope": [
+    "literal bounded GET body-next traversal",
+    "typed original Dictionary item references in order",
+    "maxPages native GET invocations; zero budgets emit no GET",
+    "maxItems bounded returned prefix",
+    "exact resolved URL spelling SHA256 cycle prevention",
+    "fixed diagnostics omit URLs/body/header data",
+    "same-origin absolute next URL or simple sibling filename; no network auth/header API"
+  ],
+  "unsupported": [
+    "HTTP status success verification",
+    "Link headers/page/offset/cursor expression/trailing block API",
+    "retry/backoff/catch/cancellation/error classification",
+    "transport timeout/redirect cap",
+    "strict external JSON array-vs-scalar validation",
+    "unbounded/general authenticated pagination"
+  ],
+  "nativeAssumptionsStillRequiringSignedRuntime": [
+    "Content Graph Count Items, empty/null and singleton collection behavior",
+    "Get Contents of URL to Dictionary conversion, real HTTP non-2xx/transport errors and cancellation",
+    "runtime Get Type witnesses, native Text hashing UTF-8 and key lookup semantics",
+    "Repeat magic variable scoping and native Dictionary identity/nested types across Append",
+    "native GET may follow redirects; maxPages does not limit redirect hops or wall-clock duration",
+    "404 with a valid page body passes the body-only model; this is an exposed limitation, not HTTP success",
+    "Alert plus Stop is a semantic stop, not a catchable exception or proven ERROR callback"
+  ],
+  "summary": {
+    "cliCompiles": 32,
+    "exactNativeActionRoundtrips": 32,
+    "independentModelCases": 144,
+    "cliNegatives": 44,
+    "causalFaults": 7,
+    "nativeExecuted": 0,
+    "elapsedSeconds": 11.859
+  },
+  "compiles": [
+    {
+      "id": "v2-debug-base",
+      "status": "PASS",
+      "sourceSha256": "85121814e64f24140e47a8a3b05b07086496b1be08ba99f8146a76aa23a5a9ee",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "three-pages-middle-empty": {
+          "status": "PASS_MODEL",
+          "requests": 3,
+          "httpStatusesObservedByOracle": [
+            200,
+            200,
+            200
+          ],
+          "returnedItems": 3,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 232
+        },
+        "empty": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 59
+        },
+        "single": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        },
+        "empty-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 89
+        },
+        "null-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 83
+        },
+        "null-items-model-boundary": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 59
+        },
+        "scalar-dictionary-model-boundary": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        },
+        "same-origin-absolute": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 149
+        },
+        "cycle": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 195
+        },
+        "case-distinct-paths": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 156
+        },
+        "max-pages": {
+          "status": "PASS_MODEL",
+          "requests": 3,
+          "httpStatusesObservedByOracle": [
+            200,
+            200,
+            200
+          ],
+          "returnedItems": 3,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 267
+        },
+        "max-items": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 6,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 201
+        },
+        "full-no-extra-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 6,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 122
+        },
+        "missing-items": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 45
+        },
+        "case-wrong-selector": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "non-dictionary-page": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_PAGE_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 32
+        },
+        "non-dictionary-item": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEM_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 63
+        },
+        "partial-page-rejected": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEM_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 72
+        },
+        "nontext-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_TEXT_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 83
+        },
+        "multiple-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_TEXT_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 81
+        },
+        "cross-origin-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 93
+        },
+        "sibling-escape": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 94
+        },
+        "sibling-query": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 95
+        },
+        "whitespace-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_INVALID",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 86
+        },
+        "absolute-fragment": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_INVALID",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 91
+        },
+        "malformed-json": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": true,
+          "modelExecutedActions": 28
+        },
+        "404-error-body": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            404
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "429-error-body-no-retry": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            429
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "404-valid-body-status-unverified": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            404
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        }
+      }
+    },
+    {
+      "id": "v2-debug-page-cap",
+      "status": "PASS",
+      "sourceSha256": "62b22206724d51e542d94b5b58e8e2da3a5a804bf3ae8ba834fbbd8aef27dde4",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "one-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 108
+        }
+      }
+    },
+    {
+      "id": "v2-debug-item-cap",
+      "status": "PASS",
+      "sourceSha256": "0e0a8254226eb4d96790594e968e792ecb8f91215cf54647ae9cdca768bd0a24",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "stop-before-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 86
+        }
+      }
+    },
+    {
+      "id": "v2-debug-zero-pages",
+      "status": "PASS",
+      "sourceSha256": "13299f9423a42da0f44bc4e9405768f3009eed8eb6c3f0b1a9e87653f1b0c000",
+      "actionCount": 3,
+      "getActionNodes": 0,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero-network": {
+          "status": "PASS_MODEL",
+          "requests": 0,
+          "httpStatusesObservedByOracle": [],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 3
+        }
+      }
+    },
+    {
+      "id": "v2-debug-zero-items",
+      "status": "PASS",
+      "sourceSha256": "597794b4ed27aa1f3ff0385d3b37010f178d5ad44ef876564a89b3986adf611b",
+      "actionCount": 3,
+      "getActionNodes": 0,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero-network": {
+          "status": "PASS_MODEL",
+          "requests": 0,
+          "httpStatusesObservedByOracle": [],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 3
+        }
+      }
+    },
+    {
+      "id": "v2-debug-custom",
+      "status": "PASS",
+      "sourceSha256": "08451b2bd58f712070510a33f439a5aba20f2f82a488f1231638a4e678b824b4",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "custom-selectors": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 156
+        }
+      }
+    },
+    {
+      "id": "v2-debug-thousand",
+      "status": "PASS",
+      "sourceSha256": "a9924b45c317a9a95026e8706839e25f79aa7357e15b480d818f308dce08ed26",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "thousand-no-extra-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1000,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 9068
+        }
+      }
+    },
+    {
+      "id": "v2-debug-upper-limits",
+      "status": "PASS",
+      "sourceSha256": "63892d4f64b5e368827f4ff736938e391be2ccd17446ec8414a811ca67dd561c",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "inclusive-limit-boundaries": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 269
+        }
+      }
+    },
+    {
+      "id": "v2-release-base",
+      "status": "PASS",
+      "sourceSha256": "85121814e64f24140e47a8a3b05b07086496b1be08ba99f8146a76aa23a5a9ee",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "three-pages-middle-empty": {
+          "status": "PASS_MODEL",
+          "requests": 3,
+          "httpStatusesObservedByOracle": [
+            200,
+            200,
+            200
+          ],
+          "returnedItems": 3,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 232
+        },
+        "empty": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 59
+        },
+        "single": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        },
+        "empty-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 89
+        },
+        "null-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 83
+        },
+        "null-items-model-boundary": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 59
+        },
+        "scalar-dictionary-model-boundary": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        },
+        "same-origin-absolute": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 149
+        },
+        "cycle": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 195
+        },
+        "case-distinct-paths": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 156
+        },
+        "max-pages": {
+          "status": "PASS_MODEL",
+          "requests": 3,
+          "httpStatusesObservedByOracle": [
+            200,
+            200,
+            200
+          ],
+          "returnedItems": 3,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 267
+        },
+        "max-items": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 6,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 201
+        },
+        "full-no-extra-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 6,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 122
+        },
+        "missing-items": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 45
+        },
+        "case-wrong-selector": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "non-dictionary-page": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_PAGE_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 32
+        },
+        "non-dictionary-item": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEM_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 63
+        },
+        "partial-page-rejected": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEM_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 72
+        },
+        "nontext-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_TEXT_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 83
+        },
+        "multiple-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_TEXT_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 81
+        },
+        "cross-origin-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 93
+        },
+        "sibling-escape": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 94
+        },
+        "sibling-query": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 95
+        },
+        "whitespace-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_INVALID",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 86
+        },
+        "absolute-fragment": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_INVALID",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 91
+        },
+        "malformed-json": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": true,
+          "modelExecutedActions": 28
+        },
+        "404-error-body": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            404
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "429-error-body-no-retry": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            429
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "404-valid-body-status-unverified": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            404
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        }
+      }
+    },
+    {
+      "id": "v2-release-page-cap",
+      "status": "PASS",
+      "sourceSha256": "62b22206724d51e542d94b5b58e8e2da3a5a804bf3ae8ba834fbbd8aef27dde4",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "one-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 108
+        }
+      }
+    },
+    {
+      "id": "v2-release-item-cap",
+      "status": "PASS",
+      "sourceSha256": "0e0a8254226eb4d96790594e968e792ecb8f91215cf54647ae9cdca768bd0a24",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "stop-before-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 86
+        }
+      }
+    },
+    {
+      "id": "v2-release-zero-pages",
+      "status": "PASS",
+      "sourceSha256": "13299f9423a42da0f44bc4e9405768f3009eed8eb6c3f0b1a9e87653f1b0c000",
+      "actionCount": 3,
+      "getActionNodes": 0,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero-network": {
+          "status": "PASS_MODEL",
+          "requests": 0,
+          "httpStatusesObservedByOracle": [],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 3
+        }
+      }
+    },
+    {
+      "id": "v2-release-zero-items",
+      "status": "PASS",
+      "sourceSha256": "597794b4ed27aa1f3ff0385d3b37010f178d5ad44ef876564a89b3986adf611b",
+      "actionCount": 3,
+      "getActionNodes": 0,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero-network": {
+          "status": "PASS_MODEL",
+          "requests": 0,
+          "httpStatusesObservedByOracle": [],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 3
+        }
+      }
+    },
+    {
+      "id": "v2-release-custom",
+      "status": "PASS",
+      "sourceSha256": "08451b2bd58f712070510a33f439a5aba20f2f82a488f1231638a4e678b824b4",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "custom-selectors": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 156
+        }
+      }
+    },
+    {
+      "id": "v2-release-thousand",
+      "status": "PASS",
+      "sourceSha256": "a9924b45c317a9a95026e8706839e25f79aa7357e15b480d818f308dce08ed26",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "thousand-no-extra-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1000,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 9068
+        }
+      }
+    },
+    {
+      "id": "v2-release-upper-limits",
+      "status": "PASS",
+      "sourceSha256": "63892d4f64b5e368827f4ff736938e391be2ccd17446ec8414a811ca67dd561c",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "inclusive-limit-boundaries": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 269
+        }
+      }
+    },
+    {
+      "id": "legacy-debug-base",
+      "status": "PASS",
+      "sourceSha256": "85121814e64f24140e47a8a3b05b07086496b1be08ba99f8146a76aa23a5a9ee",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "three-pages-middle-empty": {
+          "status": "PASS_MODEL",
+          "requests": 3,
+          "httpStatusesObservedByOracle": [
+            200,
+            200,
+            200
+          ],
+          "returnedItems": 3,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 232
+        },
+        "empty": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 59
+        },
+        "single": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        },
+        "empty-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 89
+        },
+        "null-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 83
+        },
+        "null-items-model-boundary": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 59
+        },
+        "scalar-dictionary-model-boundary": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        },
+        "same-origin-absolute": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 149
+        },
+        "cycle": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 195
+        },
+        "case-distinct-paths": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 156
+        },
+        "max-pages": {
+          "status": "PASS_MODEL",
+          "requests": 3,
+          "httpStatusesObservedByOracle": [
+            200,
+            200,
+            200
+          ],
+          "returnedItems": 3,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 267
+        },
+        "max-items": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 6,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 201
+        },
+        "full-no-extra-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 6,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 122
+        },
+        "missing-items": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 45
+        },
+        "case-wrong-selector": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "non-dictionary-page": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_PAGE_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 32
+        },
+        "non-dictionary-item": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEM_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 63
+        },
+        "partial-page-rejected": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEM_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 72
+        },
+        "nontext-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_TEXT_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 83
+        },
+        "multiple-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_TEXT_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 81
+        },
+        "cross-origin-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 93
+        },
+        "sibling-escape": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 94
+        },
+        "sibling-query": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 95
+        },
+        "whitespace-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_INVALID",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 86
+        },
+        "absolute-fragment": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_INVALID",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 91
+        },
+        "malformed-json": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": true,
+          "modelExecutedActions": 28
+        },
+        "404-error-body": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            404
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "429-error-body-no-retry": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            429
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "404-valid-body-status-unverified": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            404
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        }
+      }
+    },
+    {
+      "id": "legacy-debug-page-cap",
+      "status": "PASS",
+      "sourceSha256": "62b22206724d51e542d94b5b58e8e2da3a5a804bf3ae8ba834fbbd8aef27dde4",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "one-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 108
+        }
+      }
+    },
+    {
+      "id": "legacy-debug-item-cap",
+      "status": "PASS",
+      "sourceSha256": "0e0a8254226eb4d96790594e968e792ecb8f91215cf54647ae9cdca768bd0a24",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "stop-before-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 86
+        }
+      }
+    },
+    {
+      "id": "legacy-debug-zero-pages",
+      "status": "PASS",
+      "sourceSha256": "13299f9423a42da0f44bc4e9405768f3009eed8eb6c3f0b1a9e87653f1b0c000",
+      "actionCount": 3,
+      "getActionNodes": 0,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero-network": {
+          "status": "PASS_MODEL",
+          "requests": 0,
+          "httpStatusesObservedByOracle": [],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 3
+        }
+      }
+    },
+    {
+      "id": "legacy-debug-zero-items",
+      "status": "PASS",
+      "sourceSha256": "597794b4ed27aa1f3ff0385d3b37010f178d5ad44ef876564a89b3986adf611b",
+      "actionCount": 3,
+      "getActionNodes": 0,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero-network": {
+          "status": "PASS_MODEL",
+          "requests": 0,
+          "httpStatusesObservedByOracle": [],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 3
+        }
+      }
+    },
+    {
+      "id": "legacy-debug-custom",
+      "status": "PASS",
+      "sourceSha256": "08451b2bd58f712070510a33f439a5aba20f2f82a488f1231638a4e678b824b4",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "custom-selectors": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 156
+        }
+      }
+    },
+    {
+      "id": "legacy-debug-thousand",
+      "status": "PASS",
+      "sourceSha256": "a9924b45c317a9a95026e8706839e25f79aa7357e15b480d818f308dce08ed26",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "thousand-no-extra-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1000,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 9068
+        }
+      }
+    },
+    {
+      "id": "legacy-debug-upper-limits",
+      "status": "PASS",
+      "sourceSha256": "63892d4f64b5e368827f4ff736938e391be2ccd17446ec8414a811ca67dd561c",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "inclusive-limit-boundaries": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 269
+        }
+      }
+    },
+    {
+      "id": "legacy-release-base",
+      "status": "PASS",
+      "sourceSha256": "85121814e64f24140e47a8a3b05b07086496b1be08ba99f8146a76aa23a5a9ee",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "three-pages-middle-empty": {
+          "status": "PASS_MODEL",
+          "requests": 3,
+          "httpStatusesObservedByOracle": [
+            200,
+            200,
+            200
+          ],
+          "returnedItems": 3,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 232
+        },
+        "empty": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 59
+        },
+        "single": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        },
+        "empty-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 89
+        },
+        "null-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 83
+        },
+        "null-items-model-boundary": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 59
+        },
+        "scalar-dictionary-model-boundary": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        },
+        "same-origin-absolute": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 149
+        },
+        "cycle": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 195
+        },
+        "case-distinct-paths": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 156
+        },
+        "max-pages": {
+          "status": "PASS_MODEL",
+          "requests": 3,
+          "httpStatusesObservedByOracle": [
+            200,
+            200,
+            200
+          ],
+          "returnedItems": 3,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 267
+        },
+        "max-items": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 6,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 201
+        },
+        "full-no-extra-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 6,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 122
+        },
+        "missing-items": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 45
+        },
+        "case-wrong-selector": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "non-dictionary-page": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_PAGE_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 32
+        },
+        "non-dictionary-item": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEM_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 63
+        },
+        "partial-page-rejected": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEM_DICTIONARY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 72
+        },
+        "nontext-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_TEXT_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 83
+        },
+        "multiple-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_TEXT_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 81
+        },
+        "cross-origin-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 93
+        },
+        "sibling-escape": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 94
+        },
+        "sibling-query": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_UNSUPPORTED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 95
+        },
+        "whitespace-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_INVALID",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 86
+        },
+        "absolute-fragment": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_NEXT_URL_INVALID",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 91
+        },
+        "malformed-json": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": null,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": true,
+          "modelExecutedActions": 28
+        },
+        "404-error-body": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            404
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "429-error-body-no-retry": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            429
+          ],
+          "returnedItems": null,
+          "fixedGuard": "PAGINATE_ITEMS_KEY_REQUIRED",
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 44
+        },
+        "404-valid-body-status-unverified": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            404
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 75
+        }
+      }
+    },
+    {
+      "id": "legacy-release-page-cap",
+      "status": "PASS",
+      "sourceSha256": "62b22206724d51e542d94b5b58e8e2da3a5a804bf3ae8ba834fbbd8aef27dde4",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "one-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 108
+        }
+      }
+    },
+    {
+      "id": "legacy-release-item-cap",
+      "status": "PASS",
+      "sourceSha256": "0e0a8254226eb4d96790594e968e792ecb8f91215cf54647ae9cdca768bd0a24",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "stop-before-next": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 86
+        }
+      }
+    },
+    {
+      "id": "legacy-release-zero-pages",
+      "status": "PASS",
+      "sourceSha256": "13299f9423a42da0f44bc4e9405768f3009eed8eb6c3f0b1a9e87653f1b0c000",
+      "actionCount": 3,
+      "getActionNodes": 0,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero-network": {
+          "status": "PASS_MODEL",
+          "requests": 0,
+          "httpStatusesObservedByOracle": [],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 3
+        }
+      }
+    },
+    {
+      "id": "legacy-release-zero-items",
+      "status": "PASS",
+      "sourceSha256": "597794b4ed27aa1f3ff0385d3b37010f178d5ad44ef876564a89b3986adf611b",
+      "actionCount": 3,
+      "getActionNodes": 0,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "zero-network": {
+          "status": "PASS_MODEL",
+          "requests": 0,
+          "httpStatusesObservedByOracle": [],
+          "returnedItems": 0,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 3
+        }
+      }
+    },
+    {
+      "id": "legacy-release-custom",
+      "status": "PASS",
+      "sourceSha256": "08451b2bd58f712070510a33f439a5aba20f2f82a488f1231638a4e678b824b4",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "custom-selectors": {
+          "status": "PASS_MODEL",
+          "requests": 2,
+          "httpStatusesObservedByOracle": [
+            200,
+            200
+          ],
+          "returnedItems": 2,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 156
+        }
+      }
+    },
+    {
+      "id": "legacy-release-thousand",
+      "status": "PASS",
+      "sourceSha256": "a9924b45c317a9a95026e8706839e25f79aa7357e15b480d818f308dce08ed26",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "thousand-no-extra-request": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1000,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 9068
+        }
+      }
+    },
+    {
+      "id": "legacy-release-upper-limits",
+      "status": "PASS",
+      "sourceSha256": "63892d4f64b5e368827f4ff736938e391be2ccd17446ec8414a811ca67dd561c",
+      "actionCount": 182,
+      "getActionNodes": 1,
+      "exactNativeActionRoundtrip": true,
+      "models": {
+        "inclusive-limit-boundaries": {
+          "status": "PASS_MODEL",
+          "requests": 1,
+          "httpStatusesObservedByOracle": [
+            200
+          ],
+          "returnedItems": 1,
+          "fixedGuard": null,
+          "syntheticBodyDecodeFailure": false,
+          "modelExecutedActions": 269
+        }
+      }
+    }
+  ],
+  "cliNegatives": [
+    {
+      "id": "negative-False-debug-file-scheme",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-userinfo",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-fragment",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-selector-path",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-same-selectors",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-too-many-pages",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-too-many-items",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-fractional-pages",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-negative-pages",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-dynamic-url",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-debug-dynamic-cap",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-file-scheme",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-userinfo",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-fragment",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-selector-path",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-same-selectors",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-too-many-pages",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-too-many-items",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-fractional-pages",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-negative-pages",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-dynamic-url",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-False-release-dynamic-cap",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-file-scheme",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-userinfo",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-fragment",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-selector-path",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-same-selectors",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-too-many-pages",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-too-many-items",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-fractional-pages",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-negative-pages",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-dynamic-url",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-debug-dynamic-cap",
+      "exitCode": 2,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-file-scheme",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-userinfo",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-fragment",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-selector-path",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-same-selectors",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-too-many-pages",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-too-many-items",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-fractional-pages",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-negative-pages",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-dynamic-url",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    },
+    {
+      "id": "negative-True-release-dynamic-cap",
+      "exitCode": 1,
+      "noArtifact": true,
+      "status": "PASS"
+    }
+  ],
+  "causalFaults": [
+    {
+      "id": "page-budget-drift",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "item-budget-drift",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "cycle-predicate-inverted",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "typed-item-reference-replaced",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "dictionary-type-guard-bypassed",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "unsafe-http-method",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    },
+    {
+      "id": "full-cap-fetches-extra-page",
+      "negativeRejected": true,
+      "restoredControl": "PASS"
+    }
+  ]
+}
