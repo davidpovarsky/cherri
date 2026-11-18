@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_COMMITTED_SOURCE_AND_CLI_ONLY",
+  "sourceCommit": "a0d774a072f6468d8a5a3efd05d962c167769fb0",
+  "workingTreeDirty": false,
+  "compilerBinarySha256": "4a628a97915b9438494b95c64f11f5e3f718b607b66dc239d23ff03efc77454d",
+  "compilerBuildIdentity": {
+    "mode": "CONTROLLED_BUILD_FROM_CLEAN_COMMIT",
+    "vcsMetadata": "ABSENT_GIT_WORKTREE_FILE",
+    "command": [
+      "go",
+      "build",
+      "-buildvcs=true",
+      "-o",
+      "<reviewed ignored binary>",
+      "."
+    ],
+    "goVersion": "go version go1.25.6 windows/amd64"
+  },
+  "sourceCheckoutBinding": {
+    "status": "MATCHES_COMMIT_BYTES",
+    "files": 15,
+    "sha256": {
+      "tools/p10r15/verify_storage_probes.py": "ebf14a9747f02a70c1adf53d1cf77e0f24baf8dc6202c6cea817033af81836e4",
+      "docs/apple-runtime/p10r15/storage-probe-manifest.json": "e1f9ad0c7a18ef971a10d8b6aa88da316d5845ee6769965ee1846572d7037607",
+      "docs/apple-runtime/p10r15/storage-feasibility-probes.md": "f1e5b21f2d5e3c0c83c0690e175e94eeeda148ea0d8a0bcd8fe17be367880282",
+      "actions/storage.cherri": "15dbcdeb85bd8d864b22a63cdc5a677cee4d50656e4a7172b0cf3d194857e76e",
+      "docs/apple-runtime/macos-27/builtin-actions.json": "8fb303591888bcb01fe5935b1571d590add428c9bd044f0ab52dcdf99490571a",
+      "p15_storage_probe_test.go": "82cbdf80f5d642910e8c724226d6e979fdb4c6a6ad6bf447adbe749d2cf1e41b",
+      "tools/shortcuts-simulator-qa/test_storage_probe_contract.py": "3c0d07b1f72b5d6d5f587ceb9de2ea0095acd0482e7b1f7715f1372cecf9a4c2",
+      "tools/shortcuts-simulator-qa/validate_macro_fixtures.py": "9663b13352fca4363d76b05d6a36f0023337c6921355f67511c2964050831284",
+      "scripts/ios27_shortcuts_simulator_qa.sh": "289df7305e10a4043b7cec60f4de6804ca09defcd1a18f248a445863742399e6",
+      ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml": "00fb71ad8475cb6a44c42a7ae4c06f6eba8db1b347255fe105569201ef21d639",
+      ".github/workflows/openminis-skill.yml": "8f946750c56386b22a88096e5c434c32d8a2520528eadc93506c8587503fc048",
+      "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift": "08066d3e38fcc15315d9febab40c461df375b724b048dd55078592ebc417c404",
+      "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-same-run-v2.cherri": "3eeac22205bdef8a26d5af511675719d628a62625a460575db1cd832459e7ece",
+      "tools/shortcuts-simulator-qa/fixtures/qa-storage-scope-v2.cherri": "2d1924591e6e8328f314fafe5d8d684d2d5597bf94300ac7d5cf4e27700b1f2c",
+      "tools/shortcuts-simulator-qa/fixtures/qa-storage-delete-v2.cherri": "4361d16d59d97a81c93da7e8d3d81168f2c10caa25db67229a18bb848edd05fc"
+    }
+  },
+  "goTests": {
+    "passed": [
+      "TestP15StorageNativeMetadataDoesNotProveTypedArchive",
+      "TestP15StorageProbeWireContractsAndCausalMutations",
+      "TestP15StorageTextPrimitivesBothFrontendsProfiles"
+    ],
+    "causalGraphMutations": 18,
+    "primitiveFrontendProfileConfigurations": 4,
+    "logSha256": "ac67840774344707054e77b34eb719b3dd6b9a457283defd31359013a486f661"
+  },
+  "pythonTests": {
+    "modules": [
+      "test_storage_probe_contract",
+      "test_workflow_input_contract",
+      "test_runtime_callback_contract",
+      "test_collect_native_contract",
+      "test_public_artifacts"
+    ],
+    "passed": 47,
+    "seconds": 46.607,
+    "logSha256": "0cfdc02e36848ce9bf4fc171563408ba0466cb932a496a93c0ba559430e23c25"
+  },
+  "actualCLIFixturesCompiled": 38,
+  "storageExactNativeActionRoundtrips": 3,
+  "storageFixtures": [
+    {
+      "fixtureId": "qa-storage-text-same-run-v2",
+      "fileName": "qa-storage-text-same-run-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "3eeac22205bdef8a26d5af511675719d628a62625a460575db1cd832459e7ece",
+      "unsignedPlistSha256": "558ac58638d5ccd8a0e6c443bb1ea2c41c603501160b97f5c46653871e7f5152",
+      "nativeActionCount": 32,
+      "actionIdentifiers": [
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.setstoredcontent",
+        "is.workflow.actions.getstoredcontent",
+        "is.workflow.actions.getitemtype",
+        "is.workflow.actions.getitemtype",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.deletestoredcontent",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.text.combine",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.output"
+      ],
+      "exactNativeActionRoundtrip": true,
+      "expectedSummary": "CHERRI_QA_STORAGE_TEXT_RESULT:TYPE_OK:VALUE_OK"
+    },
+    {
+      "fixtureId": "qa-storage-scope-v2",
+      "fileName": "qa-storage-scope-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "2d1924591e6e8328f314fafe5d8d684d2d5597bf94300ac7d5cf4e27700b1f2c",
+      "unsignedPlistSha256": "1bc659b2bdc7f6d5882241359dcd1117289600d829681330c454c35c90b16063",
+      "nativeActionCount": 49,
+      "actionIdentifiers": [
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.setstoredcontent",
+        "is.workflow.actions.setstoredcontent",
+        "is.workflow.actions.getstoredcontent",
+        "is.workflow.actions.getstoredcontent",
+        "is.workflow.actions.getitemtype",
+        "is.workflow.actions.getitemtype",
+        "is.workflow.actions.getitemtype",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.deletestoredcontent",
+        "is.workflow.actions.deletestoredcontent",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.text.combine",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.output"
+      ],
+      "exactNativeActionRoundtrip": true,
+      "expectedSummary": "CHERRI_QA_STORAGE_SCOPE_RESULT:GLOBAL_TYPE_OK:GLOBAL_VALUE_OK:LOCAL_TYPE_OK:LOCAL_VALUE_OK"
+    },
+    {
+      "fixtureId": "qa-storage-delete-v2",
+      "fileName": "qa-storage-delete-v2.cherri",
+      "dialect": "v2",
+      "buildProfile": "debug",
+      "runtimeTraceExpectation": "REQUIRED_NDJSON",
+      "releaseDiagnosticActionsAbsent": false,
+      "releaseBodyShapeVerified": false,
+      "sourceSha256": "4361d16d59d97a81c93da7e8d3d81168f2c10caa25db67229a18bb848edd05fc",
+      "unsignedPlistSha256": "25f2a198bed7e392e2693b961ea65c992ab6a28edb8974bcb99adcdef0c8dea0",
+      "nativeActionCount": 31,
+      "actionIdentifiers": [
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.setstoredcontent",
+        "is.workflow.actions.getstoredcontent",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.deletestoredcontent",
+        "is.workflow.actions.getstoredcontent",
+        "is.workflow.actions.count",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.appendvariable",
+        "is.workflow.actions.text.combine",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.gettext",
+        "is.workflow.actions.comment",
+        "is.workflow.actions.output"
+      ],
+      "exactNativeActionRoundtrip": true,
+      "expectedSummary": "CHERRI_QA_STORAGE_DELETE_RESULT:BEFORE_OK:NO_VALUE_OK"
+    }
+  ],
+  "phase0ReceiptSha256": "9682aae8fc936d8a2a0230ea8846817abc5c4736bd87c095642344b0a33efe05",
+  "causalCompileMutations": {
+    "ignored-release-profile": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "missing-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "duplicated-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    }
+  },
+  "causalPublicationMutations": {
+    "nested-basename-flattened": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "unreviewed-same-basename": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "nested-path-traversal": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "stale-source-hash": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "source-identity-reassigned": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_ID_MISMATCH"
+    }
+  },
+  "publication": {
+    "publishedTextFiles": 3,
+    "quarantinedRawFiles": 110,
+    "rasterPublicationAllowed": false
+  },
+  "sameRunOnly": true,
+  "cacheImplemented": false,
+  "crossRunPersistence": "NOT_PROVEN",
+  "typedArchive": "NOT_PROVEN",
+  "nativeExecuted": 0,
+  "signing": "NOT_RUN",
+  "nativePrerequisites": [
+    "Same-run exact Text/type and global/local behavior must execute on the target iPad runtime.",
+    "Delete and missing-value behavior is diagnostic; ERROR remains FAIL and no catchability is inferred.",
+    "Cross-run persistence requires the same installed shortcut and simulator/device state across completed runs.",
+    "Typed Dict/List/Date/File archival, TTL, clock drift, corruption and concurrency remain unimplemented/unproven."
+  ],
+  "retainedDevelopmentFailures": [
+    "First Go test build used typed ShortcutAction where the graph oracle required canonical plist maps; fixed by the existing plist marshal/unmarshal codec.",
+    "First Legacy primitive fixture omitted its existing actions/storage include; explicit include restored the intended Legacy contract.",
+    "The first clean-source producer rejected missing compiler VCS metadata. Installed Go1.25.6 recognizes a .git directory, while this checkout uses a .git worktree file; explicit controlled rebuild records clean Git source and binary hash without inventing embedded VCS fields.",
+    "One read/status Sentinel exec was not executed: automatic approval review failed with thread-store metadata recovery deadline; narrower reads and later normally reviewed execution succeeded.",
+    "Producer first referenced a non-existent publication test module; all34 reached tests passed but import failed. Corrected to the existing test_public_artifacts module.",
+    "An aggregate150-second test timeout was retained; bounded transcripts now stream through timeout and the aggregate budget is330seconds.",
+    "One existing qa-export-empty callback negative child exceeded its10-second process timeout:46/47 tests passed. An unchanged clean-source rerun passed all47; this was not reclassified as a native result."
+  ],
+  "elapsedSeconds": 81.86,
+  "retainedFailureLogHashes": {
+    "dist\\storage-probe-validation-run.log": "9fffd82f5499b683235b196cdecfa4fef7090bbaaa777f0320dfc71a5c483352",
+    "dist\\storage-probe-controlled-run.log": "2e37128191f303f89dacc81a0c6823971a2aa94da7834bb6f4e871261c941631",
+    "dist\\storage-probe-controlled-final.log": "10b770b837f3327f48234361d8dfc29723db630926cf336199ba230770b1a48e",
+    "dist\\storage-probe-controlled-retained.log": "7cc803211eb56b5c55b0a7be1ce307316537433620fc647506c7c3897f141703",
+    "artifacts\\p15-storage-probes\\storage-python-tests-timeout-a0d774a.log": "12b4d4886d99989f35c374d14d4a3131d31a604fed34d3f3b9c963816fbe8073"
+  }
+}
