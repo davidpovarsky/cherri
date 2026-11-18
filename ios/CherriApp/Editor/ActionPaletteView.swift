@@ -74,7 +74,7 @@ struct ActionPaletteView: View {
             }
             .navigationTitle("Cherri Actions")
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $query, prompt: "Action name or description")
+            .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Action name or description")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
@@ -88,7 +88,7 @@ struct ActionPaletteView: View {
         guard !trimmed.isEmpty else { return actions }
         let needle = trimmed.lowercased()
 
-        return actions.filter { action in
+        let matches = actions.filter { action in
             action.name.lowercased().contains(needle)
                 || action.title?.lowercased().contains(needle) == true
                 || action.description?.lowercased().contains(needle) == true
@@ -97,6 +97,9 @@ struct ActionPaletteView: View {
                 || action.appIntent?.name.lowercased().contains(needle) == true
                 || action.appIntent?.appIntentIdentifier.lowercased().contains(needle) == true
         }
+        // Exact action names stay first even when many descriptions match.
+        return matches.filter { $0.name.lowercased() == needle }
+            + matches.filter { $0.name.lowercased() != needle }
     }
 
     private func categoryLabel(_ action: CherriActionInfo, category: String) -> String {

@@ -15,6 +15,8 @@ struct CherriEditorView: View {
     @State private var showActionPalette = false
     @State private var pendingPaletteAction: CherriActionInfo?
     @State private var paletteInsertionRange: NSRange?
+    @State private var paletteCompletionContext: CompletionContext?
+    @State private var paletteInsertionSource: String?
     @State private var contextualCompletions: [CherriCompletionItem] = []
     @State private var hoverText: String?
     @State private var signatureText: String?
@@ -141,101 +143,106 @@ struct CherriEditorView: View {
     }
 
     private var completionBar: some View {
-        HStack(spacing: 8) {
-            Button {
-                paletteInsertionRange = editPosition.selections.first
-                pendingPaletteAction = nil
-                showActionPalette = true
-            } label: {
-                Label("Actions", systemImage: "wand.and.stars")
-                    .labelStyle(.titleAndIcon)
-            }
-            .accessibilityIdentifier("actionsButton")
-            .buttonStyle(.borderless)
-            .disabled(actions.isEmpty)
-
-            Divider()
-                .frame(height: 20)
-
-            Button {
-                let (line, col) = effectivePosition()
-                Task {
-                    if let resp = try? await CherriCompiler.hover(source: text, line: line, column: col), let contents = resp.contents {
-                        hoverText = contents
-                    } else {
-                        hoverText = "No hover info at line \(line):\(col)"
+        VStack(alignment: .leading, spacing: 6) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    Button {
+                        paletteInsertionRange = editPosition.selections.first
+                        paletteCompletionContext = completionContext
+                        paletteInsertionSource = text
+                        pendingPaletteAction = nil
+                        showActionPalette = true
+                    } label: {
+                        Label("Actions", systemImage: "wand.and.stars")
+                            .labelStyle(.titleAndIcon)
                     }
-                }
-            } label: {
-                Image(systemName: "info.circle")
-            }
-            .accessibilityIdentifier("hoverButton")
-            .buttonStyle(.borderless)
+                    .accessibilityIdentifier("actionsButton")
+                    .buttonStyle(.borderless)
+                    .disabled(actions.isEmpty)
 
-            Button {
-                let (line, col) = effectiveSignaturePosition()
-                Task {
-                    if let resp = try? await CherriCompiler.signatureHelp(source: text, line: line, column: col), let label = resp.label {
-                        signatureText = label
-                    } else {
-                        signatureText = "No signature at line \(line):\(col)"
+                    Divider()
+                        .frame(height: 20)
+
+                    Button {
+                        let (line, col) = effectivePosition()
+                        Task {
+                            if let resp = try? await CherriCompiler.hover(source: text, line: line, column: col), let contents = resp.contents {
+                                hoverText = contents
+                            } else {
+                                hoverText = "No hover info at line \(line):\(col)"
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "info.circle")
                     }
-                }
-            } label: {
-                Image(systemName: "function")
-            }
-            .accessibilityIdentifier("signatureButton")
-            .buttonStyle(.borderless)
+                    .accessibilityIdentifier("hoverButton")
+                    .buttonStyle(.borderless)
 
-            Button {
-                let (line, col) = effectivePosition()
-                Task {
-                    if let resp = try? await CherriCompiler.definition(source: text, line: line, column: col), let range = resp.range {
-                        definitionText = "Definition at \(range.start.line + 1):\(range.start.character + 1)"
-                    } else {
-                        definitionText = "No definition found"
+                    Button {
+                        let (line, col) = effectiveSignaturePosition()
+                        Task {
+                            if let resp = try? await CherriCompiler.signatureHelp(source: text, line: line, column: col), let label = resp.label {
+                                signatureText = label
+                            } else {
+                                signatureText = "No signature at line \(line):\(col)"
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "function")
                     }
-                }
-            } label: {
-                Image(systemName: "arrow.up.forward.app")
-            }
-            .accessibilityIdentifier("definitionButton")
-            .buttonStyle(.borderless)
+                    .accessibilityIdentifier("signatureButton")
+                    .buttonStyle(.borderless)
 
-            Button {
-                renameTargetPosition = effectivePosition()
-                renameNewName = ""
-                showRenameAlert = true
-            } label: {
-                Image(systemName: "pencil.and.outline")
-            }
-            .accessibilityIdentifier("renameButton")
-            .buttonStyle(.borderless)
-
-            Button {
-                Task {
-                    if let resp = try? await CherriCompiler.editSourceNode(source: text, actionIndex: 0, paramLabel: "text", newExpr: "\"VisualParamUpdated\""), resp.ok, let newSource = resp.source {
-                        text = newSource
+                    Button {
+                        let (line, col) = effectivePosition()
+                        Task {
+                            if let resp = try? await CherriCompiler.definition(source: text, line: line, column: col), let range = resp.range {
+                                definitionText = "Definition at \(range.start.line + 1):\(range.start.character + 1)"
+                            } else {
+                                definitionText = "No definition found"
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.forward.app")
                     }
-                }
-            } label: {
-                Image(systemName: "slider.horizontal.3")
-            }
-            .accessibilityIdentifier("visualEditButton")
-            .buttonStyle(.borderless)
+                    .accessibilityIdentifier("definitionButton")
+                    .buttonStyle(.borderless)
 
-            Button {
-                text = ""
-            } label: {
-                Image(systemName: "trash")
+                    Button {
+                        renameTargetPosition = effectivePosition()
+                        renameNewName = ""
+                        showRenameAlert = true
+                    } label: {
+                        Image(systemName: "pencil.and.outline")
+                    }
+                    .accessibilityIdentifier("renameButton")
+                    .buttonStyle(.borderless)
+
+                    Button {
+                        Task {
+                            if let resp = try? await CherriCompiler.editSourceNode(source: text, actionIndex: 0, paramLabel: "text", newExpr: "\"VisualParamUpdated\""), resp.ok, let newSource = resp.source {
+                                text = newSource
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "slider.horizontal.3")
+                    }
+                    .accessibilityIdentifier("visualEditButton")
+                    .buttonStyle(.borderless)
+
+                    Button {
+                        text = ""
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .accessibilityIdentifier("clearEditorButton")
+                    .buttonStyle(.borderless)
+
+                }
             }
-            .accessibilityIdentifier("clearEditorButton")
-            .buttonStyle(.borderless)
+            .fixedSize(horizontal: false, vertical: true)
 
             if !contextualCompletions.isEmpty {
-                Divider()
-                    .frame(height: 24)
-
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
                         ForEach(contextualCompletions.prefix(8)) { item in
@@ -259,11 +266,9 @@ struct CherriEditorView: View {
                         }
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("contextualCompletionsList")
             } else if !completionSuggestions.isEmpty {
-                Divider()
-                    .frame(height: 24)
-
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
                         ForEach(completionSuggestions) { action in
@@ -287,10 +292,10 @@ struct CherriEditorView: View {
                         }
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("suggestionsList")
             }
 
-            Spacer(minLength: 0)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -345,19 +350,34 @@ struct CherriEditorView: View {
     private func commitPaletteSelection() {
         guard let action = pendingPaletteAction else {
             paletteInsertionRange = nil
+            paletteCompletionContext = nil
+            paletteInsertionSource = nil
             return
         }
 
         let insertionRange = paletteInsertionRange
+        let completion = paletteCompletionContext
+        let capturedSource = paletteInsertionSource
         pendingPaletteAction = nil
         paletteInsertionRange = nil
+        paletteCompletionContext = nil
+        paletteInsertionSource = nil
 
         // Wait until the sheet has fully left the hierarchy before changing the
         // CodeEditor binding. This avoids updating its underlying UITextView while
         // UIKit is still completing the presentation transition.
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(300))
-            insert(action: action, replacing: insertionRange)
+            // The sheet may outlive the source it was opened for. Never apply an
+            // old UTF-16 range to a changed document or replace an unrelated word.
+            guard let capturedSource, text.utf16.elementsEqual(capturedSource.utf16) else { return }
+            let replacementRange: NSRange?
+            if let completion, action.name.lowercased().hasPrefix(completion.prefix.lowercased()) {
+                replacementRange = completion.range
+            } else {
+                replacementRange = insertionRange
+            }
+            insert(action: action, replacing: replacementRange)
         }
     }
 

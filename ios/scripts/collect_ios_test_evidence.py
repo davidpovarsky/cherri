@@ -66,8 +66,8 @@ service_test_map = {
 }
 
 
-CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.CherriCoreIntegrationTests|CherriUITests\.CherriEditorUITests) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
-FAILURE_LINE = re.compile(r"CherriEditorUITests\.swift:(\d+): error: -\[CherriUITests\.CherriEditorUITests (test[A-Za-z0-9_]+)\]")
+CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests)|CherriUITests\.CherriEditorUITests) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
+FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriEditorInputTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
 TEST_NAME = re.compile(r"^CherriEditorUITests/(test[A-Za-z0-9_]+)$")
 PRIVATE_TEXT = re.compile(r"(?i)(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._-]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|/Users/[^/\s]+|[A-Z]:\\Users\\[^\\\s]+)")
 STAGES = {"empty-reset", "typed-source", "completion-insertion", "rapid-typed-source", "teardown"}
@@ -75,7 +75,7 @@ BOOL_FIELDS = {
     "editorExists", "editorHittable", "buildExists", "buildEnabled",
     "compiledStatusExists", "diagnosticStatusExists", "diagnosticsBannerExists", "keyboardExists",
 }
-CHECKPOINTS = {entry[2] for entry in ui_test_map.values()} | {"[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT]"}
+CHECKPOINTS = {entry[2] for entry in ui_test_map.values()} | {"[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT]", "[CHECKPOINT:E01_PALETTE_EXACT]"}
 RECEIPT_PREFIX = "[CHERRI_UI_RECEIPT] "
 
 
@@ -129,7 +129,7 @@ def bounded_log(raw_text):
                 receipts.append(receipt)
                 lines.append(RECEIPT_PREFIX + json.dumps(receipt, ensure_ascii=False, sort_keys=True))
         elif (failure := FAILURE_LINE.search(line)):
-            record = {"testId": "CherriEditorUITests/" + failure.group(2), "sourceLine": int(failure.group(1))}
+            record = {"testId": failure.group(1) + "/" + failure.group(3), "sourceLine": int(failure.group(2))}
             if len(failures) < 64:
                 failures.append(record)
                 lines.append("[CHERRI_UI_FAILURE] " + json.dumps(record, sort_keys=True))

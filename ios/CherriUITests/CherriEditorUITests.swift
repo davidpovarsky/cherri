@@ -145,32 +145,25 @@ final class CherriEditorUITests: XCTestCase {
         } else if showSuggestion.waitForExistence(timeout: 3) && showSuggestion.isHittable {
             showSuggestion.tap()
         } else {
-            actionsBtn.tap()
-            let paletteList = app.collectionViews["actionPaletteList"].exists ? app.collectionViews["actionPaletteList"] : app.tables["actionPaletteList"]
-            XCTAssertTrue(paletteList.waitForExistence(timeout: 5), "Action palette list must be presented")
-
-            let showAction = app.buttons["paletteAction_show"].exists ? app.buttons["paletteAction_show"] : paletteList.cells.firstMatch
-            XCTAssertTrue(showAction.waitForExistence(timeout: 5), "Candidate action show must exist in palette")
-            showAction.tap()
+            XCTFail("Exact contextual candidate show must be visible and hittable")
+            return
         }
 
         // Verify editor content reflects completed insertion and no trailing uncompleted prefix
         XCTAssertTrue(editor.waitForExistence(timeout: 5), "Editor must remain present after insertion")
+        expectedSyntheticSource = "show(Ask)"
         let insertionCompleted = waitForEditorValue(editor) {
-            $0.contains("show") && !$0.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix("sho")
+            Array($0.utf16) == Array("show(Ask)".utf16)
         }
         recordEditorReceipt(stage: "completion-insertion")
         XCTAssertTrue(insertionCompleted, "Selected completion must finish updating the editor source")
-        var editorValue = (editor.value as? String) ?? ""
+        let editorValue = (editor.value as? String) ?? ""
         XCTAssertTrue(editorValue.contains("show"), "Editor text must reflect inserted action call")
         XCTAssertFalse(editorValue.trimmingCharacters(in: .whitespacesAndNewlines).hasSuffix("sho"), "Editor text must not end in incomplete prefix 'sho'")
 
-        if !editorValue.contains("(") {
-            typeIntoEditor(editor, "(\"E01_Verified\")\n")
-        } else if !editorValue.contains("\n") {
-            typeIntoEditor(editor, "\n")
-        }
-
+        // The selected catalog snippet is already a complete source program.
+        // Compile those exact inserted bytes without replacing them or typing at
+        // an unverified UIKit caret position.
         let buildBtn = app.buttons["buildButton"]
         XCTAssertTrue(buildBtn.waitForExistence(timeout: 5), "Build button must exist in toolbar")
         buildBtn.tap()
@@ -181,6 +174,34 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertFalse(diagStatus.exists, "No compilation diagnostic must exist for valid inserted code")
 
         print("[CHECKPOINT:E01_COMPLETION_INSERTED] Contextual completion candidate selected, inserted, and verified in editor")
+    }
+
+    func testE01PaletteSearchSelectsExactActionAndReplacesPrefixUI() throws {
+        let editor = ensureEditorReady()
+        setEditorContent(editor, "sho")
+        let actions = app.buttons["actionsButton"]
+        XCTAssertTrue(actions.waitForExistence(timeout: 5) && actions.isHittable)
+        actions.tap()
+
+        let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 5) && search.isHittable, "Palette search must be available")
+        search.tap()
+        search.typeText("show")
+        let exactAction = app.buttons["paletteAction_show"]
+        XCTAssertTrue(exactAction.waitForExistence(timeout: 5) && exactAction.isHittable,
+                      "Search must expose the exact show action; no fallback cell is allowed")
+        exactAction.tap()
+
+        expectedSyntheticSource = "show(Ask)"
+        let exact = waitForEditorValue(editor) { Array($0.utf16) == Array("show(Ask)".utf16) }
+        recordEditorReceipt(stage: "completion-insertion")
+        XCTAssertTrue(exact, "Palette selection must replace only the captured sho prefix")
+        let build = app.buttons["buildButton"]
+        XCTAssertTrue(build.waitForExistence(timeout: 5) && build.isHittable)
+        build.tap()
+        XCTAssertTrue(app.staticTexts["compiledStatusText"].waitForExistence(timeout: 8))
+        XCTAssertFalse(app.staticTexts["diagnosticStatusText"].exists)
+        print("[CHECKPOINT:E01_PALETTE_EXACT] Exact palette action replaced the captured prefix and compiled")
     }
 
     // E02: Multiple diagnostics rendering with accurate inline indicators and ranges
@@ -480,11 +501,32 @@ final class CherriEditorUITests: XCTestCase {
 
     // Separates reset/cursor corruption from automatic delimiter insertion.
     // Real keyboard typing is intentional; paste would evade token completion.
+    func testGeneratedCloserCompletesAndOvertypesWithRealKeyboard() throws {
+        let editor = ensureEditorReady()
+        guard resetEditor(editor) else { return }
+        expectedSyntheticSource = "text(\"x\")"
+        typeIntoEditor(editor, "text(\"x\"")
+        XCTAssertTrue(waitForEditorValue(editor) { $0 == "text(\"x\")" },
+                      "The editor must still generate a closing parenthesis")
+        recordEditorReceipt(stage: "typed-source")
+        // No tap or caret movement: type the exact matching key at the active caret.
+        editor.typeText(")\n")
+        expectedSyntheticSource = "text(\"x\")\n"
+        let exact = waitForEditorValue(editor) { Array($0.utf16) == Array("text(\"x\")\n".utf16) }
+        recordEditorReceipt(stage: "typed-source")
+        XCTAssertTrue(exact, "Typing the generated closer must move past it exactly once")
+    }
+
     func testTypedSourceAndResetPreserveExactUTF16() throws {
         let editor = ensureEditorReady()
         setEditorContent(editor, "let previousLongName = 123456789\n")
         setEditorContent(editor, "let n = 1\n")
         setEditorContent(editor, "text(\"x\")\n")
+        setEditorContent(editor, "text(text(\"x\"))\n")
+        setEditorContent(editor, "let xs = [1, 2]\n")
+        setEditorContent(editor, "let d = {\"value\": 1}\n")
+        setEditorContent(editor, "if true {\ntext(\"x\")\n}\n")
+        setEditorContent(editor, "/* block */\ntext(\"x\")\n")
         print("[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT] Reset and keyboard input preserved exact UTF-16")
     }
 }

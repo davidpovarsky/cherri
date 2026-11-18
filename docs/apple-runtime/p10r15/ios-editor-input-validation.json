@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "stage": "ios-editor-input-fix",
+  "implementationBaseSha": "d2406cf1fc9443cb862a18042ffff4b19a66e7c4",
+  "diagnosticRun": {
+    "id": "44234466807",
+    "url": "https://github.com/davidpovarsky/cherri/actions/runs/44234466807",
+    "status": "FAILED",
+    "coreTestsPassed": 24,
+    "uiTestsPassed": 3,
+    "uiTestsFailed": 7,
+    "acceptanceRecords": 0,
+    "artifacts": [
+      {
+        "name": "ios-test-diagnostics.json",
+        "sha256": "4bb6f506f4360b223341617ddd2bc6d26462028923462df1c34e1a66a51006ee",
+        "sizeBytes": 26820
+      },
+      {
+        "name": "ios-test-evidence.json",
+        "sha256": "6c1db664439054b14cf5baade95beb5c1b194266ecf60003a2aab24c85fd8359",
+        "sizeBytes": 20
+      },
+      {
+        "name": "xcodetest.log",
+        "sha256": "7e1f98d059e7c6fa68a5dd6ceff261d61feac8758a0870dbc8108712778460e3",
+        "sizeBytes": 26452
+      }
+    ],
+    "exactExtraClosingTests": [
+      "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
+      "CherriEditorUITests/testE03EditorActionsHoverRenameUI",
+      "CherriEditorUITests/testE05EditorResponsivenessStaleEditsUI",
+      "CherriEditorUITests/testE06BidirectionalHebrewEmojiUI",
+      "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
+      "CherriEditorUITests/testTypedSourceAndResetPreserveExactUTF16"
+    ],
+    "paletteActualSource": "shoDNDOff()",
+    "nativeSelection": "UNKNOWN"
+  },
+  "dependency": {
+    "patchId": "cherri-p15-generated-closers-v1",
+    "revision": "5386056ab53d43363083cb96069715a9608aa048",
+    "repository": "https://github.com/mchakravarty/CodeEditorView.git"
+  },
+  "patchedFiles": [
+    {
+      "path": "Sources/CodeEditorView/CodeStorage.swift",
+      "originalGitBlob": "45352f1b11d6cc4767298f62feedbe2b441ea1f5",
+      "originalSha256": "993a84a7ae3f02f788dda749d61aae853061c3cdfccd3639fc351f51bd7cb1aa",
+      "patchedSha256": "e8305f89139f1dcc6df9e1350e7d8d87c194161784c7ad4d05a1443a3d6f0562"
+    },
+    {
+      "path": "Sources/CodeEditorView/CodeStorageDelegate.swift",
+      "originalGitBlob": "00847ef4005d966eb5f8619ce0cd65b504cbaef4",
+      "originalSha256": "c820cd31f9f286fa3f3950d3e31ca237c656afb06fe47ff2784a1c9762e8cfdb",
+      "patchedSha256": "e413fe874975b8121ef45e3cac9aa2cf80dce6c5c94c56d5a14996090b706ea5"
+    },
+    {
+      "path": "Sources/CodeEditorView/CodeView.swift",
+      "originalGitBlob": "9736d4eda78ff883e681892f664ce41d8b071e2c",
+      "originalSha256": "19379fc7cdede4160b89496447952dce0784a49c0ed175b957cb400285833ca5",
+      "patchedSha256": "7145f8da4611fdc97720a73497a05a4c8dbcfdcc4e2ace7d640363d9d2835d3c"
+    }
+  ],
+  "localChecks": {
+    "dependencyIntegrityTests": {
+      "status": "PASS",
+      "count": 9
+    },
+    "boundedEvidenceTests": {
+      "status": "PASS",
+      "count": 13
+    },
+    "exactPinnedCheckoutApply": "PASS",
+    "exactPinnedCheckoutRepeatedCheck": "PASS",
+    "workflowYaml": "PASS",
+    "workflowBashSteps": 11,
+    "nativeCommandsRequirePreparedCheckout": 3,
+    "bootstrapBashSyntax": "PASS"
+  },
+  "nativeVerification": {
+    "newCodeViewTests": "NOT_RUN",
+    "newRealKeyboardControls": "NOT_RUN",
+    "newWholeUISuite": "NOT_RUN",
+    "required": "Fresh successful ios-build on exact implementation SHA; do not promote local source checks to runtime evidence"
+  },
+  "limitations": [
+    "No local Xcode/Swift compiler on the available Windows host",
+    "Unprepared direct Xcode GUI builds may use a different SwiftPM checkout; configured bootstrap/CI path is mandatory",
+    "Editor caret state in the diagnostic receipts is UNKNOWN; new native unit tests assert it directly"
+  ]
+}
