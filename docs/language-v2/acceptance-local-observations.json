@@ -1,0 +1,824 @@
+{
+  "observations": [
+    {
+      "id": "B01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "repository"
+      ],
+      "observed_smoke_detail": "Repository on branch agent/shared-shortcuts-engine-v2-repair; baseline 559abceadda1dbf0cd7d7deb1a26315b8ac44c3f recorded",
+      "coverage_gap": "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees."
+    },
+    {
+      "id": "B02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "repository"
+      ],
+      "observed_smoke_detail": "Baseline catalog captured in docs/language-v2/baseline-catalog.json; 461 actions cataloged; current schema has 505 actions",
+      "coverage_gap": "The archived catalog count does not verify current definition identities and representative native outputs."
+    },
+    {
+      "id": "U01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "repository"
+      ],
+      "observed_smoke_detail": "Upstream boundary documented in docs/language-v2/upstream-boundary.md; actions/*.cherri preserved intact",
+      "coverage_gap": "Declaration/document existence does not establish preservation against the upstream baseline."
+    },
+    {
+      "id": "U02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "generation"
+      ],
+      "observed_smoke_detail": "Schema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (deterministic)",
+      "coverage_gap": "A fixed fingerprint comparison does not execute regeneration or determinism checks."
+    },
+    {
+      "id": "U04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "integration"
+      ],
+      "observed_smoke_detail": "Parser reliably emits E_LEGACY_SYNTAX for 3 legacy tokens outside strings",
+      "coverage_gap": "Direct parser diagnostics do not exercise the public CLI and its legacy fallback boundary."
+    },
+    {
+      "id": "P01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Plain braces literal, f-string parsed expressions, raw backslashes preserved",
+      "coverage_gap": "Statement counts do not assert the parsed literal, interpolation, raw, and multiline values."
+    },
+    {
+      "id": "P02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "service"
+      ],
+      "observed_smoke_detail": "Parser reports diagnostic and language service recovers completion",
+      "coverage_gap": "One unterminated string and nonempty completion do not cover comment and partial named-call recovery."
+    },
+    {
+      "id": "P03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Operator precedence evaluated correctly via Pratt parsing",
+      "coverage_gap": "One parsed statement does not inspect operator precedence, parentheses, or the logical AST."
+    },
+    {
+      "id": "P04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Both semicolon and newline statement terminations supported",
+      "coverage_gap": "Successful parsing does not inspect the bare-return/newline ambiguity or negative termination cases."
+    },
+    {
+      "id": "P05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "service"
+      ],
+      "observed_smoke_detail": "Non-ASCII / Hebrew identifiers tokenized and parsed cleanly",
+      "coverage_gap": "Nonempty completion does not assert the exact Unicode identifier/token agreement."
+    },
+    {
+      "id": "V01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "let snapshot evaluated at declaration site before subsequent mutation",
+      "coverage_gap": "Action count does not prove snapshot timing or original producer identity."
+    },
+    {
+      "id": "V02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Analyzer catches E_ASSIGN_IMMUTABLE on reassignment to let binding",
+      "coverage_gap": "One immutable assignment diagnostic does not cover shadowing, scope, and read-before-initialization."
+    },
+    {
+      "id": "V03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Clipboard reference materialized cleanly into AttachmentToken",
+      "coverage_gap": "Nonempty lowering does not prove that the clipboard is captured exactly once."
+    },
+    {
+      "id": "V04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "let binds List and Map literals cleanly with type inference",
+      "coverage_gap": "Successful list/map lowering does not inspect action-output bindings and native payload types."
+    },
+    {
+      "id": "C01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Named arguments bound by label irrespective of schema definition order",
+      "coverage_gap": "Literal argument lowering does not prove source evaluation order with observable calls."
+    },
+    {
+      "id": "C02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Analyzer catches E_UNKNOWN_ARGUMENT with accurate source span",
+      "coverage_gap": "One unknown-label diagnostic does not cover duplicates, missing labels, extra positional arguments, or exact spans."
+    },
+    {
+      "id": "C03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Variadic arguments mapped to typed parameter schemas",
+      "coverage_gap": "getUpcomingEvents(3) does not exercise variadic-to-named-list migration."
+    },
+    {
+      "id": "C04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "service"
+      ],
+      "observed_smoke_detail": "Enum values validated against schema enum domain and surfaced in completions",
+      "coverage_gap": "A string enum value and nonempty completion do not establish contextual and qualified member resolution."
+    },
+    {
+      "id": "C05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native-roundtrip"
+      ],
+      "observed_smoke_detail": "Native round-trip preserves unmodeled/unknown wire enum values",
+      "coverage_gap": "An IR parameter comparison does not execute native import and round-trip preservation."
+    },
+    {
+      "id": "T01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Default values retained across lowering and wire emission",
+      "coverage_gap": "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently."
+    },
+    {
+      "id": "T02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Type mismatch diagnosed when Number assigned to Text",
+      "coverage_gap": "Number-to-Text assignment rejection does not exercise a literal-required action parameter."
+    },
+    {
+      "id": "T03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Wire codec transforms Number to string or integer depending on schema facet",
+      "coverage_gap": "Finding a codec and a nonempty IR does not verify the number-as-text wire value."
+    },
+    {
+      "id": "T04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "service"
+      ],
+      "observed_smoke_detail": "Semantic distinction between Unknown, AnyContent, and Void preserved",
+      "coverage_gap": "Different type names do not test Unknown/AnyContent/Void behavior in analysis and service."
+    },
+    {
+      "id": "T05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "T? represented with explicit presence state in parameter binding",
+      "coverage_gap": "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions."
+    },
+    {
+      "id": "T06",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Structural record types checked statically at analysis time",
+      "coverage_gap": "A record constructor does not exercise authored record annotations or runtime JSON behavior."
+    },
+    {
+      "id": "T07",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Semantic versioning compares major.minor components deterministically",
+      "coverage_gap": "A helper implemented only in this runner does not exercise production platform-version comparison."
+    },
+    {
+      "id": "T08",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "service"
+      ],
+      "observed_smoke_detail": "Schema lookup chooses action variant based on mode argument",
+      "coverage_gap": "Two nonempty output type names do not test literal-mode-dependent inference."
+    },
+    {
+      "id": "T09",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Subtyping rules permit safe Content conversions",
+      "coverage_gap": "Assignment to AnyContent does not validate known Content Graph conversions or reject unverified coercions."
+    },
+    {
+      "id": "S01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "observed_smoke_detail": "UTF-16 attachment offset calculation correctly handles non-BMP emoji and Hebrew",
+      "coverage_gap": "Nonempty IR does not inspect UTF-16 token offsets, combining marks, or round-trip values."
+    },
+    {
+      "id": "S02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Raw strings preserve backslashes and plain strings preserve literal braces",
+      "coverage_gap": "Action counts do not assert exact retained backslashes and JSON/JS/CSS braces."
+    },
+    {
+      "id": "S03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "service",
+        "benchmark"
+      ],
+      "observed_smoke_detail": "Document analysis completes in 6.4939ms (\u003c 500ms)",
+      "coverage_gap": "Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits."
+    },
+    {
+      "id": "L01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Arbitrarily nested List and Map structures lower cleanly",
+      "coverage_gap": "Nonempty lowering does not assert nested shape, cardinality, or order."
+    },
+    {
+      "id": "L02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Zero-based collection indexing lowers first/last/negative/out-of-range/empty cases safely",
+      "coverage_gap": "Action counts do not prove first/last/negative/empty/out-of-range index results."
+    },
+    {
+      "id": "L03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Analyzer catches E_DUPLICATE_KEY on duplicate map keys",
+      "coverage_gap": "Duplicate-key rejection does not exercise invalid index types."
+    },
+    {
+      "id": "L04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native"
+      ],
+      "observed_smoke_detail": "Lowering guards dynamic list indexing with 1-based conversion, count check, and conditional bounds",
+      "coverage_gap": "Presence of a count action does not prove that unsafe lookup stays inside the valid bounds branch."
+    },
+    {
+      "id": "N01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Floating point division, modulus via WFScientificMathOperation=Modulus, and compound assignment lowered",
+      "coverage_gap": "A modulus action and action count do not establish fractional division and numeric constraints."
+    },
+    {
+      "id": "N03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Equality operators lowered to case-sensitive comparison logic",
+      "coverage_gap": "Nonempty IR does not prove case-sensitive equality or comparison migration."
+    },
+    {
+      "id": "F02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Nested repeat loops generate distinct GroupingIdentifiers with 0-based index math (7 actions)",
+      "coverage_gap": "Seven actions do not prove group identities, scopes, or zero-based indices."
+    },
+    {
+      "id": "F03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Value-producing if/menu lower via branch result variables and analyzer rejects non-exhaustive value paths",
+      "coverage_gap": "Nonempty lowering and any diagnostic do not validate typed branch outputs or all normal paths."
+    },
+    {
+      "id": "F04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Value-producing repeat/for loops collect yielded elements via repeat end action OutputUUID",
+      "coverage_gap": "A repeat-end UUID does not prove one semantic collected element per iteration."
+    },
+    {
+      "id": "F05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit"
+      ],
+      "observed_smoke_detail": "Unsupported while/break keywords correctly rejected by parser",
+      "coverage_gap": "A parser error for while/break does not separately prove break behavior inside a supported loop."
+    },
+    {
+      "id": "FN01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "First-class function declarations lower to RunSelf dispatcher and return to caller continuation",
+      "coverage_gap": "Action count does not prove returned value and caller continuation."
+    },
+    {
+      "id": "FN02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Presence dictionary __cherri_present distinguishes omitted arguments from explicit false/0/empty",
+      "coverage_gap": "Action count does not inspect presence tags and explicit false/zero/empty defaults."
+    },
+    {
+      "id": "FN03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Functions reject outer variable capture and support recursive self-invocation",
+      "coverage_gap": "Nonempty recursive lowering and any capture diagnostic do not prove recursive results and capture boundaries."
+    },
+    {
+      "id": "FN04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native"
+      ],
+      "observed_smoke_detail": "Dispatcher verifies __cherri_fn_call + __cherri_fn + __cherri_args + __cherri_present before branching",
+      "coverage_gap": "Action count does not inspect dispatcher envelope validation."
+    },
+    {
+      "id": "FN05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Function arguments and return values mapped cleanly through structured dictionary transport",
+      "coverage_gap": "Text/number lowering does not exercise structured argument/result transport."
+    },
+    {
+      "id": "M01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "observed_smoke_detail": "Shortcut header parsed and icon glyph/color lowered into NativeWorkflow",
+      "coverage_gap": "One icon glyph does not cover target, input/output, no-input, source, and header round-trip."
+    },
+    {
+      "id": "M02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native"
+      ],
+      "observed_smoke_detail": "Explicit return emits is.workflow.actions.output and Void fallthrough omits output",
+      "coverage_gap": "IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior."
+    },
+    {
+      "id": "M03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "observed_smoke_detail": "setup declaration parsed and lowered into ImportQuestions",
+      "coverage_gap": "Import-question count does not validate node/parameter bindings and round-trip."
+    },
+    {
+      "id": "M04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "service"
+      ],
+      "observed_smoke_detail": "Setup questions validated against duplicate name constraints",
+      "coverage_gap": "Duplicate setup diagnostics do not cover invalid uses or Ask Each Time insertion."
+    },
+    {
+      "id": "IM01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "service"
+      ],
+      "observed_smoke_detail": "Module import resolver enforces alias uniqueness and reports diagnostic",
+      "coverage_gap": "Duplicate-alias diagnostics do not exercise relative imports and cycles."
+    },
+    {
+      "id": "IM02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "migration"
+      ],
+      "observed_smoke_detail": "Module definitions hoisted in deterministic dependency order during migration",
+      "coverage_gap": "Removing an include token does not execute module initialization or prove dependency order."
+    },
+    {
+      "id": "IM03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "Built-in standard functions accessible globally and lower directly",
+      "coverage_gap": "Global base64 lowering does not prove preserved upstream stdfunc migration."
+    },
+    {
+      "id": "IM04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "security"
+      ],
+      "observed_smoke_detail": "Resource loaders validate canonical path boundaries to prevent traversal",
+      "coverage_gap": "filepath.Clean and a '..' prefix do not exercise a resource loader or reject symlink escapes."
+    },
+    {
+      "id": "IM05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "security",
+        "service"
+      ],
+      "observed_smoke_detail": "Unresolved package imports reported as diagnostic without network fetch",
+      "coverage_gap": "An unresolved import diagnostic does not observe or prohibit network access."
+    },
+    {
+      "id": "AC01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "generation"
+      ],
+      "observed_smoke_detail": "All 505 baseline actions registered in DefaultRegistry (count: 505)",
+      "coverage_gap": "A catalog count does not reconcile every definition, variant, and language construct."
+    },
+    {
+      "id": "AC02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native"
+      ],
+      "observed_smoke_detail": "ActionSchema model shared across CLI, LSP, analysis, and lowering",
+      "coverage_gap": "An injected empty schema action does not exercise public custom action source and codecs."
+    },
+    {
+      "id": "AC03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "generation"
+      ],
+      "observed_smoke_detail": "Registry generation script validates uniqueness and facet coherence",
+      "coverage_gap": "Nonempty enums do not test bad codecs, duplicates, or stale facets."
+    },
+    {
+      "id": "R01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native-roundtrip"
+      ],
+      "observed_smoke_detail": "native.action escape creates NativeActionNode preserving raw parameters",
+      "coverage_gap": "One IR action identifier does not prove unknown nested and top-level native round-trip fields."
+    },
+    {
+      "id": "R02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native-roundtrip"
+      ],
+      "observed_smoke_detail": "Native parameters dictionary preserves unmodeled properties",
+      "coverage_gap": "One IR scalar does not prove known-action variant import round-trip."
+    },
+    {
+      "id": "R03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native-roundtrip"
+      ],
+      "observed_smoke_detail": "AttachmentToken preserves Aggrandizements array across serialization",
+      "coverage_gap": "A hand-constructed aggrandizement slice is not serialized or round-tripped."
+    },
+    {
+      "id": "R04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native-roundtrip"
+      ],
+      "observed_smoke_detail": "OmissionPolicy omits unsupplied parameters unless explicitly required",
+      "coverage_gap": "Assigning OmitPolicyOmit to a struct does not exercise imported parameter omission."
+    },
+    {
+      "id": "R05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "observed_smoke_detail": "Native workflow representation retains whole-workflow fallback capability",
+      "coverage_gap": "A hand-constructed workflow length does not execute opaque regions, exports, or fallback."
+    },
+    {
+      "id": "E01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "service"
+      ],
+      "observed_smoke_detail": "LanguageService returns 521 contextual completion items including expected candidates",
+      "coverage_gap": "A small completion set does not cover contextual labels, enums, compatible variables, or UI."
+    },
+    {
+      "id": "E02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "service"
+      ],
+      "observed_smoke_detail": "Service provides 3 independent diagnostics with ranges without crash or flood",
+      "coverage_gap": "Diagnostic count does not inspect complete ranges and incomplete-code UI behavior."
+    },
+    {
+      "id": "E03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "service"
+      ],
+      "observed_smoke_detail": "Scoped rename updates only target symbol binding and references",
+      "coverage_gap": "Rename edit count does not inspect exact exclusions or hover/signature/definition behavior."
+    },
+    {
+      "id": "E04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "unit",
+        "integration"
+      ],
+      "observed_smoke_detail": "Canonical formatter preserves comments and produces idempotent output",
+      "coverage_gap": "Idempotence and one comment substring do not verify literal preservation and all comment contents."
+    },
+    {
+      "id": "E05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "service"
+      ],
+      "observed_smoke_detail": "DocumentCache rejects stale out-of-order document versions",
+      "coverage_gap": "One out-of-order document update does not test cancellation and stale response publication."
+    },
+    {
+      "id": "E06",
+      "passed": true,
+      "historically_claimed_levels": [
+        "protocol"
+      ],
+      "observed_smoke_detail": "UTF-16 diagnostic columns match exact Cocoa NSRange after Hebrew and surrogate pair emoji",
+      "coverage_gap": "One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface."
+    },
+    {
+      "id": "E08",
+      "passed": true,
+      "historically_claimed_levels": [
+        "benchmark"
+      ],
+      "observed_smoke_detail": "50 document analysis passes completed in 2.1524ms",
+      "coverage_gap": "Fifty tiny edits do not cover small/large documents and embedded assets."
+    },
+    {
+      "id": "CL01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "integration"
+      ],
+      "observed_smoke_detail": "cherri --capabilities-json emits valid JSON capabilities",
+      "coverage_gap": "In-process capability fields do not execute JSON CLI commands or observe their exit status."
+    },
+    {
+      "id": "CL02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "security",
+        "integration"
+      ],
+      "observed_smoke_detail": "cherri check analyzes pure AST/types without invoking sign or write",
+      "coverage_gap": "Unchanged directory entry count does not observe signing, execution, installation, or writes."
+    },
+    {
+      "id": "CL03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "integration"
+      ],
+      "observed_smoke_detail": "Legacy syntax rejected with E_LEGACY_SYNTAX; migrate tool converts to v2",
+      "coverage_gap": "Migrating legacy syntax does not exercise production CLI rejection of that syntax."
+    },
+    {
+      "id": "D01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "generation",
+        "docs"
+      ],
+      "observed_smoke_detail": "docs/language-v2/actions-reference.md generated from ActionSchema and matches fingerprint",
+      "coverage_gap": "Fingerprint presence does not compare every generated signature with the schema."
+    },
+    {
+      "id": "D02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "docs"
+      ],
+      "observed_smoke_detail": "Docs examples verified cleanly: ok  \tgithub.com/electrikmilk/cherri\t(cached)",
+      "coverage_gap": "The selected docs test parses/analyzes examples; it does not execute their production compilation/runtime."
+    },
+    {
+      "id": "D03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "docs",
+        "integration"
+      ],
+      "observed_smoke_detail": "Fork documentation present in cherrilang.org fork-language/ guide",
+      "coverage_gap": "File existence does not verify active fork docs, publication, and upstream separation."
+    },
+    {
+      "id": "K01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "packaging"
+      ],
+      "observed_smoke_detail": "skills/cherri-shortcuts/SKILL.md packaged with v2 architecture",
+      "coverage_gap": "SKILL.md length does not unpack a package or run its self-test."
+    },
+    {
+      "id": "K02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "integration"
+      ],
+      "observed_smoke_detail": "doctor.sh and common.sh verify compiler capability and language version",
+      "coverage_gap": "Script substrings do not execute a fresh install or reject an incompatible binary."
+    },
+    {
+      "id": "K03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "integration"
+      ],
+      "observed_smoke_detail": "compatibility-manifest.json locks compiler and docs commits",
+      "coverage_gap": "A compilerCommit key does not install that SHA or test checksums and atomic updates."
+    },
+    {
+      "id": "K04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "integration"
+      ],
+      "observed_smoke_detail": "doctor.sh verifies capabilities-json schema fingerprint against manifest",
+      "coverage_gap": "A fingerprint substring does not exercise offline cache and docs mismatch behavior."
+    },
+    {
+      "id": "K05",
+      "passed": true,
+      "historically_claimed_levels": [
+        "integration"
+      ],
+      "observed_smoke_detail": "prepare-edit.sh provides deterministic round-trip editing workspace",
+      "coverage_gap": "Script length does not execute repair/build/import/edit/sign workflows."
+    },
+    {
+      "id": "CI01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "negative-ci"
+      ],
+      "observed_smoke_detail": "Negative test assertion confirms detection of expectation divergence",
+      "coverage_gap": "Comparing two unequal literal strings does not execute a negative CI gate."
+    },
+    {
+      "id": "CI02",
+      "passed": true,
+      "historically_claimed_levels": [
+        "native"
+      ],
+      "observed_smoke_detail": "CherriRuntimePOC fixture lowers to valid Apple Shortcuts actions",
+      "coverage_gap": "Nonempty IR for a runtime fixture is not an iOS runtime execution."
+    },
+    {
+      "id": "CI03",
+      "passed": true,
+      "historically_claimed_levels": [
+        "repository"
+      ],
+      "observed_smoke_detail": "Verified current commit SHA: e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "coverage_gap": "A 40-character local SHA does not prove final workflow head/checkout provenance."
+    },
+    {
+      "id": "CI04",
+      "passed": true,
+      "historically_claimed_levels": [
+        "security",
+        "repository"
+      ],
+      "observed_smoke_detail": "No credentials or private signing materials in repository",
+      "coverage_gap": "Absence of private_key.pem is not a private-corpus, credentials, or signing audit."
+    },
+    {
+      "id": "END01",
+      "passed": true,
+      "historically_claimed_levels": [
+        "repository"
+      ],
+      "observed_smoke_detail": "Working branch checked; status output length: 464",
+      "coverage_gap": "Successful git status does not establish a clean tree, pushed branches, artifacts, or delivery provenance."
+    }
+  ],
+  "schema_version": "1",
+  "scope": "Historical smoke assertions only; not formal acceptance tier evidence",
+  "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c"
+}

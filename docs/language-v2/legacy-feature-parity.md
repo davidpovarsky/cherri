@@ -1,16 +1,16 @@
 # Cherri Legacy to v2 Feature Parity Matrix
 
-This document provides the authoritative, contract-verified feature parity mapping between Cherri Legacy and Cherri v2.0. It documents how every legacy construct is preserved, compiled, or losslessly migrated, along with implementation provenance and verification evidence.
+This document retains the historical Legacy-to-v2 capability mapping. Current formal status is established by the [P10R15 acceptance review](p10r15-formal-acceptance-review.md) and [179-ID execution audit](acceptance-execution-audit.json). A historical VERIFIED label below states the scope of its recorded local fixture; it does not establish current-SHA runtime acceptance or complete feature parity.
 
 ---
 
-## 1. Executive Summary
+## 1. Historical capability mapping
 
 | Category | Legacy Capabilities | Cherri v2 Implementation | Parity Status | Verification Test / Gate |
 | :--- | :--- | :--- | :--- | :--- |
 | **Compiler Modes** | In-process compiler | Legacy preserved via `--legacy`; v2 pipeline default | **VERIFIED** | CLI flags, unit suites |
 | **Migration Engine** | N/A (single version) | Syntax-aware AST migration; fails closed; zero data loss | **VERIFIED** | `migrate_test.go`, Parity Runner |
-| **New Apple Actions** | 17 newly added actions | Fully functional in both Legacy and v2 | **100% VERIFIED** | `tools/legacy-parity` (17/17 PASS) |
+| **New Apple Actions** | 17 newly added actions | Compiled in both frontends in the recorded fixtures | **Historical compile scope** | `tools/legacy-parity` (17/17 PASS) |
 | **Preprocessor Directives** | `#define`, `#include`, `#question`, `#trigger`, `#ref` | Canonical v2 constructs (`shortcut`, `setup`, `trigger`, metadata) | **VERIFIED** | Parity runner (48/48 fixtures) |
 | **Copy / Paste Blocks** | `copy name { ... }` / `paste name` | Compile-time macro expansion | **VERIFIED** | `TestAnalyzerCopyPaste`, `TestMigrateCopyPaste` |
 | **Automations & Triggers** | `#trigger <family> <args>` | 7 families supported (`trigger <family>(...)`) | **VERIFIED** | `TestLowerTriggersWithParameters`, acceptance `T01` |
@@ -76,7 +76,7 @@ All 7 legacy trigger families are parsed, analyzed, migrated, and lowered into n
 
 ## 3. Newly Added Apple Actions Parity Verification
 
-All 17 newly added Apple actions were tested and confirmed 100% operational in both Legacy (`cherri <file> --legacy --skip-sign`) and v2 (`cherri compile <file> --skip-sign`):
+The recorded 17-action fixture run compiled these callables in both Legacy (`cherri <file> --legacy --skip-sign`) and v2 (`cherri compile <file> --skip-sign`):
 
 | # | Action Callable | Category | Apple Action Identifier | Legacy Status | v2 Status | Verified |
 | :-: | :--- | :--- | :--- | :-: | :-: | :-: |
@@ -100,10 +100,10 @@ All 17 newly added Apple actions were tested and confirmed 100% operational in b
 
 ---
 
-## 4. Test & Verification Infrastructure
+## 4. Historical verification snapshot (not current acceptance)
 
 - **Acceptance Contracts (`tools/language-acceptance`):**
-  - All 71 local acceptance requirements pass (`Failed: 0`).
+  - Historical runner headline: 71 local assertions passed. P10R15 review found scope gaps; the current formal aggregate is 5 passes, 0 failed assertions and 174 pending/unexecuted obligations over all 179 IDs.
   - Schema fingerprint matches authoritative catalog `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`.
 - **Legacy Differential Parity Runner (`tools/legacy-parity`):**
   - 48 test fixtures scanned.

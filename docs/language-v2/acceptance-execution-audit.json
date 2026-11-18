@@ -1,0 +1,3832 @@
+{
+  "acceptance_count": 94,
+  "closure_complete": false,
+  "generated_at": "2026-11-18T02:30:06Z",
+  "recovery_gate_count": 33,
+  "repair_count": 52,
+  "rows": [
+    {
+      "id": "B01",
+      "requirement": "Verify isolated base/remote HEAD and keep unrelated agent work unchanged",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "repository"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#B01"
+      ],
+      "blocker": "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
+      "detail": "Formal scope UNVERIFIED: A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "B02",
+      "requirement": "Capture baseline catalog, definition identities and representative native outputs",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "repository"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#B02"
+      ],
+      "blocker": "The archived catalog count does not verify current definition identities and representative native outputs.",
+      "detail": "Formal scope UNVERIFIED: The archived catalog count does not verify current definition identities and representative native outputs. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "U01",
+      "requirement": "Preserve upstream declaration files when build-time adapters suffice",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "repository"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#U01"
+      ],
+      "blocker": "Declaration/document existence does not establish preservation against the upstream baseline.",
+      "detail": "Formal scope UNVERIFIED: Declaration/document existence does not establish preservation against the upstream baseline. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "U02",
+      "requirement": "Regenerate assembled schema from original declarations and narrow facets",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "generation"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#U02"
+      ],
+      "blocker": "A fixed fingerprint comparison does not execute regeneration or determinism checks.",
+      "detail": "Formal scope UNVERIFIED: A fixed fingerprint comparison does not execute regeneration or determinism checks. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "U03",
+      "requirement": "Simulate an upstream parameter change used by a facet",
+      "status": "PASS",
+      "tier": [
+        "integration"
+      ],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "actions/web.cherri",
+        "upstream_rehearsal_test.go",
+        "internal/language/schema/generated_registry.go"
+      ],
+      "test_names": [
+        "TestUpstreamPropagationRehearsal"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-evidence.json#ev-local-U03-integration"
+      ],
+      "detail": "Executed production tests: TestUpstreamPropagationRehearsal",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "U04",
+      "requirement": "Check normal public binary does not invoke a legacy script parser",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#U04"
+      ],
+      "blocker": "Direct parser diagnostics do not exercise the public CLI and its legacy fallback boundary.",
+      "detail": "Formal scope UNVERIFIED: Direct parser diagnostics do not exercise the public CLI and its legacy fallback boundary. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "P01",
+      "requirement": "Plain, f, raw and multiline text parse without treating ordinary braces as variables",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#P01"
+      ],
+      "blocker": "Statement counts do not assert the parsed literal, interpolation, raw, and multiline values.",
+      "detail": "Formal scope UNVERIFIED: Statement counts do not assert the parsed literal, interpolation, raw, and multiline values. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "P02",
+      "requirement": "Unterminated string/comment and partial named call recover",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#P02"
+      ],
+      "blocker": "One unterminated string and nonempty completion do not cover comment and partial named-call recovery.",
+      "detail": "Formal scope UNVERIFIED: One unterminated string and nonempty completion do not cover comment and partial named-call recovery. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "P03",
+      "requirement": "Pratt precedence, parentheses and short-circuit tree are correct",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#P03"
+      ],
+      "blocker": "One parsed statement does not inspect operator precedence, parentheses, or the logical AST.",
+      "detail": "Formal scope UNVERIFIED: One parsed statement does not inspect operator precedence, parentheses, or the logical AST. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "P04",
+      "requirement": "Semicolon/newline handling and bare return are unambiguous",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#P04"
+      ],
+      "blocker": "Successful parsing does not inspect the bare-return/newline ambiguity or negative termination cases.",
+      "detail": "Formal scope UNVERIFIED: Successful parsing does not inspect the bare-return/newline ambiguity or negative termination cases. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "P05",
+      "requirement": "Unicode identifiers and tokenizer/completion agree",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#P05"
+      ],
+      "blocker": "Nonempty completion does not assert the exact Unicode identifier/token agreement.",
+      "detail": "Formal scope UNVERIFIED: Nonempty completion does not assert the exact Unicode identifier/token agreement. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "V01",
+      "requirement": "let captures current var value before later assignment",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#V01"
+      ],
+      "blocker": "Action count does not prove snapshot timing or original producer identity.",
+      "detail": "Formal scope UNVERIFIED: Action count does not prove snapshot timing or original producer identity. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "V02",
+      "requirement": "Scope, shadowing, immutable reassignment and read-before-init",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#V02"
+      ],
+      "blocker": "One immutable assignment diagnostic does not cover shadowing, scope, and read-before-initialization.",
+      "detail": "Formal scope UNVERIFIED: One immutable assignment diagnostic does not cover shadowing, scope, and read-before-initialization. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "V03",
+      "requirement": "System clipboard read captured once",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#V03"
+      ],
+      "blocker": "Nonempty lowering does not prove that the clipboard is captured exactly once.",
+      "detail": "Formal scope UNVERIFIED: Nonempty lowering does not prove that the clipboard is captured exactly once. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "V04",
+      "requirement": "let binds lists/maps/action outputs without old const restrictions",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#V04"
+      ],
+      "blocker": "Successful list/map lowering does not inspect action-output bindings and native payload types.",
+      "detail": "Formal scope UNVERIFIED: Successful list/map lowering does not inspect action-output bindings and native payload types. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "C01",
+      "requirement": "Named arguments out of declaration order evaluate in source order",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#C01"
+      ],
+      "blocker": "Literal argument lowering does not prove source evaluation order with observable calls.",
+      "detail": "Formal scope UNVERIFIED: Literal argument lowering does not prove source evaluation order with observable calls. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "C02",
+      "requirement": "Duplicate, missing, unknown labels and extra positional arguments",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#C02"
+      ],
+      "blocker": "One unknown-label diagnostic does not cover duplicates, missing labels, extra positional arguments, or exact spans.",
+      "detail": "Formal scope UNVERIFIED: One unknown-label diagnostic does not cover duplicates, missing labels, extra positional arguments, or exact spans. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "C03",
+      "requirement": "Variadic source API migrates to explicit named list",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#C03"
+      ],
+      "blocker": "getUpcomingEvents(3) does not exercise variadic-to-named-list migration.",
+      "detail": "Formal scope UNVERIFIED: getUpcomingEvents(3) does not exercise variadic-to-named-list migration. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "C04",
+      "requirement": "Enum contextual and qualified members resolve",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#C04"
+      ],
+      "blocker": "A string enum value and nonempty completion do not establish contextual and qualified member resolution.",
+      "detail": "Formal scope UNVERIFIED: A string enum value and nonempty completion do not establish contextual and qualified member resolution. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "C05",
+      "requirement": "Unknown enum wire value survives native import",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#C05"
+      ],
+      "blocker": "An IR parameter comparison does not execute native import and round-trip preservation.",
+      "detail": "Formal scope UNVERIFIED: An IR parameter comparison does not execute native import and round-trip preservation. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "T01",
+      "requirement": "Typed defaults preserve false/zero/empty text/list/map vs omission",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#T01"
+      ],
+      "blocker": "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
+      "detail": "Formal scope UNVERIFIED: base64Encode lowering does not test false, zero, empty text/list/map, and omission independently. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "T02",
+      "requirement": "Runtime immutable output does not satisfy literal-required slot",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#T02"
+      ],
+      "blocker": "Number-to-Text assignment rejection does not exercise a literal-required action parameter.",
+      "detail": "Formal scope UNVERIFIED: Number-to-Text assignment rejection does not exercise a literal-required action parameter. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "T03",
+      "requirement": "Semantic Number with number-as-text wire codec",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#T03"
+      ],
+      "blocker": "Finding a codec and a nonempty IR does not verify the number-as-text wire value.",
+      "detail": "Formal scope UNVERIFIED: Finding a codec and a nonempty IR does not verify the number-as-text wire value. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "T04",
+      "requirement": "Unknown differs from AnyContent and Void",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#T04"
+      ],
+      "blocker": "Different type names do not test Unknown/AnyContent/Void behavior in analysis and service.",
+      "detail": "Formal scope UNVERIFIED: Different type names do not test Unknown/AnyContent/Void behavior in analysis and service. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "T05",
+      "requirement": "Optional presence differs from optional value and JSON null",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#T05"
+      ],
+      "blocker": "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions.",
+      "detail": "Formal scope UNVERIFIED: An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "T06",
+      "requirement": "User record annotation is not runtime JSON validation",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#T06"
+      ],
+      "blocker": "A record constructor does not exercise authored record annotations or runtime JSON behavior.",
+      "detail": "Formal scope UNVERIFIED: A record constructor does not exercise authored record annotations or runtime JSON behavior. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "T07",
+      "requirement": "Per-platform versions compare components rather than floats",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#T07"
+      ],
+      "blocker": "A helper implemented only in this runner does not exercise production platform-version comparison.",
+      "detail": "Formal scope UNVERIFIED: A helper implemented only in this runner does not exercise production platform-version comparison. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "T08",
+      "requirement": "Variant-dependent output type inferred from literal mode",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#T08"
+      ],
+      "blocker": "Two nonempty output type names do not test literal-mode-dependent inference.",
+      "detail": "Formal scope UNVERIFIED: Two nonempty output type names do not test literal-mode-dependent inference. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "T09",
+      "requirement": "Known Content Graph conversions vs unverified coercion",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#T09"
+      ],
+      "blocker": "Assignment to AnyContent does not validate known Content Graph conversions or reject unverified coercions.",
+      "detail": "Formal scope UNVERIFIED: Assignment to AnyContent does not validate known Content Graph conversions or reject unverified coercions. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "S01",
+      "requirement": "Multiple variable tokens after Hebrew/emoji/combining marks",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-roundtrip",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#S01"
+      ],
+      "blocker": "Nonempty IR does not inspect UTF-16 token offsets, combining marks, or round-trip values.",
+      "detail": "Formal scope UNVERIFIED: Nonempty IR does not inspect UTF-16 token offsets, combining marks, or round-trip values. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "S02",
+      "requirement": "Raw regex and ordinary JSON/JS/CSS text keep braces/backslashes",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#S02"
+      ],
+      "blocker": "Action counts do not assert exact retained backslashes and JSON/JS/CSS braces.",
+      "detail": "Formal scope UNVERIFIED: Action counts do not assert exact retained backslashes and JSON/JS/CSS braces. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "S03",
+      "requirement": "Large embedded local asset remains cached across unrelated edits",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "service",
+        "benchmark"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#S03"
+      ],
+      "blocker": "Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits.",
+      "detail": "Formal scope UNVERIFIED: Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "L01",
+      "requirement": "Nested lists/maps preserve shape, cardinality and element order",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#L01"
+      ],
+      "blocker": "Nonempty lowering does not assert nested shape, cardinality, or order.",
+      "detail": "Formal scope UNVERIFIED: Nonempty lowering does not assert nested shape, cardinality, or order. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "L02",
+      "requirement": "Zero-based first/last/empty/out-of-range/negative indexing",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#L02"
+      ],
+      "blocker": "Action counts do not prove first/last/negative/empty/out-of-range index results.",
+      "detail": "Formal scope UNVERIFIED: Action counts do not prove first/last/negative/empty/out-of-range index results. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "L03",
+      "requirement": "Duplicate literal keys and invalid index type",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#L03"
+      ],
+      "blocker": "Duplicate-key rejection does not exercise invalid index types.",
+      "detail": "Formal scope UNVERIFIED: Duplicate-key rejection does not exercise invalid index types. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "L04",
+      "requirement": "Dynamic bounds checking does not execute unsafe native lookup",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#L04"
+      ],
+      "blocker": "Presence of a count action does not prove that unsafe lookup stays inside the valid bounds branch.",
+      "detail": "Formal scope UNVERIFIED: Presence of a count action does not prove that unsafe lookup stays inside the valid bounds branch. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "N01",
+      "requirement": "Fractional arithmetic including 5/2 and constraints",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#N01"
+      ],
+      "blocker": "A modulus action and action count do not establish fractional division and numeric constraints.",
+      "detail": "Formal scope UNVERIFIED: A modulus action and action count do not establish fractional division and numeric constraints. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "N02",
+      "requirement": "Known zero divisor and text-plus-number are rejected",
+      "status": "PASS",
+      "tier": [
+        "unit"
+      ],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "internal/language/analysis/analyzer.go"
+      ],
+      "test_names": [
+        "tools/language-acceptance:runNumbers"
+      ],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-evidence.json#ev-local-N02-unit"
+      ],
+      "detail": "Analyzer rejects literal /0 and %0 with E_ARGUMENT_TYPE and Text+Number with E_ARGUMENT_TYPE",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "N03",
+      "requirement": "Exact case-sensitive text equality and legacy comparison migration",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#N03"
+      ],
+      "blocker": "Nonempty IR does not prove case-sensitive equality or comparison migration.",
+      "detail": "Formal scope UNVERIFIED: Nonempty IR does not prove case-sensitive equality or comparison migration. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "F01",
+      "requirement": "Mixed AND/OR short-circuits observable branch effects",
+      "status": "BLOCKED_EXTERNAL",
+      "tier": [
+        "unit",
+        "native"
+      ],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "internal/language/syntax/parser.go",
+        "internal/language/analysis/analyzer.go",
+        "internal/language/lower/lower.go",
+        "internal/language/lower/short_circuit.go",
+        "language_backend_adapter.go"
+      ],
+      "test_names": [
+        "TestP15F01StatementAndExpressionGuardRHS",
+        "TestP15F01StaticSkipsMissingTarget",
+        "TestP15F01BooleanStatementUsesValueNotPresence",
+        "TestP15F01GuardOracleRejectsMutations",
+        "TestP15F01RuntimeFixtureCompiles",
+        "TestP15F01HybridEditedPredicateGuardsRHS"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-evidence.json#ev-local-F01-unit",
+        "acceptance-local-evidence.json#ev-local-F01-native"
+      ],
+      "blocker": "Required external tier has no validated current-SHA evidence in this local run",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15F01StatementAndExpressionGuardRHS, TestP15F01StaticSkipsMissingTarget, TestP15F01BooleanStatementUsesValueNotPresence, TestP15F01GuardOracleRejectsMutations, TestP15F01RuntimeFixtureCompiles, TestP15F01HybridEditedPredicateGuardsRHS; signed runtime still required)",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "F02",
+      "requirement": "Nested for/repeat scope and zero-based indices",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#F02"
+      ],
+      "blocker": "Seven actions do not prove group identities, scopes, or zero-based indices.",
+      "detail": "Formal scope UNVERIFIED: Seven actions do not prove group identities, scopes, or zero-based indices. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "F03",
+      "requirement": "Value if/menu yield typing and normal-path coverage",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#F03"
+      ],
+      "blocker": "Nonempty lowering and any diagnostic do not validate typed branch outputs or all normal paths.",
+      "detail": "Formal scope UNVERIFIED: Nonempty lowering and any diagnostic do not validate typed branch outputs or all normal paths. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "F04",
+      "requirement": "Value loop collects one semantic element per iteration",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#F04"
+      ],
+      "blocker": "A repeat-end UUID does not prove one semantic collected element per iteration.",
+      "detail": "Formal scope UNVERIFIED: A repeat-end UUID does not prove one semantic collected element per iteration. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "F05",
+      "requirement": "Stop Shortcut is not substituted for break",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#F05"
+      ],
+      "blocker": "A parser error for while/break does not separately prove break behavior inside a supported loop.",
+      "detail": "Formal scope UNVERIFIED: A parser error for while/break does not separately prove break behavior inside a supported loop. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "FN01",
+      "requirement": "AST-defined function call returns then caller continues",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#FN01"
+      ],
+      "blocker": "Action count does not prove returned value and caller continuation.",
+      "detail": "Formal scope UNVERIFIED: Action count does not prove returned value and caller continuation. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "FN02",
+      "requirement": "Presence-tagged argument defaults include false/0/empty",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#FN02"
+      ],
+      "blocker": "Action count does not inspect presence tags and explicit false/zero/empty defaults.",
+      "detail": "Formal scope UNVERIFIED: Action count does not inspect presence tags and explicit false/zero/empty defaults. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "FN03",
+      "requirement": "No implicit runtime capture; terminating recursive call",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#FN03"
+      ],
+      "blocker": "Nonempty recursive lowering and any capture diagnostic do not prove recursive results and capture boundaries.",
+      "detail": "Formal scope UNVERIFIED: Nonempty recursive lowering and any capture diagnostic do not prove recursive results and capture boundaries. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "FN04",
+      "requirement": "Caller input vs internal dispatcher envelope",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#FN04"
+      ],
+      "blocker": "Action count does not inspect dispatcher envelope validation.",
+      "detail": "Formal scope UNVERIFIED: Action count does not inspect dispatcher envelope validation. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "FN05",
+      "requirement": "Structured argument/result transport",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#FN05"
+      ],
+      "blocker": "Text/number lowering does not exercise structured argument/result transport.",
+      "detail": "Formal scope UNVERIFIED: Text/number lowering does not exercise structured argument/result transport. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "M01",
+      "requirement": "Header target/input/output/no-input/icon/source surfaces",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#M01"
+      ],
+      "blocker": "One icon glyph does not cover target, input/output, no-input, source, and header round-trip.",
+      "detail": "Formal scope UNVERIFIED: One icon glyph does not cover target, input/output, no-input, source, and header round-trip. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "M02",
+      "requirement": "Main body explicit return and Void fallthrough",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#M02"
+      ],
+      "blocker": "IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior.",
+      "detail": "Formal scope UNVERIFIED: IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "M03",
+      "requirement": "Setup question binds by node/parameter through lowering",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#M03"
+      ],
+      "blocker": "Import-question count does not validate node/parameter bindings and round-trip.",
+      "detail": "Formal scope UNVERIFIED: Import-question count does not validate node/parameter bindings and round-trip. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "M04",
+      "requirement": "Invalid setup use/reuse and Ask Each Time insertion",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#M04"
+      ],
+      "blocker": "Duplicate setup diagnostics do not cover invalid uses or Ask Each Time insertion.",
+      "detail": "Formal scope UNVERIFIED: Duplicate setup diagnostics do not cover invalid uses or Ask Each Time insertion. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "M05",
+      "requirement": "Seven existing trigger families migrate without install claims",
+      "status": "PASS",
+      "tier": [
+        "unit",
+        "native"
+      ],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "internal/language/migrate/migrate.go",
+        "internal/language/lower/lower.go"
+      ],
+      "test_names": [
+        "tools/language-acceptance:runMetadata"
+      ],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-evidence.json#ev-local-M05-unit",
+        "acceptance-local-evidence.json#ev-local-M05-native"
+      ],
+      "detail": "Verified legacy migration and lowering for all 7 trigger families: battery=true, screenshot=true, wifi=true, bluetooth=true, stageManager=true, display=true, charging=true",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "IM01",
+      "requirement": "Relative aliases, duplicate imports and import cycle",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#IM01"
+      ],
+      "blocker": "Duplicate-alias diagnostics do not exercise relative imports and cycles.",
+      "detail": "Formal scope UNVERIFIED: Duplicate-alias diagnostics do not exercise relative imports and cycles. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "IM02",
+      "requirement": "Module top-level runtime initialization",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "migration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#IM02"
+      ],
+      "blocker": "Removing an include token does not execute module initialization or prove dependency order.",
+      "detail": "Formal scope UNVERIFIED: Removing an include token does not execute module initialization or prove dependency order. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "IM03",
+      "requirement": "Existing stdfunc behavior migrated from preserved upstream source",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#IM03"
+      ],
+      "blocker": "Global base64 lowering does not prove preserved upstream stdfunc migration.",
+      "detail": "Formal scope UNVERIFIED: Global base64 lowering does not prove preserved upstream stdfunc migration. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "IM04",
+      "requirement": "Local workspace resource traversal and symlink escape",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "security"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#IM04"
+      ],
+      "blocker": "filepath.Clean and a '..' prefix do not exercise a resource loader or reject symlink escapes.",
+      "detail": "Formal scope UNVERIFIED: filepath.Clean and a '..' prefix do not exercise a resource loader or reject symlink escapes. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "IM05",
+      "requirement": "Analysis with unresolved/remote package",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "security",
+        "service"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#IM05"
+      ],
+      "blocker": "An unresolved import diagnostic does not observe or prohibit network access.",
+      "detail": "Formal scope UNVERIFIED: An unresolved import diagnostic does not observe or prohibit network access. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "AC01",
+      "requirement": "All baseline definitions/variants/constructs accounted for",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "generation"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#AC01"
+      ],
+      "blocker": "A catalog count does not reconcile every definition, variant, and language construct.",
+      "detail": "Formal scope UNVERIFIED: A catalog count does not reconcile every definition, variant, and language construct. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "AC02",
+      "requirement": "Public custom action declaration feeds same schema/codecs",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#AC02"
+      ],
+      "blocker": "An injected empty schema action does not exercise public custom action source and codecs.",
+      "detail": "Formal scope UNVERIFIED: An injected empty schema action does not exercise public custom action source and codecs. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "AC03",
+      "requirement": "Unregistered codec, duplicate enum/label or stale facet",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "generation"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#AC03"
+      ],
+      "blocker": "Nonempty enums do not test bad codecs, duplicates, or stale facets.",
+      "detail": "Formal scope UNVERIFIED: Nonempty enums do not test bad codecs, duplicates, or stale facets. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "R01",
+      "requirement": "Unknown action and unknown nested/top-level fields round-trip",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#R01"
+      ],
+      "blocker": "One IR action identifier does not prove unknown nested and top-level native round-trip fields.",
+      "detail": "Formal scope UNVERIFIED: One IR action identifier does not prove unknown nested and top-level native round-trip fields. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "R02",
+      "requirement": "Known identifier with unmodeled value/static variant",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#R02"
+      ],
+      "blocker": "One IR scalar does not prove known-action variant import round-trip.",
+      "detail": "Formal scope UNVERIFIED: One IR scalar does not prove known-action variant import round-trip. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "R03",
+      "requirement": "Coercion-only/property-only/chained aggrandizements",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#R03"
+      ],
+      "blocker": "A hand-constructed aggrandizement slice is not serialized or round-tripped.",
+      "detail": "Formal scope UNVERIFIED: A hand-constructed aggrandizement slice is not serialized or round-tripped. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "R04",
+      "requirement": "Original missing parameters not default-filled",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#R04"
+      ],
+      "blocker": "Assigning OmitPolicyOmit to a struct does not exercise imported parameter omission.",
+      "detail": "Formal scope UNVERIFIED: Assigning OmitPolicyOmit to a struct does not exercise imported parameter omission. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "R05",
+      "requirement": "Opaque/native regions, exports and workflow fallback",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#R05"
+      ],
+      "blocker": "A hand-constructed workflow length does not execute opaque regions, exports, or fallback.",
+      "detail": "Formal scope UNVERIFIED: A hand-constructed workflow length does not execute opaque regions, exports, or fallback. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "R06",
+      "requirement": "XML/binary/unsigned Shortcut/JSON workflow intake",
+      "status": "PASS",
+      "tier": [
+        "integration"
+      ],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "import_fidelity.go",
+        "hybrid_import.go",
+        "mobile_compiler.go"
+      ],
+      "test_names": [
+        "TestP15R06ProductionImportFormats",
+        "TestHYB18_SignedShortcutContainerRejected",
+        "TestHYB20_TrailingGarbageAfterJSONRootRejected",
+        "TestHYB21_MalformedActionEntriesRejectedWithExactIndex"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-evidence.json#ev-local-R06-integration"
+      ],
+      "detail": "Executed production tests: TestP15R06ProductionImportFormats, TestHYB18_SignedShortcutContainerRejected, TestHYB20_TrailingGarbageAfterJSONRootRejected, TestHYB21_MalformedActionEntriesRejectedWithExactIndex",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "R07",
+      "requirement": "Intended single-property edit vs collateral structural change",
+      "status": "PASS",
+      "tier": [
+        "integration"
+      ],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "semantic_import_planner.go",
+        "hybrid_import.go",
+        "import_provenance.go"
+      ],
+      "test_names": [
+        "TestSEM28_UserEditOnNaturalActionIsolated",
+        "TestSEM29_UserEditInsideControlRegionIsolated",
+        "TestSEM30_OnlyTargetActionChangesAndNoCollateralDelta",
+        "TestSEM34_TamperDetectionAndStrictCompareAsymmetry"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-evidence.json#ev-local-R07-integration"
+      ],
+      "detail": "Executed production tests: TestSEM28_UserEditOnNaturalActionIsolated, TestSEM29_UserEditInsideControlRegionIsolated, TestSEM30_OnlyTargetActionChangesAndNoCollateralDelta, TestSEM34_TamperDetectionAndStrictCompareAsymmetry",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "E01",
+      "requirement": "Contextual labels/enums/compatible variables completion",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "service",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#E01"
+      ],
+      "blocker": "A small completion set does not cover contextual labels, enums, compatible variables, or UI.",
+      "detail": "Formal scope UNVERIFIED: A small completion set does not cover contextual labels, enums, compatible variables, or UI. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "E02",
+      "requirement": "Multiple diagnostics and full ranges on incomplete code",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "service",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#E02"
+      ],
+      "blocker": "Diagnostic count does not inspect complete ranges and incomplete-code UI behavior.",
+      "detail": "Formal scope UNVERIFIED: Diagnostic count does not inspect complete ranges and incomplete-code UI behavior. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "E03",
+      "requirement": "Hover/signature/definition/semantic rename",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "service",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#E03"
+      ],
+      "blocker": "Rename edit count does not inspect exact exclusions or hover/signature/definition behavior.",
+      "detail": "Formal scope UNVERIFIED: Rename edit count does not inspect exact exclusions or hover/signature/definition behavior. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "E04",
+      "requirement": "Formatter idempotence and literal/comment preservation",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#E04"
+      ],
+      "blocker": "Idempotence and one comment substring do not verify literal preservation and all comment contents.",
+      "detail": "Formal scope UNVERIFIED: Idempotence and one comment substring do not verify literal preservation and all comment contents. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "E05",
+      "requirement": "Rapid edits, cancellation and stale responses",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "service",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#E05"
+      ],
+      "blocker": "One out-of-order document update does not test cancellation and stale response publication.",
+      "detail": "Formal scope UNVERIFIED: One out-of-order document update does not test cancellation and stale response publication. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "E06",
+      "requirement": "LSP UTF-16/default negotiation and Cocoa offsets",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "protocol",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#E06"
+      ],
+      "blocker": "One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface.",
+      "detail": "Formal scope UNVERIFIED: One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "E07",
+      "requirement": "Visual source edit changes intended node only",
+      "status": "BLOCKED_EXTERNAL",
+      "tier": [
+        "integration"
+      ],
+      "required_tiers": [
+        "integration",
+        "ios-ui"
+      ],
+      "production_path": [
+        "internal/language/service/service.go"
+      ],
+      "test_names": [
+        "tools/language-acceptance:runEditor"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-evidence.json#ev-local-E07-integration"
+      ],
+      "blocker": "Required external tier has no validated current-SHA evidence in this local run",
+      "detail": "Local assertions verified; pending external tier: [ios-ui] (ApplyVisualSourceEdit mutates only bounded target span and rejects invalid action index)",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "E08",
+      "requirement": "Performance fixtures small/large and embedded assets",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "benchmark"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#E08"
+      ],
+      "blocker": "Fifty tiny edits do not cover small/large documents and embedded assets.",
+      "detail": "Formal scope UNVERIFIED: Fifty tiny edits do not cover small/large documents and embedded assets. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "CL01",
+      "requirement": "JSON commands emit parseable response and reliable exit status",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#CL01"
+      ],
+      "blocker": "In-process capability fields do not execute JSON CLI commands or observe their exit status.",
+      "detail": "Formal scope UNVERIFIED: In-process capability fields do not execute JSON CLI commands or observe their exit status. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "CL02",
+      "requirement": "Analysis never emits/signs/executes/installs",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "security",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#CL02"
+      ],
+      "blocker": "Unchanged directory entry count does not observe signing, execution, installation, or writes.",
+      "detail": "Formal scope UNVERIFIED: Unchanged directory entry count does not observe signing, execution, installation, or writes. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "CL03",
+      "requirement": "Normal production path rejects legacy public syntax",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#CL03"
+      ],
+      "blocker": "Migrating legacy syntax does not exercise production CLI rejection of that syntax.",
+      "detail": "Formal scope UNVERIFIED: Migrating legacy syntax does not exercise production CLI rejection of that syntax. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "D01",
+      "requirement": "All generated action signatures match assembled schema",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "generation",
+        "docs"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#D01"
+      ],
+      "blocker": "Fingerprint presence does not compare every generated signature with the schema.",
+      "detail": "Formal scope UNVERIFIED: Fingerprint presence does not compare every generated signature with the schema. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "D02",
+      "requirement": "Runnable and deliberately-invalid docs examples tested",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "docs"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#D02"
+      ],
+      "blocker": "The selected docs test parses/analyzes examples; it does not execute their production compilation/runtime.",
+      "detail": "Formal scope UNVERIFIED: The selected docs test parses/analyzes examples; it does not execute their production compilation/runtime. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "D03",
+      "requirement": "Active fork docs separated from upstream reference",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "docs",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#D03"
+      ],
+      "blocker": "File existence does not verify active fork docs, publication, and upstream separation.",
+      "detail": "Formal scope UNVERIFIED: File existence does not verify active fork docs, publication, and upstream separation. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "K01",
+      "requirement": "Complete updated package and unpacked self-test",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "skill-package"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#K01"
+      ],
+      "blocker": "SKILL.md length does not unpack a package or run its self-test.",
+      "detail": "Formal scope UNVERIFIED: SKILL.md length does not unpack a package or run its self-test. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "K02",
+      "requirement": "Fresh install and incompatible cached/bundled binary",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#K02"
+      ],
+      "blocker": "Script substrings do not execute a fresh install or reject an incompatible binary.",
+      "detail": "Formal scope UNVERIFIED: Script substrings do not execute a fresh install or reject an incompatible binary. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "K03",
+      "requirement": "Exact commit install and checksum/atomic update",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#K03"
+      ],
+      "blocker": "A compilerCommit key does not install that SHA or test checksums and atomic updates.",
+      "detail": "Formal scope UNVERIFIED: A compilerCommit key does not install that SHA or test checksums and atomic updates. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "K04",
+      "requirement": "Offline compatible cache and docs mismatch",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#K04"
+      ],
+      "blocker": "A fingerprint substring does not exercise offline cache and docs mismatch behavior.",
+      "detail": "Formal scope UNVERIFIED: A fingerprint substring does not exercise offline cache and docs mismatch behavior. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "K05",
+      "requirement": "Structured repair/build/import/edit/sign workflow",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#K05"
+      ],
+      "blocker": "Script length does not execute repair/build/import/edit/sign workflows.",
+      "detail": "Formal scope UNVERIFIED: Script length does not execute repair/build/import/edit/sign workflows. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "CI01",
+      "requirement": "Encoding EXPECT intentionally broken in test",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "negative-ci"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#CI01"
+      ],
+      "blocker": "Comparing two unequal literal strings does not execute a negative CI gate.",
+      "detail": "Formal scope UNVERIFIED: Comparing two unequal literal strings does not execute a negative CI gate. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "CI02",
+      "requirement": "Selected real iOS language fixtures",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#CI02"
+      ],
+      "blocker": "Nonempty IR for a runtime fixture is not an iOS runtime execution.",
+      "detail": "Formal scope UNVERIFIED: Nonempty IR for a runtime fixture is not an iOS runtime execution. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "CI03",
+      "requirement": "Final required workflows use exact final SHA",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "repository",
+        "ci"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#CI03"
+      ],
+      "blocker": "A 40-character local SHA does not prove final workflow head/checkout provenance.",
+      "detail": "Formal scope UNVERIFIED: A 40-character local SHA does not prove final workflow head/checkout provenance. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "CI04",
+      "requirement": "No private raw corpus or unrequested signing",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "security",
+        "repository"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#CI04"
+      ],
+      "blocker": "Absence of private_key.pem is not a private-corpus, credentials, or signing audit.",
+      "detail": "Formal scope UNVERIFIED: Absence of private_key.pem is not a private-corpus, credentials, or signing audit. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "AI01",
+      "requirement": "Held-out equal-budget old/new model evaluation harness",
+      "status": "BLOCKED_EXTERNAL",
+      "tier": [],
+      "required_tiers": [
+        "external-eval"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "External held-out model evaluation endpoint not configured",
+      "detail": "Harness prepared; external model evaluation API endpoint not configured per Section 22.5",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "END01",
+      "requirement": "Final pushed branches/artifacts/provenance and clean worktree",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "repository"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [
+        "acceptance-local-observations.json#END01"
+      ],
+      "blocker": "Successful git status does not establish a clean tree, pushed branches, artifacts, or delivery provenance.",
+      "detail": "Formal scope UNVERIFIED: Successful git status does not establish a clean tree, pushed branches, artifacts, or delivery provenance. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "scope": "Observed smoke only; no formal acceptance tier proven"
+    },
+    {
+      "id": "RP01",
+      "requirement": "Verification aggregator",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP02",
+      "requirement": "Required evidence levels",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP03",
+      "requirement": "Portable contract intake",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP04",
+      "requirement": "Compile cannot bypass analysis",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "cli",
+        "embedded"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP05",
+      "requirement": "Literal legacy-looking text",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "cli",
+        "embedded"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP06",
+      "requirement": "Current declaration propagation",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "generation",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP07",
+      "requirement": "Facet conflict is detected",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "generation",
+        "negative-integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP08",
+      "requirement": "Schema fingerprint and typed facts",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "generation",
+        "unit"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP09",
+      "requirement": "Static action variants",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-differential"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP10",
+      "requirement": "Custom callbacks and App Intents",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-differential"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP11",
+      "requirement": "Number-as-text and reference forms",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-differential"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP12",
+      "requirement": "Named argument effect order",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP13",
+      "requirement": "Variadic list API",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP14",
+      "requirement": "Binding capture and native types",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP15",
+      "requirement": "Compound assignment",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP16",
+      "requirement": "Exhaustive node handling",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-negative"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP17",
+      "requirement": "Comparisons and arithmetic",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP18",
+      "requirement": "Observable short circuit",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP19",
+      "requirement": "Literal and Unicode f-strings",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-roundtrip",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP20",
+      "requirement": "Container and optional shape",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP21",
+      "requirement": "Safe zero-based indexing",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP22",
+      "requirement": "Loop item and index bindings",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP23",
+      "requirement": "Value block and loop yields",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP24",
+      "requirement": "Function return and recursion",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP25",
+      "requirement": "Function default and transport",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP26",
+      "requirement": "Caller input and Void",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP27",
+      "requirement": "Real module resolution",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service",
+        "migration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP28",
+      "requirement": "Generated existing stdfunc",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "generation",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP29",
+      "requirement": "Asset and path authorization",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "security",
+        "service",
+        "benchmark"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP30",
+      "requirement": "Header metadata roundtrip",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP31",
+      "requirement": "Setup indices and askEachTime",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service",
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP32",
+      "requirement": "Existing triggers and declarations",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP33",
+      "requirement": "Syntax-aware migration",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "migration",
+        "native-differential"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP34",
+      "requirement": "Atomic failed migration",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration",
+        "negative"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP35",
+      "requirement": "Native forms and unknown values",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP36",
+      "requirement": "Shared intake formats",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP37",
+      "requirement": "Allowed edit and fail-closed gate",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration",
+        "negative"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP38",
+      "requirement": "Contextual service and LSP",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "service",
+        "protocol"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP39",
+      "requirement": "Format, rename and stale edits",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP40",
+      "requirement": "Actual Swift integration",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "app-integration",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP41",
+      "requirement": "Preview bounded source edit",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP42",
+      "requirement": "Real public CLI and installed tools",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "cli",
+        "skill-package"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP43",
+      "requirement": "Output/signing failure behavior",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration",
+        "security"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP44",
+      "requirement": "Skill compatibility rejection",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "skill-package",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP45",
+      "requirement": "Exact install and rollback",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "skill-package",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP46",
+      "requirement": "Docs and Skill retrieval coherence",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "docs",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP47",
+      "requirement": "Native encoding negative gate",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "negative-ci"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP48",
+      "requirement": "Real runtime computed assertions",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP49",
+      "requirement": "Final SHA and artifact binding",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "repository",
+        "ci",
+        "skill-package"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP50",
+      "requirement": "Executable AI evaluation harness",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "harness-unit",
+        "external-eval"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP51",
+      "requirement": "Performance and race evidence",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "benchmark",
+        "race"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "RP52",
+      "requirement": "No accidental second user frontend",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration",
+        "repository"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG01",
+      "requirement": "Takeover preserves interrupted work",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "repository"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG02",
+      "requirement": "Strict comparator rejects wrong reference edges",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG03",
+      "requirement": "Strict comparator retains tree and text meaning",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG04",
+      "requirement": "Evidence validator derives actual tiers",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG05",
+      "requirement": "Canonical action builder is really invoked",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG06",
+      "requirement": "Backend state and error isolation",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "integration",
+        "security"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG07",
+      "requirement": "Direct reference transformations survive",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-structure",
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG08",
+      "requirement": "Inline text references share canonical codec",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-roundtrip",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG09",
+      "requirement": "Semantic containers and native templates stay distinct",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-structure",
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG10",
+      "requirement": "Capture and written-order evaluation",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG11",
+      "requirement": "Parameter forms and typed defaults",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG12",
+      "requirement": "Nested and mixed loop identity",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG13",
+      "requirement": "Typed conditions and dynamic short circuit",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG14",
+      "requirement": "Value blocks, loop results and return",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG15",
+      "requirement": "Function transport and recursion",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG16",
+      "requirement": "Bounds and numeric semantics",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-structure",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG17",
+      "requirement": "Metadata, setup and trigger preservation",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG18",
+      "requirement": "Native action/block/full workflow paths",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "native-roundtrip",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG19",
+      "requirement": "Safe import editing and structural migration",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration",
+        "native-roundtrip"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG20",
+      "requirement": "Modules and existing standard functions",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "service",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG21",
+      "requirement": "Authorized resource access and pure services",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "security",
+        "integration",
+        "service"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG22",
+      "requirement": "Live schema and generation failure handling",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "generation",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG23",
+      "requirement": "Real upstream declaration propagation",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "repository",
+        "integration",
+        "generation"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG24",
+      "requirement": "Real canonical behavior propagation",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "repository",
+        "integration",
+        "native-structure"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG25",
+      "requirement": "One checked public CLI/mobile route",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration",
+        "ios-build",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG26",
+      "requirement": "Exact explicit signing payload",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "integration",
+        "ios-runtime"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG27",
+      "requirement": "Real editor ranges, completion and stale edits",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "service",
+        "integration",
+        "ios-ui"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG28",
+      "requirement": "Preview bounded edit and measured performance",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "integration",
+        "ios-ui",
+        "benchmark"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG29",
+      "requirement": "Generated active docs and executable examples",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "generation",
+        "docs",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG30",
+      "requirement": "Complete extracted Skill and immutable compatibility",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "skill-package",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG31",
+      "requirement": "Actual encoding negative gate and exact-SHA CI",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "ci",
+        "ios-runtime",
+        "repository",
+        "security"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG32",
+      "requirement": "Full obligation accounting and executable AI harness",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "integration",
+        "repository"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    },
+    {
+      "id": "BRG33",
+      "requirement": "Approved frontend semantics remain enforced",
+      "status": "UNVERIFIED",
+      "tier": [],
+      "required_tiers": [
+        "unit",
+        "analysis",
+        "service",
+        "integration"
+      ],
+      "production_path": [
+        "tools/language-acceptance/main.go"
+      ],
+      "test_names": [],
+      "positive_and_negative": false,
+      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "evidence": [],
+      "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
+      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
+    }
+  ],
+  "schema_version": "1",
+  "scope": "Executed local assertions and explicit unexecuted obligations; declaration mappings are not execution evidence",
+  "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c"
+}

@@ -1,0 +1,137 @@
+[
+  {
+    "evidence_id": "ev-local-U03-integration",
+    "requirements": [
+      "U03"
+    ],
+    "tier": "integration",
+    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "test_id": "tools/language-acceptance:runUpstream",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestUpstreamPropagationRehearsal"
+    },
+    "detail": "Executed production tests: TestUpstreamPropagationRehearsal"
+  },
+  {
+    "evidence_id": "ev-local-N02-unit",
+    "requirements": [
+      "N02"
+    ],
+    "tier": "unit",
+    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "test_id": "tools/language-acceptance:runNumbers",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Analyzer rejects literal /0 and %0 with E_ARGUMENT_TYPE and Text+Number with E_ARGUMENT_TYPE"
+    },
+    "detail": "Analyzer rejects literal /0 and %0 with E_ARGUMENT_TYPE and Text+Number with E_ARGUMENT_TYPE"
+  },
+  {
+    "evidence_id": "ev-local-F01-unit",
+    "requirements": [
+      "F01"
+    ],
+    "tier": "unit",
+    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "test_id": "tools/language-acceptance:runControl",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15F01StatementAndExpressionGuardRHS, TestP15F01StaticSkipsMissingTarget, TestP15F01BooleanStatementUsesValueNotPresence, TestP15F01GuardOracleRejectsMutations, TestP15F01RuntimeFixtureCompiles, TestP15F01HybridEditedPredicateGuardsRHS; signed runtime still required)"
+    },
+    "detail": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15F01StatementAndExpressionGuardRHS, TestP15F01StaticSkipsMissingTarget, TestP15F01BooleanStatementUsesValueNotPresence, TestP15F01GuardOracleRejectsMutations, TestP15F01RuntimeFixtureCompiles, TestP15F01HybridEditedPredicateGuardsRHS; signed runtime still required)"
+  },
+  {
+    "evidence_id": "ev-local-F01-native",
+    "requirements": [
+      "F01"
+    ],
+    "tier": "native",
+    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "test_id": "tools/language-acceptance:runControl",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15F01StatementAndExpressionGuardRHS, TestP15F01StaticSkipsMissingTarget, TestP15F01BooleanStatementUsesValueNotPresence, TestP15F01GuardOracleRejectsMutations, TestP15F01RuntimeFixtureCompiles, TestP15F01HybridEditedPredicateGuardsRHS; signed runtime still required)"
+    },
+    "detail": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15F01StatementAndExpressionGuardRHS, TestP15F01StaticSkipsMissingTarget, TestP15F01BooleanStatementUsesValueNotPresence, TestP15F01GuardOracleRejectsMutations, TestP15F01RuntimeFixtureCompiles, TestP15F01HybridEditedPredicateGuardsRHS; signed runtime still required)"
+  },
+  {
+    "evidence_id": "ev-local-M05-unit",
+    "requirements": [
+      "M05"
+    ],
+    "tier": "unit",
+    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "test_id": "tools/language-acceptance:runMetadata",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Verified legacy migration and lowering for all 7 trigger families: battery=true, screenshot=true, wifi=true, bluetooth=true, stageManager=true, display=true, charging=true"
+    },
+    "detail": "Verified legacy migration and lowering for all 7 trigger families: battery=true, screenshot=true, wifi=true, bluetooth=true, stageManager=true, display=true, charging=true"
+  },
+  {
+    "evidence_id": "ev-local-M05-native",
+    "requirements": [
+      "M05"
+    ],
+    "tier": "native",
+    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "test_id": "tools/language-acceptance:runMetadata",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Verified legacy migration and lowering for all 7 trigger families: battery=true, screenshot=true, wifi=true, bluetooth=true, stageManager=true, display=true, charging=true"
+    },
+    "detail": "Verified legacy migration and lowering for all 7 trigger families: battery=true, screenshot=true, wifi=true, bluetooth=true, stageManager=true, display=true, charging=true"
+  },
+  {
+    "evidence_id": "ev-local-R06-integration",
+    "requirements": [
+      "R06"
+    ],
+    "tier": "integration",
+    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "test_id": "tools/language-acceptance:runNative",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15R06ProductionImportFormats, TestHYB18_SignedShortcutContainerRejected, TestHYB20_TrailingGarbageAfterJSONRootRejected, TestHYB21_MalformedActionEntriesRejectedWithExactIndex"
+    },
+    "detail": "Executed production tests: TestP15R06ProductionImportFormats, TestHYB18_SignedShortcutContainerRejected, TestHYB20_TrailingGarbageAfterJSONRootRejected, TestHYB21_MalformedActionEntriesRejectedWithExactIndex"
+  },
+  {
+    "evidence_id": "ev-local-R07-integration",
+    "requirements": [
+      "R07"
+    ],
+    "tier": "integration",
+    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "test_id": "tools/language-acceptance:runNative",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestSEM28_UserEditOnNaturalActionIsolated, TestSEM29_UserEditInsideControlRegionIsolated, TestSEM30_OnlyTargetActionChangesAndNoCollateralDelta, TestSEM34_TamperDetectionAndStrictCompareAsymmetry"
+    },
+    "detail": "Executed production tests: TestSEM28_UserEditOnNaturalActionIsolated, TestSEM29_UserEditInsideControlRegionIsolated, TestSEM30_OnlyTargetActionChangesAndNoCollateralDelta, TestSEM34_TamperDetectionAndStrictCompareAsymmetry"
+  },
+  {
+    "evidence_id": "ev-local-E07-integration",
+    "requirements": [
+      "E07"
+    ],
+    "tier": "integration",
+    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "test_id": "tools/language-acceptance:runEditor",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Local assertions verified; pending external tier: [ios-ui] (ApplyVisualSourceEdit mutates only bounded target span and rejects invalid action index)"
+    },
+    "detail": "Local assertions verified; pending external tier: [ios-ui] (ApplyVisualSourceEdit mutates only bounded target span and rejects invalid action index)"
+  }
+]

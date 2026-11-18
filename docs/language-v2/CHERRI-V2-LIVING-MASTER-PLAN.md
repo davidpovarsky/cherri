@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.4.0 | **Baseline verified:** 2026-11-11 (Asia/Jerusalem) | **Status:** P0-P9 COMPLETED_VERIFIED; P10R8 (38/38 Lossless Fidelity) & P10R9 (Unified Engine, Reverse Action Registry & 38/38 Hybrid Readable Import in Legacy + V2, HYB01-HYB30) COMPLETED_VERIFIED on `agent/cherri-p10r9-unified-engine-hybrid-import-20261111`; 71/94 LOCAL ACCEPTANCE PASSED (0 failed; 22 simulator/runtime obligations proved via CI; AI01 BLOCKED_EXTERNAL; 38-shortcut physical device runtime 0/38 BLOCKED_DEVICE).
+> **Plan version:** 2.5.0 | **Current audit:** 2026-11-18 | **Status:** P10R15 IN_PROGRESS from verified P10R14. Formal local report: **5/179 PASS, 0 failed assertions, 174 pending or unexecuted**; **closure_complete=false**. See chapter 16 for current scope. Earlier P0-P12 completion labels and corpus counts describe their historical runs, not the final P10R15 candidate.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -897,8 +897,42 @@ Next smallest independently verifiable batch:
     - Physical hardware status remains **`APPLE_RUNTIME_EXECUTED: BLOCKED_DEVICE`**.
 
 
+## 16. P10R15 — Formal acceptance repair and current release work (2026-11-18)
 
+This chapter supersedes earlier completion wording as a statement about the current release. Sections 1–15 retain historical provenance; they are not automatic proof for a newer SHA.
 
+| Item | Current state |
+|---|---|
+| Verified starting point | P10R14 `ca8a62327e429d5574c8f2a5d440de2c5e553ab2` |
+| Acceptance component source | `e424174567acbf99bea2a76aa1ec79b05a18470c` |
+| F01 implementation | `985d8eda1b276a351c64e3facb2c4276749be18b` plus hybrid correction `80be0386293966e7fdda99b86a018c4e42b8aa69` |
+| Formal-scope correction | `af33e8fb334554a2b8bb3740543f799940a08628` |
+| Formal obligations | 94 original + 52 repair + 33 recovery = **179** |
+| Executed local report | **5 PASS / 0 FAIL / 174 pending or unexecuted** |
+| Detailed audit classes | **5 PASS / 171 UNVERIFIED / 3 BLOCKED_EXTERNAL** |
+| Release closure | **false**; final integrated SHA and required tiers remain open |
 
+### Milestones and acceptance matrix
 
+- [x] Reproduce and fix eager RHS execution for authored statement predicates and for new conditions appended to imported sources.
+- [x] Reproduce and fix Boolean value-versus-presence semantics for authored bindings and computed logical results.
+- [x] Execute actual production import-format, editable-source and negative mutation regressions for R06/R07.
+- [x] Separate 86 narrow smoke observations from formal tier evidence and stop linking unexecuted RP/BRG scenarios to invented passes.
+- [x] Persist all 179 IDs with source SHA, production/test mapping, evidence scope and blocker.
+- [ ] Complete the missing requirement-specific scenarios; a full Go suite alone does not supply that mapping.
+- [ ] Validate the exact final candidate on signed Apple runtime, iOS UI, installed consumers and required CI.
+- [ ] Close physical-device and external evaluation requirements only with their own evidence.
 
+### Open defects, decisions and evidence
+
+The F01 fixture `tests/language-v2/v2-short-circuit-runtime.cherri` must return `P15_F01_OK` on signed runtime. Current local evidence proves serialized guards and rejects eager, duplicate and unbalanced mutations. It does not prove execution on Apple hardware.
+
+Imported bare predicates retain native presence for original imported symbols because provenance does not identify per-statement authorship. For a new Boolean-value intent on such a symbol, use explicit equality with true or `isTrue(...)`. Newly declared Bool bindings under the same header use value semantics.
+
+The historical 71-pass headline was broader than its probes. For example, a statement count did not prove precedence, a clean-path prefix did not prove resource security, a file length did not prove Skill installation, and a successful `git status` invocation did not prove release delivery. Those observations remain available with individual coverage gaps. This status correction does not assert new product regressions.
+
+See [P10R15 acceptance review](p10r15-formal-acceptance-review.md), [179-ID audit](acceptance-execution-audit.json), [local proof records](acceptance-local-evidence.json), and [smoke observations](acceptance-local-observations.json). Snapshot source: `e424174567acbf99bea2a76aa1ec79b05a18470c`; local run: `job_162570051679`; generated: `2026-11-18T02:30:06Z`.
+
+### Next work
+
+Continue independent implementation and verification on the existing shared core. Priority work includes requirement-specific formal producers, exact-candidate signed runtime, debug/release profiles, typed require/block/measure/collect, installed Skill and external consumers, performance diagnostics, and release evidence. Asana task `1220432417414104` remains open until the formal tiers are met; root integration owns its handoff updates.
