@@ -1,0 +1,136 @@
+{
+  "sourceCommit": "07f5e294e6cdfd7c31587ac9ed36a5a99ab4ffe4",
+  "sourceTreeCleanBeforeAndAfter": true,
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-count=1",
+    "-timeout",
+    "3m",
+    "-run",
+    "^TestTypeOpaqueProductionEvidence$",
+    "./tools/language-acceptance"
+  ],
+  "exitCode": 0,
+  "rawLogSha256": "0705399b6c1775e82000b5ddf8384da38c18c3c4b415ea51517c80fabef4a3c8",
+  "executedAt": "2026-11-18T20:03:41.233818+00:00",
+  "receipt": {
+    "records": [
+      {
+        "evidence_id": "ev-local-T04-unit",
+        "requirements": [
+          "T04"
+        ],
+        "tier": "unit",
+        "implementation_sha": "07f5e294e6cdfd7c31587ac9ed36a5a99ab4ffe4",
+        "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeProduction",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+        },
+        "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+      },
+      {
+        "evidence_id": "ev-local-T04-service",
+        "requirements": [
+          "T04"
+        ],
+        "tier": "service",
+        "implementation_sha": "07f5e294e6cdfd7c31587ac9ed36a5a99ab4ffe4",
+        "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeService",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+        },
+        "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+      }
+    ],
+    "report": {
+      "timestamp": "2026-11-18T20:03:40Z",
+      "phase": "local",
+      "closure_complete": false,
+      "language_version": "2.0",
+      "schema_fingerprint": "",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "results": [
+        {
+          "id": "T04",
+          "group": "types",
+          "requirement": "Unknown differs from AnyContent and Void",
+          "test_level": "unit+service",
+          "executed_levels": [
+            "unit",
+            "service"
+          ],
+          "passed": true,
+          "status": "PASSED",
+          "detail": "All required tiers satisfied by verified evidence"
+        }
+      ]
+    },
+    "scope": "Only T04 authored assignment evidence, Void value rejection and actual Service diagnostics; native attachment compatibility is not a type guarantee, no Apple runtime or release closure",
+    "source_sha": "07f5e294e6cdfd7c31587ac9ed36a5a99ab4ffe4",
+    "source_tree_clean": true
+  },
+  "testResults": [
+    {
+      "test": "TestTypeOpaqueProductionEvidence",
+      "action": "pass",
+      "elapsed": 5.72
+    },
+    {
+      "test": null,
+      "action": "pass",
+      "elapsed": 7.314
+    }
+  ],
+  "sentinelJobId": "job_51538dbb53f6",
+  "committedLogSha256": "0705399b6c1775e82000b5ddf8384da38c18c3c4b415ea51517c80fabef4a3c8",
+  "causalSourceRed": {
+    "jobId": "job_e50f39223916",
+    "observedUnrejectedScenarios": 13,
+    "rawLogSha256": "8a277e72e8c16db03e8f1a848584e91f7322163b9ce771776d94cb305c9772c8",
+    "scope": "working tree with named actual production analyzer/service tests; the later added value-consumption controls are not counted as this original RED"
+  },
+  "finalWorkingCompatibility": {
+    "jobId": "job_f5068ddc9e7c",
+    "rootTopLevelPassed": 21,
+    "internalTopLevelPassed": 61,
+    "formalOpaqueProducer": "PASS",
+    "failedOrSkipped": 0
+  },
+  "eligibleEmptyLiteralCorrection": {
+    "jobId": "job_768e9c04463a",
+    "observedCandidateFailure": "eligible List<Number> = [] rejected as List<Unknown>",
+    "rawLogSha256": "d5a3d32e60909a252030143df85a4741d30b1329832ef6a0f9d834d6dbefe145",
+    "correction": "only authored empty List/Map literal and appropriate Optional destination compatibility; opaque collection not promoted"
+  }
+}

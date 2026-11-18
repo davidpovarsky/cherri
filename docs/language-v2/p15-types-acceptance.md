@@ -152,3 +152,7 @@ Clean source `fd63e4f1ffd3b87a632392163a784f02be11044a` passed `TestTypeNumberSt
 ### T04 final working source validation
 
 `job_f5068ddc9e7c` passed the final source before commit: 21 root production families, all 61 internal types/analysis/service/lower top-level tests, and the T04 formal unit/service producer. The root selection completed in 6.690 seconds, internal packages in 1.261-1.669 seconds each, and formal producer package in 4.575 seconds. No test failed or skipped in these selected commands. The exact clean source receipt is separate.
+
+### T04 exact committed execution
+
+Clean source `07f5e294e6cdfd7c31587ac9ed36a5a99ab4ffe4` passed its actual unit/service production wrapper in `job_51538dbb53f6` (5.720 seconds; package 7.314 seconds). The tree was clean before and after. Two distinct producer records satisfy T04 alone; missing and cross-tier evidence substitutions fail, and `closure_complete=false` remains. The raw JSONL digest is `0705399b6c1775e82000b5ddf8384da38c18c3c4b415ea51517c80fabef4a3c8`. The source-bound receipt, raw-log digest and normalized committed log are in `evidence/p15-types-07f5e29/`. No Apple runtime or complete catalog guarantee is inferred.
