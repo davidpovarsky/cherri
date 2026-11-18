@@ -1,0 +1,37 @@
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/argument
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/immutable
+    p15_unicode_text_acceptance_test.go:180: UTF-16 range {15, 1} has wrong or missing original producer: map[string]interface {}(nil)
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/mutable
+    p15_unicode_text_acceptance_test.go:180: UTF-16 range {15, 1} has wrong or missing original producer: map[string]interface {}(nil)
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/assignment
+    p15_unicode_text_acceptance_test.go:180: UTF-16 range {15, 1} has wrong or missing original producer: map[string]interface {}(nil)
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/list
+    p15_unicode_text_acceptance_test.go:180: UTF-16 range {15, 1} has wrong or missing original producer: map[string]interface {}(nil)
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/dictionary
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/argument
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/immutable
+    p15_unicode_text_acceptance_test.go:180: UTF-16 range {3, 1} has wrong or missing original producer: map[string]interface {}{"Type":"Variable", "VariableName":"mutable"}
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/mutable
+    p15_unicode_text_acceptance_test.go:180: UTF-16 range {3, 1} has wrong or missing original producer: map[string]interface {}{"Type":"Variable", "VariableName":"mutable"}
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/assignment
+    p15_unicode_text_acceptance_test.go:180: UTF-16 range {3, 1} has wrong or missing original producer: map[string]interface {}{"Type":"Variable", "VariableName":"mutable"}
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/list
+    p15_unicode_text_acceptance_test.go:180: UTF-16 range {3, 1} has wrong or missing original producer: map[string]interface {}{"Type":"Variable", "VariableName":"mutable"}
+=== RUN   TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/dictionary
+--- FAIL: TestP15S01ExactUTF16TokensAndLiteralBytes (0.03s)
+    --- PASS: TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/argument (0.01s)
+    --- FAIL: TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/immutable (0.00s)
+    --- FAIL: TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/mutable (0.00s)
+    --- FAIL: TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/assignment (0.00s)
+    --- FAIL: TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/list (0.00s)
+    --- PASS: TestP15S01ExactUTF16TokensAndLiteralBytes/hebrew_combining_zwj_and_repeated_producer/dictionary (0.00s)
+    --- PASS: TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/argument (0.00s)
+    --- FAIL: TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/immutable (0.00s)
+    --- FAIL: TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/mutable (0.00s)
+    --- FAIL: TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/assignment (0.00s)
+    --- FAIL: TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/list (0.00s)
+    --- PASS: TestP15S01ExactUTF16TokensAndLiteralBytes/literal_object_replacement_and_surrogate_pair/dictionary (0.00s)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.299s
+FAIL

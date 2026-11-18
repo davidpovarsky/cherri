@@ -1,0 +1,5 @@
+--- internal/language/lower/lower.go
++++ internal/language/lower/lower.go (isolated rune-offset mutation)
+@@ -4539 +4539 @@
+-				startUTF16 := len(utf16.Encode([]rune(fullText.String())))
++				startUTF16 := len([]rune(fullText.String()))
