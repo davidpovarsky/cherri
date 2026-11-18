@@ -201,3 +201,11 @@ Asana formal, Inspector, iOS and runtime tasks were updated with these scoped fa
 - PHASE5: S17 real Windows binary and canonical docs passed21macro compatibility controls, including9single-field faults with restored positive controls and old-manifest compatibility. There is no old-compiler case or installed-consumer promotion. Sanitized receipt retained with raw report/log hashes.
 - K04 direct18-case real offline script PASS and3bypass controls PASS; clean formal wrapper validation exposed a nested producer exit near its3-minute limit. The existing runner now retains bounded nested failure diagnostics and gives only the real shell producer a finite larger budget. Verification is active; no K04 formalPASS is inferred before that receipt. Existing5-minute full-package timeout remains recorded.
 - Main, original Pure, private corpus and live consumers remain preserved. Physical testing and disconnected ARM64 consumer are external blockers; autonomous source work continues.
+
+
+## 2026-11-18 18:20 Asia/Hebron - combined source boundary before regression
+
+- PHASE3: C04 and Legacy structured measure bodies are integrated with their source-bound receipts. Legacy6d9faaf actual19CLI/16exactroundtrips/8causalfaults and complete lower/backend packagesPASS. Typed result forwarding reuses existing attachments and shared backend ordering; native measure acceptance for Legacy remains open.
+- PHASE5: K04 exactclean22040ea formalintegration producerPASS and10existingSkillself-testPASS. The producer executes18real compatibility checks and all179IDs remain isolated. Source d80dde1 and bounded diagnostic follow-upa86ccb8 are integrated; missing offline docs no longer reportready.
+- PHASE4: exact52284f8 retry200 run44334461645 is independently auditedPASS:21published file hashes, exactfresh P15_HTTP_BODY_OK,2inline+2collector, oneprimary GET200 and onecontinuation GET200, serverSTOPPED. This does not prove catchability, status exposure or retry. Agent-owned500/404/429/transport probes44344880086/44345179210/44345197107/44345223487 remainpending.
+- Full Go, fresh179formal accounting, current505catalog and56release gates are next on an immutable combined phase source. The last complete private boundary remainsbbc60bc; a new private boundary follows source verification. No pending check is markedPASS.

@@ -2507,6 +2507,36 @@
       "reason": "Determine actual native storage behavior without inventing a second persistence backend.",
       "evidence": "Exacta0d774a clean proof:3Go tests,18graph mutations,4frontend/profile configurations,47Python controls,38actualCLI fixtures,3native-action roundtrips,3Release and5publication fault controls. Text pilot44337212109 still requires its own native result.",
       "note": "Typed archive, shared scope, missing/corrupt handling and cross-run persistence are not inferred from local graph checks."
+    },
+    {
+      "name": "P10R15 real offline Skill acceptance",
+      "locations": [
+        "skills/cherri-shortcuts/scripts/setup.sh",
+        "skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh",
+        "p15_skill_acceptance_test.go",
+        "tools/language-acceptance/skill_execution.go"
+      ],
+      "firstForkCommit": "d80dde14256b519f212caa07319d4ed0057c70d2",
+      "change": "Reject missing offline docs, exercise actual cache and precise isolated compatibility faults, and replace K04 substring smoke with named production evidence.",
+      "reason": "Observed offline setup incorrectly claimed readiness without docs; formal acceptance requires real execution.",
+      "evidence": "Exactclean22040ea K04integration producerPASS with18real compatibility cases and179-row isolation; existing10self-testPASS. Three causal bypasses rejected in retained earlier run. Raw failures and bounded timeout scope remain recorded in skill-offline-k04.md.",
+      "note": "K01/K02/K03/K05 and live installed consumers remain independent; no broad release closure."
+    },
+    {
+      "name": "P10R15 Legacy scoped value blocks and measure",
+      "locations": [
+        "scoped_blocks_legacy.go",
+        "parser.go",
+        "variables.go",
+        "shortcutgen.go",
+        "internal/language/backend/scoped_measure.go",
+        "p15_scoped_blocks_legacy_test.go"
+      ],
+      "firstForkCommit": "7035b7b167f99ef885a6a3a3efc3ac8a94072d2d",
+      "change": "Parse Legacy measure bodies once through existing token structures, preserve lexical binding snapshots and typed producer identity, and share timer/body/result ordering with V2.",
+      "reason": "Extend the existing scoped macro path to the preserved Legacy frontend without reparsing or a second backend.",
+      "evidence": "Exact6d9faaf focused40pass events,27lower/backend events,19actualCLI cases,16positive exact native-action roundtrips and8causal graph faults. Separate7ec4303 test-only repair distinguishes numeric input construction from fixed4-action Repeat region. See legacy-scoped-blocks-validation.json.",
+      "note": "General block parameters/closures/control-result declarations and signed runtime remain open; existing private-corpus gate reruns at the combined phase boundary."
     }
   ]
 }
