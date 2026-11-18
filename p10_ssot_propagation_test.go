@@ -354,6 +354,12 @@ func TestP10_AutomaticActionPropagation_Scenarios1To4(t *testing.T) {
 	if !v2Resp.OK {
 		t.Fatalf("Scenario 1 V2 compile failed: %s", v2Resp.Error)
 	}
+	// Unknown enum literals remain rejected. Registration fixes a false
+	// negative for Accurate; it must not disable validation generally.
+	invalidEnum := compileForMobileMode(synthActionName+"(\"Hello World\", mode: \"NotAValidMode\")\n", "SynthInvalid", "v2", false)
+	if invalidEnum.OK || !strings.Contains(invalidEnum.Error, "E_ENUM_MEMBER") {
+		t.Fatalf("Scenario 1 invalid dynamic enum must fail closed, response=%+v", invalidEnum)
+	}
 
 	legacyPlist, _ := base64.StdEncoding.DecodeString(legacyResp.PlistBase64)
 	v2Plist, _ := base64.StdEncoding.DecodeString(v2Resp.PlistBase64)
@@ -901,9 +907,10 @@ func extractFirstActionForParamTest(t *testing.T, plistBytes []byte) map[string]
 	}
 }
 
-// TestP10_SSoTNegativeDriftDetection (PART D.5) verifies that 10 distinct drift mutations across
-// .cherri declarations, generated_registry.go, facets, emitter ownership, and Pack modules
-// each fail closed deterministically.
+// TestP10_SSoTNegativeDriftDetection (PART D.5) verifies fail-closed compiler
+// source/registry drift and published Pack integrity independently. The Pack
+// verifier deliberately uses an immutable historical definition commit, so
+// modifying current working declarations must NOT rewrite that pinned release.
 func TestP10_SSoTNegativeDriftDetection(t *testing.T) {
 	ws := copyIsolatedSSoTWorkspace(t)
 	basicPath := filepath.Join(ws, "actions", "basic.cherri")
@@ -1074,22 +1081,59 @@ func TestP10_SSoTNegativeDriftDetection(t *testing.T) {
 		assertVerifyGeneratedFails(t, "9_Facet_Referencing_Removed_Primary_Parameter", "Facet validation failed:", false)
 	})
 
-	t.Run("10_Pure_Pack_Generator_Drift_Against_Modified_Cherri_Source", func(t *testing.T) {
+	t.Run("10_Pure_Pack_Pinned_Integrity_And_Prospective_Source_Drift", func(t *testing.T) {
 		defer restoreWorkspace()
+		// Pinned release verification and current-source prospective generation
+		// have different contracts. Tampering with current basic.cherri must
+		// change a prospective Pack, never the immutably pinned 141b9cc Pack.
 		mut := string(origBasic) + "\naction 'drift.pack' driftPackAction(text x: 'WFX')\n"
-		_ = os.WriteFile(basicPath, []byte(mut), 0644)
-
+		if err := os.WriteFile(basicPath, []byte(mut), 0644); err != nil {
+			t.Fatal(err)
+		}
 		repoRoot, err := os.Getwd()
 		if err != nil {
 			t.Fatal(err)
 		}
 		packScript := filepath.Join(repoRoot, "tools", "p10r3", "verify_or_generate_pack.py")
-		cmd := exec.Command("python", packScript, "--verify-generated", "--p10-root", ws)
-		cmd.Dir = repoRoot
-		out, err := cmd.CombinedOutput()
-		if err == nil {
-			t.Fatalf("10_Pure_Pack_Generator_Drift: expected verify_or_generate_pack.py --verify-generated to fail closed on drifted basic.cherri, but it passed:\n%s", string(out))
+		pinned := exec.Command("python", packScript, "--verify-generated", "--p10-root", ws)
+		pinned.Dir = repoRoot
+		if out, err := pinned.CombinedOutput(); err != nil {
+			t.Fatalf("pinned published Pack must remain reproducible from immutable source: %v\n%s", err, out)
+		}
+		prospectiveDir := filepath.Join(t.TempDir(), "prospective-pack")
+		prospective := exec.Command("python", packScript, "--generate", "--out-dir", prospectiveDir, "--p10-root", ws)
+		prospective.Dir = repoRoot
+		if out, err := prospective.CombinedOutput(); err != nil {
+			t.Fatalf("prospective Pack generation failed: %v\n%s", err, out)
+		}
+		prospectiveBasic, err := os.ReadFile(filepath.Join(prospectiveDir, "modules", "basic.cherri"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Contains(prospectiveBasic, []byte("driftPackAction(")) {
+			t.Fatal("prospective Pack failed to notice changed current-source action")
+		}
+		// Negative control: mutate an actual freshly regenerated pinned Pack
+		// module. Integrity verification MUST reject it by immutable SHA, and
+		// the failure must be due to module-byte drift, not a missing fixture.
+		const verifyMutation = `import importlib.util, pathlib, sys
+spec = importlib.util.spec_from_file_location("cherri_pack_verifier", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+errors = module.verify_generated_pack(
+    p10_root=pathlib.Path(sys.argv[2]),
+    mutated_modules={"basic.cherri": "// tampered published Pack module\n"},
+)
+if not any("Generated Pack module drift in basic.cherri:" in item for item in errors):
+    sys.stderr.write("MISSING_PINNED_PACK_DRIFT_FAILURE: " + repr(errors) + "\n")
+    sys.exit(1)
+print("PINNED_PACK_DRIFT_NEGATIVE_CONTROL_VERIFIED")
+`
+		negative := exec.Command("python", "-c", verifyMutation, packScript, ws)
+		negative.Dir = repoRoot
+		out, err := negative.CombinedOutput()
+		if err != nil || !bytes.Contains(out, []byte("PINNED_PACK_DRIFT_NEGATIVE_CONTROL_VERIFIED")) {
+			t.Fatalf("Pack output-integrity negative control was not proven: %v\n%s", err, out)
 		}
 	})
 }
-
