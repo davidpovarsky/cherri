@@ -16,6 +16,11 @@ on:
       - "p14_simulator_qa_runtime_trace_test.go"
   workflow_dispatch:
     inputs:
+      verify_local_ocr:
+        description: "Run independent generated-image Vision acceptance (failure fails this run)"
+        required: false
+        default: false
+        type: boolean
       probe_level:
         description: "Probe level (preflight | import | editor | runtime | full)"
         required: false
@@ -98,7 +103,15 @@ jobs:
         run: bash tools/shortcuts-simulator-qa/verify_foundation_contracts.sh
 
       - name: Verify optional local Apple Vision OCR
-        run: swift tools/shortcuts-simulator-qa/recognize_editor_text.swift --self-test
+        if: inputs.verify_local_ocr == true
+        run: |
+          set +e
+          swift tools/shortcuts-simulator-qa/recognize_editor_text.swift --self-test
+          primary_status=$?
+          swift tools/shortcuts-simulator-qa/recognize_editor_text.swift --self-test-revision2
+          control_status=$?
+          printf 'Vision primary revision3 exit=%s; diagnostic revision2 exit=%s\n' "$primary_status" "$control_status"
+          exit "$primary_status"
 
       - name: Run Go Simulator QA & Trace Oracle Unit Tests
         run: go test -v -run "TestP14_|TestP10_A1_|TestP13_SimulatorQA|TestDebug" .

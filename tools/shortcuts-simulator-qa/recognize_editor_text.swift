@@ -13,13 +13,16 @@ func emit(_ object: [String: Any], code: Int32 = 0) -> Never {
     exit(code)
 }
 
-let selfTest = CommandLine.arguments.count == 2 && CommandLine.arguments[1] == "--self-test"
+let selfTestRevision: Int? = CommandLine.arguments.count == 2
+    ? ["--self-test": VNRecognizeTextRequestRevision3,
+       "--self-test-revision2": VNRecognizeTextRequestRevision2][CommandLine.arguments[1]] : nil
+let selfTest = selfTestRevision != nil
 guard selfTest || CommandLine.arguments.count == 3 else {
     emit(["status": "INVALID_ARGUMENTS"], code: 2)
 }
 let requested = selfTest ? "en-US" : CommandLine.arguments[2]
 let request = VNRecognizeTextRequest()
-request.revision = VNRecognizeTextRequestRevision3
+request.revision = selfTestRevision ?? VNRecognizeTextRequestRevision3
 request.recognitionLevel = .accurate
 request.usesLanguageCorrection = false
 request.automaticallyDetectsLanguage = false
@@ -122,7 +125,12 @@ do {
     var chain: [[String: Any]] = []
     var current: NSError? = error as NSError
     while let item = current, chain.count < 4 {
-        chain.append(["domain": knownDomains.contains(item.domain) ? item.domain : "OTHER", "code": item.code])
+        let technicalDomain = item.domain.range(of: "^(com\\.apple\\.|NS|VN|Espresso)[A-Za-z0-9._-]{1,120}$", options: .regularExpression) != nil
+        let diagnosticVocabulary = Set(["inference", "context", "unsupported", "failed", "model", "initialize", "create", "allocation", "cpu", "gpu", "device", "espresso", "library", "unavailable", "precision", "pixel", "format", "width", "height", "vision", "image", "language", "recognition"])
+        let tokens = item.localizedDescription.lowercased().components(separatedBy: CharacterSet.letters.inverted)
+        let terms = Set(tokens).intersection(diagnosticVocabulary).sorted()
+        chain.append(["domain": knownDomains.contains(item.domain) || technicalDomain ? item.domain : "OTHER",
+                      "code": item.code, "diagnosticTerms": terms])
         current = item.userInfo[NSUnderlyingErrorKey] as? NSError
     }
     emit(["status": "VISION_REQUEST_FAILED", "errorCode": (error as NSError).code,
