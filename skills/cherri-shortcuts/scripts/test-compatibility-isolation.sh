@@ -21,6 +21,10 @@ CHERRI_DOCS_REF=$(git -C "$CHERRI_DOCS_DIR" rev-parse HEAD)
 # An explicit ref supports running a Windows worktree through WSL.
 CHERRI_REF=${CHERRI_REF:-$(git -C "$REPO_ROOT" rev-parse HEAD)}
 export CHERRI_DOCS_REF CHERRI_REF
+# Use only the reviewed manifest; an unrelated bundled binary cannot mask a bad cache.
+export SKILL_DIR="$TEST_ROOT/isolated-skill"
+mkdir -p "$SKILL_DIR"
+cp "$REPO_ROOT/skills/cherri-shortcuts/compatibility-manifest.json" "$SKILL_DIR/compatibility-manifest.json"
 CHECKS=0
 
 positive() {
@@ -69,4 +73,81 @@ printf '%s\n' 'gitdir: nonexistent-git-directory' >"$TEST_ROOT/broken-docs/.git"
 negative CHERRI_DOCS_GIT_INVALID CHERRI_DOCS_DIR="$TEST_ROOT/broken-docs"
 negative CHERRI_COMPILER_NOT_FOUND CHERRI_BIN="$TEST_ROOT/missing-compiler"
 positive
+# Exercise actual cached binaries through setup --offline. Record and reject every
+# network-capable command while allowing the existing read-only git pin checks.
+export CHERRI_TEST_REAL_GIT="$(command -v git)"
+export CHERRI_TEST_NETWORK_LOG="$TEST_ROOT/network-attempts.log"
+NO_NETWORK="$TEST_ROOT/no-network"
+mkdir -p "$NO_NETWORK" "$CHERRI_HOME/bin"
+cat >"$NO_NETWORK/git" <<'CHERRI_NO_NETWORK_GIT'
+#!/bin/sh
+for arg in "$@"; do
+  case "$arg" in
+    clone|fetch|pull|push|ls-remote|submodule)
+      printf 'git\n' >>"$CHERRI_TEST_NETWORK_LOG"
+      exit 97 ;;
+  esac
+done
+exec "$CHERRI_TEST_REAL_GIT" "$@"
+CHERRI_NO_NETWORK_GIT
+for tool in curl wget; do
+  cat >"$NO_NETWORK/$tool" <<'CHERRI_NO_NETWORK_TOOL'
+#!/bin/sh
+printf 'network tool\n' >>"$CHERRI_TEST_NETWORK_LOG"
+exit 97
+CHERRI_NO_NETWORK_TOOL
+done
+chmod +x "$NO_NETWORK/git" "$NO_NETWORK/curl" "$NO_NETWORK/wget"
+export PATH="$NO_NETWORK:$PATH"
+CACHE="$CHERRI_HOME/bin/cherri"
+cp "$CHERRI_BIN" "$CACHE"
+chmod +x "$CACHE"
+printf '%s\n' "$CHERRI_REF" >"$CACHE.commit"
+
+offline_positive() {
+  case_name=$1
+  shift
+  if ! env CHERRI_BIN= CHERRI_OFFLINE=1 "$@" sh "$SCRIPT_DIR/setup.sh" --offline >"$TEST_ROOT/offline.log" 2>&1; then
+    cat "$TEST_ROOT/offline.log" >&2
+    echo "FAIL: healthy offline cache: $case_name" >&2
+    exit 1
+  fi
+  cmp -s "$CHERRI_BIN" "$CACHE" || { echo "FAIL: cached compiler bytes changed" >&2; exit 1; }
+  CHECKS=$((CHECKS + 1))
+  printf 'CHERRI_K04_CASE:%s\n' "$case_name"
+}
+offline_negative() {
+  case_name=$1
+  diagnostic=$2
+  shift 2
+  rc=0
+  env CHERRI_BIN= CHERRI_OFFLINE=1 "$@" sh "$SCRIPT_DIR/setup.sh" --offline >"$TEST_ROOT/offline.log" 2>&1 || rc=$?
+  if [ "$rc" -eq 0 ] || ! grep -Fq "$diagnostic" "$TEST_ROOT/offline.log"; then
+    cat "$TEST_ROOT/offline.log" >&2
+    echo "FAIL: expected offline failure: $case_name ($diagnostic)" >&2
+    exit 1
+  fi
+  CHECKS=$((CHECKS + 1))
+  printf 'CHERRI_K04_CASE:%s\n' "$case_name"
+}
+
+offline_positive offline_cache_healthy
+sed 's/\*\*Schema Fingerprint:\*\*[[:space:]]*`[a-f0-9]*`/**Schema Fingerprint:** `0000000000000000000000000000000000000000000000000000000000000000`/' \
+  "$TEST_ROOT/valid-actions.md" >"$CHERRI_DOCS_DIR/fork-language/actions.md"
+offline_negative stale_schema_rejected CHERRI_STALE_DOCS_SCHEMA
+cp "$TEST_ROOT/valid-actions.md" "$CHERRI_DOCS_DIR/fork-language/actions.md"
+offline_positive restore_after_schema
+offline_negative stale_docs_commit_rejected CHERRI_STALE_DOCS_COMMIT CHERRI_DOCS_REF=0000000000000000000000000000000000000000
+offline_positive restore_after_commit
+printf '%s\n' 0000000000000000000000000000000000000000 >"$CACHE.commit"
+offline_negative incompatible_cache_rejected "no compatible cached or bundled binary"
+printf '%s\n' "$CHERRI_REF" >"$CACHE.commit"
+offline_positive restore_cache
+offline_negative missing_docs_rejected CHERRI_DOCS_MISSING CHERRI_DOCS_DIR="$TEST_ROOT/missing-docs"
+if [ -s "$CHERRI_TEST_NETWORK_LOG" ]; then
+  echo "FAIL: offline mode attempted network access" >&2
+  exit 1
+fi
+CHECKS=$((CHECKS + 1))
+printf 'CHERRI_K04_CASE:no_network_observed\n'
 printf 'PASS: %s compatibility isolation checks using real compiler and canonical docs\n' "$CHECKS"

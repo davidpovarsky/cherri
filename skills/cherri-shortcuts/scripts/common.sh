@@ -213,7 +213,7 @@ validate_cherri_bin() {
 validate_docs_dir() {
   _docs=$1
   if [ -z "$_docs" ] || [ ! -d "$_docs" ]; then
-    echo "Cherri docs directory missing: ${_docs:-<empty>}" >&2
+    echo "[CHERRI_DOCS_MISSING] Cherri docs directory missing: ${_docs:-<empty>}" >&2
     return 1
   fi
 

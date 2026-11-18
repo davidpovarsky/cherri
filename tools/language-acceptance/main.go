@@ -2069,9 +2069,7 @@ func (r *Runner) runSkill() {
 	k03Passed := errMan == nil && strings.Contains(string(manifestBytes), "compilerCommit")
 	r.Record("K03", "skill", "Exact commit install and checksum/atomic update", "integration", []string{"integration"}, k03Passed, "PASSED", "compatibility-manifest.json locks compiler and docs commits")
 
-	// K04: Offline compatible cache and docs mismatch
-	k04Passed := errMan == nil && strings.Contains(string(manifestBytes), r.reg.Fingerprint())
-	r.Record("K04", "skill", "Offline compatible cache and docs mismatch", "integration", []string{"integration"}, k04Passed, "PASSED", "doctor.sh verifies capabilities-json schema fingerprint against manifest")
+	r.runSkillOfflineRequirement()
 
 	// K05: Structured repair/build/import/edit workflow
 	prepScript := resolveRepoPath(filepath.Join("skills", "cherri-shortcuts", "scripts", "prepare-edit.sh"))
