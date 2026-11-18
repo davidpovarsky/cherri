@@ -47,3 +47,11 @@ A failed expanded attempt, job_f76c647f26b4, executed zero tests because the Win
 This is local compiler, actual CLI and native-structure evidence. It adds no formal acceptance ID and makes no Apple import, execution or signing claim. The production-path checks cover the source forms described above; they are not a claim that every Legacy aggregate evaluation shape has been proved. No private-corpus or external signing request was made by this component. The 47 original public root fixtures are unchanged, with exact hashes checked again around the clean source run.
 
 The existing C03 migration evidence retains its historical inline omission. This follow-up repairs that omission independently; it does not rewrite the original baseline or relax strict authored type/literal boundaries.
+
+## Clean immutable-source receipt
+
+Source 1244f448408bc7680a5160e2445c7dbc4914a6ab was clean before and after job_2a53c4717f48. The same bounded command passed 385 named tests in 39.203 seconds, with zero failures and zero skips. All 47 original public root fixture hashes matched the earlier preserved inventory and stayed unchanged.
+
+The full clean JSONL SHA256 is b852d5e1a550daaf43e19d11f9c55aa88ea8d47dba1a5405048bdf735f831a55. The files in evidence/p15-legacy-inline-1244f44 retain the actual baseline, later causal failures, disproved review hypotheses, infrastructure-only failure, working execution and exact-source receipt. The audit hashes all eleven payloads and the ten files in the implementation commit. No acceptance ID or Apple runtime status is promoted.
+
+The independent read-only review found no concrete defect in the parent context restoration, function cursor boundary, staged snapshot order, preserved interpolation suffixes or definition-first generation. That review did not run tests and is recorded separately from the actual execution proof.
