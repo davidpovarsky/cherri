@@ -12,6 +12,8 @@ struct CallbackEventRecord: Codable {
     let resultSummary: String?
     let tracePayload: String?
     let errorMessage: String?
+    let errorCode: String?
+    let resultShape: CallbackPayloadShape?
     let receiverSelfTest: Bool
     let timestampISO8601: String
 }
@@ -188,6 +190,8 @@ final class CallbackEventStore: ObservableObject {
             resultSummary: cleanSummary,
             tracePayload: cleanTrace,
             errorMessage: Self.sanitizeAllowlisted(rawErr),
+            errorCode: QACallbackDiagnostics.numericErrorCode(params["errorCode"] ?? params["error_code"]),
+            resultShape: rawResult.map { CallbackPayloadShape($0) },
             receiverSelfTest: selfTest,
             timestampISO8601: formatter.string(from: Date())
         )

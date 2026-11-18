@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "baselineCommit": "eb36762e35fec544d37a2960b6ab502e8e3eae60",
+  "goCommand": [
+    "go",
+    "test",
+    "-count=1",
+    "-v",
+    "-run",
+    "^(TestP15(DebugMacroPreservesFrontendResultIdentity|SignedFixtureExactProducerReferences)|TestDebug|TestP14_)",
+    "."
+  ],
+  "correctedRedExit": 1,
+  "correctedGreenExit": 0,
+  "pythonTestsPassed": 47,
+  "swiftStatus": "NOT_RUN_LOCAL_WINDOWS",
+  "nativeRecoveryStatus": "PENDING_APPLE_RUN",
+  "sourceFiles": {
+    "debug_stdlib.go": "4b7448d23e18c64b7b7366f458237f0b65685dcf05bfa15bccbf85b2bf684150",
+    "p15_debug_uuid_identity_test.go": "7858b4829b4c994af07ab608c7bb7b0fa131d526cd67f3df25012cafae8ee887",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/EvidenceGeometry.swift": "226066614a21eb8578952115a565e0f1b0433a967db274340a4cbbbc58a38c63",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/CallbackPayloadDiagnostics.swift": "e9d21868a24bcdfd7031c9a7c314941cac4608e0457108ed31508e7666615ac5",
+    "tools/shortcuts-simulator-qa/verify_foundation_contracts.swift": "cac23b09683193c5a411b8b1b00bfc77e4fefc168d08690b4c32ded7abbb681d"
+  },
+  "logs": {
+    "signed-uuid-red.log": {
+      "sha256": "921a7373f9614077c82875700cd001b0bfff3bed40dfc869c067c055ed1b5b48",
+      "bytes": 1793
+    },
+    "signed-uuid-green.log": {
+      "sha256": "1ac82d8a8e8f849ecfe0a7f05ba13a3e56a358afd0926d9ccbd220d883f99f86",
+      "bytes": 14188
+    },
+    "signed-uuid-red-v2.log": {
+      "sha256": "d73362b7ab0d4dcc1283f1725f1ed3a5f12beaf4a866659c5a527b6604bf9aaa",
+      "bytes": 1830
+    },
+    "signed-uuid-green-v2.log": {
+      "sha256": "9d2d5def8c0f4a4a8883812fa5d9fe0b236889280de675116425a33d84026d8e",
+      "bytes": 13912
+    },
+    "signed-diagnostics-python.log": {
+      "sha256": "46468a8ffe8958c2ba54063462a755a332402d5970f8377e05603c04c259c827",
+      "bytes": 7393
+    }
+  }
+}

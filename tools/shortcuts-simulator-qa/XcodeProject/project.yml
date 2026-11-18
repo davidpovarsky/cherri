@@ -15,6 +15,7 @@ targets:
     type: application
     platform: iOS
     sources:
+      - path: Shared
       - path: ReceiverApp
         excludes:
           - Info.plist
@@ -28,6 +29,7 @@ targets:
     type: bundle.ui-testing
     platform: iOS
     sources:
+      - path: Shared
       - path: UITests
     dependencies:
       - target: CherriSimulatorQAReceiver
