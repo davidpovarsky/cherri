@@ -61,36 +61,37 @@ func lookupContentItemClass(prop string) (string, bool) {
 
 // Lowerer transforms a Cherri v2 AST into Native Shortcut IR.
 type Lowerer struct {
-	registry              *schema.Registry
-	session               backend.Session
-	workflow              *ir.NativeWorkflow
-	bindings              map[string]BindingRef
-	functions             map[string]*syntax.FunctionDecl
-	setupQuestions        map[string]*syntax.SetupDecl
-	enums                 map[string]*syntax.EnumDecl
-	types                 map[string]*syntax.TypeDecl
-	actions               map[string]*syntax.ActionDecl
-	copyBlocks            map[string]*syntax.CopyBlockStmt
-	importStack           []string
-	modules               map[string]string
-	virtualModules        map[string]string
-	baseFilePath          string
-	importedFunctions     []*syntax.FunctionDecl
-	WorkflowName          string
-	uuidCounter           int
-	repeatDepth           int
-	currentBindingName    string
-	emitErr               error
-	isMac                 *bool
-	exprTypes             map[syntax.Expression]types.Type
-	enumValues            map[syntax.Expression]string
-	inExprStmt            bool
-	hasImportProvenance   bool
-	provenanceUUIDs       map[string]string
-	provenanceSymbols     map[string]bool
-	provenanceOutputNames map[string]provenanceOutputNameSpec
-	lexical               lexicalLoweringState
-	provenanceVarNames    map[string]string
+	registry                *schema.Registry
+	session                 backend.Session
+	workflow                *ir.NativeWorkflow
+	bindings                map[string]BindingRef
+	functions               map[string]*syntax.FunctionDecl
+	setupQuestions          map[string]*syntax.SetupDecl
+	enums                   map[string]*syntax.EnumDecl
+	types                   map[string]*syntax.TypeDecl
+	actions                 map[string]*syntax.ActionDecl
+	copyBlocks              map[string]*syntax.CopyBlockStmt
+	importStack             []string
+	modules                 map[string]string
+	virtualModules          map[string]string
+	baseFilePath            string
+	importedFunctions       []*syntax.FunctionDecl
+	WorkflowName            string
+	uuidCounter             int
+	autoNumberProducerCount int
+	repeatDepth             int
+	currentBindingName      string
+	emitErr                 error
+	isMac                   *bool
+	exprTypes               map[syntax.Expression]types.Type
+	enumValues              map[syntax.Expression]string
+	inExprStmt              bool
+	hasImportProvenance     bool
+	provenanceUUIDs         map[string]string
+	provenanceSymbols       map[string]bool
+	provenanceOutputNames   map[string]provenanceOutputNameSpec
+	lexical                 lexicalLoweringState
+	provenanceVarNames      map[string]string
 }
 
 // NewLowerer creates a new AST lowerer.
@@ -2059,6 +2060,19 @@ func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
 	return nil
 }
 
+// nextAutoNumberOutputName keeps synthesized, un-authored Number outputs
+// deterministic and uniquely addressable. Decompilation must allocate unique
+// source symbols for each producer; using the same output name for every
+// producer loses exact native output-name fidelity on recompilation.
+func (l *Lowerer) nextAutoNumberOutputName() string {
+	name := "Number"
+	if l.autoNumberProducerCount > 0 {
+		name = fmt.Sprintf("Number%d", l.autoNumberProducerCount)
+	}
+	l.autoNumberProducerCount++
+	return name
+}
+
 func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 	if val == nil {
 		return nil
@@ -2069,6 +2083,7 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 	uuid := l.GenerateUUID()
 	switch v := val.(type) {
 	case bool:
+		outputName := l.nextAutoNumberOutputName()
 		bNum := 0.0
 		if v {
 			bNum = 1.0
@@ -2077,7 +2092,7 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 			NodeID:          uuid,
 			AppleIdentifier: "is.workflow.actions.number",
 			OutputUUID:      uuid,
-			OutputName:      "Number",
+			OutputName:      outputName,
 			Parameters: map[string]interface{}{
 				"WFNumberActionNumber": bNum,
 			},
@@ -2086,14 +2101,15 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 		return &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: uuid,
-			OutputName: "Number",
+			OutputName: outputName,
 		}
 	case float64:
+		outputName := l.nextAutoNumberOutputName()
 		node := &ir.NativeActionNode{
 			NodeID:          uuid,
 			AppleIdentifier: "is.workflow.actions.number",
 			OutputUUID:      uuid,
-			OutputName:      "Number",
+			OutputName:      outputName,
 			Parameters: map[string]interface{}{
 				"WFNumberActionNumber": v,
 			},
@@ -2102,14 +2118,15 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 		return &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: uuid,
-			OutputName: "Number",
+			OutputName: outputName,
 		}
 	case int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8:
+		outputName := l.nextAutoNumberOutputName()
 		node := &ir.NativeActionNode{
 			NodeID:          uuid,
 			AppleIdentifier: "is.workflow.actions.number",
 			OutputUUID:      uuid,
-			OutputName:      "Number",
+			OutputName:      outputName,
 			Parameters: map[string]interface{}{
 				"WFNumberActionNumber": v,
 			},
@@ -2118,7 +2135,7 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 		return &ir.AttachmentToken{
 			Type:       "ActionOutput",
 			OutputUUID: uuid,
-			OutputName: "Number",
+			OutputName: outputName,
 		}
 	case string:
 		node := &ir.NativeActionNode{

@@ -50,6 +50,11 @@ func p15NumericListValues(actions []ShortcutAction) ([]string, error) {
 		if actions[j].WFWorkflowActionIdentifier != "is.workflow.actions.number" {
 			return nil, fmt.Errorf("item %d was coerced from native Number", i)
 		}
+		// Native ActionOutput token names must match the producer's published
+		// CustomOutputName; a different name can bind the wrong magic variable.
+		if token["OutputName"] != actions[j].WFWorkflowActionParameters["CustomOutputName"] {
+			return nil, fmt.Errorf("item %d output name does not match native producer", i)
+		}
 		values[i] = fmt.Sprint(actions[j].WFWorkflowActionParameters["WFNumberActionNumber"])
 	}
 	return values, nil
@@ -76,13 +81,36 @@ func TestP15NumericListRetainsNativeNumbers(t *testing.T) {
 	}
 }
 
+// Numbers created solely to populate a List have no user-authored symbols.
+// Unique generated native names let the supported decompiler round-trip each
+// producer without silently renaming output actions or magic-variable refs.
+func TestP15NumericListSyntheticOutputNamesAreStable(t *testing.T) {
+	actions := compileDebugFixture(t, "let items=[0,1,2]\ngetVariable(items)", false)
+	numbers := p15ActionsNamed(actions, "number")
+	if len(numbers) != 3 {
+		t.Fatalf("expected three native number producers, got %d", len(numbers))
+	}
+	for i, action := range numbers {
+		want := "Number"
+		if i > 0 {
+			want = fmt.Sprintf("Number%d", i)
+		}
+		if got := action.WFWorkflowActionParameters["CustomOutputName"]; got != want {
+			t.Fatalf("producer %d output name = %v, want %q", i, got, want)
+		}
+	}
+	if got, err := p15NumericListValues(actions); err != nil || !reflect.DeepEqual(got, []string{"0", "1", "2"}) {
+		t.Fatalf("native list references changed: values=%v error=%v", got, err)
+	}
+}
+
 func TestP15NumericListOracleRejectsNativeRowCorruption(t *testing.T) {
 	source := "let zero=0\nlet one=1\nlet items=[zero,one]\ngetVariable(items)"
 	good := compileDebugFixture(t, source, false)
 	if _, err := p15NumericListValues(good); err != nil {
 		t.Fatal(err)
 	}
-	for _, fault := range []string{"raw_number", "missing_uuid", "text_coercion", "duplicate_reference", "wrong_producer"} {
+	for _, fault := range []string{"raw_number", "missing_uuid", "text_coercion", "duplicate_reference", "wrong_producer", "wrong_output_name"} {
 		t.Run(fault, func(t *testing.T) {
 			actions := compileDebugFixture(t, source, false)
 			list := p15ActionsNamed(actions, "list")[0].WFWorkflowActionParameters["WFItems"].([]any)
@@ -97,6 +125,8 @@ func TestP15NumericListOracleRejectsNativeRowCorruption(t *testing.T) {
 				token["Aggrandizements"] = []any{map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}}
 			case "duplicate_reference":
 				list[1] = row
+			case "wrong_output_name":
+				token["OutputName"] = "UNMATCHED"
 			case "wrong_producer":
 				for i := range actions {
 					if actions[i].WFWorkflowActionParameters["UUID"] == token["OutputUUID"] {
