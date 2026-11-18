@@ -176,6 +176,39 @@ final class CherriCoreIntegrationTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(resp.diagnostics.count, 2)
     }
 
+    func testCompletionRequestBindsExactUTF16SourceAndCaret() {
+        let request = CherriCompletionRequest(source: "sho", selection: NSRange(location: 3, length: 0))
+        XCTAssertEqual(request, CherriCompletionRequest(source: "sho", selection: NSRange(location: 3, length: 0)))
+        XCTAssertNotEqual(request, CherriCompletionRequest(source: "tex", selection: NSRange(location: 3, length: 0)))
+        XCTAssertNotEqual(request, CherriCompletionRequest(source: "sho", selection: NSRange(location: 2, length: 0)))
+        XCTAssertNil(CherriCompletionRequest(source: "sho", selection: NSRange(location: 4, length: 0)).position)
+        XCTAssertNil(CherriCompletionRequest(source: "sho", selection: NSRange(location: 1, length: 1)).position)
+        let composed = CherriCompletionRequest(source: "\u{00e9}", selection: NSRange(location: 0, length: 0))
+        let decomposed = CherriCompletionRequest(source: "e\u{0301}", selection: NSRange(location: 0, length: 0))
+        XCTAssertEqual(composed.source, decomposed.source, "Swift normalizes String comparison")
+        XCTAssertNotEqual(composed, decomposed, "The completion snapshot must preserve exact UTF-16 identity")
+        let unicode = CherriCompletionRequest(source: "\u{05e9}\u{05dc}\u{05d5}\u{05dd} \u{1f469}\u{200d}\u{1f4bb}\nsho", selection: NSRange(location: 14, length: 0))
+        XCTAssertEqual(unicode.position?.line, 2)
+        XCTAssertEqual(unicode.position?.column, 4)
+    }
+
+    func testExactShoCompletionUsesCurrentBridgeSnapshot() async throws {
+        let request = CherriCompletionRequest(source: "sho", selection: NSRange(location: 3, length: 0))
+        let position = try XCTUnwrap(request.position)
+        XCTAssertEqual(position.line, 1)
+        XCTAssertEqual(position.column, 4)
+        let items = try await CherriCompiler.complete(source: request.source, line: position.line, column: position.column)
+        XCTAssertFalse(items.prefix(8).contains { $0.label == "show" },
+                       "Regression control: truncating the unfiltered service set loses the typed action")
+        let visible = request.matchingItems(items, prefix: "sho")
+        XCTAssertTrue(visible.allSatisfy { $0.label.lowercased().hasPrefix("sho") })
+        let show = try XCTUnwrap(visible.prefix(8).first { $0.label == "show" })
+        XCTAssertEqual(request.matchingItems(items, prefix: "noSuchSyntheticAction"), [])
+        XCTAssertEqual(request.matchingItems(items, prefix: nil), items)
+        XCTAssertEqual(show.insertText, "show(Ask)")
+        _ = try await CherriCompiler.compile(source: try XCTUnwrap(show.insertText), name: "Current Completion")
+    }
+
     func testCherriCompleteReturnsContextualItems() async throws {
         let source = "show("
         let items = try await CherriCompiler.complete(source: source, line: 1, column: 6)

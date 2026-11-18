@@ -1,4 +1,5 @@
 import UIKit
+import Darwin
 import XCTest
 @testable import CodeEditorView
 @testable import Cherri
@@ -34,15 +35,57 @@ final class CherriEditorInputTests: XCTestCase {
         XCTAssertEqual(view.text, "text(\"x\"))", "The generated position may be consumed only once")
     }
 
-    func testNestedGeneratedClosersAndCompleteRealInput() {
-        for source in [
-            "text(text(\"x\"))\n", "let xs = [1, 2]\n", "let d = {\"value\": 1}\n",
-            "if true {\ntext(\"x\")\n}\n", "/* block */\ntext(\"x\")\n"
-        ] {
-            let view = editor()
-            type(source, into: view)
-            XCTAssertEqual(Array(view.text.utf16), Array(source.utf16))
+    private func recordInputReceipt(_ view: CodeView, fixture: String, stage: String,
+                                    keyIndex: Int, key: String = "") {
+        let separators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
+        let method = name.components(separatedBy: separators).first { $0.hasPrefix("test") } ?? "unknown"
+        let receipt: [String: Any] = [
+            "schemaVersion": "1.0", "testName": "CherriEditorInputTests/\(method)",
+            "isolatedSyntheticEditor": true, "fixtureId": fixture, "stage": stage,
+            "keyIndex": keyIndex, "inputUTF16": Array(key.utf16).map(Int.init),
+            "actualSource": view.text ?? "", "actualUTF16Length": ((view.text ?? "") as NSString).length,
+            "selectionLocation": view.selectedRange.location, "selectionLength": view.selectedRange.length,
+        ]
+        if let bytes = try? JSONSerialization.data(withJSONObject: receipt, options: [.sortedKeys]),
+           let json = String(data: bytes, encoding: .utf8) {
+            print("[CHERRI_INPUT_RECEIPT] \(json)")
+            fflush(stdout)
         }
+    }
+
+    private func assertExactKeyboardFixture(_ source: String, fixture: String,
+                                            file: StaticString = #filePath, line: UInt = #line) {
+        let view = editor()
+        XCTAssertEqual(view.text, "", "Synthetic editor must start empty", file: file, line: line)
+        guard view.text.isEmpty else { return }
+        for (index, character) in source.enumerated() {
+            let key = String(character)
+            recordInputReceipt(view, fixture: fixture, stage: "before-key", keyIndex: index, key: key)
+            view.insertText(key)
+            recordInputReceipt(view, fixture: fixture, stage: "after-key", keyIndex: index, key: key)
+        }
+        recordInputReceipt(view, fixture: fixture, stage: "fixture-complete", keyIndex: source.count)
+        XCTAssertEqual(Array(view.text.utf16), Array(source.utf16), file: file, line: line)
+    }
+
+    func testNestedGeneratedClosersAndCompleteRealInput() {
+        assertExactKeyboardFixture("text(text(\"x\"))\n", fixture: "nested-call")
+    }
+
+    func testListGeneratedClosersAndCompleteRealInput() {
+        assertExactKeyboardFixture("let xs = [1, 2]\n", fixture: "list")
+    }
+
+    func testDictionaryGeneratedClosersAndCompleteRealInput() {
+        assertExactKeyboardFixture("let d = {\"value\": 1}\n", fixture: "dictionary")
+    }
+
+    func testCurlyBlockGeneratedClosersAndCompleteRealInput() {
+        assertExactKeyboardFixture("if true {\ntext(\"x\")\n}\n", fixture: "curly-block")
+    }
+
+    func testCommentGeneratedClosersAndCompleteRealInput() {
+        assertExactKeyboardFixture("/* block */\ntext(\"x\")\n", fixture: "block-comment")
     }
 
     func testUnicodeUTF16OffsetsPreserveGeneratedCloser() {

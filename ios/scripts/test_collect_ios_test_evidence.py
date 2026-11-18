@@ -135,6 +135,68 @@ class IOSTestEvidenceTests(unittest.TestCase):
         _, _, outputs = self.collect(self.block(status="failed", body=self.receipt(actualSource="x" * 16385)), 65)
         self.assertNotIn("x" * 16385, "".join(outputs.values()))
 
+    def input_receipt(self, **updates):
+        value = {"schemaVersion": "1.0", "testName": "CherriEditorInputTests/testNestedGeneratedClosersAndCompleteRealInput",
+                 "isolatedSyntheticEditor": True, "fixtureId": "nested-call", "stage": "before-key",
+                 "keyIndex": 2, "inputUTF16": [120], "actualSource": 'text("',
+                 "actualUTF16Length": 6, "selectionLocation": 6, "selectionLength": 0}
+        value.update(updates)
+        return collector.INPUT_PREFIX + json.dumps(value)
+
+    def input_block(self, body, complete=True):
+        target = "CherriTests.CherriEditorInputTests testNestedGeneratedClosersAndCompleteRealInput"
+        return (f"Test Case '-[{target}]' started.\n" + body + "\n"
+                + (f"Test Case '-[{target}]' passed (0.123 seconds).\n" if complete else ""))
+
+    def test_input_crash_keeps_fixed_category_and_last_real_key_without_private_reason(self):
+        body = self.input_receipt() + "\n/Users/private/CodeStorageDelegate.swift:827: Fatal error: Index out of range PRIVATE_REASON"
+        diagnostic, records, outputs = self.collect(self.input_block(body, complete=False), 65)
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "incomplete")
+        self.assertEqual(len(diagnostic["inputReceipts"]), 1)
+        self.assertEqual(diagnostic["nativeRuntimeEvents"], [{
+            "testId": "CherriEditorInputTests/testNestedGeneratedClosersAndCompleteRealInput",
+            "code": "INDEX_OUT_OF_RANGE", "sourceFile": "CodeStorageDelegate.swift", "sourceLine": 827}])
+        self.assertNotIn("PRIVATE_REASON", "".join(outputs.values()))
+        self.assertNotIn("/Users/private", "".join(outputs.values()))
+
+    def test_input_receipt_requires_active_case_and_exact_isolation_and_fixture(self):
+        for changes in ({"isolatedSyntheticEditor": False}, {"isolatedSyntheticEditor": 1},
+                        {"fixtureId": "private-source"}, {"testName": "CherriEditorInputTests/testOther"},
+                        {"selectionLocation": -1}, {"inputUTF16": [True]}, {"inputUTF16": [65536]}):
+            diagnostic, _, outputs = self.collect(self.input_block(self.input_receipt(**changes)), 65)
+            self.assertEqual(diagnostic["inputReceipts"], [])
+        diagnostic, _, _ = self.collect(self.input_receipt(), 65)
+        self.assertEqual(diagnostic["inputReceipts"], [])
+
+    def test_input_receipts_have_count_and_private_source_limits(self):
+        body = "\n".join(self.input_receipt() for _ in range(600))
+        diagnostic, _, _ = self.collect(self.input_block(body), 65)
+        self.assertEqual(len(diagnostic["inputReceipts"]), 512)
+        for source in ("ghp_PRIVATE_CANARY", "x" * 16385):
+            diagnostic, _, outputs = self.collect(self.input_block(self.input_receipt(actualSource=source)), 65)
+            self.assertEqual(diagnostic["inputReceipts"][0]["actualSource"], "[REDACTED_UNEXPECTED_CONTENT]")
+            self.assertNotIn(source, "".join(outputs.values()))
+
+    def test_candidate_identifiers_require_exact_synthetic_prefix_and_safe_shape(self):
+        identifiers = ["completionItem_show", "suggestionItem_show", "private/path", "completionItem_" + "x" * 100]
+        receipt = self.receipt(actualSource="sho", completionCandidateIdentifiers=identifiers)
+        diagnostic, _, _ = self.collect(self.block(status="failed", body=receipt), 65)
+        self.assertEqual(diagnostic["uiReceipts"][0]["completionCandidateIdentifiers"],
+                         ["completionItem_show", "suggestionItem_show"])
+        for changes in ({"actualSource": "other"}, {"syntheticSourceResetVerified": False},
+                        {"testName": "CherriEditorUITests/testOther"}):
+            value = {"actualSource": "sho", "completionCandidateIdentifiers": identifiers}
+            value.update(changes)
+            diagnostic, _, _ = self.collect(self.block(status="failed", body=self.receipt(**value)), 65)
+            self.assertNotIn("completionCandidateIdentifiers", diagnostic["uiReceipts"][0])
+
+    def test_arbitrary_runtime_messages_and_forged_runtime_marker_are_excluded(self):
+        body = "A private NSRange text\n" + collector.RUNTIME_PREFIX + '{"code":"PRIVATE_SECRET"}'
+        diagnostic, _, outputs = self.collect(self.input_block(body), 65)
+        self.assertEqual(diagnostic["nativeRuntimeEvents"], [])
+        self.assertNotIn("PRIVATE_SECRET", "".join(outputs.values()))
+
     def test_existing_evidence_is_never_overwritten(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
