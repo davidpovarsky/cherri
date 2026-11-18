@@ -3734,15 +3734,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		return l.lowerCall(e)
 
 	case *syntax.ListExpr:
-		list := make([]interface{}, len(e.Elements))
-		for i, el := range e.Elements {
-			val, err := l.lowerExpression(el)
-			if err != nil {
-				return nil, err
-			}
-			list[i] = val
-		}
-		return list, nil
+		return l.lowerListExpression(e, true)
 
 	case *syntax.MapExpr:
 		dict := make(map[string]interface{})
@@ -3751,7 +3743,13 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			if err != nil {
 				return nil, err
 			}
-			vVal, err := l.lowerExpression(entry.Value)
+			var vVal interface{}
+			if list, ok := entry.Value.(*syntax.ListExpr); ok {
+				// A Dictionary array field uses inline data, not native List rows.
+				vVal, err = l.lowerListExpression(list, false)
+			} else {
+				vVal, err = l.lowerExpression(entry.Value)
+			}
 			if err != nil {
 				return nil, err
 			}

@@ -367,6 +367,9 @@ func sanitizeRawParamValue(v any) any {
 }
 
 func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
+	if literal, ok := v.(backend.SemanticValue); ok {
+		return encodeTypedLiteralParam(literal)
+	}
 	if tok, ok := v.(*ir.AttachmentToken); ok {
 		if tok == nil {
 			return nil

@@ -55,3 +55,25 @@ independent native readback claim.
 Rollback is a revert of this commit. The change touches only the existing V2 List
 lowering path, focused tests, and this evidence. It does not change the native
 import normalizer, shared codecs, signing service, debug tracing, or iOS UI.
+
+## Authored dictionaries with native-looking keys
+
+A follow-up causal test found that ordinary fields named `WFItemType`,
+`WFSerializationType`, `Value`, and `WFValue` could be mistaken for an already
+serialized List row or token. Eight immutable/mutable cases and one nested
+Dictionary case failed before the follow-up. Real F-string/attachment rows and
+exact imported native fallback already passed, and remain unchanged.
+
+A source `MapExpr` inside a native List now retains its identity through the
+existing `backend.SemanticValue` representation. The canonical adapter uses the
+shared Dictionary, array, text, and reference encoders for those typed values.
+It does not infer data identity from user field names. Dictionary array fields
+remain inline data, retaining their existing nested serialization. Native/import
+payloads use their existing path, including `EXACT_NATIVE_FALLBACK` where required.
+
+The passing focused run includes the new causal cases, existing codec/import
+parity, native List editing, measure/require, and the shared-codec architecture
+gate. The full lowerer suite and actual CLI checks pass; exact counts, source and
+log hashes are in [the reserved-name validation record](native-dictionary-list-reserved-validation.json).
+The unchanged R1 Bool/List source still emits 32 actions. Signed runtime and the
+combined private corpus gate remain separate pending verification.
