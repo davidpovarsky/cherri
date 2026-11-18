@@ -1,0 +1,53 @@
+{
+  "sourceSha": "41121a36c83c3fc609ba3a97251c19a171c91400",
+  "compilerPin": "17ba3ca3387f204a0fd80b092624e21f311db8d4",
+  "platform": "LinuxAMD64ActualWSLUbuntu",
+  "buildSeconds": 56.359,
+  "integrity": {
+    "archiveSha256": "f2e33d7a75f4af23fa0a7913d8d5cb7ee44bd8456208911e831e3e8cb8253f14",
+    "compilerCommit": "17ba3ca3387f204a0fd80b092624e21f311db8d4",
+    "docsCommit": "d8ad5e604c9e3585876ae95b0d1f628381a33c42",
+    "kind": "runtime",
+    "runtime": {
+      "compilerCommit": "17ba3ca3387f204a0fd80b092624e21f311db8d4",
+      "goarch": "amd64",
+      "goos": "linux",
+      "sha256": "0daca37c8429d4fc49b6b102d5296027a024efd17246e8f15a1e80a64967ae97",
+      "vcsModified": false
+    },
+    "scope": "Exact committed package bytes and clean compiler source provenance; unpacked execution, installation and signing require separate tests.",
+    "skillCommit": "41121a36c83c3fc609ba3a97251c19a171c91400",
+    "status": "PASS_PACKAGE_INTEGRITY",
+    "unpacked": true,
+    "verifiedFiles": 23
+  },
+  "selfTestExit": 0,
+  "selfTestSeconds": 18.453,
+  "selfTestLogSha256": "a768c5e3ac61bc4f4066bfbdd3e33e169e343a6c9374b02ed580acc6a9aa0147",
+  "observations": {
+    "records": [],
+    "observations": {
+      "status": "PASS_WRAPPER_SELF_TEST",
+      "actual_cli_operations": [
+        "version",
+        "actions",
+        "catalog",
+        "unsigned-build",
+        "decompile",
+        "recompile",
+        "prepare-edit",
+        "reject-AEA1-input"
+      ],
+      "mock_installation_scenarios": 10,
+      "declared_compiler_pin": "17ba3ca3387f204a0fd80b092624e21f311db8d4",
+      "declared_docs_pin": "d8ad5e604c9e3585876ae95b0d1f628381a33c42",
+      "schema_fingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
+      "codec_fingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "macro_fingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+      "scope": "Wrapper execution and mock installation controls only. Package integrity, actual installer transactions and full edit/sign contracts are separately verified."
+    }
+  },
+  "sourceCleanAfter": true,
+  "compilerSourceCleanAfter": true,
+  "scope": "Actual Linux binary and POSIX unpacked Skill execution in existing Ubuntu; no ARM64 emulation, remote consumer or Apple runtime inference."
+}

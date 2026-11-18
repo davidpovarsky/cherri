@@ -1,0 +1,47 @@
+{
+  "sourceLogSha256": "5510e2d868a095bf9812fa5aa4ce9d6d949676a45fac72002bbb9fd93b61bfd7",
+  "cases": [
+    {
+      "case": "healthy_real_split_stream",
+      "exit": 0,
+      "expectedAccepted": true,
+      "status": "PASS",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "missing_continuation",
+      "exit": 1,
+      "expectedAccepted": false,
+      "status": "PASS",
+      "stderrSha256": "c6f7872b2db7299fb1c0a18a809ff03fd35ce5de03ade4efc01bf31d00a63d0d"
+    },
+    {
+      "case": "missing_test_pass",
+      "exit": 1,
+      "expectedAccepted": false,
+      "status": "PASS",
+      "stderrSha256": "40cefbb8c2ce462661aef62b5ebc2636fdbd3baafe1e9ecabce295e77d2b1ca5"
+    },
+    {
+      "case": "failed_test",
+      "exit": 1,
+      "expectedAccepted": false,
+      "status": "PASS",
+      "stderrSha256": "64e15587027a3165dcb3da85df76d2521b3bf56c791a9a707f08dd7cf554b664"
+    },
+    {
+      "case": "wrong_source",
+      "exit": 1,
+      "expectedAccepted": false,
+      "status": "PASS",
+      "stderrSha256": "8a2ee940b1d42e3d4a7ada565a4c1e9b3d4de14f8c947ff4c24bcfe1fd18df0d"
+    },
+    {
+      "case": "wrong_requirement",
+      "exit": 1,
+      "expectedAccepted": false,
+      "status": "PASS",
+      "stderrSha256": "7e08959566f05ab652b5478be40caf64e158c1e056560494e335e3f122cd25a2"
+    }
+  ]
+}

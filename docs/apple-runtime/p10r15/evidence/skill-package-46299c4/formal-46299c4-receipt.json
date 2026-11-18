@@ -1,0 +1,13 @@
+{
+  "sourceSha": "46299c418179326f2c2fa15c04bf08e999c1e483",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "formalStatus": "PASS",
+  "formalElapsedSeconds": 191.94,
+  "logSha256": "5510e2d868a095bf9812fa5aa4ce9d6d949676a45fac72002bbb9fd93b61bfd7",
+  "captureStatus": "INITIAL_CAPTURE_FAILED_THEN_RECOVERED_FROM_UNMODIFIED_LOG",
+  "captureFailure": "Initial reader parsed each Go Output event as one complete JSON receipt. Actual test2json split a logical receipt across events; concatenating Output for the same test recovered the original unmodified JSON.",
+  "receiptRecoveredWithoutRerun": true,
+  "scope": "Exact46299 package producer PASS; original capture helper failure retained. CI reader repair must be independently verified.",
+  "receiptLogicalBytes": 1344
+}
