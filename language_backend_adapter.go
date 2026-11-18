@@ -90,7 +90,8 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 		}
 		for _, callArg := range call.Arguments {
 			pos := callArg.Position
-			if pos < 0 || pos >= len(args) {
+			// Variadic values grow args, but canonical parameter positions remain fixed.
+			if pos < 0 || pos >= len(def.parameters) {
 				matched := false
 				for pIdx, pDef := range def.parameters {
 					if pDef.name == callArg.ParameterID || pDef.key == callArg.ParameterID {
