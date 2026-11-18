@@ -1,8 +1,8 @@
 {
   "milestone": "P10R4",
-  "timestamp": "2026-11-15T05:40:55.572866+00:00",
-  "sourceCommit": "f62707d622f72267796bb674b3d17336941121ae",
-  "inputDependencyFingerprint": "79d8a8ea4edadcbaa3e137ee8de2c6425490bcec99b5ffd0b71036b4e52209c9",
+  "timestamp": "2026-11-18T02:46:26.244586+00:00",
+  "sourceCommit": "92f834e1878e02d6357021e97c491c55437c038b",
+  "inputDependencyFingerprint": "40ecf0bfbda0e3cf4bd3ff4227494abaf3f3354fdec4aa607fd0c0ea2fcae865",
   "verdict": "PARTIAL_WITH_EXTERNAL_BLOCKERS",
   "legacyVerdict": "P10R3_CORRECTIVE_PARTIAL_VERIFIED",
   "summary": {
@@ -25,7 +25,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r01_missing_runtime_dir_fails_closed tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.605,
+      "durationSeconds": 0.32,
       "outputSha256": "d10ffbd9f0faa72cd6837063279524e199b59fbc3d035051302a1e8dbc4b36ad",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -36,8 +36,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r02_corrupt_snapshot_checksum_failure tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.359,
-      "outputSha256": "ff54520eb41a16677c9d2e2fc45533519a89fbdc9fb068da141805c0296b7a63",
+      "durationSeconds": 0.245,
+      "outputSha256": "27720ea34c6e809f456b08ef815888e0f633d38494a7382b76939c824a99e8b8",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
     {
@@ -47,7 +47,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r03_macos26_manifest_in_macos27_dir_fails tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.316,
+      "durationSeconds": 0.224,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -58,7 +58,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r04_dropped_or_faked_shard_invariant_failure tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.359,
+      "durationSeconds": 0.281,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -69,7 +69,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r05_corrupt_or_missing_cherri_catalog_fails tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.357,
+      "durationSeconds": 0.241,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -80,7 +80,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r06_disposition_builder_producer_exists tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.374,
+      "durationSeconds": 0.218,
       "outputSha256": "d10ffbd9f0faa72cd6837063279524e199b59fbc3d035051302a1e8dbc4b36ad",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -91,7 +91,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r07_filter_signature_without_predicate_not_verified tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.365,
+      "durationSeconds": 0.238,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -102,8 +102,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R08_FilterTwoLevelAndOrRoundTrip -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 10.357,
-      "outputSha256": "49958e8624b86c2ad1de030b27a2758f7f04b428db8db483581f87f0529d87d0",
+      "durationSeconds": 8.556,
+      "outputSha256": "0b2606fa417c3d53f7dccda9d8bb6b78d67b9991cec1f7b702e360b608f2937a",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -113,8 +113,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R09_FilterOperatorParsing -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 3.04,
-      "outputSha256": "76ff353a108296e85432a7e8c7a543e0246a6fecaf8d50a71986fdc8ab550a76",
+      "durationSeconds": 2.34,
+      "outputSha256": "bd2d846e962ff93490edde03b7df659d64ffc9d46f13b08e4b155100cd21a30b",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -124,8 +124,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R10_LimitAbsentSortOnly -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 6.119,
-      "outputSha256": "4b705e7ed98cf8bf1ecc73fe77b32a5c5b09f4c10a02fc8004ea8f4946e4f1bb",
+      "durationSeconds": 4.632,
+      "outputSha256": "8a9ad2121f00cdcc80f9cb8d70ffbb7debca7a24d1c6e96c1aed165804e6123f",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -135,8 +135,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R11_EditReminderInvalidDetail -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 4.41,
-      "outputSha256": "99e22216ab6f9cee8df412f0c6d7bddf58f77319603f77f1e0feebe14d3301ee",
+      "durationSeconds": 2.431,
+      "outputSha256": "005f12253ed95b586eae0cdc3cf1dafa8876dfe7e384d316435080ccc30d5a66",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -146,8 +146,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R12_EditEventInvalidDetail -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 4.12,
-      "outputSha256": "b5fc58c6ead58668ffcd4cc5333509dcb1b8729f55b8697e94e55061717e4127",
+      "durationSeconds": 2.087,
+      "outputSha256": "124304c681d02252e77ed694f4bef35ff7f9c2f9fc204dd366ed84a0a902eefc",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -157,8 +157,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R13_SetterModesAndDecompile -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 3.347,
-      "outputSha256": "39f860ebc51d369eeba6f13194200a20d178a6a34f81fbf8f72def10e95d1071",
+      "durationSeconds": 2.712,
+      "outputSha256": "c3bf3bcde0adeb9cf43b1d90c9a68198b15e0b68fb403450d62d0996b674adce",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -168,7 +168,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r14_residual_gaps_adjudication_integrity tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.399,
+      "durationSeconds": 0.23,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -179,7 +179,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r15_calendar_picker_requires_runtime_evidence tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.251,
+      "durationSeconds": 0.204,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -190,7 +190,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r16_output_type_mismatch_yields_partial tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.252,
+      "durationSeconds": 0.21,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -201,8 +201,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R17_FingerprintDriftOnEvidenceStatus -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.681,
-      "outputSha256": "34ad3a2889948f3e6610a4695ef128b3a3005ccc7448ab88ba7db8b15abda990",
+      "durationSeconds": 2.584,
+      "outputSha256": "46c80ffc4c85e0ac0cd3c7853c773cc5f89118c57a3f1f3ccc187d46ff10b31c",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -212,8 +212,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R18_SemanticVersionComparison -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 3.202,
-      "outputSha256": "2103464a534a53ab2f5dadd7a131b5798fb1b720204840a14f26e79f1ebcf74c",
+      "durationSeconds": 2.399,
+      "outputSha256": "382be904d27425a46932770b327b182dbb154cb3bb7de2af0576b58fd5eae8cc",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -223,7 +223,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r19_os_availability_not_assumed_universal tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.431,
+      "durationSeconds": 0.279,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -234,8 +234,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R20_UnrepresentableValueRawActionFallback -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 4.574,
-      "outputSha256": "5f9b4c0b42b488955f1bd643a11eacc3d2cc2508baa20d52573d0a65eb1939f2",
+      "durationSeconds": 4.626,
+      "outputSha256": "995e590b8d3fd23cf41a561631e6980d69f6cab69b93a2f2ed5edb7138c5cbbc",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -245,8 +245,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R21_HebrewEmojiUtf16Tokens -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 4.752,
-      "outputSha256": "cc36bdf90586e7dfe332075226bf36ffe92b5b57432f5be493555256cd2a1c15",
+      "durationSeconds": 4.417,
+      "outputSha256": "49b38fd7daabb4ef7c88052e2f89a0e76d1a122a6fc6a805e44043d9b887edfd",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -271,7 +271,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "git diff 76d722502e20db977e84a095444d0172442655b8..HEAD -- ios/CherriUITests/CherriEditorUITests.swift ios/CherriApp/Views/CodeEditorView.swift && git status --porcelain -- ios/CherriUITests/CherriEditorUITests.swift ios/CherriApp/Views/CodeEditorView.swift",
       "exitCode": 0,
-      "durationSeconds": 0.146,
+      "durationSeconds": 0.115,
       "outputSha256": "300e37aa473ec43b9876eb9bf67b13589e8c5316798a3401f9cc0e8f834ad53a",
       "sourceFile": "git"
     },
@@ -282,7 +282,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r24_toolkit_entities_and_config_excluded tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.245,
+      "durationSeconds": 0.215,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -293,8 +293,8 @@
       "tier": "STATIC_CONTRACT",
       "command": "go test -run TestP10R_R25_ActionCatalogAndGoBridgeExport -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 5.935,
-      "outputSha256": "df857d9e76bb57c426bc2f92b9b7a5c77ca62720fb871c8bbb467e90bfff5bef",
+      "durationSeconds": 4.3,
+      "outputSha256": "06920992a0f7d5ea1b4b9224a682275d71b313caaf598b33135fe3730f32ce6a",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -304,8 +304,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R26_ProvenanceRegistryIntegrity -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 4.131,
-      "outputSha256": "cf6e5c5bf50b5e7ca3bbd7af061e7120c4c37d6510b87c8d83274d1c38e058e2",
+      "durationSeconds": 4.475,
+      "outputSha256": "661c7c1c6316a43d54bdbe97709501936158ad34b2c89317eac1f903192df85c",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -315,7 +315,7 @@
       "tier": "PRODUCTION_PATH",
       "command": "python -m unittest -k test_r27_missing_serializer_classification tools/shortcut-runtime/tests/test_runtime_extraction.py",
       "exitCode": 0,
-      "durationSeconds": 0.306,
+      "durationSeconds": 0.561,
       "outputSha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
       "sourceFile": "tools/shortcut-runtime/tests/test_runtime_extraction.py"
     },
@@ -326,8 +326,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R_R28_AcceptanceSuiteCompleteness -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.768,
-      "outputSha256": "ea1f9c30c7674c49b04e6eb938444c8cc35dd203d65b2190507134a7fabdce68",
+      "durationSeconds": 3.666,
+      "outputSha256": "7b489880effffb326232e5e0ca81c0ca18382b06a2c51c0684a8f74c581898ff",
       "sourceFile": "p10r_acceptance_test.go"
     },
     {
@@ -337,8 +337,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A01_ManifestCompilerShaNonExistentInGitFails -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.581,
-      "outputSha256": "a5e366c19babcde1932de49f42afe7e3ead1fa5d8fa8bc48d3cc5fd54457b5bb",
+      "durationSeconds": 3.393,
+      "outputSha256": "24028c8aaf98a9655f4c088bd771887094686f877cc33fd65cff7b252170cf0c",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -348,8 +348,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A02_StaleDocsFingerprintRejected -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 3.47,
-      "outputSha256": "2d17e565ef7feb694b15cb7226e7791e783eddb9762d74fd4e1d9fc0fada48a9",
+      "durationSeconds": 2.52,
+      "outputSha256": "41c418cd68f8d3e2faf8e3e77ce7ddf8fc9c2de94823d19223ca4fca0628bdb7",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -359,8 +359,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A03_SourceSelectorFailsClosedOnMissing27 -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 3.569,
-      "outputSha256": "84de8eaa4463bdc4e9a066fb94a8b0f91469ac394597d9f11be28a28c71f0e99",
+      "durationSeconds": 3.231,
+      "outputSha256": "731b48752211210b591bf97954505342a850f40d43deb26c5b0b81dfd36796a7",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -370,8 +370,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A04_LegitimateEmpty27GapsPreserved -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.371,
-      "outputSha256": "a791ec65cd0dc42dbc23236e55b3aa12bdbc09417b39267778958014d9bb79d8",
+      "durationSeconds": 2.793,
+      "outputSha256": "3b5cd2e0db1909ee1ae739e233a085c3922f90ef407d0ebcfdf3d3484ee9e26a",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -381,8 +381,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A05_ManifestVersionCheckRejectsMismatch -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.643,
-      "outputSha256": "83d9d886f7bed0f23ffb91a13f9bf80e8e36d233eef4bb8740ca86b8c8c8bd9e",
+      "durationSeconds": 2.511,
+      "outputSha256": "08782eeabfa1ac4e67debad73be476b2dbdf015687083c0843d10b9f740fa5e8",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -392,8 +392,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A06_ShardSummaryIntegrity -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.433,
-      "outputSha256": "110a90d7dd198923d73a71ae75422219eb1881689d21b80d2fe140d53cfbab2c",
+      "durationSeconds": 2.525,
+      "outputSha256": "f715857631d95284bcc3527983dd407fd164e9bff125e514673a42b3ddafe84a",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -403,8 +403,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A07_UnassessedOutputDowngradesVerifiedStatus -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 3.902,
-      "outputSha256": "44fee3cd0b9fe94d6fbf5aa77722eb05d16da9b9dd09567244591036cf3b6dda",
+      "durationSeconds": 2.45,
+      "outputSha256": "378709f53cfec678eaa2b0192ae99c9334b8be6d62e533ba3255860b54fcc5d6",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -414,8 +414,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A08_DispositionCodePathVerification -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 6.767,
-      "outputSha256": "1ec61a9b8d84c9a2bafc9872265384a90cbbecc9651a09a8fc39729b3a04ca1e",
+      "durationSeconds": 4.348,
+      "outputSha256": "ad82b60166b182ccfbe9693f38f250cccef564f837363dd87cf7aa8296a198b0",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -425,8 +425,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A09_UnknownPredicateOperatorFailsClosed -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.542,
-      "outputSha256": "61ea381dee8ef3d026cbc7464bc2978470cacc509a3a8332b901dbbfd45c7be6",
+      "durationSeconds": 2.428,
+      "outputSha256": "2ee7500aa7669a3d7ecb4ee19dbfca98dc90780a70b0bc43414eeffe85a6ac50",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -436,8 +436,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A10_MalformedFilterPredicatesFailsClosed -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.277,
-      "outputSha256": "48bcca43edb18ba301a2208e804e3f3675c2a6b81d3d988b4f56176032709bb0",
+      "durationSeconds": 2.101,
+      "outputSha256": "08bd1bf348b774fb39345d8ff2a995d2383dbb1dfe37c48000ed99c7418032b3",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -447,8 +447,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A11_InvalidReminderDetailFailsUnderRemoveAndSet -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.467,
-      "outputSha256": "90ab8e08974f18bde79ec95d7854b30a83edcb3629937fa87920049335ddbdf0",
+      "durationSeconds": 2.42,
+      "outputSha256": "70544d5f6697479ba649322ee527032f1139a59afd45b5e21ce1fab048f2b432",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -458,8 +458,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A12_InvalidEventDetailFailsUnderRemoveAndSet -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.62,
-      "outputSha256": "9f3fd0fa621f44c19edcc2091c161b05ec9af885ba9eea4d4d5f271c72144fb4",
+      "durationSeconds": 2.695,
+      "outputSha256": "7ae28758d779fe560cb0505ec8ce3d200aab8f19496f895540dd2ff18617e764",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -469,8 +469,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A13_UnknownSetterModeFailsClosed -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.228,
-      "outputSha256": "1eff615b9c978729a3509f2a4969a22755381811a768f143547213a14c7b0dab",
+      "durationSeconds": 3.636,
+      "outputSha256": "3bd820a8f94f54e1ddf75df8e3390d0feed7b1b871848e910e1e1933518ec673",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -480,8 +480,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A14_RemoveSpecifiedValueEmission -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 4.099,
-      "outputSha256": "52fbb1d4777cdf75613f4b8c6e81c353a8e800a81aac9a7562759a6b8db23b81",
+      "durationSeconds": 5.597,
+      "outputSha256": "2a4debd755cdbc7b4b2c4122280e6a134a3ab5a9e6aace05ee56335c13f5ecb7",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -491,8 +491,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A15_SemanticVersionCompilerCheck -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.623,
-      "outputSha256": "c6355c9108d5db08ec3cad0de04e03e032112b8bd1ab59366585e2a95f203f0c",
+      "durationSeconds": 2.753,
+      "outputSha256": "c5a22380efd5a4c136664cd5e4da165b2229c42eae279c222291fe17657bfb2d",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -502,8 +502,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A16_HebrewEmojiUtf16Offset -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 5.501,
-      "outputSha256": "471a7b0f637c7695a59b74787ad6f4fdaeadc72c432fc9fbfadbb8266187268b",
+      "durationSeconds": 4.537,
+      "outputSha256": "fc771ad5c318a3fe4b9f2be6aa97c0ff5f13eee88dc21972878a93b0961c6146",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -513,8 +513,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A17_RawActionFallbackLossless -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 6.506,
-      "outputSha256": "e30517e6964a2cc30f47b3e3a497bb86e851c533baf807e69f4bee2ec7a61371",
+      "durationSeconds": 4.804,
+      "outputSha256": "175b1012a538c4a03be78090d7d77724a3c743eeeaa17838b32f6a07e46858e5",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -524,8 +524,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A18_FakeFirstForkCommitDetected -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 4.801,
-      "outputSha256": "5319761b405a083dbcf10c980dafa1b0ff3e1fa2c75b581efd6721cf02a2fd67",
+      "durationSeconds": 2.797,
+      "outputSha256": "a4f165b5c83e9840e6f5f400571166e072c5d126f45f8f8cfadfdd99d5c010a3",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -535,8 +535,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A19_AggregateGateFailsOnMissingTest -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 4.424,
-      "outputSha256": "8b8a52af524afe169f7c57627ff205b4699cd6e8edd6317ec96d15c96ccc135b",
+      "durationSeconds": 2.416,
+      "outputSha256": "41eee30b524705a0357b59c4cff997addc26006402a34635dbc7d2733253a293",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -546,8 +546,8 @@
       "tier": "STATIC_CONTRACT",
       "command": "go test -run TestP10R2_A20_IOSPaletteActionCoverage -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.416,
-      "outputSha256": "21c6733e606b2df28283cb51c9357ea65c470b643b7da239343a9cd34c0d4b50",
+      "durationSeconds": 2.012,
+      "outputSha256": "2a2b4e35648b29ae14b24e89729985b37c2d41256c713acae7ed9cc608cee543",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -557,8 +557,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A21_DerivedArtifactTamperingFails -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 3.314,
-      "outputSha256": "58bd1b0fac2a2ec9a782b68bee5fb481620bf468191c2ad46e2af066ed7b738f",
+      "durationSeconds": 2.075,
+      "outputSha256": "78e4e5f8746604265850d2b78dfb31da8596d95ab1a971107649b180ac8458de",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -568,8 +568,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A22_EmptyShardSummaryRejection -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.508,
-      "outputSha256": "ad217e4ed57dce567c3ac88181a131f52fd370eccbdb715845cc6fcea7385521",
+      "durationSeconds": 1.994,
+      "outputSha256": "5d9859249a7a92da0fb09f13e98a256ba59b65d8af7515ba5836598bf1cb5703",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -579,8 +579,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A23_MacOnlyFlagPreserved -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.494,
-      "outputSha256": "6740453c67c9baa06226b03b5e0a8113f4ee7927ffa60bed5bfc7acb44f5efb6",
+      "durationSeconds": 2.119,
+      "outputSha256": "0e2be697bb749f8f9b83283e1f4cfb0879c20e848d5fed778423bacf232d6f3e",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -590,8 +590,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A24_ToolKitConfigExcludedFromUserActions -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.517,
-      "outputSha256": "b5da70a905473798d5ef1f36e628fd793a2c0fdd2659498daa30e1b821bb4715",
+      "durationSeconds": 2.235,
+      "outputSha256": "f50bd1ee9df63a9a1664248dc28024f9cc0b8d3d010c90508be6ad556309a588",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -601,8 +601,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A25_SchemaFingerprintDriftDetection -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.507,
-      "outputSha256": "46d668e80e688bfd3c59fb87a6ac5092a7706ac6dde376b34b4151c719139803",
+      "durationSeconds": 2.753,
+      "outputSha256": "c6c17aa88b22669c0102b01823d7890a57032a85c8db46fa822ba25c2a7f06de",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -612,8 +612,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A26_ThirdPartyAppIntentConditional -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 2.759,
-      "outputSha256": "e47a82a482db508579a930f4d8cc8bd8990a39786fb8a8a5c2f364004a92ec9e",
+      "durationSeconds": 3.093,
+      "outputSha256": "ab34117e3fc786311c517bdbb743bf9de46052cc52d4715cee13c68547f4d8f4",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -623,8 +623,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A27_ExistingFixturesUnbroken -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 7.912,
-      "outputSha256": "36db1e6ea490f1b24ba6258f2251c21fe2b012b4a193d95d72d241f077d4f0f7",
+      "durationSeconds": 5.423,
+      "outputSha256": "c89a1e263981d16210d2da17e0f51ef50e744281d0a3eb9a6a6f184a63cc9bbd",
       "sourceFile": "p10r2_adversarial_test.go"
     },
     {
@@ -634,8 +634,8 @@
       "tier": "PRODUCTION_PATH",
       "command": "go test -run TestP10R2_A28_FullReleaseTupleStructure -count=1 -v .",
       "exitCode": 0,
-      "durationSeconds": 4.024,
-      "outputSha256": "16ece478154988b8a8b285c3fff33168a90050608ad6e40a4a2bc146c0712c6d",
+      "durationSeconds": 2.601,
+      "outputSha256": "f6ace71898fe4f4574939497e0a6df70490fe7ce2aeeae6f2516ee9cd349550a",
       "sourceFile": "p10r2_adversarial_test.go"
     }
   ]
