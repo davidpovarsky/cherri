@@ -168,6 +168,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
 			row.Scope = "Observed smoke only; no formal acceptance tier proven"
 		}
+		if tests, ok := documentationProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = append([]string{}, documentationProductionPaths[row.ID]...)
+			row.PositiveAndNegative = res.Passed
+		}
 		if tests, ok := catalogProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = append([]string{}, catalogProductionPaths...)

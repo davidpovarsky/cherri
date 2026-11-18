@@ -31,7 +31,16 @@ Variables defined with `let` are immutable. They cannot be reassigned.
 ```cherri
 let name = "Alice"
 let count = 42
-// name = "Bob"  // Compile Error: E_ASSIGN_IMMUTABLE
+```
+
+A reassignment to a `let` binding is deliberately invalid. The documentation
+test requires the exact `E_ASSIGN_IMMUTABLE` diagnostic and verifies that
+no unsigned shortcut is produced:
+
+<!-- cherri-test: diagnostic E_ASSIGN_IMMUTABLE -->
+```cherri
+let name = "Alice"
+name = "Bob"
 ```
 
 ### Mutable Bindings (`var`)
@@ -117,7 +126,7 @@ Native Apple Shortcuts content items:
 Actions in Cherri v2 accept an optional primary argument without label, followed by named arguments:
 ```cherri
 // Primary argument + named arguments
-let photo = none
+let photo = selectPhotos()
 resizeImage(photo, width: 800, height: 600)
 
 // Named arguments only
@@ -203,9 +212,9 @@ menu("Select an action") {
 
 Declare shortcut properties using the `shortcut` declaration:
 ```cherri
-shortcut "Morning Routine" {
+shortcut "Network Routine" {
     icon: { glyph: 59789, color: 4282601983 }
-    trigger time(event: .sunrise)
+    trigger wifi(event: .joined)
 }
 ```
 
@@ -213,11 +222,17 @@ shortcut "Morning Routine" {
 ```cherri
 setup apiKey: Text {
     prompt: "Enter your API Key"
-    default: "sk-demo"
+    default: "synthetic-key"
 }
+text(apiKey)
 ```
 
 ---
+
+Setup questions are bound to one direct action parameter, as in `text(apiKey)`.
+Declare a separate question for another slot. A declaration that is never used
+does not create a native import question. An authored `Ask` value is a runtime
+prompt; it is separate from a setup question.
 
 ## 8. Native Escape Hatches
 
@@ -297,7 +312,7 @@ cherri import MyShortcut.plist --fidelity=semantic --mode=v2
 
 | Fidelity Mode | Guarantee | Best Used For |
 |---------------|-----------|---------------|
-| `lossless` (default for `cherri import`) | 100% bit-for-bit decoded plist tree identity (`native.workflow` / `#workflowheader`) | Exact archival, round-tripping complex/third-party Shortcuts without any structural drift |
-| `hybrid` | 100% bit-for-bit decoded plist tree identity (`NATURAL_VERIFIED` semantic calls, control-flow regions & `#workflowheader` provenance + fail-closed `EXACT_NATIVE` escape) | Reading and editing real-world Shortcuts in natural Cherri syntax (`Legacy` or `V2`) while preserving exact wire fidelity |
+| `lossless` (default for `cherri import`) | Exact recursive typed plist tree equality (the file encoding may differ) (`native.workflow` / `#workflowheader`) | Exact archival, round-tripping complex/third-party Shortcuts without any structural drift |
+| `hybrid` | Exact recursive typed plist tree equality (the file encoding may differ) (`NATURAL_VERIFIED` semantic calls, control-flow regions & `#workflowheader` provenance + fail-closed `EXACT_NATIVE` escape) | Reading and editing real-world Shortcuts in natural Cherri syntax (`Legacy` or `V2`) while preserving exact wire fidelity |
 | `semantic` (default for `--import=...`) | Best-effort readable decompilation (`MigrateSemanticLegacySourceToV2Strict` in v2 mode; fails closed if invalid) | Inspecting or refactoring simple Shortcuts where strict wire-level UUID/header preservation is not required |
 

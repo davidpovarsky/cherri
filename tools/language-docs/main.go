@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -101,39 +103,63 @@ func renderReference(reg *schema.Registry) string {
 }
 
 func main() {
+	check := flag.Bool("check", false, "verify the complete existing reference without writing")
+	flag.Parse()
+	if flag.NArg() > 1 {
+		fmt.Fprintln(os.Stderr, "usage: language-docs [--check] [reference-path]")
+		os.Exit(2)
+	}
 	reg := schema.DefaultRegistry()
 	reference := renderReference(reg)
 	outPath := filepath.Join("docs", "language-v2", "actions-reference.md")
-	if len(os.Args) > 1 {
-		outPath = os.Args[1]
+	if flag.NArg() == 1 {
+		outPath = flag.Arg(0)
 	}
-
+	if *check {
+		data, err := os.ReadFile(outPath)
+		if err != nil || string(data) != reference {
+			fmt.Fprintln(os.Stderr, "Generated action reference differs from the complete assembled schema:", outPath)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
+			os.Exit(1)
+		}
+		fmt.Printf("Verified complete reference %s (%d native definitions; %d compiler macros).\n", outPath, len(reg.AllActions()), len(reg.CompilerMacros()))
+		return
+	}
 	if err := os.WriteFile(outPath, []byte(reference), 0644); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing actions reference: %v\n", err)
 		os.Exit(1)
 	}
-
 	fmt.Printf("Generated %s successfully (%d actions).\n", outPath, len(reg.AllActions()))
 }
 
 func buildSignature(a *schema.ActionSchema) string {
-	var parts []string
-	if prim, ok := a.PrimaryParameter(); ok {
-		parts = append(parts, fmt.Sprintf("%s: %s", prim.Label, prim.TypeName))
-	}
-	for _, p := range a.Parameters {
+	var order []int
+	primary := -1
+	for i, p := range a.Parameters {
 		if a.PrimaryParameterID != "" && p.ID == a.PrimaryParameterID {
-			continue
+			primary = i
+			order = append(order, i)
+			break
 		}
-		opt := ""
+	}
+	for i := range a.Parameters {
+		if i != primary {
+			order = append(order, i)
+		}
+	}
+	var parts []string
+	for _, index := range order {
+		p := a.Parameters[index]
+		optional, def := "", ""
 		if p.Optional {
-			opt = "?"
+			optional = "?"
 		}
-		def := ""
 		if p.DefaultValue != "" {
-			def = fmt.Sprintf(" = %q", p.DefaultValue)
+			def = " = " + formatDefault(p.TypeName, p.DefaultValue)
 		}
-		parts = append(parts, fmt.Sprintf("%s%s: %s%s", p.Label, opt, p.TypeName, def))
+		parts = append(parts, fmt.Sprintf("%s%s: %s%s", p.Label, optional, p.TypeName, def))
 	}
 	ret := ""
 	if a.OutputTypeName != "" && a.OutputTypeName != "Void" && a.OutputTypeName != "Unknown" {
@@ -144,6 +170,27 @@ func buildSignature(a *schema.ActionSchema) string {
 		block = " { <#value#> }"
 	}
 	return fmt.Sprintf("%s(%s)%s%s", a.CallableName, strings.Join(parts, ", "), block, ret)
+}
+
+// Defaults are registry metadata, not executable snippets. Preserve typed Bool
+// and Number literals; Text and opaque symbolic defaults remain quoted.
+func formatDefault(kind, value string) string {
+	switch strings.ToLower(kind) {
+	case "bool", "boolean":
+		if value == "true" || value == "false" {
+			return value
+		}
+	case "number":
+		decoder := json.NewDecoder(strings.NewReader(value))
+		decoder.UseNumber()
+		var decoded any
+		if json.Valid([]byte(value)) && decoder.Decode(&decoded) == nil {
+			if _, ok := decoded.(json.Number); ok {
+				return value
+			}
+		}
+	}
+	return fmt.Sprintf("%q", value)
 }
 
 func writeCompilerMacros(b *strings.Builder, reg *schema.Registry) {

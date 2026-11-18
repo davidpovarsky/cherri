@@ -1961,18 +1961,8 @@ func (r *Runner) runCLI() {
 
 // Group 18: Docs
 func (r *Runner) runDocs() {
-	// D01: Generated action signatures match schema
-	refPath := resolveRepoPath(filepath.Join("docs", "language-v2", "actions-reference.md"))
-	refBytes, errRef := os.ReadFile(refPath)
-	d01Passed := errRef == nil && len(refBytes) > 1000 && strings.Contains(string(refBytes), r.reg.Fingerprint())
-	r.Record("D01", "docs", "All generated action signatures match assembled schema", "generation+docs", []string{"generation", "docs"}, d01Passed, "PASSED", "docs/language-v2/actions-reference.md generated from ActionSchema and matches fingerprint")
-
-	// D02: Runnable docs examples tested
-	cmdD02 := exec.Command("go", "test", "-run", "TestDocsExamplesExtractAndVerify", ".")
-	cmdD02.Dir = resolveRepoRoot()
-	outD02, errD02 := cmdD02.CombinedOutput()
-	d02Passed := errD02 == nil
-	r.Record("D02", "docs", "Runnable and deliberately-invalid docs examples tested", "docs", []string{"docs"}, d02Passed, "PASSED", fmt.Sprintf("Docs examples verified cleanly: %s", strings.TrimSpace(string(outD02))))
+	r.runGeneratedDocumentationRequirement()
+	r.runExecutableDocumentationRequirement()
 
 	// D03: Active fork docs separated from upstream
 	docsRepoGuide := filepath.Join(resolveRepoRoot(), "..", "cherrilang.org", "fork-language", "guide.md")

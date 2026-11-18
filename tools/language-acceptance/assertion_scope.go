@@ -66,8 +66,6 @@ var incompleteLocalAssertions = map[string]string{
 	"E05":   "One out-of-order document update does not test cancellation and stale response publication.",
 	"E06":   "One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface.",
 	"E08":   "Fifty tiny edits do not cover small/large documents and embedded assets.",
-	"D01":   "Fingerprint presence does not compare every generated signature with the schema.",
-	"D02":   "The selected docs test parses/analyzes examples; it does not execute their production compilation/runtime.",
 	"D03":   "File existence does not verify active fork docs, publication, and upstream separation.",
 	"K05":   "Script length does not execute repair/build/import/edit/sign workflows.",
 	"CI01":  "Comparing two unequal literal strings does not execute a negative CI gate.",

@@ -1,98 +1,107 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
 
-	"github.com/electrikmilk/cherri/internal/language/analysis"
-	"github.com/electrikmilk/cherri/internal/language/schema"
-	"github.com/electrikmilk/cherri/internal/language/source"
-	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"howett.net/plist"
 )
 
-var codeBlockRegex = regexp.MustCompile("(?s)```cherri\\s*\n(.*?)\n```")
+var codeBlockRegex = regexp.MustCompile("(?s)```cherri[ \\t]*\\r?\\n(.*?)\\r?\\n```")
+var docsDiagnosticAnnotation = regexp.MustCompile("<!--\\s*cherri-test:\\s*diagnostic\\s+(E_[A-Z0-9_]+)\\s*-->\\s*$")
 
-// TestDocsExamplesExtractAndVerify extracts all cherri code fences from documentation
-// and verifies that runnable examples compile cleanly and negative examples produce diagnostics.
+// This is the public CLI and canonical backend, not just parser/analysis smoke.
+// Historical reference pages and generated signature notation are not runnable
+// programs; active guides must classify deliberately invalid code explicitly.
 func TestDocsExamplesExtractAndVerify(t *testing.T) {
-	docFiles := []string{
-		filepath.Join("docs", "language-v2", "language-guide.md"),
+	binary := roundTripBinary(t)
+	docFile := filepath.Join("docs", "language-v2", "language-guide.md")
+	data, err := os.ReadFile(docFile)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Also check cherrilang.org if directory exists
-	docsRepoGuide := filepath.Join("..", "cherrilang.org", "fork-language", "guide.md")
-	if _, err := os.Stat(docsRepoGuide); err == nil {
-		docFiles = append(docFiles, docsRepoGuide)
+	matches := codeBlockRegex.FindAllSubmatchIndex(data, -1)
+	if len(matches) < 18 {
+		t.Fatalf("expected full active guide coverage, found %d", len(matches))
 	}
-
-	reg := schema.DefaultRegistry()
-	verifiedCount := 0
-
-	for _, docFile := range docFiles {
-		data, err := os.ReadFile(docFile)
-		if err != nil {
-			t.Fatalf("failed to read doc file %s: %v", docFile, err)
-		}
-
-		matches := codeBlockRegex.FindAllStringSubmatch(string(data), -1)
-		for i, match := range matches {
-			snippet := strings.TrimSpace(match[1])
-			if snippet == "" {
-				continue
+	positive, negative := 0, 0
+	for index, match := range matches {
+		t.Run(fmt.Sprintf("block_%02d", index+1), func(t *testing.T) {
+			code := strings.TrimSpace(string(data[match[2]:match[3]]))
+			if code == "" {
+				t.Fatal("empty active code fence")
 			}
-
-			isDeliberateError := strings.Contains(snippet, "Compile Error:") || strings.Contains(snippet, "Expected Error:") || strings.Contains(snippet, "error:")
-
-			// Clean out commented-out error lines before checking if rest is valid
-			var cleanLines []string
-			for _, line := range strings.Split(snippet, "\n") {
-				trimmed := strings.TrimSpace(line)
-				if strings.HasPrefix(trimmed, "//") && strings.Contains(trimmed, "Compile Error") {
-					// Skip intentionally commented error example
-					continue
-				}
-				cleanLines = append(cleanLines, line)
+			expected := ""
+			if annotation := docsDiagnosticAnnotation.FindSubmatch(data[:match[0]]); len(annotation) > 1 {
+				expected = string(annotation[1])
 			}
-			cleanCode := strings.Join(cleanLines, "\n")
-
-			srcFile := source.NewFile(source.DocumentID(filepath.Base(docFile)), "doc://"+filepath.Base(docFile), i+1, cleanCode)
-			parser := syntax.NewParser(srcFile)
-			prog := parser.ParseProgram()
-			parseErrs := parser.Errors()
-
-			analyzer := analysis.NewAnalyzer(reg)
-			analyzer.Analyze(prog)
-			diags := analyzer.Diagnostics()
-
-			hasErrors := len(parseErrs) > 0
-			for _, d := range diags {
-				if d.Severity == analysis.SeverityError {
-					hasErrors = true
-					break
+			dir := t.TempDir()
+			path := filepath.Join(dir, "snippet.cherri")
+			if err := os.WriteFile(path, []byte(code+"\n"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			stdout, stderr, checkErr := p15RunCLI(t, binary, dir, nil, "check", path, "--json", "--no-ansi")
+			var checked struct {
+				Valid       bool `json:"valid"`
+				Diagnostics []struct {
+					Code     string `json:"code"`
+					Severity string `json:"severity"`
+				} `json:"diagnostics"`
+			}
+			if err := json.Unmarshal(stdout, &checked); err != nil {
+				t.Fatalf("invalid structured check: %v\n%s\n%s", err, stdout, stderr)
+			}
+			var codes []string
+			for _, diagnostic := range checked.Diagnostics {
+				if diagnostic.Severity == "ERROR" {
+					codes = append(codes, diagnostic.Code)
 				}
 			}
-
-			if isDeliberateError {
-				// If snippet itself contains raw invalid lines without comment
-				if strings.Contains(snippet, "// Compile Error:") {
-					// Intentionally commented out in snippet, cleanCode should be valid
-					if hasErrors {
-						t.Errorf("%s snippet #%d had unexpected errors: %v / %v\nCode:\n%s", docFile, i+1, parseErrs, diags, cleanCode)
-					}
+			if expected != "" {
+				if checkErr == nil || checked.Valid || len(codes) != 1 || codes[0] != expected {
+					t.Fatalf("expected exact %s, got %v (exit %v): %s", expected, codes, checkErr, stderr)
 				}
+				negative++
 			} else {
-				if hasErrors {
-					t.Errorf("%s snippet #%d failed verification: %v / %v\nCode:\n%s", docFile, i+1, parseErrs, diags, cleanCode)
+				if checkErr != nil || !checked.Valid || len(codes) != 0 {
+					t.Fatalf("runnable documentation check failed: %v\n%s\n%s", checkErr, stdout, stderr)
 				}
+				positive++
 			}
-			verifiedCount++
-		}
+			out, compileErrOutput, compileErr := p15RunCLI(t, binary, dir, nil, path, "--skip-sign", "--no-ansi")
+			unsigned := filepath.Join(dir, "snippet_unsigned.shortcut")
+			if expected != "" {
+				if compileErr == nil {
+					t.Fatal("deliberately invalid example compiled")
+				}
+				if _, err := os.Stat(unsigned); !os.IsNotExist(err) {
+					t.Fatal("invalid example left an unsigned artifact")
+				}
+				return
+			}
+			if compileErr != nil {
+				t.Fatalf("real unsigned compilation failed: %v\n%s\n%s\nCode:\n%s", compileErr, out, compileErrOutput, code)
+			}
+			raw, err := os.ReadFile(unsigned)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var workflow map[string]any
+			if _, err := plist.Unmarshal(raw, &workflow); err != nil {
+				t.Fatalf("not a real native workflow: %v", err)
+			}
+			if _, ok := workflow["WFWorkflowActions"].([]any); !ok {
+				t.Fatalf("missing native action array: %T", workflow["WFWorkflowActions"])
+			}
+		})
 	}
-
-	if verifiedCount < 5 {
-		t.Errorf("expected to verify at least 5 doc snippets, verified %d", verifiedCount)
+	if positive == 0 || negative == 0 {
+		t.Fatalf("missing real positive/negative coverage: %d/%d", positive, negative)
 	}
+	t.Logf("DOCS_EXECUTED runnable=%d exact_diagnostics=%d; actual public check and unsigned compiler; no Apple runtime claim", positive, negative)
 }
