@@ -47,3 +47,34 @@ func TestSupplementalRequirementsNeedExecutedScenarios(t *testing.T) {
 		}
 	}
 }
+
+func TestLocalReportIncludesAll179WithoutInheritedClosure(t *testing.T) {
+	contracts, err := LoadAllContracts("", "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	combined := allLocalContracts(contracts)
+	if len(combined.Cases) != 179 || combined.CaseCount != 179 {
+		t.Fatalf("wrong obligation count: %d", len(combined.Cases))
+	}
+	results := make(map[string]CaseResult)
+	for _, c := range combined.Cases {
+		results[c.ID] = CaseResult{ID: c.ID, Status: "NOT_RUN", Detail: "No dedicated scenario has executed"}
+	}
+	report, err := ValidateAndAggregateWithPhase(combined, results, "fixture", "local")
+	if err != nil {
+		t.Fatalf("explicit unexecuted obligations are not unknown IDs: %v", err)
+	}
+	if report.TotalCases != 179 || report.PassedCases != 0 || report.FailedCases != 0 || report.SkippedCases != 179 || report.ClosureComplete {
+		t.Fatalf("unexecuted obligations changed truth: %+v", report)
+	}
+	for _, result := range report.Results {
+		if result.Status != "NOT_RUN" || result.Passed || len(result.ExecutedLevels) != 0 {
+			t.Fatalf("false execution claim: %+v", result)
+		}
+	}
+	final, err := ValidateAndAggregateWithPhase(combined, results, "fixture", "final")
+	if err == nil || final.ClosureComplete {
+		t.Fatal("unexecuted obligations must reject final closure")
+	}
+}

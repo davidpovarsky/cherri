@@ -137,27 +137,32 @@ func TestP15F01StaticSkipsMissingTarget(t *testing.T) {
 func TestP15F01BooleanStatementUsesValueNotPresence(t *testing.T) {
 	for _, expr := range []string{"flag", "!flag", "flag && other", "flag || other"} {
 		var acts = p15CompiledActions(t, "var flag = false\nvar other = true\nif "+expr+" { comment(\"THEN\") } else { comment(\"ELSE\") }")
-		var starts int
-		for _, a := range acts {
-			if a["WFWorkflowActionIdentifier"] != "is.workflow.actions.conditional" {
-				continue
-			}
-			var p = p15Param(a)
-			if p15Int(p["WFControlFlowMode"]) != 0 {
-				continue
-			}
-			starts++
-			var code = p15Int(p["WFCondition"])
-			if code != 4 && code != 5 {
-				t.Fatalf("%s uses presence/compound predicate %v for a boolean, expected equality or inequality", expr, p)
-			}
-			if p15Int(p["WFNumberValue"]) != 1 {
-				t.Fatalf("%s does not compare to native true (1): %#v", expr, p)
-			}
+		p15AssertBooleanConditions(t, acts, expr)
+	}
+}
+
+func p15AssertBooleanConditions(t *testing.T, acts []map[string]any, expr string) {
+	t.Helper()
+	var starts int
+	for _, a := range acts {
+		if a["WFWorkflowActionIdentifier"] != "is.workflow.actions.conditional" {
+			continue
 		}
-		if starts == 0 {
-			t.Fatalf("missing condition for %s", expr)
+		var p = p15Param(a)
+		if p15Int(p["WFControlFlowMode"]) != 0 {
+			continue
 		}
+		starts++
+		var code = p15Int(p["WFCondition"])
+		if code != 4 && code != 5 {
+			t.Fatalf("%s uses presence/compound predicate %v for a boolean, expected equality or inequality", expr, p)
+		}
+		if p15Int(p["WFNumberValue"]) != 1 {
+			t.Fatalf("%s does not compare to native true (1): %#v", expr, p)
+		}
+	}
+	if starts == 0 {
+		t.Fatalf("missing condition for %s", expr)
 	}
 }
 

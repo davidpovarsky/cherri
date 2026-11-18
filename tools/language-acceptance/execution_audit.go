@@ -19,6 +19,7 @@ var f01RequiredTests = []string{
 	"TestP15F01BooleanStatementUsesValueNotPresence",
 	"TestP15F01GuardOracleRejectsMutations",
 	"TestP15F01RuntimeFixtureCompiles",
+	"TestP15F01HybridEditedPredicateGuardsRHS",
 }
 
 // The acceptance runner executes the production compiler regressions, and

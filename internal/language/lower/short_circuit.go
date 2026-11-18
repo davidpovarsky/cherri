@@ -22,7 +22,7 @@ func nativePredicateOperand(expr syntax.Expression) bool {
 	return false
 }
 
-func nativePredicateClauses(clauses []syntax.Expression, allowPresence bool) bool {
+func (l *Lowerer) nativePredicateClauses(clauses []syntax.Expression, allowPresence bool) bool {
 	for _, expr := range clauses {
 		if unary, ok := expr.(*syntax.UnaryExpr); ok && unary.Op == syntax.TokenBang {
 			expr = unary.Operand
@@ -59,7 +59,7 @@ func nativePredicateClauses(clauses []syntax.Expression, allowPresence bool) boo
 				return false
 			}
 		default:
-			if !allowPresence || !nativePredicateOperand(expr) {
+			if !allowPresence || !nativePredicateOperand(expr) || (l.isBooleanCondition(expr) && !l.importedPresenceOperand(expr)) {
 				return false
 			}
 		}
@@ -84,4 +84,19 @@ func (l *Lowerer) isBooleanCondition(expr syntax.Expression) bool {
 		return e.Op == syntax.TokenAnd || e.Op == syntax.TokenOr
 	}
 	return false
+}
+
+// Import source retains native presence semantics for an original imported
+// symbol. Header provenance alone must not change new authored Bool bindings or
+// logical expressions into HasAnyValue. An edited condition on an imported Bool
+// can express value intent unambiguously as "value == true" or isTrue(value).
+func (l *Lowerer) importedPresenceOperand(expr syntax.Expression) bool {
+	if !l.hasImportProvenance {
+		return false
+	}
+	if unary, ok := expr.(*syntax.UnaryExpr); ok && unary.Op == syntax.TokenBang {
+		expr = unary.Operand
+	}
+	id, ok := expr.(*syntax.IdentExpr)
+	return ok && l.provenanceSymbols[id.Name]
 }

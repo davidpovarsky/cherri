@@ -652,6 +652,11 @@ func ValidateAndAggregateWithPhase(contract *ContractFile, results map[string]Ca
 			} else {
 				validationErrors = append(validationErrors, fmt.Sprintf("case %s failed assertion", c.ID))
 			}
+		} else if phase == "local" && res.Status == "NOT_RUN" && len(res.ExecutedLevels) == 0 {
+			// Preserve an honest unexecuted obligation without calling it an
+			// assertion failure or claiming that any local assertion passed.
+			skipped++
+			res.Passed = false
 		} else if len(missingTiers) > 0 {
 			// Some required tiers are missing from executed levels
 			if phase == "local" && allMissingAreExternal {
@@ -1259,7 +1264,7 @@ func main() {
 		evBytes, _ := json.MarshalIndent(runner.records, "", "  ")
 		_ = os.WriteFile(filepath.Join(evidenceDir, "local-runner-evidence.json"), evBytes, 0644)
 
-		report, valErr = ValidateAndAggregateWithPhase(contracts.Acceptance, runner.results, runner.reg.Fingerprint(), phase)
+		report, valErr = ValidateAndAggregateWithPhase(allLocalContracts(contracts), runner.results, runner.reg.Fingerprint(), phase)
 	}
 
 	outPath := explicitOut

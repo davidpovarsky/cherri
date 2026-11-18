@@ -2932,7 +2932,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 		op := binExpr.Op
 		clauses := flattenCompoundCondition(stmt.Condition, op)
 		var templates []any
-		canUseWFConditions := l.hasImportProvenance || nativePredicateClauses(clauses, stmt.Modern)
+		canUseWFConditions := l.nativePredicateClauses(clauses, stmt.Modern || l.hasImportProvenance)
 		for _, c := range clauses {
 			if !canUseWFConditions {
 				break
@@ -3221,7 +3221,7 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 
 	// False is still a present native value. Authored Bool conditions must
 	// compare its value; imported presence predicates keep their exact wire.
-	if !l.hasImportProvenance && l.isBooleanCondition(stmt.Condition) {
+	if !l.importedPresenceOperand(stmt.Condition) && l.isBooleanCondition(stmt.Condition) {
 		if condCode == 100 || condCode == 101 {
 			if condCode == 100 {
 				condCode = 4
