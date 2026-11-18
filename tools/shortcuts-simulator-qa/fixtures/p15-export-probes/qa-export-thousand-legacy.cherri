@@ -1,0 +1,35 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "thousand")
+@verdict = "P15_EXPORT_THOUSAND_OK"
+repeat exportIndex for 1000 {
+  text("entry-{exportIndex}")
+  debugLog()
+}
+const artifact = debugExport("json", false, false, false)
+const artifactName = getName(artifact)
+const artifactText = getText(artifact)
+if artifactName != "cherri-debug.json" { @verdict = "P15_EXPORT_FILE_NAME_FAIL" }
+const parsed = getDictionary(artifactText)
+const entries = getValue(parsed, "entries")
+const entryCount = count(entries)
+if entryCount != 1000 { @verdict = "P15_EXPORT_CARDINALITY_FAIL" }
+const firstEntry = getFirstItem(entries)
+const status = getValue(firstEntry, "status")
+if status != "TEXT_PAYLOAD_ENCODED" { @verdict = "P15_EXPORT_TEXT_STATUS_FAIL" }
+const payload = getValue(firstEntry, "payload")
+const payloadValue = getValue(payload, "value")
+repeat verifyIndex for 1000 {
+  const indexedEntry = getListItem(entries, @verifyIndex)
+  const indexedPayload = getValue(indexedEntry, "payload")
+  const indexedValue = getValue(indexedPayload, "value")
+  const expectedText = text("entry-{verifyIndex}")
+  const expectedEncoded = base64Encode(expectedText, "None")
+  if indexedValue != expectedEncoded { @verdict = "P15_EXPORT_ENTRY_ORDER_FAIL" }
+}
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "thousand")
+const traceEnvelope = debugExportTrace("qa-export-thousand-legacy")
+const finalSummary = text("CHERRI_QA_EXPORT_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

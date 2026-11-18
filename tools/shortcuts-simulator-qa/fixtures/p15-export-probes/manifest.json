@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "purpose": "standalone synthetic local export native acceptance probes",
+  "defaultRuntimeRegistered": false,
+  "nativeExecuted": 0,
+  "privacy": {
+    "network": false,
+    "persistentSave": false,
+    "externalShare": false,
+    "syntheticOnly": true
+  },
+  "cases": [
+    {
+      "id": "qa-export-empty-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-empty-v2.cherri",
+      "dialect": "v2",
+      "scenario": "empty",
+      "expectedVerdict": "P15_EXPORT_EMPTY_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-unicode-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-unicode-v2.cherri",
+      "dialect": "v2",
+      "scenario": "unicode",
+      "expectedVerdict": "P15_EXPORT_UNICODE_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-thousand-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-thousand-v2.cherri",
+      "dialect": "v2",
+      "scenario": "thousand",
+      "expectedVerdict": "P15_EXPORT_THOUSAND_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-redacted-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-redacted-v2.cherri",
+      "dialect": "v2",
+      "scenario": "redacted",
+      "expectedVerdict": "P15_EXPORT_REDACTED_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-unsupported-file-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-unsupported-file-v2.cherri",
+      "dialect": "v2",
+      "scenario": "unsupported-file",
+      "expectedVerdict": "P15_EXPORT_UNSUPPORTED_FILE_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-text-file-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-text-file-v2.cherri",
+      "dialect": "v2",
+      "scenario": "text-file",
+      "expectedVerdict": "P15_EXPORT_TEXT_FILE_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-empty-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-empty-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "empty",
+      "expectedVerdict": "P15_EXPORT_EMPTY_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-unicode-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-unicode-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "unicode",
+      "expectedVerdict": "P15_EXPORT_UNICODE_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-thousand-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-thousand-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "thousand",
+      "expectedVerdict": "P15_EXPORT_THOUSAND_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-redacted-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-redacted-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "redacted",
+      "expectedVerdict": "P15_EXPORT_REDACTED_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-unsupported-file-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-unsupported-file-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "unsupported-file",
+      "expectedVerdict": "P15_EXPORT_UNSUPPORTED_FILE_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-export-text-file-legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-text-file-legacy.cherri",
+      "dialect": "legacy",
+      "scenario": "text-file",
+      "expectedVerdict": "P15_EXPORT_TEXT_FILE_OK",
+      "nativeStatus": "NOT_EXECUTED"
+    }
+  ]
+}

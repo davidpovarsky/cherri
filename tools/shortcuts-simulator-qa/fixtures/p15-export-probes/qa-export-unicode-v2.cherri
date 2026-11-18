@@ -1,0 +1,31 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "unicode")
+var verdict = "P15_EXPORT_UNICODE_OK"
+let original = text("quote \" backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET")
+debugLog()
+let artifact = debugExport("json", false, false, false)
+let artifactName = getName(artifact)
+let artifactText = getText(artifact)
+if artifactName != "cherri-debug.json" { verdict = "P15_EXPORT_FILE_NAME_FAIL" }
+let parsed = getDictionary(artifactText)
+let entries = getValue(parsed, "entries")
+let entryCount = count(entries)
+if entryCount != 1 { verdict = "P15_EXPORT_CARDINALITY_FAIL" }
+let firstEntry = getFirstItem(entries)
+let status = getValue(firstEntry, "status")
+if status != "TEXT_PAYLOAD_ENCODED" { verdict = "P15_EXPORT_TEXT_STATUS_FAIL" }
+let payload = getValue(firstEntry, "payload")
+let payloadValue = getValue(payload, "value")
+if payloadValue != "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU" { verdict = "P15_EXPORT_UTF8_PAYLOAD_FAIL" }
+let restoredFile = base64Decode(payloadValue)
+let restoredText = getText(restoredFile)
+if restoredText != original { verdict = "P15_EXPORT_UTF8_DECODE_FAIL" }
+let originalAfter = getVariable(original)
+if originalAfter != original { verdict = "P15_EXPORT_ORIGINAL_TEXT_CHANGED" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "unicode")
+let traceEnvelope = debugExportTrace("qa-export-unicode-v2")
+let finalSummary = text(f"CHERRI_QA_EXPORT_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

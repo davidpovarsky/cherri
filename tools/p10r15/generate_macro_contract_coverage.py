@@ -39,8 +39,8 @@ REQUIREMENTS = (
      ("Per-entry label metadata, formatting, branch/repeat association and six-mode acceptance are missing.",)),
     ("export", "1220544665232213", "Local debugExport", ("debugExport",),
      "Local returned file; typed JSON/text or explicit opaque placeholders; safe escaping and default redaction.",
-     "IMPLEMENTATION_GAP", ("Apple file-provider/permission and native output evidence",),
-     ("QA debugExportTrace is a separate trace helper and does not fulfill this contract.",)),
+     "PARTIAL_IMPLEMENTATION", ("Apple returned-file/UTF-8/cardinality runtime evidence",),
+     ("Local File export source supports default full redaction and explicit Text-only base64 payloads; structured types, dates/labels, selective redaction and native acceptance remain open. QA debugExportTrace is separate.",)),
     ("blocks", "1220544718901241", "Shared typed block facility", ("measure",),
      "Scoped typed block/IR, one evaluation, shadowing, value/void, nesting and explicit unavailable-dialect diagnostics.",
      "PARTIAL_IMPLEMENTATION", (),
@@ -449,7 +449,7 @@ def markdown(report):
     for row in report["requirements"]:
         lines.append("- " + row["name"] + ": " + " ".join(row["limitations"]) +
                      (" External prerequisites: " + "; ".join(row["externalPrerequisites"]) + "." if row["externalPrerequisites"] else ""))
-    lines.extend(["", "Standalone collect is deliberately not added. Existing for/yield evidence belongs to the typed collection requirement; it is not counted as a new canonical macro. Cache and retry have both missing source implementation and native prerequisites. Label, export and pagination still require ordinary implementation work.", "",
+    lines.extend(["", "Standalone collect is deliberately not added. Existing for/yield evidence belongs to the typed collection requirement; it is not counted as a new canonical macro. Cache and retry have both missing source implementation and native prerequisites. Label and pagination still require ordinary implementation work. Local export has a bounded Text-only/default-redacted source subset; its native acceptance and remaining typed serialization contract stay open.", "",
                   "Reproduce with python3 tools/p10r15/generate_macro_contract_coverage.py --refresh, then --verify. Every refresh builds the source and runs the actual CLI. Verification rejects source/producer drift and edited or incomplete evidence. The source SHA is the compiled revision before committing evidence, avoiding a self-referential commit pin.", ""])
     return "\n".join(lines)
 

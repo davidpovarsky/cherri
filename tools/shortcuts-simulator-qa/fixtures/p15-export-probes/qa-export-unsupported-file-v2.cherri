@@ -1,0 +1,25 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "unsupported-file")
+var verdict = "P15_EXPORT_UNSUPPORTED_FILE_OK"
+let original = base64Decode("AQIDBA==")
+debugLog()
+let artifact = debugExport("json", false, false, false)
+let artifactName = getName(artifact)
+let artifactText = getText(artifact)
+if artifactName != "cherri-debug.json" { verdict = "P15_EXPORT_FILE_NAME_FAIL" }
+let parsed = getDictionary(artifactText)
+let entries = getValue(parsed, "entries")
+let entryCount = count(entries)
+if entryCount != 1 { verdict = "P15_EXPORT_CARDINALITY_FAIL" }
+let firstEntry = getFirstItem(entries)
+let status = getValue(firstEntry, "status")
+if status != "UNSUPPORTED_PAYLOAD_TYPE" { verdict = "P15_EXPORT_UNSUPPORTED_STATUS_FAIL" }
+let originalAfter = base64Encode(original, "None")
+if originalAfter != "AQIDBA==" { verdict = "P15_EXPORT_ORIGINAL_FILE_CHANGED" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "unsupported-file")
+let traceEnvelope = debugExportTrace("qa-export-unsupported-file-v2")
+let finalSummary = text(f"CHERRI_QA_EXPORT_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

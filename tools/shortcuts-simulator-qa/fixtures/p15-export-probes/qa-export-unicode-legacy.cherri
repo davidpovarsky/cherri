@@ -1,0 +1,31 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "unicode")
+@verdict = "P15_EXPORT_UNICODE_OK"
+const original = text("quote \" backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET")
+debugLog()
+const artifact = debugExport("json", false, false, false)
+const artifactName = getName(artifact)
+const artifactText = getText(artifact)
+if artifactName != "cherri-debug.json" { @verdict = "P15_EXPORT_FILE_NAME_FAIL" }
+const parsed = getDictionary(artifactText)
+const entries = getValue(parsed, "entries")
+const entryCount = count(entries)
+if entryCount != 1 { @verdict = "P15_EXPORT_CARDINALITY_FAIL" }
+const firstEntry = getFirstItem(entries)
+const status = getValue(firstEntry, "status")
+if status != "TEXT_PAYLOAD_ENCODED" { @verdict = "P15_EXPORT_TEXT_STATUS_FAIL" }
+const payload = getValue(firstEntry, "payload")
+const payloadValue = getValue(payload, "value")
+if payloadValue != "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU" { @verdict = "P15_EXPORT_UTF8_PAYLOAD_FAIL" }
+const restoredFile = base64Decode(payloadValue)
+const restoredText = getText(restoredFile)
+if restoredText != original { @verdict = "P15_EXPORT_UTF8_DECODE_FAIL" }
+const originalAfter = getVariable(original)
+if originalAfter != original { @verdict = "P15_EXPORT_ORIGINAL_TEXT_CHANGED" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "unicode")
+const traceEnvelope = debugExportTrace("qa-export-unicode-legacy")
+const finalSummary = text("CHERRI_QA_EXPORT_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

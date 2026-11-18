@@ -1,0 +1,227 @@
+package main
+
+// This is the deliberately bounded first local export contract. Native log
+// items remain untouched. Arbitrary Content Graph objects are not JSON values;
+// only an explicitly opted-in Text item has a payload in this version.
+import (
+	"fmt"
+	"strings"
+
+	"github.com/electrikmilk/cherri/internal/language/backend"
+	"github.com/google/uuid"
+)
+
+const debugExportSchemaVersion = "cherri.debug-export/1"
+
+func registerDebugExportMacro() {
+	actions["debugExport"] = &actionDefinition{
+		identifier: "setitemname", outputType: Variable,
+		doc: selfDoc{
+			title:       "Export Local Debug File",
+			description: "Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.",
+			category:    "debug",
+		},
+		parameters: []parameterDefinition{
+			{name: "format", key: "WFDebugExportFormat", validType: RawString, optional: true, defaultValue: "json"},
+			{name: "includeDates", key: "WFDebugExportDates", validType: Bool, optional: true, defaultValue: false},
+			{name: "includeTypes", key: "WFDebugExportTypes", validType: Bool, optional: true, defaultValue: true},
+			{name: "redactSensitive", key: "WFDebugExportRedact", validType: Bool, optional: true, defaultValue: true},
+		},
+	}
+}
+
+type debugExportOptions struct {
+	format       string
+	includeTypes bool
+	redact       bool
+}
+
+func parseDebugExportOptions(params map[string]any) (debugExportOptions, error) {
+	out := debugExportOptions{format: "json", includeTypes: true, redact: true}
+	if raw, exists := params["WFDebugExportFormat"]; exists {
+		value, ok := raw.(string)
+		if !ok {
+			return out, fmt.Errorf("DEBUG_EXPORT_LITERAL: format must be a compile-time literal")
+		}
+		out.format = value
+	}
+	if out.format != "json" && out.format != "text" {
+		return out, fmt.Errorf("DEBUG_EXPORT_FORMAT: expected json or text")
+	}
+	for _, item := range []struct {
+		key    string
+		target *bool
+	}{
+		{"WFDebugExportTypes", &out.includeTypes},
+		{"WFDebugExportRedact", &out.redact},
+	} {
+		if _, exists := params[item.key]; !exists {
+			continue
+		}
+		value, ok := params[item.key].(bool)
+		if !ok {
+			return out, fmt.Errorf("DEBUG_EXPORT_LITERAL: %s must be a Boolean literal", item.key)
+		}
+		*item.target = value
+	}
+	if raw, exists := params["WFDebugExportDates"]; exists {
+		if _, ok := raw.(bool); !ok {
+			return out, fmt.Errorf("DEBUG_EXPORT_LITERAL: includeDates must be a Boolean literal")
+		}
+	}
+	dates, err := debugLiteralFlag(params, "WFDebugExportDates", "debugExport")
+	if err != nil {
+		return out, err
+	}
+	if dates {
+		return out, fmt.Errorf("DEBUG_EXPORT_DATES_UNSUPPORTED: per-entry dates have not been collected; includeDates must be false")
+	}
+	return out, nil
+}
+
+type debugExportExpansion struct{ actions []ShortcutAction }
+
+func (b *debugExportExpansion) add(id string, params map[string]any) {
+	b.actions = append(b.actions, ShortcutAction{
+		WFWorkflowActionIdentifier: "is.workflow.actions." + id,
+		WFWorkflowActionParameters: params,
+	})
+}
+
+func (b *debugExportExpansion) produce(id string, params map[string]any) WFTextTokenAttachment {
+	out := strings.ToUpper(uuid.NewString())
+	params["UUID"] = out
+	b.add(id, params)
+	return debugOutputRef(out)
+}
+
+// Every dynamic field in an export JSON string is output from native Base64
+// Encode with line breaks disabled. No raw user value is interpolated into JSON.
+// A string chunk is authored by this compiler; a Value chunk is an exact native
+// reference. Offsets use Apple's UTF-16 attachment ranges.
+func debugExportTextToken(parts ...any) map[string]any {
+	var content strings.Builder
+	attachments := make(map[string]any)
+	for _, part := range parts {
+		switch value := part.(type) {
+		case string:
+			content.WriteString(value)
+		case WFTextTokenAttachment:
+			key := fmt.Sprintf("{%d, 1}", utf16CodeUnitCount(content.String()))
+			content.WriteString("\uFFFC")
+			attachments[key] = value.Value
+		default:
+			panic("invalid internal debug export token component")
+		}
+	}
+	return map[string]any{
+		"WFSerializationType": "WFTextTokenString",
+		"Value": map[string]any{
+			"string": content.String(), "attachmentsByRange": attachments,
+		},
+	}
+}
+
+func (b *debugExportExpansion) base64(input any) WFTextTokenAttachment {
+	return b.produce("base64encode", map[string]any{
+		"WFInput": input, "WFEncodeMode": "Encode", "WFBase64LineBreakMode": "None",
+	})
+}
+
+func (b *debugExportExpansion) row(status string, typeValue, payload *WFTextTokenAttachment) {
+	parts := []any{`{"status":"`, status, `","payload":`}
+	if payload == nil {
+		parts = append(parts, "null")
+	} else {
+		parts = append(parts, `{"encoding":"base64-utf8","value":"`, *payload, `"}`)
+	}
+	if typeValue != nil {
+		parts = append(parts, `,"nativeType":{"encoding":"base64-utf8","value":"`, *typeValue, `"}`)
+	}
+	parts = append(parts, "}")
+	b.produce("gettext", map[string]any{"WFTextActionText": debugExportTextToken(parts...)})
+}
+
+func buildDebugExportActions(params map[string]any, resultUUID, resultName string) ([]ShortcutAction, error) {
+	options, err := parseDebugExportOptions(params)
+	if err != nil {
+		return nil, err
+	}
+	b := &debugExportExpansion{}
+	var textWitness WFTextTokenAttachment
+	if !options.redact {
+		sample := b.produce("gettext", map[string]any{"WFTextActionText": "Cherri export Text witness"})
+		textWitness = b.produce("getitemtype", map[string]any{"WFInput": sample})
+	}
+	group := strings.ToUpper(uuid.NewString())
+	b.add("repeat.each", map[string]any{
+		"WFInput": debugLogValueRef(debugLogVariableName), "GroupingIdentifier": group, "WFControlFlowMode": 0,
+	})
+	item := debugLogValueRef("Repeat Item")
+	var actualType WFTextTokenAttachment
+	if options.includeTypes || !options.redact {
+		actualType = b.produce("getitemtype", map[string]any{"WFInput": item})
+	}
+	var typeValue *WFTextTokenAttachment
+	if options.includeTypes {
+		encoded := b.base64(actualType)
+		typeValue = &encoded
+	}
+	if options.redact {
+		b.row("REDACTED", typeValue, nil)
+	} else {
+		conditional := strings.ToUpper(uuid.NewString())
+		b.add("conditional", backend.BuildIfStartTyped(conditional,
+			map[string]any{"Type": "Variable", "Variable": actualType}, 4,
+			requireComparisonText(textWitness), nil, backend.OperandString, true))
+		encoded := b.base64(item)
+		b.row("TEXT_PAYLOAD_ENCODED", typeValue, &encoded)
+		b.add("conditional", BuildIfElse(conditional))
+		b.row("UNSUPPORTED_PAYLOAD_TYPE", typeValue, nil)
+		b.add("conditional", BuildIfEnd(conditional, strings.ToUpper(uuid.NewString())))
+	}
+	rowsUUID := strings.ToUpper(uuid.NewString())
+	b.add("repeat.each", map[string]any{
+		"WFControlFlowMode": 2, "GroupingIdentifier": group, "UUID": rowsUUID,
+	})
+	separator := ","
+	if options.format == "text" {
+		separator = "\n"
+	}
+	combined := b.produce("text.combine", map[string]any{
+		"text": debugOutputRefNamed(rowsUUID, "Repeat Results"), "WFTextSeparator": "Custom", "WFTextCustomSeparator": separator,
+	})
+	policy := "redacted"
+	if !options.redact {
+		policy = "text-only-base64"
+	}
+	var envelope any
+	if options.format == "json" {
+		envelope = debugExportTextToken(
+			`{"schemaVersion":"`+debugExportSchemaVersion+`","scope":"run-local-native-items","payloadPolicy":"`+policy+
+				`","dates":"not-collected","labels":"not-collected","entries":[`, combined, "]}")
+	} else {
+		envelope = debugExportTextToken("Cherri Debug Export 1\nScope: run-local native items\nPayload policy: "+policy+
+			"\nDates: not collected\nLabels: not collected\nEntry encoding: JSON lines; Text payloads use base64-utf8\n\n", combined)
+	}
+	content := b.produce("gettext", map[string]any{"WFTextActionText": envelope})
+	file := b.produce("gettypeaction", map[string]any{
+		"WFInput": content, "WFFileType": "public.utf8-plain-text",
+	})
+	if resultUUID == "" {
+		resultUUID = strings.ToUpper(uuid.NewString())
+	}
+	extension := "json"
+	if options.format == "text" {
+		extension = "txt"
+	}
+	result := map[string]any{
+		"WFInput": file, "WFName": "cherri-debug." + extension,
+		"WFDontIncludeFileExtension": false, "UUID": resultUUID,
+	}
+	if resultName != "" {
+		result["CustomOutputName"] = resultName
+	}
+	b.add("setitemname", result)
+	return b.actions, nil
+}

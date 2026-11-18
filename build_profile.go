@@ -37,7 +37,7 @@ func isRemovableDiagnosticMacro(name string) bool {
 	switch name {
 	case "debugLog", "debugLogPrevious", "debugShowLogs", "debugFinish",
 		"debugClearLogs", "debugTrace", "debugStartTimer", "debugStopTimer",
-		"debugTraceEvent", "debugExportTrace":
+		"debugTraceEvent", "debugExportTrace", "debugExport":
 		return true
 	default:
 		return false
@@ -121,6 +121,9 @@ func inspectReleaseMacroReferences(value any, removed map[string]string) error {
 // This validation never binds or changes a producer UUID.
 func validateRemovedDiagnosticOptions(name string, params map[string]any) error {
 	switch name {
+	case "debugExport":
+		_, err := parseDebugExportOptions(params)
+		return err
 	case "debugLog", "debugLogPrevious", "debugShowLogs", "debugFinish":
 		if name == "debugLog" || name == "debugLogPrevious" {
 			if value, passed := params["WFInput"]; passed && value != nil {

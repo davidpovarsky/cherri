@@ -8562,9 +8562,9 @@ url(url: Text, url: Text)
 
 ## Compiler macros
 
-**Compiler Macro Fingerprint:** `f63d8b0a323c7045af4abf20723684506c9f63b9d31776a408c39766e7c2cf44`
+**Compiler Macro Fingerprint:** `f3c8ab73e6e923d52ed39e6c01d5fe57445e4104c2786458a4bf56ed0254bf5b`
 
-**Compiler Macros:** 13
+**Compiler Macros:** 14
 
 These compiler expansions are listed separately from the native Apple catalog. Signatures below describe V2 named arguments; existing Legacy positional forms remain available unless a scoped block is required. A metadata entry does not certify Apple runtime behavior.
 
@@ -8590,6 +8590,21 @@ Reset the execution-local debug log to an empty value.
 ```cherri
 debugClearLogs()
 ```
+
+### `debugExport`
+
+Return one local JSON/text File without saving, sharing or uploading. Fully redacts payloads by default. Explicit redactSensitive:false exports only Text as base64-encoded UTF-8; other payloads report UNSUPPORTED_PAYLOAD_TYPE. Dates/labels are not collected; includeDates:true is rejected. Options are compile-time literals. Native runtime acceptance remains required.
+
+```cherri
+debugExport(format: Text, includeDates?: Bool = "false", includeTypes?: Bool = "true", redactSensitive?: Bool = "true") -> File
+```
+
+| Parameter | Type | Optional | Literal required | Default |
+|---|---|---|---|---|
+| `format` | `Text` | true | true | json |
+| `includeDates` | `Bool` | true | true | false |
+| `includeTypes` | `Bool` | true | true | true |
+| `redactSensitive` | `Bool` | true | true | true |
 
 ### `debugExportTrace`
 
