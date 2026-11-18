@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "completed_at": "2026-11-18T22:21:53.854602+00:00",
+  "source_sha": "6f3db1184173c8872d015d18757e2ae207f79a8a",
+  "source_tree_clean_before": true,
+  "source_tree_clean_after": true,
+  "binary_sha256": "1d4e6b3f2475ae63873cc3de78e4fe1a13f3c5749781a03d4e9879cc5f11ce01",
+  "embedded_vcs_revision": "6f3db1184173c8872d015d18757e2ae207f79a8a",
+  "embedded_vcs_modified": false,
+  "baseline_compiler_sha256": "ce051ec9533381257d87f833a4a049d04793e370c9d076ccea6a515f1a2b60e4",
+  "baseline_source_sha": "51e94503d8a36feb3504118c8d1653f8ecb2cf54",
+  "tests": [
+    {
+      "name": "root-index",
+      "exit_code": 0,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-run",
+        "^TestP15L(02|04)",
+        "."
+      ],
+      "log": "root-index.log",
+      "sha256": "eb158f461d3992e860ef924207cdef9c934cb427e2041b063bb296d443370001",
+      "package_elapsed_seconds": 1.975,
+      "passed_tests": 72,
+      "failed_tests": [],
+      "execution_source": "retained exact-source log from job_7ad9819e1b32"
+    },
+    {
+      "name": "root-existing-controls",
+      "exit_code": 0,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-run",
+        "TestCTRL004_ZeroBasedIndexingAndBounds|TestP15Generated.*Guard|TestP15EmptyList|TestP15L03DuplicateAndInvalidIndexDiagnostics",
+        "."
+      ],
+      "log": "root-existing-controls.log",
+      "sha256": "e419cc3092acbfd218d0349264fb0df7083c6b810b192a59a66b290428253421",
+      "package_elapsed_seconds": 0.433,
+      "passed_tests": 62,
+      "failed_tests": [],
+      "execution_source": "retained exact-source log from job_7ad9819e1b32"
+    },
+    {
+      "name": "lower-existing-controls",
+      "exit_code": 0,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-run",
+        "Test.*Index.*Lowering|TestLowerShortCircuitAndExpressionsAndSafeIndexing",
+        "./internal/language/lower"
+      ],
+      "log": "lower-existing-controls.log",
+      "sha256": "417ff450a28dc0cd2fa45850957ede6d5cfbaab488cdffff7e7845ebb285391b",
+      "package_elapsed_seconds": 1.362,
+      "passed_tests": 7,
+      "failed_tests": [],
+      "execution_source": "retained exact-source log from job_7ad9819e1b32"
+    },
+    {
+      "name": "formal-index",
+      "exit_code": 0,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-run",
+        "^Test(IndexProductionEvidence|UnicodeTextProductionEvidence|LiteralCollectionProductionEvidence|IncompleteSmoke.*|RequirementsEvidenceMap_CompleteCoverage)$",
+        "./tools/language-acceptance"
+      ],
+      "log": "formal-index.log",
+      "sha256": "e490936cac5ed632613c87a4dfaca978ca1cb8457b7e060efeb586d63a8b35ab",
+      "package_elapsed_seconds": 21.667,
+      "passed_tests": 15,
+      "failed_tests": [],
+      "execution_source": "retained exact-source log from job_7ad9819e1b32"
+    }
+  ],
+  "causal_red": {
+    "name": "causal-old-lower-red",
+    "exit_code": 1,
+    "duration_seconds": 13.48,
+    "log": "causal-old-lower-red.log",
+    "sha256": "224a4829e208adab2946729fd86f51ada9b1d7edd3b6b5b8efdfdec52a083c3f",
+    "expected_failure": "lookup needs 3 exact guard ancestors, found 2",
+    "baseline_source_sha": "27daf7994ca20479e9dcee5645b255408b66b2fe",
+    "baseline_lower_sha256": "3c64e5e492c4413b136bf8e5fc9dd089e59db229b0f3077648fb8082b33f5db6"
+  },
+  "boundary_cases": 18,
+  "causal_graph_mutations": 18,
+  "native_roundtrips": 32,
+  "actual_cli_cases": 10,
+  "unchanged_known_or_static_cli_graphs": 7,
+  "dynamic_cli_integrality_guards": 3,
+  "requirements": {
+    "L02": "PENDING_EXTERNAL",
+    "L04": "PENDING_EXTERNAL",
+    "RP21": "NOT_PROMOTED"
+  },
+  "runtime_observed": false,
+  "release_closure": false,
+  "contracts": {
+    "tests/language-v2/acceptance-contract.json": "3c427d654759f2b09f61f288778dba3a7c53e195e04af9b03677d9c9ba8a5a0a",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5"
+  }
+}

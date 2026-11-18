@@ -1,0 +1,123 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-L02-unit",
+      "requirements": [
+        "L02"
+      ],
+      "tier": "unit",
+      "implementation_sha": "6f3db1184173c8872d015d18757e2ae207f79a8a",
+      "test_id": "github.com/electrikmilk/cherri:TestP15L02IndexBoundaryWire",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15L02IndexBoundaryWire|TestP15L04IndexOracleRejectsCorruption|TestP15L02L04IndexNativeRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15L02IndexBoundaryWire, TestP15L04IndexOracleRejectsCorruption, TestP15L02L04IndexNativeRoundTrip; exact native control ancestry and input/result references verified; Apple runtime values and no-item behavior remain pending)"
+      },
+      "detail": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15L02IndexBoundaryWire, TestP15L04IndexOracleRejectsCorruption, TestP15L02L04IndexNativeRoundTrip; exact native control ancestry and input/result references verified; Apple runtime values and no-item behavior remain pending)"
+    },
+    {
+      "evidence_id": "ev-local-L02-native-roundtrip",
+      "requirements": [
+        "L02"
+      ],
+      "tier": "native-roundtrip",
+      "implementation_sha": "6f3db1184173c8872d015d18757e2ae207f79a8a",
+      "test_id": "github.com/electrikmilk/cherri:TestP15L02L04IndexNativeRoundTrip",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15L02IndexBoundaryWire|TestP15L04IndexOracleRejectsCorruption|TestP15L02L04IndexNativeRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15L02IndexBoundaryWire, TestP15L04IndexOracleRejectsCorruption, TestP15L02L04IndexNativeRoundTrip; exact native control ancestry and input/result references verified; Apple runtime values and no-item behavior remain pending)"
+      },
+      "detail": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15L02IndexBoundaryWire, TestP15L04IndexOracleRejectsCorruption, TestP15L02L04IndexNativeRoundTrip; exact native control ancestry and input/result references verified; Apple runtime values and no-item behavior remain pending)"
+    },
+    {
+      "evidence_id": "ev-local-L04-native-roundtrip",
+      "requirements": [
+        "L04"
+      ],
+      "tier": "native-roundtrip",
+      "implementation_sha": "6f3db1184173c8872d015d18757e2ae207f79a8a",
+      "test_id": "github.com/electrikmilk/cherri:TestP15L02L04IndexNativeRoundTrip",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15L04DynamicFractionalIndexGuard|TestP15L04IndexOracleRejectsCorruption|TestP15L02L04IndexNativeRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15L04DynamicFractionalIndexGuard, TestP15L04IndexOracleRejectsCorruption, TestP15L02L04IndexNativeRoundTrip; exact native control ancestry and input/result references verified; Apple runtime values and no-item behavior remain pending)"
+      },
+      "detail": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15L04DynamicFractionalIndexGuard, TestP15L04IndexOracleRejectsCorruption, TestP15L02L04IndexNativeRoundTrip; exact native control ancestry and input/result references verified; Apple runtime values and no-item behavior remain pending)"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T22:19:25Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 2,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "skipped_cases": 2,
+    "results": [
+      {
+        "id": "L02",
+        "group": "collections",
+        "requirement": "Zero-based first/last/empty/out-of-range/negative indexing",
+        "test_level": "unit+native-structure+ios-runtime",
+        "executed_levels": [
+          "unit",
+          "native-structure"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      },
+      {
+        "id": "L04",
+        "group": "collections",
+        "requirement": "Dynamic bounds checking does not execute unsafe native lookup",
+        "test_level": "native-structure+ios-runtime",
+        "executed_levels": [
+          "native-structure"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      }
+    ]
+  },
+  "scope": "L02/L04 exact canonical index control tree and native import round trips only; Apple first/last/no-item behavior, RP21 and overall closure remain unproved",
+  "source_sha": "6f3db1184173c8872d015d18757e2ae207f79a8a",
+  "source_tree_clean": true
+}
