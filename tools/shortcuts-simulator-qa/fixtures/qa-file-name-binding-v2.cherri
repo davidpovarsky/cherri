@@ -1,0 +1,48 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "file-name-binding")
+// Independent literal byte sources keep the binding comparison isolated.
+let contents = text("{\"ok\":true}")
+let fileLet = base64Decode("eyJvayI6dHJ1ZX0=")
+let letNamed = setName(fileLet, "cherri-export-control.json")
+let letName = getName(letNamed)
+let letText = getText(letNamed)
+let fileVar = base64Decode("eyJvayI6dHJ1ZX0=")
+var varNamed = setName(fileVar, "cherri-export-control.json")
+let varName = getName(varNamed)
+let varText = getText(varNamed)
+let fileInlineName = base64Decode("eyJvayI6dHJ1ZX0=")
+var inlineName = getName(setName(fileInlineName, "cherri-export-control.json"))
+let fileInlineText = base64Decode("eyJvayI6dHJ1ZX0=")
+var inlineText = getText(setName(fileInlineText, "cherri-export-control.json"))
+var letStatus = "other"
+if letName == "cherri-export-control.json" { letStatus = "ok" }
+if letName == "letNamed" { letStatus = "binding" }
+if letName == "fileLet" { letStatus = "source" }
+if letName == "cherri-export-control" { letStatus = "stem" }
+if letName == "cherri-export-control.json.json" { letStatus = "double" }
+var varStatus = "other"
+if varName == "cherri-export-control.json" { varStatus = "ok" }
+if varName == "varNamed" { varStatus = "binding" }
+if varName == "fileVar" { varStatus = "source" }
+if varName == "cherri-export-control" { varStatus = "stem" }
+if varName == "cherri-export-control.json.json" { varStatus = "double" }
+var inlineStatus = "other"
+if inlineName == "cherri-export-control.json" { inlineStatus = "ok" }
+if inlineName == "Renamed Item" { inlineStatus = "binding" }
+if inlineName == "fileInlineName" { inlineStatus = "source" }
+if inlineName == "cherri-export-control" { inlineStatus = "stem" }
+if inlineName == "cherri-export-control.json.json" { inlineStatus = "double" }
+var letTextStatus = "bad"
+var varTextStatus = "bad"
+var inlineTextStatus = "bad"
+if letText == contents { letTextStatus = "ok" }
+if varText == contents { varTextStatus = "ok" }
+if inlineText == contents { inlineTextStatus = "ok" }
+let semanticResult = text(f"CHERRI_QA_FILE_NAME_BINDING:L={letStatus}:V={varStatus}:I={inlineStatus}:LT={letTextStatus}:VT={varTextStatus}:IT={inlineTextStatus}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "file-name-binding")
+let traceEnvelope = debugExportTrace(runId: "qa-file-name-binding-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

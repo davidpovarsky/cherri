@@ -18,6 +18,7 @@ CASES = {
     "qa-export-parse-only-v2": "CHERRI_QA_EXPORT_PARSE_ONLY:SCHEMA=ok:COUNT=ok",
     "qa-collect-empty-split-v2": "CHERRI_QA_COLLECT_EMPTY_SPLIT:direct=0:repeat=0:cleared=0:emptyText=1",
     "qa-export-file-bytes-v2": "CHERRI_QA_EXPORT_FILE_BYTES:NAME=ok:TEXT=ok",
+    "qa-file-name-binding-v2": "CHERRI_QA_FILE_NAME_BINDING:L=ok:V=ok:I=ok:LT=ok:VT=ok:IT=ok",
     "qa-f01-ifresult-let-v2": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
     "qa-f01-ifresult-var-v2": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
 }
