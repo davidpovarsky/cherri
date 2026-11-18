@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import signal
 import socket
+from socketserver import TCPServer
 import threading
 import time
 
@@ -128,6 +129,67 @@ def validate_fixture_graph(fixture, actions):
             "retryActionCount": 0, "nativeErrorCatchAdded": False}
 
 
+class LoopbackHTTPServer(HTTPServer):
+    def server_bind(self):
+        # HTTPServer normally reverse-resolves its host name while binding.
+        # The reviewed endpoint is always numeric loopback; no DNS is needed.
+        TCPServer.server_bind(self)
+        self.server_name = "127.0.0.1"
+        self.server_port = self.server_address[1]
+
+
+STARTUP_PHASES = {"BINDING_LOOPBACK", "BOUND_LOOPBACK", "SERVING", "STOPPED", "EXPIRED"}
+STARTUP_ERROR_CODES = {"UNREVIEWED_FIXTURE", "INVALID_FRESH_NONCE", "INVALID_COMMIT",
+                       "INVALID_SERVER_LIFETIME", "PRIOR_PROBE_EVIDENCE_EXISTS",
+                       "SERVER_ALREADY_STARTED", "SERVER_BINDING_MISMATCH",
+                       "INVALID_LOOPBACK_PORT", "SERVER_NOT_READY"}
+STARTUP_FAILURE_FIELDS = {"schemaVersion", "command", "status", "errorCategory", "errorCode", "osErrorNumber"}
+
+
+def startup_failure(command, error):
+    category = ("CONTRACT" if isinstance(error, ProbeError) else
+                "OS" if isinstance(error, OSError) else "STRUCTURE")
+    number = error.errno if isinstance(error, OSError) else None
+    if type(number) is not int or not -4096 <= number <= 65535:
+        number = None
+    code = str(error) if isinstance(error, ProbeError) and str(error) in STARTUP_ERROR_CODES else "REDACTED"
+    return {"schemaVersion": "1.0", "command": command, "status": "FAILED",
+            "errorCategory": category, "errorCode": code, "osErrorNumber": number}
+
+
+def startup_report(root, fixture, nonce, commit):
+    """Print only reviewed startup fields, never raw server stdout/errors."""
+    validate_identity(fixture, nonce, commit)
+    runtime = Path(root) / "runtime"
+    result = {"schemaVersion": "1.0", "kind": "HTTP_PROBE_STARTUP", "fixtureId": fixture,
+              "runNonce": nonce, "compilerSha": commit, "nativeOutcome": "NOT_OBSERVED",
+              "lastObservedServerPhase": None, "readyFilePresent": (runtime / "http-probe-ready.json").exists(),
+              "stopFilePresent": (runtime / "http-probe.stop").exists(),
+              "serveFailure": None, "inputFailure": None}
+    state_path = runtime / "http-probe-startup-state.json"
+    if state_path.exists():
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        require(set(state) == {"schemaVersion", "fixtureId", "runNonce", "compilerSha", "phase"}
+                and state["schemaVersion"] == "1.0" and state["fixtureId"] == fixture
+                and state["runNonce"] == nonce and state["compilerSha"] == commit
+                and state["phase"] in STARTUP_PHASES, "SERVER_BINDING_MISMATCH")
+        result["lastObservedServerPhase"] = state["phase"]
+    for command in ("serve", "input"):
+        path = runtime / ("http-probe-startup-" + command + ".json")
+        if not path.exists():
+            continue
+        failure = json.loads(path.read_text(encoding="utf-8"))
+        require(set(failure) == STARTUP_FAILURE_FIELDS and failure["schemaVersion"] == "1.0"
+                and failure["command"] == command and failure["status"] == "FAILED"
+                and failure["errorCategory"] in {"CONTRACT", "OS", "STRUCTURE"}
+                and failure["errorCode"] in STARTUP_ERROR_CODES | {"REDACTED"}
+                and (failure["osErrorNumber"] is None or
+                     type(failure["osErrorNumber"]) is int and -4096 <= failure["osErrorNumber"] <= 65535),
+                "SERVER_BINDING_MISMATCH")
+        result[command + "Failure"] = failure
+    return result
+
+
 class ProbeServer:
     def __init__(self, root, fixture, nonce, commit, lifetime=MAX_LIFETIME_SECONDS):
         validate_identity(fixture, nonce, commit)
@@ -137,7 +199,8 @@ class ProbeServer:
         self.ready_path = self.root / "http-probe-ready.json"
         self.receipt_path = self.root / "http-probe-receipt.json"
         self.stop_path = self.root / "http-probe.stop"
-        require(not any(p.exists() for p in (self.ready_path, self.receipt_path, self.stop_path)),
+        self.startup_path = self.root / "http-probe-startup-state.json"
+        require(not any(p.exists() for p in (self.ready_path, self.receipt_path, self.stop_path, self.startup_path)),
                 "PRIOR_PROBE_EVIDENCE_EXISTS")
         self.started = None
         self.lifetime = lifetime
@@ -202,7 +265,11 @@ class ProbeServer:
                     event["responseWriteCompleted"] = False
                 owner.persist()
 
-        self.server = HTTPServer(("127.0.0.1", 0), Handler)
+        self.startup_identity = {"schemaVersion": "1.0", "fixtureId": fixture,
+                                 "runNonce": nonce, "compilerSha": commit}
+        self.startup_phase("BINDING_LOOPBACK")
+        self.server = LoopbackHTTPServer(("127.0.0.1", 0), Handler)
+        self.startup_phase("BOUND_LOOPBACK")
         self.server.timeout = 0.2
         self.receipt = {"schemaVersion": "1.0", "fixtureId": fixture, "runNonce": nonce,
                         "compilerSha": commit, "case": FIXTURES[fixture], "boundHost": "127.0.0.1",
@@ -210,6 +277,10 @@ class ProbeServer:
                         "lifetimeSeconds": lifetime, "serverState": "STARTING", "stoppedAt": None,
                         "events": [], "rejectedRequestCount": 0}
         self.persist()
+
+    def startup_phase(self, phase):
+        require(phase in STARTUP_PHASES, "SERVER_BINDING_MISMATCH")
+        atomic_json(self.startup_path, {**self.startup_identity, "phase": phase})
 
     def persist(self):
         atomic_json(self.receipt_path, self.receipt)
@@ -224,6 +295,7 @@ class ProbeServer:
             # bind/setup must not consume the finite active lifetime and leave
             # a stale ready file for a socket already closed by expiry.
             self.persist()
+            self.startup_phase("SERVING")
             atomic_json(self.ready_path, {"fixtureId": self.receipt["fixtureId"],
                         "runNonce": self.receipt["runNonce"], "compilerSha": self.receipt["compilerSha"],
                         "host": "127.0.0.1", "port": self.server.server_port})
@@ -235,6 +307,7 @@ class ProbeServer:
             self.receipt["serverState"] = "STOPPED" if self.stop_event.is_set() or self.stop_path.exists() else "EXPIRED"
             self.receipt["stoppedAt"] = utc()
             self.persist()
+            self.startup_phase(self.receipt["serverState"])
 
     def stop(self):
         self.stop_event.set()
@@ -471,7 +544,7 @@ def validate_public_diagnostic(report, manifest, assertions):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("serve", "input", "diagnose"))
+    parser.add_argument("command", choices=("serve", "input", "diagnose", "startup-report"))
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--fixture", required=True)
     parser.add_argument("--nonce", required=True)
@@ -486,6 +559,8 @@ def main():
             server.serve()
         elif args.command == "input":
             print(ready_input(args.root / "runtime/http-probe-ready.json", args.fixture, args.nonce, args.commit))
+        elif args.command == "startup-report":
+            print(json.dumps(startup_report(args.root, args.fixture, args.nonce, args.commit)))
         else:
             require(args.fixtures_dir is not None, "FIXTURE_DIRECTORY_REQUIRED")
             report = diagnose(args.root, args.fixtures_dir, args.fixture, args.nonce, args.commit)
@@ -493,14 +568,22 @@ def main():
                               "ordinaryRuntimeContractVerified": report["ordinaryRuntimeContractVerified"]}))
             return 0 if report["diagnosticObservationComplete"] else 2
         return 0
-    except (OSError, ValueError, TypeError, KeyError):
+    except (OSError, ValueError, TypeError, KeyError) as error:
         # Do not serialize raw exceptions, URLs, paths, headers or payloads.
         report = {"schemaVersion": "1.0", "diagnosticStatus": "PROBE_EVIDENCE_REJECTED",
                   "diagnosticObservationComplete": False, "ordinaryRuntimeContractVerified": False,
                   "nativeCatchability": "NOT_PROVEN", "retryImplemented": False}
         if args.command == "diagnose":
             atomic_json(args.root / "runtime/http-probe-diagnostic.json", report)
-        print(json.dumps(report))
+        if args.command in {"serve", "input"}:
+            failure = startup_failure(args.command, error)
+            try:
+                atomic_json(args.root / ("runtime/http-probe-startup-" + args.command + ".json"), failure)
+            except OSError:
+                pass
+            print(json.dumps(failure))
+        else:
+            print(json.dumps(report))
         return 2
 
 

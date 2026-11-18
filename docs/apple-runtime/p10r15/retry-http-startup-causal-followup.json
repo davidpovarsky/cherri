@@ -1,0 +1,51 @@
+{
+  "scope": "RETRY_PROBE_HARNESS_STARTUP_NOT_NATIVE_RETRY_PROOF",
+  "failedRun": {
+    "id": 44325503486,
+    "url": "https://github.com/davidpovarsky/cherri/actions/runs/44325503486",
+    "compilerCommitSha": "867261a3ad6ceac113690f5be01f3d576d572759",
+    "conclusion": "failure",
+    "swiftGoPythonPreflight": "PASS",
+    "orchestrator": "FAILED_BEFORE_XCTEST_LAUNCH",
+    "observedError": "bounded HTTP probe did not bind its reviewed loopback endpoint",
+    "publicArtifactCount": 0,
+    "publicStagingError": "SUMMARY_MISSING",
+    "rawHelperError": "NOT_RETAINED",
+    "nativeHTTPOutcome": "NOT_RUN",
+    "exactStartupFailureCause": "UNKNOWN",
+    "failedLogSha256": "fb2e12af6e2d11f7a83dbce67aa552160935b4eac1f7e223e10190d4803a8967"
+  },
+  "causalLocalControl": {
+    "test": "test_numeric_loopback_listener_never_depends_on_hostname_resolution",
+    "oldImplementation": "FAIL: HTTPServer.server_bind invoked socket.getfqdn for numeric loopback",
+    "newImplementation": "PASS: inherited TCP bind, constant numeric server name, real HTTP200 response and validated receipt",
+    "originalMacCauseProven": false
+  },
+  "newEvidence": {
+    "startupPhases": [
+      "BINDING_LOOPBACK",
+      "BOUND_LOOPBACK",
+      "SERVING",
+      "STOPPED",
+      "EXPIRED"
+    ],
+    "failures": "Only allowlisted contract code, error category, numeric OS errno; unknown error text is REDACTED",
+    "failureBranch": "Prints bounded helper startup schema before cleanup; raw server log stays quarantined",
+    "publicationExceptionAdded": false,
+    "nativeOutcome": "NOT_OBSERVED"
+  },
+  "validation": {
+    "pythonTests": 107,
+    "status": "PASS",
+    "actualCLIProcess": "PASS serve/input plus real primary and continuation HTTP200, stop file, process exit and final receipt",
+    "privacyControls": "Injected error message/path not emitted; mismatched identity and extra fields rejected; all raw startup files quarantined"
+  },
+  "unchangedContracts": [
+    "finite server lifetime",
+    "loopback-only endpoint",
+    "fresh identity and reviewed static source",
+    "exact native callback and required trace",
+    "HTTP500/404/429/transport remain blocked until native200 control passes"
+  ],
+  "nativeStatus": "NOT_RUN_ON_NEW_IMPLEMENTATION"
+}

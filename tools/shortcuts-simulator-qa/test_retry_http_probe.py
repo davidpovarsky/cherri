@@ -96,6 +96,108 @@ class RetryHTTPProbeTests(unittest.TestCase):
     def diagnose(self, data):
         return probe.diagnose(*data[:4], COMMIT)
 
+    def test_numeric_loopback_listener_never_depends_on_hostname_resolution(self):
+        from unittest.mock import patch
+        # The reviewed endpoint is numeric loopback. DNS availability must not
+        # delay its readiness or introduce external network dependencies.
+        with patch.object(probe.socket, "getfqdn", side_effect=AssertionError("unexpected hostname resolution")):
+            root, server, thread, fid, nonce = self.start()
+            self.assertEqual(self.request(server, "/" + nonce + "/control")[:2], (200, probe.BODY))
+            receipt = self.finish(server, thread)
+            self.assertEqual(len(probe.validate_receipt(receipt, fid, nonce, COMMIT)), 1)
+
+    def test_actual_cli_process_serves_only_after_ready_and_stops_cleanly(self):
+        import subprocess
+        import sys
+        root = self.base / "cli-process"
+        fid = "qa-retry-control-v2"
+        nonce = fid + "-cli-" + "4" * 32
+        script = str(HERE / "retry_http_probe.py")
+        args = ["--root", str(root), "--fixture", fid, "--nonce", nonce, "--commit", COMMIT]
+        process = subprocess.Popen([sys.executable, script, "serve", *args],
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                   text=True, encoding="utf-8")
+        try:
+            ready = subprocess.run([sys.executable, script, "input", *args],
+                                   capture_output=True, text=True, encoding="utf-8", timeout=15)
+            self.assertEqual(ready.returncode, 0, ready.stdout + ready.stderr)
+            port, actual_nonce = ready.stdout.strip().split("/", 1)
+            self.assertEqual(actual_nonce, nonce)
+            for route, body in (("control", probe.BODY), ("continued", probe.CONTINUED_BODY)):
+                client = http.client.HTTPConnection("127.0.0.1", int(port), timeout=3)
+                try:
+                    client.request("GET", "/" + nonce + "/" + route)
+                    response = client.getresponse()
+                    self.assertEqual((response.status, response.read()), (200, body))
+                finally:
+                    client.close()
+        finally:
+            (root / "runtime").mkdir(parents=True, exist_ok=True)
+            (root / "runtime/http-probe.stop").touch()
+            try:
+                output, error = process.communicate(timeout=8)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.communicate(timeout=4)
+                self.fail("bounded CLI server ignored its stop file")
+        self.assertEqual(process.returncode, 0, output + error)
+        self.assertEqual((output, error), ("", ""))
+        receipt = json.loads((root / "runtime/http-probe-receipt.json").read_text(encoding="utf-8"))
+        self.assertEqual([event["route"] for event in probe.validate_receipt(receipt, fid, nonce, COMMIT)],
+                         ["primary", "continued"])
+        report = subprocess.run([sys.executable, script, "startup-report", *args],
+                                capture_output=True, text=True, encoding="utf-8", timeout=5)
+        self.assertEqual(report.returncode, 0, report.stdout + report.stderr)
+        observed = json.loads(report.stdout)
+        self.assertEqual(observed["lastObservedServerPhase"], "STOPPED")
+        self.assertEqual(observed["nativeOutcome"], "NOT_OBSERVED")
+        self.assertIsNone(observed["serveFailure"])
+        self.assertIsNone(observed["inputFailure"])
+
+    def test_startup_failures_emit_only_bounded_codes_and_numeric_errno(self):
+        from contextlib import redirect_stdout
+        import io
+        import sys
+        from unittest.mock import patch
+        root = self.base / "startup-failure"
+        fid = "qa-retry-control-v2"
+        nonce = fid + "-failure-" + "5" * 32
+        args = ["retry_http_probe.py", "serve", "--root", str(root), "--fixture", fid,
+                "--nonce", nonce, "--commit", COMMIT]
+        output = io.StringIO()
+        with patch.object(sys, "argv", args), patch.object(probe, "ProbeServer",
+                side_effect=OSError(13, "SYNTHETIC_PRIVATE_EXCEPTION", "/SYNTHETIC_PRIVATE_PATH")), redirect_stdout(output):
+            self.assertEqual(probe.main(), 2)
+        failure = json.loads(output.getvalue())
+        self.assertEqual(set(failure), probe.STARTUP_FAILURE_FIELDS)
+        self.assertEqual((failure["errorCategory"], failure["errorCode"], failure["osErrorNumber"]),
+                         ("OS", "REDACTED", 13))
+        self.assertNotIn("SYNTHETIC_PRIVATE", output.getvalue())
+        self.assertNotIn(str(root), output.getvalue())
+        report = probe.startup_report(root, fid, nonce, COMMIT)
+        self.assertEqual(report["serveFailure"], failure)
+        self.assertIsNone(report["lastObservedServerPhase"])
+        # Unknown contract strings cannot become a new free-text error channel.
+        self.assertEqual(probe.startup_failure("input", probe.ProbeError("SYNTHETIC_PRIVATE"))["errorCode"], "REDACTED")
+
+    def test_startup_report_rejects_foreign_state_and_extra_fields(self):
+        root, server, thread, fid, nonce = self.start()
+        self.finish(server, thread)
+        original = json.loads(server.startup_path.read_text(encoding="utf-8"))
+        for key, value in (("runNonce", nonce + "0"), ("compilerSha", "f" * 40),
+                           ("phase", "UNKNOWN_PRIVATE"), ("rawError", "SYNTHETIC_PRIVATE")):
+            with self.subTest(key=key):
+                probe.atomic_json(server.startup_path, {**original, key: value})
+                with self.assertRaises(probe.ProbeError):
+                    probe.startup_report(root, fid, nonce, COMMIT)
+        probe.atomic_json(server.startup_path, original)
+        failure = probe.startup_failure("input", probe.ProbeError("SERVER_NOT_READY"))
+        probe.atomic_json(root / "runtime/http-probe-startup-input.json", failure)
+        self.assertEqual(probe.startup_report(root, fid, nonce, COMMIT)["inputFailure"]["errorCode"], "SERVER_NOT_READY")
+        probe.atomic_json(root / "runtime/http-probe-startup-input.json", {**failure, "rawError": "SYNTHETIC_PRIVATE"})
+        with self.assertRaises(probe.ProbeError):
+            probe.startup_report(root, fid, nonce, COMMIT)
+
     def test_server_ready_file_requires_active_service_loop(self):
         fid = "qa-retry-control-v2"
         nonce = fid + "-ready-" + "2" * 32
@@ -306,12 +408,16 @@ class RetryHTTPProbeTests(unittest.TestCase):
         self.diagnose(data)
         probe.atomic_json(root / "summary.json", {"privacyGatePassed": True})
         (root / "runtime/http-probe-server.log").write_text("local-only server log", encoding="utf-8")
+        for command in ("serve", "input"):
+            probe.atomic_json(root / ("runtime/http-probe-startup-" + command + ".json"),
+                              probe.startup_failure(command, probe.ProbeError("SERVER_NOT_READY")))
         trusted = {data[2] + ".cherri": data[4]["fixtures"][0]["sourceSha256"]}
         public = self.base / "public"
         result = stage(root, public, trusted)
         self.assertTrue(result["publicationGatePassed"])
         self.assertTrue((public / "runtime/http-probe-diagnostic.json").is_file())
-        for name in ("http-probe-ready.json", "http-probe-receipt.json", "http-probe-server.log"):
+        for name in ("http-probe-ready.json", "http-probe-receipt.json", "http-probe-server.log",
+                     "http-probe-startup-state.json", "http-probe-startup-serve.json", "http-probe-startup-input.json"):
             self.assertFalse((public / "runtime" / name).exists())
         report = json.loads((root / "runtime/http-probe-diagnostic.json").read_text(encoding="utf-8"))
         for key, value in (("arbitraryHeader", "unexpected data"), ("runNonce", data[3][:-1] + "2"),
