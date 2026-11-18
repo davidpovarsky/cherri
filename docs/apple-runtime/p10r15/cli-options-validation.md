@@ -49,3 +49,11 @@ All 35 named cases passed. The tests use synthetic source and a loopback signing
 `p15_cli_option_values_test.go` is part of the normal Go test suite. `CHERRI_CLI_VALUE_TEST_BIN` exists only to rerun the same causal checks against a separately identified baseline; leave it unset to validate the current source.
 
 Production files changed: `args.go`, `main.go`, and `language_cli_adapter.go`. No importer, private corpus, signing payload validator, or live Remote Builder tuple was modified by this stage.
+
+## Filename substring signing followup
+
+A second causal run on the committed CLI-option baseline reproduced unintended remote signing when a non-Darwin compile subcommand received a source filename containing `--hubsign`. Both V2 and Legacy attempted signing, while a plain filename and three explicit-flag controls behaved as expected. Sentinel job `job_17e67d394718` captured this expected failing baseline.
+
+The subcommand now uses `args.Using("hubsign")` instead of searching the joined argument text. Six new actual CLI cases cover the ordinary filename, filename substring in V2 and Legacy, the explicit signing flag, and ordering of explicit signing/skip-sign flags. A rejecting loopback HTTP proxy captures signing attempts and never forwards workflow data to an external signer. Unsigned cases must produce a parsed nonempty native plist with zero proxy requests; explicit signing controls must reach the proxy, fail, and leave no signed destination.
+
+Full rerun: `go test -count=1 -timeout=5m -run '^TestP15CLIOption' -v .` passed all 41 named cases in Sentinel job `job_42e97f795325` (6.235 seconds in Go, 13.14 seconds total). These six non-Darwin-default cases are explicitly skipped on macOS; the existing macOS signing default is unchanged.

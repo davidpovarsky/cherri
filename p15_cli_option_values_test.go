@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -24,16 +25,89 @@ func TestP15CLIOptionValuesAndLanguageMode(t *testing.T) {
 			t.Fatalf("build actual CLI: %v\n%s", err, output)
 		}
 	}
-	run := func(t *testing.T, arguments ...string) ([]byte, error) {
+	runWithEnv := func(t *testing.T, environment []string, arguments ...string) ([]byte, error) {
 		t.Helper()
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
-		output, err := exec.CommandContext(ctx, binPath, arguments...).CombinedOutput()
+		command := exec.CommandContext(ctx, binPath, arguments...)
+		command.Env = append(os.Environ(), environment...)
+		output, err := command.CombinedOutput()
 		if ctx.Err() != nil {
 			t.Fatalf("CLI timed out: %v\n%s", ctx.Err(), output)
 		}
 		return output, err
 	}
+
+	run := func(t *testing.T, arguments ...string) ([]byte, error) {
+		t.Helper()
+		return runWithEnv(t, nil, arguments...)
+	}
+
+	t.Run("FilenameDoesNotEnableSigning", func(t *testing.T) {
+		if darwin {
+			t.Skip("implicit unsigned compilation is the non-Darwin CLI default")
+		}
+		cases := []struct {
+			name, filename string
+			options        []string
+			signs          bool
+		}{
+			{"plain_filename_control", "probe.cherri", nil, false},
+			{"filename_flag_substring", "probe--hubsign.cherri", nil, false},
+			{"legacy_filename_flag_substring", "probe--hubsign.cherri", []string{"--mode=legacy", "--load-all-actions"}, false},
+			{"explicit_hubsign_control", "probe.cherri", []string{"--hubsign"}, true},
+			{"explicit_hubsign_last", "probe.cherri", []string{"--skip-sign", "--hubsign"}, true},
+			{"explicit_skip_sign_last", "probe.cherri", []string{"--hubsign", "--skip-sign"}, false},
+		}
+		for _, tc := range cases {
+			t.Run(tc.name, func(t *testing.T) {
+				// A rejecting loopback proxy captures attempted remote signing without
+				// forwarding source or connecting to any external signing endpoint.
+				var attempts atomic.Int32
+				proxy := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					attempts.Add(1)
+					http.Error(w, "P15_SIGNING_NETWORK_BLOCKED_BY_TEST", http.StatusServiceUnavailable)
+				}))
+				defer proxy.Close()
+				dir := t.TempDir()
+				source := filepath.Join(dir, tc.filename)
+				target := filepath.Join(dir, "result.shortcut")
+				if err := os.WriteFile(source, []byte("show(\"P15 filename selection probe\")\n"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				environment := []string{
+					"HTTP_PROXY=" + proxy.URL, "HTTPS_PROXY=" + proxy.URL, "NO_PROXY=",
+					"http_proxy=" + proxy.URL, "https_proxy=" + proxy.URL, "no_proxy=",
+				}
+				arguments := []string{"compile", source, "--output=" + target, "--no-ansi"}
+				arguments = append(arguments, tc.options...)
+				output, err := runWithEnv(t, environment, arguments...)
+				if tc.signs {
+					if err == nil || attempts.Load() == 0 || !strings.Contains(string(output), "signing failed") {
+						t.Fatalf("explicit signing flag did not reach the rejecting local proxy: attempts=%d, err=%v\n%s", attempts.Load(), err, output)
+					}
+					if _, err := os.Stat(target); !os.IsNotExist(err) {
+						t.Errorf("blocked signing left destination artifact: %v", err)
+					}
+					return
+				}
+				if err != nil || attempts.Load() != 0 {
+					t.Fatalf("implicit unsigned compile attempted signing: attempts=%d, err=%v\n%s", attempts.Load(), err, output)
+				}
+				data, err := os.ReadFile(target)
+				if err != nil {
+					t.Fatal(err)
+				}
+				var native map[string]any
+				if _, err := plist.Unmarshal(data, &native); err != nil {
+					t.Fatal(err)
+				}
+				if actions, ok := native["WFWorkflowActions"].([]any); !ok || len(actions) == 0 {
+					t.Fatal("implicit unsigned output is not a nonempty native plist")
+				}
+			})
+		}
+	})
 
 	t.Run("SigningQueryPreserved", func(t *testing.T) {
 		const suffix = "/sign?response=json&opaque=a=b=="

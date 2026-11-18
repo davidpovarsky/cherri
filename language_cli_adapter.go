@@ -94,7 +94,7 @@ func HandleLanguageV2CLI() bool {
 			fmt.Fprintf(os.Stderr, "Usage: cherri compile <file.cherri> [--mode=legacy|v2] [--legacy] [--output <path>] [--skip-sign] [--hubsign]\n")
 			os.Exit(1)
 		}
-		if !darwin && !strings.Contains(strings.Join(os.Args, " "), "--hubsign") && !args.Using("signing-server") {
+		if !darwin && !args.Using("hubsign") && !args.Using("signing-server") {
 			skipSign = true
 		}
 		mode, modeErr := compileLanguageModeFromArgs()
