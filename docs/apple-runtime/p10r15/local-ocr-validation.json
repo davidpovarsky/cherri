@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0",
+  "sourceBase": "aa55ba3d682fe47a8330f16f9b259cea2debf665",
+  "files": {
+    "editor_ocr.py": "bb8e8e65fa46ac7c2680811be7ce3141c21f9525e9c66ef8fd25656ff1d5a04c",
+    "recognize_editor_text.swift": "28ef0582b8f608c53e19e9f8cf2b17a514da66304a67c9753b203926a6f2cb10",
+    "ocr-tesseract-lock.json": "064eaa8e2f2a8ea0fbeb3b41fa5e4bece23a7195d58e3329d8c2609349f5b799",
+    "test_editor_ocr.py": "00fa4f1fcc8c357a8fdaf183697bccceeeb600c0dca8dde0afeb654ff8542903",
+    "verify_local_ocr.py": "549fff4a64e499e456e89e556b8ef95d61f1a15de0ec798de7bb42985211622a",
+    "editor_inspector.py": "60267600fa8b460a9550e200812f4a6eaf7f3a85b36b2c7106114e3e34d55444",
+    "prepare_public_artifacts.py": "4d69ae4e5923529c8b38da1f46545b191d7a3b1b6de99dcb6c52903f77b62992"
+  },
+  "unitTests": {
+    "status": "PASS",
+    "count": 30,
+    "logSha256": "841469f5b6e8ac2d8572fc27679e45414507a4727c3a14dad49545fa86b041bd"
+  },
+  "actualTesseract": {
+    "schemaVersion": "1.0",
+    "proofTier": "GENERATED_TEXT_OCR_ONLY",
+    "humanReviewedAppleGroundTruth": false,
+    "nativeEditorProof": false,
+    "modelLock": {
+      "schemaVersion": "1.0",
+      "tesseractVersion": "5.5.0",
+      "repository": "https://github.com/tesseract-ocr/tessdata_fast",
+      "revision": "87416418657359cb625c412a48b6e1d6d41c29bd",
+      "models": {
+        "eng": {
+          "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata",
+          "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+          "bytes": 4113088
+        },
+        "heb": {
+          "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/heb.traineddata",
+          "sha256": "11f9e43ab227f786352a50f75c94c2e9906f1baba86d93276da19da7ce0904db",
+          "bytes": 961404
+        }
+      }
+    },
+    "cases": [
+      {
+        "language": "en-US",
+        "status": "PASS",
+        "exactTextMatched": true,
+        "exitCode": 0,
+        "diagnostic": {
+          "status": "OBSERVED",
+          "engine": "LOCAL_TESSERACT",
+          "segments": 1,
+          "rawOutput": "LOCAL_ONLY"
+        },
+        "observedSegmentCount": 1,
+        "confidence": [
+          0.92731041
+        ],
+        "frames": [
+          {
+            "x": 54,
+            "y": 72,
+            "width": 570,
+            "height": 56
+          }
+        ],
+        "wallSeconds": 0.243,
+        "imageSha256": "ad0e225abd9a31d57326cd41c17d088ea15bc9e8170b3a3e9f4e296ed761999b",
+        "expectedTextSha256": "d14012feb01d7769757d210ebb2e1d6e2e41b6bc841827dc1b703911307fc266",
+        "fontSha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
+        "staleImageRejected": true
+      },
+      {
+        "language": "he-IL",
+        "status": "PASS",
+        "exactTextMatched": true,
+        "exitCode": 0,
+        "diagnostic": {
+          "status": "OBSERVED",
+          "engine": "LOCAL_TESSERACT",
+          "segments": 1,
+          "rawOutput": "LOCAL_ONLY"
+        },
+        "observedSegmentCount": 1,
+        "confidence": [
+          0.91095215
+        ],
+        "frames": [
+          {
+            "x": 53,
+            "y": 80,
+            "width": 288,
+            "height": 51
+          }
+        ],
+        "wallSeconds": 0.096,
+        "imageSha256": "56a49e7edfffd1e9f98d1ec00f567752f5f82f58070c7b35dcd4c73a41272a8f",
+        "expectedTextSha256": "5fdd1afb5cef74cd5b28d3e00fd12a2b638cefdc0642b99eb82822924713faca",
+        "fontSha256": "436900d5ad77d33e4234247f3076eaecd25b92b9bea0519514f684140e3566a7",
+        "staleImageRejected": true
+      }
+    ],
+    "status": "PASS",
+    "exactTextPrecision": 1.0,
+    "exactTextRecall": 1.0
+  },
+  "initialRuntimeFailure": {
+    "status": "FAIL",
+    "reason": "Custom tessdata directory lacked the tsv config file; switched to the actual built-in tessedit_create_tsv parameter. No assertion relaxed.",
+    "reportSha256": "e4d2f8a113d7827667f9619ad52f69779c1dcaec39a7da5caef63967095af4e5"
+  },
+  "appleVision": {
+    "status": "NOT_RUN",
+    "reason": "No Swift/macOS runtime in local environments; actual Vision self-test queued with existing Apple CI after commit."
+  },
+  "nativeEditorGroundTruth": "OPEN",
+  "ocrPromotesAXStatus": false,
+  "rawRasterOrOCRPublication": false,
+  "windowsPython": {
+    "status": "PASS",
+    "testCount": 62,
+    "logSha256": "73c15ca3265b576abede0d0ab3a3a3eb05ae4cd1c2b31ac7278129867f173a98"
+  },
+  "workflowSyntax": {
+    "yaml": "PASS",
+    "bashBlocks": 6
+  },
+  "captureSourceSha256": "292fbd18b2a41d4c059fa75ead241bafb6749eef091c605c5a4546d8633d7ba8",
+  "formattingRepair": "Removed two extra EOF blank lines after initial diff-check failure; actual61-test Windows run passed before this formatting repair and62-test final run passed after version-pin negative control."
+}

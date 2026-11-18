@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conservative AX/native-plist comparison; no OCR or image-model dependency.
+"""Conservative AX/native-plist comparison with optional local OCR supplements.
 
 Observed cards come only from AX container geometry and hierarchy. The expected
 sequence is decoded independently from the actual compiled plist. Unexposed
@@ -274,6 +274,8 @@ def main():
     parser = argparse.ArgumentParser()
     for name in ("plist", "tree", "coverage", "fixture", "run-id", "source-sha", "out-dir"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--ocr-json", action="append", default=[], help="Private local OCR observation file; repeat per page")
+    parser.add_argument("--screenshots-manifest", help="Capture-time image hashes and viewport sizes; required with OCR")
     args = parser.parse_args()
     document = plistlib.loads(Path(args.plist).read_bytes())
     coverage = json.loads(Path(args.coverage).read_text(encoding="utf-8")) if Path(args.coverage).exists() else {}
@@ -285,6 +287,18 @@ def main():
     except (OSError, ValueError):
         nodes, node_error = [], "AX_TREE_UNREADABLE"
     observed, comparison = inspect(document, nodes, coverage, args.fixture, args.run_id, args.source_sha, node_error)
+    if args.ocr_json:
+        from editor_ocr import OCRError, supplement
+        try:
+            if not args.screenshots_manifest:
+                raise OCRError("SCREENSHOT_MANIFEST_REQUIRED")
+            ocr_documents = [json.loads(Path(p).read_text(encoding="utf-8")) for p in args.ocr_json]
+            screenshot_manifest = json.loads(Path(args.screenshots_manifest).read_text(encoding="utf-8"))
+            observed, comparison = supplement(observed, comparison, ocr_documents, screenshot_manifest)
+        except (OCRError, OSError, ValueError, TypeError, KeyError):
+            for result in (observed, comparison):
+                result["status"] = "NEEDS_REVIEW"
+                result["issues"] = sorted(set(result["issues"] + ["OCR_SUPPLEMENT_REJECTED"]))
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     for filename, data in (("editor-actions.json", observed), ("editor-comparison.json", comparison)):
@@ -295,6 +309,10 @@ def main():
              "Historical detectedActionCards counts distinct UI strings, including toolbar controls and parameters; it is not a native action count.", "",
              "| Native index | Identifier | Status |", "|---|---|---|"]
     lines.extend(f"| {r['sourceIndex']} | {r['nativeIdentifier']} | {r['status']} |" for r in comparison["actions"])
+    if comparison.get("ocrUsed"):
+        lines.extend(["", "## Optional local OCR", "",
+                      f"Displayed-text observations: {comparison['ocrSupplement']['observationCount']}. No AX status was promoted.",
+                      "OCR cannot prove native identity, hidden parameters, object types or exact plist equivalence. Raw OCR stays local."])
     lines.extend(["", "## Limitations", ""] + ["- " + i for i in comparison["issues"]])
     (out / "editor-report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(json.dumps({"status": comparison["status"], "expected": len(comparison["actions"]), "observed": len(observed["cards"]), "issues": comparison["issues"]}))

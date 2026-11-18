@@ -104,7 +104,10 @@ def stage(root, output, trusted_sources):
             if "\x00" in text:
                 raise ValueError("binary")
             if name.endswith(".json"):
-                json.loads(text)
+                parsed = json.loads(text)
+                if isinstance(parsed, dict) and parsed.get("publicationPolicy") == "LOCAL_ONLY_RAW_OCR":
+                    failures.append({**entry, "reason": "RAW_OCR_NOT_PUBLIC"})
+                    continue
             elif name.endswith(".jsonl"):
                 for line in text.splitlines():
                     if line.strip():

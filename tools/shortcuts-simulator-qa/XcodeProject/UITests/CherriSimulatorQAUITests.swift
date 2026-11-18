@@ -24,6 +24,7 @@ struct SanitizedAccessibilityNode: Codable {
 struct ScreenshotManifestEntry: Codable {
     let pageIndex: Int
     let fileName: String
+    let imageSha256: String
     let viewportWidth: Double
     let viewportHeight: Double
     let visibleNodeCount: Int
@@ -739,7 +740,9 @@ final class CherriSimulatorQAUITests: XCTestCase {
             let screenshot = XCUIScreen.main.screenshot()
             let fileName = String(format: "page-%04d.png", page)
             let fileURL = outDir.appendingPathComponent(fileName)
-            try? screenshot.pngRepresentation.write(to: fileURL, options: .atomic)
+            let screenshotData = screenshot.pngRepresentation
+            let imageSha256 = SHA256.hash(data: screenshotData).map { String(format: "%02x", $0) }.joined()
+            try? screenshotData.write(to: fileURL, options: .atomic)
 
             let attachment = XCTAttachment(screenshot: screenshot)
             attachment.name = fileName
@@ -797,6 +800,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             screenshotManifest.append(ScreenshotManifestEntry(
                 pageIndex: page,
                 fileName: fileName,
+                imageSha256: imageSha256,
                 viewportWidth: QAEvidenceGeometry.coordinate(appFrame.width),
                 viewportHeight: QAEvidenceGeometry.coordinate(appFrame.height),
                 visibleNodeCount: pageNodes.filter { $0.visible }.count,
