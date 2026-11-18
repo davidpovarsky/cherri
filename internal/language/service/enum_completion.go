@@ -158,8 +158,8 @@ func enumCallDomain(registry *schema.Registry, catalog enums.Catalog, program *s
 func (s *Service) enumCompletions(doc *DocumentState, line, col int) []CompletionItem {
 	offset := byteOffsetAtLineCol(doc.File, line, col)
 	tokens, context := enumCompletionTokens(doc.File, offset)
-	catalog := enums.New(s.registry, doc.Program)
-	expected := enumCallDomain(s.registry, catalog, doc.Program, context)
+	catalog := enums.New(s.documentRegistry(doc), doc.Program)
+	expected := enumCallDomain(s.documentRegistry(doc), catalog, doc.Program, context)
 	// Type annotations and function returns can supply an enum context without
 	// a call. Use only the cursor's own leaf expression, never an enclosing
 	// typed call whose unrelated arguments have their own contracts.

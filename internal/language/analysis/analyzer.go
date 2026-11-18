@@ -68,6 +68,9 @@ func (s *Scope) LookupLocal(name string) (*Symbol, bool) {
 // Analyzer performs semantic analysis on a parsed Program.
 type Analyzer struct {
 	registry               *schema.Registry
+	baseRegistry           *schema.Registry
+	configuredTarget       analyzerTargetConfig
+	analyzing              bool
 	diagnostics            []Diagnostic
 	currentFn              *syntax.FunctionDecl
 	inValueBlk             bool
@@ -98,8 +101,10 @@ func NewAnalyzer(registry *schema.Registry) *Analyzer {
 	if registry == nil {
 		registry = schema.DefaultRegistry()
 	}
+	base := registry.Clone()
 	return &Analyzer{
-		registry:      registry,
+		registry:      base,
+		baseRegistry:  base,
 		topLevelVars:  make(map[string]source.Span),
 		exprTypes:     make(map[syntax.Expression]types.Type),
 		userFunctions: make(map[string]bool),
@@ -131,6 +136,7 @@ func (a *Analyzer) SetIsMacTarget(isMac *bool) {
 		a.hasExplicitTarget = false
 		a.targets = nil
 	}
+	a.captureConfiguredPlatforms()
 }
 
 // Targets returns the active target platforms.
@@ -161,6 +167,7 @@ func (a *Analyzer) SetTargets(targets []string) {
 	} else {
 		a.isMacTarget = nil
 	}
+	a.captureConfiguredPlatforms()
 }
 
 // MinTargetVersion returns the legacy float projection of the minimum target.
@@ -173,6 +180,9 @@ func (a *Analyzer) MinTargetVersion() float64 {
 func (a *Analyzer) SetMinTargetVersion(v float64) {
 	a.minTargetVersion = v
 	a.minTargetVersionSource = legacyTargetVersionText(v)
+	if !a.analyzing {
+		a.configuredTarget.min, a.configuredTarget.minSource = v, a.minTargetVersionSource
+	}
 }
 
 // MinTargetVersionString returns the complete declared minimum version.
@@ -188,6 +198,9 @@ func (a *Analyzer) MaxTargetVersion() float64 {
 func (a *Analyzer) SetMaxTargetVersion(v float64) {
 	a.maxTargetVersion = v
 	a.maxTargetVersionSource = legacyTargetVersionText(v)
+	if !a.analyzing {
+		a.configuredTarget.max, a.configuredTarget.maxSource = v, a.maxTargetVersionSource
+	}
 }
 
 // MaxTargetVersionString returns the complete declared maximum version.
@@ -316,6 +329,8 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
 
 // Analyze performs full semantic verification of a Program.
 func (a *Analyzer) Analyze(prog *syntax.Program) {
+	a.beginProgram()
+	defer func() { a.analyzing = false }()
 	a.expandCopyPaste(prog)
 	a.setupUses = make(map[*syntax.SetupDecl]int)
 

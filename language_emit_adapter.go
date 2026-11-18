@@ -353,7 +353,7 @@ func CompileSourceToPlistWithOptions(filePath string, content string, options Co
 	session.buildProfile = profile
 	defer session.Close()
 
-	lowerer := lower.NewLowererWithSession(reg, session)
+	lowerer := lower.NewLowererWithSession(analyzer.Registry(), session)
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
 	lowerer.SetBaseFilePath(filePath)
 	if options.VirtualModules != nil {

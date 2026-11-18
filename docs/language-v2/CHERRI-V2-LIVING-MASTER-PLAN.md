@@ -973,3 +973,8 @@ This component records only the V02 unit obligation when its named production te
 ## P15 C03 component: explicit variadic source lists
 
 The canonical eight-callable variadic API now has an AST migration to explicit named lists and a shared, single-layer expansion into the existing binder/backend. Its named production evidence covers empty/single/multiple items, exact wire order/UUIDs, declaration shadowing, fail-closed lossy mixtures and original public CLI differentials. See [the C03 component report](p15-variadic-migration-acceptance.md) for source-bound execution evidence and scope. Only C03 unit/native-structure evidence is promoted when the clean producer succeeds. Apple runtime, general Legacy inline actions and process-global custom-registry lifetime have separate open obligations; no release closure is inferred.
+
+
+## Registry lifetime follow-up after C03
+
+The C03 singleton-contamination evidence is now addressed by isolated analyzer registries and per-document service lookups. Successful, failed and diagnostic-only compilations cannot register source actions into the canonical catalog; local shadows and typed native producer references remain supported. Repeated callable replacement now removes stale native index entries. The working component batch passed 305 root and 85 internal named tests, with clean immutable-source receipts to follow. See p15-registry-lifetime.md. No new full-contract or Apple-runtime completion is claimed. The general Legacy inline-argument producer omission is a separate remaining repair.

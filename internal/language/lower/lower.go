@@ -406,6 +406,7 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 	if l.exprTypes == nil || l.enumValues == nil {
 		analyzer := analysis.NewAnalyzer(l.registry)
 		analyzer.Analyze(prog)
+		l.registry = analyzer.Registry()
 		for _, diagnostic := range analyzer.Diagnostics() {
 			if diagnostic.Code == analysis.CodeSetupBinding && diagnostic.Severity == analysis.SeverityError {
 				return fmt.Errorf("%s: %s", diagnostic.Code, diagnostic.Message)
