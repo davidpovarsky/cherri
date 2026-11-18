@@ -927,6 +927,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 						}
 					}
 
+					if required := typeProductionTestForTier(reqID, rec.Tier); required != "" && rec.TestID != required && !strings.HasPrefix(rec.TestID, required+"/") {
+						validationErrors = append(validationErrors, fmt.Sprintf("test_id %q in record %s is not authorized for requirement %s tier %s", rec.TestID, rec.EvidenceID, reqID, rec.Tier))
+					}
+
 					// Never allow bridge-only tests to claim UI tier
 					if (rec.Tier == "ios-ui" || rec.Tier == "ui") && strings.HasPrefix(rec.TestID, "CherriCoreIntegrationTests/") {
 						validationErrors = append(validationErrors, fmt.Sprintf("record %s claims UI tier with bridge-only test %s; bridge tests cannot satisfy UI requirements", rec.EvidenceID, rec.TestID))
@@ -1472,22 +1476,8 @@ func (r *Runner) runTypes() {
 
 	r.runTypeLiteralRequirement()
 
-	// T03: Semantic Number with number-as-text codec
-	numCodecFound := false
-	for _, act := range r.reg.AllActions() {
-		for _, p := range act.Parameters {
-			if p.Codec == "number" || p.TypeName == "Number" {
-				numCodecFound = true
-				break
-			}
-		}
-		if numCodecFound {
-			break
-		}
-	}
-	wfT03, errT03 := lowerSrc(r.reg, "let n = 42\nshow(n)")
-	t03Passed := numCodecFound && errT03 == nil && len(wfT03.Actions) > 0
-	r.Record("T03", "types", "Semantic Number with number-as-text wire codec", "unit+native", []string{"unit", "native"}, t03Passed, "PASSED", "Wire codec transforms Number to string or integer depending on schema facet")
+	// T03: Public Number semantics and exact native string/reference wire.
+	r.runTypeNumberStringRequirement()
 
 	// T04: Unknown differs from AnyContent and Void
 	t04Passed := types.Unknown.Name() != types.AnyContent.Name() && types.Unknown.Name() != types.Void.Name()

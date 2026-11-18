@@ -10,6 +10,10 @@ import (
 	"testing"
 )
 
+func TestTypeNumberStringProductionEvidence(t *testing.T) {
+	testTypeProductionEvidence(t, "T03", (*Runner).runTypeNumberStringRequirement, "P15_TYPE_NUMBER_STRING_RECEIPT:", "Only T03 public Number semantics and actual native string/reference wire; no Apple execution, numeric precision promise, unrelated type contract or release closure")
+}
+
 func TestTypeLiteralProductionEvidence(t *testing.T) {
 	testTypeProductionEvidence(t, "T02", (*Runner).runTypeLiteralRequirement, "P15_TYPE_LITERAL_RECEIPT:", "Only T02 production unit contract; no native execution, external type guarantee, other T requirement or release closure")
 }
@@ -23,6 +27,9 @@ func TestTypeCardinalityProductionEvidence(t *testing.T) {
 func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), receiptLabel, scope string) {
 	tests := typeProductionTests[id]
 	producerByTier := map[string]string{}
+	if id == "T03" {
+		producerByTier["native-structure"] = tests[1]
+	}
 	if id == "T08" {
 		producerByTier["service"] = tests[1]
 	}
@@ -78,7 +85,10 @@ func testNamedProductionEvidence(t *testing.T, id string, tests []string, produc
 	}
 	mutations := []string{"wrong_producer", "missing_record", "wrong_contract"}
 	if len(tiers) > 1 {
-		mutations = append(mutations, "missing_service_tier")
+		mutations = append(mutations, "missing_required_tier")
+	}
+	if id == "T03" {
+		mutations = append(mutations, "cross_tier_producer")
 	}
 	for _, mutation := range mutations {
 		broken := *manifest
@@ -90,7 +100,9 @@ func testNamedProductionEvidence(t *testing.T, id string, tests []string, produc
 			broken.Records = nil
 		case "wrong_contract":
 			broken.Records[0].Requirements = []string{"T01"}
-		case "missing_service_tier":
+		case "cross_tier_producer":
+			broken.Records[1].TestID = broken.Records[0].TestID
+		case "missing_required_tier":
 			broken.Records = broken.Records[:1]
 		}
 		invalid, validationError := ValidateEvidenceManifest(&broken, contracts, "local")

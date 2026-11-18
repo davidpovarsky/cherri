@@ -20,6 +20,20 @@ Execution:
 
 The acceptance runner executes the named production test and records only the contract's required unit tier. Missing or unauthorized producer records fail closed. The 179-obligation ledger and unrelated CLI/parser evidence are preserved.
 
+## T03: semantic Number and exact number-as-text wire
+
+The dedicated producers execute the canonical parser, analyzer and complete compiler. Independent checked-in Apple metadata identifies `WFNumberAction` as `NSDecimalNumber` output and `WFNumberActionNumber` as a `WFNumberFieldParameter`; the captured parameter state is `WFNumberStringSubstitutableState`. The same native metadata independently identifies Round Number's numeric output and substitutable input state. No catalog output or codec is changed by this stage.
+
+`TestP15T03NumberStringSemanticSignature` checks Number return inference and the public Number input signatures of `wait` and `round`. It compiles explicit conversion from literal and produced Text and rejects an unconverted Text producer in a Number parameter with the exact diagnostic span. Existing numeric string literals are intentionally eligible in numeric native fields; that compatibility is not generalized to arbitrary Text action output.
+
+`TestP15T03NumberStringNativeWire` independently decodes emitted plist values. Both Legacy and V2 preserve the exact strings `0`, `-5`, `42.125` and `9007199254740993` in the native Number field, and the consumer references that actual producer UUID. V2 Round Number likewise retains those strings in its public numeric parameter. A separate Text-to-Number-to-Wait graph checks both reference edges. Replacing the string with a plist numeric value, changing the value, retargeting the consumer, or substituting a different native action is rejected for each frontend/value case. These checks establish serialization and source typing, not Apple arithmetic precision or execution.
+
+The initial test construction exposed two test errors, retained in `job_473fb45e3045`: it incorrectly rejected a numeric string literal already permitted by the compiler, and the Legacy fixture omitted its established whitespace around `=`. Corrected actual compiler controls passed in `job_b07ec31eec48`; neither correction changed production behavior.
+
+A separate genuine evidence-gate defect was reproduced in `job_eebffce213d6`: a semantic-only test identifier could be relabeled as the required native-structure tier and mint T03 success. The validator now resolves each T03 tier's authorized producer from the existing named production test inventory. Missing, wrong, cross-contract and cross-tier producer controls remain mandatory. The earlier `job_bb158e783256` failed the new wrapper's `native` versus normalized `native-structure` naming before reaching that mutation and is not cited as the causal defect.
+
+Only T03's unit and native-structure obligations are eligible for this producer. Signed runtime, numeric precision, other type contracts and overall release closure remain unproven by these tests. The exact clean source execution receipt is recorded separately after commit.
+
 ## T06: record annotations require prior structural evidence
 
 The original probe constructed a RecordType in memory. The replacement executes authored annotations through the parser, analyzer and complete compiler. Opaque external input, Run Shortcut output, a native dictionary content view and require's dictionary-category guard cannot establish a user-defined record shape. The rule follows optional, List, Map and union wrappers; it does not convert those values or insert a runtime validator.
@@ -60,13 +74,13 @@ Execution before commit:
 
 T08 records its required unit and service tiers with their actual distinct production test identifiers. Removing the service tier cannot mint a pass. The exact clean implementation receipt is retained after commit. Native metadata and emitted plist inspection establish the bounded static contract; this report makes no signed Apple execution or per-platform availability claim.
 
-## Remaining T01–T08 obligations
+## Type obligations
 
 | ID | Current evidence boundary |
 | --- | --- |
 | T01 | Explicit false/zero/empty/default presence and signed iOS behavior require dedicated evidence; the old base64 smoke is not formal proof. |
 | T02 | Dedicated production unit producer described above; clean exact-commit receipt is recorded separately after commit. |
-| T03 | Exact semantic Number to number-as-text wire producer is still being selected and independently verified. |
+| T03 | Dedicated semantic and decoded native-wire producers verify exact number-as-text values and producer identity; strict tier authorization, no Apple runtime or precision claim. |
 | T04 | Distinct type names alone do not establish Unknown/AnyContent/Void behavior; production diagnostics and service evidence remain required. |
 | T05 | Optional type construction alone does not prove omission versus explicit optional value and JSON null in native serialization. |
 | T06 | Dedicated production unit producer rejects unvalidated external record guarantees; no runtime validator or native execution is claimed. |
