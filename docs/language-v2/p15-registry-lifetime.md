@@ -39,3 +39,9 @@ A separate clean immutable-source receipt follows the implementation commit. Wor
 ## Scope
 
 This repairs a local compiler/service lifetime defect. It does not add a formal acceptance ID, claim the entire 179-contract suite is closed, or establish Apple import/runtime behavior. No signing, native simulator dispatch or private-corpus run was requested by this component. The existing 47 original public fixtures remain unchanged. The separately documented general Legacy inline-action omission remains assigned for the next atomic repair.
+
+## Clean immutable-source receipt
+
+Source 48e0c965f5e40595ee76ff9e3d180d7459597721 was clean before and after job_b8aac1411e41. The same bounded commands passed 305 root and 85 internal named tests, with zero failures and zero skips. The root command took 20.844 seconds; the package command took 5.171 seconds. All 47 original public root fixture SHA256 hashes remained unchanged.
+
+The retained payloads are in evidence/p15-registry-48e0c96. The root JSONL SHA256 is 55a8ab1da552085559a93b2f0e3e0266ac6bbf36925d58d763d2c92e94a33301; the package JSONL SHA256 is 621d2d0176093b6fd3e6668b3aeccc481209a6ae2a6d2be9379f161b79856e72. The audit binds nine retained files, including both causal baseline logs, the initial candidate, the working batch and the clean source receipt. This is component evidence; no acceptance ID is promoted by this repair.
