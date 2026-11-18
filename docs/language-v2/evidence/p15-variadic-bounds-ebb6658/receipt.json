@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "source_sha": "ebb6658ef5a250b3868b259b90dd9399e7d4c4b6",
+  "completed_at": "2026-11-18T23:21:03.669263+00:00",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "compiler_sha256": "7aec6242e36cc2d66301cbf5a381d447c4713cb70351af7ecfe5714adb255d55",
+  "embedded_vcs_revision": "ebb6658ef5a250b3868b259b90dd9399e7d4c4b6",
+  "embedded_vcs_modified": false,
+  "build": {
+    "name": "build",
+    "command": [
+      "go",
+      "build",
+      "-buildvcs=true",
+      "-trimpath",
+      "-o",
+      "<evidence>\\cherri.exe",
+      "."
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 23.985,
+    "log": "build.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "binary_vcs": {
+    "name": "binary-vcs",
+    "command": [
+      "go",
+      "version",
+      "-m",
+      "<evidence>\\cherri.exe"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 0.155,
+    "log": "binary-vcs.log",
+    "log_sha256": "02f8bb103c345681f560d28a708b81b033b24f87ff1d65a635c7aac98f94e64d"
+  },
+  "clean_tests": {
+    "name": "clean-focused",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-run",
+      "^(TestP15CanonicalVariadicPositionBounds|TestP15CanonicalVariadicWireRejectsCorruption|TestP15CanonicalFixedParameterBoundsRemainClosed|TestP15Filter.*|TestCORE001_ShowNamedAction|TestCORE002_VariantsSharingAppleID)$",
+      "."
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 18.459,
+    "log": "clean-focused.log",
+    "log_sha256": "2f47c400010d9f3119d48baa2466d014dc2a76145e66071a8237c64268b72837",
+    "test_pass_events": 62,
+    "passed_top_level": [
+      "TestCORE001_ShowNamedAction",
+      "TestCORE002_VariantsSharingAppleID",
+      "TestP15CanonicalVariadicPositionBounds",
+      "TestP15CanonicalVariadicWireRejectsCorruption",
+      "TestP15CanonicalFixedParameterBoundsRemainClosed",
+      "TestP15FilterCanonicalMetadataTransport",
+      "TestP15FilterMetadataMalformedFailsClosed",
+      "TestP15FilterSerializedNativeMetadataPreserved",
+      "TestP15FilterMetadataOracleRejectsCorruption",
+      "TestP15FilterMetadataNativeRoundTrip"
+    ]
+  },
+  "old_bound_counterfactual": {
+    "name": "old-bound-counterfactual",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-overlay=<evidence>\\old-bound-overlay.json",
+      "-run",
+      "^TestP15CanonicalVariadicPositionBounds$",
+      "."
+    ],
+    "exit_code": 1,
+    "expected_exit_code": 1,
+    "duration_seconds": 20.488,
+    "log": "old-bound-counterfactual.log",
+    "log_sha256": "11b87418de36d53a08dd9263684c21ad9bf0d36503f96ff305f997d8f84908d7",
+    "failed_tests": [
+      "TestP15CanonicalVariadicPositionBounds/repeated_then_inside_grown_args",
+      "TestP15CanonicalVariadicPositionBounds/repeated_then_later_inside_grown_args",
+      "TestP15CanonicalVariadicPositionBounds/named_negative_then_inside_grown_args",
+      "TestP15CanonicalVariadicPositionBounds",
+      "github.com/electrikmilk/cherri"
+    ],
+    "adapter_sha256": "55f8ed2da2b02cda634fd546ab91006cf755cb35073bd7799b8ec2bfd51a5341"
+  },
+  "actual_cli_comparisons": [
+    {
+      "name": "cli-v2-baseline",
+      "command": [
+        "<owned-source>\\artifacts\\filter-codec-57a72ed\\clean-09ca92e\\cherri.exe",
+        "compile",
+        "<evidence>\\variadic-normal.cherri",
+        "--output=<evidence>\\v2-baseline.shortcut",
+        "--skip-sign",
+        "--load-all-actions",
+        "--no-ansi",
+        "--mode=v2"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "duration_seconds": 0.122,
+      "log": "cli-v2-baseline.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "v2",
+      "compiler_sha256": "6330e647fd4bec4827b5b048645bbb5e6186ef91049cadd266b3ca26f3fb9609",
+      "source_sha256": "2b79e00efafb1c8fb4ac0a35d4678095698feacd74aea64c0bfc12e53a2a01a8",
+      "shortcut_sha256": "2152693a84933827a28ed04f2991ef6f6cc3b6a06f52b33f60beb12c3c96a8d6",
+      "actions": "v2-baseline-actions.json",
+      "actions_sha256": "519248b32a85810c5e82a163d290142de8bca6c3634023a324210830b9c03e10"
+    },
+    {
+      "name": "cli-v2-fixed",
+      "command": [
+        "<evidence>\\cherri.exe",
+        "compile",
+        "<evidence>\\variadic-normal.cherri",
+        "--output=<evidence>\\v2-fixed.shortcut",
+        "--skip-sign",
+        "--load-all-actions",
+        "--no-ansi",
+        "--mode=v2"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "duration_seconds": 0.415,
+      "log": "cli-v2-fixed.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "v2",
+      "compiler_sha256": "7aec6242e36cc2d66301cbf5a381d447c4713cb70351af7ecfe5714adb255d55",
+      "source_sha256": "2b79e00efafb1c8fb4ac0a35d4678095698feacd74aea64c0bfc12e53a2a01a8",
+      "shortcut_sha256": "2152693a84933827a28ed04f2991ef6f6cc3b6a06f52b33f60beb12c3c96a8d6",
+      "actions": "v2-fixed-actions.json",
+      "actions_sha256": "519248b32a85810c5e82a163d290142de8bca6c3634023a324210830b9c03e10"
+    },
+    {
+      "name": "cli-legacy-baseline",
+      "command": [
+        "<owned-source>\\artifacts\\filter-codec-57a72ed\\clean-09ca92e\\cherri.exe",
+        "compile",
+        "<evidence>\\variadic-normal.cherri",
+        "--output=<evidence>\\legacy-baseline.shortcut",
+        "--skip-sign",
+        "--load-all-actions",
+        "--no-ansi",
+        "--legacy"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "duration_seconds": 0.075,
+      "log": "cli-legacy-baseline.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "legacy",
+      "compiler_sha256": "6330e647fd4bec4827b5b048645bbb5e6186ef91049cadd266b3ca26f3fb9609",
+      "source_sha256": "2b79e00efafb1c8fb4ac0a35d4678095698feacd74aea64c0bfc12e53a2a01a8",
+      "shortcut_sha256": "add7937873e4d650a5635a44ceeba719658dae9f75a05c438bdc14a8a6723345",
+      "actions": "legacy-baseline-actions.json",
+      "actions_sha256": "519248b32a85810c5e82a163d290142de8bca6c3634023a324210830b9c03e10"
+    },
+    {
+      "name": "cli-legacy-fixed",
+      "command": [
+        "<evidence>\\cherri.exe",
+        "compile",
+        "<evidence>\\variadic-normal.cherri",
+        "--output=<evidence>\\legacy-fixed.shortcut",
+        "--skip-sign",
+        "--load-all-actions",
+        "--no-ansi",
+        "--legacy"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "duration_seconds": 0.064,
+      "log": "cli-legacy-fixed.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "legacy",
+      "compiler_sha256": "7aec6242e36cc2d66301cbf5a381d447c4713cb70351af7ecfe5714adb255d55",
+      "source_sha256": "2b79e00efafb1c8fb4ac0a35d4678095698feacd74aea64c0bfc12e53a2a01a8",
+      "shortcut_sha256": "add7937873e4d650a5635a44ceeba719658dae9f75a05c438bdc14a8a6723345",
+      "actions": "legacy-fixed-actions.json",
+      "actions_sha256": "519248b32a85810c5e82a163d290142de8bca6c3634023a324210830b9c03e10"
+    }
+  ],
+  "normal_v2_and_legacy_wire_unchanged": true,
+  "position_sequences": 7,
+  "native_oracle_mutations": 5,
+  "fixed_parameter_negative_controls": 3,
+  "file_sha256": {
+    "language_backend_adapter.go": "4c31e106d1bc8981a1287b01d9d407090670f04a11ee7811fd751724bdf9f8f5",
+    "p15_canonical_variadic_bounds_test.go": "d793d9aa6ca8bdf5b1e505abc404ebf4faf2c6cdc4e63d02d7bfeb652b8bc2bb"
+  },
+  "apple_runtime": "NOT_RUN",
+  "formal_requirement_promotion": "NONE"
+}

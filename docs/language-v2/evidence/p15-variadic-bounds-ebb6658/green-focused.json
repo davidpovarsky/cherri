@@ -1,0 +1,28 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-run",
+    "^(TestP15CanonicalVariadicPositionBounds|TestP15CanonicalVariadicWireRejectsCorruption|TestP15CanonicalFixedParameterBoundsRemainClosed|TestP15Filter.*|TestCORE001_ShowNamedAction|TestCORE002_VariantsSharingAppleID)$",
+    "."
+  ],
+  "exit_code": 0,
+  "duration_seconds": 12.068,
+  "test_pass_events": 62,
+  "passed_top_level": [
+    "TestCORE001_ShowNamedAction",
+    "TestCORE002_VariantsSharingAppleID",
+    "TestP15CanonicalVariadicPositionBounds",
+    "TestP15CanonicalVariadicWireRejectsCorruption",
+    "TestP15CanonicalFixedParameterBoundsRemainClosed",
+    "TestP15FilterCanonicalMetadataTransport",
+    "TestP15FilterMetadataMalformedFailsClosed",
+    "TestP15FilterSerializedNativeMetadataPreserved",
+    "TestP15FilterMetadataOracleRejectsCorruption",
+    "TestP15FilterMetadataNativeRoundTrip"
+  ],
+  "failures": [],
+  "log_sha256": "3b4153ed1c6e42e58358d0f222aa99018979918e525fe739ac9f2b3ee1931e73"
+}

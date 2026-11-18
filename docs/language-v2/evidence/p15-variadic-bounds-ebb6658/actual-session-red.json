@@ -1,0 +1,34 @@
+{
+  "source_sha": "56f35faec31e5215ee4b32a52d57c69d29c89ebb",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-run",
+    "^(TestP15CanonicalVariadicPositionBounds|TestP15CanonicalFixedParameterBoundsRemainClosed)$",
+    "."
+  ],
+  "exit_code": 1,
+  "duration_seconds": 19.237,
+  "failures": [
+    "TestP15CanonicalVariadicPositionBounds/repeated_then_inside_grown_args",
+    "TestP15CanonicalVariadicPositionBounds/repeated_then_later_inside_grown_args",
+    "TestP15CanonicalVariadicPositionBounds/named_negative_then_inside_grown_args",
+    "TestP15CanonicalVariadicPositionBounds",
+    "github.com/electrikmilk/cherri"
+  ],
+  "passed_tests": [
+    "TestP15CanonicalVariadicPositionBounds/canonical_parameter_positions",
+    "TestP15CanonicalVariadicPositionBounds/sequential_argument_positions",
+    "TestP15CanonicalVariadicPositionBounds/large_position_fallback",
+    "TestP15CanonicalVariadicPositionBounds/negative_position_fallback",
+    "TestP15CanonicalFixedParameterBoundsRemainClosed/-1",
+    "TestP15CanonicalFixedParameterBoundsRemainClosed/1",
+    "TestP15CanonicalFixedParameterBoundsRemainClosed/99",
+    "TestP15CanonicalFixedParameterBoundsRemainClosed"
+  ],
+  "log_sha256": "2a826b7638edb12d53bb67b55857a92bfe1f22a1b0d6a853ced6ae69cc2be055",
+  "test_source_sha256": "d793d9aa6ca8bdf5b1e505abc404ebf4faf2c6cdc4e63d02d7bfeb652b8bc2bb",
+  "production_adapter_sha256": "55f8ed2da2b02cda634fd546ab91006cf755cb35073bd7799b8ec2bfd51a5341"
+}
