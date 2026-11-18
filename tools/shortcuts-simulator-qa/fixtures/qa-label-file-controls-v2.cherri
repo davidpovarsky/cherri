@@ -1,0 +1,39 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "label-file-controls")
+// Preserve each control independently; no later verdict can mask an earlier one.
+let original = base64Decode("AQIDBA==")
+let originalType = typeOf(original)
+let originalBytes = base64Encode(original, lineBreakMode: "None")
+let transported = getVariable(original)
+let transportedType = typeOf(transported)
+let transportedBytes = base64Encode(transported, lineBreakMode: "None")
+let envelope = {"label": "תווית \"🍒\""}
+let record = setValue(envelope, "payload", transported)
+let restoredLabel = getValue(record, "label")
+let restored = getValue(record, "payload")
+let restoredType = typeOf(restored)
+let restoredBytes = base64Encode(restored, lineBreakMode: "None")
+let originalAfter = base64Encode(original, lineBreakMode: "None")
+var baselineStatus = "bad"
+var transportStatus = "bad"
+var transportTypeStatus = "bad"
+var labelStatus = "bad"
+var restoredTypeStatus = "bad"
+var restoredBytesStatus = "bad"
+var sourceStatus = "bad"
+if originalBytes == "AQIDBA==" { baselineStatus = "ok" }
+if transportedBytes == originalBytes { transportStatus = "ok" }
+if transportedType == originalType { transportTypeStatus = "ok" }
+if restoredLabel == "תווית \"🍒\"" { labelStatus = "ok" }
+
+if restoredType == originalType { restoredTypeStatus = "ok" }
+if restoredBytes == originalBytes { restoredBytesStatus = "ok" }
+if originalAfter == originalBytes { sourceStatus = "ok" }
+let semanticResult = text(f"CHERRI_QA_LABEL_FILE_CONTROLS:B={baselineStatus}:V={transportStatus}:VT={transportTypeStatus}:L={labelStatus}:T={restoredTypeStatus}:R={restoredBytesStatus}:S={sourceStatus}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "label-file-controls")
+let traceEnvelope = debugExportTrace(runId: "qa-label-file-controls-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

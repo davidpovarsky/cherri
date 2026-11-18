@@ -1,0 +1,24 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "export-parse-only")
+// Construction plus parse/schema/cardinality only; no payload decoding.
+let original = text("quote \" backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET")
+debugLog()
+let artifact = debugExport("json", false, false, false)
+
+let artifactText = getText(artifact)
+let parsed = getDictionary(artifactText)
+let schema = getValue(parsed, "schemaVersion")
+let entries = getValue(parsed, "entries")
+let entryCount = count(entries)
+var schemaStatus = "bad"
+var countStatus = "bad"
+if schema == "cherri.debug-export/1" { schemaStatus = "ok" }
+if entryCount == 1 { countStatus = "ok" }
+let semanticResult = text(f"CHERRI_QA_EXPORT_PARSE_ONLY:SCHEMA={schemaStatus}:COUNT={countStatus}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "export-parse-only")
+let traceEnvelope = debugExportTrace(runId: "qa-export-parse-only-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
