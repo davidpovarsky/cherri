@@ -1,0 +1,48 @@
+{
+  "status": "PASS_LOCAL_COMPILATION_AND_GATES_ONLY",
+  "actualCLIFixturesCompiled": 59,
+  "newExplicitSignedQASelections": 23,
+  "causalCompileMutations": {
+    "ignored-release-profile": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "missing-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "duplicated-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    }
+  },
+  "causalPublicationMutations": {
+    "nested-basename-flattened": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "unreviewed-same-basename": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "nested-path-traversal": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "stale-source-hash": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "source-identity-reassigned": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_ID_MISMATCH"
+    }
+  },
+  "publication": {
+    "publishedTextFiles": 3,
+    "quarantinedRawFiles": 119,
+    "rasterPublicationAllowed": false
+  },
+  "appleRuntime": "NOT_RUN",
+  "signing": "NOT_RUN"
+}

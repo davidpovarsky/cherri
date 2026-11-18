@@ -1,0 +1,120 @@
+{
+  "sourceSha": "087f0c34a3a05be6d7720e42e27fce6d5c0d5b54",
+  "builtAtUtc": "2026-11-18T22:05:46.541672+00:00",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "binarySha256": "b2d04e2c0cb6cca2a07df7e12a00d36c5e89fd4c5c4d44edbcaf70dedc257cea",
+  "steps": [
+    {
+      "name": "build",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "build",
+        "-buildvcs=true",
+        "-trimpath",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\numeric-zero-r10\\clean-087f0c3\\cherri.exe",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 9.531,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "number-graph",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-json",
+        "-count=1",
+        "-run",
+        "^TestP15NumberCoercionControl",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 12.968,
+      "logSha256": "40f5f267c8ac16c9e3ec765dad650de5dc226ec795867c65c689a18fec6b1454"
+    },
+    {
+      "name": "strict-oracle",
+      "command": [
+        "py",
+        "-3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/shortcuts-simulator-qa",
+        "-p",
+        "test_native_macro_diagnostic_contract.py"
+      ],
+      "exitCode": 0,
+      "seconds": 19.375,
+      "logSha256": "037747a932dabb8898c02e1383400680edb3333d45e1d18223f274f396e743c3"
+    },
+    {
+      "name": "phase-zero",
+      "command": [
+        "py",
+        "-3",
+        "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\consumer-r10-a04c6fe\\source",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\numeric-zero-r10\\clean-087f0c3\\cherri.exe"
+      ],
+      "exitCode": 0,
+      "seconds": 6.579,
+      "logSha256": "067d641ff5f811051262ec95699a7203183ad3ebcb157c8033010c44c143f545"
+    },
+    {
+      "name": "shell",
+      "command": [
+        "C:\\Program Files\\Git\\bin\\bash.exe",
+        "-n",
+        "scripts/ios27_shortcuts_simulator_qa.sh"
+      ],
+      "exitCode": 0,
+      "seconds": 0.046,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "actualCLIFixturesCompiled": 59,
+  "causalCompileMutations": {
+    "ignored-release-profile": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "missing-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    },
+    "duplicated-body": {
+      "exitCode": 1,
+      "expectedRejectionVerified": true
+    }
+  },
+  "causalPublicationMutations": {
+    "nested-basename-flattened": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "unreviewed-same-basename": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "nested-path-traversal": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "stale-source-hash": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_HASH_MISMATCH"
+    },
+    "source-identity-reassigned": {
+      "expectedRejectionVerified": true,
+      "diagnostic": "FIXTURE_SOURCE_ID_MISMATCH"
+    }
+  },
+  "appleRuntime": "NOT_RUN",
+  "signing": "NOT_RUN",
+  "status": "PASS_LOCAL_ONLY"
+}
