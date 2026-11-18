@@ -87,3 +87,12 @@ relaxed to accept changed producer identity.
 The complete private corpus is validated separately by the integration owner.
 No private specimen, generated private source, or raw private log is committed by
 this change, and no complete-corpus recovery is inferred from the public test.
+
+## Clean verification receipt
+
+Source 1dc091734194491d030e5a0761536725cfeb55f2 passed clean verification in
+job_299382919f63: 217 production plus 76 internal pass events, no positive-run
+failure or skip, expected service counterfactual failures, schema verification,
+and actual capabilities CLI. [The bounded receipt and original public failure
+logs](evidence/p15-distance-native-1dc0917/README.md) retain source identity,
+commands, hashes, and the unchanged 505-action count.

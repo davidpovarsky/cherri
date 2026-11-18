@@ -1,0 +1,144 @@
+{
+  "status": "PASS_LOCAL_SOURCE_AND_NATIVE_WIRE_ONLY",
+  "compilerSourceCommit": "1dc091734194491d030e5a0761536725cfeb55f2",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "commands": [
+    {
+      "name": "production",
+      "command": [
+        "go",
+        "test",
+        "-p",
+        "1",
+        ".",
+        "-run",
+        "^(TestP15(Distance|NativeReference|T04|T09|PromptNumber|RawNativeResult|ImportedListProperty)|TestP12_CF_)",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "-json"
+      ],
+      "exit": 0,
+      "expectedExit": 0,
+      "startedAt": "2026-11-18T23:15:26.008096+00:00",
+      "finishedAt": "2026-11-18T23:15:40.233153+00:00",
+      "sha256": "abdb9778d289fc098c9a72f4bc7cf841c64562afd9e78f27558eec20af645aab",
+      "pass": 217,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "internal",
+      "command": [
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./internal/language/analysis",
+        "./internal/language/service",
+        "./internal/language/lower",
+        "./internal/language/ir",
+        "-count=1",
+        "-timeout",
+        "10m",
+        "-json"
+      ],
+      "exit": 0,
+      "expectedExit": 0,
+      "startedAt": "2026-11-18T23:15:40.236640+00:00",
+      "finishedAt": "2026-11-18T23:15:48.639958+00:00",
+      "sha256": "f33db1ee2ba441dd6ff20c2ce5c2d756634c9a629205a7a03b03a7e0ddb3d70b",
+      "pass": 76,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "unchecked-service-red",
+      "command": [
+        "go",
+        "test",
+        "-p",
+        "1",
+        "-overlay",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-paginate-20261118\\artifacts\\p15-private-regression\\exact-1dc0917\\unchecked-reference-overlay.json",
+        ".",
+        "-run",
+        "^TestP15NativeReferenceOperandValidationStillRequired$",
+        "-count=1",
+        "-json"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "startedAt": "2026-11-18T23:15:48.642972+00:00",
+      "finishedAt": "2026-11-18T23:15:59.524033+00:00",
+      "sha256": "d60ccd3c512b442b31a2f63d14997fb0a3d25271ec1820372dba6613c6baa799",
+      "pass": 0,
+      "fail": 9,
+      "skip": 0
+    },
+    {
+      "name": "schema-verify",
+      "command": [
+        "go",
+        "run",
+        "./tools/language-schema",
+        "--verify-generated"
+      ],
+      "exit": 0,
+      "expectedExit": 0,
+      "startedAt": "2026-11-18T23:15:59.525544+00:00",
+      "finishedAt": "2026-11-18T23:16:04.081090+00:00",
+      "sha256": "7afe09f9dc2bfbf0e1697d8b4ff2d3baef785cd12f6aa057841d9bcb50964913",
+      "pass": 0,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "capabilities",
+      "command": [
+        "go",
+        "run",
+        ".",
+        "--capabilities-json"
+      ],
+      "exit": 0,
+      "expectedExit": 0,
+      "startedAt": "2026-11-18T23:16:04.084041+00:00",
+      "finishedAt": "2026-11-18T23:16:05.193031+00:00",
+      "sha256": "c2d6d22c11df2e85ffa20ab10a7d04ccc55347a5209dbc30dcebf4bd40e419b6",
+      "pass": 0,
+      "fail": 0,
+      "skip": 0
+    }
+  ],
+  "requiredProductionTests": [
+    "TestP15DistanceIndependentNativeOutput",
+    "TestP15DistanceNumberProduction",
+    "TestP12_CF_05_NumericPropertyAndDistanceOrder",
+    "TestP15NativeReferenceOrderedOperandWire",
+    "TestP15NativeReferenceOperandDoesNotProveScalar",
+    "TestP15NativeReferenceNamespaceIdentity",
+    "TestP15NativeReferenceOperandValidationStillRequired",
+    "TestP15NativeReferenceStaticShapeControls",
+    "TestP15NativeReferenceDynamicShapeIsNotExempt",
+    "TestP15T04OpaqueTypeProduction",
+    "TestP15T04OpaqueTypeService",
+    "TestP15T09ContentConversionEvidence",
+    "TestP15T09ContentConversionNativeWire",
+    "TestP15PromptNumberOrderedImport"
+  ],
+  "capabilities": {
+    "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+    "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+    "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+    "actionCount": 505
+  },
+  "independentMetadata": {
+    "path": "docs/apple-runtime/macos-27/builtin-actions.json",
+    "sha256": "8fb303591888bcb01fe5935b1571d590add428c9bd044f0ab52dcdf99490571a"
+  },
+  "privateCorpusReplay": "NOT_RUN_IN_THIS_RECEIPT",
+  "appleRuntime": "NOT_RUN",
+  "counterfactual": "Shared native.ref validation check removed only; eight malformed service controls fail."
+}
