@@ -45,6 +45,10 @@ func resetDebugInstrumentationManifest() {
 }
 
 func recordDebugExpandedActions(macroName string, startIdx int, expanded []ShortcutAction) {
+	// Semantic guards remain source actions even though they share macro dispatch.
+	if macroName == "require" {
+		return
+	}
 	if currentDebugInstrumentation.inlineUUIDs == nil {
 		resetDebugInstrumentationManifest()
 	}
@@ -542,6 +546,7 @@ func isDirectDebugLogInput(value any) bool {
 func init() { registerDebugStdlibActions() }
 
 func registerDebugStdlibActions() {
+	registerRequireMacro()
 	actions["debugLog"] = &actionDefinition{
 		identifier:  "appendvariable",
 		doc:         selfDoc{title: "Debug Log", description: "Append previous native output without coercion. Optional withDates captures original Creation Date at source; showLogs previews native objects (with Set Name by Creation Date when enabled); showLogsAsText opts into Combine Text or dated text rows.", category: "debug"},
@@ -632,7 +637,7 @@ func registerDebugStdlibActions() {
 // third-party App Intents and similarly named user functions remain untouched.
 func isDebugStdlibMacro(name string) bool {
 	switch name {
-	case "debugLog", "debugShowLogs", "debugClearLogs", "debugTrace", "debugAssert", "debugStartTimer", "debugStopTimer", "debugFinish", "debugLogPrevious", "debugTraceEvent", "debugExportTrace":
+	case "require", "debugLog", "debugShowLogs", "debugClearLogs", "debugTrace", "debugAssert", "debugStartTimer", "debugStopTimer", "debugFinish", "debugLogPrevious", "debugTraceEvent", "debugExportTrace":
 		return true
 	default:
 		return false
@@ -709,6 +714,8 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		}
 	}
 	switch name {
+	case "require":
+		return buildRequireMacroActions(params, resultUUID, resultName)
 	case "debugLog":
 		value, ok := params["WFInput"]
 		if !ok || !isDirectDebugLogInput(value) {

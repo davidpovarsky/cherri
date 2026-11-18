@@ -5598,6 +5598,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				callArgs = append(callArgs, backend.CallArgument{
 					ParameterID: wireKey,
 					Position:    0,
+					StaticType:  l.argumentStaticType(call.PrimaryArg),
 					Value:       primVal,
 				})
 			}
@@ -5680,6 +5681,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				callArgs = append(callArgs, backend.CallArgument{
 					ParameterID: wireKey,
 					Position:    pos,
+					StaticType:  l.argumentStaticType(nArg.Value),
 					Value:       val,
 				})
 			} else if nArg.Label != "" {

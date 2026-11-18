@@ -139,6 +139,14 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	params := getActionParameters(args)
 
 	if isDebugStdlibMacro(ident) {
+		if ident == "require" {
+			for _, argument := range call.Arguments {
+				if argument.ParameterID == "WFInput" || (argument.ParameterID == "" && argument.Position == 0) {
+					params[requireSourceTypeKey] = argument.StaticType
+					break
+				}
+			}
+		}
 		macroName := ident
 		expanded, err := resolveCompilerMacroCall(macroName, params, s.shortcut.WFWorkflowActions, call.OutputUUID, call.OutputName, s.buildProfile)
 		if err != nil {

@@ -107,6 +107,8 @@ type SemanticValue struct {
 
 // CallArgument holds an evaluated argument passed to a resolved call.
 type CallArgument struct {
+	// StaticType is compiler-only semantic information, never an Apple parameter.
+	StaticType  string
 	ParameterID string
 	Position    int
 	Value       SemanticValue
