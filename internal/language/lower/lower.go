@@ -4096,8 +4096,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			l.emitIfEnd(groupUUID, endUUID, "")
 			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: endUUID}, nil
 		} else {
-			// Dynamic index for List: add 1 and guard 1 <= idx+1 <= count(list)
+			// Dynamic index for List: require an integer, then guard 1 <= idx+1 <= count(list).
 			targetTok := l.materializeToAttachment(targetVal)
+			integralGroup, integralEnd := l.beginIntegralIndexGuard(indexVal)
 			mathUUID := l.GenerateUUID()
 			mathNode := &ir.NativeActionNode{
 				NodeID:          mathUUID,
@@ -4173,7 +4174,8 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				Parameters:      map[string]interface{}{},
 			})
 			l.emitIfEnd(outerGroup, outerEndUUID, "")
-			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: outerEndUUID}, nil
+			resultUUID := l.endIntegralIndexGuard(integralGroup, integralEnd, outerEndUUID)
+			return &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: resultUUID}, nil
 		}
 
 	case *syntax.EnumMemberExpr:

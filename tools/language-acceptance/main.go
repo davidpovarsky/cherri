@@ -1544,28 +1544,11 @@ func (r *Runner) runText() {
 func (r *Runner) runCollections() {
 	r.runNestedCollectionObservation()
 
-	// L02: Zero-based indexing (0, 2, -1, 99, empty)
-	srcL02 := "let items = [\"alpha\", \"beta\", \"gamma\"]\nlet first = items[0]\nlet last = items[2]\nlet neg = items[-1]\nlet oob = items[99]\nlet empty = [][0]"
-	wfL02, errL02 := lowerSrc(r.reg, srcL02)
-	l02Passed := errL02 == nil && len(wfL02.Actions) >= 8
-	r.Record("L02", "collections", "Zero-based first/last/empty/out-of-range/negative indexing", "unit+native+iOS", []string{"unit", "native"}, l02Passed, "PASSED", "Zero-based collection indexing lowers first/last/negative/out-of-range/empty cases safely")
+	r.runIndexRequirement("L02")
 
 	r.runLiteralCollectionRequirement("L03")
 
-	// L04: Dynamic bounds checking
-	srcL04 := "let items = [\"alpha\", \"beta\", \"gamma\"]\nvar idx = 1\nlet x = items[idx]"
-	wfL04, errL04 := lowerSrc(r.reg, srcL04)
-	hasCountGuard := false
-	if wfL04 != nil {
-		for _, a := range wfL04.Actions {
-			if a.AppleIdentifier == "is.workflow.actions.count" {
-				hasCountGuard = true
-				break
-			}
-		}
-	}
-	l04Passed := errL04 == nil && hasCountGuard
-	r.Record("L04", "collections", "Dynamic bounds checking does not execute unsafe native lookup", "native+iOS", []string{"native"}, l04Passed, "PASSED", "Lowering guards dynamic list indexing with 1-based conversion, count check, and conditional bounds")
+	r.runIndexRequirement("L04")
 }
 
 // Group 9: Numbers

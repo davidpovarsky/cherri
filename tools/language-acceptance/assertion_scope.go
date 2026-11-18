@@ -30,8 +30,6 @@ var incompleteLocalAssertions = map[string]string{
 	"T09":  "Assignment to AnyContent does not validate known Content Graph conversions or reject unverified coercions.",
 	"S03":  "Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits.",
 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
-	"L02":  "Action counts do not prove first/last/negative/empty/out-of-range index results.",
-	"L04":  "Presence of a count action does not prove that unsafe lookup stays inside the valid bounds branch.",
 	"N01":  "A modulus action and action count do not establish fractional division and numeric constraints.",
 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
 	"F02":  "Seven actions do not prove group identities, scopes, or zero-based indices.",

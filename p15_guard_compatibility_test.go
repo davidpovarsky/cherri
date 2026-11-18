@@ -71,20 +71,20 @@ func TestP15GeneratedGuardsMatchAuthoredNativeIf(t *testing.T) {
 func TestP15GeneratedBoundsGuardsMatchAuthoredNativeIf(t *testing.T) {
 	for _, tc := range []struct {
 		name, expression string
-		values           []int
+		conditions       []string
 	}{
-		{"decimal_literal_index", "items[0.0]", []int{1}},
-		{"integer_literal_index", "items[0]", []int{1, 0}},
-		{"dynamic_index", "items[index]", []int{1, 0}},
+		{"decimal_literal_index", "items[0.0]", []string{">= 1"}},
+		{"integer_literal_index", "items[0]", []string{">= 1", ">= 0"}},
+		{"dynamic_index", "items[index]", []string{"== 0", ">= 1", ">= 0"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actions := p15CompiledActions(t, "var items = [\"first\", \"second\"]\nvar index = number(0)\nlet result = "+tc.expression+"\nquicklook(result)")
 			starts := p15ConditionalStarts(actions)
-			if len(starts) != len(tc.values) {
-				t.Fatalf("bounds starts: got %d, want %d", len(starts), len(tc.values))
+			if len(starts) != len(tc.conditions) {
+				t.Fatalf("bounds starts: got %d, want %d", len(starts), len(tc.conditions))
 			}
-			for i, value := range tc.values {
-				reference := p15ConditionalStarts(p15CompiledActions(t, fmt.Sprintf("var input=number(2)\nif input >= %d { comment(\"reference\") }", value)))
+			for i, condition := range tc.conditions {
+				reference := p15ConditionalStarts(p15CompiledActions(t, fmt.Sprintf("var input=number(2)\nif input %s { comment(\"reference\") }", condition)))
 				if len(reference) != 1 {
 					t.Fatal("missing authored bounds reference")
 				}
