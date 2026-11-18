@@ -19,7 +19,6 @@ type LocalSmokeObservation struct {
 // of a larger contract. Remove an entry only with a reviewed scenario producer.
 var incompleteLocalAssertions = map[string]string{
 	"B01":   "A historical ledger substring does not verify the current base, remote HEAD, or unrelated worktrees.",
-	"B02":   "The archived catalog count does not verify current definition identities and representative native outputs.",
 	"U01":   "Declaration/document existence does not establish preservation against the upstream baseline.",
 	"U04":   "Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision.",
 	"V01":   "Action count does not prove snapshot timing or original producer identity.",
@@ -61,7 +60,6 @@ var incompleteLocalAssertions = map[string]string{
 	"IM03":  "Global base64 lowering does not prove preserved upstream stdfunc migration.",
 	"IM04":  "filepath.Clean and a '..' prefix do not exercise a resource loader or reject symlink escapes.",
 	"IM05":  "An unresolved import diagnostic does not observe or prohibit network access.",
-	"AC01":  "A catalog count does not reconcile every definition, variant, and language construct.",
 	"AC02":  "An injected empty schema action does not exercise public custom action source and codecs.",
 	"AC03":  "Nonempty enums do not test bad codecs, duplicates, or stale facets.",
 	"R01":   "One IR action identifier does not prove unknown nested and top-level native round-trip fields.",

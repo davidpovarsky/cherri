@@ -21,32 +21,32 @@ import (
 )
 
 type ActionExecutionEvidence struct {
-	Name                       string   `json:"name"`
-	ShortcutIdentifier         string   `json:"shortcutIdentifier"`
-	CompilerConstruct          bool     `json:"compilerConstruct"`
-	LegacySupported            bool     `json:"legacySupported"`
-	LegacySource               string   `json:"legacySource"`
-	LegacyEmittedIdent         string   `json:"legacyEmittedIdent,omitempty"`
-	LegacyError                string   `json:"legacyError,omitempty"`
-	V2Supported                bool     `json:"v2Supported"`
-	V2Source                   string   `json:"v2Source"`
-	V2EmittedIdent             string   `json:"v2EmittedIdent,omitempty"`
-	V2Error                    string   `json:"v2Error,omitempty"`
-	PlistIdentifierVerified    bool     `json:"plistIdentifierVerified"`
-	ParameterContractVerified  bool     `json:"parameterContractVerified"`
-	ParameterContractError     string   `json:"parameterContractError,omitempty"`
-	DecompileSupported         bool     `json:"decompileSupported"`
-	DecompileMode              string   `json:"decompileMode"`
-	DecompiledSource           string   `json:"decompiledSource,omitempty"`
-	DecompileError             string   `json:"decompileError,omitempty"`
-	RoundTripVerified          bool                    `json:"roundTripVerified"`
-	StructuralRoundTripPass    bool                    `json:"structuralRoundTripPass"`
-	ComparisonModeUsed         string                  `json:"comparisonModeUsed,omitempty"`
-	RoundTripError             string                  `json:"roundTripError,omitempty"`
-	NativeSpecimenParityStatus string                  `json:"nativeSpecimenParityStatus"`
-	AppleRuntimeExecutedStatus string                  `json:"appleRuntimeExecutedStatus"`
-	VerificationStatuses       []string                `json:"verificationStatuses"`
-	EmittedKeysSample          []string                `json:"emittedKeysSample,omitempty"`
+	Name                       string                   `json:"name"`
+	ShortcutIdentifier         string                   `json:"shortcutIdentifier"`
+	CompilerConstruct          bool                     `json:"compilerConstruct"`
+	LegacySupported            bool                     `json:"legacySupported"`
+	LegacySource               string                   `json:"legacySource"`
+	LegacyEmittedIdent         string                   `json:"legacyEmittedIdent,omitempty"`
+	LegacyError                string                   `json:"legacyError,omitempty"`
+	V2Supported                bool                     `json:"v2Supported"`
+	V2Source                   string                   `json:"v2Source"`
+	V2EmittedIdent             string                   `json:"v2EmittedIdent,omitempty"`
+	V2Error                    string                   `json:"v2Error,omitempty"`
+	PlistIdentifierVerified    bool                     `json:"plistIdentifierVerified"`
+	ParameterContractVerified  bool                     `json:"parameterContractVerified"`
+	ParameterContractError     string                   `json:"parameterContractError,omitempty"`
+	DecompileSupported         bool                     `json:"decompileSupported"`
+	DecompileMode              string                   `json:"decompileMode"`
+	DecompiledSource           string                   `json:"decompiledSource,omitempty"`
+	DecompileError             string                   `json:"decompileError,omitempty"`
+	RoundTripVerified          bool                     `json:"roundTripVerified"`
+	StructuralRoundTripPass    bool                     `json:"structuralRoundTripPass"`
+	ComparisonModeUsed         string                   `json:"comparisonModeUsed,omitempty"`
+	RoundTripError             string                   `json:"roundTripError,omitempty"`
+	NativeSpecimenParityStatus string                   `json:"nativeSpecimenParityStatus"`
+	AppleRuntimeExecutedStatus string                   `json:"appleRuntimeExecutedStatus"`
+	VerificationStatuses       []string                 `json:"verificationStatuses"`
+	EmittedKeysSample          []string                 `json:"emittedKeysSample,omitempty"`
 	ParameterContractDetails   *ParameterContractResult `json:"parameterContractDetails,omitempty"`
 }
 
@@ -171,7 +171,9 @@ func TestP10_VerifyAndRecord505CatalogExecution(t *testing.T) {
 		report.LegacyPassCount, report.V2PassCount, report.ParameterContractPassCount, report.DecompilePassCount, report.StructuralRoundTripCount, report.NativeSpecimenParityCount, report.AppleRuntimeExecutedCount)
 }
 
-func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, identToNames map[string][]string, actionCategoryMap map[string]string, nativeSpecimenResults map[string]NativeSpecimenEvaluationResult) ActionExecutionEvidence {
+// Optional observers capture actual compiler outputs for additional identity audits.
+// Existing callers, execution assertions and historical report formats stay unchanged.
+func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, identToNames map[string][]string, actionCategoryMap map[string]string, nativeSpecimenResults map[string]NativeSpecimenEvaluationResult, observers ...func(dialect, source string, plistBytes []byte)) ActionExecutionEvidence {
 	legSrc := buildLegacySourceForEntry(entry, actionCategoryMap)
 	v2Src := buildV2SourceForEntry(entry, reg)
 
@@ -210,6 +212,11 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 		if decErr != nil {
 			ev.LegacyError = decErr.Error()
 		} else {
+			for _, observe := range observers {
+				if observe != nil {
+					observe("legacy", legSrc, append([]byte(nil), legPlistBytes...))
+				}
+			}
 			matchedIdent, keys := inspectEmittedPlistForIdentifier(legPlistBytes, entry.ShortcutIdentifier)
 			if matchedIdent != "" {
 				ev.LegacySupported = true
@@ -233,6 +240,11 @@ func executeSingleCatalogEntry(entry catalogActionInfo, reg *schema.Registry, id
 		if decErr != nil {
 			ev.V2Error = decErr.Error()
 		} else {
+			for _, observe := range observers {
+				if observe != nil {
+					observe("v2", v2Src, append([]byte(nil), v2PlistBytes...))
+				}
+			}
 			matchedIdent, keys := inspectEmittedPlistForIdentifier(v2PlistBytes, entry.ShortcutIdentifier)
 			if matchedIdent != "" {
 				ev.V2Supported = true

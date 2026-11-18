@@ -1386,14 +1386,7 @@ func (r *Runner) runBaseline() {
 	b01Detail := "Repository on branch agent/shared-shortcuts-engine-v2-repair; baseline 559abceadda1dbf0cd7d7deb1a26315b8ac44c3f recorded"
 	r.Record("B01", "baseline", "Verify isolated base/remote HEAD and keep unrelated agent work unchanged", "repository", []string{"repository"}, b01Passed, "PASSED", b01Detail)
 
-	// B02: Capture baseline catalog
-	catBytes, err := os.ReadFile(resolveRepoPath(filepath.Join("docs", "language-v2", "baseline-catalog.json")))
-	var catData struct {
-		Actions []any `json:"actions"`
-	}
-	b02Passed := err == nil && json.Unmarshal(catBytes, &catData) == nil && len(catData.Actions) == 461
-	b02Detail := fmt.Sprintf("Baseline catalog captured in docs/language-v2/baseline-catalog.json; 461 actions cataloged; current schema has %d actions", len(r.reg.AllActions()))
-	r.Record("B02", "baseline", "Capture baseline catalog, definition identities and representative native outputs", "repository", []string{"repository"}, b02Passed, "PASSED", b02Detail)
+	r.runCatalogBaselineRequirement()
 }
 
 // Group 2: Upstream
@@ -1857,9 +1850,7 @@ func (r *Runner) runModules() {
 
 // Group 14: Schema
 func (r *Runner) runSchema() {
-	// AC01: All baseline definitions accounted for
-	ac01Count := len(r.reg.AllActions())
-	r.Record("AC01", "schema", "All baseline definitions/variants/constructs accounted for", "generation", []string{"generation"}, ac01Count == 505, "PASSED", fmt.Sprintf("All 505 baseline actions registered in DefaultRegistry (count: %d)", ac01Count))
+	r.runCatalogAccountingRequirement()
 
 	// AC02: Public custom action declaration
 	customAct := schema.ActionSchema{
