@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_CLEAN_SOURCE_TEST_CONTRACT_REPAIR",
+  "sourceCommit": "f5efefa5576fda0e59c6a0dd7db822c8fb115b2a",
+  "sourceTreeCleanAtExecution": true,
+  "productionCodeChanged": false,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "8m",
+    ".",
+    "-run",
+    "^(TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2|TestP15StatisticInputGraphRejectsCausalCorruption|TestP15NumericListRetainsNativeNumbers|TestP15NumericListOracleRejectsNativeRowCorruption|TestP10_SSoTNegativeDriftDetection)$"
+  ],
+  "evidence": [
+    {
+      "file": "go.jsonl",
+      "sha256": "23c16db4492f67b0341ff603ac83765248cb80dab2481fa8072e54acb886d0df",
+      "passEvents": 45,
+      "failedTests": [],
+      "skippedTests": [],
+      "topLevelPasses": [
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2",
+        "TestP10_SSoTNegativeDriftDetection",
+        "TestP15NumericListRetainsNativeNumbers",
+        "TestP15NumericListOracleRejectsNativeRowCorruption",
+        "TestP15StatisticInputGraphRejectsCausalCorruption"
+      ]
+    },
+    {
+      "file": "statistic-baseline-red.jsonl",
+      "sha256": "39a74b3957a114356206929f864a34ea826749e6450d306235dcf698592baebe",
+      "passEvents": 8,
+      "failedTests": [
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Average",
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Minimum",
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Maximum",
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Sum",
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Median",
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Mode",
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Range",
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Standard_Deviation",
+        "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2"
+      ],
+      "skippedTests": [],
+      "topLevelPasses": []
+    }
+  ],
+  "scope": [
+    "All eight Statistics operations retain named natural semantic import plus exact original typed Number/List consumer bindings; existing hybrid import retains strict full action equality including output names.",
+    "Five causal Statistics faults reject wrong values, wrong operation, retargeted consumer, deprecated input and duplicate producer.",
+    "All ten SSoT drift cases executed. Pinned Pack verification is stable across local changes; prospective generation propagates exactly the changed basic module; restored sources restore bytes; corrupted pinned output fails."
+  ],
+  "limitations": [
+    "No new production numeric or Pack behavior",
+    "No native Statistics runtime execution inferred",
+    "No broad release closure"
+  ]
+}
