@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.4",
+  "signedArtifactValidAEA1": true,
+  "signingMethod": "HUBSIGN_REMOTE_SERVICE",
+  "signedArtifactSha256": "ea3fb7d626b5ac091e9d391a23c680f68b3673b10fa527966b3946a3233a0c74",
+  "signedByteSize": 32030,
+  "legacyCounterpartSignedAEA1": true,
+  "routes": [
+    {
+      "routeId": "route_1_create_shortcut_scheme",
+      "documented": true,
+      "command": "xcrun simctl openurl <UDID> shortcuts://create-shortcut",
+      "exitCode": 0,
+      "status": "PASS",
+      "observedOutput": ""
+    },
+    {
+      "routeId": "route_2_unsigned_file_openurl",
+      "documented": true,
+      "command": "xcrun simctl openurl <UDID> file://<unsigned.shortcut>",
+      "exitCode": 0,
+      "status": "UNSIGNED_REJECTED_EXPECTED_UI_MODAL",
+      "observedOutput": ""
+    },
+    {
+      "routeId": "route_3_signed_shortcut_openurl",
+      "documented": true,
+      "command": "cherri sign <unsigned.shortcut> --hubsign && coordinated xcrun simctl openurl <UDID> file://<signed.shortcut>",
+      "hostSignExitCode": 0,
+      "hostSignOutput": "",
+      "openUrlExitCode": 0,
+      "status": "SIGNED_ARTIFACT_READY_FOR_COORDINATED_IMPORT",
+      "observedOutput": "AEA1 signed artifact verified (32030 bytes, method=HUBSIGN_REMOTE_SERVICE, legacyCounterpart=true); deferred simctl openurl to coordinated XCUITest handshake."
+    },
+    {
+      "routeId": "route_4_exploratory_import_shortcut_scheme",
+      "documented": false,
+      "classification": "UNDOCUMENTED",
+      "command": "xcrun simctl openurl <UDID> shortcuts://import-shortcut?name=CherriQAProbe",
+      "exitCode": 0,
+      "status": "UNDOCUMENTED_PROBE",
+      "observedOutput": ""
+    }
+  ]
+}

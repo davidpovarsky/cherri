@@ -1,0 +1,39 @@
+[
+  {
+    "eventSource" : "receiver-self-test",
+    "host" : "success",
+    "receiverSelfTest" : true,
+    "resultShape" : {
+      "collectorMarkerCount" : 0,
+      "inlineMarkerCount" : 0,
+      "nonemptyLineCount" : 1,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 21
+    },
+    "resultSummary" : "CHERRI_QA_RECEIVER_OK",
+    "runId" : "receiver-self-test",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-18T22:49:46.821Z"
+  },
+  {
+    "eventSource" : "shortcuts-x-callback",
+    "expectedShortcutName" : "qa-collect-counts-v2",
+    "fixtureId" : "qa-collect-counts-v2",
+    "host" : "success",
+    "receiverSelfTest" : false,
+    "resultShape" : {
+      "collectorMarkerCount" : 2,
+      "inlineMarkerCount" : 2,
+      "nonemptyLineCount" : 5,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 1008
+    },
+    "resultSummary" : "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99",
+    "runId" : "qa-collect-counts-v2-44401917924-35be3ceaae5deb7a8bd4dc6de5d8c27c",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-18T22:53:45.032Z",
+    "tracePayload" : "{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_begin\",\"runId\":\"qa-collect-counts-v2\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"before\",\"label\":\"collect-counts\",\"stepSequence\":3,\"actionIdentifier\":\"is.workflow.actions.setvariable\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"18 Nov 2026 at 10:52 PM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"after\",\"label\":\"collect-counts\",\"stepSequence\":129,\"actionIdentifier\":\"is.workflow.actions.comment\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"18 Nov 2026 at 10:52 PM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_end\",\"runId\":\"qa-collect-counts-v2\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}"
+  }
+]
