@@ -2037,19 +2037,8 @@ func (r *Runner) runSkill() {
 	k01Passed := errSkill == nil && len(skillBytes) > 100
 	r.Record("K01", "skill", "Complete updated package and unpacked self-test", "packaging", []string{"packaging"}, k01Passed, "PASSED", "skills/cherri-shortcuts/SKILL.md packaged with v2 architecture")
 
-	// K02: Fresh install and incompatible binary
-	docScript := resolveRepoPath(filepath.Join("skills", "cherri-shortcuts", "scripts", "doctor.sh"))
-	commonScript := resolveRepoPath(filepath.Join("skills", "cherri-shortcuts", "scripts", "common.sh"))
-	docBytes, errDoc := os.ReadFile(docScript)
-	commonBytes, errCommon := os.ReadFile(commonScript)
-	k02Passed := errDoc == nil && errCommon == nil && strings.Contains(string(docBytes), "validate_cherri_bin") && strings.Contains(string(commonBytes), "languageVersion")
-	r.Record("K02", "skill", "Fresh install and incompatible cached/bundled binary", "integration", []string{"integration"}, k02Passed, "PASSED", "doctor.sh and common.sh verify compiler capability and language version")
-
-	// K03: Exact commit install
-	manifestPath := resolveRepoPath(filepath.Join("skills", "cherri-shortcuts", "compatibility-manifest.json"))
-	manifestBytes, errMan := os.ReadFile(manifestPath)
-	k03Passed := errMan == nil && strings.Contains(string(manifestBytes), "compilerCommit")
-	r.Record("K03", "skill", "Exact commit install and checksum/atomic update", "integration", []string{"integration"}, k03Passed, "PASSED", "compatibility-manifest.json locks compiler and docs commits")
+	r.runSkillInstallRequirement()
+	r.runSkillUpdateRequirement()
 
 	r.runSkillOfflineRequirement()
 

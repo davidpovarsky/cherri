@@ -16,7 +16,68 @@ for arg in "$@"; do
   esac
 done
 
+if ! is_hex_len "$CHERRI_REF" 40 || ! is_hex_len "$CHERRI_DOCS_REF" 40; then
+  echo "[CHERRI_INSTALL_IMMUTABLE_REFS_REQUIRED] Install compiler and docs using exact 40-digit commit IDs." >&2
+  exit 1
+fi
+
 mkdir -p "$CHERRI_HOME/bin"
+
+# Keep the active compiler/docs pair untouched until both candidates validate.
+# Backup files remain available until the installed pair also passes validation.
+# This handles command failures/signals; it is not a power-loss journal.
+BIN_STAGE=""
+DOCS_STAGE=""
+INSTALL_LOCKED=0
+INSTALL_COMMITTED=0
+HAD_BIN=0
+HAD_COMMIT=0
+HAD_CHECKSUM=0
+HAD_DOCS=0
+BIN_INSTALLED=0
+COMMIT_INSTALLED=0
+CHECKSUM_INSTALLED=0
+DOCS_INSTALLED=0
+
+begin_install() {
+  if [ "$INSTALL_LOCKED" -eq 0 ]; then
+    if ! mkdir "$CHERRI_HOME/.install-lock" 2>/dev/null; then
+      echo "[CHERRI_INSTALL_BUSY] Another install owns $CHERRI_HOME/.install-lock; inspect an interrupted install before removing its lock." >&2
+      exit 1
+    fi
+    INSTALL_LOCKED=1
+  fi
+}
+
+finish_install() {
+  INSTALL_STATUS=$?
+  trap - EXIT HUP INT TERM
+  set +e
+  ROLLBACK_OK=1
+  if [ "$INSTALL_COMMITTED" -eq 0 ]; then
+    if [ "$DOCS_INSTALLED" -eq 1 ]; then rm -rf "$CHERRI_DOCS_DIR" || ROLLBACK_OK=0; fi
+    if [ "$HAD_DOCS" -eq 1 ]; then mv "$DOCS_STAGE/previous" "$CHERRI_DOCS_DIR" || ROLLBACK_OK=0; fi
+    if [ "$CHECKSUM_INSTALLED" -eq 1 ]; then rm -f "$CACHED_CHERRI.sha256" || ROLLBACK_OK=0; fi
+    if [ "$HAD_CHECKSUM" -eq 1 ]; then mv "$BIN_STAGE/previous.sha256" "$CACHED_CHERRI.sha256" || ROLLBACK_OK=0; fi
+    if [ "$COMMIT_INSTALLED" -eq 1 ]; then rm -f "$CACHED_CHERRI.commit" || ROLLBACK_OK=0; fi
+    if [ "$HAD_COMMIT" -eq 1 ]; then mv "$BIN_STAGE/previous.commit" "$CACHED_CHERRI.commit" || ROLLBACK_OK=0; fi
+    if [ "$BIN_INSTALLED" -eq 1 ]; then rm -f "$CACHED_CHERRI" || ROLLBACK_OK=0; fi
+    if [ "$HAD_BIN" -eq 1 ]; then mv "$BIN_STAGE/previous" "$CACHED_CHERRI" || ROLLBACK_OK=0; fi
+  fi
+  if [ "$ROLLBACK_OK" -eq 1 ]; then
+    if [ -n "$BIN_STAGE" ]; then rm -rf "$BIN_STAGE"; fi
+    if [ -n "$DOCS_STAGE" ]; then rm -rf "$DOCS_STAGE"; fi
+    if [ "$INSTALL_LOCKED" -eq 1 ]; then rmdir "$CHERRI_HOME/.install-lock"; fi
+  else
+    echo "[CHERRI_INSTALL_ROLLBACK_FAILED] Preserved recovery files in $BIN_STAGE and $DOCS_STAGE; install lock retained." >&2
+    INSTALL_STATUS=1
+  fi
+  exit "$INSTALL_STATUS"
+}
+trap finish_install EXIT
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 if [ -n "${CHERRI_BIN:-}" ]; then
   if ! validate_cherri_bin "$CHERRI_BIN"; then
@@ -49,15 +110,22 @@ else
       echo "Cannot install or update Cherri in offline mode: no compatible cached or bundled binary available." >&2
       exit 1
     fi
-
-    TMP_BIN="$CACHED_CHERRI.tmp.$$"
+    for INSTALL_FILE in "$CACHED_CHERRI" "$CACHED_CHERRI.commit" "$CACHED_CHERRI.sha256"; do
+      if [ -d "$INSTALL_FILE" ]; then
+        echo "[CHERRI_INSTALL_PATH_INVALID] Expected an install file, found a directory: $INSTALL_FILE" >&2
+        exit 1
+      fi
+    done
+    begin_install
+    BIN_STAGE=$(mktemp -d "$CHERRI_HOME/bin/.cherri-install.XXXXXX")
+    TMP_BIN="$BIN_STAGE/candidate"
     TMP_COMMIT="$TMP_BIN.commit"
-    cleanup_tmp() {
-      rm -f "$TMP_BIN" "$TMP_COMMIT"
-    }
-    trap cleanup_tmp EXIT INT TERM
 
     if [ -n "${CHERRI_PREBUILT_URL:-}" ]; then
+      if ! is_hex_len "${CHERRI_PREBUILT_SHA256:-}" 64; then
+        echo "[CHERRI_PREBUILT_CHECKSUM_REQUIRED] CHERRI_PREBUILT_SHA256 must contain the expected 64-digit SHA-256 for CHERRI_PREBUILT_URL." >&2
+        exit 1
+      fi
       echo "Downloading prebuilt Cherri..."
       if command -v wget >/dev/null 2>&1; then
         wget -q -O "$TMP_BIN" "$CHERRI_PREBUILT_URL"
@@ -67,7 +135,8 @@ else
         echo "Need wget or curl to download CHERRI_PREBUILT_URL." >&2
         exit 1
       fi
-      chmod +x "$TMP_BIN"
+      # Verify downloaded bytes before chmod or executing capabilities/version.
+      verify_cherri_checksum "$TMP_BIN" "$CHERRI_PREBUILT_SHA256"
       printf '%s\n' "$CHERRI_REF" > "$TMP_COMMIT"
     else
       missing=""
@@ -80,16 +149,26 @@ else
           echo "Installing Alpine build dependencies:$missing ca-certificates"
           apk add --no-cache git go ca-certificates
         else
-          echo "Missing:$missing. Install them or provide CHERRI_PREBUILT_URL." >&2
+          echo "Missing:$missing. Install them or provide CHERRI_PREBUILT_URL and CHERRI_PREBUILT_SHA256." >&2
           exit 1
         fi
       fi
 
       SRC="$CHERRI_HOME/src"
-      if [ ! -d "$SRC/.git" ]; then
-        rm -rf "$SRC"
+      if [ ! -e "$SRC" ]; then
         git clone "$CHERRI_REPO" "$SRC"
+      elif [ ! -d "$SRC/.git" ]; then
+        echo "[CHERRI_SOURCE_UNMANAGED] Refusing to replace a non-clone source cache: $SRC" >&2
+        exit 1
       else
+        if ! SOURCE_STATE=$(git -C "$SRC" status --porcelain); then
+          echo "[CHERRI_SOURCE_GIT_INVALID] Cannot verify source cache state; active installation unchanged." >&2
+          exit 1
+        fi
+        if [ -n "$SOURCE_STATE" ]; then
+          echo "[CHERRI_SOURCE_DIRTY] Source cache has local changes; preserve or commit them before setup." >&2
+          exit 1
+        fi
         git -C "$SRC" fetch origin "$CHERRI_REF" 2>/dev/null || git -C "$SRC" fetch origin
       fi
       git -C "$SRC" checkout --detach "$CHERRI_REF" 2>/dev/null || git -C "$SRC" checkout "$CHERRI_REF"
@@ -109,22 +188,19 @@ else
           CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o "$TMP_BIN" .
         )
       fi
-      chmod +x "$TMP_BIN"
       printf '%s\n' "$ACTUAL_SRC_SHA" > "$TMP_COMMIT"
     fi
 
+    cherri_file_sha256 "$TMP_BIN" > "$TMP_BIN.sha256"
+    chmod +x "$TMP_BIN"
     if ! validate_cherri_bin "$TMP_BIN"; then
-      echo "Newly built/downloaded Cherri binary failed compatibility validation; aborting atomic replacement." >&2
+      echo "Newly built/downloaded Cherri binary failed compatibility validation; active installation unchanged." >&2
       exit 1
     fi
-
-    mv -f "$TMP_BIN" "$CACHED_CHERRI"
-    mv -f "$TMP_COMMIT" "$CACHED_CHERRI.commit"
-    trap - EXIT INT TERM
   fi
 fi
 
-# Verify or install documentation at pinned commit
+# Validate an existing docs checkout or prepare a separate pinned candidate.
 DOCS_VALID=0
 if [ -d "$CHERRI_DOCS_DIR" ] && [ "$UPDATE" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
   if validate_docs_dir "$CHERRI_DOCS_DIR"; then
@@ -141,30 +217,74 @@ if [ "$DOCS_VALID" -eq 0 ]; then
   if [ "$OFFLINE" = "1" ]; then
     validate_docs_dir "$CHERRI_DOCS_DIR"
   else
-    if [ ! -d "$CHERRI_DOCS_DIR/.git" ] && ! command -v git >/dev/null 2>&1; then
+    if ! command -v git >/dev/null 2>&1; then
       if command -v apk >/dev/null 2>&1; then
         echo "Installing documentation dependencies: git ca-certificates"
         apk add --no-cache git ca-certificates
-      fi
-    fi
-
-    if command -v git >/dev/null 2>&1; then
-      if [ ! -d "$CHERRI_DOCS_DIR/.git" ]; then
-        rm -rf "$CHERRI_DOCS_DIR"
-        git clone "$CHERRI_DOCS_REPO" "$CHERRI_DOCS_DIR"
       else
-        git -C "$CHERRI_DOCS_DIR" fetch origin "$CHERRI_DOCS_REF" 2>/dev/null || git -C "$CHERRI_DOCS_DIR" fetch origin
+        echo "[CHERRI_DOCS_GIT_UNAVAILABLE] Cannot install pinned documentation without git." >&2
+        exit 1
       fi
-      git -C "$CHERRI_DOCS_DIR" checkout --detach "$CHERRI_DOCS_REF" 2>/dev/null || git -C "$CHERRI_DOCS_DIR" checkout "$CHERRI_DOCS_REF"
-      validate_docs_dir "$CHERRI_DOCS_DIR"
     fi
+    if [ -e "$CHERRI_DOCS_DIR" ]; then
+      if [ ! -d "$CHERRI_DOCS_DIR/.git" ]; then
+        echo "[CHERRI_DOCS_UNMANAGED] Refusing to replace non-clone or linked-worktree documentation: $CHERRI_DOCS_DIR" >&2
+        exit 1
+      fi
+      if ! DOCS_STATE=$(git -C "$CHERRI_DOCS_DIR" status --porcelain); then
+        echo "[CHERRI_DOCS_GIT_INVALID] Cannot verify documentation state; active installation unchanged." >&2
+        exit 1
+      fi
+      if [ -n "$DOCS_STATE" ]; then
+        echo "[CHERRI_DOCS_DIRTY] Documentation has local changes; active installation unchanged." >&2
+        exit 1
+      fi
+    fi
+    begin_install
+    DOCS_PARENT=$(dirname -- "$CHERRI_DOCS_DIR")
+    mkdir -p "$DOCS_PARENT"
+    DOCS_STAGE=$(mktemp -d "$DOCS_PARENT/.cherri-docs.XXXXXX")
+    git clone "$CHERRI_DOCS_REPO" "$DOCS_STAGE/candidate"
+    git -C "$DOCS_STAGE/candidate" checkout --detach "$CHERRI_DOCS_REF" 2>/dev/null || git -C "$DOCS_STAGE/candidate" checkout "$CHERRI_DOCS_REF"
+    validate_docs_dir "$DOCS_STAGE/candidate"
   fi
+fi
+
+# Every candidate is compatible before the first active file is moved.
+if [ -n "$BIN_STAGE" ]; then
+  if [ -e "$CACHED_CHERRI" ] || [ -L "$CACHED_CHERRI" ]; then
+    mv "$CACHED_CHERRI" "$BIN_STAGE/previous"
+    HAD_BIN=1
+  fi
+  if [ -e "$CACHED_CHERRI.commit" ] || [ -L "$CACHED_CHERRI.commit" ]; then
+    mv "$CACHED_CHERRI.commit" "$BIN_STAGE/previous.commit"
+    HAD_COMMIT=1
+  fi
+  if [ -e "$CACHED_CHERRI.sha256" ] || [ -L "$CACHED_CHERRI.sha256" ]; then
+    mv "$CACHED_CHERRI.sha256" "$BIN_STAGE/previous.sha256"
+    HAD_CHECKSUM=1
+  fi
+  mv "$TMP_BIN" "$CACHED_CHERRI"
+  BIN_INSTALLED=1
+  mv "$TMP_COMMIT" "$CACHED_CHERRI.commit"
+  COMMIT_INSTALLED=1
+  mv "$TMP_BIN.sha256" "$CACHED_CHERRI.sha256"
+  CHECKSUM_INSTALLED=1
+fi
+if [ -n "$DOCS_STAGE" ]; then
+  if [ -e "$CHERRI_DOCS_DIR" ]; then
+    mv "$CHERRI_DOCS_DIR" "$DOCS_STAGE/previous"
+    HAD_DOCS=1
+  fi
+  mv "$DOCS_STAGE/candidate" "$CHERRI_DOCS_DIR"
+  DOCS_INSTALLED=1
 fi
 
 BIN=$(resolve_cherri) || { echo "No compatible Cherri binary found after setup." >&2; exit 1; }
 "$BIN" --version
-printf 'Cherri ready: %s\n' "$BIN"
 if [ -d "$CHERRI_DOCS_DIR" ]; then
   validate_docs_dir "$CHERRI_DOCS_DIR"
   printf 'Docs ready: %s\n' "$CHERRI_DOCS_DIR"
 fi
+INSTALL_COMMITTED=1
+printf 'Cherri ready: %s\n' "$BIN"

@@ -40,6 +40,11 @@ Override with environment variables:
 - `CHERRI_DOCS_REF`
 - `CHERRI_DOCS_DIR`
 - `CHERRI_PREBUILT_URL`
+- `CHERRI_PREBUILT_SHA256` (required expected SHA-256 when using a prebuilt URL)
+
+Setup requires exact 40-digit compiler and docs commit IDs. It verifies a prebuilt download before executing it. Source builds and downloads record a SHA-256 beside the cached compiler; reuse checks that receipt before execution. Existing caches without a checksum remain compatible after the normal capability and commit checks.
+
+Updates stage and validate the compiler and pinned docs before replacing the active pair. Command failures during replacement restore the preceding files; local changes in managed source/docs and unmanaged docs directories are preserved and reported. This rollback protects ordinary update failures and handled signals, but does not claim atomic visibility to concurrent readers or recovery from power loss. An interrupted install that cannot restore its backups retains them with its install lock for recovery.
 
 ## Editing an existing Shortcut from a shared plist
 

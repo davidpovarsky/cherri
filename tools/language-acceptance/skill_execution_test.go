@@ -7,3 +7,15 @@ func TestSkillOfflineProductionEvidence(t *testing.T) {
 		"P15_SKILL_OFFLINE_RECEIPT:",
 		"Only K04 actual compiler offline cache, isolated docs/schema/commit rejection, missing docs and observable network denial. No fresh-install, package, atomic-update, signing, installed-consumer or release closure.")
 }
+
+func TestSkillInstallProductionEvidence(t *testing.T) {
+	testNamedProductionEvidence(t, "K02", skillProductionTests["K02"], nil, (*Runner).runSkillInstallRequirement,
+		"P15_SKILL_INSTALL_RECEIPT:",
+		"Only actual fresh source install and verified cache/bundle/explicit binary selection with isolated failures. No package, signing, native or installed-remote release closure.")
+}
+
+func TestSkillUpdateProductionEvidence(t *testing.T) {
+	testNamedProductionEvidence(t, "K03", skillProductionTests["K03"], nil, (*Runner).runSkillUpdateRequirement,
+		"P15_SKILL_UPDATE_RECEIPT:",
+		"Only exact clean pinned source installation, pre-execution download checksum, controlled late validation/promotion rollback and successful update. No power-loss, concurrent-reader, packaging, signing, or live-consumer claim.")
+}

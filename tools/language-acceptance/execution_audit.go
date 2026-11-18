@@ -31,16 +31,19 @@ var cliProductionTests = map[string][]string{
 	"CL03": {"TestP15CLIDefaultRejectsLegacyWithGuidance"},
 }
 
-// K04 launches the real cross-platform shell installer repeatedly. Its finite
-// process budget includes slow Git Bash process creation on shared Windows hosts;
-// all positive, negative, byte-preservation and no-network assertions are unchanged.
+// Real install producers include source builds and multiple controlled shell
+// transactions. Keep finite per-family budgets; all assertions remain unchanged.
 func productionTestTimeout(required []string) time.Duration {
+	budget := 3 * time.Minute
 	for _, name := range required {
-		if strings.HasPrefix(name, "TestP15K04") {
-			return 6 * time.Minute
+		if strings.HasPrefix(name, "TestP15K03") {
+			return 12 * time.Minute
+		}
+		if strings.HasPrefix(name, "TestP15K02") || strings.HasPrefix(name, "TestP15K04") || name == "TestP15SkillFreshPinnedInstall" {
+			budget = 6 * time.Minute
 		}
 	}
-	return 3 * time.Minute
+	return budget
 }
 
 // Execute named production tests with explicit discovery checks. Exit status
@@ -192,7 +195,7 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 		}
 		if tests, ok := skillProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
-			row.ProductionPath = []string{"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh", "p15_skill_acceptance_test.go"}
+			row.ProductionPath = append([]string{}, skillProductionPaths[row.ID]...)
 			row.PositiveAndNegative = res.Passed
 		}
 		if tests, ok := cliProductionTests[row.ID]; ok {

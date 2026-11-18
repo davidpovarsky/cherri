@@ -343,6 +343,7 @@ if (
   SKILL_DIR="$SKILL_TEST_COPY" \
   CHERRI_HOME="$HOME9" \
   CHERRI_PREBUILT_URL="http://127.0.0.1:1/unreachable-cherri-binary" \
+  CHERRI_PREBUILT_SHA256="0000000000000000000000000000000000000000000000000000000000000000" \
   sh "$SKILL_TEST_COPY/scripts/setup.sh" --update >/dev/null 2>&1
 ); then
   echo "Scenario 9 failed: setup.sh --update with broken download URL unexpectedly succeeded" >&2
@@ -355,7 +356,7 @@ fi
   CHERRI_HOME="$HOME9" \
   sh "$SKILL_TEST_COPY/scripts/doctor.sh" >/dev/null
 )
-printf '  [PASS] Scenario 9: failed update preserved existing working binary atomically\n'
+printf '  [PASS] Scenario 9: failed download preserved existing working binary\n'
 
 # Scenario 10: Branch advance after install -> must NOT silently change the installed version
 make_mock_cherri "$MOCK_COMPILER_REPO/.cherri-prebuilt-bin" '{"languageVersion":"2.0","catalogSchemaVersion":"3.0","schemaFingerprint":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}'

@@ -78,8 +78,6 @@ var incompleteLocalAssertions = map[string]string{
 	"D02":   "The selected docs test parses/analyzes examples; it does not execute their production compilation/runtime.",
 	"D03":   "File existence does not verify active fork docs, publication, and upstream separation.",
 	"K01":   "SKILL.md length does not unpack a package or run its self-test.",
-	"K02":   "Script substrings do not execute a fresh install or reject an incompatible binary.",
-	"K03":   "A compilerCommit key does not install that SHA or test checksums and atomic updates.",
 	"K05":   "Script length does not execute repair/build/import/edit/sign workflows.",
 	"CI01":  "Comparing two unequal literal strings does not execute a negative CI gate.",
 	"CI02":  "Nonempty IR for a runtime fixture is not an iOS runtime execution.",

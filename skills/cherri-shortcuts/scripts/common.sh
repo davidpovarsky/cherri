@@ -130,11 +130,47 @@ fi
 BUNDLED_CHERRI="$SKILL_DIR/bin/cherri"
 CACHED_CHERRI="$CHERRI_HOME/bin/cherri"
 
+cherri_file_sha256() {
+  _sum_path=$1
+  if command -v sha256sum >/dev/null 2>&1; then
+    _sum_value=$(sha256sum "$_sum_path" | awk '{print $1}')
+  elif command -v shasum >/dev/null 2>&1; then
+    _sum_value=$(shasum -a 256 "$_sum_path" | awk '{print $1}')
+  elif command -v openssl >/dev/null 2>&1; then
+    _sum_value=$(openssl dgst -sha256 "$_sum_path" | awk '{print $NF}')
+  else
+    echo "[CHERRI_CHECKSUM_UNAVAILABLE] Need sha256sum, shasum, or openssl to verify compiler bytes." >&2
+    return 1
+  fi
+  if ! is_hex_len "$_sum_value" 64; then
+    echo "[CHERRI_CHECKSUM_INVALID] Could not hash compiler bytes: $_sum_path" >&2
+    return 1
+  fi
+  printf '%s\n' "$_sum_value" | tr 'A-F' 'a-f'
+}
+
+verify_cherri_checksum() {
+  _verify_path=$1
+  _verify_expected=$(printf '%s' "$2" | tr 'A-F' 'a-f')
+  if ! is_hex_len "$_verify_expected" 64; then
+    echo "[CHERRI_CHECKSUM_INVALID] Expected a 64-digit compiler SHA-256." >&2
+    return 1
+  fi
+  _verify_actual=$(cherri_file_sha256 "$_verify_path") || return 1
+  if [ "$_verify_actual" != "$_verify_expected" ]; then
+    echo "[CHERRI_CHECKSUM_MISMATCH] Compiler bytes differ from the expected SHA-256: $_verify_path" >&2
+    return 1
+  fi
+}
+
 validate_cherri_bin() {
   _cand=$1
   if [ -z "$_cand" ] || [ ! -f "$_cand" ]; then
     echo "[CHERRI_COMPILER_NOT_FOUND] Cherri binary not found: ${_cand:-<empty>}" >&2
     return 1
+  fi
+  if [ -f "$_cand.sha256" ]; then
+    verify_cherri_checksum "$_cand" "$(tr -d '\r\n ' < "$_cand.sha256")" || return 1
   fi
   chmod +x "$_cand" 2>/dev/null || true
   if [ ! -x "$_cand" ]; then

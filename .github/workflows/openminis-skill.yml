@@ -118,6 +118,11 @@ jobs:
           CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
         run: sh skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh
 
+      - name: Verify actual pinned installs, checksum and rollback
+        run: >-
+          go test -count=1 -timeout=15m
+          -run '^(TestP15SkillFreshPinnedInstall|TestP15K02|TestP15K03)' .
+
       - name: Verify optional compiler macro compatibility
         run: |
           go run ./tools/language-docs dist/macro-actions-reference.md
