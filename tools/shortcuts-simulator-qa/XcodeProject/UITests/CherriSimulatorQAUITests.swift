@@ -138,6 +138,9 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-paginate-page-cap-v2",
         "qa-paginate-item-cap-v2",
         "qa-paginate-empty-v2",
+        "qa-storage-text-same-run-v2",
+        "qa-storage-scope-v2",
+        "qa-storage-delete-v2",
         "qa-collect-counts-v2",
         "qa-collect-counts-legacy",
         "qa-collect-dictionaries-v2",
@@ -1092,6 +1095,10 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertEqual(sanitizeUIString("qa-paginate-page-cap-v2"), "qa-paginate-page-cap-v2")
         XCTAssertEqual(sanitizeUIString("qa-paginate-item-cap-v2"), "qa-paginate-item-cap-v2")
         XCTAssertEqual(sanitizeUIString("qa-paginate-empty-v2"), "qa-paginate-empty-v2")
+        XCTAssertEqual(sanitizeUIString("qa-storage-text-same-run-v2"), "qa-storage-text-same-run-v2")
+        XCTAssertEqual(sanitizeUIString("qa-storage-scope-v2"), "qa-storage-scope-v2")
+        XCTAssertEqual(sanitizeUIString("qa-storage-delete-v2"), "qa-storage-delete-v2")
+        XCTAssertTrue(sanitizeUIString("qa-storage-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
         XCTAssertTrue(sanitizeUIString("qa-paginate-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
         XCTAssertEqual(sanitizeUIString("qa-collect-counts-v2"), "qa-collect-counts-v2")
         XCTAssertEqual(sanitizeUIString("qa-collect-counts-legacy"), "qa-collect-counts-legacy")

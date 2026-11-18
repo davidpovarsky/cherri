@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "syntheticOnly": true,
+  "namespacePrefix": "cherri.qa.p15.storage.",
+  "sameRunOnly": true,
+  "cacheImplemented": false,
+  "crossRunPersistence": "NOT_PROVEN",
+  "typedArchive": "NOT_PROVEN",
+  "cases": [
+    {
+      "id": "qa-storage-text-same-run-v2",
+      "sampleId": "qa-storage-text-same-run",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-same-run-v2.cherri",
+      "sourceSha256": "3eeac22205bdef8a26d5af511675719d628a62625a460575db1cd832459e7ece",
+      "expectedSummary": "CHERRI_QA_STORAGE_TEXT_RESULT:TYPE_OK:VALUE_OK",
+      "scope": "Same-run native Text type and exact Unicode/escape readback; own global key cleanup",
+      "nativeRuntimeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-storage-scope-v2",
+      "sampleId": "qa-storage-scope",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-storage-scope-v2.cherri",
+      "sourceSha256": "2d1924591e6e8328f314fafe5d8d684d2d5597bf94300ac7d5cf4e27700b1f2c",
+      "expectedSummary": "CHERRI_QA_STORAGE_SCOPE_RESULT:GLOBAL_TYPE_OK:GLOBAL_VALUE_OK:LOCAL_TYPE_OK:LOCAL_VALUE_OK",
+      "scope": "Same-run separation of global and shortcut-local values for the same owned key; not cross-shortcut persistence",
+      "nativeRuntimeStatus": "NOT_EXECUTED"
+    },
+    {
+      "id": "qa-storage-delete-v2",
+      "sampleId": "qa-storage-delete",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-storage-delete-v2.cherri",
+      "sourceSha256": "4361d16d59d97a81c93da7e8d3d81168f2c10caa25db67229a18bb848edd05fc",
+      "expectedSummary": "CHERRI_QA_STORAGE_DELETE_RESULT:BEFORE_OK:NO_VALUE_OK",
+      "scope": "Deletion/missing-value diagnostic; native ERROR remains a failing observation, no catch is inferred",
+      "nativeRuntimeStatus": "NOT_EXECUTED"
+    }
+  ]
+}
