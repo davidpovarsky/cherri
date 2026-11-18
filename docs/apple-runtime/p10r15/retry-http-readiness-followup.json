@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "failedRunId": "44253843533",
+  "failedRunUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44253843533",
+  "failedImplementationSha": "76ad2497cacfc476a6d009163e152b7fa0846a10",
+  "actualOutcome": "PRE_NATIVE_PYTHON_TEST_FAILURE",
+  "nativeOrchestratorExecuted": false,
+  "failedStep": "Test AX Inspector and publication quarantine",
+  "macOSPythonVersionObserved": "3.15.2",
+  "observedException": "ConnectionRefusedError errno61 during transport test client connect, before GET",
+  "nativeCause": "NOT_OBSERVED",
+  "specificCIRefusalCause": "UNKNOWN",
+  "failedLogSha256": "2e8f7c1f50ef48bf662beeff5fd5e2a771b8e3fbc6b7dab4bc9a6d278ab99ec1",
+  "causalReproduction": {
+    "oldImplementation": "76ad2497cacfc476a6d009163e152b7fa0846a10",
+    "tests": {
+      "phase": "RED_OLD_SERVER",
+      "testsRun": 2,
+      "failures": 1,
+      "errors": 1,
+      "successful": false
+    },
+    "observations": [
+      "Ready file existed before service loop started.",
+      "Startup delay longer than configured lifetime caused immediate expiry and a real connection refusal."
+    ],
+    "logSha256": "42d8cef1f9de80364eacc12ce44994edff417e1b2520b8ac13adf9f34ff049f4",
+    "limit": "This reproduces a concrete stale-readiness mechanism; the failed macOS run did not retain listener state, so its exact trigger is not proven."
+  },
+  "implementation": [
+    "Publish ready file only from the running service loop.",
+    "Start finite active lifetime when service begins.",
+    "Unit callers await the same ready receipt as the native orchestrator."
+  ],
+  "focusedValidation": {
+    "command": "py -3 -m unittest discover -s tools/shortcuts-simulator-qa -p test_retry_http_probe.py -v",
+    "exitCode": 0,
+    "tests": 17,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "durationSeconds": 7.316
+  },
+  "testedFilesSha256": {
+    "tools/shortcuts-simulator-qa/retry_http_probe.py": "5aab28e4d49b09b110bc2d05745409e0f001cc34bc0cea4504cbda8194ea531e",
+    "tools/shortcuts-simulator-qa/test_retry_http_probe.py": "9d65e6f346a348c067523bcd90caa883a83fe7b8d04d4ad465170796e4fce8ac"
+  },
+  "unchangedContracts": [
+    "No connection refusal is accepted as a successful transport experiment.",
+    "No automatic GET retry.",
+    "Finite lifetime remains1800 seconds.",
+    "ERROR/CANCELLED remain ordinary runtime/trace failure.",
+    "Static source, native graph and signing path unchanged."
+  ],
+  "native200Control": "REQUIRED_BEFORE_ERROR_CASE_DISPATCH",
+  "retryImplemented": false
+}
