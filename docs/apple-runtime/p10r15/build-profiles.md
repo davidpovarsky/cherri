@@ -25,3 +25,9 @@ The Go V2 entrypoint is `CompileSourceToPlistWithOptions(filePath, source, Compi
 ## Remaining gates
 
 Full integrated suite, exact-SHA Linux/macOS/Nix CI, signed simulator execution of release behavior and physical-device type semantics remain separate gates. This feature does not complete the typed-macro roadmap. Diagnostic removal does not promise that arbitrary source arguments containing sensitive values are removed; argument producers intentionally still execute.
+
+## Mobile and Swift bridge extension
+
+The shared mobile compiler now accepts the same explicit CompileOptions. Existing C ABI functions retain their debug default. New `CherriCompileProfile` and `CherriCompileSignedProfile` accept source, name, language mode and build profile; the existing Swift `CherriCompiler.compile` wrapper adds an optional `buildProfile: CherriBuildProfile = .debug`. Existing call sites are source compatible. This does not install a new app or add a UI toggle.
+
+The Go mobile bridge matrix passed for Legacy/V2/auto and debug/release/default, invalid-profile rejection, sequential isolation and the existing six iOS Go integration tests. Invalid language modes now fail with `COMPILE_MODE_INVALID` instead of silently entering Legacy. The new Swift integration test exercises the actual C ABI, checking that release removes appendvariable while retaining source Text and assertion Alert/Stop; execution is pending the existing iOS Build workflow. An unsigned simulator/app build is not physical-device validation.

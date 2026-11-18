@@ -267,10 +267,15 @@ private struct ActionCatalogBridgeResponse: Decodable {
     let error: String?
 }
 
+enum CherriBuildProfile: String, Sendable {
+    case debug
+    case release
+}
+
 enum CherriCompiler {
-    static func compile(source: String, name: String, mode: String = "auto", signed: Bool = false) async throws -> CompiledShortcut {
+    static func compile(source: String, name: String, mode: String = "auto", signed: Bool = false, buildProfile: CherriBuildProfile = .debug) async throws -> CompiledShortcut {
         try await Task.detached(priority: .userInitiated) {
-            try callCompileBridge(source: source, name: name, mode: mode, signed: signed)
+            try callCompileBridge(source: source, name: name, mode: mode, signed: signed, buildProfile: buildProfile)
         }.value
     }
 
@@ -340,16 +345,19 @@ enum CherriCompiler {
         }.value
     }
 
-    private static func callCompileBridge(source: String, name: String, mode: String, signed: Bool) throws -> CompiledShortcut {
+    private static func callCompileBridge(source: String, name: String, mode: String, signed: Bool, buildProfile: CherriBuildProfile) throws -> CompiledShortcut {
         let resultPointer: UnsafeMutablePointer<CChar>? = source.withCString { sourcePointer in
             name.withCString { namePointer in
                 mode.withCString { modePointer in
-                    let mutableSource = UnsafeMutablePointer(mutating: sourcePointer)
-                    let mutableName = UnsafeMutablePointer(mutating: namePointer)
-                    let mutableMode = UnsafeMutablePointer(mutating: modePointer)
-                    return signed
-                        ? CherriCompileSignedMode(mutableSource, mutableName, mutableMode)
-                        : CherriCompileMode(mutableSource, mutableName, mutableMode)
+                    buildProfile.rawValue.withCString { profilePointer in
+                        let mutableSource = UnsafeMutablePointer(mutating: sourcePointer)
+                        let mutableName = UnsafeMutablePointer(mutating: namePointer)
+                        let mutableMode = UnsafeMutablePointer(mutating: modePointer)
+                        let mutableProfile = UnsafeMutablePointer(mutating: profilePointer)
+                        return signed
+                            ? CherriCompileSignedProfile(mutableSource, mutableName, mutableMode, mutableProfile)
+                            : CherriCompileProfile(mutableSource, mutableName, mutableMode, mutableProfile)
+                    }
                 }
             }
         }

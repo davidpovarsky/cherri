@@ -50,6 +50,21 @@ func CherriCompileSignedMode(source *C.char, requestedName *C.char, mode *C.char
 	return encodeMobileResponse(compileForMobileMode(C.GoString(source), C.GoString(requestedName), C.GoString(mode), true))
 }
 
+// CherriCompileProfile compiles with explicit language mode and build profile.
+// Existing ABI functions keep their debug profile default.
+//
+//export CherriCompileProfile
+func CherriCompileProfile(source *C.char, requestedName *C.char, mode *C.char, profile *C.char) *C.char {
+	return encodeMobileResponse(compileForMobileModeWithOptions(C.GoString(source), C.GoString(requestedName), C.GoString(mode), false, CompileOptions{BuildProfile: BuildProfile(C.GoString(profile))}))
+}
+
+// CherriCompileSignedProfile compiles with explicit mode/profile and signs with HubSign.
+//
+//export CherriCompileSignedProfile
+func CherriCompileSignedProfile(source *C.char, requestedName *C.char, mode *C.char, profile *C.char) *C.char {
+	return encodeMobileResponse(compileForMobileModeWithOptions(C.GoString(source), C.GoString(requestedName), C.GoString(mode), true, CompileOptions{BuildProfile: BuildProfile(C.GoString(profile))}))
+}
+
 // CherriDecompilePlist decompiles Shortcut plist data using Cherri's decompiler.
 //
 //export CherriDecompilePlist

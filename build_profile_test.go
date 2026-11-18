@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"strings"
 	"testing"
@@ -174,5 +175,45 @@ func TestBuildProfileReleaseRejectsInvalidOptions(t *testing.T) {
 				t.Fatalf("invalid diagnostic option was ignored in release: %v", err)
 			}
 		})
+	}
+}
+
+func TestBuildProfileMobileBridgeIsolation(t *testing.T) {
+	var src = "text(\"source\")\ndebugLog()\n"
+	for _, mode := range []string{"legacy", "v2", "auto"} {
+		for _, profile := range []BuildProfile{BuildProfileRelease, BuildProfileDebug, ""} {
+			var response = compileForMobileModeWithOptions(src, "Profile Bridge", mode, false, CompileOptions{BuildProfile: profile})
+			if !response.OK || response.SignedBase64 != "" {
+				t.Fatalf("mode=%s profile=%s: %+v", mode, profile, response)
+			}
+			var data, err = base64.StdEncoding.DecodeString(response.PlistBase64)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var root, decodeErr = decodeShortcutRawMap(data)
+			if decodeErr != nil {
+				t.Fatal(decodeErr)
+			}
+			var actionsOut = root["WFWorkflowActions"].([]any)
+			var expected = 2
+			if profile == BuildProfileRelease {
+				expected = 1
+			}
+			if len(actionsOut) != expected {
+				t.Fatalf("mobile profile lost/isolation failed: mode=%s profile=%s actions=%d", mode, profile, len(actionsOut))
+			}
+		}
+		var bad = compileForMobileModeWithOptions(src, "Profile Bridge", mode, false, CompileOptions{BuildProfile: "invalid"})
+		if bad.OK || bad.PlistBase64 != "" || !strings.Contains(bad.Error, "BUILD_PROFILE_INVALID") {
+			t.Fatalf("invalid mobile profile accepted: %+v", bad)
+		}
+		var oldAPI = compileForMobileMode(src, "Original Bridge", mode, false)
+		if !oldAPI.OK {
+			t.Fatalf("existing bridge ABI changed: %+v", oldAPI)
+		}
+	}
+	var badMode = compileForMobileModeWithOptions(src, "Profile Bridge", "misspelled", false, CompileOptions{})
+	if badMode.OK || !strings.Contains(badMode.Error, "COMPILE_MODE_INVALID") {
+		t.Fatalf("invalid mode fell back to Legacy: %+v", badMode)
 	}
 }

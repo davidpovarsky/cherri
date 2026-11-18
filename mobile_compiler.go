@@ -93,7 +93,16 @@ func compileForMobile(src string, requestedName string, sign bool) mobileCompile
 	return compileForMobileMode(src, requestedName, string(MobileCompileModeAuto), sign)
 }
 
-func compileForMobileMode(src string, requestedName string, mode string, sign bool) (response mobileCompileResponse) {
+func compileForMobileMode(src string, requestedName string, mode string, sign bool) mobileCompileResponse {
+	return compileForMobileModeWithOptions(src, requestedName, mode, sign, CompileOptions{})
+}
+
+func compileForMobileModeWithOptions(src string, requestedName string, mode string, sign bool, options CompileOptions) (response mobileCompileResponse) {
+	var profile, profileErr = normalizeBuildProfile(options.BuildProfile)
+	if profileErr != nil {
+		return mobileCompileResponse{OK: false, Error: profileErr.Error(), Line: 1, Column: 1, Mode: mode}
+	}
+	options.BuildProfile = profile
 	mobileCompileMu.Lock()
 	defer mobileCompileMu.Unlock()
 
@@ -140,8 +149,12 @@ func compileForMobileMode(src string, requestedName string, mode string, sign bo
 		}
 	}
 
+	if selectedMode != MobileCompileModeV2 && selectedMode != MobileCompileModeLegacy {
+		return mobileCompileResponse{OK: false, Error: "COMPILE_MODE_INVALID: expected v2, legacy or auto", Line: 1, Column: 1, Mode: mode}
+	}
+
 	if selectedMode == MobileCompileModeV2 {
-		v2Bytes, err := CompileSourceToPlist(name+".cherri", src)
+		v2Bytes, err := CompileSourceToPlistWithOptions(name+".cherri", src, options)
 		if err == nil {
 			response = mobileCompileResponse{
 				OK:          true,
@@ -208,7 +221,7 @@ func compileForMobileMode(src string, requestedName string, mode string, sign bo
 	contents = src
 
 	initParse()
-	generateShortcut()
+	generateShortcutWithProfile(profile)
 
 	var buf bytes.Buffer
 	enc := plist.NewEncoder(&buf)

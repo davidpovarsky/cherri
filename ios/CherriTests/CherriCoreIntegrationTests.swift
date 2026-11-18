@@ -372,6 +372,24 @@ final class CherriCoreIntegrationTests: XCTestCase {
         XCTAssertEqual(resp.schemaFingerprint.count, 64)
     }
 
+    func testBuildProfilesPreserveSourceThroughCABI() async throws {
+        let source = "text(\"bridge source\")\ndebugLog()\ndebugAssert(false, \"bridge validation\")\n"
+        for mode in ["legacy", "v2"] {
+            for profile in [CherriBuildProfile.release, .debug] {
+                let result = try await CherriCompiler.compile(
+                    source: source, name: "Profile Bridge", mode: mode, buildProfile: profile
+                )
+                let actions = try XCTUnwrap(try propertyList(result.plist)["WFWorkflowActions"] as? [[String: Any]])
+                let identifiers = actions.compactMap { $0["WFWorkflowActionIdentifier"] as? String }
+                XCTAssertEqual(identifiers.contains("is.workflow.actions.appendvariable"), profile == .debug)
+                XCTAssertTrue(identifiers.contains("is.workflow.actions.gettext"))
+                XCTAssertTrue(identifiers.contains("is.workflow.actions.alert"))
+                XCTAssertTrue(identifiers.contains("is.workflow.actions.exit"))
+                XCTAssertNil(result.signedShortcut)
+            }
+        }
+    }
+
     private func propertyList(_ data: Data) throws -> [String: Any] {
         let object = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)
         return try XCTUnwrap(object as? [String: Any])
