@@ -1469,17 +1469,8 @@ func (r *Runner) runCalls() {
 	c01Passed := len(diagsC01) == 0 && errC01 == nil && len(wfC01.Actions) > 0
 	r.Record("C01", "calls", "Named arguments out of declaration order evaluate in source order", "unit+native", []string{"unit", "native"}, c01Passed, "PASSED", "Named arguments bound by label irrespective of schema definition order")
 
-	// C02: Duplicate, missing, unknown labels
-	srcC02 := "show(\"hello\", unknownLabel: 42)"
-	diagsC02 := analyzeSrc(r.reg, srcC02)
-	c02Passed := false
-	for _, d := range diagsC02 {
-		if d.Code == "E_UNKNOWN_ARGUMENT" {
-			c02Passed = true
-			break
-		}
-	}
-	r.Record("C02", "calls", "Duplicate, missing, unknown labels and extra positional arguments", "unit", []string{"unit"}, c02Passed, "PASSED", "Analyzer catches E_UNKNOWN_ARGUMENT with accurate source span")
+	// C02: Execute the complete production argument-diagnostic scenarios.
+	r.runCallArgumentRequirement()
 
 	// C03: Variadic source API migrates to explicit named list
 	srcC03 := "getUpcomingEvents(3)"

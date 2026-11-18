@@ -1386,7 +1386,12 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		if !hasPrim {
 			a.error(CodePositionalArg, call.PrimaryArg.NodeSpan(), fmt.Sprintf("action %q does not accept an unlabeled primary argument; use named arguments", callName))
 		} else {
-			boundIndices[0] = true
+			for index := range actionSchema.Parameters {
+				if &actionSchema.Parameters[index] == primParam {
+					boundIndices[index] = true
+					break
+				}
+			}
 			boundArguments[primParam.WireKey] = call.PrimaryArg
 			if primParam.WireKey == "WFDictionaryKey" {
 				if lit, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit && lit.Value == "" {
@@ -1420,10 +1425,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	}
 
 	// Step 3 & 4: Named arguments binding
-	paramIndex := 1
-	if call.PrimaryArg == nil {
-		paramIndex = 0
-	}
+	// Positional compatibility fills the first remaining parameter; an
+	// explicitly declared primary parameter need not occupy index zero.
+	paramIndex := 0
 	for _, nArg := range call.NamedArgs {
 		var param *schema.ParameterSchema
 		var matchedIdx = -1
@@ -1461,7 +1465,11 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			}
 		}
 		if !paramExists {
-			a.error(CodeUnknownArgument, nArg.Span, fmt.Sprintf("unknown argument label %q in call to %q", nArg.Label, callName))
+			if nArg.Label == "" {
+				a.error(CodePositionalArg, nArg.Span, fmt.Sprintf("too many positional arguments in call to %q", callName))
+			} else {
+				a.error(CodeUnknownArgument, nArg.Span, fmt.Sprintf("unknown argument label %q in call to %q", nArg.Label, callName))
+			}
 			a.analyzeExpression(nArg.Value, scope)
 			continue
 		}

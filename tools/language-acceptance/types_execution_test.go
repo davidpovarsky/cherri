@@ -21,6 +21,15 @@ func TestTypeCardinalityProductionEvidence(t *testing.T) {
 }
 
 func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), receiptLabel, scope string) {
+	tests := typeProductionTests[id]
+	producerByTier := map[string]string{}
+	if id == "T08" {
+		producerByTier["service"] = tests[1]
+	}
+	testNamedProductionEvidence(t, id, tests, producerByTier, run, receiptLabel, scope)
+}
+
+func testNamedProductionEvidence(t *testing.T, id string, tests []string, producerByTier map[string]string, run func(*Runner), receiptLabel, scope string) {
 	t.Helper()
 	all, err := LoadAllContracts("", "", "")
 	if err != nil {
@@ -41,18 +50,17 @@ func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), rece
 	run(runner)
 	tiers := parseRequiredTiers(selected.Cases[0].MinimumTestLevel)
 	if len(runner.results) != 1 || len(runner.records) != len(tiers) || len(runner.observations) != 0 {
-		t.Fatalf("unexpected types scope: results=%d records=%d observations=%d", len(runner.results), len(runner.records), len(runner.observations))
+		t.Fatalf("unexpected production scope: results=%d records=%d observations=%d", len(runner.results), len(runner.records), len(runner.observations))
 	}
 	contract := selected.Cases[0]
 	result := runner.results[id]
-	if !result.Passed || result.Status != "PASSED" || result.Requirement != contract.Requirement || result.TestLevel != contract.MinimumTestLevel || !reflect.DeepEqual(result.ExecutedLevels, tiers) {
+	if !result.Passed || result.Status != "PASSED" || result.Requirement != contract.Requirement || result.Group != contract.Group || result.TestLevel != contract.MinimumTestLevel || !reflect.DeepEqual(result.ExecutedLevels, tiers) {
 		t.Fatalf("%s did not execute its contract: %+v", id, result)
 	}
-	tests := typeProductionTests[id]
 	for i, record := range runner.records {
 		producer := tests[0]
-		if id == "T08" && tiers[i] == "service" {
-			producer = tests[1]
+		if mapped := producerByTier[tiers[i]]; mapped != "" {
+			producer = mapped
 		}
 		if !reflect.DeepEqual(record.Requirements, []string{id}) || record.ImplementationSHA != runner.implSHA || record.Tier != tiers[i] || record.Result != "passed" || record.ExitCode != 0 || record.TestID != "github.com/electrikmilk/cherri:"+producer || !reflect.DeepEqual(record.Command, productionTestCommand(tests)) {
 			t.Fatalf("detached production receipt: %+v", record)
@@ -111,10 +119,10 @@ func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), rece
 	for _, row := range audit.Rows {
 		if row.ID == id {
 			if row.Status != "PASS" || !row.PositiveAndNegative || !reflect.DeepEqual(row.TestNames, tests) {
-				t.Fatalf("lost type producer: %+v", row)
+				t.Fatalf("lost production producer: %+v", row)
 			}
 		} else if row.Status == "PASS" {
-			t.Fatalf("unexecuted requirement inherited type success: %+v", row)
+			t.Fatalf("unexecuted requirement inherited producer success: %+v", row)
 		}
 	}
 	status, statusErr := exec.Command("git", "-C", resolveRepoRoot(), "status", "--porcelain", "--untracked-files=normal").Output()

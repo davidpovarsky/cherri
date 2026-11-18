@@ -507,7 +507,7 @@ Next smallest independently verifiable batch:
 | V03 | Clipboard capture exactly once | PENDING_IOS_RUNTIME | P2,P7 |
 | V04 | let on lists/maps/action outputs | LOCAL_PASS | P2 |
 | C01 | Named argument effects/source order | LOCAL_PASS | P2 |
-| C02 | Required/duplicate/unknown arguments | LOCAL_PASS | P2 |
+| C02 | Required/duplicate/unknown arguments | LOCAL_PASS | Actual C02 producer: compiler, CLI/service ranges, causal negative controls |
 | C03 | Explicit variadic list API | LOCAL_PASS | P2 |
 | C04 | Enum contextual/qualified resolution | LOCAL_PASS | P2 |
 | C05 | Unknown enum wire round-trip | LOCAL_PASS | P2,P3 |

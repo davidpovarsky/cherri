@@ -152,6 +152,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = []string{"internal/language/syntax/lexer.go", "internal/language/syntax/parser.go", "internal/language/syntax/format.go", "internal/language/service/service.go", "p15_parser_acceptance_test.go"}
 			row.PositiveAndNegative = res.Passed
 		}
+		if tests, ok := callProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = append([]string{}, callProductionPaths[row.ID]...)
+			row.PositiveAndNegative = res.Passed
+		}
 		if tests, ok := typeProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = append([]string{}, typeProductionPaths[row.ID]...)
