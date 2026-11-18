@@ -2590,6 +2590,21 @@
       "evidence": "Exact clean4a61aff:1010 Legacy/V2 outputs,505structural roundtrips,461 archived identities+44additions,193explicit metadata deltas,8constructs and78alias groups;24namedPASS events including unit/generation/repository formal producers. Seven identity andfive capture corruption controls retained.",
       "firstForkCommit": "359322d994bab06374d9bd5ebf52e8b901f17e96",
       "note": "Immutable integrated implementation ancestor. Component evidence does not close broader native, physical, installed-consumer or release gates."
+    },
+    {
+      "name": "P10R15 actual immutable Skill installation and interrupted-update recovery",
+      "locations": [
+        "skills/cherri-shortcuts/scripts/setup.sh",
+        "skills/cherri-shortcuts/scripts/common.sh",
+        "p15_skill_installation_test.go",
+        "p15_skill_signal_test.go",
+        "tools/language-acceptance/skill_execution.go"
+      ],
+      "firstForkCommit": "0715125ca5163de59af21fdcbae283fce88a4ea3",
+      "change": "Validate immutable compiler/docs candidates before promotion, verify downloaded bytes before execution, preserve managed local state and recover completed renames across handled signal boundaries.",
+      "reason": "Actual late-docs overwrite, handled-signal backup loss and promoted-cache fallback counterexamples required production fixes.",
+      "evidence": "Clean b1a1e23 K02/K03/K04 initial receipts retained; later b1 signal/fallback RED supersedes its incomplete K03 contract. Follow-up 924fa7d2a99ee3a9a3ffa1413dee727c9e436fa9 integrates a08b538 correction; expanded clean K03 producerPASS including ten actual TERM boundaries and direct promoted-cache rejection. See skill-install-k02-k03.md.",
+      "note": "No power-loss, concurrent-reader atomicity, packaged binary, signing, remote installed consumer or release closure claim."
     }
   ]
 }

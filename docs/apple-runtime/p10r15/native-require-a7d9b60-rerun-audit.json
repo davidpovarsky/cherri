@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "auditedAtUtc": "2026-11-18T17:50:08.042593+00:00",
+  "runId": "44342588798",
+  "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44342588798",
+  "sourceSha": "a7d9b60bdfe6a37ec730e21af3654116e9c1a222",
+  "fixtureId": "qa-require-v2",
+  "status": "FAIL_STRICT_NATIVE_SEMANTIC_RESULT",
+  "workflowConclusion": "failure",
+  "transportStatus": "SUCCESS",
+  "actualSemanticOutput": "CHERRI_QA_REQUIRE_RESULT:P15_REQUIRE_ZERO",
+  "expectedSemanticOutput": "CHERRI_QA_REQUIRE_RESULT:P15_REQUIRE_OK",
+  "strictRuntimeContractVerified": false,
+  "freshCorrelationId": "qa-require-v2-44342588798-51ca78fae8cd9f0c93f46ce9722e2ca7",
+  "callbackTimestamp": "2026-11-18T16:58:57.160Z",
+  "inlineTraceCount": 2,
+  "collectorTraceCount": 2,
+  "sourceSha256": "728e5ff33382febb27980daeaf61323d2248185d758b52a2eae3d774960dc33f",
+  "unsignedPlistSha256": "fbe360542138dcdcd1125eafa613cc82f8a25680fa59179b8f419675b215f2f1",
+  "nativeActionCount": 143,
+  "signedArtifactSha256": "0c05fc77771afebfed092c42534359c7d3cee934ba3a9d880260b31d02e4d5f5",
+  "gates": {
+    "RUNNER_AVAILABLE": "PASS",
+    "SIMULATOR_BOOTED": "PASS",
+    "SHORTCUTS_APP_INSTALLED": "PASS",
+    "SHORTCUTS_LAUNCHED": "PASS",
+    "EDITOR_OPENED": "PASS",
+    "FILE_IMPORT_ATTEMPTED": "PASS",
+    "COMPILER_ARTIFACT_IMPORTED": "PASS",
+    "SHORTCUT_EXISTS_IN_LIBRARY": "PASS",
+    "ACTION_EDITOR_CAPTURED": "PARTIAL_EDITOR_CAPTURE",
+    "SHORTCUT_RUN_ATTEMPTED": "PASS",
+    "SHORTCUT_RUN_COMPLETED": "FAIL_RUNTIME",
+    "CALLBACK_CAPTURED": "PASS",
+    "TRACE_CAPTURED": "FAIL_RUNTIME",
+    "PHYSICAL_DEVICE_TESTED": "BLOCKED_DEVICE"
+  },
+  "editorInspectorStatus": "NEEDS_REVIEW",
+  "publishedFilesVerified": [
+    {
+      "path": "compiler-manifest.json",
+      "bytes": 161174,
+      "sha256": "cbe3bf111a5fd15923132f11c3cf335bb38f76bb1fdd132e68ab6a7dd3f88d2e"
+    },
+    {
+      "path": "docs/report.md",
+      "bytes": 849,
+      "sha256": "6a7f39e17f95aeac26cd23c19e0fb450165d74f3687fe64b4787535298f8d31a"
+    },
+    {
+      "path": "editor/ax-persistence-diagnostics.json",
+      "bytes": 158,
+      "sha256": "d5629c2e7cc125ce8e94dbfdaa07c02fc33816c8cfac53ee208f1656d542be5d"
+    },
+    {
+      "path": "editor/editor-action-coverage.json",
+      "bytes": 2007,
+      "sha256": "8ae10db224d32583737f80edad0d7bd97a850d81dee696b798f91b095878768b"
+    },
+    {
+      "path": "editor/editor-actions.json",
+      "bytes": 43948,
+      "sha256": "bcdaf0006f3d870a5793c85ad7a3b2c4b94a19f2f3f33101e3720a444caaee04"
+    },
+    {
+      "path": "editor/editor-comparison.json",
+      "bytes": 102249,
+      "sha256": "62531d81fb26e78b2574d57cd5d38007255b574a0230591be7d08ed3e3ec4e49"
+    },
+    {
+      "path": "editor/editor-report.md",
+      "bytes": 8018,
+      "sha256": "9a99868685c26f1a3ee0905c39cdd4339cddce41bb60882dc39a04c718e73fb9"
+    },
+    {
+      "path": "editor/editor-tree.json",
+      "bytes": 1369629,
+      "sha256": "7d32241149b49186e023ade75ae6e5b79b99013afe4007bbac8afcbd59088168"
+    },
+    {
+      "path": "editor/handshake-status.json",
+      "bytes": 474,
+      "sha256": "379f44a4e5de28063ca1278a17dbd4b11cdf223298c0a8b42cf0b19f8753c0f0"
+    },
+    {
+      "path": "editor/plist-vs-editor-comparison.json",
+      "bytes": 102249,
+      "sha256": "62531d81fb26e78b2574d57cd5d38007255b574a0230591be7d08ed3e3ec4e49"
+    },
+    {
+      "path": "editor/screenshots-manifest.json",
+      "bytes": 2988,
+      "sha256": "fcf1068b49049e9181c1a6827a0eae8cf3080adf8d561ebb2c5f6f3759a7970a"
+    },
+    {
+      "path": "environment.json",
+      "bytes": 786,
+      "sha256": "60fd93e2da20cf8b0d9a40e93db7b701888410c6e865df6e5afc23bf3e2a305d"
+    },
+    {
+      "path": "import-attempts.json",
+      "bytes": 1686,
+      "sha256": "65c137a11a1aca5902fa6d54ce7e2e91a1d6d5e11bc63fe60e3a55466e5153c2"
+    },
+    {
+      "path": "runtime/callback-events.json",
+      "bytes": 2167,
+      "sha256": "0387e47d8925f43655521bc618c40c5ba737db7a138c3cb9f2100ae4e1acb2bb"
+    },
+    {
+      "path": "runtime/instrumentation-vs-original.json",
+      "bytes": 7446,
+      "sha256": "64b17498042af5a26c7f4dd795246cd873fd575825bff121d578538d6890dd7b"
+    },
+    {
+      "path": "runtime/output-assertions.json",
+      "bytes": 1448,
+      "sha256": "2a95378bb3562080028439e738edd1d0f517a4c95ff0bfdc40dd945be7ffbebc"
+    },
+    {
+      "path": "runtime/runtime-trace.jsonl",
+      "bytes": 205,
+      "sha256": "e7fa137fbfd63308302d902d32eaac0c3ee358bb2e5b519386b11ae35710b1ea"
+    },
+    {
+      "path": "runtime/signing-provenance.json",
+      "bytes": 2020,
+      "sha256": "8a72d44da64ab378dbc9a2fa493b96ab8138fd64e3743addc791b4615ba26651"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 1116,
+      "sha256": "c580116ab3a150b36642078035d8f7cda199f14d967e8119503ac04da539e735"
+    },
+    {
+      "path": "tests/xcresult-summary.json",
+      "bytes": 984,
+      "sha256": "676666557c3528680c89be34b9bc8be567cbf78cd663f5ab3ca10c6b7d7a9040"
+    }
+  ],
+  "signingScope": "Published signing/AEA1 metadata source-bound; quarantined signed bytes are not independently cryptographically verified.",
+  "interpretation": "Original unchanged require acceptance still fails the zero != 0 branch. Earlier same-source equality diagnostic passed literal/direct/required/bound zero controls. A separate paired ==/!= probe is needed before attributing a compiler operator or runtime cause; no production operator or strict oracle has been changed.",
+  "privacyScope": "Synthetic text and byte patterns only; no private corpus or raster publication. Physical-device and release gates remain independent."
+}
