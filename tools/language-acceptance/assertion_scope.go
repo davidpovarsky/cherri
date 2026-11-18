@@ -36,7 +36,6 @@ var incompleteLocalAssertions = map[string]string{
 	"T03":   "Finding a codec and a nonempty IR does not verify the number-as-text wire value.",
 	"T04":   "Different type names do not test Unknown/AnyContent/Void behavior in analysis and service.",
 	"T05":   "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions.",
-	"T06":   "A record constructor does not exercise authored record annotations or runtime JSON behavior.",
 	"T07":   "A helper implemented only in this runner does not exercise production platform-version comparison.",
 	"T08":   "Two nonempty output type names do not test literal-mode-dependent inference.",
 	"T09":   "Assignment to AnyContent does not validate known Content Graph conversions or reject unverified coercions.",

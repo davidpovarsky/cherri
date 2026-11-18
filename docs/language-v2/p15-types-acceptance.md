@@ -20,6 +20,25 @@ Execution:
 
 The acceptance runner executes the named production test and records only the contract's required unit tier. Missing or unauthorized producer records fail closed. The 179-obligation ledger and unrelated CLI/parser evidence are preserved.
 
+## T06: record annotations require prior structural evidence
+
+The original probe constructed a RecordType in memory. The replacement executes authored annotations through the parser, analyzer and complete compiler. Opaque external input, Run Shortcut output, a native dictionary content view and require's dictionary-category guard cannot establish a user-defined record shape. The rule follows optional, List, Map and union wrappers; it does not convert those values or insert a runtime validator.
+
+Causal RED on clean T02 source `33cd20c0d4256dff063c5f4b8e261fd6d0755985`: job `job_700bb4fd526c` demonstrated unchecked external record annotations, mutable assignment, declared returns and unknown record-field narrowing. The same test also found that a record type's optional suffix did not parse. The first correction exposed a separate call-path defect: user-function arguments were evaluated but never checked against parameter annotations. The correction now checks the production lowerer's primary/named/positional argument binding order, including underscore-prefixed public parameter names. Existing default-value analysis remains in place.
+
+Unknown and AnyContent retain their ordinary content compatibility but cannot manufacture a record contract. Within an established record, an unknown field cannot become Text or another concrete type through an annotation, including nested List and Map fields. Optional fields cannot silently become required. Verified record identity, structural subsets, optional destinations and union destinations remain accepted. This is a bounded record-proof correction; it does not claim that the separate T04 Unknown/AnyContent/Void contract is complete.
+
+The production tests check four external origins against five record destinations, mutable assignment, primary/named/later positional function arguments, optional and list-valued record parameters, defaults, external and JsonValue returns, uncertain fields and field presence. Every negative case requires the diagnostic on the actual argument or return span and complete compile failure before native bytes are emitted. Wrong diagnostic-code mutations are rejected. Positive controls compile ordinary external-content use, verified record forwarding, optional/subset/union relations and ordinary Text/Number values. Unannotated external results remain opaque.
+
+Execution before commit:
+
+- Initial record correction exposed the remaining function-call bypass: `job_e5016d00bc38` (expected failing test).
+- Focused production T06 GREEN: `job_927de422d68e`, root package PASS in 0.196 seconds.
+- Full types, syntax, analysis, service and lower packages: `job_36f326df4273`, PASS (1.219 / 1.196 / 1.759 / 0.963 / 0.917 seconds).
+- T02 and T06 production evidence wrappers plus smoke-evidence safeguards: `job_086c25a40c0b`, PASS in 6.991 seconds.
+
+The T06 formal producer records only its required unit tier. It proves static rejection of an unvalidated external record guarantee, not native JSON validation or signed execution. Each producer's bounded evidence test verifies exact contract text, implementation SHA, producer command, diagnostic controls, missing/wrong-producer rejection and unchanged 179-obligation accounting. The clean source receipt is added after the implementation commit.
+
 ## Remaining T01–T08 obligations
 
 | ID | Current evidence boundary |
@@ -29,7 +48,7 @@ The acceptance runner executes the named production test and records only the co
 | T03 | Exact semantic Number to number-as-text wire producer is still being selected and independently verified. |
 | T04 | Distinct type names alone do not establish Unknown/AnyContent/Void behavior; production diagnostics and service evidence remain required. |
 | T05 | Optional type construction alone does not prove omission versus explicit optional value and JSON null in native serialization. |
-| T06 | A structural record constructor does not prove rejection or honest Unknown/JsonValue treatment of external content. |
+| T06 | Dedicated production unit producer rejects unvalidated external record guarantees; no runtime validator or native execution is claimed. |
 | T07 | The production analyzer currently parses and compares target versions as float64. The schema helper compares components but is not used there. Existing action min/max metadata is also float64 and lacks independent per-platform version facets. No T07 pass is claimed. |
 | T08 | Production analysis currently returns fixed ActionSchema output types. Separate aliases do not establish literal-mode-dependent single/multiple cardinality. No T08 pass is claimed without a concrete verified producer. |
 

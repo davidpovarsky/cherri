@@ -1544,10 +1544,8 @@ func (r *Runner) runTypes() {
 	t05Passed := optType.Kind() == types.KindOptional && optType.Name() != types.Text.Name()
 	r.Record("T05", "types", "Optional presence differs from optional value and JSON null", "unit+native", []string{"unit", "native"}, t05Passed, "PASSED", "T? represented with explicit presence state in parameter binding")
 
-	// T06: User record annotation
-	recType := types.NewRecord([]types.RecordField{{Name: "name", Type: types.Text}, {Name: "age", Type: types.Number}})
-	t06Passed := recType.Kind() == types.KindRecord && recType.Name() != ""
-	r.Record("T06", "types", "User record annotation is not runtime JSON validation", "unit", []string{"unit"}, t06Passed, "PASSED", "Structural record types checked statically at analysis time")
+	// T06: An annotation must not manufacture proof about external values.
+	r.runTypeRecordRequirement()
 
 	// T07: Per-platform versions
 	t07Passed := compareSemVer("16.0", "15.4") > 0 && compareSemVer("16.1", "16.10") < 0 && compareSemVer("17.0.1", "17.0.1") == 0

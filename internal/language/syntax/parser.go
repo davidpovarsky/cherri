@@ -791,10 +791,15 @@ func (p *Parser) parsePrimaryTypeAnnotation() TypeAnnotation {
 			}
 		}
 		endTok, _ := p.expect(TokenRBrace)
-		return &RecordTypeAnnotation{
+		var record TypeAnnotation = &RecordTypeAnnotation{
 			Span:   startTok.Span.Merge(endTok.Span),
 			Fields: fields,
 		}
+		if p.curr.Type == TokenQuestion {
+			question := p.advance()
+			record = &OptionalTypeAnnotation{Span: record.NodeSpan().Merge(question.Span), Inner: record}
+		}
+		return record
 	}
 
 	nameTok, ok := p.expect(TokenIdent)

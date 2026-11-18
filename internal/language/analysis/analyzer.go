@@ -21,6 +21,7 @@ type Symbol struct {
 	Mutable     bool
 	Initialized bool
 	Span        source.Span
+	Function    *syntax.FunctionDecl
 }
 
 // Scope represents a lexical scope.
@@ -330,7 +331,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 			if d.ReturnType != nil {
 				fnType = a.resolveType(d.ReturnType)
 			}
-			if !scope.Define(&Symbol{Name: d.Name, Type: fnType, Initialized: true, Span: d.Span}) {
+			if !scope.Define(&Symbol{Name: d.Name, Type: fnType, Initialized: true, Span: d.Span, Function: d}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate function declaration %q", d.Name))
 			}
 		case *syntax.SetupDecl:
@@ -1313,6 +1314,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		}
 		for _, nArg := range call.NamedArgs {
 			a.analyzeExpression(nArg.Value, scope)
+		}
+		if sym.Function != nil {
+			a.checkUserFunctionArguments(sym.Function, call)
 		}
 		return sym.Type
 	}

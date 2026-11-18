@@ -40,9 +40,9 @@ type PrimitiveType struct {
 	name string
 }
 
-func (p PrimitiveType) Kind() TypeKind             { return KindPrimitive }
-func (p PrimitiveType) Name() string               { return p.name }
-func (p PrimitiveType) String() string             { return p.name }
+func (p PrimitiveType) Kind() TypeKind { return KindPrimitive }
+func (p PrimitiveType) Name() string   { return p.name }
+func (p PrimitiveType) String() string { return p.name }
 func (p PrimitiveType) Equals(other Type) bool {
 	if o, ok := other.(PrimitiveType); ok {
 		return p.name == o.name
@@ -81,9 +81,9 @@ type ContentType struct {
 	name string
 }
 
-func (c ContentType) Kind() TypeKind             { return KindContent }
-func (c ContentType) Name() string               { return c.name }
-func (c ContentType) String() string             { return c.name }
+func (c ContentType) Kind() TypeKind { return KindContent }
+func (c ContentType) Name() string   { return c.name }
+func (c ContentType) String() string { return c.name }
 func (c ContentType) Equals(other Type) bool {
 	if o, ok := other.(ContentType); ok {
 		return c.name == o.name
@@ -123,12 +123,12 @@ var (
 // AnyContent represents arbitrary Apple content that any content item or primitive can satisfy.
 type anyContentType struct{}
 
-func (anyContentType) Kind() TypeKind                 { return KindAnyContent }
-func (anyContentType) Name() string                   { return "AnyContent" }
-func (anyContentType) String() string                 { return "AnyContent" }
-func (anyContentType) Equals(other Type) bool         { return other.Kind() == KindAnyContent }
+func (anyContentType) Kind() TypeKind         { return KindAnyContent }
+func (anyContentType) Name() string           { return "AnyContent" }
+func (anyContentType) String() string         { return "AnyContent" }
+func (anyContentType) Equals(other Type) bool { return other.Kind() == KindAnyContent }
 func (anyContentType) AssignableTo(target Type) bool {
-	return true
+	return !requiresRecordEvidence(target)
 }
 
 var AnyContent = anyContentType{}
@@ -136,32 +136,32 @@ var AnyContent = anyContentType{}
 // UnknownType represents missing or unverified type knowledge.
 type unknownType struct{}
 
-func (unknownType) Kind() TypeKind                 { return KindUnknown }
-func (unknownType) Name() string                   { return "Unknown" }
-func (unknownType) String() string                 { return "Unknown" }
-func (unknownType) Equals(other Type) bool         { return other.Kind() == KindUnknown }
-func (unknownType) AssignableTo(target Type) bool  { return true } // Unknown is conservatively accepted
+func (unknownType) Kind() TypeKind                { return KindUnknown }
+func (unknownType) Name() string                  { return "Unknown" }
+func (unknownType) String() string                { return "Unknown" }
+func (unknownType) Equals(other Type) bool        { return other.Kind() == KindUnknown }
+func (unknownType) AssignableTo(target Type) bool { return !requiresRecordEvidence(target) }
 
 var Unknown = unknownType{}
 
 // VoidType represents no return value.
 type voidType struct{}
 
-func (voidType) Kind() TypeKind                 { return KindVoid }
-func (voidType) Name() string                   { return "Void" }
-func (voidType) String() string                 { return "Void" }
-func (voidType) Equals(other Type) bool         { return other.Kind() == KindVoid }
-func (voidType) AssignableTo(target Type) bool  { return target.Kind() == KindVoid }
+func (voidType) Kind() TypeKind                { return KindVoid }
+func (voidType) Name() string                  { return "Void" }
+func (voidType) String() string                { return "Void" }
+func (voidType) Equals(other Type) bool        { return other.Kind() == KindVoid }
+func (voidType) AssignableTo(target Type) bool { return target.Kind() == KindVoid }
 
 var Void = voidType{}
 
 // JsonValueType and JsonNullType for loss-preserving external JSON
 type jsonValueType struct{}
 
-func (jsonValueType) Kind() TypeKind                 { return KindJsonValue }
-func (jsonValueType) Name() string                   { return "JsonValue" }
-func (jsonValueType) String() string                 { return "JsonValue" }
-func (jsonValueType) Equals(other Type) bool         { return other.Kind() == KindJsonValue }
+func (jsonValueType) Kind() TypeKind         { return KindJsonValue }
+func (jsonValueType) Name() string           { return "JsonValue" }
+func (jsonValueType) String() string         { return "JsonValue" }
+func (jsonValueType) Equals(other Type) bool { return other.Kind() == KindJsonValue }
 func (jsonValueType) AssignableTo(target Type) bool {
 	return target.Kind() == KindJsonValue || target.Kind() == KindUnknown || target.Kind() == KindAnyContent
 }
@@ -170,10 +170,10 @@ var JsonValue = jsonValueType{}
 
 type jsonNullType struct{}
 
-func (jsonNullType) Kind() TypeKind                 { return KindJsonNull }
-func (jsonNullType) Name() string                   { return "JsonNull" }
-func (jsonNullType) String() string                 { return "JsonNull" }
-func (jsonNullType) Equals(other Type) bool         { return other.Kind() == KindJsonNull }
+func (jsonNullType) Kind() TypeKind         { return KindJsonNull }
+func (jsonNullType) Name() string           { return "JsonNull" }
+func (jsonNullType) String() string         { return "JsonNull" }
+func (jsonNullType) Equals(other Type) bool { return other.Kind() == KindJsonNull }
 func (jsonNullType) AssignableTo(target Type) bool {
 	return target.Kind() == KindJsonNull || target.Kind() == KindJsonValue || target.Kind() == KindUnknown
 }
@@ -360,6 +360,14 @@ func (r RecordType) Equals(other Type) bool {
 	return true
 }
 func (r RecordType) AssignableTo(target Type) bool {
+	if union, ok := target.(UnionType); ok {
+		for _, member := range union.Members {
+			if r.AssignableTo(member) {
+				return true
+			}
+		}
+		return false
+	}
 	if target.Kind() == KindUnknown || target.Kind() == KindAnyContent {
 		return true
 	}
@@ -376,7 +384,7 @@ func (r RecordType) AssignableTo(target Type) bool {
 				}
 				continue
 			}
-			if !sf.Type.AssignableTo(tf.Type) {
+			if sf.Optional && !tf.Optional || !recordFieldAssignable(sf.Type, tf.Type) {
 				return false
 			}
 		}
