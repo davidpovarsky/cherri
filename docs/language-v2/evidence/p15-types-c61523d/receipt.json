@@ -1,0 +1,424 @@
+{
+  "sourceCommit": "c61523da77e2f9474de4ab477e56b7a97929a05c",
+  "sourceTreeCleanBeforeAndAfter": true,
+  "executedAt": "2026-11-18T21:12:23.393833+00:00",
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "4m",
+        "-run",
+        "^TestTypeContentConversionProductionEvidence$",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "rawLog": "formal-t09.jsonl",
+      "rawLogSha256": "788763b214f27a177e0bb905343e15df68d03bbeed7036220c8602e6f67fbd39",
+      "results": [
+        {
+          "test": "TestTypeContentConversionProductionEvidence",
+          "action": "pass",
+          "elapsed": 2.89
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 3.776
+        }
+      ],
+      "formalReceipts": [
+        {
+          "records": [
+            {
+              "evidence_id": "ev-local-T09-unit",
+              "requirements": [
+                "T09"
+              ],
+              "tier": "unit",
+              "implementation_sha": "c61523da77e2f9474de4ab477e56b7a97929a05c",
+              "test_id": "github.com/electrikmilk/cherri:TestP15T09ContentConversionEvidence",
+              "command": [
+                "go",
+                "test",
+                "-count=1",
+                "-json",
+                "-timeout",
+                "3m0s",
+                ".",
+                "-run",
+                "^(TestP15T09ContentConversionEvidence|TestP15T09ContentConversionNativeWire)$"
+              ],
+              "exit_code": 0,
+              "result": "passed",
+              "assertions": {
+                "assertion": "Executed production tests: TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire"
+              },
+              "detail": "Executed production tests: TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire"
+            },
+            {
+              "evidence_id": "ev-local-T09-native-structure",
+              "requirements": [
+                "T09"
+              ],
+              "tier": "native-structure",
+              "implementation_sha": "c61523da77e2f9474de4ab477e56b7a97929a05c",
+              "test_id": "github.com/electrikmilk/cherri:TestP15T09ContentConversionNativeWire",
+              "command": [
+                "go",
+                "test",
+                "-count=1",
+                "-json",
+                "-timeout",
+                "3m0s",
+                ".",
+                "-run",
+                "^(TestP15T09ContentConversionEvidence|TestP15T09ContentConversionNativeWire)$"
+              ],
+              "exit_code": 0,
+              "result": "passed",
+              "assertions": {
+                "assertion": "Executed production tests: TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire"
+              },
+              "detail": "Executed production tests: TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire"
+            }
+          ],
+          "report": {
+            "timestamp": "2026-11-18T21:12:13Z",
+            "phase": "local",
+            "closure_complete": false,
+            "language_version": "2.0",
+            "schema_fingerprint": "",
+            "total_cases": 1,
+            "passed_cases": 1,
+            "failed_cases": 0,
+            "skipped_cases": 0,
+            "results": [
+              {
+                "id": "T09",
+                "group": "types",
+                "requirement": "Known Content Graph conversions vs unverified coercion",
+                "test_level": "unit+native-structure",
+                "executed_levels": [
+                  "unit",
+                  "native-structure"
+                ],
+                "passed": true,
+                "status": "PASSED",
+                "detail": "All required tiers satisfied by verified evidence"
+              }
+            ]
+          },
+          "scope": "Only T09 authored conversion evidence and exact emitted native conversion producers; native metadata is inspected locally, no arbitrary safe cast, Apple runtime, general cardinality or release closure",
+          "source_sha": "c61523da77e2f9474de4ab477e56b7a97929a05c",
+          "source_tree_clean": true
+        }
+      ],
+      "committedLogSha256": "788763b214f27a177e0bb905343e15df68d03bbeed7036220c8602e6f67fbd39"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "4m",
+        "./internal/language/types",
+        "./internal/language/analysis",
+        "./internal/language/service"
+      ],
+      "exitCode": 0,
+      "rawLog": "type-packages.jsonl",
+      "rawLogSha256": "79f1fb1ca4bb0299337fc52f553f8d2da1120b728d4352f49b67394a166fc404",
+      "results": [
+        {
+          "test": "TestCompilerMacrosReachCompletionFromSharedMetadata",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestServiceAnalyze",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestServiceComplete",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestServiceHover",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestServiceContextualCallComplete",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE01MultiDiagnosticAnalysis",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE02CompletionHoverSignatureDefinition",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE04FormatterPreservesCommentsAndSemantics",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE05OutOfOrderVersionedEdits",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestE07BoundedVisualSourceEditAndRejection",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 1.005
+        },
+        {
+          "test": "TestAnalyzerAssignImmutable",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerReadBeforeInit",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerUnknownArgument",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerMissingArgument",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerDuplicateArgument",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerIfConditionBool",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerYieldOutsideValueBlock",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerLegacySyntax",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerValidProgram",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerCopyPaste",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerTruthiness",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerHotLoopWarning",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerGlobals",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAnalyzerListPlusAssign",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMacActionInNonMacShortcut_Baseline",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMacActionInMacShortcut_Allowed",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestNonMacActionInMacShortcut_Error",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestNonMacActionInNonMacShortcut_Allowed",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestEmptyDictionaryKey_MapLiteral",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestEmptyDictionaryKey_IndexExpr",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestEmptyDictionaryKey_GetValueCall",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestExprTypesTracking",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMixedTargets_RejectsNonPortableActions",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestExplicitTargetString",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestUnspecifiedTarget_EmitsWarning",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestVersionBounds_MinVersion",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestAcceptedForms_AcceptsVariableAttachment",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockInferredTypeAndLexicalScope",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockDiagnosticsAndBranchTypes",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockDoesNotReserveExistingFunctionName",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestTargetVersionSettersRetainCompatibility",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestTargetVersionSourceAccessorsKeepComponents",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 1.223
+        },
+        {
+          "test": "TestTypeAssignability",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 1.621
+        }
+      ],
+      "formalReceipts": [],
+      "committedLogSha256": "79f1fb1ca4bb0299337fc52f553f8d2da1120b728d4352f49b67394a166fc404"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "4m",
+        "-run",
+        "^TestP15DateComparisonMigrationCLIParity$",
+        "."
+      ],
+      "exitCode": 0,
+      "rawLog": "date-cli-parity.jsonl",
+      "rawLogSha256": "bd8542d64b1539eee03da9995d564b65d1f09dc546c2d0d8ade10ac8bad55fba",
+      "results": [
+        {
+          "test": "TestP15DateComparisonMigrationCLIParity",
+          "action": "pass",
+          "elapsed": 4.48
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 4.777
+        }
+      ],
+      "formalReceipts": [],
+      "committedLogSha256": "bd8542d64b1539eee03da9995d564b65d1f09dc546c2d0d8ade10ac8bad55fba"
+    }
+  ],
+  "causalRed": {
+    "jobId": "job_3e0c30cacc29",
+    "rawLogSha256": "627f449cd39f97ae0e76df922f04770edf0e26c26d3a52bd8c09fd3cec1bbcac",
+    "observed": "Ten implicit authored Text/Date claims emitted bytes without a converter; explicit converter graphs already passed"
+  },
+  "sentinelJobId": "job_149a0c1b48ae"
+}
