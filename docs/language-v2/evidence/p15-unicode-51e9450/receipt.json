@@ -1,0 +1,135 @@
+{
+  "sourceSha": "51e94503d8a36feb3504118c8d1653f8ecb2cf54",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "rootTests": 3,
+  "sourceRoutes": 12,
+  "nativeCorruptionControls": 10,
+  "exactNativeRoundTrips": 48,
+  "appleRuntime": "NOT_RUN",
+  "results": [
+    {
+      "label": "s01-production",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-run",
+        "^TestP15S01",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 17.132,
+      "sha256": "1a626ed0194f9ff0513af75cbb90a75a48c691aaa4d214c6855e3500699a6d1a"
+    },
+    {
+      "label": "s01-formal",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-run",
+        "^TestUnicodeTextProductionEvidence$",
+        "-v",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "seconds": 8.267,
+      "sha256": "f220ca31e6b754df37bb997fbf039b41ac67fd5145c52b46b847dfbadadf9cd8"
+    },
+    {
+      "label": "s02-l03-scope-controls",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-run",
+        "^Test(LiteralCollectionProductionEvidence|NestedCollectionProductionScopeRemainsUnverified|RecordRejectsContradictorySuccessfulLabel|RecordPreservesOnlyExecutedLocalPasses|SupplementalRequirementsNeedExecutedScenarios|LocalReportIncludesAll179WithoutInheritedClosure)$",
+        "-v",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "seconds": 11.803,
+      "sha256": "e9890f34349dada0ca04d99845ed44163d5a751923790f415579f4492a6f56d0"
+    }
+  ],
+  "executionJob": "job_1fa45f89717b",
+  "productionTestSourceSha256": "c9a26950419998a04058772ef72669741081d7b0755d253f8893503d43d18712",
+  "causalProductionOverlays": [
+    {
+      "scope": "ordinary",
+      "job": "job_f43e75b91261",
+      "compilerSourceUnchangedBetweenBaseAndFrozenProof": true,
+      "originalPath": "internal/language/lower/lower.go",
+      "originalSha256": "3c64e5e492c4413b136bf8e5fc9dd089e59db229b0f3077648fb8082b33f5db6",
+      "overlaySha256": "14b518b718b816be0d8004e4d200d5a492c59278d11676265833afd8ca5a5793",
+      "goTestExit": 1,
+      "failedExactRangeCases": 8,
+      "unchangedControlsPassed": 4,
+      "nativeRuntime": "NOT_RUN"
+    },
+    {
+      "scope": "shared-codec",
+      "job": "job_6047604f9b66",
+      "compilerSourceUnchangedBetweenBaseAndFrozenProof": true,
+      "originalPath": "shared_codec.go",
+      "originalSha256": "400db0c068bab109b3988dc2ef073e9b93c64e6e037be28e81cf0ff5836afb8a",
+      "overlaySha256": "c55bb55bf25f75448d7a2f86b136a42a562592f9df1f677b43d7dd5ba823d674",
+      "goTestExit": 1,
+      "failedExactRangeCases": 4,
+      "unchangedControlsPassed": 8,
+      "nativeRuntime": "NOT_RUN"
+    }
+  ],
+  "untriggeredProbe": "Secondary IR-only lowerer offset mutation did not affect canonical production output; retained in ignored development evidence and not counted as a rejected mutation.",
+  "formalState": {
+    "executedTiers": [
+      "unit",
+      "native-roundtrip"
+    ],
+    "runnerStatus": "PENDING_EXTERNAL",
+    "localManifestStatus": "NOT_RUN",
+    "auditStatus": "BLOCKED_EXTERNAL",
+    "iOSObserved": false,
+    "closureComplete": false
+  },
+  "publishedArtifacts": {
+    "s01-production.log": {
+      "sha256": "1a626ed0194f9ff0513af75cbb90a75a48c691aaa4d214c6855e3500699a6d1a",
+      "bytes": 115700
+    },
+    "s01-formal.log": {
+      "sha256": "f220ca31e6b754df37bb997fbf039b41ac67fd5145c52b46b847dfbadadf9cd8",
+      "bytes": 3526
+    },
+    "s02-l03-scope-controls.log": {
+      "sha256": "e9890f34349dada0ca04d99845ed44163d5a751923790f415579f4492a6f56d0",
+      "bytes": 5042
+    },
+    "native-specimens.json": {
+      "sha256": "660557d643cfd329282b5222aa6d9a49d51c882751e473cfe5accee1ebec94ac",
+      "bytes": 23435
+    },
+    "production-receipt.json": {
+      "sha256": "3f63836459f7a27f5db95cce4af53906b618394a77ec1045584a357c830f41e2",
+      "bytes": 3482
+    },
+    "s01-causal-rune-ordinary.log": {
+      "sha256": "a4f9b6d24feb219263b2967d349729d15b0d333ad33525481a1f5c8c201ae606",
+      "bytes": 4077
+    },
+    "causal-ordinary.patch": {
+      "sha256": "9fd09eae9a00668b64a4444859cee59cb55a651d1da3561f85fc690fb6a56357",
+      "bytes": 238
+    },
+    "s01-causal-shared-codec.log": {
+      "sha256": "0614037335137d7d24afa6d42f7b1c0369a3c59415e3b27bb81c8612fa1d1cb5",
+      "bytes": 3459
+    },
+    "causal-shared-codec.patch": {
+      "sha256": "a8ca4872925fddd17b0bf060c4cd5df1553c2ea71e8dd9a68b70dc8ef582d8f8",
+      "bytes": 234
+    }
+  }
+}

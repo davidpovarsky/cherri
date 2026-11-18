@@ -1,0 +1,7 @@
+--- shared_codec.go
++++ shared_codec.go (isolated rune-offset mutation)
+@@ -11 +10,0 @@
+-	"unicode/utf16"
+@@ -159 +158 @@
+-			startUTF16 := len(utf16.Encode([]rune(fullText.String())))
++			startUTF16 := len([]rune(fullText.String()))

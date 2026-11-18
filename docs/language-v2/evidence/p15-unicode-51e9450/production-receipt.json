@@ -1,0 +1,85 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-S01-unit",
+      "requirements": [
+        "S01"
+      ],
+      "tier": "unit",
+      "implementation_sha": "51e94503d8a36feb3504118c8d1653f8ecb2cf54",
+      "test_id": "github.com/electrikmilk/cherri:TestP15S01ExactUTF16TokensAndLiteralBytes",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15S01ExactUTF16TokensAndLiteralBytes|TestP15S01UnicodeOracleRejectsCorruption|TestP15S01UnicodeNativeRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15S01ExactUTF16TokensAndLiteralBytes, TestP15S01UnicodeOracleRejectsCorruption, TestP15S01UnicodeNativeRoundTrip; no iOS execution or observable native text result is claimed)"
+      },
+      "detail": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15S01ExactUTF16TokensAndLiteralBytes, TestP15S01UnicodeOracleRejectsCorruption, TestP15S01UnicodeNativeRoundTrip; no iOS execution or observable native text result is claimed)"
+    },
+    {
+      "evidence_id": "ev-local-S01-native-roundtrip",
+      "requirements": [
+        "S01"
+      ],
+      "tier": "native-roundtrip",
+      "implementation_sha": "51e94503d8a36feb3504118c8d1653f8ecb2cf54",
+      "test_id": "github.com/electrikmilk/cherri:TestP15S01UnicodeNativeRoundTrip",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15S01ExactUTF16TokensAndLiteralBytes|TestP15S01UnicodeOracleRejectsCorruption|TestP15S01UnicodeNativeRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15S01ExactUTF16TokensAndLiteralBytes, TestP15S01UnicodeOracleRejectsCorruption, TestP15S01UnicodeNativeRoundTrip; no iOS execution or observable native text result is claimed)"
+      },
+      "detail": "Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15S01ExactUTF16TokensAndLiteralBytes, TestP15S01UnicodeOracleRejectsCorruption, TestP15S01UnicodeNativeRoundTrip; no iOS execution or observable native text result is claimed)"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T21:31:46Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "skipped_cases": 1,
+    "results": [
+      {
+        "id": "S01",
+        "group": "text",
+        "requirement": "Multiple variable tokens after Hebrew/emoji/combining marks",
+        "test_level": "unit+native-roundtrip+ios-runtime",
+        "executed_levels": [
+          "unit",
+          "native-roundtrip"
+        ],
+        "passed": false,
+        "status": "NOT_RUN",
+        "detail": "Pending external / CI execution tier"
+      }
+    ]
+  },
+  "scope": "S01 actual local UTF-16 token/literal and exact native import round trips only; iOS observable text, linked repairs/gates and release closure remain unproved",
+  "source_sha": "51e94503d8a36feb3504118c8d1653f8ecb2cf54",
+  "source_tree_clean": true
+}
