@@ -1938,8 +1938,30 @@ func builtinLoopIdentFromPlistName(plistName string) string {
 func (ctx *semanticImportContext) attachmentBaseValueType(att map[string]any) string {
 	switch strVal(att["Type"]) {
 	case "ActionOutput":
-		if sym, ok := ctx.UUIDToSymbol[strVal(att["OutputUUID"])]; ok && sym != "" {
-			return strVal(ctx.Symbols[sym]["ValueType"])
+		uuid := strVal(att["OutputUUID"])
+		if sym, ok := ctx.UUIDToSymbol[uuid]; ok && sym != "" {
+			if valueType := strVal(ctx.Symbols[sym]["ValueType"]); valueType != "" {
+				return valueType
+			}
+		}
+		// Older import hints compare relative declaration identifiers with full
+		// native IDs. Recover collection cardinality only from the existing,
+		// unambiguous canonical candidate; never guess across variants.
+		if ctx.Doc != nil && ctx.Registry != nil {
+			if index, found := ctx.Doc.ProducerUUIDIndex[uuid]; found && index >= 0 && index < len(ctx.Doc.Actions) {
+				producer := ctx.Doc.Actions[index]
+				resolved := ctx.Registry.ResolveReverseActionCandidate(producer)
+				candidate := resolved.ChosenCandidate
+				// The scalar-only reverse fast path can reject an attachment
+				// even when the native ID has exactly one declared output type.
+				// Semantic import verifies the complete attachment separately.
+				if candidates := ctx.Registry.ByAppleIdentifier[producer.Identifier]; candidate == nil && len(candidates) == 1 {
+					candidate = &candidates[0]
+				}
+				if candidate != nil && candidate.Definition.outputType == Arr {
+					return "List"
+				}
+			}
 		}
 	case "Variable":
 		vn := strVal(att["VariableName"])
@@ -2034,6 +2056,13 @@ func (ctx *semanticImportContext) applyAggrandizementSuffixes(legBase, v2Base st
 				typed[0].Type == "WFCoercionVariableAggrandizement" &&
 				typed[0].CoercionItemClass != "" &&
 				typed[0].CoercionItemClass != "WFDictionaryContentItem"
+			// A native property aggrandizement on a collection is not the
+			// scalar field access expressed by ordinary V2 dot syntax. Keep
+			// its exact attachment through the existing symbolic native.ref
+			// path rather than weakening authored List cardinality checks.
+			if baseVT == "List" && !allowCoerceFirstNonDict {
+				return "", "", false, false
+			}
 			if ag.PropertyName == "" || sawIndexOrProp || (sawCoerce && !allowCoerceFirstNonDict) ||
 				strings.ContainsAny(ag.PropertyName, "'\"}\r\n") {
 				return "", "", false, false
