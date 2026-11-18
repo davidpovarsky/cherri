@@ -1,0 +1,22 @@
+shortcut "Cherri P15 F01" {
+    version: "27"
+}
+var flag = false
+var truth = true
+var verdict = "P15_F01_OK"
+if flag { verdict = "P15_FALSE_AS_PRESENT" }
+if !truth { verdict = "P15_NEGATED_TRUE" }
+if flag == true && run("CHERRI_P15_MISSING_AND", input: true) == true {
+    verdict = "P15_AND_BRANCH"
+}
+if truth == true || run("CHERRI_P15_MISSING_OR", input: true) == true {
+    comment("P15_OR_CORRECT")
+} else {
+    verdict = "P15_OR_BRANCH"
+}
+let a = false && (run("CHERRI_P15_STATIC_AND", input: true) == true)
+let b = true || (run("CHERRI_P15_STATIC_OR", input: true) == true)
+if a { verdict = "P15_STATIC_AND" }
+if !b { verdict = "P15_STATIC_OR" }
+if (flag && truth) || !truth { verdict = "P15_PRECEDENCE" }
+return verdict

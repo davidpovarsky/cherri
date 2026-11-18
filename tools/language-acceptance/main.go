@@ -231,6 +231,10 @@ func NewRunner() *Runner {
 }
 
 func (r *Runner) Record(id, group, req, level string, executedLevels []string, passed bool, status, detail string) {
+	var localPassed = passed
+	if !passed && status == "PASSED" {
+		status = "FAILED"
+	}
 	requiredLevels := parseRequiredTiers(level)
 	var missingTiers []string
 	for _, reqTier := range requiredLevels {
@@ -280,7 +284,7 @@ func (r *Runner) Record(id, group, req, level string, executedLevels []string, p
 
 	resStr := "failed"
 	exitCode := 1
-	if passed || status == "PENDING_EXTERNAL" || status == "PASSED" || status == "AI_EVAL_NOT_RUN" {
+	if localPassed || status == "AI_EVAL_NOT_RUN" {
 		resStr = "passed"
 		if status == "AI_EVAL_NOT_RUN" {
 			resStr = "not_run"
@@ -1202,6 +1206,7 @@ func main() {
 	}
 
 	var report *AcceptanceReport
+	var localRunner *Runner
 	var valErr error
 
 	if explicitEvidence != "" {
@@ -1220,6 +1225,7 @@ func main() {
 	} else {
 		fmt.Printf("Executing Acceptance Contract runner (phase: %s)...\n\n", phase)
 		runner := NewRunner()
+		localRunner = runner
 
 		// Run all test groups
 		runner.runBaseline()
@@ -1270,7 +1276,17 @@ func main() {
 
 	outBytes, _ := json.MarshalIndent(report, "", "  ")
 	_ = os.MkdirAll(filepath.Dir(outPath), 0755)
-	_ = os.WriteFile(outPath, outBytes, 0644)
+	if err := os.WriteFile(outPath, outBytes, 0644); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to write acceptance report: %v\n", err)
+		os.Exit(1)
+	}
+	if localRunner != nil {
+		auditPath := filepath.Join(filepath.Dir(outPath), "acceptance-execution-audit.json")
+		if err := writeExecutionAudit(localRunner, contracts, auditPath); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to write execution audit: %v\n", err)
+			os.Exit(1)
+		}
+	}
 
 	// Generate and update requirements-evidence-map.json covering all 94 acceptance, 52 repair, and 33 recovery gates
 	evidenceMap, mapErr := BuildRequirementsEvidenceMap(contracts)
@@ -1722,19 +1738,9 @@ func (r *Runner) runNumbers() {
 
 // Group 10: Control Flow
 func (r *Runner) runControl() {
-	// F01: Short-circuiting AND/OR in statement and expression positions
-	srcF01 := "var a = false\nvar b = true\nif a && b { show(\"never\") }\nlet scAnd = a && b\nlet scOr = b || a"
-	wfF01, errF01 := lowerSrc(r.reg, srcF01)
-	condCount := 0
-	if wfF01 != nil {
-		for _, a := range wfF01.Actions {
-			if a.AppleIdentifier == "is.workflow.actions.conditional" {
-				condCount++
-			}
-		}
-	}
-	f01Passed := errF01 == nil && condCount >= 9
-	r.Record("F01", "control", "Mixed AND/OR short-circuits observable branch effects", "unit+native+iOS", []string{"unit", "native"}, f01Passed, "PASSED", "Short-circuit && and || lower to nested conditional blocks in both statement and expression contexts")
+	// F01 is proven through the production compiler, not an action-count proxy.
+	f01Passed, f01Detail := executeF01ProductionTests()
+	r.Record("F01", "control", "Mixed AND/OR short-circuits observable branch effects", "unit+native+iOS", []string{"unit", "native"}, f01Passed, "PASSED", f01Detail)
 
 	// F02: Nested for/repeat scope and 0-based indices
 	srcF02 := "repeat 3 as i {\n    repeat 2 as j {\n        show(f\"{i}:{j}\")\n    }\n}"
@@ -2204,47 +2210,23 @@ func (r *Runner) runDelivery() {
 	r.Record("END01", "delivery", "Final pushed branches/artifacts/provenance and clean worktree", "repository", []string{"repository"}, end01Passed, "PASSED", fmt.Sprintf("Working branch checked; status output length: %d", len(outStatus)))
 }
 
+func (r *Runner) recordUnexecutedRequirement(id, group, title string, levels []string) {
+	var level = strings.Join(levels, "+")
+	r.results[id] = CaseResult{
+		ID: id, Group: group, Requirement: title, TestLevel: level,
+		Status: "NOT_RUN", Passed: false,
+		Detail: "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
+	}
+	// A planned scenario and expected observation are not test assertions.
+	// External producers may later supply independently validated evidence.
+}
+
 func (r *Runner) runRepairCases(repair *RepairContractFile) {
 	if repair == nil {
 		return
 	}
 	for _, c := range repair.Cases {
-		allOrigOk := true
-		for _, origID := range c.OriginalRequirementIDs {
-			if res, exists := r.results[origID]; exists {
-				if !res.Passed && res.Status != "PENDING_EXTERNAL" && res.Status != "AI_EVAL_NOT_RUN" {
-					allOrigOk = false
-					break
-				}
-			}
-		}
-		resStr := "passed"
-		exitCode := 0
-		if !allOrigOk {
-			resStr = "failed"
-			exitCode = 1
-		}
-		for _, levelStr := range c.RequiredTestLevels {
-			for _, reqTier := range parseRequiredTiers(levelStr) {
-				if reqTier == "ios-runtime" || reqTier == "ios-ui" || reqTier == "ios-build" || reqTier == "ci" || reqTier == "skill-package" {
-					continue
-				}
-				r.records = append(r.records, EvidenceRecord{
-					EvidenceID:        fmt.Sprintf("ev-local-%s-%s", c.ID, reqTier),
-					Requirements:      []string{c.ID},
-					Tier:              reqTier,
-					ImplementationSHA: r.implSHA,
-					TestID:            "tools/language-acceptance:runRepair",
-					ExitCode:          exitCode,
-					Result:            resStr,
-					Assertions: map[string]string{
-						"scenario":             c.Scenario,
-						"expected_observation": c.ExpectedObservation,
-					},
-					Detail: fmt.Sprintf("Verified repair regression %s (%s)", c.ID, c.Title),
-				})
-			}
-		}
+		r.recordUnexecutedRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels)
 	}
 }
 
@@ -2253,42 +2235,7 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
-		allOrigOk := true
-		for _, origID := range g.RelatedOriginalIDs {
-			if res, exists := r.results[origID]; exists {
-				if !res.Passed && res.Status != "PENDING_EXTERNAL" && res.Status != "AI_EVAL_NOT_RUN" {
-					allOrigOk = false
-					break
-				}
-			}
-		}
-		resStr := "passed"
-		exitCode := 0
-		if !allOrigOk {
-			resStr = "failed"
-			exitCode = 1
-		}
-		for _, levelStr := range g.MinimumEvidenceTiers {
-			for _, reqTier := range parseRequiredTiers(levelStr) {
-				if reqTier == "ios-runtime" || reqTier == "ios-ui" || reqTier == "ios-build" || reqTier == "ci" || reqTier == "skill-package" {
-					continue
-				}
-				r.records = append(r.records, EvidenceRecord{
-					EvidenceID:        fmt.Sprintf("ev-local-%s-%s", g.ID, reqTier),
-					Requirements:      []string{g.ID},
-					Tier:              reqTier,
-					ImplementationSHA: r.implSHA,
-					TestID:            "tools/language-acceptance:runGates",
-					ExitCode:          exitCode,
-					Result:            resStr,
-					Assertions: map[string]string{
-						"scenario":             g.Scenario,
-						"expected_observation": g.ExpectedObservation,
-					},
-					Detail: fmt.Sprintf("Verified recovery gate %s (%s)", g.ID, g.Title),
-				})
-			}
-		}
+		r.recordUnexecutedRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers)
 	}
 }
 
@@ -2322,9 +2269,9 @@ func (r *Runner) runCIVerification() {
 			ExitCode:          0,
 			Result:            "passed",
 			Assertions: map[string]string{
-				"build_and_test_run":   wfMap["Build & Test"],
-				"openminis_skill_run":  wfMap["OpenMinis Skill"],
-				"ios_build_run":        wfMap["iOS Build"],
+				"build_and_test_run":    wfMap["Build & Test"],
+				"openminis_skill_run":   wfMap["OpenMinis Skill"],
+				"ios_build_run":         wfMap["iOS Build"],
 				"ios27_runtime_poc_run": wfMap["iOS 27 Shortcuts Runtime PoC"],
 			},
 			Detail: fmt.Sprintf("All 4 required GitHub Actions workflows succeeded on exact SHA %s", r.implSHA),
@@ -2337,4 +2284,3 @@ func (r *Runner) runCIVerification() {
 		r.results["CI03"] = res
 	}
 }
-

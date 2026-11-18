@@ -1170,7 +1170,7 @@ func TestEndToEndAggregator_All12AdversarialAttacks(t *testing.T) {
 	})
 }
 
-func TestFull179ContractRequirements_EndToEndClosureAndProducerIsolation(t *testing.T) {
+func TestFull179ContractRequirements_RejectsUnexecutedScenarioClosure(t *testing.T) {
 	origDiscover := ciRunDiscoveryFunc
 	origPaths := defaultEvidencePathsFunc
 	t.Cleanup(func() {
@@ -1319,12 +1319,11 @@ func TestFull179ContractRequirements_EndToEndClosureAndProducerIsolation(t *test
 		t.Fatalf("BuildFinalEvidenceManifest failed: %v", err)
 	}
 	report, err := ValidateEvidenceManifest(manifest, contracts, "final")
-	if err != nil {
-		t.Fatalf("ValidateEvidenceManifest failed on full 179 requirement set: %v", err)
+	if err == nil || report.ClosureComplete || report.FailedCases == 0 {
+		t.Fatalf("linked RP/BRG scenarios fabricated closure without execution: %+v", report)
 	}
-	if report.TotalCases != 179 || report.PassedCases != 178 || report.SkippedCases != 1 || report.FailedCases != 0 || !report.ClosureComplete {
-		t.Fatalf("unexpected report counts: total=%d passed=%d skipped=%d failed=%d closure=%t",
-			report.TotalCases, report.PassedCases, report.SkippedCases, report.FailedCases, report.ClosureComplete)
+	if report.TotalCases != 179 {
+		t.Fatalf("full contract inventory lost requirements: %d", report.TotalCases)
 	}
 }
 
