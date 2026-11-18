@@ -139,7 +139,7 @@ class ProbeServer:
         self.stop_path = self.root / "http-probe.stop"
         require(not any(p.exists() for p in (self.ready_path, self.receipt_path, self.stop_path)),
                 "PRIOR_PROBE_EVIDENCE_EXISTS")
-        self.started = time.monotonic()
+        self.started = None
         self.lifetime = lifetime
         self.stop_event = threading.Event()
         owner = self
@@ -207,17 +207,26 @@ class ProbeServer:
         self.receipt = {"schemaVersion": "1.0", "fixtureId": fixture, "runNonce": nonce,
                         "compilerSha": commit, "case": FIXTURES[fixture], "boundHost": "127.0.0.1",
                         "port": self.server.server_port, "startedAt": utc(),
-                        "lifetimeSeconds": lifetime, "serverState": "READY", "stoppedAt": None,
+                        "lifetimeSeconds": lifetime, "serverState": "STARTING", "stoppedAt": None,
                         "events": [], "rejectedRequestCount": 0}
         self.persist()
-        atomic_json(self.ready_path, {"fixtureId": fixture, "runNonce": nonce, "compilerSha": commit,
-                                     "host": "127.0.0.1", "port": self.server.server_port})
 
     def persist(self):
         atomic_json(self.receipt_path, self.receipt)
 
     def serve(self):
+        require(self.started is None, "SERVER_ALREADY_STARTED")
+        self.started = time.monotonic()
+        self.receipt["startedAt"] = utc()
+        self.receipt["serverState"] = "SERVING"
         try:
+            # Readiness belongs to the running service, not construction. A slow
+            # bind/setup must not consume the finite active lifetime and leave
+            # a stale ready file for a socket already closed by expiry.
+            self.persist()
+            atomic_json(self.ready_path, {"fixtureId": self.receipt["fixtureId"],
+                        "runNonce": self.receipt["runNonce"], "compilerSha": self.receipt["compilerSha"],
+                        "host": "127.0.0.1", "port": self.server.server_port})
             while (not self.stop_event.is_set() and not self.stop_path.exists()
                    and time.monotonic() - self.started < self.lifetime):
                 self.server.handle_request()

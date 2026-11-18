@@ -37,6 +37,8 @@ class RetryHTTPProbeTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve, daemon=True)
         self.servers.append((server, thread))
         thread.start()
+        # Await the same service-loop acknowledgement used by the native runner.
+        probe.ready_input(server.ready_path, fid, nonce, COMMIT, timeout=3)
         return root, server, thread, fid, nonce
 
     def request(self, server, path, method="GET"):
@@ -93,6 +95,39 @@ class RetryHTTPProbeTests(unittest.TestCase):
 
     def diagnose(self, data):
         return probe.diagnose(*data[:4], COMMIT)
+
+    def test_server_ready_file_requires_active_service_loop(self):
+        fid = "qa-retry-control-v2"
+        nonce = fid + "-ready-" + "2" * 32
+        server = probe.ProbeServer(self.base / "active-ready", fid, nonce, COMMIT, lifetime=5)
+        self.addCleanup(server.server.server_close)
+        self.assertFalse(server.ready_path.exists(), "constructed listener is not an acknowledged running service")
+        thread = threading.Thread(target=server.serve, daemon=True)
+        self.servers.append((server, thread))
+        thread.start()
+        value = probe.ready_input(server.ready_path, fid, nonce, COMMIT, timeout=2)
+        self.assertEqual(value, str(server.server.server_port) + "/" + nonce)
+        self.assertEqual(self.request(server, "/" + nonce + "/control")[:2], (200, probe.BODY))
+        receipt = self.finish(server, thread)
+        self.assertEqual(len(probe.validate_receipt(receipt, fid, nonce, COMMIT)), 1)
+
+    def test_server_ready_lifetime_starts_when_service_runs(self):
+        import time
+        fid = "qa-retry-control-v2"
+        nonce = fid + "-delayed-" + "3" * 32
+        server = probe.ProbeServer(self.base / "delayed-ready", fid, nonce, COMMIT, lifetime=1)
+        self.addCleanup(server.server.server_close)
+        # A constructor/startup delay must not publish a stale ready file for a
+        # server whose entire active lifetime elapsed before serving any request.
+        time.sleep(1.05)
+        thread = threading.Thread(target=server.serve, daemon=True)
+        self.servers.append((server, thread))
+        thread.start()
+        probe.ready_input(server.ready_path, fid, nonce, COMMIT, timeout=2)
+        self.assertEqual(self.request(server, "/" + nonce + "/control")[:2], (200, probe.BODY))
+        receipt = self.finish(server, thread)
+        self.assertEqual(receipt["serverState"], "STOPPED")
+        self.assertEqual(len(probe.validate_receipt(receipt, fid, nonce, COMMIT)), 1)
 
     def test_real_http_responses_keep_body_constant_across_statuses(self):
         for case, status in probe.CASES.items():
