@@ -1,0 +1,127 @@
+{
+  "baseSha": "8c42876a49081c961d6dce8344cc9879ff8f4a0f",
+  "candidateDirty": true,
+  "exit": 1,
+  "seconds": 240.156,
+  "logSha256": "4a33b5a32e82881331e7fed75e7128f3f1ed087e0a7367e38589728ed838cdd3",
+  "events": [
+    {
+      "Time": "2026-11-18T18:50:51.7924567+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03LateDocsFailurePreservesWorkingPair",
+      "Output": "    p15_skill_installation_test.go:201: K03_LATE_DOCS_CONTROL source=8c42876a49081c961d6dce8344cc9879ff8f4a0f old_binary=c7ae69464ac173fabf8ea9c60be77a476b23786f057ea7adebf57b52c8aaf67c candidate_binary=880e84215782e341c27aaa16114bff785b5077a81dcc4fe6e6a36c4d9fb159e6 old_docs=1ed777cc8c8cc7d4ccf8f70fba7b368513253fe9 invalid_docs=88da47e68672fcd3fe4997a5f0de1ddc3217ca97 requests=1\n"
+    },
+    {
+      "Time": "2026-11-18T18:50:51.8523149+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03LateDocsFailurePreservesWorkingPair",
+      "Elapsed": 50.3
+    },
+    {
+      "Time": "2026-11-18T18:51:11.369522+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03DownloadedChecksumBeforeExecution/missing",
+      "Output": "    p15_skill_installation_test.go:348: K03_CHECKSUM_CONTROL case=missing requests=0 unverified_execution=false\n"
+    },
+    {
+      "Time": "2026-11-18T18:51:11.6929029+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03DownloadedChecksumBeforeExecution/missing",
+      "Elapsed": 19.84
+    },
+    {
+      "Time": "2026-11-18T18:51:34.6952887+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03DownloadedChecksumBeforeExecution/malformed",
+      "Output": "    p15_skill_installation_test.go:348: K03_CHECKSUM_CONTROL case=malformed requests=0 unverified_execution=false\n"
+    },
+    {
+      "Time": "2026-11-18T18:51:34.7446738+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03DownloadedChecksumBeforeExecution/malformed",
+      "Elapsed": 23.05
+    },
+    {
+      "Time": "2026-11-18T18:51:56.8690359+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03DownloadedChecksumBeforeExecution/mismatch",
+      "Output": "    p15_skill_installation_test.go:348: K03_CHECKSUM_CONTROL case=mismatch requests=1 unverified_execution=false\n"
+    },
+    {
+      "Time": "2026-11-18T18:51:56.9587798+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03DownloadedChecksumBeforeExecution/mismatch",
+      "Elapsed": 22.21
+    },
+    {
+      "Time": "2026-11-18T18:51:56.9587798+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03DownloadedChecksumBeforeExecution",
+      "Elapsed": 65.11
+    },
+    {
+      "Time": "2026-11-18T18:52:26.1336873+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/commit_receipt_move",
+      "Elapsed": 25.42
+    },
+    {
+      "Time": "2026-11-18T18:52:42.2356765+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/checksum_receipt_move",
+      "Elapsed": 16.1
+    },
+    {
+      "Time": "2026-11-18T18:52:55.2672158+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/docs_directory_move",
+      "Elapsed": 13.03
+    },
+    {
+      "Time": "2026-11-18T18:53:08.2805002+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/final_docs_validation",
+      "Elapsed": 13.01
+    },
+    {
+      "Time": "2026-11-18T18:53:08.2842465+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair",
+      "Elapsed": 71.33
+    },
+    {
+      "Time": "2026-11-18T18:53:28.4049864+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03SuccessfulUpdateCommitsValidatedPair",
+      "Output": "    p15_skill_installation_test.go:463: K03_SUCCESS_CONTROL source=8c42876a49081c961d6dce8344cc9879ff8f4a0f binary=880e84215782e341c27aaa16114bff785b5077a81dcc4fe6e6a36c4d9fb159e6 docs=1d45b530defbd3931d5244e3c7a096d597444e71 requests=1\n"
+    },
+    {
+      "Time": "2026-11-18T18:53:28.4585141+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03SuccessfulUpdateCommitsValidatedPair",
+      "Elapsed": 20.17
+    },
+    {
+      "Time": "2026-11-18T18:53:28.4753978+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Elapsed": 207.243
+    }
+  ]
+}

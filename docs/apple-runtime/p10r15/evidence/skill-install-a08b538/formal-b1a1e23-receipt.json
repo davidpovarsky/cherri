@@ -1,0 +1,53 @@
+{
+  "sourceSha": "b1a1e232a4a13ad73c12d9fdc4dad2ae2b08728e",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "statusAfter": [],
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestSkill(Install|Update|Offline)ProductionEvidence$",
+    "-count=1",
+    "-json",
+    "-timeout=35m"
+  ],
+  "exit": 0,
+  "seconds": 513.828,
+  "logSha256": "847cb27dbe3819991ef201998f7c6e8b51e99ef3bdd4e046167d17571b8edec5",
+  "events": [
+    {
+      "Time": "2026-11-18T19:15:50.3619216+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestSkillOfflineProductionEvidence",
+      "Elapsed": 109.37
+    },
+    {
+      "Time": "2026-11-18T19:18:28.1509906+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestSkillInstallProductionEvidence",
+      "Elapsed": 157.79
+    },
+    {
+      "Time": "2026-11-18T19:22:28.7307069+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestSkillUpdateProductionEvidence",
+      "Elapsed": 240.58
+    },
+    {
+      "Time": "2026-11-18T19:22:28.7353281+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Elapsed": 509.726
+    }
+  ],
+  "formalFiles": [
+    "p15_skill_install_receipt.json",
+    "p15_skill_update_receipt.json",
+    "p15_skill_offline_receipt.json"
+  ]
+}

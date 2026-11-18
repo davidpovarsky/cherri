@@ -1,0 +1,37 @@
+{
+  "sourceSha": "a08b538332590569337482ed2e8be4ed59ade169",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "statusAfter": [],
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestSkillUpdateProductionEvidence$",
+    "-count=1",
+    "-json",
+    "-timeout=35m"
+  ],
+  "exit": 0,
+  "seconds": 440.906,
+  "logSha256": "3a5353bb21e1994c9f81f7ee456faa7d99cd764a74e7fdd22cb48cbaa24f5452",
+  "events": [
+    {
+      "Time": "2026-11-18T19:42:25.381932+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Test": "TestSkillUpdateProductionEvidence",
+      "Elapsed": 435.79
+    },
+    {
+      "Time": "2026-11-18T19:42:25.3825256+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "Elapsed": 437.061
+    }
+  ],
+  "formalFiles": [
+    "p15_skill_update_receipt.json"
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "baseSha": "8c42876a49081c961d6dce8344cc9879ff8f4a0f",
+  "candidateDirty": true,
+  "exit": 1,
+  "seconds": 262.609,
+  "logSha256": "a2902942cd56da4ad75f1ecca8d79538f58a526cfd6691c7f06900a8618bdb6b",
+  "events": [
+    {
+      "Time": "2026-11-18T19:01:55.0062903+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/commit_receipt_move",
+      "Output": "    p15_skill_installation_test.go:422: K03_ROLLBACK_CONTROL case=commit_receipt_move candidate_was_active=true prior_pair_restored=true\n"
+    },
+    {
+      "Time": "2026-11-18T19:01:55.0572202+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/commit_receipt_move",
+      "Elapsed": 21.52
+    },
+    {
+      "Time": "2026-11-18T19:02:17.7862979+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/checksum_receipt_move",
+      "Output": "    p15_skill_installation_test.go:422: K03_ROLLBACK_CONTROL case=checksum_receipt_move candidate_was_active=true prior_pair_restored=true\n"
+    },
+    {
+      "Time": "2026-11-18T19:02:17.8469052+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/checksum_receipt_move",
+      "Elapsed": 22.79
+    },
+    {
+      "Time": "2026-11-18T19:02:47.8284017+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/docs_directory_move",
+      "Output": "    p15_skill_installation_test.go:422: K03_ROLLBACK_CONTROL case=docs_directory_move candidate_was_active=true prior_pair_restored=true\n"
+    },
+    {
+      "Time": "2026-11-18T19:02:47.8881678+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/docs_directory_move",
+      "Elapsed": 30.04
+    },
+    {
+      "Time": "2026-11-18T19:03:14.2851271+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/final_docs_validation",
+      "Output": "    p15_skill_installation_test.go:422: K03_ROLLBACK_CONTROL case=final_docs_validation candidate_was_active=true prior_pair_restored=true\n"
+    },
+    {
+      "Time": "2026-11-18T19:03:14.3414554+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair/final_docs_validation",
+      "Elapsed": 26.45
+    },
+    {
+      "Time": "2026-11-18T19:03:14.3436207+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K03PromotionFailuresRestoreActualPair",
+      "Elapsed": 106.65
+    },
+    {
+      "Time": "2026-11-18T19:03:48.5836937+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15SkillFreshPinnedInstall",
+      "Output": "    p15_skill_installation_test.go:515: K02_K03_FRESH_SOURCE source=8c42876a49081c961d6dce8344cc9879ff8f4a0f branch=d6a296a57b9d208353f8cfe7afea65dfbdda920a docs=be0e6d5268e503cae3f5db1fd4437922b2c425fe docs_branch=078b3d04e1fcc2c76ebc69f62923f0f399013d86 vcs_clean=true binary=4154f9c2a22955425cb812fa278b583cf8ab4b9a66eaf7211bc77150189df98d\n"
+    },
+    {
+      "Time": "2026-11-18T19:03:49.802191+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15SkillFreshPinnedInstall",
+      "Elapsed": 35.46
+    },
+    {
+      "Time": "2026-11-18T19:04:10.3410333+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K02ActualCacheAndBundleSelection/cache_preferred_without_executing_bad_bundle",
+      "Output": "    p15_skill_installation_test.go:590: K02_SELECTION_CONTROL case=cache_preferred_without_executing_bad_bundle exact_selection_or_rejection=true unverified_execution=false\n"
+    },
+    {
+      "Time": "2026-11-18T19:04:10.390967+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K02ActualCacheAndBundleSelection/cache_preferred_without_executing_bad_bundle",
+      "Elapsed": 20.56
+    },
+    {
+      "Time": "2026-11-18T19:04:34.2053208+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K02ActualCacheAndBundleSelection/bad_cache_uses_verified_bundle",
+      "Elapsed": 23.81
+    },
+    {
+      "Time": "2026-11-18T19:04:51.8710911+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K02ActualCacheAndBundleSelection/tampered_cache_not_executed",
+      "Elapsed": 17.66
+    },
+    {
+      "Time": "2026-11-18T19:05:21.1217409+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K02ActualCacheAndBundleSelection/both_incompatible_fail",
+      "Output": "    p15_skill_installation_test.go:590: K02_SELECTION_CONTROL case=both_incompatible_fail exact_selection_or_rejection=true unverified_execution=false\n"
+    },
+    {
+      "Time": "2026-11-18T19:05:21.1808445+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K02ActualCacheAndBundleSelection/both_incompatible_fail",
+      "Elapsed": 29.31
+    },
+    {
+      "Time": "2026-11-18T19:05:37.7143257+02:00",
+      "Action": "output",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K02ActualCacheAndBundleSelection/explicit_incompatible_never_falls_back",
+      "Output": "    p15_skill_installation_test.go:590: K02_SELECTION_CONTROL case=explicit_incompatible_never_falls_back exact_selection_or_rejection=true unverified_execution=false\n"
+    },
+    {
+      "Time": "2026-11-18T19:05:37.7774115+02:00",
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K02ActualCacheAndBundleSelection/explicit_incompatible_never_falls_back",
+      "Elapsed": 16.6
+    },
+    {
+      "Time": "2026-11-18T19:05:37.7774115+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP15K02ActualCacheAndBundleSelection",
+      "Elapsed": 107.97
+    },
+    {
+      "Time": "2026-11-18T19:05:37.9192563+02:00",
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Elapsed": 250.477
+    }
+  ]
+}

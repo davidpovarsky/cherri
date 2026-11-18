@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-11-18T17:46:11.836646+00:00",
+  "implementationSha": "b1a1e232a4a13ad73c12d9fdc4dad2ae2b08728e",
+  "signalAndFinalValidationFixSha": "a08b538332590569337482ed2e8be4ed59ade169",
+  "status": "PASS_SCOPED_ACTUAL_INSTALLATION_CONTRACT",
+  "supersession": "b1a1e23 initial K02/K03/K04 producers passed their then-existing contracts; later actual signal and fallback counterexamples failed on that same source. K03 closure evidence is the expanded clean a08b538 producer, not the earlier incomplete pass.",
+  "tests": {
+    "K02": "actual fresh source build, exact immutable compiler/docs refs, actual cache/bundle/explicit binary choice; clean b1a1e23",
+    "K03": "actual source installation; checksums before downloaded execution; staged docs validation; four command/promotion failures; ten handled TERM boundaries; direct promoted cache validation; clean a08b538",
+    "K04": "18 actual offline compatibility checks; clean b1a1e23"
+  },
+  "r4FormalSeconds": 440.906,
+  "files": [
+    {
+      "file": "formal-b1a1e23-receipt.json",
+      "sha256": "73a9d13e5263afb1b13cb1867a9defef6dfee6b3fd959cda47672d0d7bf15cc1"
+    },
+    {
+      "file": "b1a1e23-install.json",
+      "sha256": "ab07771122e4341601b6ea9d6f130ad64a329de33c4ac4fdee81b1a434661cb4"
+    },
+    {
+      "file": "b1a1e23-offline.json",
+      "sha256": "04e7520e6747919093dada1179f6d06dad1af70b9367b5350f7a0f199a7408b8"
+    },
+    {
+      "file": "b1a1e23-update-before-review.json",
+      "sha256": "fb49b94598d78510b239557a1fc4725ab4a0acfb9499ff0f6f3d2928bf067c90"
+    },
+    {
+      "file": "late-docs-8c42876-red.json",
+      "sha256": "e4f748760b9a10c2ad3d7ea7def8f2496347312221093ccc5d21794b0c795a57"
+    },
+    {
+      "file": "test-harness-failure.json",
+      "sha256": "aa2bd02278d5a34480da7c3f8410f98da3850dd04db8410521590d28e42fa98f"
+    },
+    {
+      "file": "fresh-selection-path-assertion-failure.json",
+      "sha256": "c23088520cff9d85260bc8d30445aa52283292cadfc6e1f0a3765d1f64ef15ee"
+    },
+    {
+      "file": "signal-fallback-b1a1e23-red.json",
+      "sha256": "abf1f395b61d4964b0b6f3f67e7f902f261b3a88c3ee2ab21f5775607f2b70c6"
+    },
+    {
+      "file": "formal-a08b538-receipt.json",
+      "sha256": "9819e0196e90453c2a31a460bc080b61e29722ded93c6a70e83d8a07ed0af541"
+    },
+    {
+      "file": "a08b538-update.json",
+      "sha256": "a5839f275e821530be27ea5559ea8e9ed53f62f0cf14af1cc8348c0be1fb8e5a"
+    }
+  ],
+  "scope": "No power-loss guarantee, concurrent-reader atomicity, K01 packaging, K05 signing, installed remote consumer, native runtime, main promotion or release closure. Existing test-harness errors are retained as failures, not passing rollback evidence."
+}

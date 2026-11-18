@@ -1,0 +1,58 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-K02-integration",
+      "requirements": [
+        "K02"
+      ],
+      "tier": "integration",
+      "implementation_sha": "b1a1e232a4a13ad73c12d9fdc4dad2ae2b08728e",
+      "test_id": "github.com/electrikmilk/cherri:TestP15SkillFreshPinnedInstall",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "6m0s",
+        ".",
+        "-run",
+        "^(TestP15SkillFreshPinnedInstall|TestP15K02ActualCacheAndBundleSelection)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15SkillFreshPinnedInstall, TestP15K02ActualCacheAndBundleSelection"
+      },
+      "detail": "Executed production tests: TestP15SkillFreshPinnedInstall, TestP15K02ActualCacheAndBundleSelection"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T17:18:27Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "K02",
+        "group": "skill",
+        "requirement": "Fresh install and incompatible cached/bundled binary",
+        "test_level": "integration",
+        "executed_levels": [
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only actual fresh source install and verified cache/bundle/explicit binary selection with isolated failures. No package, signing, native or installed-remote release closure.",
+  "source_sha": "b1a1e232a4a13ad73c12d9fdc4dad2ae2b08728e",
+  "source_tree_clean": true
+}
