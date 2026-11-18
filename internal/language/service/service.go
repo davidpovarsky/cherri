@@ -722,7 +722,7 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 			decls = append(decls, scopedDeclaration{
 				name:      s.Name,
 				declSpan:  declSpan,
-				scopeSpan: file.SpanForOffsets(declSpan.Start.ByteOffset, currentScope.End.ByteOffset),
+				scopeSpan: file.SpanForOffsets(s.Span.End.ByteOffset, currentScope.End.ByteOffset),
 			})
 			refs = append(refs, identRef{name: s.Name, span: declSpan})
 		case *syntax.AssignStmt:
@@ -810,10 +810,17 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 				bodyScope = d.Body.Span
 			}
 			for _, p := range d.Parameters {
+				visibleAfter := p.Span.End.ByteOffset
+				if p.TypeExpr != nil && p.TypeExpr.NodeSpan().End.ByteOffset > visibleAfter {
+					visibleAfter = p.TypeExpr.NodeSpan().End.ByteOffset
+				}
+				if p.DefaultExpr != nil && p.DefaultExpr.NodeSpan().End.ByteOffset > visibleAfter {
+					visibleAfter = p.DefaultExpr.NodeSpan().End.ByteOffset
+				}
 				decls = append(decls, scopedDeclaration{
 					name:      p.Name,
 					declSpan:  p.Span,
-					scopeSpan: bodyScope,
+					scopeSpan: file.SpanForOffsets(visibleAfter, bodyScope.End.ByteOffset),
 				})
 				refs = append(refs, identRef{name: p.Name, span: p.Span})
 				if p.DefaultExpr != nil {
@@ -848,6 +855,11 @@ func resolveDeclForRef(decls []scopedDeclaration, name string, offset int) *scop
 		d := &decls[i]
 		if d.name != name {
 			continue
+		}
+		// A declaration resolves to itself, but its initializer still belongs
+		// to the enclosing environment until the binding is complete.
+		if offset >= d.declSpan.Start.ByteOffset && offset < d.declSpan.End.ByteOffset {
+			return d
 		}
 		if offset >= d.scopeSpan.Start.ByteOffset && offset <= d.scopeSpan.End.ByteOffset {
 			scopeLen := d.scopeSpan.End.ByteOffset - d.scopeSpan.Start.ByteOffset

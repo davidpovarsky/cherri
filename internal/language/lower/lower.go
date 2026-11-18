@@ -89,6 +89,7 @@ type Lowerer struct {
 	provenanceUUIDs       map[string]string
 	provenanceSymbols     map[string]bool
 	provenanceOutputNames map[string]provenanceOutputNameSpec
+	lexical               lexicalLoweringState
 	provenanceVarNames    map[string]string
 }
 
@@ -1541,7 +1542,7 @@ func (l *Lowerer) materializeYieldValue(val interface{}) {
 func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 	switch s := stmt.(type) {
 	case *syntax.BindingStmt:
-		return l.lowerBinding(s)
+		return l.lowerLexicalBinding(s)
 	case *syntax.AssignStmt:
 		return l.lowerAssign(s)
 	case *syntax.ExprStmt:
@@ -1595,12 +1596,7 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 		}
 		return nil
 	case *syntax.BlockStmt:
-		for _, bs := range s.Statements {
-			if err := l.lowerStatement(bs); err != nil {
-				return err
-			}
-		}
-		return nil
+		return l.lowerLexicalBlock(s)
 	case *syntax.CopyBlockStmt:
 		l.copyBlocks[s.Name] = s
 		return nil
@@ -2986,10 +2982,8 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 			l.emitAction(node)
 
 			// Then block statements
-			for _, ts := range stmt.ThenBlock.Statements {
-				if err := l.lowerStatement(ts); err != nil {
-					return nil, err
-				}
+			if err := l.lowerLexicalBlock(stmt.ThenBlock); err != nil {
+				return nil, err
 			}
 
 			// Else block
@@ -3261,10 +3255,8 @@ func (l *Lowerer) lowerIfWithOutput(stmt *syntax.IfStmt, withOutput bool) (*ir.A
 	}
 
 	// 2. Then block statements
-	for _, ts := range stmt.ThenBlock.Statements {
-		if err := l.lowerStatement(ts); err != nil {
-			return nil, err
-		}
+	if err := l.lowerLexicalBlock(stmt.ThenBlock); err != nil {
+		return nil, err
 	}
 
 	// 3. Else block (Mode 1) if present
@@ -3308,6 +3300,8 @@ func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool
 	}
 
 	l.emitRepeatCountStart(groupUUID, countVal)
+	restoreScope := l.beginLexicalScope()
+	defer restoreScope()
 
 	repeatIndexName := "Repeat Index"
 	if l.repeatDepth > 1 {
@@ -3318,11 +3312,12 @@ func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool
 	var hadBinding bool
 	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
 		prevBinding, hadBinding = l.bindings[stmt.IndexVar]
+		nativeName := l.lexicalLoopVariableName(stmt.IndexVar)
 		setVarNode := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
 			AppleIdentifier: "is.workflow.actions.setvariable",
 			Parameters: map[string]interface{}{
-				"WFVariableName": stmt.IndexVar,
+				"WFVariableName": nativeName,
 				"WFInput": &ir.AttachmentToken{
 					Type:       "Variable",
 					OutputName: repeatIndexName,
@@ -3332,14 +3327,12 @@ func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool
 		l.emitAction(setVarNode)
 		l.bindings[stmt.IndexVar] = BindingRef{
 			IsVariable:   true,
-			VariableName: stmt.IndexVar,
+			VariableName: nativeName,
 		}
 	}
 
-	for _, s := range stmt.BodyBlock.Statements {
-		if err := l.lowerStatement(s); err != nil {
-			return nil, err
-		}
+	if err := l.lowerLexicalBlock(stmt.BodyBlock); err != nil {
+		return nil, err
 	}
 
 	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
@@ -3377,6 +3370,8 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 	iterToken := l.materializeToAttachment(iterVal)
 
 	l.emitRepeatEachStart(groupUUID, iterToken)
+	restoreScope := l.beginLexicalScope()
+	defer restoreScope()
 
 	repeatItemName := "Repeat Item"
 	repeatIndexName := "Repeat Index"
@@ -3389,11 +3384,12 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 	var hadItemBinding bool
 	if stmt.ItemVar != "" && stmt.ItemVar != "_" {
 		prevItemBinding, hadItemBinding = l.bindings[stmt.ItemVar]
+		nativeName := l.lexicalLoopVariableName(stmt.ItemVar)
 		setVarNode := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
 			AppleIdentifier: "is.workflow.actions.setvariable",
 			Parameters: map[string]interface{}{
-				"WFVariableName": stmt.ItemVar,
+				"WFVariableName": nativeName,
 				"WFInput": &ir.AttachmentToken{
 					Type:       "Variable",
 					OutputName: repeatItemName,
@@ -3403,7 +3399,7 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 		l.emitAction(setVarNode)
 		l.bindings[stmt.ItemVar] = BindingRef{
 			IsVariable:   true,
-			VariableName: stmt.ItemVar,
+			VariableName: nativeName,
 		}
 	}
 
@@ -3411,11 +3407,12 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 	var hadIndexBinding bool
 	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
 		prevIndexBinding, hadIndexBinding = l.bindings[stmt.IndexVar]
+		nativeName := l.lexicalLoopVariableName(stmt.IndexVar)
 		setVarNode := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
 			AppleIdentifier: "is.workflow.actions.setvariable",
 			Parameters: map[string]interface{}{
-				"WFVariableName": stmt.IndexVar,
+				"WFVariableName": nativeName,
 				"WFInput": &ir.AttachmentToken{
 					Type:       "Variable",
 					OutputName: repeatIndexName,
@@ -3425,14 +3422,12 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 		l.emitAction(setVarNode)
 		l.bindings[stmt.IndexVar] = BindingRef{
 			IsVariable:   true,
-			VariableName: stmt.IndexVar,
+			VariableName: nativeName,
 		}
 	}
 
-	for _, s := range stmt.BodyBlock.Statements {
-		if err := l.lowerStatement(s); err != nil {
-			return nil, err
-		}
+	if err := l.lowerLexicalBlock(stmt.BodyBlock); err != nil {
+		return nil, err
 	}
 
 	if stmt.ItemVar != "" && stmt.ItemVar != "_" {
@@ -3497,10 +3492,8 @@ func (l *Lowerer) lowerMenuWithOutput(stmt *syntax.MenuStmt, withOutput bool) (*
 		l.emitMenuStart(groupUUID, promptVal, menuItems)
 		for _, c := range stmt.Cases {
 			l.emitMenuCase(groupUUID, c.Label)
-			for _, s := range c.BodyBlock.Statements {
-				if err := l.lowerStatement(s); err != nil {
-					return nil, err
-				}
+			if err := l.lowerLexicalBlock(c.BodyBlock); err != nil {
+				return nil, err
 			}
 		}
 	} else {
@@ -3596,10 +3589,8 @@ func (l *Lowerer) lowerMenuWithOutput(stmt *syntax.MenuStmt, withOutput bool) (*
 		})
 		for _, cs := range caseSpecs {
 			l.emitMenuCaseFull(groupUUID, cs.title, cs.attrTitle, cs.includeAttr)
-			for _, s := range cs.body.Statements {
-				if err := l.lowerStatement(s); err != nil {
-					return nil, err
-				}
+			if err := l.lowerLexicalBlock(cs.body); err != nil {
+				return nil, err
 			}
 		}
 	}

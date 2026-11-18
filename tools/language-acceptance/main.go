@@ -1434,17 +1434,8 @@ func (r *Runner) runBinding() {
 	v01Passed := len(diagsV01) == 0 && errV01 == nil && len(wfV01.Actions) >= 2
 	r.Record("V01", "binding", "let captures current var value before later assignment", "unit+native+iOS", []string{"unit", "native"}, v01Passed, "PASSED", "let snapshot evaluated at declaration site before subsequent mutation")
 
-	// V02: Scope, shadowing, immutable reassignment
-	srcV02 := "let c = 10\nc = 20"
-	diagsV02 := analyzeSrc(r.reg, srcV02)
-	v02Passed := false
-	for _, d := range diagsV02 {
-		if d.Code == "E_ASSIGN_IMMUTABLE" {
-			v02Passed = true
-			break
-		}
-	}
-	r.Record("V02", "binding", "Scope, shadowing, immutable reassignment and read-before-init", "unit", []string{"unit"}, v02Passed, "PASSED", "Analyzer catches E_ASSIGN_IMMUTABLE on reassignment to let binding")
+	// V02: Execute all scoped binding and flow obligations through production.
+	r.runBindingScopeRequirement()
 
 	// V03: System clipboard read captured once
 	srcV03 := "let clip = clipboard\nshow(clip)"

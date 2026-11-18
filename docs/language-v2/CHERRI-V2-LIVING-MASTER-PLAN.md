@@ -961,3 +961,10 @@ The full Go suite at8c42876 separately FAILED three families after821.203s;1659n
 Signed StorageText44337212109 atff2d530 proves same-run Text type/value only. HTTP20044334461645 proves exact body and two correlated requests only. Neither supplies cache persistence/retry acceptance. Collection empty behavior, File restoration/export and F01 conditional runtime failures remain active. Physical iPad and the disconnected ARM64 host remain separately recorded blockers.
 
 Evidence: [formal review](p10r15-formal-acceptance-review.md), [179-ID audit](acceptance-execution-audit.json), [immutable capture](evidence/p15-formal-8c42876/capture-summary.json). Main-only history, existing infrastructure and private source data remain preserved.
+
+
+### V02 component follow-up: lexical scope and definite initialization
+
+The V02 implementation and requirement-specific producer are documented in [P15 binding acceptance](p15-bindings-acceptance.md). Causal production probes exposed branch/loop/short-circuit initialization leakage, initializer navigation errors and native references escaping a shadow's lexical body. The repair preserves declared types separately from path-local optional facts, restores body-local backend identities, and retains original imported identities while treating appended same-name declarations as authored locals. Actual CLI/service diagnostics and synthetic imported full-tree/pre-overlay controls are included.
+
+This component records only the V02 unit obligation when its named production tests execute successfully. It does not revise the older aggregate in this document, close C01 or V01, prove Apple runtime behavior, or replace the root agent's final integrated private-corpus and formal snapshot. Import metadata has no immutable source-node identity; the first not-yet-materialized pinned definition remains an explicit boundary, documented with the tested appended-shadow cases.

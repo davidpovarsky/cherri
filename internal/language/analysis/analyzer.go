@@ -25,6 +25,7 @@ type Symbol struct {
 	Function        *syntax.FunctionDecl
 	EnumDeclaration bool
 	EnumType        string
+	flowType        types.Type
 }
 
 // Scope represents a lexical scope.
@@ -721,14 +722,16 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			a.warn(CodeShadowing, s.Span, fmt.Sprintf("variable %q shadows an existing declaration at %s", s.Name, parentSym.Span))
 		}
 
-		scope.Define(&Symbol{
+		symbol := &Symbol{
 			Name:        s.Name,
 			EnumType:    a.enumCatalog.TypeName(s.TypeExpr),
 			Type:        declType,
 			Mutable:     s.Mutable,
 			Initialized: s.Value != nil,
 			Span:        s.Span,
-		})
+		}
+		narrowAssignedValue(symbol, valType)
+		scope.Define(symbol)
 
 	case *syntax.AssignStmt:
 		if strings.HasPrefix(s.Name, "@") {
@@ -745,6 +748,9 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			return
 		}
 
+		if s.Op != syntax.TokenAssign && !sym.Initialized {
+			a.error(CodeReadBeforeInit, s.Span, fmt.Sprintf("variable %q read before initialization by compound assignment", s.Name))
+		}
 		valType := a.analyzeEnumContext(s.Value, scope, sym.EnumType)
 		if valType != nil && sym.Type != nil {
 			if s.Op == syntax.TokenPlusAssign {
@@ -760,6 +766,7 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			}
 		}
 		sym.Initialized = true
+		narrowAssignedValue(sym, valType)
 
 	case *syntax.ExprStmt:
 		a.analyzeExpression(s.Expr, scope)
@@ -800,13 +807,25 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		if condType != nil && !isConditionTypeAllowed(condType) {
 			a.error(CodeArgumentType, s.Condition.NodeSpan(), fmt.Sprintf("if condition requires Bool, got %s", condType))
 		}
+		entry := captureBindingFlow(scope)
+		a.refineCondition(s.Condition, true, scope, nil)
 		thenScope := NewScope(scope)
 		for _, ts := range s.ThenBlock.Statements {
 			a.analyzeStatement(ts, thenScope)
 		}
+		var paths []bindingFlow
+		if statementMayContinue(s.ThenBlock) {
+			paths = append(paths, captureBindingFlow(scope))
+		}
+		entry.restore()
+		a.refineCondition(s.Condition, false, scope, nil)
 		if s.ElseBlock != nil {
 			a.analyzeStatement(s.ElseBlock, scope)
 		}
+		if s.ElseBlock == nil || statementMayContinue(s.ElseBlock) {
+			paths = append(paths, captureBindingFlow(scope))
+		}
+		mergeBindingFlow(entry, paths...)
 
 	case *syntax.ForStmt:
 		forScope := NewScope(scope)
@@ -823,11 +842,14 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 		}
 		forScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, Span: s.Span})
 		forScope.Define(&Symbol{Name: "RepeatItem", Type: elemType, Initialized: true, Span: s.Span})
+		entry := captureBindingFlow(scope)
+		invalidateLoopRefinements(s.BodyBlock, forScope)
 		a.loopDepth++
 		for _, bs := range s.BodyBlock.Statements {
 			a.analyzeStatement(bs, forScope)
 		}
 		a.loopDepth--
+		mergeBindingFlow(entry, entry, captureBindingFlow(scope))
 
 	case *syntax.RepeatStmt:
 		repScope := NewScope(scope)
@@ -839,11 +861,14 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			repScope.Define(&Symbol{Name: s.IndexVar, Type: types.Number, Initialized: true, Span: s.Span})
 		}
 		repScope.Define(&Symbol{Name: "RepeatIndex", Type: types.Number, Initialized: true, Span: s.Span})
+		entry := captureBindingFlow(scope)
+		invalidateLoopRefinements(s.BodyBlock, repScope)
 		a.loopDepth++
 		for _, bs := range s.BodyBlock.Statements {
 			a.analyzeStatement(bs, repScope)
 		}
 		a.loopDepth--
+		mergeBindingFlow(entry, entry, captureBindingFlow(scope))
 
 	case *syntax.MenuStmt:
 		if s.Prompt != nil {
@@ -853,11 +878,20 @@ func (a *Analyzer) analyzeStatement(stmt syntax.Statement, scope *Scope) {
 			if c.Value != nil {
 				a.analyzeExpression(c.Value, scope)
 			}
+		}
+		entry := captureBindingFlow(scope)
+		var paths []bindingFlow
+		for _, c := range s.Cases {
+			entry.restore()
 			caseScope := NewScope(scope)
 			for _, cs := range c.BodyBlock.Statements {
 				a.analyzeStatement(cs, caseScope)
 			}
+			if statementMayContinue(c.BodyBlock) {
+				paths = append(paths, captureBindingFlow(scope))
+			}
 		}
+		mergeBindingFlow(entry, paths...)
 	}
 }
 
@@ -1063,7 +1097,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		if !sym.Initialized {
 			a.error(CodeReadBeforeInit, e.Span, fmt.Sprintf("variable %q read before initialization", e.Name))
 		}
-		return sym.Type
+		return sym.readType()
 
 	case *syntax.MemberExpr:
 		targetType := a.analyzeExpression(e.Target, scope)
@@ -1146,7 +1180,12 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 
 	case *syntax.BinaryExpr:
 		leftType := a.analyzeExpression(e.Left, scope)
-		rightType := a.analyzeExpression(e.Right, scope)
+		var rightType types.Type
+		if e.Op == syntax.TokenAnd || e.Op == syntax.TokenOr {
+			rightType = a.analyzeLogicalRight(e, scope)
+		} else {
+			rightType = a.analyzeExpression(e.Right, scope)
+		}
 
 		switch e.Op {
 		case syntax.TokenPlus, syntax.TokenMinus, syntax.TokenStar, syntax.TokenSlash, syntax.TokenPercent:

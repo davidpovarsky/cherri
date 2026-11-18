@@ -23,7 +23,6 @@ var incompleteLocalAssertions = map[string]string{
 	"U01":   "Declaration/document existence does not establish preservation against the upstream baseline.",
 	"U04":   "Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision.",
 	"V01":   "Action count does not prove snapshot timing or original producer identity.",
-	"V02":   "One immutable assignment diagnostic does not cover shadowing, scope, and read-before-initialization.",
 	"V03":   "Nonempty lowering does not prove that the clipboard is captured exactly once.",
 	"V04":   "Successful list/map lowering does not inspect action-output bindings and native payload types.",
 	"C01":   "Literal argument lowering does not prove source evaluation order with observable calls.",
