@@ -43,6 +43,7 @@ type ControlFlowViolationInfo struct {
 
 // NativeActionRecord represents a single validated native Shortcut action from a decoded Shortcut document.
 type NativeActionRecord struct {
+	RawAction           map[string]any
 	Index               int
 	Identifier          string
 	Parameters          map[string]any
@@ -222,6 +223,7 @@ func DecodeNativeShortcutDocument(b []byte) (*NativeShortcutDocument, error) {
 		}
 
 		rec := NativeActionRecord{
+			RawAction:        deepClonePlistMap(actMap),
 			Index:            idx,
 			Identifier:       ident,
 			Parameters:       params,
@@ -578,9 +580,12 @@ func mergeWorkflowHeaderMapWithDialect(
 ) map[string]any {
 	compiledActions := make([]any, 0, len(actions))
 	for i, act := range actions {
-		actMap := map[string]any{
-			"WFWorkflowActionIdentifier": act.WFWorkflowActionIdentifier,
+		actMap := deepClonePlistMap(act.rawNativeEnvelope)
+		if actMap == nil {
+			actMap = map[string]any{}
 		}
+		actMap["WFWorkflowActionIdentifier"] = act.WFWorkflowActionIdentifier
+		delete(actMap, "WFWorkflowActionParameters")
 		if len(act.WFWorkflowActionParameters) > 0 {
 			actMap["WFWorkflowActionParameters"] = act.WFWorkflowActionParameters
 		} else if exactParamsPresence != nil {
@@ -951,6 +956,13 @@ func RenderLosslessV2SourceFromDocument(doc *NativeShortcutDocument) (string, er
 }
 
 func formatRawLegacyActionCall(rec NativeActionRecord) (string, error) {
+	if hasNativeActionEnvelopeFields(rec) {
+		literal, err := exactNativeActionEnvelopeLiteral(rec)
+		if err != nil {
+			return "", err
+		}
+		return "rawAction(" + formatCherriDoubleQuotedString(rec.Identifier) + ", nil, rawPlist(" + formatCherriDoubleQuotedString(literal) + "))", nil
+	}
 	var out strings.Builder
 	out.WriteString("rawAction(")
 	out.WriteString(formatCherriDoubleQuotedString(rec.Identifier))
@@ -972,6 +984,13 @@ func formatRawLegacyActionCall(rec NativeActionRecord) (string, error) {
 }
 
 func formatRawV2ActionCall(rec NativeActionRecord) (string, error) {
+	if hasNativeActionEnvelopeFields(rec) {
+		literal, err := exactNativeActionEnvelopeLiteral(rec)
+		if err != nil {
+			return "", err
+		}
+		return "native.action(" + formatCherriDoubleQuotedString(rec.Identifier) + ", envelope: native.plist(" + formatCherriDoubleQuotedString(literal) + "))", nil
+	}
 	var out strings.Builder
 	out.WriteString("native.action(")
 	out.WriteString(formatCherriDoubleQuotedString(rec.Identifier))
@@ -1006,6 +1025,16 @@ func renderLosslessLegacySource(doc map[string]any) (string, error) {
 
 	for idx, act := range actions {
 		ident, _ := act["WFWorkflowActionIdentifier"].(string)
+		record := NativeActionRecord{Index: idx, Identifier: ident, RawAction: deepClonePlistMap(act)}
+		if hasNativeActionEnvelopeFields(record) {
+			line, err := formatRawLegacyActionCall(record)
+			if err != nil {
+				return "", err
+			}
+			out.WriteString(line)
+			out.WriteByte('\n')
+			continue
+		}
 		out.WriteString("rawAction(")
 		out.WriteString(formatCherriDoubleQuotedString(ident))
 
@@ -1046,6 +1075,16 @@ func renderLosslessV2Source(doc map[string]any) (string, error) {
 
 	for idx, act := range actions {
 		ident, _ := act["WFWorkflowActionIdentifier"].(string)
+		record := NativeActionRecord{Index: idx, Identifier: ident, RawAction: deepClonePlistMap(act)}
+		if hasNativeActionEnvelopeFields(record) {
+			line, err := formatRawV2ActionCall(record)
+			if err != nil {
+				return "", err
+			}
+			out.WriteString(line)
+			out.WriteByte('\n')
+			continue
+		}
 		out.WriteString("native.action(")
 		out.WriteString(formatCherriDoubleQuotedString(ident))
 

@@ -298,6 +298,18 @@ func makeAction(arguments []actionArgument, reference *WFActionReference) {
 		return
 	}
 	isRawAction := currentAction.identifier == "rawAction"
+	var rawEnvelope map[string]any
+	hasEnvelope := false
+	if isRawAction {
+		var envelopeErr error
+		rawEnvelope, hasEnvelope, envelopeErr = rawLegacyActionEnvelope(arguments)
+		if envelopeErr != nil {
+			exit(envelopeErr.Error())
+		}
+		if hasEnvelope && reference != nil && (reference.UUID != "" || reference.CustomOutputName != "") {
+			exit("NATIVE_ACTION_ENVELOPE_BINDING: exact Legacy envelopes require an explicit rawRef consumer")
+		}
+	}
 	hasExplicitRawPlist := false
 	if isRawAction && len(arguments) > 0 {
 		if rawIdent, ok := getArgValue(arguments[0]).(string); ok {
@@ -318,10 +330,16 @@ func makeAction(arguments []actionArgument, reference *WFActionReference) {
 		if exactActionParamsPresence == nil {
 			exactActionParamsPresence = make(map[int]bool)
 		}
+		if hasEnvelope {
+			_, hasExplicitRawPlist = rawEnvelope["WFWorkflowActionParameters"]
+		}
 		exactActionParamsPresence[len(shortcut.WFWorkflowActions)] = hasExplicitRawPlist
 	}
 	// Additionally add the output name and UUID of this action if provided
 	addAction(ident, attachReferenceToParams(params, reference))
+	if hasEnvelope {
+		shortcut.WFWorkflowActions[len(shortcut.WFWorkflowActions)-1].rawNativeEnvelope = rawEnvelope
+	}
 }
 
 // getFullActionIdentifier determines the full identifier of currentAction.definition.

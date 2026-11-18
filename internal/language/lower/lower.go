@@ -199,6 +199,18 @@ func (l *Lowerer) generateControlEndOutputUUID(withOutput bool, bindingName stri
 }
 
 func (l *Lowerer) emitAction(node *ir.NativeActionNode) {
+	if node.ExactRawEnvelope != nil {
+		exactSession, ok := l.session.(interface {
+			EmitExactRawActionEnvelope(string, map[string]any) error
+		})
+		if !ok {
+			l.emitErr = fmt.Errorf("NATIVE_ACTION_ENVELOPE_BACKEND: exact envelopes require the canonical backend")
+		} else if l.emitErr == nil {
+			l.emitErr = exactSession.EmitExactRawActionEnvelope(node.AppleIdentifier, node.ExactRawEnvelope)
+		}
+		l.workflow.AddAction(node)
+		return
+	}
 	if l.session != nil && l.emitErr == nil {
 		if node.ExactRawParameters {
 			if exactSession, ok := l.session.(interface {
@@ -4883,6 +4895,8 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			OutputName: l.currentBindingName,
 			Parameters: make(map[string]interface{}),
 		}
+		var exactEnvelope map[string]any
+		hasParameterArgument := false
 		if call.PrimaryArg != nil {
 			val, err := l.lowerExpression(call.PrimaryArg)
 			if err != nil {
@@ -4905,7 +4919,20 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				} else {
 					node.AppleIdentifier = fmt.Sprintf("%v", val)
 				}
+			} else if arg.Label == "envelope" {
+				if exactEnvelope != nil {
+					return nil, fmt.Errorf("NATIVE_ACTION_ENVELOPE_ARGUMENTS: duplicate envelope")
+				}
+				value, err := l.lowerExpression(arg.Value)
+				if err != nil {
+					return nil, err
+				}
+				exactEnvelope, err = nativeActionEnvelopeValue(value)
+				if err != nil {
+					return nil, err
+				}
 			} else if arg.Label == "parameters" || arg.Label == "" {
+				hasParameterArgument = true
 				val, err := l.lowerExpression(arg.Value)
 				if err != nil {
 					return nil, fmt.Errorf("failed to lower action parameters: %w", err)
@@ -4967,6 +4994,14 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 		if strings.TrimSpace(node.AppleIdentifier) == "" {
 			return nil, fmt.Errorf("%s requires a non-empty action identifier", actionName)
+		}
+		if exactEnvelope != nil {
+			if hasParameterArgument || len(node.Parameters) != 0 {
+				return nil, fmt.Errorf("NATIVE_ACTION_ENVELOPE_CONFLICT: parameters and an exact envelope cannot both be supplied")
+			}
+			if err := setNativeActionEnvelope(node, exactEnvelope); err != nil {
+				return nil, err
+			}
 		}
 		if !node.HasExactRawParameters && len(call.NamedArgs) == 0 && l.workflow.ExactRawWorkflow {
 			node.ExactRawParameters = true
@@ -5290,6 +5325,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 						NodeID:          l.GenerateUUID(),
 						AppleIdentifier: ident,
 						Parameters:      params,
+					}
+					if err := setNativeActionEnvelope(node, cloneLowerPlistValue(actMap).(map[string]any)); err != nil {
+						return nil, err
 					}
 					if u, ok := params["UUID"].(string); ok {
 						node.OutputUUID = u

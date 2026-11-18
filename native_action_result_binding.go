@@ -305,6 +305,11 @@ func (s *CanonicalBackendSession) validateNativeActionResults() error {
 		if _, _, err := s.visitNativeActionResultValue(reflect.ValueOf(action.WFWorkflowActionParameters), false); err != nil {
 			return err
 		}
+		if action.rawNativeEnvelope != nil {
+			if _, _, err := s.visitNativeActionResultValue(reflect.ValueOf(action.rawNativeEnvelope), false); err != nil {
+				return err
+			}
+		}
 	}
 	for _, binding := range s.nativeActionResults {
 		if binding.consumedUUID == "" {

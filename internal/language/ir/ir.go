@@ -4,22 +4,23 @@ import "github.com/electrikmilk/cherri/internal/language/schema"
 
 // NativeActionNode represents a single physical Apple Shortcut action in the pipeline.
 type NativeActionNode struct {
-	NodeID                  string                 `json:"nodeId"`
-	AppleIdentifier         string                 `json:"appleIdentifier"`
-	Parameters              map[string]interface{} `json:"parameters"`
-	ExactRawParameters      bool                   `json:"exactRawParameters,omitempty"`
-	HasExactRawParameters   bool                   `json:"hasExactRawParameters,omitempty"`
-	OutputUUID              string                 `json:"outputUUID,omitempty"`
-	OutputName              string                 `json:"outputName,omitempty"`
-	GroupingIdentifier      string                 `json:"groupingIdentifier,omitempty"`
-	ControlFlowMode         int                    `json:"controlFlowMode,omitempty"` // 0=begin, 1=else/case, 2=end
+	NodeID                string                 `json:"nodeId"`
+	AppleIdentifier       string                 `json:"appleIdentifier"`
+	Parameters            map[string]interface{} `json:"parameters"`
+	ExactRawEnvelope      map[string]any         `json:"exactRawEnvelope,omitempty"`
+	ExactRawParameters    bool                   `json:"exactRawParameters,omitempty"`
+	HasExactRawParameters bool                   `json:"hasExactRawParameters,omitempty"`
+	OutputUUID            string                 `json:"outputUUID,omitempty"`
+	OutputName            string                 `json:"outputName,omitempty"`
+	GroupingIdentifier    string                 `json:"groupingIdentifier,omitempty"`
+	ControlFlowMode       int                    `json:"controlFlowMode,omitempty"` // 0=begin, 1=else/case, 2=end
 }
 
 // AttachmentToken represents an inline variable/action output attachment in text.
 type AttachmentToken struct {
-	Type          string                 `json:"type"` // ActionOutput, Variable, ExtensionInput, etc.
-	OutputUUID    string                 `json:"outputUUID,omitempty"`
-	OutputName    string                 `json:"outputName,omitempty"`
+	Type            string                   `json:"type"` // ActionOutput, Variable, ExtensionInput, etc.
+	OutputUUID      string                   `json:"outputUUID,omitempty"`
+	OutputName      string                   `json:"outputName,omitempty"`
 	Aggrandizements []map[string]interface{} `json:"aggrandizements,omitempty"`
 }
 

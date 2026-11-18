@@ -381,6 +381,9 @@ func singleCompiledActionMatchesRecord(compiledMap map[string]any, rec NativeAct
 	if !ok {
 		return false
 	}
+	if rec.RawAction != nil && hasNativeActionEnvelopeFields(rec) {
+		return plistValuesStrictlyEqual(act0, rec.RawAction)
+	}
 	ident, _ := act0["WFWorkflowActionIdentifier"].(string)
 	if ident != rec.Identifier {
 		return false

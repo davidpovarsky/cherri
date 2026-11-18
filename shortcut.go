@@ -37,6 +37,7 @@ type Shortcut struct {
 var shortcut Shortcut
 
 type ShortcutAction struct {
+	rawNativeEnvelope          map[string]any
 	WFWorkflowActionIdentifier string
 	WFWorkflowActionParameters map[string]any `plist:",omitempty"`
 }

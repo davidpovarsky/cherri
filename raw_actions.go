@@ -19,8 +19,22 @@ func defineRawAction() {
 				optional:  true,
 				validType: Dict,
 			},
+			{
+				name:      "envelope",
+				optional:  true,
+				validType: Dict,
+			},
 		},
 		makeParams: func(args []actionArgument) map[string]any {
+			if envelope, provided, err := rawLegacyActionEnvelope(args); provided {
+				if err != nil {
+					exit(err.Error())
+				}
+				if params, ok := envelope["WFWorkflowActionParameters"].(map[string]any); ok {
+					return deepClonePlistMap(params)
+				}
+				return map[string]any{}
+			}
 			if len(args) == 1 {
 				return map[string]any{}
 			}
