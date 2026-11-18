@@ -1,0 +1,15 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "raw-empty")
+@verdict = "P15_LABEL_RAW_EMPTY_OK"
+@empty = []
+getVariable(@empty)
+const captured = debugLog()
+const emptyCount = count(captured)
+if emptyCount != 0 { @verdict = "P15_LABEL_RAW_EMPTY_COUNT" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "raw-empty")
+const traceEnvelope = debugExportTrace("qa-label-raw-empty-legacy")
+const finalSummary = text("CHERRI_QA_LABEL_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

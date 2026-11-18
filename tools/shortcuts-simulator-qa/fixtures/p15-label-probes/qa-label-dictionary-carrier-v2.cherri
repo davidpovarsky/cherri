@@ -1,0 +1,32 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "dictionary-carrier")
+var verdict = "P15_LABEL_DICTIONARY_CARRIER_OK"
+let original = {"name": "payload", "flag": false, "items": ["first", "second"]}
+let originalType = typeOf(original)
+let transported = getVariable(original)
+let envelope = {"label": "????? \"??\""}
+let record = setValue(envelope, "payload", transported)
+let restoredLabel = getValue(record, "label")
+if restoredLabel != "????? \"??\"" { verdict = "P15_LABEL_METADATA_FAIL" }
+let restored = getValue(record, "payload")
+let restoredType = typeOf(restored)
+let restoredName = getValue(restored, "name")
+let restoredFlag = getValue(restored, "flag")
+let restoredItems = getValue(restored, "items")
+let originalNameAfter = getValue(original, "name")
+let flagWitness = typeOf(false)
+let restoredFlagType = typeOf(restoredFlag)
+if restoredType != originalType { verdict = "P15_LABEL_DICTIONARY_TYPE_FAIL" }
+if restoredName != "payload" { verdict = "P15_LABEL_DICTIONARY_NAME_FAIL" }
+if restoredFlag { verdict = "P15_LABEL_DICTIONARY_FLAG_FAIL" }
+if restoredFlagType != flagWitness { verdict = "P15_LABEL_DICTIONARY_FLAG_TYPE_FAIL" }
+let itemCount = count(restoredItems)
+if itemCount != 2 { verdict = "P15_LABEL_DICTIONARY_ITEMS_FAIL" }
+if originalNameAfter != "payload" { verdict = "P15_LABEL_DICTIONARY_SOURCE_MUTATED" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "dictionary-carrier")
+let traceEnvelope = debugExportTrace(runId: "qa-label-dictionary-carrier-v2")
+let finalSummary = text(f"CHERRI_QA_LABEL_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

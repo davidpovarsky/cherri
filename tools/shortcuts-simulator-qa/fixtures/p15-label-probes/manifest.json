@@ -1,0 +1,118 @@
+{
+  "formatVersion": 1,
+  "purpose": "Probe native typed-label representation before adding a debugLog label capability.",
+  "status": "OPEN_REPRESENTATION_UNPROVEN",
+  "sourceBase": "0102da8ad779f9f5d5979ffa081475f1c095d52e",
+  "cases": [
+    {
+      "id": "qa-label-dictionary-carrier-v2",
+      "dialect": "v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-dictionary-carrier-v2.cherri",
+      "candidate": "dictionary-carrier",
+      "expectedMarker": "P15_LABEL_DICTIONARY_CARRIER_OK",
+      "question": "Can existing Set Dictionary Value carry a Dictionary through a generic native reference without changing type or nested fields?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    },
+    {
+      "id": "qa-label-dictionary-carrier-legacy",
+      "dialect": "legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-dictionary-carrier-legacy.cherri",
+      "candidate": "dictionary-carrier",
+      "expectedMarker": "P15_LABEL_DICTIONARY_CARRIER_OK",
+      "question": "Can existing Set Dictionary Value carry a Dictionary through a generic native reference without changing type or nested fields?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    },
+    {
+      "id": "qa-label-file-carrier-v2",
+      "dialect": "v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-file-carrier-v2.cherri",
+      "candidate": "file-carrier",
+      "expectedMarker": "P15_LABEL_FILE_CARRIER_OK",
+      "question": "Can existing Dictionary transport preserve an opaque binary File's native type, bytes and original object?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    },
+    {
+      "id": "qa-label-file-carrier-legacy",
+      "dialect": "legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-file-carrier-legacy.cherri",
+      "candidate": "file-carrier",
+      "expectedMarker": "P15_LABEL_FILE_CARRIER_OK",
+      "question": "Can existing Dictionary transport preserve an opaque binary File's native type, bytes and original object?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    },
+    {
+      "id": "qa-label-setname-alias-v2",
+      "dialect": "v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-setname-alias-v2.cherri",
+      "candidate": "setname-alias",
+      "expectedMarker": "P15_LABEL_SETNAME_ISOLATED_OK",
+      "question": "Does Set Name return an independent typed view without mutating the original in-memory File's name or bytes?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    },
+    {
+      "id": "qa-label-setname-alias-legacy",
+      "dialect": "legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-setname-alias-legacy.cherri",
+      "candidate": "setname-alias",
+      "expectedMarker": "P15_LABEL_SETNAME_ISOLATED_OK",
+      "question": "Does Set Name return an independent typed view without mutating the original in-memory File's name or bytes?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    },
+    {
+      "id": "qa-label-raw-grouping-v2",
+      "dialect": "v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-raw-grouping-v2.cherri",
+      "candidate": "raw-grouping",
+      "expectedMarker": "P15_LABEL_RAW_GROUPING_OK",
+      "question": "Does raw Add to Variable flatten a two-item source then a scalar into three entries, demonstrating why a one-label-per-call sidecar is unsafe?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    },
+    {
+      "id": "qa-label-raw-grouping-legacy",
+      "dialect": "legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-raw-grouping-legacy.cherri",
+      "candidate": "raw-grouping",
+      "expectedMarker": "P15_LABEL_RAW_GROUPING_OK",
+      "question": "Does raw Add to Variable flatten a two-item source then a scalar into three entries, demonstrating why a one-label-per-call sidecar is unsafe?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    },
+    {
+      "id": "qa-label-raw-empty-v2",
+      "dialect": "v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-raw-empty-v2.cherri",
+      "candidate": "raw-empty",
+      "expectedMarker": "P15_LABEL_RAW_EMPTY_OK",
+      "question": "Does logging an empty native List produce zero raw entries without a native missing-input error?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    },
+    {
+      "id": "qa-label-raw-empty-legacy",
+      "dialect": "legacy",
+      "path": "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/qa-label-raw-empty-legacy.cherri",
+      "candidate": "raw-empty",
+      "expectedMarker": "P15_LABEL_RAW_EMPTY_OK",
+      "question": "Does logging an empty native List produce zero raw entries without a native missing-input error?",
+      "nativeStatus": "NOT_EXECUTED",
+      "authorizationScope": "SYNTHETIC_IN_MEMORY_ONLY",
+      "registration": "NOT_IN_DEFAULT_RUNTIME_ALLOWLIST"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "file-carrier")
+@verdict = "P15_LABEL_FILE_CARRIER_OK"
+const original = base64Decode("AQIDBA==")
+const originalType = typeOf(original)
+const originalBytes = base64Encode(original, "None")
+const transported = getVariable(original)
+const envelope = {"label": "????? \"??\""}
+const record = setValue(envelope, "payload", transported)
+const restoredLabel = getValue(record, "label")
+if restoredLabel != "????? \"??\"" { @verdict = "P15_LABEL_METADATA_FAIL" }
+const restored = getValue(record, "payload")
+const restoredType = typeOf(restored)
+const restoredBytes = base64Encode(restored, "None")
+const originalBytesAfter = base64Encode(original, "None")
+if originalBytes != "AQIDBA==" { @verdict = "P15_LABEL_FILE_BASELINE_FAIL" }
+if restoredType != originalType { @verdict = "P15_LABEL_FILE_TYPE_FAIL" }
+if restoredBytes != originalBytes { @verdict = "P15_LABEL_FILE_BYTES_FAIL" }
+if originalBytesAfter != originalBytes { @verdict = "P15_LABEL_FILE_SOURCE_MUTATED" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "file-carrier")
+const traceEnvelope = debugExportTrace("qa-label-file-carrier-legacy")
+const finalSummary = text("CHERRI_QA_LABEL_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

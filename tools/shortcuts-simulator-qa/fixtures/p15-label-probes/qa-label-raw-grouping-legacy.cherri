@@ -1,0 +1,19 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "raw-grouping")
+@verdict = "P15_LABEL_RAW_GROUPING_OK"
+@first = ["first", "second"]
+getVariable(@first)
+const firstLog = debugLog()
+const firstCount = count(firstLog)
+const second = text("third")
+const secondLog = debugLog()
+const secondCount = count(secondLog)
+if firstCount != 2 { @verdict = "P15_LABEL_RAW_FIRST_COUNT" }
+if secondCount != 3 { @verdict = "P15_LABEL_RAW_SECOND_COUNT" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "raw-grouping")
+const traceEnvelope = debugExportTrace("qa-label-raw-grouping-legacy")
+const finalSummary = text("CHERRI_QA_LABEL_PROBE_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
