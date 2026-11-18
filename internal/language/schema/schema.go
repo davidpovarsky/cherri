@@ -178,6 +178,21 @@ func (r *Registry) RegisterCustomAction(a *ActionSchema) {
 	if r.actionsByName == nil {
 		r.actionsByName = make(map[string]*ActionSchema)
 	}
+	// A source-local replacement must remove its old native-index entry while
+	// preserving other callable variants of the same native action.
+	if old := r.actionsByName[a.CallableName]; old != nil && old.AppleIdentifier != "" {
+		var remaining []*ActionSchema
+		for _, candidate := range r.actionsByIdentifier[old.AppleIdentifier] {
+			if candidate.CallableName != a.CallableName {
+				remaining = append(remaining, candidate)
+			}
+		}
+		if len(remaining) == 0 {
+			delete(r.actionsByIdentifier, old.AppleIdentifier)
+		} else {
+			r.actionsByIdentifier[old.AppleIdentifier] = remaining
+		}
+	}
 	r.actionsByName[a.CallableName] = a
 	if a.AppleIdentifier != "" {
 		if r.actionsByIdentifier == nil {
@@ -185,6 +200,7 @@ func (r *Registry) RegisterCustomAction(a *ActionSchema) {
 		}
 		r.actionsByIdentifier[a.AppleIdentifier] = append(r.actionsByIdentifier[a.AppleIdentifier], a)
 	}
+	r.fingerprint = r.computeFingerprint(r.AllActions())
 }
 
 // CompareVersions compares two version strings (e.g., "27.10" vs "27.2", "16.4" vs "16.4.1") semantically.

@@ -242,9 +242,9 @@ func TestP15C03ListTypeEvidence(t *testing.T) {
 }
 
 func TestP15C03CustomActionShadow(t *testing.T) {
-	// Exercise the actual installed CLI boundary without sharing the currently
-	// mutable process-global custom registry between independent source files.
-	// Repeated in-process compilation isolation has its own retained regression.
+	// Exercise the actual installed CLI boundary for original and migrated custom
+	// declarations. Repeated in-process registry isolation is independently
+	// covered by p15_registry_lifetime_test.go and its retained causal baseline.
 	bin := roundTripBinary(t)
 	for _, name := range []string{"url", "list"} {
 		t.Run(name, func(t *testing.T) {

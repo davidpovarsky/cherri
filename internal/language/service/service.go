@@ -77,7 +77,7 @@ func NewService(registry *schema.Registry) *Service {
 		registry = schema.DefaultRegistry()
 	}
 	return &Service{
-		registry:  registry,
+		registry:  registry.Clone(),
 		documents: make(map[string]*DocumentState),
 	}
 }
@@ -271,7 +271,7 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 
 	// 1. Contextual parameter labels and enum values for the active call
 	if callIdent != "" {
-		if act, ok := s.registry.LookupAction(callIdent); ok {
+		if act, ok := s.documentRegistry(doc).LookupAction(callIdent); ok {
 			for _, p := range act.Parameters {
 				if p.Label != "" && !usedLabels[p.Label] {
 					items = append(items, CompletionItem{
@@ -333,7 +333,7 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 	}
 
 	// 4. Action completions
-	for _, a := range append(s.registry.AllActions(), s.registry.CompilerMacros()...) {
+	for _, a := range append(s.documentRegistry(doc).AllActions(), s.documentRegistry(doc).CompilerMacros()...) {
 		items = append(items, CompletionItem{
 			Label:         a.CallableName,
 			Kind:          CompletionKindFunction,
@@ -430,7 +430,7 @@ func (s *Service) Hover(uri string, line, col int) *HoverResult {
 		return nil
 	}
 
-	if a, found := s.registry.LookupAction(word); found {
+	if a, found := s.documentRegistry(doc).LookupAction(word); found {
 		var md strings.Builder
 		fmt.Fprintf(&md, "### %s\n\n", a.CallableName)
 		fmt.Fprintf(&md, "**Action:** `%s`\n\n", a.AppleIdentifier)
@@ -554,7 +554,7 @@ func (s *Service) SignatureHelp(uri string, line, col int) *SignatureHelpResult 
 	argsText := string(prefixRunes[openParen+1:])
 	activeParam := strings.Count(argsText, ",")
 
-	if act, found := s.registry.LookupAction(callIdent); found {
+	if act, found := s.documentRegistry(doc).LookupAction(callIdent); found {
 		params := make([]string, len(act.Parameters))
 		for i, p := range act.Parameters {
 			opt := ""
@@ -1079,7 +1079,11 @@ func (s *Service) ApplyVisualSourceEdit(src string, actionIndex int, paramLabel 
 		return src, fmt.Errorf("action call at index %d is a raw/unmappable call", actionIndex)
 	}
 
-	actSchema, hasSchema := s.registry.LookupAction(calleeName)
+	// Visual edits receive their own source, which need not be an open
+	// document. Resolve its local declarations without consulting another file.
+	analyzer := analysis.NewAnalyzer(s.registry)
+	analyzer.Analyze(prog)
+	actSchema, hasSchema := analyzer.Registry().LookupAction(calleeName)
 	canonicalLabel := paramLabel
 	isPrimaryTarget := paramLabel == "" || paramLabel == "primary"
 
