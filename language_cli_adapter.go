@@ -54,6 +54,9 @@ func init() {
 
 // HandleLanguageV2CLI processes v2 CLI commands. Returns true if handled.
 func HandleLanguageV2CLI() bool {
+	if handleEditVerificationCLI() {
+		return true
+	}
 	// 0. compile <file> [--output <out>] [--skip-sign]
 	if len(os.Args) > 1 && os.Args[1] == "compile" {
 		var compPath string

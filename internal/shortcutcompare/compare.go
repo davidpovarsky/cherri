@@ -73,15 +73,26 @@ func LoadShortcutDocument(path string) (map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
+	doc, err := decodeShortcutDocument(data, true)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", path, err)
+	}
+	return doc, nil
+}
+
+func decodeShortcutDocument(data []byte, allowJSON bool) (map[string]any, error) {
 	var decoded any
-	if _, err = plist.Unmarshal(data, &decoded); err != nil {
+	if _, err := plist.Unmarshal(data, &decoded); err != nil {
+		if !allowJSON {
+			return nil, fmt.Errorf("edit verification requires an XML or binary workflow plist")
+		}
 		if jsonErr := json.Unmarshal(data, &decoded); jsonErr != nil {
-			return nil, fmt.Errorf("%s: not a parsable plist/json Shortcut", path)
+			return nil, fmt.Errorf("not a parsable plist/json Shortcut")
 		}
 	}
 	doc, ok := decoded.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("%s: top level is not a dictionary", path)
+		return nil, fmt.Errorf("top level is not a dictionary")
 	}
 	return doc, nil
 }

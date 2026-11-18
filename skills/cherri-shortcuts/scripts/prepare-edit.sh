@@ -27,11 +27,11 @@
 #   2  usage error
 #   3  input is a signed AEA1 Shortcut (direct extraction not supported yet)
 #   4  decompiled source does not recompile (workspace preserved for diagnosis)
+#   5  exact comparison is unavailable or detects an undeclared difference
+#   6  workspace already contains files (preserved unchanged)
 set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/common.sh"
-ensure_cherri
-
 if [ "$#" -lt 1 ]; then
   echo "Usage: prepare-edit.sh INPUT_PLIST_OR_UNSIGNED_SHORTCUT [WORKSPACE_DIR]" >&2
   exit 2
@@ -67,11 +67,17 @@ if [ "$#" -ge 2 ] && [ -n "$2" ]; then
 else
   WORKSPACE="${CHERRI_EDITS_DIR:-/var/minis/shared/cherri-edits}/$SAFE_NAME-$STAMP"
 fi
+if [ -e "$WORKSPACE" ] && { [ ! -d "$WORKSPACE" ] || [ -n "$(ls -A "$WORKSPACE")" ]; }; then
+  echo "[CHERRI_EDIT_WORKSPACE_OCCUPIED] Choose a new or empty workspace; existing originals and edits are preserved." >&2
+  exit 6
+fi
+ensure_cherri
 mkdir -p "$WORKSPACE/original" "$WORKSPACE/source" "$WORKSPACE/builds"
+WORKSPACE=$(CDPATH= cd -- "$WORKSPACE" && pwd)
 
 # 1. Preserve the original input. Never modify the caller's file.
 ORIGINAL="$WORKSPACE/original/shortcut.plist"
-cp -f "$INPUT_ABS" "$ORIGINAL"
+cp "$INPUT_ABS" "$ORIGINAL"
 
 # 2. Decompile with the real Cherri decompiler into the workspace source dir.
 sh "$SCRIPT_DIR/decompile.sh" "$ORIGINAL" "$WORKSPACE/source" >/dev/null
@@ -100,19 +106,17 @@ if ! VALIDATION_OUTPUT=$(sh "$SCRIPT_DIR/build.sh" "$CHERRI_SRC" "$VALIDATION" -
   exit 4
 fi
 
-# 5. Structural round-trip verification: prove that unmodified import matches
-#    the original Shortcut's semantics, ignoring volatile UUID regeneration.
-CORPUS_BIN="${SHORTCUT_CORPUS_BIN:-shortcut-corpus}"
-if [ -x "$SCRIPT_DIR/../../../dist/shortcut-corpus" ]; then
-  CORPUS_BIN="$SCRIPT_DIR/../../../dist/shortcut-corpus"
-elif [ -x "$SCRIPT_DIR/../../../dist/shortcut-corpus.exe" ]; then
-  CORPUS_BIN="$SCRIPT_DIR/../../../dist/shortcut-corpus.exe"
+# 5. The packaged compiler owns comparison. Missing support and any undeclared
+# metadata, identity, reference or typed-value change block workspace acceptance.
+if ! COMPARE_OUTPUT=$("$CHERRI_BIN_RESOLVED" verify-edit "$ORIGINAL" "$VALIDATION" --json 2>&1); then
+  echo "[CHERRI_EDIT_GATE_FAILED] Exact imported-document preservation was not verified." >&2
+  printf '%s\n' "$COMPARE_OUTPUT" >&2
+  echo "Workspace preserved for diagnosis: $WORKSPACE" >&2
+  exit 5
 fi
-if command -v "$CORPUS_BIN" >/dev/null 2>&1 || [ -x "$CORPUS_BIN" ]; then
-  if ! COMPARE_OUTPUT=$("$CORPUS_BIN" compare "$ORIGINAL" "$VALIDATION" 2>&1); then
-    echo "Warning: Decompiled shortcut has structural differences from original:" >&2
-    printf '%s\n' "$COMPARE_OUTPUT" >&2
-  fi
+if ! json_is_valid_object "$COMPARE_OUTPUT" || ! printf '%s\n' "$COMPARE_OUTPUT" | grep -Eq '"ok"[[:space:]]*:[[:space:]]*true'; then
+  echo "[CHERRI_EDIT_GATE_FAILED] Comparison returned no successful structured receipt." >&2
+  exit 5
 fi
 
 printf '%s\n' "$ORIGINAL"

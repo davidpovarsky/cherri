@@ -92,10 +92,10 @@ inspection aid only and is never required.
 sh "$SKILL_DIR/scripts/prepare-edit.sh" INPUT_PLIST_OR_UNSIGNED_SHORTCUT [WORKSPACE_DIR]
 ```
 
-   `prepare-edit.sh` validates the input, rejects signed `AEA1` input with a
-   clear message, preserves the original untouched, decompiles with the real
-   decompiler, and immediately proves the generated source recompiles
-   unsigned. It never edits the source and never signs. On success it prints
+   `prepare-edit.sh` requires a new or empty workspace, rejects signed `AEA1`
+   input, preserves the original untouched, imports through the shared V2 hybrid
+   route, and proves the generated source recompiles with every native field
+   and decoded type preserved. Missing comparison support blocks acceptance. It never edits the source and never signs. On success it prints
    the original copy, editable `.cherri`, validation `.shortcut`, and
    workspace paths.
 2. Read the generated `.cherri` source and understand the user's requested
@@ -110,15 +110,42 @@ sh "$SKILL_DIR/scripts/prepare-edit.sh" INPUT_PLIST_OR_UNSIGNED_SHORTCUT [WORKSP
 sh "$SKILL_DIR/scripts/build.sh" WORKSPACE/source/shortcut.cherri WORKSPACE/builds/validation.shortcut --unsigned
 ```
 
-6. After validation passes, sign explicitly (never sign before the user's
-   edit is complete):
+6. Record the requested edit in `WORKSPACE/allowed-delta.json` before finalizing.
+   Bind `originalSHA256` to the preserved original bytes. List exact native field
+   paths and before/after values; never generate an authorization by accepting
+   every observed difference. For a Text-field replacement, the policy shape is:
 
-```sh
-sh "$SKILL_DIR/scripts/build.sh" WORKSPACE/source/shortcut.cherri WORKSPACE/builds/final.shortcut --signed
+```json
+{
+  "schemaVersion": 1,
+  "originalSHA256": "<SHA-256 of WORKSPACE/original/shortcut.plist>",
+  "changes": [{
+    "path": ["WFWorkflowActions", "0", "WFWorkflowActionParameters", "WFTextActionText"],
+    "before": "Original text",
+    "after": "Requested text"
+  }]
+}
 ```
 
-7. Verify the signed result starts with `AEA1` (the wrapper checks this).
-8. Return BOTH the edited `.cherri` and the signed `.shortcut`. If anything
+   This is a contextual template: use the actual original hash, field path and
+   requested values. Version 1 supports existing scalar field replacements.
+   Aggregate replacement or action insertion/deletion requires a broader edit
+   policy implementation and must not be silently authorized.
+
+7. Finalize through the required comparison gate and existing signing service:
+
+```sh
+sh "$SKILL_DIR/scripts/build.sh" WORKSPACE/source/shortcut.cherri WORKSPACE/builds/final.shortcut --signed \
+  --original=WORKSPACE/original/shortcut.plist --allowed-delta=WORKSPACE/allowed-delta.json
+```
+
+   The wrapper signs the exact verified unsigned bytes and preserves the
+   original and previous delivery on failure. Missing comparison support or any
+   unlisted metadata, identity, reference or typed-value change blocks signing.
+   For a copied imported source, pass the original path explicitly.
+
+8. Verify the signed result starts with `AEA1` (the wrapper checks this).
+9. Return BOTH the edited `.cherri` and the signed `.shortcut`. If anything
    could not be preserved exactly (unsupported action, lossy parameter),
    tell the user explicitly.
 

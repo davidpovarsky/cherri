@@ -1961,11 +1961,7 @@ func (r *Runner) runSkill() {
 
 	r.runSkillOfflineRequirement()
 
-	// K05: Structured repair/build/import/edit workflow
-	prepScript := resolveRepoPath(filepath.Join("skills", "cherri-shortcuts", "scripts", "prepare-edit.sh"))
-	prepBytes, errPrep := os.ReadFile(prepScript)
-	k05Passed := errPrep == nil && len(prepBytes) > 500
-	r.Record("K05", "skill", "Structured repair/build/import/edit/sign workflow", "integration", []string{"integration"}, k05Passed, "PASSED", "prepare-edit.sh provides deterministic round-trip editing workspace")
+	r.runSkillEditRequirement()
 }
 
 // Group 20: Verification

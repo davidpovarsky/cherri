@@ -2,10 +2,9 @@
 set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/common.sh"
-ensure_cherri
 
 if [ "$#" -lt 1 ]; then
-  echo "Usage: build.sh SOURCE.cherri [OUTPUT.shortcut] [--signed|--unsigned] [--contacts|--anyone]" >&2
+  echo "Usage: build.sh SOURCE.cherri [OUTPUT.shortcut] [--signed|--unsigned] [--contacts|--anyone] [--original=ORIGINAL.plist --allowed-delta=POLICY.json]" >&2
   exit 2
 fi
 SOURCE=$1
@@ -13,6 +12,8 @@ shift
 OUTPUT=""
 MODE=signed
 SHARE=anyone
+ORIGINAL=""
+POLICY=""
 
 if [ "$#" -gt 0 ]; then
   case "$1" in
@@ -26,6 +27,8 @@ for arg in "$@"; do
     --unsigned) MODE=unsigned ;;
     --contacts) SHARE=contacts ;;
     --anyone) SHARE=anyone ;;
+    --original=*) ORIGINAL=${arg#--original=} ;;
+    --allowed-delta=*) POLICY=${arg#--allowed-delta=} ;;
     *) echo "Unknown option: $arg" >&2; exit 2 ;;
   esac
 done
@@ -36,92 +39,85 @@ SOURCE_ABS="$SOURCE_DIR/$(basename -- "$SOURCE")"
 if [ -z "$OUTPUT" ]; then
   OUTPUT=${SOURCE_ABS%.*}.shortcut
 fi
-case "$OUTPUT" in
-  /*) OUTPUT_ABS=$OUTPUT ;;
-  *) OUTPUT_ABS="$(pwd)/$OUTPUT" ;;
-esac
-mkdir -p "$(dirname -- "$OUTPUT_ABS")"
-rm -f "$OUTPUT_ABS"
+mkdir -p "$(dirname -- "$OUTPUT")"
+OUTPUT_DIR=$(CDPATH= cd -- "$(dirname -- "$OUTPUT")" && pwd)
+OUTPUT_ABS="$OUTPUT_DIR/$(basename -- "$OUTPUT")"
+if [ "$SOURCE_ABS" = "$OUTPUT_ABS" ] || [ "$SOURCE_ABS" -ef "$OUTPUT_ABS" ]; then
+  echo "[CHERRI_BUILD_INPUT_ALIAS] Output must not replace the source." >&2
+  exit 2
+fi
+if [ -e "$OUTPUT_ABS" ] && [ ! -f "$OUTPUT_ABS" ]; then
+  echo "[CHERRI_BUILD_OUTPUT_TYPE] Output is not a regular file." >&2
+  exit 2
+fi
 
+# Prepared workspaces carry their own immutable original. Imported source copied
+# elsewhere must name that original explicitly before the signing step.
 if [ "$MODE" = signed ]; then
-  # Step 1: Preflight unsigned plist compilation with the verified Cherri binary
-  # so we confirm the source compiles cleanly to a valid XML/binary plist with
-  # the exact pinned compiler before invoking the signing path.
-  PREFLIGHT_PLIST="${TMPDIR:-/tmp}/cherri-preflight-$$.shortcut"
-  rm -f "$PREFLIGHT_PLIST"
-  "$CHERRI_BIN_RESOLVED" "$SOURCE_ABS" --output="$PREFLIGHT_PLIST" --skip-sign --no-ansi
-  if [ ! -s "$PREFLIGHT_PLIST" ]; then
-    rm -f "$PREFLIGHT_PLIST"
-    echo "Unsigned preflight compilation failed to produce plist: $SOURCE_ABS" >&2
-    exit 1
+  if [ -z "$ORIGINAL" ] && [ -f "$SOURCE_DIR/../original/shortcut.plist" ]; then
+    ORIGINAL="$SOURCE_DIR/../original/shortcut.plist"
   fi
-  if ! grep -q "WFWorkflowActions" "$PREFLIGHT_PLIST" 2>/dev/null; then
-    rm -f "$PREFLIGHT_PLIST"
-    echo "Unsigned preflight output is not a valid Shortcut plist: $SOURCE_ABS" >&2
-    exit 1
+  if [ -z "$ORIGINAL" ] && grep -Eq '^[[:space:]]*(#workflowheader([[:space:]]|$)|native[[:space:]]*\.[[:space:]]*workflow[[:space:]]*\()' "$SOURCE_ABS"; then
+    echo "[CHERRI_EDIT_POLICY_REQUIRED] Imported source requires --original and --allowed-delta before signing." >&2
+    exit 2
   fi
-  rm -f "$PREFLIGHT_PLIST"
-
-  # Step 2: Signed compilation using the exact same verified compiler binary.
-  SIGN_FLAGS="--hubsign"
-  if [ -n "${CHERRI_SIGNING_SERVER:-}" ]; then
-    SIGN_FLAGS="--signing-server=$CHERRI_SIGNING_SERVER"
+fi
+if [ -n "$ORIGINAL" ] || [ -n "$POLICY" ]; then
+  if [ -z "$ORIGINAL" ] || [ -z "$POLICY" ] || [ ! -f "$ORIGINAL" ] || [ ! -f "$POLICY" ]; then
+    echo "[CHERRI_EDIT_POLICY_REQUIRED] Provide an existing original and explicit allowed-delta policy." >&2
+    exit 2
   fi
-  if ! "$CHERRI_BIN_RESOLVED" "$SOURCE_ABS" --output="$OUTPUT_ABS" $SIGN_FLAGS --share="$SHARE" --no-ansi; then
-    rm -f "$OUTPUT_ABS"
-    echo "Signed compilation failed for: $SOURCE_ABS" >&2
-    exit 1
-  fi
-  if [ ! -s "$OUTPUT_ABS" ]; then
-    rm -f "$OUTPUT_ABS"
-    echo "Compiler did not create signed Shortcut: $OUTPUT_ABS" >&2
-    exit 1
-  fi
-  HEADER=$(dd if="$OUTPUT_ABS" bs=1 count=4 2>/dev/null || true)
-  if [ "$HEADER" != "AEA1" ]; then
-    rm -f "$OUTPUT_ABS"
-    echo "Signing result is not an AEA1 Shortcut (got header '$HEADER'): $OUTPUT_ABS" >&2
-    exit 1
-  fi
-else
-  # Cherri deliberately writes skip-sign output beside the source as
-  # <workflowName>_unsigned.shortcut; --output only applies to the signed
-  # destination. Run the compiler, then pick the freshly-written unsigned file
-  # and move it to the caller's requested destination.
-  STATE=${TMPDIR:-/tmp}/cherri-unsigned-before-$$
-  : > "$STATE"
-  for f in "$SOURCE_DIR"/*_unsigned.shortcut; do
-    [ -f "$f" ] || continue
-    cksum "$f" >> "$STATE" 2>/dev/null || true
-  done
-
-  "$CHERRI_BIN_RESOLVED" "$SOURCE_ABS" --skip-sign --no-ansi
-
-  GENERATED=""
-  for f in "$SOURCE_DIR"/*_unsigned.shortcut; do
-    [ -f "$f" ] || continue
-    LINE=$(cksum "$f" 2>/dev/null || true)
-    if ! grep -Fqx -- "$LINE" "$STATE" 2>/dev/null; then
-      GENERATED=$f
-      break
-    fi
-  done
-  rm -f "$STATE"
-
-  # If Cherri overwrote an identical pre-existing file, the checksum is
-  # unchanged. In that case the most recently touched unsigned file is still
-  # the correct compiler output.
-  if [ -z "$GENERATED" ]; then
-    GENERATED=$(ls -1t "$SOURCE_DIR"/*_unsigned.shortcut 2>/dev/null | head -n 1 || true)
-  fi
-  [ -n "$GENERATED" ] && [ -s "$GENERATED" ] || {
-    echo "Compiler succeeded but no unsigned Shortcut output was found beside $SOURCE_ABS" >&2
-    exit 1
-  }
-
-  if [ "$GENERATED" != "$OUTPUT_ABS" ]; then
-    mv -f "$GENERATED" "$OUTPUT_ABS"
+  if [ "$ORIGINAL" -ef "$OUTPUT_ABS" ] || [ "$POLICY" -ef "$OUTPUT_ABS" ]; then
+    echo "[CHERRI_BUILD_INPUT_ALIAS] Output must not replace the original or edit policy." >&2
+    exit 2
   fi
 fi
 
+ensure_cherri
+STAGE=$(mktemp -d "$OUTPUT_DIR/.cherri-build.XXXXXXXX")
+trap 'rm -rf "$STAGE"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+UNSIGNED="$STAGE/verified-unsigned.shortcut"
+
+# The explicit V2 compile command writes exactly this file. No sibling-file
+# discovery, preexisting output deletion, or second compilation is needed.
+"$CHERRI_BIN_RESOLVED" compile "$SOURCE_ABS" --skip-sign "--output=$UNSIGNED" --no-ansi
+[ -s "$UNSIGNED" ] || { echo "Unsigned compilation produced no Shortcut." >&2; exit 1; }
+if [ -n "$ORIGINAL" ]; then
+  if ! GATE=$("$CHERRI_BIN_RESOLVED" verify-edit "$ORIGINAL" "$UNSIGNED" "--allowed-delta=$POLICY" --json 2>&1); then
+    printf '%s\n' "$GATE" >&2
+    echo "[CHERRI_EDIT_GATE_FAILED] Finalization stopped; original and previous output are preserved." >&2
+    exit 1
+  fi
+else
+  if ! GATE=$("$CHERRI_BIN_RESOLVED" verify-edit "$UNSIGNED" "$UNSIGNED" --json 2>&1); then
+    printf '%s\n' "$GATE" >&2
+    echo "[CHERRI_EDIT_GATE_FAILED] Compiler comparison entrypoint is required." >&2
+    exit 1
+  fi
+fi
+if ! json_is_valid_object "$GATE" || ! printf '%s\n' "$GATE" | grep -Eq '"ok"[[:space:]]*:[[:space:]]*true'; then
+  echo "[CHERRI_EDIT_GATE_FAILED] Comparison returned no successful structured receipt." >&2
+  exit 1
+fi
+
+if [ "$MODE" = signed ]; then
+  SIGNED="$STAGE/$(basename -- "$OUTPUT_ABS")"
+  # Sign the same bytes that passed the complete document gate. The public sign
+  # command retains its configured service selection and AEA1 validation.
+  if [ -n "${CHERRI_SIGNING_SERVER:-}" ]; then
+    "$CHERRI_BIN_RESOLVED" sign "$UNSIGNED" "--output=$SIGNED" "--source-file=$SOURCE_ABS" "--signing-server=$CHERRI_SIGNING_SERVER" "--share=$SHARE" --no-ansi
+  else
+    "$CHERRI_BIN_RESOLVED" sign "$UNSIGNED" "--output=$SIGNED" "--source-file=$SOURCE_ABS" --hubsign "--share=$SHARE" --no-ansi
+  fi
+  HEADER=$(dd if="$SIGNED" bs=1 count=4 2>/dev/null || true)
+  if [ ! -s "$SIGNED" ] || [ "$HEADER" != AEA1 ]; then
+    echo "[CHERRI_SIGN_INVALID] Signing did not produce an AEA1 Shortcut." >&2
+    exit 1
+  fi
+  mv -f "$SIGNED" "$OUTPUT_ABS"
+else
+  mv -f "$UNSIGNED" "$OUTPUT_ABS"
+fi
 printf '%s\n' "$OUTPUT_ABS"
