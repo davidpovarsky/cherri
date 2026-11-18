@@ -1,7 +1,7 @@
 {
   "acceptance_count": 94,
   "closure_complete": false,
-  "generated_at": "2026-11-18T02:30:06Z",
+  "generated_at": "2026-11-18T06:16:23Z",
   "recovery_gate_count": 33,
   "repair_count": 52,
   "rows": [
@@ -18,7 +18,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#B01"
       ],
@@ -39,7 +39,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#B02"
       ],
@@ -60,7 +60,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#U01"
       ],
@@ -71,24 +71,32 @@
     {
       "id": "U02",
       "requirement": "Regenerate assembled schema from original declarations and narrow facets",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "unit",
+        "generation"
+      ],
       "required_tiers": [
         "unit",
         "generation"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "actions",
+        "tools/language-schema/main.go",
+        "internal/language/schema/generated_registry.go",
+        "p15_schema_production_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15U02GeneratedSchemaProduction"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#U02"
+        "acceptance-local-evidence.json#ev-local-U02-unit",
+        "acceptance-local-evidence.json#ev-local-U02-generation"
       ],
-      "blocker": "A fixed fingerprint comparison does not execute regeneration or determinism checks.",
-      "detail": "Formal scope UNVERIFIED: A fixed fingerprint comparison does not execute regeneration or determinism checks. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15U02GeneratedSchemaProduction",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "U03",
@@ -102,14 +110,19 @@
       ],
       "production_path": [
         "actions/web.cherri",
+        "actions/calendar.cherri",
+        "tools/language-schema/main.go",
         "upstream_rehearsal_test.go",
-        "internal/language/schema/generated_registry.go"
+        "p15_schema_production_test.go",
+        "internal/language/schema/generated_registry.go",
+        "internal/language/analysis/analyzer.go",
+        "internal/language/service/service.go"
       ],
       "test_names": [
         "TestUpstreamPropagationRehearsal"
       ],
       "positive_and_negative": true,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-evidence.json#ev-local-U03-integration"
       ],
@@ -129,120 +142,159 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#U04"
       ],
-      "blocker": "Direct parser diagnostics do not exercise the public CLI and its legacy fallback boundary.",
-      "detail": "Formal scope UNVERIFIED: Direct parser diagnostics do not exercise the public CLI and its legacy fallback boundary. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "blocker": "Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision.",
+      "detail": "Formal scope UNVERIFIED: Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision. Observed smoke passed=true; see acceptance-local-observations.json.",
       "scope": "Observed smoke only; no formal acceptance tier proven"
     },
     {
       "id": "P01",
       "requirement": "Plain, f, raw and multiline text parse without treating ordinary braces as variables",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "unit"
+      ],
       "required_tiers": [
         "unit"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "internal/language/syntax/lexer.go",
+        "internal/language/syntax/parser.go",
+        "internal/language/syntax/format.go",
+        "internal/language/service/service.go",
+        "p15_parser_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15P01LiteralAndInterpolationValues"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#P01"
+        "acceptance-local-evidence.json#ev-local-P01-unit"
       ],
-      "blocker": "Statement counts do not assert the parsed literal, interpolation, raw, and multiline values.",
-      "detail": "Formal scope UNVERIFIED: Statement counts do not assert the parsed literal, interpolation, raw, and multiline values. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15P01LiteralAndInterpolationValues",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "P02",
       "requirement": "Unterminated string/comment and partial named call recover",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "unit",
+        "service"
+      ],
       "required_tiers": [
         "unit",
         "service"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "internal/language/syntax/lexer.go",
+        "internal/language/syntax/parser.go",
+        "internal/language/syntax/format.go",
+        "internal/language/service/service.go",
+        "p15_parser_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15P02BoundedRecoveryAndCompletion"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#P02"
+        "acceptance-local-evidence.json#ev-local-P02-unit",
+        "acceptance-local-evidence.json#ev-local-P02-service"
       ],
-      "blocker": "One unterminated string and nonempty completion do not cover comment and partial named-call recovery.",
-      "detail": "Formal scope UNVERIFIED: One unterminated string and nonempty completion do not cover comment and partial named-call recovery. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15P02BoundedRecoveryAndCompletion",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "P03",
       "requirement": "Pratt precedence, parentheses and short-circuit tree are correct",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "unit"
+      ],
       "required_tiers": [
         "unit"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "internal/language/syntax/lexer.go",
+        "internal/language/syntax/parser.go",
+        "internal/language/syntax/format.go",
+        "internal/language/service/service.go",
+        "p15_parser_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15P03PrecedenceAndComparisonChains"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#P03"
+        "acceptance-local-evidence.json#ev-local-P03-unit"
       ],
-      "blocker": "One parsed statement does not inspect operator precedence, parentheses, or the logical AST.",
-      "detail": "Formal scope UNVERIFIED: One parsed statement does not inspect operator precedence, parentheses, or the logical AST. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15P03PrecedenceAndComparisonChains",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "P04",
       "requirement": "Semicolon/newline handling and bare return are unambiguous",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "unit"
+      ],
       "required_tiers": [
         "unit"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "internal/language/syntax/lexer.go",
+        "internal/language/syntax/parser.go",
+        "internal/language/syntax/format.go",
+        "internal/language/service/service.go",
+        "p15_parser_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15P04ReturnTerminators"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#P04"
+        "acceptance-local-evidence.json#ev-local-P04-unit"
       ],
-      "blocker": "Successful parsing does not inspect the bare-return/newline ambiguity or negative termination cases.",
-      "detail": "Formal scope UNVERIFIED: Successful parsing does not inspect the bare-return/newline ambiguity or negative termination cases. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15P04ReturnTerminators",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "P05",
       "requirement": "Unicode identifiers and tokenizer/completion agree",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "unit",
+        "service"
+      ],
       "required_tiers": [
         "unit",
         "service"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "internal/language/syntax/lexer.go",
+        "internal/language/syntax/parser.go",
+        "internal/language/syntax/format.go",
+        "internal/language/service/service.go",
+        "p15_parser_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15P05UnicodeIdentifierTokenizerCompletion"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#P05"
+        "acceptance-local-evidence.json#ev-local-P05-unit",
+        "acceptance-local-evidence.json#ev-local-P05-service"
       ],
-      "blocker": "Nonempty completion does not assert the exact Unicode identifier/token agreement.",
-      "detail": "Formal scope UNVERIFIED: Nonempty completion does not assert the exact Unicode identifier/token agreement. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15P05UnicodeIdentifierTokenizerCompletion",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "V01",
@@ -259,7 +311,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#V01"
       ],
@@ -280,7 +332,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#V02"
       ],
@@ -303,7 +355,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#V03"
       ],
@@ -325,7 +377,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#V04"
       ],
@@ -347,7 +399,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#C01"
       ],
@@ -368,7 +420,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#C02"
       ],
@@ -390,7 +442,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#C03"
       ],
@@ -412,7 +464,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#C04"
       ],
@@ -433,7 +485,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#C05"
       ],
@@ -456,7 +508,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#T01"
       ],
@@ -467,23 +519,30 @@
     {
       "id": "T02",
       "requirement": "Runtime immutable output does not satisfy literal-required slot",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "unit"
+      ],
       "required_tiers": [
         "unit"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "internal/language/analysis/analyzer.go",
+        "internal/language/analysis/literal_arguments.go",
+        "internal/language/lower/lower.go",
+        "language_emit_adapter.go",
+        "p15_types_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15T02LiteralRequiredProduction"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#T02"
+        "acceptance-local-evidence.json#ev-local-T02-unit"
       ],
-      "blocker": "Number-to-Text assignment rejection does not exercise a literal-required action parameter.",
-      "detail": "Formal scope UNVERIFIED: Number-to-Text assignment rejection does not exercise a literal-required action parameter. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15T02LiteralRequiredProduction",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "T03",
@@ -499,7 +558,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#T03"
       ],
@@ -521,7 +580,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#T04"
       ],
@@ -543,7 +602,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#T05"
       ],
@@ -554,23 +613,35 @@
     {
       "id": "T06",
       "requirement": "User record annotation is not runtime JSON validation",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "unit"
+      ],
       "required_tiers": [
         "unit"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "internal/language/types/types.go",
+        "internal/language/types/record_evidence.go",
+        "internal/language/analysis/analyzer.go",
+        "internal/language/analysis/function_arguments.go",
+        "internal/language/syntax/parser.go",
+        "internal/language/analysis/control_results.go",
+        "p15_record_acceptance_test.go",
+        "p15_control_type_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15T06RecordAnnotationsDoNotValidateExternalValues",
+        "TestP15T06RecordProofTypeRelations",
+        "TestP15T06ControlResultsRequireAllBranches"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#T06"
+        "acceptance-local-evidence.json#ev-local-T06-unit"
       ],
-      "blocker": "A record constructor does not exercise authored record annotations or runtime JSON behavior.",
-      "detail": "Formal scope UNVERIFIED: A record constructor does not exercise authored record annotations or runtime JSON behavior. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "T07",
@@ -585,7 +656,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#T07"
       ],
@@ -596,24 +667,35 @@
     {
       "id": "T08",
       "requirement": "Variant-dependent output type inferred from literal mode",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "unit",
+        "service"
+      ],
       "required_tiers": [
         "unit",
         "service"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "internal/language/analysis/analyzer.go",
+        "internal/language/analysis/cardinality.go",
+        "internal/language/service/service.go",
+        "internal/language/service/call_result.go",
+        "p15_cardinality_acceptance_test.go",
+        "docs/apple-runtime/macos-27/builtin-actions.json"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15T08ConditionalCardinalityProduction",
+        "TestP15T08ConditionalCardinalityService"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#T08"
+        "acceptance-local-evidence.json#ev-local-T08-unit",
+        "acceptance-local-evidence.json#ev-local-T08-service"
       ],
-      "blocker": "Two nonempty output type names do not test literal-mode-dependent inference.",
-      "detail": "Formal scope UNVERIFIED: Two nonempty output type names do not test literal-mode-dependent inference. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "T09",
@@ -629,7 +711,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#T09"
       ],
@@ -652,7 +734,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#S01"
       ],
@@ -674,7 +756,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#S02"
       ],
@@ -696,7 +778,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#S03"
       ],
@@ -718,7 +800,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#L01"
       ],
@@ -741,7 +823,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#L02"
       ],
@@ -762,7 +844,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#L03"
       ],
@@ -784,7 +866,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#L04"
       ],
@@ -807,7 +889,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#N01"
       ],
@@ -832,7 +914,7 @@
         "tools/language-acceptance:runNumbers"
       ],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-evidence.json#ev-local-N02-unit"
       ],
@@ -853,7 +935,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#N03"
       ],
@@ -890,7 +972,7 @@
         "TestP15F01HybridEditedPredicateGuardsRHS"
       ],
       "positive_and_negative": true,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-evidence.json#ev-local-F01-unit",
         "acceptance-local-evidence.json#ev-local-F01-native"
@@ -914,7 +996,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#F02"
       ],
@@ -936,7 +1018,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#F03"
       ],
@@ -958,7 +1040,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#F04"
       ],
@@ -979,7 +1061,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#F05"
       ],
@@ -1002,7 +1084,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#FN01"
       ],
@@ -1025,7 +1107,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#FN02"
       ],
@@ -1048,7 +1130,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#FN03"
       ],
@@ -1070,7 +1152,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#FN04"
       ],
@@ -1092,7 +1174,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#FN05"
       ],
@@ -1114,7 +1196,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#M01"
       ],
@@ -1136,7 +1218,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#M02"
       ],
@@ -1158,7 +1240,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#M03"
       ],
@@ -1180,7 +1262,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#M04"
       ],
@@ -1208,7 +1290,7 @@
         "tools/language-acceptance:runMetadata"
       ],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-evidence.json#ev-local-M05-unit",
         "acceptance-local-evidence.json#ev-local-M05-native"
@@ -1230,7 +1312,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#IM01"
       ],
@@ -1252,7 +1334,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#IM02"
       ],
@@ -1274,7 +1356,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#IM03"
       ],
@@ -1295,7 +1377,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#IM04"
       ],
@@ -1317,7 +1399,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#IM05"
       ],
@@ -1338,7 +1420,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#AC01"
       ],
@@ -1360,7 +1442,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#AC02"
       ],
@@ -1381,7 +1463,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#AC03"
       ],
@@ -1402,7 +1484,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#R01"
       ],
@@ -1423,7 +1505,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#R02"
       ],
@@ -1444,7 +1526,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#R03"
       ],
@@ -1465,7 +1547,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#R04"
       ],
@@ -1487,7 +1569,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#R05"
       ],
@@ -1517,7 +1599,7 @@
         "TestHYB21_MalformedActionEntriesRejectedWithExactIndex"
       ],
       "positive_and_negative": true,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-evidence.json#ev-local-R06-integration"
       ],
@@ -1546,7 +1628,7 @@
         "TestSEM34_TamperDetectionAndStrictCompareAsymmetry"
       ],
       "positive_and_negative": true,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-evidence.json#ev-local-R07-integration"
       ],
@@ -1567,7 +1649,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#E01"
       ],
@@ -1589,7 +1671,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#E02"
       ],
@@ -1611,7 +1693,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#E03"
       ],
@@ -1633,7 +1715,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#E04"
       ],
@@ -1655,7 +1737,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#E05"
       ],
@@ -1677,7 +1759,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#E06"
       ],
@@ -1703,7 +1785,7 @@
         "tools/language-acceptance:runEditor"
       ],
       "positive_and_negative": true,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-evidence.json#ev-local-E07-integration"
       ],
@@ -1724,7 +1806,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#E08"
       ],
@@ -1735,66 +1817,86 @@
     {
       "id": "CL01",
       "requirement": "JSON commands emit parseable response and reliable exit status",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "integration"
+      ],
       "required_tiers": [
         "integration"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "main.go",
+        "args.go",
+        "language_cli_adapter.go",
+        "p15_cli_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15CLIJSONCommandsAndExitStatus"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#CL01"
+        "acceptance-local-evidence.json#ev-local-CL01-integration"
       ],
-      "blocker": "In-process capability fields do not execute JSON CLI commands or observe their exit status.",
-      "detail": "Formal scope UNVERIFIED: In-process capability fields do not execute JSON CLI commands or observe their exit status. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15CLIJSONCommandsAndExitStatus",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "CL02",
       "requirement": "Analysis never emits/signs/executes/installs",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "security",
+        "integration"
+      ],
       "required_tiers": [
         "security",
         "integration"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "main.go",
+        "args.go",
+        "language_cli_adapter.go",
+        "p15_cli_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15CLIAnalysisHasNoExternalEffects"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#CL02"
+        "acceptance-local-evidence.json#ev-local-CL02-security",
+        "acceptance-local-evidence.json#ev-local-CL02-integration"
       ],
-      "blocker": "Unchanged directory entry count does not observe signing, execution, installation, or writes.",
-      "detail": "Formal scope UNVERIFIED: Unchanged directory entry count does not observe signing, execution, installation, or writes. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15CLIAnalysisHasNoExternalEffects",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "CL03",
       "requirement": "Normal production path rejects legacy public syntax",
-      "status": "UNVERIFIED",
-      "tier": [],
+      "status": "PASS",
+      "tier": [
+        "integration"
+      ],
       "required_tiers": [
         "integration"
       ],
       "production_path": [
-        "tools/language-acceptance/main.go"
+        "main.go",
+        "args.go",
+        "language_cli_adapter.go",
+        "p15_cli_acceptance_test.go"
       ],
-      "test_names": [],
-      "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "test_names": [
+        "TestP15CLIDefaultRejectsLegacyWithGuidance"
+      ],
+      "positive_and_negative": true,
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
-        "acceptance-local-observations.json#CL03"
+        "acceptance-local-evidence.json#ev-local-CL03-integration"
       ],
-      "blocker": "Migrating legacy syntax does not exercise production CLI rejection of that syntax.",
-      "detail": "Formal scope UNVERIFIED: Migrating legacy syntax does not exercise production CLI rejection of that syntax. Observed smoke passed=true; see acceptance-local-observations.json.",
-      "scope": "Observed smoke only; no formal acceptance tier proven"
+      "detail": "Executed production tests: TestP15CLIDefaultRejectsLegacyWithGuidance",
+      "scope": "Local runner assertion scope only; not universal feature, installed consumer, or Apple runtime acceptance"
     },
     {
       "id": "D01",
@@ -1810,7 +1912,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#D01"
       ],
@@ -1831,7 +1933,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#D02"
       ],
@@ -1853,7 +1955,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#D03"
       ],
@@ -1874,7 +1976,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#K01"
       ],
@@ -1895,7 +1997,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#K02"
       ],
@@ -1916,7 +2018,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#K03"
       ],
@@ -1927,7 +2029,7 @@
     {
       "id": "K04",
       "requirement": "Offline compatible cache and docs mismatch",
-      "status": "UNVERIFIED",
+      "status": "FAIL",
       "tier": [],
       "required_tiers": [
         "integration"
@@ -1937,12 +2039,12 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#K04"
       ],
       "blocker": "A fingerprint substring does not exercise offline cache and docs mismatch behavior.",
-      "detail": "Formal scope UNVERIFIED: A fingerprint substring does not exercise offline cache and docs mismatch behavior. Observed smoke passed=true; see acceptance-local-observations.json.",
+      "detail": "Formal scope UNVERIFIED: A fingerprint substring does not exercise offline cache and docs mismatch behavior. Observed smoke passed=false; see acceptance-local-observations.json.",
       "scope": "Observed smoke only; no formal acceptance tier proven"
     },
     {
@@ -1958,7 +2060,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#K05"
       ],
@@ -1979,7 +2081,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#CI01"
       ],
@@ -2000,7 +2102,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#CI02"
       ],
@@ -2022,7 +2124,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#CI03"
       ],
@@ -2044,7 +2146,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#CI04"
       ],
@@ -2065,7 +2167,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "External held-out model evaluation endpoint not configured",
       "detail": "Harness prepared; external model evaluation API endpoint not configured per Section 22.5",
@@ -2084,7 +2186,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [
         "acceptance-local-observations.json#END01"
       ],
@@ -2106,7 +2208,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2126,7 +2228,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2145,7 +2247,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2166,7 +2268,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2187,7 +2289,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2207,7 +2309,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2227,7 +2329,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2247,7 +2349,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2266,7 +2368,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2285,7 +2387,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2305,7 +2407,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2326,7 +2428,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2346,7 +2448,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2367,7 +2469,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2388,7 +2490,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2408,7 +2510,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2429,7 +2531,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2450,7 +2552,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2471,7 +2573,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2491,7 +2593,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2512,7 +2614,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2533,7 +2635,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2553,7 +2655,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2574,7 +2676,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2595,7 +2697,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2615,7 +2717,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2636,7 +2738,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2656,7 +2758,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2677,7 +2779,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2697,7 +2799,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2718,7 +2820,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2738,7 +2840,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2758,7 +2860,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2778,7 +2880,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2797,7 +2899,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2816,7 +2918,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2836,7 +2938,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2856,7 +2958,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2877,7 +2979,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2897,7 +2999,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2917,7 +3019,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2937,7 +3039,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2957,7 +3059,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2977,7 +3079,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -2997,7 +3099,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3017,7 +3119,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3036,7 +3138,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3055,7 +3157,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3076,7 +3178,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3096,7 +3198,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3116,7 +3218,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3136,7 +3238,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3155,7 +3257,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3175,7 +3277,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3195,7 +3297,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3215,7 +3317,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3236,7 +3338,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3257,7 +3359,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3277,7 +3379,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3298,7 +3400,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3318,7 +3420,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3339,7 +3441,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3360,7 +3462,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3381,7 +3483,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3402,7 +3504,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3423,7 +3525,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3444,7 +3546,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3465,7 +3567,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3485,7 +3587,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3505,7 +3607,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3525,7 +3627,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3546,7 +3648,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3567,7 +3669,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3587,7 +3689,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3608,7 +3710,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3629,7 +3731,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3650,7 +3752,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3671,7 +3773,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3692,7 +3794,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3713,7 +3815,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3734,7 +3836,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3754,7 +3856,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3776,7 +3878,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3797,7 +3899,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3819,7 +3921,7 @@
       ],
       "test_names": [],
       "positive_and_negative": false,
-      "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "evidence": [],
       "blocker": "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation",
       "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner",
@@ -3828,5 +3930,5 @@
   ],
   "schema_version": "1",
   "scope": "Executed local assertions and explicit unexecuted obligations; declaration mappings are not execution evidence",
-  "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c"
+  "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6"
 }

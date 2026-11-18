@@ -1,18 +1,22 @@
 # P10R15 formal acceptance review
 
 Date: 2026-11-18  
-Component source: `e424174567acbf99bea2a76aa1ec79b05a18470c`  
+Current formal snapshot source: `85b6c352d1e0f9f272cfc6f33c10d0becd29eee6`
 Verified starting point: P10R14 `ca8a62327e429d5574c8f2a5d440de2c5e553ab2`  
 Formal Asana acceptance task: `1220432417414104`  
 Status: **IMPLEMENTED_PARTIAL_EVIDENCE — project closure remains open**
 
 ## Current result
 
-The current local runner reports **179 obligations: 5 passed, 0 failed assertions, 174 pending or unexecuted**. The machine-readable audit distinguishes **5 PASS, 171 UNVERIFIED, and 3 BLOCKED_EXTERNAL**. The 94 original requirements account for 5 passes, 86 unverified obligations, two external runtime/UI obligations, and AI01. The 52 repair scenarios and 33 backend recovery gates have no dedicated scenario producer in this local run.
+The fresh local runner at `85b6c352d1e0f9f272cfc6f33c10d0becd29eee6` reports **179 obligations: 17 passed, 1 failed, 161 pending or unexecuted**. Its independently inspected audit distinguishes **17 PASS, 1 FAIL, 158 UNVERIFIED and 3 BLOCKED_EXTERNAL**. All 26 actual local evidence records carry that exact source SHA. The runner exited 1, and `closure_complete` remains false.
 
-This replaces the historical 71-pass headline as a formal acceptance claim. The change does not mean that 66 product behaviors regressed. Review found that many earlier checks observed a smaller smoke condition than their requirement described. All 86 such observations remain available separately; they no longer create formal evidence tiers.
+K04 is the real local failure: the checked-in consumer tuple still pins the old native schema fingerprint. It requires a coherent source/docs/Skill update and actual installed/offline evidence; changing one fingerprint alone is not the repair. The 158 unverified items remain engineering or evidence obligations, not automatically hardware blockers. The three external-tier labels are F01, E07 and AI01. F01 already has a failed earlier signed run under active diagnosis; missing current-SHA proof is not evidence that the simulator is unavailable.
 
-This is a component snapshot. Root integration, private-corpus verification, signed simulator results, installed consumer checks, and release CI must be tied to the final integrated SHA before they can extend this evidence.
+This supersedes the first P10R15 component snapshot (5 passes) and the historical 71-pass headline. Earlier narrow smoke observations remain separate from formal proof. The 52 repair scenarios and 33 backend recovery gates still require their own scenario producers; shared requirement IDs cannot manufacture their acceptance.
+
+The capture was rerun into a fresh output directory using the documented `--phase=local`. A previous wrapper had copied old checked-in audit/evidence files over fresh outputs; that mixed capture is invalid. A subsequent diagnostic invocation used a nonstandard `implementation` phase and counted unresolved work as failures. Neither is used as the authoritative local snapshot. The committed files are the actual fresh runner output, with hashes in `evidence/p15-formal-85b6c35/capture-summary.json`.
+
+This snapshot is a scoped local result. Later source changes, signed runtime, iOS UI, installed consumers, final private-corpus boundaries and release CI require their own source-bound receipts.
 
 ## Reviewable artifacts
 
@@ -24,18 +28,27 @@ This is a component snapshot. Root integration, private-corpus verification, sig
 
 ## Producers accepted at their stated local tier
 
-| ID | Executed producer | Proven scope | Remaining limitation |
+| ID | Requirement | Executed tier | Actual producer |
 |---|---|---|---|
-| U03 | `TestUpstreamPropagationRehearsal` through discovered, uncached Go execution | Real source edit, regeneration, propagation and cleanup rehearsal | Does not close unrelated catalog or release requirements |
-| N02 | `Runner.runNumbers` using production analyzer | Literal division/modulus by zero and Text-plus-Number are rejected | Unit negative cases only |
-| M05 | `Runner.runMetadata` using migrator and lowerer | Exact parameter assertions for seven migrated trigger families | No automation installation or device trigger execution claim |
-| R06 | `TestP15R06ProductionImportFormats`, `TestHYB18`, `TestHYB20`, `TestHYB21` | XML plist, binary plist, unsigned .shortcut and JSON input; both frontends; recursive typed output equality; malformed/signed container rejection | Synthetic fixtures, not the private 38-shortcut corpus |
-| R07 | `TestSEM28`, `TestSEM29`, `TestSEM30`, `TestSEM34` | Edited natural action/control regions, bounded changes, collateral-delta and tamper rejection | Does not establish every possible editing workflow |
-| F01 | Six `TestP15F01*` producers | Serialized native guard placement, once-only RHS, static skipping, Boolean equality, nested logic, imported-header edits and negative guard mutations | **PENDING_EXTERNAL:** exact-candidate signed Apple runtime |
-| E07 | `Runner.runEditor` using `Service.ApplyVisualSourceEdit` | Exact bounded source change and invalid action-index rejection | **PENDING_EXTERNAL:** iOS UI |
-| AI01 | No evaluation producer executed | Endpoint blocker recorded with zero executed evaluation tiers | **BLOCKED_EXTERNAL:** held-out equal-budget model evaluation |
+| U02 | Regenerate assembled schema from original declarations and narrow facets | unit, generation | `TestP15U02GeneratedSchemaProduction` |
+| U03 | Simulate an upstream parameter change used by a facet | integration | `TestUpstreamPropagationRehearsal` |
+| P01 | Plain, f, raw and multiline text parse without treating ordinary braces as variables | unit | `TestP15P01LiteralAndInterpolationValues` |
+| P02 | Unterminated string/comment and partial named call recover | unit, service | `TestP15P02BoundedRecoveryAndCompletion` |
+| P03 | Pratt precedence, parentheses and short-circuit tree are correct | unit | `TestP15P03PrecedenceAndComparisonChains` |
+| P04 | Semicolon/newline handling and bare return are unambiguous | unit | `TestP15P04ReturnTerminators` |
+| P05 | Unicode identifiers and tokenizer/completion agree | unit, service | `TestP15P05UnicodeIdentifierTokenizerCompletion` |
+| T02 | Runtime immutable output does not satisfy literal-required slot | unit | `TestP15T02LiteralRequiredProduction` |
+| T06 | User record annotation is not runtime JSON validation | unit | `TestP15T06RecordAnnotationsDoNotValidateExternalValues`; `TestP15T06RecordProofTypeRelations`; `TestP15T06ControlResultsRequireAllBranches` |
+| T08 | Variant-dependent output type inferred from literal mode | unit, service | `TestP15T08ConditionalCardinalityProduction`; `TestP15T08ConditionalCardinalityService` |
+| N02 | Known zero divisor and text-plus-number are rejected | unit | `tools/language-acceptance:runNumbers` |
+| M05 | Seven existing trigger families migrate without install claims | unit, native | `tools/language-acceptance:runMetadata` |
+| R06 | XML/binary/unsigned Shortcut/JSON workflow intake | integration | `TestP15R06ProductionImportFormats`; `TestHYB18_SignedShortcutContainerRejected`; `TestHYB20_TrailingGarbageAfterJSONRootRejected`; `TestHYB21_MalformedActionEntriesRejectedWithExactIndex` |
+| R07 | Intended single-property edit vs collateral structural change | integration | `TestSEM28_UserEditOnNaturalActionIsolated`; `TestSEM29_UserEditInsideControlRegionIsolated`; `TestSEM30_OnlyTargetActionChangesAndNoCollateralDelta`; `TestSEM34_TamperDetectionAndStrictCompareAsymmetry` |
+| CL01 | JSON commands emit parseable response and reliable exit status | integration | `TestP15CLIJSONCommandsAndExitStatus` |
+| CL02 | Analysis never emits/signs/executes/installs | security, integration | `TestP15CLIAnalysisHasNoExternalEffects` |
+| CL03 | Normal production path rejects legacy public syntax | integration | `TestP15CLIDefaultRejectsLegacyWithGuidance` |
 
-Each named Go producer is selected by its exact test name. The runner checks JSON discovery events; an exit code of zero with no selected tests fails verification. Production subprocesses have timeouts and use `-count=1`.
+The `native` tier for M05 means serialized native parameter assertions. It is not Apple execution or automation installation. F01 and E07 retain local proof but their required runtime/UI acceptance is unresolved. AI01 has no configured eligible external evaluation endpoint. Named Go producers are selected with uncached execution and exact JSON discovery checks; zero exit with no selected test is rejected.
 
 ## F01 defects and fixes
 
@@ -53,7 +66,7 @@ The synthetic signed-runtime source is `tests/language-v2/v2-short-circuit-runti
 
 | Earlier probe | Why it could not close the contract | Current treatment |
 |---|---|---|
-| P03 statement count | Never inspected precedence or the logical AST | Observation retained; UNVERIFIED |
+| P03 statement count | Never inspected precedence or the logical AST | Historical observation retained; superseded by the current production P03 proof |
 | T07 runner-local version helper | Did not exercise production platform comparison | Observation retained; UNVERIFIED |
 | IM04 cleaned path prefix | Did not invoke a resource loader or test a symlink escape | Observation retained; UNVERIFIED |
 | AC03 nonempty enum registry | Did not inject bad codecs, duplicates or stale facets | Observation retained; UNVERIFIED |
@@ -67,7 +80,7 @@ The synthetic signed-runtime source is `tests/language-v2/v2-short-circuit-runti
 
 The full per-ID explanation is in the execution audit and smoke-observation file. Local phase keeps explicit unexecuted work pending and returns success only when there is no real assertion failure or contradiction. Final phase rejects unresolved mandatory tiers and scenarios.
 
-## Focused verification performed
+## Historical component verification
 
 - Red F01 authored comparisons and Boolean presence probes before implementation.
 - Red hybrid-header RHS probes: SentinelX job `job_1e455010cd32`.

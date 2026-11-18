@@ -1,0 +1,58 @@
+{
+  "sourceSha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+  "phase": "local",
+  "runnerExitCode": 1,
+  "elapsedSeconds": 162.61,
+  "auditCounts": {
+    "UNVERIFIED": 158,
+    "PASS": 17,
+    "BLOCKED_EXTERNAL": 3,
+    "FAIL": 1
+  },
+  "failedIds": [
+    "K04"
+  ],
+  "allEvidenceRecordsBoundToSource": true,
+  "evidenceCount": 26,
+  "report": {
+    "timestamp": "2026-11-18T06:16:23Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
+    "total_cases": 179,
+    "passed_cases": 17,
+    "failed_cases": 1,
+    "skipped_cases": 161
+  },
+  "files": {
+    "acceptance-execution-audit.json": {
+      "bytes": 156918,
+      "sha256": "ea9f471207297a7ac526bff47746427f051add5004376e058835f152be17cc6e"
+    },
+    "acceptance-local-evidence.json": {
+      "bytes": 18575,
+      "sha256": "5ec87e131659a0042c58839e905d7cb1025194192c544af23188b9e30ee57884"
+    },
+    "acceptance-local-observations.json": {
+      "bytes": 26089,
+      "sha256": "8011ef6f0a3544af6adf858c2b75d30b45530e96a9aa02c0b6db3a0884596ef4"
+    },
+    "acceptance-results.json": {
+      "bytes": 68791,
+      "sha256": "292f0399312f38c1d5020d4c0eb566eb024dd050eb6244c37546d025d930ed90"
+    },
+    "requirements-evidence-map.json": {
+      "bytes": 312761,
+      "sha256": "91724e4a6ea81fc5b327789e10f5d0a86b74e72985b94aebc44e4a6009d945f0"
+    },
+    "runner.log": {
+      "bytes": 770,
+      "sha256": "43da31ec2bb4b41a90c0d1c279288d1715f98ada63950eac93eab718609babb5"
+    }
+  },
+  "captureCorrections": [
+    "No checked-in reports are copied over this runner output.",
+    "The preceding85b6c35 run used a nonstandard implementation phase; its strict aggregate retained unproven obligations as failures. This run uses the documented local phase and keeps formal closure false."
+  ]
+}

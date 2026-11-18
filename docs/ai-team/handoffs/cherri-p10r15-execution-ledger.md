@@ -144,3 +144,13 @@ Asana formal, Inspector, iOS and runtime tasks were updated with these scoped fa
 - Apple Vision44240787251 failed actual execution. Supported CPU selection candidate56808fc (integrated9532624) is under actual preflight44244671547; no Apple OCR claim yet.
 - Existing Asana master and child context are preserved. A detailed notes update was auto-review rejected; a materially smaller project status1220666353420836 and bounded child handoffs1220666355135577/1220663269351448 succeeded without private-corpus or operational payloads.
 - Source state remains a feature branch; main-only15 and docs-main-only4 commits preserved. Live consumer tuple/Pure Original remain as previously recorded. Final integrated Go/private-corpus/CI/consumer gates must be refreshed.
+
+
+## 2026-11-18 08:16 Asia/Hebron - source-verified formal and regression checkpoint
+
+- Source85b6c35 formal runner:179 obligations,17PASS/1FAIL/161pending. Detailed audit17PASS/1FAIL/158UNVERIFIED/3missing external-tier proofs. All26 records bind exactly to that source. K04 is stale consumer schema/tuple evidence. The copied old audit from a prior wrapper was rejected and a documented-local-phase rerun produced fresh verified files; see capture-summary.json.
+- Root and lower packages at85b6c35 completed in525.765s:1197 pass events,4skip,1failed named test(A28 schema fingerprint mismatch). The former native.ref chained-metadata panic is repaired. A generated getType parameter-evidence description changed as expected from corrected source; its bytes/diff were preserved before restoring the isolated validation worktree. This is not a full-suite PASS.
+- Version comparison8915e43/receipt36d9ede preserves authored components through the existing comparator. Exact originald06b885 local proofs passed; per-platform T07 remains open.
+- F01 counter44248683227/predicate44248694890 and label44248707476/export44248722472 were dispatched from85b6c35 with mandatory native callback/trace, bounded editor capture and no optional OCR claim. One owned watcher covers the four runs; queued is not PASS.
+- AX group repair58aa2e1 replays actual4403-node evidence and keeps unique native identity unknown. Native Apple Vision three preflights failed; optional local recognition remains unverified and actual failed exits are retained. UI repair85b6c35 corresponds to independent owned rund695/44248146483, pending outcome.
+- Asana formal handoff comment1220646637805104 records the metadata repair and rejected mixed evidence without reposting private or operational payloads. No acceptance task was mass-completed. Rollback is source-specific revert; no main merge, Pure change or live promotion occurred.

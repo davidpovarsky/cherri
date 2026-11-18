@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_at": "2026-11-18T02:30:06Z",
+  "generated_at": "2026-11-18T06:16:23Z",
   "authority": "CHERRI-CANONICAL-BACKEND-RECOVERY.md Appendix A \u0026 Section 4.4",
   "total_requirements": 179,
   "acceptance_count": 94,
@@ -2389,7 +2389,7 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser"
+        "github.com/electrikmilk/cherri:TestP15P01LiteralAndInterpolationValues"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#P01"
@@ -2411,7 +2411,7 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser"
+        "github.com/electrikmilk/cherri:TestP15P02BoundedRecoveryAndCompletion"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#P02"
@@ -2432,7 +2432,7 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser"
+        "github.com/electrikmilk/cherri:TestP15P03PrecedenceAndComparisonChains"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#P03"
@@ -2453,7 +2453,7 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser"
+        "github.com/electrikmilk/cherri:TestP15P04ReturnTerminators"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#P04"
@@ -2475,7 +2475,7 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser",
+        "github.com/electrikmilk/cherri:TestP15P05UnicodeIdentifierTokenizerCompletion",
         "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis"
       ],
       "required_ui_assertions": {
@@ -4078,7 +4078,7 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runTypes"
+        "github.com/electrikmilk/cherri:TestP15T02LiteralRequiredProduction"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#T02"
@@ -4165,7 +4165,9 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runTypes"
+        "github.com/electrikmilk/cherri:TestP15T06RecordAnnotationsDoNotValidateExternalValues",
+        "github.com/electrikmilk/cherri:TestP15T06RecordProofTypeRelations",
+        "github.com/electrikmilk/cherri:TestP15T06ControlResultsRequireAllBranches"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#T06"
@@ -4208,7 +4210,8 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runTypes"
+        "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityProduction",
+        "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityService"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#T08"
@@ -4274,7 +4277,7 @@
         "generation"
       ],
       "test_ids": [
-        "tools/language-acceptance:runUpstream"
+        "github.com/electrikmilk/cherri:TestP15U02GeneratedSchemaProduction"
       ],
       "fixture_identities": [
         "actions/*.cherri",
@@ -4296,7 +4299,7 @@
         "integration"
       ],
       "test_ids": [
-        "tools/language-acceptance:runUpstream"
+        "github.com/electrikmilk/cherri:TestUpstreamPropagationRehearsal"
       ],
       "fixture_identities": [
         "actions/*.cherri",
@@ -4512,7 +4515,7 @@
         "generation"
       ],
       "test_ids": [
-        "tools/language-acceptance:runUpstream"
+        "github.com/electrikmilk/cherri:TestP15U02GeneratedSchemaProduction"
       ],
       "fixture_identities": [
         "actions/*.cherri",
@@ -4534,7 +4537,7 @@
         "integration"
       ],
       "test_ids": [
-        "tools/language-acceptance:runUpstream"
+        "github.com/electrikmilk/cherri:TestUpstreamPropagationRehearsal"
       ],
       "fixture_identities": [
         "actions/*.cherri",
@@ -4578,7 +4581,7 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser"
+        "github.com/electrikmilk/cherri:TestP15P01LiteralAndInterpolationValues"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#P01"
@@ -4600,7 +4603,7 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser"
+        "github.com/electrikmilk/cherri:TestP15P02BoundedRecoveryAndCompletion"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#P02"
@@ -4621,7 +4624,7 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser"
+        "github.com/electrikmilk/cherri:TestP15P03PrecedenceAndComparisonChains"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#P03"
@@ -4642,7 +4645,7 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser"
+        "github.com/electrikmilk/cherri:TestP15P04ReturnTerminators"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#P04"
@@ -4664,7 +4667,7 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runParser",
+        "github.com/electrikmilk/cherri:TestP15P05UnicodeIdentifierTokenizerCompletion",
         "CherriCoreIntegrationTests/testUnicodeIdentifierCompilationAndAnalysis"
       ],
       "required_ui_assertions": {
@@ -4933,7 +4936,7 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runTypes"
+        "github.com/electrikmilk/cherri:TestP15T02LiteralRequiredProduction"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#T02"
@@ -5020,7 +5023,9 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runTypes"
+        "github.com/electrikmilk/cherri:TestP15T06RecordAnnotationsDoNotValidateExternalValues",
+        "github.com/electrikmilk/cherri:TestP15T06RecordProofTypeRelations",
+        "github.com/electrikmilk/cherri:TestP15T06ControlResultsRequireAllBranches"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#T06"
@@ -5063,7 +5068,8 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runTypes"
+        "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityProduction",
+        "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityService"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#T08"

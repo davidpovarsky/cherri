@@ -28,70 +28,13 @@
       "coverage_gap": "Declaration/document existence does not establish preservation against the upstream baseline."
     },
     {
-      "id": "U02",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit",
-        "generation"
-      ],
-      "observed_smoke_detail": "Schema fingerprint: f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d (deterministic)",
-      "coverage_gap": "A fixed fingerprint comparison does not execute regeneration or determinism checks."
-    },
-    {
       "id": "U04",
       "passed": true,
       "historically_claimed_levels": [
         "integration"
       ],
       "observed_smoke_detail": "Parser reliably emits E_LEGACY_SYNTAX for 3 legacy tokens outside strings",
-      "coverage_gap": "Direct parser diagnostics do not exercise the public CLI and its legacy fallback boundary."
-    },
-    {
-      "id": "P01",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit"
-      ],
-      "observed_smoke_detail": "Plain braces literal, f-string parsed expressions, raw backslashes preserved",
-      "coverage_gap": "Statement counts do not assert the parsed literal, interpolation, raw, and multiline values."
-    },
-    {
-      "id": "P02",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit",
-        "service"
-      ],
-      "observed_smoke_detail": "Parser reports diagnostic and language service recovers completion",
-      "coverage_gap": "One unterminated string and nonempty completion do not cover comment and partial named-call recovery."
-    },
-    {
-      "id": "P03",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit"
-      ],
-      "observed_smoke_detail": "Operator precedence evaluated correctly via Pratt parsing",
-      "coverage_gap": "One parsed statement does not inspect operator precedence, parentheses, or the logical AST."
-    },
-    {
-      "id": "P04",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit"
-      ],
-      "observed_smoke_detail": "Both semicolon and newline statement terminations supported",
-      "coverage_gap": "Successful parsing does not inspect the bare-return/newline ambiguity or negative termination cases."
-    },
-    {
-      "id": "P05",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit",
-        "service"
-      ],
-      "observed_smoke_detail": "Non-ASCII / Hebrew identifiers tokenized and parsed cleanly",
-      "coverage_gap": "Nonempty completion does not assert the exact Unicode identifier/token agreement."
+      "coverage_gap": "Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision."
     },
     {
       "id": "V01",
@@ -191,15 +134,6 @@
       "coverage_gap": "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently."
     },
     {
-      "id": "T02",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit"
-      ],
-      "observed_smoke_detail": "Type mismatch diagnosed when Number assigned to Text",
-      "coverage_gap": "Number-to-Text assignment rejection does not exercise a literal-required action parameter."
-    },
-    {
       "id": "T03",
       "passed": true,
       "historically_claimed_levels": [
@@ -230,15 +164,6 @@
       "coverage_gap": "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions."
     },
     {
-      "id": "T06",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit"
-      ],
-      "observed_smoke_detail": "Structural record types checked statically at analysis time",
-      "coverage_gap": "A record constructor does not exercise authored record annotations or runtime JSON behavior."
-    },
-    {
       "id": "T07",
       "passed": true,
       "historically_claimed_levels": [
@@ -246,16 +171,6 @@
       ],
       "observed_smoke_detail": "Semantic versioning compares major.minor components deterministically",
       "coverage_gap": "A helper implemented only in this runner does not exercise production platform-version comparison."
-    },
-    {
-      "id": "T08",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit",
-        "service"
-      ],
-      "observed_smoke_detail": "Schema lookup chooses action variant based on mode argument",
-      "coverage_gap": "Two nonempty output type names do not test literal-mode-dependent inference."
     },
     {
       "id": "T09",
@@ -294,7 +209,7 @@
         "service",
         "benchmark"
       ],
-      "observed_smoke_detail": "Document analysis completes in 6.4939ms (\u003c 500ms)",
+      "observed_smoke_detail": "Document analysis completes in 6.4846ms (\u003c 500ms)",
       "coverage_gap": "Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits."
     },
     {
@@ -611,7 +526,7 @@
       "historically_claimed_levels": [
         "service"
       ],
-      "observed_smoke_detail": "LanguageService returns 521 contextual completion items including expected candidates",
+      "observed_smoke_detail": "LanguageService returns 535 contextual completion items including expected candidates",
       "coverage_gap": "A small completion set does not cover contextual labels, enums, compatible variables, or UI."
     },
     {
@@ -666,36 +581,8 @@
       "historically_claimed_levels": [
         "benchmark"
       ],
-      "observed_smoke_detail": "50 document analysis passes completed in 2.1524ms",
+      "observed_smoke_detail": "50 document analysis passes completed in 611µs",
       "coverage_gap": "Fifty tiny edits do not cover small/large documents and embedded assets."
-    },
-    {
-      "id": "CL01",
-      "passed": true,
-      "historically_claimed_levels": [
-        "integration"
-      ],
-      "observed_smoke_detail": "cherri --capabilities-json emits valid JSON capabilities",
-      "coverage_gap": "In-process capability fields do not execute JSON CLI commands or observe their exit status."
-    },
-    {
-      "id": "CL02",
-      "passed": true,
-      "historically_claimed_levels": [
-        "security",
-        "integration"
-      ],
-      "observed_smoke_detail": "cherri check analyzes pure AST/types without invoking sign or write",
-      "coverage_gap": "Unchanged directory entry count does not observe signing, execution, installation, or writes."
-    },
-    {
-      "id": "CL03",
-      "passed": true,
-      "historically_claimed_levels": [
-        "integration"
-      ],
-      "observed_smoke_detail": "Legacy syntax rejected with E_LEGACY_SYNTAX; migrate tool converts to v2",
-      "coverage_gap": "Migrating legacy syntax does not exercise production CLI rejection of that syntax."
     },
     {
       "id": "D01",
@@ -755,7 +642,7 @@
     },
     {
       "id": "K04",
-      "passed": true,
+      "passed": false,
       "historically_claimed_levels": [
         "integration"
       ],
@@ -795,7 +682,7 @@
       "historically_claimed_levels": [
         "repository"
       ],
-      "observed_smoke_detail": "Verified current commit SHA: e424174567acbf99bea2a76aa1ec79b05a18470c",
+      "observed_smoke_detail": "Verified current commit SHA: 85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "coverage_gap": "A 40-character local SHA does not prove final workflow head/checkout provenance."
     },
     {
@@ -814,11 +701,11 @@
       "historically_claimed_levels": [
         "repository"
       ],
-      "observed_smoke_detail": "Working branch checked; status output length: 464",
+      "observed_smoke_detail": "Working branch checked; status output length: 0",
       "coverage_gap": "Successful git status does not establish a clean tree, pushed branches, artifacts, or delivery provenance."
     }
   ],
   "schema_version": "1",
   "scope": "Historical smoke assertions only; not formal acceptance tier evidence",
-  "source_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c"
+  "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6"
 }

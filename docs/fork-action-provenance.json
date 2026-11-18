@@ -2286,6 +2286,78 @@
       "reason": "Concrete implementation or evidence defect found during the authorized P10R15 closure execution.",
       "evidence": "Exact clean source5209cfd wrapper tests passed including stale key, failed extraction, stale facet and missing evidence controls; caller sources remain unchanged; only U02/U03 scope is verified.",
       "note": "Immutable implementation ancestor, separate metadata commit. No unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 native metadata inline arrays",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "p15_native_metadata_test.go"
+      ],
+      "firstForkCommit": "121cbaef5de5f90d197332d9824e16f503f69f15",
+      "change": "Preserve inline native.plist/ref metadata while retaining authored native List/Dictionary producers; reject malformed aggrandizements.",
+      "reason": "Concrete authorized P10R15 implementation or evidence defect. Existing infrastructure is retained.",
+      "evidence": "Actual full-suite panic reproduced;122 focused pass events; full root/lower later completed with only the independent stale consumer tuple failure.",
+      "note": "Immutable implementation ancestor in a separate metadata commit; no unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 actual AX outer canvas groups",
+      "locations": [
+        "tools/shortcuts-simulator-qa",
+        "docs/apple-runtime/p10r15/ax-canvas-grouping.md"
+      ],
+      "firstForkCommit": "58aa2e1efd2cdb8a7243fd4adfb1257d81a7bb4c",
+      "change": "Use observed outer canvas groups rather than nested parameter cells; keep overlap and unknown identity explicit.",
+      "reason": "Concrete authorized P10R15 implementation or evidence defect. Existing infrastructure is retained.",
+      "evidence": "74 Python tests and actual4403-node sanitized replay passed; no native-identity or full Inspector match is inferred.",
+      "note": "Immutable implementation ancestor in a separate metadata commit; no unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 strict label and export runtime selectors",
+      "locations": [
+        "scripts/ios27_shortcuts_simulator_qa.sh",
+        "tools/shortcuts-simulator-qa/prepare_public_artifacts.py"
+      ],
+      "firstForkCommit": "3b9b6d8234531c5d6cbeca57967c50e460cf3c27",
+      "change": "Bind nine fixed reviewed label/export probes to ordinary strict trace, callback and source-hash publication contracts.",
+      "reason": "Concrete authorized P10R15 implementation or evidence defect. Existing infrastructure is retained.",
+      "evidence": "69 Python tests,22 actual fixture compilations and causal gate/publication mutations passed; native pilots pending.",
+      "note": "Immutable implementation ancestor in a separate metadata commit; no unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 isolated F01 signed diagnostics",
+      "locations": [
+        "p15_f01_native_diagnostics_test.go",
+        "tools/shortcuts-simulator-qa/fixtures"
+      ],
+      "firstForkCommit": "5dbd6932d9db4b1df937968fca46bee0d9d91bc5",
+      "change": "Add four independent counter/predicate/control/logic probes without changing compiler behavior or original failed source.",
+      "reason": "Concrete authorized P10R15 implementation or evidence defect. Existing infrastructure is retained.",
+      "evidence": "Exact original482eff24 clean receipt: four production tests,28 Python contracts and four actual CLI compiles passed; signed counter/predicate queued.",
+      "note": "Immutable implementation ancestor in a separate metadata commit; no unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 current editor completion snapshots",
+      "locations": [
+        "ios/CherriApp/Editor/CherriCompletionRequest.swift",
+        "docs/apple-runtime/p10r15/ios-editor-completion-followup.md"
+      ],
+      "firstForkCommit": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+      "change": "Filter current Go completion results before UI truncation and bind asynchronous output to source/caret; isolate native typing cases.",
+      "reason": "Concrete authorized P10R15 implementation or evidence defect. Existing infrastructure is retained.",
+      "evidence": "27 Python contracts passed before owned iOS run44248146483; that native outcome remains pending.",
+      "note": "Immutable implementation ancestor in a separate metadata commit; no unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 exact target version components",
+      "locations": [
+        "internal/language/analysis/target_versions.go",
+        "p15_version_comparison_test.go"
+      ],
+      "firstForkCommit": "8915e434ea1ed9d9140e3e7a3a3b22ecfb4af4d2",
+      "change": "Preserve authored version components and use existing schema comparator; reject malformed/nonliteral bounds with exact spans.",
+      "reason": "Concrete authorized P10R15 implementation or evidence defect. Existing infrastructure is retained.",
+      "evidence": "Causal baseline failures preserved; exact source d06b885 passed60 package tests and4 production tests; per-platform T07 remains unverified.",
+      "note": "Immutable implementation ancestor in a separate metadata commit; no unexecuted runtime, device, visual or release tier is inferred."
     }
   ]
 }

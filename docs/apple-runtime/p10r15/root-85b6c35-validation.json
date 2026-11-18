@@ -1,0 +1,50 @@
+{
+  "sourceSha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "20m",
+    ".",
+    "./internal/language/lower"
+  ],
+  "exitCode": 1,
+  "elapsedSeconds": 525.765,
+  "eventCounts": {
+    "pass": 1197,
+    "fail": 2,
+    "skip": 4
+  },
+  "failures": [
+    {
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R2_A28_FullReleaseTupleStructure",
+      "Elapsed": 0.03
+    },
+    {
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Elapsed": 511.065
+    }
+  ],
+  "packageResults": [
+    {
+      "Action": "pass",
+      "Package": "github.com/electrikmilk/cherri/internal/language/lower",
+      "Elapsed": 0.876
+    },
+    {
+      "Action": "fail",
+      "Package": "github.com/electrikmilk/cherri",
+      "Elapsed": 511.065
+    }
+  ],
+  "logSha256": "801b86fc14bdfc850d8a8b04718d527fef8e36293ce040e30f093d410ad6624f",
+  "cleanAfter": false,
+  "cleanAfterDeliberateReportRestore": true,
+  "generatedReportChange": "One getType diagnostic/documentation entry regenerated from the corrected canonical Get File of Type declaration. It was copied to host-local validation evidence before restoring this temporary worktree.",
+  "actualFailure": "A28 checked-in consumer schema fingerprint f558 differs from actual registry6eb; coherent tuple update pending."
+}

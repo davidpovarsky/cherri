@@ -1,12 +1,75 @@
 [
   {
+    "evidence_id": "ev-local-U02-unit",
+    "requirements": [
+      "U02"
+    ],
+    "tier": "unit",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15U02GeneratedSchemaProduction",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15U02GeneratedSchemaProduction)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15U02GeneratedSchemaProduction"
+    },
+    "detail": "Executed production tests: TestP15U02GeneratedSchemaProduction"
+  },
+  {
+    "evidence_id": "ev-local-U02-generation",
+    "requirements": [
+      "U02"
+    ],
+    "tier": "generation",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15U02GeneratedSchemaProduction",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15U02GeneratedSchemaProduction)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15U02GeneratedSchemaProduction"
+    },
+    "detail": "Executed production tests: TestP15U02GeneratedSchemaProduction"
+  },
+  {
     "evidence_id": "ev-local-U03-integration",
     "requirements": [
       "U03"
     ],
     "tier": "integration",
-    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
-    "test_id": "tools/language-acceptance:runUpstream",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestUpstreamPropagationRehearsal",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestUpstreamPropagationRehearsal)$"
+    ],
     "exit_code": 0,
     "result": "passed",
     "assertions": {
@@ -15,12 +78,298 @@
     "detail": "Executed production tests: TestUpstreamPropagationRehearsal"
   },
   {
+    "evidence_id": "ev-local-P01-unit",
+    "requirements": [
+      "P01"
+    ],
+    "tier": "unit",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15P01LiteralAndInterpolationValues",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15P01LiteralAndInterpolationValues)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15P01LiteralAndInterpolationValues"
+    },
+    "detail": "Executed production tests: TestP15P01LiteralAndInterpolationValues"
+  },
+  {
+    "evidence_id": "ev-local-P02-unit",
+    "requirements": [
+      "P02"
+    ],
+    "tier": "unit",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15P02BoundedRecoveryAndCompletion",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15P02BoundedRecoveryAndCompletion)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15P02BoundedRecoveryAndCompletion"
+    },
+    "detail": "Executed production tests: TestP15P02BoundedRecoveryAndCompletion"
+  },
+  {
+    "evidence_id": "ev-local-P02-service",
+    "requirements": [
+      "P02"
+    ],
+    "tier": "service",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15P02BoundedRecoveryAndCompletion",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15P02BoundedRecoveryAndCompletion)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15P02BoundedRecoveryAndCompletion"
+    },
+    "detail": "Executed production tests: TestP15P02BoundedRecoveryAndCompletion"
+  },
+  {
+    "evidence_id": "ev-local-P03-unit",
+    "requirements": [
+      "P03"
+    ],
+    "tier": "unit",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15P03PrecedenceAndComparisonChains",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15P03PrecedenceAndComparisonChains)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15P03PrecedenceAndComparisonChains"
+    },
+    "detail": "Executed production tests: TestP15P03PrecedenceAndComparisonChains"
+  },
+  {
+    "evidence_id": "ev-local-P04-unit",
+    "requirements": [
+      "P04"
+    ],
+    "tier": "unit",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15P04ReturnTerminators",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15P04ReturnTerminators)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15P04ReturnTerminators"
+    },
+    "detail": "Executed production tests: TestP15P04ReturnTerminators"
+  },
+  {
+    "evidence_id": "ev-local-P05-unit",
+    "requirements": [
+      "P05"
+    ],
+    "tier": "unit",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15P05UnicodeIdentifierTokenizerCompletion",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15P05UnicodeIdentifierTokenizerCompletion)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15P05UnicodeIdentifierTokenizerCompletion"
+    },
+    "detail": "Executed production tests: TestP15P05UnicodeIdentifierTokenizerCompletion"
+  },
+  {
+    "evidence_id": "ev-local-P05-service",
+    "requirements": [
+      "P05"
+    ],
+    "tier": "service",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15P05UnicodeIdentifierTokenizerCompletion",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15P05UnicodeIdentifierTokenizerCompletion)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15P05UnicodeIdentifierTokenizerCompletion"
+    },
+    "detail": "Executed production tests: TestP15P05UnicodeIdentifierTokenizerCompletion"
+  },
+  {
+    "evidence_id": "ev-local-T02-unit",
+    "requirements": [
+      "T02"
+    ],
+    "tier": "unit",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15T02LiteralRequiredProduction",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15T02LiteralRequiredProduction)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15T02LiteralRequiredProduction"
+    },
+    "detail": "Executed production tests: TestP15T02LiteralRequiredProduction"
+  },
+  {
+    "evidence_id": "ev-local-T06-unit",
+    "requirements": [
+      "T06"
+    ],
+    "tier": "unit",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15T06RecordAnnotationsDoNotValidateExternalValues",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15T06RecordAnnotationsDoNotValidateExternalValues|TestP15T06RecordProofTypeRelations|TestP15T06ControlResultsRequireAllBranches)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches"
+    },
+    "detail": "Executed production tests: TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches"
+  },
+  {
+    "evidence_id": "ev-local-T08-unit",
+    "requirements": [
+      "T08"
+    ],
+    "tier": "unit",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityProduction",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+    },
+    "detail": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+  },
+  {
+    "evidence_id": "ev-local-T08-service",
+    "requirements": [
+      "T08"
+    ],
+    "tier": "service",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "github.com/electrikmilk/cherri:TestP15T08ConditionalCardinalityService",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-timeout",
+      "3m",
+      ".",
+      "-run",
+      "^(TestP15T08ConditionalCardinalityProduction|TestP15T08ConditionalCardinalityService)$"
+    ],
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+    },
+    "detail": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
+  },
+  {
     "evidence_id": "ev-local-N02-unit",
     "requirements": [
       "N02"
     ],
     "tier": "unit",
-    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
     "test_id": "tools/language-acceptance:runNumbers",
     "exit_code": 0,
     "result": "passed",
@@ -35,7 +384,7 @@
       "F01"
     ],
     "tier": "unit",
-    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
     "test_id": "tools/language-acceptance:runControl",
     "exit_code": 0,
     "result": "passed",
@@ -50,7 +399,7 @@
       "F01"
     ],
     "tier": "native",
-    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
     "test_id": "tools/language-acceptance:runControl",
     "exit_code": 0,
     "result": "passed",
@@ -65,7 +414,7 @@
       "M05"
     ],
     "tier": "unit",
-    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
     "test_id": "tools/language-acceptance:runMetadata",
     "exit_code": 0,
     "result": "passed",
@@ -80,7 +429,7 @@
       "M05"
     ],
     "tier": "native",
-    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
     "test_id": "tools/language-acceptance:runMetadata",
     "exit_code": 0,
     "result": "passed",
@@ -95,7 +444,7 @@
       "R06"
     ],
     "tier": "integration",
-    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
     "test_id": "tools/language-acceptance:runNative",
     "exit_code": 0,
     "result": "passed",
@@ -110,7 +459,7 @@
       "R07"
     ],
     "tier": "integration",
-    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
     "test_id": "tools/language-acceptance:runNative",
     "exit_code": 0,
     "result": "passed",
@@ -125,7 +474,7 @@
       "E07"
     ],
     "tier": "integration",
-    "implementation_sha": "e424174567acbf99bea2a76aa1ec79b05a18470c",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
     "test_id": "tools/language-acceptance:runEditor",
     "exit_code": 0,
     "result": "passed",
@@ -133,5 +482,65 @@
       "assertion": "Local assertions verified; pending external tier: [ios-ui] (ApplyVisualSourceEdit mutates only bounded target span and rejects invalid action index)"
     },
     "detail": "Local assertions verified; pending external tier: [ios-ui] (ApplyVisualSourceEdit mutates only bounded target span and rejects invalid action index)"
+  },
+  {
+    "evidence_id": "ev-local-CL01-integration",
+    "requirements": [
+      "CL01"
+    ],
+    "tier": "integration",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "tools/language-acceptance:runCLI",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15CLIJSONCommandsAndExitStatus"
+    },
+    "detail": "Executed production tests: TestP15CLIJSONCommandsAndExitStatus"
+  },
+  {
+    "evidence_id": "ev-local-CL02-security",
+    "requirements": [
+      "CL02"
+    ],
+    "tier": "security",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "tools/language-acceptance:runCLI",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15CLIAnalysisHasNoExternalEffects"
+    },
+    "detail": "Executed production tests: TestP15CLIAnalysisHasNoExternalEffects"
+  },
+  {
+    "evidence_id": "ev-local-CL02-integration",
+    "requirements": [
+      "CL02"
+    ],
+    "tier": "integration",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "tools/language-acceptance:runCLI",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15CLIAnalysisHasNoExternalEffects"
+    },
+    "detail": "Executed production tests: TestP15CLIAnalysisHasNoExternalEffects"
+  },
+  {
+    "evidence_id": "ev-local-CL03-integration",
+    "requirements": [
+      "CL03"
+    ],
+    "tier": "integration",
+    "implementation_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+    "test_id": "tools/language-acceptance:runCLI",
+    "exit_code": 0,
+    "result": "passed",
+    "assertions": {
+      "assertion": "Executed production tests: TestP15CLIDefaultRejectsLegacyWithGuidance"
+    },
+    "detail": "Executed production tests: TestP15CLIDefaultRejectsLegacyWithGuidance"
   }
 ]

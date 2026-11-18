@@ -897,9 +897,9 @@ Next smallest independently verifiable batch:
     - Physical hardware status remains **`APPLE_RUNTIME_EXECUTED: BLOCKED_DEVICE`**.
 
 
-## 16. P10R15 — Formal acceptance repair and current release work (2026-11-18)
+## 16. P10R15 — Historical first formal acceptance repair (2026-11-18)
 
-This chapter supersedes earlier completion wording as a statement about the current release. Sections 1–15 retain historical provenance; they are not automatic proof for a newer SHA.
+This chapter preserves the first P10R15 component snapshot. Chapter 17 is the later current formal snapshot. Sections 1–15 retain historical provenance; they are not automatic proof for a newer SHA.
 
 | Item | Current state |
 |---|---|
@@ -936,3 +936,16 @@ See [P10R15 acceptance review](p10r15-formal-acceptance-review.md), [179-ID audi
 ### Next work
 
 Continue independent implementation and verification on the existing shared core. Priority work includes requirement-specific formal producers, exact-candidate signed runtime, debug/release profiles, typed require/block/measure/collect, installed Skill and external consumers, performance diagnostics, and release evidence. Asana task `1220432417414104` remains open until the formal tiers are met; root integration owns its handoff updates.
+
+
+## 17. V2 acceptance status - integrated snapshot 2026-11-18 08:16 Asia/Hebron
+
+Source: `85b6c352d1e0f9f272cfc6f33c10d0becd29eee6`; actual local runner job `job_36a52be4f877`; generated `2026-11-18T06:16:23Z`. All 179 IDs remain in the generated aggregate, execution audit and requirement map. Current results: **17 PASS, 1 FAIL, 158 UNVERIFIED, 3 required external-tier proofs missing**. The local aggregate groups the last two classes as 161 pending. Exit code 1 and closure=false are retained.
+
+The 17 proved IDs are `U02`, `U03`, `P01`, `P02`, `P03`, `P04`, `P05`, `T02`, `T06`, `T08`, `N02`, `M05`, `R06`, `R07`, `CL01`, `CL02`, `CL03`. They cover their exact recorded local tiers only. K04 fails because the installed-consumer contract is still pinned to an older schema; the coherent S/D/K tuple and actual consumer tests are pending. The 52 RP and 33 BRG scenarios are not bulk-promoted from existing requirement tests.
+
+Two later facts must stay separate from that formal snapshot: the target-version component repair now preserves 16.10/16.02 and rejects malformed bounds using the existing shared comparator, but full per-platform T07 metadata remains unverified; the full root/lower suite at this snapshot completed with 1,197 pass events, four skips and one failed test (A28 consumer fingerprint), rather than stopping at the former native.ref panic. That suite regenerated one real getType documentation/parameter-evidence entry and was not initially clean after execution; the output is preserved separately and the temporary worktree restored deliberately.
+
+Evidence: [current acceptance review](p10r15-formal-acceptance-review.md), [179-ID audit](acceptance-execution-audit.json), [capture hashes](evidence/p15-formal-85b6c35/capture-summary.json). An earlier evidence-copy wrapper mixed old audit files into a new output directory; those copied files are invalid. This checkpoint uses only freshly generated, source-validated outputs. Historical smoke counts and completion checkboxes in earlier chapters remain history, not current acceptance.
+
+F01 has a genuine earlier signed runtime error and isolated counter/predicate runs are now queued at this snapshot. E07 needs source-correlated UI evidence; AI01 still needs an eligible model evaluation endpoint. These statuses do not convert unimplemented or unverified local work into external blockers. All remaining independent engineering continues. No release-complete claim is made.

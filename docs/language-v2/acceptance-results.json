@@ -1,13 +1,16 @@
 {
-  "timestamp": "2026-11-18T02:30:06Z",
+  "timestamp": "2026-11-18T06:16:23Z",
   "phase": "local",
   "closure_complete": false,
   "language_version": "2.0",
-  "schema_fingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+  "schema_fingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
   "total_cases": 179,
-  "passed_cases": 5,
-  "failed_cases": 0,
-  "skipped_cases": 174,
+  "passed_cases": 17,
+  "failed_cases": 1,
+  "skipped_cases": 161,
+  "validation_errors": [
+    "case K04 failed: Formal scope UNVERIFIED: A fingerprint substring does not exercise offline cache and docs mismatch behavior. Observed smoke passed=false; see acceptance-local-observations.json."
+  ],
   "results": [
     {
       "id": "B01",
@@ -41,9 +44,13 @@
       "group": "upstream",
       "requirement": "Regenerate assembled schema from original declarations and narrow facets",
       "test_level": "unit+generation",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A fixed fingerprint comparison does not execute regeneration or determinism checks. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "generation"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15U02GeneratedSchemaProduction"
     },
     {
       "id": "U03",
@@ -64,52 +71,69 @@
       "test_level": "integration",
       "passed": false,
       "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Direct parser diagnostics do not exercise the public CLI and its legacy fallback boundary. Observed smoke passed=true; see acceptance-local-observations.json."
+      "detail": "Formal scope UNVERIFIED: Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision. Observed smoke passed=true; see acceptance-local-observations.json."
     },
     {
       "id": "P01",
       "group": "parser",
       "requirement": "Plain, f, raw and multiline text parse without treating ordinary braces as variables",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Statement counts do not assert the parsed literal, interpolation, raw, and multiline values. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15P01LiteralAndInterpolationValues"
     },
     {
       "id": "P02",
       "group": "parser",
       "requirement": "Unterminated string/comment and partial named call recover",
       "test_level": "unit+service",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: One unterminated string and nonempty completion do not cover comment and partial named-call recovery. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15P02BoundedRecoveryAndCompletion"
     },
     {
       "id": "P03",
       "group": "parser",
       "requirement": "Pratt precedence, parentheses and short-circuit tree are correct",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: One parsed statement does not inspect operator precedence, parentheses, or the logical AST. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15P03PrecedenceAndComparisonChains"
     },
     {
       "id": "P04",
       "group": "parser",
       "requirement": "Semicolon/newline handling and bare return are unambiguous",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Successful parsing does not inspect the bare-return/newline ambiguity or negative termination cases. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15P04ReturnTerminators"
     },
     {
       "id": "P05",
       "group": "parser",
       "requirement": "Unicode identifiers and tokenizer/completion agree",
       "test_level": "unit+service",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Nonempty completion does not assert the exact Unicode identifier/token agreement. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15P05UnicodeIdentifierTokenizerCompletion"
     },
     {
       "id": "V01",
@@ -206,9 +230,12 @@
       "group": "types",
       "requirement": "Runtime immutable output does not satisfy literal-required slot",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Number-to-Text assignment rejection does not exercise a literal-required action parameter. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15T02LiteralRequiredProduction"
     },
     {
       "id": "T03",
@@ -242,9 +269,12 @@
       "group": "types",
       "requirement": "User record annotation is not runtime JSON validation",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A record constructor does not exercise authored record annotations or runtime JSON behavior. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15T06RecordAnnotationsDoNotValidateExternalValues, TestP15T06RecordProofTypeRelations, TestP15T06ControlResultsRequireAllBranches"
     },
     {
       "id": "T07",
@@ -260,9 +290,13 @@
       "group": "types",
       "requirement": "Variant-dependent output type inferred from literal mode",
       "test_level": "unit+service",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Two nonempty output type names do not test literal-mode-dependent inference. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15T08ConditionalCardinalityProduction, TestP15T08ConditionalCardinalityService"
     },
     {
       "id": "T09",
@@ -730,27 +764,37 @@
       "group": "cli",
       "requirement": "JSON commands emit parseable response and reliable exit status",
       "test_level": "integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: In-process capability fields do not execute JSON CLI commands or observe their exit status. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15CLIJSONCommandsAndExitStatus"
     },
     {
       "id": "CL02",
       "group": "cli",
       "requirement": "Analysis never emits/signs/executes/installs",
       "test_level": "security+integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Unchanged directory entry count does not observe signing, execution, installation, or writes. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "security",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15CLIAnalysisHasNoExternalEffects"
     },
     {
       "id": "CL03",
       "group": "cli",
       "requirement": "Normal production path rejects legacy public syntax",
       "test_level": "integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Migrating legacy syntax does not exercise production CLI rejection of that syntax. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15CLIDefaultRejectsLegacyWithGuidance"
     },
     {
       "id": "D01",
@@ -812,8 +856,8 @@
       "requirement": "Offline compatible cache and docs mismatch",
       "test_level": "integration",
       "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A fingerprint substring does not exercise offline cache and docs mismatch behavior. Observed smoke passed=true; see acceptance-local-observations.json."
+      "status": "FAILED",
+      "detail": "Formal scope UNVERIFIED: A fingerprint substring does not exercise offline cache and docs mismatch behavior. Observed smoke passed=false; see acceptance-local-observations.json."
     },
     {
       "id": "K05",
