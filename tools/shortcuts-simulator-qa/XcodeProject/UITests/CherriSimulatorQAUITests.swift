@@ -145,6 +145,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-http-json-control-v2",
         "qa-http-json-fetch-v2",
         "qa-number-comparison-diag-v2",
+        "qa-number-coercion-control-v2",
         "qa-collect-counts-v2",
         "qa-collect-counts-legacy",
         "qa-collect-dictionaries-v2",
@@ -1129,6 +1130,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertEqual(sanitizeUIString("qa-http-json-control-v2"), "qa-http-json-control-v2")
         XCTAssertEqual(sanitizeUIString("qa-http-json-fetch-v2"), "qa-http-json-fetch-v2")
         XCTAssertEqual(sanitizeUIString("qa-number-comparison-diag-v2"), "qa-number-comparison-diag-v2")
+        XCTAssertEqual(sanitizeUIString("qa-number-coercion-control-v2"), "qa-number-coercion-control-v2")
         XCTAssertTrue(sanitizeUIString("qa-storage-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
         XCTAssertTrue(sanitizeUIString("qa-paginate-private-unreviewed")?.hasPrefix("[REDACTED_NON_ALLOWLISTED") == true)
         XCTAssertEqual(sanitizeUIString("qa-collect-counts-v2"), "qa-collect-counts-v2")
