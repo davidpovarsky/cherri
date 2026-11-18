@@ -6,10 +6,26 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
-// variantOutputType refines only a native action whose checked-in Apple
-// contract identifies both input-dependent element type and literal selection
-// mode. Other actions retain their declared (possibly Unknown) output category.
+// variantOutputType refines native results only when the checked-in contract
+// and a known literal mode establish their type or cardinality. Other actions
+// retain their declared (possibly Unknown) output category.
 func (a *Analyzer) variantOutputType(action *schema.ActionSchema, arguments map[string]syntax.Expression) (types.Type, bool) {
+	if action.Builtin && !action.Custom && action.CallableName == "prompt" && action.AppleIdentifier == "is.workflow.actions.ask" {
+		// WFAskForInputAction exposes NSDecimalNumber and maps the native number
+		// intent case to WFInputType="Number". A runtime or omitted mode proves
+		// no numeric result. Keep the general prompt schema Unknown.
+		parameter, ok := action.ParameterByLabel("inputType")
+		if ok && parameter.WireKey == "WFInputType" && parameter.EnumName == "inputType" {
+			for _, mode := range parameter.EnumValues {
+				if mode != "Number" {
+					continue
+				}
+				if selected, known := a.enumLiteralValue(arguments[parameter.WireKey]); known && selected == mode {
+					return types.Number, true
+				}
+			}
+		}
+	}
 	if action.AppleIdentifier != "is.workflow.actions.choosefromlist" {
 		return nil, false
 	}
