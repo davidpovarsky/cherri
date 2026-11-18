@@ -1,0 +1,302 @@
+{
+  "sourceSha": "d06b885f6a89469b53ed1cbdadd7dc486441616a",
+  "cleanBefore": true,
+  "formalT07Status": "UNVERIFIED",
+  "scope": "Generic source-version comparison; no independently evidenced per-platform version facets.",
+  "commands": [
+    {
+      "argv": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=90s",
+        "./internal/language/analysis",
+        "./internal/language/service",
+        "./internal/language/lower"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 3.692,
+      "outputSha256": "feeeab5e22b13f0a6b435a45ddfe9a417865cd19379fe29a80720b2985f4059c",
+      "topLevelTestPasses": [
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestCompilerMacrosReachCompletionFromSharedMetadata"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceAnalyze"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceComplete"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceHover"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestServiceContextualCallComplete"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE01MultiDiagnosticAnalysis"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE02CompletionHoverSignatureDefinition"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE04FormatterPreservesCommentsAndSemantics"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE05OutOfOrderVersionedEdits"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE06UTF16DiagnosticSpansEmojiAndHebrew"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/service",
+          "test": "TestE07BoundedVisualSourceEditAndRejection"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerAssignImmutable"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerReadBeforeInit"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerUnknownArgument"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerMissingArgument"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerDuplicateArgument"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerIfConditionBool"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerYieldOutsideValueBlock"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerLegacySyntax"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerValidProgram"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerCopyPaste"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerTruthiness"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerHotLoopWarning"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerGlobals"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAnalyzerListPlusAssign"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMacActionInNonMacShortcut_Baseline"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMacActionInMacShortcut_Allowed"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestNonMacActionInMacShortcut_Error"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestNonMacActionInNonMacShortcut_Allowed"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_MapLiteral"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_IndexExpr"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestEmptyDictionaryKey_GetValueCall"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestExprTypesTracking"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestMixedTargets_RejectsNonPortableActions"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestExplicitTargetString"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestUnspecifiedTarget_EmitsWarning"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestVersionBounds_MinVersion"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestAcceptedForms_AcceptsVariableAttachment"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockInferredTypeAndLexicalScope"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockDiagnosticsAndBranchTypes"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestScopedBlockDoesNotReserveExistingFunctionName"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestTargetVersionSettersRetainCompatibility"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+          "test": "TestTargetVersionSourceAccessorsKeepComponents"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestMapIndexDynamicKeyLowering"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestListIndexDynamicLowering"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestMapIndexEmptyKeyLoweringError"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestMapIndexUnicodeKeyLowering"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestMapIndexLetVarLowering"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestMapIndexNestedMapLowering"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestMapIndexDirectGetValueCall"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestLowerBasicWorkflow"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestLowerConditionalWorkflow"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestLowerFunctionEnvelopeDefaultsAndVoidReturn"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestLowerShortCircuitAndExpressionsAndSafeIndexing"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestLowerTriggersWithParameters"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestLowerUnusedFunctionDispatcherOmitted"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestLowerListAppendVariable"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri/internal/language/lower",
+          "test": "TestScopedBlockRenamingPreservesSourceAndLiteralValues"
+        }
+      ]
+    },
+    {
+      "argv": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=90s",
+        ".",
+        "-run",
+        "^TestP15TargetVersion"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 2.711,
+      "outputSha256": "2ffbdbdaaed5a476b094d371a771d60ff8ab691f78b7849ba3a59e411cfd9994",
+      "topLevelTestPasses": [
+        {
+          "package": "github.com/electrikmilk/cherri",
+          "test": "TestP15TargetVersionComponentsProduction"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri",
+          "test": "TestP15TargetVersionMalformedBoundsFailClosed"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri",
+          "test": "TestP15TargetVersionServiceEdits"
+        },
+        {
+          "package": "github.com/electrikmilk/cherri",
+          "test": "TestP15TargetVersionIncompleteMetadataRecoversInService"
+        }
+      ]
+    }
+  ],
+  "cleanAfter": true,
+  "jobId": "job_c0d30c47bfa4",
+  "platform": "Windows amd64",
+  "argvPathsNormalizedForPortability": true
+}
