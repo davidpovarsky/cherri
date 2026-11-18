@@ -219,19 +219,21 @@ jobs:
         run: |
           go test ./tools/language-acceptance -run '^TestSkillPackageProductionEvidence$' -count=1 -json -timeout=12m > dist/skill-package-producer.jsonl
           python3 - <<'PY'
-          import json
+          import json, os
           from pathlib import Path
-          receipts = []
-          for line in Path("dist/skill-package-producer.jsonl").read_text().splitlines():
-              event = json.loads(line)
-              output = event.get("Output", "")
-              marker = "P15_SKILL_PACKAGE_RECEIPT:"
-              if marker in output:
-                  receipts.append(json.loads(output.split(marker, 1)[1]))
+          events = [json.loads(line) for line in Path("dist/skill-package-producer.jsonl").read_text().splitlines() if line.strip()]
+          test = "TestSkillPackageProductionEvidence"
+          marker = "P15_SKILL_PACKAGE_RECEIPT:"
+          # Go test2json can split one long logical line across Output events.
+          output = "".join(event.get("Output", "") for event in events if event.get("Test") == test)
+          receipts = [json.loads(line.split(marker, 1)[1]) for line in output.splitlines() if marker in line]
           assert len(receipts) == 1, "missing or duplicate actual package receipt"
+          assert sum(event.get("Action") == "pass" and event.get("Test") == test for event in events) == 1
+          assert not any(event.get("Action") == "fail" for event in events)
           receipt = receipts[0]
           assert receipt["source_tree_clean"] and receipt["report"]["passed_cases"] == 1
-          assert all(record["requirements"] == ["K01"] for record in receipt["records"])
+          assert receipt["source_sha"] == os.environ["GITHUB_SHA"]
+          assert len(receipt["records"]) == 1 and receipt["records"][0]["requirements"] == ["K01"]
           Path("dist/skill-evidence.json").write_text(json.dumps(receipt, indent=2) + "\n")
           PY
 
