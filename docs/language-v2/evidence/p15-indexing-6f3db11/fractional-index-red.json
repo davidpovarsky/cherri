@@ -1,0 +1,15 @@
+{
+  "production_sha": "27daf7994ca20479e9dcee5645b255408b66b2fe",
+  "test_sha256": "2347e201f9ef851c06ceaf7f01a9e13b156e986fc3e43756a984c7a35b2d78bc",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-run",
+    "^TestP15L04DynamicFractionalIndexGuard$",
+    "."
+  ],
+  "exit_code": 1,
+  "expected_failure": "lookup needs 3 exact guard ancestors, found 2",
+  "elapsed_seconds": 14.892
+}

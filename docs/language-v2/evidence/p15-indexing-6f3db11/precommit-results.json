@@ -1,0 +1,50 @@
+[
+  {
+    "name": "precommit-native",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-run",
+      "^TestP15L(02|04)|TestCTRL004_ZeroBasedIndexingAndBounds|TestP15Generated.*Guard|TestP15EmptyList",
+      "."
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 11.57,
+    "passed_tests": 120,
+    "failed": []
+  },
+  {
+    "name": "precommit-lower",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-run",
+      "Test.*Index.*Lowering|TestLowerShortCircuitAndExpressionsAndSafeIndexing",
+      "./internal/language/lower"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.698,
+    "passed_tests": 7,
+    "failed": []
+  },
+  {
+    "name": "precommit-formal",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-run",
+      "^Test(IndexProductionEvidence|UnicodeTextProductionEvidence|LiteralCollectionProductionEvidence|IncompleteSmoke.*|RequirementsEvidenceMap_CompleteCoverage)$",
+      "./tools/language-acceptance"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 20.965,
+    "passed_tests": 15,
+    "failed": []
+  }
+]
