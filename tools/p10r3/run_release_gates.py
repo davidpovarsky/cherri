@@ -694,7 +694,11 @@ def execute_gate(gate_id, defn):
             "rationale": defn.get("blockerReason", ""),
         }
 
-    cmd = defn["command"]
+    cmd = list(defn["command"])
+    # Use the running interpreter, not an unrelated Windows Store alias or
+    # another Python installation selected from PATH.
+    if cmd and cmd[0] in ("python", "python3"):
+        cmd[0] = sys.executable
     try:
         proc = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
         dur = round(time.time() - t0, 3)

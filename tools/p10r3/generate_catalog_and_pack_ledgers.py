@@ -26,6 +26,15 @@ UPSTREAM_SHA = "bcc0095754e2cc0baaeb4d93dae172b8153b4716"
 PACK_SHA = "141b9cc96cf1df3f9d1593548dc49ae8a46a256a"
 
 DEPENDENCY_GLOBS = [
+    # Every compiler/backend and its execution producers affect the evidence.
+    # A short historical allowlist missed newly added macro/lowering files.
+    "*.go",
+    "go.mod",
+    "go.sum",
+    "internal/**/*.go",
+    "tools/language-schema/*.go",
+    "tools/p10r3/generate_catalog_and_pack_ledgers.py",
+    "tools/p10r3/run_release_gates.py",
     "actions/*.cherri",
     "actions_std.go",
     "actions_catalog.go",

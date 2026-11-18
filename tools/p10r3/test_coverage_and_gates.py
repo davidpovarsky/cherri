@@ -15,6 +15,7 @@ import copy
 import json
 import pathlib
 import sys
+import tempfile
 import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -250,6 +251,37 @@ class TestP10CoverageAndGates(unittest.TestCase):
         )
         self.assertFalse(ok)
         self.assertTrue(any("inputDependencyFingerprint drift" in e for e in errs))
+
+    def test_c5_fingerprint_covers_new_compiler_and_lowering_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            before = gen.compute_input_dependency_fingerprint(root)
+            for relative in ("build_profile.go", "internal/language/lower/short_circuit.go",
+                             "internal/language/analysis/new_guard.go", "go.sum",
+                             "tools/p10r3/run_release_gates.py"):
+                source = root / relative
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.write_bytes(b"original compiler input\n")
+                added = gen.compute_input_dependency_fingerprint(root)
+                self.assertNotEqual(before, added, relative + " was absent from fingerprint")
+                source.write_bytes(b"changed compiler input\n")
+                changed = gen.compute_input_dependency_fingerprint(root)
+                self.assertNotEqual(added, changed, relative + " mutation was ignored")
+                source.unlink()
+                self.assertEqual(before, gen.compute_input_dependency_fingerprint(root))
+
+    def test_c5_fingerprint_normalizes_line_endings_and_excludes_generated_receipts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "build_profile.go").write_bytes(b"first\nsecond\n")
+            before = gen.compute_input_dependency_fingerprint(root)
+            (root / "build_profile.go").write_bytes(b"first\r\nsecond\r\n")
+            self.assertEqual(before, gen.compute_input_dependency_fingerprint(root))
+            receipt = root / "docs/apple-runtime/p10/p10r3-gate-results.json"
+            receipt.parent.mkdir(parents=True)
+            receipt.write_text('{"sourceCommit":"receipt-only"}', encoding="utf-8")
+            self.assertEqual(before, gen.compute_input_dependency_fingerprint(root),
+                             "generated receipt created a circular dependency")
 
     def test_c5_09_release_verdict_never_ready_when_blocked_or_failing(self):
         all_pass = [{"id": gid, "status": "PASS"} for gid in gates.ALL_REQUIRED_GATES]
