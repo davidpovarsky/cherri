@@ -1,0 +1,56 @@
+[
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.gettext",
+    "WFWorkflowActionParameters": {
+      "CustomOutputName": "input",
+      "UUID": "79D699BC-38CC-470E-9E27-538C05CD107D",
+      "WFTextActionText": "P15_FILTER_INPUT"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.filter.files",
+    "WFWorkflowActionParameters": {
+      "WFCompoundType": "1",
+      "WFContentItemFilter": {
+        "P15Unknown": [
+          false,
+          0,
+          ""
+        ],
+        "Value": {
+          "WFActionParameterFilterPrefix": 7,
+          "WFActionParameterFilterTemplates": [
+            {
+              "Operator": 4,
+              "P15Nested": {
+                "Value": [
+                  0,
+                  false,
+                  ""
+                ],
+                "WFItemType": "ordinary",
+                "WFSerializationType": "ordinary"
+              },
+              "Property": "Name",
+              "Removable": false,
+              "Values": {
+                "String": "{literal}"
+              }
+            }
+          ],
+          "WFContentPredicateBoundedDate": true
+        },
+        "WFCompoundType": "1",
+        "WFSerializationType": "WFContentPredicateTableTemplate"
+      },
+      "WFContentItemInputParameter": {
+        "Value": {
+          "OutputName": "input",
+          "OutputUUID": "79D699BC-38CC-470E-9E27-538C05CD107D",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  }
+]

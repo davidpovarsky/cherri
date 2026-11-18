@@ -1,0 +1,64 @@
+{
+  "source_base": "57a72ed05f97158c85d2ed591801b439041caa41",
+  "observed_at": "2026-11-18T22:57:44.628915+00:00",
+  "results": [
+    {
+      "name": "filter-green",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-run",
+        "^TestP15Filter",
+        "."
+      ],
+      "exit_code": 0,
+      "duration_seconds": 39.355,
+      "test_pass_events": 42,
+      "passed_top_level_tests": [
+        "TestP15FilterCanonicalMetadataTransport",
+        "TestP15FilterMetadataMalformedFailsClosed",
+        "TestP15FilterSerializedNativeMetadataPreserved",
+        "TestP15FilterMetadataOracleRejectsCorruption",
+        "TestP15FilterMetadataNativeRoundTrip"
+      ],
+      "failures": [],
+      "package_pass": true,
+      "log": "filter-green.jsonl",
+      "log_sha256": "40bece2730b1740de0035983dde204854687c1046465410bbccdcb6a0645b19e"
+    },
+    {
+      "name": "filter-originals-compatibility",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-run",
+        "^(TestP10_IPadAcceptanceKit_CompileAndStructure|TestP10R2_A08_DispositionCodePathVerification|TestP10R_R08_FilterTwoLevelAndOrRoundTrip|TestP10R2_A09_UnknownPredicateOperatorFailsClosed|TestP10R2_A10_MalformedFilterPredicatesFailsClosed|TestP10R_R09_FilterOperatorParsing|TestP10R_R10_LimitAbsentSortOnly|TestP15S02ExactLiteralBytes|TestP15S02ExplicitInterpolationAndLegacyBoundary|TestP15L01NestedDictionaryShape|TestP15DictionaryListLiteralPreservesNativeValues)$",
+        "."
+      ],
+      "exit_code": 0,
+      "duration_seconds": 36.141,
+      "test_pass_events": 79,
+      "passed_top_level_tests": [
+        "TestP10_IPadAcceptanceKit_CompileAndStructure",
+        "TestP10R2_A08_DispositionCodePathVerification",
+        "TestP10R2_A09_UnknownPredicateOperatorFailsClosed",
+        "TestP10R2_A10_MalformedFilterPredicatesFailsClosed",
+        "TestP10R_R08_FilterTwoLevelAndOrRoundTrip",
+        "TestP10R_R09_FilterOperatorParsing",
+        "TestP10R_R10_LimitAbsentSortOnly",
+        "TestP15DictionaryListLiteralPreservesNativeValues",
+        "TestP15S02ExplicitInterpolationAndLegacyBoundary",
+        "TestP15S02ExactLiteralBytes",
+        "TestP15L01NestedDictionaryShape"
+      ],
+      "failures": [],
+      "package_pass": true,
+      "log": "filter-originals-compatibility.jsonl",
+      "log_sha256": "1576ad17ec3e7b77eee20ab68c8c266c8e27c6b17374ac489b2c6dab4fa25301"
+    }
+  ]
+}

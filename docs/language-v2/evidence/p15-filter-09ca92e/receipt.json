@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "completed_at": "2026-11-18T23:01:12.332460+00:00",
+  "source_sha": "09ca92e144158c147a799c1bc8517f78c5f7fd61",
+  "source_tree_clean_before": true,
+  "source_tree_clean_after": true,
+  "compiler_sha256": "6330e647fd4bec4827b5b048645bbb5e6186ef91049cadd266b3ca26f3fb9609",
+  "embedded_vcs_revision": "09ca92e144158c147a799c1bc8517f78c5f7fd61",
+  "embedded_vcs_modified": false,
+  "baseline_source_sha": "57a72ed05f97158c85d2ed591801b439041caa41",
+  "unchanged_original_tests": [
+    "TestP10_IPadAcceptanceKit_CompileAndStructure",
+    "TestP10R2_A08_DispositionCodePathVerification",
+    "TestP10R_R08_FilterTwoLevelAndOrRoundTrip"
+  ],
+  "test_files_sha256_unchanged": {
+    "p10_http_json_test.go": "bfc0304ca82b1be3e7b0c81bedb26837a828272ae7ba716a0b9ed03367456c09",
+    "p10r2_adversarial_test.go": "5ddf7ed3d35e8f7d1ef65f818cf1f70ee2257c6461dac7483ed01aa416ae944d",
+    "p10r_acceptance_test.go": "9a3cd87569b2ba692b5de67eb0052e95130f99841ad2a31a11a2655cb7eb887a"
+  },
+  "build": {
+    "name": "build",
+    "command": [
+      "go",
+      "build",
+      "-buildvcs=true",
+      "-trimpath",
+      "-o",
+      "<evidence>\\cherri.exe",
+      "."
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 32.931,
+    "log": "build.log",
+    "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "binary_vcs": {
+    "name": "binary-vcs",
+    "command": [
+      "go",
+      "version",
+      "-m",
+      "<evidence>\\cherri.exe"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 0.188,
+    "log": "binary-vcs.log",
+    "raw_log_sha256": "b84c4cee1a77a3af388d374cd52613dfbe5fbc3263b61c3a1a3b892762c2bbe1"
+  },
+  "verified_tests": {
+    "name": "focused-clean-tests",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-run",
+      "^(TestP15FilterCanonicalMetadataTransport|TestP15FilterMetadataMalformedFailsClosed|TestP15FilterSerializedNativeMetadataPreserved|TestP15FilterMetadataOracleRejectsCorruption|TestP15FilterMetadataNativeRoundTrip|TestP10_IPadAcceptanceKit_CompileAndStructure|TestP10R2_A08_DispositionCodePathVerification|TestP10R_R08_FilterTwoLevelAndOrRoundTrip|TestP10R2_A09_UnknownPredicateOperatorFailsClosed|TestP10R2_A10_MalformedFilterPredicatesFailsClosed|TestP10R_R09_FilterOperatorParsing|TestP10R_R10_LimitAbsentSortOnly|TestP15S02ExactLiteralBytes|TestP15S02ExplicitInterpolationAndLegacyBoundary|TestP15L01NestedDictionaryShape|TestP15DictionaryListLiteralPreservesNativeValues)$",
+      "."
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 78.927,
+    "log": "focused-clean-tests.log",
+    "raw_log_sha256": "ca163e9e86c1aa39bf18c4364fdef9cbc4ac3ef6fd8b9a59c07996b763025718",
+    "test_pass_events": 121,
+    "passed_top_level_tests": [
+      "TestP10_IPadAcceptanceKit_CompileAndStructure",
+      "TestP10R2_A08_DispositionCodePathVerification",
+      "TestP10R2_A09_UnknownPredicateOperatorFailsClosed",
+      "TestP10R2_A10_MalformedFilterPredicatesFailsClosed",
+      "TestP10R_R08_FilterTwoLevelAndOrRoundTrip",
+      "TestP10R_R09_FilterOperatorParsing",
+      "TestP10R_R10_LimitAbsentSortOnly",
+      "TestP15DictionaryListLiteralPreservesNativeValues",
+      "TestP15FilterCanonicalMetadataTransport",
+      "TestP15FilterMetadataMalformedFailsClosed",
+      "TestP15FilterSerializedNativeMetadataPreserved",
+      "TestP15FilterMetadataOracleRejectsCorruption",
+      "TestP15FilterMetadataNativeRoundTrip",
+      "TestP15S02ExplicitInterpolationAndLegacyBoundary",
+      "TestP15S02ExactLiteralBytes",
+      "TestP15L01NestedDictionaryShape"
+    ],
+    "failed_tests": [],
+    "package_pass": true
+  },
+  "causal_old_adapter": {
+    "name": "causal-old-adapter-red",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-json",
+      "-overlay=<evidence>\\baseline-overlay.json",
+      "-run",
+      "^TestP15FilterCanonicalMetadataTransport$",
+      "."
+    ],
+    "exit_code": 1,
+    "expected_exit_code": 1,
+    "duration_seconds": 17.722,
+    "log": "causal-old-adapter-red.log",
+    "raw_log_sha256": "882c5dc5f5287f78a527d2bd4fa2523d4357aa255c34ae98eae0ffd1bfd896ce",
+    "test_pass_events": 2,
+    "passed_top_level_tests": [],
+    "failed_tests": [
+      "TestP15FilterCanonicalMetadataTransport/compound_map",
+      "TestP15FilterCanonicalMetadataTransport/shorthand_map",
+      "TestP15FilterCanonicalMetadataTransport/empty_map",
+      "TestP15FilterCanonicalMetadataTransport",
+      "github.com/electrikmilk/cherri"
+    ],
+    "package_pass": false,
+    "baseline_adapter_sha256": "5d8c85538c902156ac5cbbd9ef9a210a28b5796f95a5e607aa5b0f819897581c"
+  },
+  "malformed_production_cases": 8,
+  "native_oracle_corruptions": 8,
+  "native_roundtrips": 16,
+  "actual_cli_specimens": [
+    {
+      "name": "cli-compound-v2",
+      "command": [
+        "<evidence>\\cherri.exe",
+        "compile",
+        "<evidence>\\compound-v2.cherri",
+        "--output=<evidence>\\compound-v2.shortcut",
+        "--skip-sign",
+        "--load-all-actions",
+        "--no-ansi",
+        "--mode=v2"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "duration_seconds": 0.245,
+      "log": "cli-compound-v2.log",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "compound-v2.cherri",
+      "source_sha256": "92c399a813fd1e0c7c6209e7ba99271467824937c1c0733d69a297e07f86c779",
+      "shortcut_sha256": "6423bdb131b0505b8e183cc0770e7559cab177d09381922d3ba92332674512cc",
+      "actions": "compound-v2-actions.json",
+      "actions_sha256": "fb18e7ca60497c5fbef808bdd31bc48967e761d286ccb54bbc745036249984de",
+      "native_action_count": 2,
+      "frontend": "v2"
+    },
+    {
+      "name": "cli-serialized-v2",
+      "command": [
+        "<evidence>\\cherri.exe",
+        "compile",
+        "<evidence>\\serialized-v2.cherri",
+        "--output=<evidence>\\serialized-v2.shortcut",
+        "--skip-sign",
+        "--load-all-actions",
+        "--no-ansi",
+        "--mode=v2"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "duration_seconds": 0.077,
+      "log": "cli-serialized-v2.log",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "serialized-v2.cherri",
+      "source_sha256": "178defab1e9387542425c65e479c1b908144f64a2a51d21286a46412775ea476",
+      "shortcut_sha256": "bf1edaa562f5eed40edbc1cb165d6698a04a77b8357418bfd842fcc5f7acf76c",
+      "actions": "serialized-v2-actions.json",
+      "actions_sha256": "8f794b9fda306c3f6d9e56a0e99cb09d5af6af1d0c8975e8bd9676e31fe61673",
+      "native_action_count": 2,
+      "frontend": "v2"
+    },
+    {
+      "name": "cli-serialized-legacy",
+      "command": [
+        "<evidence>\\cherri.exe",
+        "compile",
+        "<evidence>\\serialized-legacy.cherri",
+        "--output=<evidence>\\serialized-legacy.shortcut",
+        "--skip-sign",
+        "--load-all-actions",
+        "--no-ansi",
+        "--legacy"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "duration_seconds": 0.08,
+      "log": "cli-serialized-legacy.log",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "serialized-legacy.cherri",
+      "source_sha256": "4e08eac4f7025e374004bdad4c0879e19a02165a4f84a4132f25bcdf53bfad7c",
+      "shortcut_sha256": "7cd814606058c010836b23a040ffdd263b0f465b13c4c5f50410bb980598decf",
+      "actions": "serialized-legacy-actions.json",
+      "actions_sha256": "11aa24cdfee40229cd68bd23826cc6343725a60ddc4c1041c004a247c16a9439",
+      "native_action_count": 2,
+      "frontend": "legacy"
+    }
+  ],
+  "actual_cli_invalid_filter": {
+    "command": [
+      "<evidence>\\cherri.exe",
+      "compile",
+      "<evidence>\\invalid-filter.cherri",
+      "--output=<evidence>\\invalid-filter.shortcut",
+      "--skip-sign",
+      "--mode=v2",
+      "--load-all-actions",
+      "--no-ansi"
+    ],
+    "exit_code": 2,
+    "no_output_file": true,
+    "source": "invalid-filter.cherri",
+    "source_sha256": "086401f91652df61d5ab9da558ae31146421b6ce660e444f2594193f5a36b477",
+    "log": "cli-invalid-filter.log",
+    "raw_log_sha256": "aebb9392d65e206037745cc1d6ccfa6eac1a7db6399f54a49a87e4319da85748",
+    "duration_seconds": 0.1
+  },
+  "production_files": [
+    "language_backend_adapter.go",
+    "language_filter_adapter.go"
+  ],
+  "file_sha256": {
+    "language_backend_adapter.go": "55f8ed2da2b02cda634fd546ab91006cf755cb35073bd7799b8ec2bfd51a5341",
+    "language_filter_adapter.go": "d7d063cb38ec6c6a0b68e1515a644e086848140dd2749e2fb2553ded0f64c69c",
+    "p15_filter_metadata_test.go": "8c787d0cf610029b751edfb1b36d31408f9df70b91c64a613867c13753f4dd05"
+  },
+  "apple_runtime": "NOT_RUN",
+  "formal_requirement_promotion": "NONE",
+  "scope": "Canonical filter metadata transport, unchanged production regressions, exact native serialization and import roundtrip only."
+}

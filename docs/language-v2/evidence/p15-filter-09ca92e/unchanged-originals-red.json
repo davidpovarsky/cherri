@@ -1,0 +1,25 @@
+{
+  "source_sha": "57a72ed05f97158c85d2ed591801b439041caa41",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-run",
+    "^(TestP10_IPadAcceptanceKit_CompileAndStructure|TestP10R2_A08_DispositionCodePathVerification|TestP10R_R08_FilterTwoLevelAndOrRoundTrip)$",
+    "."
+  ],
+  "exit_code": 1,
+  "duration_seconds": 25.045,
+  "failed_original_tests": [
+    "TestP10_IPadAcceptanceKit_CompileAndStructure",
+    "TestP10R2_A08_DispositionCodePathVerification",
+    "TestP10R_R08_FilterTwoLevelAndOrRoundTrip"
+  ],
+  "typed_dictionary_panic_count": 3,
+  "test_files_sha256_unchanged": {
+    "p10_http_json_test.go": "bfc0304ca82b1be3e7b0c81bedb26837a828272ae7ba716a0b9ed03367456c09",
+    "p10r2_adversarial_test.go": "5ddf7ed3d35e8f7d1ef65f818cf1f70ee2257c6461dac7483ed01aa416ae944d",
+    "p10r_acceptance_test.go": "9a3cd87569b2ba692b5de67eb0052e95130f99841ad2a31a11a2655cb7eb887a"
+  }
+}

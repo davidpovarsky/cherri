@@ -1,0 +1,2 @@
+let input = text("P15_FILTER_INPUT")
+filterFiles(input, filter: {"compound":"or","predicates":[{"property":"Name","operator":"contains","value":"{owner}\\path"},{"property":"File Size","operator":"equals","value":0}]})

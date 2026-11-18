@@ -1,0 +1,25 @@
+{
+  "not_production_changes": true,
+  "before_source_freeze": true,
+  "retained_failures": [
+    {
+      "capture": "first-filter-green.jsonl",
+      "raw_sha256": "f691e504b706970038d5fcc2d294378515c1cdf40892f146ac231dc4660ec668",
+      "failed_test": "TestP15FilterSerializedNativeMetadataPreserved",
+      "diagnostic_lines": [
+        "p15_filter_metadata_test.go:192: legacy compile failed: Undefined action 'ext()'"
+      ],
+      "explanation": "Legacy test source omitted the required whitespace after assignment; corrected the synthetic source only."
+    },
+    {
+      "capture": "second-filter-green.jsonl",
+      "raw_sha256": "f6b3cbfe61d19d3e00288e8356805094da3f8292093b859e35c359f67ef5350b",
+      "failed_test": "TestP15FilterSerializedNativeMetadataPreserved",
+      "diagnostic_lines": [
+        "p15_filter_metadata_test.go:199: Legacy native filter changed: map[string]interface {}{\"WFCompoundType\":\"1\", \"WFContentItemFilter\":map[string]interface {}{\"P15Unknown\":[]interface {}{false, 0, \"\"}, \"Value\":map[string]interface {}{\"WFActionParameterFilterPrefix\":7, \"WFActionParameterFilterTemplates\":[]interface {}{map[string]interface {}{\"Operator\":4, \"P15Nested\":map[string]interface {}{\"Value\":[]interface {}{0, false, \"\"}, \"WFItemType\":\"ordinary\", \"WFSerializationType\":\"ordinary\"}, \"Property\":\"Name\", \"Removable\":false, \"Values\":map[string]interface {}{\"String\":\"{literal}\"}}}, \"WFContentPredicateBoundedDate\":true}, \"WFCompoundType\":\"1\", \"WFSerializationType\":\"WFContentPredicateTableTemplate\"}, \"WFContentItemInputParameter\":map[string]interface {}{\"Value\":map[string]interface {}{\"OutputName\":\"input\", \"OutputUUID\":\"55647968-2a52-4a82-8df9-12204af48304\", \"Type\":\"ActionOutput\"}, \"WFSerializationType\":\"WFTextTokenAttachment\"}}"
+      ],
+      "explanation": "Legacy exact numeric expectation initially used V2 integers. Actual retained pre-fix CLI proved four real-valued metadata numbers, now asserted without numeric coercion."
+    }
+  ],
+  "pre_fix_test_source_sha256": "465e9074332eee2fc8989ccb38a7f92955893d384c8997075c34c22a5a5420b8"
+}

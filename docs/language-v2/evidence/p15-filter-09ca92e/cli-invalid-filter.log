@@ -1,0 +1,27 @@
+panic: invalid predicates specification: expected slice, got string
+
+goroutine 1 [running]:
+main.buildContentItemFilter({0x7ff6a70a4d00?, 0xc0004bfec0?})
+	github.com/electrikmilk/cherri/actions_std.go:3344 +0x15fb
+main.makeActionParams({0xc00021ca00, 0x2, 0x5}, 0xc0004bfef0)
+	github.com/electrikmilk/cherri/action.go:435 +0x527
+main.getActionParameters({0xc00021ca00, 0x2, 0x5})
+	github.com/electrikmilk/cherri/action.go:400 +0x905
+main.(*CanonicalBackendSession).EmitResolvedCall(0xc0003efa20, {{0xc00020a023, 0xb}, {0x0, 0x0}, {0x7ff6a716c448, 0x20}, {0xc000359ba0, 0x2, 0x2}, ...})
+	github.com/electrikmilk/cherri/language_backend_adapter.go:152 +0xc89
+github.com/electrikmilk/cherri/internal/language/lower.(*Lowerer).lowerCall(0xc0001d11e0, 0xc00021c140)
+	github.com/electrikmilk/cherri/internal/language/lower/lower.go:5820 +0x361d
+github.com/electrikmilk/cherri/internal/language/lower.(*Lowerer).lowerExpression(0xc0001d11e0, {0x7ff6a72c10a0, 0xc00021c140})
+	github.com/electrikmilk/cherri/internal/language/lower/lower.go:3779 +0x2e50
+github.com/electrikmilk/cherri/internal/language/lower.(*Lowerer).lowerStatement(0xc0001d11e0, {0x7ff6a72c1398?, 0xc0002041c0})
+	github.com/electrikmilk/cherri/internal/language/lower/lower.go:1566 +0x3d4
+github.com/electrikmilk/cherri/internal/language/lower.(*Lowerer).LowerProgramToSession(0xc0001d11e0, 0xc00021a000)
+	github.com/electrikmilk/cherri/internal/language/lower/lower.go:502 +0xc28
+main.CompileSourceToPlistWithOptions({0xc0000b4100, 0x7a}, {0xc00020a000, 0x58}, {{0x7ff6a7143f7d?, 0x0?}, 0x0?, 0xec?})
+	github.com/electrikmilk/cherri/language_emit_adapter.go:364 +0x725
+main.CompileFileV2({0xc0000b4100, 0x7a}, {0xc0000b8009, 0x7c}, 0x1)
+	github.com/electrikmilk/cherri/language_emit_adapter.go:386 +0x236
+main.HandleLanguageV2CLI()
+	github.com/electrikmilk/cherri/language_cli_adapter.go:127 +0x552c
+main.main()
+	github.com/electrikmilk/cherri/main.go:60 +0x25
