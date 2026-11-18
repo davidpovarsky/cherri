@@ -130,7 +130,7 @@ action 'getdistance' getDistance(
     bool ?avoidTolls: 'WFAvoidTolls' = false,
     variable ?startLocation: 'WFGetDirectionsCustomLocation',
     text ?accuracy: 'Accuracy'
-)
+): number
 
 // [Doc]: [Location] Filter Locations: Filter locations with various filters.
 action 'filter.locations' filterLocations(

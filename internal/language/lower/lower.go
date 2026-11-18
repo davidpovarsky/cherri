@@ -5154,23 +5154,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					hasExplicitOutputName = true
 				}
 			case "aggrandizements":
-				rawVal := cloneLowerPlistValue(val)
-				if m, ok := rawVal.(map[string]any); ok {
-					if nested, hasNested := m["Aggrandizements"]; hasNested {
-						rawVal = nested
-					}
+				validated, err := ir.NativeReferenceAggrandizements(cloneLowerPlistValue(val))
+				if err != nil {
+					return nil, err
 				}
-				list, ok := rawVal.([]any)
-				if !ok {
-					return nil, fmt.Errorf("native.ref aggrandizements must be an inline list of dictionaries, got %T", rawVal)
-				}
-				for index, item := range list {
-					m, ok := item.(map[string]any)
-					if !ok {
-						return nil, fmt.Errorf("native.ref aggrandizements item %d must be a dictionary, got %T", index, item)
-					}
-					aggrs = append(aggrs, m)
-				}
+				aggrs = append(aggrs, validated...)
 			case "coerce", "coercion":
 				aggrs = append(aggrs, map[string]interface{}{
 					"Type":              "WFCoercionVariableAggrandizement",
@@ -5219,34 +5207,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			}, nil
 		}
 
-		normKind := strings.ToLower(strings.TrimSpace(kind))
-		switch normKind {
-		case "actionoutput", "output":
-			kind = "ActionOutput"
-			if strings.TrimSpace(outputUUID) == "" {
-				return nil, fmt.Errorf("native.ref for ActionOutput requires a non-empty uuid")
-			}
-		case "variable", "var":
-			kind = "Variable"
-			if strings.TrimSpace(outputName) == "" {
-				return nil, fmt.Errorf("native.ref for Variable requires a non-empty name")
-			}
-		case "shortcutinput", "extensioninput", "input":
-			kind = "ExtensionInput"
-		case "clipboard":
-			kind = "Clipboard"
-		case "currentdate", "date":
-			kind = "CurrentDate"
-		case "devicedetails", "device":
-			kind = "DeviceDetails"
-		case "ask", "askeachtime":
-			kind = "Ask"
-		default:
-			if kind == "" {
-				return nil, fmt.Errorf("native.ref requires a reference kind (e.g. ActionOutput, Variable, ShortcutInput)")
-			}
-			return nil, fmt.Errorf("unsupported or invalid native.ref kind: %q", kind)
+		validatedKind, err := ir.NormalizeNativeReferenceKind(kind, outputUUID, outputName)
+		if err != nil {
+			return nil, err
 		}
+		kind = validatedKind
 
 		tok := &ir.AttachmentToken{
 			Type:            kind,
