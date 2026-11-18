@@ -1955,6 +1955,119 @@
       "reason": "Existing stale-doc checks could fail for unrelated causes, and an old installed compiler could report malformed signed results as success.",
       "evidence": "Nine causal Skill checks and existing10scenarios PASS. Current source34signing cases:3unsigned controls,31negative rejections. Old installed46cases:12false successes preserved as failures; no live promotion or cryptographic validity claimed. Signing probe implementation 4ad9813cde1cc7c226b0bb3f93b8ef5bce0b4ac6.",
       "note": "Metadata is recorded separately after immutable integrated implementation commits. No release-complete claim."
+    },
+    {
+      "name": "P10R15 typed require native safety guard",
+      "locations": [
+        "require_macro.go",
+        "require_type_metadata.go",
+        "internal/language/analysis/require.go",
+        "internal/language/schema/require.go",
+        "require_macro_test.go"
+      ],
+      "firstForkCommit": "2504d8d162e12cbc905f76085a4b9a0aa082abfc",
+      "change": "Expand typed require through the shared canonical backend while preserving original producer references and capturing mutable/system inputs once.",
+      "reason": "Validate content without treating false or zero as absent or coercing typed objects to text.",
+      "evidence": "Production Legacy/V2 positive and negative tests; independent canonical typeOf and Apple WFGetItemTypeAction metadata test corrected both inspection sites in e9fea2354d2bfc7244c728e0985e30e4e88b74b6. Integrated Release safety and UUID-chain test passed at4367786d980b7137c1143f3a94f44d7f3a8bbc92.",
+      "note": "Separate provenance recorded after immutable implementation commits. This entry does not certify full project completion or unexecuted Apple/physical tiers."
+    },
+    {
+      "name": "P10R15 scoped measurement and existing collection value flow",
+      "locations": [
+        "internal/language/syntax/scoped_blocks.go",
+        "internal/language/analysis/scoped_blocks.go",
+        "internal/language/lower/scoped_blocks.go",
+        "p15_scoped_blocks_test.go"
+      ],
+      "firstForkCommit": "7266d49dac331f3b2237a19186e5a8a46425d743",
+      "change": "Add V2 inline value blocks for measure using existing timers, lexical hygiene and original native results; benchmark existing for/yield Repeat Results.",
+      "reason": "Prevent duplicate body execution and typed-result replacement while avoiding an unnecessary accumulator or parallel collection backend.",
+      "evidence": "44 focused tests and full syntax/analysis/lower/schema/service suites passed on feature source. Existing collection graph has6 actions for N0/1/100. Legacy scoped blocks explicitly rejected; general callable blocks and Apple runtime remain open.",
+      "note": "Separate provenance recorded after immutable implementation commits. This entry does not certify full project completion or unexecuted Apple/physical tiers."
+    },
+    {
+      "name": "P10R15 native predicate fidelity and Boolean helper values",
+      "locations": [
+        "internal/language/lower/short_circuit.go",
+        "internal/language/lower/predicate_value.go",
+        "p15_compound_native_operands_test.go",
+        "p15_negated_predicates_test.go"
+      ],
+      "firstForkCommit": "a5f8ae0e71a91b4645582b9b5088709ed235d324",
+      "change": "Accept pure native reference/token operands without eagerly executing producers; lower negated and value-position condition helpers through the existing native If emitter.",
+      "reason": "Recover legitimate natural import classifications while retaining logical short-circuit behavior and original imported presence semantics.",
+      "evidence": "Synthetic RED/GREEN regressions. Exact original fix1cd80624eb5caa2800421e0f6d0550dda3e65a20 passed38-input P13:23353/27652 natural,4298fallback,1invalid,0demoted,76/76 recursive tree equality. Further integrated negation repair861bb43ae435ccb302641905e62586a98e27736f passed focused F01/P12/SEM/lower tests. Final integrated corpus remains a separate receipt.",
+      "note": "Separate provenance recorded after immutable implementation commits. This entry does not certify full project completion or unexecuted Apple/physical tiers."
+    },
+    {
+      "name": "P10R15 CLI options and production acceptance",
+      "locations": [
+        "args.go",
+        "main.go",
+        "language_cli_adapter.go",
+        "p15_cli_option_values_test.go",
+        "p15_cli_acceptance_test.go",
+        "tools/language-acceptance/execution_audit.go"
+      ],
+      "firstForkCommit": "3704c24845cf584aa9049e18e3dc3f8702367ba0",
+      "change": "Preserve complete option values, honor explicit frontend modes and parsed signing/JSON flags, and execute actual production CLI acceptance scenarios.",
+      "reason": "Prevent truncated URLs/output paths, unintended signing from filenames, wrong output protocols, and shallow smoke assertions masquerading as integration proof.",
+      "evidence": "41 actual option-selection cases passed on feature source. Three new formal producers plus Release guard test passed; acceptance runner suite passed. Signing/open/network observers have positive controls and analyze must leave file hashes unchanged. Exact CLI formal implementation50a3c0e4eafb5f0215b4341984e140928753d802.",
+      "note": "Separate provenance recorded after immutable implementation commits. This entry does not certify full project completion or unexecuted Apple/physical tiers."
+    },
+    {
+      "name": "P10R15 compiler macro discovery and compatibility metadata",
+      "locations": [
+        "internal/language/schema/macro_metadata.go",
+        "internal/language/protocol/protocol.go",
+        "internal/language/service/service.go",
+        "tools/language-docs/main.go"
+      ],
+      "firstForkCommit": "ab9a264ba370890397d74042e00c11a3b4c84ffd",
+      "change": "Expose sorted compiler-only schemas and a separate semantic macro fingerprint through capabilities, completion and generated documentation.",
+      "reason": "Keep the505-entry native catalog stable while allowing consumers to detect new macro signatures, literal constraints and scoped blocks.",
+      "evidence": "Schema/protocol/service/docs suites passed; mutation tests change macro fingerprint for return type, literal, wire-key and scoped-block mutations. Actual CLI reports13 macros and native actionCount505; docs producer and canonical schema verification passed.",
+      "note": "Separate provenance recorded after immutable implementation commits. This entry does not certify full project completion or unexecuted Apple/physical tiers."
+    },
+    {
+      "name": "P10R15 strict macro signed-runtime fixture contracts",
+      "locations": [
+        "scripts/ios27_shortcuts_simulator_qa.sh",
+        "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+        "p15_macro_runtime_fixtures_test.go",
+        "tools/shortcuts-simulator-qa/fixtures/qa-require-v2.cherri",
+        "tools/shortcuts-simulator-qa/fixtures/qa-measure-release-v2.cherri"
+      ],
+      "firstForkCommit": "26def7775ce12525f963337d98f87dc4d9bcf1f1",
+      "change": "Add synthetic require and Debug/Release measurement targets with exact fresh callback, profile, graph and trace requirements in the existing signed pipeline.",
+      "reason": "A missing trace is valid only for the exact Release fixture after independently proving removal of diagnostics and preservation of body effects.",
+      "evidence": "47 Python tests,20 focused Go tests and12 actual CLI fixture builds passed on feature source. Ignored Release flag, removed body and duplicated body mutations were rejected. No current-source Apple execution claimed.",
+      "note": "Separate provenance recorded after immutable implementation commits. This entry does not certify full project completion or unexecuted Apple/physical tiers."
+    },
+    {
+      "name": "P10R15 compiler-bound release receipt production",
+      "locations": [
+        "tools/p10r3/generate_catalog_and_pack_ledgers.py",
+        "tools/p10r3/run_release_gates.py"
+      ],
+      "firstForkCommit": "92f834e1878e02d6357021e97c491c55437c038b",
+      "change": "Bind historical release ledgers to all compiler inputs and execute Python gates through the active interpreter.",
+      "reason": "R1 Linux and macOS correctly rejected stale dependency fingerprints after passing their compiler suites.",
+      "evidence": "Actual refresh at92f834e:505 producer, catalog generator,56 gates, ancestry/fingerprint check and ledger consistency passed;55PASS and1BLOCKED_PLATFORM,0FAIL. Receipt59d81c0716703ec20472dd9239864151b66bf6c8. Later source changes require regeneration.",
+      "note": "Separate provenance recorded after immutable implementation commits. This entry does not certify full project completion or unexecuted Apple/physical tiers."
+    },
+    {
+      "name": "P10R15 inactive ARM64 installed-consumer verification",
+      "locations": [
+        "tools/p10r15/verify_installed_signing.py",
+        "docs/apple-runtime/p10r15/candidate-r1-consumer-provenance.json",
+        "docs/apple-runtime/p10r15/candidate-r1-consumer-surface-audit.json"
+      ],
+      "firstForkCommit": "070d326e06a97b3fd93df155324c74815c3375c5",
+      "change": "Stage and verify a separate compiler/docs/Skill tuple with real installed entrypoints and signing faults, preserving live hashes.",
+      "reason": "Source correctness does not establish behavior of old deployed binaries and wrappers.",
+      "evidence": "Inactive R1 tuple has46/46 process cases:4 unsigned controls,42 negative rejections,0failures;12/12 entrypoint checks and causal compatibility/self-tests pass. All12 false-success cases from old live tuple are rejected. No live promotion yet.",
+      "note": "Separate provenance recorded after immutable implementation commits. This entry does not certify full project completion or unexecuted Apple/physical tiers."
     }
   ]
 }

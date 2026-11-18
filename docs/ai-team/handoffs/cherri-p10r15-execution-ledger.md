@@ -65,3 +65,46 @@ No release candidate or project completion is claimed. Keep all required unrun g
 - Live Pure/Pure+Pack/Fork unsigned mode isolation evidence `f1788ba08c946b80d131eb460351d3f2d5b4326c`: four expected outcomes and checksum guards pass. Pure upstream and package files were not changed.
 - Asana handoffs appended to QA1219603546838978, catalog1220085240857296, Inspector1220655985907047, privacy1220646564229070 and Skill1219603547340941. They remain OPEN at their broader acceptance scope. Master execution status1220663200268350 is at risk.
 - Next candidate gates: full integrated Go suite; exact-SHA Linux/macOS/Nix; actual signed Legacy/BoolList/F01 callbacks; full iOS bridge build/test; refreshed corpus and generated metadata; coherent consumer tuple. Remaining typed macros are implementation work, not falsely labeled external blockers. Physical iPad remains BLOCKED_DEVICE.
+
+
+## 2026-11-18 implementation and verification checkpoint
+
+This checkpoint follows immutable R1 validation d00bc0b9e9a4d8c460623de3d883680b94289e04. The closure master remains OPEN. The owner has authorized implementation, executions, deployments and Asana updates; remaining gates below are technical/evidence requirements, not a request for repeated permission.
+
+### Integrated source changes
+
+| Scope | Integrated commit | Evidence and limits |
+|---|---|---|
+| Dependency-bound release receipts | 92f834e1878e02d6357021e97c491c55437c038b; receipts59d81c0716703ec20472dd9239864151b66bf6c8 | Fresh505 producer and56 release gates executed:55PASS,1BLOCKED_PLATFORM,0FAIL. Later code changes invalidate this receipt until regenerated. |
+| CLI option/signing fixes | 3704c24;56b2c95 | Complete values containing equals signs, explicit frontend selection, no signing selected by a filename.41 focused cases passed on feature source. |
+| Real CLI formal producers | 50a3c0e4eafb5f0215b4341984e140928753d802 | CL01/CL02/CL03 now execute the current binary. Pure analysis is observed with filesystem hashes, native command probes and loopback signing controls. JSON filename regression fixed. Full runner package passed. |
+| Typed require | 2504d8d162e12cbc905f76085a4b9a0aa082abfc;e9fea2354d2bfc7244c728e0985e30e4e88b74b6 | Shared typed reference guard. Independent native metadata caught and corrected Get Type to getitemtype. Signed/type-runtime gates remain open. |
+| Release semantic guards | 4367786d980b7137c1143f3a94f44d7f3a8bbc92 | Actual Legacy/V2 guard, Alert/Stop and original producer-reference chain survive diagnostic removal. |
+| Scoped measurement and existing collection | 7266d49dac331f3b2237a19186e5a8a46425d743 |44 focused tests and full frontend/lowering suites passed. V2 inline value blocks only; Legacy has explicit diagnostic. Existing for/yield has constant6 actions for N0/1/100 without accumulator. |
+| Compound reference fidelity and predicate values | a5f8ae0e71a91b4645582b9b5088709ed235d324;861bb43ae435ccb302641905e62586a98e27736f | Synthetic causal import, lazy side-effect and negated helper cases pass. Full corpus recovery receipt is scoped below. |
+| Macro discovery and consumer metadata | ab9a264ba370890397d74042e00c11a3b4c84ffd |13 compiler macros exposed separately through capabilities, completion and generated docs. Native catalog remains505; macro fingerprint is f63d8b0a323c7045af4abf20723684506c9f63b9d31776a408c39766e7c2cf44. Full4-package tests and real generators passed. |
+| Strict signed macro fixture contracts | 26def7775ce12525f963337d98f87dc4d9bcf1f1 |47 Python tests,20 focused Go tests and12 actual CLI builds passed on feature source. Missing profile, missing body and duplicated body mutations rejected. No Apple run claimed. |
+| Inactive ARM64 consumer verification | 070d326e06a97b3fd93df155324c74815c3375c5 |46/46 signing/control cases,12/12 entrypoint cases and compatibility/self-tests passed on staged R1 tuple. Live installation unchanged. |
+
+### Failures retained and corrected
+
+R1 Windows build, full Go suite and40 Python runtime tests passed. The same private38 inputs passed P10 measure and P11 native-wire tests, but P13 correctly failed at22936 natural actions against its unchanged floor of23340. No threshold or private original was changed.
+
+A synthetic reproduction showed that the F01 preflight rejected pure native reference/member/token operands, causing natural regions to expand and fall back. Exact original fix1cd80624eb5caa2800421e0f6d0550dda3e65a20 then passed the complete private P13 audit:38 inputs,27652 actions,23353 natural(84.45%),4298 exact fallback,1 source-invalid,0 demoted and76/76 recursive native tree equality. Raw logs and source filenames remain host-local. The later negation/value-position repair requires the final integrated corpus boundary as well.
+
+The first require implementation used gettypeaction. Independent Apple metadata identified that as Get File of Type, while canonical typeOf uses getitemtype. A causal test now follows both comparison producer UUIDs and independently checks WFGetItemTypeAction/NSString/WFInput metadata. The correction passed; old getType alias behavior was not silently repurposed.
+
+### CI and Apple scope
+
+- R1 Build & Test run [44223692029](https://github.com/davidpovarsky/cherri/actions/runs/44223692029): Nix passed. Linux and macOS each passed full Go, matrix, discovery, decompile, package, parity and oracle steps, then failed the stale release-ledger fingerprint gate. The existing producer was corrected and rerun, but final-source CI is still required.
+- R1 iOS run [44223787270](https://github.com/davidpovarsky/cherri/actions/runs/44223787270): Simulator app and XCFramework built. All24 CherriCore integration tests passed, including the new profile C ABI test. Six editor UI tests failed. A separate exact-R1 UI worktree is investigating actual inserted source and bounded failure-evidence retention.
+- Signed xcode-27 Legacy/Bool-List/F01 jobs44223774682/44223779379/44223783251 remained queued with no executed steps at the last check. Their unexecuted state is not runtime proof.
+- No physical iPad has been tested. The local56-gate Windows receipt,179 formal language obligations,505 catalog rows and private38x2 corpus are separate denominators.
+
+### Active independent work and handoff
+
+An immutable ab9a264 integration worktree is running a complete Go suite. Formal P01?P05 producers are being strengthened; actual parser defects have been reproduced and are under repair. The previous179-obligation report remains a historical snapshot until the final integrated producer refresh.
+
+The consumer owner is adding manifest-conditional macro fingerprint checks and a generated eleven-task macro evidence ledger. General callable blocks, typed label association, secure local typed export, cache/retry/paginate and physical/runtime requirements remain explicitly incomplete; the implemented scoped subset is not the entire roadmap.
+
+Asana master and eight corresponding core/macro/consumer/iOS tasks were updated from fresh task reads with executed source/proof and open failures. No task was mass-completed. Main's15 unique commits and Pure Original are preserved. No main merge, live consumer promotion, package publication or physical-device change has occurred.
