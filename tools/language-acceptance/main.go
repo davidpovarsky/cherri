@@ -931,6 +931,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 						validationErrors = append(validationErrors, fmt.Sprintf("test_id %q in record %s is not authorized for requirement %s tier %s", rec.TestID, rec.EvidenceID, reqID, rec.Tier))
 					}
 
+					if required := literalCollectionProductionTestForTier(reqID, rec.Tier); required != "" && rec.TestID != required && !strings.HasPrefix(rec.TestID, required+"/") {
+						validationErrors = append(validationErrors, fmt.Sprintf("test_id %q in record %s is not authorized for requirement %s tier %s", rec.TestID, rec.EvidenceID, reqID, rec.Tier))
+					}
+
 					// Never allow bridge-only tests to claim UI tier
 					if (rec.Tier == "ios-ui" || rec.Tier == "ui") && strings.HasPrefix(rec.TestID, "CherriCoreIntegrationTests/") {
 						validationErrors = append(validationErrors, fmt.Sprintf("record %s claims UI tier with bridge-only test %s; bridge tests cannot satisfy UI requirements", rec.EvidenceID, rec.TestID))
@@ -1513,11 +1517,7 @@ func (r *Runner) runTypes() {
 
 // Group 7: Text
 func (r *Runner) runText() {
-	// S01: Multiple variable tokens after Hebrew/emoji
-	srcS01 := "let n = \"עולם 🌍\"\nlet msg = f\"שלום {n}! סוף\""
-	wfS01, errS01 := lowerSrc(r.reg, srcS01)
-	s01Passed := errS01 == nil && len(wfS01.Actions) > 0
-	r.Record("S01", "text", "Multiple variable tokens after Hebrew/emoji/combining marks", "unit+native-roundtrip+iOS", []string{"unit", "native-roundtrip"}, s01Passed, "PASSED", "UTF-16 attachment offset calculation correctly handles non-BMP emoji and Hebrew")
+	r.runUnicodeTextRequirement()
 
 	r.runLiteralCollectionRequirement("S02")
 
