@@ -41,3 +41,11 @@ The formal producer executes all nine tests, records separate unit/native-struct
 Development RED logs and later correction/compatibility runs are retained under the owned checkout's `artifacts/p15-call-order/`. The final source is followed by a separate immutable receipt with clean-source checks, actual process exits, source hashes and raw Go events. The root agent owns the combined formal snapshot, private 38-input corpus, installed consumers and signed runtime gates.
 
 The assignment capture in this component concerns source-visible writes in later arguments. It is not proof of system-value snapshot semantics, arbitrary native action side effects, function platform runtime or every internal evaluation rule of nested containers; those retain their own contracts. No corpus threshold, imported fidelity check, external gate or release condition is relaxed.
+
+## Immutable source receipt
+
+Implementation `7289b9ccf06767342bb5a3ea73e3bacd2fa3b307` was clean before and after `job_f78b240097f4`. All 60 top-level tests in analysis/service/lower passed (3.226 seconds). The formal producer passed (6.660 seconds), executing all nine production tests and recording exactly one C01 PASS with unit and native-structure evidence. Closure remains false. The original contract still says `unit+native`; the existing validator normalizes its native tier to native-structure.
+
+The final compiler working tree also passed 63 focused compatibility tests before the implementation commit. See [receipt and scope](evidence/p15-call-order-7289b9c/receipt.json), [source hashes and exact commands](evidence/p15-call-order-7289b9c/verification.json), [formal evidence](evidence/p15-call-order-7289b9c/formal-receipt.json), and [raw exact-source events](evidence/p15-call-order-7289b9c/verification.jsonl). Development RED logs retain their distinct source/observer boundaries.
+
+The independent helper review identified a conservative cost boundary: unlike a plain reference, an FString/List/Map/Record argument materializes through its existing typed producer when any later outer assignment is present, even if that write is unrelated to a contained reference. This can add an action but preserves evaluation semantics. No-write imported arguments retain their prior wire. This component makes no minimal-action-count claim.

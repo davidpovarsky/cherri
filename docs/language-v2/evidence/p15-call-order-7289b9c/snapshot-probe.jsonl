@@ -1,0 +1,18 @@
+{"Time":"2026-11-18T19:34:13.5935012+02:00","Action":"start","Package":"github.com/electrikmilk/cherri"}
+{"Time":"2026-11-18T19:34:13.8946692+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot"}
+{"Time":"2026-11-18T19:34:13.8946692+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot","Output":"=== RUN   TestP15C01ArgumentValueSnapshot\n"}
+{"Time":"2026-11-18T19:34:13.8946692+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/function"}
+{"Time":"2026-11-18T19:34:13.8946692+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/function","Output":"=== RUN   TestP15C01ArgumentValueSnapshot/function\n"}
+{"Time":"2026-11-18T19:34:13.9170797+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/function","Output":"    p15_call_order_test.go:276: first argument remains a late mutable read: outputs=[] variables=[value]\n"}
+{"Time":"2026-11-18T19:34:13.9170797+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/function","Output":"--- FAIL: TestP15C01ArgumentValueSnapshot/function (0.02s)\n"}
+{"Time":"2026-11-18T19:34:13.9170797+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/function","Elapsed":0.02}
+{"Time":"2026-11-18T19:34:13.9170797+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/custom"}
+{"Time":"2026-11-18T19:34:13.9170797+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/custom","Output":"=== RUN   TestP15C01ArgumentValueSnapshot/custom\n"}
+{"Time":"2026-11-18T19:34:13.9187833+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/custom","Output":"    p15_call_order_test.go:276: first argument remains a late mutable read: outputs=[] variables=[value]\n"}
+{"Time":"2026-11-18T19:34:13.9187833+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/custom","Output":"--- FAIL: TestP15C01ArgumentValueSnapshot/custom (0.00s)\n"}
+{"Time":"2026-11-18T19:34:13.9187833+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot/custom","Elapsed":0}
+{"Time":"2026-11-18T19:34:13.9187833+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot","Output":"--- FAIL: TestP15C01ArgumentValueSnapshot (0.02s)\n"}
+{"Time":"2026-11-18T19:34:13.919447+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15C01ArgumentValueSnapshot","Elapsed":0.02}
+{"Time":"2026-11-18T19:34:13.919447+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Output":"FAIL\n"}
+{"Time":"2026-11-18T19:34:13.9231539+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Output":"FAIL\tgithub.com/electrikmilk/cherri\t0.330s\n"}
+{"Time":"2026-11-18T19:34:13.9231539+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Elapsed":0.33}

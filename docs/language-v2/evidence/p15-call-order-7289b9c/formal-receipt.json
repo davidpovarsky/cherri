@@ -1,0 +1,85 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-C01-unit",
+      "requirements": [
+        "C01"
+      ],
+      "tier": "unit",
+      "implementation_sha": "7289b9ccf06767342bb5a3ea73e3bacd2fa3b307",
+      "test_id": "github.com/electrikmilk/cherri:TestP15C01SourceOrderFlow",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15C01SourceOrderFlow|TestP15C01SourceOrderNativeStructure|TestP15C01DefaultEffectsOnce|TestP15C01DefaultGuardStructure|TestP15C01ArgumentValueSnapshot|TestP15C01SnapshotBoundaries|TestP15C01NestedCustomResult|TestP15C01AggregateArgumentSnapshots|TestP15C01CLIAndService)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15C01SourceOrderFlow, TestP15C01SourceOrderNativeStructure, TestP15C01DefaultEffectsOnce, TestP15C01DefaultGuardStructure, TestP15C01ArgumentValueSnapshot, TestP15C01SnapshotBoundaries, TestP15C01NestedCustomResult, TestP15C01AggregateArgumentSnapshots, TestP15C01CLIAndService"
+      },
+      "detail": "Executed production tests: TestP15C01SourceOrderFlow, TestP15C01SourceOrderNativeStructure, TestP15C01DefaultEffectsOnce, TestP15C01DefaultGuardStructure, TestP15C01ArgumentValueSnapshot, TestP15C01SnapshotBoundaries, TestP15C01NestedCustomResult, TestP15C01AggregateArgumentSnapshots, TestP15C01CLIAndService"
+    },
+    {
+      "evidence_id": "ev-local-C01-native-structure",
+      "requirements": [
+        "C01"
+      ],
+      "tier": "native-structure",
+      "implementation_sha": "7289b9ccf06767342bb5a3ea73e3bacd2fa3b307",
+      "test_id": "github.com/electrikmilk/cherri:TestP15C01SourceOrderNativeStructure",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15C01SourceOrderFlow|TestP15C01SourceOrderNativeStructure|TestP15C01DefaultEffectsOnce|TestP15C01DefaultGuardStructure|TestP15C01ArgumentValueSnapshot|TestP15C01SnapshotBoundaries|TestP15C01NestedCustomResult|TestP15C01AggregateArgumentSnapshots|TestP15C01CLIAndService)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15C01SourceOrderFlow, TestP15C01SourceOrderNativeStructure, TestP15C01DefaultEffectsOnce, TestP15C01DefaultGuardStructure, TestP15C01ArgumentValueSnapshot, TestP15C01SnapshotBoundaries, TestP15C01NestedCustomResult, TestP15C01AggregateArgumentSnapshots, TestP15C01CLIAndService"
+      },
+      "detail": "Executed production tests: TestP15C01SourceOrderFlow, TestP15C01SourceOrderNativeStructure, TestP15C01DefaultEffectsOnce, TestP15C01DefaultGuardStructure, TestP15C01ArgumentValueSnapshot, TestP15C01SnapshotBoundaries, TestP15C01NestedCustomResult, TestP15C01AggregateArgumentSnapshots, TestP15C01CLIAndService"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T18:01:04Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "C01",
+        "group": "calls",
+        "requirement": "Named arguments out of declaration order evaluate in source order",
+        "test_level": "unit+native-structure",
+        "executed_levels": [
+          "unit",
+          "native-structure"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only C01 unit and actual native-structure tiers: source effect order, once-only supplied/default producers, UUID/value binding and CLI/service checks. No Apple function execution, function bridge runtime, system-value snapshot or release closure.",
+  "source_sha": "7289b9ccf06767342bb5a3ea73e3bacd2fa3b307",
+  "source_tree_clean": true
+}

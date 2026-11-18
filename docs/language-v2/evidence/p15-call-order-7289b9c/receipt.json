@@ -1,0 +1,192 @@
+{
+  "implementation_commit": "7289b9ccf06767342bb5a3ea73e3bacd2fa3b307",
+  "verification_job": "job_f78b240097f4",
+  "status": "PASS",
+  "formal_contract": "C01",
+  "original_required_level": "unit+native",
+  "canonical_executed_tiers": [
+    "unit",
+    "native-structure"
+  ],
+  "formal_passed_cases": 1,
+  "closure_complete": false,
+  "source_clean_before_and_after": true,
+  "named_production_tests": 9,
+  "source_file_hashes": [
+    {
+      "path": "docs/language-v2/p15-call-order-acceptance.md",
+      "sha256": "d928886b5f6dab75d5d66a488f399245d50eac65dfc87d44deeb7d32e908ee2c"
+    },
+    {
+      "path": "internal/language/analysis/binding_flow.go",
+      "sha256": "90d3bf67bfe514fe64ec330f58dfe674fcc167662f1751fd0beadb867a0763d8"
+    },
+    {
+      "path": "internal/language/analysis/function_arguments.go",
+      "sha256": "fdb63638e62597649ad5182ab5ff1332e0c4dca61781f7d225dbfc9c2175043f"
+    },
+    {
+      "path": "internal/language/lower/call_arguments.go",
+      "sha256": "0151cc0b578cd1a742a5b7e1951f0d53817932f8f5ad856eca201d7a884ff6c1"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "5b63fb8d6f68cfa9aa7baaac4f845c44c4d738f82ef5ab9f58514bf4562010a1"
+    },
+    {
+      "path": "p15_call_order_oracle_test.go",
+      "sha256": "2b86e4180009e57212d153214e32ae511e44207ae094fbb9404da709e47394db"
+    },
+    {
+      "path": "p15_call_order_test.go",
+      "sha256": "339746c86c7ce026f6888a7ab226d6fe2602651fd61b554bbe091d1408ac91da"
+    },
+    {
+      "path": "tools/language-acceptance/assertion_scope.go",
+      "sha256": "151c80b9bf07ba4b1f7d7fca3153f02e13271bf12055d80da3b9dbf1afd93ba4"
+    },
+    {
+      "path": "tools/language-acceptance/calls_execution.go",
+      "sha256": "ca4ef6d9b75ba90e99e06dbde6d60f0170fbc32e9a32e97a0426b33d2a9cedf9"
+    },
+    {
+      "path": "tools/language-acceptance/calls_execution_test.go",
+      "sha256": "69593fb4e367260ee719e625327c40567e4b833b78b2d4ef1dec54a777283c72"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "a4730abb55cf6063cfa5052ba5f4edd26311077d78794288d91a36254699d71d"
+    }
+  ],
+  "development_validation": [
+    {
+      "job": "job_6dd75f7ef31a",
+      "log": "baseline-corrected-observer.jsonl",
+      "source_base": "64ca9156169b4624d6cabaa18357c5c2b231bff2",
+      "actual_exit_code": 1,
+      "scope": "Production source before C01 changes, newly added tests in working tree. Reordered producers, missing first nested UUIDs, incorrect flow order and duplicate omitted defaults. The observer was corrected to allow legitimate parameterless native actions before this recorded default evidence."
+    },
+    {
+      "job": "job_c5a105dcf7aa",
+      "log": "snapshot-probe.jsonl",
+      "actual_exit_code": 1,
+      "scope": "Development tree after initial order/default fixes; earlier mutable function/custom arguments retained live references across a later assignment."
+    },
+    {
+      "job": "job_b11d37842f7f",
+      "log": "expanded-attempt.jsonl",
+      "actual_exit_code": 1,
+      "scope": "Development tree after scalar capture; interpolated Text arguments still retained live references. Guard/CLI and other cases were healthy."
+    },
+    {
+      "job": "job_b0c820a230d7",
+      "log": "nested-result-red.jsonl",
+      "actual_exit_code": 1,
+      "scope": "Development tree: consumed custom result referenced an absent native producer UUID; aggregate/Text capture and guarded-default controls passed."
+    },
+    {
+      "job": "job_5942596bb734",
+      "log": "compatibility-candidate.jsonl",
+      "process_receipt": "compatibility-candidate-process.json",
+      "actual_exit_code": 0,
+      "scope": "Final compiler implementation working tree; 63 focused production compatibility tests passed."
+    },
+    {
+      "job": "job_5942596bb734",
+      "log": "formal-candidate.jsonl",
+      "process_receipt": "formal-candidate-process.json",
+      "actual_exit_code": 1,
+      "scope": "Strict formal binder rejected the unnormalized native tier label. Original contract was retained; producer now records canonical native-structure."
+    }
+  ],
+  "independent_review": {
+    "reviewer": "inventory_import sibling agent",
+    "scope": "Read-only dispatcher/caller default ownership, lexical assignment walk and native capture helpers. No tests run by reviewer.",
+    "finding": "Confirmed original duplicate/wrong-scope defaults and source-order inversion. Final helper review found no concrete blocker; noted aggregate capture is conservative for any later visible assignment."
+  },
+  "capture_policy": "Plain references capture only when a later argument writes that visible binding. FString/List/Map/Record values conservatively materialize through existing typed producers if any later outer assignment is present. Arguments without later visible assignments retain prior reference wire.",
+  "limits": [
+    "Actual native action structure is inspected; no Apple function/runtime execution is inferred.",
+    "The root agent owns combined private-corpus and release verification.",
+    "System-value snapshot and internal nested-container evaluation contracts remain separate.",
+    "Development test files evolved; RED logs are not claimed as one frozen test-source snapshot.",
+    "Aggregate capture can add a semantically conservative producer when the later outer assignment is unrelated to its contained references."
+  ],
+  "files": [
+    {
+      "name": "baseline-corrected-observer.jsonl",
+      "bytes": 20074,
+      "sha256": "9a550ca2636549241787b3251f4c6f9d2a47b951df133ccabb8edd890f8a77eb"
+    },
+    {
+      "name": "baseline-corrected-process.json",
+      "bytes": 198,
+      "sha256": "5a0976c8f83071c215ffe9a09301c4b7bbd54c2bce8f1e35651867b8b954bbdb"
+    },
+    {
+      "name": "compatibility-candidate-process.json",
+      "bytes": 3425,
+      "sha256": "4bc9f84e072ddd77e98934b999e3aa9dc934b273ac01e2a13efcc2f27c7ba8f7"
+    },
+    {
+      "name": "compatibility-candidate.jsonl",
+      "bytes": 358173,
+      "sha256": "3f575e70e0959832af6a4994bf817eb7bb3dee0b0f6026a61c56f8a03df86ed6"
+    },
+    {
+      "name": "expanded-attempt.jsonl",
+      "bytes": 23108,
+      "sha256": "3c46a330366a9ac93cc7798b6bbd430d9567f0cc07465f01f420cbe587d8e0d5"
+    },
+    {
+      "name": "formal-candidate-process.json",
+      "bytes": 343,
+      "sha256": "c286e4d3c300c3e398be47a8f8bc23faa6d4d57cf2b1ccd04000444ba756acca"
+    },
+    {
+      "name": "formal-candidate.jsonl",
+      "bytes": 2208,
+      "sha256": "be125fb67b5df7d96984ef9395a71ff849eefc980c9c77b4c103153ff9810de3"
+    },
+    {
+      "name": "formal-receipt.json",
+      "bytes": 4112,
+      "sha256": "5d57adeed6c336024f91df4487c84fbaf72ac0fb0413c32b1a66d3004134ce96"
+    },
+    {
+      "name": "nested-result-red.jsonl",
+      "bytes": 6783,
+      "sha256": "2a069fb3d773b4f2b581b950d0e328c3af699e8406f028a942f0073032de3083"
+    },
+    {
+      "name": "packages-process.json",
+      "bytes": 2929,
+      "sha256": "58411be96a7e2b25a22887999a6da4c073da540e16a6c55cd70fb8646f0bb5a8"
+    },
+    {
+      "name": "packages.jsonl",
+      "bytes": 51747,
+      "sha256": "00413e429848321c3729000c1eeb3bfb328799f4e49430208cc61a2674c2d412"
+    },
+    {
+      "name": "snapshot-probe.jsonl",
+      "bytes": 3297,
+      "sha256": "e601b9ff6dd7fca307bb40ec5c83992378ede10c666771939c8c55b7cae3b4d1"
+    },
+    {
+      "name": "verification-process.json",
+      "bytes": 416,
+      "sha256": "832aa4fafaca63701972f0560c8ffae4069a3a4cf360e3aaedc60be41b38ff1e"
+    },
+    {
+      "name": "verification.json",
+      "bytes": 6033,
+      "sha256": "773b4566f687b4c6b80713e187464eac8341cc99e3da48428acdd2f258ac0125"
+    },
+    {
+      "name": "verification.jsonl",
+      "bytes": 5833,
+      "sha256": "7e26b6ef0eba45683e15eba07c4db2ca0b3bda9e1ddc0d026867525c30449fed"
+    }
+  ]
+}

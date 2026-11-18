@@ -1,0 +1,154 @@
+{
+  "source_sha": "7289b9ccf06767342bb5a3ea73e3bacd2fa3b307",
+  "source_tree_clean_before": true,
+  "source_tree_clean_after": true,
+  "generated_at_utc": "2026-11-18T18:01:05.230403+00:00",
+  "go_version": "go version go1.25.6 windows/amd64",
+  "scope": "C01 original unit+native contract, with native canonicalized to native-structure. Actual compiler, CLI/service and emitted action graph. No Apple function execution, system-value snapshot or release closure.",
+  "source_files": [
+    {
+      "path": "docs/language-v2/p15-call-order-acceptance.md",
+      "sha256": "d928886b5f6dab75d5d66a488f399245d50eac65dfc87d44deeb7d32e908ee2c"
+    },
+    {
+      "path": "internal/language/analysis/binding_flow.go",
+      "sha256": "90d3bf67bfe514fe64ec330f58dfe674fcc167662f1751fd0beadb867a0763d8"
+    },
+    {
+      "path": "internal/language/analysis/function_arguments.go",
+      "sha256": "fdb63638e62597649ad5182ab5ff1332e0c4dca61781f7d225dbfc9c2175043f"
+    },
+    {
+      "path": "internal/language/lower/call_arguments.go",
+      "sha256": "0151cc0b578cd1a742a5b7e1951f0d53817932f8f5ad856eca201d7a884ff6c1"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "5b63fb8d6f68cfa9aa7baaac4f845c44c4d738f82ef5ab9f58514bf4562010a1"
+    },
+    {
+      "path": "p15_call_order_oracle_test.go",
+      "sha256": "2b86e4180009e57212d153214e32ae511e44207ae094fbb9404da709e47394db"
+    },
+    {
+      "path": "p15_call_order_test.go",
+      "sha256": "339746c86c7ce026f6888a7ab226d6fe2602651fd61b554bbe091d1408ac91da"
+    },
+    {
+      "path": "tools/language-acceptance/assertion_scope.go",
+      "sha256": "151c80b9bf07ba4b1f7d7fca3153f02e13271bf12055d80da3b9dbf1afd93ba4"
+    },
+    {
+      "path": "tools/language-acceptance/calls_execution.go",
+      "sha256": "ca4ef6d9b75ba90e99e06dbde6d60f0170fbc32e9a32e97a0426b33d2a9cedf9"
+    },
+    {
+      "path": "tools/language-acceptance/calls_execution_test.go",
+      "sha256": "69593fb4e367260ee719e625327c40567e4b833b78b2d4ef1dec54a777283c72"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "a4730abb55cf6063cfa5052ba5f4edd26311077d78794288d91a36254699d71d"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-timeout=180s",
+        "-json",
+        "./internal/language/analysis",
+        "./internal/language/service",
+        "./internal/language/lower"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 3.226,
+      "sha256": "00413e429848321c3729000c1eeb3bfb328799f4e49430208cc61a2674c2d412",
+      "passed_top_level_tests": [
+        "TestAcceptedForms_AcceptsVariableAttachment",
+        "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+        "TestAnalyzerAssignImmutable",
+        "TestAnalyzerCopyPaste",
+        "TestAnalyzerDuplicateArgument",
+        "TestAnalyzerGlobals",
+        "TestAnalyzerHotLoopWarning",
+        "TestAnalyzerIfConditionBool",
+        "TestAnalyzerLegacySyntax",
+        "TestAnalyzerListPlusAssign",
+        "TestAnalyzerMissingArgument",
+        "TestAnalyzerReadBeforeInit",
+        "TestAnalyzerTruthiness",
+        "TestAnalyzerUnknownArgument",
+        "TestAnalyzerValidProgram",
+        "TestAnalyzerYieldOutsideValueBlock",
+        "TestCompilerMacrosReachCompletionFromSharedMetadata",
+        "TestE01MultiDiagnosticAnalysis",
+        "TestE02CompletionHoverSignatureDefinition",
+        "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+        "TestE04FormatterPreservesCommentsAndSemantics",
+        "TestE05OutOfOrderVersionedEdits",
+        "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+        "TestE07BoundedVisualSourceEditAndRejection",
+        "TestEmptyDictionaryKey_GetValueCall",
+        "TestEmptyDictionaryKey_IndexExpr",
+        "TestEmptyDictionaryKey_MapLiteral",
+        "TestExplicitTargetString",
+        "TestExprTypesTracking",
+        "TestListIndexDynamicLowering",
+        "TestLowerBasicWorkflow",
+        "TestLowerConditionalWorkflow",
+        "TestLowerFunctionEnvelopeDefaultsAndVoidReturn",
+        "TestLowerListAppendVariable",
+        "TestLowerShortCircuitAndExpressionsAndSafeIndexing",
+        "TestLowerTriggersWithParameters",
+        "TestLowerUnusedFunctionDispatcherOmitted",
+        "TestMacActionInMacShortcut_Allowed",
+        "TestMacActionInNonMacShortcut_Baseline",
+        "TestMapIndexDirectGetValueCall",
+        "TestMapIndexDynamicKeyLowering",
+        "TestMapIndexEmptyKeyLoweringError",
+        "TestMapIndexLetVarLowering",
+        "TestMapIndexNestedMapLowering",
+        "TestMapIndexUnicodeKeyLowering",
+        "TestMixedTargets_RejectsNonPortableActions",
+        "TestNonMacActionInMacShortcut_Error",
+        "TestNonMacActionInNonMacShortcut_Allowed",
+        "TestScopedBlockDiagnosticsAndBranchTypes",
+        "TestScopedBlockDoesNotReserveExistingFunctionName",
+        "TestScopedBlockInferredTypeAndLexicalScope",
+        "TestScopedBlockRenamingPreservesSourceAndLiteralValues",
+        "TestServiceAnalyze",
+        "TestServiceComplete",
+        "TestServiceContextualCallComplete",
+        "TestServiceHover",
+        "TestTargetVersionSettersRetainCompatibility",
+        "TestTargetVersionSourceAccessorsKeepComponents",
+        "TestUnspecifiedTarget_EmitsWarning",
+        "TestVersionBounds_MinVersion"
+      ],
+      "failed": []
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-timeout=180s",
+        "-json",
+        "./tools/language-acceptance",
+        "-run",
+        "^TestCallOrderProductionEvidence$"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 6.66,
+      "sha256": "7e26b6ef0eba45683e15eba07c4db2ca0b3bda9e1ddc0d026867525c30449fed",
+      "passed_top_level_tests": [
+        "TestCallOrderProductionEvidence"
+      ],
+      "failed": []
+    }
+  ],
+  "unchanged_existing_unicode_lower_lines": 5
+}
