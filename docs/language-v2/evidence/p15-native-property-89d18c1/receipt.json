@@ -1,0 +1,44 @@
+{
+  "sourceSha": "89d18c1869b0bba8b532fc36ea367f700d41232d",
+  "sourceTreeCleanBefore": true,
+  "sourceTreeCleanAfter": true,
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-json",
+    "-count=1",
+    "-timeout=90s",
+    ".",
+    "-run",
+    "^Test(P15Imported|P15T08ConditionalCardinality|P12_PAR_(03|04|05|06|07|08)|P13_FID_)"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 4.234,
+  "rawSha256": "cb4940f39bab7dd75b6e862ecbb35f28b971334ad1f3c2e1bd8f3125652e45eb",
+  "topLevelPasses": [
+    "TestP12_PAR_03_RTLBidiTextAndDictKeysPreserved",
+    "TestP12_PAR_04_PromptMultilineBoolDefaultAndInputTypeAbsence",
+    "TestP12_PAR_05_ListMixedTextTokenAndAttachmentRejection",
+    "TestP12_PAR_06_TypedVarOutputAndDictAggrandizementProvenance",
+    "TestP12_PAR_07_AbsentVsFalseAndZeroNumericTriState",
+    "TestP12_PAR_08_NestedDictFailClosedAndSortedScalarsPromote",
+    "TestP13_FID_01_NumberActionStringAndAttachmentParity",
+    "TestP13_FID_02_SplitAndJoinTextAttachmentAndAbsentShowText",
+    "TestP13_FID_03_ChangeCaseOpenURLAndImageAttachmentParity",
+    "TestP13_FID_04_UnreferencedSortedDictionaryPromotion",
+    "TestP15T08ConditionalCardinalityProduction",
+    "TestP15T08ConditionalCardinalityService",
+    "TestP15ImportedListPropertyPreservesNativeReference",
+    "TestP15ImportedScalarPropertyKeepsNaturalSyntax",
+    "TestP15ImportedCollectionHintDoesNotGuessVariants"
+  ],
+  "scope": "Local synthetic import/property-reference regression, complete native wire and pre-overlay semantic parity, authored cardinality failure controls, existing T08/P12/P13 focused compatibility. No private corpus or Apple execution in this command.",
+  "verificationJob": "job_c12377d1d4a5",
+  "baselineJob": "job_85fa43da97ba",
+  "baselineProductionSha": "4830dd698f984c4f362aeccdb037dc94384b3407",
+  "baselineScope": "The production baseline was unchanged; the synthetic regression test was newly introduced and reproduced one V2_COMPILE:V2_LINE_COMPILE_ERROR demotion. The immutable green command uses the final committed test revision, including additional negative controls.",
+  "files": {
+    "baseline-red.log": "1d91b53d8263a46107f73265e66642b7b2a5e4849fc5f98d732976d723f4a133",
+    "verification.jsonl": "cb4940f39bab7dd75b6e862ecbb35f28b971334ad1f3c2e1bd8f3125652e45eb"
+  }
+}

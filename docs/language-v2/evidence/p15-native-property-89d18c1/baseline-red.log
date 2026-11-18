@@ -1,0 +1,8 @@
+=== RUN   TestP15ImportedListPropertyPreservesNativeReference
+=== RUN   TestP15ImportedListPropertyPreservesNativeReference/variable_false_token_true
+    p15_list_property_import_test.go:72: native collection property was demoted: natural=1 total=2 lifecycle=&{CandidateActionCount:2 PostAtomicCount:2 VerifiedActionCount:1 DemotedActionCount:1 DemotionReasons:map[V2_COMPILE:V2_LINE_COMPILE_ERROR:1] CandidateRegionCount:0 VerifiedRegionCount:0 DemotedRegionCount:0 Transitions:[{UnitID:action:0 Kind:action RegionGroupID: StartIndex:0 EndIndex:0 ActionCount:1 AppleIdentifier:is.workflow.actions.detect.images CandidateStage:CANDIDATE FinalState:VERIFIED FinalStage:FINAL_DUAL_VERIFY TransitionReason:} {UnitID:action:1 Kind:action RegionGroupID: StartIndex:1 EndIndex:1 ActionCount:1 AppleIdentifier:is.workflow.actions.setitemname CandidateStage:CANDIDATE FinalState:DEMOTED FinalStage:V2_COMPILE TransitionReason:V2_LINE_COMPILE_ERROR}]}
+--- FAIL: TestP15ImportedListPropertyPreservesNativeReference (0.04s)
+    --- FAIL: TestP15ImportedListPropertyPreservesNativeReference/variable_false_token_true (0.04s)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.255s
+FAIL

@@ -27,3 +27,7 @@ These checks prove local import, analysis and serialization behavior. They do no
 ## Focused execution
 
 Job `job_76c11cc9afbb` passed all 15 selected top-level tests: the three new collection-property checks, both T08 production/service producers, six existing P12 parameter/attachment tests, and all four existing P13 fidelity fixtures. The selected command was `go test -count=1 -timeout=90s -v . -run '^Test(P15Imported|P15T08ConditionalCardinality|P12_PAR_(03|04|05|06|07|08)|P13_FID_)'`. The first causal run remains a recorded failure; no threshold was changed.
+
+## Immutable source receipt
+
+Job `job_c12377d1d4a5` reran the focused command on clean source `89d18c1869b0bba8b532fc36ea367f700d41232d`, passing all 15 top-level tests with exit zero and a clean tree afterward. See [the source-bound receipt](evidence/p15-native-property-89d18c1/receipt.json), [raw Go JSON](evidence/p15-native-property-89d18c1/verification.jsonl), and [the causal baseline failure](evidence/p15-native-property-89d18c1/baseline-red.log). The full private-kernel gate remains independent.
