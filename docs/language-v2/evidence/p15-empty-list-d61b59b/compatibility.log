@@ -1,0 +1,1483 @@
+=== RUN   TestCODEC001_LiteralBracesVsFString
+--- PASS: TestCODEC001_LiteralBracesVsFString (0.01s)
+=== RUN   TestCODEC002_HebrewEmojiAttachmentOffsets
+=== RUN   TestCODEC002_HebrewEmojiAttachmentOffsets/Hebrew_prefix
+=== RUN   TestCODEC002_HebrewEmojiAttachmentOffsets/Emoji_surrogate_pair_prefix
+=== RUN   TestCODEC002_HebrewEmojiAttachmentOffsets/Combined_Hebrew_niqqud_prefix
+--- PASS: TestCODEC002_HebrewEmojiAttachmentOffsets (0.00s)
+    --- PASS: TestCODEC002_HebrewEmojiAttachmentOffsets/Hebrew_prefix (0.00s)
+    --- PASS: TestCODEC002_HebrewEmojiAttachmentOffsets/Emoji_surrogate_pair_prefix (0.00s)
+    --- PASS: TestCODEC002_HebrewEmojiAttachmentOffsets/Combined_Hebrew_niqqud_prefix (0.00s)
+=== RUN   TestCODEC003_LetDictionaryNativeAction
+--- PASS: TestCODEC003_LetDictionaryNativeAction (0.00s)
+=== RUN   TestCODEC004_VarDictionaryMaterialization
+--- PASS: TestCODEC004_VarDictionaryMaterialization (0.00s)
+=== RUN   TestCODEC005_DictInNamedActionArg
+--- PASS: TestCODEC005_DictInNamedActionArg (0.00s)
+=== RUN   TestCODEC006_NestedOrderedDictListWithRefsAndPrimitives
+--- PASS: TestCODEC006_NestedOrderedDictListWithRefsAndPrimitives (0.00s)
+=== RUN   TestCODEC007_ApproachA_JSONTextGetDictionary
+--- PASS: TestCODEC007_ApproachA_JSONTextGetDictionary (0.00s)
+=== RUN   TestCODEC008_ApproachD_DictionaryCoercion
+--- PASS: TestCODEC008_ApproachD_DictionaryCoercion (0.00s)
+=== RUN   TestCODEC009_ApproachC_SetNameJSON
+--- PASS: TestCODEC009_ApproachC_SetNameJSON (0.00s)
+=== RUN   TestCODEC010_CoercionAndTransformationsMatrix
+--- PASS: TestCODEC010_CoercionAndTransformationsMatrix (0.00s)
+=== RUN   TestNATIVE_RefAggrandizements
+--- PASS: TestNATIVE_RefAggrandizements (0.00s)
+=== RUN   TestNATIVE_RefNegativeValidation
+--- PASS: TestNATIVE_RefNegativeValidation (0.00s)
+=== RUN   TestNATIVE_Ref_FullCapabilities
+--- PASS: TestNATIVE_Ref_FullCapabilities (0.00s)
+=== RUN   TestNATIVE_Ref_NegativeRejections
+=== RUN   TestNATIVE_Ref_NegativeRejections/InvalidRefType
+=== RUN   TestNATIVE_Ref_NegativeRejections/ActionOutputMissingUUID
+=== RUN   TestNATIVE_Ref_NegativeRejections/VariableMissingName
+=== RUN   TestNATIVE_Ref_NegativeRejections/EmptyRefKind
+--- PASS: TestNATIVE_Ref_NegativeRejections (0.00s)
+    --- PASS: TestNATIVE_Ref_NegativeRejections/InvalidRefType (0.00s)
+    --- PASS: TestNATIVE_Ref_NegativeRejections/ActionOutputMissingUUID (0.00s)
+    --- PASS: TestNATIVE_Ref_NegativeRejections/VariableMissingName (0.00s)
+    --- PASS: TestNATIVE_Ref_NegativeRejections/EmptyRefKind (0.00s)
+=== RUN   TestNATIVE_Ref_ChainedMultiLevelAggrandizements
+--- PASS: TestNATIVE_Ref_ChainedMultiLevelAggrandizements (0.00s)
+=== RUN   TestP15V02BindingFlowProduction
+=== RUN   TestP15V02BindingFlowProduction/unicode_read
+=== RUN   TestP15V02BindingFlowProduction/guard_truthiness
+=== RUN   TestP15V02BindingFlowProduction/guard_json_null
+=== RUN   TestP15V02BindingFlowProduction/immutable
+=== RUN   TestP15V02BindingFlowProduction/immutable_nested
+=== RUN   TestP15V02BindingFlowProduction/duplicate
+=== RUN   TestP15V02BindingFlowProduction/unknown_scope
+=== RUN   TestP15V02BindingFlowProduction/forward_read
+=== RUN   TestP15V02BindingFlowProduction/before_init
+=== RUN   TestP15V02BindingFlowProduction/self_init
+=== RUN   TestP15V02BindingFlowProduction/compound_add
+=== RUN   TestP15V02BindingFlowProduction/compound_multiply
+=== RUN   TestP15V02BindingFlowProduction/if_missing_else
+=== RUN   TestP15V02BindingFlowProduction/if_else_reads_uninitialized
+=== RUN   TestP15V02BindingFlowProduction/nested_missing_path
+=== RUN   TestP15V02BindingFlowProduction/repeat_zero
+=== RUN   TestP15V02BindingFlowProduction/for_empty
+=== RUN   TestP15V02BindingFlowProduction/menu_missing_path
+=== RUN   TestP15V02BindingFlowProduction/and_skipped_assignment
+=== RUN   TestP15V02BindingFlowProduction/or_skipped_assignment
+=== RUN   TestP15V02BindingFlowProduction/narrow_outside
+=== RUN   TestP15V02BindingFlowProduction/narrow_reassigned_none
+=== RUN   TestP15V02BindingFlowProduction/narrow_reassigned_optional
+=== RUN   TestP15V02BindingFlowProduction/narrow_branch_write
+=== RUN   TestP15V02BindingFlowProduction/narrow_loop_write
+=== RUN   TestP15V02BindingFlowProduction/narrow_rhs_write
+=== RUN   TestP15V02BindingFlowProduction/mutable
+=== RUN   TestP15V02BindingFlowProduction/initialized_later
+=== RUN   TestP15V02BindingFlowProduction/if_all_paths
+=== RUN   TestP15V02BindingFlowProduction/if_else_if_all_paths
+=== RUN   TestP15V02BindingFlowProduction/loop_initialized
+=== RUN   TestP15V02BindingFlowProduction/menu_all_paths
+=== RUN   TestP15V02BindingFlowProduction/scoped_once
+=== RUN   TestP15V02BindingFlowProduction/shadow_initializer
+=== RUN   TestP15V02BindingFlowProduction/narrow_then
+=== RUN   TestP15V02BindingFlowProduction/narrow_else
+=== RUN   TestP15V02BindingFlowProduction/narrow_reversed
+=== RUN   TestP15V02BindingFlowProduction/narrow_not
+=== RUN   TestP15V02BindingFlowProduction/narrow_and_rhs
+=== RUN   TestP15V02BindingFlowProduction/narrow_or_rhs
+=== RUN   TestP15V02BindingFlowProduction/narrow_known_reassignment
+=== RUN   TestP15V02BindingFlowProduction/narrow_unwritten_loop
+=== RUN   TestP15V02BindingFlowProduction/narrow_loop_shadow
+=== RUN   TestP15V02BindingFlowProduction/narrow_early_return
+--- PASS: TestP15V02BindingFlowProduction (0.04s)
+    --- PASS: TestP15V02BindingFlowProduction/unicode_read (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/guard_truthiness (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/guard_json_null (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/immutable (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/immutable_nested (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/duplicate (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/unknown_scope (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/forward_read (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/before_init (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/self_init (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/compound_add (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/compound_multiply (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/if_missing_else (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/if_else_reads_uninitialized (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/nested_missing_path (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/repeat_zero (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/for_empty (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/menu_missing_path (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/and_skipped_assignment (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/or_skipped_assignment (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_outside (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_reassigned_none (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_reassigned_optional (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_branch_write (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_loop_write (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_rhs_write (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/mutable (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/initialized_later (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/if_all_paths (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/if_else_if_all_paths (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/loop_initialized (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/menu_all_paths (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/scoped_once (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/shadow_initializer (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_then (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_else (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_reversed (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_not (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_and_rhs (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_or_rhs (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_known_reassignment (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_unwritten_loop (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_loop_shadow (0.00s)
+    --- PASS: TestP15V02BindingFlowProduction/narrow_early_return (0.00s)
+=== RUN   TestP15V02BindingScopeService
+=== RUN   TestP15V02BindingScopeService/initializer_outer
+=== RUN   TestP15V02BindingScopeService/inside_local
+=== RUN   TestP15V02BindingScopeService/outside_outer
+=== RUN   TestP15V02BindingScopeService/declaration_self
+=== RUN   TestP15V02BindingScopeService/scoped_initializer
+=== RUN   TestP15V02BindingScopeService/scoped_local
+--- PASS: TestP15V02BindingScopeService (0.00s)
+    --- PASS: TestP15V02BindingScopeService/initializer_outer (0.00s)
+    --- PASS: TestP15V02BindingScopeService/inside_local (0.00s)
+    --- PASS: TestP15V02BindingScopeService/outside_outer (0.00s)
+    --- PASS: TestP15V02BindingScopeService/declaration_self (0.00s)
+    --- PASS: TestP15V02BindingScopeService/scoped_initializer (0.00s)
+    --- PASS: TestP15V02BindingScopeService/scoped_local (0.00s)
+=== RUN   TestP15V02LexicalWire
+=== RUN   TestP15V02LexicalWire/let_if
+=== RUN   TestP15V02LexicalWire/let_else
+=== RUN   TestP15V02LexicalWire/let_sibling
+=== RUN   TestP15V02LexicalWire/let_native_predicates
+=== RUN   TestP15V02LexicalWire/let_repeat
+=== RUN   TestP15V02LexicalWire/let_for
+=== RUN   TestP15V02LexicalWire/let_menu
+=== RUN   TestP15V02LexicalWire/let_initializer
+=== RUN   TestP15V02LexicalWire/var_if
+=== RUN   TestP15V02LexicalWire/var_repeat
+=== RUN   TestP15V02LexicalWire/var_for
+=== RUN   TestP15V02LexicalWire/var_menu
+=== RUN   TestP15V02LexicalWire/for_item
+=== RUN   TestP15V02LexicalWire/repeat_index
+--- PASS: TestP15V02LexicalWire (0.02s)
+    --- PASS: TestP15V02LexicalWire/let_if (0.00s)
+    --- PASS: TestP15V02LexicalWire/let_else (0.00s)
+    --- PASS: TestP15V02LexicalWire/let_sibling (0.00s)
+    --- PASS: TestP15V02LexicalWire/let_native_predicates (0.00s)
+    --- PASS: TestP15V02LexicalWire/let_repeat (0.00s)
+    --- PASS: TestP15V02LexicalWire/let_for (0.00s)
+    --- PASS: TestP15V02LexicalWire/let_menu (0.00s)
+    --- PASS: TestP15V02LexicalWire/let_initializer (0.00s)
+    --- PASS: TestP15V02LexicalWire/var_if (0.00s)
+    --- PASS: TestP15V02LexicalWire/var_repeat (0.00s)
+    --- PASS: TestP15V02LexicalWire/var_for (0.00s)
+    --- PASS: TestP15V02LexicalWire/var_menu (0.00s)
+    --- PASS: TestP15V02LexicalWire/for_item (0.00s)
+    --- PASS: TestP15V02LexicalWire/repeat_index (0.00s)
+=== RUN   TestP15V02ImportedScopeIdentity
+=== RUN   TestP15V02ImportedScopeIdentity/output
+=== RUN   TestP15V02ImportedScopeIdentity/variable
+=== RUN   TestP15V02ImportedScopeIdentity/opaque
+--- PASS: TestP15V02ImportedScopeIdentity (0.08s)
+    --- PASS: TestP15V02ImportedScopeIdentity/output (0.02s)
+    --- PASS: TestP15V02ImportedScopeIdentity/variable (0.02s)
+    --- PASS: TestP15V02ImportedScopeIdentity/opaque (0.02s)
+=== RUN   TestP15V02RepeatedImportedLoopIdentity
+--- PASS: TestP15V02RepeatedImportedLoopIdentity (0.06s)
+=== RUN   TestP15V02BindingServiceAndCLI
+=== RUN   TestP15V02BindingServiceAndCLI/unicode_read
+=== RUN   TestP15V02BindingServiceAndCLI/guard_truthiness
+=== RUN   TestP15V02BindingServiceAndCLI/guard_json_null
+=== RUN   TestP15V02BindingServiceAndCLI/immutable
+=== RUN   TestP15V02BindingServiceAndCLI/immutable_nested
+=== RUN   TestP15V02BindingServiceAndCLI/duplicate
+=== RUN   TestP15V02BindingServiceAndCLI/unknown_scope
+=== RUN   TestP15V02BindingServiceAndCLI/forward_read
+=== RUN   TestP15V02BindingServiceAndCLI/before_init
+=== RUN   TestP15V02BindingServiceAndCLI/self_init
+=== RUN   TestP15V02BindingServiceAndCLI/compound_add
+=== RUN   TestP15V02BindingServiceAndCLI/compound_multiply
+=== RUN   TestP15V02BindingServiceAndCLI/if_missing_else
+=== RUN   TestP15V02BindingServiceAndCLI/if_else_reads_uninitialized
+=== RUN   TestP15V02BindingServiceAndCLI/nested_missing_path
+=== RUN   TestP15V02BindingServiceAndCLI/repeat_zero
+=== RUN   TestP15V02BindingServiceAndCLI/for_empty
+=== RUN   TestP15V02BindingServiceAndCLI/menu_missing_path
+=== RUN   TestP15V02BindingServiceAndCLI/and_skipped_assignment
+=== RUN   TestP15V02BindingServiceAndCLI/or_skipped_assignment
+=== RUN   TestP15V02BindingServiceAndCLI/narrow_outside
+=== RUN   TestP15V02BindingServiceAndCLI/narrow_reassigned_none
+=== RUN   TestP15V02BindingServiceAndCLI/narrow_reassigned_optional
+=== RUN   TestP15V02BindingServiceAndCLI/narrow_branch_write
+=== RUN   TestP15V02BindingServiceAndCLI/narrow_loop_write
+=== RUN   TestP15V02BindingServiceAndCLI/narrow_rhs_write
+--- PASS: TestP15V02BindingServiceAndCLI (3.59s)
+    --- PASS: TestP15V02BindingServiceAndCLI/unicode_read (0.15s)
+    --- PASS: TestP15V02BindingServiceAndCLI/guard_truthiness (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/guard_json_null (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/immutable (0.04s)
+    --- PASS: TestP15V02BindingServiceAndCLI/immutable_nested (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/duplicate (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/unknown_scope (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/forward_read (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/before_init (0.04s)
+    --- PASS: TestP15V02BindingServiceAndCLI/self_init (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/compound_add (0.04s)
+    --- PASS: TestP15V02BindingServiceAndCLI/compound_multiply (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/if_missing_else (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/if_else_reads_uninitialized (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/nested_missing_path (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/repeat_zero (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/for_empty (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/menu_missing_path (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/and_skipped_assignment (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/or_skipped_assignment (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/narrow_outside (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/narrow_reassigned_none (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/narrow_reassigned_optional (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/narrow_branch_write (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/narrow_loop_write (0.03s)
+    --- PASS: TestP15V02BindingServiceAndCLI/narrow_rhs_write (0.03s)
+=== RUN   TestP15V02ParameterScopes
+--- PASS: TestP15V02ParameterScopes (0.00s)
+=== RUN   TestP15C02ArgumentDiagnosticsProduction
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_unknown
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_unknown_unicode
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_duplicate_named
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_duplicate_primary
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_missing_primary
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_missing_named
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_missing_reordered
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_extra_positional
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_extra_after_named
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/native_zero_arity
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_missing
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_duplicate_named
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_duplicate_primary
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_unknown
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_extra_positional
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_extra_with_reserved_name
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_alias_duplicate
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_ambiguous_alias_reuse
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_zero_arity
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_zero_unknown
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/function_required_optional_value
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/custom_primary_missing_other
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/custom_primary_duplicate
+=== RUN   TestP15C02ArgumentDiagnosticsProduction/custom_unknown
+--- PASS: TestP15C02ArgumentDiagnosticsProduction (0.02s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_unknown (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_unknown_unicode (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_duplicate_named (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_duplicate_primary (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_missing_primary (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_missing_named (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_missing_reordered (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_extra_positional (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_extra_after_named (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/native_zero_arity (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_missing (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_duplicate_named (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_duplicate_primary (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_unknown (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_extra_positional (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_extra_with_reserved_name (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_alias_duplicate (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_ambiguous_alias_reuse (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_zero_arity (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_zero_unknown (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/function_required_optional_value (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/custom_primary_missing_other (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/custom_primary_duplicate (0.00s)
+    --- PASS: TestP15C02ArgumentDiagnosticsProduction/custom_unknown (0.00s)
+=== RUN   TestP15C02AcceptedBindingsProduction
+--- PASS: TestP15C02AcceptedBindingsProduction (0.04s)
+=== RUN   TestP15C02ArgumentServiceAndCLI
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_unknown
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_unknown_unicode
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_duplicate_named
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_duplicate_primary
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_missing_primary
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_missing_named
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_missing_reordered
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_extra_positional
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_extra_after_named
+=== RUN   TestP15C02ArgumentServiceAndCLI/native_zero_arity
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_missing
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_duplicate_named
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_duplicate_primary
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_unknown
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_extra_positional
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_extra_with_reserved_name
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_alias_duplicate
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_ambiguous_alias_reuse
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_zero_arity
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_zero_unknown
+=== RUN   TestP15C02ArgumentServiceAndCLI/function_required_optional_value
+=== RUN   TestP15C02ArgumentServiceAndCLI/custom_primary_missing_other
+=== RUN   TestP15C02ArgumentServiceAndCLI/custom_primary_duplicate
+=== RUN   TestP15C02ArgumentServiceAndCLI/custom_unknown
+--- PASS: TestP15C02ArgumentServiceAndCLI (2.87s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_unknown (0.14s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_unknown_unicode (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_duplicate_named (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_duplicate_primary (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_missing_primary (0.06s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_missing_named (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_missing_reordered (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_extra_positional (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_extra_after_named (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/native_zero_arity (0.04s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_missing (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_duplicate_named (0.05s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_duplicate_primary (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_unknown (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_extra_positional (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_extra_with_reserved_name (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_alias_duplicate (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_ambiguous_alias_reuse (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_zero_arity (0.04s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_zero_unknown (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/function_required_optional_value (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/custom_primary_missing_other (0.03s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/custom_primary_duplicate (0.02s)
+    --- PASS: TestP15C02ArgumentServiceAndCLI/custom_unknown (0.03s)
+=== RUN   TestP15C01DefaultGuardStructure
+--- PASS: TestP15C01DefaultGuardStructure (0.04s)
+=== RUN   TestP15C01CLIAndService
+--- PASS: TestP15C01CLIAndService (1.99s)
+=== RUN   TestP15C01SnapshotBoundaries
+--- PASS: TestP15C01SnapshotBoundaries (0.01s)
+=== RUN   TestP15C01NestedCustomResult
+--- PASS: TestP15C01NestedCustomResult (0.00s)
+=== RUN   TestP15C01AggregateArgumentSnapshots
+=== RUN   TestP15C01AggregateArgumentSnapshots/list
+=== RUN   TestP15C01AggregateArgumentSnapshots/map
+--- PASS: TestP15C01AggregateArgumentSnapshots (0.01s)
+    --- PASS: TestP15C01AggregateArgumentSnapshots/list (0.00s)
+    --- PASS: TestP15C01AggregateArgumentSnapshots/map (0.00s)
+=== RUN   TestP15C01SourceOrderNativeStructure
+=== RUN   TestP15C01SourceOrderNativeStructure/function_reverse
+=== RUN   TestP15C01SourceOrderNativeStructure/function_mixed
+=== RUN   TestP15C01SourceOrderNativeStructure/function_positional
+=== RUN   TestP15C01SourceOrderNativeStructure/function_alias
+=== RUN   TestP15C01SourceOrderNativeStructure/custom_reverse
+=== RUN   TestP15C01SourceOrderNativeStructure/custom_primary
+=== RUN   TestP15C01SourceOrderNativeStructure/native_action_healthy_control
+--- PASS: TestP15C01SourceOrderNativeStructure (0.02s)
+    --- PASS: TestP15C01SourceOrderNativeStructure/function_reverse (0.00s)
+    --- PASS: TestP15C01SourceOrderNativeStructure/function_mixed (0.01s)
+    --- PASS: TestP15C01SourceOrderNativeStructure/function_positional (0.00s)
+    --- PASS: TestP15C01SourceOrderNativeStructure/function_alias (0.00s)
+    --- PASS: TestP15C01SourceOrderNativeStructure/custom_reverse (0.00s)
+    --- PASS: TestP15C01SourceOrderNativeStructure/custom_primary (0.00s)
+    --- PASS: TestP15C01SourceOrderNativeStructure/native_action_healthy_control (0.00s)
+=== RUN   TestP15C01SourceOrderFlow
+=== RUN   TestP15C01SourceOrderFlow/named_write_before_read
+=== RUN   TestP15C01SourceOrderFlow/named_read_before_write
+=== RUN   TestP15C01SourceOrderFlow/positional_write_before_read
+=== RUN   TestP15C01SourceOrderFlow/positional_read_before_write
+--- PASS: TestP15C01SourceOrderFlow (0.00s)
+    --- PASS: TestP15C01SourceOrderFlow/named_write_before_read (0.00s)
+    --- PASS: TestP15C01SourceOrderFlow/named_read_before_write (0.00s)
+    --- PASS: TestP15C01SourceOrderFlow/positional_write_before_read (0.00s)
+    --- PASS: TestP15C01SourceOrderFlow/positional_read_before_write (0.00s)
+=== RUN   TestP15C01DefaultEffectsOnce
+=== RUN   TestP15C01DefaultEffectsOnce/c01Defaults()
+=== RUN   TestP15C01DefaultEffectsOnce/c01Defaults(text("P15_C01_EXPLICIT_A"))
+=== RUN   TestP15C01DefaultEffectsOnce/c01Defaults(b:text("P15_C01_EXPLICIT_B"))
+=== RUN   TestP15C01DefaultEffectsOnce/c01Defaults(b:text("P15_C01_EXPLICIT_B"),a:text("P15_C01_EXPLICIT_A"))
+=== RUN   TestP15C01DefaultEffectsOnce/earlier_parameter_scope
+--- PASS: TestP15C01DefaultEffectsOnce (0.01s)
+    --- PASS: TestP15C01DefaultEffectsOnce/c01Defaults() (0.00s)
+    --- PASS: TestP15C01DefaultEffectsOnce/c01Defaults(text("P15_C01_EXPLICIT_A")) (0.00s)
+    --- PASS: TestP15C01DefaultEffectsOnce/c01Defaults(b:text("P15_C01_EXPLICIT_B")) (0.00s)
+    --- PASS: TestP15C01DefaultEffectsOnce/c01Defaults(b:text("P15_C01_EXPLICIT_B"),a:text("P15_C01_EXPLICIT_A")) (0.00s)
+    --- PASS: TestP15C01DefaultEffectsOnce/earlier_parameter_scope (0.00s)
+=== RUN   TestP15C01ArgumentValueSnapshot
+=== RUN   TestP15C01ArgumentValueSnapshot/function
+=== RUN   TestP15C01ArgumentValueSnapshot/custom
+=== RUN   TestP15C01ArgumentValueSnapshot/function_fstring
+=== RUN   TestP15C01ArgumentValueSnapshot/custom_fstring
+--- PASS: TestP15C01ArgumentValueSnapshot (0.01s)
+    --- PASS: TestP15C01ArgumentValueSnapshot/function (0.00s)
+    --- PASS: TestP15C01ArgumentValueSnapshot/custom (0.00s)
+    --- PASS: TestP15C01ArgumentValueSnapshot/function_fstring (0.00s)
+    --- PASS: TestP15C01ArgumentValueSnapshot/custom_fstring (0.00s)
+=== RUN   TestP15CollectExistingLegacyAndV2Results
+    p15_collect_native_test.go:62: legacy=false N=0 nativeActions=8 loopActions=4 loopAccumulatorActions=0 inputAppendActions=0 inputNumberActions=0
+    p15_collect_native_test.go:62: legacy=false N=1 nativeActions=7 loopActions=4 loopAccumulatorActions=0 inputAppendActions=0 inputNumberActions=1
+    p15_collect_native_test.go:62: legacy=false N=100 nativeActions=106 loopActions=4 loopAccumulatorActions=0 inputAppendActions=0 inputNumberActions=100
+    p15_collect_native_test.go:62: legacy=true N=0 nativeActions=7 loopActions=4 loopAccumulatorActions=0 inputAppendActions=0 inputNumberActions=0
+    p15_collect_native_test.go:62: legacy=true N=1 nativeActions=9 loopActions=4 loopAccumulatorActions=0 inputAppendActions=1 inputNumberActions=1
+    p15_collect_native_test.go:62: legacy=true N=100 nativeActions=207 loopActions=4 loopAccumulatorActions=0 inputAppendActions=100 inputNumberActions=100
+--- PASS: TestP15CollectExistingLegacyAndV2Results (0.02s)
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults/counts-v2
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults/counts-legacy
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults/dictionaries-v2
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults/dictionaries-legacy
+--- PASS: TestP15CollectSignedFixturesObserveNativeResults (0.02s)
+    --- PASS: TestP15CollectSignedFixturesObserveNativeResults/counts-v2 (0.01s)
+    --- PASS: TestP15CollectSignedFixturesObserveNativeResults/counts-legacy (0.01s)
+    --- PASS: TestP15CollectSignedFixturesObserveNativeResults/dictionaries-v2 (0.00s)
+    --- PASS: TestP15CollectSignedFixturesObserveNativeResults/dictionaries-legacy (0.00s)
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural/coercion
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural/property
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural/dictionary-key
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural/native-ref-output-name
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural/native-ref-aggrandizements
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural/token-string-rhs
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural/native-ref-presence
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural/presence-with-boolean-coercion
+=== RUN   TestP15F01ImportedCompoundOperandsPreserveNatural/presence-with-coercion
+--- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural (0.20s)
+    --- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural/coercion (0.02s)
+    --- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural/property (0.02s)
+    --- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural/dictionary-key (0.02s)
+    --- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural/native-ref-output-name (0.02s)
+    --- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural/native-ref-aggrandizements (0.03s)
+    --- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural/token-string-rhs (0.02s)
+    --- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural/native-ref-presence (0.02s)
+    --- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural/presence-with-boolean-coercion (0.02s)
+    --- PASS: TestP15F01ImportedCompoundOperandsPreserveNatural/presence-with-coercion (0.03s)
+=== RUN   TestP15F01NestedProducerWrappersRemainLazy
+--- PASS: TestP15F01NestedProducerWrappersRemainLazy (0.02s)
+=== RUN   TestP15DictionaryListReservedNamesAreOrdinaryFields
+=== RUN   TestP15DictionaryListReservedNamesAreOrdinaryFields/let_WFTextTokenString
+=== RUN   TestP15DictionaryListReservedNamesAreOrdinaryFields/var_WFTextTokenString
+=== RUN   TestP15DictionaryListReservedNamesAreOrdinaryFields/let_WFTextTokenAttachment
+=== RUN   TestP15DictionaryListReservedNamesAreOrdinaryFields/var_WFTextTokenAttachment
+=== RUN   TestP15DictionaryListReservedNamesAreOrdinaryFields/let_WFDictionaryFieldValue
+=== RUN   TestP15DictionaryListReservedNamesAreOrdinaryFields/var_WFDictionaryFieldValue
+=== RUN   TestP15DictionaryListReservedNamesAreOrdinaryFields/let_ordinary
+=== RUN   TestP15DictionaryListReservedNamesAreOrdinaryFields/var_ordinary
+--- PASS: TestP15DictionaryListReservedNamesAreOrdinaryFields (0.01s)
+    --- PASS: TestP15DictionaryListReservedNamesAreOrdinaryFields/let_WFTextTokenString (0.00s)
+    --- PASS: TestP15DictionaryListReservedNamesAreOrdinaryFields/var_WFTextTokenString (0.00s)
+    --- PASS: TestP15DictionaryListReservedNamesAreOrdinaryFields/let_WFTextTokenAttachment (0.00s)
+    --- PASS: TestP15DictionaryListReservedNamesAreOrdinaryFields/var_WFTextTokenAttachment (0.00s)
+    --- PASS: TestP15DictionaryListReservedNamesAreOrdinaryFields/let_WFDictionaryFieldValue (0.00s)
+    --- PASS: TestP15DictionaryListReservedNamesAreOrdinaryFields/var_WFDictionaryFieldValue (0.00s)
+    --- PASS: TestP15DictionaryListReservedNamesAreOrdinaryFields/let_ordinary (0.00s)
+    --- PASS: TestP15DictionaryListReservedNamesAreOrdinaryFields/var_ordinary (0.00s)
+=== RUN   TestP15DictionaryListNestedReservedNamesPreserveTypedValues
+--- PASS: TestP15DictionaryListNestedReservedNamesPreserveTypedValues (0.00s)
+=== RUN   TestP15DictionaryListPreservesActualFStringAndAttachment
+--- PASS: TestP15DictionaryListPreservesActualFStringAndAttachment (0.00s)
+=== RUN   TestP15DictionaryListPreservesExactImportedNativeFallback
+--- PASS: TestP15DictionaryListPreservesExactImportedNativeFallback (0.02s)
+=== RUN   TestP15DictionaryListLiteralPreservesNativeValues
+=== RUN   TestP15DictionaryListLiteralPreservesNativeValues/immutable
+=== RUN   TestP15DictionaryListLiteralPreservesNativeValues/mutable
+=== RUN   TestP15DictionaryListLiteralPreservesNativeValues/assignment
+--- PASS: TestP15DictionaryListLiteralPreservesNativeValues (0.01s)
+    --- PASS: TestP15DictionaryListLiteralPreservesNativeValues/immutable (0.00s)
+    --- PASS: TestP15DictionaryListLiteralPreservesNativeValues/mutable (0.00s)
+    --- PASS: TestP15DictionaryListLiteralPreservesNativeValues/assignment (0.00s)
+=== RUN   TestP15DictionaryListOracleRejectsOriginalDefectAndTampering
+=== RUN   TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/raw_dictionary_text_row
+=== RUN   TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/missing_producer
+=== RUN   TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/swapped_order
+=== RUN   TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/text_coercion
+--- PASS: TestP15DictionaryListOracleRejectsOriginalDefectAndTampering (0.00s)
+    --- PASS: TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/raw_dictionary_text_row (0.00s)
+    --- PASS: TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/missing_producer (0.00s)
+    --- PASS: TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/swapped_order (0.00s)
+    --- PASS: TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/text_coercion (0.00s)
+=== RUN   TestP15DictionaryListUsesDocumentedNativeContentArrayContract
+--- PASS: TestP15DictionaryListUsesDocumentedNativeContentArrayContract (0.03s)
+=== RUN   TestP15EmptyListRuntimeBindings
+=== RUN   TestP15EmptyListRuntimeBindings/immutable
+=== RUN   TestP15EmptyListRuntimeBindings/mutable
+=== RUN   TestP15EmptyListRuntimeBindings/assignment
+=== RUN   TestP15EmptyListRuntimeBindings/snapshot
+--- PASS: TestP15EmptyListRuntimeBindings (0.00s)
+    --- PASS: TestP15EmptyListRuntimeBindings/immutable (0.00s)
+    --- PASS: TestP15EmptyListRuntimeBindings/mutable (0.00s)
+    --- PASS: TestP15EmptyListRuntimeBindings/assignment (0.00s)
+    --- PASS: TestP15EmptyListRuntimeBindings/snapshot (0.00s)
+=== RUN   TestP15EmptyListCollectInput
+=== RUN   TestP15EmptyListCollectInput/direct
+=== RUN   TestP15EmptyListCollectInput/bound
+=== RUN   TestP15EmptyListCollectInput/mutable
+--- PASS: TestP15EmptyListCollectInput (0.00s)
+    --- PASS: TestP15EmptyListCollectInput/direct (0.00s)
+    --- PASS: TestP15EmptyListCollectInput/bound (0.00s)
+    --- PASS: TestP15EmptyListCollectInput/mutable (0.00s)
+=== RUN   TestP15EmptyListDoesNotCollapseEmptyText
+--- PASS: TestP15EmptyListDoesNotCollapseEmptyText (0.00s)
+=== RUN   TestP15EmptyListIndependentIdentity
+--- PASS: TestP15EmptyListIndependentIdentity (0.00s)
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"d83fcd862d10f1656639bf6bfe0a0b9b53a3ad85aaa046a9deed4f3207b9a9e0"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"487edd5a1255e0344c3ce43ae1e1f9f28b1918a1aee2cf4beb6e6c05d8430519"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"6294a3f550824d8e40a458681eb7f695904ef5f87dd47f3ec7fd655a0864247f"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"fbe39a5a19fda04f5387ad590eea0a245f817c54bff2829ccaab4ffc8af4d22c"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"d83fcd862d10f1656639bf6bfe0a0b9b53a3ad85aaa046a9deed4f3207b9a9e0"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"487edd5a1255e0344c3ce43ae1e1f9f28b1918a1aee2cf4beb6e6c05d8430519"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"6294a3f550824d8e40a458681eb7f695904ef5f87dd47f3ec7fd655a0864247f"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"fbe39a5a19fda04f5387ad590eea0a245f817c54bff2829ccaab4ffc8af4d22c"}
+--- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged (0.14s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/legacy (0.03s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/v2 (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/legacy (0.00s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/v2 (0.00s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/legacy (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/v2 (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/legacy (0.00s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/v2 (0.00s)
+=== RUN   TestP15EmptyListOracleRejectsCorruption
+=== RUN   TestP15EmptyListOracleRejectsCorruption/no_nothing
+=== RUN   TestP15EmptyListOracleRejectsCorruption/inherited_input
+=== RUN   TestP15EmptyListOracleRejectsCorruption/wrong_variable
+=== RUN   TestP15EmptyListOracleRejectsCorruption/missing_producer
+=== RUN   TestP15EmptyListOracleRejectsCorruption/wrong_output_name
+=== RUN   TestP15EmptyListOracleRejectsCorruption/raw_empty_input
+--- PASS: TestP15EmptyListOracleRejectsCorruption (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/no_nothing (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/inherited_input (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/wrong_variable (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/missing_producer (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/wrong_output_name (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/raw_empty_input (0.00s)
+=== RUN   TestP15EmptyListSignedFixtureSourceRemainsStrict
+--- PASS: TestP15EmptyListSignedFixtureSourceRemainsStrict (0.00s)
+=== RUN   TestP15EmptyListAttachmentOnlyArgumentBoundary
+--- PASS: TestP15EmptyListAttachmentOnlyArgumentBoundary (0.00s)
+=== RUN   TestP15EmptyListExistingLegacyClearControl
+--- PASS: TestP15EmptyListExistingLegacyClearControl (0.00s)
+=== RUN   TestP15EmptyListReturnAndYield
+=== RUN   TestP15EmptyListReturnAndYield/return
+=== RUN   TestP15EmptyListReturnAndYield/yield
+--- PASS: TestP15EmptyListReturnAndYield (0.00s)
+    --- PASS: TestP15EmptyListReturnAndYield/return (0.00s)
+    --- PASS: TestP15EmptyListReturnAndYield/yield (0.00s)
+=== RUN   TestP15C04EnumResolutionProduction
+=== RUN   TestP15C04EnumResolutionProduction/native_context_primary
+=== RUN   TestP15C04EnumResolutionProduction/native_context_named
+=== RUN   TestP15C04EnumResolutionProduction/native_qualified
+=== RUN   TestP15C04EnumResolutionProduction/native_qualified_named
+=== RUN   TestP15C04EnumResolutionProduction/custom_context
+=== RUN   TestP15C04EnumResolutionProduction/custom_named
+=== RUN   TestP15C04EnumResolutionProduction/custom_qualified
+=== RUN   TestP15C04EnumResolutionProduction/custom_empty
+=== RUN   TestP15C04EnumResolutionProduction/custom_quoted
+=== RUN   TestP15C04EnumResolutionProduction/custom_unicode
+=== RUN   TestP15C04EnumResolutionProduction/custom_default
+=== RUN   TestP15C04EnumResolutionProduction/custom_second_domain
+=== RUN   TestP15C04EnumResolutionProduction/qualified_expression
+=== RUN   TestP15C04EnumResolutionProduction/qualified_empty_expression
+=== RUN   TestP15C04EnumResolutionProduction/lowercase_declared
+=== RUN   TestP15C04EnumResolutionProduction/native_source_alias_context
+=== RUN   TestP15C04EnumResolutionProduction/native_source_alias_qualified
+=== RUN   TestP15C04EnumResolutionProduction/native_domain_override_context
+=== RUN   TestP15C04EnumResolutionProduction/native_domain_override_qualified
+=== RUN   TestP15C04EnumResolutionProduction/native_domain_override_literal
+=== RUN   TestP15C04EnumResolutionProduction/bare_enum_type
+=== RUN   TestP15C04EnumResolutionProduction/branch_raw_domain
+=== RUN   TestP15C04EnumResolutionProduction/function_member
+=== RUN   TestP15C04EnumResolutionProduction/function_raw_domain
+=== RUN   TestP15C04EnumResolutionProduction/return_member
+=== RUN   TestP15C04EnumResolutionProduction/binding_member
+=== RUN   TestP15C04EnumResolutionProduction/assignment_member
+=== RUN   TestP15C04EnumResolutionProduction/wrong_qualified_domain
+=== RUN   TestP15C04EnumResolutionProduction/duplicate_member
+=== RUN   TestP15C04EnumResolutionProduction/native_missing
+=== RUN   TestP15C04EnumResolutionProduction/native_qualified_missing
+=== RUN   TestP15C04EnumResolutionProduction/custom_missing
+=== RUN   TestP15C04EnumResolutionProduction/qualified_missing
+=== RUN   TestP15C04EnumResolutionProduction/unknown_qualified
+=== RUN   TestP15C04EnumResolutionProduction/unbound_context
+=== RUN   TestP15C04EnumResolutionProduction/wrong_custom_wire
+=== RUN   TestP15C04EnumResolutionProduction/wrong_domain_member
+--- PASS: TestP15C04EnumResolutionProduction (0.05s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_context_primary (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_context_named (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_qualified (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_qualified_named (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/custom_context (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/custom_named (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/custom_qualified (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/custom_empty (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/custom_quoted (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/custom_unicode (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/custom_default (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/custom_second_domain (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/qualified_expression (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/qualified_empty_expression (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/lowercase_declared (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_source_alias_context (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_source_alias_qualified (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_domain_override_context (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_domain_override_qualified (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_domain_override_literal (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/bare_enum_type (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/branch_raw_domain (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/function_member (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/function_raw_domain (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/return_member (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/binding_member (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/assignment_member (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/wrong_qualified_domain (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/duplicate_member (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_missing (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/native_qualified_missing (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/custom_missing (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/qualified_missing (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/unknown_qualified (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/unbound_context (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/wrong_custom_wire (0.00s)
+    --- PASS: TestP15C04EnumResolutionProduction/wrong_domain_member (0.00s)
+=== RUN   TestP15C04EnumServiceAndCLI
+=== RUN   TestP15C04EnumServiceAndCLI/quoted_member
+=== RUN   TestP15C04EnumServiceAndCLI/native_source_alias
+=== RUN   TestP15C04EnumServiceAndCLI/scope_ends_at_block
+=== RUN   TestP15C04EnumServiceAndCLI/native_bare
+=== RUN   TestP15C04EnumServiceAndCLI/native_empty
+=== RUN   TestP15C04EnumServiceAndCLI/native_dot_empty
+=== RUN   TestP15C04EnumServiceAndCLI/custom_nested_call
+=== RUN   TestP15C04EnumServiceAndCLI/custom_comment
+=== RUN   TestP15C04EnumServiceAndCLI/native_dot
+=== RUN   TestP15C04EnumServiceAndCLI/native_qualified
+=== RUN   TestP15C04EnumServiceAndCLI/native_named_multiline
+=== RUN   TestP15C04EnumServiceAndCLI/custom_dot
+=== RUN   TestP15C04EnumServiceAndCLI/custom_qualified
+=== RUN   TestP15C04EnumServiceAndCLI/custom_second_domain
+=== RUN   TestP15C04EnumServiceAndCLI/custom_unicode
+--- PASS: TestP15C04EnumServiceAndCLI (3.54s)
+    --- PASS: TestP15C04EnumServiceAndCLI/quoted_member (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_source_alias (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/scope_ends_at_block (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_bare (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_empty (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_dot_empty (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_nested_call (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_comment (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_dot (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_qualified (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/native_named_multiline (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_dot (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_qualified (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_second_domain (0.00s)
+    --- PASS: TestP15C04EnumServiceAndCLI/custom_unicode (0.00s)
+=== RUN   TestP15C04EnumContextsAndShadowing
+=== RUN   TestP15C04EnumContextsAndShadowing/binding
+=== RUN   TestP15C04EnumContextsAndShadowing/assignment
+=== RUN   TestP15C04EnumContextsAndShadowing/optional
+=== RUN   TestP15C04EnumContextsAndShadowing/function_primary
+=== RUN   TestP15C04EnumContextsAndShadowing/function_named
+=== RUN   TestP15C04EnumContextsAndShadowing/function_return
+=== RUN   TestP15C04EnumContextsAndShadowing/branch_result
+=== RUN   TestP15C04EnumContextsAndShadowing/measure_result
+=== RUN   TestP15C04EnumContextsAndShadowing/quoted_member
+=== RUN   TestP15C04EnumContextsAndShadowing/shadow_Mode
+=== RUN   TestP15C04EnumContextsAndShadowing/shadow_Mode_=_{"Blue":"fallback"}
+=== RUN   TestP15C04EnumContextsAndShadowing/shadow_tone
+=== RUN   TestP15C04EnumContextsAndShadowing/shadow_backgroundSound
+--- PASS: TestP15C04EnumContextsAndShadowing (0.07s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/binding (0.00s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/assignment (0.00s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/optional (0.00s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/function_primary (0.01s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/function_named (0.01s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/function_return (0.01s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/branch_result (0.00s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/measure_result (0.00s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/quoted_member (0.00s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/shadow_Mode (0.00s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/shadow_Mode_=_{"Blue":"fallback"} (0.01s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/shadow_tone (0.00s)
+    --- PASS: TestP15C04EnumContextsAndShadowing/shadow_backgroundSound (0.01s)
+=== RUN   TestP15C04EnumFunctionService
+--- PASS: TestP15C04EnumFunctionService (0.04s)
+=== RUN   TestP15C04ProvidedRegistryEnumDomain
+--- PASS: TestP15C04ProvidedRegistryEnumDomain (0.00s)
+=== RUN   TestP15F01DiagnosticFixturesPreserveIsolation
+=== RUN   TestP15F01DiagnosticFixturesPreserveIsolation/control
+=== RUN   TestP15F01DiagnosticFixturesPreserveIsolation/logic
+=== RUN   TestP15F01DiagnosticFixturesPreserveIsolation/counter
+=== RUN   TestP15F01DiagnosticFixturesPreserveIsolation/predicate
+--- PASS: TestP15F01DiagnosticFixturesPreserveIsolation (0.11s)
+    --- PASS: TestP15F01DiagnosticFixturesPreserveIsolation/control (0.02s)
+    --- PASS: TestP15F01DiagnosticFixturesPreserveIsolation/logic (0.02s)
+    --- PASS: TestP15F01DiagnosticFixturesPreserveIsolation/counter (0.02s)
+    --- PASS: TestP15F01DiagnosticFixturesPreserveIsolation/predicate (0.02s)
+=== RUN   TestP15F01DiagnosticOracleRejectsCausalMutations
+--- PASS: TestP15F01DiagnosticOracleRejectsCausalMutations (0.02s)
+=== RUN   TestP15F01HybridEditedPredicateGuardsRHS
+=== RUN   TestP15F01HybridEditedPredicateGuardsRHS/and
+=== RUN   TestP15F01HybridEditedPredicateGuardsRHS/or
+--- PASS: TestP15F01HybridEditedPredicateGuardsRHS (0.03s)
+    --- PASS: TestP15F01HybridEditedPredicateGuardsRHS/and (0.00s)
+    --- PASS: TestP15F01HybridEditedPredicateGuardsRHS/or (0.00s)
+=== RUN   TestP15R06ProductionImportFormats
+=== RUN   TestP15R06ProductionImportFormats/xml.plist/legacy
+=== RUN   TestP15R06ProductionImportFormats/xml.plist/v2
+=== RUN   TestP15R06ProductionImportFormats/binary.plist/legacy
+=== RUN   TestP15R06ProductionImportFormats/binary.plist/v2
+=== RUN   TestP15R06ProductionImportFormats/unsigned.shortcut/legacy
+=== RUN   TestP15R06ProductionImportFormats/unsigned.shortcut/v2
+=== RUN   TestP15R06ProductionImportFormats/workflow.json/legacy
+=== RUN   TestP15R06ProductionImportFormats/workflow.json/v2
+--- PASS: TestP15R06ProductionImportFormats (0.06s)
+    --- PASS: TestP15R06ProductionImportFormats/xml.plist/legacy (0.02s)
+    --- PASS: TestP15R06ProductionImportFormats/xml.plist/v2 (0.00s)
+    --- PASS: TestP15R06ProductionImportFormats/binary.plist/legacy (0.01s)
+    --- PASS: TestP15R06ProductionImportFormats/binary.plist/v2 (0.00s)
+    --- PASS: TestP15R06ProductionImportFormats/unsigned.shortcut/legacy (0.00s)
+    --- PASS: TestP15R06ProductionImportFormats/unsigned.shortcut/v2 (0.00s)
+    --- PASS: TestP15R06ProductionImportFormats/workflow.json/legacy (0.01s)
+    --- PASS: TestP15R06ProductionImportFormats/workflow.json/v2 (0.00s)
+=== RUN   TestP15S02ExplicitInterpolationAndLegacyBoundary
+--- PASS: TestP15S02ExplicitInterpolationAndLegacyBoundary (0.00s)
+=== RUN   TestP15S02LiteralOracleRejectsCorruption
+=== RUN   TestP15S02LiteralOracleRejectsCorruption/removed_backslash
+=== RUN   TestP15S02LiteralOracleRejectsCorruption/removed_braces
+=== RUN   TestP15S02LiteralOracleRejectsCorruption/changed_unicode
+=== RUN   TestP15S02LiteralOracleRejectsCorruption/fabricated_reference
+--- PASS: TestP15S02LiteralOracleRejectsCorruption (0.00s)
+    --- PASS: TestP15S02LiteralOracleRejectsCorruption/removed_backslash (0.00s)
+    --- PASS: TestP15S02LiteralOracleRejectsCorruption/removed_braces (0.00s)
+    --- PASS: TestP15S02LiteralOracleRejectsCorruption/changed_unicode (0.00s)
+    --- PASS: TestP15S02LiteralOracleRejectsCorruption/fabricated_reference (0.00s)
+=== RUN   TestP15S02LiteralNativeRoundTrip
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-literal-container/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"9f15ed654d64bb771f27d8b8d4742d999543374a890a12a43ccf4a5a6f7323fe","mode":"legacy","name":"s02-literal-container","output_sha256":"8c35183e3e3effaed23a846ebbbd55dfe443c9972324c7cec45f1b7463e84961","runtime_observed":false,"source_sha256":"140108ac017bad8714c1d05a2151b2a0673b31033971123d651320837dc8843c"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-literal-container/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"9f15ed654d64bb771f27d8b8d4742d999543374a890a12a43ccf4a5a6f7323fe","mode":"v2","name":"s02-literal-container","output_sha256":"8c35183e3e3effaed23a846ebbbd55dfe443c9972324c7cec45f1b7463e84961","runtime_observed":false,"source_sha256":"be49e38895df49d909f57f9e51ece721156415064e648c27981a2b3741460bd0"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-literal-container/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"9f15ed654d64bb771f27d8b8d4742d999543374a890a12a43ccf4a5a6f7323fe","mode":"legacy","name":"s02-literal-container","output_sha256":"8c35183e3e3effaed23a846ebbbd55dfe443c9972324c7cec45f1b7463e84961","runtime_observed":false,"source_sha256":"e54adf6037914a9ed2496fe44152f46f2c24cbe53ff9956263acd2296bebdaf0"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-literal-container/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"9f15ed654d64bb771f27d8b8d4742d999543374a890a12a43ccf4a5a6f7323fe","mode":"v2","name":"s02-literal-container","output_sha256":"8c35183e3e3effaed23a846ebbbd55dfe443c9972324c7cec45f1b7463e84961","runtime_observed":false,"source_sha256":"4b4bfdb9d41982c082617f3d806090dec8a4b2a8f5965e4a4a968c1607716d66"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-literal-container/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"fa9703be17bec4ff2b18d964b8ca5571ef050bb85307ca552dc8b9244d1a6237","mode":"legacy","name":"s02-literal-container","output_sha256":"8c35183e3e3effaed23a846ebbbd55dfe443c9972324c7cec45f1b7463e84961","runtime_observed":false,"source_sha256":"140108ac017bad8714c1d05a2151b2a0673b31033971123d651320837dc8843c"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-literal-container/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"fa9703be17bec4ff2b18d964b8ca5571ef050bb85307ca552dc8b9244d1a6237","mode":"v2","name":"s02-literal-container","output_sha256":"8c35183e3e3effaed23a846ebbbd55dfe443c9972324c7cec45f1b7463e84961","runtime_observed":false,"source_sha256":"be49e38895df49d909f57f9e51ece721156415064e648c27981a2b3741460bd0"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-literal-container/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"fa9703be17bec4ff2b18d964b8ca5571ef050bb85307ca552dc8b9244d1a6237","mode":"legacy","name":"s02-literal-container","output_sha256":"8c35183e3e3effaed23a846ebbbd55dfe443c9972324c7cec45f1b7463e84961","runtime_observed":false,"source_sha256":"e54adf6037914a9ed2496fe44152f46f2c24cbe53ff9956263acd2296bebdaf0"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-literal-container/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"fa9703be17bec4ff2b18d964b8ca5571ef050bb85307ca552dc8b9244d1a6237","mode":"v2","name":"s02-literal-container","output_sha256":"8c35183e3e3effaed23a846ebbbd55dfe443c9972324c7cec45f1b7463e84961","runtime_observed":false,"source_sha256":"4b4bfdb9d41982c082617f3d806090dec8a4b2a8f5965e4a4a968c1607716d66"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"6c87006590e54b90f154d5da3e5d69862c3ab4a5dd4c08145ef0d07f5b07061d","mode":"legacy","name":"s02-opaque-wire-control","output_sha256":"fe794540530096c27af78c4167060b5ab9e3859f520b0b2752d317f6ccb38f94","runtime_observed":false,"source_sha256":"a7cb5dc0ce9acf6d9c2e4c216c6954a77cc1934ca17a033b555b21b614d6cb9c"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"6c87006590e54b90f154d5da3e5d69862c3ab4a5dd4c08145ef0d07f5b07061d","mode":"v2","name":"s02-opaque-wire-control","output_sha256":"fe794540530096c27af78c4167060b5ab9e3859f520b0b2752d317f6ccb38f94","runtime_observed":false,"source_sha256":"b06bf8bbe4d383f58785f5b19dc6bdacd78e3a2e65f48fd5e83f99a00ff945f6"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"6c87006590e54b90f154d5da3e5d69862c3ab4a5dd4c08145ef0d07f5b07061d","mode":"legacy","name":"s02-opaque-wire-control","output_sha256":"fe794540530096c27af78c4167060b5ab9e3859f520b0b2752d317f6ccb38f94","runtime_observed":false,"source_sha256":"466219ca70876f3b9bbccdd9c8a9b4d9f3a424c12d0ef74d90f0bd3023fed85f"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"6c87006590e54b90f154d5da3e5d69862c3ab4a5dd4c08145ef0d07f5b07061d","mode":"v2","name":"s02-opaque-wire-control","output_sha256":"fe794540530096c27af78c4167060b5ab9e3859f520b0b2752d317f6ccb38f94","runtime_observed":false,"source_sha256":"a82c2a20c210771e7e16e5194079c0e416efefa3df91bb04f823a53fdb32af4d"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"550e53c3d320027b1d8530156241aa2cdd8e10ea4d07ee19b51bed107ec1d387","mode":"legacy","name":"s02-opaque-wire-control","output_sha256":"fe794540530096c27af78c4167060b5ab9e3859f520b0b2752d317f6ccb38f94","runtime_observed":false,"source_sha256":"a7cb5dc0ce9acf6d9c2e4c216c6954a77cc1934ca17a033b555b21b614d6cb9c"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"550e53c3d320027b1d8530156241aa2cdd8e10ea4d07ee19b51bed107ec1d387","mode":"v2","name":"s02-opaque-wire-control","output_sha256":"fe794540530096c27af78c4167060b5ab9e3859f520b0b2752d317f6ccb38f94","runtime_observed":false,"source_sha256":"b06bf8bbe4d383f58785f5b19dc6bdacd78e3a2e65f48fd5e83f99a00ff945f6"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"550e53c3d320027b1d8530156241aa2cdd8e10ea4d07ee19b51bed107ec1d387","mode":"legacy","name":"s02-opaque-wire-control","output_sha256":"fe794540530096c27af78c4167060b5ab9e3859f520b0b2752d317f6ccb38f94","runtime_observed":false,"source_sha256":"466219ca70876f3b9bbccdd9c8a9b4d9f3a424c12d0ef74d90f0bd3023fed85f"}
+=== RUN   TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"550e53c3d320027b1d8530156241aa2cdd8e10ea4d07ee19b51bed107ec1d387","mode":"v2","name":"s02-opaque-wire-control","output_sha256":"fe794540530096c27af78c4167060b5ab9e3859f520b0b2752d317f6ccb38f94","runtime_observed":false,"source_sha256":"a82c2a20c210771e7e16e5194079c0e416efefa3df91bb04f823a53fdb32af4d"}
+--- PASS: TestP15S02LiteralNativeRoundTrip (0.40s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-literal-container/1/hybrid/legacy (0.07s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-literal-container/1/hybrid/v2 (0.05s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-literal-container/1/lossless/legacy (0.02s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-literal-container/1/lossless/v2 (0.02s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-literal-container/2/hybrid/legacy (0.04s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-literal-container/2/hybrid/v2 (0.03s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-literal-container/2/lossless/legacy (0.01s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-literal-container/2/lossless/v2 (0.01s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/1/hybrid/legacy (0.03s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/1/hybrid/v2 (0.03s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/1/lossless/legacy (0.02s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/1/lossless/v2 (0.02s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/2/hybrid/legacy (0.03s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/2/hybrid/v2 (0.02s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/2/lossless/legacy (0.00s)
+    --- PASS: TestP15S02LiteralNativeRoundTrip/s02-opaque-wire-control/2/lossless/v2 (0.00s)
+=== RUN   TestP15L01NestedDictionaryOracleRejectsCorruption
+=== RUN   TestP15L01NestedDictionaryOracleRejectsCorruption/omit_empty_array
+=== RUN   TestP15L01NestedDictionaryOracleRejectsCorruption/drop_empty_map
+=== RUN   TestP15L01NestedDictionaryOracleRejectsCorruption/remove_element
+=== RUN   TestP15L01NestedDictionaryOracleRejectsCorruption/reorder_elements
+=== RUN   TestP15L01NestedDictionaryOracleRejectsCorruption/change_false
+=== RUN   TestP15L01NestedDictionaryOracleRejectsCorruption/flatten_array
+--- PASS: TestP15L01NestedDictionaryOracleRejectsCorruption (0.00s)
+    --- PASS: TestP15L01NestedDictionaryOracleRejectsCorruption/omit_empty_array (0.00s)
+    --- PASS: TestP15L01NestedDictionaryOracleRejectsCorruption/drop_empty_map (0.00s)
+    --- PASS: TestP15L01NestedDictionaryOracleRejectsCorruption/remove_element (0.00s)
+    --- PASS: TestP15L01NestedDictionaryOracleRejectsCorruption/reorder_elements (0.00s)
+    --- PASS: TestP15L01NestedDictionaryOracleRejectsCorruption/change_false (0.00s)
+    --- PASS: TestP15L01NestedDictionaryOracleRejectsCorruption/flatten_array (0.00s)
+=== RUN   TestP15S02ExactLiteralBytes
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/immutable
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/mutable
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/list
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/dictionary
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/dictionary_mutable
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/dictionary_assignment
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/dictionary_return
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/dictionary_yield
+=== RUN   TestP15S02ExactLiteralBytes/raw_regex/dictionary_in_list
+=== RUN   TestP15S02ExactLiteralBytes/json/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/json/immutable
+=== RUN   TestP15S02ExactLiteralBytes/json/mutable
+=== RUN   TestP15S02ExactLiteralBytes/json/list
+=== RUN   TestP15S02ExactLiteralBytes/json/dictionary
+=== RUN   TestP15S02ExactLiteralBytes/json/dictionary_mutable
+=== RUN   TestP15S02ExactLiteralBytes/json/dictionary_assignment
+=== RUN   TestP15S02ExactLiteralBytes/json/dictionary_return
+=== RUN   TestP15S02ExactLiteralBytes/json/dictionary_yield
+=== RUN   TestP15S02ExactLiteralBytes/json/dictionary_in_list
+=== RUN   TestP15S02ExactLiteralBytes/javascript/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/javascript/immutable
+=== RUN   TestP15S02ExactLiteralBytes/javascript/mutable
+=== RUN   TestP15S02ExactLiteralBytes/javascript/list
+=== RUN   TestP15S02ExactLiteralBytes/javascript/dictionary
+=== RUN   TestP15S02ExactLiteralBytes/javascript/dictionary_mutable
+=== RUN   TestP15S02ExactLiteralBytes/javascript/dictionary_assignment
+=== RUN   TestP15S02ExactLiteralBytes/javascript/dictionary_return
+=== RUN   TestP15S02ExactLiteralBytes/javascript/dictionary_yield
+=== RUN   TestP15S02ExactLiteralBytes/javascript/dictionary_in_list
+=== RUN   TestP15S02ExactLiteralBytes/css/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/css/immutable
+=== RUN   TestP15S02ExactLiteralBytes/css/mutable
+=== RUN   TestP15S02ExactLiteralBytes/css/list
+=== RUN   TestP15S02ExactLiteralBytes/css/dictionary
+=== RUN   TestP15S02ExactLiteralBytes/css/dictionary_mutable
+=== RUN   TestP15S02ExactLiteralBytes/css/dictionary_assignment
+=== RUN   TestP15S02ExactLiteralBytes/css/dictionary_return
+=== RUN   TestP15S02ExactLiteralBytes/css/dictionary_yield
+=== RUN   TestP15S02ExactLiteralBytes/css/dictionary_in_list
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/immutable
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/mutable
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/list
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/dictionary
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_mutable
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_assignment
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_return
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_yield
+=== RUN   TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_in_list
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/action_argument
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/immutable
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/mutable
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/list
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_mutable
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_assignment
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_return
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_yield
+=== RUN   TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_in_list
+=== RUN   TestP15S02ExactLiteralBytes/literal_dictionary_key
+--- PASS: TestP15S02ExactLiteralBytes (0.06s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/dictionary (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/dictionary_mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/dictionary_assignment (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/dictionary_return (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/dictionary_yield (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/raw_regex/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/dictionary (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/dictionary_mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/dictionary_assignment (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/dictionary_return (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/dictionary_yield (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/json/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/dictionary (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/dictionary_mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/dictionary_assignment (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/dictionary_return (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/dictionary_yield (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/javascript/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/dictionary (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/dictionary_mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/dictionary_assignment (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/dictionary_return (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/dictionary_yield (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/css/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/dictionary (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_assignment (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_return (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_yield (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/native_looking_braces/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/action_argument (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/immutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_mutable (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_assignment (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_return (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_yield (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/unicode_escaped_controls/dictionary_in_list (0.00s)
+    --- PASS: TestP15S02ExactLiteralBytes/literal_dictionary_key (0.00s)
+=== RUN   TestP15L01NestedDictionaryShape
+=== RUN   TestP15L01NestedDictionaryShape/immutable
+=== RUN   TestP15L01NestedDictionaryShape/mutable
+=== RUN   TestP15L01NestedDictionaryShape/assignment
+=== RUN   TestP15L01NestedDictionaryShape/dictionary_in_list
+--- PASS: TestP15L01NestedDictionaryShape (0.01s)
+    --- PASS: TestP15L01NestedDictionaryShape/immutable (0.00s)
+    --- PASS: TestP15L01NestedDictionaryShape/mutable (0.00s)
+    --- PASS: TestP15L01NestedDictionaryShape/assignment (0.00s)
+    --- PASS: TestP15L01NestedDictionaryShape/dictionary_in_list (0.00s)
+=== RUN   TestP15L01UnverifiedNativeNestedLiteralFailsClosed
+--- PASS: TestP15L01UnverifiedNativeNestedLiteralFailsClosed (0.00s)
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate_raw_spelling
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate_nested
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_text
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_bool
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_list
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_map
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/list_dynamic_text
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/map_number
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/map_bool
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/map_list
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/map_map
+=== RUN   TestP15L03DuplicateAndInvalidIndexDiagnostics/valid_controls
+--- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics (0.02s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate_raw_spelling (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/duplicate_nested (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_text (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_bool (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_list (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_map (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/list_dynamic_text (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/map_number (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/map_bool (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/map_list (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/map_map (0.00s)
+    --- PASS: TestP15L03DuplicateAndInvalidIndexDiagnostics/valid_controls (0.01s)
+=== RUN   TestP15M03SetupFinalActionBinding
+=== RUN   TestP15M03SetupFinalActionBinding/action_zero
+=== RUN   TestP15M03SetupFinalActionBinding/later_argument_producer
+=== RUN   TestP15M03SetupFinalActionBinding/function_expansion
+=== RUN   TestP15M03SetupFinalActionBinding/later_date_backfill
+=== RUN   TestP15M03SetupFinalActionBinding/question_name_collides_with_wire_key
+--- PASS: TestP15M03SetupFinalActionBinding (0.01s)
+    --- PASS: TestP15M03SetupFinalActionBinding/action_zero (0.00s)
+    --- PASS: TestP15M03SetupFinalActionBinding/later_argument_producer (0.00s)
+    --- PASS: TestP15M03SetupFinalActionBinding/function_expansion (0.00s)
+    --- PASS: TestP15M03SetupFinalActionBinding/later_date_backfill (0.00s)
+    --- PASS: TestP15M03SetupFinalActionBinding/question_name_collides_with_wire_key (0.00s)
+=== RUN   TestP15M04InvalidSetupAndEditorHoles
+=== RUN   TestP15M04InvalidSetupAndEditorHoles/macro
+=== RUN   TestP15M04InvalidSetupAndEditorHoles/alias
+=== RUN   TestP15M04InvalidSetupAndEditorHoles/expression
+=== RUN   TestP15M04InvalidSetupAndEditorHoles/reuse
+=== RUN   TestP15M04InvalidSetupAndEditorHoles/two_parameters
+=== RUN   TestP15M04InvalidSetupAndEditorHoles/function_argument
+=== RUN   TestP15M04InvalidSetupAndEditorHoles/palette_unfilled_argument
+=== RUN   TestP15M04InvalidSetupAndEditorHoles/explicit_ask_control
+--- PASS: TestP15M04InvalidSetupAndEditorHoles (0.01s)
+    --- PASS: TestP15M04InvalidSetupAndEditorHoles/macro (0.00s)
+    --- PASS: TestP15M04InvalidSetupAndEditorHoles/alias (0.00s)
+    --- PASS: TestP15M04InvalidSetupAndEditorHoles/expression (0.00s)
+    --- PASS: TestP15M04InvalidSetupAndEditorHoles/reuse (0.00s)
+    --- PASS: TestP15M04InvalidSetupAndEditorHoles/two_parameters (0.00s)
+    --- PASS: TestP15M04InvalidSetupAndEditorHoles/function_argument (0.00s)
+    --- PASS: TestP15M04InvalidSetupAndEditorHoles/palette_unfilled_argument (0.00s)
+    --- PASS: TestP15M04InvalidSetupAndEditorHoles/explicit_ask_control (0.00s)
+=== RUN   TestP15M01KnownHeaderMapping
+--- PASS: TestP15M01KnownHeaderMapping (0.00s)
+=== RUN   TestP15M01NativeHeaderRoundTrip
+=== RUN   TestP15M01NativeHeaderRoundTrip/metadata-future-header/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"664cc1e30f63113b4e818266f2f6450f6313ff1a58e8d57ddf338f7df1caf7a9","mode":"legacy","name":"metadata-future-header","output_sha256":"52115bc24766d246f0276093056d0c97cb9db4a62ff1c8ab66cd517c15b3d891","runtime_observed":false,"source_sha256":"36a99091711d8b96e95a4de0e9d0fae530db154a3cc09ed35ff0a2936cb6e855"}
+=== RUN   TestP15M01NativeHeaderRoundTrip/metadata-future-header/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"664cc1e30f63113b4e818266f2f6450f6313ff1a58e8d57ddf338f7df1caf7a9","mode":"v2","name":"metadata-future-header","output_sha256":"52115bc24766d246f0276093056d0c97cb9db4a62ff1c8ab66cd517c15b3d891","runtime_observed":false,"source_sha256":"302395ae62d8ac6b903ae3e9fca83a5a9dff82daed3969cb0211101ff9281147"}
+=== RUN   TestP15M01NativeHeaderRoundTrip/metadata-future-header/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"664cc1e30f63113b4e818266f2f6450f6313ff1a58e8d57ddf338f7df1caf7a9","mode":"legacy","name":"metadata-future-header","output_sha256":"52115bc24766d246f0276093056d0c97cb9db4a62ff1c8ab66cd517c15b3d891","runtime_observed":false,"source_sha256":"6f6b57155a2f9d5ef5becd2ee46bfc74403e3d1ba958e1e60cafbe63e72c5204"}
+=== RUN   TestP15M01NativeHeaderRoundTrip/metadata-future-header/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"664cc1e30f63113b4e818266f2f6450f6313ff1a58e8d57ddf338f7df1caf7a9","mode":"v2","name":"metadata-future-header","output_sha256":"52115bc24766d246f0276093056d0c97cb9db4a62ff1c8ab66cd517c15b3d891","runtime_observed":false,"source_sha256":"6f461f11da0037961b10e8ad94be3a42677c9013ff58290ca41d80ba71cc11f7"}
+=== RUN   TestP15M01NativeHeaderRoundTrip/metadata-future-header/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"8a21ef5c8bfe015717b59fae6d7e8d395b7a771c61b7d2135baa1eb86de90321","mode":"legacy","name":"metadata-future-header","output_sha256":"52115bc24766d246f0276093056d0c97cb9db4a62ff1c8ab66cd517c15b3d891","runtime_observed":false,"source_sha256":"36a99091711d8b96e95a4de0e9d0fae530db154a3cc09ed35ff0a2936cb6e855"}
+=== RUN   TestP15M01NativeHeaderRoundTrip/metadata-future-header/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"8a21ef5c8bfe015717b59fae6d7e8d395b7a771c61b7d2135baa1eb86de90321","mode":"v2","name":"metadata-future-header","output_sha256":"52115bc24766d246f0276093056d0c97cb9db4a62ff1c8ab66cd517c15b3d891","runtime_observed":false,"source_sha256":"302395ae62d8ac6b903ae3e9fca83a5a9dff82daed3969cb0211101ff9281147"}
+=== RUN   TestP15M01NativeHeaderRoundTrip/metadata-future-header/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"8a21ef5c8bfe015717b59fae6d7e8d395b7a771c61b7d2135baa1eb86de90321","mode":"legacy","name":"metadata-future-header","output_sha256":"52115bc24766d246f0276093056d0c97cb9db4a62ff1c8ab66cd517c15b3d891","runtime_observed":false,"source_sha256":"6f6b57155a2f9d5ef5becd2ee46bfc74403e3d1ba958e1e60cafbe63e72c5204"}
+=== RUN   TestP15M01NativeHeaderRoundTrip/metadata-future-header/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"8a21ef5c8bfe015717b59fae6d7e8d395b7a771c61b7d2135baa1eb86de90321","mode":"v2","name":"metadata-future-header","output_sha256":"52115bc24766d246f0276093056d0c97cb9db4a62ff1c8ab66cd517c15b3d891","runtime_observed":false,"source_sha256":"6f461f11da0037961b10e8ad94be3a42677c9013ff58290ca41d80ba71cc11f7"}
+=== RUN   TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowTypes
+=== RUN   TestP15M01NativeHeaderRoundTrip/reject_omitted_WFQuickActionSurfaces
+=== RUN   TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowInputContentItemClasses
+=== RUN   TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowOutputContentItemClasses
+=== RUN   TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowNoInputBehavior
+=== RUN   TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowIcon
+=== RUN   TestP15M01NativeHeaderRoundTrip/reject_omitted_P15FutureHeader
+--- PASS: TestP15M01NativeHeaderRoundTrip (0.15s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/metadata-future-header/1/hybrid/legacy (0.04s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/metadata-future-header/1/hybrid/v2 (0.02s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/metadata-future-header/1/lossless/legacy (0.00s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/metadata-future-header/1/lossless/v2 (0.00s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/metadata-future-header/2/hybrid/legacy (0.03s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/metadata-future-header/2/hybrid/v2 (0.02s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/metadata-future-header/2/lossless/legacy (0.01s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/metadata-future-header/2/lossless/v2 (0.00s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowTypes (0.00s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/reject_omitted_WFQuickActionSurfaces (0.00s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowInputContentItemClasses (0.00s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowOutputContentItemClasses (0.00s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowNoInputBehavior (0.00s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/reject_omitted_WFWorkflowIcon (0.00s)
+    --- PASS: TestP15M01NativeHeaderRoundTrip/reject_omitted_P15FutureHeader (0.00s)
+=== RUN   TestP15M03SetupNativeRoundTrip
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-zero/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"c529f7b86eee28b45eb48264df4036ac9293f144f04b3808b0b53f632e7722d9","mode":"legacy","name":"setup-zero","output_sha256":"0032ad20c5903557254869c500bf91c865492e748bb58ef99e63b0ba16706b0b","runtime_observed":false,"source_sha256":"637e1d0a707a8221d53276e910f356beefad055c4a531cb35561f51524edbce4"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-zero/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"c529f7b86eee28b45eb48264df4036ac9293f144f04b3808b0b53f632e7722d9","mode":"v2","name":"setup-zero","output_sha256":"0032ad20c5903557254869c500bf91c865492e748bb58ef99e63b0ba16706b0b","runtime_observed":false,"source_sha256":"062bac0f05f150a6c901a82717b4ff7a7b0ebe62e13610d97af1f66963db54f9"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-zero/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"c529f7b86eee28b45eb48264df4036ac9293f144f04b3808b0b53f632e7722d9","mode":"legacy","name":"setup-zero","output_sha256":"0032ad20c5903557254869c500bf91c865492e748bb58ef99e63b0ba16706b0b","runtime_observed":false,"source_sha256":"03cfce32cdffe2608788cf3cc81a846b2badd1f5193e296b8eb639c10863b2ea"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-zero/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"c529f7b86eee28b45eb48264df4036ac9293f144f04b3808b0b53f632e7722d9","mode":"v2","name":"setup-zero","output_sha256":"0032ad20c5903557254869c500bf91c865492e748bb58ef99e63b0ba16706b0b","runtime_observed":false,"source_sha256":"b0cc5c3c0f775d0b603e28fe51fbbba0e841bf971d963d9571d2f8d181473102"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-zero/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"cea4cd9291e50fcdba37f55edd9ee6f202e9a4007147bc70de0235412bfde4b3","mode":"legacy","name":"setup-zero","output_sha256":"0032ad20c5903557254869c500bf91c865492e748bb58ef99e63b0ba16706b0b","runtime_observed":false,"source_sha256":"637e1d0a707a8221d53276e910f356beefad055c4a531cb35561f51524edbce4"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-zero/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"cea4cd9291e50fcdba37f55edd9ee6f202e9a4007147bc70de0235412bfde4b3","mode":"v2","name":"setup-zero","output_sha256":"0032ad20c5903557254869c500bf91c865492e748bb58ef99e63b0ba16706b0b","runtime_observed":false,"source_sha256":"062bac0f05f150a6c901a82717b4ff7a7b0ebe62e13610d97af1f66963db54f9"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-zero/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"cea4cd9291e50fcdba37f55edd9ee6f202e9a4007147bc70de0235412bfde4b3","mode":"legacy","name":"setup-zero","output_sha256":"0032ad20c5903557254869c500bf91c865492e748bb58ef99e63b0ba16706b0b","runtime_observed":false,"source_sha256":"03cfce32cdffe2608788cf3cc81a846b2badd1f5193e296b8eb639c10863b2ea"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-zero/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":1,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"cea4cd9291e50fcdba37f55edd9ee6f202e9a4007147bc70de0235412bfde4b3","mode":"v2","name":"setup-zero","output_sha256":"0032ad20c5903557254869c500bf91c865492e748bb58ef99e63b0ba16706b0b","runtime_observed":false,"source_sha256":"b0cc5c3c0f775d0b603e28fe51fbbba0e841bf971d963d9571d2f8d181473102"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-native/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"bd81c7746cafe52b4e1167ce16202ac3441b67dd862babfb2403e176919582be","mode":"legacy","name":"setup-native","output_sha256":"730d90744ad3c59562121f8065e50ef826a2ce2999aaed600f4517d61ca4e861","runtime_observed":false,"source_sha256":"e42ed5c1bc1297eeff3d2181ec1511ae28c34bf6fa06b69dbd932cb969d116d3"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-native/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"bd81c7746cafe52b4e1167ce16202ac3441b67dd862babfb2403e176919582be","mode":"v2","name":"setup-native","output_sha256":"730d90744ad3c59562121f8065e50ef826a2ce2999aaed600f4517d61ca4e861","runtime_observed":false,"source_sha256":"4c64ea628700be725bc95a8cd9b580941c2882cb50630f49f8a1eebc624b4a5f"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-native/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"bd81c7746cafe52b4e1167ce16202ac3441b67dd862babfb2403e176919582be","mode":"legacy","name":"setup-native","output_sha256":"730d90744ad3c59562121f8065e50ef826a2ce2999aaed600f4517d61ca4e861","runtime_observed":false,"source_sha256":"45b5df3308c5200734a1704cc0bc70dc741445bf09868bcbd7cfac4afe0e1a14"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-native/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"bd81c7746cafe52b4e1167ce16202ac3441b67dd862babfb2403e176919582be","mode":"v2","name":"setup-native","output_sha256":"730d90744ad3c59562121f8065e50ef826a2ce2999aaed600f4517d61ca4e861","runtime_observed":false,"source_sha256":"88a941495c5b05125012945dca6b24353c01c8587f127822ba8da9333dc0e65d"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-native/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"99182a3229027429816c9c9e3ca3d2a9b22ace99bf6cb84ab535daa8e786b9dd","mode":"legacy","name":"setup-native","output_sha256":"730d90744ad3c59562121f8065e50ef826a2ce2999aaed600f4517d61ca4e861","runtime_observed":false,"source_sha256":"e42ed5c1bc1297eeff3d2181ec1511ae28c34bf6fa06b69dbd932cb969d116d3"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-native/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"99182a3229027429816c9c9e3ca3d2a9b22ace99bf6cb84ab535daa8e786b9dd","mode":"v2","name":"setup-native","output_sha256":"730d90744ad3c59562121f8065e50ef826a2ce2999aaed600f4517d61ca4e861","runtime_observed":false,"source_sha256":"4c64ea628700be725bc95a8cd9b580941c2882cb50630f49f8a1eebc624b4a5f"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-native/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"99182a3229027429816c9c9e3ca3d2a9b22ace99bf6cb84ab535daa8e786b9dd","mode":"legacy","name":"setup-native","output_sha256":"730d90744ad3c59562121f8065e50ef826a2ce2999aaed600f4517d61ca4e861","runtime_observed":false,"source_sha256":"45b5df3308c5200734a1704cc0bc70dc741445bf09868bcbd7cfac4afe0e1a14"}
+=== RUN   TestP15M03SetupNativeRoundTrip/setup-native/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"99182a3229027429816c9c9e3ca3d2a9b22ace99bf6cb84ab535daa8e786b9dd","mode":"v2","name":"setup-native","output_sha256":"730d90744ad3c59562121f8065e50ef826a2ce2999aaed600f4517d61ca4e861","runtime_observed":false,"source_sha256":"88a941495c5b05125012945dca6b24353c01c8587f127822ba8da9333dc0e65d"}
+=== RUN   TestP15M03SetupNativeRoundTrip/missing_index
+=== RUN   TestP15M03SetupNativeRoundTrip/wrong_index
+=== RUN   TestP15M03SetupNativeRoundTrip/wrong_parameter
+=== RUN   TestP15M03SetupNativeRoundTrip/wrong_value
+=== RUN   TestP15M03SetupNativeRoundTrip/duplicate_question
+--- PASS: TestP15M03SetupNativeRoundTrip (0.43s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-zero/1/hybrid/legacy (0.03s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-zero/1/hybrid/v2 (0.03s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-zero/1/lossless/legacy (0.01s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-zero/1/lossless/v2 (0.01s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-zero/2/hybrid/legacy (0.03s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-zero/2/hybrid/v2 (0.02s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-zero/2/lossless/legacy (0.01s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-zero/2/lossless/v2 (0.01s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-native/1/hybrid/legacy (0.06s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-native/1/hybrid/v2 (0.06s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-native/1/lossless/legacy (0.03s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-native/1/lossless/v2 (0.03s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-native/2/hybrid/legacy (0.04s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-native/2/hybrid/v2 (0.03s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-native/2/lossless/legacy (0.01s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/setup-native/2/lossless/v2 (0.00s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/missing_index (0.00s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/wrong_index (0.00s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/wrong_parameter (0.00s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/wrong_value (0.00s)
+    --- PASS: TestP15M03SetupNativeRoundTrip/duplicate_question (0.00s)
+=== RUN   TestP15M04SetupScopeAndUnused
+--- PASS: TestP15M04SetupScopeAndUnused (0.01s)
+=== RUN   TestP15M04CatalogInsertionHoles
+    p15_metadata_acceptance_test.go:351: actual unfilled palette cases rejected by compiler and mobile bridge: 352
+--- PASS: TestP15M04CatalogInsertionHoles (0.07s)
+=== RUN   TestP15M03SetupBindingRejectsIdentityCorruption
+=== RUN   TestP15M03SetupBindingRejectsIdentityCorruption/control
+=== RUN   TestP15M03SetupBindingRejectsIdentityCorruption/missing_node
+=== RUN   TestP15M03SetupBindingRejectsIdentityCorruption/duplicate_node
+=== RUN   TestP15M03SetupBindingRejectsIdentityCorruption/missing_parameter
+=== RUN   TestP15M03SetupBindingRejectsIdentityCorruption/reused_question
+=== RUN   TestP15M03SetupBindingRejectsIdentityCorruption/late_prefix
+=== RUN   TestP15M03SetupBindingRejectsIdentityCorruption/uuid_rename
+--- PASS: TestP15M03SetupBindingRejectsIdentityCorruption (0.01s)
+    --- PASS: TestP15M03SetupBindingRejectsIdentityCorruption/control (0.00s)
+    --- PASS: TestP15M03SetupBindingRejectsIdentityCorruption/missing_node (0.00s)
+    --- PASS: TestP15M03SetupBindingRejectsIdentityCorruption/duplicate_node (0.00s)
+    --- PASS: TestP15M03SetupBindingRejectsIdentityCorruption/missing_parameter (0.00s)
+    --- PASS: TestP15M03SetupBindingRejectsIdentityCorruption/reused_question (0.00s)
+    --- PASS: TestP15M03SetupBindingRejectsIdentityCorruption/late_prefix (0.00s)
+    --- PASS: TestP15M03SetupBindingRejectsIdentityCorruption/uuid_rename (0.00s)
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"73814adedcea40a4277d8e8cb5c2d7ef8d79b677877545d63c47f0c500bf077f","mode":"legacy","name":"unknown-tree-control","output_sha256":"f5825e694b8415eab621dd7d68fa7a05b786be4f21268a643fde1f4e7a096782","runtime_observed":false,"source_sha256":"3d5c53380c214ea838a362f9419163816ae7fa9fa427b0acb6286ad54950020f"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"73814adedcea40a4277d8e8cb5c2d7ef8d79b677877545d63c47f0c500bf077f","mode":"v2","name":"unknown-tree-control","output_sha256":"f5825e694b8415eab621dd7d68fa7a05b786be4f21268a643fde1f4e7a096782","runtime_observed":false,"source_sha256":"375bea0d08e61de34d0840e4e1d2289b9724e177a398c5dfbe8e19f5183aa508"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"73814adedcea40a4277d8e8cb5c2d7ef8d79b677877545d63c47f0c500bf077f","mode":"legacy","name":"unknown-tree-control","output_sha256":"f5825e694b8415eab621dd7d68fa7a05b786be4f21268a643fde1f4e7a096782","runtime_observed":false,"source_sha256":"950bbf06b9296c8be49202722c03aef63e165737bea25a00b62e89fd2929fb40"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"73814adedcea40a4277d8e8cb5c2d7ef8d79b677877545d63c47f0c500bf077f","mode":"v2","name":"unknown-tree-control","output_sha256":"f5825e694b8415eab621dd7d68fa7a05b786be4f21268a643fde1f4e7a096782","runtime_observed":false,"source_sha256":"70a8b998add0056d31fb13de373735bf86fba4a09e9f81f4eb64974c4b58d98b"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"531f30ba781ed20c6605cf1baa38abf00d228b8680e4ffbc02f6c3f7501de549","mode":"legacy","name":"unknown-tree-control","output_sha256":"f5825e694b8415eab621dd7d68fa7a05b786be4f21268a643fde1f4e7a096782","runtime_observed":false,"source_sha256":"3d5c53380c214ea838a362f9419163816ae7fa9fa427b0acb6286ad54950020f"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"531f30ba781ed20c6605cf1baa38abf00d228b8680e4ffbc02f6c3f7501de549","mode":"v2","name":"unknown-tree-control","output_sha256":"f5825e694b8415eab621dd7d68fa7a05b786be4f21268a643fde1f4e7a096782","runtime_observed":false,"source_sha256":"375bea0d08e61de34d0840e4e1d2289b9724e177a398c5dfbe8e19f5183aa508"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"531f30ba781ed20c6605cf1baa38abf00d228b8680e4ffbc02f6c3f7501de549","mode":"legacy","name":"unknown-tree-control","output_sha256":"f5825e694b8415eab621dd7d68fa7a05b786be4f21268a643fde1f4e7a096782","runtime_observed":false,"source_sha256":"950bbf06b9296c8be49202722c03aef63e165737bea25a00b62e89fd2929fb40"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"531f30ba781ed20c6605cf1baa38abf00d228b8680e4ffbc02f6c3f7501de549","mode":"v2","name":"unknown-tree-control","output_sha256":"f5825e694b8415eab621dd7d68fa7a05b786be4f21268a643fde1f4e7a096782","runtime_observed":false,"source_sha256":"70a8b998add0056d31fb13de373735bf86fba4a09e9f81f4eb64974c4b58d98b"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"7b1876395324bb9105fd13bb91dedd8490cb2207f53854a6ec8e4c2201f4669a","mode":"legacy","name":"unknown-tree","output_sha256":"26b5a2a7af3ec5297860d411ccdfaacad074e373cf9941e41e0c3202b1f0bda5","runtime_observed":false,"source_sha256":"847ca1a91da033f2d684215067bf42495907c3413346fc2dc9cf282d1f8ef1a1"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"7b1876395324bb9105fd13bb91dedd8490cb2207f53854a6ec8e4c2201f4669a","mode":"v2","name":"unknown-tree","output_sha256":"26b5a2a7af3ec5297860d411ccdfaacad074e373cf9941e41e0c3202b1f0bda5","runtime_observed":false,"source_sha256":"3a208e28fdf135277214c757857516fb96d63ebd94d313b20b3252684a34b6a8"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"7b1876395324bb9105fd13bb91dedd8490cb2207f53854a6ec8e4c2201f4669a","mode":"legacy","name":"unknown-tree","output_sha256":"26b5a2a7af3ec5297860d411ccdfaacad074e373cf9941e41e0c3202b1f0bda5","runtime_observed":false,"source_sha256":"752964288e566e17f6af36e524eb321872159c2ac4242579d6c7ff1574104422"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"7b1876395324bb9105fd13bb91dedd8490cb2207f53854a6ec8e4c2201f4669a","mode":"v2","name":"unknown-tree","output_sha256":"26b5a2a7af3ec5297860d411ccdfaacad074e373cf9941e41e0c3202b1f0bda5","runtime_observed":false,"source_sha256":"676e9fade6e63e553656b916dad0b22d543032edc4b6e861a206fe7c317d05af"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"a021a7a74ce822e24ac6b66451d521d89db6239f29a2033235e52ef1e2e9d9f0","mode":"legacy","name":"unknown-tree","output_sha256":"26b5a2a7af3ec5297860d411ccdfaacad074e373cf9941e41e0c3202b1f0bda5","runtime_observed":false,"source_sha256":"847ca1a91da033f2d684215067bf42495907c3413346fc2dc9cf282d1f8ef1a1"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"a021a7a74ce822e24ac6b66451d521d89db6239f29a2033235e52ef1e2e9d9f0","mode":"v2","name":"unknown-tree","output_sha256":"26b5a2a7af3ec5297860d411ccdfaacad074e373cf9941e41e0c3202b1f0bda5","runtime_observed":false,"source_sha256":"3a208e28fdf135277214c757857516fb96d63ebd94d313b20b3252684a34b6a8"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"a021a7a74ce822e24ac6b66451d521d89db6239f29a2033235e52ef1e2e9d9f0","mode":"legacy","name":"unknown-tree","output_sha256":"26b5a2a7af3ec5297860d411ccdfaacad074e373cf9941e41e0c3202b1f0bda5","runtime_observed":false,"source_sha256":"752964288e566e17f6af36e524eb321872159c2ac4242579d6c7ff1574104422"}
+=== RUN   TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"a021a7a74ce822e24ac6b66451d521d89db6239f29a2033235e52ef1e2e9d9f0","mode":"v2","name":"unknown-tree","output_sha256":"26b5a2a7af3ec5297860d411ccdfaacad074e373cf9941e41e0c3202b1f0bda5","runtime_observed":false,"source_sha256":"676e9fade6e63e553656b916dad0b22d543032edc4b6e861a206fe7c317d05af"}
+--- PASS: TestP15R01UnknownNativeFieldsRoundTrip (0.33s)
+    --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control (0.17s)
+        --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/1/hybrid/legacy (0.05s)
+        --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/1/hybrid/v2 (0.03s)
+        --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/1/lossless/legacy (0.02s)
+        --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/1/lossless/v2 (0.01s)
+        --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/2/hybrid/legacy (0.02s)
+        --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/2/hybrid/v2 (0.03s)
+        --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/2/lossless/legacy (0.00s)
+        --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/without_action_envelope_control/unknown-tree-control/2/lossless/v2 (0.00s)
+    --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/1/hybrid/legacy (0.04s)
+    --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/1/hybrid/v2 (0.03s)
+    --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/1/lossless/legacy (0.02s)
+    --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/1/lossless/v2 (0.01s)
+    --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/2/hybrid/legacy (0.03s)
+    --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/2/hybrid/v2 (0.02s)
+    --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/2/lossless/legacy (0.01s)
+    --- PASS: TestP15R01UnknownNativeFieldsRoundTrip/unknown-tree/2/lossless/v2 (0.01s)
+=== RUN   TestP15R02KnownNativeUnmodeledVariants
+=== RUN   TestP15R02KnownNativeUnmodeledVariants/known-future-variant/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":4,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"fc8107ae1067413b504debbac278b2434e5c2ce61ddaaa43f74e4918a8485461","mode":"legacy","name":"known-future-variant","output_sha256":"09ab0d782ea85e3f019cac7389010a5b8b89c5c5337732ae72aea4ba878e22ce","runtime_observed":false,"source_sha256":"c05e433d45c6f2a06d646bfe20af5a39a1afbbf1b085b009779e5512f1568d13"}
+=== RUN   TestP15R02KnownNativeUnmodeledVariants/known-future-variant/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":4,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"fc8107ae1067413b504debbac278b2434e5c2ce61ddaaa43f74e4918a8485461","mode":"v2","name":"known-future-variant","output_sha256":"09ab0d782ea85e3f019cac7389010a5b8b89c5c5337732ae72aea4ba878e22ce","runtime_observed":false,"source_sha256":"54f59963d3f1cdfd4de321fe798cece9ec661af2534a5acdac942e2a25d06d78"}
+=== RUN   TestP15R02KnownNativeUnmodeledVariants/known-future-variant/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":4,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"fc8107ae1067413b504debbac278b2434e5c2ce61ddaaa43f74e4918a8485461","mode":"legacy","name":"known-future-variant","output_sha256":"09ab0d782ea85e3f019cac7389010a5b8b89c5c5337732ae72aea4ba878e22ce","runtime_observed":false,"source_sha256":"0584a54ab4be4190f20c91b1dce111462bf5c3febfbfe98df96afc57884e468c"}
+=== RUN   TestP15R02KnownNativeUnmodeledVariants/known-future-variant/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":4,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"fc8107ae1067413b504debbac278b2434e5c2ce61ddaaa43f74e4918a8485461","mode":"v2","name":"known-future-variant","output_sha256":"09ab0d782ea85e3f019cac7389010a5b8b89c5c5337732ae72aea4ba878e22ce","runtime_observed":false,"source_sha256":"46991586f8837d7f7f7f6f61f0514ab1e234e6d2aa9421e9d555baa53da6db76"}
+--- PASS: TestP15R02KnownNativeUnmodeledVariants (0.10s)
+    --- PASS: TestP15R02KnownNativeUnmodeledVariants/known-future-variant/1/hybrid/legacy (0.05s)
+    --- PASS: TestP15R02KnownNativeUnmodeledVariants/known-future-variant/1/hybrid/v2 (0.03s)
+    --- PASS: TestP15R02KnownNativeUnmodeledVariants/known-future-variant/1/lossless/legacy (0.02s)
+    --- PASS: TestP15R02KnownNativeUnmodeledVariants/known-future-variant/1/lossless/v2 (0.00s)
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields/property-future-fields/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"0824db576937b809772322b8443c376ab6bb9da12ea680e63407cfe55c0b1d6c","mode":"legacy","name":"property-future-fields","output_sha256":"7a0742d91ec9b85ceedfc8c115ae38c3d917430f0f1560c182c0c336763e9214","runtime_observed":false,"source_sha256":"c47542221f657f6b1c13bfbd9b54f5f77e97f989e2c568b6e6eaef25d375b094"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields/property-future-fields/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"0824db576937b809772322b8443c376ab6bb9da12ea680e63407cfe55c0b1d6c","mode":"v2","name":"property-future-fields","output_sha256":"7a0742d91ec9b85ceedfc8c115ae38c3d917430f0f1560c182c0c336763e9214","runtime_observed":false,"source_sha256":"8b34929eab2b28bfdcfdc0ec85e2e8f01b1d58367192142c46a6d286745d6681"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields/property-future-fields/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"0824db576937b809772322b8443c376ab6bb9da12ea680e63407cfe55c0b1d6c","mode":"legacy","name":"property-future-fields","output_sha256":"7a0742d91ec9b85ceedfc8c115ae38c3d917430f0f1560c182c0c336763e9214","runtime_observed":false,"source_sha256":"28c2bd86648b14b8fbc30965595bcc9d1b0d2351fb4edbf50d277a284bb10977"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields/property-future-fields/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"0824db576937b809772322b8443c376ab6bb9da12ea680e63407cfe55c0b1d6c","mode":"v2","name":"property-future-fields","output_sha256":"7a0742d91ec9b85ceedfc8c115ae38c3d917430f0f1560c182c0c336763e9214","runtime_observed":false,"source_sha256":"a7cec4497b5384ba5ced1fb827123461be7698ad88fb2a25b7c5e029ceca6524"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/coercion
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/coercion/coercion/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"1cfaeeb7980bdd6f7f2cb972f834ae40fe7f888d34242cd42f1aed187874c7bf","mode":"legacy","name":"coercion","output_sha256":"1470f8755d22f48bf094b1b6e5a195af51a9855b9583a138ef4b5078c2fe3a16","runtime_observed":false,"source_sha256":"64a6f4246015c3359f248e8132efd3c96808f1334674f436742c17c4e5c1d494"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/coercion/coercion/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"1cfaeeb7980bdd6f7f2cb972f834ae40fe7f888d34242cd42f1aed187874c7bf","mode":"v2","name":"coercion","output_sha256":"1470f8755d22f48bf094b1b6e5a195af51a9855b9583a138ef4b5078c2fe3a16","runtime_observed":false,"source_sha256":"e740a2ddab4d43c2dcd9e33be6933261378383d42c7bdc828b1a63674461e6d6"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/coercion/coercion/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"1cfaeeb7980bdd6f7f2cb972f834ae40fe7f888d34242cd42f1aed187874c7bf","mode":"legacy","name":"coercion","output_sha256":"1470f8755d22f48bf094b1b6e5a195af51a9855b9583a138ef4b5078c2fe3a16","runtime_observed":false,"source_sha256":"40d9b6c1f66edd5f0bd85fb2fe1f4ce3cd335d97f99197ca24e7727cfe9b7b0b"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/coercion/coercion/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"1cfaeeb7980bdd6f7f2cb972f834ae40fe7f888d34242cd42f1aed187874c7bf","mode":"v2","name":"coercion","output_sha256":"1470f8755d22f48bf094b1b6e5a195af51a9855b9583a138ef4b5078c2fe3a16","runtime_observed":false,"source_sha256":"4859fbfeea0bcb5a2abfb47a93a935adfb8eb6032e9b12a0c2413e16874d6e24"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property/property/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"544b2abf4a26d2de1c3b5c8d9cda4d420c295b450db923b967c14da3bbaabaaf","mode":"legacy","name":"property","output_sha256":"5eff78a14d4b84bebca0963174404c5cefa598c7b3c961bd982c003fd527b756","runtime_observed":false,"source_sha256":"9ad86690bd23a552b6956b51c1b60fdd966e082c2d5dae3697102fc076979681"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property/property/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"544b2abf4a26d2de1c3b5c8d9cda4d420c295b450db923b967c14da3bbaabaaf","mode":"v2","name":"property","output_sha256":"5eff78a14d4b84bebca0963174404c5cefa598c7b3c961bd982c003fd527b756","runtime_observed":false,"source_sha256":"ac1ae321b9896a2abe46712df55a432a52cd73b968e7382dbcd66f813a0484b0"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property/property/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"544b2abf4a26d2de1c3b5c8d9cda4d420c295b450db923b967c14da3bbaabaaf","mode":"legacy","name":"property","output_sha256":"5eff78a14d4b84bebca0963174404c5cefa598c7b3c961bd982c003fd527b756","runtime_observed":false,"source_sha256":"f0a6c6dc966d7d2715ca2ab5cdabf33e5f8d6c5c6c0cac2f61a3eb10c084b656"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/property/property/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"544b2abf4a26d2de1c3b5c8d9cda4d420c295b450db923b967c14da3bbaabaaf","mode":"v2","name":"property","output_sha256":"5eff78a14d4b84bebca0963174404c5cefa598c7b3c961bd982c003fd527b756","runtime_observed":false,"source_sha256":"d759cafeeb297a1cacf9fd19c1cac2e9ecc08742fa8a10f30b03df21d1ea28e0"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain/ordered-chain/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"e452a4c3bdc5a19c3dc6f2994512335ffc0b7e4affa29613191621293934a07f","mode":"legacy","name":"ordered-chain","output_sha256":"42145a710fb1c74f1087544111545a8fc95c2b1f2bcef5f7e13700eb7462f73d","runtime_observed":false,"source_sha256":"1f160f6a9855b386068dcfc66ebb32246b4564469bf486c0b33134b2540a6e0a"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain/ordered-chain/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"e452a4c3bdc5a19c3dc6f2994512335ffc0b7e4affa29613191621293934a07f","mode":"v2","name":"ordered-chain","output_sha256":"42145a710fb1c74f1087544111545a8fc95c2b1f2bcef5f7e13700eb7462f73d","runtime_observed":false,"source_sha256":"6822a46bb51fb6a822bd3ccc61f9eef86e63bf35706a4ab82432e1648eee2fd0"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain/ordered-chain/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"e452a4c3bdc5a19c3dc6f2994512335ffc0b7e4affa29613191621293934a07f","mode":"legacy","name":"ordered-chain","output_sha256":"42145a710fb1c74f1087544111545a8fc95c2b1f2bcef5f7e13700eb7462f73d","runtime_observed":false,"source_sha256":"7053ea9cff29a5e14a5aebf5d48d532be0cd4711d3ad9a5ebf103040cca51848"}
+=== RUN   TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain/ordered-chain/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":2,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"e452a4c3bdc5a19c3dc6f2994512335ffc0b7e4affa29613191621293934a07f","mode":"v2","name":"ordered-chain","output_sha256":"42145a710fb1c74f1087544111545a8fc95c2b1f2bcef5f7e13700eb7462f73d","runtime_observed":false,"source_sha256":"da27e7cde0db2927b878bc539068f648ea4ca7b97d5153287c07803d059e8285"}
+--- PASS: TestP15R03OrderedAggrandizementsRoundTrip (0.40s)
+    --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields (0.11s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields/property-future-fields/1/hybrid/legacy (0.04s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields/property-future-fields/1/hybrid/v2 (0.04s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields/property-future-fields/1/lossless/legacy (0.02s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property-future-fields/property-future-fields/1/lossless/v2 (0.01s)
+    --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/coercion (0.08s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/coercion/coercion/1/hybrid/legacy (0.03s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/coercion/coercion/1/hybrid/v2 (0.02s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/coercion/coercion/1/lossless/legacy (0.01s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/coercion/coercion/1/lossless/v2 (0.01s)
+    --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property (0.09s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property/property/1/hybrid/legacy (0.03s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property/property/1/hybrid/v2 (0.03s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property/property/1/lossless/legacy (0.02s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/property/property/1/lossless/v2 (0.00s)
+    --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain (0.12s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain/ordered-chain/1/hybrid/legacy (0.05s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain/ordered-chain/1/hybrid/v2 (0.03s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain/ordered-chain/1/lossless/legacy (0.02s)
+        --- PASS: TestP15R03OrderedAggrandizementsRoundTrip/ordered-chain/ordered-chain/1/lossless/v2 (0.02s)
+=== RUN   TestP15R04ImportedOmissionAndExplicitValues
+=== RUN   TestP15R04ImportedOmissionAndExplicitValues/omission-presence/1/hybrid/legacy
+
+Warning: Dead actions: Statement appears to be unreachable or does not loop as stop() was called outside of conditional. (10:1)
+
+
+Warning: Dead actions: Statement appears to be unreachable or does not loop as stop() was called outside of conditional. (10:1)
+
+
+Warning: Dead actions: Statement appears to be unreachable or does not loop as stop() was called outside of conditional. (10:1)
+
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":9,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"a5d87c1226317a351ab206ebe8014aa641e85363b38aaf4045f8249fbb79aae4","mode":"legacy","name":"omission-presence","output_sha256":"939b1062b9482792cb6f8775f067bddd997763fd88374ab4bfd493e8bfac5c18","runtime_observed":false,"source_sha256":"e17501261d47aa0d0faa87ce5af84ce1b9f3bf852f811f6a7d751d0115539e9b"}
+=== RUN   TestP15R04ImportedOmissionAndExplicitValues/omission-presence/1/hybrid/v2
+
+Warning: Dead actions: Statement appears to be unreachable or does not loop as stop() was called outside of conditional. (10:1)
+
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":9,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"a5d87c1226317a351ab206ebe8014aa641e85363b38aaf4045f8249fbb79aae4","mode":"v2","name":"omission-presence","output_sha256":"939b1062b9482792cb6f8775f067bddd997763fd88374ab4bfd493e8bfac5c18","runtime_observed":false,"source_sha256":"5d9e824730309b014ae094ce53d6b6668f3ed8b10a6d5716b6484e3bf6b3098f"}
+=== RUN   TestP15R04ImportedOmissionAndExplicitValues/omission-presence/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":9,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"a5d87c1226317a351ab206ebe8014aa641e85363b38aaf4045f8249fbb79aae4","mode":"legacy","name":"omission-presence","output_sha256":"939b1062b9482792cb6f8775f067bddd997763fd88374ab4bfd493e8bfac5c18","runtime_observed":false,"source_sha256":"193beb44fa62cc2d0243fc88a5bb9c44ab1eb9e5450256e84320935b49dca829"}
+=== RUN   TestP15R04ImportedOmissionAndExplicitValues/omission-presence/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":9,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"a5d87c1226317a351ab206ebe8014aa641e85363b38aaf4045f8249fbb79aae4","mode":"v2","name":"omission-presence","output_sha256":"939b1062b9482792cb6f8775f067bddd997763fd88374ab4bfd493e8bfac5c18","runtime_observed":false,"source_sha256":"ef79979e767ff6f061699cd084ec1f851338bba3b1d16325c56e6f1927a277f2"}
+--- PASS: TestP15R04ImportedOmissionAndExplicitValues (0.16s)
+    --- PASS: TestP15R04ImportedOmissionAndExplicitValues/omission-presence/1/hybrid/legacy (0.07s)
+    --- PASS: TestP15R04ImportedOmissionAndExplicitValues/omission-presence/1/hybrid/v2 (0.04s)
+    --- PASS: TestP15R04ImportedOmissionAndExplicitValues/omission-presence/1/lossless/legacy (0.02s)
+    --- PASS: TestP15R04ImportedOmissionAndExplicitValues/omission-presence/1/lossless/v2 (0.03s)
+=== RUN   TestP15V04CollectionAndOutputBindings
+=== RUN   TestP15V04CollectionAndOutputBindings/raw_number
+=== RUN   TestP15V04CollectionAndOutputBindings/false_to_true
+=== RUN   TestP15V04CollectionAndOutputBindings/nested_order
+=== RUN   TestP15V04CollectionAndOutputBindings/dangling_alias
+=== RUN   TestP15V04CollectionAndOutputBindings/reexecuted_origin
+--- PASS: TestP15V04CollectionAndOutputBindings (0.01s)
+    --- PASS: TestP15V04CollectionAndOutputBindings/raw_number (0.00s)
+    --- PASS: TestP15V04CollectionAndOutputBindings/false_to_true (0.00s)
+    --- PASS: TestP15V04CollectionAndOutputBindings/nested_order (0.00s)
+    --- PASS: TestP15V04CollectionAndOutputBindings/dangling_alias (0.00s)
+    --- PASS: TestP15V04CollectionAndOutputBindings/reexecuted_origin (0.00s)
+=== RUN   TestP15R05RawExportsAndInvalidBoundary
+=== RUN   TestP15R05RawExportsAndInvalidBoundary/let-export
+=== RUN   TestP15R05RawExportsAndInvalidBoundary/alias-export
+=== RUN   TestP15R05RawExportsAndInvalidBoundary/explicit-native-ref
+=== RUN   TestP15R05RawExportsAndInvalidBoundary/unused-missing-identity
+=== RUN   TestP15R05RawExportsAndInvalidBoundary/consumed-missing-identity
+=== RUN   TestP15R05RawExportsAndInvalidBoundary/consumed-ambiguous-identity
+--- PASS: TestP15R05RawExportsAndInvalidBoundary (0.01s)
+    --- PASS: TestP15R05RawExportsAndInvalidBoundary/let-export (0.00s)
+    --- PASS: TestP15R05RawExportsAndInvalidBoundary/alias-export (0.00s)
+    --- PASS: TestP15R05RawExportsAndInvalidBoundary/explicit-native-ref (0.00s)
+    --- PASS: TestP15R05RawExportsAndInvalidBoundary/unused-missing-identity (0.00s)
+    --- PASS: TestP15R05RawExportsAndInvalidBoundary/consumed-missing-identity (0.00s)
+    --- PASS: TestP15R05RawExportsAndInvalidBoundary/consumed-ambiguous-identity (0.00s)
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":5,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"359230b74d0314744d54b1bd87ace052ef267593d2d2709459018a62d85366f5","mode":"legacy","name":"opaque-region-export","output_sha256":"9acab1f9dc51663a3efe7e985e117f139e5cc53c218b62fa10295afd6880c732","runtime_observed":false,"source_sha256":"7d6dd053f49f454c2e65114f07d95f003576934bdec4b7e17dcd08530200a1b5"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":5,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"359230b74d0314744d54b1bd87ace052ef267593d2d2709459018a62d85366f5","mode":"v2","name":"opaque-region-export","output_sha256":"9acab1f9dc51663a3efe7e985e117f139e5cc53c218b62fa10295afd6880c732","runtime_observed":false,"source_sha256":"6d871297dd5bd4738d1eea1dc940524974b78636901cdc82e90f9807b7a350fa"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":5,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"359230b74d0314744d54b1bd87ace052ef267593d2d2709459018a62d85366f5","mode":"legacy","name":"opaque-region-export","output_sha256":"9acab1f9dc51663a3efe7e985e117f139e5cc53c218b62fa10295afd6880c732","runtime_observed":false,"source_sha256":"c9a0c5275c805cf2e3951117c32b5b7754f1d4c6417a7ca10c6f4b0aa02d9b0e"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":5,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"359230b74d0314744d54b1bd87ace052ef267593d2d2709459018a62d85366f5","mode":"v2","name":"opaque-region-export","output_sha256":"9acab1f9dc51663a3efe7e985e117f139e5cc53c218b62fa10295afd6880c732","runtime_observed":false,"source_sha256":"1bbda4e878cb6c1ddb14c19f6439780aa2b18a55adacbbb96982b9b403a4a137"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":5,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"0c425d9ce4efa0486b98ced6439acf4c0f389dd7d4b1979c31e1d0ef220e1cb4","mode":"legacy","name":"opaque-region-export","output_sha256":"9acab1f9dc51663a3efe7e985e117f139e5cc53c218b62fa10295afd6880c732","runtime_observed":false,"source_sha256":"7d6dd053f49f454c2e65114f07d95f003576934bdec4b7e17dcd08530200a1b5"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":5,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"0c425d9ce4efa0486b98ced6439acf4c0f389dd7d4b1979c31e1d0ef220e1cb4","mode":"v2","name":"opaque-region-export","output_sha256":"9acab1f9dc51663a3efe7e985e117f139e5cc53c218b62fa10295afd6880c732","runtime_observed":false,"source_sha256":"6d871297dd5bd4738d1eea1dc940524974b78636901cdc82e90f9807b7a350fa"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":5,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"0c425d9ce4efa0486b98ced6439acf4c0f389dd7d4b1979c31e1d0ef220e1cb4","mode":"legacy","name":"opaque-region-export","output_sha256":"9acab1f9dc51663a3efe7e985e117f139e5cc53c218b62fa10295afd6880c732","runtime_observed":false,"source_sha256":"c9a0c5275c805cf2e3951117c32b5b7754f1d4c6417a7ca10c6f4b0aa02d9b0e"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":5,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"0c425d9ce4efa0486b98ced6439acf4c0f389dd7d4b1979c31e1d0ef220e1cb4","mode":"v2","name":"opaque-region-export","output_sha256":"9acab1f9dc51663a3efe7e985e117f139e5cc53c218b62fa10295afd6880c732","runtime_observed":false,"source_sha256":"1bbda4e878cb6c1ddb14c19f6439780aa2b18a55adacbbb96982b9b403a4a137"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-invalid-existing-reference/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":6,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"ab3963c69c24540a48fe10192b6029ce4f1a1ce391715c9fe8ddcad3c726f174","mode":"legacy","name":"opaque-invalid-existing-reference","output_sha256":"ea14e7132c4c43c76ca7cfd902a4651fe59ec1b40f9fba27ad7c86a3af62e52b","runtime_observed":false,"source_sha256":"552fe90b4ec7ad10bd3b63fd8df58df787ab321c7892eddddbf87185d0177936"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-invalid-existing-reference/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":6,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"ab3963c69c24540a48fe10192b6029ce4f1a1ce391715c9fe8ddcad3c726f174","mode":"v2","name":"opaque-invalid-existing-reference","output_sha256":"ea14e7132c4c43c76ca7cfd902a4651fe59ec1b40f9fba27ad7c86a3af62e52b","runtime_observed":false,"source_sha256":"8f2004d427d7042e098f0ee308a55c3c27ccab7d3fd1278916cca7ee324bcf8a"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-invalid-existing-reference/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":6,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"ab3963c69c24540a48fe10192b6029ce4f1a1ce391715c9fe8ddcad3c726f174","mode":"legacy","name":"opaque-invalid-existing-reference","output_sha256":"ea14e7132c4c43c76ca7cfd902a4651fe59ec1b40f9fba27ad7c86a3af62e52b","runtime_observed":false,"source_sha256":"6a99a856fcb9ca689c28e2504dda11152e4bb23852e008d49b3bf180999036b7"}
+=== RUN   TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-invalid-existing-reference/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":6,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"ab3963c69c24540a48fe10192b6029ce4f1a1ce391715c9fe8ddcad3c726f174","mode":"v2","name":"opaque-invalid-existing-reference","output_sha256":"ea14e7132c4c43c76ca7cfd902a4651fe59ec1b40f9fba27ad7c86a3af62e52b","runtime_observed":false,"source_sha256":"d45e50c32eddca2d6ac4c1803713601ff37c6941480d6d014f4ab17e8b1f4045"}
+--- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback (0.30s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/1/hybrid/legacy (0.05s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/1/hybrid/v2 (0.05s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/1/lossless/legacy (0.00s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/1/lossless/v2 (0.02s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/2/hybrid/legacy (0.03s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/2/hybrid/v2 (0.02s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/2/lossless/legacy (0.00s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-region-export/2/lossless/v2 (0.00s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-invalid-existing-reference/1/hybrid/legacy (0.04s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-invalid-existing-reference/1/hybrid/v2 (0.04s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-invalid-existing-reference/1/lossless/legacy (0.02s)
+    --- PASS: TestP15R05OpaqueRegionsAndWorkflowFallback/opaque-invalid-existing-reference/1/lossless/v2 (0.02s)
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_"left"_&&_!(right_beginsWith_"x")
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_"left"_&&_!(right_beginsWith_"x")
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_"left"_||_!(right_endsWith_"x")
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_"left"_||_!(right_endsWith_"x")
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_"left"_&&_!isTrue(flag)
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_"left"_&&_!isTrue(flag)
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_"left"_&&_!isFalse(flag)
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_"left"_&&_!isFalse(flag)
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/!isToday(CurrentDate)
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isToday(CurrentDate)
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/!isBetween(n,_1,_3)
+=== RUN   TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isBetween(n,_1,_3)
+--- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues (0.02s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_"left"_&&_!(right_beginsWith_"x") (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_"left"_&&_!(right_beginsWith_"x") (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_"left"_||_!(right_endsWith_"x") (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_"left"_||_!(right_endsWith_"x") (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_"left"_&&_!isTrue(flag) (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_"left"_&&_!isTrue(flag) (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/left_==_"left"_&&_!isFalse(flag) (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_left_==_"left"_&&_!isFalse(flag) (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/!isToday(CurrentDate) (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isToday(CurrentDate) (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/!isBetween(n,_1,_3) (0.00s)
+    --- PASS: TestP15F01NegatedComputedPredicatesUseBooleanValues/modern:_!isBetween(n,_1,_3) (0.00s)
+=== RUN   TestP15F01PredicateValuesRemainTypedAndLazy
+--- PASS: TestP15F01PredicateValuesRemainTypedAndLazy (0.01s)
+=== RUN   TestP15F01NegatedAuthoredPredicatesInImportedWorkflow
+--- PASS: TestP15F01NegatedAuthoredPredicatesInImportedWorkflow (0.02s)
+=== RUN   TestP15NumericListRetainsNativeNumbers
+=== RUN   TestP15NumericListRetainsNativeNumbers/explicit_reference_control
+=== RUN   TestP15NumericListRetainsNativeNumbers/immutable
+=== RUN   TestP15NumericListRetainsNativeNumbers/mutable
+=== RUN   TestP15NumericListRetainsNativeNumbers/assignment
+--- PASS: TestP15NumericListRetainsNativeNumbers (0.00s)
+    --- PASS: TestP15NumericListRetainsNativeNumbers/explicit_reference_control (0.00s)
+    --- PASS: TestP15NumericListRetainsNativeNumbers/immutable (0.00s)
+    --- PASS: TestP15NumericListRetainsNativeNumbers/mutable (0.00s)
+    --- PASS: TestP15NumericListRetainsNativeNumbers/assignment (0.00s)
+=== RUN   TestP15NumericListSyntheticOutputNamesAreStable
+--- PASS: TestP15NumericListSyntheticOutputNamesAreStable (0.00s)
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/raw_number
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/missing_uuid
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/text_coercion
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/duplicate_reference
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/wrong_producer
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/wrong_output_name
+--- PASS: TestP15NumericListOracleRejectsNativeRowCorruption (0.01s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/raw_number (0.00s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/missing_uuid (0.00s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/text_coercion (0.00s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/duplicate_reference (0.00s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/wrong_producer (0.00s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/wrong_output_name (0.00s)
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/missing_authored_clear_target
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/empty_becomes_singleton
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/direct_count_uses_Repeat_result
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/collected_count_uses_input
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/authored_clearing_Nothing_replaced
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/authored_clear_gains_prior_input
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/clearing_Nothing_replaced
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/clear_gains_prior_input
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Count_redirected
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Repeat_group_changed
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/singleton_empty_Text_removed
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/empty_List_loses_producer_UUID
+--- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph (0.01s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/missing_authored_clear_target (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/empty_becomes_singleton (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/direct_count_uses_Repeat_result (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/collected_count_uses_input (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/authored_clearing_Nothing_replaced (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/authored_clear_gains_prior_input (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/clearing_Nothing_replaced (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/clear_gains_prior_input (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Count_redirected (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Repeat_group_changed (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/singleton_empty_Text_removed (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/empty_List_loses_producer_UUID (0.00s)
+=== RUN   TestP15RuntimeDiagnosticFileBytesGraph
+--- PASS: TestP15RuntimeDiagnosticFileBytesGraph (0.00s)
+=== RUN   TestP15RuntimeDiagnosticIfResultLetVarSplit
+--- PASS: TestP15RuntimeDiagnosticIfResultLetVarSplit (0.00s)
+=== RUN   TestP15F01LocalRuntimeWrapperPreservesCounterProof
+    p15_short_circuit_local_harness_test.go:131: standalone=79, wrapped=91 native actions; signed runtime remains open
+--- PASS: TestP15F01LocalRuntimeWrapperPreservesCounterProof (0.03s)
+=== RUN   TestP15F01LocalCounterFixtureNativeGraph
+    p15_short_circuit_local_test.go:314: production native graph: 79 actions; expected signed result P15_F01_LOCAL_OK:calls=1; runtime not asserted
+--- PASS: TestP15F01LocalCounterFixtureNativeGraph (0.00s)
+=== RUN   TestP15F01LocalCounterOracleRejectsMutations
+=== RUN   TestP15F01LocalCounterOracleRejectsMutations/eager_rhs
+=== RUN   TestP15F01LocalCounterOracleRejectsMutations/wrong_increment
+=== RUN   TestP15F01LocalCounterOracleRejectsMutations/crosswired_store
+=== RUN   TestP15F01LocalCounterOracleRejectsMutations/missing_control
+=== RUN   TestP15F01LocalCounterOracleRejectsMutations/external_target
+=== RUN   TestP15F01LocalCounterOracleRejectsMutations/hidden_counter
+=== RUN   TestP15F01LocalCounterOracleRejectsMutations/wrong_success_marker
+--- PASS: TestP15F01LocalCounterOracleRejectsMutations (0.01s)
+    --- PASS: TestP15F01LocalCounterOracleRejectsMutations/eager_rhs (0.00s)
+    --- PASS: TestP15F01LocalCounterOracleRejectsMutations/wrong_increment (0.00s)
+    --- PASS: TestP15F01LocalCounterOracleRejectsMutations/crosswired_store (0.00s)
+    --- PASS: TestP15F01LocalCounterOracleRejectsMutations/missing_control (0.00s)
+    --- PASS: TestP15F01LocalCounterOracleRejectsMutations/external_target (0.00s)
+    --- PASS: TestP15F01LocalCounterOracleRejectsMutations/hidden_counter (0.00s)
+    --- PASS: TestP15F01LocalCounterOracleRejectsMutations/wrong_success_marker (0.00s)
+=== RUN   TestP15F01StatementAndExpressionGuardRHS
+=== RUN   TestP15F01StatementAndExpressionGuardRHS/and_statement
+=== RUN   TestP15F01StatementAndExpressionGuardRHS/or_statement
+=== RUN   TestP15F01StatementAndExpressionGuardRHS/and_comparison
+=== RUN   TestP15F01StatementAndExpressionGuardRHS/or_comparison
+=== RUN   TestP15F01StatementAndExpressionGuardRHS/and_expression
+=== RUN   TestP15F01StatementAndExpressionGuardRHS/or_expression
+=== RUN   TestP15F01StatementAndExpressionGuardRHS/mixed_statement
+--- PASS: TestP15F01StatementAndExpressionGuardRHS (0.01s)
+    --- PASS: TestP15F01StatementAndExpressionGuardRHS/and_statement (0.00s)
+    --- PASS: TestP15F01StatementAndExpressionGuardRHS/or_statement (0.00s)
+    --- PASS: TestP15F01StatementAndExpressionGuardRHS/and_comparison (0.00s)
+    --- PASS: TestP15F01StatementAndExpressionGuardRHS/or_comparison (0.00s)
+    --- PASS: TestP15F01StatementAndExpressionGuardRHS/and_expression (0.00s)
+    --- PASS: TestP15F01StatementAndExpressionGuardRHS/or_expression (0.00s)
+    --- PASS: TestP15F01StatementAndExpressionGuardRHS/mixed_statement (0.00s)
+=== RUN   TestP15F01StaticSkipsMissingTarget
+--- PASS: TestP15F01StaticSkipsMissingTarget (0.00s)
+=== RUN   TestP15F01BooleanStatementUsesValueNotPresence
+--- PASS: TestP15F01BooleanStatementUsesValueNotPresence (0.00s)
+=== RUN   TestP15F01GuardOracleRejectsMutations
+--- PASS: TestP15F01GuardOracleRejectsMutations (0.00s)
+=== RUN   TestP15F01RuntimeFixtureCompiles
+--- PASS: TestP15F01RuntimeFixtureCompiles (0.02s)
+PASS
+ok  	github.com/electrikmilk/cherri	16.044s

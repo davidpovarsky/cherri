@@ -1,0 +1,76 @@
+=== RUN   TestP15EmptyListRuntimeBindings
+=== RUN   TestP15EmptyListRuntimeBindings/immutable
+    p15_empty_list_test.go:107: empty output uses is.workflow.actions.list, not the existing cleared-variable bridge
+=== RUN   TestP15EmptyListRuntimeBindings/mutable
+    p15_empty_list_test.go:107: empty assignment inherited a producer
+=== RUN   TestP15EmptyListRuntimeBindings/assignment
+    p15_empty_list_test.go:107: empty assignment inherited a producer
+=== RUN   TestP15EmptyListRuntimeBindings/snapshot
+    p15_empty_list_test.go:107: empty assignment inherited a producer
+--- FAIL: TestP15EmptyListRuntimeBindings (0.02s)
+    --- FAIL: TestP15EmptyListRuntimeBindings/immutable (0.01s)
+    --- FAIL: TestP15EmptyListRuntimeBindings/mutable (0.00s)
+    --- FAIL: TestP15EmptyListRuntimeBindings/assignment (0.00s)
+    --- FAIL: TestP15EmptyListRuntimeBindings/snapshot (0.00s)
+=== RUN   TestP15EmptyListCollectInput
+=== RUN   TestP15EmptyListCollectInput/direct
+    p15_empty_list_test.go:139: empty output uses is.workflow.actions.list, not the existing cleared-variable bridge
+=== RUN   TestP15EmptyListCollectInput/bound
+    p15_empty_list_test.go:139: empty output uses is.workflow.actions.list, not the existing cleared-variable bridge
+=== RUN   TestP15EmptyListCollectInput/mutable
+    p15_empty_list_test.go:139: empty assignment inherited a producer
+--- FAIL: TestP15EmptyListCollectInput (0.00s)
+    --- FAIL: TestP15EmptyListCollectInput/direct (0.00s)
+    --- FAIL: TestP15EmptyListCollectInput/bound (0.00s)
+    --- FAIL: TestP15EmptyListCollectInput/mutable (0.00s)
+=== RUN   TestP15EmptyListDoesNotCollapseEmptyText
+--- PASS: TestP15EmptyListDoesNotCollapseEmptyText (0.00s)
+=== RUN   TestP15EmptyListIndependentIdentity
+    p15_empty_list_test.go:185: empty output uses is.workflow.actions.list, not the existing cleared-variable bridge
+--- FAIL: TestP15EmptyListIndependentIdentity (0.00s)
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"d83fcd862d10f1656639bf6bfe0a0b9b53a3ad85aaa046a9deed4f3207b9a9e0"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"487edd5a1255e0344c3ce43ae1e1f9f28b1918a1aee2cf4beb6e6c05d8430519"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"6294a3f550824d8e40a458681eb7f695904ef5f87dd47f3ec7fd655a0864247f"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"fbe39a5a19fda04f5387ad590eea0a245f817c54bff2829ccaab4ffc8af4d22c"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"d83fcd862d10f1656639bf6bfe0a0b9b53a3ad85aaa046a9deed4f3207b9a9e0"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"487edd5a1255e0344c3ce43ae1e1f9f28b1918a1aee2cf4beb6e6c05d8430519"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"6294a3f550824d8e40a458681eb7f695904ef5f87dd47f3ec7fd655a0864247f"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"fbe39a5a19fda04f5387ad590eea0a245f817c54bff2829ccaab4ffc8af4d22c"}
+--- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged (0.12s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/legacy (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/v2 (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/legacy (0.00s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/v2 (0.00s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/legacy (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/v2 (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/legacy (0.00s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/v2 (0.01s)
+=== RUN   TestP15EmptyListOracleRejectsCorruption
+    p15_empty_list_test.go:235: empty output uses is.workflow.actions.list, not the existing cleared-variable bridge
+--- FAIL: TestP15EmptyListOracleRejectsCorruption (0.00s)
+=== RUN   TestP15EmptyListSignedFixtureSourceRemainsStrict
+--- PASS: TestP15EmptyListSignedFixtureSourceRemainsStrict (0.00s)
+=== RUN   TestP15EmptyListAttachmentOnlyArgumentBoundary
+--- PASS: TestP15EmptyListAttachmentOnlyArgumentBoundary (0.00s)
+=== RUN   TestP15EmptyListExistingLegacyClearControl
+--- PASS: TestP15EmptyListExistingLegacyClearControl (0.00s)
+=== RUN   TestP15EmptyListReturnAndYield
+=== RUN   TestP15EmptyListReturnAndYield/return
+    p15_empty_list_test.go:326: empty output uses is.workflow.actions.list, not the existing cleared-variable bridge
+=== RUN   TestP15EmptyListReturnAndYield/yield
+    p15_empty_list_test.go:334: empty Yield still emits native List[]
+--- FAIL: TestP15EmptyListReturnAndYield (0.00s)
+    --- FAIL: TestP15EmptyListReturnAndYield/return (0.00s)
+    --- FAIL: TestP15EmptyListReturnAndYield/yield (0.00s)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.368s
+FAIL

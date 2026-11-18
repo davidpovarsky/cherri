@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 1,
+  "sourceSha": "d61b59b9d1589a06b75fa7b545370b925337f8c7",
+  "sourceKind": "normal local shared Git clone, detached immutable commit",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "finishedAt": "2026-11-18T20:52:52.368241+00:00",
+  "steps": [
+    {
+      "name": "clone",
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "<owned-checkout>",
+        "<clean-source>"
+      ],
+      "startedAt": "2026-11-18T20:52:12.970498+00:00",
+      "durationSeconds": 0.328,
+      "exitCode": 0,
+      "logSha256": "adf7baf8c359084b1cbaec241495003da4d7b53d910b7e0558a031a20130ef49"
+    },
+    {
+      "name": "line-endings",
+      "command": [
+        "git",
+        "config",
+        "core.autocrlf",
+        "false"
+      ],
+      "startedAt": "2026-11-18T20:52:13.298782+00:00",
+      "durationSeconds": 0.079,
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "checkout",
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "d61b59b9d1589a06b75fa7b545370b925337f8c7"
+      ],
+      "startedAt": "2026-11-18T20:52:13.381106+00:00",
+      "durationSeconds": 2.828,
+      "exitCode": 0,
+      "logSha256": "090c530584694d3e0a3a15c51650c0d38a45392d4683428b9fbf48094c533c29"
+    },
+    {
+      "name": "contract",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-run",
+        "^TestP15(EmptyList|RuntimeDiagnostic|Collect)",
+        "-v",
+        "."
+      ],
+      "startedAt": "2026-11-18T20:52:16.343349+00:00",
+      "durationSeconds": 16.047,
+      "exitCode": 0,
+      "logSha256": "2be00a46f51b5d34b28b7af124b7c0bd520ebf391ef815be2cdfc6678d8d50ce"
+    },
+    {
+      "name": "lower",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "./internal/language/lower"
+      ],
+      "startedAt": "2026-11-18T20:52:32.387446+00:00",
+      "durationSeconds": 3.61,
+      "exitCode": 0,
+      "logSha256": "44cbaff0baafccdf3bdea2d228f94fb9833774ec6f9ae8f32d981d0ebdab4fd7"
+    },
+    {
+      "name": "build",
+      "command": [
+        "go",
+        "build",
+        "-buildvcs=true",
+        "-trimpath",
+        "-o",
+        "<owned-checkout>\\artifacts\\empty-list-66b507a\\clean-d61b59b-clone\\cherri.exe",
+        "."
+      ],
+      "startedAt": "2026-11-18T20:52:36.004508+00:00",
+      "durationSeconds": 14.765,
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "buildinfo",
+      "command": [
+        "go",
+        "version",
+        "-m",
+        "<owned-checkout>\\artifacts\\empty-list-66b507a\\clean-d61b59b-clone\\cherri.exe"
+      ],
+      "startedAt": "2026-11-18T20:52:50.766995+00:00",
+      "durationSeconds": 0.313,
+      "exitCode": 0,
+      "logSha256": "9a9f81cdbfc39a2291a6064172330c1066978a09244cf0a5cac7276fde73d33b"
+    },
+    {
+      "name": "qa-collect-empty-split-v2",
+      "command": [
+        "<owned-checkout>\\artifacts\\empty-list-66b507a\\clean-d61b59b-clone\\cherri.exe",
+        "compile",
+        "tools\\shortcuts-simulator-qa\\fixtures\\qa-collect-empty-split-v2.cherri",
+        "--output=<owned-checkout>\\artifacts\\empty-list-66b507a\\clean-d61b59b-clone\\qa-collect-empty-split-v2.shortcut",
+        "--skip-sign",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi",
+        "--mode=v2"
+      ],
+      "startedAt": "2026-11-18T20:52:51.410076+00:00",
+      "durationSeconds": 0.328,
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "qa-collect-counts-v2",
+      "command": [
+        "<owned-checkout>\\artifacts\\empty-list-66b507a\\clean-d61b59b-clone\\cherri.exe",
+        "compile",
+        "tools\\shortcuts-simulator-qa\\fixtures\\qa-collect-counts-v2.cherri",
+        "--output=<owned-checkout>\\artifacts\\empty-list-66b507a\\clean-d61b59b-clone\\qa-collect-counts-v2.shortcut",
+        "--skip-sign",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi",
+        "--mode=v2"
+      ],
+      "startedAt": "2026-11-18T20:52:51.847320+00:00",
+      "durationSeconds": 0.063,
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "qa-collect-counts-legacy",
+      "command": [
+        "<owned-checkout>\\artifacts\\empty-list-66b507a\\clean-d61b59b-clone\\cherri.exe",
+        "compile",
+        "tools\\shortcuts-simulator-qa\\fixtures\\qa-collect-counts-legacy.cherri",
+        "--output=<owned-checkout>\\artifacts\\empty-list-66b507a\\clean-d61b59b-clone\\qa-collect-counts-legacy.shortcut",
+        "--skip-sign",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi",
+        "--legacy"
+      ],
+      "startedAt": "2026-11-18T20:52:52.026901+00:00",
+      "durationSeconds": 0.078,
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "binarySha256": "814814e56f50624a90da59e17e6e8ab3d0fcba66916c0fe436de74364196705c",
+  "buildInfo": "<owned-checkout>\\artifacts\\empty-list-66b507a\\clean-d61b59b-clone\\cherri.exe: go1.25.6\n\tpath\tgithub.com/electrikmilk/cherri\n\tmod\tgithub.com/electrikmilk/cherri\tv1.3.3-0.20261118204829-d61b59b9d158\t\n\tdep\tdario.cat/mergo\tv1.0.2\th1:85+piFYR1tMbRrLcDwR18y4UKJ3aH1Tbzi24VRW1TK8=\n\tdep\tgithub.com/Microsoft/go-winio\tv0.6.2\th1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=\n\tdep\tgithub.com/ProtonMail/go-crypto\tv1.3.0\th1:ILq8+Sf5If5DCpHQp4PbZdS1J7HDFRXz/+xKBiRGFrw=\n\tdep\tgithub.com/cloudflare/circl\tv1.6.1\th1:zqIqSPIndyBh1bjLVVDHMPpVKqp8Su/V+6MeDzzQBQ0=\n\tdep\tgithub.com/cyphar/filepath-securejoin\tv0.5.1\th1:eYgfMq5yryL4fbWfkLpFFy2ukSELzaJOTaUTuh+oF48=\n\tdep\tgithub.com/dustin/go-humanize\tv1.0.1\th1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=\n\tdep\tgithub.com/electrikmilk/args-parser\tv1.1.3\th1:66xFYBDmsO3mZvIM1ThO/AV/3zTRwfE45A21akaQ1Zc=\n\tdep\tgithub.com/emirpasic/gods\tv1.18.1\th1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=\n\tdep\tgithub.com/glebarez/go-sqlite\tv1.22.0\th1:uAcMJhaA6r3LHMTFgP0SifzgXg46yJkgxqyuyec+ruQ=\n\tdep\tgithub.com/go-git/gcfg\tv1.5.1-0.20230307220236-3a3c6141e376\th1:+zs/tPmkDkHx3U66DAb0lQFJrpS6731Oaa12ikc+DiI=\n\tdep\tgithub.com/go-git/go-billy/v5\tv5.6.2\th1:6Q86EsPXMa7c3YZ3aLAQsMA0VlWmy43r6FHqa/UNbRM=\n\tdep\tgithub.com/go-git/go-git/v5\tv5.16.3\th1:Z8BtvxZ09bYm/yYNgPKCzgWtaRqDTgIKRgIRHBfU6Z8=\n\tdep\tgithub.com/golang/groupcache\tv0.0.0-20241129210726-2c02b8208cf8\th1:f+oWsMOmNPc8JmEHVZIycC7hBoQxHH9pNKQORJNozsQ=\n\tdep\tgithub.com/google/uuid\tv1.6.0\th1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=\n\tdep\tgithub.com/jbenet/go-context\tv0.0.0-20150711004518-d14ea06fba99\th1:BQSFePA1RWJOlocH6Fxy8MmwDt+yVQYULKfN0RoTN8A=\n\tdep\tgithub.com/kevinburke/ssh_config\tv1.4.0\th1:6xxtP5bZ2E4NF5tuQulISpTO2z8XbtH8cg1PWkxoFkQ=\n\tdep\tgithub.com/klauspost/cpuid/v2\tv2.3.0\th1:S4CRMLnYUhGeDFDqkGriYKdfoFlDnMtqTiI/sFzhA9Y=\n\tdep\tgithub.com/mattn/go-isatty\tv0.0.20\th1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=\n\tdep\tgithub.com/pjbgf/sha1cd\tv0.5.0\th1:a+UkboSi1znleCDUNT3M5YxjOnN1fz2FhN48FlwCxs0=\n\tdep\tgithub.com/remyoudompheng/bigfft\tv0.0.0-20230129092748-24d4a6f8daec\th1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=\n\tdep\tgithub.com/sergi/go-diff\tv1.4.0\th1:n/SP9D5ad1fORl+llWyN+D6qoUETXNZARKjyY2/KVCw=\n\tdep\tgithub.com/skeema/knownhosts\tv1.3.2\th1:EDL9mgf4NzwMXCTfaxSD/o/a5fxDw/xL9nkU28JjdBg=\n\tdep\tgithub.com/xanzy/ssh-agent\tv0.3.3\th1:+/15pJfg/RsTxqYcX6fHqOXZwwMP+2VyYWJeWM2qQFM=\n\tdep\tgolang.org/x/crypto\tv0.43.0\th1:dduJYIi3A3KOfdGOHX8AVZ/jGiyPa3IbBozJ5kNuE04=\n\tdep\tgolang.org/x/net\tv0.46.0\th1:giFlY12I07fugqwPuWJi68oOnpfqFnJIJzaIIm2JVV4=\n\tdep\tgolang.org/x/sys\tv0.37.0\th1:fdNQudmxPjkdUTPnLn5mdQv7Zwvbvpaxqs831goi9kQ=\n\tdep\tgopkg.in/warnings.v0\tv0.1.2\th1:wFXVbFY8DY5/xOe1ECiWdKCzZlxgshcYVNkBHstARME=\n\tdep\thowett.net/plist\tv1.0.1\th1:37GdZ8tP09Q35o9ych3ehygcsL+HqKSwzctveSlarvM=\n\tdep\tmodernc.org/libc\tv1.37.6\th1:orZH3c5wmhIQFTXF+Nt+eeauyd+ZIt2BX6ARe+kD+aw=\n\tdep\tmodernc.org/mathutil\tv1.6.0\th1:fRe9+AmYlaej+64JsEEhoWuAYBkOtQiMEU7n/XgfYi4=\n\tdep\tmodernc.org/memory\tv1.7.2\th1:Klh90S215mmH8c9gO98QxQFsY+W451E8AnzjoE2ee1E=\n\tdep\tmodernc.org/sqlite\tv1.28.0\th1:Zx+LyDDmXczNnEQdvPuEfcFVA2ZPyaD7UCZDjef3BHQ=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=containermaxprocs=0,decoratemappings=0,tlssha1=1,updatemaxprocs=0,x509sha256skid=0\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=amd64\n\tbuild\tGOOS=windows\n\tbuild\tGOAMD64=v1\n\tbuild\tvcs=git\n\tbuild\tvcs.revision=d61b59b9d1589a06b75fa7b545370b925337f8c7\n\tbuild\tvcs.time=2026-11-18T20:48:29Z\n\tbuild\tvcs.modified=false\n",
+  "vcsRevisionVerified": true,
+  "vcsModified": false,
+  "fixtures": [
+    {
+      "fixtureId": "qa-collect-empty-split-v2",
+      "dialect": "v2",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-collect-empty-split-v2.cherri",
+      "sourceSha256": "15d1e0ab8bae11e87cc91d81ea1a9a3cc0466429956ad7bff9b6b18570854a3a",
+      "sourceMatchesImmutableGit": true,
+      "unsignedPlistSha256": "b0a38253d3469a6887adecfa2a5a8580b5f85e80a7ab424f0b6f2676b7afd11f",
+      "nativeActionCount": 31,
+      "signedRuntime": "NOT_EXECUTED"
+    },
+    {
+      "fixtureId": "qa-collect-counts-v2",
+      "dialect": "v2",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-collect-counts-v2.cherri",
+      "sourceSha256": "86e612043d5a914af787733ffc3209d3e51f9352e1d5a5fb423856c7ee996ee8",
+      "sourceMatchesImmutableGit": true,
+      "unsignedPlistSha256": "780ca9c916456962a708f0850afd45ec614fd4c74aa318f485adc01a903ea986",
+      "nativeActionCount": 136,
+      "signedRuntime": "NOT_EXECUTED"
+    },
+    {
+      "fixtureId": "qa-collect-counts-legacy",
+      "dialect": "legacy",
+      "sourcePath": "tools/shortcuts-simulator-qa/fixtures/qa-collect-counts-legacy.cherri",
+      "sourceSha256": "efb5758b930edf21d0eafb4fd85a963807489f2c5b2342777752c675d0bf12b8",
+      "sourceMatchesImmutableGit": true,
+      "unsignedPlistSha256": "857f5fd99d3a8c55f9bb37554834fb67adf86723a3b35201148cdfce82ec8f1c",
+      "nativeActionCount": 239,
+      "signedRuntime": "NOT_EXECUTED"
+    }
+  ],
+  "nativeRepairVerified": false,
+  "nestedListL01": "UNVERIFIED",
+  "causalVerification": {
+    "name": "red-final-hooks",
+    "sourceSha": "d00a53a70500a08579af42ca9d548f6d3fbe3657",
+    "sourceState": " M internal/language/lower/lower.go\n M p15_runtime_diagnostic_graph_test.go\n M p15_short_circuit_test.go\n?? internal/language/lower/empty_list.go\n?? p15_empty_list_test.go\n",
+    "command": [
+      "go",
+      "test",
+      "-overlay",
+      "artifacts\\empty-list-66b507a\\baseline-overlay.json",
+      "-count=1",
+      "-run",
+      "^TestP15EmptyList",
+      "-v",
+      "."
+    ],
+    "startedAt": "2026-11-18T20:46:39.277728+00:00",
+    "finishedAt": "2026-11-18T20:46:48.118747+00:00",
+    "durationSeconds": 8.844,
+    "exitCode": 1,
+    "expectedRed": true,
+    "expectedOutcomeObserved": true,
+    "testSourceSha256": "35efe7094aa3f8997a173079d84cf61a60411746a2f61f1c6eeb6b9bd8f3fc21",
+    "logSha256": "19f5b08316678ce6cd45eca6b3a2265684c93fa7dad35e2cfc31221a78c46432",
+    "overlaySourceCommit": "d00a53a70500a08579af42ca9d548f6d3fbe3657",
+    "overlaySourcePath": "internal/language/lower/lower.go",
+    "overlaySourceSha256": "b5a73a25a340c203650d23c76730e208264fbe4dd5b497b9fde534ee1b919854",
+    "causalMutation": "Revert only four production empty-List hooks; final test and helper source unchanged."
+  },
+  "preCommitCompatibility": {
+    "name": "green4-contract",
+    "sourceSha": "d00a53a70500a08579af42ca9d548f6d3fbe3657",
+    "sourceState": " M internal/language/lower/lower.go\n M p15_runtime_diagnostic_graph_test.go\n M p15_short_circuit_test.go\n?? internal/language/lower/empty_list.go\n?? p15_empty_list_test.go\n",
+    "command": [
+      "go",
+      "test",
+      "-count=1",
+      "-run",
+      "^Test(P15(EmptyList|RuntimeDiagnostic|Collect|NumericList|DictionaryList|S02|L01|L03|V02|V04|R0|C01|C02|C04|M0|ShortCircuit|F01)|NATIVE_Ref|CODEC)",
+      "-v",
+      "."
+    ],
+    "startedAt": "2026-11-18T20:46:48.119747+00:00",
+    "finishedAt": "2026-11-18T20:47:12.833574+00:00",
+    "durationSeconds": 24.703,
+    "exitCode": 0,
+    "expectedRed": false,
+    "expectedOutcomeObserved": true,
+    "testSourceSha256": "35efe7094aa3f8997a173079d84cf61a60411746a2f61f1c6eeb6b9bd8f3fc21",
+    "logSha256": "a05b1d5ab8a67a9190145724b7744e8f7569db7ce583e45e610e25153a7407eb",
+    "sourceClean": false
+  },
+  "capturedLogs": [
+    {
+      "path": "clean-contract.log",
+      "sha256": "2be00a46f51b5d34b28b7af124b7c0bd520ebf391ef815be2cdfc6678d8d50ce",
+      "bytes": 12313,
+      "unchangedCapturedLog": true
+    },
+    {
+      "path": "clean-lower.log",
+      "sha256": "44cbaff0baafccdf3bdea2d228f94fb9833774ec6f9ae8f32d981d0ebdab4fd7",
+      "bytes": 67,
+      "unchangedCapturedLog": true
+    },
+    {
+      "path": "causal-red.log",
+      "sha256": "19f5b08316678ce6cd45eca6b3a2265684c93fa7dad35e2cfc31221a78c46432",
+      "bytes": 8315,
+      "unchangedCapturedLog": true
+    },
+    {
+      "path": "compatibility.log",
+      "sha256": "a05b1d5ab8a67a9190145724b7744e8f7569db7ce583e45e610e25153a7407eb",
+      "bytes": 143820,
+      "unchangedCapturedLog": true
+    }
+  ],
+  "verificationScope": {
+    "actualProductionSourceCompiler": true,
+    "actualCLICompileCount": 3,
+    "cleanContractTestsPassed": 15,
+    "emptyValueCorruptionsRejected": 6,
+    "signedDifferentialGraphCorruptionsRejected": 12,
+    "exactImportRoutes": 8,
+    "dualDialectPreOverlayDemotions": 0,
+    "immutableFixtureSourceUnchanged": true,
+    "nativeCountsAfterFix": "NOT_EXECUTED",
+    "explicitNilAssignment": "UNCHANGED_NOT_PROVED",
+    "nestedListL01": "UNVERIFIED"
+  },
+  "expectedNativePilots": [
+    {
+      "selection": "qa-collect-empty-split",
+      "expected": "CHERRI_QA_COLLECT_EMPTY_SPLIT:direct=0:repeat=0:cleared=0:emptyText=1"
+    },
+    {
+      "selection": "qa-collect-counts-v2",
+      "expected": "CHERRI_QA_COLLECT_COUNTS:empty=0:single=1:one:many=100:0:99"
+    }
+  ],
+  "buildProvenanceControl": {
+    "linkedWorktreeBuild": "REJECTED_MISSING_EMBEDDED_VCS",
+    "replacement": "normal local shared Git clone",
+    "embeddedRevisionRequired": "d61b59b9d1589a06b75fa7b545370b925337f8c7",
+    "embeddedModifiedRequired": false
+  }
+}

@@ -1,0 +1,124 @@
+=== RUN   TestP15CollectExistingLegacyAndV2Results
+    p15_collect_native_test.go:62: legacy=false N=0 nativeActions=8 loopActions=4 loopAccumulatorActions=0 inputAppendActions=0 inputNumberActions=0
+    p15_collect_native_test.go:62: legacy=false N=1 nativeActions=7 loopActions=4 loopAccumulatorActions=0 inputAppendActions=0 inputNumberActions=1
+    p15_collect_native_test.go:62: legacy=false N=100 nativeActions=106 loopActions=4 loopAccumulatorActions=0 inputAppendActions=0 inputNumberActions=100
+    p15_collect_native_test.go:62: legacy=true N=0 nativeActions=7 loopActions=4 loopAccumulatorActions=0 inputAppendActions=0 inputNumberActions=0
+    p15_collect_native_test.go:62: legacy=true N=1 nativeActions=9 loopActions=4 loopAccumulatorActions=0 inputAppendActions=1 inputNumberActions=1
+    p15_collect_native_test.go:62: legacy=true N=100 nativeActions=207 loopActions=4 loopAccumulatorActions=0 inputAppendActions=100 inputNumberActions=100
+--- PASS: TestP15CollectExistingLegacyAndV2Results (0.03s)
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults/counts-v2
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults/counts-legacy
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults/dictionaries-v2
+=== RUN   TestP15CollectSignedFixturesObserveNativeResults/dictionaries-legacy
+--- PASS: TestP15CollectSignedFixturesObserveNativeResults (0.03s)
+    --- PASS: TestP15CollectSignedFixturesObserveNativeResults/counts-v2 (0.01s)
+    --- PASS: TestP15CollectSignedFixturesObserveNativeResults/counts-legacy (0.01s)
+    --- PASS: TestP15CollectSignedFixturesObserveNativeResults/dictionaries-v2 (0.00s)
+    --- PASS: TestP15CollectSignedFixturesObserveNativeResults/dictionaries-legacy (0.00s)
+=== RUN   TestP15EmptyListRuntimeBindings
+=== RUN   TestP15EmptyListRuntimeBindings/immutable
+=== RUN   TestP15EmptyListRuntimeBindings/mutable
+=== RUN   TestP15EmptyListRuntimeBindings/assignment
+=== RUN   TestP15EmptyListRuntimeBindings/snapshot
+--- PASS: TestP15EmptyListRuntimeBindings (0.00s)
+    --- PASS: TestP15EmptyListRuntimeBindings/immutable (0.00s)
+    --- PASS: TestP15EmptyListRuntimeBindings/mutable (0.00s)
+    --- PASS: TestP15EmptyListRuntimeBindings/assignment (0.00s)
+    --- PASS: TestP15EmptyListRuntimeBindings/snapshot (0.00s)
+=== RUN   TestP15EmptyListCollectInput
+=== RUN   TestP15EmptyListCollectInput/direct
+=== RUN   TestP15EmptyListCollectInput/bound
+=== RUN   TestP15EmptyListCollectInput/mutable
+--- PASS: TestP15EmptyListCollectInput (0.00s)
+    --- PASS: TestP15EmptyListCollectInput/direct (0.00s)
+    --- PASS: TestP15EmptyListCollectInput/bound (0.00s)
+    --- PASS: TestP15EmptyListCollectInput/mutable (0.00s)
+=== RUN   TestP15EmptyListDoesNotCollapseEmptyText
+--- PASS: TestP15EmptyListDoesNotCollapseEmptyText (0.00s)
+=== RUN   TestP15EmptyListIndependentIdentity
+--- PASS: TestP15EmptyListIndependentIdentity (0.00s)
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"d83fcd862d10f1656639bf6bfe0a0b9b53a3ad85aaa046a9deed4f3207b9a9e0"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"487edd5a1255e0344c3ce43ae1e1f9f28b1918a1aee2cf4beb6e6c05d8430519"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"6294a3f550824d8e40a458681eb7f695904ef5f87dd47f3ec7fd655a0864247f"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":1,"input_sha256":"de417463533e32cd87acb8f3e4ec2b80fc27c6b4bca1ecbe2ed726e30a21ffc4","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"fbe39a5a19fda04f5387ad590eea0a245f817c54bff2829ccaab4ffc8af4d22c"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"d83fcd862d10f1656639bf6bfe0a0b9b53a3ad85aaa046a9deed4f3207b9a9e0"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"hybrid","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"487edd5a1255e0344c3ce43ae1e1f9f28b1918a1aee2cf4beb6e6c05d8430519"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/legacy
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"legacy","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"6294a3f550824d8e40a458681eb7f695904ef5f87dd47f3ec7fd655a0864247f"}
+=== RUN   TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/v2
+    p15_native_acceptance_test.go:79: P15_NATIVE_SPECIMEN:{"action_count":3,"exact_tree":true,"fidelity":"lossless","format":2,"input_sha256":"2791b98a4123d13dab97080b545e3a26d42d051f83d9e1194d3b7e91cf49e6f2","mode":"v2","name":"empty-native-list","output_sha256":"4ba9b35b3b80473fc7f73f95e5079ac436d8e1b55028e1c5503be707b383f84d","runtime_observed":false,"source_sha256":"fbe39a5a19fda04f5387ad590eea0a245f817c54bff2829ccaab4ffc8af4d22c"}
+--- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged (0.17s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/legacy (0.04s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/hybrid/v2 (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/legacy (0.01s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/1/lossless/v2 (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/legacy (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/hybrid/v2 (0.02s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/legacy (0.00s)
+    --- PASS: TestP15EmptyListRawNativeAndImportedArraysUnchanged/empty-native-list/2/lossless/v2 (0.00s)
+=== RUN   TestP15EmptyListOracleRejectsCorruption
+=== RUN   TestP15EmptyListOracleRejectsCorruption/no_nothing
+=== RUN   TestP15EmptyListOracleRejectsCorruption/inherited_input
+=== RUN   TestP15EmptyListOracleRejectsCorruption/wrong_variable
+=== RUN   TestP15EmptyListOracleRejectsCorruption/missing_producer
+=== RUN   TestP15EmptyListOracleRejectsCorruption/wrong_output_name
+=== RUN   TestP15EmptyListOracleRejectsCorruption/raw_empty_input
+--- PASS: TestP15EmptyListOracleRejectsCorruption (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/no_nothing (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/inherited_input (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/wrong_variable (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/missing_producer (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/wrong_output_name (0.00s)
+    --- PASS: TestP15EmptyListOracleRejectsCorruption/raw_empty_input (0.00s)
+=== RUN   TestP15EmptyListSignedFixtureSourceRemainsStrict
+--- PASS: TestP15EmptyListSignedFixtureSourceRemainsStrict (0.01s)
+=== RUN   TestP15EmptyListAttachmentOnlyArgumentBoundary
+--- PASS: TestP15EmptyListAttachmentOnlyArgumentBoundary (0.00s)
+=== RUN   TestP15EmptyListExistingLegacyClearControl
+--- PASS: TestP15EmptyListExistingLegacyClearControl (0.00s)
+=== RUN   TestP15EmptyListReturnAndYield
+=== RUN   TestP15EmptyListReturnAndYield/return
+=== RUN   TestP15EmptyListReturnAndYield/yield
+--- PASS: TestP15EmptyListReturnAndYield (0.00s)
+    --- PASS: TestP15EmptyListReturnAndYield/return (0.00s)
+    --- PASS: TestP15EmptyListReturnAndYield/yield (0.00s)
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/missing_authored_clear_target
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/empty_becomes_singleton
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/direct_count_uses_Repeat_result
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/collected_count_uses_input
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/authored_clearing_Nothing_replaced
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/authored_clear_gains_prior_input
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/clearing_Nothing_replaced
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/clear_gains_prior_input
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Count_redirected
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Repeat_group_changed
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/singleton_empty_Text_removed
+=== RUN   TestP15RuntimeDiagnosticCollectEmptyGraph/empty_List_loses_producer_UUID
+--- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph (0.01s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/missing_authored_clear_target (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/empty_becomes_singleton (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/direct_count_uses_Repeat_result (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/collected_count_uses_input (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/authored_clearing_Nothing_replaced (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/authored_clear_gains_prior_input (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/clearing_Nothing_replaced (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/clear_gains_prior_input (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Count_redirected (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Repeat_group_changed (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/singleton_empty_Text_removed (0.00s)
+    --- PASS: TestP15RuntimeDiagnosticCollectEmptyGraph/empty_List_loses_producer_UUID (0.00s)
+=== RUN   TestP15RuntimeDiagnosticFileBytesGraph
+--- PASS: TestP15RuntimeDiagnosticFileBytesGraph (0.00s)
+=== RUN   TestP15RuntimeDiagnosticIfResultLetVarSplit
+--- PASS: TestP15RuntimeDiagnosticIfResultLetVarSplit (0.02s)
+PASS
+ok  	github.com/electrikmilk/cherri	0.536s
