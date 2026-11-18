@@ -1,11 +1,11 @@
 {
   "formatVersion": 1,
-  "observedAtUtc": "2026-11-18T04:09:03.756080+00:00",
+  "observedAtUtc": "2026-11-18T14:30:00.389553+00:00",
   "masterAsanaTask": "1220544599390563",
-  "sourceSha": "ab9a264ba370890397d74042e00c11a3b4c84ffd",
+  "sourceSha": "69fc585d05cf0e9fc5b57e422137682d247a3e26",
   "worktreeDirtyBeforeExecution": false,
-  "sourceFingerprint": "3c0f17d19dae114719cf22deed78044768ea785044b20246b258422b928b862f",
-  "generatorSHA256": "a04dc690d8589629d36de8e03d0c382348f6a6cdabcfe6f64797ad4520b7d99c",
+  "sourceFingerprint": "a1c2d70a5eabad1f55ecc1857d06c86b21d450e55c0e986a76b196a344885d3f",
+  "generatorSHA256": "48b5edb29c38c94f5f3f30e99551bd53acd5875bba7f3c575d911ddd17805e28",
   "buildCommand": [
     "go",
     "build",
@@ -15,12 +15,12 @@
     "."
   ],
   "goVersion": "go version go1.25.6 windows/amd64",
-  "compilerSHA256": "ff97925325e85c67a6e286d4b8b3c3e7b8bf74eca1a0e19e00deb38bb6378a3b",
+  "compilerSHA256": "1fd509db7fa441a015480cc91bed4d64e8787a62b36e6f07132c404b982b2ed0",
   "languageVersion": "2.0",
-  "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
-  "macroFingerprint": "f63d8b0a323c7045af4abf20723684506c9f63b9d31776a408c39766e7c2cf44",
+  "schemaFingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
   "nativeCatalogCount": 505,
-  "compilerMacroCount": 13,
+  "compilerMacroCount": 15,
   "compilerMacros": [
     {
       "id": "debugAssert",
@@ -91,6 +91,94 @@
         "insertionSnippet": "debugClearLogs()"
       },
       "builtin": true,
+      "evidenceStatus": "inferred"
+    },
+    {
+      "id": "debugExport",
+      "callableName": "debugExport",
+      "module": "debug",
+      "appleIdentifier": "is.workflow.actions.setitemname",
+      "primaryParameterId": "format",
+      "parameters": [
+        {
+          "id": "format",
+          "label": "format",
+          "displayName": "Format",
+          "type": "Text",
+          "rawType": "rawstring",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "json",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugExportFormat",
+          "enumValues": [
+            "json",
+            "text"
+          ],
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "includeDates",
+          "label": "includeDates",
+          "displayName": "Include Dates (unsupported)",
+          "type": "Bool",
+          "rawType": "bool",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "false",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugExportDates",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "includeTypes",
+          "label": "includeTypes",
+          "displayName": "Include Native Types",
+          "type": "Bool",
+          "rawType": "bool",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "true",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugExportTypes",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "redactSensitive",
+          "label": "redactSensitive",
+          "displayName": "Redact All Payloads",
+          "type": "Bool",
+          "rawType": "bool",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "true",
+          "omissionPolicy": "omit",
+          "wireKey": "WFDebugExportRedact",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "outputType": "File",
+      "rawOutputType": "variable",
+      "docs": {
+        "title": "Export Local Debug File",
+        "description": "Return one local JSON/text File without saving, sharing or uploading. Fully redacts payloads by default. Explicit redactSensitive:false exports only Text as base64-encoded UTF-8; other payloads report UNSUPPORTED_PAYLOAD_TYPE. Dates/labels are not collected; includeDates:true is rejected. Options are compile-time literals. Native runtime acceptance remains required.",
+        "category": "debug",
+        "insertionSnippet": "debugExport()"
+      },
+      "builtin": true,
+      "compilerConstruct": true,
       "evidenceStatus": "inferred"
     },
     {
@@ -594,6 +682,105 @@
       "evidenceStatus": "inferred"
     },
     {
+      "id": "paginate",
+      "callableName": "paginate",
+      "module": "web",
+      "appleIdentifier": "is.workflow.actions.getvariable",
+      "primaryParameterId": "startURL",
+      "parameters": [
+        {
+          "id": "startURL",
+          "label": "startURL",
+          "displayName": "Initial HTTP(S) URL",
+          "type": "Text",
+          "rawType": "rawstring",
+          "optional": false,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateStartURL",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "itemsKey",
+          "label": "itemsKey",
+          "displayName": "Dictionary items key",
+          "type": "Text",
+          "rawType": "rawstring",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "items",
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateItemsKey",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "nextKey",
+          "label": "nextKey",
+          "displayName": "Next URL or sibling filename key",
+          "type": "Text",
+          "rawType": "rawstring",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "next",
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateNextKey",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "maxPages",
+          "label": "maxPages",
+          "displayName": "Maximum native GET invocations (0..100)",
+          "type": "Number",
+          "rawType": "number",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "20",
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateMaxPages",
+          "evidenceStatus": "inferred"
+        },
+        {
+          "id": "maxItems",
+          "label": "maxItems",
+          "displayName": "Maximum returned Dictionary items (0..10000)",
+          "type": "Number",
+          "rawType": "number",
+          "optional": true,
+          "literal": true,
+          "acceptedForms": [
+            "literal"
+          ],
+          "default": "1000",
+          "omissionPolicy": "omit",
+          "wireKey": "WFPaginateMaxItems",
+          "evidenceStatus": "inferred"
+        }
+      ],
+      "outputType": "List<Map<Text, AnyContent>>",
+      "rawOutputType": "array",
+      "docs": {
+        "title": "Paginate Bounded Dictionary Pages",
+        "description": "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Next accepts same-origin absolute URLs or simple sibling filenames. Exact resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. No headers, Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.",
+        "category": "web",
+        "insertionSnippet": "paginate(\"https://example.invalid/pages/one.json\")"
+      },
+      "builtin": true,
+      "compilerConstruct": true,
+      "evidenceStatus": "inferred"
+    },
+    {
       "id": "require",
       "callableName": "require",
       "module": "control",
@@ -671,7 +858,7 @@
   "canonicalDocs": {
     "generatedFromThisSource": true,
     "macroFingerprintMatches": true,
-    "sha256": "dcc90981ef64f7782c8f246653209941e3206606f3b9234578b0dd8c7c5690a5"
+    "sha256": "e53d6cf7ff1b7a743bdc089786dbed4181fcda0a9231953ca760579a9f7b494f"
   },
   "nativeMetadata": {
     "source": "docs/apple-runtime/macos-27/builtin-actions.json",
@@ -702,7 +889,7 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "c847bd75e93c51f5d62fb8d2a63a579f2b78b96f70dcc9de88e2907c169cd196",
+      "unsignedSHA256": "7c17c51c3c88d5779e08b4afdd32f8aff6025050519a74feaa404d0ae56b400d",
       "nativeActionCount": 21,
       "nativeActionIDs": {
         "is.workflow.actions.alert": 3,
@@ -752,7 +939,7 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "aea8696467c845f8c60b09e1a3cd76c8fe920ed378f617c190ffbb30c46adda0",
+      "unsignedSHA256": "05ebe3cf4ad4f9f851de5dd7f970bb11b6c4667ee71fd438803061fcdf719052",
       "nativeActionCount": 20,
       "nativeActionIDs": {
         "is.workflow.actions.alert": 3,
@@ -801,7 +988,7 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "e9faf7b69dd0ad0fde1f19b9e2f7b9630d4b71e5e6de4e95c3788c3ee3de8670",
+      "unsignedSHA256": "70d63c5d7652332eb641e011f75cc4d985faad7e4c32889c2396a78c66cd67cb",
       "nativeActionCount": 21,
       "nativeActionIDs": {
         "is.workflow.actions.alert": 3,
@@ -851,7 +1038,7 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "70ed64b8ea1d00cb4f5ab9ebfd86c79e03407a31c721b03187757235adbca031",
+      "unsignedSHA256": "529828dcd029ca1bf5cd89cecd00f0b51e6a8202b80f65646f6065deb82a793a",
       "nativeActionCount": 20,
       "nativeActionIDs": {
         "is.workflow.actions.alert": 3,
@@ -900,7 +1087,7 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "2da8a97ece8fee94caa17f00f2bb5be0d2809cac807f60b7897b0271b444f2e1",
+      "unsignedSHA256": "d33f1582166a522cd95097c7d73e076afa61a2378a98285b40b1c54d73ecdc76",
       "nativeActionCount": 7,
       "nativeActionIDs": {
         "is.workflow.actions.appendvariable": 1,
@@ -947,7 +1134,7 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "127ff88967a7628471e78b1502b76266f00243451105a5a3a5aa37084873a177",
+      "unsignedSHA256": "3a8cd0bdff8f79cafb246ae1bd93a3e5671c9c8ca4e107deb17ae38851cd2a5b",
       "nativeActionCount": 3,
       "nativeActionIDs": {
         "is.workflow.actions.dictionary": 1,
@@ -991,7 +1178,7 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "7fde5b7d8a66ae1806e0730d841dea234db4a24b8cb5df9ff61876d2c46379ec",
+      "unsignedSHA256": "ff1d934350e6aa73835256be6376895ab72850143db387d21339bc8cbf724896",
       "nativeActionCount": 6,
       "nativeActionIDs": {
         "is.workflow.actions.getvariable": 2,
@@ -1035,11 +1222,12 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "6ecbbe13977f4a09ee234bf30fb560c272bb952be19b62f5447e146d2bb3a90c",
-      "nativeActionCount": 6,
+      "unsignedSHA256": "eaf504a3cda8b39ec8e48c1287812868ee479f0bb67a50e3b16a98c2da0b930f",
+      "nativeActionCount": 7,
       "nativeActionIDs": {
         "is.workflow.actions.getvariable": 2,
         "is.workflow.actions.list": 1,
+        "is.workflow.actions.number": 1,
         "is.workflow.actions.repeat.each": 2,
         "is.workflow.actions.setvariable": 1
       },
@@ -1079,11 +1267,12 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "ee58f4837ff73b7bd25f4a3ef7c88adc883dc1c01aaaad39cd93f333b36c70f7",
-      "nativeActionCount": 6,
+      "unsignedSHA256": "0fa27de6da73211006b6ab505726186681513e466aaf64380ec7cfc14412fd8a",
+      "nativeActionCount": 106,
       "nativeActionIDs": {
         "is.workflow.actions.getvariable": 2,
         "is.workflow.actions.list": 1,
+        "is.workflow.actions.number": 100,
         "is.workflow.actions.repeat.each": 2,
         "is.workflow.actions.setvariable": 1
       },
@@ -1123,12 +1312,13 @@
       "diagnosticTail": "",
       "signedRuntime": "NOT_EXECUTED",
       "physicalDevice": "NOT_EXECUTED",
-      "unsignedSHA256": "d2810e63d8596a2e100c2be29eae2f0285a9f4e232009806dff523040b12a8ee",
-      "nativeActionCount": 6,
+      "unsignedSHA256": "61abb68c50ebdf0b23e8f07b10ffa973ee270d2991bb66b9a0079fc6ac22a405",
+      "nativeActionCount": 8,
       "nativeActionIDs": {
         "is.workflow.actions.dictionary": 1,
         "is.workflow.actions.getvariable": 1,
         "is.workflow.actions.list": 1,
+        "is.workflow.actions.number": 2,
         "is.workflow.actions.repeat.each": 2,
         "is.workflow.actions.setvariable": 1
       },
@@ -1197,6 +1387,214 @@
       "expectedDiagnostic": "E_BLOCK_VALUE_REQUIRED",
       "noArtifact": true,
       "verdict": "PASS"
+    },
+    {
+      "id": "paginate_v2",
+      "kind": "paginate",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "paginate(\"https://example.invalid/p15/entry.json\", \"items\", \"next\", 3, 6)\n",
+      "sourceSHA256": "c2d102ceaeac5aad6713ba85c6d205117be662d57af2fef507fe6e5cae3dd490",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>\\paginate_v2\\source.cherri",
+        "--output=<synthetic-fixtures>\\paginate_v2\\output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "fa949fba81eccad1c046134d5b3e9b0bbc4431b2ea6e3537931736b15a1e8a9a",
+      "nativeActionCount": 182,
+      "nativeActionIDs": {
+        "is.workflow.actions.alert": 19,
+        "is.workflow.actions.appendvariable": 2,
+        "is.workflow.actions.conditional": 70,
+        "is.workflow.actions.count": 8,
+        "is.workflow.actions.detect.dictionary": 1,
+        "is.workflow.actions.dictionary": 1,
+        "is.workflow.actions.downloadurl": 1,
+        "is.workflow.actions.exit": 19,
+        "is.workflow.actions.getitemfromlist": 1,
+        "is.workflow.actions.getitemtype": 5,
+        "is.workflow.actions.gettext": 4,
+        "is.workflow.actions.getvalueforkey": 3,
+        "is.workflow.actions.getvariable": 14,
+        "is.workflow.actions.hash": 4,
+        "is.workflow.actions.list": 2,
+        "is.workflow.actions.number": 3,
+        "is.workflow.actions.repeat.count": 2,
+        "is.workflow.actions.repeat.each": 6,
+        "is.workflow.actions.setvariable": 17
+      },
+      "structuralChecks": {
+        "oneGETNode": true,
+        "explicitPageBudget": true,
+        "nativeCycleHash": true,
+        "typedDictionaryWitness": true,
+        "semanticFailureStops": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "paginate-zero_v2",
+      "kind": "paginate-zero",
+      "dialect": "v2",
+      "profile": "debug",
+      "source": "paginate(\"https://example.invalid/p15/entry.json\", \"items\", \"next\", 0, 6)\n",
+      "sourceSHA256": "c084ab94c6b86f41ca9e836363e0c378c2235a605a770efa07d091267aa9e669",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>\\paginate-zero_v2\\source.cherri",
+        "--output=<synthetic-fixtures>\\paginate-zero_v2\\output.shortcut",
+        "--skip-sign",
+        "--mode=v2",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "9c12676b79aa9ba15591c26489230d55b3e577867fb40e51df82bb0f4e23451f",
+      "nativeActionCount": 3,
+      "nativeActionIDs": {
+        "is.workflow.actions.getvariable": 1,
+        "is.workflow.actions.list": 1,
+        "is.workflow.actions.setvariable": 1
+      },
+      "structuralChecks": {
+        "zeroBudgetNoGET": true,
+        "zeroBudgetNoLoop": true,
+        "explicitEmptyResult": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "paginate_legacy",
+      "kind": "paginate",
+      "dialect": "legacy",
+      "profile": "debug",
+      "source": "paginate(\"https://example.invalid/p15/entry.json\", \"items\", \"next\", 3, 6)\n",
+      "sourceSHA256": "c2d102ceaeac5aad6713ba85c6d205117be662d57af2fef507fe6e5cae3dd490",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>\\paginate_legacy\\source.cherri",
+        "--output=<synthetic-fixtures>\\paginate_legacy\\output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "\nWarning: Value for action argument 'itemsKey' is the same as the default value.\n\n### Paginate Bounded Dictionary Pages\n\nCollect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; same-origin absolute next URL or simple sibling filename. No HTTP status verification, headers, retry, transport timeout or trailing block. Native runtime acceptance remains required.\n\n```\npaginate(..., rawtext ?itemsKey = \"items\", ..., ..., ...): array\n``` (1:59)\n\n\nWarning: Value for action argument 'nextKey' is the same as the default value.\n\n### Paginate Bounded Dictionary Pages\n\nCollect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; same-origin absolute next URL or simple sibling filename. No HTTP status verification, headers, retry, transport timeout or trailing block. Native runtime acceptance remains required.\n\n```\npaginate(..., ..., rawtext ?nextKey = \"next\", ..., ...): array\n``` (1:67)\n\n",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "f4467188b6185423ce95a2d0f1c2f494ad9f00151b52188b692f9f4900ca809c",
+      "nativeActionCount": 182,
+      "nativeActionIDs": {
+        "is.workflow.actions.alert": 19,
+        "is.workflow.actions.appendvariable": 2,
+        "is.workflow.actions.conditional": 70,
+        "is.workflow.actions.count": 8,
+        "is.workflow.actions.detect.dictionary": 1,
+        "is.workflow.actions.dictionary": 1,
+        "is.workflow.actions.downloadurl": 1,
+        "is.workflow.actions.exit": 19,
+        "is.workflow.actions.getitemfromlist": 1,
+        "is.workflow.actions.getitemtype": 5,
+        "is.workflow.actions.gettext": 4,
+        "is.workflow.actions.getvalueforkey": 3,
+        "is.workflow.actions.getvariable": 14,
+        "is.workflow.actions.hash": 4,
+        "is.workflow.actions.list": 2,
+        "is.workflow.actions.number": 3,
+        "is.workflow.actions.repeat.count": 2,
+        "is.workflow.actions.repeat.each": 6,
+        "is.workflow.actions.setvariable": 17
+      },
+      "structuralChecks": {
+        "oneGETNode": true,
+        "explicitPageBudget": true,
+        "nativeCycleHash": true,
+        "typedDictionaryWitness": true,
+        "semanticFailureStops": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "paginate-zero_legacy",
+      "kind": "paginate-zero",
+      "dialect": "legacy",
+      "profile": "debug",
+      "source": "paginate(\"https://example.invalid/p15/entry.json\", \"items\", \"next\", 0, 6)\n",
+      "sourceSHA256": "c084ab94c6b86f41ca9e836363e0c378c2235a605a770efa07d091267aa9e669",
+      "command": [
+        "<freshly-built-compiler>",
+        "compile",
+        "<synthetic-fixtures>\\paginate-zero_legacy\\source.cherri",
+        "--output=<synthetic-fixtures>\\paginate-zero_legacy\\output.shortcut",
+        "--skip-sign",
+        "--mode=legacy",
+        "--build-profile=debug",
+        "--load-all-actions",
+        "--no-ansi"
+      ],
+      "exitCode": 0,
+      "diagnosticTail": "\nWarning: Value for action argument 'itemsKey' is the same as the default value.\n\n### Paginate Bounded Dictionary Pages\n\nCollect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; same-origin absolute next URL or simple sibling filename. No HTTP status verification, headers, retry, transport timeout or trailing block. Native runtime acceptance remains required.\n\n```\npaginate(..., rawtext ?itemsKey = \"items\", ..., ..., ...): array\n``` (1:59)\n\n\nWarning: Value for action argument 'nextKey' is the same as the default value.\n\n### Paginate Bounded Dictionary Pages\n\nCollect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; same-origin absolute next URL or simple sibling filename. No HTTP status verification, headers, retry, transport timeout or trailing block. Native runtime acceptance remains required.\n\n```\npaginate(..., ..., rawtext ?nextKey = \"next\", ..., ...): array\n``` (1:67)\n\n",
+      "signedRuntime": "NOT_EXECUTED",
+      "physicalDevice": "NOT_EXECUTED",
+      "unsignedSHA256": "ee2a97537f20047e6fa7131d5fe9fe7cc81f1ea77f0782f9c8bcdf5eb92dcc7e",
+      "nativeActionCount": 3,
+      "nativeActionIDs": {
+        "is.workflow.actions.getvariable": 1,
+        "is.workflow.actions.list": 1,
+        "is.workflow.actions.setvariable": 1
+      },
+      "structuralChecks": {
+        "zeroBudgetNoGET": true,
+        "zeroBudgetNoLoop": true,
+        "explicitEmptyResult": true
+      },
+      "decompile": {
+        "mode": "V2_LOSSLESS_EXPANDED_NATIVE",
+        "importExitCode": 0,
+        "recompileExitCode": 0,
+        "nativeActionsExact": true,
+        "macroSourceReconstruction": "NOT_CLAIMED"
+      },
+      "verdict": "PASS"
     }
   ],
   "causalMutations": [
@@ -1239,10 +1637,34 @@
       "positiveControl": true,
       "faultRejected": true,
       "verdict": "PASS"
+    },
+    {
+      "case": "paginate_v2",
+      "mutation": "page_budget_changed",
+      "intendedCheck": "explicitPageBudget",
+      "positiveControl": true,
+      "faultRejected": true,
+      "verdict": "PASS"
     }
   ],
   "crossCaseChecks": {
-    "constantCollectionActionCount": true,
+    "constantCollectionLoopActionCount": true,
+    "collectionLoopActionCounts": [
+      4,
+      4,
+      4
+    ],
+    "collectionTotalActionCounts": [
+      6,
+      7,
+      106
+    ],
+    "numericInputActionCounts": [
+      0,
+      1,
+      100
+    ],
+    "typedNumericInputCountsMatch": true,
     "requireGuardCountsDebugRelease": {
       "legacy": true,
       "v2": true
@@ -1281,15 +1703,17 @@
       "name": "debugLog labels",
       "acceptanceRequirement": "Stable per-entry labels without replacing the original raw object or its downstream UUID.",
       "status": "OPEN",
-      "implementationState": "IMPLEMENTATION_GAP",
+      "implementationState": "PARTIAL_IMPLEMENTATION",
       "canonicalDescriptors": [
         "debugLog"
       ],
       "canonicalContractObservation": "LABEL_PARAMETER_ABSENT",
       "executedCases": [],
-      "externalPrerequisites": [],
+      "externalPrerequisites": [
+        "Native file/object identity and six-mode label acceptance"
+      ],
       "limitations": [
-        "Per-entry label metadata, formatting, branch/repeat association and six-mode acceptance are missing."
+        "Per-entry metadata and bounded source contracts are implemented; signed File-carrier byte identity still requires repair and acceptance."
       ],
       "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
       "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
@@ -1302,15 +1726,17 @@
       "name": "Local debugExport",
       "acceptanceRequirement": "Local returned file; typed JSON/text or explicit opaque placeholders; safe escaping and default redaction.",
       "status": "OPEN",
-      "implementationState": "IMPLEMENTATION_GAP",
-      "canonicalDescriptors": [],
-      "canonicalContractObservation": "NO_CANONICAL_DESCRIPTOR",
+      "implementationState": "PARTIAL_IMPLEMENTATION",
+      "canonicalDescriptors": [
+        "debugExport"
+      ],
+      "canonicalContractObservation": "DESCRIPTOR_PRESENT",
       "executedCases": [],
       "externalPrerequisites": [
-        "Apple file-provider/permission and native output evidence"
+        "Apple returned-file/UTF-8/cardinality runtime evidence"
       ],
       "limitations": [
-        "QA debugExportTrace is a separate trace helper and does not fulfill this contract."
+        "Local File export source supports default full redaction and explicit Text-only base64 payloads; structured types, dates/labels, selective redaction and native acceptance remain open. QA debugExportTrace is separate."
       ],
       "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
       "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
@@ -1374,7 +1800,7 @@
       "feature": "collect",
       "asanaTask": "1220544651247337",
       "name": "Typed collection",
-      "acceptanceRequirement": "Use existing V2 for/yield and native Repeat Results without a second accumulator or standalone alias.",
+      "acceptanceRequirement": "Use existing native Repeat Results without a second accumulator or standalone alias; account separately for typed input construction.",
       "status": "OPEN",
       "implementationState": "EXISTING_V2_CONSTRUCT",
       "canonicalDescriptors": [],
@@ -1445,15 +1871,22 @@
       "name": "Bounded pagination",
       "acceptanceRequirement": "Explicit limits/cursor termination, typed aggregation and malformed/error/rate-limit/credential safeguards.",
       "status": "OPEN",
-      "implementationState": "IMPLEMENTATION_GAP",
-      "canonicalDescriptors": [],
-      "canonicalContractObservation": "NO_CANONICAL_DESCRIPTOR",
-      "executedCases": [],
+      "implementationState": "BOUNDED_GET_IMPLEMENTATION",
+      "canonicalDescriptors": [
+        "paginate"
+      ],
+      "canonicalContractObservation": "DESCRIPTOR_PRESENT",
+      "executedCases": [
+        "paginate_v2",
+        "paginate_legacy",
+        "paginate-zero_v2",
+        "paginate-zero_legacy"
+      ],
       "externalPrerequisites": [
         "Signed synthetic multi-page HTTP/schema/error observation"
       ],
       "limitations": [
-        "A bounded GET/body-cursor subset can use existing loops; generic response-status or retry behavior must not be invented."
+        "The shared bounded GET/body-cursor implementation has page/item limits and cycle guards. Response headers/status, transport recovery, redirect limits and generic retry remain outside its proven contract."
       ],
       "nativeSourceExemplar": "NO_INDEPENDENT_APPLE_AUTHORED_MACRO_SPECIMEN",
       "signedSimulator": "NOT_ESTABLISHED_BY_THIS_LEDGER",
@@ -1513,7 +1946,11 @@
         "collect_v2_100",
         "collect_v2_dictionary",
         "measure_legacy_unavailable",
-        "measure_v2_empty_rejected"
+        "measure_v2_empty_rejected",
+        "paginate_v2",
+        "paginate-zero_v2",
+        "paginate_legacy",
+        "paginate-zero_legacy"
       ],
       "externalPrerequisites": [
         "Final pinned consumer tuple and signed/physical acceptance evidence"
@@ -1537,12 +1974,12 @@
     "asanaChildren": 11,
     "open": 11,
     "closed": 0,
-    "compilerMacros": 13,
-    "compileChecks": 12,
-    "compilePassed": 12,
-    "causalMutationChecks": 5,
+    "compilerMacros": 15,
+    "compileChecks": 16,
+    "compilePassed": 16,
+    "causalMutationChecks": 6,
     "structuralExecutionVerdict": "PASS",
     "releaseCompletion": "OPEN"
   },
-  "observationsSHA256": "c3fac08ba0d5f4d25fd78cef1a84ceb5cb549f213ea50cb16f5a51e7206225ef"
+  "observationsSHA256": "ac3953c1d620887e3e72747fe878cd5f0258d1c651acf8f8d0f3c34b252b3662"
 }

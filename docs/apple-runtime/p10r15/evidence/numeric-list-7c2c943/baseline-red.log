@@ -1,0 +1,31 @@
+=== RUN   TestP15NumericListRetainsNativeNumbers
+=== RUN   TestP15NumericListRetainsNativeNumbers/explicit_reference_control
+=== RUN   TestP15NumericListRetainsNativeNumbers/immutable
+    p15_numeric_list_test.go:58: item 0 is a raw scalar in a native text row
+=== RUN   TestP15NumericListRetainsNativeNumbers/mutable
+    p15_numeric_list_test.go:58: item 0 is a raw scalar in a native text row
+=== RUN   TestP15NumericListRetainsNativeNumbers/assignment
+    p15_numeric_list_test.go:58: item 0 is a raw scalar in a native text row
+=== RUN   TestP15NumericListRetainsNativeNumbers/call_argument
+    p15_numeric_list_test.go:58: missing native List
+--- FAIL: TestP15NumericListRetainsNativeNumbers (0.04s)
+    --- PASS: TestP15NumericListRetainsNativeNumbers/explicit_reference_control (0.03s)
+    --- FAIL: TestP15NumericListRetainsNativeNumbers/immutable (0.00s)
+    --- FAIL: TestP15NumericListRetainsNativeNumbers/mutable (0.00s)
+    --- FAIL: TestP15NumericListRetainsNativeNumbers/assignment (0.00s)
+    --- FAIL: TestP15NumericListRetainsNativeNumbers/call_argument (0.00s)
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/raw_number
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/missing_uuid
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/text_coercion
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/duplicate_reference
+=== RUN   TestP15NumericListOracleRejectsNativeRowCorruption/wrong_producer
+--- PASS: TestP15NumericListOracleRejectsNativeRowCorruption (0.01s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/raw_number (0.00s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/missing_uuid (0.00s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/text_coercion (0.00s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/duplicate_reference (0.00s)
+    --- PASS: TestP15NumericListOracleRejectsNativeRowCorruption/wrong_producer (0.00s)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.305s
+FAIL

@@ -1,0 +1,69 @@
+{
+  "sourceSha": "69fc585d05cf0e9fc5b57e422137682d247a3e26",
+  "results": [
+    {
+      "name": "python-runtime",
+      "sourceSha": "69fc585d05cf0e9fc5b57e422137682d247a3e26",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/shortcuts-simulator-qa",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 74.859,
+      "logSha256": "65532b9fdd400fadd45b9c3307c420c9197a4c76020077a43c0ebd5df6d6c88b"
+    },
+    {
+      "name": "macro-refresh",
+      "sourceSha": "69fc585d05cf0e9fc5b57e422137682d247a3e26",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "tools/p10r15/generate_macro_contract_coverage.py",
+        "--refresh",
+        "--out-dir",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\combined-69fc585"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 23.546,
+      "logSha256": "485837480309906d783a9ff11a66e46557527c8227b7cd5f768027b87ed92ecc"
+    },
+    {
+      "name": "macro-verify",
+      "sourceSha": "69fc585d05cf0e9fc5b57e422137682d247a3e26",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "tools/p10r15/generate_macro_contract_coverage.py",
+        "--verify",
+        "--out-dir",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\combined-69fc585"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 0.313,
+      "logSha256": "25a0b588ecefef60a54e9771a117e375a5c645d1f0e8a0a3ff8e12b4464904f3"
+    },
+    {
+      "name": "macro-faults",
+      "sourceSha": "69fc585d05cf0e9fc5b57e422137682d247a3e26",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "tools/p10r15/verify_macro_ledger_evidence.py",
+        "--repo",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-project-closure-20261118",
+        "--ledger-dir",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\combined-69fc585",
+        "--report",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261118\\combined-69fc585\\macro-verifier-controls.json"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 7.016,
+      "logSha256": "9f75a7a159cac3ade7a31b00d7d5624aa40fb9acca5427f4164643924b2e5b7b"
+    }
+  ],
+  "cleanAfter": true
+}

@@ -2332,7 +2332,7 @@
       "firstForkCommit": "5dbd6932d9db4b1df937968fca46bee0d9d91bc5",
       "change": "Add four independent counter/predicate/control/logic probes without changing compiler behavior or original failed source.",
       "reason": "Concrete authorized P10R15 implementation or evidence defect. Existing infrastructure is retained.",
-      "evidence": "Exact original482eff24 clean receipt: four production tests,28 Python contracts and four actual CLI compiles passed; signed counter/predicate queued.",
+      "evidence": "Exact85b6 native counter44248683227 and predicate44248694890 PASS with fresh exact callback and4trace events each. Original fullF01 and control/logic remain open.",
       "note": "Immutable implementation ancestor in a separate metadata commit; no unexecuted runtime, device, visual or release tier is inferred."
     },
     {
@@ -2344,7 +2344,7 @@
       "firstForkCommit": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
       "change": "Filter current Go completion results before UI truncation and bind asynchronous output to source/caret; isolate native typing cases.",
       "reason": "Concrete authorized P10R15 implementation or evidence defect. Existing infrastructure is retained.",
-      "evidence": "27 Python contracts passed before owned iOS run44248146483; that native outcome remains pending.",
+      "evidence": "Exactd695 native iOS run44248146483 PASS50/50:26core,12input,12UI; source-bound receipt integratedada5a5e. No physical-device claim.",
       "note": "Immutable implementation ancestor in a separate metadata commit; no unexecuted runtime, device, visual or release tier is inferred."
     },
     {
@@ -2358,6 +2358,89 @@
       "reason": "Concrete authorized P10R15 implementation or evidence defect. Existing infrastructure is retained.",
       "evidence": "Causal baseline failures preserved; exact source d06b885 passed60 package tests and4 production tests; per-platform T07 remains unverified.",
       "note": "Immutable implementation ancestor in a separate metadata commit; no unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 existing native collection probes",
+      "locations": [
+        "p15_collect_native_test.go",
+        "tools/shortcuts-simulator-qa/test_collect_native_contract.py"
+      ],
+      "firstForkCommit": "ef71b732e0316bbcb9ac47d781d4f5a7daa5885a",
+      "change": "Exercise native Repeat Results through both existing dialects; no collect alias.",
+      "reason": "Concrete P10R15 implementation or acceptance evidence using existing infrastructure.",
+      "evidence": "Original clean b1c9673 compile/roundtrip proof; exact38 signed Legacy count and V2 Dictionary PASS, V2 numeric item defect retained.",
+      "note": "Immutable implementation ancestor, recorded separately. No unexecuted native, physical-device or release tier is inferred."
+    },
+    {
+      "name": "P10R15 bounded shared GET pagination",
+      "locations": [
+        "paginate_macro.go",
+        "tools/p10r15/verify_paginate.py"
+      ],
+      "firstForkCommit": "7ca7c240992ae454cd654bd8d18113048cabe9a9",
+      "change": "Add bounded page/item budgets, typed ordered aggregation and native cycle guards through the existing shared macro path.",
+      "reason": "Concrete P10R15 implementation or acceptance evidence using existing infrastructure.",
+      "evidence": "Exact f5d88ad source32 compiles/roundtrips,144 loopback graph cases,44 negative inputs,7causal faults. Native pilots at35a6b60 pending; no HTTP recovery claim.",
+      "note": "Immutable implementation ancestor, recorded separately. No unexecuted native, physical-device or release tier is inferred."
+    },
+    {
+      "name": "P10R15 complete argument binding",
+      "locations": [
+        "internal/language/analysis/analyzer.go",
+        "p15_call_acceptance_test.go"
+      ],
+      "firstForkCommit": "4830dd698f984c4f362aeccdb037dc94384b3407",
+      "change": "Validate missing, duplicate, unknown and excess call arguments while preserving optional/default semantics.",
+      "reason": "Concrete P10R15 implementation or acceptance evidence using existing infrastructure.",
+      "evidence": "Exact70cd603 production C02 evidence plus T02/T06/T08 compatibility passed; receipt integrated9a5edfb.",
+      "note": "Immutable implementation ancestor, recorded separately. No unexecuted native, physical-device or release tier is inferred."
+    },
+    {
+      "name": "P10R15 roundtrip test binary cleanup",
+      "locations": [
+        "fork_roundtrip_test.go"
+      ],
+      "firstForkCommit": "0de5370d9ad19cdd8fc8f87275ea825a769e4055",
+      "change": "Remove only the test process-owned shared compiler after tests finish, retaining the actual exit.",
+      "reason": "Concrete P10R15 implementation or acceptance evidence using existing infrastructure.",
+      "evidence": "Actual successful and deliberately failed Go-build subprocesses remove own directory and preserve unrelated sentinel.",
+      "note": "Immutable implementation ancestor, recorded separately. No unexecuted native, physical-device or release tier is inferred."
+    },
+    {
+      "name": "P10R15 bounded native HTTP continuation probes",
+      "locations": [
+        "tools/shortcuts-simulator-qa/retry_http_probe.py",
+        "scripts/ios27_shortcuts_simulator_qa.sh"
+      ],
+      "firstForkCommit": "40b502d4477d35a8d096098f8fbd5b6fb53bc497",
+      "change": "Add nonce-bound finite synthetic local HTTP/transport probes with unchanged strict callback/publication gates.",
+      "reason": "Concrete P10R15 implementation or acceptance evidence using existing infrastructure.",
+      "evidence": "Native200 pilot failed before execution in Python readiness; follow-up fb1ee94 starts lifetime at active serving. Combined108Python passed69fc585. Native error contract remains unproven.",
+      "note": "Immutable implementation ancestor, recorded separately. No unexecuted native, physical-device or release tier is inferred."
+    },
+    {
+      "name": "P10R15 native numeric List materialization",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "p15_numeric_list_test.go",
+        "p15_collect_native_test.go"
+      ],
+      "firstForkCommit": "ae7b9b2ea2a47010a5d579354f47a1412e37456d",
+      "change": "Reuse Number/reference materialization for numeric List rows and retain integer precision without float conversion.",
+      "reason": "Concrete P10R15 implementation or acceptance evidence using existing infrastructure.",
+      "evidence": "Causal original row failures and independent explicit-reference control; exact clean7c2c94341pass events. Actual38 native numeric callback failure retained; fixed source signed rerun pending.",
+      "note": "Immutable implementation ancestor, recorded separately. No unexecuted native, physical-device or release tier is inferred."
+    },
+    {
+      "name": "P10R15 typed macro coverage refresh",
+      "locations": [
+        "tools/p10r15/generate_macro_contract_coverage.py"
+      ],
+      "firstForkCommit": "69fc585d05cf0e9fc5b57e422137682d247a3e26",
+      "change": "Measure numeric input construction separately from the constant collection loop and execute bounded pagination graph controls.",
+      "reason": "Concrete P10R15 implementation or acceptance evidence using existing infrastructure.",
+      "evidence": "Exact69fc58516CLI cases,14expanded native roundtrips,6causal graph faults,19verifier controls,15canonical macros and505native catalog. All11Asana children remain open.",
+      "note": "Immutable implementation ancestor, recorded separately. No unexecuted native, physical-device or release tier is inferred."
     }
   ]
 }

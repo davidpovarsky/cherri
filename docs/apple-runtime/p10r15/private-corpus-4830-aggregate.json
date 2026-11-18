@@ -1,0 +1,48 @@
+{
+  "sourceSha": "4830dd698f984c4f362aeccdb037dc94384b3407",
+  "hostPlatform": "WindowsAMD64",
+  "startedAtUtc": "2026-11-18T13:57:24.406230+00:00",
+  "tests": [
+    {
+      "test": "TestP10R10CorpusMeasure",
+      "status": "PASS",
+      "exitCode": 0,
+      "discovered": true,
+      "wallSeconds": 281.453,
+      "logSha256": "3622db4e4dcf4b719e4d1916467acc68799f67e78281af43254ac13c379b828d",
+      "safeSummary": []
+    },
+    {
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+      "status": "PASS",
+      "exitCode": 0,
+      "discovered": true,
+      "wallSeconds": 166.063,
+      "logSha256": "ad0e87cbb2e4c8bbd9d19fb8778723cd85bcc076efd4b75ee0d012f10af445d1",
+      "safeSummary": [
+        "p11_wire_fidelity_test.go:115: P11_WIRE_01 checked 38 files, 27652 total actions, 23349 NATURAL_VERIFIED"
+      ]
+    },
+    {
+      "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+      "status": "FAIL",
+      "exitCode": 1,
+      "discovered": true,
+      "wallSeconds": 128.781,
+      "logSha256": "9e42518e8d21c03d38b9605e44127a18dd5eb6b089db65e0c563a4ae96c8bcb1",
+      "safeSummary": []
+    }
+  ],
+  "scope": "Private originals and raw logs remain on authorized host; only aggregate counts/timings leave the corpus boundary.",
+  "originalInputsUnchanged": true,
+  "cleanAfterReportRestore": true,
+  "finishedAtUtc": "2026-11-18T14:07:01.030885+00:00",
+  "status": "FAIL",
+  "failureClassification": {
+    "stage3DemotedActions": 4,
+    "naturalVerified": 23349,
+    "previousNaturalVerified": 23353,
+    "exactDualDialectPlists": 76,
+    "causeStatus": "NARROW_IMPORT_PROPERTY_REPAIR_IN_PROGRESS"
+  }
+}
