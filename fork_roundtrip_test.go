@@ -35,17 +35,33 @@ import (
 
 var roundTripBinaryOnce sync.Once
 var roundTripBinaryPath string
+var roundTripBinaryDir string
 var roundTripBinaryErr error
+
+// The compiler is shared by this test process, so its directory must outlive
+// individual tests and be removed only after all test workers have finished.
+// A test/build failure keeps its failure status while still reclaiming the binary.
+func TestMain(m *testing.M) {
+	code := m.Run()
+	if roundTripBinaryDir != "" {
+		if err := os.RemoveAll(roundTripBinaryDir); err != nil {
+			fmt.Fprintf(os.Stderr, "remove temporary round-trip compiler: %v\n", err)
+			if code == 0 {
+				code = 1
+			}
+		}
+	}
+	os.Exit(code)
+}
 
 func roundTripBinary(t *testing.T) string {
 	t.Helper()
 	roundTripBinaryOnce.Do(func() {
-		var dir string
-		dir, roundTripBinaryErr = os.MkdirTemp("", "cherri-roundtrip-bin")
+		roundTripBinaryDir, roundTripBinaryErr = os.MkdirTemp("", "cherri-roundtrip-bin")
 		if roundTripBinaryErr != nil {
 			return
 		}
-		roundTripBinaryPath = filepath.Join(dir, "cherri-roundtrip")
+		roundTripBinaryPath = filepath.Join(roundTripBinaryDir, "cherri-roundtrip")
 		var build *exec.Cmd
 		if isWindowsRuntime() {
 			roundTripBinaryPath += ".exe"
