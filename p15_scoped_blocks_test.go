@@ -195,7 +195,6 @@ func TestP15_MeasureRejectsUnprovenForms(t *testing.T) {
 }
 
 func TestP15_CollectUsesExistingRepeatResultsWithoutAccumulator(t *testing.T) {
-	baselineCount := -1
 	for _, size := range []int{0, 1, 100} {
 		items := make([]string, size)
 		for index := range items {
@@ -203,13 +202,38 @@ func TestP15_CollectUsesExistingRepeatResultsWithoutAccumulator(t *testing.T) {
 		}
 		source := "let result = for item in [" + strings.Join(items, ",") + "] { yield item }\ngetVariable(result)"
 		actions := p15MeasureActions(t, source, BuildProfileDebug)
-		t.Logf("collect existing for/yield N=%d nativeActions=%d", size, len(actions))
-		if baselineCount < 0 {
-			baselineCount = len(actions)
+		var boundaries []int
+		for index, action := range actions {
+			if action.WFWorkflowActionIdentifier == "is.workflow.actions.repeat.each" {
+				boundaries = append(boundaries, index)
+			}
 		}
-		if len(actions) != baselineCount {
-			t.Fatalf("collection unrolled body with N=%d: actions=%d baseline=%d", size, len(actions), baselineCount)
+		if len(boundaries) != 2 {
+			t.Fatalf("missing Repeat Each boundaries: %v", actionSuffixes(actions))
 		}
+		start, end := boundaries[0], boundaries[1]
+		region := actions[start : end+1]
+		if got := strings.Join(actionSuffixes(region), ","); got != "repeat.each,setvariable,getvariable,repeat.each" {
+			t.Fatalf("existing four-action loop body changed/unrolled at N=%d: %s", size, got)
+		}
+		inputActions := actions[:start]
+		numbers, lists := p15ActionsNamed(inputActions, "number"), p15ActionsNamed(inputActions, "list")
+		if len(numbers) != size || len(lists) != 1 {
+			t.Fatalf("typed input construction lost values: N=%d Number=%d List=%d", size, len(numbers), len(lists))
+		}
+		for index, number := range numbers {
+			if fmt.Sprint(number.WFWorkflowActionParameters["WFNumberActionNumber"]) != fmt.Sprint(index) {
+				t.Fatalf("numeric input value changed at N=%d item=%d: %v", size, index, number)
+			}
+		}
+		input := p15OutputReference(actions[start].WFWorkflowActionParameters["WFInput"])
+		if input["Type"] != "ActionOutput" || input["OutputUUID"] != lists[0].WFWorkflowActionParameters["UUID"] {
+			t.Fatalf("loop is not bound to the typed input List: %v", input)
+		}
+		if len(actions[end+1:]) != 1 {
+			t.Fatalf("unexpected post-loop work: %v", actionSuffixes(actions[end+1:]))
+		}
+		t.Logf("collect N=%d total=%d inputConstruction=%d repeatRegion=%d resultConsumer=%d", size, len(actions), len(inputActions), len(region), len(actions[end+1:]))
 		loops := p15ActionsNamed(actions, "repeat.each")
 		if len(loops) != 2 || loops[0].WFWorkflowActionParameters["GroupingIdentifier"] != loops[1].WFWorkflowActionParameters["GroupingIdentifier"] {
 			t.Fatal("repeat control region not paired")
