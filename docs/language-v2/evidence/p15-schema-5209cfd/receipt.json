@@ -1,0 +1,85 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-U02-unit",
+      "requirements": [
+        "U02"
+      ],
+      "tier": "unit",
+      "implementation_sha": "5209cfdfaa23b7b51dcd36c55c7ebcee7cd51e6c",
+      "test_id": "github.com/electrikmilk/cherri:TestP15U02GeneratedSchemaProduction",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15U02GeneratedSchemaProduction)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15U02GeneratedSchemaProduction"
+      },
+      "detail": "Executed production tests: TestP15U02GeneratedSchemaProduction"
+    },
+    {
+      "evidence_id": "ev-local-U02-generation",
+      "requirements": [
+        "U02"
+      ],
+      "tier": "generation",
+      "implementation_sha": "5209cfdfaa23b7b51dcd36c55c7ebcee7cd51e6c",
+      "test_id": "github.com/electrikmilk/cherri:TestP15U02GeneratedSchemaProduction",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15U02GeneratedSchemaProduction)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15U02GeneratedSchemaProduction"
+      },
+      "detail": "Executed production tests: TestP15U02GeneratedSchemaProduction"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T05:31:35Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "U02",
+        "group": "upstream",
+        "requirement": "Regenerate assembled schema from original declarations and narrow facets",
+        "test_level": "unit+generation",
+        "executed_levels": [
+          "unit",
+          "generation"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only U02 actual production generation and causal mutation checks; no platform or release closure",
+  "source_sha": "5209cfdfaa23b7b51dcd36c55c7ebcee7cd51e6c",
+  "source_tree_clean": true
+}

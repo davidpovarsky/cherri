@@ -1,0 +1,25 @@
+{
+  "sha": "5209cfdfaa23b7b51dcd36c55c7ebcee7cd51e6c",
+  "cleanAtStart": true,
+  "exit": 0,
+  "seconds": 67.122,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "6m",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestSchema(Generation|Propagation)ProductionEvidence$"
+  ],
+  "sha256": "cbc08098d90a1ddbd702cea005f77a6bfdc0703bd22c88d776bd4f69620e06e3",
+  "passes": [
+    "TestSchemaGenerationProductionEvidence",
+    "TestSchemaPropagationProductionEvidence"
+  ],
+  "failures": [],
+  "scope": "U02 actual live catalog and repeat generation; U03 actual isolated declaration->generation->compiled registry->analyzer/completion plus stale-facet rejection and restore. No platform or release closure.",
+  "sourceTreeCleanAfter": true
+}
