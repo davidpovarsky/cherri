@@ -2428,7 +2428,7 @@
       "firstForkCommit": "ae7b9b2ea2a47010a5d579354f47a1412e37456d",
       "change": "Reuse Number/reference materialization for numeric List rows and retain integer precision without float conversion.",
       "reason": "Concrete P10R15 implementation or acceptance evidence using existing infrastructure.",
-      "evidence": "Causal original row failures and independent explicit-reference control; exact clean7c2c94341pass events. Actual38 native numeric callback failure retained; fixed source signed rerun pending.",
+      "evidence": "Causal original row failures and independent explicit-reference control; exact clean7c2c94341pass events. Actual38 native numeric callback failure retained; fixed source signed rerun pending. Signed71a3e2d run44326198585 now returns100items and0/99; empty count1 vs0 keeps whole fixtureFAIL. Exactold/new17-action empty prefix is identical. See collection-r5-71a3e2d-native-audit.json.",
       "note": "Immutable implementation ancestor, recorded separately. No unexecuted native, physical-device or release tier is inferred."
     },
     {
@@ -2451,7 +2451,7 @@
       "firstForkCommit": "bbc60bc0c0fef4c8e56f831615486c5ec0f3543f",
       "change": "Recover collection cardinality only from disambiguated existing reverse metadata and preserve exact imported native property attachments. Authored scalar member guards remain strict.",
       "reason": "Repair the four Stage-3 demotions isolated after the List property safety guard.",
-      "evidence": "Causal RED and 15 focused clean-source tests PASS on 89d18c1869b0bba8b532fc36ea367f700d41232d, recorded in docs/language-v2/evidence/p15-native-property-89d18c1. Full combined private boundary is running separately.",
+      "evidence": "Causal RED and 15 focused clean-source tests PASS on 89d18c1869b0bba8b532fc36ea367f700d41232d, recorded in docs/language-v2/evidence/p15-native-property-89d18c1. Full combined private boundary is running separately. Combinedbbc60bc private boundary subsequently PASS:38unchanged originals,76exact recursive outputs,23353natural,4298fallback,1invalid,0demotions; sanitized aggregate committedbe9395.",
       "note": "Immutable implementation ancestor; private input content is not exported and no pending runtime tier is inferred."
     },
     {
@@ -2464,7 +2464,7 @@
       "firstForkCommit": "7ce528375a839081f0e311daaf7f3f8ae0145db6",
       "change": "Add independent value and File pipeline controls while retaining the original strict acceptance sources and trace/result gates.",
       "reason": "Localize actual signed require, label and export failures using the existing simulator pipeline.",
-      "evidence": "Exact integrated7ce5283:111Python tests, bash syntax and five actual CLI unsigned compilations PASS. Native diagnostics are dispatched separately; no Apple result inferred.",
+      "evidence": "Exact integrated7ce5283:111Python tests, bash syntax and five actual CLI unsigned compilations PASS. Native diagnostics are dispatched separately; no Apple result inferred. Fresh signeda7d9b60: zero equality diagnosticPASS; File Dictionary restore type/bytesFAIL; independent File conversion/name/readbackERROR. All60published file hashes independently verified; see native-diagnostics-a7d9b60-audit.json.",
       "note": "Only synthetic fixtures may be signed or published."
     },
     {
@@ -2479,6 +2479,34 @@
       "reason": "Separate immutable optional Pack reproduction from enhanced compiler return-type corrections.",
       "evidence": "Clean3ab0e444 four production controls PASS, including missing/wrong source and corrupted module rejection; all8consumer drift mutations detected. Fresh root matrix7localPASS/1external blocker.",
       "note": "Pure Original and releasedPack0.1.1 remain untouched. Static consumer compatibility does not prove installed execution."
+    },
+    {
+      "name": "P10R15 contextual and qualified enum resolution",
+      "locations": [
+        "internal/language/enums/catalog.go",
+        "internal/language/analysis/enums.go",
+        "internal/language/lower/enum_values.go",
+        "internal/language/service/enum_completion.go",
+        "p15_enum_acceptance_test.go"
+      ],
+      "firstForkCommit": "7a668f9586da791565d2a45f8f4cd40a73063cf5",
+      "change": "Resolve exact source/native enum wires through one derived catalog, context and lexical scope; retain native parameter wire constraints and precise service insertion.",
+      "reason": "Execute the C04 unit and service contract through production paths.",
+      "evidence": "Clean6d4db11:70package tests and5independent C04/C02/T02/T06/T08 producers PASS. Follow-upb73b992 respects scoped block shadows; exactdd3c266 C04 receipt passes both required tiers and native-domain alias rejection controls.",
+      "note": "Immutable first implementation ancestor. Native/UI/current full179 closure remain independent."
+    },
+    {
+      "name": "P10R15 existing storage feasibility probes",
+      "locations": [
+        "tools/p10r15/verify_storage_probes.py",
+        "p15_storage_probe_test.go",
+        "tools/shortcuts-simulator-qa/fixtures/qa-storage-text-same-run-v2.cherri"
+      ],
+      "firstForkCommit": "46b4157837b91a92ec4fcb7cec566159950182cc",
+      "change": "Exercise existing get/set/delete stored-content primitives with strict synthetic graph, release and publication contracts before any typed cache design.",
+      "reason": "Determine actual native storage behavior without inventing a second persistence backend.",
+      "evidence": "Exacta0d774a clean proof:3Go tests,18graph mutations,4frontend/profile configurations,47Python controls,38actualCLI fixtures,3native-action roundtrips,3Release and5publication fault controls. Text pilot44337212109 still requires its own native result.",
+      "note": "Typed archive, shared scope, missing/corrupt handling and cross-run persistence are not inferred from local graph checks."
     }
   ]
 }

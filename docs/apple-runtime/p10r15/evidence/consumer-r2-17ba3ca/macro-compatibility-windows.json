@@ -1,0 +1,172 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-18T15:35:53Z",
+  "scope": "ACTUAL_COMPILER_CANONICAL_DOCS_ISOLATED_SINGLE_FIELD_MUTATIONS",
+  "compilerCommit": "17ba3ca3387f204a0fd80b092624e21f311db8d4",
+  "compilerSHA256": "ce32d4c462013e402692194db1f8b3b2ec62ee4aa8bcbb68d91857cd93bad58d",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+  "macroCount": 15,
+  "schemaFingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
+  "canonicalDocsSHA256": "e53d6cf7ff1b7a743bdc089786dbed4181fcda0a9231953ca760579a9f7b494f",
+  "skillCommonSHA256": "9904f662f5c2911f57745a7cd2773056d2a0194a9cff1685f23df2901004061f",
+  "legacyCompilerCommit": null,
+  "legacyCompilerSHA256": null,
+  "livePromotion": false,
+  "summary": {
+    "checks": 21,
+    "passed": 21,
+    "failed": 0
+  },
+  "results": [
+    {
+      "case": "actual_healthy_tuple",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 7.11
+    },
+    {
+      "case": "healthy_capabilities_proxy",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 6.453
+    },
+    {
+      "case": "compiler_macro_missing",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_MISSING",
+      "verdict": "PASS",
+      "seconds": 3.547
+    },
+    {
+      "case": "compiler_restore_after_missing",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 5.484
+    },
+    {
+      "case": "compiler_macro_malformed",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_INVALID",
+      "verdict": "PASS",
+      "seconds": 4.14
+    },
+    {
+      "case": "compiler_restore_after_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 6.25
+    },
+    {
+      "case": "compiler_macro_mismatch",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_MISMATCH",
+      "verdict": "PASS",
+      "seconds": 3.813
+    },
+    {
+      "case": "compiler_restore_after_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 5.422
+    },
+    {
+      "case": "manifest_macro_empty",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_MANIFEST_INVALID",
+      "verdict": "PASS",
+      "seconds": 1.515
+    },
+    {
+      "case": "manifest_restore_after_empty",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 3.485
+    },
+    {
+      "case": "manifest_macro_malformed",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_MANIFEST_INVALID",
+      "verdict": "PASS",
+      "seconds": 1.406
+    },
+    {
+      "case": "manifest_restore_after_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 3.125
+    },
+    {
+      "case": "manifest_macro_mismatch",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_MISMATCH",
+      "verdict": "PASS",
+      "seconds": 2.0
+    },
+    {
+      "case": "manifest_restore_after_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 2.953
+    },
+    {
+      "case": "docs_macro_missing",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_DOCS_MACRO_FINGERPRINT_MISSING",
+      "verdict": "PASS",
+      "seconds": 3.156
+    },
+    {
+      "case": "docs_restore_after_missing",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 3.406
+    },
+    {
+      "case": "docs_macro_malformed",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_DOCS_MACRO_FINGERPRINT_INVALID",
+      "verdict": "PASS",
+      "seconds": 3.36
+    },
+    {
+      "case": "docs_restore_after_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 3.078
+    },
+    {
+      "case": "docs_macro_mismatch",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_STALE_DOCS_MACROS",
+      "verdict": "PASS",
+      "seconds": 3.0
+    },
+    {
+      "case": "docs_restore_after_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 3.172
+    },
+    {
+      "case": "old_manifest_without_macro_field",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 3.031
+    }
+  ],
+  "rawReportSha256": "53e6079de1b70675bfef51a109f2a99cdddb5c6276f3e61ad65d39fc9fa70ad4",
+  "rawLogSha256": "731bcbadf4d3a6d6a11557a0b43e560a291701fcea0b39456cac8f59a0dfcb68",
+  "evidenceScope": "Actual S17 compiler with canonical generated docs copied to an isolated Git fixture; doctor single-field fault and restore controls on Windows. The isolated docs commit is not the installed D pin. No old-compiler case was requested; no live promotion."
+}
