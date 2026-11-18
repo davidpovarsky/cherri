@@ -21,6 +21,11 @@ struct SanitizedAccessibilityNode: Codable {
     let frame: SanitizedFrame
     let enabled: Bool
     let visible: Bool
+    let geometryValid: Bool
+    let identifierDigest: String?
+    let nativeUUIDDigests: [String]
+    let nativeActionIdentifier: String?
+    let actionContainerHint: Bool
 }
 
 struct ScreenshotManifestEntry: Codable {
@@ -39,6 +44,8 @@ struct ScreenshotManifestEntry: Codable {
 
 struct EditorActionCoverageReport: Codable {
     let schemaVersion: String
+    let runId: String
+    let axTreePersisted: Bool
     let shortcutLaunched: Bool
     let shortcutForegroundVerified: Bool
     let expectedShortcutName: String
@@ -136,7 +143,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
 
     private static let allowlistedPrefixes: [String] = [
         "CHERRI_QA_", "ANCHOR_", "qa.", "qa-functional", "qa-scroll-editor",
-        "qa-rtl-hebrew", "Cherri QA", "===CHERRI_QA_TRACE_NDJSON_V14===",
+        "qa-rtl-hebrew", "qa-bool-list", "qa-short-circuit", "Cherri QA", "===CHERRI_QA_TRACE_NDJSON_V14===",
         "ElementType_", "Vertical scroll bar", "Horizontal scroll bar",
         "_TtGC7SwiftUI", "More, qa-", "More, New Shortcut", "Edit, New Shortcut",
         "Edit, qa-", "Open, qa-", "Play, qa-", "Preparing support for"
@@ -194,7 +201,26 @@ final class CherriSimulatorQAUITests: XCTestCase {
         func visit(_ snap: XCUIElementSnapshot, parentIdx: Int?, siblingIdx: Int) {
             let currentIdx = nodes.count
             let f = snap.frame
-            let isVis = !f.isEmpty && f.width > 0 && f.height > 0 && viewport.intersects(f)
+            let geometryValid = [f.origin.x, f.origin.y, f.width, f.height].allSatisfy { $0.isFinite }
+            let isVis = geometryValid && !f.isEmpty && f.width > 0 && f.height > 0 && viewport.intersects(f)
+            func finiteCoordinate(_ value: CGFloat) -> Double {
+                value.isFinite ? Double((value * 10).rounded() / 10) : 0
+            }
+            func stableDigest(_ value: String) -> String {
+                SHA256.hash(data: Data(value.utf8)).map { String(format: "%02x", $0) }.joined()
+            }
+            let rawIdentifier = snap.identifier
+            let uuidPattern = "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"
+            let identifierRange = NSRange(rawIdentifier.startIndex..<rawIdentifier.endIndex, in: rawIdentifier)
+            let uuidMatches = (try? NSRegularExpression(pattern: uuidPattern))?.matches(in: rawIdentifier, range: identifierRange) ?? []
+            let uuidDigests = uuidMatches.compactMap { match -> String? in
+                guard let range = Range(match.range, in: rawIdentifier) else { return nil }
+                return stableDigest(String(rawIdentifier[range]).lowercased())
+            }
+            let nativeIdentifier = rawIdentifier.range(of: "^is\\.workflow\\.actions\\.[A-Za-z0-9._-]+$", options: .regularExpression) != nil ? rawIdentifier : nil
+            // A container hint is structural evidence, not a localized title.
+            // Unknown containers remain unknown instead of counting every text/button.
+            let actionHint = rawIdentifier.hasPrefix("workflow-action-") || rawIdentifier.hasPrefix("WFWorkflowAction")
             let rawVal: String?
             if let v = snap.value {
                 rawVal = String(describing: v)
@@ -215,13 +241,18 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 identifier: sanitizeUIString(snap.identifier),
                 value: sanitizeUIString(rawVal),
                 frame: SanitizedFrame(
-                    x: (f.origin.x * 10).rounded() / 10,
-                    y: (f.origin.y * 10).rounded() / 10,
-                    width: (f.size.width * 10).rounded() / 10,
-                    height: (f.size.height * 10).rounded() / 10
+                    x: finiteCoordinate(f.origin.x),
+                    y: finiteCoordinate(f.origin.y),
+                    width: finiteCoordinate(f.size.width),
+                    height: finiteCoordinate(f.size.height)
                 ),
                 enabled: snap.isEnabled,
-                visible: isVis
+                visible: isVis,
+                geometryValid: geometryValid,
+                identifierDigest: rawIdentifier.isEmpty ? nil : stableDigest(rawIdentifier),
+                nativeUUIDDigests: uuidDigests,
+                nativeActionIdentifier: nativeIdentifier,
+                actionContainerHint: actionHint
             )
             nodes.append(node)
 
@@ -814,20 +845,34 @@ final class CherriSimulatorQAUITests: XCTestCase {
         var runtimeCallbackObservedInUI = false
 
         func writeEditorArtifacts() {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            var axTreePersisted = false
+            do {
+                let treeData = try encoder.encode(allMergedNodes)
+                try treeData.write(to: outDir.appendingPathComponent("editor-tree.json"), options: .atomic)
+                axTreePersisted = !allMergedNodes.isEmpty
+            } catch {
+                // Historical artifacts lack editor-tree.json; report encoding
+                // or write failures instead of substituting screenshot counts.
+                XCTFail("AX_TREE_PERSISTENCE_FAILED")
+            }
             let hasTopAnchor = orderedAnchors.contains(where: { $0.contains("ANCHOR_CARD_01") || $0.contains("ANCHOR_RTL_01") })
             let hasBottomAnchor = orderedAnchors.contains(where: { $0.contains("ANCHOR_CARD_28") || $0.contains("ANCHOR_RTL_01") })
 
             let captureStatus: String
             if !foregroundVerified {
                 captureStatus = "BLOCKED_SIMULATOR_APP"
-            } else if editorOpened && shortcutExistsInLibrary && editorIdentityVerified && hasTopAnchor && hasBottomAnchor && !orderedActionCards.isEmpty {
+            } else if axTreePersisted && editorOpened && shortcutExistsInLibrary && editorIdentityVerified && hasTopAnchor && hasBottomAnchor && !orderedActionCards.isEmpty {
                 captureStatus = "EDITOR_CAPTURE_COMPLETE"
             } else {
                 captureStatus = "PARTIAL_EDITOR_CAPTURE"
             }
 
             let coverage = EditorActionCoverageReport(
-                schemaVersion: "1.4",
+                schemaVersion: "1.5",
+                runId: execRunNonce,
+                axTreePersisted: axTreePersisted,
                 shortcutLaunched: launched,
                 shortcutForegroundVerified: foregroundVerified,
                 expectedShortcutName: expectedShortcutName,
@@ -851,12 +896,6 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 runtimeCallbackObservedInUI: runtimeCallbackObservedInUI
             )
 
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-
-            if let treeData = try? encoder.encode(allMergedNodes) {
-                try? treeData.write(to: outDir.appendingPathComponent("editor-tree.json"), options: .atomic)
-            }
             if let manifestData = try? encoder.encode(screenshotManifest) {
                 try? manifestData.write(to: outDir.appendingPathComponent("screenshots-manifest.json"), options: .atomic)
             }

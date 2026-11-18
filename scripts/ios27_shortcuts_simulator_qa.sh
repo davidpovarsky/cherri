@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-functional|qa-scroll-editor|qa-rtl-hebrew) ;;
+  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -76,6 +76,24 @@ GATE_PHYSICAL_DEVICE_TESTED="BLOCKED_DEVICE"
 
 # Select primary target fixture from SAMPLE_ID
 case "$SAMPLE_ID" in
+  qa-short-circuit)
+    TARGET_FIXTURE_ID="qa-short-circuit-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-short-circuit-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F01_RESULT:P15_F01_OK"
+    ;;
+  qa-functional-legacy)
+    TARGET_FIXTURE_ID="qa-functional-legacy"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-functional-legacy"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_RESULT:ok:count=2:mode=legacy"
+    ;;
+  qa-bool-list)
+    TARGET_FIXTURE_ID="qa-bool-list-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-bool-list-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_BOOL_LIST_RESULT:ok:first=first:last=second"
+    ;;
   qa-scroll-editor)
     TARGET_FIXTURE_ID="qa-scroll-editor-v2"
     LEGACY_COUNTERPART_ID="qa-scroll-editor-legacy"
@@ -124,6 +142,8 @@ fixture_specs = [
     ("qa-scroll-editor-v2", "qa-scroll-editor-v2.cherri", "v2"),
     ("qa-scroll-editor-legacy", "qa-scroll-editor-legacy.cherri", "legacy"),
     ("qa-rtl-hebrew-v2", "qa-rtl-hebrew-v2.cherri", "v2"),
+    ("qa-bool-list-v2", "qa-bool-list-v2.cherri", "v2"),
+    ("qa-short-circuit-v2", "qa-short-circuit-v2.cherri", "v2"),
     ("qa-functional-v2-uninstrumented", "qa-functional-v2-uninstrumented.cherri", "v2"),
     ("qa-functional-legacy-uninstrumented", "qa-functional-legacy-uninstrumented.cherri", "legacy"),
 ]
@@ -167,7 +187,8 @@ for fid, fname, dialect in fixture_specs:
     })
 
 compiler_manifest = {
-    "schemaVersion": "1.4",
+    "schemaVersion": "1.5",
+    "syntheticOnly": True,
     "compilerCommitSha": source_sha,
     "fixtures": manifest_entries,
 }
@@ -1447,78 +1468,23 @@ PY
       fi
     fi
 
-    # Generate comparison of compiled plist actions/parameters against captured Shortcuts Editor cards
+    # AX observations and native plist are independent inputs. Missing identity,
+    # unknown values or ambiguous overlap remain NEEDS_REVIEW, never false PASS.
     if [ -n "${UNSIGNED_FILE:-}" ] && [ -s "${UNSIGNED_FILE:-}" ]; then
-      python3 - "$UNSIGNED_FILE" "$ARTIFACT_DIR/editor/editor-action-coverage.json" "$ARTIFACT_DIR/editor/editor-tree.json" "$ARTIFACT_DIR/editor/plist-vs-editor-comparison.json" "$TARGET_FIXTURE_ID" <<'PY'
-import json, os, plistlib, sys
-
-plist_path, cov_path, tree_path, out_path, fid = sys.argv[1:6]
-doc = plistlib.loads(open(plist_path, "rb").read())
-actions = doc.get("WFWorkflowActions", [])
-cov = json.load(open(cov_path, encoding="utf-8")) if os.path.exists(cov_path) else {}
-tree = json.load(open(tree_path, encoding="utf-8")) if os.path.exists(tree_path) else []
-
-visible_texts = set()
-for card in cov.get("detectedActionCards", []):
-    visible_texts.add(card)
-for a in cov.get("detectedAnchors", []):
-    visible_texts.add(a)
-for n in tree:
-    if n.get("visible"):
-        for k in ("label", "value"):
-            v = n.get(k)
-            if v:
-                visible_texts.add(v)
-joined_ui = "\n".join(visible_texts)
-
-plist_items = []
-for idx, act in enumerate(actions):
-    aid = act.get("WFWorkflowActionIdentifier", "")
-    params = act.get("WFWorkflowActionParameters", {})
-    marker = None
-    if aid == "is.workflow.actions.comment":
-        marker = params.get("WFCommentActionText", "")
-    elif aid == "is.workflow.actions.gettext":
-        txt = params.get("WFTextActionText", "")
-        marker = txt.get("Value", {}).get("string", "") if isinstance(txt, dict) else str(txt)
-    elif aid == "is.workflow.actions.number":
-        marker = str(params.get("WFNumberActionNumber", ""))
-    expected_ui_titles = {
-        "is.workflow.actions.comment": "Comment",
-        "is.workflow.actions.gettext": "Text",
-        "is.workflow.actions.number": "Number",
-        "is.workflow.actions.dictionary": "Dictionary",
-        "is.workflow.actions.getvalueforkey": "Get Dictionary Value",
-        "is.workflow.actions.conditional": "If",
-        "is.workflow.actions.repeat.count": "Repeat",
-        "is.workflow.actions.output": "Stop and Output",
-    }
-    title_hint = expected_ui_titles.get(aid, aid.split(".")[-1])
-    matched_title = (title_hint.lower() in joined_ui.lower()) or ("Get Value" in joined_ui and aid == "is.workflow.actions.getvalueforkey")
-    matched_marker = bool(marker and isinstance(marker, str) and len(marker) >= 6 and (marker.splitlines()[0][:24] in joined_ui))
-    plist_items.append({
-        "nativeIndex": idx,
-        "actionIdentifier": aid,
-        "expectedCardHint": title_hint,
-        "markerPreview": str(marker)[:80] if marker else None,
-        "matchedCardTitleInUI": matched_title,
-        "matchedParameterInUI": matched_marker,
-    })
-
-summary = {
-    "schemaVersion": "1.4",
-    "fixtureId": fid,
-    "compiledNativeActionCount": len(actions),
-    "detectedAnchorsCount": len(cov.get("detectedAnchors", [])),
-    "detectedAnchors": cov.get("detectedAnchors", []),
-    "detectedActionCardsCount": len(cov.get("detectedActionCards", [])),
-    "matchedCardTitlesCount": sum(1 for item in plist_items if item["matchedCardTitleInUI"]),
-    "matchedParameterValuesCount": sum(1 for item in plist_items if item["matchedParameterInUI"]),
-    "actions": plist_items,
-}
-with open(out_path, "w", encoding="utf-8") as f:
-    json.dump(summary, f, indent=2)
-PY
+      python3 tools/shortcuts-simulator-qa/editor_inspector.py \
+        --plist "$UNSIGNED_FILE" \
+        --tree "$ARTIFACT_DIR/editor/editor-tree.json" \
+        --coverage "$ARTIFACT_DIR/editor/editor-action-coverage.json" \
+        --fixture "$EXPECTED_SHORTCUT_NAME" --run-id "$EXEC_RUN_NONCE" \
+        --source-sha "$SOURCE_SHA" --out-dir "$ARTIFACT_DIR/editor"
+      INSPECTOR_RC=$?
+      # Preserve the historical artifact name as an alias to the stricter report.
+      if [ -f "$ARTIFACT_DIR/editor/editor-comparison.json" ]; then
+        cp "$ARTIFACT_DIR/editor/editor-comparison.json" "$ARTIFACT_DIR/editor/plist-vs-editor-comparison.json"
+      fi
+      if [ "$INSPECTOR_RC" -ne 0 ]; then
+        echo "Editor Inspector: NEEDS_REVIEW (see editor-comparison.json; capture alone is not one-to-one verification)"
+      fi
     fi
 
     # Phase 4: Correlated Runtime Execution of Imported Shortcut via x-callback-url
@@ -1716,6 +1682,9 @@ if len(matched) > 1:
     sys.exit(0)
 
 ev = matched[0]
+if ev.get("receiverSelfTest") is not False or ev.get("eventSource") != "shortcuts-x-callback" or ev.get("fixtureId") != expected_trace_run_id or ev.get("expectedShortcutName") != expected_trace_run_id:
+    print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": "callback source or fixture identity mismatch"}))
+    sys.exit(0)
 if ev.get("status") != "SUCCESS":
     print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": f"callback status={ev.get('status')} error={ev.get('errorMessage')}"}))
     sys.exit(0)
@@ -1723,7 +1692,7 @@ if ev.get("status") != "SUCCESS":
 summary_text = ev.get("resultSummary") or ""
 trace_text = ev.get("tracePayload") or ""
 combined = (summary_text + "\n" + trace_text).strip()
-if expected_out and expected_out not in combined:
+if expected_out and summary_text.strip() != expected_out:
     print(json.dumps({"runGate": "FAIL_RUNTIME", "traceGate": "FAIL_RUNTIME", "reason": f"expected output {expected_out!r} not in {summary_text!r}"}))
     sys.exit(0)
 
@@ -1930,7 +1899,8 @@ if not os.path.exists(trace_jsonl_path):
         }) + "\n")
 PY
 
-# Perform internal privacy scan across all text and binary files before writing summary.json
+# Legacy pattern scan only; raster safety is NOT established by this scan.
+# The separate publication gate quarantines all raster/archives/raw inputs.
 PRIVACY_SCAN_OUT="$(python3 - "$ARTIFACT_DIR" "$UDID" <<'PY'
 import json, os, re, sys
 
@@ -2016,7 +1986,7 @@ elif gates["COMPILER_ARTIFACT_IMPORTED"] == "BLOCKED_SIGNING":
 else:
     readiness = "PARTIAL_READY"
 
-# Scan all artifact files (including binary PNGs) for forbidden patterns and raw UDIDs
+# Pattern scan including metadata; this is not pixel inspection or redaction.
 forbidden = re.compile(rb"(?i)(cherri-shortcut-audit-20261110|\b[0-3][0-9]\.plist\b|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,})")
 custom_server = os.environ.get("CHERRI_SIGNING_SERVER", "").strip()
 privacy_violations = []
@@ -2034,6 +2004,15 @@ for dirpath, _, filenames in os.walk(artifact_dir):
             privacy_violations.append(f"{fn}: custom signing URL leaked into artifact")
 
 privacy_passed = (len(privacy_violations) == 0)
+inspector_status = "NOT_RUN"
+inspector_path = os.path.join(artifact_dir, "editor", "editor-comparison.json")
+if os.path.exists(inspector_path):
+    try:
+        inspector_status = json.load(open(inspector_path, encoding="utf-8")).get("status", "NEEDS_REVIEW")
+    except (OSError, ValueError):
+        inspector_status = "NEEDS_REVIEW"
+if readiness == "READY_SIMULATOR_VERIFIED" and inspector_status != "PASS":
+    readiness = "RUNTIME_VERIFIED_EDITOR_NEEDS_REVIEW"
 
 summary = {
     "schemaVersion": "1.4",
@@ -2042,6 +2021,9 @@ summary = {
     "requireRuntime": (req_rt == "true"),
     "releaseReadiness": readiness,
     "privacyGatePassed": privacy_passed,
+    "privacyScope": "SYNTHETIC_TEXT_AND_BYTE_PATTERNS_ONLY",
+    "pixelRedactionVerified": False,
+    "editorInspectorStatus": inspector_status,
     "privacyViolations": privacy_violations,
     "gates": gates,
 }

@@ -1,0 +1,26 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "bool-list")
+let enabled = true
+let disabled = false
+if enabled {
+    text("CHERRI_QA_TRUE_BRANCH")
+} else {
+    output("CHERRI_QA_BOOL_FAILED_TRUE")
+}
+if disabled {
+    output("CHERRI_QA_BOOL_FAILED_FALSE")
+} else {
+    text("CHERRI_QA_FALSE_BRANCH")
+}
+let items = [{"name": "first", "flag": false}, {"name": "second", "nested": ["a", "b"]}]
+let firstItem = getFirstItem(items)
+let lastItem = getLastItem(items)
+let firstName = getValue(dictionary: firstItem, key: "name")
+let lastName = getValue(dictionary: lastItem, key: "name")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "bool-list")
+let traceEnvelope = debugExportTrace(runId: "qa-bool-list-v2")
+let finalSummary = text(f"CHERRI_QA_BOOL_LIST_RESULT:ok:first={firstName}:last={lastName}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
