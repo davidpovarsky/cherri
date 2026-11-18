@@ -1,0 +1,58 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-K05-integration",
+      "requirements": [
+        "K05"
+      ],
+      "tier": "integration",
+      "implementation_sha": "66afb1579fb3231051e96293d5a9e94cec4e5d18",
+      "test_id": "github.com/electrikmilk/cherri:TestP15K05LiveSigning",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "8m0s",
+        ".",
+        "-run",
+        "^(TestP15K05LiveSigning|TestP15K05BuildPreservesExistingFiles|TestP15K05PreparePreservesOriginal|TestP15K05RepairBuildImportEdit|TestP15K05SigningGateAndExactInput|TestP15K05PrepareRequiresComparator|TestP15K05CopiedImportRequiresPolicy)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15K05LiveSigning, TestP15K05BuildPreservesExistingFiles, TestP15K05PreparePreservesOriginal, TestP15K05RepairBuildImportEdit, TestP15K05SigningGateAndExactInput, TestP15K05PrepareRequiresComparator, TestP15K05CopiedImportRequiresPolicy"
+      },
+      "detail": "Executed production tests: TestP15K05LiveSigning, TestP15K05BuildPreservesExistingFiles, TestP15K05PreparePreservesOriginal, TestP15K05RepairBuildImportEdit, TestP15K05SigningGateAndExactInput, TestP15K05PrepareRequiresComparator, TestP15K05CopiedImportRequiresPolicy"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-18T19:49:29Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "K05",
+        "group": "skill",
+        "requirement": "Structured repair/build/import/edit/sign workflow",
+        "test_level": "integration",
+        "executed_levels": [
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Actual V2 repair/build/import/one-field edit, exact full typed-document gate, preserved originals/prior outputs, blocked unauthorized/missing-comparator cases and real configured signing-service output over the verified bytes. No Apple validity, import, installed-consumer or runtime inference.",
+  "source_sha": "66afb1579fb3231051e96293d5a9e94cec4e5d18",
+  "source_tree_clean": true
+}

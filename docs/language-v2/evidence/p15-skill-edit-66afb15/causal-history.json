@@ -1,0 +1,177 @@
+{
+  "scope": "Causal host-only log hashes and process outcomes; WIP/local controls do not substitute for clean66 live receipt.",
+  "observations": [
+    {
+      "source_sha": "fb93cfb1dae4ca3130a744e16bebcc67a8ac9b20",
+      "source_tree_clean": false,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=4m",
+        "-run",
+        "^TestP15K05(BuildPreservesExistingFiles|PreparePreservesOriginal)$",
+        "."
+      ],
+      "exit_code": 1,
+      "seconds": 49.49,
+      "sha256": "f1701dc26297bd5d06ed54ab4e87ee24843e71d8423c860eb60838f48f843816",
+      "label": "baseline-preservation",
+      "scope": "Unchanged fb93 production: source alias deletion, previous delivery deletion and occupied-workspace overwrite; healthy controls passed."
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=2m",
+        "-run",
+        "^TestP15K05PreparePreservesOriginal$",
+        "."
+      ],
+      "exit_code": 1,
+      "seconds": 19.766,
+      "sha256": "80191c117201cc3721b879c16b2a58a1346c9a9ce9608b34a25a71b2b8b4c8f5",
+      "label": "old-import-path-exact",
+      "scope": "Unchanged old semantic wrapper: actual producer/reference UUID loss prevented exact round trip."
+    },
+    {
+      "source_sha": "9e6d6617f070c441d6d264bfa1d9a51640061839",
+      "source_tree_clean": false,
+      "production_unchanged": true,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15K05CopiedImportRequiresPolicy$",
+        "."
+      ],
+      "exit_code": 1,
+      "seconds": 92.187,
+      "sha256": "041f246c644f623bf3a95cfee831aa35cb033aef53b9bf06f6a73857ade2babf",
+      "label": "copied-import-red",
+      "scope": "Unchanged9e production: leading comment, split tokens and grouped native target reached loopback signer without original/policy; authored text/comment controls passed."
+    },
+    {
+      "source_sha": "9e6d6617f070c441d6d264bfa1d9a51640061839",
+      "source_tree_clean": false,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15K05CopiedImportRequiresPolicy$",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 110.5,
+      "sha256": "52e2f54477af22ca270a4a3ee17b5dd60ed4878ff528d46ba44b92750f2ab6af",
+      "label": "copied-import-green-v2",
+      "scope": "WIP canonical session guard: seven copied-source/module/authored control cases passed."
+    },
+    {
+      "source_sha": "9e6d6617f070c441d6d264bfa1d9a51640061839",
+      "source_tree_clean": false,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=3m",
+        "-run",
+        "^TestP15K05BuildPreservesExistingFiles/healthy_unsigned_keeps_sibling$",
+        "."
+      ],
+      "exit_code": 1,
+      "seconds": 20.031,
+      "sha256": "924d92108e4a487a6ee0fd2e6011bb622781ee5b72e075641e31ea2abdaf004b",
+      "label": "staged-sibling-red",
+      "scope": "WIP before explicit-output fix: unrelated existing source unsigned sibling was overwritten."
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=2m",
+        "-run",
+        "^TestP15K05BuildPreservesExistingFiles/legacy_.*_guard$",
+        "."
+      ],
+      "exit_code": 1,
+      "seconds": 27.812,
+      "sha256": "0a263c7eab3fa28066d84433b247e04d25630e3f71accc1502b8f5aadc380e8a",
+      "source_sha": "9e6d6617f070c441d6d264bfa1d9a51640061839",
+      "source_tree_clean": false,
+      "label": "legacy-route-red",
+      "scope": "WIP before shared Legacy fix: filename Legacy form ignored guard; explicit compile form rejected it."
+    },
+    {
+      "source_sha": "9e6d6617f070c441d6d264bfa1d9a51640061839",
+      "source_tree_clean": false,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=6m",
+        "-run",
+        "^TestP15K05",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 164.766,
+      "sha256": "a1c2a1693f7216ac255629fb60d3b6ebc2f0e60f43e65621ba1dd236a0c0747e",
+      "live_signing_enabled": false,
+      "label": "local-followup-final",
+      "scope": "Exact final implementation files before commit: seven local K05 families passed, live test skipped; no external service attempted."
+    },
+    {
+      "source_sha": "9e6d6617f070c441d6d264bfa1d9a51640061839",
+      "source_tree_clean": false,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=2m",
+        "-run",
+        "^TestSkillEditSkippedLiveTestIsNotEvidence$",
+        "./tools/language-acceptance"
+      ],
+      "exit_code": 0,
+      "seconds": 7.594,
+      "sha256": "9f37e25ee3ead92a186c6a1366e68f4ba226dfb32f912a4ae5cdfe68f3796daf",
+      "live_signing_enabled": false,
+      "label": "skip-followup-final",
+      "scope": "Actual dedicated test proved skipped live signing cannot mint formal evidence."
+    },
+    {
+      "source_sha": "9e6d6617f070c441d6d264bfa1d9a51640061839",
+      "source_tree_clean": true,
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout=10m",
+        "-run",
+        "^TestSkillEditProductionEvidence$",
+        "./tools/language-acceptance"
+      ],
+      "exit_code": 1,
+      "seconds": 90.118,
+      "sha256": "294f693c1b8fbee63e951ffb4db543cb6ebd8a4047fed0ecf9b599e4a46ad223",
+      "label": "exact9e-pre-request-provenance-stop",
+      "scope": "Clean9e formal producer failed at binary VCS guard before preparation/signing; no service result. Local production families passed. Go linked-worktree binary lacked vcs.revision/vcs.modified."
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "source_sha": "66afb1579fb3231051e96293d5a9e94cec4e5d18",
+  "evidence_scope": "K05 integration and signing-service/container only",
+  "closure_complete": false,
+  "independent_artifact_checks": {
+    "every_recorded_file_hash_matches": true,
+    "unsigned_equals_sign_input": true,
+    "signed_header": "AEA1",
+    "one_field_full_decoded_document_equality": true,
+    "large_integer_preserved": true
+  },
+  "job_id": "job_ec17481df3c3",
+  "first_attempt_job_id": "job_fbc27975f7dc",
+  "review_findings_reproduced_and_fixed": [
+    "copied-source lexical gate bypass",
+    "ordinary filename Legacy guard bypass"
+  ],
+  "additional_causal_fix": "explicit unsigned output preserves unrelated existing source sibling",
+  "files": {
+    "causal-history.json": {
+      "bytes": 5801,
+      "sha256": "01f402781b2c066a4f6b1b49a8175fadf29792849ead9b80efcf6e9d2f883c29"
+    },
+    "exact-comparator-process.json": {
+      "bytes": 1199,
+      "sha256": "e74f608f9dcffb60189415b469cd23d0eec0716e1b7284da0d490ee5e2c26dfa"
+    },
+    "exact-comparator.jsonl": {
+      "bytes": 33696,
+      "sha256": "ff30aabfe573c98832e73272eeb543bbe501a4c235f725afd6d3cef64d2e0582"
+    },
+    "exact-formal-process.json": {
+      "bytes": 485,
+      "sha256": "de77451e225206821399b1a6a1bda01c3b6a91fa373afe72b46618d185126398"
+    },
+    "exact-formal.jsonl": {
+      "bytes": 4216,
+      "sha256": "fc702dc658f7e0bf7d2b9b1f5077b49206b016c024e04aaa9821688bb5335b99"
+    },
+    "exact-legacy-process.json": {
+      "bytes": 487,
+      "sha256": "903f31b6e59c72bdf307b4e823a4e20e500ff8ab01af97f02520a553f4ba35fd"
+    },
+    "exact-legacy.jsonl": {
+      "bytes": 1317,
+      "sha256": "c37c027f74f3f7b69b73b2209ad852886a73c78655268ef8a5851f47f290b997"
+    },
+    "execution-receipt.json": {
+      "bytes": 5077,
+      "sha256": "968d303ff7548176a7dcc113f77e047ec8fc458e234844c5792acbf162bb0c40"
+    },
+    "formal-receipt.json": {
+      "bytes": 2419,
+      "sha256": "7e2469bcb6cceb2e7a6ad7c8d007ffeaa952b728c12ff0fa0bcb40f52c5bd6d1"
+    },
+    "started.json": {
+      "bytes": 2477,
+      "sha256": "6a944a09404b5d3cd20124106629aa4e502e796bda14dcdfe85cd471dbe715af"
+    },
+    "synthetic/allowed-delta.json": {
+      "bytes": 345,
+      "sha256": "452bfcccbdeabd0c5296d7e025be11b576ffb51f1e933ab8d6d2e1f86fe140c5"
+    },
+    "synthetic/edited.cherri": {
+      "bytes": 3009,
+      "sha256": "429d641baf62335fd2e4597f8273996c1cd753d1e60c5b68c2d0457b4bb0f638"
+    },
+    "synthetic/gate-receipt.json": {
+      "bytes": 228,
+      "sha256": "eaac1b1ecfb12f145d02b4ba4cbc5b0bd2a18142d36ce5b6a86550f8636687b7"
+    },
+    "synthetic/live-signing-receipt.json": {
+      "bytes": 1008,
+      "sha256": "b1fd3b5eb92674e5d170c1a1377536f544e589dce2cced89921d9d85292e5125"
+    },
+    "synthetic/original.plist": {
+      "bytes": 1706,
+      "sha256": "6fd8edd3447941ec756107e44e1af60744fe4794a8d5eb22ee1d6b549c83b237"
+    },
+    "synthetic/sign-input.shortcut": {
+      "bytes": 3335,
+      "sha256": "450f561b59696520218252566e62997001416add2a2b1527c30e47dc9cfd83d6"
+    },
+    "synthetic/signed.shortcut": {
+      "bytes": 22164,
+      "sha256": "3cda2ddbad543bc263e36853646bf458a383ee684786207aa0f6dfbc640c6954"
+    },
+    "synthetic/signing-provenance.json": {
+      "bytes": 772,
+      "sha256": "97c95ffb76ea44b3251cef34eb80177bfee5d409d79aac920c8a35beb5af0d58"
+    },
+    "synthetic/verified-unsigned.shortcut": {
+      "bytes": 3335,
+      "sha256": "450f561b59696520218252566e62997001416add2a2b1527c30e47dc9cfd83d6"
+    }
+  }
+}

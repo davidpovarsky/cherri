@@ -1,0 +1,36 @@
+{
+  "source_sha": "66afb1579fb3231051e96293d5a9e94cec4e5d18",
+  "source_tree_clean": true,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=2m",
+    "./internal/shortcutcompare"
+  ],
+  "exit_code": 0,
+  "seconds": 12.625,
+  "sha256": "ff30aabfe573c98832e73272eeb543bbe501a4c235f725afd6d3cef64d2e0582",
+  "passed_top_level_tests": [
+    "TestAlphaRenamingPasses",
+    "TestMutation01_SwapProducerUUID",
+    "TestMutation02_NonexistentProducer",
+    "TestMutation03_ChangeVariableName",
+    "TestMutation04_ReplaceTokenWithString",
+    "TestMutation05_Transformations",
+    "TestMutation06_ShiftAttachmentRange",
+    "TestMutation07_NestedKeyAsymmetry",
+    "TestMutation08_ScalarTypesAndOmission",
+    "TestMutation09_ReorderActionsAndGroupMarkers",
+    "TestMutation10_RebindLoopReference",
+    "TestMutation11_StaticVariantOrAppIntent",
+    "TestMutation12_RetargetImportQuestion",
+    "TestMutation13_ChangeOrdinaryUUIDLiteral",
+    "TestEditExactComparisonRejectsParityRelaxations",
+    "TestEditPolicyBoundedReplacement",
+    "TestEditPolicyRejectsAmbiguousAuthorizations",
+    "TestFunctionBodyMutation_DetectedByNormalizedComparator"
+  ],
+  "failed_tests": []
+}

@@ -153,3 +153,38 @@ found the ordinary filename Legacy route ignored the guard; its actual causal
 RED and the healthy explicit Legacy rejection control precede the shared
 Legacy-entry fix. None of these loopback or pre-request failures is recorded as
 successful remote signing.
+
+## Clean execution receipt: 66afb15
+
+On clean source `66afb1579fb3231051e96293d5a9e94cec4e5d18`, actual job
+`job_ec17481df3c3` completed successfully. The exact comparator package passed
+18 named tests (12.625s), explicit Legacy compatibility passed (11.813s), and
+the dedicated formal K05 producer passed (155.141s). Its seven named production
+tests include the actual service run and every required local gate. The formal
+report records only K05's integration tier: one PASS, zero failures/skips and
+`closure_complete: false`.
+
+Shortcuty Sign returned a 22,164-byte synthetic signed artifact. Existing
+container validation reported `AEA1_HEADER_PASS`. The verified unsigned and
+captured sign-input bytes both have SHA-256
+`450f561b59696520218252566e62997001416add2a2b1527c30e47dc9cfd83d6`.
+The signed response SHA-256 is
+`3cda2ddbad543bc263e36853646bf458a383ee684786207aa0f6dfbc640c6954`.
+The actual VCS-checked compiler binary SHA-256 is
+`8a47e50cf5b403ac158f76da32e143a2176ef22f0be06c7f1609168d7961a620`.
+Original bytes were preserved; the two-action native document contains exactly
+the single authorized Text-field replacement.
+
+The complete [formal receipt](evidence/p15-skill-edit-66afb15/formal-receipt.json),
+[execution commands/log hashes](evidence/p15-skill-edit-66afb15/execution-receipt.json),
+[artifact audit](evidence/p15-skill-edit-66afb15/artifact-audit.json), and
+[synthetic signing receipt](evidence/p15-skill-edit-66afb15/synthetic/live-signing-receipt.json)
+bind this result to the clean source. The same directory retains raw Go streams,
+the original/source/policy, exact unsigned/sign-input bytes, signed response and
+signing provenance. The [causal history](evidence/p15-skill-edit-66afb15/causal-history.json)
+keeps the earlier failures and WIP checks distinct from that clean receipt.
+
+This is actual configured signing-service and container evidence. Apple
+signature validity, Apple import/runtime and final installed-consumer parity are
+not established by K05. Consumer pins still require the integrated compiler,
+docs and Skill tuple before release validation.
