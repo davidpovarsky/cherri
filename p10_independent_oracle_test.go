@@ -775,7 +775,7 @@ func TestP10_IsolatedCompilerMutationGate(t *testing.T) {
 		"var collectInlineVarRegex = regexp.MustCompile(`\\{@?([a-zA-Z_][a-zA-Z0-9_]*)(?:\\['(.*?)'])?(?:\\.(.*?))?}`)\nvar replaceVarRegex = regexp.MustCompile(`\\{@?[a-zA-Z_][a-zA-Z0-9_]*(?:\\['.*?'])?(?:\\..*?)?}`)",
 		"var collectInlineVarRegex = regexp.MustCompile(`\\{@?(.*?)(?:\\['(.*?)'])?(?:\\.(.*?))?}`)\nvar replaceVarRegex = regexp.MustCompile(`(\\{@?.*?})`)",
 		"^TestP10_RegexQuantifiersPreserved$",
-		"regex WFTextTokenString struct corrupted",
+		"regex WFTextTokenString corrupted",
 	)
 
 	// 4. Real Compiler Mutation 4: Disable the array equality check in internal/language/lower/lower.go

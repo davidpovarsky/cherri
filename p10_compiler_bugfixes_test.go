@@ -192,6 +192,21 @@ matchText("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}", text: pattern)
 
 	assertUnadulteratedRegex("gettext.WFTextActionText", textAct.WFWorkflowActionParameters["WFTextActionText"])
 	assertUnadulteratedRegex("matchText.WFMatchTextPattern", matchAct.WFWorkflowActionParameters["WFMatchTextPattern"])
+
+	// V2 literal tokens now bypass Legacy interpolation by design. Exercise
+	// the unchanged public Legacy compiler too, so the source mutation of
+	// its inline-variable serializer still reaches an observable native wire.
+	legacy := compileDebugFixture(t, "#include 'actions/text'\n@pattern = \"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}\"\nmatchText(\"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}\", @pattern)\n", true)
+	matches := 0
+	for _, action := range legacy {
+		if action.WFWorkflowActionIdentifier == "is.workflow.actions.text.match" {
+			matches++
+			assertUnadulteratedRegex("legacy.matchText.WFMatchTextPattern", action.WFWorkflowActionParameters["WFMatchTextPattern"])
+		}
+	}
+	if matches != 1 {
+		t.Fatalf("expected one actual Legacy regex consumer, got %d", matches)
+	}
 }
 
 // 5. Task 1219800392994574: JSON braces in string must not be parsed as inline variables
