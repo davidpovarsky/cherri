@@ -1467,12 +1467,7 @@ func (r *Runner) runCalls() {
 	// C02: Execute the complete production argument-diagnostic scenarios.
 	r.runCallArgumentRequirement()
 
-	// C03: Variadic source API migrates to explicit named list
-	srcC03 := "getUpcomingEvents(3)"
-	diagsC03 := analyzeSrc(r.reg, srcC03)
-	wfC03, errC03 := lowerSrc(r.reg, srcC03)
-	c03Passed := len(diagsC03) == 0 && errC03 == nil && len(wfC03.Actions) > 0
-	r.Record("C03", "calls", "Variadic source API migrates to explicit named list", "unit+native", []string{"unit", "native"}, c03Passed, "PASSED", "Variadic arguments mapped to typed parameter schemas")
+	r.runVariadicMigrationRequirement()
 
 	// C04: Actual enum analysis, serialization and shared-service producers.
 	r.runEnumRequirement()

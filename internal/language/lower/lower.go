@@ -5600,6 +5600,15 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 	}
 
+	// Expand only the explicit outer argument pack. The same canonical binder
+	// validates it during analysis; existing source-order snapshots now apply
+	// separately to each original element, without changing nested values.
+	if expanded, packError := schema.ExpandNamedVariadicLists(call, actionSchema); packError != nil {
+		return nil, packError
+	} else {
+		call = expanded
+	}
+
 	uuid := l.GenerateUUID()
 	prevInExprStmt := l.inExprStmt
 	l.inExprStmt = false
