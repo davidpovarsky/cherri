@@ -45,6 +45,18 @@ class WorkflowInputContractTests(unittest.TestCase):
         for fixture in ("qa-unit-release", "qa-functional-release", "qa-measure-release;exit 0"):
             self.assertEqual(self.validate(["full", "ipad-default", fixture, "true", "20", "true"]).returncode, 2)
 
+    def test_self_contained_short_circuit_is_a_separate_explicit_target(self):
+        self.assertEqual(self.validate(["full", "ipad-default", "qa-short-circuit-local", "true", "20", "true"]).returncode, 0)
+        for fixture in ("qa-short-circuit-local-release", "qa-short-circuit-local;exit 0"):
+            self.assertEqual(self.validate(["full", "ipad-default", fixture, "true", "20", "true"]).returncode, 2)
+        script = (self.root / "scripts/ios27_shortcuts_simulator_qa.sh").read_text(encoding="utf-8")
+        selector = script.split("# Select primary target fixture from SAMPLE_ID\n", 1)[1].split('TARGET_SOURCE_FILE=', 1)[0]
+        selector += '\nprintf "%s\\n" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT"\n'
+        result = subprocess.run([self.bash, "-c", selector], env={**os.environ, "SAMPLE_ID": "qa-short-circuit-local"},
+                                capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.splitlines(), ["qa-short-circuit-local-v2", "CHERRI_QA_F01_LOCAL_RESULT:P15_F01_LOCAL_OK:calls=1"])
+
     def test_out_of_range_noncanonical_and_overflow_are_rejected(self):
         for pages in ("0", "21", "01", "-1", "1.0", " 1", "1 ", "9" * 200, "1\n2", "$(exit 0)"):
             result = self.validate(["full", "ipad-default", "qa-bool-list", "true", pages, "true"])

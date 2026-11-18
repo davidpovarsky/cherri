@@ -64,6 +64,22 @@ class CallbackContractTests(unittest.TestCase):
     def test_exact_fresh_success(self):
         self.assertEqual(self.verify([self.event()])["runGate"], "PASS")
 
+    def test_self_contained_short_circuit_requires_exact_count_and_normal_trace(self):
+        fid = "qa-short-circuit-local-v2"
+        expected = "CHERRI_QA_F01_LOCAL_RESULT:P15_F01_LOCAL_OK:calls=1"
+        event = self.event()
+        event.update(fixtureId=fid, expectedShortcutName=fid, resultSummary=expected)
+        event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+        result = self.verify([event], fid, expected)
+        self.assertEqual((result["runGate"], result["traceGate"]), ("PASS", "PASS"))
+        for summary in (expected.replace("calls=1", "calls=0"), expected.replace("calls=1", "calls=2"),
+                        expected.replace("P15_F01_LOCAL_OK", "P15_F01_LOCAL_EAGER")):
+            self.assertEqual(self.verify([{**event, "resultSummary": summary}], fid, expected)["runGate"], "FAIL_RUNTIME")
+        self.assertEqual(self.verify([{**event, "tracePayload": ""}], fid, expected)["traceGate"], "FAIL_RUNTIME")
+        manifest = self.manifest(fid)
+        manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE")
+        self.assertEqual(self.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
+
     def test_source_fixture_and_self_test_mutations(self):
         for key, value in (("eventSource", "receiver-self-test"), ("fixtureId", "other"),
                            ("expectedShortcutName", "other"), ("receiverSelfTest", True),

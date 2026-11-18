@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-require|qa-measure|qa-measure-release) ;;
+  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-require|qa-measure|qa-measure-release) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -93,6 +93,12 @@ case "$SAMPLE_ID" in
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="qa-measure-release-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_MEASURE_RELEASE_RESULT:P15_MEASURE_RELEASE_OK"
+    ;;
+  qa-short-circuit-local)
+    TARGET_FIXTURE_ID="qa-short-circuit-local-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-short-circuit-local-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F01_LOCAL_RESULT:P15_F01_LOCAL_OK:calls=1"
     ;;
   qa-short-circuit)
     TARGET_FIXTURE_ID="qa-short-circuit-v2"
@@ -164,6 +170,7 @@ fixture_specs = [
     ("qa-rtl-hebrew-v2", "qa-rtl-hebrew-v2.cherri", "v2"),
     ("qa-bool-list-v2", "qa-bool-list-v2.cherri", "v2"),
     ("qa-short-circuit-v2", "qa-short-circuit-v2.cherri", "v2"),
+    ("qa-short-circuit-local-v2", "qa-short-circuit-local-v2.cherri", "v2"),
     ("qa-require-v2", "qa-require-v2.cherri", "v2"),
     ("qa-measure-v2", "qa-measure-v2.cherri", "v2"),
     ("qa-measure-release-v2", "qa-measure-release-v2.cherri", "v2"),
