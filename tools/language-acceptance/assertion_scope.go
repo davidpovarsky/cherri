@@ -24,7 +24,6 @@ var incompleteLocalAssertions = map[string]string{
 	"V01":   "Action count does not prove snapshot timing or original producer identity.",
 	"V03":   "Nonempty lowering does not prove that the clipboard is captured exactly once.",
 	"V04":   "Successful list/map lowering does not inspect action-output bindings and native payload types.",
-	"C01":   "Literal argument lowering does not prove source evaluation order with observable calls.",
 	"C03":   "getUpcomingEvents(3) does not exercise variadic-to-named-list migration.",
 	"C05":   "An IR parameter comparison does not execute native import and round-trip preservation.",
 	"T01":   "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",

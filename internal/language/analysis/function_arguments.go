@@ -7,67 +7,75 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
 
-// checkUserFunctionArguments binds and analyzes each argument in its parameter context.
-// Binding order deliberately matches the function envelope lowerer: primary,
-// explicit name (including the public name of an underscore-prefixed parameter),
-// then remaining positional arguments. Track every supplied argument so this
-// compatibility order cannot silently discard or reuse a value.
+// Bind by parameter identity first, then analyze each supplied expression once
+// in its source order. Parameter order controls the envelope slots, not effects.
 func (a *Analyzer) checkUserFunctionArguments(fn *syntax.FunctionDecl, call *syntax.CallExpr, scope *Scope) {
 	usedNamed := make([]bool, len(call.NamedArgs))
+	namedParameters := make([]int, len(call.NamedArgs))
+	for i := range namedParameters {
+		namedParameters[i] = -1
+	}
 	unnamedArgIndex := 0
 	if call.PrimaryArg != nil && len(fn.Parameters) == 0 {
 		a.error(CodePositionalArg, call.PrimaryArg.NodeSpan(), fmt.Sprintf("function %q does not accept positional arguments", fn.Name))
-		a.analyzeExpression(call.PrimaryArg, scope)
 	}
 	for i, param := range fn.Parameters {
-		var argument syntax.Expression
-		if i == 0 {
-			argument = call.PrimaryArg
-		}
-		if argument == nil {
+		supplied := i == 0 && call.PrimaryArg != nil
+		if !supplied {
 			for index, named := range call.NamedArgs {
 				if named.Label != "" && (named.Label == param.Name || strings.TrimPrefix(param.Name, "_") == named.Label) {
 					if usedNamed[index] {
 						a.error(CodeDuplicateArgument, named.Span, fmt.Sprintf("argument label %q is ambiguous across parameters in call to %q", named.Label, fn.Name))
+					} else {
+						namedParameters[index] = i
 					}
 					usedNamed[index] = true
-					argument = named.Value
+					supplied = true
 					break
 				}
 			}
 		}
-		if argument == nil {
+		if !supplied {
 			for unnamedArgIndex < len(call.NamedArgs) {
 				index := unnamedArgIndex
 				named := call.NamedArgs[index]
 				unnamedArgIndex++
 				if named.Label == "" {
 					usedNamed[index] = true
-					argument = named.Value
+					namedParameters[index] = i
+					supplied = true
 					break
 				}
 			}
 		}
-		if argument == nil {
-			if !param.Optional && param.DefaultExpr == nil {
-				a.error(CodeMissingArgument, call.Span, fmt.Sprintf("missing required argument %q in call to %q", param.Name, fn.Name))
-			}
-			continue
+		if !supplied && !param.Optional && param.DefaultExpr == nil {
+			a.error(CodeMissingArgument, call.Span, fmt.Sprintf("missing required argument %q in call to %q", param.Name, fn.Name))
 		}
+	}
+
+	analyzeArgument := func(argument syntax.Expression, parameterIndex int) {
+		if parameterIndex < 0 || parameterIndex >= len(fn.Parameters) {
+			a.analyzeExpression(argument, scope)
+			return
+		}
+		param := fn.Parameters[parameterIndex]
 		actual := a.analyzeEnumContext(argument, scope, a.enumCatalog.TypeName(param.TypeExpr))
 		if param.TypeExpr == nil {
-			continue
+			return
 		}
 		expected := a.resolveType(param.TypeExpr)
 		if actual != nil && !actual.AssignableTo(expected) {
 			a.error(CodeArgumentType, argument.NodeSpan(), fmt.Sprintf("argument for %s expects %s, got %s", param.Name, expected, actual))
 		}
 	}
+	if call.PrimaryArg != nil {
+		analyzeArgument(call.PrimaryArg, 0)
+	}
 	for index, named := range call.NamedArgs {
+		analyzeArgument(named.Value, namedParameters[index])
 		if usedNamed[index] {
 			continue
 		}
-		a.analyzeExpression(named.Value, scope)
 		if named.Label == "" {
 			a.error(CodePositionalArg, named.Span, fmt.Sprintf("too many positional arguments in call to %q", fn.Name))
 			continue

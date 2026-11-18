@@ -1446,12 +1446,8 @@ func (r *Runner) runBinding() {
 
 // Group 5: Calls
 func (r *Runner) runCalls() {
-	// C01: Named arguments out of declaration order
-	srcC01 := "resizeImage(none, height: 600, width: 800)"
-	diagsC01 := analyzeSrc(r.reg, srcC01)
-	wfC01, errC01 := lowerSrc(r.reg, srcC01)
-	c01Passed := len(diagsC01) == 0 && errC01 == nil && len(wfC01.Actions) > 0
-	r.Record("C01", "calls", "Named arguments out of declaration order evaluate in source order", "unit+native", []string{"unit", "native"}, c01Passed, "PASSED", "Named arguments bound by label irrespective of schema definition order")
+	// C01: Execute source-order and once-only effects through production.
+	r.runCallOrderRequirement()
 
 	// C02: Execute the complete production argument-diagnostic scenarios.
 	r.runCallArgumentRequirement()

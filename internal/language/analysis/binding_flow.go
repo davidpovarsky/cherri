@@ -172,6 +172,19 @@ func (a *Analyzer) analyzeLogicalRight(expr *syntax.BinaryExpr, scope *Scope) ty
 // shadow's initializer, which still executes in the enclosing environment.
 func writtenBindings(node syntax.Node, scope *Scope) map[*Symbol]bool {
 	writes := map[*Symbol]bool{}
+	for name := range OuterAssignedNames(node) {
+		if symbol, found := scope.Lookup(name); found {
+			writes[symbol] = true
+		}
+	}
+	return writes
+}
+
+// OuterAssignedNames reports assignments to the enclosing environment, excluding
+// local declarations and loop bindings. Both flow analysis and argument-value
+// lowering use this source-order lexical walk.
+func OuterAssignedNames(node syntax.Node) map[string]bool {
+	writes := map[string]bool{}
 	var walk func(syntax.Node, map[string]bool)
 	walk = func(node syntax.Node, locals map[string]bool) {
 		if node == nil {
@@ -184,9 +197,7 @@ func writtenBindings(node syntax.Node, scope *Scope) map[*Symbol]bool {
 		case *syntax.AssignStmt:
 			walk(value.Value, locals)
 			if !locals[value.Name] {
-				if symbol, found := scope.Lookup(value.Name); found {
-					writes[symbol] = true
-				}
+				writes[value.Name] = true
 			}
 		case *syntax.ExprStmt:
 			walk(value.Expr, locals)

@@ -1384,7 +1384,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 				l.emitIfElse(defGroupUUID)
 
-				defVal, err := l.lowerExpression(param.DefaultExpr)
+				defVal, err := l.lowerCallValue(param.DefaultExpr)
 				if err != nil {
 					return nil, fmt.Errorf("function %s default param %s: %w", fn.Name, param.Name, err)
 				}
@@ -5297,7 +5297,8 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	if actDecl, ok := l.actions[actionName]; ok {
 		uuid := l.GenerateUUID()
 		outputUUID := ""
-		if l.currentBindingName != "" {
+		hasValue := actDecl.ReturnType == nil || l.resolveTypeAnnotation(actDecl.ReturnType).Kind() != types.KindVoid
+		if l.currentBindingName != "" || (!l.inExprStmt && hasValue) {
 			outputUUID = uuid
 		}
 		params := make(map[string]interface{})
@@ -5315,7 +5316,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		// Positional primary arg
 		if call.PrimaryArg != nil {
 			if actDecl.PrimaryParam != "" {
-				val, err := l.lowerExpression(call.PrimaryArg)
+				val, err := l.lowerCallArgumentValue(call, -1, call.PrimaryArg)
 				if err != nil {
 					return nil, err
 				}
@@ -5327,7 +5328,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				providedParams[actDecl.PrimaryParam] = true
 			} else if len(actDecl.Parameters) > 0 {
 				param := actDecl.Parameters[0]
-				val, err := l.lowerExpression(call.PrimaryArg)
+				val, err := l.lowerCallArgumentValue(call, -1, call.PrimaryArg)
 				if err != nil {
 					return nil, err
 				}
@@ -5338,9 +5339,9 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 
 		// Named or subsequent positional args
-		for _, arg := range call.NamedArgs {
+		for argumentIndex, arg := range call.NamedArgs {
 			if arg.Label != "" {
-				val, err := l.lowerExpression(arg.Value)
+				val, err := l.lowerCallArgumentValue(call, argumentIndex, arg.Value)
 				if err != nil {
 					return nil, err
 				}
@@ -5355,7 +5356,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if posIdx < len(actDecl.Parameters) {
 					param := actDecl.Parameters[posIdx]
 					posIdx++
-					val, err := l.lowerExpression(arg.Value)
+					val, err := l.lowerCallArgumentValue(call, argumentIndex, arg.Value)
 					if err != nil {
 						return nil, err
 					}
@@ -5371,7 +5372,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		for _, param := range actDecl.Parameters {
 			if !providedParams[param.Name] {
 				if param.DefaultExpr != nil {
-					val, err := l.lowerExpression(param.DefaultExpr)
+					val, err := l.lowerCallValue(param.DefaultExpr)
 					if err != nil {
 						return nil, err
 					}
@@ -5393,6 +5394,10 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 
 	// Check user-defined function
 	if fn, ok := l.functions[actionName]; ok {
+		primaryValue, namedValues, err := l.lowerProvidedFunctionValues(call)
+		if err != nil {
+			return nil, err
+		}
 		argsList := make([]interface{}, len(fn.Parameters))
 		dispatchDict := map[string]interface{}{
 			"_cherri_magic":        "__cherri_fn_envelope_v2__",
@@ -5405,21 +5410,13 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			var argVal interface{}
 			supplied := false
 			if i == 0 && call.PrimaryArg != nil {
-				v, err := l.lowerExpression(call.PrimaryArg)
-				if err != nil {
-					return nil, err
-				}
-				argVal = v
+				argVal = primaryValue
 				supplied = true
 			}
 			if !supplied {
-				for _, nArg := range call.NamedArgs {
+				for argumentIndex, nArg := range call.NamedArgs {
 					if nArg.Label != "" && (nArg.Label == param.Name || strings.TrimPrefix(param.Name, "_") == nArg.Label) {
-						v, err := l.lowerExpression(nArg.Value)
-						if err != nil {
-							return nil, err
-						}
-						argVal = v
+						argVal = namedValues[argumentIndex]
 						supplied = true
 						break
 					}
@@ -5430,11 +5427,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 					nArg := call.NamedArgs[unnamedArgIdx]
 					unnamedArgIdx++
 					if nArg.Label == "" {
-						v, err := l.lowerExpression(nArg.Value)
-						if err != nil {
-							return nil, err
-						}
-						argVal = v
+						argVal = namedValues[unnamedArgIdx-1]
 						supplied = true
 						break
 					}
@@ -5453,20 +5446,8 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				argsList[i] = argVal
 			} else {
 				dispatchDict[fmt.Sprintf("has_arg_%d", i)] = "0"
-				if param.DefaultExpr != nil {
-					v, err := l.lowerExpression(param.DefaultExpr)
-					if err != nil {
-						return nil, err
-					}
-					if b, isBool := v.(bool); isBool {
-						if b {
-							v = 1.0
-						} else {
-							v = 0.0
-						}
-					}
-					argsList[i] = v
-				}
+				// The dispatcher evaluates an omitted default exactly once,
+				// under has_arg_i == 0 and after preceding parameters exist.
 			}
 		}
 		dispatchDict["arguments"] = argsList
@@ -5598,6 +5579,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 						return nil, err
 					}
 				}
+				primVal = l.captureCallSemanticValue(primVal, l.callWritesAfter(call, -1))
 				wireKey := primParam.WireKey
 				if wireKey == "" || wireKey == "url" {
 					if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
@@ -5631,7 +5613,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		if call.PrimaryArg == nil {
 			paramIndex = 0
 		}
-		for _, nArg := range call.NamedArgs {
+		for argumentIndex, nArg := range call.NamedArgs {
 			var param *schema.ParameterSchema
 			var matchedIdx = -1
 			var exists bool
@@ -5677,6 +5659,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 				if err != nil {
 					return nil, err
 				}
+				val = l.captureCallSemanticValue(val, l.callWritesAfter(call, argumentIndex))
 				wireKey := param.WireKey
 				if wireKey == "" || wireKey == "url" {
 					if actionSchema.AppleIdentifier == "is.workflow.actions.url" {
@@ -5767,7 +5750,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	// 1. Primary argument
 	if call.PrimaryArg != nil {
 		if primParam, hasPrim := actionSchema.PrimaryParameter(); hasPrim {
-			primVal, err := l.lowerExpression(call.PrimaryArg)
+			primVal, err := l.lowerCallArgumentValue(call, -1, call.PrimaryArg)
 			if err != nil {
 				return nil, err
 			}
@@ -5833,7 +5816,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 	if call.PrimaryArg == nil {
 		paramIndex = 0
 	}
-	for _, nArg := range call.NamedArgs {
+	for argumentIndex, nArg := range call.NamedArgs {
 		var param *schema.ParameterSchema
 		var exists bool
 		if nArg.Label != "" {
@@ -5849,7 +5832,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			}
 		}
 		if exists && param != nil {
-			val, err := l.lowerExpression(nArg.Value)
+			val, err := l.lowerCallArgumentValue(call, argumentIndex, nArg.Value)
 			if err != nil {
 				return nil, err
 			}
