@@ -11,6 +11,7 @@ import test_runtime_callback_contract as callback_contract
 
 
 CASES = {
+    "qa-number-coercion-control-v2": "CHERRI_QA_NUMBER_COERCION_RESULT:DEQ=Y:DNE=N:REQ=Y:RNE=N:BEQ=Y:BNE=N:ONE_NE_ZERO=Y:ZERO_NE_ONE=Y:ONE_EQ_ONE=Y",
     "qa-nil-clear-v2": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
     "qa-require-zero-diag-v2": "CHERRI_QA_REQUIRE_ZERO_DIAG:L=ok:D=ok:R=ok:B=ok",
     "qa-label-file-controls-v2": "CHERRI_QA_LABEL_FILE_CONTROLS:B=ok:V=ok:VT=ok:L=ok:T=ok:R=ok:S=ok",
@@ -75,9 +76,9 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
                 self.assertEqual(self.oracle.verify([{**event, "resultSummary": expected + "-WRONG"}], fid, expected)["runGate"], "FAIL_RUNTIME")
                 # Reject a wrong value in every independently reported flag,
                 # including later flags that a single verdict used to mask.
-                for match in re.finditer(r"=(ok|[0-9]+)(?=:|$)", expected):
+                for match in re.finditer(r"=(ok|Y|N|[0-9]+)(?=:|$)", expected):
                     old = match.group(1)
-                    wrong_value = "bad" if old == "ok" else "1" if old == "0" else "0"
+                    wrong_value = "bad" if old == "ok" else "N" if old == "Y" else "Y" if old == "N" else "1" if old == "0" else "0"
                     wrong = expected[:match.start(1)] + wrong_value + expected[match.end(1):]
                     self.assertEqual(self.oracle.verify([{**event, "resultSummary": wrong}], fid, expected)["runGate"],
                                      "FAIL_RUNTIME", wrong)
