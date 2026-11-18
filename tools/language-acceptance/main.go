@@ -1551,11 +1551,8 @@ func (r *Runner) runTypes() {
 	t07Passed := compareSemVer("16.0", "15.4") > 0 && compareSemVer("16.1", "16.10") < 0 && compareSemVer("17.0.1", "17.0.1") == 0
 	r.Record("T07", "types", "Per-platform versions compare components rather than floats", "unit", []string{"unit"}, t07Passed, "PASSED", "Semantic versioning compares major.minor components deterministically")
 
-	// T08: Variant-dependent output type
-	encAct, okEnc := r.reg.LookupAction("base64Encode")
-	decAct, okDec := r.reg.LookupAction("base64Decode")
-	t08Passed := okEnc && okDec && encAct.OutputTypeName != "" && decAct.OutputTypeName != ""
-	r.Record("T08", "types", "Variant-dependent output type inferred from literal mode", "unit+service", []string{"unit", "service"}, t08Passed, "PASSED", "Schema lookup chooses action variant based on mode argument")
+	// T08: Actual literal-mode cardinality and contextual language service.
+	r.runTypeCardinalityRequirement()
 
 	// T09: Content Graph conversions
 	t09Passed := types.Text.AssignableTo(types.AnyContent) && types.Number.AssignableTo(types.AnyContent)

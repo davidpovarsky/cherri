@@ -466,8 +466,13 @@ func (s *Service) Hover(uri string, line, col int) *HoverResult {
 			}
 			fmt.Fprintf(&md, "- `%s`: `%s`%s\n", p.Label, p.TypeName, opt)
 		}
-		if a.OutputTypeName != "" && a.OutputTypeName != "Unknown" {
-			fmt.Fprintf(&md, "\n**Returns:** `%s`\n", a.OutputTypeName)
+		output := a.OutputTypeName
+		inferred, contextual := inferredCallResultAt(doc, word, line, col)
+		if contextual {
+			output = inferred.Name()
+		}
+		if output != "" && (output != "Unknown" || contextual) {
+			fmt.Fprintf(&md, "\n**Returns:** `%s`\n", output)
 		}
 
 		span := source.Span{
@@ -585,6 +590,9 @@ func (s *Service) SignatureHelp(uri string, line, col int) *SignatureHelpResult 
 		ret := "Void"
 		if act.OutputTypeName != "" {
 			ret = act.OutputTypeName
+		}
+		if inferred, contextual := inferredCallResultAt(doc, callIdent, line, identStart+1); contextual {
+			ret = inferred.Name()
 		}
 		return &SignatureHelpResult{
 			Label:           fmt.Sprintf("%s(%s) -> %s", act.CallableName, strings.Join(params, ", "), ret),

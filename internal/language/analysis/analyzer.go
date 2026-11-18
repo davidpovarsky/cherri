@@ -1042,6 +1042,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		case "image":
 			return types.Image
 		default:
+			if mayHaveListCardinality(targetType) {
+				a.error(CodeArgumentType, e.Span, fmt.Sprintf("property %q requires a single value; %s may contain multiple items", e.Property, targetType))
+			}
 			return types.Unknown
 		}
 
@@ -1150,17 +1153,14 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		}
 
 	case *syntax.ListExpr:
-		var elemType types.Type = types.Unknown
+		elements := make([]types.Type, 0, len(e.Elements))
 		for _, el := range e.Elements {
-			t := a.analyzeExpression(el, scope)
-			if elemType.Kind() == types.KindUnknown {
-				elemType = t
-			}
+			elements = append(elements, a.analyzeExpression(el, scope))
 		}
-		return types.NewList(elemType)
+		return types.NewList(types.NewUnion(elements...))
 
 	case *syntax.MapExpr:
-		var valType types.Type = types.Unknown
+		values := make([]types.Type, 0, len(e.Entries))
 		seenKeys := make(map[string]bool)
 		for _, entry := range e.Entries {
 			if litKey, ok := entry.Key.(*syntax.LiteralExpr); ok {
@@ -1173,12 +1173,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 				seenKeys[litKey.Value] = true
 			}
 			a.analyzeExpression(entry.Key, scope)
-			vt := a.analyzeExpression(entry.Value, scope)
-			if valType.Kind() == types.KindUnknown {
-				valType = vt
-			}
+			values = append(values, a.analyzeExpression(entry.Value, scope))
 		}
-		return types.NewMap(types.Text, valType)
+		return types.NewMap(types.Text, types.NewUnion(values...))
 
 	case *syntax.IfStmt:
 		oldVal := a.inValueBlk
@@ -1400,6 +1397,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 
 	// Step-by-step argument binding algorithm per §7.2
 	boundIndices := make(map[int]bool)
+	boundArguments := make(map[string]syntax.Expression)
 
 	// Step 2: Primary argument binding
 	if call.PrimaryArg != nil {
@@ -1408,6 +1406,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			a.error(CodePositionalArg, call.PrimaryArg.NodeSpan(), fmt.Sprintf("action %q does not accept an unlabeled primary argument; use named arguments", callName))
 		} else {
 			boundIndices[0] = true
+			boundArguments[primParam.WireKey] = call.PrimaryArg
 			if primParam.WireKey == "WFDictionaryKey" {
 				if lit, isLit := call.PrimaryArg.(*syntax.LiteralExpr); isLit && lit.Value == "" {
 					a.error(CodeArgumentType, call.PrimaryArg.NodeSpan(), "empty dictionary key is not allowed")
@@ -1490,6 +1489,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			a.error(CodeDuplicateArgument, nArg.Span, fmt.Sprintf("duplicate argument for parameter %q in call to %q", nArg.Label, callName))
 		}
 		boundIndices[matchedIdx] = true
+		boundArguments[param.WireKey] = nArg.Value
 
 		if param.WireKey == "WFDictionaryKey" || nArg.Label == "key" {
 			if lit, isLit := nArg.Value.(*syntax.LiteralExpr); isLit && lit.Value == "" {
@@ -1532,6 +1532,9 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 
 	if actionSchema.CallableName == "require" && actionSchema.CompilerConstruct {
 		return a.requireOutputType(call)
+	}
+	if result, specialized := a.variantOutputType(actionSchema, boundArguments); specialized {
+		return result
 	}
 	if actionSchema.OutputType != nil {
 		return actionSchema.OutputType

@@ -39,6 +39,27 @@ Execution before commit:
 
 The T06 formal producer records only its required unit tier. It proves static rejection of an unvalidated external record guarantee, not native JSON validation or signed execution. Each producer's bounded evidence test verifies exact contract text, implementation SHA, producer command, diagnostic controls, missing/wrong-producer rejection and unchanged 179-obligation accounting. The clean source receipt is added after the implementation commit.
 
+## T08: literal selection mode and actual result cardinality
+
+The old probe compared two unrelated base64 aliases. The replacement uses the checked-in Apple `WFChooseFromListAction` contract: the input determines the selected element's type, the Select Multiple switch defaults to false, and its native description explicitly permits multiple selections when enabled. The nominal `Output.Multiple=false` field is not treated as proof for every mode.
+
+Causal RED on `b56eaa83e30ef923b0a3e17c0b11385533a9be7c`: job `job_f8eb39f755a0` reproduced fixed Unknown output, first-element-only List and Map inference, accepted invalid scalar/field use, and missing contextual hover. The corrected analyzer joins every List element and Map value with the existing union representation; opaque members do not disappear depending on position. For a known List<T>, omitted/false mode produces T, true produces List<T>, and runtime mode produces T | List<T>. Pure Boolean literals already folded by the compiler retain their mode. Runtime let bindings are not constant-propagated. An opaque input keeps an Unknown element category, including when its multiple-result container is known.
+
+Result inference uses the production argument binder's wire-key associations, covering primary, named and later positional arguments. No native action is added or changed. The tests compile actual selection calls and independently check the emitted input/output producer UUIDs and omitted, explicit or attached native mode. Wrong-mode and wrong-producer mutations fail.
+
+Direct field access on a known possible list result is rejected, while a scalar selected record retains its established field type. A mixed collection cannot satisfy a homogeneous annotation solely because of its first value. These diagnostics prevent complete native emission. This is a cardinality and static evidence correction, not an implicit runtime cast or proof that opaque input has a record shape.
+
+Hover and Signature Help read the analyzer's actual call result at that callee's source span. Different calls to the same action show their own cardinality, and edits change both displayed types and diagnostics. The fixed schema output remains Unknown for contexts without an analyzed call; no blanket catalog guarantee is introduced.
+
+Execution before commit:
+
+- Focused T08 GREEN: `job_7d5075bcb139`, PASS in 0.229 seconds.
+- T02/T06/T08 production tests including mode/UUID/diagnostic mutations and editor edits: `job_a9e0972e2f58`, root PASS in 0.229 seconds.
+- The same job passed full types, syntax, analysis, service and lower packages (0.926 / 1.332 / 1.268 / 1.542 / 1.331 seconds).
+- Actual T02/T06/T08 formal producers and smoke safeguards: `job_fd121b5cc053`, PASS in 7.547 seconds.
+
+T08 records its required unit and service tiers with their actual distinct production test identifiers. Removing the service tier cannot mint a pass. The exact clean implementation receipt is retained after commit. Native metadata and emitted plist inspection establish the bounded static contract; this report makes no signed Apple execution or per-platform availability claim.
+
 ## Remaining T01–T08 obligations
 
 | ID | Current evidence boundary |
@@ -50,7 +71,7 @@ The T06 formal producer records only its required unit tier. It proves static re
 | T05 | Optional type construction alone does not prove omission versus explicit optional value and JSON null in native serialization. |
 | T06 | Dedicated production unit producer rejects unvalidated external record guarantees; no runtime validator or native execution is claimed. |
 | T07 | The production analyzer currently parses and compares target versions as float64. The schema helper compares components but is not used there. Existing action min/max metadata is also float64 and lacks independent per-platform version facets. No T07 pass is claimed. |
-| T08 | Production analysis currently returns fixed ActionSchema output types. Separate aliases do not establish literal-mode-dependent single/multiple cardinality. No T08 pass is claimed without a concrete verified producer. |
+| T08 | Dedicated chooseFromList unit/service producer checks native mode facts, emitted wire, actual call types and contextual editor behavior; no signed runtime or platform-availability claim. |
 
 No native runtime, UI, platform availability or release closure is inferred from this local type work.
 

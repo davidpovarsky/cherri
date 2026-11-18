@@ -13,9 +13,11 @@ import (
 func TestTypeLiteralProductionEvidence(t *testing.T) {
 	testTypeProductionEvidence(t, "T02", (*Runner).runTypeLiteralRequirement, "P15_TYPE_LITERAL_RECEIPT:", "Only T02 production unit contract; no native execution, external type guarantee, other T requirement or release closure")
 }
-
 func TestTypeRecordProductionEvidence(t *testing.T) {
 	testTypeProductionEvidence(t, "T06", (*Runner).runTypeRecordRequirement, "P15_TYPE_RECORD_RECEIPT:", "Only T06 production unit contract; static rejection of unvalidated external record guarantees, no runtime validator, native execution or release closure")
+}
+func TestTypeCardinalityProductionEvidence(t *testing.T) {
+	testTypeProductionEvidence(t, "T08", (*Runner).runTypeCardinalityRequirement, "P15_TYPE_CARDINALITY_RECEIPT:", "Only T08 unit and service contract; native metadata and emitted wire are inspected locally, no Apple runtime, platform availability or release closure")
 }
 
 func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), receiptLabel, scope string) {
@@ -25,9 +27,9 @@ func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), rece
 		t.Fatal(err)
 	}
 	selected := &ContractFile{}
-	for _, c := range all.Acceptance.Cases {
-		if c.ID == id {
-			selected.Cases = append(selected.Cases, c)
+	for _, contract := range all.Acceptance.Cases {
+		if contract.ID == id {
+			selected.Cases = append(selected.Cases, contract)
 		}
 	}
 	selected.CaseCount = len(selected.Cases)
@@ -37,26 +39,40 @@ func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), rece
 	contracts := &ContractsSet{Acceptance: selected, Repair: &RepairContractFile{}, Gates: &GatesContractFile{}}
 	runner := NewRunner()
 	run(runner)
-	if len(runner.results) != 1 || len(runner.records) != 1 || len(runner.observations) != 0 {
+	tiers := parseRequiredTiers(selected.Cases[0].MinimumTestLevel)
+	if len(runner.results) != 1 || len(runner.records) != len(tiers) || len(runner.observations) != 0 {
 		t.Fatalf("unexpected types scope: results=%d records=%d observations=%d", len(runner.results), len(runner.records), len(runner.observations))
 	}
-	c := selected.Cases[0]
+	contract := selected.Cases[0]
 	result := runner.results[id]
-	if !result.Passed || result.Status != "PASSED" || result.Requirement != c.Requirement || result.TestLevel != c.MinimumTestLevel || !reflect.DeepEqual(result.ExecutedLevels, []string{"unit"}) {
-		t.Fatalf("Type producer did not execute its contract: %+v", result)
+	if !result.Passed || result.Status != "PASSED" || result.Requirement != contract.Requirement || result.TestLevel != contract.MinimumTestLevel || !reflect.DeepEqual(result.ExecutedLevels, tiers) {
+		t.Fatalf("%s did not execute its contract: %+v", id, result)
 	}
-	record := runner.records[0]
 	tests := typeProductionTests[id]
-	if !reflect.DeepEqual(record.Requirements, []string{id}) || record.ImplementationSHA != runner.implSHA || record.Tier != "unit" || record.Result != "passed" || record.ExitCode != 0 ||
-		record.TestID != "github.com/electrikmilk/cherri:"+tests[0] || !reflect.DeepEqual(record.Command, productionTestCommand(tests)) || !strings.Contains(record.Detail, tests[0]) {
-		t.Fatalf("detached production receipt: %+v", record)
+	for i, record := range runner.records {
+		producer := tests[0]
+		if id == "T08" && tiers[i] == "service" {
+			producer = tests[1]
+		}
+		if !reflect.DeepEqual(record.Requirements, []string{id}) || record.ImplementationSHA != runner.implSHA || record.Tier != tiers[i] || record.Result != "passed" || record.ExitCode != 0 || record.TestID != "github.com/electrikmilk/cherri:"+producer || !reflect.DeepEqual(record.Command, productionTestCommand(tests)) {
+			t.Fatalf("detached production receipt: %+v", record)
+		}
+		for _, name := range tests {
+			if !strings.Contains(record.Detail, name) {
+				t.Fatalf("missing named test outcome %s", name)
+			}
+		}
 	}
 	manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	report, err := ValidateEvidenceManifest(manifest, contracts, "local")
 	if err != nil || report.PassedCases != 1 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete {
-		t.Fatalf("bounded type report invalid/expanded: %+v %v", report, err)
+		t.Fatalf("bounded %s report invalid/expanded: %+v %v", id, report, err)
 	}
-	for _, mutation := range []string{"wrong_producer", "missing_record", "wrong_contract"} {
+	mutations := []string{"wrong_producer", "missing_record", "wrong_contract"}
+	if len(tiers) > 1 {
+		mutations = append(mutations, "missing_service_tier")
+	}
+	for _, mutation := range mutations {
 		broken := *manifest
 		broken.Records = append([]EvidenceRecord{}, manifest.Records...)
 		switch mutation {
@@ -66,8 +82,11 @@ func testTypeProductionEvidence(t *testing.T, id string, run func(*Runner), rece
 			broken.Records = nil
 		case "wrong_contract":
 			broken.Records[0].Requirements = []string{"T01"}
+		case "missing_service_tier":
+			broken.Records = broken.Records[:1]
 		}
-		if _, err := ValidateEvidenceManifest(&broken, contracts, "local"); err == nil {
+		invalid, validationError := ValidateEvidenceManifest(&broken, contracts, "local")
+		if validationError == nil && invalid.PassedCases != 0 {
 			t.Errorf("%s mutation minted evidence", mutation)
 		}
 	}

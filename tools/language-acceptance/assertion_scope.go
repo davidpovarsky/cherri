@@ -37,7 +37,6 @@ var incompleteLocalAssertions = map[string]string{
 	"T04":   "Different type names do not test Unknown/AnyContent/Void behavior in analysis and service.",
 	"T05":   "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions.",
 	"T07":   "A helper implemented only in this runner does not exercise production platform-version comparison.",
-	"T08":   "Two nonempty output type names do not test literal-mode-dependent inference.",
 	"T09":   "Assignment to AnyContent does not validate known Content Graph conversions or reject unverified coercions.",
 	"S01":   "Nonempty IR does not inspect UTF-16 token offsets, combining marks, or round-trip values.",
 	"S02":   "Action counts do not assert exact retained backslashes and JSON/JS/CSS braces.",
