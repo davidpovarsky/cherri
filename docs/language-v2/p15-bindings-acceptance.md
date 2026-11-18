@@ -39,3 +39,9 @@ The metadata does not provide immutable source-node identities. The first defini
 The development RED logs are retained in the owned checkout under `artifacts/p15-bindings/`. They show the rejected or wrongly accepted production cases before each repair. The final implementation is followed by a separate receipt commit containing exact-source commands, process exit codes, source cleanliness, source hashes and raw test events. Formal V02 evidence is emitted only by `TestBindingScopeProductionEvidence`, which executes all seven named production tests and records the unchanged unit tier.
 
 Other contracts remain independent: argument source-effect ordering (C01), native value snapshot behavior (V01), optional predicate execution on Apple hardware, private-corpus compatibility of the integrated candidate, and final release acceptance are not promoted by V02.
+
+## Immutable source receipt
+
+Implementation `aecca5d2dd5eef7f82ee6c0848304674cfea4ab8` was verified clean before and after execution by `job_b28f3b68de95`. All 60 top-level tests in the analysis/service/lower packages passed (5.632 seconds), and the formal V02 producer passed (16.248 seconds), executing the seven named production tests. The formal report contains one V02 unit PASS and keeps closure false. The earlier 54-test compatibility run passed on the final implementation working tree before its commit; it is recorded separately from the clean-source run.
+
+See [receipt and scope](evidence/p15-bindings-aecca5d/receipt.json), [source hashes and commands](evidence/p15-bindings-aecca5d/verification.json), [formal evidence](evidence/p15-bindings-aecca5d/formal-receipt.json), and [raw exact-source events](evidence/p15-bindings-aecca5d/verification.jsonl). Development RED logs are retained with their distinct scopes and are not described as a single frozen test snapshot.

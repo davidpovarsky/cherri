@@ -1,0 +1,46 @@
+--- FAIL: TestP15V02BindingFlowProduction (0.05s)
+    --- FAIL: TestP15V02BindingFlowProduction/compound_add (0.00s)
+        p15_binding_acceptance_test.go:95: compound_add: want one E_READ_BEFORE_INIT at [18,28), got []
+    --- FAIL: TestP15V02BindingFlowProduction/compound_multiply (0.00s)
+        p15_binding_acceptance_test.go:95: compound_multiply: want one E_READ_BEFORE_INIT at [18,28), got []
+    --- FAIL: TestP15V02BindingFlowProduction/if_missing_else (0.00s)
+        p15_binding_acceptance_test.go:95: if_missing_else: want one E_READ_BEFORE_INIT at [71,76), got []
+    --- FAIL: TestP15V02BindingFlowProduction/if_else_reads_uninitialized (0.00s)
+        p15_binding_acceptance_test.go:95: if_else_reads_uninitialized: want one E_READ_BEFORE_INIT at [77,82), got []
+    --- FAIL: TestP15V02BindingFlowProduction/nested_missing_path (0.00s)
+        p15_binding_acceptance_test.go:95: nested_missing_path: want one E_READ_BEFORE_INIT at [98,103), got []
+    --- FAIL: TestP15V02BindingFlowProduction/repeat_zero (0.00s)
+        p15_binding_acceptance_test.go:95: repeat_zero: want one E_READ_BEFORE_INIT at [46,51), got []
+    --- FAIL: TestP15V02BindingFlowProduction/for_empty (0.00s)
+        p15_binding_acceptance_test.go:95: for_empty: want one E_READ_BEFORE_INIT at [52,57), got []
+    --- FAIL: TestP15V02BindingFlowProduction/menu_missing_path (0.00s)
+        p15_binding_acceptance_test.go:95: menu_missing_path: want one E_READ_BEFORE_INIT at [85,90), got []
+    --- FAIL: TestP15V02BindingFlowProduction/and_skipped_assignment (0.00s)
+        p15_binding_acceptance_test.go:95: and_skipped_assignment: want one E_READ_BEFORE_INIT at [109,114), got []
+    --- FAIL: TestP15V02BindingFlowProduction/or_skipped_assignment (0.00s)
+        p15_binding_acceptance_test.go:95: or_skipped_assignment: want one E_READ_BEFORE_INIT at [108,113), got []
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_outside (0.00s)
+        p15_binding_acceptance_test.go:95: narrow_outside: want one E_ARGUMENT_TYPE at [90,95), got [[ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:36-2:41) [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:3:17-3:22)]
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_then (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:36-2:41)
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_else (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:59-2:64)
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_reversed (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:36-2:41)
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_not (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:39-2:44)
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_and_rhs (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:57-2:62)
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_or_rhs (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:57-2:62)
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_known_reassignment (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:55-2:60)
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_unwritten_loop (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:46-2:51)
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_loop_shadow (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_ARGUMENT_TYPE: type Text? is not assignable to declared type Text (p15-parser:2:46-2:51)
+    --- FAIL: TestP15V02BindingFlowProduction/narrow_early_return (0.00s)
+        p15_binding_acceptance_test.go:116: [ERROR] E_RETURN_TYPE: return value of type Text? does not match expected return type Text (p15-parser:1:78-1:90)
+FAIL
+FAIL	github.com/electrikmilk/cherri	0.393s
+FAIL

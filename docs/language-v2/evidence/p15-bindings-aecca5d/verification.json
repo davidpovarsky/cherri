@@ -1,0 +1,177 @@
+{
+  "source_sha": "aecca5d2dd5eef7f82ee6c0848304674cfea4ab8",
+  "source_tree_clean_before": true,
+  "source_tree_clean_after": true,
+  "generated_at_utc": "2026-11-18T17:16:53.640933+00:00",
+  "go_version": "go version go1.25.6 windows/amd64",
+  "scope": "V02 unit contract only. Actual shared compiler, CLI/service and synthetic serialized wire. No Apple execution, V01 runtime snapshot, C01 ordering, private corpus or release closure.",
+  "source_files": [
+    {
+      "path": "docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md",
+      "sha256": "24de29579616032f7c778ae181ce774cbbb941bc7a3c4aa2f8d3bc1a06e2c261"
+    },
+    {
+      "path": "docs/language-v2/p15-bindings-acceptance.md",
+      "sha256": "331e5b5dd65bc9dd6cdd6f5d794d5ca7d2240666d86d255840e19f547af56d5e"
+    },
+    {
+      "path": "internal/language/analysis/analyzer.go",
+      "sha256": "d1ebd1c6b5f1d8b4fb86e91d179df9b826101bc4693ff3f75faf1f826bfcbb74"
+    },
+    {
+      "path": "internal/language/analysis/binding_flow.go",
+      "sha256": "0c7c48c7bcd1ddcd7a1683eaeae0d11d64ff3d42a98dcffefbfe0036bdea1efa"
+    },
+    {
+      "path": "internal/language/lower/lexical_scope.go",
+      "sha256": "06499149973ab6b2629be5ed64edaa8b32eda1d5397695a10223be3590af7b61"
+    },
+    {
+      "path": "internal/language/lower/lower.go",
+      "sha256": "20f345daf2420f6f1f0e8003d0788dfec4d47beefea5c44c81f8fb9ab521b6aa"
+    },
+    {
+      "path": "internal/language/service/service.go",
+      "sha256": "0590840c31af503ee9ca9e9bc3853a4ab922f1d6d095dbdff3ae9475de1645f8"
+    },
+    {
+      "path": "p15_binding_acceptance_test.go",
+      "sha256": "a0e4937c755f85d82d4624ccbf1ddac857aeef9844aa660baf2bf35892deffbf"
+    },
+    {
+      "path": "p15_binding_scope_wire_test.go",
+      "sha256": "9acccc84ee84405d9f09d06bf55836d4bd619811d6a6b0ab3af2a3ee13e1815d"
+    },
+    {
+      "path": "p15_binding_service_test.go",
+      "sha256": "be571a4fd36dae20f9286d85d8449a08c5725696f9336a6ee5bed90b7118ca77"
+    },
+    {
+      "path": "tools/language-acceptance/assertion_scope.go",
+      "sha256": "5d280f136ddb94e29beb5f79e8708e2c2a27fd9bdba2a3c1a2cd35e5a15e8e6b"
+    },
+    {
+      "path": "tools/language-acceptance/binding_execution.go",
+      "sha256": "609a6ffe31a3a3775748d9c21526b069b901b500ba7d9a244c740d7fd71010b4"
+    },
+    {
+      "path": "tools/language-acceptance/binding_execution_test.go",
+      "sha256": "27a9ad1af55fc4c3dcbdeed75cedd7c011aa2997c91bc172ab17b65c1a1045ff"
+    },
+    {
+      "path": "tools/language-acceptance/evidence_map.go",
+      "sha256": "16bde634a8b5e24a89657fbfc0ca4a19ce0a9d227574717c7b1103ae9fe91609"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "sha256": "fdbec93f62c7346af1bc33d421074fdf49f82c93439c37c3ee0451f05b763110"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "sha256": "f8c1d8644d77165ffed0bf792d66d5d48cae3d56c887ffa765b384a4737e80d7"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-timeout=180s",
+        "-json",
+        "./internal/language/analysis",
+        "./internal/language/service",
+        "./internal/language/lower"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 5.632,
+      "sha256": "5574d60c170cdea6c37966722759e2fca0899dcc44876bcab8a21de739d04564",
+      "passed_top_level_tests": [
+        "TestAcceptedForms_AcceptsVariableAttachment",
+        "TestAcceptedForms_RejectsLiteralForAttachmentOnlyParam",
+        "TestAnalyzerAssignImmutable",
+        "TestAnalyzerCopyPaste",
+        "TestAnalyzerDuplicateArgument",
+        "TestAnalyzerGlobals",
+        "TestAnalyzerHotLoopWarning",
+        "TestAnalyzerIfConditionBool",
+        "TestAnalyzerLegacySyntax",
+        "TestAnalyzerListPlusAssign",
+        "TestAnalyzerMissingArgument",
+        "TestAnalyzerReadBeforeInit",
+        "TestAnalyzerTruthiness",
+        "TestAnalyzerUnknownArgument",
+        "TestAnalyzerValidProgram",
+        "TestAnalyzerYieldOutsideValueBlock",
+        "TestCompilerMacrosReachCompletionFromSharedMetadata",
+        "TestE01MultiDiagnosticAnalysis",
+        "TestE02CompletionHoverSignatureDefinition",
+        "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+        "TestE04FormatterPreservesCommentsAndSemantics",
+        "TestE05OutOfOrderVersionedEdits",
+        "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+        "TestE07BoundedVisualSourceEditAndRejection",
+        "TestEmptyDictionaryKey_GetValueCall",
+        "TestEmptyDictionaryKey_IndexExpr",
+        "TestEmptyDictionaryKey_MapLiteral",
+        "TestExplicitTargetString",
+        "TestExprTypesTracking",
+        "TestListIndexDynamicLowering",
+        "TestLowerBasicWorkflow",
+        "TestLowerConditionalWorkflow",
+        "TestLowerFunctionEnvelopeDefaultsAndVoidReturn",
+        "TestLowerListAppendVariable",
+        "TestLowerShortCircuitAndExpressionsAndSafeIndexing",
+        "TestLowerTriggersWithParameters",
+        "TestLowerUnusedFunctionDispatcherOmitted",
+        "TestMacActionInMacShortcut_Allowed",
+        "TestMacActionInNonMacShortcut_Baseline",
+        "TestMapIndexDirectGetValueCall",
+        "TestMapIndexDynamicKeyLowering",
+        "TestMapIndexEmptyKeyLoweringError",
+        "TestMapIndexLetVarLowering",
+        "TestMapIndexNestedMapLowering",
+        "TestMapIndexUnicodeKeyLowering",
+        "TestMixedTargets_RejectsNonPortableActions",
+        "TestNonMacActionInMacShortcut_Error",
+        "TestNonMacActionInNonMacShortcut_Allowed",
+        "TestScopedBlockDiagnosticsAndBranchTypes",
+        "TestScopedBlockDoesNotReserveExistingFunctionName",
+        "TestScopedBlockInferredTypeAndLexicalScope",
+        "TestScopedBlockRenamingPreservesSourceAndLiteralValues",
+        "TestServiceAnalyze",
+        "TestServiceComplete",
+        "TestServiceContextualCallComplete",
+        "TestServiceHover",
+        "TestTargetVersionSettersRetainCompatibility",
+        "TestTargetVersionSourceAccessorsKeepComponents",
+        "TestUnspecifiedTarget_EmitsWarning",
+        "TestVersionBounds_MinVersion"
+      ],
+      "failed": []
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-timeout=150s",
+        "-json",
+        "./tools/language-acceptance",
+        "-run",
+        "^TestBindingScopeProductionEvidence$"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 16.248,
+      "sha256": "8cf845bb91d191a64e639ecc7cf3e483cbd7235750c0b27f18a722d7ae513605",
+      "passed_top_level_tests": [
+        "TestBindingScopeProductionEvidence"
+      ],
+      "failed": []
+    }
+  ],
+  "unicode_transfer_guard": {
+    "go_escape_supplementary": true,
+    "go_escape_hebrew": true
+  }
+}
