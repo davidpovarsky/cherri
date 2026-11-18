@@ -232,5 +232,56 @@
     "No Release trace exception",
     "No raw corpus or raster publication",
     "No physical-device acceptance"
-  ]
+  ],
+  "postRunPublicHTTPObservation": {
+    "url": "https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/one.json",
+    "finalURL": "https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/one.json",
+    "status": 200,
+    "contentType": "text/plain; charset=utf-8",
+    "byteCount": 335,
+    "SHA256": "25baf7da5af19f5f23a4790762c82502b39e90a17d0626e53e930b09d94efac1",
+    "sourceBytesMatch": true,
+    "nativeResponseType": "UNOBSERVED",
+    "independentActionMetadata": {
+      "is.workflow.actions.downloadurl": {
+        "ActionClass": "WFDownloadURLAction",
+        "Input": {
+          "Multiple": true,
+          "ParameterKey": "WFURL",
+          "Required": true,
+          "Types": [
+            "WFURLContentItem"
+          ]
+        },
+        "Output": {
+          "DisclosureLevel": "Public",
+          "Multiple": true,
+          "OutputName": "Contents of URL",
+          "Types": [
+            "public.data"
+          ]
+        }
+      },
+      "is.workflow.actions.detect.dictionary": {
+        "ActionClass": "WFCoercionAction",
+        "Input": {
+          "Multiple": true,
+          "ParameterKey": "WFInput",
+          "Required": true,
+          "Types": [
+            "NSDictionary"
+          ]
+        },
+        "Output": {
+          "DisclosureLevel": "Public",
+          "Multiple": true,
+          "OutputName": "Dictionary",
+          "Types": [
+            "WFDictionaryContentItem"
+          ]
+        }
+      }
+    },
+    "scope": "Independent host GET after the two native runs; not a captured iPad HTTP response. Both original native runtime failures remain unchanged."
+  }
 }

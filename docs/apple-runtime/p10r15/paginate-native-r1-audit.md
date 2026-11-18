@@ -14,3 +14,7 @@ The pages are immutable public GitHub raw files at38c7098772f4b822d6a3555137c0c7
 AX persistence retained8175/8221 nodes, but Inspector remains NEEDS_REVIEW and physical-device execution is not done. No raster or original private corpus data was published. The complete bounded audit with20file hashes per run is [paginate-native-r1-audit.json](paginate-native-r1-audit.json).
 
 Next causal boundaries are a minimal native GET/Dictionary control, independent type/count/key witnesses, then the original ordered/cycle/budget scenarios. The full fixtures and failed observations remain unchanged; no success marker or trace exception has been substituted.
+
+## Bounded follow-up: public response content type
+
+A subsequent host GET of the exact immutable GitHub raw `one.json` URL returned HTTP 200 without a redirect, `Content-Type: text/plain; charset=utf-8`, and all 335 bytes matched the committed synthetic page (SHA-256 `25baf7da5af19f5f23a4790762c82502b39e90a17d0626e53e930b09d94efac1`). This is not an observation of the earlier iPad response. Independent Apple action metadata declares `downloadurl` output as `public.data`; `detect.dictionary` is a separate coercion action. The native response type is still unobserved. A direct GET/type/conversion diagnostic is justified before changing the macro; no MIME/conversion cause has been proved and both original FAIL_RUNTIME outcomes remain retained.
