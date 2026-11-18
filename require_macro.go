@@ -151,7 +151,7 @@ func (b *requireExpansion) items() WFTextTokenAttachment {
 
 func (b *requireExpansion) actualType() WFTextTokenAttachment {
 	if b.typeRef.Value.OutputUUID == "" {
-		b.typeRef = b.produce("gettypeaction", map[string]any{"WFInput": b.input})
+		b.typeRef = b.produce("getitemtype", map[string]any{"WFInput": b.input})
 	}
 	return b.typeRef
 }
@@ -172,7 +172,7 @@ func (b *requireExpansion) witness(kind string) WFTextTokenAttachment {
 		var raw any = map[string]any{"cherri_type_witness": true}
 		sample = b.produce("dictionary", map[string]any{"WFItems": makeExplicitDictionaryValue(&raw)})
 	}
-	ref := b.produce("gettypeaction", map[string]any{"WFInput": sample})
+	ref := b.produce("getitemtype", map[string]any{"WFInput": sample})
 	b.witnesses[kind] = ref
 	return ref
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -146,7 +147,7 @@ quicklook(checked)`, false)
 		switch a.WFWorkflowActionIdentifier {
 		case "is.workflow.actions.runworkflow":
 			runs++
-		case "is.workflow.actions.gettypeaction":
+		case "is.workflow.actions.getitemtype":
 			types++
 			if firstType < 0 {
 				firstType = i
@@ -292,7 +293,7 @@ const checked = require(value, "", true)`, true},
 						charCount++
 					}
 				}
-				if act.WFWorkflowActionIdentifier == "is.workflow.actions.gettypeaction" {
+				if act.WFWorkflowActionIdentifier == "is.workflow.actions.getitemtype" {
 					typeCount++
 				}
 			}
@@ -404,6 +405,86 @@ debugLog()`
 		}
 		if source != len(acts)-1 || debug != 1 {
 			t.Fatalf("semantic guard classified as debug (legacy=%t): source=%d debug=%d actions=%d", legacy, source, debug, len(acts))
+		}
+	}
+}
+
+func TestP15RequireTypeInspectionMatchesCanonicalAndAppleMetadata(t *testing.T) {
+	data, err := os.ReadFile("docs/apple-runtime/macos-27/builtin-actions.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var metadata map[string]struct {
+		ActionClass string
+		Name        string
+		Input       struct{ ParameterKey string }
+		Output      struct{ Types []string }
+	}
+	if err := json.Unmarshal(data, &metadata); err != nil {
+		t.Fatal(err)
+	}
+	canonical := compileDebugFixture(t, `let original = text("native")
+let inspected = typeOf(original)`, false)
+	canonicalID := ""
+	for _, act := range canonical {
+		meta := metadata[act.WFWorkflowActionIdentifier]
+		if meta.ActionClass == "WFGetItemTypeAction" {
+			if canonicalID != "" {
+				t.Fatal("canonical typeOf emits multiple type inspectors")
+			}
+			canonicalID = act.WFWorkflowActionIdentifier
+			if meta.Name != "Get Type" || meta.Input.ParameterKey != "WFInput" || len(meta.Output.Types) != 1 || meta.Output.Types[0] != "NSString" {
+				t.Fatalf("canonical typeOf disagrees with Apple inspection metadata: %+v", meta)
+			}
+		}
+	}
+	if canonicalID == "" {
+		t.Fatal("canonical typeOf did not emit Apple's native type inspector")
+	}
+	for _, legacy := range []bool{false, true} {
+		src := `let original = text("native")
+let checked = require(original, type: "text")`
+		if legacy {
+			src = `const original = text("native")
+const checked = require(original, "text")`
+		}
+		acts := compileDebugFixture(t, src, legacy)
+		producers := make(map[string]ShortcutAction)
+		for _, act := range acts {
+			if id, ok := act.WFWorkflowActionParameters["UUID"].(string); ok {
+				producers[id] = act
+			}
+		}
+		inspections := 0
+		for _, act := range acts {
+			p := act.WFWorkflowActionParameters
+			if act.WFWorkflowActionIdentifier != "is.workflow.actions.conditional" || p["WFConditionalActionString"] == nil {
+				continue
+			}
+			input, _ := p["WFInput"].(map[string]any)
+			actualID := requireOutputUUID(input["Variable"])
+			token, _ := p["WFConditionalActionString"].(map[string]any)
+			value, _ := token["Value"].(map[string]any)
+			attachments, _ := value["attachmentsByRange"].(map[string]any)
+			witness, _ := attachments["{0, 1}"].(map[string]any)
+			witnessID, _ := witness["OutputUUID"].(string)
+			for _, id := range []string{actualID, witnessID} {
+				producer, ok := producers[id]
+				if !ok {
+					t.Fatalf("type comparison lost inspection producer %q", id)
+				}
+				meta := metadata[producer.WFWorkflowActionIdentifier]
+				if producer.WFWorkflowActionIdentifier != canonicalID || meta.ActionClass != "WFGetItemTypeAction" {
+					t.Fatalf("require compares output from %s (%s), want canonical typeOf %s; legacy=%t", producer.WFWorkflowActionIdentifier, meta.Name, canonicalID, legacy)
+				}
+				if producer.WFWorkflowActionParameters[meta.Input.ParameterKey] == nil {
+					t.Fatal("native inspector input is missing")
+				}
+				inspections++
+			}
+		}
+		if inspections != 2 {
+			t.Fatalf("expected actual and witness native type inspectors, got %d", inspections)
 		}
 	}
 }

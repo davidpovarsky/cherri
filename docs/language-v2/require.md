@@ -31,7 +31,7 @@ The V2 analyzer preserves the input's inferred type, including list element type
 
 ## Native semantics
 
-Type guards first require exactly one content item. Zero or multiple items fail before type-label comparison. The compiler then emits Get Type for the input and for a native witness value of the requested category. It compares these runtime-derived labels rather than assuming an English type label. The witness is used only for validation; the result retains the original input reference.
+Type guards first require exactly one content item. Zero or multiple items fail before type-label comparison. The compiler then emits Get Type for the input and for a native witness value of the requested category. It compares these runtime-derived labels rather than assuming an English type label. The witness is used only for validation; the result retains the original input reference. Both inspections use the existing canonical `typeOf` action (`is.workflow.actions.getitemtype`). The independent Apple action metadata identifies it as `WFGetItemTypeAction`, with text output named Type; its identity and input wire key are checked against actual production `typeOf` compilation.
 
 `nonEmpty` has these definitions:
 
