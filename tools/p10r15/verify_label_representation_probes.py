@@ -63,6 +63,26 @@ def parameters(action):
     return action.get("WFWorkflowActionParameters", {})
 
 
+
+def validate_probe_unicode(cases):
+    verified = []
+    for spec in cases:
+        if "carrier" not in spec["id"] and "setname" not in spec["id"]:
+            continue
+        path = ROOT / spec["path"]
+        source = path.read_text(encoding="utf-8")
+        expected = ("\u05ea\u05d5\u05d5\u05d9\u05ea" if "carrier" in spec["id"] else "\u05e9\u05dc\u05d5\u05dd")
+        if source.count(expected) != 2 or source.count("\U0001f352") != 2 or "????" in source:
+            raise RuntimeError("UNICODE_PROBE_SOURCE_BYTES_INVALID:" + spec["id"])
+        verified.append({"id":spec["id"], "sha256":sha(path),
+                         "hebrewOccurrences":source.count(expected),
+                         "cherryOccurrences":source.count("\U0001f352"),
+                         "utf8Roundtrip":source.encode("utf-8")==path.read_bytes()})
+    if len(verified) != 6:
+        raise RuntimeError("UNICODE_PROBE_DENOMINATOR_CHANGED")
+    return verified
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=ROOT / "dist/p15-label-probes")
@@ -72,6 +92,7 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     manifest_path = ROOT / "tools/shortcuts-simulator-qa/fixtures/p15-label-probes/manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    unicode_sources = validate_probe_unicode(manifest["cases"])
     source_fingerprint = input_fingerprint(manifest_path, manifest["cases"])
     source_sha = command(["git","rev-parse","HEAD"]).stdout.strip()
     source_dirty = bool(command(["git","status","--porcelain"]).stdout.strip())
@@ -163,7 +184,7 @@ def main():
         "goVersion":command(["go","version"]).stdout.strip(),
         "compilerSHA256":sha(binary),"manifestSHA256":sha(manifest_path),"schemaFingerprint":caps["schemaFingerprint"],
         "macroFingerprint":caps["macroFingerprint"],"debugLogLabelDeclared":label_declared,
-        "metadataBoundary":metadata,"cases":rows,"summary":{"probes":len(rows),"compiledReady":good,
+        "metadataBoundary":metadata,"unicodeSourceBytes":unicode_sources,"cases":rows,"summary":{"probes":len(rows),"compiledReady":good,
         "nativeExecuted":0,"labelFeatureStatus":"OPEN_REPRESENTATION_UNPROVEN"},
         "privacy":{"privateCorpusRead":False,"signerUsed":False,"networkExecuted":False,"installedConsumerChanged":False}}
     opts.report.parent.mkdir(parents=True,exist_ok=True)

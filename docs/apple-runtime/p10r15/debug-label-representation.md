@@ -49,3 +49,18 @@ The command builds from the current checkout, creates unsigned files in dist/p15
 A plausible safe design keeps the raw object list untouched and records only primitive label metadata indexed by the actual raw log range before/after each append. It must establish Count/Repeat cardinality for empty/nested values, initialization and clearing, skipped branches, late labels, repeated calls and no overhead when no label is used. A separate label per source call without that association is unsafe. Typed preview must present labels without assuming Set Name copies an object or coercing the original payload to Text.
 
 Until these representation questions have native answers, adding an apparently supported label parameter would overstate the contract. This is a specific representation prerequisite plus remaining source implementation, not a claim that all label engineering is blocked by unavailable hardware.
+
+
+## Unicode source correction
+
+An independent byte read after commit 92b7533 found that the PowerShell stdin
+encoding had replaced Hebrew and emoji in six probe files with question marks.
+The preceding compile and exact-roundtrip checks were valid for those stored
+bytes, but did not establish the intended Unicode scope. This is a retained
+evidence defect, not a native runtime failure.
+
+The six sources now contain actual UTF-8 Hebrew and U+1F352 in both setup and
+assertion. The producer checks those exact code points and UTF-8 bytes before
+building, records their SHA-256 values, and rejects question-mark substitutions.
+The explicit mutation audit must fail before compilation, followed by restored
+10-probe structural verification. Native execution remains zero.

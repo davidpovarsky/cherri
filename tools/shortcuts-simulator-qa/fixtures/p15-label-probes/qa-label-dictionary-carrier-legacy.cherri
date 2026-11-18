@@ -5,10 +5,10 @@ debugTraceEvent("before", "dictionary-carrier")
 const original = {"name": "payload", "flag": false, "items": ["first", "second"]}
 const originalType = typeOf(original)
 const transported = getVariable(original)
-const envelope = {"label": "????? \"??\""}
+const envelope = {"label": "תווית \"🍒\""}
 const record = setValue(envelope, "payload", transported)
 const restoredLabel = getValue(record, "label")
-if restoredLabel != "????? \"??\"" { @verdict = "P15_LABEL_METADATA_FAIL" }
+if restoredLabel != "תווית \"🍒\"" { @verdict = "P15_LABEL_METADATA_FAIL" }
 const restored = getValue(record, "payload")
 const restoredType = typeOf(restored)
 const restoredName = getValue(restored, "name")

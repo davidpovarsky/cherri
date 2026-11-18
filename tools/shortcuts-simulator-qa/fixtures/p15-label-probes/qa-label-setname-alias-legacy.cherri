@@ -6,14 +6,14 @@ const original = base64Decode("AQIDBA==")
 const originalType = typeOf(original)
 const originalName = getName(original)
 const originalBytes = base64Encode(original, "None")
-const renamed = setName(original, "p15-label-????-??.bin")
+const renamed = setName(original, "p15-label-שלום-🍒.bin")
 const renamedType = typeOf(renamed)
 const renamedName = getName(renamed)
 const renamedBytes = base64Encode(renamed, "None")
 const originalNameAfter = getName(original)
 const originalBytesAfter = base64Encode(original, "None")
 if renamedType != originalType { @verdict = "P15_LABEL_SETNAME_TYPE_FAIL" }
-if renamedName != "p15-label-????-??.bin" { @verdict = "P15_LABEL_SETNAME_LABEL_FAIL" }
+if renamedName != "p15-label-שלום-🍒.bin" { @verdict = "P15_LABEL_SETNAME_LABEL_FAIL" }
 if renamedBytes != originalBytes { @verdict = "P15_LABEL_SETNAME_BYTES_FAIL" }
 if originalNameAfter != originalName { @verdict = "P15_LABEL_SETNAME_ALIASED_NAME" }
 if originalBytesAfter != originalBytes { @verdict = "P15_LABEL_SETNAME_SOURCE_MUTATED" }

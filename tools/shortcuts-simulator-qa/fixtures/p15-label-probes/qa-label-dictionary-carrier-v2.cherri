@@ -5,10 +5,10 @@ var verdict = "P15_LABEL_DICTIONARY_CARRIER_OK"
 let original = {"name": "payload", "flag": false, "items": ["first", "second"]}
 let originalType = typeOf(original)
 let transported = getVariable(original)
-let envelope = {"label": "????? \"??\""}
+let envelope = {"label": "תווית \"🍒\""}
 let record = setValue(envelope, "payload", transported)
 let restoredLabel = getValue(record, "label")
-if restoredLabel != "????? \"??\"" { verdict = "P15_LABEL_METADATA_FAIL" }
+if restoredLabel != "תווית \"🍒\"" { verdict = "P15_LABEL_METADATA_FAIL" }
 let restored = getValue(record, "payload")
 let restoredType = typeOf(restored)
 let restoredName = getValue(restored, "name")

@@ -6,14 +6,14 @@ let original = base64Decode("AQIDBA==")
 let originalType = typeOf(original)
 let originalName = getName(original)
 let originalBytes = base64Encode(original, lineBreakMode: "None")
-let renamed = setName(original, "p15-label-????-??.bin")
+let renamed = setName(original, "p15-label-שלום-🍒.bin")
 let renamedType = typeOf(renamed)
 let renamedName = getName(renamed)
 let renamedBytes = base64Encode(renamed, lineBreakMode: "None")
 let originalNameAfter = getName(original)
 let originalBytesAfter = base64Encode(original, lineBreakMode: "None")
 if renamedType != originalType { verdict = "P15_LABEL_SETNAME_TYPE_FAIL" }
-if renamedName != "p15-label-????-??.bin" { verdict = "P15_LABEL_SETNAME_LABEL_FAIL" }
+if renamedName != "p15-label-שלום-🍒.bin" { verdict = "P15_LABEL_SETNAME_LABEL_FAIL" }
 if renamedBytes != originalBytes { verdict = "P15_LABEL_SETNAME_BYTES_FAIL" }
 if originalNameAfter != originalName { verdict = "P15_LABEL_SETNAME_ALIASED_NAME" }
 if originalBytesAfter != originalBytes { verdict = "P15_LABEL_SETNAME_SOURCE_MUTATED" }

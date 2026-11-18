@@ -6,10 +6,10 @@ let original = base64Decode("AQIDBA==")
 let originalType = typeOf(original)
 let originalBytes = base64Encode(original, lineBreakMode: "None")
 let transported = getVariable(original)
-let envelope = {"label": "????? \"??\""}
+let envelope = {"label": "תווית \"🍒\""}
 let record = setValue(envelope, "payload", transported)
 let restoredLabel = getValue(record, "label")
-if restoredLabel != "????? \"??\"" { verdict = "P15_LABEL_METADATA_FAIL" }
+if restoredLabel != "תווית \"🍒\"" { verdict = "P15_LABEL_METADATA_FAIL" }
 let restored = getValue(record, "payload")
 let restoredType = typeOf(restored)
 let restoredBytes = base64Encode(restored, lineBreakMode: "None")

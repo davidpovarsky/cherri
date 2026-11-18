@@ -6,10 +6,10 @@ const original = base64Decode("AQIDBA==")
 const originalType = typeOf(original)
 const originalBytes = base64Encode(original, "None")
 const transported = getVariable(original)
-const envelope = {"label": "????? \"??\""}
+const envelope = {"label": "תווית \"🍒\""}
 const record = setValue(envelope, "payload", transported)
 const restoredLabel = getValue(record, "label")
-if restoredLabel != "????? \"??\"" { @verdict = "P15_LABEL_METADATA_FAIL" }
+if restoredLabel != "תווית \"🍒\"" { @verdict = "P15_LABEL_METADATA_FAIL" }
 const restored = getValue(record, "payload")
 const restoredType = typeOf(restored)
 const restoredBytes = base64Encode(restored, "None")

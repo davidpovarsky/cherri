@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "historicalDefect": {
+    "commit": "92b7533d5facf90e024a42a7a47eb3f6e6f80564",
+    "affectedFiles": 6,
+    "observation": "PowerShell stdin replaced intended Hebrew/emoji with question marks; old compile/roundtrip receipts did not establish Unicode scope"
+  },
+  "negative": {
+    "actualProducerExitCode": 1,
+    "diagnostic": "UNICODE_PROBE_SOURCE_BYTES_INVALID",
+    "compilerBinaryUnchanged": true,
+    "rejectedBeforeBuild": true
+  },
+  "restored": {
+    "actualProducerExitCode": 0,
+    "compiledReady": 10,
+    "exactNativeActionRoundtrips": 10,
+    "sourceBytesRestoredExactly": true
+  },
+  "nativeExecuted": 0
+}
