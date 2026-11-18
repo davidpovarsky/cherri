@@ -1574,7 +1574,7 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 	case *syntax.MenuStmt:
 		return l.lowerMenu(s)
 	case *syntax.YieldStmt:
-		val, err := l.lowerExpression(s.Value)
+		val, err := l.lowerRuntimeLiteral(s.Value)
 		if err != nil {
 			return err
 		}
@@ -1583,7 +1583,7 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 	case *syntax.ReturnStmt:
 		l.workflow.HasExplicitReturn = true
 		if s.Value != nil {
-			val, err := l.lowerExpression(s.Value)
+			val, err := l.lowerRuntimeLiteral(s.Value)
 			if err != nil {
 				return err
 			}
@@ -1727,7 +1727,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 	if !b.Mutable {
 		l.currentBindingName = b.Name
 	}
-	val, err := l.lowerExpression(b.Value)
+	val, err := l.lowerRuntimeLiteral(b.Value)
 	l.currentBindingName = ""
 	if err != nil {
 		return err
@@ -1964,7 +1964,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 }
 
 func (l *Lowerer) lowerAssign(a *syntax.AssignStmt) error {
-	val, err := l.lowerExpression(a.Value)
+	val, err := l.lowerRuntimeLiteral(a.Value)
 	if err != nil {
 		return err
 	}

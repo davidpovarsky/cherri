@@ -132,6 +132,7 @@ type WFExplicitDictionaryFieldValueWrapper struct {
 type WFArrayValue struct {
 	WFSerializationType string                       `plist:",omitempty"`
 	Value               []WFDictionaryFieldValueItem `plist:",omitempty"`
+	explicitEmpty       bool
 }
 
 type WFBoolValue struct {

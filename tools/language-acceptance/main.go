@@ -1525,11 +1525,7 @@ func (r *Runner) runText() {
 	s01Passed := errS01 == nil && len(wfS01.Actions) > 0
 	r.Record("S01", "text", "Multiple variable tokens after Hebrew/emoji/combining marks", "unit+native-roundtrip+iOS", []string{"unit", "native-roundtrip"}, s01Passed, "PASSED", "UTF-16 attachment offset calculation correctly handles non-BMP emoji and Hebrew")
 
-	// S02: Raw regex and JSON
-	srcS02 := "let re = r\"\\d+\\s+[a-z]\"\nlet j = \"{\\\"key\\\": 1}\""
-	wfS02, errS02 := lowerSrc(r.reg, srcS02)
-	s02Passed := errS02 == nil && len(wfS02.Actions) >= 2
-	r.Record("S02", "text", "Raw regex and ordinary JSON/JS/CSS text keep braces/backslashes", "unit+native", []string{"unit", "native"}, s02Passed, "PASSED", "Raw strings preserve backslashes and plain strings preserve literal braces")
+	r.runLiteralCollectionRequirement("S02")
 
 	// S03: Large embedded local asset
 	svcS03 := service.NewService(r.reg)
@@ -1546,11 +1542,7 @@ func (r *Runner) runText() {
 
 // Group 8: Collections
 func (r *Runner) runCollections() {
-	// L01: Nested lists/maps
-	srcL01 := "let data = [{\"a\": [1, 2]}, {\"b\": [3, 4]}]"
-	wfL01, errL01 := lowerSrc(r.reg, srcL01)
-	l01Passed := errL01 == nil && len(wfL01.Actions) > 0
-	r.Record("L01", "collections", "Nested lists/maps preserve shape, cardinality and element order", "unit+native", []string{"unit", "native"}, l01Passed, "PASSED", "Arbitrarily nested List and Map structures lower cleanly")
+	r.runNestedCollectionObservation()
 
 	// L02: Zero-based indexing (0, 2, -1, 99, empty)
 	srcL02 := "let items = [\"alpha\", \"beta\", \"gamma\"]\nlet first = items[0]\nlet last = items[2]\nlet neg = items[-1]\nlet oob = items[99]\nlet empty = [][0]"
@@ -1558,17 +1550,7 @@ func (r *Runner) runCollections() {
 	l02Passed := errL02 == nil && len(wfL02.Actions) >= 8
 	r.Record("L02", "collections", "Zero-based first/last/empty/out-of-range/negative indexing", "unit+native+iOS", []string{"unit", "native"}, l02Passed, "PASSED", "Zero-based collection indexing lowers first/last/negative/out-of-range/empty cases safely")
 
-	// L03: Duplicate literal keys
-	srcL03 := "let m = {\"k\": 1, \"k\": 2}"
-	diagsL03 := analyzeSrc(r.reg, srcL03)
-	l03Passed := false
-	for _, d := range diagsL03 {
-		if d.Code == "E_DUPLICATE_KEY" {
-			l03Passed = true
-			break
-		}
-	}
-	r.Record("L03", "collections", "Duplicate literal keys and invalid index type", "unit", []string{"unit"}, l03Passed, "PASSED", "Analyzer catches E_DUPLICATE_KEY on duplicate map keys")
+	r.runLiteralCollectionRequirement("L03")
 
 	// L04: Dynamic bounds checking
 	srcL04 := "let items = [\"alpha\", \"beta\", \"gamma\"]\nvar idx = 1\nlet x = items[idx]"

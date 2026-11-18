@@ -8,7 +8,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
@@ -16,10 +15,6 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"howett.net/plist"
 )
-
-// Independent copy so ValString preserves literal identifier braces in V2 without
-// shielding shortcutgen's inline-variable regex from regex quantifier tests.
-var v2LiteralInlineBraceRegex = regexp.MustCompile(`\{@?[a-zA-Z_][a-zA-Z0-9_]*(?:\['.*?'\])?(?:\..*?)?\}`)
 
 type CanonicalBackendSession struct {
 	tx                       *BackendTransaction
@@ -228,10 +223,9 @@ func convertCallArgToActionArg(arg backend.CallArgument) actionArgument {
 	case backend.ValFloat:
 		return actionArgument{valueType: Float, value: val.FloatVal}
 	case backend.ValString:
-		if v2LiteralInlineBraceRegex.MatchString(val.StrVal) {
-			return actionArgument{valueType: RawString, value: val.StrVal}
-		}
-		return actionArgument{valueType: String, value: val.StrVal}
+		// V2 interpolation is explicit ValTextSegments, never inferred by a
+		// legacy regular expression from an ordinary string's contents.
+		return actionArgument{valueType: RawString, value: val.StrVal}
 	case backend.ValReference:
 		ref := val.Ref
 		if ref != nil {
@@ -264,13 +258,9 @@ func convertCallArgToActionArg(arg backend.CallArgument) actionArgument {
 			value:     encoded,
 		}
 	case backend.ValDict:
-		dictMap := make(map[string]interface{}, len(val.DictVal))
-		for _, entry := range val.DictVal {
-			dictMap[entry.Key] = ConvertSemanticValueToParam(entry.Value)
-		}
 		return actionArgument{
 			valueType: Dict,
-			value:     dictMap,
+			value:     encodeTypedLiteralDictionaryItems(val.DictVal),
 		}
 	case backend.ValList:
 		items := make([]any, len(val.ListVal))
