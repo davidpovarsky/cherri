@@ -1,0 +1,122 @@
+{
+  "sourceCommit": "44ff2199779f80126c9add57ef9d4b87ea623d22",
+  "sourceTreeCleanBeforeAndAfter": true,
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-count=1",
+    "-timeout",
+    "3m",
+    "-run",
+    "^TestTypeOpaqueProductionEvidence$",
+    "./tools/language-acceptance"
+  ],
+  "exitCode": 0,
+  "rawLogSha256": "e185f0622e06700929cea073e9d40f348daad081741b65f854b4dc87ce293bc7",
+  "executedAt": "2026-11-18T20:11:03.793129+00:00",
+  "receipt": {
+    "records": [
+      {
+        "evidence_id": "ev-local-T04-unit",
+        "requirements": [
+          "T04"
+        ],
+        "tier": "unit",
+        "implementation_sha": "44ff2199779f80126c9add57ef9d4b87ea623d22",
+        "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeProduction",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+        },
+        "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+      },
+      {
+        "evidence_id": "ev-local-T04-service",
+        "requirements": [
+          "T04"
+        ],
+        "tier": "service",
+        "implementation_sha": "44ff2199779f80126c9add57ef9d4b87ea623d22",
+        "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeService",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+        },
+        "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+      }
+    ],
+    "report": {
+      "timestamp": "2026-11-18T20:11:03Z",
+      "phase": "local",
+      "closure_complete": false,
+      "language_version": "2.0",
+      "schema_fingerprint": "",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "results": [
+        {
+          "id": "T04",
+          "group": "types",
+          "requirement": "Unknown differs from AnyContent and Void",
+          "test_level": "unit+service",
+          "executed_levels": [
+            "unit",
+            "service"
+          ],
+          "passed": true,
+          "status": "PASSED",
+          "detail": "All required tiers satisfied by verified evidence"
+        }
+      ]
+    },
+    "scope": "Only T04 authored assignment evidence, Void value rejection and actual Service diagnostics; native attachment compatibility is not a type guarantee, no Apple runtime or release closure",
+    "source_sha": "44ff2199779f80126c9add57ef9d4b87ea623d22",
+    "source_tree_clean": true
+  },
+  "testResults": [
+    {
+      "test": "TestTypeOpaqueProductionEvidence",
+      "action": "pass",
+      "elapsed": 2.52
+    },
+    {
+      "test": null,
+      "action": "pass",
+      "elapsed": 3.691
+    }
+  ],
+  "causalRed": {
+    "jobId": "job_f90c227ba74a",
+    "message": "E_RETURN_TYPE: return value of type Text | Number does not match expected return type Text | Number",
+    "rawLogSha256": "6367182981720ce8071d20e1106e13c61341c5bbc13cff1c40d0bdaf1eafbdc7"
+  },
+  "sentinelJobId": "job_67e084d9ea7a",
+  "committedLogSha256": "e185f0622e06700929cea073e9d40f348daad081741b65f854b4dc87ce293bc7"
+}
