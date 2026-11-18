@@ -39,3 +39,33 @@ func TestDefaultRegistry(t *testing.T) {
 		t.Errorf("expected translationLanguage enum to have values")
 	}
 }
+
+func TestRegisterCustomActionPopulatesEnumDomainWithoutOverridingBuiltins(t *testing.T) {
+	registry := NewRegistry(nil, map[string][]string{"builtInMode": {"Original"}})
+	dynamic := []string{"Fast", "Accurate"}
+	registry.RegisterCustomAction(&ActionSchema{
+		CallableName:    "syntheticAction",
+		AppleIdentifier: "is.workflow.actions.synthetic",
+		Parameters: []ParameterSchema{
+			{ID: "mode", EnumName: "dynamicMode", EnumValues: dynamic},
+			{ID: "builtin", EnumName: "builtInMode", EnumValues: []string{"Poisoned"}},
+		},
+	})
+	values, present := registry.LookupEnum("dynamicMode")
+	if !present || len(values) != 2 || values[0] != "Fast" || values[1] != "Accurate" {
+		t.Fatalf("custom enum not registered: %v, present=%v", values, present)
+	}
+	// The input metadata and copied public view must not alias registry state.
+	dynamic[1] = "Mutated"
+	values[0] = "Mutated"
+	fresh := registry.AllEnums()
+	if fresh["dynamicMode"][0] != "Fast" || fresh["dynamicMode"][1] != "Accurate" {
+		t.Fatalf("custom enum registration aliases mutable values: %v", fresh["dynamicMode"])
+	}
+	if got := fresh["builtInMode"]; len(got) != 1 || got[0] != "Original" {
+		t.Fatalf("custom action overwrote preexisting native enum: %v", got)
+	}
+	if _, exists := registry.LookupAction("syntheticAction"); !exists {
+		t.Fatal("custom action registration lost callable")
+	}
+}

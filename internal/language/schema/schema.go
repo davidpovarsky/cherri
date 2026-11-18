@@ -179,6 +179,22 @@ func (r *Registry) RegisterCustomAction(a *ActionSchema) {
 		r.actionsByName = make(map[string]*ActionSchema)
 	}
 	r.actionsByName[a.CallableName] = a
+	// Dynamic action schemas can introduce their own enum domains. Register
+	// these domains with the same registry used by analysis/enums.New, or
+	// otherwise the analyzer rejects a valid schema.EnumValues literal while
+	// compiling the action. Never overwrite an existing catalog enum: a
+	// conflicting custom action must not silently change built-in semantics.
+	if r.enumsByName == nil {
+		r.enumsByName = make(map[string][]string)
+	}
+	for _, parameter := range a.Parameters {
+		if parameter.EnumName == "" || len(parameter.EnumValues) == 0 {
+			continue
+		}
+		if _, exists := r.enumsByName[parameter.EnumName]; !exists {
+			r.enumsByName[parameter.EnumName] = append([]string(nil), parameter.EnumValues...)
+		}
+	}
 	if a.AppleIdentifier != "" {
 		if r.actionsByIdentifier == nil {
 			r.actionsByIdentifier = make(map[string][]*ActionSchema)
@@ -573,7 +589,12 @@ func (r *Registry) ActionNames() []string {
 // LookupEnum returns the valid enum values for an enum name.
 func (r *Registry) LookupEnum(enumName string) ([]string, bool) {
 	vals, ok := r.enumsByName[enumName]
-	return vals, ok
+	if !ok {
+		return nil, false
+	}
+	// The registry owns its enum definitions. Returning its backing slice
+	// lets callers accidentally mutate subsequent enum validation.
+	return append([]string(nil), vals...), true
 }
 
 // AllEnums returns all enum mappings.
