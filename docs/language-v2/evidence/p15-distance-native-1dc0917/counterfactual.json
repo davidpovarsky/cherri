@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "1dc091734194491d030e5a0761536725cfeb55f2",
+  "file": "internal/language/analysis/analyzer.go",
+  "replaceExactlyOnce": {
+    "before": "a.nativeReferenceCalls[call] = validArguments && a.validNativeReferenceOperand(call, scope)",
+    "after": "a.nativeReferenceCalls[call] = validArguments"
+  },
+  "execution": "Write the replacement to an isolated Go overlay; leave the tracked source unchanged. Run go test -p 1 -overlay <overlay.json> . -run ^TestP15NativeReferenceOperandValidationStillRequired$ -count=1 -json.",
+  "expected": "Exit 1; all eight malformed Service.Analyze subcases and their parent test fail. A build failure, missing test, or unrelated failure is not success.",
+  "observedLog": "unchecked-service-red.jsonl"
+}
