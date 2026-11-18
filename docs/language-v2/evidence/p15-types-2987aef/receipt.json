@@ -1,0 +1,362 @@
+{
+  "sourceCommit": "2987aefa7109ce089736bbbe3a6bd4b88fbcd098",
+  "sourceTreeCleanBeforeAndAfter": true,
+  "executedAt": "2026-11-18T20:56:36.460538+00:00",
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "4m",
+        "-run",
+        "^TestP15(Unary.*|DateComparisonMigrationCLIParity)$",
+        "."
+      ],
+      "exitCode": 0,
+      "rawLog": "unary-production.jsonl",
+      "rawLogSha256": "bbfcfd714076b5a4113cd69d07eeaf1efb32d8a3493a8bc82d08f64b70c8087a",
+      "results": [
+        {
+          "test": "TestP15DateComparisonMigrationCLIParity",
+          "action": "pass",
+          "elapsed": 4.63
+        },
+        {
+          "test": "TestP15UnaryNumberLiteralNative",
+          "action": "pass",
+          "elapsed": 0.05
+        },
+        {
+          "test": "TestP15UnaryQuantityLiteralNative",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestP15UnaryIntegerOverflowRejected",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 4.9030000000000005
+        }
+      ],
+      "formalReceipts": [],
+      "committedLogSha256": "bbfcfd714076b5a4113cd69d07eeaf1efb32d8a3493a8bc82d08f64b70c8087a"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "4m",
+        "-run",
+        "^TestType(NumberString|Opaque)ProductionEvidence$",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "rawLog": "formal-t03-t04.jsonl",
+      "rawLogSha256": "7ed398ee3e020f4b4d561184f74cdaaa8d779c9aa0cccaed0991a9966010e0dd",
+      "results": [
+        {
+          "test": "TestTypeOpaqueProductionEvidence",
+          "action": "pass",
+          "elapsed": 2.94
+        },
+        {
+          "test": "TestTypeNumberStringProductionEvidence",
+          "action": "pass",
+          "elapsed": 2.43
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 6.299
+        }
+      ],
+      "formalReceipts": [
+        {
+          "records": [
+            {
+              "evidence_id": "ev-local-T04-unit",
+              "requirements": [
+                "T04"
+              ],
+              "tier": "unit",
+              "implementation_sha": "2987aefa7109ce089736bbbe3a6bd4b88fbcd098",
+              "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeProduction",
+              "command": [
+                "go",
+                "test",
+                "-count=1",
+                "-json",
+                "-timeout",
+                "3m0s",
+                ".",
+                "-run",
+                "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+              ],
+              "exit_code": 0,
+              "result": "passed",
+              "assertions": {
+                "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+              },
+              "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+            },
+            {
+              "evidence_id": "ev-local-T04-service",
+              "requirements": [
+                "T04"
+              ],
+              "tier": "service",
+              "implementation_sha": "2987aefa7109ce089736bbbe3a6bd4b88fbcd098",
+              "test_id": "github.com/electrikmilk/cherri:TestP15T04OpaqueTypeService",
+              "command": [
+                "go",
+                "test",
+                "-count=1",
+                "-json",
+                "-timeout",
+                "3m0s",
+                ".",
+                "-run",
+                "^(TestP15T04OpaqueTypeProduction|TestP15T04OpaqueTypeService)$"
+              ],
+              "exit_code": 0,
+              "result": "passed",
+              "assertions": {
+                "assertion": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+              },
+              "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
+            }
+          ],
+          "report": {
+            "timestamp": "2026-11-18T20:56:31Z",
+            "phase": "local",
+            "closure_complete": false,
+            "language_version": "2.0",
+            "schema_fingerprint": "",
+            "total_cases": 1,
+            "passed_cases": 1,
+            "failed_cases": 0,
+            "skipped_cases": 0,
+            "results": [
+              {
+                "id": "T04",
+                "group": "types",
+                "requirement": "Unknown differs from AnyContent and Void",
+                "test_level": "unit+service",
+                "executed_levels": [
+                  "unit",
+                  "service"
+                ],
+                "passed": true,
+                "status": "PASSED",
+                "detail": "All required tiers satisfied by verified evidence"
+              }
+            ]
+          },
+          "scope": "Only T04 authored assignment evidence, Void value rejection and actual Service diagnostics; native attachment compatibility is not a type guarantee, no Apple runtime or release closure",
+          "source_sha": "2987aefa7109ce089736bbbe3a6bd4b88fbcd098",
+          "source_tree_clean": true
+        },
+        {
+          "records": [
+            {
+              "evidence_id": "ev-local-T03-unit",
+              "requirements": [
+                "T03"
+              ],
+              "tier": "unit",
+              "implementation_sha": "2987aefa7109ce089736bbbe3a6bd4b88fbcd098",
+              "test_id": "github.com/electrikmilk/cherri:TestP15T03NumberStringSemanticSignature",
+              "command": [
+                "go",
+                "test",
+                "-count=1",
+                "-json",
+                "-timeout",
+                "3m0s",
+                ".",
+                "-run",
+                "^(TestP15T03NumberStringSemanticSignature|TestP15T03NumberStringNativeWire)$"
+              ],
+              "exit_code": 0,
+              "result": "passed",
+              "assertions": {
+                "assertion": "Executed production tests: TestP15T03NumberStringSemanticSignature, TestP15T03NumberStringNativeWire"
+              },
+              "detail": "Executed production tests: TestP15T03NumberStringSemanticSignature, TestP15T03NumberStringNativeWire"
+            },
+            {
+              "evidence_id": "ev-local-T03-native-structure",
+              "requirements": [
+                "T03"
+              ],
+              "tier": "native-structure",
+              "implementation_sha": "2987aefa7109ce089736bbbe3a6bd4b88fbcd098",
+              "test_id": "github.com/electrikmilk/cherri:TestP15T03NumberStringNativeWire",
+              "command": [
+                "go",
+                "test",
+                "-count=1",
+                "-json",
+                "-timeout",
+                "3m0s",
+                ".",
+                "-run",
+                "^(TestP15T03NumberStringSemanticSignature|TestP15T03NumberStringNativeWire)$"
+              ],
+              "exit_code": 0,
+              "result": "passed",
+              "assertions": {
+                "assertion": "Executed production tests: TestP15T03NumberStringSemanticSignature, TestP15T03NumberStringNativeWire"
+              },
+              "detail": "Executed production tests: TestP15T03NumberStringSemanticSignature, TestP15T03NumberStringNativeWire"
+            }
+          ],
+          "report": {
+            "timestamp": "2026-11-18T20:56:33Z",
+            "phase": "local",
+            "closure_complete": false,
+            "language_version": "2.0",
+            "schema_fingerprint": "",
+            "total_cases": 1,
+            "passed_cases": 1,
+            "failed_cases": 0,
+            "skipped_cases": 0,
+            "results": [
+              {
+                "id": "T03",
+                "group": "types",
+                "requirement": "Semantic Number with number-as-text wire codec",
+                "test_level": "unit+native-structure",
+                "executed_levels": [
+                  "unit",
+                  "native-structure"
+                ],
+                "passed": true,
+                "status": "PASSED",
+                "detail": "All required tiers satisfied by verified evidence"
+              }
+            ]
+          },
+          "scope": "Only T03 public Number semantics and actual native string/reference wire; no Apple execution, numeric precision promise, unrelated type contract or release closure",
+          "source_sha": "2987aefa7109ce089736bbbe3a6bd4b88fbcd098",
+          "source_tree_clean": true
+        }
+      ],
+      "committedLogSha256": "7ed398ee3e020f4b4d561184f74cdaaa8d779c9aa0cccaed0991a9966010e0dd"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout",
+        "4m",
+        "./internal/language/lower"
+      ],
+      "exitCode": 0,
+      "rawLog": "lower-package.jsonl",
+      "rawLogSha256": "3642a59a874b709c852bffbafa87a2a4270a5d19a25bc24c4b9955667177e1af",
+      "results": [
+        {
+          "test": "TestMapIndexDynamicKeyLowering",
+          "action": "pass",
+          "elapsed": 0.01
+        },
+        {
+          "test": "TestListIndexDynamicLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexEmptyKeyLoweringError",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexUnicodeKeyLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexLetVarLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexNestedMapLowering",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestMapIndexDirectGetValueCall",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerBasicWorkflow",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerConditionalWorkflow",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerFunctionEnvelopeDefaultsAndVoidReturn",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerShortCircuitAndExpressionsAndSafeIndexing",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerTriggersWithParameters",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerUnusedFunctionDispatcherOmitted",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestLowerListAppendVariable",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": "TestScopedBlockRenamingPreservesSourceAndLiteralValues",
+          "action": "pass",
+          "elapsed": 0
+        },
+        {
+          "test": null,
+          "action": "pass",
+          "elapsed": 1.026
+        }
+      ],
+      "formalReceipts": [],
+      "committedLogSha256": "3642a59a874b709c852bffbafa87a2a4270a5d19a25bc24c4b9955667177e1af"
+    }
+  ],
+  "causalRed": {
+    "jobId": "job_cf7bad35a817",
+    "rawLogSha256": "72334beea9082935bc2b016f9997c0184b38f97d1024e8628099e1515a1f2a3c",
+    "observed": "Integral literal emitted Math; V2 qty negative magnitude stringified output reference; Legacy scalar control passed; overflow emitted bytes"
+  },
+  "sentinelJobId": "job_43a6d9a62294"
+}
