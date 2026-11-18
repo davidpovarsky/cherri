@@ -788,7 +788,10 @@ func collectArguments() (arguments []actionArgument) {
 		if argIndex < paramsSize {
 			param = params[argIndex]
 		}
-		arguments = append(arguments, collectArgument(&argIndex, &param, &paramsSize))
+		tokenStart := len(tokens)
+		argument := collectArgument(&argIndex, &param, &paramsSize)
+		snapshotLegacyArgumentsBefore(arguments, tokenStart)
+		arguments = append(arguments, argument)
 		argIndex++
 	}
 	return
@@ -817,7 +820,7 @@ func collectArgument(argIndex *int, param *parameterDefinition, paramsSize *int)
 		valueType: valueType,
 		value:     value,
 	}
-	argument = materializeLegacyScopedArgument(argument)
+	argument = materializeLegacyActionArgument(argument)
 	if !param.infinite && (valueType != Nil && value != nil) {
 		checkArg(param, &argument)
 	}
@@ -2084,10 +2087,10 @@ func collectActionCall() {
 }
 
 func collectAction(identifier *string) (value action) {
-	if legacyScopedParsing != nil {
-		previousAction, previousSaved := currentAction, savedAction
-		defer func() { currentAction, savedAction = previousAction, previousSaved }()
-	}
+	// Nested arguments have their own action context. Restore the actual
+	// parent's definition before checking the parent's remaining arguments.
+	previousAction, previousSaved := currentAction, savedAction
+	defer func() { currentAction, savedAction = previousAction, previousSaved }()
 	if legacyScopedParsing != nil && *identifier == "rawAction" {
 		parserError("E_BLOCK_RAW_NATIVE: raw native calls use absolute variable names and cannot promise lexical block scope")
 	}
