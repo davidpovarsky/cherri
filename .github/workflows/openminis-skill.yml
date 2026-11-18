@@ -117,6 +117,14 @@ jobs:
           CHERRI_BIN: ${{ github.workspace }}/dist/cherri-linux-amd64
         run: sh skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh
 
+      - name: Verify real CLI signing failures leave no artifact
+        run: >-
+          python3 tools/p10r15/verify_installed_signing.py
+          --compiler dist/cherri-linux-amd64
+          --skill skills/cherri-shortcuts
+          --include-timeout
+          --report dist/signing-protocol-exit-evidence.json
+
       - name: Live Activity · refresh
         uses: davidpovarsky/github-automation/live-refresh@main
         continue-on-error: true

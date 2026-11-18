@@ -1,0 +1,217 @@
+{
+  "formatVersion": 1,
+  "observedDateUtc": "2026-11-18",
+  "scope": "PRE_PROMOTION_CONSUMER_OBSERVATION",
+  "releaseReadiness": "OPEN",
+  "source": {
+    "baselineP14Commit": "ca8a62327e429d5574c8f2a5d440de2c5e553ab2",
+    "inventoryBranchHead": "679639d69bd1c4599b4f94cb44964f263416b5d7",
+    "finalRootCandidateCommit": null,
+    "testedCompiler": {
+      "sourceCheckoutCommit": "c2208b28ab0fdcf7c584d54da01c5f36fb3fd941",
+      "compilerFilesChangedFromP14": false,
+      "platform": "linux/amd64 on Ubuntu WSL",
+      "binarySha256": "525b34d189ee57747111c7839093d87da93ffd0603fec01ee0e15a2d0e8077ad",
+      "buildReceipt": "SentinelX job_3abb6113fb6b built successfully; following invocation failed only on Windows .git path in WSL",
+      "capabilities": {
+        "languageVersion": "2.0",
+        "catalogSchemaVersion": "3.0",
+        "protocolVersion": "1.0",
+        "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+        "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+        "actionCount": 505,
+        "features": [
+          "let_var_bindings",
+          "named_call_arguments",
+          "f_strings",
+          "raw_strings",
+          "typed_collections",
+          "value_producing_blocks",
+          "ast_functions",
+          "native_preservation",
+          "shared_analysis_service",
+          "zero_based_indexing"
+        ]
+      },
+      "protocolFaultEvidence": "source-signing-fault-audit.json",
+      "protocolFaultSummary": {
+        "checks": 34,
+        "controlsPassed": 3,
+        "negativesRejected": 31,
+        "failures": 0
+      }
+    },
+    "skill": {
+      "sourceCommit": "679639d69bd1c4599b4f94cb44964f263416b5d7",
+      "manifest": {
+        "skillVersion": "2.0.0",
+        "languageVersion": "2.0",
+        "catalogSchemaVersion": "3.0",
+        "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+        "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+        "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+        "compilerCommit": "1204e1f7dfac7af8df0813d1514fac629765af69",
+        "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+        "docsCommit": "a38b62b819e48fea73dfd0636eb6de4dd08c2713"
+      },
+      "causalNegativeChecks": 9,
+      "existingFixtureInstallScenarios": 10,
+      "status": "SOURCE_TESTS_PASS_RELEASE_PINS_PENDING_REFRESH"
+    },
+    "docs": {
+      "checkoutCommit": "a38b62b819e48fea73dfd0636eb6de4dd08c2713",
+      "checkoutClean": true,
+      "schemaFingerprint": "787e9842bbe92b14dbf195bf896c371cb622cd0b6178532b146dc1da6164cc46",
+      "smokeCompilerPin": "4f4d30f1b863e8d53cd3d56eb8ddcaffab7ce8f2",
+      "status": "FAIL_SCHEMA_DRIFT",
+      "requiredAction": "Regenerate canonical actions docs from the final compiler and run real snippet checks before updating immutable docs and Skill pins."
+    },
+    "preview": {
+      "checkoutCommit": "42ee7656e0cc07b00a097ff4d17d90c8eb8b6efd",
+      "checkoutClean": true,
+      "packageVersion": "1.3.4",
+      "packagePin": "github:davidpovarsky/preview-shortcut#42ee7656e0cc07b00a097ff4d17d90c8eb8b6efd",
+      "lockResolved": "git+ssh://git@github.com/davidpovarsky/preview-shortcut.git#42ee7656e0cc07b00a097ff4d17d90c8eb8b6efd",
+      "sourcePinsAgree": true,
+      "generatedBundlePresentInInventoryWorktree": false,
+      "status": "SOURCE_PINS_INSPECTED_RUNTIME_NOT_OBSERVED"
+    },
+    "ios": {
+      "bridgeUsesCanonicalRegistry": true,
+      "swiftCallsCherriActionCatalog": true,
+      "swiftDecodesSchemaFingerprint": true,
+      "status": "SOURCE_INSPECTED_DEVICE_INSTALL_NOT_OBSERVED",
+      "evidenceFiles": [
+        "ios_bridge.go",
+        "mobile_compiler.go",
+        "ios/CherriApp/Compiler/CherriCompiler.swift"
+      ],
+      "note": "Source inspection is not an installed app or simulator runtime claim. Final CI/runtime receipts must identify their own source commit."
+    }
+  },
+  "installed": {
+    "remoteBuilder": {
+      "host": "torah-social",
+      "platform": "Linux aarch64",
+      "statusCommand": "cherri-remote-legacy.sh status",
+      "statusExitCode": 0,
+      "defaultMode": "legacy",
+      "tuple": {
+        "compilerCommit": "15f29066e627a1776b8cb17405117e99263171d3",
+        "docsCommit": "8daeebc33b55b691493dfe75ff823c24dce44c21",
+        "label": "p10",
+        "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa",
+        "skillSourceHead": "2456327cc941f6ae89c870833d3d5f70109d693c",
+        "sourceBranch": "agent/cherri-p10-apple-actions-coverage"
+      },
+      "compilerSha256": "14fa042e8d0205981b9ec91b93190a3ef0336dc561bd9bb01a6d871d09099afe",
+      "capabilities": {
+        "languageVersion": "2.0",
+        "catalogSchemaVersion": "3.0",
+        "protocolVersion": "1.0",
+        "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa",
+        "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+        "actionCount": 505,
+        "features": [
+          "let_var_bindings",
+          "named_call_arguments",
+          "f_strings",
+          "raw_strings",
+          "typed_collections",
+          "value_producing_blocks",
+          "ast_functions",
+          "native_preservation",
+          "shared_analysis_service",
+          "zero_based_indexing"
+        ]
+      },
+      "skillManifest": {
+        "skillVersion": "2.0.0",
+        "languageVersion": "2.0",
+        "catalogSchemaVersion": "3.0",
+        "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa",
+        "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+        "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+        "compilerCommit": "15f29066e627a1776b8cb17405117e99263171d3",
+        "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+        "docsCommit": "8daeebc33b55b691493dfe75ff823c24dce44c21"
+      },
+      "runnerSha256": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+      "legacyWrapperSha256": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+      "skillBuildSha256": "07bb002ad0ded6ad9ed651772b29420fc828c016ac47f1d01b03babcb69a63ad",
+      "activeJsonSha256": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+      "faultAudit": "installed-signing-fault-audit.json",
+      "faultSummary": {
+        "checks": 46,
+        "controlsPassed": 4,
+        "negativesRejected": 30,
+        "failures": 12
+      },
+      "status": "OLD_COHERENT_TUPLE_WITH_CONFIRMED_SIGNING_FALSE_SUCCESSES",
+      "pluginPackageRegistration": "NOT_EXPOSED_IN_CURRENT_SESSION",
+      "archivedPluginCopy": "0.1.4 under jobs/cherri-original-cutover-audit; not evidence of current registered plugin version"
+    },
+    "pure": {
+      "status": "UPSTREAM_PURE_VERIFIED",
+      "sourceCommit": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+      "sourceTree": "4fe9fbc8c742aaf01d6ec8193d9be708fb1de7b5",
+      "docsCommit": "4165cc7224b8f4f0500d95129da9fa14eca5458f",
+      "binarySha256": "e66f3dd0354270d2a2e1cc7dd0b139f56c6290e0625aee0bd5237c260087767c",
+      "verificationCommand": "pure-upstream/bin/pure-cherri-service.sh verify",
+      "exitCode": 0,
+      "modified": false
+    },
+    "purePack": {
+      "version": "0.1.1",
+      "definitionSourceCommit": "2456327cc941f6ae89c870833d3d5f70109d693c",
+      "manifestSha256": "5263262e4a8b1bad69939f793154a342ece52292e5d00a08c68307a0243af431",
+      "declaredStatus": "EXTERNAL_DEFINITIONS_NOT_RUNTIME_VERIFIED",
+      "freshVerificationScope": "MANIFEST_PROVENANCE_ONLY",
+      "modified": false
+    }
+  },
+  "authoringPatterns": {
+    "status": "BLOCKED_ORIGINAL_PACKAGE_NOT_LOCATED",
+    "asanaTask": "1219604109827689",
+    "asanaAttachmentCount": 0,
+    "windowsSearch": "Downloads filename search for Cherri, authoring, INSTALL-AGENT returned 40 relevant paths; none was the original Authoring Patterns package.",
+    "zipCentralDirectories": [
+      {
+        "name": "cherri-canonical-backend-recovery-kit.zip",
+        "entries": 19,
+        "relevantEntries": 0
+      },
+      {
+        "name": "cherri-language-agent-kit.zip",
+        "entries": 6,
+        "relevantEntries": 0
+      },
+      {
+        "name": "cherri-language-repair-kit.zip",
+        "entries": 8,
+        "relevantEntries": 0
+      },
+      {
+        "name": "Lumen_Cherri_Source_4.zip",
+        "entries": 7,
+        "relevantEntries": 0
+      }
+    ],
+    "docsCheckoutRelevantFiles": 0,
+    "remoteWorkspaceSearchDepth": 5,
+    "remoteRelevantFiles": 0,
+    "scopeNote": "Bounded search evidence; not a claim that the original package does not exist elsewhere. No replacement of its 24 pages, 22 rules, or 3 examples was fabricated."
+  },
+  "promotion": {
+    "status": "NOT_PERFORMED",
+    "liveTupleModified": false,
+    "blockers": [
+      "Final integrated compiler SHA not frozen at observation time",
+      "Docs schema mismatch must be resolved",
+      "Installed runtime still uses old compiler and failed 12 protocol fault checks",
+      "Current registered plugin package provenance unavailable",
+      "Original Authoring Patterns package not located"
+    ],
+    "runbook": "consumer-provenance.md"
+  }
+}

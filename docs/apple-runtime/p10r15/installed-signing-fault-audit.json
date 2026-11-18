@@ -1,0 +1,667 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-18T02:15:29Z",
+  "scope": "ACTUAL_CLI_AND_ENDPOINT_INSTRUMENTED_WRAPPER_COPIES_LOOPBACK_ONLY",
+  "appleCryptographicValidation": "NOT_TESTED",
+  "privateCorpusUsed": false,
+  "provenance": {
+    "compilerSha256": "14fa042e8d0205981b9ec91b93190a3ef0336dc561bd9bb01a6d871d09099afe",
+    "capabilities": {
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "protocolVersion": "1.0",
+      "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "actionCount": 505,
+      "features": [
+        "let_var_bindings",
+        "named_call_arguments",
+        "f_strings",
+        "raw_strings",
+        "typed_collections",
+        "value_producing_blocks",
+        "ast_functions",
+        "native_preservation",
+        "shared_analysis_service",
+        "zero_based_indexing"
+      ]
+    },
+    "skillManifest": {
+      "skillVersion": "2.0.0",
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+      "compilerCommit": "15f29066e627a1776b8cb17405117e99263171d3",
+      "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+      "docsCommit": "8daeebc33b55b691493dfe75ff823c24dce44c21"
+    },
+    "skillBuildSha256": "07bb002ad0ded6ad9ed651772b29420fc828c016ac47f1d01b03babcb69a63ad",
+    "installedTuple": {
+      "compilerCommit": "15f29066e627a1776b8cb17405117e99263171d3",
+      "docsCommit": "8daeebc33b55b691493dfe75ff823c24dce44c21",
+      "label": "p10",
+      "schemaFingerprint": "15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa",
+      "skillSourceHead": "2456327cc941f6ae89c870833d3d5f70109d693c",
+      "sourceBranch": "agent/cherri-p10-apple-actions-coverage"
+    },
+    "remoteLegacySha256": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+    "remoteRunnerSha256": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954"
+  },
+  "results": [
+    {
+      "surface": "cli_v2",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.045,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 2366,
+          "magicHex": "3c3f786d",
+          "sha256": "0ce737286489a80a599d3623e7c8af635c79f081962c33c06c85b09e28ccbaaa"
+        },
+        {
+          "bytes": 2366,
+          "magicHex": "3c3f786d",
+          "sha256": "0ce737286489a80a599d3623e7c8af635c79f081962c33c06c85b09e28ccbaaa"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_v2",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.047,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: unexpected signing service response: <?xml version='1.0'?><plist><dict/></plist>\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.045,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: unexpected signing service response: <html>synthetic signer error</html>\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.047,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing server error: synthetic fault (TEST)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.047,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service failed (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.048,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: unexpected signing service response: \n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.047,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: unexpected signing service response: {broken\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.049,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: failed to decode base64 signed payload: illegal base64 data at input byte 0\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "digest_mismatch",
+      "exitCode": 0,
+      "seconds": 0.047,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 32,
+          "magicHex": "41454131",
+          "sha256": "8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_v2",
+      "case": "header_only",
+      "exitCode": 0,
+      "seconds": 0.047,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 4,
+          "magicHex": "41454131",
+          "sha256": "a077bc2d2190761fa69a254786303c82ccb0a4cd56a9d79a535a3ee31f30211c"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_v2",
+      "case": "zero_archive",
+      "exitCode": 0,
+      "seconds": 0.049,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 32,
+          "magicHex": "41454131",
+          "sha256": "b38cbfcba19f0caf92d197bc34fe5e0c63043b7cbd0693e10b2639eac81ebb7c"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_v2",
+      "case": "timeout",
+      "exitCode": 1,
+      "seconds": 45.052,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing request error: Post \"http://127.0.0.1:37269/shortcuty.app/sign\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.04,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 2097,
+          "magicHex": "3c3f786d",
+          "sha256": "f360103806ff6c9d68723902a5b2c24eaf51800a0dbc82e78b9c5cbc24c767ea"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.041,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: unexpected signing service response: <?xml version='1.0'?><plist><dict/></plist>\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.041,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: unexpected signing service response: <html>synthetic signer error</html>\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.04,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing server error: synthetic fault (TEST)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.043,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service failed (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.041,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: unexpected signing service response: \n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.04,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: unexpected signing service response: {broken\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.041,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: failed to decode base64 signed payload: illegal base64 data at input byte 0\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "digest_mismatch",
+      "exitCode": 0,
+      "seconds": 0.04,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 32,
+          "magicHex": "41454131",
+          "sha256": "8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "header_only",
+      "exitCode": 0,
+      "seconds": 0.041,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 4,
+          "magicHex": "41454131",
+          "sha256": "a077bc2d2190761fa69a254786303c82ccb0a4cd56a9d79a535a3ee31f30211c"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "zero_archive",
+      "exitCode": 0,
+      "seconds": 0.043,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 32,
+          "magicHex": "41454131",
+          "sha256": "b38cbfcba19f0caf92d197bc34fe5e0c63043b7cbd0693e10b2639eac81ebb7c"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "skill_copy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.118,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 2366,
+          "magicHex": "3c3f786d",
+          "sha256": "0ce737286489a80a599d3623e7c8af635c79f081962c33c06c85b09e28ccbaaa"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": "<isolated-audit>/skill_copy/unsigned_control/result.shortcut\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.11,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: unexpected signing service response: <?xml version='1.0'?><plist><dict/></plist>\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.117,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: unexpected signing service response: <html>synthetic signer error</html>\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.119,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing server error: synthetic fault (TEST)\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.111,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service failed (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.109,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: unexpected signing service response: \n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.112,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: unexpected signing service response: {broken\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.111,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: failed to decode base64 signed payload: illegal base64 data at input byte 0\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "digest_mismatch",
+      "exitCode": 0,
+      "seconds": 0.112,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 32,
+          "magicHex": "41454131",
+          "sha256": "8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": "<isolated-audit>/skill_copy/digest_mismatch/result.shortcut\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "header_only",
+      "exitCode": 0,
+      "seconds": 0.124,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 4,
+          "magicHex": "41454131",
+          "sha256": "a077bc2d2190761fa69a254786303c82ccb0a4cd56a9d79a535a3ee31f30211c"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": "<isolated-audit>/skill_copy/header_only/result.shortcut\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "zero_archive",
+      "exitCode": 0,
+      "seconds": 0.118,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 32,
+          "magicHex": "41454131",
+          "sha256": "b38cbfcba19f0caf92d197bc34fe5e0c63043b7cbd0693e10b2639eac81ebb7c"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": "<isolated-audit>/skill_copy/zero_archive/result.shortcut\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.256,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 2097,
+          "magicHex": "3c3f786d",
+          "sha256": "f360103806ff6c9d68723902a5b2c24eaf51800a0dbc82e78b9c5cbc24c767ea"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nCHERRI_LANGUAGE=legacy\nCHERRI_BRANCH=agent/cherri-p10-apple-actions-coverage\nBUILD_ARTIFACT=<isolated-audit>/remote_legacy_copy/unsigned_control/outputs/fixture-p10-legacy-20261118T021435-803300.shortcut\nf360103806ff6c9d68723902a5b2c24eaf51800a0dbc82e78b9c5cbc24c767ea  <isolated-audit>/remote_legacy_copy/unsigned_control/outputs/fixture-p10-legacy-20261118T021435-803300.shortcut\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/unsigned_control/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/unsigned_control/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/unsigned_control/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.312,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: unexpected signing service response: <?xml version='1.0'?><plist><dict/></plist>\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/xml/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/xml/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/xml/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.305,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: unexpected signing service response: <html>synthetic signer error</html>\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/html/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/html/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/html/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.3,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing server error: synthetic fault (TEST)\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/json_error/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/json_error/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/json_error/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.334,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing service failed (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/non_200/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/non_200/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/non_200/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.31,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: unexpected signing service response: \n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/empty/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/empty/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/empty/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.3,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: unexpected signing service response: {broken\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/corrupt_json/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/corrupt_json/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/corrupt_json/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.287,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: failed to decode base64 signed payload: illegal base64 data at input byte 0\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/corrupt_base64/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/corrupt_base64/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/corrupt_base64/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "digest_mismatch",
+      "exitCode": 0,
+      "seconds": 0.317,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 32,
+          "magicHex": "41454131",
+          "sha256": "8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nCHERRI_LANGUAGE=legacy\nCHERRI_BRANCH=agent/cherri-p10-apple-actions-coverage\nBUILD_ARTIFACT=<isolated-audit>/remote_legacy_copy/digest_mismatch/outputs/fixture-p10-legacy-20261118T021441-804705.shortcut\n8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed  <isolated-audit>/remote_legacy_copy/digest_mismatch/outputs/fixture-p10-legacy-20261118T021441-804705.shortcut\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/digest_mismatch/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/digest_mismatch/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/digest_mismatch/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "header_only",
+      "exitCode": 0,
+      "seconds": 0.3,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 4,
+          "magicHex": "41454131",
+          "sha256": "a077bc2d2190761fa69a254786303c82ccb0a4cd56a9d79a535a3ee31f30211c"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nCHERRI_LANGUAGE=legacy\nCHERRI_BRANCH=agent/cherri-p10-apple-actions-coverage\nBUILD_ARTIFACT=<isolated-audit>/remote_legacy_copy/header_only/outputs/fixture-p10-legacy-20261118T021442-804871.shortcut\na077bc2d2190761fa69a254786303c82ccb0a4cd56a9d79a535a3ee31f30211c  <isolated-audit>/remote_legacy_copy/header_only/outputs/fixture-p10-legacy-20261118T021442-804871.shortcut\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/header_only/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/header_only/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/header_only/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "zero_archive",
+      "exitCode": 0,
+      "seconds": 0.303,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [
+        {
+          "bytes": 32,
+          "magicHex": "41454131",
+          "sha256": "b38cbfcba19f0caf92d197bc34fe5e0c63043b7cbd0693e10b2639eac81ebb7c"
+        }
+      ],
+      "verdict": "FAIL",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nCHERRI_LANGUAGE=legacy\nCHERRI_BRANCH=agent/cherri-p10-apple-actions-coverage\nBUILD_ARTIFACT=<isolated-audit>/remote_legacy_copy/zero_archive/outputs/fixture-p10-legacy-20261118T021443-805038.shortcut\nb38cbfcba19f0caf92d197bc34fe5e0c63043b7cbd0693e10b2639eac81ebb7c  <isolated-audit>/remote_legacy_copy/zero_archive/outputs/fixture-p10-legacy-20261118T021443-805038.shortcut\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/zero_archive/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/zero_archive/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/zero_archive/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "surface": "remote_legacy_copy",
+      "case": "timeout",
+      "exitCode": 1,
+      "seconds": 45.353,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\n\nError: signing request error: Post \"http://127.0.0.1:34211/shortcuty.app/sign\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n\nPlatform: Linux aarch64\nSkill dir: <isolated-audit>/remote_legacy_copy/timeout/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: <isolated-audit>/remote_legacy_copy/timeout/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-audit>/remote_legacy_copy/timeout/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\nLEGACY_BUILDER_ERROR: signing command failed\n"
+    }
+  ],
+  "summary": {
+    "checks": 46,
+    "controlsPassed": 4,
+    "negativesRejected": 30,
+    "failures": 12
+  }
+}

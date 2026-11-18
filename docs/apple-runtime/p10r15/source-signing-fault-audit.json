@@ -1,0 +1,447 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-18T02:15:07Z",
+  "scope": "ACTUAL_CLI_AND_ENDPOINT_INSTRUMENTED_WRAPPER_COPIES_LOOPBACK_ONLY",
+  "appleCryptographicValidation": "NOT_TESTED",
+  "privateCorpusUsed": false,
+  "provenance": {
+    "compilerSha256": "525b34d189ee57747111c7839093d87da93ffd0603fec01ee0e15a2d0e8077ad",
+    "capabilities": {
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "protocolVersion": "1.0",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "actionCount": 505,
+      "features": [
+        "let_var_bindings",
+        "named_call_arguments",
+        "f_strings",
+        "raw_strings",
+        "typed_collections",
+        "value_producing_blocks",
+        "ast_functions",
+        "native_preservation",
+        "shared_analysis_service",
+        "zero_based_indexing"
+      ]
+    },
+    "skillManifest": {
+      "skillVersion": "2.0.0",
+      "languageVersion": "2.0",
+      "catalogSchemaVersion": "3.0",
+      "schemaFingerprint": "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+      "codecFingerprint": "3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e",
+      "compilerRepo": "https://github.com/davidpovarsky/cherri.git",
+      "compilerCommit": "1204e1f7dfac7af8df0813d1514fac629765af69",
+      "docsRepo": "https://github.com/davidpovarsky/cherrilang.org.git",
+      "docsCommit": "a38b62b819e48fea73dfd0636eb6de4dd08c2713"
+    },
+    "skillBuildSha256": "e377d4d589a84002f021224839a564ff3a5d224b299c398b6c8d248cff2a3d0f"
+  },
+  "results": [
+    {
+      "surface": "cli_v2",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.157,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        },
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_v2",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.172,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.17,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.149,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing server error: synthetic fault (TEST)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.176,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.15,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned empty response\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.178,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.179,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted base64 signed payload: illegal base64 data at input byte 0\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.165,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.175,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.184,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n"
+    },
+    {
+      "surface": "cli_v2",
+      "case": "timeout",
+      "exitCode": 1,
+      "seconds": 45.265,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing request timeout: Post \"http://127.0.0.1:46399/shortcuty.app/sign\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.511,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 1964,
+          "magicHex": "3c3f786d",
+          "sha256": "d5592b3cc69804341a817665f56bbc8960b723a0795d2066e4ed6354bb931ade"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": ""
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 0.379,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.299,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 0.386,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing server error: synthetic fault (TEST)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.334,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.444,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned empty response\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.339,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.39,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: corrupted base64 signed payload: illegal base64 data at input byte 0\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 0.314,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 0.273,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\n\n"
+    },
+    {
+      "surface": "cli_legacy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 0.264,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "\nError: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\n\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "unsigned_control",
+      "exitCode": 0,
+      "seconds": 0.725,
+      "localRequests": 0,
+      "multipartProtocolObserved": false,
+      "artifacts": [
+        {
+          "bytes": 2205,
+          "magicHex": "3c3f786d",
+          "sha256": "6698cc36fb3c51901287d360261f5a827488ebe0fcacfa200c6bdafe6a3c45d3"
+        }
+      ],
+      "verdict": "CONTROL_PASS",
+      "diagnosticTail": "<isolated-audit>/skill_copy/unsigned_control/result.shortcut\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "xml",
+      "exitCode": 1,
+      "seconds": 1.026,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned unsigned XML/plist data instead of AEA1 signed Shortcut (Content-Type: application/x-plist)\nSigned compilation failed for: <isolated-audit>/skill_copy/xml/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "html",
+      "exitCode": 1,
+      "seconds": 0.873,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned HTML error page instead of AEA1 signed Shortcut (Content-Type: text/html)\nSigned compilation failed for: <isolated-audit>/skill_copy/html/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "json_error",
+      "exitCode": 1,
+      "seconds": 1.025,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing server error: synthetic fault (TEST)\nSigned compilation failed for: <isolated-audit>/skill_copy/json_error/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "non_200",
+      "exitCode": 1,
+      "seconds": 0.786,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service transient failure (503 Service Unavailable): {\"message\":\"synthetic unavailable\"}\nSigned compilation failed for: <isolated-audit>/skill_copy/non_200/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "empty",
+      "exitCode": 1,
+      "seconds": 0.623,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned empty response\nSigned compilation failed for: <isolated-audit>/skill_copy/empty/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_json",
+      "exitCode": 1,
+      "seconds": 0.552,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted signing service JSON response: invalid character 'b' looking for beginning of object key string\nSigned compilation failed for: <isolated-audit>/skill_copy/corrupt_json/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "corrupt_base64",
+      "exitCode": 1,
+      "seconds": 0.632,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: corrupted base64 signed payload: illegal base64 data at input byte 0\nSigned compilation failed for: <isolated-audit>/skill_copy/corrupt_base64/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "digest_mismatch",
+      "exitCode": 1,
+      "seconds": 1.149,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service signed_sha256 mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 8e3399213559efa11cd7d8975fa87027bf74c42ae63c3a805ed08853b0ab9aed\nSigned compilation failed for: <isolated-audit>/skill_copy/digest_mismatch/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "header_only",
+      "exitCode": 1,
+      "seconds": 1.118,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (truncated AEA1 archive: got 4 bytes, minimum required is 16 bytes, Content-Type: application/octet-stream)\nSigned compilation failed for: <isolated-audit>/skill_copy/header_only/fixture.cherri\n"
+    },
+    {
+      "surface": "skill_copy",
+      "case": "zero_archive",
+      "exitCode": 1,
+      "seconds": 1.016,
+      "localRequests": 1,
+      "multipartProtocolObserved": true,
+      "artifacts": [],
+      "verdict": "REJECTED_NONZERO_NO_ARTIFACT",
+      "diagnosticTail": "Compilation error: signing failed: signing service returned invalid AEA1 payload (corrupted AEA1 archive: payload bytes after AEA1 magic are all zero, Content-Type: application/octet-stream)\nSigned compilation failed for: <isolated-audit>/skill_copy/zero_archive/fixture.cherri\n"
+    }
+  ],
+  "summary": {
+    "checks": 34,
+    "controlsPassed": 3,
+    "negativesRejected": 31,
+    "failures": 0
+  }
+}
