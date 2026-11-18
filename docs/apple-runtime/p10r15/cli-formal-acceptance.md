@@ -14,3 +14,5 @@ The first actual CLI run exposed that a source filename containing --json select
 Focused production run after correction: all four top-level tests passed, package9.012s, total16.2s. Full language-acceptance package suite passed, package37.200s, total39.06s. Raw logs are in the authorized local evidence directory. No environment override may substitute an older CLI for these formal producers.
 
 The formal runner discovers and executes each named production test and retains exact source provenance. Its next complete report must be regenerated on the integrated candidate; this document does not relabel historical reports. Linux/macOS CI and Apple runtime/physical gates remain separate.
+
+Independent follow-up: the require type-inspection action was corrected to native getitemtype after comparison with canonical typeOf and the Apple action-class/output metadata. The Release guard assertion uses that independently verified identity; both the producer-tracing native test and Release preservation test passed together on the integration branch.

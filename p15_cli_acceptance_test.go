@@ -323,7 +323,7 @@ func TestBuildProfileRequireRemainsSemanticSafety(t *testing.T) {
 			return out
 		}
 		b, r := counts(baseline), counts(release)
-		for _, id := range []string{"conditional", "alert", "exit", "gettypeaction", "count"} {
+		for _, id := range []string{"conditional", "alert", "exit", "getitemtype", "count"} {
 			key := "is.workflow.actions." + id
 			if r[key] == 0 || r[key] != b[key] {
 				t.Fatalf("Legacy=%v release changed semantic guard %s: debug=%d release=%d", legacy, id, b[key], r[key])
