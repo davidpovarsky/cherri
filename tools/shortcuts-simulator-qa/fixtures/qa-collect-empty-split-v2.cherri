@@ -1,0 +1,39 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "collect-empty-split")
+// Keep the failing empty List -> Repeat Results -> Count order intact.
+let emptyInput = []
+let emptyResults = for item in emptyInput { yield item }
+let collectedCount = count(emptyResults)
+let directCount = count(emptyInput)
+// Exact existing Legacy empty-variable mechanism, without a new emitter.
+native.action("is.workflow.actions.nothing")
+native.action("is.workflow.actions.setvariable", parameters: native.plist({"WFVariableName": "__cherri_qa_cleared_empty"}))
+native.action("is.workflow.actions.repeat.each", parameters: {
+    "GroupingIdentifier": "6CB058E1-D964-4C0E-94A4-430EF6780011",
+    "WFControlFlowMode": 0,
+    "WFInput": native.ref("Variable", name: "__cherri_qa_cleared_empty")
+})
+native.action("is.workflow.actions.setvariable", parameters: {
+    "WFVariableName": "__cherri_qa_cleared_item",
+    "WFSerializationType": "WFTextTokenAttachment",
+    "WFInput": native.ref("Variable", name: "Repeat Item")
+})
+native.action("is.workflow.actions.getvariable", parameters: {
+    "WFVariable": native.ref("Variable", name: "__cherri_qa_cleared_item")
+})
+native.action("is.workflow.actions.repeat.each", parameters: native.plist({
+    "GroupingIdentifier": "6CB058E1-D964-4C0E-94A4-430EF6780011",
+    "WFControlFlowMode": 2,
+    "UUID": "6CB058E1-D964-4C0E-94A4-430EF6780012"
+}))
+let clearedCount = count(native.ref("ActionOutput", uuid: "6CB058E1-D964-4C0E-94A4-430EF6780012", outputName: "emptyResults"))
+
+let emptyTextList = [""]
+let emptyTextCount = count(emptyTextList)
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "collect-empty-split")
+let traceEnvelope = debugExportTrace(runId: "qa-collect-empty-split-v2")
+let finalSummary = text(f"CHERRI_QA_COLLECT_EMPTY_SPLIT:direct={directCount}:repeat={collectedCount}:cleared={clearedCount}:emptyText={emptyTextCount}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

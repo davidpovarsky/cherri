@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-require|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
+  all|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-require|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-collect-empty-split|qa-export-file-bytes|qa-f01-ifresult-let|qa-f01-ifresult-var|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -183,6 +183,32 @@ case "$SAMPLE_ID" in
     EXPECTED_SHORTCUT_NAME="qa-export-parse-only-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_PARSE_ONLY:SCHEMA=ok:COUNT=ok"
     ;;
+  qa-collect-empty-split)
+    TARGET_FIXTURE_ID="qa-collect-empty-split-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="$TARGET_FIXTURE_ID"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_COLLECT_EMPTY_SPLIT:direct=0:repeat=0:cleared=0:emptyText=1"
+    ;;
+  qa-export-file-bytes)
+    TARGET_FIXTURE_ID="qa-export-file-bytes-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-export-file-bytes-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_EXPORT_FILE_BYTES:NAME=ok:TEXT=ok"
+    ;;
+  qa-f01-ifresult-let)
+    TARGET_FIXTURE_ID="qa-f01-ifresult-let-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-f01-ifresult-let-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK"
+    ;;
+  qa-f01-ifresult-var)
+    TARGET_FIXTURE_ID="qa-f01-ifresult-var-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-f01-ifresult-var-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK"
+    ;;
+
+
   qa-require)
     TARGET_FIXTURE_ID="qa-require-v2"
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
@@ -362,6 +388,10 @@ fixture_specs = [
     ("qa-export-file-control-v2", "qa-export-file-control-v2.cherri", "v2"),
     ("qa-export-build-only-v2", "qa-export-build-only-v2.cherri", "v2"),
     ("qa-export-parse-only-v2", "qa-export-parse-only-v2.cherri", "v2"),
+    ("qa-collect-empty-split-v2", "qa-collect-empty-split-v2.cherri", "v2"),
+    ("qa-export-file-bytes-v2", "qa-export-file-bytes-v2.cherri", "v2"),
+    ("qa-f01-ifresult-let-v2", "qa-f01-ifresult-let-v2.cherri", "v2"),
+    ("qa-f01-ifresult-var-v2", "qa-f01-ifresult-var-v2.cherri", "v2"),
     ("qa-require-v2", "qa-require-v2.cherri", "v2"),
     ("qa-measure-v2", "qa-measure-v2.cherri", "v2"),
     ("qa-measure-release-v2", "qa-measure-release-v2.cherri", "v2"),

@@ -1,0 +1,15 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "f01-if-result")
+let one = number(1)
+var truth: Bool = one == 1
+var verdict = "P15_F01_IFRESULT_OK"
+var controlValue: Bool = if truth { yield true } else { yield false }
+if !controlValue { verdict = "P15_F01_IFRESULT_WRONG" }
+let semanticResult = text(verdict)
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "f01-if-result")
+let traceEnvelope = debugExportTrace(runId: "qa-f01-ifresult-var-v2")
+let finalSummary = text(f"CHERRI_QA_F01_IFRESULT:{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

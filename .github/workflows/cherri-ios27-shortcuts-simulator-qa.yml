@@ -67,6 +67,10 @@ on:
           - qa-export-file-control
           - qa-export-build-only
           - qa-export-parse-only
+          - qa-collect-empty-split
+          - qa-export-file-bytes
+          - qa-f01-ifresult-let
+          - qa-f01-ifresult-var
           - qa-measure
           - qa-measure-release
           - qa-label-file-carrier
@@ -138,7 +142,7 @@ jobs:
           exit "$primary_status"
 
       - name: Run Go Simulator QA & Trace Oracle Unit Tests
-        run: go test -v -run "TestP14_|TestP10_A1_|TestP13_SimulatorQA|TestDebug" .
+        run: go test -v -run "TestP14_|TestP10_A1_|TestP13_SimulatorQA|TestDebug|TestP15RuntimeDiagnostic" .
 
       - name: Test AX Inspector and publication quarantine
         run: python3 -m unittest discover -s tools/shortcuts-simulator-qa -p 'test_*.py' -v

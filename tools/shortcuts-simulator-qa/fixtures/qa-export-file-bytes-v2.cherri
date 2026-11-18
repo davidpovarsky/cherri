@@ -1,0 +1,20 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "export-file-bytes")
+// Literal reviewed UTF-8 bytes to File; no getType, debugExport or JSON parsing.
+let contents = text("{\"ok\":true}")
+let file = base64Decode("eyJvayI6dHJ1ZX0=")
+let named = setName(file, "cherri-export-control.json")
+let actualName = getName(named)
+let actualText = getText(named)
+var nameStatus = "bad"
+var textStatus = "bad"
+if actualName == "cherri-export-control.json" { nameStatus = "ok" }
+if actualText == contents { textStatus = "ok" }
+let semanticResult = text(f"CHERRI_QA_EXPORT_FILE_BYTES:NAME={nameStatus}:TEXT={textStatus}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "export-file-bytes")
+let traceEnvelope = debugExportTrace(runId: "qa-export-file-bytes-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
