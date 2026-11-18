@@ -1,0 +1,76 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-18T02:25:04Z",
+  "scope": "LIVE_INSTALLED_SYNTHETIC_UNSIGNED_CLI_MODES_ONLY",
+  "deviceExecution": "NOT_TESTED",
+  "signing": "NOT_REQUESTED",
+  "privateCorpusUsed": false,
+  "sourceAndBinaryHashesUnchanged": true,
+  "beforeAndAfterHashes": {
+    "active.json": "ee9aac247c568fb743d4e505bcaaebe224bfca843d1091438701bd18273807d0",
+    "bin/cherri-remote-runner.sh": "7ae689e9d494e7ddb9a7b9abfb5c5d96bb4321b069dc2847aec07271122cb954",
+    "bin/cherri-remote-legacy.sh": "734507b7a981d7d4185fb3582bd9601d958db013dcd7b12b13201d0d3b0e0b4c",
+    "pure-upstream/bin/cherri": "e66f3dd0354270d2a2e1cc7dd0b139f56c6290e0625aee0bd5237c260087767c",
+    "pure-upstream/apple-actions-pack/manifest.json": "5263262e4a8b1bad69939f793154a342ece52292e5d00a08c68307a0243af431",
+    "pure-upstream/jobs/p10r15-mode-surface-audit/basic.cherri": "21fc025b7567eef23fd6bb3d8ac5fd73cd8399db553cbec7b7b4eea9702f0423",
+    "pure-upstream/jobs/p10r15-mode-surface-audit/pack-only.cherri": "705ec85e5e78f50aa20f9b0b5ab81e77fb85b8be8da6030e69621ce919a52817"
+  },
+  "results": [
+    {
+      "mode": "pure",
+      "exitCode": 0,
+      "expectedCompilationSuccess": true,
+      "artifactExists": true,
+      "actionIdentifiers": [
+        "is.workflow.actions.showresult"
+      ],
+      "passed": true,
+      "diagnosticTail": "NATIVE_PLIST=VALID, actionCount=1\nMODE=unsigned\nSOURCE_SHA=bcc0095754e2cc0baaeb4d93dae172b8153b4716\nARTIFACT=/home/chatgpt-agent/workspaces/cherri-remote/pure-upstream/outputs/basic-unsigned-20261118T022433.shortcut\nde08cc3633aeda59da65196d2cbec429b51fc3f37a1a8e484dba849709f50e9c  /home/chatgpt-agent/workspaces/cherri-remote/pure-upstream/outputs/basic-unsigned-20261118T022433.shortcut\n"
+    },
+    {
+      "mode": "pure_rejects_external_alias",
+      "exitCode": 1,
+      "expectedCompilationSuccess": false,
+      "artifactExists": false,
+      "actionIdentifiers": [],
+      "passed": true,
+      "diagnosticTail": "\nAction 'vibrateAdvanced(...)' does not exist or has not yet been defined.\nError: Undefined action 'vibrateAdvanced()' (1:1)\n"
+    },
+    {
+      "mode": "pure_plus_pack",
+      "exitCode": 0,
+      "expectedCompilationSuccess": true,
+      "artifactExists": true,
+      "actionIdentifiers": [
+        "is.workflow.actions.vibrate"
+      ],
+      "passed": true,
+      "diagnosticTail": "COMPILER=PURE_UPSTREAM\nMODE=PURE_UPSTREAM_WITH_EXTERNAL_PACK\nACTION_PACK_VERSION=0.1.1\nNATIVE_PLIST=VALID, actionCount=1\nMODE=unsigned\nSOURCE_SHA=bcc0095754e2cc0baaeb4d93dae172b8153b4716\nARTIFACT=/home/chatgpt-agent/workspaces/cherri-remote/pure-upstream/outputs/probe-unsigned-20261118T022504.shortcut\nd309864b95295d0838fc95276f5f3af6c009afe148bd091dcd486770a5f816ce  /home/chatgpt-agent/workspaces/cherri-remote/pure-upstream/outputs/probe-unsigned-20261118T022504.shortcut\n"
+    },
+    {
+      "mode": "fork_legacy",
+      "exitCode": 0,
+      "expectedCompilationSuccess": true,
+      "artifactExists": true,
+      "actionIdentifiers": [
+        "is.workflow.actions.showresult"
+      ],
+      "passed": true,
+      "diagnosticTail": "SHORTCUT_PREFLIGHT=PASS comparisons=0 vcardBlocks=0\nCHERRI_LANGUAGE=legacy\nCHERRI_BRANCH=agent/cherri-p10-apple-actions-coverage\nBUILD_ARTIFACT=/home/chatgpt-agent/workspaces/cherri-remote/outputs/basic-p10-legacy-20261118T022433-806693.shortcut\nde08cc3633aeda59da65196d2cbec429b51fc3f37a1a8e484dba849709f50e9c  /home/chatgpt-agent/workspaces/cherri-remote/outputs/basic-p10-legacy-20261118T022433-806693.shortcut\nPlatform: Linux aarch64\nSkill dir: /home/chatgpt-agent/workspaces/cherri-remote/source/p10/skills/cherri-shortcuts\nPinned compiler commit: 15f29066e627a1776b8cb17405117e99263171d3\nPinned docs commit: 8daeebc33b55b691493dfe75ff823c24dce44c21\nCherri: /home/chatgpt-agent/workspaces/cherri-remote/p10/runtime/bin/cherri\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: /home/chatgpt-agent/workspaces/cherri-remote/p10/runtime/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    }
+  ],
+  "integrity": [
+    {
+      "name": "pure_integrity",
+      "exitCode": 0,
+      "output": "UPSTREAM_PURE=VERIFIED"
+    },
+    {
+      "name": "pack_integrity",
+      "exitCode": 0,
+      "output": "PURE_UPSTREAM_WITH_PACK=VERIFIED"
+    }
+  ],
+  "allPassed": true,
+  "pilotFixtureIssue": "Initial fixture directory also contained basic.cherri, which correctly triggered the existing pack reserved-module conflict guard. Repeated the positive pack probe in its own directory without reserved filenames."
+}

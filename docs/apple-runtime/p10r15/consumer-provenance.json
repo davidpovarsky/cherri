@@ -166,8 +166,36 @@
       "definitionSourceCommit": "2456327cc941f6ae89c870833d3d5f70109d693c",
       "manifestSha256": "5263262e4a8b1bad69939f793154a342ece52292e5d00a08c68307a0243af431",
       "declaredStatus": "EXTERNAL_DEFINITIONS_NOT_RUNTIME_VERIFIED",
-      "freshVerificationScope": "MANIFEST_PROVENANCE_ONLY",
+      "freshVerificationScope": "MANIFEST_AND_CHECKSUMS_PLUS_ONE_SYNTHETIC_ALIAS_COMPILE",
       "modified": false
+    },
+    "remoteModes": {
+      "evidence": "installed-mode-surface-audit.json",
+      "scope": "LIVE_INSTALLED_SYNTHETIC_UNSIGNED_CLI_MODES_ONLY",
+      "allPassed": true,
+      "modeChecks": [
+        {
+          "mode": "pure",
+          "exitCode": 0,
+          "passed": true
+        },
+        {
+          "mode": "pure_rejects_external_alias",
+          "exitCode": 1,
+          "passed": true
+        },
+        {
+          "mode": "pure_plus_pack",
+          "exitCode": 0,
+          "passed": true
+        },
+        {
+          "mode": "fork_legacy",
+          "exitCode": 0,
+          "passed": true
+        }
+      ],
+      "sourceAndBinaryHashesUnchanged": true
     }
   },
   "authoringPatterns": {

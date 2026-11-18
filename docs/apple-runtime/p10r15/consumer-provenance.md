@@ -19,7 +19,7 @@ The Windows docs checkout is also stale: its checked-in action-reference fingerp
 | Remote installed compiler | `15f29066e627a1776b8cb17405117e99263171d3` | Linux/aarch64; schema `15eed22550806d167aa399fb7b95b761f540a8e9bf2fbb560cb2dd9112b0ddaa`; binary SHA-256 `14fa042e8d0205981b9ec91b93190a3ef0336dc561bd9bb01a6d871d09099afe` |
 | Remote installed docs/Skill | Docs `8daeebc33b55b691493dfe75ff823c24dce44c21`; Skill source `2456327cc941f6ae89c870833d3d5f70109d693c` | Actual `cherri-remote-legacy.sh status` exits 0; Legacy remains default |
 | Pure upstream | `bcc0095754e2cc0baaeb4d93dae172b8153b4716` | `pure-cherri-service.sh verify` returned `UPSTREAM_PURE=VERIFIED`; source/docs/binary untouched |
-| External Apple Pack | Version 0.1.1; definition source `2456327cc941f6ae89c870833d3d5f70109d693c` | Manifest provenance inspected; explicitly not fresh Apple runtime evidence |
+| External Apple Pack | Version 0.1.1; definition source `2456327cc941f6ae89c870833d3d5f70109d693c` | Checksums and one synthetic alias compile verified; explicitly not Apple runtime evidence |
 
 The Remote Builder plugin's current registration/version is not exposed in this tool session. The archived 0.1.4 plugin under an old audit directory is not proof of the registered package version. The active service scripts, binary, docs, and source checkout were inspected directly.
 
@@ -58,6 +58,19 @@ python3 tools/p10r15/verify_installed_signing.py \
 ```
 
 For the installed host, add `--remote-home /home/chatgpt-agent/workspaces/cherri-remote`, use its actual compiler and source Skill paths, and write the report to a new audit job directory. The final endpoint uses a path marker selecting the canonical multipart adapter; it avoids an embedded equals sign in a CLI argument. Earlier pilot output using a query parameter is not the digest proof used here.
+
+## Live installed mode isolation
+
+A separate unsigned check exercised the actual installed service entrypoints, not wrapper copies. `installed-mode-surface-audit.json` records all four expected outcomes:
+
+| Mode check | Result |
+| --- | --- |
+| Pure original, `show("P10R15 mode isolation")` | Exit 0; native `is.workflow.actions.showresult` |
+| Pure original, pack-only `vibrateAdvanced("Selection")` | Exit 1; undefined action; no artifact |
+| Pure + Pack, the same pack-only alias | Exit 0; native `is.workflow.actions.vibrate` |
+| Fork Legacy, the basic fixture | Exit 0; native `is.workflow.actions.showresult` |
+
+The real Pure and Pack integrity commands both passed after the runs. Hashes of active config, live wrappers, Pure binary, Pack manifest, and original synthetic inputs remained unchanged. A pilot used a directory containing `basic.cherri`, which correctly hit the Pack's reserved module filename guard; the positive Pack case was then run in a separate directory without that collision. The report retains this fixture correction explicitly. This proves these unsigned CLI routes and one external alias, not complete action coverage or device execution.
 
 ## Promotion and rollback sequence
 
