@@ -24,7 +24,7 @@ case "$DEVICE_PROFILE" in
   *) echo "ERROR: Invalid DEVICE_PROFILE '$DEVICE_PROFILE'" >&2; exit 2 ;;
 esac
 case "$SAMPLE_ID" in
-  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-collect-empty-split|qa-export-file-bytes|qa-f01-ifresult-let|qa-f01-ifresult-var) ;;
+  all|qa-collect-counts-v2|qa-collect-counts-legacy|qa-collect-dictionaries-v2|qa-collect-dictionaries-legacy|qa-functional|qa-functional-legacy|qa-scroll-editor|qa-rtl-hebrew|qa-bool-list|qa-short-circuit|qa-short-circuit-local|qa-f01-diag-counter|qa-f01-diag-predicate|qa-f01-diag-control|qa-f01-diag-logic|qa-require|qa-measure|qa-measure-release|qa-label-file-carrier|qa-label-raw-empty|qa-label-raw-grouping|qa-export-unicode|qa-export-empty|qa-export-thousand|qa-export-redacted|qa-export-unsupported-file|qa-export-text-file|qa-retry-control|qa-retry-http500|qa-retry-http404|qa-retry-http429|qa-retry-transport|qa-paginate-ordered|qa-paginate-cycle|qa-paginate-page-cap|qa-paginate-item-cap|qa-paginate-empty|qa-require-zero-diag|qa-label-file-controls|qa-export-file-control|qa-export-build-only|qa-export-parse-only|qa-storage-text-same-run|qa-storage-scope|qa-storage-delete|qa-storage-text-cross-run|qa-http-json-control|qa-http-json-fetch|qa-number-comparison-diag|qa-collect-empty-split|qa-export-file-bytes|qa-f01-ifresult-let|qa-f01-ifresult-var) ;;
   *) echo "ERROR: Invalid SAMPLE_ID '$SAMPLE_ID'" >&2; exit 2 ;;
 esac
 case "$CAPTURE_FULL_EDITOR" in
@@ -89,6 +89,7 @@ GATE_PHYSICAL_DEVICE_TESTED="BLOCKED_DEVICE"
 # Nested source paths are fixed here; an inherited environment cannot select a file.
 TARGET_SOURCE_RELATIVE=""
 HTTP_PROBE_ENABLED="false"
+STORAGE_CROSS_RUN_ENABLED="false"
 case "$SAMPLE_ID" in
   qa-collect-counts-v2)
     TARGET_FIXTURE_ID="qa-collect-counts-v2"
@@ -125,6 +126,31 @@ case "$SAMPLE_ID" in
     LEGACY_COUNTERPART_ID="qa-functional-legacy"
     EXPECTED_SHORTCUT_NAME="qa-storage-scope-v2"
     EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_STORAGE_SCOPE_RESULT:GLOBAL_TYPE_OK:GLOBAL_VALUE_OK:LOCAL_TYPE_OK:LOCAL_VALUE_OK"
+    ;;
+  qa-storage-text-cross-run)
+    TARGET_FIXTURE_ID="qa-storage-text-cross-run-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-storage-text-cross-run-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_STORAGE_CROSS_RUN_RESULT:READ:TYPE_OK:VALUE_OK"
+    STORAGE_CROSS_RUN_ENABLED="true"
+    ;;
+  qa-http-json-control)
+    TARGET_FIXTURE_ID="qa-http-json-control-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-http-json-control-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_HTTP_JSON_CONTROL_RESULT:DICTIONARY_OK:NEXT_OK:ITEMS_OK"
+    ;;
+  qa-number-comparison-diag)
+    TARGET_FIXTURE_ID="qa-number-comparison-diag-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-number-comparison-diag-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_NUMBER_COMPARISON_RESULT:DEQ=Y:DNE=N:REQ=Y:RNE=N:BEQ=Y:BNE=N:ONE_NE_ZERO=Y:ZERO_NE_ONE=Y:ONE_EQ_ONE=Y"
+    ;;
+  qa-http-json-fetch)
+    TARGET_FIXTURE_ID="qa-http-json-fetch-v2"
+    LEGACY_COUNTERPART_ID="qa-functional-legacy"
+    EXPECTED_SHORTCUT_NAME="qa-http-json-fetch-v2"
+    EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_HTTP_JSON_FETCH_RESULT:DICTIONARY_OK:NEXT_OK:ITEMS_OK"
     ;;
   qa-storage-delete)
     TARGET_FIXTURE_ID="qa-storage-delete-v2"
@@ -437,6 +463,10 @@ fixture_specs = [
     ("qa-storage-text-same-run-v2", "qa-storage-text-same-run-v2.cherri", "v2"),
     ("qa-storage-scope-v2", "qa-storage-scope-v2.cherri", "v2"),
     ("qa-storage-delete-v2", "qa-storage-delete-v2.cherri", "v2"),
+    ("qa-storage-text-cross-run-v2", "qa-storage-text-cross-run-v2.cherri", "v2"),
+    ("qa-http-json-control-v2", "qa-http-json-control-v2.cherri", "v2"),
+    ("qa-http-json-fetch-v2", "qa-http-json-fetch-v2.cherri", "v2"),
+    ("qa-number-comparison-diag-v2", "qa-number-comparison-diag-v2.cherri", "v2"),
     ("qa-paginate-ordered-v2", "p15-paginate-probes/qa-paginate-ordered-v2.cherri", "v2"),
     ("qa-paginate-cycle-v2", "p15-paginate-probes/qa-paginate-cycle-v2.cherri", "v2"),
     ("qa-paginate-page-cap-v2", "p15-paginate-probes/qa-paginate-page-cap-v2.cherri", "v2"),
@@ -1418,6 +1448,11 @@ PY
         exit 2
       fi
     fi
+    if [ "$STORAGE_CROSS_RUN_ENABLED" = "true" ]; then
+      python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/storage_cross_run.py" prepare --root "$ARTIFACT_DIR" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA" --udid "$UDID" || { echo "ERROR: storage phase preparation rejected before native launch" >&2; exit 2; }
+      SHORTCUT_INPUT_VALUE="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/storage_cross_run.py" input --root "$ARTIFACT_DIR" --phase WRITE)" || { echo "ERROR: storage phase preparation rejected before native launch" >&2; exit 2; }
+      EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_STORAGE_CROSS_RUN_RESULT:WRITE:TYPE_OK:VALUE_OK"
+    fi
     RUN_URL="$(python3 - "$EXPECTED_SHORTCUT_NAME" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$SHORTCUT_INPUT_VALUE" <<'PY'
 import sys, urllib.parse
 name, run_nonce, fid, input_text = sys.argv[1:5]
@@ -1444,7 +1479,7 @@ print(f"shortcuts://run-shortcut?name={urllib.parse.quote(sys.argv[1])}")
 PY
 )"
 
-    if [ "$HTTP_PROBE_ENABLED" = "true" ]; then
+    if [ "$HTTP_PROBE_ENABLED" = "true" ] || [ "$STORAGE_CROSS_RUN_ENABLED" = "true" ]; then
       # These fixtures need the exact endpoint input; a no-input fallback would
       # test a different URL and cannot establish native HTTP behavior.
       RUN_URL_MINIMAL=""
@@ -2081,6 +2116,7 @@ PY
       fi
 
       # Evaluate callback & NDJSON trace using strict oracle rules (never hardcode BLOCKED_IMPORT!)
+      evaluate_runtime_callback() {
       RUNTIME_EVAL="$(python3 - "$ARTIFACT_DIR/runtime/callback-events.json" "$EXEC_RUN_NONCE" "$TARGET_FIXTURE_ID" "$EXPECTED_SEMANTIC_OUTPUT" "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" "$ARTIFACT_DIR/compiler-manifest.json" "$SOURCE_SHA" <<'PY'
 import json, re, sys
 
@@ -2245,6 +2281,28 @@ else:
     result("PASS", "PASS", "verified correlated callback output and NDJSON trace")
 PY
 )"
+      }
+      evaluate_runtime_callback
+      if [ "$STORAGE_CROSS_RUN_ENABLED" = "true" ]; then
+        printf '%s\n' "$RUNTIME_EVAL" > "$ARTIFACT_DIR/runtime/storage-writer-oracle.json"
+        if [ -f "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" ]; then
+          cp "$ARTIFACT_DIR/runtime/runtime-trace.jsonl" "$ARTIFACT_DIR/runtime/storage-writer-trace.jsonl"
+        fi
+        if python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/storage_cross_run.py" writer-ready --root "$ARTIFACT_DIR"; then
+          # This is a second external invocation, not a nested runShortcut().
+          # A fresh nonce and a single dispatch prohibit writer/reader replay.
+          EXEC_RUN_NONCE="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/storage_cross_run.py" reader-nonce --root "$ARTIFACT_DIR")" || { echo "ERROR: storage phase preparation rejected before native launch" >&2; exit 2; }
+          EXPECTED_SEMANTIC_OUTPUT="CHERRI_QA_STORAGE_CROSS_RUN_RESULT:READ:TYPE_OK:VALUE_OK"
+          rm -f "$ARTIFACT_DIR/runtime/runtime-trace.jsonl"
+          python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/storage_cross_run.py" dispatch-reader --root "$ARTIFACT_DIR" --udid "$UDID" --receiver-data "$RECEIVER_DATA_DIR" || true
+          evaluate_runtime_callback
+          printf '%s\n' "$RUNTIME_EVAL" > "$ARTIFACT_DIR/runtime/storage-reader-oracle.json"
+        fi
+        # A writer-only PASS never satisfies the two-invocation requirement.
+        if ! python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/storage_cross_run.py" report --root "$ARTIFACT_DIR"; then
+          RUNTIME_EVAL="$(printf '%s' "$RUNTIME_EVAL" | python3 -c 'import json,sys; d=json.load(sys.stdin); d.update(runGate="FAIL_RUNTIME",traceGate="FAIL_RUNTIME",reason="two separate storage invocations did not both satisfy strict callback/trace/order"); print(json.dumps(d))')"
+        fi
+      fi
       GATE_SHORTCUT_RUN_COMPLETED="$(echo "$RUNTIME_EVAL" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("runGate","FAIL_RUNTIME"))')"
       GATE_TRACE_CAPTURED="$(echo "$RUNTIME_EVAL" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("traceGate","FAIL_RUNTIME"))')"
       RUNTIME_EVAL_REASON="$(echo "$RUNTIME_EVAL" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("reason",""))')"

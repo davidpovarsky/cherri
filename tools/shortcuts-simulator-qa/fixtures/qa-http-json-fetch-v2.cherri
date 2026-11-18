@@ -1,0 +1,39 @@
+shortcut "qa-http-json-fetch-v2" {
+    version: "27"
+}
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "http-json-fetch")
+let response = downloadURL("https://raw.githubusercontent.com/davidpovarsky/cherri/38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/docs/apple-runtime/p10r15/paginate-pages/one.json")
+let textWitness = text("P15_HTTP_JSON_TEXT")
+let dictionaryWitness = {"next": "two.json"}
+let rawType = typeOf(response)
+let textType = typeOf(textWitness)
+let dictionaryType = typeOf(dictionaryWitness)
+if rawType == textType {
+    debugTraceEvent("before", "http-json-raw-type-text")
+} else {
+    if rawType == dictionaryType {
+        debugTraceEvent("before", "http-json-raw-type-dictionary")
+    } else {
+        debugTraceEvent("before", "http-json-raw-type-other")
+    }
+}
+let parsed = getDictionary(response)
+let parsedType = typeOf(parsed)
+let next = getValue(parsed, "next")
+let items = getValue(parsed, "items")
+let itemCount = count(items)
+var typeFlag = "DICTIONARY_OK"
+var nextFlag = "NEXT_OK"
+var itemsFlag = "ITEMS_OK"
+if parsedType != dictionaryType { typeFlag = "DICTIONARY_FAIL" }
+if next != "two.json" { nextFlag = "NEXT_FAIL" }
+if itemCount != 1 { itemsFlag = "ITEMS_FAIL" }
+let verdict = text(f"{typeFlag}:{nextFlag}:{itemsFlag}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent("after", "http-json-fetch")
+let traceEnvelope = debugExportTrace("qa-http-json-fetch-v2")
+let finalSummary = text(f"CHERRI_QA_HTTP_JSON_FETCH_RESULT:{verdict}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

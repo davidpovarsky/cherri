@@ -58,6 +58,10 @@ new_probes = {
     'qa-storage-text-same-run-v2': '',
     'qa-storage-scope-v2': '',
     'qa-storage-delete-v2': '',
+    'qa-storage-text-cross-run-v2': '',
+    'qa-http-json-control-v2': '',
+    'qa-http-json-fetch-v2': '',
+    'qa-number-comparison-diag-v2': '',
 }
 selected_ids = {'qa-require-v2', 'qa-measure-v2', 'qa-measure-release-v2', *new_probes}
 selected = {f['fixtureId']: f for f in manifest['fixtures'] if f['fixtureId'] in selected_ids}
