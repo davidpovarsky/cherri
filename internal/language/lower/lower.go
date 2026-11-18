@@ -1860,7 +1860,7 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 					OutputUUID:      uuid,
 					OutputName:      b.Name,
 					Parameters: map[string]interface{}{
-						"WFItems": formatWFListItems(v),
+						"WFItems": l.formatWFListItems(v),
 					},
 				}
 				l.emitAction(node)
@@ -2186,7 +2186,7 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 			OutputUUID:      uuid,
 			OutputName:      "List",
 			Parameters: map[string]interface{}{
-				"WFItems": formatWFListItems(v),
+				"WFItems": l.formatWFListItems(v),
 			},
 		}
 		l.emitAction(node)
@@ -2215,16 +2215,26 @@ func (l *Lowerer) materializeToAttachment(val interface{}) *ir.AttachmentToken {
 	}
 }
 
-func formatWFListItems(items []interface{}) []interface{} {
+func (l *Lowerer) formatWFListItems(items []interface{}) []interface{} {
 	formatted := make([]interface{}, len(items))
 	for i, it := range items {
-		if m, ok := it.(map[string]interface{}); ok && m["WFItemType"] != nil {
-			formatted[i] = it
-		} else {
-			formatted[i] = map[string]interface{}{
-				"WFItemType": 0,
-				"WFValue":    it,
+		if m, ok := it.(map[string]interface{}); ok {
+			if m["WFItemType"] != nil {
+				// Preserve explicitly serialized native/import content rows.
+				formatted[i] = it
+				continue
 			}
+			if m["WFSerializationType"] != "WFTextTokenString" && m["WFSerializationType"] != "WFTextTokenAttachment" {
+				// List uses WFContentArrayParameter, not Dictionary field values.
+				// A raw map in its text row is not a native Dictionary value. Reuse
+				// the canonical Dictionary producer and the existing [dictBinding]
+				// reference path, preserving nested values and explicit false.
+				it = l.materializeToAttachment(it)
+			}
+		}
+		formatted[i] = map[string]interface{}{
+			"WFItemType": 0,
+			"WFValue":    it,
 		}
 	}
 	return formatted

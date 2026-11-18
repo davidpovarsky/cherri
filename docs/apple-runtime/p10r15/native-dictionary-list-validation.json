@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "createdAt": "2026-11-18T04:15:01.984008+00:00",
+  "baseCommitSha": "3cc185bafcd2c12db49cdf4b25c4e2c0d1c1b3dd",
+  "historicalRuntime": {
+    "runId": "44223779379",
+    "compilerSha": "d00bc0b9e9a4d8c460623de3d883680b94289e04",
+    "status": "ERROR",
+    "runtimeCause": "UNCONFIRMED",
+    "sourceSha256": "8337913a2b3b888bdfbba1abbfc28ddc8ce63b87a7383531a3ac03cab0b49e00"
+  },
+  "causality": {
+    "redExitCode": 1,
+    "redCases": [
+      "immutable",
+      "mutable",
+      "assignment"
+    ],
+    "redReason": "item 0 is not an original native value reference",
+    "greenExitCode": 0,
+    "mutationsRejected": [
+      "raw_dictionary_text_row",
+      "missing_producer",
+      "swapped_order",
+      "text_coercion"
+    ]
+  },
+  "regression": {
+    "result": "PASS",
+    "passedTestEvents": 41,
+    "passedTests": [
+      "TestCODEC001_LiteralBracesVsFString",
+      "TestCODEC002_HebrewEmojiAttachmentOffsets/Hebrew_prefix",
+      "TestCODEC002_HebrewEmojiAttachmentOffsets/Emoji_surrogate_pair_prefix",
+      "TestCODEC002_HebrewEmojiAttachmentOffsets/Combined_Hebrew_niqqud_prefix",
+      "TestCODEC002_HebrewEmojiAttachmentOffsets",
+      "TestCODEC003_LetDictionaryNativeAction",
+      "TestCODEC004_VarDictionaryMaterialization",
+      "TestCODEC005_DictInNamedActionArg",
+      "TestCODEC006_NestedOrderedDictListWithRefsAndPrimitives",
+      "TestCODEC007_ApproachA_JSONTextGetDictionary",
+      "TestCODEC008_ApproachD_DictionaryCoercion",
+      "TestCODEC009_ApproachC_SetNameJSON",
+      "TestCODEC010_CoercionAndTransformationsMatrix",
+      "TestP10R8_LosslessImportAndCompileParityLegacyAndV2/legacy",
+      "TestP10R8_LosslessImportAndCompileParityLegacyAndV2/v2",
+      "TestP10R8_LosslessImportAndCompileParityLegacyAndV2",
+      "TestP12_PAR_05_ListMixedTextTokenAndAttachmentRejection",
+      "TestP12_EDIT_06_EditListItemAddReorderIsolated",
+      "TestP15DictionaryListLiteralPreservesNativeValues/immutable",
+      "TestP15DictionaryListLiteralPreservesNativeValues/mutable",
+      "TestP15DictionaryListLiteralPreservesNativeValues/assignment",
+      "TestP15DictionaryListLiteralPreservesNativeValues",
+      "TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/raw_dictionary_text_row",
+      "TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/missing_producer",
+      "TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/swapped_order",
+      "TestP15DictionaryListOracleRejectsOriginalDefectAndTampering/text_coercion",
+      "TestP15DictionaryListOracleRejectsOriginalDefectAndTampering",
+      "TestP15DictionaryListUsesDocumentedNativeContentArrayContract",
+      "TestP15_MeasureReleaseRuntimeFixtureRetainsEffectsAndValueProducers",
+      "TestP15_MeasurePreservesOriginalDictionaryProducer",
+      "TestP15_MeasureNestedSameLabelRunsBodyOnce",
+      "TestP15_MeasureShadowedNativeStorageDoesNotOverwriteOuter",
+      "TestP15_MeasureWaitAndNativeControlResults",
+      "TestP15_MeasureFreezesCurrentDateBeforeStoppingTimer",
+      "TestP15_MeasureRejectsUnprovenFormsAndLegacyBoundary",
+      "TestP15_MeasureAndCollectReusableFixturesCompile",
+      "TestP15RequireSingletonListDoesNotUseTextEmptiness/v2-list",
+      "TestP15RequireSingletonListDoesNotUseTextEmptiness/v2-text",
+      "TestP15RequireSingletonListDoesNotUseTextEmptiness/legacy-list",
+      "TestP15RequireSingletonListDoesNotUseTextEmptiness/legacy-text",
+      "TestP15RequireSingletonListDoesNotUseTextEmptiness"
+    ],
+    "fullLowererPackage": "PASS",
+    "cliBuild": "PASS"
+  },
+  "actualCLI": {
+    "command": [
+      "<repo>/artifacts/p15-list-native.exe",
+      "<repo>/artifacts/native-dictionary-list/qa-bool-list-v2.cherri",
+      "--skip-sign",
+      "--build-profile=debug",
+      "--output=<repo>/artifacts/native-dictionary-list/qa-bool-list-v2.shortcut"
+    ],
+    "exitCode": 0,
+    "sourceSha256": "8337913a2b3b888bdfbba1abbfc28ddc8ce63b87a7383531a3ac03cab0b49e00",
+    "unsignedPlistSha256": "d9a2330511e834666818e94b21724b78bd45826cfcd4b799e24073fd3105a091",
+    "nativeActionCount": 32,
+    "dictionaryProducerCount": 2,
+    "listItemCount": 2,
+    "exactProducerUUIDReferences": true,
+    "explicitFalseRetained": true,
+    "nestedArrayOrder": [
+      "a",
+      "b"
+    ],
+    "runtime": "NOT_RUN",
+    "cwd": "<repo>/artifacts/native-dictionary-list",
+    "pathRepresentation": "Actual invocation with repository prefix replaced by <repo>"
+  },
+  "nativeMetadataSha256": "8fb303591888bcb01fe5935b1571d590add428c9bd044f0ab52dcdf99490571a",
+  "sourceSha256": {
+    "internal/language/lower/lower.go": "e0355e81c69a75d0f3e0189e395726a62ab64a77e13fada4e6a7b171e182ecc2",
+    "p15_dictionary_list_test.go": "f92352e60a6b145adf35dd1ae0b69d253a29c652997144930a3f71162ad78004"
+  },
+  "validationLogSha256": {
+    "artifacts/p15-dictionary-list-red.log": "103b54f2133458c642f3cb797327af91326e87751b0481710a80da4595ba33b2",
+    "artifacts/p15-dictionary-list-green.log": "01baa4113255d9dc38fd31a85e986e7bcc43fcbd0204d5015988df3bc6668ebe",
+    "artifacts/p15-dictionary-list-regression.jsonl": "b27337ea6ef647739da681ee08ab9f314f2a1ae014590a24b11a08bf93beac5b",
+    "artifacts/p15-dictionary-list-lower.log": "e30d7700e3163de83f65a47b157ff35714b076f9928eb5c15534a87d00329ed3"
+  }
+}
