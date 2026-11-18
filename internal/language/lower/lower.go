@@ -3771,7 +3771,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			}
 			groupUUID := l.GenerateUUID()
 			uuid := l.GenerateUUID()
-			l.emitIfStart(groupUUID, operand, 4, 1.0, false)
+			l.emitIfStart(groupUUID, operand, 4, 1.0, true)
 			fNode := &ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
 				AppleIdentifier: "is.workflow.actions.number",
@@ -4001,7 +4001,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 
 			groupUUID := l.GenerateUUID()
 			endUUID := l.GenerateUUID()
-			l.emitIfStart(groupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: countUUID}, 3, oneBased, false)
+			l.emitIfStart(groupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: countUUID}, 3, oneBased, true)
 
 			getUUID := l.GenerateUUID()
 			l.emitAction(&ir.NativeActionNode{
@@ -4068,11 +4068,11 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 
 			outerGroup := l.GenerateUUID()
 			outerEndUUID := l.GenerateUUID()
-			l.emitIfStart(outerGroup, oneBasedTok, 3, 1.0, false)
+			l.emitIfStart(outerGroup, oneBasedTok, 3, 1.0, true)
 
 			innerGroup := l.GenerateUUID()
 			innerEndUUID := l.GenerateUUID()
-			l.emitIfStart(innerGroup, diffTok, 3, 0.0, false)
+			l.emitIfStart(innerGroup, diffTok, 3, 0.0, true)
 
 			uuid := l.GenerateUUID()
 			node := &ir.NativeActionNode{
@@ -4221,6 +4221,9 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 		}
 
 		// Logical short-circuiting (compile-time and dynamic):
+		// Generated single-predicate guards use the same compatibility mode as
+		// ordinary authored If. Explicit modern/imported conditions are handled
+		// separately by lowerIf and retain their original wire representation.
 		if e.Op == syntax.TokenAnd {
 			if b, ok := left.(bool); ok {
 				if !b {
@@ -4231,7 +4234,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			// Dynamic short-circuiting for &&: evaluate e.Right only inside Then branch (when left == 1.0)
 			groupUUID := l.GenerateUUID()
 			endUUID := l.GenerateUUID()
-			l.emitIfStart(groupUUID, l.materializeToAttachment(left), 4, 1.0, false)
+			l.emitIfStart(groupUUID, l.materializeToAttachment(left), 4, 1.0, true)
 			rightVal, err := l.lowerExpression(e.Right)
 			if err != nil {
 				return nil, err
@@ -4256,7 +4259,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 			// Dynamic short-circuiting for ||: evaluate e.Right only inside Else branch (when left != 1.0)
 			groupUUID := l.GenerateUUID()
 			endUUID := l.GenerateUUID()
-			l.emitIfStart(groupUUID, l.materializeToAttachment(left), 4, 1.0, false)
+			l.emitIfStart(groupUUID, l.materializeToAttachment(left), 4, 1.0, true)
 			l.emitAction(&ir.NativeActionNode{
 				NodeID:          l.GenerateUUID(),
 				AppleIdentifier: "is.workflow.actions.number",
@@ -4392,7 +4395,7 @@ func (l *Lowerer) lowerExpression(expr syntax.Expression) (interface{}, error) {
 				opType = backend.OperandString
 			}
 			inputTok = l.ensureConditionalInputCoercion(e.Left, inputTok, opType)
-			l.emitIfStartTyped(groupUUID, inputTok, condCode, right, nil, opType, false)
+			l.emitIfStartTyped(groupUUID, inputTok, condCode, right, nil, opType, true)
 
 			// Then branch: 1.0 (true)
 			tNode := &ir.NativeActionNode{
