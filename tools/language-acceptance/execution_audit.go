@@ -31,10 +31,22 @@ var cliProductionTests = map[string][]string{
 	"CL03": {"TestP15CLIDefaultRejectsLegacyWithGuidance"},
 }
 
+// K04 launches the real cross-platform shell installer repeatedly. Its finite
+// process budget includes slow Git Bash process creation on shared Windows hosts;
+// all positive, negative, byte-preservation and no-network assertions are unchanged.
+func productionTestTimeout(required []string) time.Duration {
+	for _, name := range required {
+		if strings.HasPrefix(name, "TestP15K04") {
+			return 6 * time.Minute
+		}
+	}
+	return 3 * time.Minute
+}
+
 // Execute named production tests with explicit discovery checks. Exit status
 // alone cannot prove that any required scenario was selected.
 func executeNamedProductionTests(required []string) (bool, string) {
-	var ctx, cancel = context.WithTimeout(context.Background(), 4*time.Minute)
+	var ctx, cancel = context.WithTimeout(context.Background(), productionTestTimeout(required)+time.Minute)
 	defer cancel()
 	if len(required) == 0 {
 		return false, "No production tests were selected"
@@ -62,7 +74,13 @@ func executeNamedProductionTests(required []string) (bool, string) {
 		}
 	}
 	if err != nil || scanner.Err() != nil || len(missing) != 0 {
-		return false, fmt.Sprintf("Production tests failed or were not discovered: process=%v; missing=%v; scanner=%v", err, missing, scanner.Err())
+		// Retain a bounded causal diagnostic instead of discarding every nested
+		// assertion or timeout line behind an undifferentiated exit status.
+		tail := output
+		if len(tail) > 8192 {
+			tail = tail[len(tail)-8192:]
+		}
+		return false, fmt.Sprintf("Production tests failed or were not discovered: process=%v; missing=%v; scanner=%v; output_tail=%s", err, missing, scanner.Err(), tail)
 	}
 	return true, "Executed production tests: " + strings.Join(required, ", ")
 }

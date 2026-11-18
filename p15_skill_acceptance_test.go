@@ -48,7 +48,7 @@ func p15RunSkillIsolation(t *testing.T, root, binary string) (string, error) {
 		env = append(env, value)
 	}
 	env = append(env, "CHERRI_BIN="+filepath.ToSlash(binary), "CHERRI_REF="+strings.TrimSpace(string(rev)))
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	script := filepath.Join(root, "skills", "cherri-shortcuts", "scripts", "test-compatibility-isolation.sh")
 	cmd := exec.CommandContext(ctx, p15SkillBash(t), "--noprofile", "--norc", filepath.ToSlash(script))
