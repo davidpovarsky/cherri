@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.5.0 | **Current audit:** 2026-11-18 | **Status:** P10R15 IN_PROGRESS from verified P10R14. Formal local report: **5/179 PASS, 0 failed assertions, 174 pending or unexecuted**; **closure_complete=false**. See chapter 16 for current scope. Earlier P0-P12 completion labels and corpus counts describe their historical runs, not the final P10R15 candidate.
+> **Plan version:** 2.5.0 | **Current audit:** 2026-11-18 | **Status:** P10R15 IN_PROGRESS from verified P10R14. Formal local report: **20/179 PASS, 0 failed formal assertions, 159 pending or unexecuted** at immutable `8c42876`; **closure_complete=false**. The separate full Go suite failed three test families. See chapter 18 for the latest completed formal snapshot. Earlier P0-P12 completion labels and corpus counts describe their historical runs, not the final P10R15 candidate.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -940,7 +940,7 @@ Continue independent implementation and verification on the existing shared core
 
 ## 17. V2 acceptance status - integrated snapshot 2026-11-18 08:16 Asia/Hebron
 
-Source: `85b6c352d1e0f9f272cfc6f33c10d0becd29eee6`; actual local runner job `job_36a52be4f877`; generated `2026-11-18T06:16:23Z`. All 179 IDs remain in the generated aggregate, execution audit and requirement map. Current results: **17 PASS, 1 FAIL, 158 UNVERIFIED, 3 required external-tier proofs missing**. The local aggregate groups the last two classes as 161 pending. Exit code 1 and closure=false are retained.
+Source: `85b6c352d1e0f9f272cfc6f33c10d0becd29eee6`; actual local runner job `job_36a52be4f877`; generated `2026-11-18T06:16:23Z`. All 179 IDs remain in the generated aggregate, execution audit and requirement map. Snapshot results: **17 PASS, 1 FAIL, 158 UNVERIFIED, 3 required external-tier proofs missing**. The local aggregate groups the last two classes as 161 pending. Exit code 1 and closure=false are retained.
 
 The 17 proved IDs are `U02`, `U03`, `P01`, `P02`, `P03`, `P04`, `P05`, `T02`, `T06`, `T08`, `N02`, `M05`, `R06`, `R07`, `CL01`, `CL02`, `CL03`. They cover their exact recorded local tiers only. K04 fails because the installed-consumer contract is still pinned to an older schema; the coherent S/D/K tuple and actual consumer tests are pending. The 52 RP and 33 BRG scenarios are not bulk-promoted from existing requirement tests.
 
@@ -949,3 +949,15 @@ Two later facts must stay separate from that formal snapshot: the target-version
 Evidence: [current acceptance review](p10r15-formal-acceptance-review.md), [179-ID audit](acceptance-execution-audit.json), [capture hashes](evidence/p15-formal-85b6c35/capture-summary.json). An earlier evidence-copy wrapper mixed old audit files into a new output directory; those copied files are invalid. This checkpoint uses only freshly generated, source-validated outputs. Historical smoke counts and completion checkboxes in earlier chapters remain history, not current acceptance.
 
 F01 has a genuine earlier signed runtime error and isolated counter/predicate runs are now queued at this snapshot. E07 needs source-correlated UI evidence; AI01 still needs an eligible model evaluation endpoint. These statuses do not convert unimplemented or unverified local work into external blockers. All remaining independent engineering continues. No release-complete claim is made.
+
+## 18. Latest completed formal snapshot - 2026-11-18 18:44 Asia/Hebron
+
+Exact source `8c42876a49081c961d6dce8344cc9879ff8f4a0f`; actual local runner `job_3a30fa58f468`; generated `2026-11-18T16:44:43Z`. All179IDs remain distinct and source-bound. Result: **20PASS,0FAIL,156UNVERIFIED,3BLOCKED_EXTERNAL**; the aggregate reports159pending. Exit0 means no failed registered formal assertion, while **closure_complete=false**.
+
+C02,C04,K04 now have actual requirement-specific production evidence. The complete passed set is U02,U03,P01,P02,P03,P04,P05,C02,C04,T02,T06,T08,N02,M05,R06,R07,CL01,CL02,CL03,K04. K04 covers real offline setup and precise isolated compatibility/network failures. K01,K02,K03,K05,52repair scenarios and33recovery gates are not inferred from it.
+
+The full Go suite at8c42876 separately FAILED three families after821.203s;1659namedPASS events and4skips do not override those failures. Supplied enum-domain repair and statistic/Pack test-contract corrections now have their own clean receipts on later commits. A real K03 late-docs update defect was reproduced and its staged rollback/checksum repair is being verified. These later changes require a new combined boundary.
+
+Signed StorageText44337212109 atff2d530 proves same-run Text type/value only. HTTP20044334461645 proves exact body and two correlated requests only. Neither supplies cache persistence/retry acceptance. Collection empty behavior, File restoration/export and F01 conditional runtime failures remain active. Physical iPad and the disconnected ARM64 host remain separately recorded blockers.
+
+Evidence: [formal review](p10r15-formal-acceptance-review.md), [179-ID audit](acceptance-execution-audit.json), [immutable capture](evidence/p15-formal-8c42876/capture-summary.json). Main-only history, existing infrastructure and private source data remain preserved.

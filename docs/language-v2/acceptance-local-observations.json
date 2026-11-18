@@ -86,15 +86,6 @@
       "coverage_gap": "Literal argument lowering does not prove source evaluation order with observable calls."
     },
     {
-      "id": "C02",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit"
-      ],
-      "observed_smoke_detail": "Analyzer catches E_UNKNOWN_ARGUMENT with accurate source span",
-      "coverage_gap": "One unknown-label diagnostic does not cover duplicates, missing labels, extra positional arguments, or exact spans."
-    },
-    {
       "id": "C03",
       "passed": true,
       "historically_claimed_levels": [
@@ -103,16 +94,6 @@
       ],
       "observed_smoke_detail": "Variadic arguments mapped to typed parameter schemas",
       "coverage_gap": "getUpcomingEvents(3) does not exercise variadic-to-named-list migration."
-    },
-    {
-      "id": "C04",
-      "passed": true,
-      "historically_claimed_levels": [
-        "unit",
-        "service"
-      ],
-      "observed_smoke_detail": "Enum values validated against schema enum domain and surfaced in completions",
-      "coverage_gap": "A string enum value and nonempty completion do not establish contextual and qualified member resolution."
     },
     {
       "id": "C05",
@@ -209,7 +190,7 @@
         "service",
         "benchmark"
       ],
-      "observed_smoke_detail": "Document analysis completes in 6.4846ms (\u003c 500ms)",
+      "observed_smoke_detail": "Document analysis completes in 3.4535ms (\u003c 500ms)",
       "coverage_gap": "Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits."
     },
     {
@@ -526,7 +507,7 @@
       "historically_claimed_levels": [
         "service"
       ],
-      "observed_smoke_detail": "LanguageService returns 535 contextual completion items including expected candidates",
+      "observed_smoke_detail": "LanguageService returns 536 contextual completion items including expected candidates",
       "coverage_gap": "A small completion set does not cover contextual labels, enums, compatible variables, or UI."
     },
     {
@@ -581,7 +562,7 @@
       "historically_claimed_levels": [
         "benchmark"
       ],
-      "observed_smoke_detail": "50 document analysis passes completed in 611µs",
+      "observed_smoke_detail": "50 document analysis passes completed in 8.2182ms",
       "coverage_gap": "Fifty tiny edits do not cover small/large documents and embedded assets."
     },
     {
@@ -641,15 +622,6 @@
       "coverage_gap": "A compilerCommit key does not install that SHA or test checksums and atomic updates."
     },
     {
-      "id": "K04",
-      "passed": false,
-      "historically_claimed_levels": [
-        "integration"
-      ],
-      "observed_smoke_detail": "doctor.sh verifies capabilities-json schema fingerprint against manifest",
-      "coverage_gap": "A fingerprint substring does not exercise offline cache and docs mismatch behavior."
-    },
-    {
       "id": "K05",
       "passed": true,
       "historically_claimed_levels": [
@@ -682,7 +654,7 @@
       "historically_claimed_levels": [
         "repository"
       ],
-      "observed_smoke_detail": "Verified current commit SHA: 85b6c352d1e0f9f272cfc6f33c10d0becd29eee6",
+      "observed_smoke_detail": "Verified current commit SHA: 8c42876a49081c961d6dce8344cc9879ff8f4a0f",
       "coverage_gap": "A 40-character local SHA does not prove final workflow head/checkout provenance."
     },
     {
@@ -707,5 +679,5 @@
   ],
   "schema_version": "1",
   "scope": "Historical smoke assertions only; not formal acceptance tier evidence",
-  "source_sha": "85b6c352d1e0f9f272cfc6f33c10d0becd29eee6"
+  "source_sha": "8c42876a49081c961d6dce8344cc9879ff8f4a0f"
 }

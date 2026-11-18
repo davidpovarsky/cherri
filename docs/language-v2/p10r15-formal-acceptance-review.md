@@ -1,22 +1,24 @@
 # P10R15 formal acceptance review
 
 Date: 2026-11-18  
-Current formal snapshot source: `85b6c352d1e0f9f272cfc6f33c10d0becd29eee6`
+Latest completed formal snapshot source: `8c42876a49081c961d6dce8344cc9879ff8f4a0f`
 Verified starting point: P10R14 `ca8a62327e429d5574c8f2a5d440de2c5e553ab2`  
 Formal Asana acceptance task: `1220432417414104`  
 Status: **IMPLEMENTED_PARTIAL_EVIDENCE — project closure remains open**
 
 ## Current result
 
-The fresh local runner at `85b6c352d1e0f9f272cfc6f33c10d0becd29eee6` reports **179 obligations: 17 passed, 1 failed, 161 pending or unexecuted**. Its independently inspected audit distinguishes **17 PASS, 1 FAIL, 158 UNVERIFIED and 3 BLOCKED_EXTERNAL**. All 26 actual local evidence records carry that exact source SHA. The runner exited 1, and `closure_complete` remains false.
+The fresh local runner at `8c42876a49081c961d6dce8344cc9879ff8f4a0f` executed all registered local producers and reports **179 obligations: 20 passed, 0 failed, 159 pending or unexecuted**. The independent audit contains **20 PASS, 156 UNVERIFIED and 3 BLOCKED_EXTERNAL**, with all 179 distinct IDs bound to that exact source SHA. The runner exited 0; `closure_complete` remains false. Generated at `2026-11-18T16:44:43Z`, job `job_3a30fa58f468`.
 
-K04 is the real local failure: the checked-in consumer tuple still pins the old native schema fingerprint. It requires a coherent source/docs/Skill update and actual installed/offline evidence; changing one fingerprint alone is not the repair. The 158 unverified items remain engineering or evidence obligations, not automatically hardware blockers. The three external-tier labels are F01, E07 and AI01. F01 already has a failed earlier signed run under active diagnosis; missing current-SHA proof is not evidence that the simulator is unavailable.
+This is the latest completed formal snapshot, not a final-candidate claim. The full Go suite at the same source failed three separate families (statistic semantic-import UI naming, supplied-registry enum propagation and immutable-vs-prospective Pack drift). Their actual failure log hash and counts are retained in `../apple-runtime/p10r15/evidence/integrated-8c42876/full-go-receipt.json`. Subsequent repairs do not rewrite that failure.
 
-This supersedes the first P10R15 component snapshot (5 passes) and the historical 71-pass headline. Earlier narrow smoke observations remain separate from formal proof. The 52 repair scenarios and 33 backend recovery gates still require their own scenario producers; shared requirement IDs cannot manufacture their acceptance.
+C02, C04 and K04 add their actual production evidence to the prior 17 verified local IDs. K04 now executes a real compiler with canonical docs, healthy offline cache, isolated docs/schema/commit/cache faults, missing docs and observed network denial. It does not close fresh install, package, checksum/update, signing or installed-consumer requirements. K03 separately reproduced a real late-docs partial overwrite; its repair is still under verification.
 
-The capture was rerun into a fresh output directory using the documented `--phase=local`. A previous wrapper had copied old checked-in audit/evidence files over fresh outputs; that mixed capture is invalid. A subsequent diagnostic invocation used a nonstandard `implementation` phase and counted unresolved work as failures. Neither is used as the authoritative local snapshot. The committed files are the actual fresh runner output, with hashes in `evidence/p15-formal-85b6c35/capture-summary.json`.
+The 156 unverified items remain engineering or evidence obligations, not automatically hardware blockers. The external-tier records are F01, E07 and AI01. Actual failed signed runtime cases are retained and under active diagnosis; missing current-SHA runtime evidence does not mean the simulator is unavailable. All 52 repair scenarios and 33 backend recovery gates still require their own independent scenario producers.
 
-This snapshot is a scoped local result. Later source changes, signed runtime, iOS UI, installed consumers, final private-corpus boundaries and release CI require their own source-bound receipts.
+Only outputs freshly generated into the source-bound directory are authoritative: [capture hashes](evidence/p15-formal-8c42876/capture-summary.json). Earlier mixed copied captures and the nonstandard implementation-phase diagnostic remain invalid historical attempts. The current declaration map in `tests/` must not be confused with proof; the exact runner-generated map is archived beside this snapshot.
+
+Later source changes, signed runtime, iOS UI, installed consumers, private-corpus boundaries and release CI require their own receipts.
 
 ## Reviewable artifacts
 
@@ -37,6 +39,8 @@ This snapshot is a scoped local result. Later source changes, signed runtime, iO
 | P03 | Pratt precedence, parentheses and short-circuit tree are correct | unit | `TestP15P03PrecedenceAndComparisonChains` |
 | P04 | Semicolon/newline handling and bare return are unambiguous | unit | `TestP15P04ReturnTerminators` |
 | P05 | Unicode identifiers and tokenizer/completion agree | unit, service | `TestP15P05UnicodeIdentifierTokenizerCompletion` |
+| C02 | Duplicate, missing, unknown labels and extra positional arguments | unit | `TestP15C02ArgumentDiagnosticsProduction`; `TestP15C02AcceptedBindingsProduction`; `TestP15C02ArgumentServiceAndCLI` |
+| C04 | Enum contextual and qualified members resolve | unit, service | `TestP15C04EnumResolutionProduction`; `TestP15C04EnumServiceAndCLI`; `TestP15C04EnumContextsAndShadowing`; `TestP15C04EnumFunctionService` |
 | T02 | Runtime immutable output does not satisfy literal-required slot | unit | `TestP15T02LiteralRequiredProduction` |
 | T06 | User record annotation is not runtime JSON validation | unit | `TestP15T06RecordAnnotationsDoNotValidateExternalValues`; `TestP15T06RecordProofTypeRelations`; `TestP15T06ControlResultsRequireAllBranches` |
 | T08 | Variant-dependent output type inferred from literal mode | unit, service | `TestP15T08ConditionalCardinalityProduction`; `TestP15T08ConditionalCardinalityService` |
@@ -47,6 +51,7 @@ This snapshot is a scoped local result. Later source changes, signed runtime, iO
 | CL01 | JSON commands emit parseable response and reliable exit status | integration | `TestP15CLIJSONCommandsAndExitStatus` |
 | CL02 | Analysis never emits/signs/executes/installs | security, integration | `TestP15CLIAnalysisHasNoExternalEffects` |
 | CL03 | Normal production path rejects legacy public syntax | integration | `TestP15CLIDefaultRejectsLegacyWithGuidance` |
+| K04 | Offline compatible cache and docs mismatch | integration | `TestP15K04OfflineCacheProduction` |
 
 The `native` tier for M05 means serialized native parameter assertions. It is not Apple execution or automation installation. F01 and E07 retain local proof but their required runtime/UI acceptance is unresolved. AI01 has no configured eligible external evaluation endpoint. Named Go producers are selected with uncached execution and exact JSON discovery checks; zero exit with no selected test is rejected.
 
@@ -86,7 +91,7 @@ The full per-ID explanation is in the execution audit and smoke-observation file
 - Red hybrid-header RHS probes: SentinelX job `job_1e455010cd32`.
 - Green F01/lowering/acceptance and exact-wire control regressions: `job_0c92220981fc`.
 - Green formal-scope, full-179 rejection, import formats, edit isolation and mutation tests: `job_cc962689bffb` (acceptance package 24.852s; compiler package 0.691s).
-- Current local snapshot: `job_162570051679`, source `e424174567acbf99bea2a76aa1ec79b05a18470c`, generated `2026-11-18T02:30:06Z`.
+- Initial local snapshot: `job_162570051679`, source `e424174567acbf99bea2a76aa1ec79b05a18470c`, generated `2026-11-18T02:30:06Z`.
 - `git diff --check` passed before the implementation commits.
 
 The private corpus and the full repository suite are centralized by the root agent and are not attributed to this component run.

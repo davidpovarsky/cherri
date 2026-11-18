@@ -1,16 +1,13 @@
 {
-  "timestamp": "2026-11-18T06:16:23Z",
+  "timestamp": "2026-11-18T16:44:43Z",
   "phase": "local",
   "closure_complete": false,
   "language_version": "2.0",
   "schema_fingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
   "total_cases": 179,
-  "passed_cases": 17,
-  "failed_cases": 1,
-  "skipped_cases": 161,
-  "validation_errors": [
-    "case K04 failed: Formal scope UNVERIFIED: A fingerprint substring does not exercise offline cache and docs mismatch behavior. Observed smoke passed=false; see acceptance-local-observations.json."
-  ],
+  "passed_cases": 20,
+  "failed_cases": 0,
+  "skipped_cases": 159,
   "results": [
     {
       "id": "B01",
@@ -185,9 +182,12 @@
       "group": "calls",
       "requirement": "Duplicate, missing, unknown labels and extra positional arguments",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: One unknown-label diagnostic does not cover duplicates, missing labels, extra positional arguments, or exact spans. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15C02ArgumentDiagnosticsProduction, TestP15C02AcceptedBindingsProduction, TestP15C02ArgumentServiceAndCLI"
     },
     {
       "id": "C03",
@@ -203,9 +203,13 @@
       "group": "calls",
       "requirement": "Enum contextual and qualified members resolve",
       "test_level": "unit+service",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A string enum value and nonempty completion do not establish contextual and qualified member resolution. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
     },
     {
       "id": "C05",
@@ -855,9 +859,12 @@
       "group": "skill",
       "requirement": "Offline compatible cache and docs mismatch",
       "test_level": "integration",
-      "passed": false,
-      "status": "FAILED",
-      "detail": "Formal scope UNVERIFIED: A fingerprint substring does not exercise offline cache and docs mismatch behavior. Observed smoke passed=false; see acceptance-local-observations.json."
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15K04OfflineCacheProduction"
     },
     {
       "id": "K05",
