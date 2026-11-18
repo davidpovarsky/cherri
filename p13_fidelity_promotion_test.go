@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/electrikmilk/cherri/internal/language/schema"
+
 	"howett.net/plist"
 )
 
@@ -404,7 +406,7 @@ func TestP13_CorpusFidelityAndSourceSizeAudit(t *testing.T) {
 	report := p13CorpusAuditReport{
 		SchemaVersion:            "1.0.0",
 		Phase:                    "P10R13-Phase6",
-		SchemaFingerprint:        "f55851491e52ec9d06e486420f83d4faef0e31292d411235c01bf104bc48045d",
+		SchemaFingerprint:        schema.DefaultRegistry().Fingerprint(),
 		SpecimenCount:            len(files),
 		BaselineP10R12Natural:    22490,
 		BaselineP10R12NaturalPct: 81.33,
