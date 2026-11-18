@@ -112,15 +112,17 @@ def main():
                     "test_runtime_callback_contract", "test_collect_native_contract",
                     "test_public_artifacts"]
     test_environment = {**os.environ, "PYTHONPATH": str(QA)}
-    py_result = subprocess.run([sys.executable, "-X", "utf8", "-m", "unittest", "-v", *test_modules],
-                               cwd=ROOT, env=test_environment, capture_output=True,
-                               text=True, encoding="utf-8", timeout=150)
     py_log = output.parent / "storage-python-tests.log"
-    py_log.write_bytes((py_result.stdout + py_result.stderr).encode("utf-8"))
+    # Stream the bounded test transcript so a timeout retains its causal location.
+    with py_log.open("wb") as transcript:
+        py_result = subprocess.run([sys.executable, "-X", "utf8", "-m", "unittest", "-v", *test_modules],
+                                   cwd=ROOT, env=test_environment, stdout=transcript,
+                                   stderr=subprocess.STDOUT, timeout=330)
+    py_transcript = py_log.read_text(encoding="utf-8")
     if py_result.returncode:
         raise RuntimeError("storage Python contracts failed; inspect " + str(py_log))
-    match = re.search(r"Ran (\d+) tests in ([0-9.]+)s", py_result.stderr)
-    assert match and re.search(r"\nOK\s*$", py_result.stderr), "unittest completion receipt missing"
+    match = re.search(r"Ran (\d+) tests in ([0-9.]+)s", py_transcript)
+    assert match and re.search(r"\nOK\s*$", py_transcript), "unittest completion receipt missing"
 
     phase0 = checked([sys.executable, "-X", "utf8", QA / "validate_macro_fixtures.py",
                       ROOT, compiler], "actual Phase 0 CLI and publication gates", 180)
