@@ -70,7 +70,7 @@ var p15C04Invalid = []struct{ name, source, argument, code string }{
 	{"native_domain_override_qualified", "enum backgroundSound { Coast=\"not-native\" }\nsetBackgroundSound(backgroundSound.Coast)", "backgroundSound.Coast", analysis.CodeEnumMember},
 	{"native_domain_override_literal", "enum backgroundSound { Coast=\"not-native\" }\nsetBackgroundSound(\"not-native\")", "\"not-native\"", analysis.CodeEnumMember},
 	{"bare_enum_type", "enum Mode {Blue=\"wire\"}\ntext(Mode)", "Mode", analysis.CodeEnumMember},
-	{"branch_raw_domain", "enum Mode {Blue=\"wire\"}\nlet value:Mode=if number(0)==1 {\"wrong\"} else {.Blue}", "\"wrong\"", analysis.CodeEnumMember},
+	{"branch_raw_domain", "enum Mode {Blue=\"wire\"}\nlet value:Mode=if number(0)==1 {yield \"wrong\"} else {yield .Blue}", "\"wrong\"", analysis.CodeEnumMember},
 	{"function_member", p15C04Function + "c04Function(.Missing)", ".Missing", analysis.CodeEnumMember},
 	{"function_raw_domain", p15C04Function + "c04Function(\"wrong\")", "\"wrong\"", analysis.CodeEnumMember},
 	{"return_member", "enum Mode {Blue=\"wire\"}\nfunction c04Bad()->Mode{return .Missing}\nc04Bad()", ".Missing", analysis.CodeEnumMember},
@@ -315,7 +315,7 @@ func TestP15C04EnumContextsAndShadowing(t *testing.T) {
 		{"function_primary", p15C04Function + "c04Function(.Empty)", []string{"native-blue", ""}},
 		{"function_named", p15C04Function + "c04Function(value:.Empty)", []string{"native-blue", ""}},
 		{"function_return", "enum Mode { Blue=\"native-blue\" }\nfunction c04Return()->Mode {return .Blue}\nc04Return()", []string{"native-blue"}},
-		{"branch_result", "enum Mode { Blue=\"native-blue\", Empty=\"\" }\nlet choice:Mode = if number(0)==1 {.Blue} else {.Empty}\ntext(choice)", []string{"native-blue", ""}},
+		{"branch_result", "enum Mode { Blue=\"native-blue\", Empty=\"\" }\nlet choice:Mode = if number(0)==1 {yield .Blue} else {yield .Empty}\ntext(choice)", []string{"native-blue", ""}},
 		{"measure_result", "enum Mode { Blue=\"native-blue\" }\nlet choice:Mode = measure(\"enum\") {.Blue}\ntext(choice)", []string{"native-blue"}},
 		{"quoted_member", "enum Mode { \"space name\"=\"wire-space\", \"if\"=\"wire-keyword\" }\naction c04Quoted(value:Mode) {identifier:\"com.example.p15.quoted\"}\nc04Quoted(\"wire-space\")", nil},
 	} {
@@ -348,6 +348,15 @@ func TestP15C04EnumContextsAndShadowing(t *testing.T) {
 			compileDebugFixture(t, formatted, false)
 		})
 	}
+	// Implicit native-last-action output has no static branch guarantee.
+	// Retain that rejected source as a negative while the positive enum
+	// fixture above uses the language's explicit final yield contract.
+	t.Run("implicit_branch_has_no_text_proof", func(t *testing.T) {
+		src := "enum Mode { Blue=\"native-blue\", Empty=\"\" }\nlet choice:Mode = if number(0)==1 {.Blue} else {.Empty}"
+		if raw, err := CompileSourceToPlist("p15-c04-unproved-branch.cherri", src); err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeArgumentType) {
+			t.Fatalf("implicit branch must retain its unverified result diagnostic: %v", err)
+		}
+	})
 	// Enum qualifiers must not steal typed dictionary parameters. Both defaulted
 	// and required parameters retain their original native producer and key path.
 	for _, tc := range []struct{ name, defaultExpr string }{
@@ -355,7 +364,13 @@ func TestP15C04EnumContextsAndShadowing(t *testing.T) {
 		{"tone", ""}, {"backgroundSound", ""},
 	} {
 		t.Run("shadow_"+tc.name+tc.defaultExpr, func(t *testing.T) {
-			src := "enum " + tc.name + " { Blue=\"enum-wire\" }\nfunction c04Shadow(" + tc.name + ":Map<Text,Text>" + tc.defaultExpr + ")->Text{return " + tc.name + ".Blue}\nc04Shadow({\"Blue\":\"record-wire\"})"
+			src := "enum " + tc.name + " { Blue=\"enum-wire\" }\nfunction c04Shadow(" + tc.name + ":Map<Text,Text>" + tc.defaultExpr + ")->AnyContent{return " + tc.name + ".Blue}\nc04Shadow({\"Blue\":\"record-wire\"})"
+			// A Map value type does not prove this key exists. The unconverted
+			// field must not acquire Text proof from the return annotation.
+			unproved := strings.Replace(src, ")->AnyContent{return ", ")->Text{return ", 1)
+			if raw, err := CompileSourceToPlist("p15-c04-unproved-field.cherri", unproved); err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeReturnType) {
+				t.Fatalf("unproved field return must retain the strict type diagnostic: %v", err)
+			}
 			program, errors := p15ParseProgram(src)
 			if len(errors) != 0 {
 				t.Fatal(errors)
