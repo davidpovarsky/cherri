@@ -8,6 +8,7 @@ on:
       - 'skills/cherri-shortcuts/**'
       - '.github/workflows/openminis-skill.yml'
       - '*.go'
+      - 'tools/p10r15/**'
       - 'actions/**'
       - 'go.mod'
       - 'go.sum'
@@ -196,6 +197,14 @@ jobs:
           device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
+      - name: Upload signing fault evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-signing-fault-evidence
+          path: dist/signing-protocol-exit-evidence.json
+          if-no-files-found: ignore
+
       - name: Upload OpenMinis skill artifacts
         uses: actions/upload-artifact@v4
         with:
