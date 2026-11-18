@@ -366,7 +366,7 @@ def main():
     manifest = json.loads(manifest_path.read_bytes())
     cases = manifest["cases"]
     require(len(cases)==4 and len({c["id"] for c in cases})==4, "four explicit cases required")
-    paths = [str(manifest_path.relative_to(ROOT)), "tools/p10r15/verify_native_continuation_probes.py",
+    paths = [manifest_path.relative_to(ROOT).as_posix(), "tools/p10r15/verify_native_continuation_probes.py",
         "tools/shortcuts-simulator-qa/storage_cross_run.py", "tools/shortcuts-simulator-qa/test_storage_cross_run.py",
         "tools/shortcuts-simulator-qa/prepare_public_artifacts.py", "scripts/ios27_shortcuts_simulator_qa.sh",
         ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml", ".github/workflows/openminis-skill.yml",
