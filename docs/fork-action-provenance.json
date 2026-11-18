@@ -2198,6 +2198,94 @@
       "reason": "Actual production defects and source-bound acceptance gaps found during the authorized P10R15 closure run.",
       "evidence": "Causal production RED/GREEN, analyzer/service/lower and HTTP/require/Release tests passed; exact T02 formal producer passed on originalb250282; other type IDs remain open.",
       "note": "Implementation SHA is an immutable ancestor; this separate metadata commit does not certify unexecuted native or physical tiers."
+    },
+    {
+      "name": "P10R15 structural record proof and complete branch joins",
+      "locations": [
+        "internal/language/types/types.go",
+        "internal/language/analysis/analyzer.go",
+        "internal/language/analysis/control_results.go"
+      ],
+      "firstForkCommit": "56ee6a217cf94205db1df0081137fcf16ac62dc7",
+      "change": "Reject opaque or partial values as verified records through wrappers, user function arguments and every control branch.",
+      "reason": "Concrete implementation or evidence defect found during the authorized P10R15 closure execution.",
+      "evidence": "Causal type and branch RED/GREEN, full language packages and exact T06 producers passed; control followup dc5027a; no runtime JSON validator is invented.",
+      "note": "Immutable implementation ancestor, separate metadata commit. No unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 conditional cardinality and actual call service types",
+      "locations": [
+        "internal/language/analysis/cardinality.go",
+        "internal/language/service/call_result.go",
+        "p15_cardinality_acceptance_test.go"
+      ],
+      "firstForkCommit": "e3a600c809d495b6bdb766938f874569d62f311d",
+      "change": "Infer chooseFromList output from actual selection mode and all collection elements; expose actual call result type in hover/signature.",
+      "reason": "Concrete implementation or evidence defect found during the authorized P10R15 closure execution.",
+      "evidence": "Exact T08 unit and service producers passed; missing-service mutation rejected; native catalog fingerprint unchanged.",
+      "note": "Immutable implementation ancestor, separate metadata commit. No unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 exact editor input and completion selection",
+      "locations": [
+        "ios",
+        "scripts"
+      ],
+      "firstForkCommit": "b3449e206ac4d0777639e67646f59dc18af9a0d3",
+      "change": "Track known auto-generated suffix units in the pinned editor dependency and apply exact selected completion to its captured prefix.",
+      "reason": "Concrete implementation or evidence defect found during the authorized P10R15 closure execution.",
+      "evidence": "Pinned patch pre/post hashes, transactional repeat verification and22 Python tests passed; actual Swift/UIKit run44242289253 pending.",
+      "note": "Immutable implementation ancestor, separate metadata commit. No unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 local OCR with capture binding and quarantine",
+      "locations": [
+        "tools/shortcuts-simulator-qa/editor_ocr.py",
+        "tools/shortcuts-simulator-qa/recognize_editor_text.swift",
+        "tools/shortcuts-simulator-qa/prepare_public_artifacts.py"
+      ],
+      "firstForkCommit": "722676596611e6a1403b644ca49c09077b17e8d0",
+      "change": "Add optional local Vision and pinned Tesseract while preserving AX unknowns, capture identity and raw OCR quarantine.",
+      "reason": "Concrete implementation or evidence defect found during the authorized P10R15 closure execution.",
+      "evidence": "Real English/Hebrew Tesseract CLI and stale-image controls passed;62 Windows Python tests passed; Apple run44240787251 failed actual Vision, CPU candidate9532624 rerun44244671547 pending.",
+      "note": "Immutable implementation ancestor, separate metadata commit. No unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 label representation native probes",
+      "locations": [
+        "tools/shortcuts-simulator-qa/fixtures/p15-label-probes"
+      ],
+      "firstForkCommit": "e6a9ef58315e6530a13fa180a4acd21e71843ff4",
+      "change": "Add source-bound label carrier/identity probes using existing debug semantics without declaring a new label capability.",
+      "reason": "Concrete implementation or evidence defect found during the authorized P10R15 closure execution.",
+      "evidence": "10 actual CLI/roundtrip probes and24 test events passed; Unicode repairb59a0a9 includes byte guards and corrupted-source rejection; native label identity remains unverified.",
+      "note": "Immutable implementation ancestor, separate metadata commit. No unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 bounded local debug export",
+      "locations": [
+        "debug_export.go",
+        "internal/language/schema/debug_export.go",
+        "tools/p10r15/verify_debug_export.py"
+      ],
+      "firstForkCommit": "05a98246ebf038296443884d0bc68a35dfcbb57c",
+      "change": "Export a local File with default payload redaction and explicit supported Text-only serialization; use canonical text segments/codecs.",
+      "reason": "Concrete implementation or evidence defect found during the authorized P10R15 closure execution.",
+      "evidence": "16 configurations/roundtrips,80 independent model cases,16 negatives,6 graph faults and12 native probe compilations passed; codec followup318fceb; native export execution remains pending.",
+      "note": "Immutable implementation ancestor, separate metadata commit. No unexecuted runtime, device, visual or release tier is inferred."
+    },
+    {
+      "name": "P10R15 actual schema production generation evidence",
+      "locations": [
+        "p15_schema_production_test.go",
+        "upstream_rehearsal_test.go",
+        "tools/language-acceptance/schema_execution.go"
+      ],
+      "firstForkCommit": "288475dc4bca30a1d9ba103148624be59a893ff1",
+      "change": "Replace fixed fingerprint and hand-built registry smoke proofs with isolated real generation, compiled registry, analyzer and completion paths.",
+      "reason": "Concrete implementation or evidence defect found during the authorized P10R15 closure execution.",
+      "evidence": "Exact clean source5209cfd wrapper tests passed including stale key, failed extraction, stale facet and missing evidence controls; caller sources remain unchanged; only U02/U03 scope is verified.",
+      "note": "Immutable implementation ancestor, separate metadata commit. No unexecuted runtime, device, visual or release tier is inferred."
     }
   ]
 }

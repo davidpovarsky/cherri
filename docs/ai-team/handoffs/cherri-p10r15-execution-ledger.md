@@ -134,3 +134,13 @@ Asana formal, Inspector, iOS and runtime tasks were updated with these scoped fa
 - T02 source literal requirements integrated at a94ac1670078514a2f0b340bae86ca49502e4fa8; new production evidence rejects runtime expressions with E_LITERAL_REQUIRED while keeping established HTTP dynamic leaves. Formal179 final refresh remains pending other active type work.
 - Signed Legacy23ea902 rerun44238251950; Bool/List and local-counter F01 at256f6a639a6f2a47eee5350ffc062746da9bd752 run44239174499/44239178590. Pending results are not PASS.
 - All15 main-only compiler commits and all4 main-only docs commits remain preserved. Main and live consumers have not been advanced.
+
+
+## 2026-11-18 07:36 Asia/Hebron ? core, runtime and schema checkpoint
+
+- Shared source integrates literal-required arguments, truthful conditional cardinality, structural-record proof across every control branch, real generated-schema evidence, exact editor input fixes, optional local OCR, label probes and bounded local debug File export. Each has separate source-bound receipts; native export/labels remain open.
+- Signed Legacy44238251950 at23ea902 passed exact output and5 trace events; AX persistence succeeded but full Inspector matching remains unresolved. Signed Bool/List44239174499 at256f6a6 passed exact output and4 trace events. Local F0144239178590 at256f6a6 returned a correlated error; the cause is under investigation and no PASS is assigned. See the three committed artifact audits.
+- U02/U03 source5209cfd real production tests and formal wrapper tests passed with isolated actual regeneration, stale-input/facet controls and compiled analyzer/service validation. Metadata receipts are independent commits;179-obligation accounting and closure=false remain intact.
+- Apple Vision44240787251 failed actual execution. Supported CPU selection candidate56808fc (integrated9532624) is under actual preflight44244671547; no Apple OCR claim yet.
+- Existing Asana master and child context are preserved. A detailed notes update was auto-review rejected; a materially smaller project status1220666353420836 and bounded child handoffs1220666355135577/1220663269351448 succeeded without private-corpus or operational payloads.
+- Source state remains a feature branch; main-only15 and docs-main-only4 commits preserved. Live consumer tuple/Pure Original remain as previously recorded. Final integrated Go/private-corpus/CI/consumer gates must be refreshed.
