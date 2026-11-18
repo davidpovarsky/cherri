@@ -1,0 +1,112 @@
+{
+  "compilerBinaries": {
+    "867": "be7d917420789b6bbe4e9ba985eb77c751c246217f3a3f33d1aeb2c73b45061f",
+    "71": "2b2a0e273ab340bbe13e687dd1af3eced828b57e27ada1793c5a8fc46121ba8f"
+  },
+  "fixtures": [
+    {
+      "compiler": "867",
+      "fixtureId": "qa-collect-empty-split-v2",
+      "sourceSha256": "15d1e0ab8bae11e87cc91d81ea1a9a3cc0466429956ad7bff9b6b18570854a3a",
+      "unsignedPlistSha256": "bc4d5dc4cdab0f0488dcaa9e6f35953406094e3f5005005d94b69a766281cd53",
+      "nativeActionCount": 29,
+      "outputReferenceCount": 15,
+      "duplicateProducerUUIDs": 0,
+      "danglingOutputReferences": 0
+    },
+    {
+      "compiler": "867",
+      "fixtureId": "qa-export-file-bytes-v2",
+      "sourceSha256": "4f095910b9af28d6016cd23ba06ad845f884e17941303edde4d1497bc5a144b2",
+      "unsignedPlistSha256": "f0b8725f5d328ebcdf178548b3041502326f83eb1c828d52e1210b9e7117d2d2",
+      "nativeActionCount": 32,
+      "outputReferenceCount": 18,
+      "duplicateProducerUUIDs": 0,
+      "danglingOutputReferences": 0
+    },
+    {
+      "compiler": "867",
+      "fixtureId": "qa-f01-ifresult-let-v2",
+      "sourceSha256": "ca087dae7c6728647763a2b22ccc405b335ce8c3a5cb8d444b9eb6379fbd6d04",
+      "unsignedPlistSha256": "b7bbcb45a2748b8d20476480118ebb48c95f3aafe6f2be18ef50d071d2bcdee0",
+      "nativeActionCount": 32,
+      "outputReferenceCount": 12,
+      "duplicateProducerUUIDs": 0,
+      "danglingOutputReferences": 0
+    },
+    {
+      "compiler": "867",
+      "fixtureId": "qa-f01-ifresult-var-v2",
+      "sourceSha256": "e0f49a9d2138da7f4ac49cbd1dac97d353e340218385d185b374421fb950702a",
+      "unsignedPlistSha256": "1ac51cf1b3a53dc7bbbc279e0259692cf4d61150abd84d1ed88124c11242e88d",
+      "nativeActionCount": 33,
+      "outputReferenceCount": 12,
+      "duplicateProducerUUIDs": 0,
+      "danglingOutputReferences": 0
+    },
+    {
+      "compiler": "71",
+      "fixtureId": "qa-collect-empty-split-v2",
+      "sourceSha256": "15d1e0ab8bae11e87cc91d81ea1a9a3cc0466429956ad7bff9b6b18570854a3a",
+      "unsignedPlistSha256": "ef0448c4646d20f76cb1a4507b3879f5fc54089a6e20bb3a0276f3d0245a53c8",
+      "nativeActionCount": 29,
+      "outputReferenceCount": 15,
+      "duplicateProducerUUIDs": 0,
+      "danglingOutputReferences": 0
+    },
+    {
+      "compiler": "71",
+      "fixtureId": "qa-export-file-bytes-v2",
+      "sourceSha256": "4f095910b9af28d6016cd23ba06ad845f884e17941303edde4d1497bc5a144b2",
+      "unsignedPlistSha256": "35449af0d369126acd923feb7a9ef7ececf58c59f259722c62b59162e1cbc785",
+      "nativeActionCount": 32,
+      "outputReferenceCount": 18,
+      "duplicateProducerUUIDs": 0,
+      "danglingOutputReferences": 0
+    },
+    {
+      "compiler": "71",
+      "fixtureId": "qa-f01-ifresult-let-v2",
+      "sourceSha256": "ca087dae7c6728647763a2b22ccc405b335ce8c3a5cb8d444b9eb6379fbd6d04",
+      "unsignedPlistSha256": "39ed4a7dc52a78d74d1d3892766cf0c177fbbe18bd018a71655879edb48d5b93",
+      "nativeActionCount": 32,
+      "outputReferenceCount": 12,
+      "duplicateProducerUUIDs": 0,
+      "danglingOutputReferences": 0
+    },
+    {
+      "compiler": "71",
+      "fixtureId": "qa-f01-ifresult-var-v2",
+      "sourceSha256": "e0f49a9d2138da7f4ac49cbd1dac97d353e340218385d185b374421fb950702a",
+      "unsignedPlistSha256": "a828b1e14616bd4e9d053e5c2088298728622a359f5809d2dff3c4323d2408cd",
+      "nativeActionCount": 33,
+      "outputReferenceCount": 12,
+      "duplicateProducerUUIDs": 0,
+      "danglingOutputReferences": 0
+    }
+  ],
+  "runtimeObserved": false,
+  "allFourGraphsIdenticalAcross867And71AfterOnlyUUIDGroupNormalization": true,
+  "goValidation": {
+    "command": "go test -p 2 -count=1 -run ^TestP15RuntimeDiagnostic .",
+    "returnCode": 0,
+    "packageSeconds": 0.878,
+    "positiveTests": 3,
+    "compiledFixtureCount": 4,
+    "causalCollectionGraphMutationsRejected": 10
+  },
+  "pythonValidation": {
+    "command": "py -3 -m unittest discover -s tools/shortcuts-simulator-qa -p test_*.py",
+    "returnCode": 0,
+    "testsRun": 107,
+    "seconds": 103.689,
+    "result": "OK"
+  },
+  "shellValidation": {
+    "command": "bash -n scripts/ios27_shortcuts_simulator_qa.sh",
+    "returnCode": 0
+  },
+  "nativeRuntimeStatus": "NOT_RUN",
+  "compilerProductionChanged": false,
+  "strictOriginalExpectationsChanged": false
+}

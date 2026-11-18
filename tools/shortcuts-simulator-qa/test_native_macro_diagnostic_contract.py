@@ -1,6 +1,7 @@
 """Strict dispatch and callback contracts for the next causal native split."""
 import ast
 import os
+import re
 from pathlib import Path
 import subprocess
 import unittest
@@ -15,6 +16,10 @@ CASES = {
     "qa-export-file-control-v2": "CHERRI_QA_EXPORT_FILE_CONTROL:NAME=ok:TEXT=ok",
     "qa-export-build-only-v2": "CHERRI_QA_EXPORT_BUILD_ONLY:NAME=ok",
     "qa-export-parse-only-v2": "CHERRI_QA_EXPORT_PARSE_ONLY:SCHEMA=ok:COUNT=ok",
+    "qa-collect-empty-split-v2": "CHERRI_QA_COLLECT_EMPTY_SPLIT:direct=0:repeat=0:cleared=0:emptyText=1",
+    "qa-export-file-bytes-v2": "CHERRI_QA_EXPORT_FILE_BYTES:NAME=ok:TEXT=ok",
+    "qa-f01-ifresult-let-v2": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
+    "qa-f01-ifresult-var-v2": "CHERRI_QA_F01_IFRESULT:P15_F01_IFRESULT_OK",
 }
 
 
@@ -65,17 +70,15 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
             with self.subTest(fixture=fid):
                 result = self.oracle.verify([event], fid, expected)
                 self.assertEqual((result["runGate"], result["traceGate"]), ("PASS", "PASS"))
+                self.assertEqual(self.oracle.verify([{**event, "resultSummary": expected + "-WRONG"}], fid, expected)["runGate"], "FAIL_RUNTIME")
                 # Reject a wrong value in every independently reported flag,
                 # including later flags that a single verdict used to mask.
-                start = 0
-                while True:
-                    index = expected.find("=ok", start)
-                    if index < 0:
-                        break
-                    wrong = expected[:index] + "=bad" + expected[index + 3:]
+                for match in re.finditer(r"=(ok|[0-9]+)(?=:|$)", expected):
+                    old = match.group(1)
+                    wrong_value = "bad" if old == "ok" else "1" if old == "0" else "0"
+                    wrong = expected[:match.start(1)] + wrong_value + expected[match.end(1):]
                     self.assertEqual(self.oracle.verify([{**event, "resultSummary": wrong}], fid, expected)["runGate"],
                                      "FAIL_RUNTIME", wrong)
-                    start = index + 3
                 for key, value in (("status", "ERROR"), ("status", "CANCELLED"), ("runId", "stale"),
                                    ("expectedShortcutName", "qa-private"), ("receiverSelfTest", True)):
                     self.assertEqual(self.oracle.verify([{**event, key: value}], fid, expected)["runGate"], "FAIL_RUNTIME")
