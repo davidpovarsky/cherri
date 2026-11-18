@@ -439,13 +439,6 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 			trimmed = strings.TrimSpace(line)
 		}
 
-		// 7c. Convert legacy list(...) literal construction: list(a, b, c) -> [a, b, c]
-		if strings.Contains(line, "list(") && !strings.Contains(line, "getListItem(") && !strings.Contains(line, "getListItems(") && !strings.Contains(line, "chooseFromList(") {
-			re := regexp.MustCompile(`(^|[^a-zA-Z0-9_])list\(([^)]*)\)`)
-			line = re.ReplaceAllString(line, "${1}[${2}]")
-			trimmed = strings.TrimSpace(line)
-		}
-
 		// 8. Convert @var = val -> let/var var = val
 		if strings.HasPrefix(trimmed, "@") {
 			// Check if +=, -=, *=, /=
@@ -639,6 +632,7 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 	prog := p.ParseProgram()
 	if len(p.Errors()) == 0 {
 		preserveLegacyOptionalBindings(prog, result, legacyBindingLines, strings.Count(outHeader.String(), "\n"), reg)
+		migrateVariadicCalls(prog, reg)
 		return syntax.Format(prog), diags, nil
 	}
 

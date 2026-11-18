@@ -19,3 +19,9 @@ func TestCallOrderProductionEvidence(t *testing.T) {
 		"P15_CALL_ORDER_RECEIPT:",
 		"Only C01 unit and actual native-structure tiers: source effect order, once-only supplied/default producers, UUID/value binding and CLI/service checks. No Apple function execution, function bridge runtime, system-value snapshot or release closure.")
 }
+
+func TestVariadicMigrationProductionEvidence(t *testing.T) {
+	testNamedProductionEvidence(t, "C03", callProductionTests["C03"], map[string]string{"native-structure": "TestP15C03NamedListNativeStructure"}, (*Runner).runVariadicMigrationRequirement,
+		"P15_VARIADIC_MIGRATION_RECEIPT:",
+		"Only C03 unit and native-structure: all eight canonical variadics, empty/single/multiple explicit named packs, exact native item/UUID order, no recursive flattening, source/shadow preservation, actual original CLI differentials and causal mutations. No Apple execution, unsupported Legacy inline-action parity, dynamic runtime spreading, or release closure.")
+}

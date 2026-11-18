@@ -23,7 +23,6 @@ var incompleteLocalAssertions = map[string]string{
 	"U04":  "Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision.",
 	"V01":  "Action count does not prove snapshot timing or original producer identity.",
 	"V03":  "Nonempty lowering does not prove that the clipboard is captured exactly once.",
-	"C03":  "getUpcomingEvents(3) does not exercise variadic-to-named-list migration.",
 	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
 	"T05":  "An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions.",
 	"T07":  "A helper implemented only in this runner does not exercise production platform-version comparison.",

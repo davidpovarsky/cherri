@@ -542,7 +542,17 @@ func checkInfiniteArgs(startIdx int) {
 		if i < startIdx {
 			continue
 		}
-		checkArg(&currentAction.definition.parameters[startIdx], &arg)
+		parameter := &currentAction.definition.parameters[startIdx]
+		// Canonical V2 references already carry the complete producer identity.
+		// Repeated text inputs use the same descriptor-capable token serializer
+		// as ordinary text parameters; do not reinterpret a display name as a
+		// Legacy source variable. Literal and enum boundaries remain checked.
+		if parameter.validType == String && !parameter.literal && parameter.enum == "" && arg.valueType == Variable {
+			if reference, ok := arg.value.(varValue); ok && reference.descriptor != nil {
+				continue
+			}
+		}
+		checkArg(parameter, &arg)
 	}
 }
 

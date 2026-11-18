@@ -156,7 +156,7 @@ func (scope *migrationBindingScope) lookup(name string) *syntax.BindingStmt {
 // Follow lexical identity through the canonical AST. Initializers are visited
 // before declaration, and function/loop/scoped-block locals cannot capture an
 // unrelated same-named outer declaration for Optional annotation.
-func walkMigrationBindings(program *syntax.Program, onBinding func(*syntax.BindingStmt), onAssignment func(*syntax.AssignStmt, *syntax.BindingStmt)) {
+func walkMigrationBindings(program *syntax.Program, onBinding func(*syntax.BindingStmt), onAssignment func(*syntax.AssignStmt, *syntax.BindingStmt), onCalls ...func(*syntax.CallExpr, *migrationBindingScope)) {
 	var expression func(syntax.Expression, *migrationBindingScope)
 	var statement func(syntax.Statement, *migrationBindingScope)
 	var block func(*syntax.BlockStmt, *migrationBindingScope)
@@ -179,6 +179,9 @@ func walkMigrationBindings(program *syntax.Program, onBinding func(*syntax.Bindi
 			}
 			if e.Block != nil {
 				block(e.Block.Body, scope)
+			}
+			for _, visit := range onCalls {
+				visit(e, scope)
 			}
 		case *syntax.FStringExpr:
 			for _, part := range e.Parts {

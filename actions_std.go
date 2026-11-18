@@ -503,20 +503,10 @@ var actions = map[string]*actionDefinition{
 			},
 		},
 		check: func(args []actionArgument, _ *actionDefinition) {
-			if len(args) > 1 && args[0].valueType == Variable {
-				parserError("Shortcuts only allows one variable for an email address.")
-			}
+			checkVariadicVariableMixture(args)
 		},
 		makeParams: func(args []actionArgument) map[string]any {
-			if args[0].valueType == Variable {
-				return map[string]any{
-					"WFEmailAddress": argumentValue(args, 0),
-				}
-			}
-
-			return map[string]any{
-				"WFEmailAddress": contactValue(emailAddress, args),
-			}
+			return makeVariadicContactValue("WFEmailAddress", emailAddress, args)
 		},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompContactValue(action, "WFEmailAddress", emailAddress)
@@ -538,20 +528,10 @@ var actions = map[string]*actionDefinition{
 			},
 		},
 		check: func(args []actionArgument, _ *actionDefinition) {
-			if len(args) > 1 && args[0].valueType == Variable {
-				parserError("Shortcuts only allows one variable for a phone number.")
-			}
+			checkVariadicVariableMixture(args)
 		},
 		makeParams: func(args []actionArgument) map[string]any {
-			if args[0].valueType == Variable {
-				return map[string]any{
-					"WFPhoneNumber": argumentValue(args, 0),
-				}
-			}
-
-			return map[string]any{
-				"WFPhoneNumber": contactValue(phoneNumber, args),
-			}
+			return makeVariadicContactValue("WFPhoneNumber", phoneNumber, args)
 		},
 		decomp: func(action *ShortcutAction) (arguments []string) {
 			return decompContactValue(action, "WFPhoneNumber", phoneNumber)
@@ -2983,6 +2963,40 @@ type contentKit string
 var emailAddress contentKit = "emailaddress"
 var phoneNumber contentKit = "phonenumber"
 
+// These existing native constructors have two distinct encodings: a literal
+// vector or one dynamic text field. Mixing them previously discarded items or
+// serialized Go's private varValue as an empty dictionary.
+func checkVariadicVariableMixture(args []actionArgument) {
+	if len(args) < 2 {
+		return
+	}
+	for _, arg := range args {
+		if arg.valueType == Variable {
+			parserError("This constructor supports literal items or one variable; a variable cannot be combined with other items")
+		}
+	}
+}
+func isVariadicTextReference(value any) bool {
+	switch value.(type) {
+	case WFTextTokenString, WFTextTokenAttachment:
+		return true
+	}
+	return false
+}
+func makeVariadicContactValue(key string, kind contentKit, args []actionArgument) map[string]any {
+	checkVariadicVariableMixture(args)
+	for _, arg := range args {
+		encoded := paramValue(arg, String)
+		if isVariadicTextReference(encoded) {
+			if len(args) != 1 {
+				parserError("This constructor supports literal items or one variable/template; dynamic text cannot be combined with other items")
+			}
+			return map[string]any{key: encoded}
+		}
+	}
+	return map[string]any{key: contactValue(kind, args)}
+}
+
 func contactValue(contentKit contentKit, args []actionArgument) map[string]any {
 	var contactValues []map[string]any
 	var entryType int
@@ -3176,18 +3190,23 @@ func replaceAppIDs(args []actionArgument, _ *actionDefinition) {
 }
 
 func makeAllAppsAction(args []actionArgument) (params map[string]any) {
+	checkVariadicVariableMixture(args)
 	if len(args) == 0 {
 		return map[string]any{}
 	}
 
 	params = make(map[string]any)
-
-	if args[0].valueType != Variable {
-		params["WFAppsExcept"] = apps(args)
-	} else {
-		params["WFAppsExcept"] = argumentValue(args, 0)
+	for _, arg := range args {
+		encoded := paramValue(arg, String)
+		if isVariadicTextReference(encoded) {
+			if len(args) != 1 {
+				parserError("This constructor supports literal items or one variable/template; dynamic text cannot be combined with other items")
+			}
+			params["WFAppsExcept"] = encoded
+			return
+		}
 	}
-
+	params["WFAppsExcept"] = apps(args)
 	return
 }
 
