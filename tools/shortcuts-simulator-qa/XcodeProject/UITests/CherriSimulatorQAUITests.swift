@@ -881,7 +881,15 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 "errorCategory": "NONE"
             ]
             do {
-                let treeData = try encoder.encode(allMergedNodes)
+                // Retain every sanitized AX node, index, parent, geometry and page.
+                // Pretty-print indentation overflowed the 10 MiB publication
+                // limit on long editor snapshots. Compact JSON changes no data,
+                // redaction, inspector logic or publication/privacy thresholds.
+                let treeEncoder = JSONEncoder()
+                treeEncoder.outputFormatting = [.sortedKeys]
+                let treeData = try treeEncoder.encode(allMergedNodes)
+                persistenceDiagnostic["encodedBytes"] = treeData.count
+                persistenceDiagnostic["serialization"] = "COMPACT_FULL_TREE"
                 persistencePhase = "WRITE"
                 try treeData.write(to: outDir.appendingPathComponent("editor-tree.json"), options: .atomic)
                 axTreePersisted = !allMergedNodes.isEmpty
