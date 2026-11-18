@@ -1,0 +1,27 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "nil-clear")
+// Keep preceding nonempty native output immediately before each explicit nil.
+let priorBinding = text("P15_NIL_PRIOR_BINDING")
+var nilBinding: Text? = nil
+let bindingCount = count(native.ref("Variable", name: "nilBinding"))
+
+var nilAssignment: Text? = "P15_NIL_OLD_VALUE"
+let priorAssignment = text("P15_NIL_PRIOR_ASSIGNMENT")
+nilAssignment = nil
+let assignmentCount = count(native.ref("Variable", name: "nilAssignment"))
+
+// Independent existing Legacy clear control; no Optional coercion or new macro.
+let priorControl = text("P15_NIL_PRIOR_CONTROL")
+native.action("is.workflow.actions.nothing")
+native.action("is.workflow.actions.setvariable", parameters: native.plist({"WFVariableName": "__cherri_qa_nil_clear_control"}))
+let controlCount = count(native.ref("Variable", name: "__cherri_qa_nil_clear_control"))
+
+var presentText: Text? = "P15_NIL_PRESENT_VALUE"
+let presentCount = count(native.ref("Variable", name: "presentText"))
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "nil-clear")
+let traceEnvelope = debugExportTrace(runId: "qa-nil-clear-v2")
+let finalSummary = text(f"CHERRI_QA_NIL_CLEAR:binding={bindingCount}:assignment={assignmentCount}:control={controlCount}:present={presentCount}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)

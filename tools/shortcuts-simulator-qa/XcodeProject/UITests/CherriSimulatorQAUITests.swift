@@ -158,6 +158,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-export-file-control-v2",
         "qa-export-build-only-v2",
         "qa-export-parse-only-v2",
+        "qa-nil-clear-v2",
         "qa-collect-empty-split-v2",
         "qa-export-file-bytes-v2",
         "qa-f01-ifresult-let-v2",
@@ -1143,6 +1144,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertEqual(sanitizeUIString("qa-export-file-control-v2"), "qa-export-file-control-v2")
         XCTAssertEqual(sanitizeUIString("qa-export-build-only-v2"), "qa-export-build-only-v2")
         XCTAssertEqual(sanitizeUIString("qa-export-parse-only-v2"), "qa-export-parse-only-v2")
+        XCTAssertEqual(sanitizeUIString("qa-nil-clear-v2"), "qa-nil-clear-v2")
         XCTAssertEqual(sanitizeUIString("qa-collect-empty-split-v2"), "qa-collect-empty-split-v2")
         XCTAssertEqual(sanitizeUIString("qa-export-file-bytes-v2"), "qa-export-file-bytes-v2")
         XCTAssertEqual(sanitizeUIString("qa-f01-ifresult-let-v2"), "qa-f01-ifresult-let-v2")

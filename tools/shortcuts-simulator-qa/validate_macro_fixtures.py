@@ -41,6 +41,7 @@ if positive.returncode != 0:
     raise SystemExit(positive.returncode)
 manifest = json.loads((directory / 'compiler-manifest.json').read_text())
 new_probes = {
+    'qa-nil-clear-v2': '',
     'qa-label-file-carrier-v2': 'p15-label-probes',
     'qa-label-raw-empty-v2': 'p15-label-probes',
     'qa-label-raw-grouping-v2': 'p15-label-probes',

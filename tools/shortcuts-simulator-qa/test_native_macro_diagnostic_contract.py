@@ -11,6 +11,7 @@ import test_runtime_callback_contract as callback_contract
 
 
 CASES = {
+    "qa-nil-clear-v2": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
     "qa-require-zero-diag-v2": "CHERRI_QA_REQUIRE_ZERO_DIAG:L=ok:D=ok:R=ok:B=ok",
     "qa-label-file-controls-v2": "CHERRI_QA_LABEL_FILE_CONTROLS:B=ok:V=ok:VT=ok:L=ok:T=ok:R=ok:S=ok",
     "qa-export-file-control-v2": "CHERRI_QA_EXPORT_FILE_CONTROL:NAME=ok:TEXT=ok",
