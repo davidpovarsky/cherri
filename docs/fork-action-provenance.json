@@ -2551,6 +2551,45 @@
       "reason": "Isolate actual empty-list, If result and File conversion failures without relaxing original acceptance oracles.",
       "evidence": "Exact clean e9c03fe:119Python tests,3Go graph tests with10causal mutations, shell syntaxPASS. Native runs at4e7956d remain independent.",
       "note": "Synthetic sources only. No Apple result follows from local checks."
+    },
+    {
+      "name": "P10R15 lexical definite assignment and native binding identity",
+      "locations": [
+        "internal/language/analysis/binding_flow.go",
+        "internal/language/lower/lexical_scope.go",
+        "p15_binding_acceptance_test.go"
+      ],
+      "change": "Analyze control-flow initialization and optional refinement with lexical scope; preserve imported native definition identity while keeping appended authored shadows distinct.",
+      "reason": "Actual V02 counterexamples exposed leaking branch/loop/short-circuit initialization, initializer definition errors and imported UUID/native variable aliasing.",
+      "evidence": "Exact clean aecca5d:60 analysis/service/lower top-level tests and7production V02 tests, exact formal unit producerPASS. Original imported/full pre-overlay wire and repeated loop identities tested. Combined343e955 private38x2PASS,23353natural,0demotions.",
+      "firstForkCommit": "a85aedb1eda314fb1c6b1e7051b0c41cfed8b097",
+      "note": "Immutable integrated implementation ancestor. Component evidence does not close broader native, physical, installed-consumer or release gates."
+    },
+    {
+      "name": "P10R15 exact raw native action result identity",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "internal/language/lower/native_action_result.go",
+        "language_backend_adapter.go",
+        "native_action_result_binding.go"
+      ],
+      "change": "Resolve private raw-action result handles through existing producer UUID identity without mutating opaque native parameters; reject consumed missing, conflicting or ambiguous identities.",
+      "reason": "Authored raw result consumers must reference an actual unique producer; unused and source-invalid raw payloads must remain exact.",
+      "evidence": "Clean9d5ff64 normal-clone binary with exact VCS metadata:36 actual CLI contractsPASS (22serialized successes,10missing-ID,2conflicting-ID,2ambiguous-ID negatives). Source controls, typed values, finalization mutations and Debug/Release scopes retained. Combined343e955 private38x2PASS.",
+      "firstForkCommit": "ac4286d753cacd0f142c22252074f5f8e6707883",
+      "note": "Immutable integrated implementation ancestor. Component evidence does not close broader native, physical, installed-consumer or release gates."
+    },
+    {
+      "name": "P10R15 historical and current catalog identity execution",
+      "locations": [
+        "p15_catalog_acceptance_test.go",
+        "p10_catalog_execution_test.go"
+      ],
+      "change": "Observe the existing505 execution path and verify archived identities, native outputs, shared native-ID aliases, constructs and generated propagation without creating another catalog.",
+      "reason": "AC01/B02 require actual per-definition evidence and causal corruption rejection, beyond matching total counts.",
+      "evidence": "Exact clean4a61aff:1010 Legacy/V2 outputs,505structural roundtrips,461 archived identities+44additions,193explicit metadata deltas,8constructs and78alias groups;24namedPASS events including unit/generation/repository formal producers. Seven identity andfive capture corruption controls retained.",
+      "firstForkCommit": "359322d994bab06374d9bd5ebf52e8b901f17e96",
+      "note": "Immutable integrated implementation ancestor. Component evidence does not close broader native, physical, installed-consumer or release gates."
     }
   ]
 }
