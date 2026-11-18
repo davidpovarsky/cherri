@@ -1278,8 +1278,10 @@ PY
       python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" serve --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA" >"$ARTIFACT_DIR/runtime/http-probe-server.log" 2>&1 &
       HTTP_PROBE_PID=$!
       HTTP_PROBE_STARTED="true"
-      SHORTCUT_INPUT_VALUE="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" input --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA")"
-      if [ "$?" -ne 0 ]; then
+      if ! SHORTCUT_INPUT_VALUE="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" input --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA")"; then
+        # The helper emits an exact bounded startup schema; never print raw
+        # server stdout, exception messages, paths, headers or response bodies.
+        python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/retry_http_probe.py" startup-report --root "$ARTIFACT_DIR" --fixture "$TARGET_FIXTURE_ID" --nonce "$EXEC_RUN_NONCE" --commit "$SOURCE_SHA"
         stop_http_probe
         echo "ERROR: bounded HTTP probe did not bind its reviewed loopback endpoint" >&2
         exit 2

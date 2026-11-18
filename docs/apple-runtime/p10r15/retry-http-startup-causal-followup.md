@@ -1,0 +1,13 @@
+# Retry HTTP startup: native attempt and causal harness follow-up
+
+Run [44325503486](https://github.com/davidpovarsky/cherri/actions/runs/44325503486), at compiler commit 867261a3ad6ceac113690f5be01f3d576d572759, passed the macOS Swift, Go and Python preflight checks. The orchestrator reached signed-fixture preparation, then failed before launching XCTest because the bounded loopback helper did not acknowledge readiness. Artifact staging reported SUMMARY_MISSING. No helper stderr/state survived publication, and no native HTTP outcome was observed. **The exact cause of this failed startup is unknown.**
+
+The numeric loopback listener used the standard HTTPServer binding implementation, which also resolves its host name. A causal local test replaced hostname resolution with a failing dependency: the old implementation failed while calling socket.getfqdn; the corrected listener uses the inherited TCP socket bind and supplies the already-known numeric server name. With hostname resolution unavailable, the corrected implementation serves the exact HTTP200 body and records the actual request. This removes an unnecessary external lookup from a numeric loopback probe. It does not prove DNS caused the earlier macOS failure.
+
+Startup now records a small, fixed phase schema and bounded failure fields. On readiness failure the orchestrator prints only the reviewed startup report, then cleans up. Raw exception messages, paths, server stdout, request headers and bodies are never printed by that report. Unknown error strings become REDACTED; only an allowlisted contract code or numeric OS errno can be reported. All startup files remain quarantined by the existing publisher. No publication exception or runtime success exception was added.
+
+The full current suite passed **107/107 Python tests**. New checks include a real independent CLI server process, the actual input command, both primary and continuation GETs, clean stop-file/process termination, bounded OS-error handling, foreign-state rejection and extra-field rejection. The existing strict callback, source-binding and publication controls passed unchanged.
+
+The ready timeout and finite server lifetime were not increased. There is no automatic native GET retry. ERROR and CANCELLED callbacks still fail the ordinary runtime and trace contracts. HTTP500, HTTP404, HTTP429 and transport-close probes remain undispatched until the native200 control proves exact output, normal trace and both reviewed requests.
+
+The companion JSON preserves the observed failed run and the precise local evidence. The new implementation still needs its own signed simulator execution.
