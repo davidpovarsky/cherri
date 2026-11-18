@@ -86,3 +86,13 @@ Clean implementation commit 642d276723cf6a80a5f3ba7f5165454ccafc42d5 passed its 
 ### T08 exact committed execution
 
 Clean implementation commit 501a46f6db3c26971037ac4e87ab8f71e1c2251e passed its actual unit/service producers and formal evidence validator in Sentinel job job_30ddabb0b1c3. The bounded report contains one passed requirement (T08), two tier records, zero failed/skipped, and closure_complete=false. Receipt and raw-log digest are under evidence/p15-types-501a46f.
+
+## T06 follow-up: final control results, all branches
+
+A separate causal probe on source cc9ba50853f3573485aebb4c8a942b43ada9437b found a real gap in the initial T06 correction. Ordinary if/menu/repeat/for inference still used the first encountered yield. Job job_da37de3c1b38 reproduced nine unchecked record-return paths, including a known record followed by an external alternative, a missing final yield, an early yield overwritten by a later action, and nested variants. Five mixed Text/Number controls also inferred only the first type. The earlier 642d276 receipt is historical evidence for its listed direct cases; it is insufficient to prove these control paths.
+
+The analyzer now determines each branch's final explicit result with the existing BlockResultExpression helper and joins those results with the existing union/list types. A missing or overwritten final yield remains AnyContent. Final nested control expressions are followed recursively. Existing implicit native-last-action behavior remains untyped; no conversion, native action or runtime validator is inserted. The known record in one branch cannot validate another branch's external content.
+
+TestP15T06ControlResultsRequireAllBranches covers ten negative/control variants, exact return diagnostics, complete compilation blocked before bytes, wrong-code rejection, verified-record positive branches/loops, and five actual mixed-control type/compile checks. The formal T06 producer now requires this test alongside its original authored-value and structural-relation tests.
+
+Validation before commit: job_4e31d2bac06d passed all T02/T06/T08 production tests in 0.276 seconds. Job_00866dd28cfe passed full analysis/service/lower packages (0.911 / 0.965 / 0.896 seconds), existing Require/Measure/ShortCircuit/GeneratedGuard matching tests (0.365 seconds), and all three formal type evidence producers (6.518 seconds). No native runtime or overall release closure is inferred.

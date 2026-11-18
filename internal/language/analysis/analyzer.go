@@ -1183,16 +1183,12 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		a.inValueBlk = true
 		a.yieldedTypes = nil
 		a.analyzeStatement(e, scope)
-		yields := a.yieldedTypes
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
 		if ifAnyYield(e) && e.ElseBlock == nil {
 			a.error(CodeYieldContext, e.Span, "value-producing 'if' expression requires 'else'")
 		}
-		if len(yields) > 0 {
-			return yields[0]
-		}
-		return types.AnyContent
+		return a.controlExpressionResultType(e)
 
 	case *syntax.RepeatStmt:
 		oldVal := a.inValueBlk
@@ -1200,14 +1196,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		a.inValueBlk = true
 		a.yieldedTypes = nil
 		a.analyzeStatement(e, scope)
-		yields := a.yieldedTypes
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		elemType := types.Type(types.AnyContent)
-		if len(yields) > 0 {
-			elemType = yields[0]
-		}
-		return types.NewList(elemType)
+		return a.controlExpressionResultType(e)
 
 	case *syntax.ForStmt:
 		oldVal := a.inValueBlk
@@ -1215,14 +1206,9 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		a.inValueBlk = true
 		a.yieldedTypes = nil
 		a.analyzeStatement(e, scope)
-		yields := a.yieldedTypes
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
-		elemType := types.Type(types.AnyContent)
-		if len(yields) > 0 {
-			elemType = yields[0]
-		}
-		return types.NewList(elemType)
+		return a.controlExpressionResultType(e)
 
 	case *syntax.MenuStmt:
 		oldVal := a.inValueBlk
@@ -1230,7 +1216,6 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 		a.inValueBlk = true
 		a.yieldedTypes = nil
 		a.analyzeStatement(e, scope)
-		yields := a.yieldedTypes
 		a.yieldedTypes = oldYields
 		a.inValueBlk = oldVal
 		if menuAnyYield(e) {
@@ -1240,10 +1225,7 @@ func (a *Analyzer) analyzeExpressionInternal(expr syntax.Expression, scope *Scop
 				}
 			}
 		}
-		if len(yields) > 0 {
-			return yields[0]
-		}
-		return types.AnyContent
+		return a.controlExpressionResultType(e)
 	}
 
 	return types.Unknown

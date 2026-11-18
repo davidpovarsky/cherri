@@ -4,7 +4,7 @@ import "strings"
 
 var typeProductionTests = map[string][]string{
 	"T02": {"TestP15T02LiteralRequiredProduction"},
-	"T06": {"TestP15T06RecordAnnotationsDoNotValidateExternalValues", "TestP15T06RecordProofTypeRelations"},
+	"T06": {"TestP15T06RecordAnnotationsDoNotValidateExternalValues", "TestP15T06RecordProofTypeRelations", "TestP15T06ControlResultsRequireAllBranches"},
 	"T08": {"TestP15T08ConditionalCardinalityProduction", "TestP15T08ConditionalCardinalityService"},
 }
 var typeProductionTiers = map[string][]string{
@@ -14,7 +14,7 @@ var typeProductionTiers = map[string][]string{
 }
 var typeProductionPaths = map[string][]string{
 	"T02": {"internal/language/analysis/analyzer.go", "internal/language/analysis/literal_arguments.go", "internal/language/lower/lower.go", "language_emit_adapter.go", "p15_types_acceptance_test.go"},
-	"T06": {"internal/language/types/types.go", "internal/language/types/record_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/syntax/parser.go", "p15_record_acceptance_test.go"},
+	"T06": {"internal/language/types/types.go", "internal/language/types/record_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/syntax/parser.go", "internal/language/analysis/control_results.go", "p15_record_acceptance_test.go", "p15_control_type_acceptance_test.go"},
 	"T08": {"internal/language/analysis/analyzer.go", "internal/language/analysis/cardinality.go", "internal/language/service/service.go", "internal/language/service/call_result.go", "p15_cardinality_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
 }
 
