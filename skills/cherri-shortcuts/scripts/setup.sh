@@ -30,14 +30,12 @@ BIN_STAGE=""
 DOCS_STAGE=""
 INSTALL_LOCKED=0
 INSTALL_COMMITTED=0
-HAD_BIN=0
-HAD_COMMIT=0
-HAD_CHECKSUM=0
-HAD_DOCS=0
-BIN_INSTALLED=0
-COMMIT_INSTALLED=0
-CHECKSUM_INSTALLED=0
-DOCS_INSTALLED=0
+OLD_BIN_PRESENT=0
+OLD_COMMIT_PRESENT=0
+OLD_CHECKSUM_PRESENT=0
+OLD_DOCS_PRESENT=0
+BIN_PROMOTING=0
+DOCS_PROMOTING=0
 
 begin_install() {
   if [ "$INSTALL_LOCKED" -eq 0 ]; then
@@ -49,20 +47,48 @@ begin_install() {
   fi
 }
 
+# The rollback decision uses the rename result on disk. A signal may be
+# delivered after mv completes but before the shell executes its next line.
+restore_install_file() {
+  _restore_dest=$1
+  _restore_backup=$2
+  _restore_candidate=$3
+  _restore_existed=$4
+  if [ -e "$_restore_backup" ] || [ -L "$_restore_backup" ]; then
+    if rm -f "$_restore_dest"; then
+      mv "$_restore_backup" "$_restore_dest" || ROLLBACK_OK=0
+    else
+      ROLLBACK_OK=0
+    fi
+  elif [ "$_restore_existed" -eq 0 ] && [ ! -e "$_restore_candidate" ] && [ ! -L "$_restore_candidate" ]; then
+    rm -f "$_restore_dest" || ROLLBACK_OK=0
+  fi
+}
+
 finish_install() {
   INSTALL_STATUS=$?
-  trap - EXIT HUP INT TERM
+  trap - EXIT
+  # Finish the bounded rollback before honoring further handled signals.
+  trap '' HUP INT TERM
   set +e
   ROLLBACK_OK=1
   if [ "$INSTALL_COMMITTED" -eq 0 ]; then
-    if [ "$DOCS_INSTALLED" -eq 1 ]; then rm -rf "$CHERRI_DOCS_DIR" || ROLLBACK_OK=0; fi
-    if [ "$HAD_DOCS" -eq 1 ]; then mv "$DOCS_STAGE/previous" "$CHERRI_DOCS_DIR" || ROLLBACK_OK=0; fi
-    if [ "$CHECKSUM_INSTALLED" -eq 1 ]; then rm -f "$CACHED_CHERRI.sha256" || ROLLBACK_OK=0; fi
-    if [ "$HAD_CHECKSUM" -eq 1 ]; then mv "$BIN_STAGE/previous.sha256" "$CACHED_CHERRI.sha256" || ROLLBACK_OK=0; fi
-    if [ "$COMMIT_INSTALLED" -eq 1 ]; then rm -f "$CACHED_CHERRI.commit" || ROLLBACK_OK=0; fi
-    if [ "$HAD_COMMIT" -eq 1 ]; then mv "$BIN_STAGE/previous.commit" "$CACHED_CHERRI.commit" || ROLLBACK_OK=0; fi
-    if [ "$BIN_INSTALLED" -eq 1 ]; then rm -f "$CACHED_CHERRI" || ROLLBACK_OK=0; fi
-    if [ "$HAD_BIN" -eq 1 ]; then mv "$BIN_STAGE/previous" "$CACHED_CHERRI" || ROLLBACK_OK=0; fi
+    if [ "$DOCS_PROMOTING" -eq 1 ]; then
+      if [ -e "$DOCS_STAGE/previous" ] || [ -L "$DOCS_STAGE/previous" ]; then
+        if rm -rf "$CHERRI_DOCS_DIR"; then
+          mv "$DOCS_STAGE/previous" "$CHERRI_DOCS_DIR" || ROLLBACK_OK=0
+        else
+          ROLLBACK_OK=0
+        fi
+      elif [ "$OLD_DOCS_PRESENT" -eq 0 ] && [ ! -e "$DOCS_STAGE/candidate" ]; then
+        rm -rf "$CHERRI_DOCS_DIR" || ROLLBACK_OK=0
+      fi
+    fi
+    if [ "$BIN_PROMOTING" -eq 1 ]; then
+      restore_install_file "$CACHED_CHERRI.sha256" "$BIN_STAGE/previous.sha256" "$BIN_STAGE/candidate.sha256" "$OLD_CHECKSUM_PRESENT"
+      restore_install_file "$CACHED_CHERRI.commit" "$BIN_STAGE/previous.commit" "$BIN_STAGE/candidate.commit" "$OLD_COMMIT_PRESENT"
+      restore_install_file "$CACHED_CHERRI" "$BIN_STAGE/previous" "$BIN_STAGE/candidate" "$OLD_BIN_PRESENT"
+    fi
   fi
   if [ "$ROLLBACK_OK" -eq 1 ]; then
     if [ -n "$BIN_STAGE" ]; then rm -rf "$BIN_STAGE"; fi
@@ -252,35 +278,35 @@ fi
 
 # Every candidate is compatible before the first active file is moved.
 if [ -n "$BIN_STAGE" ]; then
-  if [ -e "$CACHED_CHERRI" ] || [ -L "$CACHED_CHERRI" ]; then
-    mv "$CACHED_CHERRI" "$BIN_STAGE/previous"
-    HAD_BIN=1
-  fi
-  if [ -e "$CACHED_CHERRI.commit" ] || [ -L "$CACHED_CHERRI.commit" ]; then
-    mv "$CACHED_CHERRI.commit" "$BIN_STAGE/previous.commit"
-    HAD_COMMIT=1
-  fi
-  if [ -e "$CACHED_CHERRI.sha256" ] || [ -L "$CACHED_CHERRI.sha256" ]; then
-    mv "$CACHED_CHERRI.sha256" "$BIN_STAGE/previous.sha256"
-    HAD_CHECKSUM=1
-  fi
+  if [ -e "$CACHED_CHERRI" ] || [ -L "$CACHED_CHERRI" ]; then OLD_BIN_PRESENT=1; fi
+  if [ -e "$CACHED_CHERRI.commit" ] || [ -L "$CACHED_CHERRI.commit" ]; then OLD_COMMIT_PRESENT=1; fi
+  if [ -e "$CACHED_CHERRI.sha256" ] || [ -L "$CACHED_CHERRI.sha256" ]; then OLD_CHECKSUM_PRESENT=1; fi
+  BIN_PROMOTING=1
+  if [ "$OLD_BIN_PRESENT" -eq 1 ]; then mv "$CACHED_CHERRI" "$BIN_STAGE/previous"; fi
+  if [ "$OLD_COMMIT_PRESENT" -eq 1 ]; then mv "$CACHED_CHERRI.commit" "$BIN_STAGE/previous.commit"; fi
+  if [ "$OLD_CHECKSUM_PRESENT" -eq 1 ]; then mv "$CACHED_CHERRI.sha256" "$BIN_STAGE/previous.sha256"; fi
   mv "$TMP_BIN" "$CACHED_CHERRI"
-  BIN_INSTALLED=1
   mv "$TMP_COMMIT" "$CACHED_CHERRI.commit"
-  COMMIT_INSTALLED=1
   mv "$TMP_BIN.sha256" "$CACHED_CHERRI.sha256"
-  CHECKSUM_INSTALLED=1
 fi
 if [ -n "$DOCS_STAGE" ]; then
-  if [ -e "$CHERRI_DOCS_DIR" ]; then
-    mv "$CHERRI_DOCS_DIR" "$DOCS_STAGE/previous"
-    HAD_DOCS=1
-  fi
+  if [ -e "$CHERRI_DOCS_DIR" ] || [ -L "$CHERRI_DOCS_DIR" ]; then OLD_DOCS_PRESENT=1; fi
+  DOCS_PROMOTING=1
+  if [ "$OLD_DOCS_PRESENT" -eq 1 ]; then mv "$CHERRI_DOCS_DIR" "$DOCS_STAGE/previous"; fi
   mv "$DOCS_STAGE/candidate" "$CHERRI_DOCS_DIR"
-  DOCS_INSTALLED=1
 fi
 
-BIN=$(resolve_cherri) || { echo "No compatible Cherri binary found after setup." >&2; exit 1; }
+if [ -n "$BIN_STAGE" ]; then
+  # A damaged newly promoted cache must roll back, not appear successful by
+  # selecting an unrelated compatible bundled or PATH compiler.
+  if ! validate_cherri_bin "$CACHED_CHERRI"; then
+    echo "[CHERRI_INSTALL_PROMOTED_INVALID] Promoted compiler failed validation; restoring the preceding installation." >&2
+    exit 1
+  fi
+  BIN=$CACHED_CHERRI
+else
+  BIN=$(resolve_cherri) || { echo "No compatible Cherri binary found after setup." >&2; exit 1; }
+fi
 "$BIN" --version
 if [ -d "$CHERRI_DOCS_DIR" ]; then
   validate_docs_dir "$CHERRI_DOCS_DIR"

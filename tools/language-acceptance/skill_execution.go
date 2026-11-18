@@ -12,13 +12,15 @@ var skillProductionTests = map[string][]string{
 		"TestP15K03SuccessfulUpdateCommitsValidatedPair",
 		"TestP15K03ImmutableInstallRefsRequired",
 		"TestP15K03LocalStateIsPreserved",
+		"TestP15K03HandledSignalRestoresFiles",
+		"TestP15K03PromotedCacheCannotFallBack",
 	},
 	"K04": {"TestP15K04OfflineCacheProduction"},
 }
 
 var skillProductionPaths = map[string][]string{
 	"K02": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "p15_skill_installation_test.go"},
-	"K03": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "p15_skill_installation_test.go"},
+	"K03": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "p15_skill_installation_test.go", "p15_skill_signal_test.go"},
 	"K04": {"skills/cherri-shortcuts/scripts/setup.sh", "skills/cherri-shortcuts/scripts/common.sh", "skills/cherri-shortcuts/scripts/doctor.sh", "skills/cherri-shortcuts/scripts/test-compatibility-isolation.sh", "p15_skill_acceptance_test.go"},
 }
 
