@@ -1,0 +1,156 @@
+{
+  "sourceSha": "8c42876a49081c961d6dce8344cc9879ff8f4a0f",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": false,
+  "statusAfter": [
+    " M docs/apple-runtime/p10/p10-505-parameter-contract-evidence.json"
+  ],
+  "command": [
+    "go",
+    "test",
+    "./...",
+    "-count=1",
+    "-json",
+    "-timeout=40m",
+    "-p",
+    "2"
+  ],
+  "startedAt": "2026-11-18T16:21:04.578859+00:00",
+  "finishedAt": "2026-11-18T16:34:45.778793+00:00",
+  "seconds": 821.203,
+  "exit": 1,
+  "wrapperTimeout": false,
+  "namedTestEvents": {
+    "pass": 1659,
+    "skip": 4,
+    "fail": 12
+  },
+  "failed": [
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Average",
+      "elapsed": 0.18
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Minimum",
+      "elapsed": 0.26
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Maximum",
+      "elapsed": 0.23
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Sum",
+      "elapsed": 0.8
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Median",
+      "elapsed": 0.22
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Mode",
+      "elapsed": 0.64
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Range",
+      "elapsed": 0.31
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2/v2-Standard_Deviation",
+      "elapsed": 0.23
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2",
+      "elapsed": 3.44
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_AutomaticActionPropagation_Scenarios1To4",
+      "elapsed": 0.07
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_SSoTNegativeDriftDetection/10_Pure_Pack_Generator_Drift_Against_Modified_Cherri_Source",
+      "elapsed": 4.1
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10_SSoTNegativeDriftDetection",
+      "elapsed": 43.39
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": null,
+      "elapsed": 803.625
+    }
+  ],
+  "skipped": [
+    {
+      "package": "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+      "test": null
+    },
+    {
+      "package": "github.com/electrikmilk/cherri/internal/language/enums",
+      "test": null
+    },
+    {
+      "package": "github.com/electrikmilk/cherri/internal/language/ir",
+      "test": null
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestCherri"
+    },
+    {
+      "package": "github.com/electrikmilk/cherri/tools/inventory",
+      "test": null
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP10R10CorpusMeasure"
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire"
+    },
+    {
+      "package": "github.com/electrikmilk/cherri",
+      "test": "TestP15ParserRecoveryChild"
+    }
+  ],
+  "passedPackages": [
+    "github.com/electrikmilk/cherri/internal/icloudshortcut",
+    "github.com/electrikmilk/cherri/internal/language/analysis",
+    "github.com/electrikmilk/cherri/internal/language/backend",
+    "github.com/electrikmilk/cherri/internal/language/lower",
+    "github.com/electrikmilk/cherri/internal/language/lsp",
+    "github.com/electrikmilk/cherri/internal/language/migrate",
+    "github.com/electrikmilk/cherri/internal/language/protocol",
+    "github.com/electrikmilk/cherri/internal/language/schema",
+    "github.com/electrikmilk/cherri/internal/language/service",
+    "github.com/electrikmilk/cherri/internal/language/source",
+    "github.com/electrikmilk/cherri/internal/language/syntax",
+    "github.com/electrikmilk/cherri/internal/language/types",
+    "github.com/electrikmilk/cherri/internal/shortcutcompare",
+    "github.com/electrikmilk/cherri/tools/ci-test-discovery",
+    "github.com/electrikmilk/cherri/tools/ios-runtime-verifier",
+    "github.com/electrikmilk/cherri/tools/language-acceptance",
+    "github.com/electrikmilk/cherri/tools/language-docs",
+    "github.com/electrikmilk/cherri/tools/language-migrate",
+    "github.com/electrikmilk/cherri/tools/language-schema",
+    "github.com/electrikmilk/cherri/tools/legacy-parity",
+    "github.com/electrikmilk/cherri/tools/shortcut-corpus"
+  ],
+  "logSha256": "3ca7eaafa234699eba9fcbcdd9d539ccd8dff273c1263109de228480f1b74263",
+  "privateCorpusRequested": false,
+  "scope": "Actual full Go suite on immutable combined source; skipped private corpus/native/external obligations are not PASS.",
+  "interpretation": "FAIL: three failing test families; PASS event counts include subtests/parents. Private corpus and native execution are not covered."
+}

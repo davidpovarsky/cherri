@@ -1,0 +1,75 @@
+{
+  "sourceSha": "e9c03fec2209d243a067ed1d4ca29b9773656718",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "selectors": 50,
+  "addedSelectors": [
+    "qa-collect-empty-split",
+    "qa-export-file-bytes",
+    "qa-f01-ifresult-let",
+    "qa-f01-ifresult-var"
+  ],
+  "results": [
+    {
+      "name": "python-qa",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/shortcuts-simulator-qa",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "seconds": 101.422,
+      "logSha256": "cc66456ed2f966d82ff0b542bbf61602c7f9fbb2ea801e15a8be072faa7ed698",
+      "tests": 119
+    },
+    {
+      "name": "go-diagnostic-graphs",
+      "command": [
+        "go",
+        "test",
+        ".",
+        "-run",
+        "^TestP15RuntimeDiagnostic",
+        "-count=1",
+        "-json",
+        "-timeout=5m"
+      ],
+      "exit": 0,
+      "seconds": 16.75,
+      "logSha256": "bf3ab2f9a580c39e1ce1b73c778744c3d7bce89a037119b6465edddab2c95478",
+      "passed": [
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/missing_empty_rows",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/empty_becomes_singleton",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/direct_count_uses_Repeat_result",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/collected_count_uses_input",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/clearing_Nothing_replaced",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/clear_gains_prior_input",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Count_redirected",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/cleared_Repeat_group_changed",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/singleton_empty_Text_removed",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph/empty_List_loses_producer_UUID",
+        "TestP15RuntimeDiagnosticCollectEmptyGraph",
+        "TestP15RuntimeDiagnosticFileBytesGraph",
+        "TestP15RuntimeDiagnosticIfResultLetVarSplit"
+      ]
+    },
+    {
+      "name": "bash-syntax",
+      "command": [
+        "bash",
+        "-n",
+        "scripts/ios27_shortcuts_simulator_qa.sh"
+      ],
+      "exit": 0,
+      "seconds": 0.093,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "pass": true
+}

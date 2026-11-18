@@ -2492,7 +2492,7 @@
       "firstForkCommit": "7a668f9586da791565d2a45f8f4cd40a73063cf5",
       "change": "Resolve exact source/native enum wires through one derived catalog, context and lexical scope; retain native parameter wire constraints and precise service insertion.",
       "reason": "Execute the C04 unit and service contract through production paths.",
-      "evidence": "Clean6d4db11:70package tests and5independent C04/C02/T02/T06/T08 producers PASS. Follow-upb73b992 respects scoped block shadows; exactdd3c266 C04 receipt passes both required tiers and native-domain alias rejection controls.",
+      "evidence": "Clean6d4db11:70package tests and5independent C04/C02/T02/T06/T08 producers PASS. Follow-upb73b992 respects scoped block shadows; exactdd3c266 C04 receipt passes both required tiers and native-domain alias rejection controls. Supplied-registry regression from full8c42876 repaired b97d1ec: contextual domain includes explicit parameter EnumValues without widening per-action wires. Exact clean C04 producer plus P10/505 parity and45analysis/service testsPASS; receipt3c90f79.",
       "note": "Immutable first implementation ancestor. Native/UI/current full179 closure remain independent."
     },
     {
@@ -2505,7 +2505,7 @@
       "firstForkCommit": "46b4157837b91a92ec4fcb7cec566159950182cc",
       "change": "Exercise existing get/set/delete stored-content primitives with strict synthetic graph, release and publication contracts before any typed cache design.",
       "reason": "Determine actual native storage behavior without inventing a second persistence backend.",
-      "evidence": "Exacta0d774a clean proof:3Go tests,18graph mutations,4frontend/profile configurations,47Python controls,38actualCLI fixtures,3native-action roundtrips,3Release and5publication fault controls. Text pilot44337212109 still requires its own native result.",
+      "evidence": "Exacta0d774a clean proof:3Go tests,18graph mutations,4frontend/profile configurations,47Python controls,38actualCLI fixtures,3native-action roundtrips,3Release and5publication fault controls. Text pilot44337212109 still requires its own native result. Signed ff2d530 run44337212109 subsequently independently audited PASS_NATIVE_SAME_RUN_TEXT_ONLY:20hashes,32actions,fresh exactTYPE_OK:VALUE_OK,fourtraceevents,sevenoraclefaultsrejected. Inspector58unresolved observations; cache/cross-run/physical remain unproven.",
       "note": "Typed archive, shared scope, missing/corrupt handling and cross-run persistence are not inferred from local graph checks."
     },
     {
@@ -2537,6 +2537,20 @@
       "reason": "Extend the existing scoped macro path to the preserved Legacy frontend without reparsing or a second backend.",
       "evidence": "Exact6d9faaf focused40pass events,27lower/backend events,19actualCLI cases,16positive exact native-action roundtrips and8causal graph faults. Separate7ec4303 test-only repair distinguishes numeric input construction from fixed4-action Repeat region. See legacy-scoped-blocks-validation.json.",
       "note": "General block parameters/closures/control-result declarations and signed runtime remain open; existing private-corpus gate reruns at the combined phase boundary."
+    },
+    {
+      "name": "P10R15 causal empty collection, conditional result and File-byte diagnostics",
+      "locations": [
+        "p15_runtime_diagnostic_test.go",
+        "tools/shortcuts-simulator-qa/fixtures/qa-collect-empty-split-v2.cherri",
+        "tools/shortcuts-simulator-qa/fixtures/qa-f01-ifresult-let-v2.cherri",
+        "tools/shortcuts-simulator-qa/fixtures/qa-export-file-bytes-v2.cherri"
+      ],
+      "firstForkCommit": "e9c03fec2209d243a067ed1d4ca29b9773656718",
+      "change": "Add strict differential native fixtures to the existing simulator workflow and preserve the union of all50selectors.",
+      "reason": "Isolate actual empty-list, If result and File conversion failures without relaxing original acceptance oracles.",
+      "evidence": "Exact clean e9c03fe:119Python tests,3Go graph tests with10causal mutations, shell syntaxPASS. Native runs at4e7956d remain independent.",
+      "note": "Synthetic sources only. No Apple result follows from local checks."
     }
   ]
 }
