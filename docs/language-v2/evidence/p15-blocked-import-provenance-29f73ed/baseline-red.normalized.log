@@ -1,0 +1,38 @@
+FFF
+======================================================================
+FAIL: test_blocked_report_preserves_validated_compile_provenance (test_runtime_callback_contract.CallbackContractTests.test_blocked_report_preserves_validated_compile_provenance) (fixture='qa-unit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-kernel-boundary-20261118\tools\shortcuts-simulator-qa\test_runtime_callback_contract.py", line 276, in test_blocked_report_preserves_validated_compile_provenance
+    self.assertEqual(report["compilerCommitSha"], "a" * 40)
+AssertionError: 'UNKNOWN' != 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+- UNKNOWN
++ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
+======================================================================
+FAIL: test_blocked_report_preserves_validated_compile_provenance (test_runtime_callback_contract.CallbackContractTests.test_blocked_report_preserves_validated_compile_provenance) (fixture='qa-measure-release-v2')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-kernel-boundary-20261118\tools\shortcuts-simulator-qa\test_runtime_callback_contract.py", line 276, in test_blocked_report_preserves_validated_compile_provenance
+    self.assertEqual(report["compilerCommitSha"], "a" * 40)
+AssertionError: 'UNKNOWN' != 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+- UNKNOWN
++ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
+======================================================================
+FAIL: test_blocked_report_provenance_never_promotes_callback_or_trace (test_runtime_callback_contract.CallbackContractTests.test_blocked_report_provenance_never_promotes_callback_or_trace)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-kernel-boundary-20261118\tools\shortcuts-simulator-qa\test_runtime_callback_contract.py", line 292, in test_blocked_report_provenance_never_promotes_callback_or_trace
+    self.assertEqual(report["compilerCommitSha"], "a" * 40)
+AssertionError: 'UNKNOWN' != 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+- UNKNOWN
++ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.424s
+
+FAILED (failures=3)
