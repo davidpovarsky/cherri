@@ -23,3 +23,17 @@ All five repository input digests in the actual gate summary match their exact S
 The CI record paths still reflect the producer's artifact layout. Consumers may transport the bytes and rebind local paths, while retaining S2, run44452839062, and the original hashes. No source relabeling or automatic credit to K2/S3 is authorized by this archive.
 
 The manifest binds each raw file; CRLF and process diagnostics are preserved. The exact-source observation receipt also retains the independently reproduced LANG002 baseline, which was expected to fail.
+
+## Archive source isolation
+
+The observation harness is stored as audit/native_encoding_ci_observation_test.go.txt
+with its original 2,273 bytes and SHA256 unchanged. A .go filename under
+this archive was incorrectly discovered as a standalone package by recursive
+Go commands, causing S3 Nix and iOS compiler-pretest builds to fail with
+undefined root-package helper names. This filename correction keeps the
+evidence available without making it application or test-package source.
+
+For replay, use the archived content as a replacement in an external Go
+overlay whose virtual test path belongs to the root package. The original
+overlay JSON, process commands, CI observations and their exact source
+identities remain unchanged. The manifest records the archived filename.
