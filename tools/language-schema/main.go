@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -242,6 +243,57 @@ var facets = map[string]ActionFacet{
 	},
 }
 
+// effectiveParameterCodec is shared by validation and generated output so a
+// malformed binding cannot pass validation through a different fallback path.
+func effectiveParameterCodec(p LegacyParameter) string {
+	if p.Enum != "" {
+		return backend.CodecEnum
+	}
+	return mapCodec(p.Type)
+}
+
+func validateCatalogFacts(catalog *LegacyCatalog) error {
+	actions := make(map[string]bool)
+	enums := make(map[string][]string)
+	for _, action := range catalog.Actions {
+		if action.Name == "" {
+			return fmt.Errorf("action has an empty name")
+		}
+		if actions[action.Name] {
+			return fmt.Errorf("duplicate action %q", action.Name)
+		}
+		actions[action.Name] = true
+		labels := make(map[string]bool)
+		for _, p := range action.Parameters {
+			if p.Name == "" {
+				return fmt.Errorf("action %q has an empty parameter label", action.Name)
+			}
+			if labels[p.Name] {
+				return fmt.Errorf("action %q has duplicate parameter label %q", action.Name, p.Name)
+			}
+			labels[p.Name] = true
+			codec := effectiveParameterCodec(p)
+			if !backend.IsRegisteredParameterCodec(codec) {
+				return fmt.Errorf("action %q parameter %q uses unregistered codec %q", action.Name, p.Name, codec)
+			}
+			if p.Enum != "" {
+				values := make(map[string]bool)
+				for _, value := range p.EnumValues {
+					if values[value] {
+						return fmt.Errorf("action %q parameter %q has duplicate enum value %q in %q", action.Name, p.Name, value, p.Enum)
+					}
+					values[value] = true
+				}
+				if previous, exists := enums[p.Enum]; exists && !slices.Equal(previous, p.EnumValues) {
+					return fmt.Errorf("action %q parameter %q has conflicting enum definition %q", action.Name, p.Name, p.Enum)
+				}
+				enums[p.Enum] = p.EnumValues
+			}
+		}
+	}
+	return nil
+}
+
 func validateFacets(catalog *LegacyCatalog) error {
 	for _, action := range catalog.Actions {
 		if err := schema.ValidatePlatformVersionMetadata(action.PlatformVersions); err != nil {
@@ -344,6 +396,11 @@ func main() {
 	var catalog LegacyCatalog
 	if err := json.Unmarshal(data, &catalog); err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing catalog JSON: %v\n", err)
+		os.Exit(1)
+	}
+
+	if err := validateCatalogFacts(&catalog); err != nil {
+		fmt.Fprintf(os.Stderr, "Catalog validation failed: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -743,9 +800,8 @@ func initDefaultRegistry() *Registry {
 				}
 			}
 
-			codec := mapCodec(p.Type)
+			codec := effectiveParameterCodec(p)
 			if p.Enum != "" {
-				codec = backend.CodecEnum
 				if len(p.EnumValues) > 0 {
 					allEnums[p.Enum] = p.EnumValues
 				}
