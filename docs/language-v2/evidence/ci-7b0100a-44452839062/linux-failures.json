@@ -1,0 +1,51 @@
+{
+  "runId": 44452839062,
+  "sourceCommit": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+  "jobId": 135320698652,
+  "logBytes": 1268875,
+  "logSha256": "458c8d998eb7b5c0cf483cb0f0d5ef4f27649c87553da20f2b1c46496349d57c",
+  "failures": [
+    {
+      "line": 1820,
+      "text": "2026-11-19T03:45:00.4253954Z --- FAIL: TestLANG002_EnumAndTypeAliases (0.01s)",
+      "context": [
+        "2026-11-19T03:45:00.4251565Z     --- PASS: TestLANG001_ImportsAndCustomAction/CustomAction (0.01s)",
+        "2026-11-19T03:45:00.4251883Z === RUN   TestLANG002_EnumAndTypeAliases",
+        "2026-11-19T03:45:00.4252157Z === RUN   TestLANG002_EnumAndTypeAliases/ValidEnum",
+        "2026-11-19T03:45:00.4253033Z     metadata_matrix_test.go:273: expected quicklook input to be 'PRODUCTION', got {{ActionOutput  9FA8FB64-ADC8-4231-A0C1-F2F7B52F1219 Text <nil> <nil> [] map[]  [] } WFTextTokenAttachment}",
+        "2026-11-19T03:45:00.4253661Z === RUN   TestLANG002_EnumAndTypeAliases/InvalidEnum",
+        "2026-11-19T03:45:00.4253954Z --- FAIL: TestLANG002_EnumAndTypeAliases (0.01s)",
+        "2026-11-19T03:45:00.4254293Z     --- FAIL: TestLANG002_EnumAndTypeAliases/ValidEnum (0.01s)",
+        "2026-11-19T03:45:00.4254678Z     --- PASS: TestLANG002_EnumAndTypeAliases/InvalidEnum (0.00s)",
+        "2026-11-19T03:45:00.4254966Z === RUN   TestLANG003_NativeEscapeAPIs",
+        "2026-11-19T03:45:00.4255230Z === RUN   TestLANG003_NativeEscapeAPIs/NativeAction",
+        "2026-11-19T03:45:00.4255513Z === RUN   TestLANG003_NativeEscapeAPIs/NativePlist",
+        "2026-11-19T03:45:00.4255793Z === RUN   TestLANG003_NativeEscapeAPIs/NativeRef",
+        "2026-11-19T03:45:00.4256081Z === RUN   TestLANG003_NativeEscapeAPIs/NativeWorkflow",
+        "2026-11-19T03:45:00.4256409Z === RUN   TestLANG003_NativeEscapeAPIs/NativeNegativeFailClosed",
+        "2026-11-19T03:45:00.4256792Z --- PASS: TestLANG003_NativeEscapeAPIs (0.03s)"
+      ]
+    },
+    {
+      "line": 1821,
+      "text": "2026-11-19T03:45:00.4254293Z     --- FAIL: TestLANG002_EnumAndTypeAliases/ValidEnum (0.01s)",
+      "context": [
+        "2026-11-19T03:45:00.4251883Z === RUN   TestLANG002_EnumAndTypeAliases",
+        "2026-11-19T03:45:00.4252157Z === RUN   TestLANG002_EnumAndTypeAliases/ValidEnum",
+        "2026-11-19T03:45:00.4253033Z     metadata_matrix_test.go:273: expected quicklook input to be 'PRODUCTION', got {{ActionOutput  9FA8FB64-ADC8-4231-A0C1-F2F7B52F1219 Text <nil> <nil> [] map[]  [] } WFTextTokenAttachment}",
+        "2026-11-19T03:45:00.4253661Z === RUN   TestLANG002_EnumAndTypeAliases/InvalidEnum",
+        "2026-11-19T03:45:00.4253954Z --- FAIL: TestLANG002_EnumAndTypeAliases (0.01s)",
+        "2026-11-19T03:45:00.4254293Z     --- FAIL: TestLANG002_EnumAndTypeAliases/ValidEnum (0.01s)",
+        "2026-11-19T03:45:00.4254678Z     --- PASS: TestLANG002_EnumAndTypeAliases/InvalidEnum (0.00s)",
+        "2026-11-19T03:45:00.4254966Z === RUN   TestLANG003_NativeEscapeAPIs",
+        "2026-11-19T03:45:00.4255230Z === RUN   TestLANG003_NativeEscapeAPIs/NativeAction",
+        "2026-11-19T03:45:00.4255513Z === RUN   TestLANG003_NativeEscapeAPIs/NativePlist",
+        "2026-11-19T03:45:00.4255793Z === RUN   TestLANG003_NativeEscapeAPIs/NativeRef",
+        "2026-11-19T03:45:00.4256081Z === RUN   TestLANG003_NativeEscapeAPIs/NativeWorkflow",
+        "2026-11-19T03:45:00.4256409Z === RUN   TestLANG003_NativeEscapeAPIs/NativeNegativeFailClosed",
+        "2026-11-19T03:45:00.4256792Z --- PASS: TestLANG003_NativeEscapeAPIs (0.03s)",
+        "2026-11-19T03:45:00.4257126Z     --- PASS: TestLANG003_NativeEscapeAPIs/NativeAction (0.01s)"
+      ]
+    }
+  ]
+}

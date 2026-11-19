@@ -1,0 +1,35 @@
+{
+  "sourceCommit": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+  "runId": 44452839062,
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "id": 135320698299,
+      "name": "build-test-nix",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-19T03:38:24Z",
+      "completed_at": "2026-11-19T03:40:53Z"
+    },
+    {
+      "id": 135320698583,
+      "name": "build-test-macos",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-19T03:47:20Z",
+      "completed_at": "2026-11-19T04:03:02Z"
+    },
+    {
+      "id": 135320698652,
+      "name": "build-test-linux",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-19T03:38:25Z",
+      "completed_at": "2026-11-19T03:47:32Z"
+    }
+  ],
+  "onlyFailedLeafOnBothHosts": "TestLANG002_EnumAndTypeAliases/ValidEnum",
+  "localBaseline": "same exact S2 failure independently reproduced; InvalidEnum PASS",
+  "macOSK01Actual": "PASS: unpacked_actual_self_test, all packaging controls, and TestSkillPackageProductionEvidence",
+  "fullCIClosure": false
+}
