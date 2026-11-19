@@ -1,0 +1,20 @@
+=== RUN   TestGate_MenusAssetWorkspace
+=== RUN   TestGate_MenusAssetWorkspace/entry_asset_wins_over_decoy_cwd
+=== RUN   TestGate_MenusAssetWorkspace/missing_entry_asset_fails_closed
+=== RUN   TestGate_MenusAssetWorkspace/restored_exact_asset_recovers
+--- PASS: TestGate_MenusAssetWorkspace (3.25s)
+    --- PASS: TestGate_MenusAssetWorkspace/entry_asset_wins_over_decoy_cwd (0.11s)
+    --- PASS: TestGate_MenusAssetWorkspace/missing_entry_asset_fails_closed (0.07s)
+    --- PASS: TestGate_MenusAssetWorkspace/restored_exact_asset_recovers (0.15s)
+=== RUN   TestGate_MenusMissingCanonicalAssetFailsClosed
+--- PASS: TestGate_MenusMissingCanonicalAssetFailsClosed (0.00s)
+=== RUN   TestGate_PositiveEndToEnd
+--- PASS: TestGate_PositiveEndToEnd (0.39s)
+=== RUN   TestGate_Negative_MissingRequiredParameterFailsGate
+--- PASS: TestGate_Negative_MissingRequiredParameterFailsGate (0.19s)
+=== RUN   TestGate_Negative_IntentionalDifferenceDetected
+--- PASS: TestGate_Negative_IntentionalDifferenceDetected (0.05s)
+=== RUN   TestGate_Negative_MissingActionParameterDetected
+--- PASS: TestGate_Negative_MissingActionParameterDetected (0.06s)
+PASS
+ok  	github.com/electrikmilk/cherri/tools/legacy-parity	6.476s

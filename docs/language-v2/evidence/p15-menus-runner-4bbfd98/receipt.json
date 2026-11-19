@@ -1,0 +1,25 @@
+{
+  "formatVersion": 1,
+  "recordedAtUtc": "2026-11-19T19:57:01.256571+00:00",
+  "baseCommit": "d7052f4568db26dba169bdefc72623e48c04968a",
+  "implementationCommit": "4bbfd98f0f003d92faec35bab4720c228c198cb9",
+  "compilerProductionSource": "d7052f4568db26dba169bdefc72623e48c04968a",
+  "before": {
+    "command": "go test -count=1 -run ^TestGate_MenusAssetWorkspace$ -v ./tools/legacy-parity",
+    "exitCode": 1,
+    "expectedDiagnostic": "E_WORKSPACE_ACCESS"
+  },
+  "after": {
+    "command": "go test -count=1 -v ./tools/legacy-parity",
+    "exitCode": 0,
+    "topLevelPassed": 6,
+    "subtestsPassed": 3
+  },
+  "scope": "Menus runner staging only; globals/standard/full CI and formal179 remain open. Tests executed before implementation commit against identical implementation bytes. A later wrapper git diff check failed on CRLF formatting; corrected before commit. No compiler policy or canonical fixture edits.",
+  "files": {
+    "baseline-parity-summary.json": "dbdeba45e5cfa1305f77d81bd257ba7c8ebccd195570846775dd0e356eb321fb",
+    "menus-after.log": "28923c344a7b54b247fa7c3aa8b716d306fa31f49a087c4ef36f7d22fc6ea91e",
+    "menus-before.log": "4826772260aa2fc7440a3c3b7a87ec550571f9c6ae419b8e4627090dd42d0f61",
+    "migration-independent-baseline.json": "4de3260be1b1b17657281b70fbf804ec11c9e9d5aac8f875a654ce8cebbb0530"
+  }
+}

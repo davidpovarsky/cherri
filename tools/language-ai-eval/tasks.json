@@ -1,0 +1,47 @@
+{
+  "schema": "cherri-language-ai-eval/v1",
+  "tasks": [
+    {
+      "id": "generate_unicode_literal",
+      "kind": "generation",
+      "prompt": "Create a shortcut that displays exactly the supplied literal, preserving the emoji, Hebrew, braces, and double quote: שלום 🍒 {literal} \"done\". Return source only.",
+      "starter": {"legacy": "", "v2": ""},
+      "oracle": {"visible_text": "שלום 🍒 {literal} \"done\"", "type": "Text", "side_effects": ["show"]}
+    },
+    {
+      "id": "generate_sum",
+      "kind": "generation",
+      "prompt": "Compute 7 plus 4 using a numeric expression, bind its result, and display the numeric result. Return source only.",
+      "starter": {"legacy": "", "v2": ""},
+      "oracle": {"numeric_result": 11, "requires_computation": true, "side_effects": ["show"]}
+    },
+    {
+      "id": "generate_list_selection",
+      "kind": "generation",
+      "prompt": "Create a list containing red, green, blue in this order. Select the middle item from that list and display it. Return source only.",
+      "starter": {"legacy": "", "v2": ""},
+      "oracle": {"list": ["red", "green", "blue"], "selected_text": "green", "side_effects": ["show"]}
+    },
+    {
+      "id": "edit_literal_only",
+      "kind": "edit",
+      "prompt": "Change only the displayed text from draft to ready. Keep the existing number binding and do not add side effects. Return complete source only.",
+      "starter": {"legacy": "@count = 4\nshow(\"draft\")\n", "v2": "let count = 4\nshow(\"draft\")\n"},
+      "oracle": {"visible_text": "ready", "unchanged_binding": {"count": 4}, "side_effects": ["show"]}
+    },
+    {
+      "id": "edit_binding_reference",
+      "kind": "edit",
+      "prompt": "Fix the misspelled reference so the shortcut displays the existing title binding. Do not replace the reference with a hard-coded duplicate. Return complete source only.",
+      "starter": {"legacy": "@title = \"Cherri\"\nshow(@titel)\n", "v2": "let title = \"Cherri\"\nshow(titel)\n"},
+      "oracle": {"visible_text": "Cherri", "requires_binding_reference": "title", "side_effects": ["show"]}
+    },
+    {
+      "id": "edit_arithmetic_operand",
+      "kind": "edit",
+      "prompt": "Fix the missing right operand by adding the number 5, retain the result binding and display that bound result. Return complete source only.",
+      "starter": {"legacy": "@result = 6 +\nshow(@result)\n", "v2": "let result = 6 +\nshow(result)\n"},
+      "oracle": {"numeric_result": 11, "requires_binding_reference": "result", "side_effects": ["show"]}
+    }
+  ]
+}

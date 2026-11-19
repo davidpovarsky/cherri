@@ -1,0 +1,38 @@
+{
+  "source": "d7052f4568db26dba169bdefc72623e48c04968a",
+  "cases": [
+    {
+      "name": "unterminated",
+      "exit": 0,
+      "original_preserved": false,
+      "stdout": "Migrated and updated C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-migration-repro-5q966yny\\unterminated.cherri successfully.\n",
+      "stderr": "",
+      "before": "@value = \"unterminated\n",
+      "after": "let value = \"unterminated",
+      "before_sha256": "b8b6473899a651cd337963e717530705da139a0ceccbf7eece8c09c2cb0bfe49",
+      "after_sha256": "fad15a90b50e46639780be9a407bbb1e846d4ee86d799835a12c925b6c234cf9"
+    },
+    {
+      "name": "missing_operand",
+      "exit": 0,
+      "original_preserved": false,
+      "stdout": "Migrated and updated C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-migration-repro-5q966yny\\missing_operand.cherri successfully.\n",
+      "stderr": "",
+      "before": "@value = 1 +\n",
+      "after": "let value = 1 +",
+      "before_sha256": "59df46de6cae8753495de092be5fc1570a7ba9a936e771f176208f8f7c37347c",
+      "after_sha256": "1a5ea2e5bbd37dc3a9a227c71adbb170f3caf2b7a34c6ef0f9d9335447842ffd"
+    },
+    {
+      "name": "healthy",
+      "exit": 0,
+      "original_preserved": false,
+      "stdout": "Migrated and updated C:\\Users\\DAVID\\AppData\\Local\\Temp\\cherri-migration-repro-5q966yny\\healthy.cherri successfully.\n",
+      "stderr": "",
+      "before": "@value = 1\nshow(@value)\n",
+      "after": "let value = 1\n\nshow(value)\n",
+      "before_sha256": "2484be84bdecce3026a49e3682684e4e741b66fe1355f977af1c722d5ddb1fdd",
+      "after_sha256": "6ccaf3e2d6afe02f099af1dc6dcdc4e4908661565a35e0fff29eca994529c4d7"
+    }
+  ]
+}
