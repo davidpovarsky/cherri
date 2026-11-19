@@ -1,0 +1,34 @@
+{
+  "name": "module-alias-working-fixed",
+  "moduleProductionBase": "6439bd425a43ad8cb4ce97b95564f99ecd7fb62e",
+  "sourceState": "shared-source and semantic-alias working repairs",
+  "testSha256": "9cda07c9735e496d3a11e5807ac6053a40eb0e488dbe8a8b3436e529c4c03dc0",
+  "command": [
+    "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15IM01ModuleAliasCasePreservesNamespace|TestP15IM01UppercaseModuleRejectsUnexportedCallable|TestP15C04|TestP15Enum)",
+    "."
+  ],
+  "exitCode": 1,
+  "seconds": 31.803,
+  "bytes": 62925,
+  "sha256": "3c8c339b5d44b4f06317b50ff7e0dc41a53f0c57b639a2bddfa8b68d22b85144",
+  "named": {
+    "run": 76,
+    "pass": 74,
+    "fail": 2,
+    "skip": 0
+  },
+  "failures": [
+    "TestP15IM01ModuleAliasCasePreservesNamespace/uppercase_modules",
+    "TestP15IM01ModuleAliasCasePreservesNamespace"
+  ],
+  "diagnostics": [
+    "    p15_module_alias_case_test.go:37: module dispatch identities missing or collapsed: {markerDispatch:map[] mainCalls:[module:a.cherri::value module:b.cherri::value] bodyCalls:map[]}\n"
+  ]
+}

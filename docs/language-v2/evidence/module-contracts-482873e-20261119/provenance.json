@@ -1,0 +1,65 @@
+{
+  "formatVersion": 1,
+  "finalSource": "482873e3b3776be7178c32977f6038559ce03d8d",
+  "sourceTree": "72714ea2697689d749782b8dd1420ebab0e44f41",
+  "transfer": {
+    "bytes": 82666,
+    "sha256": "bb5619e87b51afe33f4c1505c0da496d5ebed6bee33603bf2e99ca26538df1e1",
+    "linuxAndWindowsHashesMatch": true,
+    "zipOutsideGit": true
+  },
+  "sameFinalBaselineTest": {
+    "path": "p15_module_contracts_test.go",
+    "sha256": "fbea638c49126cf448bf829ccb2a0f8d921fd005679ddd4c3d3688123b3e15d8"
+  },
+  "sourceChangedPaths": [
+    ".gitattributes",
+    "action.go",
+    "internal/language/analysis/analyzer.go",
+    "internal/language/analysis/module_imports.go",
+    "internal/language/lower/lower.go",
+    "internal/language/lower/module_scope.go",
+    "internal/language/lower/workspace_module.go",
+    "internal/language/modules/graph.go",
+    "internal/language/modules/standard_library.go",
+    "internal/language/modules/stdfunc_source_generated.go",
+    "internal/language/service/module_analysis.go",
+    "internal/language/service/p15_stdfunc_direct_test.go",
+    "internal/language/service/service.go",
+    "internal/language/workspace/resource.go",
+    "internal/language/workspace/resource_test.go",
+    "internal/language/workspace/resource_unix_test.go",
+    "language_emit_adapter.go",
+    "p15_module_alias_case_test.go",
+    "p15_module_contracts_test.go",
+    "p15_module_std_source_test.go",
+    "tools/language-stdlib/main.go"
+  ],
+  "contracts": [
+    {
+      "path": "tests/language-v2/acceptance-contract.json",
+      "bytes": 31418,
+      "sha256": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+      "unchanged": true
+    },
+    {
+      "path": "tests/language-v2/repair-regression-plan.json",
+      "bytes": 35665,
+      "sha256": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+      "unchanged": true
+    },
+    {
+      "path": "tests/language-v2/backend-recovery-gates.json",
+      "bytes": 29212,
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+      "unchanged": true
+    }
+  ],
+  "rawEvidenceWhitespaceExceptions": {
+    "paths": [
+      "linux/build-info.txt",
+      "linux/build-info-482873e.txt"
+    ],
+    "reason": "Unmodified go version -m output ends its module row with a tab; original bytes and digests are retained. All other staged archive paths pass the normal whitespace check."
+  }
+}
