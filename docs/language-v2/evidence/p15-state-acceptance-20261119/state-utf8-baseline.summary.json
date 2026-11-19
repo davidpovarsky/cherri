@@ -1,0 +1,15 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=2m",
+    "-run",
+    "^TestBackendStateRaceIntakeActualArchive$/^raw_invalid_utf8$",
+    "./tools/language-acceptance"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 27.70300000003772,
+  "raw_sha256": "8d04d7404c16c5efb1dc73255f693e2639fc17ee8a50a58630705c4a8094ee21"
+}
