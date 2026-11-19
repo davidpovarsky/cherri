@@ -90,22 +90,60 @@ final class CherriEditorUITests: XCTestCase {
         }
     }
 
+    /// Startup receipts contain only fixed control state, including before a reset.
+    /// They never inspect a restored document's source, title, or accessibility tree.
+    private func recordStartupReceipt(stage: String, waitCompleted: Bool) {
+        guard let app else { return }
+        let editor = app.textViews["cherriCodeEditor"]
+        let createDoc = app.buttons["Create Document"]
+        let nameSeparators = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_")).inverted
+        let method = name.components(separatedBy: nameSeparators).first { $0.hasPrefix("test") } ?? "unknown"
+        let receipt: [String: Any] = [
+            "schemaVersion": "1.0",
+            "testName": "CherriEditorUITests/\(method)",
+            "stage": stage,
+            "waitCompleted": waitCompleted,
+            "windowExists": app.windows.firstMatch.exists,
+            "appRunningForeground": app.state == .runningForeground,
+            "createDocumentExists": createDoc.exists,
+            "createDocumentHittable": createDoc.exists && createDoc.isHittable,
+            "editorExists": editor.exists,
+            "editorHittable": editor.exists && editor.isHittable,
+        ]
+        if let bytes = try? JSONSerialization.data(withJSONObject: receipt, options: [.sortedKeys]),
+           let json = String(data: bytes, encoding: .utf8) {
+            print("[CHERRI_UI_STARTUP] \(json)")
+        }
+    }
+
     @discardableResult
     private func ensureEditorReady() -> XCUIElement {
         let window = app.windows.firstMatch
-        XCTAssertTrue(window.waitForExistence(timeout: 10), "Main application window must exist")
+        let windowReady = window.waitForExistence(timeout: 10)
+        recordStartupReceipt(stage: "window-wait", waitCompleted: windowReady)
+        XCTAssertTrue(windowReady, "Main application window must exist")
 
         let editor = app.textViews["cherriCodeEditor"]
         if editor.waitForExistence(timeout: 2) {
+            recordStartupReceipt(stage: "editor-wait", waitCompleted: true)
             return editor
         }
 
         let createDoc = app.buttons["Create Document"]
-        if createDoc.waitForExistence(timeout: 6) && createDoc.isHittable {
+        // DocumentGroup can expose the button before its transition allows a tap.
+        // Wait for both properties instead of abandoning creation on one snapshot.
+        let creationReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            createDoc.exists && createDoc.isHittable
+        }, object: createDoc)
+        let canCreateDocument = XCTWaiter.wait(for: [creationReady], timeout: 6) == .completed
+        recordStartupReceipt(stage: "document-wait", waitCompleted: canCreateDocument)
+        if canCreateDocument {
             createDoc.tap()
         }
 
-        XCTAssertTrue(editor.waitForExistence(timeout: 10), "cherriCodeEditor must exist in workspace")
+        let editorReady = editor.waitForExistence(timeout: 10)
+        recordStartupReceipt(stage: "editor-wait", waitCompleted: editorReady)
+        XCTAssertTrue(editorReady, "cherriCodeEditor must exist in workspace")
         return editor
     }
 

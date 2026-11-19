@@ -78,6 +78,10 @@ BOOL_FIELDS = {
 }
 CHECKPOINTS = {entry[2] for entry in ui_test_map.values()} | {"[CHECKPOINT:EDITOR_TYPED_SOURCE_EXACT]", "[CHECKPOINT:E01_PALETTE_EXACT]"}
 RECEIPT_PREFIX = "[CHERRI_UI_RECEIPT] "
+STARTUP_PREFIX = "[CHERRI_UI_STARTUP] "
+STARTUP_STAGES = {"window-wait", "document-wait", "editor-wait"}
+STARTUP_BOOL_FIELDS = {"waitCompleted", "windowExists", "appRunningForeground",
+                       "createDocumentExists", "createDocumentHittable", "editorExists", "editorHittable"}
 INPUT_PREFIX = "[CHERRI_INPUT_RECEIPT] "
 RUNTIME_PREFIX = "[CHERRI_NATIVE_RUNTIME_EVENT] "
 INPUT_FIXTURES = {"nested-call", "list", "dictionary", "curly-block", "block-comment"}
@@ -126,6 +130,22 @@ def safe_receipt(line):
     else:
         receipt["sourceOmittedReason"] = "EMPTY_RESET_NOT_VERIFIED"
     return receipt
+
+
+def safe_startup_receipt(line, active_test):
+    try:
+        raw = json.loads(line[len(STARTUP_PREFIX):])
+    except (ValueError, TypeError):
+        return None
+    if (not isinstance(raw, dict) or raw.get("schemaVersion") != "1.0"
+            or not isinstance(active_test, str) or not TEST_NAME.fullmatch(active_test)
+            or raw.get("testName") != active_test
+            or not isinstance(raw.get("stage"), str) or raw["stage"] not in STARTUP_STAGES
+            or any(type(raw.get(key)) is not bool for key in STARTUP_BOOL_FIELDS)):
+        return None
+    # Startup has not established an empty document. Even a forged reset flag
+    # cannot authorize source, document names, AX labels, or an arbitrary tree.
+    return {key: raw[key] for key in ("schemaVersion", "testName", "stage", *sorted(STARTUP_BOOL_FIELDS))}
 
 
 def safe_input_receipt(line, active_test):
@@ -182,6 +202,7 @@ def bounded_log(raw_text):
     case_events = 0
     input_events = 0
     runtime_events = 0
+    startup_events = 0
     active_test = None
     for raw_line in raw_text.splitlines():
         line = raw_line.strip()
@@ -190,6 +211,11 @@ def bounded_log(raw_text):
             case_events += 1
             if case_events <= 512:
                 lines.append(line)
+        elif line.startswith(STARTUP_PREFIX) and startup_events < 64:
+            receipt = safe_startup_receipt(line, active_test)
+            if receipt:
+                startup_events += 1
+                lines.append(STARTUP_PREFIX + json.dumps(receipt, sort_keys=True))
         elif line.startswith(INPUT_PREFIX) and input_events < 512:
             receipt = safe_input_receipt(line, active_test)
             if receipt:
@@ -345,10 +371,11 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path):
         "xcodebuildExitCode": xcode_exit, "runStatus": run_status,
         "rawLogPresent": raw_present, "sanitizedLogSha256": log_sha,
         "testResults": test_results, "uiReceipts": receipts, "uiFailures": failures,
+        "startupReceipts": [json.loads(line[len(STARTUP_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_PREFIX)],
         "inputReceipts": [json.loads(line[len(INPUT_PREFIX):]) for line in log_text.splitlines() if line.startswith(INPUT_PREFIX)],
         "nativeRuntimeEvents": [json.loads(line[len(RUNTIME_PREFIX):]) for line in log_text.splitlines() if line.startswith(RUNTIME_PREFIX)],
         "privacy": {"rawLogsPublished": False, "screenshotsPublished": False,
-                    "sourceRequiresVerifiedEmptyReset": True},
+                    "sourceRequiresVerifiedEmptyReset": True, "startupReceiptsContainOnlyKnownControlState": True},
     }
     (output_dir / "ios-test-diagnostics.json").write_text(json.dumps(diagnostic, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     (output_dir / "ios-test-evidence.json").write_text(json.dumps({"records": records}, indent=2) + "\n", encoding="utf-8")

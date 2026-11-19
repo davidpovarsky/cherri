@@ -135,6 +135,65 @@ class IOSTestEvidenceTests(unittest.TestCase):
         _, _, outputs = self.collect(self.block(status="failed", body=self.receipt(actualSource="x" * 16385)), 65)
         self.assertNotIn("x" * 16385, "".join(outputs.values()))
 
+    def startup_receipt(self, **updates):
+        value = {"schemaVersion": "1.0", "testName": f"CherriEditorUITests/{self.ui_method}",
+                 "stage": "document-wait", "waitCompleted": False,
+                 "windowExists": True, "appRunningForeground": True,
+                 "createDocumentExists": True, "createDocumentHittable": False,
+                 "editorExists": False, "editorHittable": False}
+        value.update(updates)
+        return "[CHERRI_UI_STARTUP] " + json.dumps(value, ensure_ascii=False)
+
+    def test_startup_receipts_capture_only_known_state_without_source(self):
+        secret = "PRIVATE_STARTUP_CANARY document label and restored source"
+        for stage in ("window-wait", "document-wait", "editor-wait"):
+            with self.subTest(stage=stage):
+                receipt = self.startup_receipt(stage=stage, actualSource=secret, expectedSource=secret,
+                                               documentLabel=secret, accessibilityTree=secret,
+                                               syntheticSourceResetVerified=True)
+                diagnostic, records, outputs = self.collect(self.block(status="failed", body=receipt), 65)
+                saved = diagnostic.get("startupReceipts", [])
+                self.assertEqual(len(saved), 1)
+                self.assertEqual(saved[0], {
+                    "schemaVersion": "1.0", "testName": f"CherriEditorUITests/{self.ui_method}",
+                    "stage": stage, "waitCompleted": False, "windowExists": True,
+                    "appRunningForeground": True, "createDocumentExists": True,
+                    "createDocumentHittable": False, "editorExists": False, "editorHittable": False})
+                self.assertNotIn(secret, "".join(outputs.values()))
+                self.assertEqual(records, [])
+
+    def test_startup_receipts_require_active_case_exact_stage_and_boolean_types(self):
+        diagnostic, _, _ = self.collect(self.block(status="failed", body=self.startup_receipt()), 65)
+        self.assertEqual(len(diagnostic.get("startupReceipts", [])), 1)
+        for changes in ({"schemaVersion": "2"}, {"testName": "CherriEditorUITests/testOther"},
+                        {"stage": "PRIVATE_STAGE"}, {"stage": ["document-wait"]},
+                        {"waitCompleted": 1}, {"windowExists": "true"}, {"editorExists": None},
+                        {"appRunningForeground": 0}, {"createDocumentExists": "PRIVATE_VALUE"},
+                        {"createDocumentHittable": 1}, {"editorHittable": {}}):
+            with self.subTest(changes=changes):
+                diagnostic, records, outputs = self.collect(
+                    self.block(status="failed", body=self.startup_receipt(**changes)), 65)
+                self.assertEqual(diagnostic.get("startupReceipts", []), [])
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_", "".join(outputs.values()))
+        diagnostic, _, _ = self.collect(self.startup_receipt(), 65)
+        self.assertEqual(diagnostic.get("startupReceipts", []), [])
+
+    def test_startup_receipts_have_a_separate_bound_from_synthetic_source_receipts(self):
+        startup = "\n".join(self.startup_receipt() for _ in range(80))
+        diagnostic, _, _ = self.collect(self.block(status="failed", body=startup + "\n" + self.receipt()), 65)
+        self.assertEqual(len(diagnostic.get("startupReceipts", [])), 64)
+        self.assertEqual(len(diagnostic["uiReceipts"]), 1)
+        self.assertEqual(diagnostic["uiReceipts"][0]["actualSource"], 'text("שלום 🌍")\n')
+
+    def test_startup_receipt_cannot_replace_behavioral_checkpoint(self):
+        receipt = self.startup_receipt(stage="editor-wait", waitCompleted=True,
+                                       editorExists=True, editorHittable=True,
+                                       checkpoint=self.checkpoint)
+        diagnostic, records, _ = self.collect(self.block(body=receipt))
+        self.assertEqual(len(diagnostic.get("startupReceipts", [])), 1)
+        self.assertEqual(records, [])
+
     def input_receipt(self, **updates):
         value = {"schemaVersion": "1.0", "testName": "CherriEditorInputTests/testNestedGeneratedClosersAndCompleteRealInput",
                  "isolatedSyntheticEditor": True, "fixtureId": "nested-call", "stage": "before-key",
