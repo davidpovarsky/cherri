@@ -26,6 +26,7 @@ MANIFEST = "docs/apple-runtime/p10r15/native-continuation-probe-manifest.json"
 # Reviewed synthetic selectors use their immutable orchestration contract.
 # They never derive the expected result from the downloaded artifact.
 REVIEWED_SELECTORS = {
+    "qa-export-unicode-diagnostic-v2": "qa-export-unicode-diagnostic",
     "qa-collect-empty-split-v2": "qa-collect-empty-split",
     "qa-collect-counts-v2": "qa-collect-counts-v2",
     "qa-nil-clear-v2": "qa-nil-clear",

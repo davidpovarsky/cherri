@@ -1,5 +1,8 @@
 """Strict dispatch and callback contracts for the next causal native split."""
 import ast
+import base64
+import hashlib
+import json
 import os
 import re
 from pathlib import Path
@@ -12,6 +15,7 @@ from fixture_compile_contract import EXPECTED_REJECTIONS
 
 
 CASES = {
+    "qa-export-unicode-diagnostic-v2": "CHERRI_QA_EXPORT_UNICODE_DIAG:TYPE=Y:NAME=Y:COUNT=Y:STATUS=Y:PAYLOAD=Y:RESTORED_EQ=Y:RESTORED_NE=N:LITERAL_EQ=Y:LITERAL_NE=N:UNCHANGED=Y:ORIGINAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:PAYLOAD_TEXT64=Y1hWdmRHVWdJaUJpWVdOcmMyeGhjMmdnWENCdVpYZHNhVzVsQ2tobFluSmxkeURYcWRhNDE0SFhuTmVWMXJuWG5TQmphR1Z5Y25rZzhKK05raUIwYjJ0bGJpQlRXVTVVU0VWVVNVTmZVMFZEVWtWVQ==:DECODED_FILE64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:RESTORED64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:LITERAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:AFTER64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:NAME64=Y2hlcnJpLWRlYnVnLmpzb24=:STATUS64=VEVYVF9QQVlMT0FEX0VOQ09ERUQ=",
     "qa-number-coercion-control-v2": "CHERRI_QA_NUMBER_COERCION_RESULT:DEQ=Y:DNE=N:REQ=Y:RNE=N:BEQ=Y:BNE=N:ONE_NE_ZERO=Y:ZERO_NE_ONE=Y:ONE_EQ_ONE=Y",
     "qa-nil-clear-v2": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
     "qa-require-zero-diag-v2": "CHERRI_QA_REQUIRE_ZERO_DIAG:L=ok:D=ok:R=ok:B=ok",
@@ -94,6 +98,43 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
                 manifest = self.oracle.manifest(fid)
                 manifest["fixtures"][0].update(buildProfile="release", runtimeTraceExpectation="ABSENT_RELEASE")
                 self.assertEqual(self.oracle.verify([event], fid, expected, manifest)["runGate"], "FAIL_RUNTIME")
+
+    def test_unicode_byte_witnesses_are_independent_and_required(self):
+        fid = "qa-export-unicode-diagnostic-v2"
+        contract = json.loads((self.root / "docs/apple-runtime/p10r15/export-unicode-diagnostic-contract.json").read_text(encoding="utf-8"))
+        original = self.root / "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/qa-export-unicode-v2.cherri"
+        self.assertEqual(hashlib.sha256(original.read_bytes()).hexdigest(),
+                         "073c2d4fbbe461f35b17796e4fef814f65f85a71acd0a5efa9ad0f195287b079")
+        source = self.root / "tools/shortcuts-simulator-qa/fixtures" / (fid + ".cherri")
+        self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), contract["fixtureSha256"])
+        expected = CASES[fid]
+        self.assertEqual(expected, contract["expectedCallbackSummary"])
+        self.assertIs(contract["diagnosticOnly"], True)
+        self.assertIs(contract["formalAcceptanceGranted"], False)
+        literal = base64.b64decode(contract["expectedOriginalBase64"], validate=True)
+        self.assertEqual(len(literal), 84)
+        self.assertEqual(literal.decode("utf-8"),
+                         'quote " backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET')
+        event = self.oracle.event()
+        event.update(fixtureId=fid, expectedShortcutName=fid, resultSummary=expected)
+        event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+        fields = dict(item.split("=", 1) for item in expected.split(":")[1:])
+        self.assertEqual(len(contract["byteWitnesses"]), 8)
+        for witness in contract["byteWitnesses"]:
+            key, correct = witness["name"], witness["expectedBase64"]
+            with self.subTest(witness=key):
+                self.assertEqual(fields[key], correct)
+                self.assertLessEqual(len(correct), 512)
+                base64.b64decode(correct, validate=True)
+                for altered in ("OVERSIZE", "AQ==", correct[:-1], "A" * 513):
+                    wrong = expected.replace(":" + key + "=" + correct, ":" + key + "=" + altered)
+                    self.assertNotEqual(wrong, expected)
+                    self.assertEqual(self.oracle.verify([{**event, "resultSummary": wrong}], fid, expected)["runGate"],
+                                     "FAIL_RUNTIME")
+        self.assertEqual(base64.b64decode(fields["PAYLOAD_TEXT64"]).decode("ascii"),
+                         contract["expectedOriginalBase64"])
+        self.assertEqual(base64.b64decode(fields["NAME64"]), b"cherri-debug.json")
+        self.assertEqual(base64.b64decode(fields["STATUS64"]), b"TEXT_PAYLOAD_ENCODED")
 
     def test_f04_flattening_dropped_empties_and_inner_value_loss_are_rejected(self):
         wrong_results = {

@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "1.0",
+  "fixtureId": "qa-export-unicode-diagnostic-v2",
+  "sampleId": "qa-export-unicode-diagnostic",
+  "basedOnCompilerSource": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+  "diagnosticOnly": true,
+  "formalAcceptanceGranted": false,
+  "originalAcceptanceFixture": "p15-export-probes/qa-export-unicode-v2.cherri",
+  "originalFailureRunId": 44435457189,
+  "fixtureSha256": "4bbf88356f04bbf7ad2f07c1cc30874e611a0bcd7314a38c82a56b1ba5eeb3aa",
+  "publicLiteralUTF8Bytes": 84,
+  "expectedOriginalBase64": "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU",
+  "maximumCharactersPerByteWitness": 512,
+  "expectedCallbackSummary": "CHERRI_QA_EXPORT_UNICODE_DIAG:TYPE=Y:NAME=Y:COUNT=Y:STATUS=Y:PAYLOAD=Y:RESTORED_EQ=Y:RESTORED_NE=N:LITERAL_EQ=Y:LITERAL_NE=N:UNCHANGED=Y:ORIGINAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:PAYLOAD_TEXT64=Y1hWdmRHVWdJaUJpWVdOcmMyeGhjMmdnWENCdVpYZHNhVzVsQ2tobFluSmxkeURYcWRhNDE0SFhuTmVWMXJuWG5TQmphR1Z5Y25rZzhKK05raUIwYjJ0bGJpQlRXVTVVU0VWVVNVTmZVMFZEVWtWVQ==:DECODED_FILE64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:RESTORED64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:LITERAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:AFTER64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:NAME64=Y2hlcnJpLWRlYnVnLmpzb24=:STATUS64=VEVYVF9QQVlMT0FEX0VOQ09ERUQ=",
+  "flags": [
+    {
+      "name": "TYPE",
+      "variable": "typeFlag",
+      "condition": "artifactType == expectedFileType",
+      "expected": "Y"
+    },
+    {
+      "name": "NAME",
+      "variable": "nameFlag",
+      "condition": "artifactName == \"cherri-debug.json\"",
+      "expected": "Y"
+    },
+    {
+      "name": "COUNT",
+      "variable": "countFlag",
+      "condition": "entryCount.number == 1",
+      "expected": "Y"
+    },
+    {
+      "name": "STATUS",
+      "variable": "statusFlag",
+      "condition": "status == \"TEXT_PAYLOAD_ENCODED\"",
+      "expected": "Y"
+    },
+    {
+      "name": "PAYLOAD",
+      "variable": "payloadFlag",
+      "condition": "payloadValue == \"cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU\"",
+      "expected": "Y"
+    },
+    {
+      "name": "RESTORED_EQ",
+      "variable": "restoredEq",
+      "condition": "restoredText == original",
+      "expected": "Y"
+    },
+    {
+      "name": "RESTORED_NE",
+      "variable": "restoredNe",
+      "condition": "restoredText != original",
+      "expected": "N"
+    },
+    {
+      "name": "LITERAL_EQ",
+      "variable": "literalEq",
+      "condition": "literalText == original",
+      "expected": "Y"
+    },
+    {
+      "name": "LITERAL_NE",
+      "variable": "literalNe",
+      "condition": "literalText != original",
+      "expected": "N"
+    },
+    {
+      "name": "UNCHANGED",
+      "variable": "unchangedFlag",
+      "condition": "originalAfter == original",
+      "expected": "Y"
+    }
+  ],
+  "byteWitnesses": [
+    {
+      "name": "ORIGINAL64",
+      "variable": "original64",
+      "sourceValue": "original",
+      "expectedBase64": "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU"
+    },
+    {
+      "name": "PAYLOAD_TEXT64",
+      "variable": "payloadText64",
+      "sourceValue": "payloadValue",
+      "expectedBase64": "Y1hWdmRHVWdJaUJpWVdOcmMyeGhjMmdnWENCdVpYZHNhVzVsQ2tobFluSmxkeURYcWRhNDE0SFhuTmVWMXJuWG5TQmphR1Z5Y25rZzhKK05raUIwYjJ0bGJpQlRXVTVVU0VWVVNVTmZVMFZEVWtWVQ=="
+    },
+    {
+      "name": "DECODED_FILE64",
+      "variable": "decodedFile64",
+      "sourceValue": "restoredFile",
+      "expectedBase64": "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU"
+    },
+    {
+      "name": "RESTORED64",
+      "variable": "restored64",
+      "sourceValue": "restoredText",
+      "expectedBase64": "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU"
+    },
+    {
+      "name": "LITERAL64",
+      "variable": "literal64",
+      "sourceValue": "literalText",
+      "expectedBase64": "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU"
+    },
+    {
+      "name": "AFTER64",
+      "variable": "after64",
+      "sourceValue": "originalAfter",
+      "expectedBase64": "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU"
+    },
+    {
+      "name": "NAME64",
+      "variable": "name64",
+      "sourceValue": "artifactName",
+      "expectedBase64": "Y2hlcnJpLWRlYnVnLmpzb24="
+    },
+    {
+      "name": "STATUS64",
+      "variable": "status64",
+      "sourceValue": "status",
+      "expectedBase64": "VEVYVF9QQVlMT0FEX0VOQ09ERUQ="
+    }
+  ],
+  "scopeLimitations": [
+    "A diagnostic mismatch preserves the original export failure.",
+    "EQ and NE are observed independently to separate comparison behavior from byte differences.",
+    "The literal-decode control shares the same native decode/Get Text boundary without production export.",
+    "No external input, private payload or arbitrary file is read."
+  ]
+}
