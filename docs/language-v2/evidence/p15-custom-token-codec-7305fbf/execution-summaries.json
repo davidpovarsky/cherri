@@ -1,0 +1,168 @@
+{
+  "baseline-oracle-corrected-summary.json": {
+    "source_sha": "a432646e28c419d91995927a5eb3d34db1337466",
+    "source_status_before": "?? p15_custom_codec_acceptance_test.go\n",
+    "source_status_after": "?? p15_custom_codec_acceptance_test.go\n",
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-p=1",
+      "-count=1",
+      "-json",
+      "-timeout=4m",
+      "-run",
+      "^TestP15Custom(TokenCodec.*|CodecSharedReferenceCausality)$",
+      "."
+    ],
+    "exit_code": 1,
+    "timed_out": false,
+    "seconds": 16.239,
+    "named_tests": {
+      "fail": 11,
+      "pass": 4
+    },
+    "failed": [
+      "TestP15CustomTokenCodecCanonicalParity/text_positional",
+      "TestP15CustomTokenCodecCanonicalParity/text_named",
+      "TestP15CustomTokenCodecCanonicalParity/empty_text",
+      "TestP15CustomTokenCodecCanonicalParity/zero",
+      "TestP15CustomTokenCodecCanonicalParity/fraction",
+      "TestP15CustomTokenCodecCanonicalParity/false",
+      "TestP15CustomTokenCodecCanonicalParity/default_text",
+      "TestP15CustomTokenCodecCanonicalParity/default_zero",
+      "TestP15CustomTokenCodecCanonicalParity",
+      "TestP15CustomTokenCodecSecondaryAndImplicitBindings",
+      "TestP15CustomTokenCodecPublicRoutes"
+    ],
+    "skipped": [],
+    "log_bytes": 15635,
+    "log_sha256": "bdc4653724359f65d850a4f78b68a1d5bc6fb79dd4dd204aa84618d71ab813f1",
+    "invalid_json": [],
+    "available_bytes_before": 3462242304
+  },
+  "baseline-summary.json": {
+    "source_sha": "a432646e28c419d91995927a5eb3d34db1337466",
+    "source_status_before": "?? p15_custom_codec_acceptance_test.go\n",
+    "source_status_after": "?? p15_custom_codec_acceptance_test.go\n",
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-p=1",
+      "-count=1",
+      "-json",
+      "-timeout=4m",
+      "-run",
+      "^TestP15Custom(TokenCodec.*|CodecSharedReferenceCausality)$",
+      "."
+    ],
+    "exit_code": 1,
+    "timed_out": false,
+    "seconds": 32.972,
+    "named_tests": {
+      "fail": 12,
+      "pass": 3
+    },
+    "failed": [
+      "TestP15CustomTokenCodecCanonicalParity/text_positional",
+      "TestP15CustomTokenCodecCanonicalParity/text_named",
+      "TestP15CustomTokenCodecCanonicalParity/empty_text",
+      "TestP15CustomTokenCodecCanonicalParity/zero",
+      "TestP15CustomTokenCodecCanonicalParity/fraction",
+      "TestP15CustomTokenCodecCanonicalParity/false",
+      "TestP15CustomTokenCodecCanonicalParity/default_text",
+      "TestP15CustomTokenCodecCanonicalParity/default_zero",
+      "TestP15CustomTokenCodecCanonicalParity/producer_reference",
+      "TestP15CustomTokenCodecCanonicalParity",
+      "TestP15CustomTokenCodecSecondaryAndImplicitBindings",
+      "TestP15CustomTokenCodecPublicRoutes"
+    ],
+    "skipped": [],
+    "log_bytes": 16045,
+    "log_sha256": "b10e07a8b5a2d3de03338d7cf346c2319958e6eb106c13dd51afe313e6be0b26",
+    "invalid_json": [],
+    "available_bytes_before": 3148230656
+  },
+  "candidate-summary.json": {
+    "source_sha": "a432646e28c419d91995927a5eb3d34db1337466",
+    "source_status_before": " M internal/language/lower/lower.go\n?? internal/language/lower/parameter_codecs.go\n?? p15_custom_codec_acceptance_test.go\n",
+    "source_status_after": " M internal/language/lower/lower.go\n?? internal/language/lower/parameter_codecs.go\n?? p15_custom_codec_acceptance_test.go\n",
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-p=1",
+      "-count=1",
+      "-json",
+      "-timeout=4m",
+      "-run",
+      "^TestP15Custom(TokenCodec.*|CodecSharedReferenceCausality)$",
+      "."
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "seconds": 23.497,
+    "named_tests": {
+      "pass": 16
+    },
+    "failed": [],
+    "skipped": [],
+    "log_bytes": 13636,
+    "log_sha256": "f650ac3d5b1681a782d0ace2dd9c1a123b46acf14dca12e2c3033376581bdb66",
+    "invalid_json": [],
+    "available_bytes_before": 3618824192
+  },
+  "clean-7305-packages-summary.json": {
+    "source_sha": "7305fbf8774738bd8c18394ee69a21bdddd49d66",
+    "source_status_before": "",
+    "source_status_after": "",
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-p=1",
+      "-count=1",
+      "-json",
+      "-timeout=4m",
+      "./internal/language/lower",
+      "./internal/language/backend"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "seconds": 4.869,
+    "named_tests": {
+      "pass": 28
+    },
+    "failed": [],
+    "skipped": [],
+    "log_bytes": 27892,
+    "log_sha256": "fc93fb98c2e7b431ba87e5619a598a8daee75f5a8d7a59e4aa896dad19cc8d49",
+    "invalid_json": [],
+    "available_bytes_before": 3524837376
+  },
+  "clean-7305-related-summary.json": {
+    "source_sha": "7305fbf8774738bd8c18394ee69a21bdddd49d66",
+    "source_status_before": "",
+    "source_status_after": "",
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-p=1",
+      "-count=1",
+      "-json",
+      "-timeout=4m",
+      "-run",
+      "^(TestP15Custom.*Codec.*|TestP15C01.*|TestP15C02.*|TestP15T03.*|TestP15Registry.*|TestCompilerEndToEndParityMatrix|TestArchitecture_D_SharedCodecMaintenance)$",
+      "."
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "seconds": 18.317,
+    "named_tests": {
+      "pass": 131
+    },
+    "failed": [],
+    "skipped": [],
+    "log_bytes": 111635,
+    "log_sha256": "3327b1385b1749227ee00b668997a827ec2f8495de4f94714000a63ef4ba8b0e",
+    "invalid_json": [],
+    "available_bytes_before": 3414691840
+  }
+}
