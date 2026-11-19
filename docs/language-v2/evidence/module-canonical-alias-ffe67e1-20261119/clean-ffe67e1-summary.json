@@ -1,0 +1,28 @@
+{
+  "sourceProduction": "ffe67e1cc7c2363c813d9a32a1865b655597708f",
+  "sourceState": "exact clean commit",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15IM0[1345]|TestMODULES_|TestP15C01|TestP15C04|TestP15Enum|TestP15F0[134]|TestP15T06)",
+    "."
+  ],
+  "exitCode": 0,
+  "seconds": 41.75,
+  "bytes": 297339,
+  "sha256": "9d110ee223757d6f1828979308cbbc061d0e9d1e04e5c01fac4c46110c63bf6d",
+  "testSha256": "35628fc94d632e28a177fc7d77f88f1e2d43de403a94feb9d2a1ad17c70257b1",
+  "named": {
+    "run": 343,
+    "pass": 343,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": []
+}
