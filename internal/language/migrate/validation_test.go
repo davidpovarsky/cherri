@@ -11,6 +11,9 @@ import (
 
 func TestMigrationInvalidGeneratedSyntaxFailsClosed(t *testing.T) {
 	for _, input := range []string{"@value = \"unterminated\n", "@value = 1 +\n", "if @value {\n"} {
+		if !strings.HasSuffix(input, "\n") || strings.Contains(input, "\\n") {
+			t.Fatal("regression input must contain actual LF bytes, not escaped newline text")
+		}
 		var output, diagnostics, err = migrate.MigrateSourceWithDiagnostics(input)
 		if err == nil || output != "" || len(diagnostics) == 0 || !strings.Contains(err.Error(), "invalid V2 syntax") {
 			t.Fatalf("invalid conversion reported success: output=%q diagnostics=%+v error=%v", output, diagnostics, err)

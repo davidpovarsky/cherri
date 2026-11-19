@@ -17,6 +17,18 @@ type supplementalProductionScenario struct {
 // These are independent executions of the complete supplemental scenarios.
 // Related original IDs are navigation only and never supply an inherited pass.
 var supplementalProductionScenarios = map[string]supplementalProductionScenario{
+	"RP04": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15RP04CheckedCompileRejectsSemanticErrors"},
+		Tiers:           []string{"unit", "cli", "embedded"},
+		ProductionPaths: []string{"language_cli_adapter.go", "language_emit_adapter.go", "mobile_compiler.go", "internal/language/analysis/analyzer.go", "p15_checked_compile_contract_test.go"},
+	},
+	"RP34": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15RP34RejectedMigrationPreservesOriginal", "TestP15RP34ActualWriteFailurePreservesOriginal"},
+		Tiers:           []string{"integration", "negative"},
+		ProductionPaths: []string{"language_cli_adapter.go", "internal/language/migrate/migrate.go", "p15_migration_atomic_contract_test.go"},
+	},
 	"RP05": {
 		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
 		TestNames:       []string{"TestP15RP05LiteralPublicRoutes"},

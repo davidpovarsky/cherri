@@ -408,24 +408,32 @@ func CompileFileV2(filePath string, targetOutPath string, skipSign bool) error {
 	// An explicit unsigned destination is the complete output contract. Do not
 	// overwrite a sibling source artifact while callers stage a verified build.
 	if skipSign && targetOutPath != "" {
-		return os.WriteFile(targetOutPath, plistBytes, 0644)
+		return atomicWriteFile(targetOutPath, plistBytes, 0644)
 	}
-	unsignedPath := base + "_unsigned.shortcut"
-	if err := os.WriteFile(unsignedPath, plistBytes, 0644); err != nil {
-		return err
-	}
-
 	if targetOutPath == "" {
 		targetOutPath = base + ".shortcut"
 	}
-
 	if skipSign {
+		var unsignedPath = base + "_unsigned.shortcut"
+		if err := atomicWriteFile(unsignedPath, plistBytes, 0644); err != nil {
+			return err
+		}
 		if targetOutPath != unsignedPath {
-			if err := os.WriteFile(targetOutPath, plistBytes, 0644); err != nil {
-				return err
-			}
+			return atomicWriteFile(targetOutPath, plistBytes, 0644)
 		}
 		return nil
+	}
+
+	// Signing input is private scratch data. Keep any existing sibling unsigned
+	// artifact intact, and send these exact compiled bytes to the signer.
+	var stagingDir, stagingErr = os.MkdirTemp(filepath.Dir(targetOutPath), "cherri-compile-*")
+	if stagingErr != nil {
+		return fmt.Errorf("failed to create compilation staging directory: %w", stagingErr)
+	}
+	defer os.RemoveAll(stagingDir)
+	var unsignedPath = filepath.Join(stagingDir, filepath.Base(base)+"_unsigned.shortcut")
+	if err := os.WriteFile(unsignedPath, plistBytes, 0600); err != nil {
+		return err
 	}
 
 	// Prepare shortcut and basename for signing
@@ -438,12 +446,7 @@ func CompileFileV2(filePath string, targetOutPath string, skipSign bool) error {
 	}
 
 	if err := SignShortcut(unsignedPath, targetOutPath, signingMode); err != nil {
-		if targetOutPath != "" && targetOutPath != unsignedPath {
-			_ = os.Remove(targetOutPath)
-		}
 		return fmt.Errorf("signing failed: %w", err)
 	}
-
-	_ = os.Remove(unsignedPath)
 	return nil
 }

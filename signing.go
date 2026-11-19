@@ -31,17 +31,47 @@ var signFailed = false
 var signingServiceFailed = false
 var backoff = 10
 
-// SignShortcut signs the unsigned shortcut at inPath and writes the signed file to outPath.
+// SignShortcut signs into a private staging directory. A failed signer may
+// truncate or remove its output, so it must never receive the caller's existing
+// destination. Only a validated, complete result replaces that destination.
 func SignShortcut(inPath, outPath, mode string) error {
+	inputPath = inPath
+	outputPath = outPath
+	return signWithStagedOutput(outPath, func(stagedOutput string) error {
+		return signShortcutToStagedPath(inPath, stagedOutput, mode)
+	})
+}
+
+func signWithStagedOutput(outPath string, signTo func(string) error) error {
+	if strings.TrimSpace(outPath) == "" {
+		return fmt.Errorf("signed output shortcut path is empty")
+	}
+	var stagingDir, err = os.MkdirTemp(filepath.Dir(outPath), "cherri-sign-*")
+	if err != nil {
+		return fmt.Errorf("failed to create signing staging directory: %w", err)
+	}
+	defer os.RemoveAll(stagingDir)
+	var stagedOutput = filepath.Join(stagingDir, filepath.Base(outPath))
+	if err := signTo(stagedOutput); err != nil {
+		return err
+	}
+	var signedBytes, readErr = os.ReadFile(stagedOutput)
+	if readErr != nil {
+		return fmt.Errorf("failed to read staged signed shortcut: %w", readErr)
+	}
+	if _, err := ValidateSignedShortcutBytes(signedBytes); err != nil {
+		return fmt.Errorf("signed artifact validation failed: %w", err)
+	}
+	return atomicWriteFile(outPath, signedBytes, 0644)
+}
+
+func signShortcutToStagedPath(inPath, outPath, mode string) error {
 	if mode == "" {
 		mode = "people-who-know-me"
 		if args.Using("share") && args.Value("share") == "anyone" {
 			mode = "anyone"
 		}
 	}
-
-	inputPath = inPath
-	outputPath = outPath
 
 	if darwin && !args.Using("hubsign") && !args.Using("signing-server") {
 		if args.Using("debug") {
@@ -122,7 +152,9 @@ func sign() {
 }
 
 func useHubSign() {
-	if err := signPathWithHubSignCandidates(inputPath, outputPath); err != nil {
+	if err := signWithStagedOutput(outputPath, func(stagedOutput string) error {
+		return signPathWithHubSignCandidates(inputPath, stagedOutput)
+	}); err != nil {
 		exit(err.Error())
 	}
 }
@@ -135,7 +167,9 @@ type SigningService struct {
 
 // Sign the Shortcut using a signing service.
 func useSigningService(service *SigningService) {
-	if err := useSigningServiceExplicit(service, inputPath, outputPath); err != nil {
+	if err := signWithStagedOutput(outputPath, func(stagedOutput string) error {
+		return useSigningServiceExplicit(service, inputPath, stagedOutput)
+	}); err != nil {
 		exit(err.Error())
 	}
 }
@@ -699,24 +733,18 @@ func SignUnsignedShortcutFileWithProvenance(
 	}
 
 	if signErr != nil {
-		if unsignedPath != signedOutPath {
-			_ = os.Remove(signedOutPath)
-		}
 		return nil, signErr
 	}
 
 	tier, valErr := ValidateSignedShortcutBytes(signedBytes)
 	if valErr != nil {
-		if unsignedPath != signedOutPath {
-			_ = os.Remove(signedOutPath)
-		}
 		return nil, fmt.Errorf("signed artifact validation failed: %w", valErr)
 	}
 
 	if err := os.MkdirAll(filepath.Dir(signedOutPath), 0755); err != nil {
 		return nil, fmt.Errorf("failed to create output directory: %w", err)
 	}
-	if err := os.WriteFile(signedOutPath, signedBytes, 0600); err != nil {
+	if err := atomicWriteFile(signedOutPath, signedBytes, 0600); err != nil {
 		return nil, fmt.Errorf("failed to write signed shortcut to %s: %w", filepath.Base(signedOutPath), err)
 	}
 

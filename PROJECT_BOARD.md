@@ -39,6 +39,8 @@ Use Markdown checkboxes where useful:
 
 ## Done
 
+- [x] Preserve prior artifacts when P15 migration or signing fails (2026-11-19). Shared migration validation now rejects unparsable generated text before writing; public signing stages output and commits only after validation. Real failed/restored CLI and OS rename controls pass locally. Final clean-SHA acceptance and Apple gates remain separate; see [causal evidence and scope](docs/language-v2/p15-migration-signing-output-preservation-20261119.md).
+
 Completed items that are still useful to retain because they document an important decision, discovery, or implementation.
 
 Example:
