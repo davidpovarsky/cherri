@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/electrikmilk/cherri/internal/language/analysis"
 )
 
 func p15MeasureActions(t *testing.T, source string, profile BuildProfile) []ShortcutAction {
@@ -297,23 +299,34 @@ func TestP15_CollectUsesExistingRepeatResultsWithoutAccumulator(t *testing.T) {
 }
 
 func TestP15_CollectTypedBodyHasSingleNativeProducer(t *testing.T) {
-	for _, test := range []struct{ body, producer string }{
-		{`{"name": "typed", "flag": false}`, "dictionary"},
-		{`["nested", item]`, "list"},
+	for _, test := range []struct{ name, body string }{
+		{"record", `{"name": "typed", "flag": false}`},
+		{"record_with_list_field", `{"name": "typed", "items": ["nested", item]}`},
 	} {
-		source := "let result = for item in [1, 2] { yield " + test.body + " }\ngetVariable(result)"
-		actions := p15MeasureActions(t, source, BuildProfileDebug)
-		expected := 1
-		if test.producer == "list" {
-			expected++
-		} // one input List and one body List
-		if len(p15ActionsNamed(actions, test.producer)) != expected {
-			t.Fatalf("body producer duplicated/lost: %v", actionSuffixes(actions))
-		}
-		if len(p15ActionsNamed(actions, "appendvariable")) != 0 {
-			t.Fatal("typed collection added an accumulator")
-		}
+		t.Run(test.name, func(t *testing.T) {
+			source := "let result = for item in [1, 2] { yield " + test.body + " }\ngetVariable(result)"
+			actions := p15MeasureActions(t, source, BuildProfileDebug)
+			if len(p15ActionsNamed(actions, "dictionary")) != 1 || len(p15ActionsNamed(actions, "list")) != 1 {
+				t.Fatalf("record body or input List producer duplicated/lost: %v", actionSuffixes(actions))
+			}
+			if len(p15ActionsNamed(actions, "appendvariable")) != 0 {
+				t.Fatal("typed collection added an accumulator")
+			}
+		})
 	}
+	t.Run("list_result_rejected", func(t *testing.T) {
+		// Native F04 controls show flattening, so a single List producer does
+		// not establish one nested List result per iteration.
+		source := "let result = for item in [1, 2] { yield [\"nested\", item] }\ngetVariable(result)"
+		if err := p15ExactLiteralDiagnostic(p15TypeDiagnostics(t, source), source,
+			`["nested", item]`, analysis.CodeTargetValueShape); err != nil {
+			t.Fatal(err)
+		}
+		raw, err := CompileSourceToPlist("p15-collect-typed-boundary.cherri", source)
+		if err == nil || len(raw) != 0 || !strings.Contains(err.Error(), analysis.CodeTargetValueShape) {
+			t.Fatalf("unsupported List-valued result reached native emission: bytes=%d err=%v", len(raw), err)
+		}
+	})
 }
 
 func TestP15_MeasureAndCollectReusableFixturesCompile(t *testing.T) {
