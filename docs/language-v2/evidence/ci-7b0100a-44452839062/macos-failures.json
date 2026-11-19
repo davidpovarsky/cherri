@@ -1,0 +1,61 @@
+{
+  "runId": 44452839062,
+  "sourceCommit": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+  "jobId": 135320698583,
+  "logBytes": 1274080,
+  "logSha256": "85a204dcf8b6b8d730c95bec7c316f7ee3708fda062915e14a360b569408226d",
+  "failures": [
+    {
+      "line": 1886,
+      "text": "2026-11-19T03:58:42.8182360Z --- FAIL: TestLANG002_EnumAndTypeAliases (0.01s)",
+      "context": [
+        "2026-11-19T03:58:42.8178540Z     --- PASS: TestLANG001_ImportsAndCustomAction/CustomAction (0.00s)",
+        "2026-11-19T03:58:42.8178990Z === RUN   TestLANG002_EnumAndTypeAliases",
+        "2026-11-19T03:58:42.8179420Z === RUN   TestLANG002_EnumAndTypeAliases/ValidEnum",
+        "2026-11-19T03:58:42.8181080Z     metadata_matrix_test.go:273: expected quicklook input to be 'PRODUCTION', got {{ActionOutput  76289D87-A6AE-4EBB-AD73-F71300F19E63 Text <nil> <nil> [] map[]  [] } WFTextTokenAttachment}",
+        "2026-11-19T03:58:42.8181980Z === RUN   TestLANG002_EnumAndTypeAliases/InvalidEnum",
+        "2026-11-19T03:58:42.8182360Z --- FAIL: TestLANG002_EnumAndTypeAliases (0.01s)",
+        "2026-11-19T03:58:42.8182820Z     --- FAIL: TestLANG002_EnumAndTypeAliases/ValidEnum (0.01s)",
+        "2026-11-19T03:58:42.8183390Z     --- PASS: TestLANG002_EnumAndTypeAliases/InvalidEnum (0.01s)",
+        "2026-11-19T03:58:42.8183750Z === RUN   TestLANG003_NativeEscapeAPIs",
+        "2026-11-19T03:58:42.8184960Z === RUN   TestLANG003_NativeEscapeAPIs/NativeAction",
+        "2026-11-19T03:58:42.8186150Z === RUN   TestLANG003_NativeEscapeAPIs/NativePlist",
+        "2026-11-19T03:58:42.8186630Z === RUN   TestLANG003_NativeEscapeAPIs/NativeRef"
+      ]
+    },
+    {
+      "line": 1887,
+      "text": "2026-11-19T03:58:42.8182820Z     --- FAIL: TestLANG002_EnumAndTypeAliases/ValidEnum (0.01s)",
+      "context": [
+        "2026-11-19T03:58:42.8178990Z === RUN   TestLANG002_EnumAndTypeAliases",
+        "2026-11-19T03:58:42.8179420Z === RUN   TestLANG002_EnumAndTypeAliases/ValidEnum",
+        "2026-11-19T03:58:42.8181080Z     metadata_matrix_test.go:273: expected quicklook input to be 'PRODUCTION', got {{ActionOutput  76289D87-A6AE-4EBB-AD73-F71300F19E63 Text <nil> <nil> [] map[]  [] } WFTextTokenAttachment}",
+        "2026-11-19T03:58:42.8181980Z === RUN   TestLANG002_EnumAndTypeAliases/InvalidEnum",
+        "2026-11-19T03:58:42.8182360Z --- FAIL: TestLANG002_EnumAndTypeAliases (0.01s)",
+        "2026-11-19T03:58:42.8182820Z     --- FAIL: TestLANG002_EnumAndTypeAliases/ValidEnum (0.01s)",
+        "2026-11-19T03:58:42.8183390Z     --- PASS: TestLANG002_EnumAndTypeAliases/InvalidEnum (0.01s)",
+        "2026-11-19T03:58:42.8183750Z === RUN   TestLANG003_NativeEscapeAPIs",
+        "2026-11-19T03:58:42.8184960Z === RUN   TestLANG003_NativeEscapeAPIs/NativeAction",
+        "2026-11-19T03:58:42.8186150Z === RUN   TestLANG003_NativeEscapeAPIs/NativePlist",
+        "2026-11-19T03:58:42.8186630Z === RUN   TestLANG003_NativeEscapeAPIs/NativeRef",
+        "2026-11-19T03:58:42.8187080Z === RUN   TestLANG003_NativeEscapeAPIs/NativeWorkflow"
+      ]
+    }
+  ],
+  "k01ObservedResults": [
+    "2026-11-19T03:58:43.4023300Z --- PASS: TestP15K01UnpackedPackageContract (31.02s)",
+    "2026-11-19T03:58:43.4044480Z     --- PASS: TestP15K01UnpackedPackageContract/unpacked_actual_self_test (10.94s)",
+    "2026-11-19T03:58:43.4045050Z     --- PASS: TestP15K01UnpackedPackageContract/source_and_reproducible_runtime_inventory (2.17s)",
+    "2026-11-19T03:58:43.4045420Z     --- PASS: TestP15K01UnpackedPackageContract/reject_missing_wrapper (1.09s)",
+    "2026-11-19T03:58:43.4045810Z     --- PASS: TestP15K01UnpackedPackageContract/reject_unexpected_file (1.19s)",
+    "2026-11-19T03:58:43.4046170Z     --- PASS: TestP15K01UnpackedPackageContract/reject_duplicate_path (1.13s)",
+    "2026-11-19T03:58:43.4046500Z     --- PASS: TestP15K01UnpackedPackageContract/reject_traversal (1.21s)",
+    "2026-11-19T03:58:43.4046910Z     --- PASS: TestP15K01UnpackedPackageContract/reject_binary_bytes (1.11s)",
+    "2026-11-19T03:58:43.4047330Z     --- PASS: TestP15K01UnpackedPackageContract/reject_binary_executable_mode (1.07s)",
+    "2026-11-19T03:58:43.4047730Z     --- PASS: TestP15K01UnpackedPackageContract/reject_compiler_commit_receipt (1.83s)",
+    "2026-11-19T03:58:43.4048190Z     --- PASS: TestP15K01UnpackedPackageContract/reject_forged_internal_hash (1.70s)",
+    "2026-11-19T03:58:43.4048650Z     --- PASS: TestP15K01UnpackedPackageContract/occupied_unpack_destination_preserved (0.65s)",
+    "2026-11-19T03:58:43.4049800Z     --- PASS: TestP15K01UnpackedPackageContract/current_compiler_cannot_impersonate_manifest_pin (3.25s)",
+    "2026-11-19T04:02:58.4482600Z --- PASS: TestSkillPackageProductionEvidence (24.81s)"
+  ]
+}
