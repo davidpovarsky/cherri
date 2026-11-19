@@ -47,7 +47,16 @@ jobs:
         go build -o cherri .
 
     - name: Full Go Test Suite
-      run: go test -count=1 -timeout=15m -v ./...
+      run: python3 -B tools/p10r15/run_full_go_suite.py --report "$RUNNER_TEMP/cherri-full-go-suite.json"
+
+    - name: Upload complete Go suite execution receipt
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cherri-full-go-suite-${{ github.job }}
+        path: ${{ runner.temp }}/cherri-full-go-suite.json
+        if-no-files-found: warn
+        retention-days: 14
 
     - name: Full Matrix Regression Tests
       run: go test -count=1 -timeout=15m -v -run '^Test(CORE|CODEC|CTRL|META|LANG|IOS|GEN)' ./...
@@ -158,7 +167,16 @@ jobs:
         go build -o cherri .
 
     - name: Full Go Test Suite
-      run: go test -count=1 -timeout=15m -v ./...
+      run: python3 -B tools/p10r15/run_full_go_suite.py --report "$RUNNER_TEMP/cherri-full-go-suite.json"
+
+    - name: Upload complete Go suite execution receipt
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cherri-full-go-suite-${{ github.job }}
+        path: ${{ runner.temp }}/cherri-full-go-suite.json
+        if-no-files-found: warn
+        retention-days: 14
 
     - name: Full Matrix Regression Tests
       run: go test -count=1 -timeout=15m -v -run '^Test(CORE|CODEC|CTRL|META|LANG|IOS|GEN)' ./...
