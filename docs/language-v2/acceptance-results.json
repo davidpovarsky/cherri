@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-11-18T16:44:43Z",
+  "timestamp": "2026-11-19T04:15:19Z",
   "phase": "local",
   "closure_complete": false,
   "language_version": "2.0",
-  "schema_fingerprint": "6eb0ef0129bba916af7cfdeae85bdbb2e42245390ccaa1137670aeb46cb62cce",
+  "schema_fingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
   "total_cases": 179,
-  "passed_cases": 20,
+  "passed_cases": 73,
   "failed_cases": 0,
-  "skipped_cases": 159,
+  "skipped_cases": 106,
   "results": [
     {
       "id": "B01",
@@ -23,9 +23,12 @@
       "group": "baseline",
       "requirement": "Capture baseline catalog, definition identities and representative native outputs",
       "test_level": "repository",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: The archived catalog count does not verify current definition identities and representative native outputs. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "repository"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults"
     },
     {
       "id": "U01",
@@ -66,9 +69,12 @@
       "group": "upstream",
       "requirement": "Check normal public binary does not invoke a legacy script parser",
       "test_level": "integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Historical migration-only legacy wording conflicts with the preserved explicit public --legacy route (living-plan D005). CL03 proves default V2 rejection only; U04 remains UNVERIFIED pending a contract decision. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15U04PublicFrontendRouteMatrix, TestP15CLIDefaultRejectsLegacyWithGuidance; explicit P10R15 contract: default V2 without implicit Legacy fallback; opt-in Legacy preserved under mandate E3/F1 and D005"
     },
     {
       "id": "P01",
@@ -146,9 +152,12 @@
       "group": "binding",
       "requirement": "Scope, shadowing, immutable reassignment and read-before-init",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: One immutable assignment diagnostic does not cover shadowing, scope, and read-before-initialization. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15V02BindingFlowProduction, TestP15V02BindingScopeService, TestP15V02BindingServiceAndCLI, TestP15V02ParameterScopes, TestP15V02LexicalWire, TestP15V02ImportedScopeIdentity, TestP15V02RepeatedImportedLoopIdentity"
     },
     {
       "id": "V03",
@@ -164,18 +173,26 @@
       "group": "binding",
       "requirement": "let binds lists/maps/action outputs without old const restrictions",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Successful list/map lowering does not inspect action-output bindings and native payload types. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15V04CollectionAndOutputBindings"
     },
     {
       "id": "C01",
       "group": "calls",
       "requirement": "Named arguments out of declaration order evaluate in source order",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Literal argument lowering does not prove source evaluation order with observable calls. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15C01SourceOrderFlow, TestP15C01SourceOrderNativeStructure, TestP15C01DefaultEffectsOnce, TestP15C01DefaultGuardStructure, TestP15C01ArgumentValueSnapshot, TestP15C01SnapshotBoundaries, TestP15C01NestedCustomResult, TestP15C01AggregateArgumentSnapshots, TestP15C01CLIAndService"
     },
     {
       "id": "C02",
@@ -194,9 +211,13 @@
       "group": "calls",
       "requirement": "Variadic source API migrates to explicit named list",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: getUpcomingEvents(3) does not exercise variadic-to-named-list migration. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15C03MigrationStructure, TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03DynamicContactAndAppBoundary, TestP15C03OriginalCLIParity, TestP15C03SingletonReferencesAndTemplates, TestP15C03TemplateMixturesFailClosed, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem, TestP15C03ListTypeEvidence, TestP15C03CustomActionShadow, TestP15C03PackElementSnapshot"
     },
     {
       "id": "C04",
@@ -209,16 +230,19 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService"
+      "detail": "Executed production tests: TestP15C04EnumResolutionProduction, TestP15C04EnumServiceAndCLI, TestP15C04EnumContextsAndShadowing, TestP15C04EnumFunctionService, TestP15C04ProvidedRegistryEnumDomain"
     },
     {
       "id": "C05",
       "group": "calls",
       "requirement": "Unknown enum wire value survives native import",
       "test_level": "native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: An IR parameter comparison does not execute native import and round-trip preservation. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15C05UnknownEnumNativeImport, TestP15NativeRoundTripOracleRejectsCorruption"
     },
     {
       "id": "T01",
@@ -246,18 +270,26 @@
       "group": "types",
       "requirement": "Semantic Number with number-as-text wire codec",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Finding a codec and a nonempty IR does not verify the number-as-text wire value. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15T03NumberStringSemanticSignature, TestP15T03NumberStringNativeWire"
     },
     {
       "id": "T04",
       "group": "types",
       "requirement": "Unknown differs from AnyContent and Void",
       "test_level": "unit+service",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Different type names do not test Unknown/AnyContent/Void behavior in analysis and service. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15T04OpaqueTypeProduction, TestP15T04OpaqueTypeService"
     },
     {
       "id": "T05",
@@ -266,7 +298,7 @@
       "test_level": "unit+native",
       "passed": false,
       "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: An Optional type constructor does not prove omission, optional value, and JSON null wire distinctions. Observed smoke passed=true; see acceptance-local-observations.json."
+      "detail": "Formal scope UNVERIFIED: Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved. Observed smoke passed=true; see acceptance-local-observations.json."
     },
     {
       "id": "T06",
@@ -285,9 +317,12 @@
       "group": "types",
       "requirement": "Per-platform versions compare components rather than floats",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A helper implemented only in this runner does not exercise production platform-version comparison. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation"
     },
     {
       "id": "T08",
@@ -307,27 +342,39 @@
       "group": "types",
       "requirement": "Known Content Graph conversions vs unverified coercion",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Assignment to AnyContent does not validate known Content Graph conversions or reject unverified coercions. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15T09ContentConversionEvidence, TestP15T09ContentConversionNativeWire"
     },
     {
       "id": "S01",
       "group": "text",
       "requirement": "Multiple variable tokens after Hebrew/emoji/combining marks",
       "test_level": "unit+native-roundtrip+iOS",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
       "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Nonempty IR does not inspect UTF-16 token offsets, combining marks, or round-trip values. Observed smoke passed=true; see acceptance-local-observations.json."
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "S02",
       "group": "text",
       "requirement": "Raw regex and ordinary JSON/JS/CSS text keep braces/backslashes",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Action counts do not assert exact retained backslashes and JSON/JS/CSS braces. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15S02ExactLiteralBytes, TestP15S02ExplicitInterpolationAndLegacyBoundary, TestP15S02LiteralOracleRejectsCorruption, TestP15S02LiteralNativeRoundTrip"
     },
     {
       "id": "S03",
@@ -352,27 +399,37 @@
       "group": "collections",
       "requirement": "Zero-based first/last/empty/out-of-range/negative indexing",
       "test_level": "unit+native+iOS",
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
       "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Action counts do not prove first/last/negative/empty/out-of-range index results. Observed smoke passed=true; see acceptance-local-observations.json."
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "L03",
       "group": "collections",
       "requirement": "Duplicate literal keys and invalid index type",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Duplicate-key rejection does not exercise invalid index types. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15L03DuplicateAndInvalidIndexDiagnostics"
     },
     {
       "id": "L04",
       "group": "collections",
       "requirement": "Dynamic bounds checking does not execute unsafe native lookup",
       "test_level": "native+iOS",
+      "executed_levels": [
+        "native-roundtrip"
+      ],
       "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Presence of a count action does not prove that unsafe lookup stays inside the valid bounds branch. Observed smoke passed=true; see acceptance-local-observations.json."
+      "status": "PENDING_EXTERNAL",
+      "detail": "Local assertions verified; pending external tier: [ios-runtime]"
     },
     {
       "id": "N01",
@@ -431,9 +488,13 @@
       "group": "control",
       "requirement": "Value if/menu yield typing and normal-path coverage",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Nonempty lowering and any diagnostic do not validate typed branch outputs or all normal paths. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15F03YieldTypesAndNormalPaths, TestP15F03TerminatedPathsDoNotBecomeValues, TestP15F03YieldDiagnosticsProduction, TestP15F03ImplicitResultBoundary, TestP15F03NativeBranchResults, TestP15F03WireOracleMutations, TestP15F03CLIAndService, TestP15F03NoneYieldClearsPrecedingOutput, TestP15F03LiteralYieldNativeFields"
     },
     {
       "id": "F04",
@@ -449,9 +510,12 @@
       "group": "control",
       "requirement": "Stop Shortcut is not substituted for break",
       "test_level": "unit",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A parser error for while/break does not separately prove break behavior inside a supported loop. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15F05UnsupportedLoopControlProduction, TestP15F05SupportedLoopsAndKeywordText"
     },
     {
       "id": "FN01",
@@ -503,9 +567,13 @@
       "group": "metadata",
       "requirement": "Header target/input/output/no-input/icon/source surfaces",
       "test_level": "unit+native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: One icon glyph does not cover target, input/output, no-input, source, and header round-trip. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip"
     },
     {
       "id": "M02",
@@ -521,18 +589,26 @@
       "group": "metadata",
       "requirement": "Setup question binds by node/parameter through lowering",
       "test_level": "unit+native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Import-question count does not validate node/parameter bindings and round-trip. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption"
     },
     {
       "id": "M04",
       "group": "metadata",
       "requirement": "Invalid setup use/reuse and Ask Each Time insertion",
       "test_level": "unit+service",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Duplicate setup diagnostics do not cover invalid uses or Ask Each Time insertion. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "service"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15M04InvalidSetupAndEditorHoles, TestP15M04SetupScopeAndUnused, TestP15M04CatalogInsertionHoles, TestP15AC01ConstructGrammarAudit, TestIOS003_PaletteActionSnippetsInV2"
     },
     {
       "id": "M05",
@@ -545,7 +621,7 @@
       ],
       "passed": true,
       "status": "PASSED",
-      "detail": "Verified legacy migration and lowering for all 7 trigger families: battery=true, screenshot=true, wifi=true, bluetooth=true, stageManager=true, display=true, charging=true"
+      "detail": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
     },
     {
       "id": "IM01",
@@ -579,9 +655,12 @@
       "group": "modules",
       "requirement": "Local workspace resource traversal and symlink escape",
       "test_level": "security",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: filepath.Clean and a '..' prefix do not exercise a resource loader or reject symlink escapes. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "security"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15IM04ActualWorkspaceResourceBoundaries"
     },
     {
       "id": "IM05",
@@ -597,72 +676,98 @@
       "group": "schema",
       "requirement": "All baseline definitions/variants/constructs accounted for",
       "test_level": "generation",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A catalog count does not reconcile every definition, variant, and language construct. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "generation"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15B02AC01CatalogMigrationAndNativeOutputs, TestP15B02AC01RejectsCatalogIdentityFaults, TestP15B02AC01RejectsNativeCaptureFaults, TestP15AC01ConstructGrammarAudit, TestP15U02GeneratedSchemaProduction"
     },
     {
       "id": "AC02",
       "group": "schema",
       "requirement": "Public custom action declaration feeds same schema/codecs",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: An injected empty schema action does not exercise public custom action source and codecs. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15AC02AllCodecFamiliesNativeShape, TestP15AC02DeclaredSchemaRegistryAndRejections, TestP15CustomTokenCodecCanonicalParity, TestP15CustomTokenCodecSecondaryAndImplicitBindings, TestP15CustomCodecSharedReferenceCausality, TestP15CustomTokenCodecPublicRoutes, TestP15ActionDeclarationPublicValidation, TestP15ActionDeclarationHealthyControl, TestP15RegistryRepeatedCompileIsolation, TestP15RegistryCustomOutputReferenceIsolation, TestP15C02ArgumentDiagnosticsProduction, TestP15C02AcceptedBindingsProduction, TestP15C04EnumResolutionProduction"
     },
     {
       "id": "AC03",
       "group": "schema",
       "requirement": "Unregistered codec, duplicate enum/label or stale facet",
       "test_level": "generation",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Nonempty enums do not test bad codecs, duplicates, or stale facets. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "generation"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15ActionDeclarationPublicValidation, TestP15ActionDeclarationHealthyControl, TestP15C04EnumResolutionProduction, TestP15C02ArgumentDiagnosticsProduction, TestUpstreamPropagationRehearsal"
     },
     {
       "id": "R01",
       "group": "native",
       "requirement": "Unknown action and unknown nested/top-level fields round-trip",
       "test_level": "native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: One IR action identifier does not prove unknown nested and top-level native round-trip fields. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15R01UnknownNativeFieldsRoundTrip, TestP15NativeActionEnvelopePreservesExactSource, TestP15NativeActionEnvelopeOldParametersRemainData, TestP15NativeActionEnvelopeRejectsConflicts, TestP15NativeActionEnvelopeBeforeOverlayAndCompatibilityRenderers, TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit, TestP15NativeActionEnvelopePrivateIdentityCannotEscape, TestP15NativeActionEnvelopeLegacyArity, TestP15NativeRoundTripOracleRejectsCorruption"
     },
     {
       "id": "R02",
       "group": "native",
       "requirement": "Known identifier with unmodeled value/static variant",
       "test_level": "native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: One IR scalar does not prove known-action variant import round-trip. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15R02KnownNativeUnmodeledVariants, TestP15NativeRoundTripOracleRejectsCorruption"
     },
     {
       "id": "R03",
       "group": "native",
       "requirement": "Coercion-only/property-only/chained aggrandizements",
       "test_level": "native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A hand-constructed aggrandizement slice is not serialized or round-tripped. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15R03OrderedAggrandizementsRoundTrip, TestP15NativeRoundTripOracleRejectsCorruption"
     },
     {
       "id": "R04",
       "group": "native",
       "requirement": "Original missing parameters not default-filled",
       "test_level": "native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Assigning OmitPolicyOmit to a struct does not exercise imported parameter omission. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15R04ImportedOmissionAndExplicitValues, TestP15NativeActionEnvelopePreservesExactSource, TestP15NativeRoundTripOracleRejectsCorruption"
     },
     {
       "id": "R05",
       "group": "native",
       "requirement": "Opaque/native regions, exports and workflow fallback",
       "test_level": "unit+native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A hand-constructed workflow length does not execute opaque regions, exports, or fallback. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15R05RawExportsAndInvalidBoundary, TestP15R05OpaqueRegionsAndWorkflowFallback, TestP15NativeActionEnvelopeFullWorkflowAndAuthoredEdit, TestP15RawNativeResultFinalizationRejectsIdentityCorruption"
     },
     {
       "id": "R06",
@@ -720,9 +825,13 @@
       "group": "editor",
       "requirement": "Formatter idempotence and literal/comment preservation",
       "test_level": "unit+integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Idempotence and one comment substring do not verify literal preservation and all comment contents. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "unit",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15E04SyntaxAndServiceProduction, TestP15E04ActualCLIAndServiceNativeIdentity, TestP15E04FormatterOracleRejectsChangedValuesAndComments"
     },
     {
       "id": "E05",
@@ -805,18 +914,25 @@
       "group": "docs",
       "requirement": "All generated action signatures match assembled schema",
       "test_level": "generation+docs",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Fingerprint presence does not compare every generated signature with the schema. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "generation",
+        "docs"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15D01CanonicalDocsProduction"
     },
     {
       "id": "D02",
       "group": "docs",
       "requirement": "Runnable and deliberately-invalid docs examples tested",
       "test_level": "docs",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: The selected docs test parses/analyzes examples; it does not execute their production compilation/runtime. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "docs"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestDocsExamplesExtractAndVerify"
     },
     {
       "id": "D03",
@@ -832,27 +948,36 @@
       "group": "skill",
       "requirement": "Complete updated package and unpacked self-test",
       "test_level": "packaging",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: SKILL.md length does not unpack a package or run its self-test. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "skill-package"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15K01UnpackedPackageContract"
     },
     {
       "id": "K02",
       "group": "skill",
       "requirement": "Fresh install and incompatible cached/bundled binary",
       "test_level": "integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Script substrings do not execute a fresh install or reject an incompatible binary. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15SkillFreshPinnedInstall, TestP15K02ActualCacheAndBundleSelection"
     },
     {
       "id": "K03",
       "group": "skill",
       "requirement": "Exact commit install and checksum/atomic update",
       "test_level": "integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: A compilerCommit key does not install that SHA or test checksums and atomic updates. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15SkillFreshPinnedInstall, TestP15K03LateDocsFailurePreservesWorkingPair, TestP15K03DownloadedChecksumBeforeExecution, TestP15K03PromotionFailuresRestoreActualPair, TestP15K03SuccessfulUpdateCommitsValidatedPair, TestP15K03ImmutableInstallRefsRequired, TestP15K03LocalStateIsPreserved, TestP15K03HandledSignalRestoresFiles, TestP15K03PromotedCacheCannotFallBack"
     },
     {
       "id": "K04",
@@ -871,18 +996,21 @@
       "group": "skill",
       "requirement": "Structured repair/build/import/edit/sign workflow",
       "test_level": "integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Script length does not execute repair/build/import/edit/sign workflows. Observed smoke passed=true; see acceptance-local-observations.json."
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15K05LiveSigning, TestP15K05BuildPreservesExistingFiles, TestP15K05PreparePreservesOriginal, TestP15K05RepairBuildImportEdit, TestP15K05SigningGateAndExactInput, TestP15K05PrepareRequiresComparator, TestP15K05CopiedImportRequiresPolicy"
     },
     {
       "id": "CI01",
       "group": "verification",
       "requirement": "Encoding EXPECT intentionally broken in test",
-      "test_level": "negative-CI",
+      "test_level": "negative-ci",
       "passed": false,
       "status": "NOT_RUN",
-      "detail": "Formal scope UNVERIFIED: Comparing two unequal literal strings does not execute a negative CI gate. Observed smoke passed=true; see acceptance-local-observations.json."
+      "detail": "Requires the source-bound macOS WorkflowKit REQUIRED encoding gate: correct set, one isolated corrupted EXPECT with exact nonzero diagnostic, restored set. Local process fixtures do not execute Apple code."
     },
     {
       "id": "CI02",
@@ -934,27 +1062,38 @@
       "group": "repair",
       "requirement": "Verification aggregator",
       "test_level": "unit+integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestMeta_AssertionReturnsFalse, TestMeta_ContradictoryPassedStatus, TestMeta_MissingRequiredID, TestMeta_UnknownIDInjected, TestMeta_DuplicateEvidenceID, TestEndToEndAggregator_All12AdversarialAttacks, TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs"
     },
     {
       "id": "RP02",
       "group": "repair",
       "requirement": "Required evidence levels",
       "test_level": "unit+integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15RP02ParserOnlyAndForeignSHA, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestMeta_FalsePassedClaimWithMissingTiersRejected, TestMeta_WeakTestLevelRejection"
     },
     {
       "id": "RP03",
       "group": "repair",
       "requirement": "Portable contract intake",
       "test_level": "integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15RP03FreshCloneContractIntake, TestRealContractsLoadAndVerifyDigests, TestMeta_ContractHashMismatch"
     },
     {
       "id": "RP04",
@@ -970,9 +1109,14 @@
       "group": "repair",
       "requirement": "Literal legacy-looking text",
       "test_level": "unit+CLI+embedded",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "cli",
+        "embedded"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15RP05LiteralPublicRoutes"
     },
     {
       "id": "RP06",
@@ -1006,18 +1150,24 @@
       "group": "repair",
       "requirement": "Static action variants",
       "test_level": "native-differential",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "native-differential"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15RP09StaticVariantNativeDifferential"
     },
     {
       "id": "RP10",
       "group": "repair",
       "requirement": "Custom callbacks and App Intents",
       "test_level": "native-differential",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "native-differential"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15CanonicalCallbackCausality, TestCompilerEndToEndParityMatrix, TestComparatorMutationMatrix, TestAppIntentDescriptorGeneralization, TestCuratedAppleIntentObservedShapesRoundTrip"
     },
     {
       "id": "RP11",
@@ -1042,9 +1192,13 @@
       "group": "repair",
       "requirement": "Variadic list API",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03SingletonReferencesAndTemplates, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem"
     },
     {
       "id": "RP14",
@@ -1195,27 +1349,40 @@
       "group": "repair",
       "requirement": "Header metadata roundtrip",
       "test_level": "unit+native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip"
     },
     {
       "id": "RP31",
       "group": "repair",
       "requirement": "Setup indices and askEachTime",
       "test_level": "unit+service+native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "service",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15M04InvalidSetupAndEditorHoles, TestP15M04SetupScopeAndUnused, TestP15M04CatalogInsertionHoles"
     },
     {
       "id": "RP32",
       "group": "repair",
       "requirement": "Existing triggers and declarations",
       "test_level": "unit+native",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip, TestP15ActionDeclarationPublicValidation, TestP15ActionDeclarationHealthyControl"
     },
     {
       "id": "RP33",
@@ -1240,27 +1407,37 @@
       "group": "repair",
       "requirement": "Native forms and unknown values",
       "test_level": "native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15R01UnknownNativeFieldsRoundTrip, TestP15R02KnownNativeUnmodeledVariants, TestP15R03OrderedAggrandizementsRoundTrip, TestP15R04ImportedOmissionAndExplicitValues, TestP15C05UnknownEnumNativeImport, TestP15R05RawExportsAndInvalidBoundary, TestP15NativeRoundTripOracleRejectsCorruption"
     },
     {
       "id": "RP36",
       "group": "repair",
       "requirement": "Shared intake formats",
       "test_level": "integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15R06ProductionImportFormats, TestHYB18_SignedShortcutContainerRejected, TestHYB20_TrailingGarbageAfterJSONRootRejected, TestHYB21_MalformedActionEntriesRejectedWithExactIndex"
     },
     {
       "id": "RP37",
       "group": "repair",
       "requirement": "Allowed edit and fail-closed gate",
       "test_level": "integration+negative",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "integration",
+        "negative"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15K05RepairBuildImportEdit, TestP15K05SigningGateAndExactInput, TestP15K05PrepareRequiresComparator"
     },
     {
       "id": "RP38",
@@ -1411,36 +1588,53 @@
       "group": "recovery_gate",
       "requirement": "Strict comparator rejects wrong reference edges",
       "test_level": "unit+native-structure",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15BRG02ReferenceTopologyProduction"
     },
     {
       "id": "BRG03",
       "group": "recovery_gate",
       "requirement": "Strict comparator retains tree and text meaning",
       "test_level": "unit+native-structure",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "native-structure"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15BRG03TypedTreeProduction"
     },
     {
       "id": "BRG04",
       "group": "recovery_gate",
       "requirement": "Evidence validator derives actual tiers",
       "test_level": "unit+integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs, TestMeta_ContractHashMismatch, TestMeta_AssertionReturnsFalse, TestMeta_WeakTestLevelRejection, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestSupplementalAcceptanceMissingProducerFailsClosed, TestLocalReportIncludesAll179WithoutInheritedClosure, TestEndToEndAggregator_All12AdversarialAttacks"
     },
     {
       "id": "BRG05",
       "group": "recovery_gate",
       "requirement": "Canonical action builder is really invoked",
       "test_level": "unit+native-structure+integration",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "native-structure",
+        "integration"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15CanonicalCallbackCausality, TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend, TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation, TestArchitecture_D_SharedCodecMaintenance, TestCompilerEndToEndParityMatrix, TestCORE003_UnknownDefinitionIDHardError"
     },
     {
       "id": "BRG06",
@@ -1456,9 +1650,13 @@
       "group": "recovery_gate",
       "requirement": "Direct reference transformations survive",
       "test_level": "native-structure+native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "native-structure",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15BRG07DirectReferenceKindsRoundTrip, TestP15BRG07ReferenceMutationControls, TestP15BRG07SharedReferencePaths"
     },
     {
       "id": "BRG08",
@@ -1546,9 +1744,13 @@
       "group": "recovery_gate",
       "requirement": "Metadata, setup and trigger preservation",
       "test_level": "unit+native-roundtrip",
-      "passed": false,
-      "status": "NOT_RUN",
-      "detail": "Linked acceptance IDs are navigation only; this distinct scenario has no executed producer in the local runner"
+      "executed_levels": [
+        "unit",
+        "native-roundtrip"
+      ],
+      "passed": true,
+      "status": "PASSED",
+      "detail": "Executed production tests: TestP15M01KnownHeaderMapping, TestP15M01NativeHeaderRoundTrip, TestP15RP30HeaderAbsenceAndNameRoundTrip, TestP15M03SetupFinalActionBinding, TestP15M03SetupNativeRoundTrip, TestP15M03SetupBindingRejectsIdentityCorruption, TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
     },
     {
       "id": "BRG18",
