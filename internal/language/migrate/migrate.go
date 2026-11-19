@@ -636,7 +636,12 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 		return syntax.Format(prog), diags, nil
 	}
 
-	return result, diags, nil
+	// A preview that cannot parse must never become a successful in-place write.
+	// Keep this gate in the shared migration path so every CLI has the same rule.
+	for _, parseError := range p.Errors() {
+		addDiag(parseError.Span.Start.Line, parseError.Span.Start.Column, "generated V2 source is not representable: "+parseError.Message)
+	}
+	return "", diags, fmt.Errorf("migration produced invalid V2 syntax (%d error(s))", len(p.Errors()))
 }
 
 func mapLegacyType(t string) string {
