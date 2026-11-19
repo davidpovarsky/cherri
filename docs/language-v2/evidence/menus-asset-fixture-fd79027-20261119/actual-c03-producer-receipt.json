@@ -1,0 +1,85 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-C03-unit",
+      "requirements": [
+        "C03"
+      ],
+      "tier": "unit",
+      "implementation_sha": "fd790278f40c2b1352eba2821863b33ddea29c06",
+      "test_id": "github.com/electrikmilk/cherri:TestP15C03MigrationStructure",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15C03MigrationStructure|TestP15C03NamedListNativeStructure|TestP15C03LegacyWireControl|TestP15C03LiteralOracleMutations|TestP15C03ElementOrderAndReferences|TestP15C03PackBoundaries|TestP15C03DynamicContactAndAppBoundary|TestP15C03OriginalCLIParity|TestP15C03SingletonReferencesAndTemplates|TestP15C03TemplateMixturesFailClosed|TestP15C03NestedMigrationAndSourceIdentity|TestP15C03EmptyIsNotAnEmptyItem|TestP15C03ListTypeEvidence|TestP15C03CustomActionShadow|TestP15C03PackElementSnapshot)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15C03MigrationStructure, TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03DynamicContactAndAppBoundary, TestP15C03OriginalCLIParity, TestP15C03SingletonReferencesAndTemplates, TestP15C03TemplateMixturesFailClosed, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem, TestP15C03ListTypeEvidence, TestP15C03CustomActionShadow, TestP15C03PackElementSnapshot"
+      },
+      "detail": "Executed production tests: TestP15C03MigrationStructure, TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03DynamicContactAndAppBoundary, TestP15C03OriginalCLIParity, TestP15C03SingletonReferencesAndTemplates, TestP15C03TemplateMixturesFailClosed, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem, TestP15C03ListTypeEvidence, TestP15C03CustomActionShadow, TestP15C03PackElementSnapshot"
+    },
+    {
+      "evidence_id": "ev-local-C03-native-structure",
+      "requirements": [
+        "C03"
+      ],
+      "tier": "native-structure",
+      "implementation_sha": "fd790278f40c2b1352eba2821863b33ddea29c06",
+      "test_id": "github.com/electrikmilk/cherri:TestP15C03NamedListNativeStructure",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15C03MigrationStructure|TestP15C03NamedListNativeStructure|TestP15C03LegacyWireControl|TestP15C03LiteralOracleMutations|TestP15C03ElementOrderAndReferences|TestP15C03PackBoundaries|TestP15C03DynamicContactAndAppBoundary|TestP15C03OriginalCLIParity|TestP15C03SingletonReferencesAndTemplates|TestP15C03TemplateMixturesFailClosed|TestP15C03NestedMigrationAndSourceIdentity|TestP15C03EmptyIsNotAnEmptyItem|TestP15C03ListTypeEvidence|TestP15C03CustomActionShadow|TestP15C03PackElementSnapshot)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15C03MigrationStructure, TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03DynamicContactAndAppBoundary, TestP15C03OriginalCLIParity, TestP15C03SingletonReferencesAndTemplates, TestP15C03TemplateMixturesFailClosed, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem, TestP15C03ListTypeEvidence, TestP15C03CustomActionShadow, TestP15C03PackElementSnapshot"
+      },
+      "detail": "Executed production tests: TestP15C03MigrationStructure, TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03DynamicContactAndAppBoundary, TestP15C03OriginalCLIParity, TestP15C03SingletonReferencesAndTemplates, TestP15C03TemplateMixturesFailClosed, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem, TestP15C03ListTypeEvidence, TestP15C03CustomActionShadow, TestP15C03PackElementSnapshot"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-19T05:32:19Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "C03",
+        "group": "calls",
+        "requirement": "Variadic source API migrates to explicit named list",
+        "test_level": "unit+native-structure",
+        "executed_levels": [
+          "unit",
+          "native-structure"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only C03 unit and native-structure: all eight canonical variadics, empty/single/multiple explicit named packs, exact native item/UUID order, no recursive flattening, source/shadow preservation, actual original CLI differentials and causal mutations. No Apple execution, unsupported Legacy inline-action parity, dynamic runtime spreading, or release closure.",
+  "source_sha": "fd790278f40c2b1352eba2821863b33ddea29c06",
+  "source_tree_clean": true
+}
