@@ -80,3 +80,8 @@ RP50 now executes the real held-out task-runner control suite through exact disc
 ## P15 exact S01/F01 runtime intake — 2026-11-19
 
 Added only the two source-bound coverage observer records for S01 and F01, bringing formal output to six records/ten IDs while raw seventeen diagnostics stay unchanged. Exact current-SHA source/oracle/reset/context/receipt bindings are preserved; Go rejects old weaker producer IDs, changed values, missing bindings and unrelated repair membership. Full54 Python runtime-chain tests, two additional actual publication controls, and53 focused Go evidence test events passed. Initial stale S01 tier-authorization failure was retained and corrected. No local control is native evidence; fresh Apple execution remains required. See docs/language-v2/p15-runtime-evidence-scope-20261119.md.
+
+
+## P15 RP29 actual authorization and benchmark producer - 2026-11-19
+
+Independently executed all unchanged RP29 security/service/benchmark tiers at clean source 5b9c3dd2: eleven production tests, 34 named pass events, six fixtures and 400 raw monotonic samples; no skips or failures. All nine clean-source corruption controls passed. Missing or skipped symlink children and detached benchmark summaries cannot satisfy intake. Related requirement IDs and native/race/release tiers inherit no result. Exact raw public receipts and provenance are retained in docs/language-v2/p15-rp29-actual-producer-20261119.md. Final integrated179 execution remains separate.

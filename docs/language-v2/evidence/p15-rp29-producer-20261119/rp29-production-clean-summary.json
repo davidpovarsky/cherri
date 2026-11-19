@@ -1,0 +1,33 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=5m",
+    "-json",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestP15RP29AssetAuthorizationProductionEvidence$"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 66.67,
+  "source_sha": "5b9c3dd2b6211de39ae071979bc0cf7b1db6f0a9",
+  "status_before": "",
+  "status_after": "",
+  "artifact_directory": "C:\\Users\\DAVID\\Code\\cherri-p10r15-acceptance-20261119\\dist\\p15-acceptance-causal\\rp29-actual-artifacts",
+  "passed_tests": [
+    "TestP15RP29AssetAuthorizationProductionEvidence/missing_security_tier",
+    "TestP15RP29AssetAuthorizationProductionEvidence/wrong_security_producer",
+    "TestP15RP29AssetAuthorizationProductionEvidence/missing_security_binding",
+    "TestP15RP29AssetAuthorizationProductionEvidence/missing_symlink_child",
+    "TestP15RP29AssetAuthorizationProductionEvidence/skipped_symlink_child",
+    "TestP15RP29AssetAuthorizationProductionEvidence/stale_source",
+    "TestP15RP29AssetAuthorizationProductionEvidence/invented_runtime",
+    "TestP15RP29AssetAuthorizationProductionEvidence/borrowed_original",
+    "TestP15RP29AssetAuthorizationProductionEvidence/missing_raw_stream",
+    "TestP15RP29AssetAuthorizationProductionEvidence"
+  ],
+  "failed_tests": [],
+  "skipped_tests": []
+}
