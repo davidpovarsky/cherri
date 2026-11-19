@@ -1702,24 +1702,9 @@ func (r *Runner) runControl() {
 
 // Group 11: Functions
 func (r *Runner) runFunctions() {
-	// FN01: AST-defined function call returns then caller continues
-	srcFN01 := "function add(a: Number, b: Number) -> Number {\n    return a + b\n}\nlet res = add(1, b: 2)\nlet after = res + 1"
-	wfFN01, errFN01 := lowerSrc(r.reg, srcFN01)
-	fn01Passed := errFN01 == nil && len(wfFN01.Actions) >= 10
-	r.Record("FN01", "functions", "AST-defined function call returns then caller continues", "unit+native+iOS", []string{"unit", "native"}, fn01Passed, "PASSED", "First-class function declarations lower to RunSelf dispatcher and return to caller continuation")
-
-	// FN02: Presence-tagged argument defaults include false/0/empty
-	srcFN02 := "function checkDefaults(flag: Bool = true, count: Number = 9, label: Text = \"def\") -> Text {\n    return f\"{flag}:{count}:{label}\"\n}\nlet explicitVal = checkDefaults(false, count: 0, label: \"\")\nlet omittedVal = checkDefaults()"
-	wfFN02, errFN02 := lowerSrc(r.reg, srcFN02)
-	fn02Passed := errFN02 == nil && len(wfFN02.Actions) >= 12
-	r.Record("FN02", "functions", "Presence-tagged argument defaults include false/0/empty", "unit+native+iOS", []string{"unit", "native"}, fn02Passed, "PASSED", "Presence dictionary __cherri_present distinguishes omitted arguments from explicit false/0/empty")
-
-	// FN03: No implicit runtime capture; terminating recursive call
-	srcFN03 := "function fact(n: Number) -> Number {\n    if n <= 1 { return 1 }\n    let prev = fact(n - 1)\n    return n * prev\n}\nlet c = fact(3)"
-	wfFN03, errFN03 := lowerSrc(r.reg, srcFN03)
-	diagsOuterCapture := analyzeSrc(r.reg, "let outer = 10\nfunction bad() -> Number { return outer }")
-	fn03Passed := errFN03 == nil && len(wfFN03.Actions) > 0 && len(diagsOuterCapture) > 0
-	r.Record("FN03", "functions", "No implicit runtime capture; terminating recursive call", "unit+native+iOS", []string{"unit", "native"}, fn03Passed, "PASSED", "Functions reject outer variable capture and support recursive self-invocation")
+	for _, id := range []string{"FN01", "FN02", "FN03"} {
+		r.runNumberFunctionRequirement(id)
+	}
 
 	// FN04: Caller input vs internal dispatcher envelope
 	srcFN04 := "function test(x: Number) -> Number { return x }\nlet r = test(5)"

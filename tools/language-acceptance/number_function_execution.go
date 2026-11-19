@@ -25,6 +25,44 @@ var numberFunctionScenarios = map[string]numberFunctionScenario{
 			"p15_short_circuit_test.go", "p15_call_order_test.go",
 		},
 	},
+	"FN01": {
+		Group: "functions", Title: "AST-defined function call returns then caller continues",
+		Scope:       "Actual AST function typing and rejection before emission; complete native argument, local-return and caller-continuation graph with causal corruptions",
+		RuntimeTest: "ios27-runtime-poc:functions",
+		UnitTest:    "TestP15FN01FunctionTyping", NativeTest: "TestP15FN01ReturnAndContinuationNative",
+		ProductionPaths: []string{
+			"internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "internal/language/lower/call_arguments.go",
+			"language_backend_adapter.go", "language_emit_adapter.go", "shortcutgen.go",
+			"p15_function_acceptance_test.go", "p15_function_native_oracle_test.go",
+			"p15_types_acceptance_test.go", "p15_short_circuit_test.go", "p15_call_order_test.go", "p15_literal_collections_acceptance_test.go",
+		},
+	},
+	"FN02": {
+		Group: "functions", Title: "Presence-tagged argument defaults include false/0/empty",
+		Scope:       "Actual typed defaults, supplied false/zero/empty versus omission, presence-guard selection through native return and caller consumer, plus existing typed envelope and guard controls",
+		RuntimeTest: "ios27-runtime-poc:functions",
+		UnitTest:    "TestP15FN02DefaultTyping", NativeTest: "TestP15FN02PresenceDefaultsNative",
+		AdditionalTests: []string{"TestP15T01FunctionPresenceEnvelope", "TestP15T01DefaultsGuardedByPresence"},
+		ProductionPaths: []string{
+			"internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "internal/language/lower/call_arguments.go",
+			"language_backend_adapter.go", "language_emit_adapter.go", "shortcutgen.go",
+			"p15_function_acceptance_test.go", "p15_function_native_oracle_test.go", "p15_binding_defaults_acceptance_test.go",
+			"p15_types_acceptance_test.go", "p15_short_circuit_test.go", "p15_call_order_test.go", "p15_literal_collections_acceptance_test.go",
+			"tests/runtime_poc/CherriTypedDefaultsPOC.cherri",
+		},
+	},
+	"FN03": {
+		Group: "functions", Title: "No implicit runtime capture; terminating recursive call",
+		Scope:       "Actual exact capture diagnostics without emission, explicit parameter control and recursive AST types; complete native base-case, decreasing recursive argument, typed product and final consumer graph",
+		RuntimeTest: "ios27-runtime-poc:functions",
+		UnitTest:    "TestP15FN03CaptureAndRecursionTyping", NativeTest: "TestP15FN03TerminatingRecursionNative",
+		ProductionPaths: []string{
+			"internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "internal/language/lower/call_arguments.go",
+			"language_backend_adapter.go", "language_emit_adapter.go", "shortcutgen.go",
+			"p15_function_acceptance_test.go", "p15_function_native_oracle_test.go",
+			"p15_types_acceptance_test.go", "p15_short_circuit_test.go", "p15_call_order_test.go", "p15_literal_collections_acceptance_test.go",
+		},
+	},
 }
 
 func (scenario numberFunctionScenario) tests() []string {
