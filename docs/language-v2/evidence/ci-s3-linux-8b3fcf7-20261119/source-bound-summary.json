@@ -1,0 +1,160 @@
+{
+  "runId": 44459420585,
+  "jobId": 135342289479,
+  "sourceSHA": "8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46",
+  "jobStatus": "completed",
+  "jobConclusion": "failure",
+  "url": "https://github.com/davidpovarsky/cherri/actions/runs/44459420585/job/135342289479",
+  "rawLog": {
+    "bytes": 1298843,
+    "sha256": "162c740af63c63948fcae3cd6c56d3f33f3acbd1c8668d508305bd096055edd1",
+    "retainedHostPath": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\module-s3-ci-diagnosis\\linux-job-135342289479-api.log"
+  },
+  "packages": {
+    "passed": 24,
+    "noTests": 5,
+    "failed": 1,
+    "terminalRows": [
+      "ok  \tgithub.com/electrikmilk/cherri\t459.615s",
+      "?   \tgithub.com/electrikmilk/cherri/cmd/cherri-migrate\t[no test files]",
+      "FAIL\tgithub.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit [build failed]",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/icloudshortcut\t0.004s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/analysis\t0.894s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/backend\t0.010s",
+      "?   \tgithub.com/electrikmilk/cherri/internal/language/enums\t[no test files]",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/ir\t0.002s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/lower\t0.143s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/lsp\t0.024s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/migrate\t0.012s",
+      "?   \tgithub.com/electrikmilk/cherri/internal/language/modules\t[no test files]",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/protocol\t0.010s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/schema\t0.011s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/service\t0.741s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/source\t0.002s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/syntax\t0.004s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/types\t0.003s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/language/workspace\t0.004s",
+      "ok  \tgithub.com/electrikmilk/cherri/internal/shortcutcompare\t2.031s",
+      "ok  \tgithub.com/electrikmilk/cherri/tools/ci-test-discovery\t0.287s",
+      "?   \tgithub.com/electrikmilk/cherri/tools/inventory\t[no test files]",
+      "ok  \tgithub.com/electrikmilk/cherri/tools/ios-runtime-verifier\t0.003s",
+      "ok  \tgithub.com/electrikmilk/cherri/tools/language-acceptance\t653.134s",
+      "ok  \tgithub.com/electrikmilk/cherri/tools/language-docs\t0.788s",
+      "ok  \tgithub.com/electrikmilk/cherri/tools/language-migrate\t0.009s",
+      "ok  \tgithub.com/electrikmilk/cherri/tools/language-schema\t0.671s",
+      "?   \tgithub.com/electrikmilk/cherri/tools/language-stdlib\t[no test files]",
+      "ok  \tgithub.com/electrikmilk/cherri/tools/legacy-parity\t0.228s",
+      "ok  \tgithub.com/electrikmilk/cherri/tools/shortcut-corpus\t0.021s"
+    ]
+  },
+  "namedTestFailureMarkers": 0,
+  "knownCause": "Archived standalone Go test is incorrectly discovered as a package; undefined EvidenceRecord/nativeEncodingTestID/validateNativeEncodingRecord. Fixed separately as259e9fb; this job ran unchanged historical S3.",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/checkout@v6",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Set up Python",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Set up Node for encoding gate process controls",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Required Encoding Gate Process Controls",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Set up Go",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Build",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Full Go Test Suite",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "name": "Full Matrix Regression Tests",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Machine-Checked Test Discovery Gate",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Decompilation Test",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Package Manager Test",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Differential Legacy Parity Gate",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "P10R8 Independent Oracle Mutation Suite & Sanitized Report Integrity",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "P10 SSoT, Coverage Ledgers, Pack & Release Gates",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Upload P10R4 Release Gate Attestation (Linux)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Set up Go",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Post Set up Node for encoding gate process controls",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Post Set up Python",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Post Run actions/checkout@v6",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "scope": "Historical S3 Linux full-Go job only. Overall job failed. No S4, private corpus, macOS, simulator or full release proof."
+}
