@@ -55,3 +55,8 @@ Example:
 ## Archive
 
 Older completed/superseded items that still have historical value.
+
+
+## P15 formal PoC scope repair — 2026-11-19
+
+Implemented the separate source-bound narrow exporter and actual Python-to-Go intake regression. Raw17 diagnostic rows remain unchanged; only V01/V03/L02/L04/N01/FN01/FN02/FN03 runtime facets are eligible. Twelve Python controls and six Go test/subtest events passed; no native/runtime or179-closure claim. See docs/language-v2/p15-runtime-evidence-scope-20261119.md. Shell/publication wiring and fresh Apple execution remain separate gates.
