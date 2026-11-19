@@ -6,7 +6,7 @@ import "github.com/electrikmilk/cherri/internal/language/syntax"
 // iteration. Reject only a statically established List-shaped final result;
 // Unknown/AnyContent remains an unverified native-last-action boundary.
 func (a *Analyzer) requireNativeLoopResultShape(body *syntax.BlockStmt) {
-	if !mayHaveListCardinality(a.controlBranchResultType(body)) {
+	if !statementMayContinue(body) || !mayHaveListCardinality(a.controlBranchResultType(body)) {
 		return
 	}
 	span := body.Span
