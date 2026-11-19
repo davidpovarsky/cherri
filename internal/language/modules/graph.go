@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
@@ -38,28 +37,6 @@ type Module struct {
 type Graph struct {
 	Root    *Module
 	Modules []*Module // dependencies before their importers
-}
-
-var standardLibrary struct {
-	sync.RWMutex
-	source string
-}
-
-// RegisterStandardLibrary shares the compiler's existing embedded upstream source.
-// It is configured once during compiler initialization, never read from a host install.
-func RegisterStandardLibrary(text string) {
-	standardLibrary.Lock()
-	defer standardLibrary.Unlock()
-	if standardLibrary.source != "" && standardLibrary.source != text {
-		panic("standard library source already registered")
-	}
-	standardLibrary.source = text
-}
-
-func StandardLibrarySource() string {
-	standardLibrary.RLock()
-	defer standardLibrary.RUnlock()
-	return standardLibrary.source
 }
 
 func HasImports(program *syntax.Program) bool {
