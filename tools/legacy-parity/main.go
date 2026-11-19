@@ -273,7 +273,16 @@ func testFixture(binPath, fixturePath, tmpDir, repoRoot string) FixtureResult {
 		return res
 	}
 	res.MigratedOk = true
-	_ = os.WriteFile(v2Src, []byte(migrated), 0644)
+	if err := stageFixtureAssets(name, tmpDir, repoRoot); err != nil {
+		res.Status = "V2_COMPILE_FAIL"
+		res.Detail = err.Error()
+		return res
+	}
+	if err := os.WriteFile(v2Src, []byte(migrated), 0600); err != nil {
+		res.Status = "V2_COMPILE_FAIL"
+		res.Detail = fmt.Sprintf("write migrated fixture: %v", err)
+		return res
+	}
 
 	// 3. Compile migrated source with v2 compile --skip-sign
 	cmdV2 := exec.Command(binPath, "compile", v2Src, "--skip-sign", "-o", v2Out)
