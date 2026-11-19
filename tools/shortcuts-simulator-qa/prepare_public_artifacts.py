@@ -122,6 +122,36 @@ def verify_synthetic_manifest(root, trusted_sources):
         raise PublicationBlocked("EXISTING_PRIVACY_GATE_FAILED")
 
 
+
+def public_json(text):
+    def unique_object(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("duplicate JSON key")
+            value[key] = item
+        return value
+    return json.loads(text, object_pairs_hook=unique_object)
+
+
+def structured_privacy_failure(value):
+    # Inspect decoded strings and keys: valid JSON escapes can conceal every
+    # token from a scan of serialized bytes. Duplicate keys are rejected by
+    # public_json so canonicalization cannot discard an earlier private value.
+    if CANARY.search(json.dumps(value, ensure_ascii=False)):
+        return "SECRET_OR_PRIVATE_CANARY"
+    pending = [value]
+    while pending:
+        item = pending.pop()
+        if isinstance(item, dict):
+            if item.get("publicationPolicy") == "LOCAL_ONLY_RAW_OCR":
+                return "RAW_OCR_NOT_PUBLIC"
+            pending.extend(item.values())
+        elif isinstance(item, list):
+            pending.extend(item)
+    return None
+
+
 def stage(root, output, trusted_sources):
     root, output = Path(root).resolve(), Path(output).absolute()
     if not root.is_dir() or output.exists() or root == output or root in output.parents:
@@ -152,8 +182,10 @@ def stage(root, output, trusted_sources):
             text = data.decode("utf-8")
             if "\x00" in text:
                 raise ValueError("binary")
+            structured = []
             if name.endswith(".json"):
-                parsed = json.loads(text)
+                parsed = public_json(text)
+                structured.append(parsed)
                 if name == "runtime/http-probe-diagnostic.json":
                     from retry_http_probe import validate_public_diagnostic
                     try:
@@ -170,13 +202,15 @@ def stage(root, output, trusted_sources):
                     except (OSError, ValueError, TypeError, KeyError):
                         failures.append({**entry, "reason": "INVALID_BOUNDED_STORAGE_DIAGNOSTIC"})
                         continue
-                if isinstance(parsed, dict) and parsed.get("publicationPolicy") == "LOCAL_ONLY_RAW_OCR":
-                    failures.append({**entry, "reason": "RAW_OCR_NOT_PUBLIC"})
-                    continue
             elif name.endswith(".jsonl"):
                 for line in text.splitlines():
                     if line.strip():
-                        json.loads(line)
+                        structured.append(public_json(line))
+            structured_failure = next((reason for value in structured
+                                       if (reason := structured_privacy_failure(value))), None)
+            if structured_failure:
+                failures.append({**entry, "reason": structured_failure})
+                continue
         except (UnicodeError, ValueError):
             failures.append({**entry, "reason": "INVALID_TEXT_OR_STRUCTURED_DATA"})
             continue
