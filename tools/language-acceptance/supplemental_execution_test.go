@@ -32,14 +32,14 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	}
 	selected.Repair.CaseCount = len(selected.Repair.Cases)
 	selected.Gates.GateCount = len(selected.Gates.Gates)
-	if selected.Repair.CaseCount != 7 || selected.Gates.GateCount != 4 {
+	if selected.Repair.CaseCount != 13 || selected.Gates.GateCount != 6 {
 		t.Fatal("supplemental scenario selection drifted")
 	}
 
 	var runner = NewRunner()
 	runner.runRepairCases(all.Repair)
 	runner.runRecoveryGates(all.Gates)
-	if len(runner.results) != 85 || len(runner.records) != 19 || len(runner.observations) != 0 {
+	if len(runner.results) != 85 || len(runner.records) != 36 || len(runner.observations) != 0 {
 		t.Fatalf("unexpected supplemental scope: results=%d records=%d observations=%d",
 			len(runner.results), len(runner.records), len(runner.observations))
 	}
@@ -71,7 +71,7 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	}
 	var manifest = &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	var report, reportErr = ValidateEvidenceManifest(manifest, selected, "local")
-	if reportErr != nil || report.PassedCases != 11 || report.FailedCases != 0 ||
+	if reportErr != nil || report.PassedCases != 19 || report.FailedCases != 0 ||
 		report.SkippedCases != 0 || report.ClosureComplete {
 		t.Fatalf("supplemental evidence rejected or expanded into release closure: %+v err=%v", report, reportErr)
 	}

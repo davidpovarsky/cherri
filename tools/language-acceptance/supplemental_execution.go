@@ -17,6 +17,54 @@ type supplementalProductionScenario struct {
 // These are independent executions of the complete supplemental scenarios.
 // Related original IDs are navigation only and never supply an inherited pass.
 var supplementalProductionScenarios = map[string]supplementalProductionScenario{
+	"RP05": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15RP05LiteralPublicRoutes"},
+		Tiers:           []string{"unit", "cli", "embedded"},
+		ProductionPaths: []string{"internal/language/syntax/lexer.go", "internal/language/syntax/parser.go", "language_emit_adapter.go", "language_cli_adapter.go", "mobile_compiler.go", "p15_supplemental_local_contracts_test.go"},
+	},
+	"RP09": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15RP09StaticVariantNativeDifferential"},
+		Tiers:           []string{"native-differential"},
+		ProductionPaths: []string{"actions/images.cherri", "actions/crypto.cherri", "actions/settings.cherri", "action.go", "language_backend_adapter.go", "p15_supplemental_local_contracts_test.go"},
+	},
+	"RP10": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15CanonicalCallbackCausality", "TestCompilerEndToEndParityMatrix", "TestComparatorMutationMatrix", "TestAppIntentDescriptorGeneralization", "TestCuratedAppleIntentObservedShapesRoundTrip"},
+		Tiers:           []string{"native-differential"},
+		ProductionPaths: []string{"action.go", "actions_std.go", "language_backend_adapter.go", "action_parity_test.go", "app_intent_test.go", "p15_supplemental_local_contracts_test.go"},
+	},
+	"RP30": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15M01KnownHeaderMapping", "TestP15M01NativeHeaderRoundTrip", "TestP15RP30HeaderAbsenceAndNameRoundTrip"},
+		Tiers:           []string{"unit", "native-roundtrip"},
+		ProductionPaths: []string{"internal/language/lower/lower.go", "language_backend_adapter.go", "import_fidelity.go", "hybrid_import.go", "p15_metadata_acceptance_test.go", "p15_supplemental_local_contracts_test.go"},
+	},
+	"RP31": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15M03SetupFinalActionBinding", "TestP15M03SetupNativeRoundTrip", "TestP15M03SetupBindingRejectsIdentityCorruption", "TestP15M04InvalidSetupAndEditorHoles", "TestP15M04SetupScopeAndUnused", "TestP15M04CatalogInsertionHoles"},
+		Tiers:           []string{"unit", "service", "native-roundtrip"},
+		ProductionPaths: []string{"internal/language/analysis/setup.go", "internal/language/lower/setup.go", "internal/language/service/service.go", "setup_question_binding.go", "language_backend_adapter.go", "shortcutgen.go", "p15_metadata_acceptance_test.go"},
+	},
+	"RP32": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15RP32SevenTriggerMigrationAndNativeRoundTrip", "TestP15ActionDeclarationPublicValidation", "TestP15ActionDeclarationHealthyControl"},
+		Tiers:           []string{"unit", "native-structure"},
+		ProductionPaths: []string{"internal/language/migrate/migrate.go", "internal/language/lower/lower.go", "internal/language/analysis/action_declarations.go", "internal/language/backend/parameter_codecs.go", "language_backend_adapter.go", "automations.go", "p15_action_declaration_validation_test.go", "p15_supplemental_local_contracts_test.go"},
+	},
+	"BRG05": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15CanonicalCallbackCausality", "TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend", "TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation", "TestArchitecture_D_SharedCodecMaintenance", "TestCompilerEndToEndParityMatrix", "TestCORE003_UnknownDefinitionIDHardError"},
+		Tiers:           []string{"unit", "native-structure", "integration"},
+		ProductionPaths: []string{"language_backend_adapter.go", "language_registry_adapter.go", "shared_codec.go", "action.go", "actions_std.go", "architecture_cutover_test.go", "action_parity_test.go", "p15_supplemental_local_contracts_test.go"},
+	},
+	"BRG17": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15M01KnownHeaderMapping", "TestP15M01NativeHeaderRoundTrip", "TestP15RP30HeaderAbsenceAndNameRoundTrip", "TestP15M03SetupFinalActionBinding", "TestP15M03SetupNativeRoundTrip", "TestP15M03SetupBindingRejectsIdentityCorruption", "TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"},
+		Tiers:           []string{"unit", "native-roundtrip"},
+		ProductionPaths: []string{"internal/language/lower/lower.go", "internal/language/lower/setup.go", "internal/language/migrate/migrate.go", "setup_question_binding.go", "language_backend_adapter.go", "import_fidelity.go", "automations.go", "p15_metadata_acceptance_test.go", "p15_supplemental_local_contracts_test.go"},
+	},
 	"RP01": {
 		PackagePath: "./tools/language-acceptance",
 		ModulePath:  "github.com/electrikmilk/cherri/tools/language-acceptance",
