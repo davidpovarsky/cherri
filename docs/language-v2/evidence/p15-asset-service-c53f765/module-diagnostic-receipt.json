@@ -1,0 +1,40 @@
+{
+  "phase": "asset-functional-candidate",
+  "source": "4aec8717aae2f0f139d9e94612bba3c1b62c9f13",
+  "status_before": " M action.go\n M actions_std.go\n M build_profile.go\n M internal/language/analysis/analyzer.go\n M internal/language/analysis/registry_lifetime.go\n M internal/language/backend/contracts.go\n M internal/language/lower/lower.go\n M internal/language/lsp/server.go\n M internal/language/service/service.go\n M language_backend_adapter.go\n M language_emit_adapter.go\n?? embedded_assets.go\n?? internal/language/analysis/resolved_actions.go\n?? internal/language/assets/\n?? internal/language/lsp/asset_watcher_test.go\n?? internal/language/service/asset_analysis.go\n?? p15_asset_dependency_baseline_test.go\n?? p15_editor_performance_test.go\n?? p15_embedded_asset_acceptance_test.go\n",
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    ".",
+    "-run",
+    "^TestP15S03(ImportedAsset|ModuleCall)"
+  ],
+  "available_bytes": 3100438528,
+  "started": "2026-11-19T04:17:01.708766+00:00",
+  "test_sources": {
+    "p15_asset_dependency_baseline_test.go": "e202c038eaf81c363882ff942e5b134883163d2f920167a349c4bd62439c3b82",
+    "p15_embedded_asset_acceptance_test.go": "3f24857d4238a25e06d3d75f7acfbfcf89fdcc8062e27268bea3d143d0b7bd14",
+    "internal/language/assets/cache_test.go": "31015d82d0d2b125cddb3cf4bb12bfa40254a5d74566133a3637389da1dda4bf",
+    "internal/language/lsp/asset_watcher_test.go": "cf2fc86ba8afbef9a1bccc4ff0cbddaf1a35371e556f16c6c03a4fa1adf8a332"
+  },
+  "pid": 28360,
+  "exit_code": 1,
+  "seconds": 19.843,
+  "raw_sha256": "3a1d372f49af71f6969938b19dbc1b59dd81e5610a57ca0b409c8a87ee7dd6c8",
+  "raw_bytes": 4363,
+  "totals": {
+    "pass": 1,
+    "fail": 3,
+    "skip": 0
+  },
+  "failed_tests": [
+    "TestP15S03ImportedAssetKeepsEntryRootAndModuleSource",
+    "TestP15S03ModuleCallControl/Helper",
+    "TestP15S03ModuleCallControl"
+  ],
+  "status_after": " M action.go\n M actions_std.go\n M build_profile.go\n M internal/language/analysis/analyzer.go\n M internal/language/analysis/registry_lifetime.go\n M internal/language/backend/contracts.go\n M internal/language/lower/lower.go\n M internal/language/lsp/server.go\n M internal/language/service/service.go\n M language_backend_adapter.go\n M language_emit_adapter.go\n?? embedded_assets.go\n?? internal/language/analysis/resolved_actions.go\n?? internal/language/assets/\n?? internal/language/lsp/asset_watcher_test.go\n?? internal/language/service/asset_analysis.go\n?? p15_asset_dependency_baseline_test.go\n?? p15_editor_performance_test.go\n?? p15_embedded_asset_acceptance_test.go\n"
+}

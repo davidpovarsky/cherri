@@ -1,0 +1,192 @@
+{
+  "artifact_paths": [
+    "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-e08-2708591289\\editor-e08-benchmark.json",
+    "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-e08-2708591289\\editor-e08-go.jsonl",
+    "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-e08-2708591289\\editor-e08-process.json",
+    "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-e08-2708591289\\editor-e08-stderr.log",
+    "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-benchmark.json",
+    "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-go.jsonl",
+    "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-process.json",
+    "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-stderr.log"
+  ],
+  "records": [
+    {
+      "evidence_id": "ev-local-S03-service",
+      "requirements": [
+        "S03"
+      ],
+      "tier": "service",
+      "implementation_sha": "c53f765dc8f80db433c49cc4d780e0d6d9ad27dd",
+      "test_id": "github.com/electrikmilk/cherri:TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15S03EmbeddedAssetSourceRelative|TestP15S03EditorAssetDependencyDiagnostics|TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile|TestP15S03EditorAssetChangesAndFailureRecovery|TestP15S03ShadowedNameCannotReadAssets|TestP15S03ImportedAssetKeepsEntryRootAndModuleSource|TestP15S03ModuleCallControl|TestP15S03BuiltinModuleAliasUsesCanonicalAsset|TestP15E08EditorPerformanceFixtures)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed independent production tests: TestP15S03EmbeddedAssetSourceRelative, TestP15S03EditorAssetDependencyDiagnostics, TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile, TestP15S03EditorAssetChangesAndFailureRecovery, TestP15S03ShadowedNameCannotReadAssets, TestP15S03ImportedAssetKeepsEntryRootAndModuleSource, TestP15S03ModuleCallControl, TestP15S03BuiltinModuleAliasUsesCanonicalAsset, TestP15E08EditorPerformanceFixtures; six real input fixtures, 20 measured phases and 400 raw monotonic samples; no numeric latency budget or native UI execution claimed",
+        "required_production_tests": "TestP15S03EmbeddedAssetSourceRelative\nTestP15S03EditorAssetDependencyDiagnostics\nTestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile\nTestP15S03EditorAssetChangesAndFailureRecovery\nTestP15S03ShadowedNameCannotReadAssets\nTestP15S03ImportedAssetKeepsEntryRootAndModuleSource\nTestP15S03ModuleCallControl\nTestP15S03BuiltinModuleAliasUsesCanonicalAsset\nTestP15E08EditorPerformanceFixtures",
+        "scope": "local Cherri service and canonical embedded asset cache; no native UI latency claim"
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-go.jsonl",
+          "sha256": "c8f0cb4929bf9ed70d637baf3bf24d3dbb2b6a98dfe8f4b9f89d2182379c830c"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-benchmark.json",
+          "sha256": "58723971e840fdb5ed57e038d6f8dbbee8c5c682f2b974fa3f5d0830ce485377"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-process.json",
+          "sha256": "925a4ec27dedc87e80f7fa5ac44ef6ea69b804ca09203896d7a2d3697cc36765"
+        }
+      ],
+      "detail": "Executed independent production tests: TestP15S03EmbeddedAssetSourceRelative, TestP15S03EditorAssetDependencyDiagnostics, TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile, TestP15S03EditorAssetChangesAndFailureRecovery, TestP15S03ShadowedNameCannotReadAssets, TestP15S03ImportedAssetKeepsEntryRootAndModuleSource, TestP15S03ModuleCallControl, TestP15S03BuiltinModuleAliasUsesCanonicalAsset, TestP15E08EditorPerformanceFixtures; six real input fixtures, 20 measured phases and 400 raw monotonic samples; no numeric latency budget or native UI execution claimed"
+    },
+    {
+      "evidence_id": "ev-local-S03-benchmark",
+      "requirements": [
+        "S03"
+      ],
+      "tier": "benchmark",
+      "implementation_sha": "c53f765dc8f80db433c49cc4d780e0d6d9ad27dd",
+      "test_id": "github.com/electrikmilk/cherri:TestP15E08EditorPerformanceFixtures",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15S03EmbeddedAssetSourceRelative|TestP15S03EditorAssetDependencyDiagnostics|TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile|TestP15S03EditorAssetChangesAndFailureRecovery|TestP15S03ShadowedNameCannotReadAssets|TestP15S03ImportedAssetKeepsEntryRootAndModuleSource|TestP15S03ModuleCallControl|TestP15S03BuiltinModuleAliasUsesCanonicalAsset|TestP15E08EditorPerformanceFixtures)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed independent production tests: TestP15S03EmbeddedAssetSourceRelative, TestP15S03EditorAssetDependencyDiagnostics, TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile, TestP15S03EditorAssetChangesAndFailureRecovery, TestP15S03ShadowedNameCannotReadAssets, TestP15S03ImportedAssetKeepsEntryRootAndModuleSource, TestP15S03ModuleCallControl, TestP15S03BuiltinModuleAliasUsesCanonicalAsset, TestP15E08EditorPerformanceFixtures; six real input fixtures, 20 measured phases and 400 raw monotonic samples; no numeric latency budget or native UI execution claimed",
+        "required_production_tests": "TestP15S03EmbeddedAssetSourceRelative\nTestP15S03EditorAssetDependencyDiagnostics\nTestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile\nTestP15S03EditorAssetChangesAndFailureRecovery\nTestP15S03ShadowedNameCannotReadAssets\nTestP15S03ImportedAssetKeepsEntryRootAndModuleSource\nTestP15S03ModuleCallControl\nTestP15S03BuiltinModuleAliasUsesCanonicalAsset\nTestP15E08EditorPerformanceFixtures",
+        "scope": "local Cherri service and canonical embedded asset cache; no native UI latency claim"
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-go.jsonl",
+          "sha256": "c8f0cb4929bf9ed70d637baf3bf24d3dbb2b6a98dfe8f4b9f89d2182379c830c"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-benchmark.json",
+          "sha256": "58723971e840fdb5ed57e038d6f8dbbee8c5c682f2b974fa3f5d0830ce485377"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-s03-4007406851\\editor-s03-process.json",
+          "sha256": "925a4ec27dedc87e80f7fa5ac44ef6ea69b804ca09203896d7a2d3697cc36765"
+        }
+      ],
+      "detail": "Executed independent production tests: TestP15S03EmbeddedAssetSourceRelative, TestP15S03EditorAssetDependencyDiagnostics, TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile, TestP15S03EditorAssetChangesAndFailureRecovery, TestP15S03ShadowedNameCannotReadAssets, TestP15S03ImportedAssetKeepsEntryRootAndModuleSource, TestP15S03ModuleCallControl, TestP15S03BuiltinModuleAliasUsesCanonicalAsset, TestP15E08EditorPerformanceFixtures; six real input fixtures, 20 measured phases and 400 raw monotonic samples; no numeric latency budget or native UI execution claimed"
+    },
+    {
+      "evidence_id": "ev-local-E08-benchmark",
+      "requirements": [
+        "E08"
+      ],
+      "tier": "benchmark",
+      "implementation_sha": "c53f765dc8f80db433c49cc4d780e0d6d9ad27dd",
+      "test_id": "github.com/electrikmilk/cherri:TestP15E08EditorPerformanceFixtures",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15E08EditorPerformanceFixtures)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed independent production tests: TestP15E08EditorPerformanceFixtures; six real input fixtures, 20 measured phases and 400 raw monotonic samples; no numeric latency budget or native UI execution claimed",
+        "required_production_tests": "TestP15E08EditorPerformanceFixtures",
+        "scope": "local Cherri service and canonical embedded asset cache; no native UI latency claim"
+      },
+      "artifacts": [
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-e08-2708591289\\editor-e08-go.jsonl",
+          "sha256": "1e41009c849aff792bdda4aa559c9d0390b58d8c2dfe7447e521b733e485e902"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-e08-2708591289\\editor-e08-stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-e08-2708591289\\editor-e08-benchmark.json",
+          "sha256": "18da0e6bd58bcc3d235f6a7fe376d9a1cfcd5d013928293d8b8e4d7ba66855a8"
+        },
+        {
+          "path": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\asset-service-28bc5fa\\clean-producer-artifacts-c53f765\\editor-e08-2708591289\\editor-e08-process.json",
+          "sha256": "cd6ee93ccad65e7901f626bd7048b9210b0da7318777b6d8f44073541375f63d"
+        }
+      ],
+      "detail": "Executed independent production tests: TestP15E08EditorPerformanceFixtures; six real input fixtures, 20 measured phases and 400 raw monotonic samples; no numeric latency budget or native UI execution claimed"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-19T04:53:36Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 2,
+    "passed_cases": 2,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "E08",
+        "group": "editor",
+        "requirement": "Performance fixtures small/large and embedded assets",
+        "test_level": "benchmark",
+        "executed_levels": [
+          "benchmark"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "S03",
+        "group": "text",
+        "requirement": "Large embedded local asset remains cached across unrelated edits",
+        "test_level": "service+benchmark",
+        "executed_levels": [
+          "service",
+          "benchmark"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Actual local service/cache and measured desktop compiler service latency only; no Apple UI latency, race tier, or release closure.",
+  "source_sha": "c53f765dc8f80db433c49cc4d780e0d6d9ad27dd"
+}

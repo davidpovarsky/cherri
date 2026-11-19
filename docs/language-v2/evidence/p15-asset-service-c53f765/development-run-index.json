@@ -1,0 +1,132 @@
+{
+  "format_version": 1,
+  "scope": "Public synthetic baseline and intermediate development evidence; no private corpus or Apple runtime claim",
+  "runs": [
+    {
+      "phase": "baseline",
+      "note": "Original implementation: source-relative asset compilation and service missing/traversal diagnostics fail; healthy controls remain.",
+      "receipt": "baseline-receipt.json",
+      "source": "2f38ea4d31e130792c8cb976f49d8618ca8b4420",
+      "exit_code": 1,
+      "totals": {
+        "pass": 2,
+        "fail": 4,
+        "skip": 0
+      },
+      "raw_sha256": "3ed0befa44fe089b6f23bd17991abd89b38a3aabc72f2f3c521ee42c4d34548a",
+      "raw_bytes": 6508
+    },
+    {
+      "phase": "functional-1",
+      "note": "First implementation: two healthy fixtures used unsupported fn spelling; corrected to function without changing expected outcomes.",
+      "receipt": "functional-1-receipt.json",
+      "source": "4aec8717aae2f0f139d9e94612bba3c1b62c9f13",
+      "exit_code": 1,
+      "totals": {
+        "pass": 18,
+        "fail": 2,
+        "skip": 0
+      },
+      "raw_sha256": "5a61d94d38afe37ce2d79c9577802caa339c1682e08c1c6b02cc2635dcaa31e3",
+      "raw_bytes": 21096
+    },
+    {
+      "phase": "functional-2",
+      "note": "Asset behaviors pass, but uppercase local-module callee fails; isolated as a generic module defect.",
+      "receipt": "functional-2-receipt.json",
+      "source": "4aec8717aae2f0f139d9e94612bba3c1b62c9f13",
+      "exit_code": 1,
+      "totals": {
+        "pass": 19,
+        "fail": 1,
+        "skip": 0
+      },
+      "raw_sha256": "0922550762f167161f2fd6db117c9b5315f693f9caf8563754338b2bd0d7f7e7",
+      "raw_bytes": 20421
+    },
+    {
+      "phase": "module-diagnostic",
+      "note": "Lowercase literal control passes; uppercase literal and uppercase imported asset fail before alias repair.",
+      "receipt": "module-diagnostic-receipt.json",
+      "source": "4aec8717aae2f0f139d9e94612bba3c1b62c9f13",
+      "exit_code": 1,
+      "totals": {
+        "pass": 1,
+        "fail": 3,
+        "skip": 0
+      },
+      "raw_sha256": "3a1d372f49af71f6969938b19dbc1b59dd81e5610a57ca0b409c8a87ee7dd6c8",
+      "raw_bytes": 4363
+    },
+    {
+      "phase": "benchmark-2",
+      "note": "All six actual fixtures execute, but coarse Windows interrupt-clock warm measurements are zero and the strict report rejects them.",
+      "receipt": "benchmark-2-receipt.json",
+      "source": "4aec8717aae2f0f139d9e94612bba3c1b62c9f13",
+      "exit_code": 1,
+      "totals": {
+        "pass": 0,
+        "fail": 7,
+        "skip": 0
+      },
+      "raw_sha256": "4a08bf64c8c357c6caa7fa3f65d89dbbaf3f40c75847cebe539fecf4b035295d",
+      "raw_bytes": 7964
+    },
+    {
+      "phase": "clock-diagnostic",
+      "note": "Actual20 warm small-source samples are zero; the selected diagnostic run is not full benchmark coverage.",
+      "receipt": "clock-diagnostic-receipt.json",
+      "source": "4aec8717aae2f0f139d9e94612bba3c1b62c9f13",
+      "exit_code": 1,
+      "totals": {
+        "pass": 0,
+        "fail": 2,
+        "skip": 0
+      },
+      "raw_sha256": "ae11b39ee6916f702748004c6f351334fc72cdaa22f303ba2b2bcfe7b3e143d9",
+      "raw_bytes": 2650
+    },
+    {
+      "phase": "functional-3",
+      "note": "Working-source functional and high-resolution QPC benchmark:30PASS; dirty-source/patch receipts only, not formal exact-commit acceptance.",
+      "receipt": "functional-3-receipt.json",
+      "source": "dbb63eec60931458fc8a3f9eb2fa05cb9bb9ba51",
+      "exit_code": 0,
+      "totals": {
+        "pass": 30,
+        "fail": 0,
+        "skip": 0
+      },
+      "raw_sha256": "a696d91b47e204e4de19f84ea111dd84de988147a5f93033625a7abce7808c30",
+      "raw_bytes": 91491
+    },
+    {
+      "phase": "builtin-alias-baseline",
+      "note": "Unqualified healthy asset passes; both qualified builtin aliases lose service/canonical identity and fail.",
+      "receipt": "builtin-alias-baseline-receipt.json",
+      "source": "dbb63eec60931458fc8a3f9eb2fa05cb9bb9ba51",
+      "exit_code": 1,
+      "totals": {
+        "pass": 1,
+        "fail": 3,
+        "skip": 0
+      },
+      "raw_sha256": "418084a401ed187a93a98c324b68df08d3a2087f3e59d2b95a4d8e52cf931172",
+      "raw_bytes": 6607
+    },
+    {
+      "phase": "intake-1",
+      "note": "Working-source strict intake and actual owned-process cleanup controls:63PASS; no production S03/E08 closure from these metadata controls.",
+      "receipt": "intake-1-receipt.json",
+      "source": "dbb63eec60931458fc8a3f9eb2fa05cb9bb9ba51",
+      "exit_code": 0,
+      "totals": {
+        "pass": 63,
+        "fail": 0,
+        "skip": 0
+      },
+      "raw_sha256": "529cabce56290db388a6b07180cac7c0c6625cb0062e8ce6525b0380c9954575",
+      "raw_bytes": 70311
+    }
+  ]
+}

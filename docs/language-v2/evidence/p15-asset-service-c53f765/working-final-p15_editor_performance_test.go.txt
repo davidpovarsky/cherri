@@ -1,0 +1,295 @@
+package main
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"math"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
+	"sort"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/electrikmilk/cherri/internal/language/assets"
+	"github.com/electrikmilk/cherri/internal/language/service"
+)
+
+type p15EditorClock struct {
+	Name        string
+	FrequencyHz int64
+	Now         func() int64
+}
+
+type p15EditorEnvironment struct {
+	SourceCommit     string `json:"source_commit"`
+	SourceTreeClean  bool   `json:"source_tree_clean"`
+	GoVersion        string `json:"go_version"`
+	OS               string `json:"os"`
+	Arch             string `json:"arch"`
+	CPU              string `json:"cpu"`
+	LogicalCPUs      int    `json:"logical_cpus"`
+	GOMAXPROCS       int    `json:"gomaxprocs"`
+	MemoryBytes      uint64 `json:"memory_bytes"`
+	Clock            string `json:"clock"`
+	ClockFrequencyHz int64  `json:"clock_frequency_hz"`
+	CacheColdScope   string `json:"cache_cold_scope"`
+}
+
+type p15EditorMeasurement struct {
+	Fixture      string    `json:"fixture"`
+	Phase        string    `json:"phase"`
+	SourceBytes  int       `json:"source_bytes"`
+	SourceSHA256 string    `json:"source_sha256"`
+	AssetBytes   int       `json:"asset_bytes"`
+	AssetKind    string    `json:"asset_kind"`
+	InputBytes   []int     `json:"input_bytes"`
+	InputSHA256  []string  `json:"input_sha256"`
+	AssetSHA256  []string  `json:"asset_sha256"`
+	SamplesUS    []float64 `json:"samples_us"`
+	SamplesTicks []int64   `json:"samples_ticks"`
+	P50US        float64   `json:"p50_us"`
+	P95US        float64   `json:"p95_us"`
+	Reads        uint64    `json:"reads"`
+	ReadBytes    uint64    `json:"read_bytes"`
+	Encodes      uint64    `json:"encodes"`
+	Hits         uint64    `json:"hits"`
+}
+
+type p15EditorReport struct {
+	FormatVersion        int                    `json:"format_version"`
+	SamplesPerPhase      int                    `json:"samples_per_phase"`
+	Environment          p15EditorEnvironment   `json:"environment"`
+	Measurements         []p15EditorMeasurement `json:"measurements"`
+	NumericLatencyBudget string                 `json:"numeric_latency_budget"`
+	NativeUIExecution    bool                   `json:"native_ui_execution"`
+}
+
+func p15EditorHardware(t *testing.T, clock p15EditorClock) p15EditorEnvironment {
+	t.Helper()
+	environment := p15EditorEnvironment{
+		GoVersion: runtime.Version(), OS: runtime.GOOS, Arch: runtime.GOARCH,
+		LogicalCPUs: runtime.NumCPU(), GOMAXPROCS: runtime.GOMAXPROCS(0),
+		Clock: clock.Name, ClockFrequencyHz: clock.FrequencyHz,
+		CacheColdScope: "new service and Cherri asset cache; OS filesystem cache is not evicted",
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	commit, err := exec.CommandContext(ctx, "git", "rev-parse", "HEAD").Output()
+	if err != nil {
+		t.Fatal("benchmark source revision unavailable")
+	}
+	environment.SourceCommit = strings.TrimSpace(string(commit))
+	status, err := exec.CommandContext(ctx, "git", "status", "--porcelain", "--untracked-files=all").Output()
+	if err != nil {
+		t.Fatal("benchmark source cleanliness unavailable")
+	}
+	environment.SourceTreeClean = len(bytes.TrimSpace(status)) == 0
+	switch runtime.GOOS {
+	case "windows":
+		script := "$ErrorActionPreference='Stop'; [pscustomobject]@{cpu=(Get-CimInstance Win32_Processor | Select-Object -First 1 -ExpandProperty Name); memory=[uint64](Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory} | ConvertTo-Json -Compress"
+		raw, err := exec.CommandContext(ctx, "powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script).Output()
+		if err != nil {
+			t.Fatalf("benchmark hardware query failed: %v", err)
+		}
+		var hardware struct {
+			CPU    string `json:"cpu"`
+			Memory uint64 `json:"memory"`
+		}
+		if err := json.Unmarshal(bytes.TrimPrefix(raw, []byte{0xef, 0xbb, 0xbf}), &hardware); err != nil {
+			t.Fatal(err)
+		}
+		environment.CPU, environment.MemoryBytes = hardware.CPU, hardware.Memory
+	case "linux":
+		cpu, err := os.ReadFile("/proc/cpuinfo")
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, line := range strings.Split(string(cpu), "\n") {
+			key, value, ok := strings.Cut(line, ":")
+			if ok && (strings.TrimSpace(key) == "model name" || strings.TrimSpace(key) == "Hardware") {
+				environment.CPU = strings.TrimSpace(value)
+				break
+			}
+		}
+		if environment.CPU == "" {
+			environment.CPU = runtime.GOARCH + " /proc/cpuinfo processor architecture"
+		}
+		memory, err := os.ReadFile("/proc/meminfo")
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, line := range strings.Split(string(memory), "\n") {
+			if fields := strings.Fields(line); len(fields) >= 2 && fields[0] == "MemTotal:" {
+				value, err := strconv.ParseUint(fields[1], 10, 64)
+				if err != nil {
+					t.Fatal(err)
+				}
+				environment.MemoryBytes = value * 1024
+			}
+		}
+	case "darwin":
+		cpu, err := exec.CommandContext(ctx, "sysctl", "-n", "machdep.cpu.brand_string").Output()
+		if err != nil {
+			t.Fatal(err)
+		}
+		memory, err := exec.CommandContext(ctx, "sysctl", "-n", "hw.memsize").Output()
+		if err != nil {
+			t.Fatal(err)
+		}
+		environment.CPU = strings.TrimSpace(string(cpu))
+		environment.MemoryBytes, err = strconv.ParseUint(strings.TrimSpace(string(memory)), 10, 64)
+		if err != nil {
+			t.Fatal(err)
+		}
+	default:
+		t.Fatalf("benchmark hardware capture not implemented for %s", runtime.GOOS)
+	}
+	if len(environment.SourceCommit) != 40 || environment.CPU == "" || environment.MemoryBytes == 0 {
+		t.Fatal("benchmark environment is incomplete")
+	}
+	return environment
+}
+
+func p15EditorSource(statements int) string {
+	var source strings.Builder
+	for index := 0; index < statements; index++ {
+		fmt.Fprintf(&source, "let value%d = %d\n", index, index)
+	}
+	return source.String()
+}
+
+func p15EditorPercentile(samples []float64, percentile float64) float64 {
+	sorted := append([]float64(nil), samples...)
+	sort.Float64s(sorted)
+	return sorted[int(math.Ceil(percentile*float64(len(sorted))))-1]
+}
+
+// TestP15E08EditorPerformanceFixtures is an executed benchmark, not a latency
+// promise. The immutable S03/E08 contracts specify no numeric millisecond budget.
+// Raw samples and complete inputs/environment allow reviewers to compare runs.
+func TestP15E08EditorPerformanceFixtures(t *testing.T) {
+	const samples = 20
+	clock := p15EditorMeasurementClock(t)
+	report := p15EditorReport{
+		FormatVersion: 1, SamplesPerPhase: samples, Environment: p15EditorHardware(t, clock),
+		NumericLatencyBudget: "not specified by the immutable S03/E08 contracts",
+		NativeUIExecution:    false,
+	}
+	cases := []struct {
+		name, source, kind string
+		asset              []byte
+	}{
+		{name: "small_source", source: p15EditorSource(64)},
+		{name: "medium_source", source: p15EditorSource(1024)},
+		{name: "large_source", source: p15EditorSource(8192)},
+		{name: "inline_text_4mib", source: "let inlineAsset = r\"\"\"" + strings.Repeat("P", 4<<20) + "\"\"\"\n"},
+		{name: "local_text_8mib", source: p15EditorSource(64) + "embedFile(\"payload.dat\")\n", kind: "text", asset: bytes.Repeat([]byte("A"), 8<<20)},
+		{name: "local_binary_8mib", source: p15EditorSource(64) + "embedFile(\"payload.dat\")\n", kind: "binary", asset: bytes.Repeat([]byte{0, 255, 128, 1, 2, 3, 4, 5}, 1<<20)},
+	}
+	for _, fixture := range cases {
+		t.Run(fixture.name, func(t *testing.T) {
+			dir := t.TempDir()
+			uri, assetPath := filepath.Join(dir, "entry.cherri"), filepath.Join(dir, "payload.dat")
+			if fixture.asset != nil {
+				p15AssetWrite(t, assetPath, fixture.asset, 1)
+			}
+			phases := []string{"cold_service_cache", "warm_analyze", "unrelated_edit"}
+			if fixture.asset != nil {
+				phases = append(phases, "asset_edit")
+			}
+			for _, phase := range phases {
+				measurement := p15EditorMeasurement{Fixture: fixture.name, Phase: phase, SourceBytes: len(fixture.source), SourceSHA256: p15AssetSHA([]byte(fixture.source)), AssetBytes: len(fixture.asset), AssetKind: fixture.kind}
+				cache := assets.New(0, 0, 0)
+				svc := service.NewServiceWithAssetCache(nil, cache)
+				if phase != "cold_service_cache" {
+					svc.OpenDocument(uri, 1, fixture.source)
+					p15AssetAnalyze(t, svc, uri)
+				}
+				before := cache.Metrics()
+				for index := 0; index < samples; index++ {
+					input := fixture.source
+					assetDigest := ""
+					if phase == "unrelated_edit" {
+						input += fmt.Sprintf("// unrelated edit %d\n", index)
+					}
+					if fixture.asset != nil {
+						if phase == "asset_edit" {
+							fixture.asset[0] = byte(66 + index)
+							p15AssetWrite(t, assetPath, fixture.asset, 100+index)
+						}
+						assetDigest = p15AssetSHA(fixture.asset)
+					}
+					// Input preparation/hash/write is outside the editor timing.
+					measurement.InputBytes = append(measurement.InputBytes, len(input))
+					measurement.InputSHA256 = append(measurement.InputSHA256, p15AssetSHA([]byte(input)))
+					if assetDigest != "" {
+						measurement.AssetSHA256 = append(measurement.AssetSHA256, assetDigest)
+					}
+					start := clock.Now()
+					switch phase {
+					case "cold_service_cache":
+						cache = assets.New(0, 0, 0)
+						svc = service.NewServiceWithAssetCache(nil, cache)
+						svc.OpenDocument(uri, 1, input)
+					case "warm_analyze", "asset_edit":
+					case "unrelated_edit":
+						svc.ChangeDocument(uri, index+2, input)
+					default:
+						t.Fatal("unknown benchmark phase")
+					}
+					p15AssetAnalyze(t, svc, uri)
+					ticks := clock.Now() - start
+					measurement.SamplesTicks = append(measurement.SamplesTicks, ticks)
+					measurement.SamplesUS = append(measurement.SamplesUS, float64(ticks)*1e6/float64(clock.FrequencyHz))
+					if fixture.asset != nil {
+						dependencies := svc.AssetDependencies(uri)
+						if len(dependencies) != 1 || dependencies[0].SHA256 != assetDigest || dependencies[0].Bytes != int64(len(fixture.asset)) {
+							t.Fatal("timed editor operation did not use the actual asset version")
+						}
+					}
+					if phase == "cold_service_cache" {
+						observed := cache.Metrics()
+						measurement.Reads += observed.Reads
+						measurement.ReadBytes += observed.ReadBytes
+						measurement.Encodes += observed.Encodes
+						measurement.Hits += observed.Hits
+					}
+				}
+				if phase != "cold_service_cache" {
+					after := cache.Metrics()
+					measurement.Reads = after.Reads - before.Reads
+					measurement.ReadBytes = after.ReadBytes - before.ReadBytes
+					measurement.Encodes = after.Encodes - before.Encodes
+					measurement.Hits = after.Hits - before.Hits
+				}
+				measurement.P50US = p15EditorPercentile(measurement.SamplesUS, 0.50)
+				measurement.P95US = p15EditorPercentile(measurement.SamplesUS, 0.95)
+				expectedReads := uint64(0)
+				if fixture.asset != nil && (phase == "cold_service_cache" || phase == "asset_edit") {
+					expectedReads = samples
+				}
+				if measurement.Reads != expectedReads || measurement.Encodes != expectedReads || measurement.ReadBytes != expectedReads*uint64(len(fixture.asset)) {
+					t.Fatalf("benchmark did not execute its declared cache phase: %+v", measurement)
+				}
+				if len(measurement.SamplesUS) != samples || measurement.P50US <= 0 || measurement.P95US < measurement.P50US {
+					t.Fatalf("invalid measured percentiles phase=%s p50=%g p95=%g samples=%v", phase, measurement.P50US, measurement.P95US, measurement.SamplesUS)
+				}
+				report.Measurements = append(report.Measurements, measurement)
+			}
+		})
+	}
+	if len(report.Measurements) != 20 {
+		t.Fatalf("missing benchmark fixture/phase: %d", len(report.Measurements))
+	}
+	raw, err := json.Marshal(report)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("P15_EDITOR_BENCHMARK=" + string(raw))
+}

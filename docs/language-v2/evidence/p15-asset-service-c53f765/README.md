@@ -1,0 +1,13 @@
+# Embedded asset service and performance evidence
+
+This archive preserves the actual development failures, corrected production gates, and final clean independent S03/E08 producer run on `c53f765dc8f80db433c49cc4d780e0d6d9ad27dd`. The production change is `6428765f28451df26ac9ddc9f7929f4f17866592`.
+
+The clean final producer run (`job_037d2a540fc3`) passed 70 named control/outer tests with no failures or skips. It independently executed S03 and E08 against the same clean source, each measuring six real fixtures, twenty measured phases and 400 raw monotonic samples. The selected report contains two complete local requirements and explicitly records `closure_complete: false`. The complete 179-item project report must be rerun after integration before updating project completion.
+
+S03 covers the local service and canonical compiler cache: source-relative assets, real byte reads and encodes, cache reuse across unrelated edits, imported module/alias identity, watcher invalidation, replacement and failure recovery, bounded retention, and unchanged canonical serializer behavior. E08 records hardware, Go/source versions, actual input sizes and hashes, raw tick samples, p50/p95 values, and distinct small/large/inline/local text/local binary paths. No numeric latency budget was invented. No iOS UI latency, Apple runtime, race-tier result, installed consumer state or release closure is claimed.
+
+The original baseline demonstrated real source-relative compile and asset-diagnostic failures. Intermediate failures preserve the fixture spelling correction, uppercase module and stable canonical alias defects, and the Windows coarse-clock result that rejected zero-duration samples. The fixed benchmark uses the actual Windows high-resolution performance counter; it does not substitute fabricated timing values. Driver setup failures are retained separately and do not count as executed tests. Working-source runs are labelled as such in their original receipts.
+
+The final clean outer JSONL is 91,137 bytes with SHA256 `78fcf033e450e22f5e4e8e2dd74873ab3ef62f54d2e14f2c3230ea0927bdb667`. All eight underlying actual producer artifacts are present beneath `clean-producer-artifacts-c53f765/`. Original process/proof receipts retain their original absolute host paths and bytes; `archive-index.json` maps those original relative names to the preserved archive names and SHA256 values. It is an archive index, not a newly executed acceptance manifest.
+
+All 103 original members are byte-preserved. Loose Go source snapshots have the suffix `.go.txt` so recursive Go package discovery cannot treat archived test source as a live package. Source ZIP members remain unchanged. The local attributes disable text normalization for this evidence.

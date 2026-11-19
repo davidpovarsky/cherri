@@ -1,0 +1,43 @@
+{
+  "phase": "asset-functional-candidate",
+  "source": "cf4338256379550b2cea58c53c7111e0798ddd0f",
+  "status_before": " M action.go\n M actions_std.go\n M build_profile.go\n M internal/language/analysis/analyzer.go\n M internal/language/analysis/registry_lifetime.go\n M internal/language/backend/contracts.go\n M internal/language/lower/lower.go\n M internal/language/lsp/server.go\n M internal/language/service/service.go\n M language_backend_adapter.go\n M language_emit_adapter.go\n M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/execution_audit.go\n M tools/language-acceptance/main.go\n?? docs/language-v2/p15-asset-service-acceptance.md\n?? embedded_assets.go\n?? internal/language/analysis/resolved_actions.go\n?? internal/language/assets/\n?? internal/language/lsp/asset_watcher_test.go\n?? internal/language/service/asset_analysis.go\n?? p15_asset_dependency_baseline_test.go\n?? p15_editor_clock_other_test.go\n?? p15_editor_clock_windows_test.go\n?? p15_editor_performance_test.go\n?? p15_embedded_asset_acceptance_test.go\n?? tools/language-acceptance/editor_benchmark_intake.go\n?? tools/language-acceptance/editor_performance_execution.go\n?? tools/language-acceptance/editor_performance_execution_test.go\n?? tools/language-acceptance/editor_process_other.go\n?? tools/language-acceptance/editor_process_windows.go\n",
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=180s",
+    ".",
+    "./internal/language/assets",
+    "./internal/language/lsp",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestP15S03|TestAssetCache|TestLSPAssetWatcher|TestEditor|TestAcceptanceCLILocalRunnerOutputsFollowDestination)"
+  ],
+  "available_bytes": 2952830976,
+  "started": "2026-11-19T04:47:54.640863+00:00",
+  "test_sources": {
+    "p15_asset_dependency_baseline_test.go": "e202c038eaf81c363882ff942e5b134883163d2f920167a349c4bd62439c3b82",
+    "p15_embedded_asset_acceptance_test.go": "9d072a24ade84a74328d5ed6b1d84fc8fea2e24c1044e715e76e5a6a43a6c1a3",
+    "internal/language/assets/cache_test.go": "31015d82d0d2b125cddb3cf4bb12bfa40254a5d74566133a3637389da1dda4bf",
+    "internal/language/lsp/asset_watcher_test.go": "cf2fc86ba8afbef9a1bccc4ff0cbddaf1a35371e556f16c6c03a4fa1adf8a332",
+    "tools/language-acceptance/editor_performance_execution_test.go": "81888634927a336fcd802ee648f063351e1bf6206af9218dc9185b45d7ee178c",
+    "tools/language-acceptance/editor_performance_execution.go": "ff56fcde3edba2feb57aefc9223ab930c30652a1e044932a8639364d8fdddd57",
+    "tools/language-acceptance/editor_benchmark_intake.go": "18a3eb862681f8be206548f7bf0ac297e234c633b1d4984ea0ca9328022da58f",
+    "p15_editor_performance_test.go": "6ce4d2abc6f190d443ec409dc559143d5c47a7838c841e7c947385dfb6794931"
+  },
+  "pid": 33552,
+  "exit_code": 0,
+  "seconds": 45.843,
+  "raw_sha256": "70d7c70e78e5ced45de39f64b05ff434b514fda032ad779dbc2aec272ee77b26",
+  "raw_bytes": 102223,
+  "totals": {
+    "pass": 96,
+    "fail": 0,
+    "skip": 0
+  },
+  "failed_tests": [],
+  "status_after": " M action.go\n M actions_std.go\n M build_profile.go\n M internal/language/analysis/analyzer.go\n M internal/language/analysis/registry_lifetime.go\n M internal/language/backend/contracts.go\n M internal/language/lower/lower.go\n M internal/language/lsp/server.go\n M internal/language/service/service.go\n M language_backend_adapter.go\n M language_emit_adapter.go\n M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/execution_audit.go\n M tools/language-acceptance/main.go\n?? docs/language-v2/p15-asset-service-acceptance.md\n?? embedded_assets.go\n?? internal/language/analysis/resolved_actions.go\n?? internal/language/assets/\n?? internal/language/lsp/asset_watcher_test.go\n?? internal/language/service/asset_analysis.go\n?? p15_asset_dependency_baseline_test.go\n?? p15_editor_clock_other_test.go\n?? p15_editor_clock_windows_test.go\n?? p15_editor_performance_test.go\n?? p15_embedded_asset_acceptance_test.go\n?? tools/language-acceptance/editor_benchmark_intake.go\n?? tools/language-acceptance/editor_performance_execution.go\n?? tools/language-acceptance/editor_performance_execution_test.go\n?? tools/language-acceptance/editor_process_other.go\n?? tools/language-acceptance/editor_process_windows.go\n"
+}

@@ -1,0 +1,38 @@
+{
+  "phase": "original-production-baseline",
+  "source": "2f38ea4d31e130792c8cb976f49d8618ca8b4420",
+  "status_before": "?? p15_asset_dependency_baseline_test.go\n",
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=90s",
+    ".",
+    "-run",
+    "^TestP15S03(EmbeddedAssetSourceRelative|EditorAssetDependencyDiagnostics)$"
+  ],
+  "available_bytes": 2855346176,
+  "started": "2026-11-19T04:05:17.478268+00:00",
+  "test_sources": {
+    "p15_asset_dependency_baseline_test.go": "e202c038eaf81c363882ff942e5b134883163d2f920167a349c4bd62439c3b82"
+  },
+  "pid": 4284,
+  "exit_code": 1,
+  "seconds": 48.781,
+  "raw_sha256": "3ed0befa44fe089b6f23bd17991abd89b38a3aabc72f2f3c521ee42c4d34548a",
+  "raw_bytes": 6508,
+  "totals": {
+    "pass": 2,
+    "fail": 4,
+    "skip": 0
+  },
+  "failed_tests": [
+    "TestP15S03EmbeddedAssetSourceRelative",
+    "TestP15S03EditorAssetDependencyDiagnostics/missing_local_asset",
+    "TestP15S03EditorAssetDependencyDiagnostics/escaped_local_asset",
+    "TestP15S03EditorAssetDependencyDiagnostics"
+  ],
+  "status_after": "?? p15_asset_dependency_baseline_test.go\n"
+}

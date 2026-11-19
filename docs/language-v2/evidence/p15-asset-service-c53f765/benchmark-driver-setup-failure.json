@@ -1,0 +1,31 @@
+{
+  "scope": "driver syntax failure before any Go command started",
+  "job": {
+    "ok": true,
+    "job": {
+      "id": "job_9d78676710b3",
+      "type": "job_result",
+      "source": "script_run@host_7ec8382e82747448",
+      "severity": "warning",
+      "tool": "script_run",
+      "host": "host_7ec8382e82747448",
+      "status": "failed",
+      "exit_code": 1,
+      "created_at": 1795061938.6865075,
+      "started_at": "2026-11-19T04:18:58.763908+00:00",
+      "finished_at": "2026-11-19T04:18:58.845484+00:00",
+      "duration_s": 0.08,
+      "error": null,
+      "output_truncated": false,
+      "timeout_s": 270,
+      "read": false,
+      "notified": {
+        "telegram": null,
+        "resend": null
+      },
+      "notify_spec": {},
+      "output": "File \"C:\\ProgramData\\SentinelX\\uploads\\.sentinelx_uploads\\script_job_80bd2bf2e0fb463e8bc4486a6653ed99\\script.py\", line 14\r\n    cmd=[r'C:\\Program Files\\Go\\bin\\go.exe','test','-p=1','-count=1','-json','-timeout=180s','.','-run','^TestP15E08EditorPerformanceFixtures]\r\n                                                                                                       ^\r\nSyntaxError: unterminated string literal (detected at line 14)"
+    }
+  },
+  "driver_sha256": "433158f28274587ca81742b45cb717999e6726fff26062298883c50275173da1"
+}

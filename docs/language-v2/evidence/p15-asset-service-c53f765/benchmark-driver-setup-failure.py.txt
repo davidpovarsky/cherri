@@ -1,0 +1,76 @@
+from pathlib import Path
+import os,json,subprocess,time,hashlib,sys,datetime,ctypes
+p=Path(r'C:\Users\DAVID\Code\cherri-p10r15-asset-service-20261119')
+e=Path(r'C:\Users\DAVID\Code\cherri-p10r15-evidence-20261119\asset-service-28bc5fa')
+e.mkdir(parents=True,exist_ok=True)
+class MEMORYSTATUSEX(ctypes.Structure):
+ _fields_=[("dwLength",ctypes.c_ulong),("dwMemoryLoad",ctypes.c_ulong)]+[(x,ctypes.c_ulonglong) for x in ["ullTotalPhys","ullAvailPhys","ullTotalPageFile","ullAvailPageFile","ullTotalVirtual","ullAvailVirtual","ullAvailExtendedVirtual"]]
+memory=MEMORYSTATUSEX();memory.dwLength=ctypes.sizeof(memory)
+if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(memory)):raise RuntimeError("memory query failed")
+available=memory.ullAvailPhys
+print(json.dumps({"available_bytes":available}),flush=True)
+if available<1800000000:raise SystemExit("memory gate: focused run not started")
+env=os.environ.copy();env['GOMAXPROCS']='1';env['GOFLAGS']='-p=1'
+cmd=[r'C:\Program Files\Go\bin\go.exe','test','-p=1','-count=1','-json','-timeout=180s','.','-run','^TestP15E08EditorPerformanceFixtures]
+receipt={"phase":"asset-functional-candidate","source":subprocess.check_output(['git','rev-parse','HEAD'],cwd=p,text=True).strip(),"status_before":subprocess.check_output(['git','status','--porcelain'],cwd=p,text=True),"command":cmd,"available_bytes":available,"started":datetime.datetime.now(datetime.timezone.utc).isoformat()}
+for f in ['p15_editor_performance_test.go','p15_embedded_asset_acceptance_test.go']:
+ data=(p/f).read_bytes();(e/('benchmark-1-'+Path(f).name)).write_bytes(data);receipt.setdefault('test_sources',{})[f]=hashlib.sha256(data).hexdigest()
+start=time.monotonic()
+with (e/'benchmark-1-go.jsonl').open('wb') as log:
+ proc=subprocess.Popen(cmd,cwd=p,env=env,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.BELOW_NORMAL_PRIORITY_CLASS)
+ receipt['pid']=proc.pid
+ try:receipt['exit_code']=proc.wait(timeout=230)
+ except subprocess.TimeoutExpired:
+  receipt['timeout']=True
+  receipt['terminated_owned_root_pid']=proc.pid
+  result=subprocess.run(['taskkill','/PID',str(proc.pid),'/T','/F'],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=20)
+  receipt['cleanup_exit_code']=result.returncode
+  proc.wait(timeout=20);receipt['exit_code']=proc.returncode
+receipt['seconds']=round(time.monotonic()-start,3)
+raw=(e/'benchmark-1-go.jsonl').read_bytes();receipt['raw_sha256']=hashlib.sha256(raw).hexdigest();receipt['raw_bytes']=len(raw)
+events=[]
+for line in raw.decode('utf-8',errors='replace').splitlines():
+ try:events.append(json.loads(line))
+ except ValueError:pass
+receipt['totals']={a:sum(x.get('Action')==a and 'Test' in x for x in events) for a in ['pass','fail','skip']}
+receipt['failed_tests']=[x['Test'] for x in events if x.get('Action')=='fail' and 'Test' in x]
+receipt['status_after']=subprocess.check_output(['git','status','--porcelain'],cwd=p,text=True)
+(e/'benchmark-1-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(receipt),flush=True)
+print(''.join(x.get('Output','') for x in events if x.get('Action')=='output' and any(y in x.get('Output','') for y in ['expected','compiled','FAIL','panic','undefined','cannot','syntax error','unknown','rejected','failed','lost','S03_ASSET'])),flush=True)
+]
+receipt={"phase":"asset-functional-candidate","source":subprocess.check_output(['git','rev-parse','HEAD'],cwd=p,text=True).strip(),"status_before":subprocess.check_output(['git','status','--porcelain'],cwd=p,text=True),"command":cmd,"available_bytes":available,"started":datetime.datetime.now(datetime.timezone.utc).isoformat()}
+for f in ['p15_asset_dependency_baseline_test.go','p15_embedded_asset_acceptance_test.go','internal/language/assets/cache_test.go','internal/language/lsp/asset_watcher_test.go']:
+ data=(p/f).read_bytes();(e/('benchmark-1-'+Path(f).name)).write_bytes(data);receipt.setdefault('test_sources',{})[f]=hashlib.sha256(data).hexdigest()
+start=time.monotonic()
+with (e/'benchmark-1-go.jsonl').open('wb') as log:
+ proc=subprocess.Popen(cmd,cwd=p,env=env,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.BELOW_NORMAL_PRIORITY_CLASS)
+ receipt['pid']=proc.pid
+ try:receipt['exit_code']=proc.wait(timeout=200)
+ except subprocess.TimeoutExpired:
+  receipt['timeout']=True
+  receipt['terminated_owned_root_pid']=proc.pid
+  result=subprocess.run(['taskkill','/PID',str(proc.pid),'/T','/F'],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=20)
+  receipt['cleanup_exit_code']=result.returncode
+  proc.wait(timeout=20);receipt['exit_code']=proc.returncode
+receipt['seconds']=round(time.monotonic()-start,3)
+raw=(e/'benchmark-1-go.jsonl').read_bytes();receipt['raw_sha256']=hashlib.sha256(raw).hexdigest();receipt['raw_bytes']=len(raw)
+events=[]
+for line in raw.decode('utf-8',errors='replace').splitlines():
+ try:events.append(json.loads(line))
+ except ValueError:pass
+receipt['totals']={a:sum(x.get('Action')==a and 'Test' in x for x in events) for a in ['pass','fail','skip']}
+receipt['failed_tests']=[x['Test'] for x in events if x.get('Action')=='fail' and 'Test' in x]
+receipt['status_after']=subprocess.check_output(['git','status','--porcelain'],cwd=p,text=True)
+(e/'benchmark-1-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(receipt),flush=True)
+print(''.join(x.get('Output','') for x in events if x.get('Action')=='output' and any(y in x.get('Output','') for y in ['expected','compiled','FAIL','panic','undefined','cannot','syntax error','unknown','rejected','failed','lost','S03_ASSET'])),flush=True)
+
+bench_output=''.join(x.get('Output','') for x in events if x.get('Test')=='TestP15E08EditorPerformanceFixtures')
+marker='P15_EDITOR_BENCHMARK='
+reports=[line.split(marker,1)[1].strip() for line in bench_output.splitlines() if marker in line]
+if len(reports)==1:
+ report=json.loads(reports[0])
+ (e/'benchmark-1-report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+ print(json.dumps({"environment":report["environment"],"measurements":[{k:row[k] for k in ["fixture","phase","source_bytes","asset_bytes","p50_us","p95_us","reads","encodes"]} for row in report["measurements"]]}),flush=True)
+else: print(json.dumps({"benchmark_report_count":len(reports)}),flush=True)
