@@ -17,7 +17,7 @@ import (
 )
 
 // This is a deliberately synthetic intake model. It exercises receipt rejection
-// and is never an authorized source for S03/E08 production evidence.
+// and is never an authorized source for S03/E08/RP29 production evidence.
 func editorIntakeModel() editorPerformanceReport {
 	report := editorPerformanceReport{
 		FormatVersion: 1, SamplesPerPhase: 20,
@@ -117,6 +117,12 @@ func editorModelStream(t *testing.T, id string, report editorPerformanceReport) 
 			}
 			emit("output", test, editorBenchmarkMarker+string(payload)+"\n")
 		}
+		for _, child := range assetAuthorizationRequiredSubtests(editorProductionTests[id]) {
+			if strings.HasPrefix(child, test+"/") {
+				emit("run", child, "")
+				emit("pass", child, "")
+			}
+		}
 		emit("pass", test, "")
 	}
 	emit("pass", "", "")
@@ -144,7 +150,7 @@ func editorModelRecord(t *testing.T, id string, report editorPerformanceReport) 
 		BenchmarkSHA256: editorSHA(payload), BenchmarkBytes: len(payload),
 		StderrSHA256: editorSHA(errorOutput), StderrBytes: len(errorOutput),
 	}
-	for _, path := range editorProductionPaths {
+	for _, path := range editorProductionPathsForID(id) {
 		receipt.SourceFiles = append(receipt.SourceFiles, editorSourceFile{path, editorSHA([]byte("intake-model:" + path))})
 	}
 	process, err := json.Marshal(receipt)
@@ -157,8 +163,11 @@ func editorModelRecord(t *testing.T, id string, report editorPerformanceReport) 
 		Command: productionTestCommand(tests), Result: "passed", ExitCode: 0,
 		Assertions: map[string]string{
 			"required_production_tests": strings.Join(tests, "\n"),
-			"scope":                     "local Cherri service and canonical embedded asset cache; no native UI latency claim",
+			"scope":                     editorProductionScope(id),
 		},
+	}
+	if id == "RP29" {
+		record.Assertions["required_security_subtests"] = strings.Join(assetAuthorizationSecuritySubtests, "\n")
 	}
 	for _, file := range []struct {
 		suffix string
@@ -236,7 +245,7 @@ func TestEditorBenchmarkIntakeRejectsProxyAndFabricatedMetrics(t *testing.T) {
 }
 
 func TestEditorEvidenceIntakeRejectsSummaryOnlyAndDetachedExecution(t *testing.T) {
-	for _, id := range []string{"S03", "E08"} {
+	for _, id := range []string{"S03", "E08", "RP29"} {
 		t.Run(id, func(t *testing.T) {
 			good := editorModelRecord(t, id, editorIntakeModel())
 			if err := validateEditorPerformanceRecord(id, good); err != nil {
@@ -504,7 +513,8 @@ func TestP15EditorProducerActualContracts(t *testing.T) {
 		t.Fatal("changed formal179 accounting")
 	}
 	for _, row := range audit.Rows {
-		if tests, ok := editorProductionTests[row.ID]; ok {
+		if row.ID == "S03" || row.ID == "E08" {
+			var tests = editorProductionTests[row.ID]
 			if row.Status != "PASS" || !row.PositiveAndNegative || !reflect.DeepEqual(row.TestNames, tests) || !reflect.DeepEqual(row.ProductionPath, editorProductionPaths) {
 				t.Fatalf("lost exact editor scenario: %+v", row)
 			}

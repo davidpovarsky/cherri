@@ -459,6 +459,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP29" {
+		return assetAuthorizationScenario.testIDs()
+	}
 	if id == "RP50" {
 		return aiEvaluationHarnessScenario.testIDs()
 	}
@@ -505,6 +508,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP29" {
+		return append([]string{}, assetAuthorizationScenario.ProductionPaths...)
+	}
 	if id == "RP50" {
 		return append([]string{}, aiEvaluationHarnessScenario.ProductionPaths...)
 	}

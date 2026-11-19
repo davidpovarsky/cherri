@@ -23,6 +23,19 @@ const editorBenchmarkMarker = "P15_EDITOR_BENCHMARK="
 var editorBenchmarkFixtures = []string{"small_source", "medium_source", "large_source", "inline_text_4mib", "local_text_8mib", "local_binary_8mib"}
 
 var editorProductionTests = map[string][]string{
+	"RP29": {
+		"TestP15RP29AssetAuthorizationAcrossServiceAndCompile",
+		"TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement",
+		"TestP15S03EmbeddedAssetSourceRelative",
+		"TestP15S03EditorAssetDependencyDiagnostics",
+		"TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile",
+		"TestP15S03EditorAssetChangesAndFailureRecovery",
+		"TestP15S03ShadowedNameCannotReadAssets",
+		"TestP15S03ImportedAssetKeepsEntryRootAndModuleSource",
+		"TestP15S03ModuleCallControl",
+		"TestP15S03BuiltinModuleAliasUsesCanonicalAsset",
+		editorBenchmarkTest,
+	},
 	"S03": {
 		"TestP15S03EmbeddedAssetSourceRelative",
 		"TestP15S03EditorAssetDependencyDiagnostics",
@@ -137,6 +150,9 @@ func parseEditorProductionOutput(raw []byte, required []string) ([]byte, []strin
 	for _, fixture := range editorBenchmarkFixtures {
 		observed[editorBenchmarkTest+"/"+fixture] = true
 	}
+	for _, child := range assetAuthorizationRequiredSubtests(required) {
+		observed[child] = true
+	}
 	runs, passes := map[string]int{}, map[string]int{}
 	packagePasses := 0
 	var benchmarkOutput strings.Builder
@@ -191,6 +207,11 @@ func parseEditorProductionOutput(raw []byte, required []string) ([]byte, []strin
 		name := editorBenchmarkTest + "/" + fixture
 		if runs[name] != 1 || passes[name] != 1 {
 			return nil, nil, fmt.Errorf("missing actual benchmark fixture execution: %s", fixture)
+		}
+	}
+	for _, child := range assetAuthorizationRequiredSubtests(required) {
+		if runs[child] != 1 || passes[child] != 1 {
+			return nil, nil, fmt.Errorf("missing actual security child execution: %s", child)
 		}
 	}
 	discovered := make([]string, 0, len(required))
@@ -248,7 +269,7 @@ func (r *Runner) executeEditorProduction(id string) ([]EvidenceArtifact, string,
 		SourceCleanBefore: true, Command: productionTestCommand(tests),
 		RequiredTests: append([]string(nil), tests...),
 	}
-	for _, path := range editorProductionPaths {
+	for _, path := range editorProductionPathsForID(id) {
 		data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
 		if err != nil {
 			return nil, "", fmt.Errorf("missing production source %s: %w", path, err)
@@ -334,6 +355,9 @@ func (r *Runner) runEditorPerformanceRequirement(id string) {
 	if id == "S03" {
 		group, requirement, level, tiers = "text", "Large embedded local asset remains cached across unrelated edits", "service+benchmark", []string{"service", "benchmark"}
 	}
+	if id == "RP29" {
+		group, requirement, level, tiers = "repair", "Asset and path authorization", "security+service+benchmark", assetAuthorizationScenario.Tiers
+	}
 	artifacts, detail, err := r.executeEditorProduction(id)
 	if err != nil {
 		detail = err.Error()
@@ -342,14 +366,14 @@ func (r *Runner) runEditorPerformanceRequirement(id string) {
 	r.Record(id, group, requirement, level, tiers, err == nil, "PASSED", detail)
 	for index := first; index < len(r.records); index++ {
 		record := &r.records[index]
-		producer := editorBenchmarkTest
-		if record.Tier == "service" {
-			producer = "TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile"
-		}
+		var producer = editorProductionTestForTier(id, record.Tier)
 		record.TestID = "github.com/electrikmilk/cherri:" + producer
 		record.Command = productionTestCommand(tests)
 		record.Assertions["required_production_tests"] = strings.Join(tests, "\n")
-		record.Assertions["scope"] = "local Cherri service and canonical embedded asset cache; no native UI latency claim"
+		record.Assertions["scope"] = editorProductionScope(id)
+		if id == "RP29" {
+			record.Assertions["required_security_subtests"] = strings.Join(assetAuthorizationSecuritySubtests, "\n")
+		}
 		record.Artifacts = append([]EvidenceArtifact(nil), artifacts...)
 	}
 }
@@ -362,18 +386,19 @@ func validateEditorPerformanceRecord(id string, record EvidenceRecord) error {
 	fail := func(reason string) error {
 		return fmt.Errorf("editor performance record %s for %s: %s", record.EvidenceID, id, reason)
 	}
-	producer := editorBenchmarkTest
-	if id == "S03" && record.Tier == "service" {
-		producer = "TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile"
-	} else if record.Tier != "benchmark" {
+	var producer = editorProductionTestForTier(id, record.Tier)
+	if producer == "" {
 		return fail("unexecuted evidence tier")
 	}
 	if !reflect.DeepEqual(record.Requirements, []string{id}) ||
 		record.TestID != "github.com/electrikmilk/cherri:"+producer ||
 		!reflect.DeepEqual(record.Command, productionTestCommand(tests)) ||
 		record.Assertions["required_production_tests"] != strings.Join(tests, "\n") ||
-		record.Assertions["scope"] != "local Cherri service and canonical embedded asset cache; no native UI latency claim" {
+		record.Assertions["scope"] != editorProductionScope(id) {
 		return fail("detached or partial production scenario")
+	}
+	if id == "RP29" && record.Assertions["required_security_subtests"] != strings.Join(assetAuthorizationSecuritySubtests, "\n") {
+		return fail("missing exact security child selection")
 	}
 	if len(record.Artifacts) != 4 {
 		return fail("missing exact stdout, stderr, benchmark and process artifacts")
@@ -428,7 +453,7 @@ func validateEditorPerformanceRecord(id string, record EvidenceRecord) error {
 		}
 		paths = append(paths, file.Path)
 	}
-	if !reflect.DeepEqual(paths, editorProductionPaths) {
+	if !reflect.DeepEqual(paths, editorProductionPathsForID(id)) {
 		return fail("missing exact production source paths")
 	}
 	actualBenchmark, discovered, err := parseEditorProductionOutput(raw, tests)

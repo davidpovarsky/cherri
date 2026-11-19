@@ -63,6 +63,7 @@ func TestSupplementalProductionScenarioInventory(t *testing.T) {
 		t.Fatal(err)
 	}
 	var selected, _ = p15SupplementalSelection(t, all)
+	_ = p15AppendAssetAuthorizationSelection(t, all, selected)
 	_ = p15AppendAIEvaluationPartialSelection(t, all, selected)
 }
 
@@ -72,6 +73,7 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 		t.Fatal(err)
 	}
 	var selected, requiredRecords = p15SupplementalSelection(t, all)
+	requiredRecords += p15AppendAssetAuthorizationSelection(t, all, selected)
 	var requiredCases = selected.Repair.CaseCount + selected.Gates.GateCount
 	requiredRecords += p15AppendAIEvaluationPartialSelection(t, all, selected)
 
@@ -88,6 +90,10 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 				!reflect.DeepEqual(result.ExecutedLevels, scenario.Tiers) {
 				t.Fatalf("%s complete supplemental scenario did not pass: %+v", id, result)
 			}
+		} else if id == "RP29" {
+			if !result.Passed || result.Status != "PASSED" || !reflect.DeepEqual(result.ExecutedLevels, assetAuthorizationScenario.Tiers) {
+				t.Fatalf("asset authorization lost actual security/service/benchmark proof: %+v", result)
+			}
 		} else if id == "RP50" {
 			if result.Passed || result.Status != "PENDING_EXTERNAL" || !reflect.DeepEqual(result.ExecutedLevels, aiEvaluationHarnessScenario.Tiers) {
 				t.Fatalf("partial AI controls lost the unexecuted evaluation tier: %+v", result)
@@ -103,6 +109,12 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 		}
 		var id = record.Requirements[0]
 		var scenario = supplementalProductionScenarios[id]
+		if id == "RP29" {
+			scenario = assetAuthorizationScenario
+			if err := validateEditorPerformanceRecord(id, record); err != nil {
+				t.Fatal(err)
+			}
+		}
 		if id == "RP50" {
 			scenario = aiEvaluationHarnessScenario
 			if err := validateAIEvaluationHarnessRecord(id, record); err != nil {
@@ -210,6 +222,13 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 				!reflect.DeepEqual(row.TestNames, scenario.TestNames) ||
 				!reflect.DeepEqual(row.ProductionPath, scenario.ProductionPaths) {
 				t.Fatalf("audit lost the actual supplemental producer: %+v", row)
+			}
+		} else if row.ID == "RP29" {
+			if row.Status != "PASS" || !row.PositiveAndNegative ||
+				!reflect.DeepEqual(row.Tier, assetAuthorizationScenario.Tiers) ||
+				!reflect.DeepEqual(row.TestNames, assetAuthorizationScenario.TestNames) ||
+				!reflect.DeepEqual(row.ProductionPath, assetAuthorizationScenario.ProductionPaths) {
+				t.Fatalf("audit lost actual asset authorization producer: %+v", row)
 			}
 		} else if row.ID == "RP50" {
 			if row.Status != "BLOCKED_EXTERNAL" || row.PositiveAndNegative ||

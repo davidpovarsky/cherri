@@ -182,9 +182,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 		}
 		if tests, ok := editorProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
-			row.ProductionPath = append([]string{}, editorProductionPaths...)
+			row.ProductionPath = editorProductionPathsForID(row.ID)
 			row.PositiveAndNegative = res.Passed
 			row.Scope = "Executed local Cherri service/cache and desktop service benchmark only; no iOS UI latency or race tier inferred"
+			if row.ID == "RP29" {
+				row.Scope = editorProductionScope(row.ID)
+			}
 		}
 		if tests, ok := moduleProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)

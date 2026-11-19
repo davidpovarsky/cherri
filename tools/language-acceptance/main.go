@@ -1934,6 +1934,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if r.runAssetAuthorizationRequirement(c.ID, c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if r.runAIEvaluationHarnessRequirement(c.ID, c.Title, c.RequiredTestLevels) {
 			continue
 		}
