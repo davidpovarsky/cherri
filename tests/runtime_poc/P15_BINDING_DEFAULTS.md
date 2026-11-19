@@ -64,3 +64,24 @@ No V01, V03, or T01 formal pass is created by these local tests. A complete
 record needs the exact source SHA, compiled artifact hashes, actual native
 callback or clipboard bytes, and successful verification against the expected
 values. Record failures and unavailable runtime tiers explicitly.
+
+## Signed Simulator QA registration
+
+The existing Simulator QA workflow offers qa-binding-defaults, which executes
+the fixed qa-binding-capture and qa-typed-defaults selections serially with
+separate artifacts. Both target names remain exactly CherriBindingCapturePOC
+and CherriTypedDefaultsPOC, including the typed-default function self-calls.
+
+The reviewed adapters in tools/shortcuts-simulator-qa/fixtures/p15-binding-defaults
+contain the original bodies byte-for-byte. Their added observer reads the
+actual final Clipboard after Set Clipboard, encodes its UTF-8 content as
+Base64 with no line breaks, caps that witness at 512 characters, and returns
+it with the source-bound callback and NDJSON trace. The expected decoded
+bytes are the exact payloads above; no trailing newline is expected.
+The existing zero counts for explicit empty List and Map remain mandatory.
+
+Phase0 verifies the original source hashes, adapter bytes, actual observer
+edges, bounded output and original-name self-calls before signing. Local
+checks establish these contracts only; the signed runtime result still has
+to be observed on the exact dispatched source. Neither failed callbacks nor
+missing trace can be accepted as a pass.

@@ -1,0 +1,27 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "binding-defaults")
+// BEGIN unchanged tests/runtime_poc/CherriTypedDefaultsPOC.cherri
+// T01: empty containers are explicit arguments, independent of false/zero/text.
+function typedDefaults(flag: Bool = true, num: Number = 9, txt: Text = "def", items: List<Text> = ["default"], object: Map<Text, Text> = {"default": "present"}) -> Text {
+    let itemCount = count(items)
+    let keyCount = count(getKeys(object))
+    return f"{flag}:{num}:{txt}:{itemCount}:{keyCount}"
+}
+let defaultsExplicit = typedDefaults(false, num: 0, txt: "", items: [], object: {})
+let defaultsOmitted = typedDefaults()
+let defaultsMixed = typedDefaults(flag: false, items: [])
+let result = f"CHERRI_TYPED_DEFAULTS_OK\nDEFAULTS_EXPLICIT={defaultsExplicit}\nDEFAULTS_OMITTED={defaultsOmitted}\nDEFAULTS_MIXED={defaultsMixed}"
+setClipboard(result)
+// END unchanged runtime body
+comment("ANCHOR_CARD_15_MID_CENTER")
+let qaObservedClipboard = getVariable(Clipboard)
+let qaClipboard64Raw = base64Encode(qaObservedClipboard, lineBreakMode: "None")
+let qaClipboard64Length = count(qaClipboard64Raw, "Characters")
+var qaClipboard64 = "OVERSIZE"
+if qaClipboard64Length.number < 513 { qaClipboard64 = qaClipboard64Raw }
+debugTraceEvent("after", "binding-defaults")
+let qaTraceEnvelope = debugExportTrace(runId: "CherriTypedDefaultsPOC")
+let qaFinalSummary = text(f"CHERRI_QA_TYPED_DEFAULTS_RESULT:{qaClipboard64}\n{qaTraceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(qaFinalSummary)

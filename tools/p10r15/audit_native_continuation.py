@@ -26,6 +26,8 @@ MANIFEST = "docs/apple-runtime/p10r15/native-continuation-probe-manifest.json"
 # Reviewed synthetic selectors use their immutable orchestration contract.
 # They never derive the expected result from the downloaded artifact.
 REVIEWED_SELECTORS = {
+    "CherriBindingCapturePOC": "qa-binding-capture",
+    "CherriTypedDefaultsPOC": "qa-typed-defaults",
     "qa-export-unicode-diagnostic-v2": "qa-export-unicode-diagnostic",
     "qa-collect-empty-split-v2": "qa-collect-empty-split",
     "qa-collect-counts-v2": "qa-collect-counts-v2",
@@ -44,6 +46,8 @@ REVIEWED_SELECTORS = {
 }
 # Reviewed export probes are deliberately nested; runtime input cannot choose paths.
 REVIEWED_FILES = {
+    "CherriBindingCapturePOC": "p15-binding-defaults/CherriBindingCapturePOC.cherri",
+    "CherriTypedDefaultsPOC": "p15-binding-defaults/CherriTypedDefaultsPOC.cherri",
     "qa-export-unicode-v2": "p15-export-probes/qa-export-unicode-v2.cherri",
     "qa-export-empty-v2": "p15-export-probes/qa-export-empty-v2.cherri",
     "qa-export-thousand-v2": "p15-export-probes/qa-export-thousand-v2.cherri",

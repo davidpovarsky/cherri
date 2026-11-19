@@ -41,6 +41,8 @@ MAGIC = (b"\x89PNG\r\n\x1a\n", b"\xff\xd8\xff", b"GIF8", b"%PDF", b"PK\x03\x04",
 # Source hashes are trusted only for these reviewed nested synthetic files.
 # Do not replace this explicit list with rglob, basename flattening or directory-wide trust.
 TRUSTED_NESTED_FIXTURES = (
+    "p15-binding-defaults/CherriBindingCapturePOC.cherri",
+    "p15-binding-defaults/CherriTypedDefaultsPOC.cherri",
     "p15-label-probes/qa-label-file-carrier-v2.cherri",
     "p15-label-probes/qa-label-raw-empty-v2.cherri",
     "p15-label-probes/qa-label-raw-grouping-v2.cherri",
