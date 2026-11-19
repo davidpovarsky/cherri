@@ -179,6 +179,82 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(matches, "Editor UTF-16 source must exactly match the typed synthetic fixture")
     }
 
+    func testD03CurrentDocumentationSearchUI() throws {
+        let editor = ensureEditorReady()
+        let source = "show(\"D03_EDITOR_PRESERVED\")"
+        setEditorContent(editor, source)
+
+        let options = app.buttons["workspaceOptionsButton"]
+        XCTAssertTrue(options.waitForExistence(timeout: 5) && options.isHittable)
+        options.tap()
+        let documentation = app.buttons["documentationButton"]
+        XCTAssertTrue(documentation.waitForExistence(timeout: 5) && documentation.isHittable)
+        documentation.tap()
+
+        let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.descendants(matching: .any)["docsLoadError"].exists)
+        let migration = app.switches["docsMigrationToggle"]
+        XCTAssertTrue(migration.waitForExistence(timeout: 5))
+        XCTAssertEqual(migration.value as? String, "0")
+
+        search.tap()
+        search.typeText("show")
+        let firstResult = app.buttons.matching(
+            NSPredicate(format: "identifier BEGINSWITH %@", "docsResult_")
+        ).firstMatch
+        let exactFirst = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            firstResult.exists && firstResult.isHittable && firstResult.label.hasPrefix("show")
+        }, object: firstResult)
+        XCTAssertEqual(XCTWaiter.wait(for: [exactFirst], timeout: 5), .completed)
+        firstResult.tap()
+        let title = app.staticTexts["docsSectionTitle"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertEqual(title.label, "show")
+        let signature = app.staticTexts.containing(
+            NSPredicate(format: "label CONTAINS %@", "show(input: AnyContent)")
+        ).firstMatch
+        XCTAssertTrue(signature.waitForExistence(timeout: 5),
+                      "The reader must expose the current action signature")
+
+        let back = app.navigationBars["show"].buttons.firstMatch
+        XCTAssertTrue(back.exists && back.isHittable)
+        back.tap()
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        let clearSearch = search.buttons.firstMatch
+        XCTAssertTrue(clearSearch.waitForExistence(timeout: 5) && clearSearch.isHittable)
+        clearSearch.tap()
+        let missing = "ZZZ_MISSING_DOCUMENTATION_937"
+        search.typeText(missing)
+        let noResults = app.descendants(matching: .any)["docsNoResults"]
+        XCTAssertTrue(noResults.waitForExistence(timeout: 5),
+                      "An unknown term must show the empty search state")
+
+        XCTAssertTrue(clearSearch.exists && clearSearch.isHittable)
+        clearSearch.tap()
+        search.typeText("@count")
+        XCTAssertTrue(noResults.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons.matching(
+            NSPredicate(format: "identifier BEGINSWITH %@", "docsResult_fork-language/migration.md:")
+        ).firstMatch.exists, "Historical examples must be excluded by default")
+        migration.tap()
+        let migrationResult = app.buttons.matching(
+            NSPredicate(format: "identifier BEGINSWITH %@", "docsResult_fork-language/migration.md:")
+        ).firstMatch
+        XCTAssertTrue(migrationResult.waitForExistence(timeout: 5),
+                      "Migration examples require explicit opt-in")
+        XCTAssertEqual(migration.value as? String, "1")
+
+        let done = app.buttons["docsDoneButton"]
+        XCTAssertTrue(done.waitForExistence(timeout: 5) && done.isHittable)
+        done.tap()
+        XCTAssertTrue(editor.waitForExistence(timeout: 5))
+        XCTAssertTrue(waitForEditorValue(editor) { Array($0.utf16) == Array(source.utf16) },
+                      "Searching documentation must preserve the edited source exactly")
+        recordEditorReceipt(stage: "documentation-search-completed")
+        print("[CHECKPOINT:D03_CURRENT_DOCS_SEARCH_VERIFIED] Current signature, empty state, explicit migration, and unchanged synthetic editor source verified")
+    }
+
     // E01 & RP40: Contextual completion display, selection, insertion, and successful compilation
     func testE01CompletionDisplayAndInsertionUI() throws {
         let editor = ensureEditorReady()
