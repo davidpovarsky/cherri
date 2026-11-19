@@ -96,3 +96,6 @@ intake is still required, and RP51 also requires the independently measured
 cold/warm benchmark evidence. The receipt intentionally leaves
 `formal_requirements_proved` empty. The combined integration SHA must rerun the
 relevant race and required CI gates after these commits are integrated.
+
+The later [import and cold-catalog proof](p15-state-import-race-20261119.md)
+records the completed bounded follow-up and its retained failed intermediate.

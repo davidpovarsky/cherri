@@ -1,0 +1,141 @@
+{
+  "formal_requirements_proved": [],
+  "source_changes_verified": [
+    "hybrid_import.go",
+    "language_backend_adapter.go",
+    "language_backend_session.go",
+    "language_registry_adapter.go",
+    "reverse_action_registry.go",
+    "semantic_import_planner.go"
+  ],
+  "phases": {
+    "baseline": {
+      "source_commit": "a06b9c92751cbcfc832d921f4cec4ed401a6c3f3",
+      "run_id": "44629555814",
+      "race_warnings": 108,
+      "raw_sha256": "7e5bce539978dc74715ba3bbda5346dacef48fac6f5620372db219d853027a55",
+      "raw_bytes": 1453633
+    },
+    "intermediate": {
+      "source_commit": "2847b3bba70c92baf26fb06d90842a9095472d74",
+      "run_id": "44630396283",
+      "race_warnings": 1,
+      "raw_sha256": "7ed8ac91ae5f43f4c2ed7b5a0c50756f0f342e37d16cf3725e6cb412da08ff67",
+      "raw_bytes": 21238
+    },
+    "fixed": {
+      "source_commit": "87ca5dfc5194633eb4223a6983704593c34e113a",
+      "run_id": "44631364786",
+      "race_warnings": 0,
+      "raw_sha256": "27a6e4be10dc72cf318914253d3df135793b1b8d6419197ec1b1ee0cfa209c23",
+      "raw_bytes": 6900
+    }
+  },
+  "files": [
+    {
+      "path": "baseline/environment.json",
+      "stored_bytes": 329,
+      "stored_sha256": "0e225b5bc168e3e0bce88b85cea88773d76f562ed948f3e18fadcf9a4f1dbc99",
+      "original_bytes": 329,
+      "original_sha256": "0e225b5bc168e3e0bce88b85cea88773d76f562ed948f3e18fadcf9a4f1dbc99"
+    },
+    {
+      "path": "baseline/source-files.json",
+      "stored_bytes": 2851,
+      "stored_sha256": "3740c7ac94208261d7f79154e21ee0bc857b52d75b35ae04580c87b0ace27aef",
+      "original_bytes": 2851,
+      "original_sha256": "3740c7ac94208261d7f79154e21ee0bc857b52d75b35ae04580c87b0ace27aef"
+    },
+    {
+      "path": "baseline/race-receipt.json",
+      "stored_bytes": 2998,
+      "stored_sha256": "1fb306d68627ff4365e27bb4a01598a43b92ec2c7802d9a5728354efcca136c4",
+      "original_bytes": 2998,
+      "original_sha256": "1fb306d68627ff4365e27bb4a01598a43b92ec2c7802d9a5728354efcca136c4"
+    },
+    {
+      "path": "baseline/go-test.jsonl.gz",
+      "stored_bytes": 46526,
+      "stored_sha256": "c3eaea1c2474110221ea5ecbee490e349326e3e308cc98360fc3d6103602f6a2",
+      "original_bytes": 1453633,
+      "original_sha256": "7e5bce539978dc74715ba3bbda5346dacef48fac6f5620372db219d853027a55"
+    },
+    {
+      "path": "baseline/go-test.stderr",
+      "stored_bytes": 1630,
+      "stored_sha256": "e12eb994413400ff843be99773c3ed74514d207aba962041f4fa874d57032259",
+      "original_bytes": 1630,
+      "original_sha256": "e12eb994413400ff843be99773c3ed74514d207aba962041f4fa874d57032259"
+    },
+    {
+      "path": "intermediate/environment.json",
+      "stored_bytes": 329,
+      "stored_sha256": "0e225b5bc168e3e0bce88b85cea88773d76f562ed948f3e18fadcf9a4f1dbc99",
+      "original_bytes": 329,
+      "original_sha256": "0e225b5bc168e3e0bce88b85cea88773d76f562ed948f3e18fadcf9a4f1dbc99"
+    },
+    {
+      "path": "intermediate/source-files.json",
+      "stored_bytes": 2851,
+      "stored_sha256": "b42a9e7385c9fc0cec512010aac8168e0fbf881520e48de0b6736b6dd3cf5bd5",
+      "original_bytes": 2851,
+      "original_sha256": "b42a9e7385c9fc0cec512010aac8168e0fbf881520e48de0b6736b6dd3cf5bd5"
+    },
+    {
+      "path": "intermediate/race-receipt.json",
+      "stored_bytes": 3178,
+      "stored_sha256": "05e44cb8ded432001ed9e1b74e515a17972eb63283a42cf01b3263ec208945c7",
+      "original_bytes": 3178,
+      "original_sha256": "05e44cb8ded432001ed9e1b74e515a17972eb63283a42cf01b3263ec208945c7"
+    },
+    {
+      "path": "intermediate/go-test.jsonl",
+      "stored_bytes": 21238,
+      "stored_sha256": "7ed8ac91ae5f43f4c2ed7b5a0c50756f0f342e37d16cf3725e6cb412da08ff67",
+      "original_bytes": 21238,
+      "original_sha256": "7ed8ac91ae5f43f4c2ed7b5a0c50756f0f342e37d16cf3725e6cb412da08ff67"
+    },
+    {
+      "path": "intermediate/go-test.stderr",
+      "stored_bytes": 1630,
+      "stored_sha256": "e12eb994413400ff843be99773c3ed74514d207aba962041f4fa874d57032259",
+      "original_bytes": 1630,
+      "original_sha256": "e12eb994413400ff843be99773c3ed74514d207aba962041f4fa874d57032259"
+    },
+    {
+      "path": "fixed/environment.json",
+      "stored_bytes": 327,
+      "stored_sha256": "4921d4b232afbe6b3c4f9f91cded95b413992b990210905514876e113d816bbc",
+      "original_bytes": 327,
+      "original_sha256": "4921d4b232afbe6b3c4f9f91cded95b413992b990210905514876e113d816bbc"
+    },
+    {
+      "path": "fixed/source-files.json",
+      "stored_bytes": 2851,
+      "stored_sha256": "96c55442be2c942fafdf6a173ba0881517eedff841f69d27fa293f90b12abf5b",
+      "original_bytes": 2851,
+      "original_sha256": "96c55442be2c942fafdf6a173ba0881517eedff841f69d27fa293f90b12abf5b"
+    },
+    {
+      "path": "fixed/race-receipt.json",
+      "stored_bytes": 2928,
+      "stored_sha256": "a7402783891524145c8bde112a366afe4ee33ce53a75a3b6c67d9e602bc953e3",
+      "original_bytes": 2928,
+      "original_sha256": "a7402783891524145c8bde112a366afe4ee33ce53a75a3b6c67d9e602bc953e3"
+    },
+    {
+      "path": "fixed/go-test.jsonl",
+      "stored_bytes": 6900,
+      "stored_sha256": "27a6e4be10dc72cf318914253d3df135793b1b8d6419197ec1b1ee0cfa209c23",
+      "original_bytes": 6900,
+      "original_sha256": "27a6e4be10dc72cf318914253d3df135793b1b8d6419197ec1b1ee0cfa209c23"
+    },
+    {
+      "path": "fixed/go-test.stderr",
+      "stored_bytes": 1630,
+      "stored_sha256": "e3dc4a38869904471c797aa3c9197d3976166382bba7e843c3ebd72aef0c429a",
+      "original_bytes": 1630,
+      "original_sha256": "e3dc4a38869904471c797aa3c9197d3976166382bba7e843c3ebd72aef0c429a"
+    }
+  ]
+}

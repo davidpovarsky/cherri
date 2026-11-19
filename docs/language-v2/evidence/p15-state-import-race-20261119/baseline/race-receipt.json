@@ -1,0 +1,87 @@
+{
+  "format_version": 1,
+  "source_commit": "a06b9c92751cbcfc832d921f4cec4ed401a6c3f3",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "repository": "davidpovarsky/cherri",
+  "run_id": "44629555814",
+  "run_attempt": "1",
+  "command": [
+    "go",
+    "test",
+    "-race",
+    "-count=1",
+    "-json",
+    "-timeout=8m",
+    "-run",
+    "^(TestBackendRecovery06MixedEntryPoints|TestBackendRecovery06EmitterErrorAndCancellation|TestBackendRecovery06ImportEntryPoints|TestBackendRecovery06MobilePanicRecovery)$",
+    "."
+  ],
+  "started_utc": "2026-11-19T22:32:30.699637+00:00",
+  "finished_utc": "2026-11-19T22:33:16.247157+00:00",
+  "elapsed_seconds": 45.49485615099999,
+  "exit_code": 1,
+  "timed_out": false,
+  "raw_sha256": "7e5bce539978dc74715ba3bbda5346dacef48fac6f5620372db219d853027a55",
+  "raw_bytes": 1453633,
+  "stderr_sha256": "e12eb994413400ff843be99773c3ed74514d207aba962041f4fa874d57032259",
+  "stderr_bytes": 1630,
+  "environment_sha256": "0e225b5bc168e3e0bce88b85cea88773d76f562ed948f3e18fadcf9a4f1dbc99",
+  "source_files_sha256": "3740c7ac94208261d7f79154e21ee0bc857b52d75b35ae04580c87b0ace27aef",
+  "status": "FAILED",
+  "issues": [
+    "race process failed or timed out",
+    "race detector reported a data race",
+    "Go reported fail",
+    "required exact test TestBackendRecovery06ImportEntryPoints lacks one pass event",
+    "terminal production package PASS missing",
+    "missing, duplicated, uninstrumented or incomplete execution witness for TestBackendRecovery06ImportEntryPoints"
+  ],
+  "required_tests": [
+    "TestBackendRecovery06MixedEntryPoints",
+    "TestBackendRecovery06EmitterErrorAndCancellation",
+    "TestBackendRecovery06EmitterErrorAndCancellation/emitter_error",
+    "TestBackendRecovery06EmitterErrorAndCancellation/cancellation",
+    "TestBackendRecovery06ImportEntryPoints",
+    "TestBackendRecovery06MobilePanicRecovery"
+  ],
+  "observations": {
+    "TestBackendRecovery06MixedEntryPoints": [
+      {
+        "race_instrumented": true,
+        "sequential_rounds": 3,
+        "concurrent_workers": 8,
+        "concurrent_rounds": 8,
+        "completed_cases": 64
+      }
+    ],
+    "TestBackendRecovery06EmitterErrorAndCancellation": [
+      {
+        "race_instrumented": true,
+        "sequential_rounds": 0,
+        "concurrent_workers": 0,
+        "concurrent_rounds": 0,
+        "completed_cases": 0,
+        "emitter_faults": [
+          "emitter_error",
+          "cancellation"
+        ]
+      }
+    ],
+    "TestBackendRecovery06ImportEntryPoints": [],
+    "TestBackendRecovery06MobilePanicRecovery": [
+      {
+        "emitted_before_panic": 1,
+        "emitter_calls": 2,
+        "partial_output_rejected": true,
+        "race_instrumented": true,
+        "recovery_requests": [
+          "canonical",
+          "mobile-v2"
+        ]
+      }
+    ]
+  },
+  "formal_requirements_proved": [],
+  "scope": "Actual bounded race scenarios only. Formal BRG06/RP51 intake and RP51 benchmark evidence remain separate required gates."
+}
