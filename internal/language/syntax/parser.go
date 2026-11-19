@@ -601,6 +601,7 @@ func (p *Parser) parseActionDecl() *ActionDecl {
 
 	var params []ParameterDecl
 	bindings := make(map[string]ActionBinding)
+	explicitBindings := make(map[string]bool)
 
 	for p.curr.Type != TokenRParen && p.curr.Type != TokenEOF {
 		var firstTok Token
@@ -714,8 +715,14 @@ func (p *Parser) parseActionDecl() *ActionDecl {
 						p.expect(TokenColon)
 						p.expect(TokenLBrace)
 						var b ActionBinding
+						seenFields := make(map[string]bool)
 						for p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF {
-							bField := p.advance().Text
+							fieldToken := p.advance()
+							bField := fieldToken.Text
+							if seenFields[bField] {
+								p.errorAt(fieldToken.Span, fmt.Sprintf("duplicate action binding field %q", bField))
+							}
+							seenFields[bField] = true
 							p.expect(TokenColon)
 							bVal, _ := p.expect(TokenString)
 							if bField == "key" {
@@ -726,6 +733,10 @@ func (p *Parser) parseActionDecl() *ActionDecl {
 							p.match(TokenComma)
 						}
 						p.expect(TokenRBrace)
+						if explicitBindings[paramNameTok.Text] {
+							p.errorAt(paramNameTok.Span, fmt.Sprintf("duplicate action binding %q", paramNameTok.Text))
+						}
+						explicitBindings[paramNameTok.Text] = true
 						bindings[paramNameTok.Text] = b
 						p.match(TokenComma)
 					}

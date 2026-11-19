@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
@@ -424,19 +425,19 @@ func mapType(legacyType string) string {
 func mapCodec(legacyType string) string {
 	switch strings.ToLower(legacyType) {
 	case "text", "string":
-		return "text"
+		return backend.CodecText
 	case "number", "int", "integer", "float":
-		return "number"
+		return backend.CodecNumber
 	case "bool", "boolean":
-		return "bool"
+		return backend.CodecBool
 	case "dictionary", "dict":
-		return "dictionary"
+		return backend.CodecDictionary
 	case "array", "list":
-		return "array"
+		return backend.CodecArray
 	case "variable":
-		return "token"
+		return backend.CodecToken
 	default:
-		return "token"
+		return backend.CodecToken
 	}
 }
 
@@ -744,7 +745,7 @@ func initDefaultRegistry() *Registry {
 
 			codec := mapCodec(p.Type)
 			if p.Enum != "" {
-				codec = "enum"
+				codec = backend.CodecEnum
 				if len(p.EnumValues) > 0 {
 					allEnums[p.Enum] = p.EnumValues
 				}
