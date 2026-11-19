@@ -165,6 +165,22 @@ def main():
     if runner_text.count(old_reader) != 1:
         raise ValueError("Observed runner active-release reader changed")
     runner_text = runner_text.replace(old_reader, validator)
+    # Both language routes sign the exact native plist that passed preflight.
+    # A second compile can change UUIDs or observe a concurrent source edit.
+    old_preflight = 'preflight="__DOLLAR__BASE/tmp/__DOLLAR__{name}-__DOLLAR__{LABEL}-__DOLLAR__{stamp}-preflight.shortcut"'.replace("__DOLLAR__", "$")
+    if runner_text.count(old_preflight) != 1:
+        raise ValueError("Observed V2 preflight allocation changed")
+    exact_preflight = """preflight="__DOLLAR__(mktemp "__DOLLAR__BASE/tmp/v2-preflight-XXXXXXXX.shortcut")"
+    trap 'rm -f -- "__DOLLAR__preflight"' EXIT""".replace("__DOLLAR__", "$")
+    runner_text = runner_text.replace(old_preflight, exact_preflight)
+    signing_start = runner_text.index('    elif [ "__DOLLAR__LABEL" = \'p9\' ]; then'.replace("__DOLLAR__", "$"))
+    signing_end = runner_text.index('    fi\n    sha256sum "__DOLLAR__out"'.replace("__DOLLAR__", "$"), signing_start)
+    exact_signing = """    else
+      "__DOLLAR__CHERRI_BIN" sign "__DOLLAR__preflight" --source-file="__DOLLAR__src" --output="__DOLLAR__out" --hubsign --share=anyone --no-ansi
+""".replace("__DOLLAR__", "$")
+    runner_text = runner_text[:signing_start] + exact_signing + runner_text[signing_end:]
+    runner_text = runner_text.replace("stamp=$(date -u +%Y%m%dT%H%M%S)\n",
+                                      "stamp=$(date -u +%Y%m%dT%H%M%S)-$$\n")
     runner = candidate / "bin/cherri-remote-runner.sh"
     runner.write_text(runner_text)
     runner.chmod(0o700)

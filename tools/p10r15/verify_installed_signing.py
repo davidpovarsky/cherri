@@ -7,6 +7,8 @@ The report is protocol/exit/artifact evidence, never Apple signature evidence.
 """
 import argparse
 import base64
+import email.policy
+from email.parser import BytesParser
 import hashlib
 import http.server
 import json
@@ -70,7 +72,7 @@ def main():
         surfaces.append("skill_copy")
     if opts.remote_home:
         opts.remote_home = opts.remote_home.resolve()
-        surfaces.append("remote_legacy_copy")
+        surfaces.extend(["remote_legacy_copy", "remote_v2_copy"])
     caps = subprocess.run([str(opts.compiler), "--capabilities-json", "--no-ansi"],
                           capture_output=True, text=True, check=True)
     provenance = {"compilerSha256": digest(opts.compiler), "capabilities": json.loads(caps.stdout)}
@@ -99,9 +101,23 @@ def main():
                 class FaultHandler(http.server.BaseHTTPRequestHandler):
                     def do_POST(self):
                         size = int(self.headers.get("Content-Length", "0"))
-                        self.rfile.read(size)
-                        calls.append({"method": "POST", "requestBytes": size,
-                                      "contentType": self.headers.get("Content-Type", "")})
+                        payload = self.rfile.read(size)
+                        request = {"method": "POST", "requestBytes": size,
+                                   "contentType": self.headers.get("Content-Type", "")}
+                        if surface.startswith("remote_"):
+                            message = BytesParser(policy=email.policy.default).parsebytes(
+                                ("Content-Type: " + request["contentType"] +
+                                 "\r\nMIME-Version: 1.0\r\n\r\n").encode() + payload)
+                            uploads = [part.get_payload(decode=True) for part in message.iter_parts()
+                                       if part.get_param("name", header="content-disposition") == "file"]
+                            preflights = list((work / "tmp").glob("*.shortcut"))
+                            exact = len(uploads) == 1 and len(preflights) == 1
+                            if exact:
+                                request["uploadedPlistSha256"] = hashlib.sha256(uploads[0]).hexdigest()
+                                request["preflightSha256"] = digest(preflights[0])
+                                exact = request["uploadedPlistSha256"] == request["preflightSha256"]
+                            request["exactPreflightBytes"] = exact
+                        calls.append(request)
                         if name == "timeout":
                             time.sleep(48)
                         try:
@@ -129,7 +145,7 @@ def main():
                 env["CHERRI_OFFLINE"] = "1"
                 source_dir = work
                 output_dir = work
-                if surface == "remote_legacy_copy":
+                if surface.startswith("remote_"):
                     source_dir = work / "jobs"
                     output_dir = work / "outputs"
                     for path in [source_dir, output_dir, work / "bin", work / "config", work / "tmp", work / "source", work / remote_label]:
@@ -144,9 +160,11 @@ def main():
                     # immutable release runners; do not replace their verifier.
                     if (opts.remote_home / "tools").is_dir():
                         (work / "tools").symlink_to(opts.remote_home / "tools", target_is_directory=True)
-                    wrapper = (opts.remote_home / "bin/cherri-remote-legacy.sh").read_text()
+                    wrapper_name = ("cherri-remote-runner.sh" if surface == "remote_v2_copy"
+                                    else "cherri-remote-legacy.sh")
+                    wrapper = (opts.remote_home / "bin" / wrapper_name).read_text()
                     assert wrapper.count("--hubsign") == 1, "unexpected wrapper signing invocation"
-                    wrapper_path = work / "bin/cherri-remote-legacy.sh"
+                    wrapper_path = work / "bin" / wrapper_name
                     wrapper_path.write_text(wrapper.replace("--hubsign", "--signing-server=" + endpoint))
                     wrapper_path.chmod(0o700)
                     env["CHERRI_REMOTE_HOME"] = str(work)
@@ -175,7 +193,7 @@ def main():
                 rc, output, seconds = execute(cmd, env, work)
                 server.shutdown()
                 server.server_close()
-                if surface == "remote_legacy_copy":
+                if surface.startswith("remote_"):
                     artifacts = sorted(output_dir.glob("*.shortcut"))
                 elif name == "unsigned_control" and surface.startswith("cli_"):
                     artifacts = sorted(work.glob("*_unsigned.shortcut"))
@@ -188,12 +206,16 @@ def main():
                 if name == "unsigned_control" and rc == 0 and artifacts:
                     control_ok = all(bool(plistlib.loads(path.read_bytes()).get("WFWorkflowActions")) for path in artifacts)
                 multipart = bool(calls) and all(c["contentType"].startswith("multipart/form-data;") for c in calls)
+                exact_preflight = (not surface.startswith("remote_") or
+                                   bool(calls) and all(c.get("exactPreflightBytes") is True for c in calls))
                 diagnostic_ok = name != "digest_mismatch" or "signed_sha256" in output
                 verdict = "CONTROL_PASS" if control_ok else (
                     "REJECTED_NONZERO_NO_ARTIFACT" if name != "unsigned_control" and rc not in [0, None]
-                    and not artifacts and multipart and diagnostic_ok else "FAIL")
+                    and not artifacts and multipart and diagnostic_ok and exact_preflight else "FAIL")
                 row = {"surface": surface, "case": name, "exitCode": rc, "seconds": seconds,
                        "localRequests": len(calls), "multipartProtocolObserved": multipart,
+                       "exactPreflightBytesObserved": exact_preflight if surface.startswith("remote_") and calls else None,
+                       "requestEvidence": calls,
                        "artifacts": summaries, "verdict": verdict,
                        "diagnosticTail": output.replace(str(root), "<isolated-audit>")}
                 rows.append(row)
