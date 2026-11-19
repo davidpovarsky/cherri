@@ -1,0 +1,140 @@
+// Public synthetic native coverage supplement. No external inputs or targets.
+// S01: literal Hebrew, combining marks and astral characters precede tokens.
+let first = text("α")
+var mutable = text("ב")
+let שֵׁם = text("🌍")
+let unicodeFirst = f"שָׁלוֹם👩‍💻é|{first}|אב{mutable}|é{first}|🌍{שֵׁם}"
+let unicodeSecond = f"￼🙂{first}{mutable}é{first}שָׁ{שֵׁם}"
+let unicodeOutput = f"{unicodeFirst}||{unicodeSecond}"
+
+// F01: predicates come from native Number actions, not constant AST literals.
+let zero = number(0)
+let one = number(1)
+var flag = zero == 1
+var truth = one == 1
+var trace = "START"
+
+comment("P15_F01_CASE_and_skip")
+let and_skip = flag && (if truth {
+    trace = f"{trace}|BAD_AND"
+    yield true
+} else {
+    trace = f"{trace}|BAD_AND"
+    yield false
+})
+
+comment("P15_F01_CASE_or_skip")
+let or_skip = truth || (if flag {
+    trace = f"{trace}|BAD_OR"
+    yield true
+} else {
+    trace = f"{trace}|BAD_OR"
+    yield false
+})
+
+comment("P15_F01_CASE_false_or_true")
+let false_or_true = flag || (if truth {
+    trace = f"{trace}|OR_TRUE"
+    yield true
+} else {
+    trace = f"{trace}|OR_TRUE"
+    yield false
+})
+
+comment("P15_F01_CASE_false_or_false")
+let false_or_false = flag || (if flag {
+    trace = f"{trace}|OR_FALSE"
+    yield true
+} else {
+    trace = f"{trace}|OR_FALSE"
+    yield false
+})
+
+comment("P15_F01_CASE_nested_or")
+let nested_or = (flag && (if truth {
+    trace = f"{trace}|BAD_NEST_OR"
+    yield true
+} else {
+    trace = f"{trace}|BAD_NEST_OR"
+    yield false
+})) || (truth && (if truth {
+    trace = f"{trace}|NEST_OR"
+    yield true
+} else {
+    trace = f"{trace}|NEST_OR"
+    yield false
+}))
+
+comment("P15_F01_CASE_nested_and")
+let nested_and = (truth || (if flag {
+    trace = f"{trace}|BAD_NEST_AND"
+    yield true
+} else {
+    trace = f"{trace}|BAD_NEST_AND"
+    yield false
+})) && (flag || (if flag {
+    trace = f"{trace}|NEST_AND"
+    yield true
+} else {
+    trace = f"{trace}|NEST_AND"
+    yield false
+}))
+
+comment("P15_F01_CASE_outer_and")
+let outer_and = flag && ((if truth {
+    trace = f"{trace}|BAD_OUTER_AND_LEFT"
+    yield true
+} else {
+    trace = f"{trace}|BAD_OUTER_AND_LEFT"
+    yield false
+}) || (if flag {
+    trace = f"{trace}|BAD_OUTER_AND_RIGHT"
+    yield true
+} else {
+    trace = f"{trace}|BAD_OUTER_AND_RIGHT"
+    yield false
+}))
+
+comment("P15_F01_CASE_outer_or")
+let outer_or = truth || ((if flag {
+    trace = f"{trace}|BAD_OUTER_OR_LEFT"
+    yield true
+} else {
+    trace = f"{trace}|BAD_OUTER_OR_LEFT"
+    yield false
+}) && (if truth {
+    trace = f"{trace}|BAD_OUTER_OR_RIGHT"
+    yield true
+} else {
+    trace = f"{trace}|BAD_OUTER_OR_RIGHT"
+    yield false
+}))
+
+comment("P15_F01_CASE_mixed_run")
+let mixed_run = truth && ((if flag {
+    trace = f"{trace}|MIX_LEFT"
+    yield true
+} else {
+    trace = f"{trace}|MIX_LEFT"
+    yield false
+}) || (if truth {
+    trace = f"{trace}|MIX_RIGHT"
+    yield true
+} else {
+    trace = f"{trace}|MIX_RIGHT"
+    yield false
+}))
+
+comment("P15_F01_RESULTS")
+let result_and_skip = if and_skip { yield "T" } else { yield "F" }
+let result_or_skip = if or_skip { yield "T" } else { yield "F" }
+let result_false_or_true = if false_or_true { yield "T" } else { yield "F" }
+let result_false_or_false = if false_or_false { yield "T" } else { yield "F" }
+let result_nested_or = if nested_or { yield "T" } else { yield "F" }
+let result_nested_and = if nested_and { yield "T" } else { yield "F" }
+let result_outer_and = if outer_and { yield "T" } else { yield "F" }
+let result_outer_or = if outer_or { yield "T" } else { yield "F" }
+let result_mixed_run = if mixed_run { yield "T" } else { yield "F" }
+let results = f"and_skip={result_and_skip}|or_skip={result_or_skip}|false_or_true={result_false_or_true}|false_or_false={result_false_or_false}|nested_or={result_nested_or}|nested_and={result_nested_and}|outer_and={result_outer_and}|outer_or={result_outer_or}|mixed_run={result_mixed_run}"
+let finalResult = f"CHERRI_S01_F01_COVERAGE_OK\nS01_OUTPUT={unicodeOutput}\nF01_TRACE={trace}\nF01_RESULTS={results}"
+setClipboard(finalResult)

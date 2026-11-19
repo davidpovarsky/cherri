@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "source_path": "tests/runtime_poc/CherriS01F01CoveragePOC.cherri",
+  "source_sha256": "4a13f90af2bdc326e24f9dbf785f76a1ae41043e176b5a3188ab794694a19aa3",
+  "requirements": [
+    "S01",
+    "F01"
+  ],
+  "expected_clipboard": "CHERRI_S01_F01_COVERAGE_OK\nS01_OUTPUT=שָׁלוֹם👩‍💻é|α|אבב|éα|🌍🌍||￼🙂αבéαשָׁ🌍\nF01_TRACE=START|OR_TRUE|OR_FALSE|NEST_OR|NEST_AND|MIX_LEFT|MIX_RIGHT\nF01_RESULTS=and_skip=F|or_skip=T|false_or_true=T|false_or_false=F|nested_or=T|nested_and=F|outer_and=F|outer_or=T|mixed_run=T",
+  "expected_clipboard_sha256": "f2e79540f2c95547ac9c83d59f25b63ce4167153d81731a5e00b746f041037f9",
+  "expected_fields": {
+    "S01_OUTPUT": "שָׁלוֹם👩‍💻é|α|אבב|éα|🌍🌍||￼🙂αבéαשָׁ🌍",
+    "F01_TRACE": "START|OR_TRUE|OR_FALSE|NEST_OR|NEST_AND|MIX_LEFT|MIX_RIGHT",
+    "F01_RESULTS": "and_skip=F|or_skip=T|false_or_true=T|false_or_false=F|nested_or=T|nested_and=F|outer_and=F|outer_or=T|mixed_run=T"
+  },
+  "coverage": {
+    "S01": [
+      "Hebrew marks before tokens",
+      "astral and ZWJ characters before tokens",
+      "combining marks before tokens",
+      "repeated producer",
+      "mutable producer",
+      "literal U+FFFC is not an attachment"
+    ],
+    "F01": [
+      "and_skip",
+      "or_skip",
+      "false_or_true",
+      "false_or_false",
+      "nested_or",
+      "nested_and",
+      "outer_and",
+      "outer_or",
+      "mixed_run"
+    ]
+  },
+  "runtime_status": "NOT_RUN"
+}
