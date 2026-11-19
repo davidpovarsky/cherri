@@ -4,7 +4,7 @@ import argparse, base64, copy, hashlib, json, os, pathlib, re, subprocess, sys, 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PREFIX = "is.workflow.actions."
-ALLOWED = {"gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "gettypeaction", "setitemname"}
+ALLOWED = {"gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "setitemname"}
 
 class Value:
     def __init__(self, kind, data, name=None):
@@ -90,21 +90,21 @@ class GraphModel:
                 # runtime witnesses, never this model's spelling.
                 previous = Value("Text","native:"+self.value(p["WFInput"]).kind)
             elif ident == "base64encode":
-                if p["WFEncodeMode"] != "Encode":
-                    raise ValueError("wrong base64 direction")
-                data = base64.b64encode(as_text(self.value(p["WFInput"])).encode("utf-8")).decode("ascii")
-                if p.get("WFBase64LineBreakMode") != "None":
-                    data = "\n".join(textwrap.wrap(data,76))
-                previous = Value("Text",data)
+                text = as_text(self.value(p["WFInput"]))
+                if p["WFEncodeMode"] == "Decode":
+                    previous = Value("File", base64.b64decode(text, validate=True))
+                elif p["WFEncodeMode"] == "Encode":
+                    data = base64.b64encode(text.encode("utf-8")).decode("ascii")
+                    if p.get("WFBase64LineBreakMode") != "None":
+                        data = "\n".join(textwrap.wrap(data,76))
+                    previous = Value("Text", data)
+                else:
+                    raise ValueError("unknown base64 direction")
             elif ident == "text.combine":
                 items = self.value(p["text"])
                 if items.kind != "List" or p.get("WFTextSeparator") != "Custom":
                     raise ValueError("unknown combine contract")
                 previous = Value("Text",p["WFTextCustomSeparator"].join(as_text(v) for v in items.data))
-            elif ident == "gettypeaction":
-                if p.get("WFFileType") != "public.utf8-plain-text":
-                    raise ValueError("unsupported file conversion")
-                previous = Value("File",as_text(self.value(p["WFInput"])).encode("utf-8"))
             elif ident == "setitemname":
                 source = self.value(p["WFInput"])
                 if source.kind != "File" or p["WFName"] not in {"cherri-debug.json","cherri-debug.txt"}:
@@ -165,9 +165,11 @@ def fingerprint():
 
 def verify_native_metadata():
     catalog=json.loads((ROOT/"docs/apple-runtime/macos-27/builtin-actions.json").read_text(encoding="utf-8"))
-    for ident,cls in [("getitemtype","WFGetItemTypeAction"),("base64encode","WFBase64EncodingAction"),("gettypeaction","WFGetTypeAction"),("setitemname","WFSetItemNameAction")]:
+    for ident,cls in [("getitemtype","WFGetItemTypeAction"),("base64encode","WFBase64EncodingAction"),("setitemname","WFSetItemNameAction")]:
         assert catalog[PREFIX+ident]["ActionClass"]==cls
-    assert catalog[PREFIX+"gettypeaction"]["Output"]["Types"]==["public.data"]
+    assert catalog[PREFIX+"base64encode"]["Output"]["Types"]==["WFStringContentItem","public.data"]
+    modes=next(p for p in catalog[PREFIX+"base64encode"]["Parameters"] if p["Key"]=="WFEncodeMode")
+    assert modes["Items"]==["Encode","Decode"]
     assert catalog[PREFIX+"getitemtype"]["Output"]["Types"]==["NSString"]
     return {"path":"docs/apple-runtime/macos-27/builtin-actions.json","sha256":hashlib.sha256((ROOT/"docs/apple-runtime/macos-27/builtin-actions.json").read_bytes()).hexdigest(),"platform":"macOS 27 metadata; does not establish iPad runtime"}
 
@@ -183,7 +185,7 @@ def main():
     out=ROOT/"dist/p15-debug-export";out.mkdir(parents=True,exist_ok=True)
     exe=out/("cherri.exe" if os.name=="nt" else "cherri")
     started=time.monotonic()
-    build=run(["go","build","-trimpath","-o",exe,"."])
+    build=run(["go","build","-p=1","-trimpath","-o",exe,"."])
     if build.returncode:
         raise RuntimeError("compiler build failed: "+build.stderr[-3000:])
     capabilities=run([exe,"--capabilities-json"])
@@ -249,15 +251,19 @@ def main():
         p["WFConditionalActionString"]={"WFSerializationType":"WFTextTokenString","Value":{"string":"\ufffc","attachmentsByRange":{"{0, 1}":p["WFInput"]["Variable"]["Value"]}}}
     def mutate_filename(g):
         g[-1]["WFWorkflowActionParameters"]["WFName"]="../private.json"
-    def mutate_file_type(g):
-        g[-2]["WFWorkflowActionParameters"]["WFFileType"]="public.rtf"
+    def mutate_file_direction(g):
+        g[-2]["WFWorkflowActionParameters"]["WFEncodeMode"]="Encode"
+    def mutate_unproved_conversion(g):
+        g[-2]["WFWorkflowActionIdentifier"]=PREFIX+"gettypeaction"
+        g[-2]["WFWorkflowActionParameters"]["WFFileType"]="public.utf8-plain-text"
     def mutate_reference(g):
         g[-1]["WFWorkflowActionParameters"]["WFInput"]["Value"]["OutputUUID"]="MISSING"
     faults=[]
     for name,original,redact,mutation in [
         ("base64-line-breaks",base,False,mutate_linebreak),("default-payload-leak",default,True,mutate_redaction),
         ("type-witness-bypass",base,False,mutate_witness),("unsafe-filename",base,False,mutate_filename),
-        ("wrong-file-encoding",base,False,mutate_file_type),("missing-output-reference",base,False,mutate_reference),
+        ("wrong-file-direction",base,False,mutate_file_direction),("unproved-text-file-conversion",base,False,mutate_unproved_conversion),
+        ("missing-output-reference",base,False,mutate_reference),
     ]:
         altered=copy.deepcopy(original);mutation(altered)
         items=[Value("Text",'"\\\n'+("שלום🍒"*100)),Value("File",b"\x01\xff")]
@@ -296,7 +302,7 @@ def main():
       "schemaFingerprint":caps.get("schemaFingerprint"),"macroFingerprint":caps.get("macroFingerprint"),
       "nativeMetadata":verify_native_metadata(),
       "scope":["one returned File; no provider save/share/network","default full payload redaction","opt-in Text payloads explicitly base64-utf8","non-Text payloads explicitly unsupported","dates/labels not collected"],
-      "nativeAssumptionsStillRequiringSignedRuntime":["empty cleared log Repeat cardinality","native Text Base64 UTF-8 including empty Text and controls","Get File of Type public.utf8-plain-text byte conversion","Set Name on newly produced File","Repeat and If result collection for 0/1/1000 items"],
+      "nativeAssumptionsStillRequiringSignedRuntime":["empty cleared log Repeat cardinality","native Text Base64 UTF-8 including empty Text and controls","Text envelope Base64 Encode/Decode byte conversion","Set Name on newly produced File","Repeat and If result collection for 0/1/1000 items"],
       "summary":{"cliCompiles":len(checks),"exactNativeActionRoundtrips":len(checks),"independentModelCases":sum(len(c["models"]) for c in checks),"cliNegatives":len(negatives),"causalFaults":len(faults),"nativeProbeCompiles":len(native_probes),"nativeExecuted":0,"elapsedSeconds":round(time.monotonic()-started,3)},
       "compiles":checks,"cliNegatives":negatives,"causalFaults":faults,"nativeProbes":native_probes,
     }

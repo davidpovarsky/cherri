@@ -25,7 +25,6 @@ func TestP15DebugExportCanonicalNativeMetadata(t *testing.T) {
 	for _, tc := range []struct{ suffix, class, input string }{
 		{"getitemtype", "WFGetItemTypeAction", "WFInput"},
 		{"base64encode", "WFBase64EncodingAction", "WFInput"},
-		{"gettypeaction", "WFGetTypeAction", "WFInput"},
 		{"setitemname", "WFSetItemNameAction", "WFInput"},
 	} {
 		entry := native["is.workflow.actions."+tc.suffix]
@@ -33,21 +32,26 @@ func TestP15DebugExportCanonicalNativeMetadata(t *testing.T) {
 			t.Fatalf("independent native contract changed: %s", tc.suffix)
 		}
 	}
-	fileTypes := debugParamMap(native["is.workflow.actions.gettypeaction"]["Output"])["Types"]
-	if !reflect.DeepEqual(fileTypes, []any{"public.data"}) {
-		t.Fatalf("Get File of Type is not a File witness: %v", fileTypes)
+	fileTypes := debugParamMap(native["is.workflow.actions.base64encode"]["Output"])["Types"]
+	if !reflect.DeepEqual(fileTypes, []any{"WFStringContentItem", "public.data"}) {
+		t.Fatalf("Base64 native Text/File output contract changed: %v", fileTypes)
 	}
-	var hasNone bool
+	var hasNone, hasDecode bool
 	for _, raw := range native["is.workflow.actions.base64encode"]["Parameters"].([]any) {
 		param := debugParamMap(raw)
+		if param["Key"] == "WFEncodeMode" {
+			for _, item := range param["Items"].([]any) {
+				hasDecode = hasDecode || item == "Decode"
+			}
+		}
 		if param["Key"] == "WFBase64LineBreakMode" {
 			for _, item := range param["Items"].([]any) {
 				hasNone = hasNone || item == "None"
 			}
 		}
 	}
-	if !hasNone {
-		t.Fatal("native base64 no-line-break contract missing")
+	if !hasNone || !hasDecode {
+		t.Fatal("native Base64 Decode/no-line-break contract missing")
 	}
 	macro, ok := schema.DefaultRegistry().LookupAction("debugExport")
 	if !ok || macro.OutputType != types.File || !macro.CompilerConstruct {
@@ -92,29 +96,37 @@ func TestP15DebugExportBothFrontendsPrivacyAndIdentity(t *testing.T) {
 				if exportRef["OutputUUID"] != exported.WFWorkflowActionParameters["UUID"] {
 					t.Fatal("returned File reference changed")
 				}
+				fileEncoderUUID := acts[len(acts)-5].WFWorkflowActionParameters["UUID"]
+				fileDecoderUUID := acts[len(acts)-4].WFWorkflowActionParameters["UUID"]
 				seen := map[string]map[string]any{}
 				for _, a := range acts[4 : len(acts)-2] {
 					p := a.WFWorkflowActionParameters
 					id := strings.TrimPrefix(a.WFWorkflowActionIdentifier, "is.workflow.actions.")
 					switch id {
-					case "gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "gettypeaction", "setitemname":
+					case "gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "setitemname":
 					default:
 						t.Fatalf("export performs unexpected external effect or mutation: %s", id)
 					}
 					if id == "base64encode" {
-						if p["WFEncodeMode"] != "Encode" || p["WFBase64LineBreakMode"] != "None" {
-							t.Fatal("unsafe base64 contract")
-						}
 						ref := debugParamMap(debugParamMap(p["WFInput"])["Value"])
-						if option == "" || strings.HasSuffix(option, "false, true") {
-							producer, exists := seen[fmt.Sprint(ref["OutputUUID"])]
-							if !exists || producer["id"] != "getitemtype" {
-								t.Fatal("default export encodes raw payload")
+						switch p["WFEncodeMode"] {
+						case "Encode":
+							if p["WFBase64LineBreakMode"] != "None" {
+								t.Fatal("unsafe base64 line breaks")
 							}
+							if (option == "" || strings.HasSuffix(option, "false, true")) && p["UUID"] != fileEncoderUUID {
+								producer, exists := seen[fmt.Sprint(ref["OutputUUID"])]
+								if !exists || producer["id"] != "getitemtype" {
+									t.Fatal("default export encodes raw payload")
+								}
+							}
+						case "Decode":
+							if p["UUID"] != fileDecoderUUID || ref["OutputUUID"] != fileEncoderUUID {
+								t.Fatal("only the completed envelope may become a decoded File")
+							}
+						default:
+							t.Fatal("unsafe base64 direction")
 						}
-					}
-					if id == "gettypeaction" && p["WFFileType"] != "public.utf8-plain-text" {
-						t.Fatal("file content encoding changed")
 					}
 					if id == "setitemname" && p["WFName"] != "cherri-debug.json" && p["WFName"] != "cherri-debug.txt" {
 						t.Fatal("uncontrolled export filename")
@@ -172,7 +184,7 @@ func TestP15DebugExportZeroOneThousandCompileBudget(t *testing.T) {
 		for _, count := range []int{0, 1, 1000} {
 			src := "debugClearLogs()\n" + strings.Repeat("text(\"entry\")\ndebugLog()\n", count) + "debugExport()\n"
 			acts := compileDebugFixture(t, src, legacy)
-			if len(acts) != 2+2*count+9 {
+			if len(acts) != 2+2*count+10 {
 				t.Fatalf("legacy=%t count=%d: unbounded expansion %d", legacy, count, len(acts))
 			}
 		}

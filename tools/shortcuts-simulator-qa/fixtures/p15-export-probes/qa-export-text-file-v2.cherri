@@ -5,7 +5,13 @@ var verdict = "P15_EXPORT_TEXT_FILE_OK"
 let original = text("quote \" backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET")
 debugLog()
 let artifact = debugExport("text", false, false, false)
-let artifactName = getName(artifact)
+let artifactStem = getName(artifact)
+let artifactExtension = getFileDetail(artifact, "File Extension")
+let artifactName = text(f"{artifactStem}.{artifactExtension}")
+let fileWitness = base64Decode("AQ==")
+let expectedFileType = typeOf(fileWitness)
+let artifactType = typeOf(artifact)
+if artifactType != expectedFileType { verdict = "P15_EXPORT_FILE_TYPE_FAIL" }
 let artifactText = getText(artifact)
 if artifactName != "cherri-debug.txt" { verdict = "P15_EXPORT_FILE_NAME_FAIL" }
 if artifactText != "Cherri Debug Export 1\nScope: run-local native items\nPayload policy: text-only-base64\nDates: not collected\nLabels: not collected\nEntry encoding: JSON lines; Text payloads use base64-utf8\n\n{\"status\":\"TEXT_PAYLOAD_ENCODED\",\"payload\":{\"encoding\":\"base64-utf8\",\"value\":\"cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU\"}}" { verdict = "P15_EXPORT_TEXT_FILE_BYTES_FAIL" }

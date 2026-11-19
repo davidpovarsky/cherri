@@ -28,8 +28,8 @@ Both frontends expand the same implementation into existing native actions:
 - All options are compile-time literals. includeDates:true is rejected with
   DEBUG_EXPORT_DATES_UNSUPPORTED; labels and dates are recorded as not-collected.
   No unverified timestamp or entry association is fabricated.
-- Output uses Get File of Type with public.utf8-plain-text, then Set Name on
-  that new File. No Save File, provider destination, network, Share, clipboard,
+- Output encodes the completed UTF-8 Text envelope with Base64 Encode and
+  decodes those exact bytes into a new File, then uses Set Name. No Save File, provider destination, network, Share, clipboard,
   Stored Content or Run Shortcut action is emitted.
 - The raw __cherri_debug_log references remain untouched. A diagnostic export
   does not rename or convert original objects. Existing six display modes are
@@ -113,8 +113,8 @@ The producer independently checks:
   file encoding, filename and output UUID, followed by restored controls.
 - Standalone synthetic native probes, with exact source-byte checks for
   Hebrew/emoji and exact lossless graph roundtrips.
-- Independent bundled Apple metadata for Get Type, Base64 Encode, Get File of
-  Type and Set Name. This is macOS metadata evidence, not iPad execution proof.
+- Independent bundled Apple metadata for Get Type, Base64 Encode/Decode
+  and Set Name. This is macOS metadata evidence, not iPad execution proof.
 
 The Go suite also compiles 0/1/1,000 logged items in both frontends and checks
 constant export graph size, immutable original UUID references, returned File
@@ -142,8 +142,8 @@ local. Signing alone does not establish any of these outcomes.
 Native acceptance must establish empty-list behavior, Text/UTF-8 bytes and
 empty strings, Repeat/If result collection, one newly produced File, its
 extension/content, and actual latency/memory on the target platform. The source
-action budget is 9 actions for default export, 7 with types omitted, 16 for
-opted-in Text with types, and 15 with types omitted. These are compiled graph
+action budget is 10 actions for default export, 8 with types omitted, 17 for
+opted-in Text with types, and 16 with types omitted. These are compiled graph
 counts, not runtime timing measurements.
 
 This first subset leaves structured Dictionary/List/Number/Bool/null/Date
@@ -170,3 +170,12 @@ suite pass after the correction. The source-drift guard also rejected a producer
 whose input glob accidentally included its generated unsigned files. Source
 fingerprinting now covers only actual inputs; native probes compile isolated
 copies under dist with signing skipped. Neither failed run was accepted.
+
+
+## File materialization repair, 19 November 2026
+
+The prior model assumed Get File of Type could convert any Text envelope to the required bytes. The direct signed native control failed, so that assumption is removed from the local model and production path. Final File materialization now uses Base64 Encode/Decode after the existing payload policy and JSON/Text envelope construction. Default payload redaction remains in the row construction; the final encoding of the already-redacted envelope is not a payload opt-in.
+
+Independent signed run44429796917 at0c286b6 proved name-plus-File-Extension, native File type, exact Base64 bytes and Get Text for the reviewed decoded File. The earlier Get Name-only full-name expectation was false on this runtime; original run44401954515 remains archived as a failure. The export probes now reconstruct the full name with that independent property and compare the output type to an actual decoded File witness.
+
+These control results do not execute debugExport. The revised production macro still requires exact-source signed native export validation before any runtime success claim. The native action graph regression fails on the original source and the bounded local model now rejects the old unproved conversion rather than fabricating a File value.
