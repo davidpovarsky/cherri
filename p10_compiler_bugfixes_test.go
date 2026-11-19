@@ -193,6 +193,10 @@ matchText("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}", text: pattern)
 	assertUnadulteratedRegex("gettext.WFTextActionText", textAct.WFWorkflowActionParameters["WFTextActionText"])
 	assertUnadulteratedRegex("matchText.WFMatchTextPattern", matchAct.WFWorkflowActionParameters["WFMatchTextPattern"])
 
+	// Each public compiler owns the shared native state for its session.
+	// Finish the V2 transaction before entering the separate Legacy compiler.
+	session.Close()
+
 	// V2 literal tokens now bypass Legacy interpolation by design. Exercise
 	// the unchanged public Legacy compiler too, so the source mutation of
 	// its inline-variable serializer still reaches an observable native wire.
