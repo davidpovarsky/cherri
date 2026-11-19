@@ -168,13 +168,13 @@ def main():
                 except ValueError:
                     ok = False
             elif name in ("legacy_status", "registered_status", "restored_registered_status"):
-                expected = {"CHERRI_REMOTE_LANGUAGE_MODE": "legacy",
+                expected_status = {"CHERRI_REMOTE_LANGUAGE_MODE": "legacy",
                             "CHERRI_REMOTE_SOURCE_BRANCH": release["sourceBranch"]}
-                expected.update({key: release[key] for key in
+                expected_status.update({key: release[key] for key in
                                  ("compilerCommit", "docsCommit", "schemaFingerprint", "sourceBranch")})
                 lines = [line.split("=", 1) for line in stdout.splitlines() if line.strip()]
-                ok = ok and len(lines) == len(expected) and all(len(pair) == 2 for pair in lines)
-                ok = ok and dict(lines) == expected
+                ok = ok and len(lines) == len(expected_status) and all(len(pair) == 2 for pair in lines)
+                ok = ok and dict(lines) == expected_status
         row = {"check": name, "kind": "CAUSAL_REJECTION" if expected else "ENTRYPOINT",
                "exitCode": rc, "seconds": round(time.monotonic() - start, 3),
                "verdict": "PASS" if ok else "FAIL", "nativeArtifacts": native,

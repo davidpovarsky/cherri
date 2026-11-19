@@ -30,7 +30,8 @@ def execute(name, code):
     directory = output / name
     (directory / 'builds').mkdir(parents=True, exist_ok=True)
     (directory / 'runtime').mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(binary, directory / 'builds/cherri')
+    # Preserve the actual compiler executable mode on POSIX hosts.
+    shutil.copy2(binary, directory / 'builds/cherri')
     return subprocess.run([sys.executable, '-c', code, str(repo), str(directory), sha],
                           capture_output=True, text=True, timeout=100), directory
 
