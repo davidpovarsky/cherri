@@ -128,6 +128,7 @@ func ReferenceToDescriptor(ref *backend.Reference) ReferenceDescriptor {
 	if len(ref.Transformations) > 0 {
 		for _, t := range ref.Transformations {
 			aggr := Aggrandizement{
+				rawNativeFields:   deepClonePlistMap(t.RawNativeFields),
 				Type:              t.Type,
 				PropertyName:      t.PropertyName,
 				CoercionItemClass: t.CoercionItemClass,

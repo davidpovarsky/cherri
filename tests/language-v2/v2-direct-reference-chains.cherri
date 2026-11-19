@@ -1,0 +1,9 @@
+// compile-only: exact direct-reference encoding and native import preservation.
+// The synthetic consumer and opaque extension fields make no Apple runtime claim.
+native.action("is.workflow.actions.gettext", parameters: {"WFTextActionText":"BRG07 source","UUID":"12345678-1234-4234-8234-123456789abc"})
+native.action("is.workflow.actions.setvariable", parameters: {"WFVariableName":"BRG07Saved","WFInput":native.ref("ActionOutput", uuid:"12345678-1234-4234-8234-123456789abc")})
+native.action("com.example.cherri.brg07.references", parameters: {
+    "Action": native.ref("ActionOutput", uuid:"12345678-1234-4234-8234-123456789abc", aggrandizements: [{"Type":"WFCoercionVariableAggrandizement","CoercionItemClass":"WFDictionaryContentItem","P15Extra":false},{"Type":"WFDictionaryValueVariableAggrandizement","DictionaryKey":"payload"},{"Type":"WFPropertyVariableAggrandizement","PropertyName":"Name","PropertyUserInfo":[{"Value":false,"Zero":0,"Empty":""}]}]),
+    "Variable": native.ref("Variable", name:"BRG07Saved", aggrandizements: [{"Type":"WFCoercionVariableAggrandizement","CoercionItemClass":"WFDictionaryContentItem","P15Extra":false},{"Type":"WFDictionaryValueVariableAggrandizement","DictionaryKey":"payload"},{"Type":"WFPropertyVariableAggrandizement","PropertyName":"Name","PropertyUserInfo":[{"Value":false,"Zero":0,"Empty":""}]}]),
+    "System": native.ref("ExtensionInput", aggrandizements: [{"Type":"WFCoercionVariableAggrandizement","CoercionItemClass":"WFDictionaryContentItem","P15Extra":false},{"Type":"WFDictionaryValueVariableAggrandizement","DictionaryKey":"payload"},{"Type":"WFPropertyVariableAggrandizement","PropertyName":"Name","PropertyUserInfo":[{"Value":false,"Zero":0,"Empty":""}]}])
+})

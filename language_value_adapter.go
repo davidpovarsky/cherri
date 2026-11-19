@@ -50,6 +50,10 @@ func encodeReferenceMap(ref *backend.Reference) map[string]any {
 	if len(val.Aggrandizements) > 0 {
 		aggrs := make([]map[string]any, len(val.Aggrandizements))
 		for i, a := range val.Aggrandizements {
+			if a.rawNativeFields != nil {
+				aggrs[i] = deepClonePlistMap(a.rawNativeFields)
+				continue
+			}
 			m := map[string]any{"Type": a.Type}
 			if a.PropertyName != "" {
 				m["PropertyName"] = a.PropertyName
