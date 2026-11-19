@@ -36,6 +36,9 @@ sh "$SKILL_DIR/scripts/catalog.sh" 'is.workflow.actions.alert' >/dev/null
 
 TMP=${TMPDIR:-/tmp}/cherri-skill-test-$$
 mkdir -p "$TMP/decompiled" "$TMP/prepared"
+# macOS TMPDIR commonly ends with a slash. Compare the same absolute path
+# spelling that prepare-edit reports, including normalized separators.
+TMP=$(CDPATH= cd -- "$TMP" && pwd -P)
 trap 'rm -rf "$TMP"' EXIT INT TERM
 
 printf 'Testing unsigned compile wrapper...\n'
@@ -72,10 +75,13 @@ sh "$SKILL_DIR/scripts/build.sh" "$V2_SRC" "$TMP/recompiled.shortcut" --unsigned
 [ -s "$TMP/recompiled.shortcut" ]
 
 printf 'Testing existing-Shortcut prepare/edit workflow...\n'
-PREPARE_OUT=$(sh "$SKILL_DIR/scripts/prepare-edit.sh" "$TMP/v2actions.shortcut" "$TMP/prepared" 2>&1)
-printf '%s\n' "$PREPARE_OUT" | grep -q "$TMP/prepared/original/shortcut.plist"
-printf '%s\n' "$PREPARE_OUT" | grep -q "$TMP/prepared/source/.*\.cherri"
-printf '%s\n' "$PREPARE_OUT" | grep -q "$TMP/prepared/builds/validation.shortcut"
+if ! PREPARE_OUT=$(sh "$SKILL_DIR/scripts/prepare-edit.sh" "$TMP/v2actions.shortcut" "$TMP/prepared" 2>&1); then
+  printf '%s\n' "$PREPARE_OUT" >&2
+  exit 1
+fi
+printf '%s\n' "$PREPARE_OUT" | grep -Fxq "$TMP/prepared/original/shortcut.plist"
+printf '%s\n' "$PREPARE_OUT" | grep -F "$TMP/prepared/source/" | grep -q '\.cherri$'
+printf '%s\n' "$PREPARE_OUT" | grep -Fxq "$TMP/prepared/builds/validation.shortcut"
 [ -s "$TMP/prepared/builds/validation.shortcut" ]
 
 # AEA1 signed input must be rejected with a clear early diagnostic.
