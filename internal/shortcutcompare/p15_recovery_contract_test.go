@@ -1,6 +1,7 @@
 package shortcutcompare
 
 import (
+	"encoding/json"
 	"reflect"
 	"strings"
 	"testing"
@@ -30,6 +31,23 @@ func p15RecoveryRejectBothWays(t *testing.T, a, b map[string]any, path string) {
 		var result = CompareDocumentsStrict(pair[0], pair[1])
 		if result.Equal || len(result.Differences) == 0 || result.Truncated {
 			t.Fatalf("direction %d accepted mutation at %s: %+v", direction, path, result)
+		}
+		var encoded, err = json.Marshal(result)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var wire struct {
+			Differences []map[string]any
+		}
+		if err := json.Unmarshal(encoded, &wire); err != nil {
+			t.Fatal(err)
+		}
+		for _, difference := range wire.Differences {
+			_, hasA := difference["a"]
+			_, hasB := difference["b"]
+			if !hasA || !hasB {
+				t.Fatalf("serialized diagnostics lost false/zero/absent expected or actual value: %s", encoded)
+			}
 		}
 		var found bool
 		for _, difference := range result.Differences {
