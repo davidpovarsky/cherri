@@ -1436,7 +1436,7 @@ func TestP12_CF_19_RepeatIndexItemAndResultOutputs(t *testing.T) {
 	assertP12CFDualVerified(t, "P12-CF-19", doc,
 		map[int]string{1: "NATURAL_VERIFIED", 2: "NATURAL_VERIFIED", 3: "NATURAL_VERIFIED"},
 		[]string{`const LoopOut = for `},
-		[]string{`let LoopOut = for `},
+		[]string{`for _ in `, `let LoopOut = native.ref("ActionOutput", uuid: `},
 		[]string{`"is.workflow.actions.repeat.each"`},
 	)
 }

@@ -3359,7 +3359,7 @@ func (ctx *semanticImportContext) trySynthesizeRepeatCountRegion(reg *semanticCo
 	if !ctx.isControlBranchProducerSafe(startRec) {
 		return
 	}
-	endAssignLeg, endAssignV2, okEnd := ctx.controlEndAssignPrefix(endRec)
+	endAssignLeg, endV2, okEnd := ctx.nativeLoopResultBindings(endRec)
 	if !okEnd {
 		return
 	}
@@ -3386,11 +3386,11 @@ func (ctx *semanticImportContext) trySynthesizeRepeatCountRegion(reg *semanticCo
 	applyDecisionCandidate(
 		&plan.Decisions[reg.Start],
 		ctx.flushPendingLegacyDecls(fmt.Sprintf("%srepeat _ for %s {", endAssignLeg, cntPair.Legacy)),
-		fmt.Sprintf("%srepeat _ for %s {", endAssignV2, cntPair.V2),
+		fmt.Sprintf("repeat _ for %s {", cntPair.V2),
 		"repeat", "",
 	)
 	plan.Decisions[reg.End].RegionGroupID = reg.GroupID
-	applyDecisionCandidate(&plan.Decisions[reg.End], "}", "}", "repeat", "")
+	applyDecisionCandidate(&plan.Decisions[reg.End], "}", endV2, "repeat", "")
 }
 
 func (ctx *semanticImportContext) trySynthesizeRepeatEachRegion(reg *semanticControlRegion, plan *HybridImportPlan) {
@@ -3409,7 +3409,7 @@ func (ctx *semanticImportContext) trySynthesizeRepeatEachRegion(reg *semanticCon
 	if !ctx.isControlBranchProducerSafe(startRec) {
 		return
 	}
-	endAssignLeg, endAssignV2, okEnd := ctx.controlEndAssignPrefix(endRec)
+	endAssignLeg, endV2, okEnd := ctx.nativeLoopResultBindings(endRec)
 	if !okEnd {
 		return
 	}
@@ -3434,11 +3434,11 @@ func (ctx *semanticImportContext) trySynthesizeRepeatEachRegion(reg *semanticCon
 	applyDecisionCandidate(
 		&plan.Decisions[reg.Start],
 		ctx.flushPendingLegacyDecls(fmt.Sprintf("%sfor _ in %s {", endAssignLeg, inPair.Legacy)),
-		fmt.Sprintf("%sfor _ in %s {", endAssignV2, inPair.V2),
+		fmt.Sprintf("for _ in %s {", inPair.V2),
 		"repeat.each", "",
 	)
 	plan.Decisions[reg.End].RegionGroupID = reg.GroupID
-	applyDecisionCandidate(&plan.Decisions[reg.End], "}", "}", "repeat.each", "")
+	applyDecisionCandidate(&plan.Decisions[reg.End], "}", endV2, "repeat.each", "")
 }
 
 func (ctx *semanticImportContext) captureCandidateSnapshot(plan *HybridImportPlan) {
