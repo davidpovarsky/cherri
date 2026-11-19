@@ -278,10 +278,11 @@ func (s *ForStmt) statementNode()        {}
 func (s *ForStmt) expressionNode()       {}
 
 type RepeatStmt struct {
-	Span      source.Span
-	Count     Expression
-	IndexVar  string
-	BodyBlock *BlockStmt
+	Span        source.Span
+	Count       Expression
+	IndexVar    string
+	LegacyIndex bool // Existing repeat index for count spelling keeps native one-based indices.
+	BodyBlock   *BlockStmt
 }
 
 func (s *RepeatStmt) NodeSpan() source.Span { return s.Span }

@@ -345,15 +345,7 @@ func (f *Formatter) formatStatement(stmt Statement) {
 		f.formatBlockStmt(s.BodyBlock, false)
 	case *RepeatStmt:
 		f.writeIndent()
-		f.buf.WriteString("repeat ")
-		if s.Count != nil {
-			f.formatControlExpression(s.Count)
-		} else {
-			f.buf.WriteString("none")
-		}
-		if s.IndexVar != "" {
-			fmt.Fprintf(&f.buf, " as %s", s.IndexVar)
-		}
+		f.formatRepeatHeader(s)
 		f.buf.WriteString(" ")
 		f.formatBlockStmt(s.BodyBlock, false)
 	case *MenuStmt:
@@ -570,15 +562,7 @@ func (f *Formatter) formatExpression(expr Expression) {
 		f.buf.WriteString(" ")
 		f.formatBlockStmt(e.BodyBlock, false)
 	case *RepeatStmt:
-		f.buf.WriteString("repeat ")
-		if e.Count != nil {
-			f.formatControlExpression(e.Count)
-		} else {
-			f.buf.WriteString("none")
-		}
-		if e.IndexVar != "" {
-			fmt.Fprintf(&f.buf, " as %s", e.IndexVar)
-		}
+		f.formatRepeatHeader(e)
 		f.buf.WriteString(" ")
 		f.formatBlockStmt(e.BodyBlock, false)
 	case *MenuStmt:
@@ -594,6 +578,21 @@ func (f *Formatter) formatExpression(expr Expression) {
 		f.indent--
 		f.writeIndent()
 		f.buf.WriteString("}")
+	}
+}
+
+func (f *Formatter) formatRepeatHeader(s *RepeatStmt) {
+	f.buf.WriteString("repeat ")
+	if s.LegacyIndex && s.IndexVar != "" {
+		fmt.Fprintf(&f.buf, "%s for ", s.IndexVar)
+	}
+	if s.Count != nil {
+		f.formatControlExpression(s.Count)
+	} else {
+		f.buf.WriteString("none")
+	}
+	if !s.LegacyIndex && s.IndexVar != "" {
+		fmt.Fprintf(&f.buf, " as %s", s.IndexVar)
 	}
 }
 

@@ -167,8 +167,8 @@ repeat i for 5 {
 	if !strings.Contains(migrated, "var counter: Number") {
 		t.Errorf("expected var counter: Number, got:\n%s", migrated)
 	}
-	if !strings.Contains(migrated, "repeat 5 as i") {
-		t.Errorf("expected repeat 5 as i, got:\n%s", migrated)
+	if !strings.Contains(migrated, "repeat i for 5") {
+		t.Errorf("expected preserved one-based repeat i for 5, got:\n%s", migrated)
 	}
 }
 

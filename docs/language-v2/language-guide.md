@@ -179,6 +179,10 @@ repeat 3 as i {
 }
 ```
 
+The modern `repeat 3 as i` form exposes `i` as `0, 1, 2`. Nested loops have distinct index and item bindings; an outer binding is restored after an inner same-name loop.
+
+The existing Legacy compatibility spelling `repeat i for 3` retains its native one-based `1, 2, 3` index. Migration and formatting preserve that spelling and meaning. Explicit native globals `RepeatIndex`, `RepeatIndex2` and subsequent numbered globals also retain Apple's one-based values.
+
 ### Iteration Loops (`for ... in`)
 ```cherri
 let names = ["Alice", "Bob", "Charlie"]

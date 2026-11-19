@@ -340,8 +340,6 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 	// 4. Pre-process menus with Python-style item indentation
 	lines = migrateMenus(lines)
 
-	repeatForRegex := regexp.MustCompile(`^(\s*)repeat\s+([a-zA-Z0-9_]+)\s+for\s+(.+?)\s*\{\s*$`)
-
 	seenVars := make(map[string]bool)
 	for v := range typedVars {
 		seenVars[v] = true
@@ -380,14 +378,9 @@ func MigrateSourceWithDiagnostics(input string) (string, []MigrationDiagnostic, 
 			continue
 		}
 
-		// 3. Convert repeat i for N { -> repeat N as i {
-		if m := repeatForRegex.FindStringSubmatch(line); m != nil {
-			indent := m[1]
-			varName := m[2]
-			count := strings.TrimSpace(m[3])
-			line = fmt.Sprintf("%srepeat %s as %s {", indent, count, varName)
-			trimmed = strings.TrimSpace(line)
-		}
+		// Keep Legacy repeat i for N spelling. Its one-based native index is a
+		// semantic boundary, so migration/formatting must not rewrite it to the
+		// modern zero-based repeat N as i form.
 
 		// 4. Convert const name = val -> let name = val
 		if strings.HasPrefix(trimmed, "const ") {

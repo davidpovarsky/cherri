@@ -3214,8 +3214,6 @@ func (l *Lowerer) lowerRepeat(stmt *syntax.RepeatStmt) error {
 
 func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool) (*ir.AttachmentToken, error) {
 	bindingName := l.detachBindingName()
-	l.repeatDepth++
-	defer func() { l.repeatDepth-- }()
 
 	groupUUID := l.GenerateUUID()
 	var countVal any
@@ -3229,6 +3227,8 @@ func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool
 		}
 	}
 
+	l.repeatDepth++
+	defer func() { l.repeatDepth-- }()
 	l.emitRepeatCountStart(groupUUID, countVal)
 	restoreScope := l.beginLexicalScope()
 	defer restoreScope()
@@ -3243,15 +3243,16 @@ func (l *Lowerer) lowerRepeatWithOutput(stmt *syntax.RepeatStmt, withOutput bool
 	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
 		prevBinding, hadBinding = l.bindings[stmt.IndexVar]
 		nativeName := l.lexicalLoopVariableName(stmt.IndexVar)
+		var indexValue = &ir.AttachmentToken{Type: "Variable", OutputName: repeatIndexName}
+		if !stmt.LegacyIndex {
+			indexValue = l.zeroBasedLoopIndex(repeatIndexName)
+		}
 		setVarNode := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
 			AppleIdentifier: "is.workflow.actions.setvariable",
 			Parameters: map[string]interface{}{
 				"WFVariableName": nativeName,
-				"WFInput": &ir.AttachmentToken{
-					Type:       "Variable",
-					OutputName: repeatIndexName,
-				},
+				"WFInput":        indexValue,
 			},
 		}
 		l.emitAction(setVarNode)
@@ -3288,8 +3289,6 @@ func (l *Lowerer) lowerFor(stmt *syntax.ForStmt) error {
 
 func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir.AttachmentToken, error) {
 	bindingName := l.detachBindingName()
-	l.repeatDepth++
-	defer func() { l.repeatDepth-- }()
 
 	groupUUID := l.GenerateUUID()
 	iterVal, err := l.lowerExpression(stmt.Iterable)
@@ -3299,6 +3298,8 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 
 	iterToken := l.materializeToAttachment(iterVal)
 
+	l.repeatDepth++
+	defer func() { l.repeatDepth-- }()
 	l.emitRepeatEachStart(groupUUID, iterToken)
 	restoreScope := l.beginLexicalScope()
 	defer restoreScope()
@@ -3338,15 +3339,13 @@ func (l *Lowerer) lowerForWithOutput(stmt *syntax.ForStmt, withOutput bool) (*ir
 	if stmt.IndexVar != "" && stmt.IndexVar != "_" {
 		prevIndexBinding, hadIndexBinding = l.bindings[stmt.IndexVar]
 		nativeName := l.lexicalLoopVariableName(stmt.IndexVar)
+		var indexValue = l.zeroBasedLoopIndex(repeatIndexName)
 		setVarNode := &ir.NativeActionNode{
 			NodeID:          l.GenerateUUID(),
 			AppleIdentifier: "is.workflow.actions.setvariable",
 			Parameters: map[string]interface{}{
 				"WFVariableName": nativeName,
-				"WFInput": &ir.AttachmentToken{
-					Type:       "Variable",
-					OutputName: repeatIndexName,
-				},
+				"WFInput":        indexValue,
 			},
 		}
 		l.emitAction(setVarNode)

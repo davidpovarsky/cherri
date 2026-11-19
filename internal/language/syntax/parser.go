@@ -1191,7 +1191,9 @@ func (p *Parser) parseRepeatStmt() *RepeatStmt {
 	startTok := p.advance() // repeat
 	var count Expression
 	idxVar := ""
+	var legacyIndex bool
 	if p.curr.Type == TokenIdent && p.peek.Type == TokenFor {
+		legacyIndex = true
 		idxTok := p.advance()
 		idxVar = idxTok.Text
 		p.advance() // consume "for"
@@ -1214,10 +1216,11 @@ func (p *Parser) parseRepeatStmt() *RepeatStmt {
 	body := p.parseBlockStmt()
 
 	return &RepeatStmt{
-		Span:      startTok.Span.Merge(body.Span),
-		Count:     count,
-		IndexVar:  idxVar,
-		BodyBlock: body,
+		Span:        startTok.Span.Merge(body.Span),
+		Count:       count,
+		IndexVar:    idxVar,
+		LegacyIndex: legacyIndex,
+		BodyBlock:   body,
 	}
 }
 
