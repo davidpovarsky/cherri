@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-11-19T03:33:38.712168+00:00",
+  "skillCommit": "7cedd175172a050e575abb10860a003399b97a93",
+  "compilerCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "compilerSha256": "87cbf0e94f1cda7df461826a2dad107a9f24a18a688102fd812a76545a6f6a9f",
+  "selfTestSha256": "a68b0a1b220a24e3e37ba1ea751fba3d68f032a7d68900770e2d8ade2943553d",
+  "appleEngineExecuted": false,
+  "results": [
+    {
+      "label": "ordinary",
+      "exitCode": 0,
+      "durationSeconds": 3.385,
+      "tempPathSuffix": "",
+      "stdoutSha256": "0cc72ed54ae66785fea47113ef5cbd6b564ca2a336c7c9348148a065d4f2a514",
+      "stderrSha256": "1545277a583745e9b0a18d49f8ee03b213b7884bf5fa8287763575977e773de1",
+      "selfTestCompleted": true,
+      "lastOutput": [
+        "  [PASS] Scenario 7: missing/malformed schemaFingerprint and broken JSON rejected",
+        "  [PASS] Scenario 8: docs SHA/fingerprint mismatch rejected",
+        "  [PASS] Scenario 9: failed download preserved existing working binary",
+        "  [PASS] Scenario 10: branch advance did not alter pinned installed version",
+        "Cherri Shortcuts skill self-test passed."
+      ],
+      "lastTrace": [
+        "+ CHERRI_HOME=/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1051333/home-s1",
+        "+ sh /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1051333/skill-copy/scripts/doctor.sh",
+        "++ git -C /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1051333/home-s1/src rev-parse HEAD",
+        "+ INSTALLED_COMPILER_SHA=e3793b4f131cb0c48084589d9b070bc2e199f1b7",
+        "+ '[' e3793b4f131cb0c48084589d9b070bc2e199f1b7 = e3793b4f131cb0c48084589d9b070bc2e199f1b7 ']'",
+        "++ git -C /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1051333/home-s1/docs rev-parse HEAD",
+        "+ INSTALLED_DOCS_SHA=b1ab170287ed8e8ab4d72b4b7008299ea419ac1d",
+        "+ '[' b1ab170287ed8e8ab4d72b4b7008299ea419ac1d = b1ab170287ed8e8ab4d72b4b7008299ea419ac1d ']'",
+        "+ printf '  [PASS] Scenario 10: branch advance did not alter pinned installed version\\n'",
+        "+ '[' -n /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/ordinary-wrapper-observations.json ']'",
+        "++ dirname -- /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/ordinary-wrapper-observations.json",
+        "+ mkdir -p /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced",
+        "+ cat",
+        "+ echo 'Cherri Shortcuts skill self-test passed.'",
+        "+ rm -rf /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1051333"
+      ]
+    },
+    {
+      "label": "trailing_separator",
+      "exitCode": 1,
+      "durationSeconds": 1.51,
+      "tempPathSuffix": "/",
+      "stdoutSha256": "b8490c933c2d7c92c749b9eb2112741c84b8fef300c2d23df236212657151757",
+      "stderrSha256": "ca19f7804efe4a85d886ad07d6bfb0bb4a527a18c155624b0035a0e85b081213",
+      "selfTestCompleted": false,
+      "lastOutput": [
+        "Testing machine-readable catalog wrapper...",
+        "Testing unsigned compile wrapper...",
+        "Testing decompile wrapper...",
+        "Testing decompiled-source recompilation (self-contained invariant)...",
+        "Testing existing-Shortcut prepare/edit workflow..."
+      ],
+      "lastTrace": [
+        "+ '[' -n /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent//cherri-skill-test-1054736/decompiled-v2/shortcut.cherri ']'",
+        "+ sh /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/source/skills/cherri-shortcuts/scripts/build.sh /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent//cherri-skill-test-1054736/decompiled-v2/shortcut.cherri /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent//cherri-skill-test-1054736/recompiled.shortcut --unsigned",
+        "+ '[' -s /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent//cherri-skill-test-1054736/recompiled.shortcut ']'",
+        "+ printf 'Testing existing-Shortcut prepare/edit workflow...\\n'",
+        "++ sh /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/source/skills/cherri-shortcuts/scripts/prepare-edit.sh /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent//cherri-skill-test-1054736/v2actions.shortcut /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent//cherri-skill-test-1054736/prepared",
+        "+ PREPARE_OUT='/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1054736/prepared/original/shortcut.plist",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1054736/prepared/source/shortcut.cherri",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1054736/prepared/builds/validation.shortcut",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1054736/prepared'",
+        "+ printf '%s\\n' '/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1054736/prepared/original/shortcut.plist",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1054736/prepared/source/shortcut.cherri",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1054736/prepared/builds/validation.shortcut",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent/cherri-skill-test-1054736/prepared'",
+        "+ grep -q /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent//cherri-skill-test-1054736/prepared/original/shortcut.plist",
+        "+ rm -rf /home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/k01-tempdir-contract-7ced/temp-parent//cherri-skill-test-1054736"
+      ]
+    }
+  ]
+}
