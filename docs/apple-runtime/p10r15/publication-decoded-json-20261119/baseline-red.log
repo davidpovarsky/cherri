@@ -1,0 +1,52 @@
+test_unicode_escaped_json_secrets_are_blocked_without_echo (test_public_artifacts.PublicArtifactTests.test_unicode_escaped_json_secrets_are_blocked_without_echo) ... 
+  test_unicode_escaped_json_secrets_are_blocked_without_echo (test_public_artifacts.PublicArtifactTests.test_unicode_escaped_json_secrets_are_blocked_without_echo) (name='environment.json') ... FAIL
+  test_unicode_escaped_json_secrets_are_blocked_without_echo (test_public_artifacts.PublicArtifactTests.test_unicode_escaped_json_secrets_are_blocked_without_echo) (name='runtime/output-assertions.json') ... FAIL
+  test_unicode_escaped_json_secrets_are_blocked_without_echo (test_public_artifacts.PublicArtifactTests.test_unicode_escaped_json_secrets_are_blocked_without_echo) (name='runtime/runtime-trace.jsonl') ... FAIL
+test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl (test_public_artifacts.PublicArtifactTests.test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl) ... 
+  test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl (test_public_artifacts.PublicArtifactTests.test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl) (name='environment.json') ... FAIL
+  test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl (test_public_artifacts.PublicArtifactTests.test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl) (name='runtime/runtime-trace.jsonl') ... FAIL
+
+======================================================================
+FAIL: test_unicode_escaped_json_secrets_are_blocked_without_echo (test_public_artifacts.PublicArtifactTests.test_unicode_escaped_json_secrets_are_blocked_without_echo) (name='environment.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tools\shortcuts-simulator-qa\test_public_artifacts.py", line 263, in test_unicode_escaped_json_secrets_are_blocked_without_echo
+    with self.assertRaisesRegex(PublicationBlocked, "SECRET_OR_PRIVATE_CANARY") as caught:
+AssertionError: PublicationBlocked not raised
+
+======================================================================
+FAIL: test_unicode_escaped_json_secrets_are_blocked_without_echo (test_public_artifacts.PublicArtifactTests.test_unicode_escaped_json_secrets_are_blocked_without_echo) (name='runtime/output-assertions.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tools\shortcuts-simulator-qa\test_public_artifacts.py", line 263, in test_unicode_escaped_json_secrets_are_blocked_without_echo
+    with self.assertRaisesRegex(PublicationBlocked, "SECRET_OR_PRIVATE_CANARY") as caught:
+AssertionError: PublicationBlocked not raised
+
+======================================================================
+FAIL: test_unicode_escaped_json_secrets_are_blocked_without_echo (test_public_artifacts.PublicArtifactTests.test_unicode_escaped_json_secrets_are_blocked_without_echo) (name='runtime/runtime-trace.jsonl')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tools\shortcuts-simulator-qa\test_public_artifacts.py", line 263, in test_unicode_escaped_json_secrets_are_blocked_without_echo
+    with self.assertRaisesRegex(PublicationBlocked, "SECRET_OR_PRIVATE_CANARY") as caught:
+AssertionError: PublicationBlocked not raised
+
+======================================================================
+FAIL: test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl (test_public_artifacts.PublicArtifactTests.test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl) (name='environment.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tools\shortcuts-simulator-qa\test_public_artifacts.py", line 284, in test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl
+    with self.assertRaisesRegex(PublicationBlocked, "RAW_OCR_NOT_PUBLIC"):
+AssertionError: PublicationBlocked not raised
+
+======================================================================
+FAIL: test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl (test_public_artifacts.PublicArtifactTests.test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl) (name='runtime/runtime-trace.jsonl')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<checkout>\tools\shortcuts-simulator-qa\test_public_artifacts.py", line 284, in test_nested_raw_ocr_markers_are_blocked_in_json_and_jsonl
+    with self.assertRaisesRegex(PublicationBlocked, "RAW_OCR_NOT_PUBLIC"):
+AssertionError: PublicationBlocked not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.229s
+
+FAILED (failures=5)
