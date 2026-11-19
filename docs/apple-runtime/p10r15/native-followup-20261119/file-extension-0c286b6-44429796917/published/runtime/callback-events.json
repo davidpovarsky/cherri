@@ -1,0 +1,39 @@
+[
+  {
+    "eventSource" : "receiver-self-test",
+    "host" : "success",
+    "receiverSelfTest" : true,
+    "resultShape" : {
+      "collectorMarkerCount" : 0,
+      "inlineMarkerCount" : 0,
+      "nonemptyLineCount" : 1,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 21
+    },
+    "resultSummary" : "CHERRI_QA_RECEIVER_OK",
+    "runId" : "receiver-self-test",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-19T00:49:34.159Z"
+  },
+  {
+    "eventSource" : "shortcuts-x-callback",
+    "expectedShortcutName" : "qa-file-name-extension-v2",
+    "fixtureId" : "qa-file-name-extension-v2",
+    "host" : "success",
+    "receiverSelfTest" : false,
+    "resultShape" : {
+      "collectorMarkerCount" : 2,
+      "inlineMarkerCount" : 2,
+      "nonemptyLineCount" : 5,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 1043
+    },
+    "resultSummary" : "CHERRI_QA_FILE_NAME_EXTENSION:NAME=ok:EXTENSION=ok:TYPE=ok:BYTES=ok:TEXT=ok",
+    "runId" : "qa-file-name-extension-v2-44429796917-245cdc978e43f20b9c48c85b82602791",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-19T00:55:39.049Z",
+    "tracePayload" : "{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_begin\",\"runId\":\"qa-file-name-extension-v2\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"before\",\"label\":\"file-name-extension\",\"stepSequence\":3,\"actionIdentifier\":\"is.workflow.actions.setvariable\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"19 Nov 2026 at 12:54 AM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"after\",\"label\":\"file-name-extension\",\"stepSequence\":48,\"actionIdentifier\":\"is.workflow.actions.comment\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"19 Nov 2026 at 12:54 AM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_end\",\"runId\":\"qa-file-name-extension-v2\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}"
+  }
+]
