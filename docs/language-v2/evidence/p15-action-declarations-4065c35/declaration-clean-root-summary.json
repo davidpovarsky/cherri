@@ -1,0 +1,29 @@
+{
+  "phase": "CLEAN_SOURCE_VALIDATION",
+  "source_sha": "4065c3549b5fdde2e0a1aa94f2bcae2f7f4b1a05",
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-p=1",
+    ".",
+    "-run",
+    "^(TestP15ActionDeclaration.*|TestP15C02.*|TestP15C05.*|TestP15Custom.*|TestP15Registry.*|TestLANG001_.*|TestEnum_.*)$"
+  ],
+  "exit_code": 0,
+  "elapsed": 10.633742094039917,
+  "events": {
+    "run": 82,
+    "pass": 82
+  },
+  "failed": [],
+  "raw_sha256": "ab084a342a97c39e2641a3258e5f20b8124011392b8b50ad0e70e13e41cc64d2",
+  "raw_bytes": 76834,
+  "unparsed": [],
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "source_status": "",
+  "finished_utc": "2026-11-19T02:49:11.804137+00:00"
+}

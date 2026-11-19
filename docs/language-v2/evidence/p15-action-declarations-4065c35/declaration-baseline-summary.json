@@ -1,0 +1,33 @@
+{
+  "phase": "TESTS_ONLY_CAUSAL_BASELINE",
+  "source_sha": "ddc6c020806e8e2edad727d07d7d78ea13d7bfe7",
+  "exit_code": 1,
+  "elapsed": 53.46540331840515,
+  "events": {
+    "run": 11,
+    "fail": 10,
+    "pass": 1
+  },
+  "failed": [
+    "TestP15ActionDeclarationPublicValidation/unknown_codec",
+    "TestP15ActionDeclarationPublicValidation/unknown_binding",
+    "TestP15ActionDeclarationPublicValidation/unknown_primary",
+    "TestP15ActionDeclarationPublicValidation/empty_wire",
+    "TestP15ActionDeclarationPublicValidation/duplicate_parameter",
+    "TestP15ActionDeclarationPublicValidation/duplicate_wire",
+    "TestP15ActionDeclarationPublicValidation/unused_invalid_declaration",
+    "TestP15ActionDeclarationPublicValidation/duplicate_binding",
+    "TestP15ActionDeclarationPublicValidation/duplicate_binding_property",
+    "TestP15ActionDeclarationPublicValidation"
+  ],
+  "raw_sha256": "c79863072e21ecb76ab9c18aa67c2f1a7efd6c14071b8ae7ca6696c90050ca2d",
+  "raw_bytes": 81041,
+  "last_package_event": {
+    "Time": "2026-11-19T04:45:37.2766891+02:00",
+    "Action": "fail",
+    "Package": "github.com/electrikmilk/cherri",
+    "Elapsed": 7.04
+  },
+  "summary_reconstructed_from_exact_log": true,
+  "reason": "Candidate orchestration text replacement changed the output path only, leaving summary input path on prior baseline; invalid summary preserved separately, each exact raw log remains intact."
+}
