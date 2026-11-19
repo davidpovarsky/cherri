@@ -489,7 +489,7 @@
         },
         {
           "milestone": "P10R15 F02",
-          "commit": "b5a51fe6e6323508a7b33a9a8ccc0a22d0a4e72b",
+          "commit": "6d9a6f3b1c7900ecffda75b1882e9276ef45f6d6",
           "summary": "Reuse the existing native subtraction encoding to convert modern named loop indices from Apple's one-based Repeat Index to zero-based, with exact owner and captured output. Legacy spelling and raw native indices bypass this compiler-owned conversion. See the dedicated infrastructure entry and retained local proof; native fixed replay pending."
         }
       ]
@@ -3039,7 +3039,7 @@
         "internal/language/syntax/repeat_index_test.go",
         "p15_loop_index_native_test.go"
       ],
-      "firstForkCommit": "b5a51fe6e6323508a7b33a9a8ccc0a22d0a4e72b",
+      "firstForkCommit": "6d9a6f3b1c7900ecffda75b1882e9276ef45f6d6",
       "change": "Preserve the existing Legacy repeat spelling and one-based index semantics through parser, formatter and migration. Modern named repeat and tuple-for indices capture the existing native Math minus-one producer within the owning loop. Start native nesting depth after count/iterable evaluation.",
       "reason": "Native e61 run44622055945 observed one-based indices in the unchanged modern nested-loop fixture; previous Legacy parity remediation had applied native indexing to both accepted source spellings.",
       "evidence": "docs/language-v2/p15-loop-index-f02-20261119.md; clean b5a51fe6:73 package and22 production/import named passes, no failures/skips, fresh compiler47/47 preserved fixtures and17/17 action mappings; retained tests-only failed baselines.",

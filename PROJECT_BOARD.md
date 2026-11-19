@@ -119,3 +119,7 @@ Actual Linux run44634809329 at clean4e56dbcfe895baa8f944b83715ecff0d07bfd24e pro
 ### 2026-11-19 — FN01–FN03 actual local producers
 
 Clean3b3711f968464a3f42ee3bc8ebdfde73bc299a14 passed118 producer/intake events; six new core tests passed60 events with38 causal native-graph corruptions. FN01–FN03 now produce real unit/native-structure evidence and remain PENDING_EXTERNAL for their unchanged iOS tiers. No linked requirement inherits success. Scope and original failures/replays: `docs/language-v2/p15-function-actual-producers-20261119.md`.
+
+## P15 R3 assembly and original R2 OpenMinis evidence — 2026-11-19
+
+R2 remains frozen at 4e56dbcf. R3 assembles the locally verified loop-index repair, N01/FN producer proofs, the complete R2 179 audit and actual Linux race evidence. F02 implementation provenance now points to the integrated 6d9a6f3b commit; original component receipts retain b5a51fe6. R2 OpenMinis run 44634814424 succeeded with all original artifact digests verified; the pinned package compiler remains b97ae752, native macro execution and live promotion remain open. See docs/language-v2/p15-openminis-r2-20261119.md.

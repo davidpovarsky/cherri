@@ -1,0 +1,190 @@
+{
+  "formatVersion": 1,
+  "observedAtUtc": "2026-11-19T23:09:31Z",
+  "scope": "ACTUAL_COMPILER_CANONICAL_DOCS_ISOLATED_SINGLE_FIELD_MUTATIONS",
+  "compilerCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+  "compilerSHA256": "8e37e0c07e4225e2237d97f22e47dda4221957f84cc6fbd6ce1b431ffaafcee2",
+  "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+  "macroCount": 15,
+  "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+  "canonicalDocsSHA256": "96aeab4c5fb5ba3be4f7e9a7e7f31335630a169eb2016d5f6d9a9eb4f9032324",
+  "skillCommonSHA256": "f227dc241404664c2750f921f2c4b205ce8e1cef9bfc20a12b42471db48a3ec5",
+  "legacyCompilerCommit": null,
+  "legacyCompilerSHA256": null,
+  "livePromotion": false,
+  "results": [
+    {
+      "case": "actual_healthy_tuple",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.121,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "healthy_capabilities_proxy",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.118,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "compiler_macro_missing",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_MISSING",
+      "verdict": "PASS",
+      "seconds": 0.08,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n[CHERRI_MACRO_FINGERPRINT_MISSING] Cherri binary does not expose the required macroFingerprint\nExplicit CHERRI_BIN is missing or incompatible: <isolated-test>/capabilities-only-proxy\nCherri: MISSING or INCOMPATIBLE (run scripts/setup.sh)\n"
+    },
+    {
+      "case": "compiler_restore_after_missing",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.123,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "compiler_macro_malformed",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_INVALID",
+      "verdict": "PASS",
+      "seconds": 0.083,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n[CHERRI_MACRO_FINGERPRINT_INVALID] Cherri binary returned a malformed macroFingerprint\nExplicit CHERRI_BIN is missing or incompatible: <isolated-test>/capabilities-only-proxy\nCherri: MISSING or INCOMPATIBLE (run scripts/setup.sh)\n"
+    },
+    {
+      "case": "compiler_restore_after_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.12,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "compiler_macro_mismatch",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_MISMATCH",
+      "verdict": "PASS",
+      "seconds": 0.081,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n[CHERRI_MACRO_FINGERPRINT_MISMATCH] Cherri macroFingerprint mismatch: expected 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec, got 0000000000000000000000000000000000000000000000000000000000000000\nExplicit CHERRI_BIN is missing or incompatible: <isolated-test>/capabilities-only-proxy\nCherri: MISSING or INCOMPATIBLE (run scripts/setup.sh)\n"
+    },
+    {
+      "case": "compiler_restore_after_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.119,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: <isolated-test>/capabilities-only-proxy\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "manifest_macro_empty",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_MANIFEST_INVALID",
+      "verdict": "PASS",
+      "seconds": 0.04,
+      "diagnosticTail": "[CHERRI_MACRO_MANIFEST_INVALID] Compatibility manifest has missing or invalid macroFingerprint\n"
+    },
+    {
+      "case": "manifest_restore_after_empty",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.12,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "manifest_macro_malformed",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_MANIFEST_INVALID",
+      "verdict": "PASS",
+      "seconds": 0.039,
+      "diagnosticTail": "[CHERRI_MACRO_MANIFEST_INVALID] Compatibility manifest has missing or invalid macroFingerprint\n"
+    },
+    {
+      "case": "manifest_restore_after_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.122,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "manifest_macro_mismatch",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_MACRO_FINGERPRINT_MISMATCH",
+      "verdict": "PASS",
+      "seconds": 0.085,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n[CHERRI_MACRO_FINGERPRINT_MISMATCH] Cherri macroFingerprint mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec\nExplicit CHERRI_BIN is missing or incompatible: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri: MISSING or INCOMPATIBLE (run scripts/setup.sh)\n[CHERRI_STALE_DOCS_MACROS] Cherri docs Compiler Macro Fingerprint mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec\n"
+    },
+    {
+      "case": "manifest_restore_after_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.121,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "docs_macro_missing",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_DOCS_MACRO_FINGERPRINT_MISSING",
+      "verdict": "PASS",
+      "seconds": 0.124,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n[CHERRI_DOCS_MACRO_FINGERPRINT_MISSING] Cherri docs do not expose the required Compiler Macro Fingerprint\n"
+    },
+    {
+      "case": "docs_restore_after_missing",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.121,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "docs_macro_malformed",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_DOCS_MACRO_FINGERPRINT_INVALID",
+      "verdict": "PASS",
+      "seconds": 0.12,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n[CHERRI_DOCS_MACRO_FINGERPRINT_INVALID] Cherri docs have a malformed Compiler Macro Fingerprint\n"
+    },
+    {
+      "case": "docs_restore_after_malformed",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.122,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "docs_macro_mismatch",
+      "exitCode": 1,
+      "expectedDiagnostic": "CHERRI_STALE_DOCS_MACROS",
+      "verdict": "PASS",
+      "seconds": 0.121,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n[CHERRI_STALE_DOCS_MACROS] Cherri docs Compiler Macro Fingerprint mismatch: expected 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec, got 0000000000000000000000000000000000000000000000000000000000000000\n"
+    },
+    {
+      "case": "docs_restore_after_mismatch",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.12,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCompiler macro fingerprint: 1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    },
+    {
+      "case": "old_manifest_without_macro_field",
+      "exitCode": 0,
+      "expectedDiagnostic": null,
+      "verdict": "PASS",
+      "seconds": 0.12,
+      "diagnosticTail": "Platform: Linux x86_64\nSkill dir: <isolated-test>/skill\nPinned compiler commit: 4e56dbcfe895baa8f944b83715ecff0d07bfd24e\nPinned docs commit: b11bb117b69dcdf821e147e09b20e4d8aa7f9d2e\nCherri: /home/runner/work/cherri/cherri/dist/cherri-linux-amd64\nCherri Compiler \u001b[32mv2.3.0\u001b[0m\nCherri Language: v2.0 ready\nSchema fingerprint: 7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b (verified)\nCodec fingerprint: 3e7e3555eefe1e030d254df0a22c62fdc3a139f92e39da34f6d841f8bfa1689e (verified)\nDocs: <isolated-test>/docs (verified)\nsh: ok\ngrep: ok\nsed: ok\nawk: ok\n"
+    }
+  ],
+  "summary": {
+    "checks": 21,
+    "passed": 21,
+    "failed": 0
+  }
+}

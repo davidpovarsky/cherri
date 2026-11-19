@@ -1,0 +1,494 @@
+{
+  "retrieved_utc": "2026-11-19T23:18:16.385131+00:00",
+  "run_id": 44634814424,
+  "source_sha": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+  "conclusion": "success",
+  "job_log_sha256": "8d00efb4b021f545e5be02e5eaff6dc1e16cf7dd25b829452b311223cd33a4dc",
+  "artifacts": [
+    {
+      "id": 14584186180,
+      "name": "Cherri-OpenMinis-Skill",
+      "bytes": 19814906,
+      "sha256": "c1802f140ed1a2b96f00fa13e8c561d57b637590127abe5dd85ae34fd2405f33",
+      "entries": [
+        "cherri-shortcuts-openminis-arm64.zip",
+        "cherri-linux-arm64",
+        "cherri-shortcuts-skill-source.zip",
+        "cherri-linux-amd64",
+        "skill-evidence.json",
+        "skill-wrapper-observations.json",
+        "skill-package-arm64-observations.json",
+        "skill-source-integrity.json",
+        "skill-runtime-integrity.json",
+        "skill-unpacked-integrity.json",
+        "skill-package-producer.jsonl"
+      ],
+      "json_summaries": [
+        {
+          "file": "skill-evidence.json",
+          "keys": [
+            "records",
+            "report",
+            "scope",
+            "source_sha",
+            "source_tree_clean"
+          ],
+          "summary": {
+            "scope": "Only committed source/runtime ZIP inventory, actual clean pinned compiler provenance, unpacked real CLI self-test and rejected archive/source corruption. No remote installation, native runtime, signing or broad repair/release closure.",
+            "source_sha": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "source_tree_clean": true
+          }
+        },
+        {
+          "file": "skill-wrapper-observations.json",
+          "keys": [
+            "records",
+            "observations"
+          ],
+          "summary": {}
+        },
+        {
+          "file": "skill-package-arm64-observations.json",
+          "keys": [
+            "records",
+            "observations"
+          ],
+          "summary": {}
+        },
+        {
+          "file": "skill-source-integrity.json",
+          "keys": [
+            "archiveSha256",
+            "compilerCommit",
+            "docsCommit",
+            "kind",
+            "runtime",
+            "scope",
+            "skillCommit",
+            "status",
+            "unpacked",
+            "verifiedFiles"
+          ],
+          "summary": {
+            "archiveSha256": "337f9af0f6684c41d22cc5e89a3ee4a7ab3fd30d9061bb17ccd4a2f0c5f063c9",
+            "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+            "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+            "kind": "source",
+            "scope": "Exact committed package bytes and clean compiler source provenance; unpacked execution, installation and signing require separate tests.",
+            "skillCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "status": "PASS_PACKAGE_INTEGRITY",
+            "unpacked": false,
+            "verifiedFiles": 20
+          }
+        },
+        {
+          "file": "skill-runtime-integrity.json",
+          "keys": [
+            "archiveSha256",
+            "compilerCommit",
+            "docsCommit",
+            "kind",
+            "runtime",
+            "scope",
+            "skillCommit",
+            "status",
+            "unpacked",
+            "verifiedFiles"
+          ],
+          "summary": {
+            "archiveSha256": "46aff2a8b7fc4a9f89a5f1ae507f41f3d6a548eaa80ea60dde6f80c53b878315",
+            "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+            "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+            "kind": "runtime",
+            "scope": "Exact committed package bytes and clean compiler source provenance; unpacked execution, installation and signing require separate tests.",
+            "skillCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "status": "PASS_PACKAGE_INTEGRITY",
+            "unpacked": false,
+            "verifiedFiles": 23
+          }
+        },
+        {
+          "file": "skill-unpacked-integrity.json",
+          "keys": [
+            "archiveSha256",
+            "compilerCommit",
+            "docsCommit",
+            "kind",
+            "runtime",
+            "scope",
+            "skillCommit",
+            "status",
+            "unpacked",
+            "verifiedFiles"
+          ],
+          "summary": {
+            "archiveSha256": "46aff2a8b7fc4a9f89a5f1ae507f41f3d6a548eaa80ea60dde6f80c53b878315",
+            "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+            "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+            "kind": "runtime",
+            "scope": "Exact committed package bytes and clean compiler source provenance; unpacked execution, installation and signing require separate tests.",
+            "skillCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "status": "PASS_PACKAGE_INTEGRITY",
+            "unpacked": true,
+            "verifiedFiles": 23
+          }
+        }
+      ]
+    },
+    {
+      "id": 14584146323,
+      "name": "cherri-paginate-evidence",
+      "bytes": 4742,
+      "sha256": "897e842b8831ad4291a1ad6d25acb83c9c4a7fe399dc71d7357086db2d463d71",
+      "entries": [
+        "paginate-validation.json"
+      ],
+      "json_summaries": [
+        {
+          "file": "paginate-validation.json",
+          "keys": [
+            "schemaVersion",
+            "status",
+            "featureStatus",
+            "nativeRuntimeStatus",
+            "sourceCommit",
+            "worktreeDirtyBeforeEvidence",
+            "sourceFingerprint",
+            "compilerSha256",
+            "schemaFingerprint",
+            "macroFingerprint",
+            "macroDescriptor",
+            "nativeMetadata",
+            "scope",
+            "unsupported",
+            "nativeAssumptionsStillRequiringSignedRuntime",
+            "summary",
+            "compiles",
+            "cliNegatives",
+            "causalFaults"
+          ],
+          "summary": {
+            "schemaVersion": 1,
+            "status": "PASS_SOURCE_AND_MODEL_ONLY",
+            "featureStatus": "PARTIAL_SOURCE_IMPLEMENTED_PENDING_NATIVE",
+            "nativeRuntimeStatus": "NOT_EXECUTED",
+            "sourceCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "worktreeDirtyBeforeEvidence": false,
+            "sourceFingerprint": "3b7bef1c158be0a6b83a595d785a624a866227468eb908e7848e3905492d0e38",
+            "compilerSha256": "ac2805c8acab54b01691801120a293459dd37f1380f0e6d217fd0da8ad5043ee",
+            "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+            "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+          }
+        }
+      ]
+    },
+    {
+      "id": 14583866993,
+      "name": "cherri-storage-probe-evidence",
+      "bytes": 3780,
+      "sha256": "50fa2f39acede7d3b5c8eed308e83c9b83344bd39d45c06dcc60205e97631a58",
+      "entries": [
+        "storage-probe-validation.json"
+      ],
+      "json_summaries": [
+        {
+          "file": "storage-probe-validation.json",
+          "keys": [
+            "schemaVersion",
+            "status",
+            "sourceCommit",
+            "workingTreeDirty",
+            "compilerBinarySha256",
+            "compilerBuildIdentity",
+            "sourceCheckoutBinding",
+            "goTests",
+            "pythonTests",
+            "actualCLIFixturesAttempted",
+            "actualCLIFixturesCompiled",
+            "actualCLIExpectedDiagnosticRejections",
+            "storageExactNativeActionRoundtrips",
+            "storageFixtures",
+            "phase0ReceiptSha256",
+            "causalCompileMutations",
+            "causalPublicationMutations",
+            "publication",
+            "sameRunOnly",
+            "cacheImplemented",
+            "crossRunPersistence",
+            "typedArchive",
+            "nativeExecuted",
+            "signing",
+            "nativePrerequisites",
+            "retainedDevelopmentFailures",
+            "elapsedSeconds"
+          ],
+          "summary": {
+            "schemaVersion": 1,
+            "status": "PASS_COMMITTED_SOURCE_AND_CLI_ONLY",
+            "sourceCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "workingTreeDirty": false,
+            "compilerBinarySha256": "8e37e0c07e4225e2237d97f22e47dda4221957f84cc6fbd6ce1b431ffaafcee2",
+            "actualCLIFixturesAttempted": 69,
+            "actualCLIFixturesCompiled": 67,
+            "actualCLIExpectedDiagnosticRejections": 2,
+            "storageExactNativeActionRoundtrips": 3,
+            "phase0ReceiptSha256": "2dc756d61b2afea5fc142a06fa2300c9758c0a5f8796e4df73b07b02c56d213a",
+            "sameRunOnly": true,
+            "cacheImplemented": false,
+            "crossRunPersistence": "NOT_PROVEN",
+            "typedArchive": "NOT_PROVEN",
+            "nativeExecuted": 0,
+            "signing": "NOT_RUN"
+          }
+        }
+      ]
+    },
+    {
+      "id": 14583797174,
+      "name": "cherri-signing-fault-evidence",
+      "bytes": 7108,
+      "sha256": "6cf6e3bc6b657086fb383aaf19ef004855eff106502ec4b5cba7ad13803c7a81",
+      "entries": [
+        "signing-protocol-exit-evidence.json"
+      ],
+      "json_summaries": [
+        {
+          "file": "signing-protocol-exit-evidence.json",
+          "keys": [
+            "formatVersion",
+            "observedAtUtc",
+            "scope",
+            "appleCryptographicValidation",
+            "privateCorpusUsed",
+            "provenance",
+            "results",
+            "summary"
+          ],
+          "summary": {
+            "formatVersion": 1,
+            "observedAtUtc": "2026-11-19T23:11:15Z",
+            "scope": "ACTUAL_CLI_AND_ENDPOINT_INSTRUMENTED_WRAPPER_COPIES_LOOPBACK_ONLY",
+            "appleCryptographicValidation": "NOT_TESTED",
+            "privateCorpusUsed": false
+          }
+        }
+      ]
+    },
+    {
+      "id": 14583696184,
+      "name": "cherri-macro-contract-evidence",
+      "bytes": 14851,
+      "sha256": "19cf59c6a3debea5745817e3e2721553c69bd1704e4a95e8532714f07ada5d14",
+      "entries": [
+        "macro-contract-coverage.json",
+        "macro-contract-coverage.md",
+        "verifier-audit.json"
+      ],
+      "json_summaries": [
+        {
+          "file": "macro-contract-coverage.json",
+          "keys": [
+            "formatVersion",
+            "observedAtUtc",
+            "masterAsanaTask",
+            "sourceSha",
+            "worktreeDirtyBeforeExecution",
+            "sourceFingerprint",
+            "generatorSHA256",
+            "buildCommand",
+            "goVersion",
+            "compilerSHA256",
+            "languageVersion",
+            "schemaFingerprint",
+            "macroFingerprint",
+            "nativeCatalogCount",
+            "compilerMacroCount",
+            "compilerMacros",
+            "scope",
+            "canonicalDocs",
+            "nativeMetadata",
+            "compiles",
+            "causalMutations",
+            "crossCaseChecks",
+            "requirements",
+            "privacy",
+            "summary",
+            "observationsSHA256"
+          ],
+          "summary": {
+            "formatVersion": 1,
+            "observedAtUtc": "2026-11-19T23:09:33.334927+00:00",
+            "masterAsanaTask": "1220544599390563",
+            "sourceSha": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "worktreeDirtyBeforeExecution": false,
+            "sourceFingerprint": "5049772577db6422cbb316b74241d834dbe277c1ed8e31ce0a227007e827f9d1",
+            "generatorSHA256": "dd8d568c9df4af3b8a090eaf5d50293777eb95f1d7a2f0885d6e445af185532a",
+            "goVersion": "go version go1.24.13 linux/amd64",
+            "compilerSHA256": "ea65f031f3edbf1167552236e9938952f5ea296025ba0cde61689bbf66b50c83",
+            "languageVersion": "2.0",
+            "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+            "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+            "nativeCatalogCount": 505,
+            "compilerMacroCount": 15,
+            "scope": "SYNTHETIC_CLI_STRUCTURAL_AND_LOSSLESS_NATIVE_ONLY",
+            "observationsSHA256": "72bd31f65fa5ca2348836796b3e8d73a91e0336d5b4e443863d33c9225d5483a"
+          }
+        },
+        {
+          "file": "verifier-audit.json",
+          "keys": [
+            "sourceSha",
+            "sourceFingerprint",
+            "ledgerSHA256",
+            "generatorSHA256",
+            "scope",
+            "results",
+            "summary"
+          ],
+          "summary": {
+            "sourceSha": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "sourceFingerprint": "5049772577db6422cbb316b74241d834dbe277c1ed8e31ce0a227007e827f9d1",
+            "ledgerSHA256": "12b51e01b99188eebe5465c3d9a2b6c60898a0b9839520bb92320cd6ff5118f0",
+            "generatorSHA256": "dd8d568c9df4af3b8a090eaf5d50293777eb95f1d7a2f0885d6e445af185532a",
+            "scope": "COPIED_REAL_EVIDENCE_ACTUAL_VERIFIER_EXITS"
+          }
+        }
+      ]
+    },
+    {
+      "id": 14583646321,
+      "name": "cherri-native-continuation-evidence",
+      "bytes": 3581,
+      "sha256": "7929cd08b4a2dc35b13186bd36cfe3ed854c1393d863bfe97df5b387375d9589",
+      "entries": [
+        "native-continuation-validation.json",
+        "continuation-python.log"
+      ],
+      "json_summaries": [
+        {
+          "file": "native-continuation-validation.json",
+          "keys": [
+            "schemaVersion",
+            "status",
+            "sourceCommit",
+            "sourceTreeClean",
+            "compilerBinarySha256",
+            "compilerBuildIdentity",
+            "sourceFileSha256",
+            "actualCLIFixtures",
+            "pythonTests",
+            "pythonTranscriptSha256",
+            "nativeExecuted",
+            "cacheImplemented",
+            "productionCompilerChanged",
+            "scope",
+            "elapsedSeconds"
+          ],
+          "summary": {
+            "schemaVersion": 1,
+            "status": "PASS_CLEAN_SOURCE_AND_CLI_ONLY",
+            "sourceCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "sourceTreeClean": true,
+            "compilerBinarySha256": "8e37e0c07e4225e2237d97f22e47dda4221957f84cc6fbd6ce1b431ffaafcee2",
+            "pythonTests": 13,
+            "pythonTranscriptSha256": "2f632864a8bb3c45166f583729dfbf43f025a7ddd85b4fc580f335d7cee3579c",
+            "nativeExecuted": 0,
+            "cacheImplemented": false,
+            "productionCompilerChanged": false,
+            "scope": "Two-invocation orchestration, native graph identity and source roundtrip only; Apple outcomes require fresh native callbacks."
+          }
+        }
+      ]
+    },
+    {
+      "id": 14583631350,
+      "name": "cherri-macro-compatibility-evidence",
+      "bytes": 1822,
+      "sha256": "eddddfb327856170f3ac130ae90e7ebe726be6eb9e55cf806e116ba71111ba04",
+      "entries": [
+        "macro-compatibility-isolation.json"
+      ],
+      "json_summaries": [
+        {
+          "file": "macro-compatibility-isolation.json",
+          "keys": [
+            "formatVersion",
+            "observedAtUtc",
+            "scope",
+            "compilerCommit",
+            "compilerSHA256",
+            "macroFingerprint",
+            "macroCount",
+            "schemaFingerprint",
+            "canonicalDocsSHA256",
+            "skillCommonSHA256",
+            "legacyCompilerCommit",
+            "legacyCompilerSHA256",
+            "livePromotion",
+            "results",
+            "summary"
+          ],
+          "summary": {
+            "formatVersion": 1,
+            "observedAtUtc": "2026-11-19T23:09:31Z",
+            "scope": "ACTUAL_COMPILER_CANONICAL_DOCS_ISOLATED_SINGLE_FIELD_MUTATIONS",
+            "compilerCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "compilerSHA256": "8e37e0c07e4225e2237d97f22e47dda4221957f84cc6fbd6ce1b431ffaafcee2",
+            "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec",
+            "macroCount": 15,
+            "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+            "canonicalDocsSHA256": "96aeab4c5fb5ba3be4f7e9a7e7f31335630a169eb2016d5f6d9a9eb4f9032324",
+            "skillCommonSHA256": "f227dc241404664c2750f921f2c4b205ce8e1cef9bfc20a12b42471db48a3ec5",
+            "livePromotion": false
+          }
+        }
+      ]
+    },
+    {
+      "id": 14583326840,
+      "name": "cherri-debug-export-evidence",
+      "bytes": 4056,
+      "sha256": "20e4981b688a0d9ac64e9a37814b36db8ee672a8e120f044c81db6aa88f5c2f5",
+      "entries": [
+        "debug-export-validation.json"
+      ],
+      "json_summaries": [
+        {
+          "file": "debug-export-validation.json",
+          "keys": [
+            "schemaVersion",
+            "status",
+            "nativeRuntimeStatus",
+            "featureStatus",
+            "sourceCommit",
+            "worktreeDirtyBeforeEvidence",
+            "sourceFingerprint",
+            "compilerSha256",
+            "schemaFingerprint",
+            "macroFingerprint",
+            "nativeMetadata",
+            "scope",
+            "nativeAssumptionsStillRequiringSignedRuntime",
+            "summary",
+            "compiles",
+            "cliNegatives",
+            "causalFaults",
+            "nativeProbes"
+          ],
+          "summary": {
+            "schemaVersion": 1,
+            "status": "PASS_SOURCE_AND_MODEL_ONLY",
+            "nativeRuntimeStatus": "NOT_EXECUTED",
+            "featureStatus": "PARTIAL_SOURCE_IMPLEMENTED_PENDING_NATIVE",
+            "sourceCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+            "worktreeDirtyBeforeEvidence": false,
+            "sourceFingerprint": "8cbb09c3721121312bdb6a523be44301cb96efef393be6fa9c8900594c7ad4f2",
+            "compilerSha256": "ac2805c8acab54b01691801120a293459dd37f1380f0e6d217fd0da8ad5043ee",
+            "schemaFingerprint": "7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b",
+            "macroFingerprint": "1fe7f7993e2473aec591341712f42c521f913974b8e84091a5c2950232230dec"
+          }
+        }
+      ]
+    }
+  ]
+}
