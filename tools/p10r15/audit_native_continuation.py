@@ -36,6 +36,7 @@ REVIEWED_SELECTORS = {
     "qa-file-name-extension-v2": "qa-file-name-extension",
     "qa-f04-yield-list-v2": "qa-f04-yield-list",
     "qa-f04-yield-empty-list-v2": "qa-f04-yield-empty-list",
+    "qa-f04-record-empty-v2": "qa-f04-record-empty",
     "qa-number-coercion-control-v2": "qa-number-coercion-control",
     "qa-export-unicode-v2": "qa-export-unicode",
     "qa-export-empty-v2": "qa-export-empty",

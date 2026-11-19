@@ -1,0 +1,38 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "f04-record-empty")
+// Feasibility only: authored Dictionary records, not semantic List<List>.
+let inputs = ["LEFT", "RIGHT"]
+let boxes = for item in inputs { yield {"tag": item, "items": []} }
+let scalars = for item in inputs { yield item }
+let outerCount = count(boxes)
+let scalarCount = count(scalars)
+let firstBox = getFirstItem(boxes)
+let lastBox = getLastItem(boxes)
+let firstTag = getValue(dictionary: firstBox, key: "tag")
+let lastTag = getValue(dictionary: lastBox, key: "tag")
+let firstKeys = getKeys(firstBox)
+let lastKeys = getKeys(lastBox)
+let firstKeyCount = count(firstKeys)
+let lastKeyCount = count(lastKeys)
+let firstItems = getValue(dictionary: firstBox, key: "items")
+let lastItems = getValue(dictionary: lastBox, key: "items")
+let firstItemCount = count(firstItems)
+let lastItemCount = count(lastItems)
+let directEmpty = []
+let directEmptyCount = count(directEmpty)
+let dictionaryWitness = {"tag": "CONTROL", "items": []}
+let witnessType = typeOf(dictionaryWitness)
+let firstType = typeOf(firstBox)
+let lastType = typeOf(lastBox)
+var recordsAreDictionaries = "N"
+if firstType == witnessType {
+    if lastType == witnessType { recordsAreDictionaries = "Y" }
+}
+let semanticResult = text(f"outer={outerCount}:scalars={scalarCount}:tags={firstTag},{lastTag}:keys={firstKeyCount},{lastKeyCount}:items={firstItemCount},{lastItemCount}:empty={directEmptyCount}:dictionary={recordsAreDictionaries}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "f04-record-empty")
+let traceEnvelope = debugExportTrace(runId: "qa-f04-record-empty-v2")
+let finalSummary = text(f"CHERRI_QA_F04_RECORD_EMPTY_RESULT:{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
