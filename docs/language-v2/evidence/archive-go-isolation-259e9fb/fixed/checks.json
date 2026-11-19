@@ -1,0 +1,45 @@
+{
+  "source": "259e9fbc05fb01ac032031cc07723678887786da",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "availableMemoryBefore": 3008598016,
+  "GOMAXPROCS": "1",
+  "results": [
+    {
+      "name": "package-discovery",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "list",
+        "./..."
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.391
+    },
+    {
+      "name": "all-packages-compile-only",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-p=1",
+        "-run",
+        "^$",
+        "-count=1",
+        "-json",
+        "-timeout=90s",
+        "./..."
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 76.484
+    }
+  ],
+  "packageDiscoveryBefore": 30,
+  "packageDiscoveryAfter": 29,
+  "onlyRemovedPackage": "github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit",
+  "packageResults": {
+    "pass": 24,
+    "skip": 5
+  },
+  "testsExecuted": 0,
+  "evidenceMembersReverified": 28,
+  "scope": "Actual recursive package discovery and compile-only gate; not an executed full test suite, Nix build or iOS runtime pass"
+}

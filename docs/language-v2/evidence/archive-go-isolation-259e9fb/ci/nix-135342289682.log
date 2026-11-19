@@ -1,0 +1,594 @@
+﻿2026-11-19T04:35:59.3099768Z Current runner version: '2.338.2'
+2026-11-19T04:35:59.3124077Z ##[group]Runner Image Provisioner
+2026-11-19T04:35:59.3124964Z Hosted Compute Agent
+2026-11-19T04:35:59.3125554Z Version: 20261103.629
+2026-11-19T04:35:59.3126135Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-19T04:35:59.3126856Z Build Date: 2026-11-03T17:26:59Z
+2026-11-19T04:35:59.3127494Z Worker ID: {481be190-7472-4233-b8b9-282a925a0d8c}
+2026-11-19T04:35:59.3128240Z Region: westus3
+2026-11-19T04:35:59.3128912Z Cloud: Azure
+2026-11-19T04:35:59.3129424Z ##[endgroup]
+2026-11-19T04:35:59.3131243Z ##[group]Operating System
+2026-11-19T04:35:59.3131829Z Ubuntu
+2026-11-19T04:35:59.3132331Z 26.04.1
+2026-11-19T04:35:59.3132891Z LTS
+2026-11-19T04:35:59.3133363Z ##[endgroup]
+2026-11-19T04:35:59.3133896Z ##[group]Runner Image
+2026-11-19T04:35:59.3134458Z Image: ubuntu-26.04
+2026-11-19T04:35:59.3135000Z Version: 20261111.196.1
+2026-11-19T04:35:59.3136187Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-19T04:35:59.3137586Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-19T04:35:59.3138454Z ##[endgroup]
+2026-11-19T04:35:59.3139848Z ##[group]GITHUB_TOKEN Permissions
+2026-11-19T04:35:59.3142016Z Contents: read
+2026-11-19T04:35:59.3142560Z Metadata: read
+2026-11-19T04:35:59.3143130Z Packages: read
+2026-11-19T04:35:59.3143671Z ##[endgroup]
+2026-11-19T04:35:59.3145760Z Secret source: Actions
+2026-11-19T04:35:59.3146631Z Cache mode: write
+2026-11-19T04:35:59.3147618Z Prepare workflow directory
+2026-11-19T04:35:59.3482474Z Prepare all required actions
+2026-11-19T04:35:59.3532428Z Getting action download info
+2026-11-19T04:35:59.6570547Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+2026-11-19T04:35:59.7464701Z Download action repository 'DeterminateSystems/nix-installer-action@main' (SHA:2559b44fed7d4fc978e8dd0e379661afb8b73590)
+2026-11-19T04:36:00.2903662Z Download action repository 'DeterminateSystems/magic-nix-cache-action@main' (SHA:8941f279e15828abcd2fc8fbb7cd282ab00972a7)
+2026-11-19T04:36:00.9776126Z Complete job name: build-test-nix
+2026-11-19T04:36:01.0869019Z ##[group]Run actions/checkout@v6
+2026-11-19T04:36:01.0870447Z with:
+2026-11-19T04:36:01.0871377Z   repository: davidpovarsky/cherri
+2026-11-19T04:36:01.0879294Z   token: ***
+2026-11-19T04:36:01.0880180Z   ssh-strict: true
+2026-11-19T04:36:01.0881070Z   ssh-user: git
+2026-11-19T04:36:01.0881998Z   persist-credentials: true
+2026-11-19T04:36:01.0882976Z   clean: true
+2026-11-19T04:36:01.0883887Z   sparse-checkout-cone-mode: true
+2026-11-19T04:36:01.0884950Z   fetch-depth: 1
+2026-11-19T04:36:01.0885827Z   fetch-tags: false
+2026-11-19T04:36:01.0886753Z   show-progress: true
+2026-11-19T04:36:01.0887663Z   lfs: false
+2026-11-19T04:36:01.0888524Z   submodules: false
+2026-11-19T04:36:01.0889604Z   set-safe-directory: true
+2026-11-19T04:36:01.0890643Z   allow-unsafe-pr-checkout: false
+2026-11-19T04:36:01.0891973Z ##[endgroup]
+2026-11-19T04:36:01.4376053Z Syncing repository: davidpovarsky/cherri
+2026-11-19T04:36:01.4380060Z ##[group]Getting Git version info
+2026-11-19T04:36:01.4382169Z Working directory is '/home/runner/work/cherri/cherri'
+2026-11-19T04:36:01.4384472Z [command]/usr/bin/git version
+2026-11-19T04:36:01.4386174Z git version 2.56.1
+2026-11-19T04:36:01.4396720Z ##[endgroup]
+2026-11-19T04:36:01.4405044Z Temporarily overriding HOME='/home/runner/work/_temp/7093c302-7f7f-4459-bc33-05ae3bd1672f' before making global git config changes
+2026-11-19T04:36:01.4408501Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-19T04:36:01.4412547Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri
+2026-11-19T04:36:01.4465048Z Deleting the contents of '/home/runner/work/cherri/cherri'
+2026-11-19T04:36:01.4474186Z ##[group]Determining repository object format
+2026-11-19T04:36:01.4477272Z ##[endgroup]
+2026-11-19T04:36:01.4480052Z ##[group]Initializing the repository
+2026-11-19T04:36:01.4483769Z [command]/usr/bin/git init /home/runner/work/cherri/cherri
+2026-11-19T04:36:01.4569260Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-19T04:36:01.4572035Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-19T04:36:01.4574485Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-19T04:36:01.4576022Z hint: call:
+2026-11-19T04:36:01.4577305Z hint:
+2026-11-19T04:36:01.4579162Z hint: 	git config --global init.defaultBranch <name>
+2026-11-19T04:36:01.4580472Z hint:
+2026-11-19T04:36:01.4581635Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-19T04:36:01.4583615Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-19T04:36:01.4585076Z hint:
+2026-11-19T04:36:01.4585939Z hint: 	git branch -m <name>
+2026-11-19T04:36:01.4586900Z hint:
+2026-11-19T04:36:01.4588380Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-19T04:36:01.4591849Z Initialized empty Git repository in /home/runner/work/cherri/cherri/.git/
+2026-11-19T04:36:01.4597081Z [command]/usr/bin/git remote add origin https://github.com/davidpovarsky/cherri
+2026-11-19T04:36:01.4641940Z ##[endgroup]
+2026-11-19T04:36:01.4644124Z ##[group]Disabling automatic garbage collection
+2026-11-19T04:36:01.4645942Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-19T04:36:01.4671646Z ##[endgroup]
+2026-11-19T04:36:01.4673732Z ##[group]Setting up auth
+2026-11-19T04:36:01.4674973Z Removing SSH command configuration
+2026-11-19T04:36:01.4679566Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-19T04:36:01.4712615Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-19T04:36:01.5092305Z Removing HTTP extra header
+2026-11-19T04:36:01.5100508Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-19T04:36:01.5146081Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-19T04:36:01.5374361Z Removing includeIf entries pointing to credentials config files
+2026-11-19T04:36:01.5380710Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-19T04:36:01.5410420Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-19T04:36:01.5623875Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-19T04:36:01.5661653Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:36:01.5693980Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:36:01.5734229Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:36:01.5761708Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:36:01.5791149Z ##[endgroup]
+2026-11-19T04:36:01.5792636Z ##[group]Fetching the repository
+2026-11-19T04:36:01.5801280Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46:refs/remotes/origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:36:03.1263836Z From https://github.com/davidpovarsky/cherri
+2026-11-19T04:36:03.1265498Z  * [new ref]         8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46 -> origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:36:03.1275411Z [command]/usr/bin/git branch --list --remote origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:36:03.1296519Z   origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:36:03.1304197Z [command]/usr/bin/git rev-parse refs/remotes/origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:36:03.1321983Z 8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46
+2026-11-19T04:36:03.1326168Z ##[endgroup]
+2026-11-19T04:36:03.1326580Z ##[group]Determining the checkout info
+2026-11-19T04:36:03.1327335Z ##[endgroup]
+2026-11-19T04:36:03.1331630Z [command]/usr/bin/git sparse-checkout disable
+2026-11-19T04:36:03.1371777Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-19T04:36:03.1393099Z ##[group]Checking out the ref
+2026-11-19T04:36:03.1396674Z [command]/usr/bin/git checkout --progress --force -B staging/cherri-p10r15-compiler-8b3fcf7-20261119 refs/remotes/origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:36:03.3736304Z Switched to a new branch 'staging/cherri-p10r15-compiler-8b3fcf7-20261119'
+2026-11-19T04:36:03.3739849Z branch 'staging/cherri-p10r15-compiler-8b3fcf7-20261119' set up to track 'origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119'.
+2026-11-19T04:36:03.3757882Z ##[endgroup]
+2026-11-19T04:36:03.3800595Z [command]/usr/bin/git log -1 --format=%H
+2026-11-19T04:36:03.3821768Z 8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46
+2026-11-19T04:36:03.4115523Z ##[group]Run DeterminateSystems/nix-installer-action@main
+2026-11-19T04:36:03.4115907Z with:
+2026-11-19T04:36:03.4116114Z   determinate: true
+2026-11-19T04:36:03.4116329Z   flakehub: false
+2026-11-19T04:36:03.4116540Z   force-no-systemd: false
+2026-11-19T04:36:03.4119081Z   github-token: ***
+2026-11-19T04:36:03.4119365Z   github-server-url: https://github.com
+2026-11-19T04:36:03.4119661Z   job-status: success
+2026-11-19T04:36:03.4119865Z   kvm: true
+2026-11-19T04:36:03.4120063Z   modify-profile: true
+2026-11-19T04:36:03.4120292Z   reinstall: false
+2026-11-19T04:36:03.4120528Z   start-daemon: true
+2026-11-19T04:36:03.4120786Z   diagnostic-endpoint: -
+2026-11-19T04:36:03.4121024Z   trust-runner-user: true
+2026-11-19T04:36:03.4121249Z   summarize: true
+2026-11-19T04:36:03.4121472Z   _internal-strict-mode: false
+2026-11-19T04:36:03.4121717Z ##[endgroup]
+2026-11-19T04:36:03.9237854Z [command]/usr/bin/sudo mkdir -p /var/lib/determinate
+2026-11-19T04:36:03.9600935Z ##[group]Detecting systemd...
+2026-11-19T04:36:03.9601561Z ##[endgroup]
+2026-11-19T04:36:03.9670898Z ##[group]Configuring KVM
+2026-11-19T04:36:04.0317605Z ##[endgroup]
+2026-11-19T04:36:04.0330270Z [32m Accelerated KVM is enabled [33m⚡️
+2026-11-19T04:36:04.0331908Z ##[group]Installing Nix
+2026-11-19T04:36:04.0337598Z ##[group]Downloading nix-installer for x86_64-linux
+2026-11-19T04:36:04.0339589Z Fetching from https://cf.install.determinate.systems/nix-installer/stable/x86_64-linux
+2026-11-19T04:36:04.7895690Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/_temp/nix-installer-5f13b982-e903-4fe0-a794-1215e6d5c618 --files-from manifest.txt --use-compress-program zstdmt
+2026-11-19T04:36:06.1722721Z Sent 37355520 of 49437095 (75.6%), 35.6 MBs/sec
+2026-11-19T04:36:06.8606525Z Sent 49437095 of 49437095 (100.0%), 27.9 MBs/sec
+2026-11-19T04:36:07.1146445Z ##[endgroup]
+2026-11-19T04:36:07.1163779Z Installing Determinate Nix using the --determinate flag
+2026-11-19T04:36:07.1175541Z [command]/home/runner/work/_temp/nix-installer-d103004b-cac5-40f8-be82-c8d7fe68171c install linux --determinate
+2026-11-19T04:36:07.1224831Z  INFO nix-installer v3.24.2
+2026-11-19T04:36:07.2614808Z [2m[33m`nix-installer` needs to run as `root`, attempting to escalate now via `sudo`...[39m[0m
+2026-11-19T04:36:07.2723435Z  INFO nix-installer v3.24.2
+2026-11-19T04:36:07.4341946Z  INFO Step: Create directory `/nix`
+2026-11-19T04:36:07.4344817Z  INFO Step: Install Determinate Nixd
+2026-11-19T04:36:07.4621588Z  INFO Step: Provision Nix
+2026-11-19T04:36:10.0882275Z  INFO Step: Create build users (UID 30001-30032) and group (GID 30000)
+2026-11-19T04:36:10.5663462Z  INFO Step: Configure Nix
+2026-11-19T04:36:11.0750305Z  INFO Step: Create directory `/etc/tmpfiles.d`
+2026-11-19T04:36:11.0754289Z  INFO Step: Configure the Determinate Nix daemon
+2026-11-19T04:36:12.1070833Z  INFO Step: Cleanup
+2026-11-19T04:36:12.1081874Z  INFO Running self test for shell sh
+2026-11-19T04:36:12.2822557Z  INFO Running self test for shell bash
+2026-11-19T04:36:12.4529824Z [1m[32mNix was installed successfully![39m[0m
+2026-11-19T04:36:12.4531029Z To get started using Nix, open a new shell or run `[1m. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh[0m`
+2026-11-19T04:36:12.4531515Z 
+2026-11-19T04:36:12.5285250Z ##[endgroup]
+2026-11-19T04:36:12.5301213Z FlakeHub is disabled because the workflow is misconfigured. Please make sure that `id-token: write` and `contents: read` are set for this step's (or job's) permissions so that GitHub Actions provides OIDC token endpoints.
+2026-11-19T04:36:12.5302577Z For more information, see https://docs.determinate.systems/guides/github-actions/#nix-installer-action
+2026-11-19T04:36:12.6438483Z ##[group]Run DeterminateSystems/magic-nix-cache-action@main
+2026-11-19T04:36:12.6439060Z with:
+2026-11-19T04:36:12.6439261Z   listen: 127.0.0.1:37515
+2026-11-19T04:36:12.6439517Z   upstream-cache: https://cache.nixos.org
+2026-11-19T04:36:12.6439803Z   diagnostic-endpoint: -
+2026-11-19T04:36:12.6440085Z   flakehub-cache-server: https://cache.flakehub.com
+2026-11-19T04:36:12.6440425Z   flakehub-api-server: https://api.flakehub.com
+2026-11-19T04:36:12.6440735Z   startup-notification-port: 41239
+2026-11-19T04:36:12.6440987Z   diff-store: false
+2026-11-19T04:36:12.6441211Z   _internal-strict-mode: false
+2026-11-19T04:36:12.6441437Z env:
+2026-11-19T04:36:12.6441705Z   DETSYS_INVOCATION_ID: 417052de-61d1-427d-a2ff-ee45f7053252
+2026-11-19T04:36:12.6442021Z   DETERMINATE_NIX_KVM: 1
+2026-11-19T04:36:12.6442244Z ##[endgroup]
+2026-11-19T04:36:13.0067898Z [command]/usr/bin/sudo mkdir -p /var/lib/determinate
+2026-11-19T04:36:13.2834655Z ##[group]Downloading magic-nix-cache for X64-Linux
+2026-11-19T04:36:13.2836295Z Fetching from https://cf.install.determinate.systems/magic-nix-cache-closure/stable/X64-Linux
+2026-11-19T04:36:15.7044225Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/_temp/magic-nix-cache-4c263901-b7de-4276-9d8b-9bcfedf1879f --files-from manifest.txt --use-compress-program zstdmt
+2026-11-19T04:36:17.0059392Z Sent 36110336 of 84982862 (42.5%), 34.4 MBs/sec
+2026-11-19T04:36:18.0105825Z Sent 84982862 of 84982862 (100.0%), 40.4 MBs/sec
+2026-11-19T04:36:18.3422037Z ##[endgroup]
+2026-11-19T04:36:24.6742328Z FlakeHub Cache is disabled due to missing or invalid token
+2026-11-19T04:36:24.6744025Z If you're signed up for FlakeHub Cache, make sure that your Actions config has a `permissions` block with `id-token` set to "write" and `contents` set to "read"
+2026-11-19T04:36:24.6792085Z Waiting for magic-nix-cache to start...
+2026-11-19T04:36:24.6915995Z   [2m2026-11-19T04:36:24.688836Z[0m [32m INFO[0m [1;32mmagic_nix_cache[0m[32m: [32mEnabling FlakeHub cache because determinate-nixd is available.[0m
+2026-11-19T04:36:24.6917311Z     [2;3mat[0m magic-nix-cache/src/main.rs:325
+2026-11-19T04:36:24.6917753Z 
+2026-11-19T04:36:24.6919264Z   [2m2026-11-19T04:36:24.688887Z[0m [32m INFO[0m [1;32mmagic_nix_cache[0m[32m: [32mIgnoring the user-specified --flakehub-api-server-netrc, in favor of the determinate-nixd netrc[0m
+2026-11-19T04:36:24.6920838Z     [2;3mat[0m magic-nix-cache/src/main.rs:330
+2026-11-19T04:36:24.6921230Z 
+2026-11-19T04:36:24.6923895Z   [2m2026-11-19T04:36:24.689124Z[0m [31mERROR[0m [1;31mmagic_nix_cache[0m[31m: [31mFlakeHub: cache initialized failed: Unauthenticated: Cannot find netrc credentials for https://api.flakehub.com/[0m
+2026-11-19T04:36:24.6925858Z     [2;3mat[0m magic-nix-cache/src/main.rs:399
+2026-11-19T04:36:24.6926227Z 
+2026-11-19T04:36:24.6949299Z ##[error]Unable to authenticate to FlakeHub. Individuals must register at FlakeHub.com; Organizations must create an organization at FlakeHub.com.
+2026-11-19T04:36:24.6957666Z   [2m2026-11-19T04:36:24.689253Z[0m [32m INFO[0m [1;32mmagic_nix_cache[0m[32m: [32mLoading credentials from environment[0m
+2026-11-19T04:36:24.6958389Z     [2;3mat[0m magic-nix-cache/src/main.rs:423
+2026-11-19T04:36:24.6958654Z 
+2026-11-19T04:36:24.7013548Z   [2m2026-11-19T04:36:24.700533Z[0m [32m INFO[0m [1;32mmagic_nix_cache[0m[32m: [32mNative GitHub Action cache is enabled.[0m
+2026-11-19T04:36:24.7014644Z     [2;3mat[0m magic-nix-cache/src/main.rs:441
+2026-11-19T04:36:24.7015100Z 
+2026-11-19T04:36:24.7016041Z   [2m2026-11-19T04:36:24.700555Z[0m [32m INFO[0m [1;32mmagic_nix_cache[0m[32m: [32mSubscribing to Determinate Nixd build events.[0m
+2026-11-19T04:36:24.7016728Z     [2;3mat[0m magic-nix-cache/src/main.rs:467
+2026-11-19T04:36:24.7114739Z 
+2026-11-19T04:36:24.7137172Z Launched Magic Nix Cache
+2026-11-19T04:36:24.8384879Z ##[group]Run nix build
+2026-11-19T04:36:24.8385209Z [36;1mnix build[0m
+2026-11-19T04:36:24.8418001Z shell: /usr/bin/bash -e {0}
+2026-11-19T04:36:24.8418294Z env:
+2026-11-19T04:36:24.8418572Z   DETSYS_INVOCATION_ID: 417052de-61d1-427d-a2ff-ee45f7053252
+2026-11-19T04:36:24.8419169Z   DETERMINATE_NIX_KVM: 1
+2026-11-19T04:36:24.8419622Z   MAGIC_NIX_CACHE_DAEMONDIR: /home/runner/work/_temp/magic-nix-cache-9763265b-ba65-41bc-97f7-2e11dabf50d5
+2026-11-19T04:36:24.8420117Z   MAGIC_NIX_CACHE_ADDRESS: 127.0.0.1:37515
+2026-11-19T04:36:24.8420391Z ##[endgroup]
+2026-11-19T04:36:25.4425433Z unpacking 'github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b?narHash=sha256-l0KFg5HjrsfsO/JpG%2Br7fRrqm12kzFHyUHqHCVpMMbI%3D' into the tarball cache...
+2026-11-19T04:36:26.3716640Z unpacking 'github:nix-systems/default/da67096a3b9bf56a91d16901293e51ba5b49a27e?narHash=sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768%3D' into the tarball cache...
+2026-11-19T04:36:26.8314719Z copying path '/nix/store/xsdf4r7hl94n1a1kjj02ibs611jnmadn-source' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6268866Z these 2 derivations will be built:
+2026-11-19T04:36:34.6272136Z   /nix/store/225lnqsrpqhld4jr7l28bwxkyjc4zjr5-cherri-v2.3.0-go-modules.drv
+2026-11-19T04:36:34.6273217Z   /nix/store/i6r1csccnvcg0ayspnsvrm3n0ssyygg0-cherri-v2.3.0.drv
+2026-11-19T04:36:34.6273774Z these 70 paths will be fetched (132.5 MiB download, 658.1 MiB unpacked):
+2026-11-19T04:36:34.6274381Z   /nix/store/fwfpzqrvzhpjp91rbnq64z07diyicbwh-acl-2.3.2
+2026-11-19T04:36:34.6275153Z   /nix/store/12qcfbv6bgmxi1jd2dcddy25ijpcgj60-attr-2.5.2
+2026-11-19T04:36:34.6275913Z   /nix/store/rlq03x4cwf8zn73hxaxnx0zn5q9kifls-bash-5.3p3
+2026-11-19T04:36:34.6276792Z   /nix/store/35yc81pz0q5yba14lxhn5r3jx5yg6c3l-bash-interactive-5.3p3
+2026-11-19T04:36:34.6277655Z   /nix/store/dc9vaz50jg7mibk9xvqw5dqv89cxzla3-binutils-2.44
+2026-11-19T04:36:34.6278516Z   /nix/store/rmv4h4x475k2p321ln3pd0ddng7vv8k6-binutils-2.44-lib
+2026-11-19T04:36:34.6279702Z   /nix/store/xwydcyvlsa3cvssk0y5llgdhlhjvmqdm-binutils-wrapper-2.44
+2026-11-19T04:36:34.6280707Z   /nix/store/v8czfabwiry1aik0j3b4mqkqvn7vnxfi-brotli-1.1.0-lib
+2026-11-19T04:36:34.6281617Z   /nix/store/xgavznqg1ay2hycpp7yy9ia1n751jcla-bzip2-1.0.8
+2026-11-19T04:36:34.6282469Z   /nix/store/qm9rxn2sc1vrz91i443rr6f0vxm0zd82-bzip2-1.0.8-bin
+2026-11-19T04:36:34.6283329Z   /nix/store/27r2vkndmz7q6gni64l84j46igsz7km4-c-ares-1.34.5
+2026-11-19T04:36:34.6284194Z   /nix/store/imad8dvhp77h0pjbckp6wvmnyhp8dpgg-coreutils-9.8
+2026-11-19T04:36:34.6285018Z   /nix/store/8idis3j5l13c3x74jl8xly0k4qyk9mx6-curl-8.17.0
+2026-11-19T04:36:34.6285558Z   /nix/store/20axvl7mgj15m23jgmnq97hx37fgz7bk-diffutils-3.12
+2026-11-19T04:36:34.6286015Z   /nix/store/0sf11lcbcbsqbj18sx26rg352m08rk7y-ed-1.22.2
+2026-11-19T04:36:34.6286508Z   /nix/store/wk01h0i1j91ph18b2kzlf213ixb9wq0k-expand-response-params
+2026-11-19T04:36:34.6287535Z   /nix/store/jnjcxanszfrp8ln69wp0n9s237xbh7bz-expat-2.7.3
+2026-11-19T04:36:34.6288000Z   /nix/store/paj6a1lpzp57hz1djm5bs86b7ci221r0-file-5.45
+2026-11-19T04:36:34.6288869Z   /nix/store/av4xw9f56xlx5pgv862wabfif6m1yc0a-findutils-4.10.0
+2026-11-19T04:36:34.6289460Z   /nix/store/y2wdhdcrffp9hnkzk06d178hq3g98jay-gawk-5.3.2
+2026-11-19T04:36:34.6289898Z   /nix/store/kzq78n13l8w24jn8bx4djj79k5j717f1-gcc-14.3.0
+2026-11-19T04:36:34.6290600Z   /nix/store/xm08aqdd7pxcdhm0ak6aqb1v7hw5q6ri-gcc-14.3.0-lib
+2026-11-19T04:36:34.6291113Z   /nix/store/shs2lyjm5yv7fmg4pwyvrlv9zr4macmv-gcc-14.3.0-libgcc
+2026-11-19T04:36:34.6291637Z   /nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0
+2026-11-19T04:36:34.6292155Z   /nix/store/kwr2jkqrbf6gsalagrka7gb7yrn71qpi-gettext-0.25.1
+2026-11-19T04:36:34.6292889Z   /nix/store/ky6hkcj7kxsyww2r0ika361ybrg8765g-git-minimal-2.51.2
+2026-11-19T04:36:34.6293475Z   /nix/store/xx7cm72qy2c0643cm1ipngd87aqwkcdp-glibc-2.40-66
+2026-11-19T04:36:34.6293969Z   /nix/store/q6wgv06q39bfhx2xl8ysc05wi6m2zdss-glibc-2.40-66-bin
+2026-11-19T04:36:34.6294478Z   /nix/store/gi4cz4ir3zlwhf1azqfgxqdnczfrwsr7-glibc-2.40-66-dev
+2026-11-19T04:36:34.6295164Z   /nix/store/0rxahp0ckjwz7kmnh8vzwfs8ir8yrf5r-gmp-6.3.0
+2026-11-19T04:36:34.6295653Z   /nix/store/2f7yzmvcsydw38zr369l9xpk63v1ld5q-gmp-with-cxx-6.3.0
+2026-11-19T04:36:34.6296384Z   /nix/store/1kzclixw4c13wxin0b6cij1zykvwp0wb-gnu-config-2024-01-01
+2026-11-19T04:36:34.6297009Z   /nix/store/x3zjxxz8m4ki88axp0gn8q8m6bldybba-gnugrep-3.12
+2026-11-19T04:36:34.6297679Z   /nix/store/3fmzbq9y4m9nk235il7scmvwn8j9zy3p-gnumake-4.4.1
+2026-11-19T04:36:34.6298477Z   /nix/store/drc7kang929jaza6cy9zdx10s4gw1z5p-gnused-4.9
+2026-11-19T04:36:34.6299282Z   /nix/store/yi3c5karhx764ham5rfwk7iynr8mjf6q-gnutar-1.35
+2026-11-19T04:36:34.6299926Z   /nix/store/0a3dyfq09dnkw28ap2i450wjimvdmv6s-go-1.25.4
+2026-11-19T04:36:34.6300563Z   /nix/store/d471xb7sfbah076s8rx02i68zpxc2r5n-gzip-1.14
+2026-11-19T04:36:34.6301089Z   /nix/store/148w3ssbgc4wf6xcp6j0s5vy5mz41i8y-iana-etc-20250505
+2026-11-19T04:36:34.6301583Z   /nix/store/kk64v6spb2sfj8br6h729vgqd2d13pn7-isl-0.20
+2026-11-19T04:36:34.6302145Z   /nix/store/h7rm00s43k24p73qw7wv1dw8iziqc054-keyutils-1.6.3-lib
+2026-11-19T04:36:34.6302852Z   /nix/store/9z2jg63df52gd4nmbggjcw41cdi4m14p-krb5-1.22.1-lib
+2026-11-19T04:36:34.6303461Z   /nix/store/hxcmad417fd8ql9ylx96xpak7da06yiv-libidn2-2.3.8
+2026-11-19T04:36:34.6304131Z   /nix/store/qpvs11qdbqcx4q41pzmzld9phgbw4vv8-libmpc-1.3.1
+2026-11-19T04:36:34.6304858Z   /nix/store/d3fj7k3aya8slkgm72gn5izyvnlkgx73-libpsl-0.21.5
+2026-11-19T04:36:34.6305432Z   /nix/store/jrczm01vajmmh23wrzbgk51plwn7lfsi-libssh2-1.11.1
+2026-11-19T04:36:34.6306256Z   /nix/store/3rkccxj7vi0p2a0d48c4a4z2vv2cni88-libunistring-1.4.1
+2026-11-19T04:36:34.6306959Z   /nix/store/7iwv8dcgsjmkrnn752hnfdxh3f7wahmd-linux-headers-6.16.7
+2026-11-19T04:36:34.6307586Z   /nix/store/g4z9m2pl1wcv35yzgjg1934gmj83gx9m-mailcap-2.1.54
+2026-11-19T04:36:34.6308093Z   /nix/store/czkzgcvcdc0c977cdmhaddyzhwp07x2g-mpfr-4.2.2
+2026-11-19T04:36:34.6308805Z   /nix/store/yijhn548p2589pkybgvbhll09bqsxy0q-ncurses-6.5
+2026-11-19T04:36:34.6309351Z   /nix/store/cn8ppsx5dns0n4naa4k5sc0siymg41vw-nghttp2-1.67.1-lib
+2026-11-19T04:36:34.6310106Z   /nix/store/ggxfzhsmd3m54fac5xph7kva38k44mc2-nghttp3-1.12.0
+2026-11-19T04:36:34.6310696Z   /nix/store/50b381c1c7h4ll8a40wqh3fcknwpnnck-ngtcp2-1.17.0
+2026-11-19T04:36:34.6311401Z   /nix/store/m65dckzfgr1lr90g5v6jx0iynnz38nsk-nss-cacert-3.115
+2026-11-19T04:36:34.6312184Z   /nix/store/61i74yjkj9p1qphfl7018ja4sdwkipx0-openssl-3.6.0
+2026-11-19T04:36:34.6313014Z   /nix/store/qrwznp1ikdf0qw05wia2haiwi32ik5n0-patch-2.8
+2026-11-19T04:36:34.6313688Z   /nix/store/8q2582rd22xp8jlcg1xn1w219q5lx5xa-patchelf-0.15.2
+2026-11-19T04:36:34.6314350Z   /nix/store/6y07blp88mrgn05wxbif8yzmd0g2ss4x-pcre2-10.46
+2026-11-19T04:36:34.6315038Z   /nix/store/1rd1dikwmy9gnlk5911gf2wf5r8k9wdg-publicsuffix-list-0-unstable-2025-10-08
+2026-11-19T04:36:34.6315899Z   /nix/store/41cgbkwax6pd1sgi8l81mamv6rvarryj-readline-8.3p1
+2026-11-19T04:36:34.6317022Z   /nix/store/s3w5m3spa1g71hx0yb82lvk6394j3w5j-stdenv-linux
+2026-11-19T04:36:34.6317796Z   /nix/store/xaa75rd44q62nc9mrbvym9d1m6gy0fj8-tzdata-2025b
+2026-11-19T04:36:34.6318799Z   /nix/store/l2xk4ac1wx9c95kpp8vymv9r9yn57fvh-update-autotools-gnu-config-scripts-hook
+2026-11-19T04:36:34.6319794Z   /nix/store/2a3izq4hffdd9r9gb2w6q2ibdc86kss6-xgcc-14.3.0-libgcc
+2026-11-19T04:36:34.6320396Z   /nix/store/q5vlz5jl6p7mv220s2vf6z5pqi1n935z-xz-5.8.1
+2026-11-19T04:36:34.6320924Z   /nix/store/v0rfdwhg6w6i0yb6dbry4srk6pnj3xp0-xz-5.8.1-bin
+2026-11-19T04:36:34.6321538Z   /nix/store/l7xwm1f6f3zj2x8jwdbi8gdyfbx07sh7-zlib-1.3.1
+2026-11-19T04:36:34.6322156Z   /nix/store/00xpncfcvafhr6vx9q05hkhazm70zw5g-zlib-ng-2.2.5
+2026-11-19T04:36:34.6322742Z   /nix/store/s7vmxmhkq439cjb7ag9w198p6dk7kl0w-zstd-1.5.7
+2026-11-19T04:36:34.6328535Z copying path '/nix/store/148w3ssbgc4wf6xcp6j0s5vy5mz41i8y-iana-etc-20250505' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6331209Z copying path '/nix/store/g4z9m2pl1wcv35yzgjg1934gmj83gx9m-mailcap-2.1.54' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6335209Z copying path '/nix/store/xaa75rd44q62nc9mrbvym9d1m6gy0fj8-tzdata-2025b' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6346095Z copying path '/nix/store/1kzclixw4c13wxin0b6cij1zykvwp0wb-gnu-config-2024-01-01' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6348092Z copying path '/nix/store/2a3izq4hffdd9r9gb2w6q2ibdc86kss6-xgcc-14.3.0-libgcc' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6363260Z copying path '/nix/store/shs2lyjm5yv7fmg4pwyvrlv9zr4macmv-gcc-14.3.0-libgcc' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6364387Z copying path '/nix/store/3rkccxj7vi0p2a0d48c4a4z2vv2cni88-libunistring-1.4.1' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6365592Z copying path '/nix/store/m65dckzfgr1lr90g5v6jx0iynnz38nsk-nss-cacert-3.115' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6366838Z copying path '/nix/store/7iwv8dcgsjmkrnn752hnfdxh3f7wahmd-linux-headers-6.16.7' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.6382032Z copying path '/nix/store/1rd1dikwmy9gnlk5911gf2wf5r8k9wdg-publicsuffix-list-0-unstable-2025-10-08' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.7378408Z copying path '/nix/store/l2xk4ac1wx9c95kpp8vymv9r9yn57fvh-update-autotools-gnu-config-scripts-hook' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.7681709Z copying path '/nix/store/hxcmad417fd8ql9ylx96xpak7da06yiv-libidn2-2.3.8' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:34.8632928Z copying path '/nix/store/xx7cm72qy2c0643cm1ipngd87aqwkcdp-glibc-2.40-66' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3302465Z copying path '/nix/store/12qcfbv6bgmxi1jd2dcddy25ijpcgj60-attr-2.5.2' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3304491Z copying path '/nix/store/rlq03x4cwf8zn73hxaxnx0zn5q9kifls-bash-5.3p3' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3309577Z copying path '/nix/store/wk01h0i1j91ph18b2kzlf213ixb9wq0k-expand-response-params' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3311079Z copying path '/nix/store/jnjcxanszfrp8ln69wp0n9s237xbh7bz-expat-2.7.3' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3316044Z copying path '/nix/store/v8czfabwiry1aik0j3b4mqkqvn7vnxfi-brotli-1.1.0-lib' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3317497Z copying path '/nix/store/y2wdhdcrffp9hnkzk06d178hq3g98jay-gawk-5.3.2' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3318663Z copying path '/nix/store/xgavznqg1ay2hycpp7yy9ia1n751jcla-bzip2-1.0.8' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3320170Z copying path '/nix/store/27r2vkndmz7q6gni64l84j46igsz7km4-c-ares-1.34.5' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3321549Z copying path '/nix/store/0sf11lcbcbsqbj18sx26rg352m08rk7y-ed-1.22.2' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3327047Z copying path '/nix/store/xm08aqdd7pxcdhm0ak6aqb1v7hw5q6ri-gcc-14.3.0-lib' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3328616Z copying path '/nix/store/0rxahp0ckjwz7kmnh8vzwfs8ir8yrf5r-gmp-6.3.0' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3330434Z copying path '/nix/store/q6wgv06q39bfhx2xl8ysc05wi6m2zdss-glibc-2.40-66-bin' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3331860Z copying path '/nix/store/3fmzbq9y4m9nk235il7scmvwn8j9zy3p-gnumake-4.4.1' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3333235Z copying path '/nix/store/d3fj7k3aya8slkgm72gn5izyvnlkgx73-libpsl-0.21.5' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3334734Z copying path '/nix/store/h7rm00s43k24p73qw7wv1dw8iziqc054-keyutils-1.6.3-lib' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.3336111Z copying path '/nix/store/drc7kang929jaza6cy9zdx10s4gw1z5p-gnused-4.9' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4144764Z copying path '/nix/store/l7xwm1f6f3zj2x8jwdbi8gdyfbx07sh7-zlib-1.3.1' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4172594Z copying path '/nix/store/6y07blp88mrgn05wxbif8yzmd0g2ss4x-pcre2-10.46' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4194743Z copying path '/nix/store/q5vlz5jl6p7mv220s2vf6z5pqi1n935z-xz-5.8.1' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4231755Z copying path '/nix/store/qm9rxn2sc1vrz91i443rr6f0vxm0zd82-bzip2-1.0.8-bin' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4299955Z copying path '/nix/store/fwfpzqrvzhpjp91rbnq64z07diyicbwh-acl-2.3.2' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4301657Z copying path '/nix/store/00xpncfcvafhr6vx9q05hkhazm70zw5g-zlib-ng-2.2.5' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4329905Z copying path '/nix/store/qrwznp1ikdf0qw05wia2haiwi32ik5n0-patch-2.8' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4624345Z copying path '/nix/store/61i74yjkj9p1qphfl7018ja4sdwkipx0-openssl-3.6.0' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4625753Z copying path '/nix/store/yijhn548p2589pkybgvbhll09bqsxy0q-ncurses-6.5' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4678106Z copying path '/nix/store/cn8ppsx5dns0n4naa4k5sc0siymg41vw-nghttp2-1.67.1-lib' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4795054Z copying path '/nix/store/ggxfzhsmd3m54fac5xph7kva38k44mc2-nghttp3-1.12.0' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4817575Z copying path '/nix/store/czkzgcvcdc0c977cdmhaddyzhwp07x2g-mpfr-4.2.2' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.4915804Z copying path '/nix/store/kk64v6spb2sfj8br6h729vgqd2d13pn7-isl-0.20' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.5072100Z copying path '/nix/store/0a3dyfq09dnkw28ap2i450wjimvdmv6s-go-1.25.4' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.5121640Z copying path '/nix/store/gi4cz4ir3zlwhf1azqfgxqdnczfrwsr7-glibc-2.40-66-dev' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.5182306Z copying path '/nix/store/d471xb7sfbah076s8rx02i68zpxc2r5n-gzip-1.14' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.5222575Z copying path '/nix/store/rmv4h4x475k2p321ln3pd0ddng7vv8k6-binutils-2.44-lib' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.5320799Z copying path '/nix/store/paj6a1lpzp57hz1djm5bs86b7ci221r0-file-5.45' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.5437545Z copying path '/nix/store/yi3c5karhx764ham5rfwk7iynr8mjf6q-gnutar-1.35' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.5479758Z copying path '/nix/store/v0rfdwhg6w6i0yb6dbry4srk6pnj3xp0-xz-5.8.1-bin' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.5844034Z copying path '/nix/store/x3zjxxz8m4ki88axp0gn8q8m6bldybba-gnugrep-3.12' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.5952600Z copying path '/nix/store/qpvs11qdbqcx4q41pzmzld9phgbw4vv8-libmpc-1.3.1' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.7410219Z copying path '/nix/store/kwr2jkqrbf6gsalagrka7gb7yrn71qpi-gettext-0.25.1' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.7413808Z copying path '/nix/store/2f7yzmvcsydw38zr369l9xpk63v1ld5q-gmp-with-cxx-6.3.0' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.7417797Z copying path '/nix/store/8q2582rd22xp8jlcg1xn1w219q5lx5xa-patchelf-0.15.2' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.7419612Z copying path '/nix/store/s7vmxmhkq439cjb7ag9w198p6dk7kl0w-zstd-1.5.7' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.7510238Z copying path '/nix/store/dc9vaz50jg7mibk9xvqw5dqv89cxzla3-binutils-2.44' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.7602655Z copying path '/nix/store/kzq78n13l8w24jn8bx4djj79k5j717f1-gcc-14.3.0' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.7959378Z copying path '/nix/store/41cgbkwax6pd1sgi8l81mamv6rvarryj-readline-8.3p1' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.8233956Z copying path '/nix/store/9z2jg63df52gd4nmbggjcw41cdi4m14p-krb5-1.22.1-lib' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.8250831Z copying path '/nix/store/50b381c1c7h4ll8a40wqh3fcknwpnnck-ngtcp2-1.17.0' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.8252116Z copying path '/nix/store/jrczm01vajmmh23wrzbgk51plwn7lfsi-libssh2-1.11.1' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.8435098Z copying path '/nix/store/imad8dvhp77h0pjbckp6wvmnyhp8dpgg-coreutils-9.8' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.9251175Z copying path '/nix/store/35yc81pz0q5yba14lxhn5r3jx5yg6c3l-bash-interactive-5.3p3' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.9995223Z copying path '/nix/store/20axvl7mgj15m23jgmnq97hx37fgz7bk-diffutils-3.12' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:35.9996983Z copying path '/nix/store/av4xw9f56xlx5pgv862wabfif6m1yc0a-findutils-4.10.0' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:36.0713638Z copying path '/nix/store/8idis3j5l13c3x74jl8xly0k4qyk9mx6-curl-8.17.0' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:36.3271761Z copying path '/nix/store/ky6hkcj7kxsyww2r0ika361ybrg8765g-git-minimal-2.51.2' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:36.5014526Z copying path '/nix/store/xwydcyvlsa3cvssk0y5llgdhlhjvmqdm-binutils-wrapper-2.44' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:39.7816959Z copying path '/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:39.8956750Z copying path '/nix/store/s3w5m3spa1g71hx0yb82lvk6394j3w5j-stdenv-linux' from 'http://127.0.0.1:37515'...
+2026-11-19T04:36:40.0573653Z building '/nix/store/225lnqsrpqhld4jr7l28bwxkyjc4zjr5-cherri-v2.3.0-go-modules.drv'...
+2026-11-19T04:36:47.1383840Z building '/nix/store/i6r1csccnvcg0ayspnsvrm3n0ssyygg0-cherri-v2.3.0.drv'...
+2026-11-19T04:37:52.1276263Z ❌ git+file:///home/runner/work/cherri/cherri?shallow=1#
+2026-11-19T04:37:52.1277914Z error: Cannot build '/nix/store/i6r1csccnvcg0ayspnsvrm3n0ssyygg0-cherri-v2.3.0.drv'.
+2026-11-19T04:37:52.1278642Z        Reason: builder failed with exit code 1.
+2026-11-19T04:37:52.1279553Z        Output paths:
+2026-11-19T04:37:52.1280471Z          /nix/store/p7hdi8xlcqm19mzkxjq3fardzjxaxvvd-cherri-v2.3.0
+2026-11-19T04:37:52.1281709Z        Last 25 log lines:
+2026-11-19T04:37:52.1282641Z        > Building subPackage ./internal/language/source
+2026-11-19T04:37:52.1283864Z        > Building subPackage ./internal/language/syntax
+2026-11-19T04:37:52.1285103Z        > Building subPackage ./internal/language/types
+2026-11-19T04:37:52.1286400Z        > Building subPackage ./internal/language/workspace
+2026-11-19T04:37:52.1287578Z        > Building subPackage ./internal/shortcutcompare
+2026-11-19T04:37:52.1288930Z        > Building subPackage ./tools/ci-test-discovery
+2026-11-19T04:37:52.1290025Z        > Building subPackage ./tools/inventory
+2026-11-19T04:37:52.1290507Z        > Building subPackage ./tools/ios-runtime-verifier
+2026-11-19T04:37:52.1291059Z        > Building subPackage ./tools/language-acceptance
+2026-11-19T04:37:52.1291672Z        > Building subPackage ./tools/language-docs
+2026-11-19T04:37:52.1292210Z        > Building subPackage ./tools/language-migrate
+2026-11-19T04:37:52.1292698Z        > Building subPackage ./tools/language-schema
+2026-11-19T04:37:52.1293021Z        > Building subPackage ./tools/language-stdlib
+2026-11-19T04:37:52.1293347Z        > Building subPackage ./tools/legacy-parity
+2026-11-19T04:37:52.1293663Z        > Building subPackage ./tools/shortcut-corpus
+2026-11-19T04:37:52.1294289Z        > buildPhase completed in 32 seconds
+2026-11-19T04:37:52.1294577Z        > Running phase: checkPhase
+2026-11-19T04:37:52.1294884Z        > ok       github.com/electrikmilk/cherri  0.054s
+2026-11-19T04:37:52.1295824Z        > # github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit [github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit.test]
+2026-11-19T04:37:52.1296998Z        > docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:18:32: undefined: EvidenceRecord
+2026-11-19T04:37:52.1297956Z        > docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:25:34: undefined: nativeEncodingTestID
+2026-11-19T04:37:52.1300777Z        > docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:38:23: undefined: validateNativeEncodingRecord
+2026-11-19T04:37:52.1302995Z        > docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:42:23: undefined: validateNativeEncodingRecord
+2026-11-19T04:37:52.1306925Z        > FAIL        github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit [build failed]
+2026-11-19T04:37:52.1309196Z        > FAIL
+2026-11-19T04:37:52.1309913Z        For full logs, run:
+2026-11-19T04:37:52.1311158Z          nix log /nix/store/i6r1csccnvcg0ayspnsvrm3n0ssyygg0-cherri-v2.3.0.drv
+2026-11-19T04:37:52.1476692Z ##[error]Process completed with exit code 1.
+2026-11-19T04:37:52.1566033Z Post job cleanup.
+2026-11-19T04:37:52.6019350Z [command]/usr/bin/sudo mkdir -p /var/lib/determinate
+2026-11-19T04:37:52.9267694Z   [2m2026-11-19T04:37:52.924951Z[0m [32m INFO[0m [1;32mmagic_nix_cache::api[0m[32m: [32mWorkflow finished[0m
+2026-11-19T04:37:52.9268458Z     [2;3mat[0m magic-nix-cache/src/api.rs:58
+2026-11-19T04:37:52.9268925Z 
+2026-11-19T04:37:52.9269479Z   [2m2026-11-19T04:37:52.924986Z[0m [32m INFO[0m [1;32mmagic_nix_cache::api[0m[32m: [32mWaiting for GitHub action cache uploads to finish[0m
+2026-11-19T04:37:52.9270085Z     [2;3mat[0m magic-nix-cache/src/api.rs:98
+2026-11-19T04:37:52.9270282Z 
+2026-11-19T04:37:53.2823873Z   [2m2026-11-19T04:37:53.281337Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/kd4xwxjpjxi71jkm6ka0np72if9rm3y0-move-sbin.sh' to the GitHub Action Cache[0m
+2026-11-19T04:37:53.2824878Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:37:53.2825138Z 
+2026-11-19T04:37:54.7373505Z   [2m2026-11-19T04:37:54.736252Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/kk64v6spb2sfj8br6h729vgqd2d13pn7-isl-0.20' to the GitHub Action Cache[0m
+2026-11-19T04:37:54.7374492Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:37:54.7374747Z 
+2026-11-19T04:37:59.0995857Z   [2m2026-11-19T04:37:59.098628Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/kzq78n13l8w24jn8bx4djj79k5j717f1-gcc-14.3.0' to the GitHub Action Cache[0m
+2026-11-19T04:37:59.0996880Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:37:59.0997131Z 
+2026-11-19T04:38:00.0975731Z   [2m2026-11-19T04:38:00.096617Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/l2xk4ac1wx9c95kpp8vymv9r9yn57fvh-update-autotools-gnu-config-scripts-hook' to the GitHub Action Cache[0m
+2026-11-19T04:38:00.0976895Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:00.0977153Z 
+2026-11-19T04:38:01.0646225Z   [2m2026-11-19T04:38:01.063649Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/pag6l61paj1dc9sv15l7bm5c17xn5kyk-move-systemd-user-units.sh' to the GitHub Action Cache[0m
+2026-11-19T04:38:01.0647472Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:01.0647733Z 
+2026-11-19T04:38:02.3067475Z   [2m2026-11-19T04:38:02.305768Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/paj6a1lpzp57hz1djm5bs86b7ci221r0-file-5.45' to the GitHub Action Cache[0m
+2026-11-19T04:38:02.3069668Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:02.3069931Z 
+2026-11-19T04:38:03.5209735Z   [2m2026-11-19T04:38:03.519912Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/pilsssjjdxvdphlg2h19p0bfx5q0jzkn-strip.sh' to the GitHub Action Cache[0m
+2026-11-19T04:38:03.5211456Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:03.5211815Z 
+2026-11-19T04:38:04.7193713Z   [2m2026-11-19T04:38:04.718292Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/q5vlz5jl6p7mv220s2vf6z5pqi1n935z-xz-5.8.1' to the GitHub Action Cache[0m
+2026-11-19T04:38:04.7194717Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:04.7194978Z 
+2026-11-19T04:38:06.0170986Z   [2m2026-11-19T04:38:06.016170Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/q6wgv06q39bfhx2xl8ysc05wi6m2zdss-glibc-2.40-66-bin' to the GitHub Action Cache[0m
+2026-11-19T04:38:06.0172039Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:06.0172308Z 
+2026-11-19T04:38:07.1259507Z   [2m2026-11-19T04:38:07.125021Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/qm9rxn2sc1vrz91i443rr6f0vxm0zd82-bzip2-1.0.8-bin' to the GitHub Action Cache[0m
+2026-11-19T04:38:07.1260542Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:07.1260804Z 
+2026-11-19T04:38:08.3481124Z   [2m2026-11-19T04:38:08.347131Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/qpvs11qdbqcx4q41pzmzld9phgbw4vv8-libmpc-1.3.1' to the GitHub Action Cache[0m
+2026-11-19T04:38:08.3482183Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:08.3482434Z 
+2026-11-19T04:38:09.5624462Z   [2m2026-11-19T04:38:09.561533Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/qrwznp1ikdf0qw05wia2haiwi32ik5n0-patch-2.8' to the GitHub Action Cache[0m
+2026-11-19T04:38:09.5625515Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:09.5625771Z 
+2026-11-19T04:38:10.8292819Z   [2m2026-11-19T04:38:10.828313Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/rmv4h4x475k2p321ln3pd0ddng7vv8k6-binutils-2.44-lib' to the GitHub Action Cache[0m
+2026-11-19T04:38:10.8293854Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:10.8294110Z 
+2026-11-19T04:38:11.8340157Z   [2m2026-11-19T04:38:11.833161Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/s3w5m3spa1g71hx0yb82lvk6394j3w5j-stdenv-linux' to the GitHub Action Cache[0m
+2026-11-19T04:38:11.8341193Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:11.8341439Z 
+2026-11-19T04:38:13.0115022Z   [2m2026-11-19T04:38:13.010623Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/v0rfdwhg6w6i0yb6dbry4srk6pnj3xp0-xz-5.8.1-bin' to the GitHub Action Cache[0m
+2026-11-19T04:38:13.0116430Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:13.0117026Z 
+2026-11-19T04:38:13.9699468Z   [2m2026-11-19T04:38:13.968771Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0' to the GitHub Action Cache[0m
+2026-11-19T04:38:13.9700538Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:13.9700785Z 
+2026-11-19T04:38:15.0190320Z   [2m2026-11-19T04:38:15.018083Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/wgrbkkaldkrlrni33ccvm3b6vbxzb656-make-symlinks-relative.sh' to the GitHub Action Cache[0m
+2026-11-19T04:38:15.0191598Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:15.0191883Z 
+2026-11-19T04:38:15.9817517Z   [2m2026-11-19T04:38:15.980940Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/wk01h0i1j91ph18b2kzlf213ixb9wq0k-expand-response-params' to the GitHub Action Cache[0m
+2026-11-19T04:38:15.9819191Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:15.9819542Z 
+2026-11-19T04:38:16.9937576Z   [2m2026-11-19T04:38:16.992853Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/x8c40nfigps493a07sdr2pm5s9j1cdc0-patch-shebangs.sh' to the GitHub Action Cache[0m
+2026-11-19T04:38:16.9938631Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:16.9939118Z 
+2026-11-19T04:38:18.0904211Z   [2m2026-11-19T04:38:18.089461Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/xgavznqg1ay2hycpp7yy9ia1n751jcla-bzip2-1.0.8' to the GitHub Action Cache[0m
+2026-11-19T04:38:18.0905430Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:18.0905696Z 
+2026-11-19T04:38:19.0590679Z   [2m2026-11-19T04:38:19.058085Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/xwydcyvlsa3cvssk0y5llgdhlhjvmqdm-binutils-wrapper-2.44' to the GitHub Action Cache[0m
+2026-11-19T04:38:19.0591787Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:19.0592051Z 
+2026-11-19T04:38:20.0232126Z   [2m2026-11-19T04:38:20.022321Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/xyff06pkhki3qy1ls77w10s0v79c9il0-reproducible-builds.sh' to the GitHub Action Cache[0m
+2026-11-19T04:38:20.0233179Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:20.0233436Z 
+2026-11-19T04:38:21.3386762Z   [2m2026-11-19T04:38:21.337594Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/y2wdhdcrffp9hnkzk06d178hq3g98jay-gawk-5.3.2' to the GitHub Action Cache[0m
+2026-11-19T04:38:21.3388319Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:21.3388890Z 
+2026-11-19T04:38:22.6221544Z   [2m2026-11-19T04:38:22.621283Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/yi3c5karhx764ham5rfwk7iynr8mjf6q-gnutar-1.35' to the GitHub Action Cache[0m
+2026-11-19T04:38:22.6222576Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:22.6222841Z 
+2026-11-19T04:38:23.6281340Z   [2m2026-11-19T04:38:23.627496Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/z7k98578dfzi6l3hsvbivzm7hfqlk0zc-set-source-date-epoch-to-latest.sh' to the GitHub Action Cache[0m
+2026-11-19T04:38:26.1905466Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:26.1905968Z 
+2026-11-19T04:38:26.1913717Z   [2m2026-11-19T04:38:26.186233Z[0m [32m INFO[0m [1;32mmagic_nix_cache::gha[0m[32m: [32mUploaded '/nix/store/ifhhlall9g7fzd6qmhgyjm0apydwnpdq-cherri-v2.3.0-go-modules' to the GitHub Action Cache[0m
+2026-11-19T04:38:26.1914888Z     [2;3mat[0m magic-nix-cache/src/gha.rs:213
+2026-11-19T04:38:26.1915183Z 
+2026-11-19T04:38:26.1915966Z   [2m2026-11-19T04:38:26.186316Z[0m [32m INFO[0m [1;32mmagic_nix_cache::api[0m[32m: [32mFlakeHub cache is not enabled, not uploading anything to it[0m
+2026-11-19T04:38:26.1916949Z     [2;3mat[0m magic-nix-cache/src/api.rs:110
+2026-11-19T04:38:26.1917237Z 
+2026-11-19T04:38:26.1917756Z   [2m2026-11-19T04:38:26.186375Z[0m [32m INFO[0m [1;32mmagic_nix_cache[0m[32m: [32mShutting down[0m
+2026-11-19T04:38:26.1918469Z     [2;3mat[0m magic-nix-cache/src/main.rs:559
+2026-11-19T04:38:26.1918987Z 
+2026-11-19T04:38:26.3710809Z Post job cleanup.
+2026-11-19T04:38:26.7345942Z [command]/usr/bin/sudo mkdir -p /var/lib/determinate
+2026-11-19T04:38:28.8227891Z [38;2;255;0;0mBuild logs from 1 failure
+2026-11-19T04:38:28.8228923Z The following build logs are also available in the Markdown summary:
+2026-11-19T04:38:28.8230359Z ##[group]Failed build: /nix/store/i6r1csccnvcg0ayspnsvrm3n0ssyygg0-cherri-v2.3.0.drv
+2026-11-19T04:38:28.8231274Z     Running phase: unpackPhase
+2026-11-19T04:38:28.8231913Z     @nix { "action": "setPhase", "phase": "unpackPhase" }
+2026-11-19T04:38:28.8233096Z     unpacking source archive /nix/store/8d94wf43l9p3bdqks705k1xh6bvygsr0-f7zf8d9cs4v63ngqj1r5r41i95sjm05d-source
+2026-11-19T04:38:28.8234150Z     source root is f7zf8d9cs4v63ngqj1r5r41i95sjm05d-source
+2026-11-19T04:38:28.8234548Z     Running phase: patchPhase
+2026-11-19T04:38:28.8234906Z     @nix { "action": "setPhase", "phase": "patchPhase" }
+2026-11-19T04:38:28.8235351Z     Running phase: updateAutotoolsGnuConfigScriptsPhase
+2026-11-19T04:38:28.8236077Z     @nix { "action": "setPhase", "phase": "updateAutotoolsGnuConfigScriptsPhase" }
+2026-11-19T04:38:28.8236756Z     Running phase: configurePhase
+2026-11-19T04:38:28.8237281Z     @nix { "action": "setPhase", "phase": "configurePhase" }
+2026-11-19T04:38:28.8237827Z     Running phase: buildPhase
+2026-11-19T04:38:28.8238306Z     @nix { "action": "setPhase", "phase": "buildPhase" }
+2026-11-19T04:38:28.8239056Z     Building subPackage .
+2026-11-19T04:38:28.8239384Z     Building subPackage ./cmd/cherri-migrate
+2026-11-19T04:38:28.8239950Z     Building subPackage ./docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit
+2026-11-19T04:38:28.8241343Z     github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit: no non-test Go files in /build/f7zf8d9cs4v63ngqj1r5r41i95sjm05d-source/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit
+2026-11-19T04:38:28.8242519Z     Building subPackage ./internal/icloudshortcut
+2026-11-19T04:38:28.8242933Z     Building subPackage ./internal/language/analysis
+2026-11-19T04:38:28.8243329Z     Building subPackage ./internal/language/backend
+2026-11-19T04:38:28.8243720Z     Building subPackage ./internal/language/enums
+2026-11-19T04:38:28.8244089Z     Building subPackage ./internal/language/ir
+2026-11-19T04:38:28.8244461Z     Building subPackage ./internal/language/lower
+2026-11-19T04:38:28.8244840Z     Building subPackage ./internal/language/lsp
+2026-11-19T04:38:28.8245220Z     Building subPackage ./internal/language/migrate
+2026-11-19T04:38:28.8245603Z     Building subPackage ./internal/language/modules
+2026-11-19T04:38:28.8245992Z     Building subPackage ./internal/language/protocol
+2026-11-19T04:38:28.8246498Z     Building subPackage ./internal/language/schema
+2026-11-19T04:38:28.8247066Z     Building subPackage ./internal/language/service
+2026-11-19T04:38:28.8247457Z     Building subPackage ./internal/language/source
+2026-11-19T04:38:28.8247842Z     Building subPackage ./internal/language/syntax
+2026-11-19T04:38:28.8248233Z     Building subPackage ./internal/language/types
+2026-11-19T04:38:28.8248626Z     Building subPackage ./internal/language/workspace
+2026-11-19T04:38:28.8249416Z     Building subPackage ./internal/shortcutcompare
+2026-11-19T04:38:28.8249795Z     Building subPackage ./tools/ci-test-discovery
+2026-11-19T04:38:28.8250157Z     Building subPackage ./tools/inventory
+2026-11-19T04:38:28.8250539Z     Building subPackage ./tools/ios-runtime-verifier
+2026-11-19T04:38:28.8250934Z     Building subPackage ./tools/language-acceptance
+2026-11-19T04:38:28.8251357Z     Building subPackage ./tools/language-docs
+2026-11-19T04:38:28.8251915Z     Building subPackage ./tools/language-migrate
+2026-11-19T04:38:28.8252621Z     Building subPackage ./tools/language-schema
+2026-11-19T04:38:28.8253300Z     Building subPackage ./tools/language-stdlib
+2026-11-19T04:38:28.8253980Z     Building subPackage ./tools/legacy-parity
+2026-11-19T04:38:28.8254424Z     Building subPackage ./tools/shortcut-corpus
+2026-11-19T04:38:28.8255043Z     buildPhase completed in 32 seconds
+2026-11-19T04:38:28.8255408Z     Running phase: checkPhase
+2026-11-19T04:38:28.8255786Z     @nix { "action": "setPhase", "phase": "checkPhase" }
+2026-11-19T04:38:28.8256196Z     ok  	github.com/electrikmilk/cherri	0.054s
+2026-11-19T04:38:28.8257231Z     # github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit [github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit.test]
+2026-11-19T04:38:28.8259175Z     docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:18:32: undefined: EvidenceRecord
+2026-11-19T04:38:28.8261138Z     docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:25:34: undefined: nativeEncodingTestID
+2026-11-19T04:38:28.8262349Z     docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:38:23: undefined: validateNativeEncodingRecord
+2026-11-19T04:38:28.8263555Z     docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:42:23: undefined: validateNativeEncodingRecord
+2026-11-19T04:38:28.8264653Z     FAIL	github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit [build failed]
+2026-11-19T04:38:28.8265280Z     FAIL
+2026-11-19T04:38:28.8265496Z     
+2026-11-19T04:38:28.8265969Z ##[endgroup]
+2026-11-19T04:38:29.0186316Z Post job cleanup.
+2026-11-19T04:38:29.1018016Z [command]/usr/bin/git version
+2026-11-19T04:38:29.1058817Z git version 2.56.1
+2026-11-19T04:38:29.1096109Z Temporarily overriding HOME='/home/runner/work/_temp/a7dcfb13-6929-460a-a6d1-ceaf121e6c46' before making global git config changes
+2026-11-19T04:38:29.1097414Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-19T04:38:29.1102976Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cherri/cherri
+2026-11-19T04:38:29.1133466Z Removing SSH command configuration
+2026-11-19T04:38:29.1140438Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-19T04:38:29.1173002Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-19T04:38:29.1436208Z Removing HTTP extra header
+2026-11-19T04:38:29.1441627Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-19T04:38:29.1476329Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-19T04:38:29.1748445Z Removing includeIf entries pointing to credentials config files
+2026-11-19T04:38:29.1759133Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-19T04:38:29.1785889Z includeif.gitdir:/home/runner/work/cherri/cherri/.git.path
+2026-11-19T04:38:29.1786873Z includeif.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path
+2026-11-19T04:38:29.1788074Z includeif.gitdir:/github/workspace/.git.path
+2026-11-19T04:38:29.1789136Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-19T04:38:29.1798448Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/.git.path
+2026-11-19T04:38:29.1823686Z /home/runner/work/_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:38:29.1836221Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/.git.path /home/runner/work/_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:38:29.1884575Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path
+2026-11-19T04:38:29.1907775Z /home/runner/work/_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:38:29.1919990Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cherri/cherri/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:38:29.1958483Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-19T04:38:29.1978136Z /github/runner_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:38:29.1986130Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:38:29.2020658Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-19T04:38:29.2039906Z /github/runner_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:38:29.2047758Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config
+2026-11-19T04:38:29.2099327Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-19T04:38:29.2328259Z Removing credentials config '/home/runner/work/_temp/git-credentials-90d65c62-1a47-4f21-bfca-a06acafd5a7d.config'
+2026-11-19T04:38:29.2479055Z Cleaning up orphan processes

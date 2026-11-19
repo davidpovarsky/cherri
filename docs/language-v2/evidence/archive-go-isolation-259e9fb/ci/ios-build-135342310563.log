@@ -1,0 +1,594 @@
+﻿2026-11-19T04:38:36.1070850Z Current runner version: '2.338.2'
+2026-11-19T04:38:36.1105380Z ##[group]Runner Image Provisioner
+2026-11-19T04:38:36.1106270Z Hosted Compute Agent
+2026-11-19T04:38:36.1106740Z Version: 20261103.629
+2026-11-19T04:38:36.1107240Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-19T04:38:36.1107790Z Build Date: 2026-11-03T17:26:59Z
+2026-11-19T04:38:36.1108280Z Worker ID: {7ea646ca-0cdf-4453-abc6-be4aaf052b22}
+2026-11-19T04:38:36.1108770Z Region: westus
+2026-11-19T04:38:36.1109170Z Cloud: MacCloud
+2026-11-19T04:38:36.1109560Z ##[endgroup]
+2026-11-19T04:38:36.1111780Z ##[group]Operating System
+2026-11-19T04:38:36.1112260Z macOS
+2026-11-19T04:38:36.1112620Z 15.8.2
+2026-11-19T04:38:36.1112980Z 24H232
+2026-11-19T04:38:36.1113340Z ##[endgroup]
+2026-11-19T04:38:36.1113740Z ##[group]Runner Image
+2026-11-19T04:38:36.1114220Z Image: macos-15-arm64
+2026-11-19T04:38:36.1114680Z Version: 20261104.0514.1
+2026-11-19T04:38:36.1115930Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20261104.0514/images/macos/macos-15-arm64-Readme.md
+2026-11-19T04:38:36.1117150Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20261104.0514
+2026-11-19T04:38:36.1117940Z ##[endgroup]
+2026-11-19T04:38:36.1119030Z ##[group]GITHUB_TOKEN Permissions
+2026-11-19T04:38:36.1122130Z Actions: read
+2026-11-19T04:38:36.1122560Z Contents: read
+2026-11-19T04:38:36.1122940Z Metadata: read
+2026-11-19T04:38:36.1123360Z ##[endgroup]
+2026-11-19T04:38:36.1125640Z Secret source: Actions
+2026-11-19T04:38:36.1126300Z Cache mode: write
+2026-11-19T04:38:36.1126820Z Prepare workflow directory
+2026-11-19T04:38:36.1390210Z Prepare all required actions
+2026-11-19T04:38:36.1434680Z Getting action download info
+2026-11-19T04:38:36.5963880Z Download action repository 'davidpovarsky/github-automation@main' (SHA:61b34ae6d31e94afb6ceb8a836742275c495b0e2)
+2026-11-19T04:38:37.1683310Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+2026-11-19T04:38:37.3027930Z Download action repository 'actions/setup-go@v3' (SHA:be3c94b385c4f180051c996d336f57a34c397495)
+2026-11-19T04:38:37.7144040Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-19T04:38:37.8358180Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-19T04:38:38.1291780Z Complete job name: ios-build
+2026-11-19T04:38:38.1838380Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-19T04:38:38.1839090Z with:
+2026-11-19T04:38:38.1839400Z   event: refresh
+2026-11-19T04:38:38.1839840Z   device_id: ***
+2026-11-19T04:38:38.1840170Z   token: ***
+2026-11-19T04:38:38.1843070Z   github_token: ***
+2026-11-19T04:38:38.1843550Z ##[endgroup]
+2026-11-19T04:38:39.8250590Z ##[group]Run actions/checkout@v6
+2026-11-19T04:38:39.8252730Z with:
+2026-11-19T04:38:39.8254290Z   repository: davidpovarsky/cherri
+2026-11-19T04:38:39.8271630Z   token: ***
+2026-11-19T04:38:39.8273450Z   ssh-strict: true
+2026-11-19T04:38:39.8275360Z   ssh-user: git
+2026-11-19T04:38:39.8276940Z   persist-credentials: true
+2026-11-19T04:38:39.8278610Z   clean: true
+2026-11-19T04:38:39.8280390Z   sparse-checkout-cone-mode: true
+2026-11-19T04:38:39.8282230Z   fetch-depth: 1
+2026-11-19T04:38:39.8282950Z   fetch-tags: false
+2026-11-19T04:38:39.8283620Z   show-progress: true
+2026-11-19T04:38:39.8284300Z   lfs: false
+2026-11-19T04:38:39.8284950Z   submodules: false
+2026-11-19T04:38:39.8285710Z   set-safe-directory: true
+2026-11-19T04:38:39.8286540Z   allow-unsafe-pr-checkout: false
+2026-11-19T04:38:39.8287440Z ##[endgroup]
+2026-11-19T04:38:40.0474720Z Syncing repository: davidpovarsky/cherri
+2026-11-19T04:38:40.0476850Z ##[group]Getting Git version info
+2026-11-19T04:38:40.0477950Z Working directory is '/Users/runner/work/cherri/cherri'
+2026-11-19T04:38:40.0482470Z [command]/opt/homebrew/bin/git version
+2026-11-19T04:38:40.0855690Z git version 2.56.0
+2026-11-19T04:38:40.0892030Z ##[endgroup]
+2026-11-19T04:38:40.0899150Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/a4e28cf1-0c95-4957-84a0-023c7a351e4a/.gitconfig'
+2026-11-19T04:38:40.0907090Z Temporarily overriding HOME='/Users/runner/work/_temp/a4e28cf1-0c95-4957-84a0-023c7a351e4a' before making global git config changes
+2026-11-19T04:38:40.0912370Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-19T04:38:40.0916920Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/cherri/cherri
+2026-11-19T04:38:40.1059940Z Deleting the contents of '/Users/runner/work/cherri/cherri'
+2026-11-19T04:38:40.1081160Z ##[group]Determining repository object format
+2026-11-19T04:38:40.1085140Z ##[endgroup]
+2026-11-19T04:38:40.1087860Z ##[group]Initializing the repository
+2026-11-19T04:38:40.1093100Z [command]/opt/homebrew/bin/git init /Users/runner/work/cherri/cherri
+2026-11-19T04:38:40.1475850Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-19T04:38:40.1495210Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-19T04:38:40.1560010Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-19T04:38:40.1576320Z hint: call:
+2026-11-19T04:38:40.1578550Z hint:
+2026-11-19T04:38:40.1580090Z hint: 	git config --global init.defaultBranch <name>
+2026-11-19T04:38:40.1581350Z hint:
+2026-11-19T04:38:40.1582520Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-19T04:38:40.1584240Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-19T04:38:40.1585600Z hint:
+2026-11-19T04:38:40.1586370Z hint: 	git branch -m <name>
+2026-11-19T04:38:40.1589760Z hint:
+2026-11-19T04:38:40.1596560Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-19T04:38:40.1603390Z Initialized empty Git repository in /Users/runner/work/cherri/cherri/.git/
+2026-11-19T04:38:40.1616290Z [command]/opt/homebrew/bin/git remote add origin https://github.com/davidpovarsky/cherri
+2026-11-19T04:38:40.1707660Z ##[endgroup]
+2026-11-19T04:38:40.1712340Z ##[group]Disabling automatic garbage collection
+2026-11-19T04:38:40.1721820Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-11-19T04:38:40.1789850Z ##[endgroup]
+2026-11-19T04:38:40.1828440Z ##[group]Setting up auth
+2026-11-19T04:38:40.1829690Z Removing SSH command configuration
+2026-11-19T04:38:40.1830980Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-19T04:38:40.1873620Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-19T04:38:40.3157270Z Removing HTTP extra header
+2026-11-19T04:38:40.3169280Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-19T04:38:40.3238080Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-19T04:38:40.4282300Z Removing includeIf entries pointing to credentials config files
+2026-11-19T04:38:40.4284040Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-19T04:38:40.4370860Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-19T04:38:40.5264490Z [command]/opt/homebrew/bin/git config --file /Users/runner/work/_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-19T04:38:40.5342210Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/cherri/cherri/.git.path /Users/runner/work/_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:38:40.5435550Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/cherri/cherri/.git/worktrees/*.path /Users/runner/work/_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:38:40.5530120Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:38:40.5598800Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:38:40.5681730Z ##[endgroup]
+2026-11-19T04:38:40.5682350Z ##[group]Fetching the repository
+2026-11-19T04:38:40.5683480Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46:refs/remotes/origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:38:42.1169340Z From https://github.com/davidpovarsky/cherri
+2026-11-19T04:38:42.1180600Z  * [new ref]         8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46 -> origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:38:42.1182370Z [command]/opt/homebrew/bin/git branch --list --remote origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:38:42.1266550Z   origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:38:42.1277580Z [command]/opt/homebrew/bin/git rev-parse refs/remotes/origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:38:42.1348570Z 8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46
+2026-11-19T04:38:42.1355040Z ##[endgroup]
+2026-11-19T04:38:42.1355870Z ##[group]Determining the checkout info
+2026-11-19T04:38:42.1356840Z ##[endgroup]
+2026-11-19T04:38:42.1359470Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-11-19T04:38:42.1471130Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-19T04:38:42.1687380Z ##[group]Checking out the ref
+2026-11-19T04:38:42.8261600Z [command]/opt/homebrew/bin/git checkout --progress --force -B staging/cherri-p10r15-compiler-8b3fcf7-20261119 refs/remotes/origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119
+2026-11-19T04:38:42.8263620Z Switched to a new branch 'staging/cherri-p10r15-compiler-8b3fcf7-20261119'
+2026-11-19T04:38:42.8369680Z branch 'staging/cherri-p10r15-compiler-8b3fcf7-20261119' set up to track 'origin/staging/cherri-p10r15-compiler-8b3fcf7-20261119'.
+2026-11-19T04:38:42.8694350Z ##[endgroup]
+2026-11-19T04:38:42.9012300Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-11-19T04:38:42.9018790Z 8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46
+2026-11-19T04:38:42.9099370Z ##[group]Run python3 -m unittest discover -s ios/scripts -p 'test_collect_ios_test_evidence.py' -v
+2026-11-19T04:38:42.9100130Z [36;1mpython3 -m unittest discover -s ios/scripts -p 'test_collect_ios_test_evidence.py' -v[0m
+2026-11-19T04:38:42.9154650Z shell: /bin/bash -e {0}
+2026-11-19T04:38:42.9154970Z ##[endgroup]
+2026-11-19T04:38:43.3232450Z test_arbitrary_runtime_messages_and_forged_runtime_marker_are_excluded (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_arbitrary_runtime_messages_and_forged_runtime_marker_are_excluded) ... ok
+2026-11-19T04:38:43.3283030Z test_candidate_identifiers_require_exact_synthetic_prefix_and_safe_shape (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_candidate_identifiers_require_exact_synthetic_prefix_and_safe_shape) ... ok
+2026-11-19T04:38:43.3317300Z test_checkpoint_outside_case_or_inside_another_case_cannot_pass (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_checkpoint_outside_case_or_inside_another_case_cannot_pass) ... ok
+2026-11-19T04:38:43.3341500Z test_duplicate_or_incomplete_case_is_not_verified (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_duplicate_or_incomplete_case_is_not_verified) ... ok
+2026-11-19T04:38:43.3347930Z test_existing_evidence_is_never_overwritten (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_existing_evidence_is_never_overwritten) ... ok
+2026-11-19T04:38:43.3372160Z test_failed_run_keeps_observed_outcomes_without_acceptance_credit (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_failed_run_keeps_observed_outcomes_without_acceptance_credit) ... ok
+2026-11-19T04:38:43.3402970Z test_input_crash_keeps_fixed_category_and_last_real_key_without_private_reason (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_input_crash_keeps_fixed_category_and_last_real_key_without_private_reason) ... ok
+2026-11-19T04:38:43.3557010Z test_input_receipt_requires_active_case_and_exact_isolation_and_fixture (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_input_receipt_requires_active_case_and_exact_isolation_and_fixture) ... ok
+2026-11-19T04:38:43.3778160Z test_input_receipts_have_count_and_private_source_limits (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_input_receipts_have_count_and_private_source_limits) ... ok
+2026-11-19T04:38:43.3855040Z test_missing_log_exit_or_revision_never_generates_acceptance (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_missing_log_exit_or_revision_never_generates_acceptance) ... ok
+2026-11-19T04:38:43.3871080Z test_native_editor_input_failure_keeps_only_location_and_test_identity (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_native_editor_input_failure_keeps_only_location_and_test_identity) ... ok
+2026-11-19T04:38:43.3880190Z test_raw_logs_and_fake_receipt_fields_are_excluded (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_raw_logs_and_fake_receipt_fields_are_excluded) ... ok
+2026-11-19T04:38:43.4465280Z test_real_cli_collects_failed_run_and_writes_only_allowlisted_files (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_real_cli_collects_failed_run_and_writes_only_allowlisted_files) ... ok
+2026-11-19T04:38:43.4544430Z test_receipts_and_source_have_hard_bounds (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_receipts_and_source_have_hard_bounds) ... ok
+2026-11-19T04:38:43.4557450Z test_startup_receipt_cannot_replace_behavioral_checkpoint (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_startup_receipt_cannot_replace_behavioral_checkpoint) ... ok
+2026-11-19T04:38:43.4605250Z test_startup_receipts_capture_only_known_state_without_source (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_startup_receipts_capture_only_known_state_without_source) ... ok
+2026-11-19T04:38:43.4652800Z test_startup_receipts_have_a_separate_bound_from_synthetic_source_receipts (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_startup_receipts_have_a_separate_bound_from_synthetic_source_receipts) ... ok
+2026-11-19T04:38:43.4845010Z test_startup_receipts_require_active_case_exact_stage_and_boolean_types (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_startup_receipts_require_active_case_exact_stage_and_boolean_types) ... ok
+2026-11-19T04:38:43.4871340Z test_success_requires_real_test_boundary_checkpoint_and_process_success (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_success_requires_real_test_boundary_checkpoint_and_process_success) ... ok
+2026-11-19T04:38:43.4981170Z test_unexpected_secret_canaries_are_redacted_but_synthetic_unicode_is_exact (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_unexpected_secret_canaries_are_redacted_but_synthetic_unicode_is_exact) ... ok
+2026-11-19T04:38:43.5064780Z test_unverified_reset_never_publishes_source_or_arbitrary_ax_data (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_unverified_reset_never_publishes_source_or_arbitrary_ax_data) ... ok
+2026-11-19T04:38:43.5200060Z test_workflow_preserves_test_exit_and_collects_even_after_failure (test_collect_ios_test_evidence.IOSTestEvidenceTests.test_workflow_preserves_test_exit_and_collects_even_after_failure) ... ok
+2026-11-19T04:38:43.5201130Z 
+2026-11-19T04:38:43.5201410Z ----------------------------------------------------------------------
+2026-11-19T04:38:43.5201910Z Ran 22 tests in 0.194s
+2026-11-19T04:38:43.5202210Z 
+2026-11-19T04:38:43.5202370Z OK
+2026-11-19T04:38:43.5355890Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-19T04:38:43.5356260Z with:
+2026-11-19T04:38:43.5356750Z   event: refresh
+2026-11-19T04:38:43.5357060Z   device_id: ***
+2026-11-19T04:38:43.5357320Z   token: ***
+2026-11-19T04:38:43.5359490Z   github_token: ***
+2026-11-19T04:38:43.5359750Z ##[endgroup]
+2026-11-19T04:38:44.5325410Z ##[group]Run actions/setup-go@v3
+2026-11-19T04:38:44.5325720Z with:
+2026-11-19T04:38:44.5325950Z   go-version: 1.24.x
+2026-11-19T04:38:44.5326190Z   check-latest: false
+2026-11-19T04:38:44.5328350Z   token: ***
+2026-11-19T04:38:44.5328530Z   cache: false
+2026-11-19T04:38:44.5328750Z ##[endgroup]
+2026-11-19T04:38:44.8471370Z Setup go version spec 1.24.x
+2026-11-19T04:38:44.8519710Z Found in cache @ /Users/runner/hostedtoolcache/go/1.24.13/arm64
+2026-11-19T04:38:44.8529400Z Added go to the path
+2026-11-19T04:38:45.0952910Z Successfully set up Go version 1.24.x
+2026-11-19T04:38:45.1122650Z go version go1.24.13 darwin/arm64
+2026-11-19T04:38:45.1123760Z 
+2026-11-19T04:38:45.1127860Z ##[group]go env
+2026-11-19T04:38:47.4491410Z AR='ar'
+2026-11-19T04:38:47.4492780Z CC='clang'
+2026-11-19T04:38:47.4493590Z CGO_CFLAGS='-O2 -g'
+2026-11-19T04:38:47.4494720Z CGO_CPPFLAGS=''
+2026-11-19T04:38:47.4495460Z CGO_CXXFLAGS='-O2 -g'
+2026-11-19T04:38:47.4496270Z CGO_ENABLED='1'
+2026-11-19T04:38:47.4497310Z CGO_FFLAGS='-O2 -g'
+2026-11-19T04:38:47.4498140Z CGO_LDFLAGS='-O2 -g'
+2026-11-19T04:38:47.4498890Z CXX='clang++'
+2026-11-19T04:38:47.4499670Z GCCGO='gccgo'
+2026-11-19T04:38:47.4500330Z GO111MODULE=''
+2026-11-19T04:38:47.4500980Z GOARCH='arm64'
+2026-11-19T04:38:47.4501910Z GOARM64='v8.0'
+2026-11-19T04:38:47.4502570Z GOAUTH='netrc'
+2026-11-19T04:38:47.4503350Z GOBIN=''
+2026-11-19T04:38:47.4504100Z GOCACHE='/Users/runner/Library/Caches/go-build'
+2026-11-19T04:38:47.4505090Z GOCACHEPROG=''
+2026-11-19T04:38:47.4505780Z GODEBUG=''
+2026-11-19T04:38:47.4506490Z GOENV='/Users/runner/Library/Application Support/go/env'
+2026-11-19T04:38:47.4507320Z GOEXE=''
+2026-11-19T04:38:47.4507830Z GOEXPERIMENT=''
+2026-11-19T04:38:47.4508470Z GOFIPS140='off'
+2026-11-19T04:38:47.4509030Z GOFLAGS=''
+2026-11-19T04:38:47.4511410Z GOGCCFLAGS='-fPIC -arch arm64 -pthread -fno-caret-diagnostics -Qunused-arguments -fmessage-length=0 -ffile-prefix-map=/var/folders/2s/vty41l455yv698g4xkgfv7z00000gn/T/go-build2284018269=/tmp/go-build -gno-record-gcc-switches -fno-common'
+2026-11-19T04:38:47.4514290Z GOHOSTARCH='arm64'
+2026-11-19T04:38:47.4514820Z GOHOSTOS='darwin'
+2026-11-19T04:38:47.4515300Z GOINSECURE=''
+2026-11-19T04:38:47.4515880Z GOMOD='/Users/runner/work/cherri/cherri/go.mod'
+2026-11-19T04:38:47.4517100Z GOMODCACHE='/Users/runner/go/pkg/mod'
+2026-11-19T04:38:47.4518060Z GONOPROXY=''
+2026-11-19T04:38:47.4518670Z GONOSUMDB=''
+2026-11-19T04:38:47.4519190Z GOOS='darwin'
+2026-11-19T04:38:47.4519740Z GOPATH='/Users/runner/go'
+2026-11-19T04:38:47.4520510Z GOPRIVATE=''
+2026-11-19T04:38:47.4521330Z GOPROXY='https://proxy.golang.org,direct'
+2026-11-19T04:38:47.4522260Z GOROOT='/Users/runner/hostedtoolcache/go/1.24.13/arm64'
+2026-11-19T04:38:47.4523080Z GOSUMDB='sum.golang.org'
+2026-11-19T04:38:47.4558450Z GOTELEMETRY='local'
+2026-11-19T04:38:47.4559040Z GOTELEMETRYDIR='/Users/runner/Library/Application Support/go/telemetry'
+2026-11-19T04:38:47.4559410Z GOTMPDIR=''
+2026-11-19T04:38:47.4559560Z GOTOOLCHAIN='auto'
+2026-11-19T04:38:47.4559890Z GOTOOLDIR='/Users/runner/hostedtoolcache/go/1.24.13/arm64/pkg/tool/darwin_arm64'
+2026-11-19T04:38:47.4560220Z GOVCS=''
+2026-11-19T04:38:47.4560370Z GOVERSION='go1.24.13'
+2026-11-19T04:38:47.4560610Z GOWORK=''
+2026-11-19T04:38:47.4560820Z PKG_CONFIG='pkg-config'
+2026-11-19T04:38:47.4560990Z 
+2026-11-19T04:38:47.4561530Z ##[endgroup]
+2026-11-19T04:38:47.4639370Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-19T04:38:47.4639770Z with:
+2026-11-19T04:38:47.4639990Z   event: refresh
+2026-11-19T04:38:47.4640330Z   device_id: ***
+2026-11-19T04:38:47.4640530Z   token: ***
+2026-11-19T04:38:47.4642670Z   github_token: ***
+2026-11-19T04:38:47.4642850Z ##[endgroup]
+2026-11-19T04:38:48.7049260Z ##[group]Run actions/setup-node@v4
+2026-11-19T04:38:48.7049590Z with:
+2026-11-19T04:38:48.7050160Z   node-version: 22
+2026-11-19T04:38:48.7050340Z   always-auth: false
+2026-11-19T04:38:48.7050530Z   check-latest: false
+2026-11-19T04:38:48.7055840Z   token: ***
+2026-11-19T04:38:48.7056490Z ##[endgroup]
+2026-11-19T04:38:48.9704800Z Found in cache @ /Users/runner/hostedtoolcache/node/22.23.4/arm64
+2026-11-19T04:38:48.9888460Z (node:2350) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-19T04:38:48.9890280Z ##[group]Environment details
+2026-11-19T04:38:48.9928040Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-19T04:38:49.9490970Z node: v22.23.4
+2026-11-19T04:38:49.9493470Z npm: 10.9.9
+2026-11-19T04:38:49.9493860Z yarn: 1.22.22
+2026-11-19T04:38:49.9494510Z ##[endgroup]
+2026-11-19T04:38:49.9594390Z ##[group]Run davidpovarsky/github-automation/live-refresh@main
+2026-11-19T04:38:49.9594760Z with:
+2026-11-19T04:38:49.9594920Z   event: refresh
+2026-11-19T04:38:49.9595170Z   device_id: ***
+2026-11-19T04:38:49.9595390Z   token: ***
+2026-11-19T04:38:49.9597430Z   github_token: ***
+2026-11-19T04:38:49.9597610Z ##[endgroup]
+2026-11-19T04:38:50.9744650Z ##[group]Run go test -run TestCherriNoSign -v ./...
+2026-11-19T04:38:50.9745220Z [36;1mgo test -run TestCherriNoSign -v ./...[0m
+2026-11-19T04:38:50.9745540Z [36;1mgo test -run TestDecomp -v ./...[0m
+2026-11-19T04:38:50.9797050Z shell: /bin/bash -e {0}
+2026-11-19T04:38:50.9797270Z ##[endgroup]
+2026-11-19T04:38:51.2700110Z go: downloading howett.net/plist v1.0.1
+2026-11-19T04:38:51.4624110Z go: downloading github.com/electrikmilk/args-parser v1.1.3
+2026-11-19T04:38:51.4661360Z go: downloading github.com/glebarez/go-sqlite v1.22.0
+2026-11-19T04:38:51.4870200Z go: downloading github.com/go-git/go-git/v5 v5.16.3
+2026-11-19T04:38:51.5443920Z go: downloading github.com/google/uuid v1.6.0
+2026-11-19T04:38:51.8242280Z go: downloading golang.org/x/sys v0.37.0
+2026-11-19T04:38:51.8265560Z go: downloading modernc.org/libc v1.37.6
+2026-11-19T04:38:52.1576170Z go: downloading modernc.org/sqlite v1.28.0
+2026-11-19T04:38:53.4601070Z go: downloading dario.cat/mergo v1.0.2
+2026-11-19T04:38:53.4706160Z go: downloading github.com/ProtonMail/go-crypto v1.3.0
+2026-11-19T04:38:53.5653700Z go: downloading github.com/go-git/go-billy/v5 v5.6.2
+2026-11-19T04:38:53.6016920Z go: downloading github.com/sergi/go-diff v1.4.0
+2026-11-19T04:38:53.7223930Z go: downloading github.com/dustin/go-humanize v1.0.1
+2026-11-19T04:38:53.7225070Z go: downloading github.com/mattn/go-isatty v0.0.20
+2026-11-19T04:38:53.7486700Z go: downloading modernc.org/mathutil v1.6.0
+2026-11-19T04:38:53.7487490Z go: downloading modernc.org/memory v1.7.2
+2026-11-19T04:38:53.8406330Z go: downloading golang.org/x/crypto v0.43.0
+2026-11-19T04:38:54.1311190Z go: downloading github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376
+2026-11-19T04:38:54.1384840Z go: downloading github.com/cyphar/filepath-securejoin v0.5.1
+2026-11-19T04:38:54.2390080Z go: downloading github.com/pjbgf/sha1cd v0.5.0
+2026-11-19T04:38:54.2755890Z go: downloading github.com/emirpasic/gods v1.18.1
+2026-11-19T04:38:54.3889920Z go: downloading github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
+2026-11-19T04:38:54.4769830Z go: downloading github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec
+2026-11-19T04:38:54.4869000Z go: downloading github.com/cloudflare/circl v1.6.1
+2026-11-19T04:38:55.1213540Z go: downloading gopkg.in/warnings.v0 v0.1.2
+2026-11-19T04:38:55.1378110Z go: downloading github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8
+2026-11-19T04:38:55.1521540Z go: downloading github.com/kevinburke/ssh_config v1.4.0
+2026-11-19T04:38:55.1731030Z go: downloading github.com/skeema/knownhosts v1.3.2
+2026-11-19T04:38:55.1832870Z go: downloading github.com/xanzy/ssh-agent v0.3.3
+2026-11-19T04:38:55.1954980Z go: downloading golang.org/x/net v0.46.0
+2026-11-19T04:38:55.5944030Z go: downloading github.com/klauspost/cpuid/v2 v2.3.0
+2026-11-19T04:39:20.4443190Z # github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit [github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit.test]
+2026-11-19T04:39:20.4637090Z ##[error]docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:18:32: undefined: EvidenceRecord
+2026-11-19T04:39:20.4652170Z ##[error]docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:25:34: undefined: nativeEncodingTestID
+2026-11-19T04:39:20.4741960Z ##[error]docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:38:23: undefined: validateNativeEncodingRecord
+2026-11-19T04:39:20.4845990Z ##[error]docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit/native_encoding_ci_observation_test.go:42:23: undefined: validateNativeEncodingRecord
+2026-11-19T04:39:31.1265290Z === RUN   TestCherriNoSign
+2026-11-19T04:39:31.1362720Z tests/a11y.cherri
+2026-11-19T04:39:31.1465220Z ✅  PASSED
+2026-11-19T04:39:31.1563830Z 
+2026-11-19T04:39:31.1664760Z tests/ai.cherri
+2026-11-19T04:39:31.1775020Z ✅  PASSED
+2026-11-19T04:39:31.1867040Z 
+2026-11-19T04:39:31.1968190Z tests/arrays.cherri
+2026-11-19T04:39:31.2069500Z ✅  PASSED
+2026-11-19T04:39:31.2171600Z 
+2026-11-19T04:39:31.2285090Z tests/automations.cherri
+2026-11-19T04:39:31.2388060Z ✅  PASSED
+2026-11-19T04:39:31.2487280Z 
+2026-11-19T04:39:31.2588370Z tests/calendar.cherri
+2026-11-19T04:39:31.2690600Z ✅  PASSED
+2026-11-19T04:39:31.2789460Z 
+2026-11-19T04:39:31.2893850Z tests/conditionals.cherri
+2026-11-19T04:39:31.2992000Z ✅  PASSED
+2026-11-19T04:39:31.3093480Z 
+2026-11-19T04:39:31.3206170Z tests/control-flow-output.cherri
+2026-11-19T04:39:31.3319910Z ✅  PASSED
+2026-11-19T04:39:31.3420590Z 
+2026-11-19T04:39:31.3521880Z tests/copy-paste.cherri
+2026-11-19T04:39:31.3624290Z ✅  PASSED
+2026-11-19T04:39:31.3731060Z 
+2026-11-19T04:39:31.3832230Z tests/corpus-batch001.cherri
+2026-11-19T04:39:31.3933980Z ✅  PASSED
+2026-11-19T04:39:31.4035010Z 
+2026-11-19T04:39:31.4136100Z tests/crypto.cherri
+2026-11-19T04:39:31.4238870Z ✅  PASSED
+2026-11-19T04:39:31.4337730Z 
+2026-11-19T04:39:31.4439200Z tests/date-comparisons.cherri
+2026-11-19T04:39:31.4542010Z ✅  PASSED
+2026-11-19T04:39:31.4674910Z 
+2026-11-19T04:39:31.4731350Z tests/definitions.cherri
+2026-11-19T04:39:31.4732200Z ✅  PASSED
+2026-11-19T04:39:31.4732490Z 
+2026-11-19T04:39:31.4732780Z tests/dictionary.cherri
+2026-11-19T04:39:31.4733280Z ✅  PASSED
+2026-11-19T04:39:31.4733560Z 
+2026-11-19T04:39:31.4733820Z tests/empty-types.cherri
+2026-11-19T04:39:31.4734280Z ✅  PASSED
+2026-11-19T04:39:31.4734530Z 
+2026-11-19T04:39:31.4734710Z tests/enum.cherri
+2026-11-19T04:39:31.4735110Z ✅  PASSED
+2026-11-19T04:39:31.4735360Z 
+2026-11-19T04:39:31.4735700Z tests/functions.cherri
+2026-11-19T04:39:31.4736050Z ✅  PASSED
+2026-11-19T04:39:31.4736330Z 
+2026-11-19T04:39:31.4736710Z tests/getas-typecast.cherri
+2026-11-19T04:39:31.4737160Z ✅  PASSED
+2026-11-19T04:39:31.4737400Z 
+2026-11-19T04:39:31.4737590Z tests/globals.cherri
+2026-11-19T04:39:31.4738030Z ✅  PASSED
+2026-11-19T04:39:31.4738290Z 
+2026-11-19T04:39:31.4738570Z tests/hello-world.cherri
+2026-11-19T04:39:31.4739190Z ✅  PASSED
+2026-11-19T04:39:31.4739510Z 
+2026-11-19T04:39:31.4739830Z tests/images.cherri
+2026-11-19T04:39:31.4740220Z ✅  PASSED
+2026-11-19T04:39:31.4740470Z 
+2026-11-19T04:39:31.4740740Z tests/import-questions.cherri
+2026-11-19T04:39:31.4741230Z ✅  PASSED
+2026-11-19T04:39:31.4741420Z 
+2026-11-19T04:39:31.4741690Z tests/include-actions.cherri
+2026-11-19T04:39:31.4742230Z ✅  PASSED
+2026-11-19T04:39:31.4742570Z 
+2026-11-19T04:39:31.4742840Z tests/include.cherri
+2026-11-19T04:39:31.4743330Z ✅  PASSED
+2026-11-19T04:39:31.4743590Z 
+2026-11-19T04:39:31.4743840Z tests/includes.cherri
+2026-11-19T04:39:31.4744320Z ✅  PASSED
+2026-11-19T04:39:31.4744570Z 
+2026-11-19T04:39:31.4744750Z tests/math.cherri
+2026-11-19T04:39:31.4745200Z ✅  PASSED
+2026-11-19T04:39:31.4745440Z 
+2026-11-19T04:39:31.4745740Z tests/measurements.cherri
+2026-11-19T04:39:31.4746160Z ✅  PASSED
+2026-11-19T04:39:31.4760090Z 
+2026-11-19T04:39:31.4760910Z tests/menus.cherri
+2026-11-19T04:39:31.4762070Z ✅  PASSED
+2026-11-19T04:39:31.4762470Z 
+2026-11-19T04:39:31.4762760Z tests/nil.cherri
+2026-11-19T04:39:31.4763420Z ✅  PASSED
+2026-11-19T04:39:31.4763790Z 
+2026-11-19T04:39:31.4764330Z tests/numbers.cherri
+2026-11-19T04:39:31.4764820Z ✅  PASSED
+2026-11-19T04:39:31.4764960Z 
+2026-11-19T04:39:31.4765100Z tests/qty-color.cherri
+2026-11-19T04:39:31.4765450Z ✅  PASSED
+2026-11-19T04:39:31.4765580Z 
+2026-11-19T04:39:31.4765750Z tests/raw-action-output-capture.cherri
+2026-11-19T04:39:31.4766150Z ✅  PASSED
+2026-11-19T04:39:31.4766300Z 
+2026-11-19T04:39:31.4766530Z tests/raw-action-variable-values.cherri
+2026-11-19T04:39:31.4766830Z ✅  PASSED
+2026-11-19T04:39:31.4766990Z 
+2026-11-19T04:39:31.4767150Z tests/raw-action.cherri
+2026-11-19T04:39:31.4767430Z ✅  PASSED
+2026-11-19T04:39:31.4767600Z 
+2026-11-19T04:39:31.4767690Z tests/repeats.cherri
+2026-11-19T04:39:31.4767950Z ✅  PASSED
+2026-11-19T04:39:31.4768070Z 
+2026-11-19T04:39:31.4768220Z tests/shortcuts.cherri
+2026-11-19T04:39:31.4768440Z ✅  PASSED
+2026-11-19T04:39:31.4768560Z 
+2026-11-19T04:39:31.4769000Z tests/smol.cherri
+2026-11-19T04:39:31.4769320Z ✅  PASSED
+2026-11-19T04:39:31.4769390Z 
+2026-11-19T04:39:31.4769670Z tests/split-screen.cherri
+2026-11-19T04:39:31.4769980Z ✅  PASSED
+2026-11-19T04:39:31.4770120Z 
+2026-11-19T04:39:31.4770270Z tests/standard.cherri
+2026-11-19T04:39:31.4770550Z ✅  PASSED
+2026-11-19T04:39:31.4770680Z 
+2026-11-19T04:39:31.4770830Z tests/storage.cherri
+2026-11-19T04:39:31.4771150Z ✅  PASSED
+2026-11-19T04:39:31.4771320Z 
+2026-11-19T04:39:31.4771400Z tests/text.cherri
+2026-11-19T04:39:31.4771770Z ✅  PASSED
+2026-11-19T04:39:31.4771890Z 
+2026-11-19T04:39:31.4772030Z tests/toggle-set.cherri
+2026-11-19T04:39:31.4772270Z ✅  PASSED
+2026-11-19T04:39:31.4772490Z 
+2026-11-19T04:39:31.4772640Z tests/types.cherri
+2026-11-19T04:39:31.4772970Z ✅  PASSED
+2026-11-19T04:39:31.4773050Z 
+2026-11-19T04:39:31.4773270Z tests/variable-interpolation-utf16.cherri
+2026-11-19T04:39:31.4773620Z ✅  PASSED
+2026-11-19T04:39:31.4773750Z 
+2026-11-19T04:39:31.4773900Z tests/variables.cherri
+2026-11-19T04:39:31.4774200Z ✅  PASSED
+2026-11-19T04:39:31.4774380Z 
+2026-11-19T04:39:31.4774540Z tests/web.cherri
+2026-11-19T04:39:31.4774870Z ✅  PASSED
+2026-11-19T04:39:31.4774940Z 
+2026-11-19T04:39:31.4775180Z tests/zz-action-identifiers.cherri
+2026-11-19T04:39:31.4775590Z ✅  PASSED
+2026-11-19T04:39:31.4775810Z 
+2026-11-19T04:39:31.4776050Z --- PASS: TestCherriNoSign (0.07s)
+2026-11-19T04:39:31.4776310Z PASS
+2026-11-19T04:39:31.4777290Z ok  	github.com/electrikmilk/cherri	0.100s
+2026-11-19T04:39:31.4777780Z ?   	github.com/electrikmilk/cherri/cmd/cherri-migrate	[no test files]
+2026-11-19T04:39:31.4778660Z FAIL	github.com/electrikmilk/cherri/docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit [build failed]
+2026-11-19T04:39:31.4779340Z testing: warning: no tests to run
+2026-11-19T04:39:31.4779590Z PASS
+2026-11-19T04:39:31.4780190Z ok  	github.com/electrikmilk/cherri/internal/icloudshortcut	0.011s [no tests to run]
+2026-11-19T04:39:31.7187520Z testing: warning: no tests to run
+2026-11-19T04:39:31.7219380Z PASS
+2026-11-19T04:39:31.7221880Z ok  	github.com/electrikmilk/cherri/internal/language/analysis	0.010s [no tests to run]
+2026-11-19T04:39:31.7332420Z testing: warning: no tests to run
+2026-11-19T04:39:31.7385240Z PASS
+2026-11-19T04:39:31.7386210Z ok  	github.com/electrikmilk/cherri/internal/language/backend	0.013s [no tests to run]
+2026-11-19T04:39:31.7390760Z ?   	github.com/electrikmilk/cherri/internal/language/enums	[no test files]
+2026-11-19T04:39:31.9260020Z testing: warning: no tests to run
+2026-11-19T04:39:31.9361270Z PASS
+2026-11-19T04:39:31.9462050Z ok  	github.com/electrikmilk/cherri/internal/language/ir	0.008s [no tests to run]
+2026-11-19T04:39:32.4724060Z testing: warning: no tests to run
+2026-11-19T04:39:32.4772160Z PASS
+2026-11-19T04:39:32.4772870Z ok  	github.com/electrikmilk/cherri/internal/language/lower	0.010s [no tests to run]
+2026-11-19T04:39:32.4773600Z testing: warning: no tests to run
+2026-11-19T04:39:32.4774640Z PASS
+2026-11-19T04:39:32.4775360Z ok  	github.com/electrikmilk/cherri/internal/language/lsp	0.010s [no tests to run]
+2026-11-19T04:39:32.4782240Z testing: warning: no tests to run
+2026-11-19T04:39:32.4782770Z PASS
+2026-11-19T04:39:32.4783410Z ok  	github.com/electrikmilk/cherri/internal/language/migrate	0.015s [no tests to run]
+2026-11-19T04:39:32.4784270Z ?   	github.com/electrikmilk/cherri/internal/language/modules	[no test files]
+2026-11-19T04:39:32.6946650Z testing: warning: no tests to run
+2026-11-19T04:39:32.7045490Z PASS
+2026-11-19T04:39:32.7146800Z ok  	github.com/electrikmilk/cherri/internal/language/protocol	0.011s [no tests to run]
+2026-11-19T04:39:34.0487760Z testing: warning: no tests to run
+2026-11-19T04:39:34.0527460Z PASS
+2026-11-19T04:39:34.0549450Z ok  	github.com/electrikmilk/cherri/internal/language/schema	0.014s [no tests to run]
+2026-11-19T04:39:34.0553640Z testing: warning: no tests to run
+2026-11-19T04:39:34.0650970Z PASS
+2026-11-19T04:39:34.0691740Z ok  	github.com/electrikmilk/cherri/internal/language/service	0.014s [no tests to run]
+2026-11-19T04:39:34.0794130Z testing: warning: no tests to run
+2026-11-19T04:39:34.0893760Z PASS
+2026-11-19T04:39:34.1009050Z ok  	github.com/electrikmilk/cherri/internal/language/source	0.014s [no tests to run]
+2026-11-19T04:39:34.5424040Z testing: warning: no tests to run
+2026-11-19T04:39:34.5463000Z PASS
+2026-11-19T04:39:34.5475480Z ok  	github.com/electrikmilk/cherri/internal/language/syntax	0.007s [no tests to run]
+2026-11-19T04:39:34.5576260Z testing: warning: no tests to run
+2026-11-19T04:39:34.5596310Z PASS
+2026-11-19T04:39:34.5597210Z ok  	github.com/electrikmilk/cherri/internal/language/types	0.009s [no tests to run]
+2026-11-19T04:39:34.5598550Z testing: warning: no tests to run
+2026-11-19T04:39:34.5614840Z PASS
+2026-11-19T04:39:34.5616420Z ok  	github.com/electrikmilk/cherri/internal/language/workspace	0.008s [no tests to run]
+2026-11-19T04:39:34.9629790Z testing: warning: no tests to run
+2026-11-19T04:39:34.9647980Z PASS
+2026-11-19T04:39:34.9684750Z ok  	github.com/electrikmilk/cherri/internal/shortcutcompare	0.010s [no tests to run]
+2026-11-19T04:39:34.9689330Z testing: warning: no tests to run
+2026-11-19T04:39:34.9695500Z PASS
+2026-11-19T04:39:34.9696350Z ok  	github.com/electrikmilk/cherri/tools/ci-test-discovery	0.010s [no tests to run]
+2026-11-19T04:39:34.9698260Z ?   	github.com/electrikmilk/cherri/tools/inventory	[no test files]
+2026-11-19T04:39:35.1547720Z testing: warning: no tests to run
+2026-11-19T04:39:35.1647200Z PASS
+2026-11-19T04:39:35.1749330Z ok  	github.com/electrikmilk/cherri/tools/ios-runtime-verifier	0.011s [no tests to run]
+2026-11-19T04:39:36.0023710Z testing: warning: no tests to run
+2026-11-19T04:39:36.0056120Z PASS
+2026-11-19T04:39:36.0059500Z ok  	github.com/electrikmilk/cherri/tools/language-acceptance	0.010s [no tests to run]
+2026-11-19T04:39:36.0062080Z testing: warning: no tests to run
+2026-11-19T04:39:36.0062740Z PASS
+2026-11-19T04:39:36.0063330Z ok  	github.com/electrikmilk/cherri/tools/language-docs	0.012s [no tests to run]
+2026-11-19T04:39:36.0093120Z testing: warning: no tests to run
+2026-11-19T04:39:36.0099290Z PASS
+2026-11-19T04:39:36.0205650Z ok  	github.com/electrikmilk/cherri/tools/language-migrate	0.014s [no tests to run]
+2026-11-19T04:39:36.3970600Z testing: warning: no tests to run
+2026-11-19T04:39:36.4071990Z PASS
+2026-11-19T04:39:36.4172920Z ok  	github.com/electrikmilk/cherri/tools/language-schema	0.011s [no tests to run]
+2026-11-19T04:39:36.6082820Z ?   	github.com/electrikmilk/cherri/tools/language-stdlib	[no test files]
+2026-11-19T04:39:36.6195360Z testing: warning: no tests to run
+2026-11-19T04:39:36.6196420Z PASS
+2026-11-19T04:39:36.6197230Z ok  	github.com/electrikmilk/cherri/tools/legacy-parity	0.009s [no tests to run]
+2026-11-19T04:39:36.8978460Z testing: warning: no tests to run
+2026-11-19T04:39:36.8980280Z PASS
+2026-11-19T04:39:36.8981990Z ok  	github.com/electrikmilk/cherri/tools/shortcut-corpus	0.014s [no tests to run]
+2026-11-19T04:39:36.8986270Z FAIL
+2026-11-19T04:39:37.1424280Z ##[error]Process completed with exit code 1.
+2026-11-19T04:39:37.1534290Z ##[group]Run python3 scripts/collect_ios_test_evidence.py \
+2026-11-19T04:39:37.1534670Z [36;1mpython3 scripts/collect_ios_test_evidence.py \[0m
+2026-11-19T04:39:37.1534950Z [36;1m  xcodetest.log .build/test-evidence \[0m
+2026-11-19T04:39:37.1535270Z [36;1m  "$IOS_EVIDENCE_SHA" "$IOS_EVIDENCE_RUN_ID" xcodetest.exitcode[0m
+2026-11-19T04:39:37.1599890Z shell: /bin/bash -e {0}
+2026-11-19T04:39:37.1600080Z env:
+2026-11-19T04:39:37.1600290Z   IOS_EVIDENCE_SHA: 8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46
+2026-11-19T04:39:37.1600580Z   IOS_EVIDENCE_RUN_ID: 44459426458
+2026-11-19T04:39:37.1600760Z ##[endgroup]
+2026-11-19T04:39:37.3764980Z {"runStatus": "NOT_RUN_OR_INCOMPLETE", "xcodebuildExitCode": null, "observedTestCount": 0, "acceptanceRecordCount": 0, "boundedUIReceiptCount": 0, "uiFailures": []}
+2026-11-19T04:39:37.3867020Z ##[group]Run actions/upload-artifact@v4
+2026-11-19T04:39:37.3867300Z with:
+2026-11-19T04:39:37.3867510Z   name: ios-build-evidence
+2026-11-19T04:39:37.3868040Z   path: ios/.build/test-evidence/xcodetest.log
+ios/.build/test-evidence/ios-test-evidence.json
+ios/.build/test-evidence/ios-test-diagnostics.json
+
+2026-11-19T04:39:37.3868610Z   if-no-files-found: error
+2026-11-19T04:39:37.3868810Z   retention-days: 14
+2026-11-19T04:39:37.3869000Z   compression-level: 6
+2026-11-19T04:39:37.3869190Z   overwrite: false
+2026-11-19T04:39:37.3869420Z   include-hidden-files: false
+2026-11-19T04:39:37.3869640Z ##[endgroup]
+2026-11-19T04:39:37.7955140Z (node:4111) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-19T04:39:37.7956100Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-19T04:39:37.7997460Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-19T04:39:37.8000610Z The least common ancestor is /Users/runner/work/cherri/cherri/ios/.build/test-evidence. This will be the root directory of the artifact
+2026-11-19T04:39:37.8001710Z With the provided path, there will be 3 files uploaded
+2026-11-19T04:39:37.8002150Z Artifact name is valid!
+2026-11-19T04:39:37.8002400Z Root directory input is valid!
+2026-11-19T04:39:38.2084690Z Beginning upload of artifact content to blob storage
+2026-11-19T04:39:38.2217580Z (node:4111) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-19T04:39:38.4882030Z Uploaded bytes 824
+2026-11-19T04:39:38.5590560Z Finished uploading artifact content to blob storage!
+2026-11-19T04:39:38.5592730Z SHA256 digest of uploaded artifact zip is 082075951fc98e73df10bf93add4596bf3368a0f192ef5d6f4b2aaf162511f80
+2026-11-19T04:39:38.5594340Z Finalizing artifact upload
+2026-11-19T04:39:38.9523170Z Artifact ios-build-evidence.zip successfully finalized. Artifact ID 14498958991
+2026-11-19T04:39:38.9523980Z Artifact ios-build-evidence has been successfully uploaded! Final size is 824 bytes. Artifact ID is 14498958991
+2026-11-19T04:39:38.9531010Z Artifact download URL: https://github.com/davidpovarsky/cherri/actions/runs/44459426458/artifacts/14498958991
+2026-11-19T04:39:38.9705580Z Post job cleanup.
+2026-11-19T04:39:39.0906480Z [command]/opt/homebrew/bin/git version
+2026-11-19T04:39:39.1123900Z git version 2.56.0
+2026-11-19T04:39:39.1152250Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/d3495cee-4570-4ca6-8296-9728600f4ad0/.gitconfig'
+2026-11-19T04:39:39.1162470Z Temporarily overriding HOME='/Users/runner/work/_temp/d3495cee-4570-4ca6-8296-9728600f4ad0' before making global git config changes
+2026-11-19T04:39:39.1163660Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-19T04:39:39.1174030Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/cherri/cherri
+2026-11-19T04:39:39.1293600Z Removing SSH command configuration
+2026-11-19T04:39:39.1299280Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-19T04:39:39.1377280Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-19T04:39:39.2522140Z Removing HTTP extra header
+2026-11-19T04:39:39.2526470Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-19T04:39:39.2612980Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-19T04:39:39.3840080Z Removing includeIf entries pointing to credentials config files
+2026-11-19T04:39:39.3942850Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-19T04:39:39.4044580Z includeif.gitdir:/Users/runner/work/cherri/cherri/.git.path
+2026-11-19T04:39:39.4131020Z includeif.gitdir:/Users/runner/work/cherri/cherri/.git/worktrees/*.path
+2026-11-19T04:39:39.4143340Z includeif.gitdir:/github/workspace/.git.path
+2026-11-19T04:39:39.4145000Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-19T04:39:39.4149090Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/cherri/cherri/.git.path
+2026-11-19T04:39:39.4151500Z /Users/runner/work/_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:39:39.4156040Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/cherri/cherri/.git.path /Users/runner/work/_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:39:39.4160480Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/cherri/cherri/.git/worktrees/*.path
+2026-11-19T04:39:39.4163010Z /Users/runner/work/_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:39:39.4167780Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/cherri/cherri/.git/worktrees/*.path /Users/runner/work/_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:39:39.4222180Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-19T04:39:39.4293960Z /github/runner_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:39:39.4304590Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:39:39.4409790Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-19T04:39:39.4480530Z /github/runner_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:39:39.4494360Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config
+2026-11-19T04:39:39.4584400Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-19T04:39:39.5593660Z Removing credentials config '/Users/runner/work/_temp/git-credentials-2ef586b0-5aa6-45d9-aee7-f8be7dda7b8b.config'
+2026-11-19T04:39:39.5734850Z Cleaning up orphan processes
+2026-11-19T04:39:40.5183460Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-go@v3, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
