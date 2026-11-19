@@ -31,6 +31,8 @@ REVIEWED_SELECTORS = {
     "qa-nil-clear-v2": "qa-nil-clear",
     "qa-file-name-binding-v2": "qa-file-name-binding",
     "qa-file-name-extension-v2": "qa-file-name-extension",
+    "qa-f04-yield-list-v2": "qa-f04-yield-list",
+    "qa-f04-yield-empty-list-v2": "qa-f04-yield-empty-list",
     "qa-number-coercion-control-v2": "qa-number-coercion-control",
 }
 FIXTURES += tuple(REVIEWED_SELECTORS)

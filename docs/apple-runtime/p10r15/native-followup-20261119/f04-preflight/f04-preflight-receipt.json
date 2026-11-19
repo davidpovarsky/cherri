@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "1.0",
+  "fixtures": [
+    {
+      "fixture": "qa-f04-yield-list-v2",
+      "compilerSourceCommit": "8f1a4580db20e699aa7fc1b5542811cb16a50742",
+      "compilerBinarySha256": "87943be1f8bae57c71e684ee53fb62a5a72cfc190639cfebbba9d270721ebfb3",
+      "fixtureUnchangedFromCompilerSource": true,
+      "fixtureSha256": "c0719b046c2ed724fccef9e5b09e313c7dd72c02dc2c72ce1abe8aab1592e091",
+      "compileExitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unsignedPlistSha256": "68e029805be9ade49745afa275aee4424d50c2fb7cbf9e317c2ef27f749cfab2",
+      "nativeActionCount": 109,
+      "graphChecks": [
+        "two actual Repeat Each start/end pairs",
+        "no accumulator inside either loop body",
+        "outer and scalar counts consume exact native Repeat Results UUIDs"
+      ],
+      "repeatBoundaries": [
+        {
+          "index": 6,
+          "identifier": "is.workflow.actions.repeat.each",
+          "GroupingIdentifier": "0496CDE1-9B51-49BA-BA45-B8BE91C5FE83",
+          "WFControlFlowMode": 0,
+          "WFInput": {
+            "Value": {
+              "OutputName": "inputs",
+              "OutputUUID": "0F0BB64C-1F51-486E-959E-D130928C5C2D",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          }
+        },
+        {
+          "index": 9,
+          "identifier": "is.workflow.actions.repeat.each",
+          "CustomOutputName": "pairs",
+          "GroupingIdentifier": "0496CDE1-9B51-49BA-BA45-B8BE91C5FE83",
+          "UUID": "6A516FA6-3663-4024-A6CA-57E2FF89FA74",
+          "WFControlFlowMode": 2
+        },
+        {
+          "index": 10,
+          "identifier": "is.workflow.actions.repeat.each",
+          "GroupingIdentifier": "FAF5FFA2-A4EF-4ED5-88E2-F031E9A64E9D",
+          "WFControlFlowMode": 0,
+          "WFInput": {
+            "Value": {
+              "OutputName": "inputs",
+              "OutputUUID": "0F0BB64C-1F51-486E-959E-D130928C5C2D",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          }
+        },
+        {
+          "index": 13,
+          "identifier": "is.workflow.actions.repeat.each",
+          "CustomOutputName": "scalars",
+          "GroupingIdentifier": "FAF5FFA2-A4EF-4ED5-88E2-F031E9A64E9D",
+          "UUID": "371F68E8-9BF2-4E0E-AE8C-A26C48144549",
+          "WFControlFlowMode": 2
+        }
+      ],
+      "nativeExecution": "NOT_RUN"
+    },
+    {
+      "fixture": "qa-f04-yield-empty-list-v2",
+      "compilerSourceCommit": "8f1a4580db20e699aa7fc1b5542811cb16a50742",
+      "compilerBinarySha256": "87943be1f8bae57c71e684ee53fb62a5a72cfc190639cfebbba9d270721ebfb3",
+      "fixtureUnchangedFromCompilerSource": true,
+      "fixtureSha256": "d1322f6c7c663d266b0e9a7e272a92ae331be0e411818dae0c7d5172587578c3",
+      "compileExitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unsignedPlistSha256": "a7126fd7bcd77f8c7307da49ea6639e2853b42068a20babcac05ddffa00a8960",
+      "nativeActionCount": 59,
+      "graphChecks": [
+        "two actual Repeat Each start/end pairs",
+        "no accumulator inside either loop body",
+        "outer and scalar counts consume exact native Repeat Results UUIDs"
+      ],
+      "repeatBoundaries": [
+        {
+          "index": 6,
+          "identifier": "is.workflow.actions.repeat.each",
+          "GroupingIdentifier": "77963448-80AD-4536-8D05-A52C8AF7D3E6",
+          "WFControlFlowMode": 0,
+          "WFInput": {
+            "Value": {
+              "OutputName": "inputs",
+              "OutputUUID": "11A28A8B-6CA4-4CE7-B8FC-D30963F49BFD",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          }
+        },
+        {
+          "index": 11,
+          "identifier": "is.workflow.actions.repeat.each",
+          "CustomOutputName": "empties",
+          "GroupingIdentifier": "77963448-80AD-4536-8D05-A52C8AF7D3E6",
+          "UUID": "13932BF3-5C78-4F0A-AC27-666C3F0C7FB6",
+          "WFControlFlowMode": 2
+        },
+        {
+          "index": 12,
+          "identifier": "is.workflow.actions.repeat.each",
+          "GroupingIdentifier": "60B1CF43-4699-4455-B2B2-EF75AD530CBB",
+          "WFControlFlowMode": 0,
+          "WFInput": {
+            "Value": {
+              "OutputName": "inputs",
+              "OutputUUID": "11A28A8B-6CA4-4CE7-B8FC-D30963F49BFD",
+              "Type": "ActionOutput"
+            },
+            "WFSerializationType": "WFTextTokenAttachment"
+          }
+        },
+        {
+          "index": 15,
+          "identifier": "is.workflow.actions.repeat.each",
+          "CustomOutputName": "scalars",
+          "GroupingIdentifier": "60B1CF43-4699-4455-B2B2-EF75AD530CBB",
+          "UUID": "00F40951-0C16-4501-B2E6-1F6298B0185D",
+          "WFControlFlowMode": 2
+        }
+      ],
+      "nativeExecution": "NOT_RUN"
+    }
+  ],
+  "inspectionCorrection": "First ad-hoc graph check rejected the existing __cherri_qa_trace append outside the loops because its guessed name was wrong; final check inspects loop boundaries and exact count-consumer UUIDs directly."
+}
