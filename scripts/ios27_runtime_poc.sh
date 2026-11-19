@@ -5,8 +5,15 @@ mkdir -p artifacts
 LOG_PID=""
 HTTP_PID=""
 SIM_UDID=""
+OWNED_SIM_UDID=""
+POC_REPO_ROOT=$(git rev-parse --show-toplevel)
+POC_TOOLS="$POC_REPO_ROOT/tools/shortcuts-simulator-qa"
+# Fail before signing or Simulator access if any original fixture is unreviewed.
+python3 "$POC_TOOLS/runtime_poc_publication.py" check-sources --repo "$POC_REPO_ROOT" --root artifacts
 
 cleanup() {
+    local original_status=$?
+    trap - EXIT
     echo "=== CLEANUP ==="
     if [ -n "$HTTP_PID" ]; then
         kill "$HTTP_PID" 2>/dev/null || true
@@ -14,8 +21,16 @@ cleanup() {
     if [ -n "$LOG_PID" ]; then
         kill "$LOG_PID" 2>/dev/null || true
     fi
+    if [ -n "$OWNED_SIM_UDID" ]; then
+        if ! python3 "$POC_TOOLS/runtime_poc_device.py" cleanup --root "$POC_REPO_ROOT/artifacts" --udid "$OWNED_SIM_UDID"; then
+            if [ "$original_status" -eq 0 ]; then original_status=2; fi
+        fi
+    fi
+    exit "$original_status"
 }
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 take_failure_screenshot() {
     if [ -n "$SIM_UDID" ]; then
@@ -135,6 +150,7 @@ sign_and_verify() {
     local signed_file="$2"
     local source_cherri="$3"
     local compile_flag="${4:-}"
+    local sign_method="native"
 
     echo "Attempting native macOS shortcuts sign: $unsigned_file -> $signed_file..."
     set +e
@@ -145,6 +161,7 @@ sign_and_verify() {
 
     if [ $sign_exit -ne 0 ] || [ ! -f "$signed_file" ]; then
         if [ "${CHERRI_ALLOW_EXTERNAL_SIGNING:-0}" = "1" ]; then
+            sign_method="hubsign"
             echo "Native shortcuts sign failed or output missing. CHERRI_ALLOW_EXTERNAL_SIGNING=1 set; attempting Cherri HubSign fallback..."
             if [ "$compile_flag" = "--legacy" ]; then
                 ./cherri "$source_cherri" --legacy -s=anyone -d 2>&1 | tee -a artifacts/sign.log
@@ -176,6 +193,9 @@ sign_and_verify() {
         exit 1
     fi
     echo "Signed payload verified: valid AEA1 header present in $signed_file."
+    python3 "$POC_TOOLS/runtime_poc_publication.py" record-signing \
+        --repo "$POC_REPO_ROOT" --root artifacts --source "$source_cherri" \
+        --unsigned "$unsigned_file" --signed "$signed_file" --method "$sign_method"
 }
 
 import_and_confirm() {
@@ -218,7 +238,6 @@ echo "=== [1] ENVIRONMENT ==="
 sw_vers | tee artifacts/runtime-info.txt
 xcodebuild -version | tee -a artifacts/runtime-info.txt
 xcrun simctl list runtimes | tee -a artifacts/runtime-info.txt
-xcrun simctl list devices available | tee artifacts/simulator-devices.txt
 
 echo "Shortcuts CLI check:"
 which shortcuts || true
@@ -227,66 +246,16 @@ shortcuts --help || true
 # [2] BOOT SIMULATOR
 echo ""
 echo "=== [2] BOOT SIMULATOR ==="
+# Always create a fresh run-owned device. Never borrow or erase a personal device.
+OWNED_SIM_UDID=$(python3 "$POC_TOOLS/runtime_poc_device.py" create --root artifacts)
+readonly OWNED_SIM_UDID
 python3 - << 'EOF'
-import json, subprocess, sys
-
-cmd = ['xcrun', 'simctl', 'list', 'devices', 'available', '-j']
-data = json.loads(subprocess.check_output(cmd))
-devices = data.get('devices', {})
-
-selected_udid = None
-selected_name = None
-selected_runtime = None
-
-# 1. Search available devices for an iOS 27 runtime
-for runtime_id, dev_list in devices.items():
-    if 'iOS-27' in runtime_id or 'iOS 27' in runtime_id or 'iOS.27' in runtime_id:
-        for dev in dev_list:
-            if dev.get('isAvailable', False) and 'iPhone' in dev.get('name', ''):
-                selected_udid = dev['udid']
-                selected_name = dev['name']
-                selected_runtime = runtime_id
-                break
-    if selected_udid:
-        break
-
-# 2. Check any available device with 27 in runtime if iPhone match was not found
-if not selected_udid:
-    for runtime_id, dev_list in devices.items():
-        if '27' in runtime_id:
-            for dev in dev_list:
-                if dev.get('isAvailable', False):
-                    selected_udid = dev['udid']
-                    selected_name = dev['name']
-                    selected_runtime = runtime_id
-                    break
-        if selected_udid:
-            break
-
-# 3. If no pre-created device exists, check if iOS 27 runtime exists to create one
-if not selected_udid:
-    runtimes_data = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'runtimes', '-j']))
-    target_runtime = None
-    for r in runtimes_data.get('runtimes', []):
-        if ('iOS 27' in r.get('name', '') or 'iOS-27' in r.get('identifier', '')) and r.get('isAvailable', False):
-            target_runtime = r['identifier']
-            break
-    if target_runtime:
-        print(f"Creating new iPhone on runtime {target_runtime}...")
-        new_udid = subprocess.check_output(['xcrun', 'simctl', 'create', 'Cherri-iOS27-iPhone', 'iPhone 16', target_runtime]).decode().strip()
-        selected_udid = new_udid
-        selected_name = 'Cherri-iOS27-iPhone'
-        selected_runtime = target_runtime
-
-if not selected_udid:
-    print("FATAL: Could not find or create an iOS 27 Simulator device.", file=sys.stderr)
-    sys.exit(1)
-
-print(f"SELECTED DEVICE: {selected_name} ({selected_udid})")
-print(f"RUNTIME: {selected_runtime}")
-
-with open('artifacts/selected_device.txt', 'w') as f:
-    f.write(f"UDID={selected_udid}\nNAME={selected_name}\nRUNTIME={selected_runtime}\n")
+import json
+from pathlib import Path
+receipt = json.loads(Path("artifacts/runtime-poc-device.json").read_text())
+Path("artifacts/selected_device.txt").write_text(
+    "UDID=" + receipt["udid"] + "\nNAME=" + receipt["deviceName"]
+    + "\nRUNTIME=" + receipt["runtimeIdentifier"] + "\n", encoding="utf-8")
 EOF
 
 SIM_UDID=$(grep '^UDID=' artifacts/selected_device.txt | cut -d= -f2)

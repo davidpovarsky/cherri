@@ -52,6 +52,9 @@ jobs:
           device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
+      - name: Verify formal PoC privacy controls
+        run: python3 -m unittest discover -s tools/shortcuts-simulator-qa -p test_runtime_poc_privacy.py -v
+
       - name: Install XcodeGen
         run: brew install xcodegen
 
@@ -95,10 +98,17 @@ jobs:
           device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
-      - name: Upload PoC Artifacts
+      - name: Stage verified formal PoC artifacts
+        id: publication
         if: always()
+        run: |
+          python3 tools/shortcuts-simulator-qa/runtime_poc_publication.py stage \
+            --repo . --root artifacts --output poc-public
+
+      - name: Upload PoC Artifacts
+        if: always() && steps.publication.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: ios27-shortcuts-runtime-poc-artifacts
-          path: artifacts/
+          path: poc-public/
           retention-days: 7
