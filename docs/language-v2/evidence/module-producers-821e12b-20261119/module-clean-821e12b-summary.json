@@ -1,0 +1,35 @@
+{
+  "sourceSHA": "821e12bf037939cd30075d06b11fd35fc5375a77",
+  "sourceState": "exact clean module producer commit",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^(TestModuleProductionEvidence|TestModuleProductionPathsExist|TestModuleEvidenceRejectsDetachedAndCrossTierRecords|TestModuleStandardLibraryUnitEvidence|TestWorkspaceProductionPathsExist|TestWorkspaceResourceProductionEvidence|TestWorkspaceEvidenceRejectsUnrelatedCommands)$",
+    "./tools/language-acceptance"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "seconds": 33.453,
+  "bytes": 39124,
+  "sha256": "b2eb2cbdd2d3ff973f7803cfee15d13833a5c1a8330bc80abd785b14cb968d6b",
+  "named": {
+    "run": 21,
+    "pass": 21,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": [
+    "    module_execution_test.go:25: P15_MODULE_PRODUCTION_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-IM01-unit\",\"requirements\":[\"IM01\"],\"tier\":\"unit\",\"implementation_sha\":\"821e12bf037939cd30075d06b11fd35fc5375a77\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15IM01ModuleNamespaceDispatch\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15IM01ModuleNamespaceDispatch|TestP15IM01NestedModuleNamespaceIsolation|TestP15IM01CanonicalRelativeModuleIdentity|TestP15IM01ModuleServiceResolvesActualDependencies|TestP15IM01DuplicateImportAndLocalNamesStayDistinct|TestP15IM01ModuleServiceRefreshAndExports|TestP15IM01ModuleAliasCasePreservesNamespace|TestP15IM01UppercaseModuleRejectsUnexportedCallable|TestP15IM01BuiltinModuleAliasesPreserveNativeParity|TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity|TestP15IM01CyclePathAndDuplicateAliasDiagnostics)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15IM01ModuleNamespaceDispatch, TestP15IM01NestedM",
+    "    module_execution_test.go:25: P15_MODULE_PRODUCTION_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-IM02-unit\",\"requirements\":[\"IM02\"],\"tier\":\"unit\",\"implementation_sha\":\"821e12bf037939cd30075d06b11fd35fc5375a77\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15IM02RejectsModuleRuntimeInitialization\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15IM02RejectsModuleRuntimeInitialization|TestP15IM02LegacyMigrationDoesNotDropInitialization)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization\",\"required_production_tests\":\"TestP15IM02RejectsModuleRuntimeInitialization\\nTestP15IM02LegacyMigrationDoesNotDropInitialization\"},\"detail\":\"Executed production tests: TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization\"},{\"evidence_id\":\"ev-local-IM02-migration\",\"requirements\":[\"IM02\"],\"tier\":\"migration\",\"impleme",
+    "    module_execution_test.go:25: P15_MODULE_PRODUCTION_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-IM05-security\",\"requirements\":[\"IM05\"],\"tier\":\"security\",\"implementation_sha\":\"821e12bf037939cd30075d06b11fd35fc5375a77\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15IM05RemoteImportsNeverFetch\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15IM05RemoteImportsNeverFetch|TestP15IM05UnresolvedLocalDependencyNoInstallation)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15IM05RemoteImportsNeverFetch, TestP15IM05UnresolvedLocalDependencyNoInstallation\",\"required_production_tests\":\"TestP15IM05RemoteImportsNeverFetch\\nTestP15IM05UnresolvedLocalDependencyNoInstallation\"},\"detail\":\"Executed production tests: TestP15IM05RemoteImportsNeverFetch, TestP15IM05UnresolvedLocalDependencyNoInstallation\"},{\"evidence_id\":\"ev-local-IM05-service\",\"requirements\":[\"IM05\"],\"tier\":\"service\",\"implementation_sha\":\"821e12bf037939cd30075d06b11fd35fc5375a77\"",
+    "    module_execution_test.go:218: P15_MODULE_STDFUNC_UNIT_RECEIPT:{\"observations\":[{\"id\":\"IM03\",\"passed\":true,\"historically_claimed_levels\":[\"unit\"],\"observed_smoke_detail\":\"Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain; preserved source hash, migrated structure and separate service package without main verified locally; actual native behavior remains pending\",\"coverage_gap\":\"The preserved-source and separate service-package unit scenarios ran; required native behavior has not executed. The native tier remains required and local.\"}],\"records\":[],\"report\":{\"timestamp\":\"2026-11-19T04:59:52Z\",\"phase\":\"local\",\"closure_complete\":false,\"language_version\":\"2.0\",\"schema_fingerprint\":\"7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\",\"total_cases\":1,\"passed_cases\":0,\"failed_cases\":0,\"skipped_cases\":1,\"results\":[{\"id\":\"IM03\",\"group\":\"modules\",\"requirement\":\"Existing stdfunc behavior migrated from preserved upstream source\",\"test_level\":\"unit+n",
+    "    workspace_execution_test.go:6: P15_WORKSPACE_RESOURCE_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-IM04-security\",\"requirements\":[\"IM04\"],\"tier\":\"security\",\"implementation_sha\":\"821e12bf037939cd30075d06b11fd35fc5375a77\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15IM04ActualWorkspaceResourceBoundaries\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15IM04ActualWorkspaceResourceBoundaries)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15IM04ActualWorkspaceResourceBoundaries\",\"required_production_tests\":\"TestP15IM04ActualWorkspaceResourceBoundaries\"},\"detail\":\"Executed production tests: TestP15IM04ActualWorkspaceResourceBoundaries\"}],\"report\":{\"timestamp\":\"2026-11-19T04:59:57Z\",\"phase\":\"local\",\"closure_complete\":false,\"language_version\":\"2.0\",\"schema_fingerprint\":\"\",\"total_cases\":1,\"passed_cases\":1,\"failed_cases\":0,\"skipped_cases\":0,\"results\":[{\"id\":\"IM04\",\"group\":\"modules\",\"requirement\":\"Local workspace resource traversal a"
+  ],
+  "missingRequiredTests": []
+}

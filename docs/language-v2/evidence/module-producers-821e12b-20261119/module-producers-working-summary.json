@@ -1,0 +1,39 @@
+{
+  "sourceBase": "7476d807cd1178994849488d6a834c267a6f5c07",
+  "sourceState": "working complete module producer and exact IM04 path repair",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^(TestModuleProductionEvidence|TestModuleProductionPathsExist|TestModuleEvidenceRejectsDetachedAndCrossTierRecords|TestModuleStandardLibraryUnitEvidence|TestWorkspaceProductionPathsExist|TestWorkspaceResourceProductionEvidence|TestWorkspaceEvidenceRejectsUnrelatedCommands)$",
+    "./tools/language-acceptance"
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "seconds": 0.984,
+  "bytes": 1391,
+  "sha256": "32951c26b165df2d97cab3952251acbf29222b6d4a19c986619474f57dceff07",
+  "named": {
+    "run": 0,
+    "pass": 0,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": [
+    "tools\\language-acceptance\\main.go:24:2: \"github.com/electrikmilk/cherri/internal/language/migrate\" imported and not used\n"
+  ],
+  "missingRequiredTests": [
+    "TestModuleProductionEvidence",
+    "TestModuleProductionPathsExist",
+    "TestModuleEvidenceRejectsDetachedAndCrossTierRecords",
+    "TestModuleStandardLibraryUnitEvidence",
+    "TestWorkspaceProductionPathsExist",
+    "TestWorkspaceResourceProductionEvidence",
+    "TestWorkspaceEvidenceRejectsUnrelatedCommands"
+  ]
+}
