@@ -1,0 +1,50 @@
+{
+  "source": "0d8d178a7ece7f1b876c3f86985f2983919b41a6",
+  "argv": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=8m",
+    "-run",
+    "^TestP15F02",
+    "./internal/language/lower",
+    "."
+  ],
+  "exit_code": 1,
+  "duration_s": 21.096624612808228,
+  "clean_after": true,
+  "source_files": {
+    "internal/language/lower/lower.go": "b494a6d258bbc4b12fddcbbfeb00d01cd08b7b11765cca0a709453b538d5a310",
+    "internal/language/lower/loop_index_test.go": "049d3b88df7af121a640d3644645a96dca5a5887e4345bd2811eb62bdd2b21e6",
+    "internal/language/syntax/ast.go": "673486e84672c59f012fc488644adad28fc387b2f972eba2c6d14cb8df8bc183",
+    "internal/language/syntax/parser.go": "a677b32070ad73804c3709182d9f32e72c7ab562caecfb20474738d5d7b7e4f1",
+    "internal/language/syntax/format.go": "8e168a2d6223e770468dbd0e516f41990a7ddaabb3c7b2ba45aec595c02df35b",
+    "internal/language/migrate/migrate.go": "9fffbcbe292e0d48ae5dc1c34b1bc3e88b574a6e936be4d4309259f1d3edf652",
+    "p15_loop_index_native_test.go": "95bdd632f8dc4b7ea8376ec07da322464ba45537f884e816b4bb1b310ce6dad2",
+    "tests/runtime_poc/CherriRuntimePOC.cherri": "cf5cb580a75833ffd022f4c4b4e8fa0e0e52f101c7f584d2726833000adf050b",
+    "scripts/ios27_runtime_poc.sh": "06a2225c0b13ef85a1701237ef6ea97ab5ed0480623f2ccfe0800dd82f8b6e1a"
+  },
+  "named_pass": [
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/ignored_indices",
+    "TestP15F02MigrationPreservesLegacyOneBasedIndices",
+    "TestP15F02RawNativeIndexGlobalsRemainOneBased"
+  ],
+  "named_fail": [
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/named_repeat",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/tuple_for",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/mixed_nested_and_siblings",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer",
+    "TestP15F02IndexGraphRejectsCausalMutations/wrong_offset",
+    "TestP15F02IndexGraphRejectsCausalMutations/wrong_direction",
+    "TestP15F02IndexGraphRejectsCausalMutations/dangling_capture",
+    "TestP15F02IndexGraphRejectsCausalMutations/wrong_loop_end",
+    "TestP15F02IndexGraphRejectsCausalMutations/one_based_binding",
+    "TestP15F02IndexGraphRejectsCausalMutations/wrong_depth",
+    "TestP15F02IndexGraphRejectsCausalMutations",
+    "TestP15F02UnchangedRuntimeFixtureNativeIndices"
+  ],
+  "named_skip": [],
+  "stdout_sha256": "f25780dc3fa2d95e21376a565358eeb65dfd9b90845bbd013917a0608c966b2b",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

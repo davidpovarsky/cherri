@@ -1,0 +1,28 @@
+{
+  "kind": "MINIMAL_PUBLIC_LOG_EXTRACT_NO_FORMAL_ACCEPTANCE",
+  "implementation_sha": "e61e0d306bb363c39ade612ef35ccfc8051ddf3c",
+  "run_id": "44622055945",
+  "run_attempt": "1",
+  "job_id": "135906016379",
+  "original_job_log_sha256": "a428b4be0d3876d62a8ce4e24f5f183914672e3d3280d6f08bc93a9721f820a5",
+  "original_job_log_bytes": 1095638,
+  "fixture": "tests/runtime_poc/CherriRuntimePOC.cherri",
+  "oracle": "scripts/ios27_runtime_poc.sh",
+  "expected": "LOOPS=0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
+  "observed": "LOOPS=1:A:1:1|1:A:2:2|2:B:1:1|2:B:2:2|",
+  "observations": [
+    {
+      "poll": 4,
+      "original_log_line": 3501
+    },
+    {
+      "poll": 60,
+      "original_log_line": 4872
+    }
+  ],
+  "terminal_reason": "The job has exceeded the maximum execution time of 45m0s",
+  "published_artifacts": [],
+  "formal_acceptance_granted": false,
+  "proof_commit": "c35e1195dee39e53a57531b2aa37fd3f770e8bd7",
+  "proof_path": "docs/apple-runtime/p10r15/evidence/formal-e61-timeout-20261119.json"
+}

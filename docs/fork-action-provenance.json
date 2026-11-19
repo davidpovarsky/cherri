@@ -469,7 +469,9 @@
       "upstreamLocation": "actions/math.cherri",
       "forkLocations": [
         "actions/math.cherri",
-        "action.go"
+        "action.go",
+        "internal/language/lower/lower.go",
+        "internal/language/lower/loop_index.go"
       ],
       "firstForkCommit": "ea304e0217d18e28ac63a9de575a751221d238f1",
       "change": "Added 'Modulus' operation to calculationOperation enum, changed operandTwo key to WFScientificMathOperand and mirrored WFMathOperand in makeActionParams.",
@@ -484,6 +486,11 @@
           "milestone": "P10R12",
           "commit": "bbb83df02e0707a222f49c745dcd04b136df7818",
           "summary": "Prompt action multiline Bool, nil default guard, and typed default answer parameter key cleanup recorded under entry 'prompt'."
+        },
+        {
+          "milestone": "P10R15 F02",
+          "commit": "b5a51fe6e6323508a7b33a9a8ccc0a22d0a4e72b",
+          "summary": "Reuse the existing native subtraction encoding to convert modern named loop indices from Apple's one-based Repeat Index to zero-based, with exact owner and captured output. Legacy spelling and raw native indices bypass this compiler-owned conversion. See the dedicated infrastructure entry and retained local proof; native fixed replay pending."
         }
       ]
     },
@@ -3018,6 +3025,25 @@
       "reason": "Native diagnostic run44466065158 observed an unwanted empty first entry after clear followed by logging; empty Text is one native item, not an empty buffer.",
       "evidence": "TestP15DebugClearLogsLeavesNoSyntheticEntry: six V2/Legacy clear, clear-after-log and explicitly logged empty controls failed before repair and passed after repair. Debug export verifier and native boundary graph controls retain independent corruption checks.",
       "note": "Implementation originally d41a46f702a329c556cdd6a0f08565b3f74f6a0b, integrated as6d9ff8ac. Local graph and model checks do not prove Apple File coercion or Unicode runtime behavior; fresh integrated Apple execution remains required."
+    },
+    {
+      "name": "P10R15 zero-based V2 loop indices with Legacy syntax preservation",
+      "locations": [
+        "internal/language/syntax/ast.go",
+        "internal/language/syntax/parser.go",
+        "internal/language/syntax/format.go",
+        "internal/language/migrate/migrate.go",
+        "internal/language/lower/lower.go",
+        "internal/language/lower/loop_index.go",
+        "internal/language/lower/loop_index_test.go",
+        "internal/language/syntax/repeat_index_test.go",
+        "p15_loop_index_native_test.go"
+      ],
+      "firstForkCommit": "b5a51fe6e6323508a7b33a9a8ccc0a22d0a4e72b",
+      "change": "Preserve the existing Legacy repeat spelling and one-based index semantics through parser, formatter and migration. Modern named repeat and tuple-for indices capture the existing native Math minus-one producer within the owning loop. Start native nesting depth after count/iterable evaluation.",
+      "reason": "Native e61 run44622055945 observed one-based indices in the unchanged modern nested-loop fixture; previous Legacy parity remediation had applied native indexing to both accepted source spellings.",
+      "evidence": "docs/language-v2/p15-loop-index-f02-20261119.md; clean b5a51fe6:73 package and22 production/import named passes, no failures/skips, fresh compiler47/47 preserved fixtures and17/17 action mappings; retained tests-only failed baselines.",
+      "note": "Raw RepeatIndex globals, Legacy fixtures and the original runtime golden remain unchanged. Local graph/parity proof grants no fixed Apple runtime or formal F02/RP22/BRG12 acceptance."
     }
   ]
 }

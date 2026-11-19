@@ -1,0 +1,60 @@
+{
+  "source": "2157fa695073247a3659c37490d1009ecc2efa50",
+  "argv": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=8m",
+    "-run",
+    "^TestP15F02",
+    "./internal/language/lower",
+    "./internal/language/syntax",
+    "."
+  ],
+  "exit_code": 1,
+  "duration_s": 7.565624952316284,
+  "clean_after": true,
+  "source_files": {
+    "internal/language/lower/lower.go": "b494a6d258bbc4b12fddcbbfeb00d01cd08b7b11765cca0a709453b538d5a310",
+    "internal/language/lower/loop_index_test.go": "65768ae4133d83be5ec0e0a9c2d4976b1b320768dd1b630f4b5003317c8fdf8e",
+    "internal/language/syntax/ast.go": "673486e84672c59f012fc488644adad28fc387b2f972eba2c6d14cb8df8bc183",
+    "internal/language/syntax/parser.go": "a677b32070ad73804c3709182d9f32e72c7ab562caecfb20474738d5d7b7e4f1",
+    "internal/language/syntax/format.go": "8e168a2d6223e770468dbd0e516f41990a7ddaabb3c7b2ba45aec595c02df35b",
+    "internal/language/migrate/migrate.go": "9fffbcbe292e0d48ae5dc1c34b1bc3e88b574a6e936be4d4309259f1d3edf652",
+    "internal/language/syntax/repeat_index_test.go": "77f593afaa449dc56734ea544214f4f012c71419ce6f1fb331f96a5c8e0cc608",
+    "p15_loop_index_native_test.go": "95bdd632f8dc4b7ea8376ec07da322464ba45537f884e816b4bb1b310ce6dad2",
+    "tests/runtime_poc/CherriRuntimePOC.cherri": "cf5cb580a75833ffd022f4c4b4e8fa0e0e52f101c7f584d2726833000adf050b",
+    "scripts/ios27_runtime_poc.sh": "06a2225c0b13ef85a1701237ef6ea97ab5ed0480623f2ccfe0800dd82f8b6e1a"
+  },
+  "named_pass": [
+    "TestP15F02FormattingPreservesRepeatIndexSemantics/repeat_3_as_index_{_number(index)_}",
+    "TestP15F02FormattingPreservesRepeatIndexSemantics/let_values_=_repeat_3_as_index_{_yield_index_}",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/legacy_named_repeat",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/ignored_indices",
+    "TestP15F02MigrationPreservesLegacyOneBasedIndices",
+    "TestP15F02RawNativeIndexGlobalsRemainOneBased"
+  ],
+  "named_fail": [
+    "TestP15F02FormattingPreservesRepeatIndexSemantics/repeat_index_for_3_{_number(index)_}",
+    "TestP15F02FormattingPreservesRepeatIndexSemantics/let_values_=_repeat_index_for_3_{_yield_index_}",
+    "TestP15F02FormattingPreservesRepeatIndexSemantics",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/named_repeat",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/tuple_for",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/iterable_loop_is_not_nested_in_its_consumer",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer/mixed_nested_and_siblings",
+    "TestP15F02NamedIndicesUseZeroBasedNativeProducer",
+    "TestP15F02IndexGraphRejectsCausalMutations/one_based_binding",
+    "TestP15F02IndexGraphRejectsCausalMutations/wrong_depth",
+    "TestP15F02IndexGraphRejectsCausalMutations/wrong_offset",
+    "TestP15F02IndexGraphRejectsCausalMutations/wrong_direction",
+    "TestP15F02IndexGraphRejectsCausalMutations/dangling_capture",
+    "TestP15F02IndexGraphRejectsCausalMutations/wrong_loop_end",
+    "TestP15F02IndexGraphRejectsCausalMutations",
+    "TestP15F02IndexShadowRestoresOuterLoopAndBindings",
+    "TestP15F02UnchangedRuntimeFixtureNativeIndices"
+  ],
+  "named_skip": [],
+  "stdout_sha256": "c1a1769f3bde13f520d66876d002e73fff19e260b8914c4767c7b86d6d2c8c5a",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
