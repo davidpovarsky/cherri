@@ -1,0 +1,46 @@
+test_real_source_archive_reaches_required_runtime_boundary (test_remote_package_preflight.SourcePackagePreflight.test_real_source_archive_reaches_required_runtime_boundary) ... 
+  test_real_source_archive_reaches_required_runtime_boundary (test_remote_package_preflight.SourcePackagePreflight.test_real_source_archive_reaches_required_runtime_boundary) [exact_source_then_missing_runtime] ... ERROR
+  test_real_source_archive_reaches_required_runtime_boundary (test_remote_package_preflight.SourcePackagePreflight.test_real_source_archive_reaches_required_runtime_boundary) [source_runtime_receipt_rejected] ... FAIL
+  test_real_source_archive_reaches_required_runtime_boundary (test_remote_package_preflight.SourcePackagePreflight.test_real_source_archive_reaches_required_runtime_boundary) [rehash_cannot_hide_changed_source_bytes] ... FAIL
+
+======================================================================
+ERROR: test_real_source_archive_reaches_required_runtime_boundary (test_remote_package_preflight.SourcePackagePreflight.test_real_source_archive_reaches_required_runtime_boundary) [exact_source_then_missing_runtime]
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/chatgpt-agent/workspaces/cherri-p10r15-promoter-package-evidence-20261119/baseline-tools/test_remote_package_preflight.py", line 75, in test_real_source_archive_reaches_required_runtime_boundary
+    promotion.preflight(stage, live, root / "unused-unit-evidence")
+  File "/home/chatgpt-agent/workspaces/cherri-p10r15-promoter-package-evidence-20261119/baseline-tools/promote_remote_release.py", line 190, in preflight
+    files, receipt = expected_package(skill, release["skillSourceHead"], kind,
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/chatgpt-agent/workspaces/cherri-p10r15-promoter-package-evidence-20261119/baseline-tools/package_skill.py", line 117, in expected_package
+    raise ValueError("source package cannot contain a runtime compiler")
+ValueError: source package cannot contain a runtime compiler
+
+======================================================================
+FAIL: test_real_source_archive_reaches_required_runtime_boundary (test_remote_package_preflight.SourcePackagePreflight.test_real_source_archive_reaches_required_runtime_boundary) [source_runtime_receipt_rejected]
+----------------------------------------------------------------------
+ValueError: source package cannot contain a runtime compiler
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/chatgpt-agent/workspaces/cherri-p10r15-promoter-package-evidence-20261119/baseline-tools/test_remote_package_preflight.py", line 84, in test_real_source_archive_reaches_required_runtime_boundary
+    with self.assertRaisesRegex(ValueError, "Binary package provenance differs"):
+AssertionError: "Binary package provenance differs" does not match "source package cannot contain a runtime compiler"
+
+======================================================================
+FAIL: test_real_source_archive_reaches_required_runtime_boundary (test_remote_package_preflight.SourcePackagePreflight.test_real_source_archive_reaches_required_runtime_boundary) [rehash_cannot_hide_changed_source_bytes]
+----------------------------------------------------------------------
+ValueError: source package cannot contain a runtime compiler
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/chatgpt-agent/workspaces/cherri-p10r15-promoter-package-evidence-20261119/baseline-tools/test_remote_package_preflight.py", line 95, in test_real_source_archive_reaches_required_runtime_boundary
+    with self.assertRaisesRegex(ValueError, "archive (size/mode|bytes) mismatch"):
+AssertionError: "archive (size/mode|bytes) mismatch" does not match "source package cannot contain a runtime compiler"
+
+----------------------------------------------------------------------
+Ran 1 test in 0.178s
+
+FAILED (failures=2, errors=1)

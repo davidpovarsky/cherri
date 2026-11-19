@@ -1,0 +1,9 @@
+# Remote promotion source-package argument repair
+
+Operator commit `8261cb8add28af419bc9b52817b4d4a0a9256afc` corrects the package builder call: source packages receive no compiler argument, while runtime packages retain the actual compiler path and provenance checks. Frozen Skill K4 `7546d0203405ba326e4e71ff9f74115dd0d34fa8` is unchanged. This operational tool is outside the packaged Skill inventory.
+
+The causal baseline executed the actual committed-file package builder and archive verifier from K4 and failed with `source package cannot contain a runtime compiler`. The regression uses synthetic prerequisites only for unrelated stage/report/runtime checks; it does not mock `expected_package`. A correct source archive must verify and then reach an intentionally absent runtime file. A source receipt claiming runtime provenance and coherently rehashed altered source bytes must both reject. The deliberate missing-runtime boundary is not a complete deployment preflight pass.
+
+The repaired snapshot passed the new regression and all existing filesystem transaction, interrupted-write recovery, lock, rollback, stale-state, and evidence-gate tests: 16 tests, zero failures or skips. The separate exact-commit replay passed in 40.868 seconds. Every operational Python file was checked against the committed K4 Git blob or the two verified 8261cb8 blobs; all snapshot bytes and the clean K4 checkout remained unchanged. `clean-commit-summary.json` records their hashes.
+
+These are actual Python unit/fault executions on isolated synthetic files. No live builder was changed, no external signing was requested by this regression, and no Apple cryptographic or device-runtime success is claimed. Actual 37-row entrypoint, 58-row fault, 8-row smoke and package/tuple gates remain mandatory for a live promotion.
