@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_at": "2026-11-19T02:58:08Z",
+  "generated_at": "2026-11-19T03:23:59Z",
   "authority": "CHERRI-CANONICAL-BACKEND-RECOVERY.md Appendix A \u0026 Section 4.4",
   "total_requirements": 179,
   "acceptance_count": 94,
@@ -64,7 +64,11 @@
         "generation"
       ],
       "test_ids": [
-        "tools/language-acceptance:runSchema"
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationPublicValidation",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationHealthyControl",
+        "github.com/electrikmilk/cherri:TestP15C04EnumResolutionProduction",
+        "github.com/electrikmilk/cherri:TestP15C02ArgumentDiagnosticsProduction",
+        "github.com/electrikmilk/cherri:TestUpstreamPropagationRehearsal"
       ],
       "fixture_identities": [
         "actions/*.cherri",
@@ -252,9 +256,12 @@
         "integration"
       ],
       "test_ids": [
-        "tools/language-acceptance:runGates",
-        "github.com/electrikmilk/cherri:TestActionParityMatrix",
-        "github.com/electrikmilk/cherri:TestBackendRecoveryInitial_TransformsSurviveEmission"
+        "github.com/electrikmilk/cherri:TestP15CanonicalCallbackCausality",
+        "github.com/electrikmilk/cherri:TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend",
+        "github.com/electrikmilk/cherri:TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation",
+        "github.com/electrikmilk/cherri:TestArchitecture_D_SharedCodecMaintenance",
+        "github.com/electrikmilk/cherri:TestCompilerEndToEndParityMatrix",
+        "github.com/electrikmilk/cherri:TestCORE003_UnknownDefinitionIDHardError"
       ],
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG05"
@@ -595,8 +602,13 @@
         "native-roundtrip"
       ],
       "test_ids": [
-        "tools/language-acceptance:runGates",
-        "tests/language-v2/recovery:TestBackendRecovery17"
+        "github.com/electrikmilk/cherri:TestP15M01KnownHeaderMapping",
+        "github.com/electrikmilk/cherri:TestP15M01NativeHeaderRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15RP30HeaderAbsenceAndNameRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15M03SetupFinalActionBinding",
+        "github.com/electrikmilk/cherri:TestP15M03SetupNativeRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15M03SetupBindingRejectsIdentityCorruption",
+        "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
       ],
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG17"
@@ -1482,7 +1494,9 @@
         "integration"
       ],
       "test_ids": [
-        "tools/language-acceptance:runEditor",
+        "github.com/electrikmilk/cherri:TestP15E04SyntaxAndServiceProduction",
+        "github.com/electrikmilk/cherri:TestP15E04ActualCLIAndServiceNativeIdentity",
+        "github.com/electrikmilk/cherri:TestP15E04FormatterOracleRejectsChangedValuesAndComments",
         "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics"
       ],
       "required_ui_assertions": {
@@ -1981,7 +1995,7 @@
         "security"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM04ActualWorkspaceResourceBoundaries"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM04"
@@ -2350,7 +2364,7 @@
         "native-structure"
       ],
       "test_ids": [
-        "tools/language-acceptance:runMetadata"
+        "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#M05"
@@ -2829,8 +2843,7 @@
         "embedded"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "tests/language-v2/repair:RP05"
+        "github.com/electrikmilk/cherri:TestP15RP05LiteralPublicRoutes"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP05"
@@ -2922,8 +2935,7 @@
         "native-differential"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "github.com/electrikmilk/cherri:TestActionParityMatrix"
+        "github.com/electrikmilk/cherri:TestP15RP09StaticVariantNativeDifferential"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP09"
@@ -2944,8 +2956,11 @@
         "native-differential"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "github.com/electrikmilk/cherri:TestActionParityMatrix"
+        "github.com/electrikmilk/cherri:TestP15CanonicalCallbackCausality",
+        "github.com/electrikmilk/cherri:TestCompilerEndToEndParityMatrix",
+        "github.com/electrikmilk/cherri:TestComparatorMutationMatrix",
+        "github.com/electrikmilk/cherri:TestAppIntentDescriptorGeneralization",
+        "github.com/electrikmilk/cherri:TestCuratedAppleIntentObservedShapesRoundTrip"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP10"
@@ -3491,8 +3506,9 @@
         "native-roundtrip"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "tests/language-v2/repair:RP30"
+        "github.com/electrikmilk/cherri:TestP15M01KnownHeaderMapping",
+        "github.com/electrikmilk/cherri:TestP15M01NativeHeaderRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15RP30HeaderAbsenceAndNameRoundTrip"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP30"
@@ -3515,8 +3531,12 @@
         "native-roundtrip"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "tests/language-v2/repair:RP31"
+        "github.com/electrikmilk/cherri:TestP15M03SetupFinalActionBinding",
+        "github.com/electrikmilk/cherri:TestP15M03SetupNativeRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15M03SetupBindingRejectsIdentityCorruption",
+        "github.com/electrikmilk/cherri:TestP15M04InvalidSetupAndEditorHoles",
+        "github.com/electrikmilk/cherri:TestP15M04SetupScopeAndUnused",
+        "github.com/electrikmilk/cherri:TestP15M04CatalogInsertionHoles"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP31"
@@ -3538,8 +3558,9 @@
         "native-structure"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "tests/language-v2/repair:RP32"
+        "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationPublicValidation",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationHealthyControl"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP32"
@@ -5905,7 +5926,7 @@
         "native-structure"
       ],
       "test_ids": [
-        "tools/language-acceptance:runMetadata"
+        "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#M05"
@@ -5992,7 +6013,7 @@
         "security"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM04ActualWorkspaceResourceBoundaries"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM04"
@@ -6084,7 +6105,11 @@
         "generation"
       ],
       "test_ids": [
-        "tools/language-acceptance:runSchema"
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationPublicValidation",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationHealthyControl",
+        "github.com/electrikmilk/cherri:TestP15C04EnumResolutionProduction",
+        "github.com/electrikmilk/cherri:TestP15C02ArgumentDiagnosticsProduction",
+        "github.com/electrikmilk/cherri:TestUpstreamPropagationRehearsal"
       ],
       "fixture_identities": [
         "actions/*.cherri",
@@ -6360,7 +6385,9 @@
         "integration"
       ],
       "test_ids": [
-        "tools/language-acceptance:runEditor",
+        "github.com/electrikmilk/cherri:TestP15E04SyntaxAndServiceProduction",
+        "github.com/electrikmilk/cherri:TestP15E04ActualCLIAndServiceNativeIdentity",
+        "github.com/electrikmilk/cherri:TestP15E04FormatterOracleRejectsChangedValuesAndComments",
         "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics"
       ],
       "required_ui_assertions": {
@@ -6985,8 +7012,7 @@
         "embedded"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "tests/language-v2/repair:RP05"
+        "github.com/electrikmilk/cherri:TestP15RP05LiteralPublicRoutes"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP05"
@@ -7078,8 +7104,7 @@
         "native-differential"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "github.com/electrikmilk/cherri:TestActionParityMatrix"
+        "github.com/electrikmilk/cherri:TestP15RP09StaticVariantNativeDifferential"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP09"
@@ -7100,8 +7125,11 @@
         "native-differential"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "github.com/electrikmilk/cherri:TestActionParityMatrix"
+        "github.com/electrikmilk/cherri:TestP15CanonicalCallbackCausality",
+        "github.com/electrikmilk/cherri:TestCompilerEndToEndParityMatrix",
+        "github.com/electrikmilk/cherri:TestComparatorMutationMatrix",
+        "github.com/electrikmilk/cherri:TestAppIntentDescriptorGeneralization",
+        "github.com/electrikmilk/cherri:TestCuratedAppleIntentObservedShapesRoundTrip"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP10"
@@ -7647,8 +7675,9 @@
         "native-roundtrip"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "tests/language-v2/repair:RP30"
+        "github.com/electrikmilk/cherri:TestP15M01KnownHeaderMapping",
+        "github.com/electrikmilk/cherri:TestP15M01NativeHeaderRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15RP30HeaderAbsenceAndNameRoundTrip"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP30"
@@ -7671,8 +7700,12 @@
         "native-roundtrip"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "tests/language-v2/repair:RP31"
+        "github.com/electrikmilk/cherri:TestP15M03SetupFinalActionBinding",
+        "github.com/electrikmilk/cherri:TestP15M03SetupNativeRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15M03SetupBindingRejectsIdentityCorruption",
+        "github.com/electrikmilk/cherri:TestP15M04InvalidSetupAndEditorHoles",
+        "github.com/electrikmilk/cherri:TestP15M04SetupScopeAndUnused",
+        "github.com/electrikmilk/cherri:TestP15M04CatalogInsertionHoles"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP31"
@@ -7694,8 +7727,9 @@
         "native-structure"
       ],
       "test_ids": [
-        "tools/language-acceptance:runRepair",
-        "tests/language-v2/repair:RP32"
+        "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationPublicValidation",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationHealthyControl"
       ],
       "fixture_identities": [
         "tests/language-v2/repair-regression-plan.json#RP32"
@@ -8315,9 +8349,12 @@
         "integration"
       ],
       "test_ids": [
-        "tools/language-acceptance:runGates",
-        "github.com/electrikmilk/cherri:TestActionParityMatrix",
-        "github.com/electrikmilk/cherri:TestBackendRecoveryInitial_TransformsSurviveEmission"
+        "github.com/electrikmilk/cherri:TestP15CanonicalCallbackCausality",
+        "github.com/electrikmilk/cherri:TestArchitecture_A_ProductionCompilerInvokesCanonicalBackend",
+        "github.com/electrikmilk/cherri:TestArchitecture_B_DisablingCanonicalBackendBreaksCompilation",
+        "github.com/electrikmilk/cherri:TestArchitecture_D_SharedCodecMaintenance",
+        "github.com/electrikmilk/cherri:TestCompilerEndToEndParityMatrix",
+        "github.com/electrikmilk/cherri:TestCORE003_UnknownDefinitionIDHardError"
       ],
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG05"
@@ -8658,8 +8695,13 @@
         "native-roundtrip"
       ],
       "test_ids": [
-        "tools/language-acceptance:runGates",
-        "tests/language-v2/recovery:TestBackendRecovery17"
+        "github.com/electrikmilk/cherri:TestP15M01KnownHeaderMapping",
+        "github.com/electrikmilk/cherri:TestP15M01NativeHeaderRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15RP30HeaderAbsenceAndNameRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15M03SetupFinalActionBinding",
+        "github.com/electrikmilk/cherri:TestP15M03SetupNativeRoundTrip",
+        "github.com/electrikmilk/cherri:TestP15M03SetupBindingRejectsIdentityCorruption",
+        "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
       ],
       "fixture_identities": [
         "tests/language-v2/backend-recovery-gates.json#BRG17"
