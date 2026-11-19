@@ -1,0 +1,96 @@
+{
+  "availableMemoryBytesBefore": 3103612928,
+  "swiftc": "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+  "sourceBaseline": "b056e111faa41690c899fa47970bc2e4066bdba1",
+  "appleRuntime": "NOT_RUN",
+  "commands": [
+    {
+      "label": "swift-version",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+        "--version"
+      ],
+      "exitCode": 0,
+      "seconds": 0.781,
+      "logSha256": "11e81275ad64859552dec70a1722dd90ffd0525eecf7166e9d6ffdfff6eb842e"
+    },
+    {
+      "label": "fixed-compile",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+        "-parse-as-library",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-import-foreground-20261119\\tools\\shortcuts-simulator-qa\\XcodeProject\\Shared\\LibraryForegroundGate.swift",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-import-foreground-20261119\\tools\\shortcuts-simulator-qa\\verify_import_foreground.swift",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\import-foreground-local\\fixed-contract.exe"
+      ],
+      "exitCode": 0,
+      "seconds": 4.015,
+      "logSha256": "f6a01552811c1db5d0007fdb58e4688c71bb4dc47520c4c717e20d8f788c8256"
+    },
+    {
+      "label": "fixed-contract",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\import-foreground-local\\fixed-contract.exe"
+      ],
+      "exitCode": 0,
+      "seconds": 0.141,
+      "logSha256": "45f8d967c88c3876341ed59189ffd518bbd2cca63054c04621a258598b0a7f7e"
+    },
+    {
+      "label": "unconditional-mutation-compile",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+        "-parse-as-library",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\import-foreground-local\\LibraryForegroundGate-unconditional.swift",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-import-foreground-20261119\\tools\\shortcuts-simulator-qa\\verify_import_foreground.swift",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\import-foreground-local\\unconditional-contract.exe"
+      ],
+      "exitCode": 0,
+      "seconds": 1.953,
+      "logSha256": "7cf3af89b116ff8276c6452c53214c2b0d343c7b01569f9dbd71cfb27c1b489c"
+    },
+    {
+      "label": "unconditional-mutation-contract",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\import-foreground-local\\unconditional-contract.exe"
+      ],
+      "exitCode": 3221225501,
+      "seconds": 4.0,
+      "logSha256": "52b14b9ad0dc4eda1ae980a79b607feb63fcbb1dcc4f7ee9e8149af68ade8d32"
+    }
+  ],
+  "positive": {
+    "activationBoundedToOne": true,
+    "appleRuntime": "NOT_RUN",
+    "assertions": 48,
+    "localFoundationContract": "PASS",
+    "oldUnconditionalQueryReproduced": true,
+    "receiptBooleansOnly": true,
+    "scenarios": 6,
+    "schemaVersion": "1.0",
+    "unavailableAppQuerySuppressed": true,
+    "waitTimeoutSeconds": 10
+  },
+  "causalMutationRejected": true,
+  "sourceFiles": [
+    {
+      "path": "tools/shortcuts-simulator-qa/XcodeProject/Shared/LibraryForegroundGate.swift",
+      "sha256": "0ab1072c24facb41131a168725ffdc95720535a9d6ed374ce9a4494aaca34ba0"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/verify_import_foreground.swift",
+      "sha256": "ce30c6d853ecbef228be944a129ba5be3eb0761a0817cae7746e4d3bebd4fd3e"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/verify_foundation_contracts.sh",
+      "sha256": "d497e8e3c9ff605514ec85e710aa67e1b40c79c41fcab07b965ea02b626e8208"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift",
+      "sha256": "3c9db347c2214c7b0aa1fdf771f0d6f645d6dd4d75711de99dcb6e91b6c3ad06"
+    }
+  ],
+  "status": "PASS_LOCAL_FOUNDATION_ONLY"
+}

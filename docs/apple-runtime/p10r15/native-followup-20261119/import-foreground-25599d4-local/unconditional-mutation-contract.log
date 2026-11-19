@@ -1,0 +1,13 @@
+
+STDERR
+Swift/ErrorType.swift:254: Fatal error: Error raised at top level: Error Domain=QAImportForegroundContracts Code=1 "(null)"UserInfo={NSLocalizedDescription=activation-without-foreground: no unready descendant query}
+Current stack trace:
+0    swiftCore.dll                      0x00007ffd512be730 swift_reportError + 94
+1    swiftCore.dll                      0x00007ffd5135dc00 swift_stdlib_reportFatalErrorInFile + 132
+2    swiftCore.dll                      0x00007ffd50f973e0 StaticString.withUTF8Buffer<A>(_:) + 872
+3    swiftCore.dll                      0x00007ffd50f967b0 _assertionFailure(_:_:file:line:flags:) + 262
+4    swiftCore.dll                      0x00007ffd5100dd00 swift_errorInMain + 784
+5    unconditional-contract.exe         0x00007ff783418690 main + 53
+6    unconditional-contract.exe         0x00007ff783418690 main + 4367
+7    KERNEL32.DLL                       0x00007ffe05bfdd90 BaseThreadInitThunk + 23
+8    ntdll.dll                          0x00007ffe05e99c30 RtlUserThreadStart + 44

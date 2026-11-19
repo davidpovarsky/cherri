@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "sourceCommit": "25599d46c878c4f104697682176126fab42c4cc1",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "commands": [
+    {
+      "label": "compile",
+      "command": [
+        "C:\\Users\\DAVID\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.3.3+Asserts\\usr\\bin\\swiftc.EXE",
+        "-parse-as-library",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-import-foreground-20261119\\tools\\shortcuts-simulator-qa\\XcodeProject\\Shared\\LibraryForegroundGate.swift",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-import-foreground-20261119\\tools\\shortcuts-simulator-qa\\verify_import_foreground.swift",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\import-foreground-local\\clean-25599d4\\contract.exe"
+      ],
+      "exitCode": 0,
+      "seconds": 2.172,
+      "sha256": "8b0c55d6e19f1cf702fc3f19be9d05b5803c74fcbe9e7d84cb33bcd851debb9d"
+    },
+    {
+      "label": "execute",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\import-foreground-local\\clean-25599d4\\contract.exe"
+      ],
+      "exitCode": 0,
+      "seconds": 0.062,
+      "sha256": "45f8d967c88c3876341ed59189ffd518bbd2cca63054c04621a258598b0a7f7e"
+    }
+  ],
+  "foundationAssertions": 48,
+  "transitionScenarios": 6,
+  "appleRuntime": "NOT_RUN",
+  "XCTestAdapterCompilation": "PENDING_ACTUAL_SIMULATOR_WORKFLOW",
+  "sourceFiles": [
+    {
+      "path": "tools/shortcuts-simulator-qa/XcodeProject/Shared/LibraryForegroundGate.swift",
+      "sha256": "0ab1072c24facb41131a168725ffdc95720535a9d6ed374ce9a4494aaca34ba0"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/verify_import_foreground.swift",
+      "sha256": "ce30c6d853ecbef228be944a129ba5be3eb0761a0817cae7746e4d3bebd4fd3e"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/verify_foundation_contracts.sh",
+      "sha256": "d497e8e3c9ff605514ec85e710aa67e1b40c79c41fcab07b965ea02b626e8208"
+    },
+    {
+      "path": "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift",
+      "sha256": "7c5c727b4a1394f4638f724926ad05f7e37bb7bfcf0a56c92cf9ab89f771e961"
+    },
+    {
+      "path": "docs/apple-runtime/p10r15/import-foreground-transition.md",
+      "sha256": "fe36c9b5bdfa5e1c38e6598fc9d4dc75f9bf8907eee7589e5d8c70fb5317c233"
+    }
+  ]
+}
