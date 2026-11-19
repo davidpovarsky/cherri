@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 import runtime_poc_formal_evidence as formal
+import runtime_poc_coverage as coverage
 from test_runtime_poc_formal_evidence import create_control_fixture
 
 REPO = Path(__file__).resolve().parents[2]
@@ -18,6 +19,11 @@ class ActualPoCEmitterTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.control = create_control_fixture(self.temp.name, REPO)
         self.root = Path(self.control["root"])
+        # Exercise a failed coverage observation independently of the old raw17.
+        (self.root / coverage.OBSERVED).write_bytes(b"BEFORE_COVERAGE_TEST")
+        observed = coverage.observe(self.control["repo"], self.root, self.control["commit"],
+                                    self.control["run_id"], self.control["attempt"], allow_deleted=True)
+        (self.root / coverage.RESULT).write_bytes(coverage.encoded(observed))
         source = (REPO / "scripts/ios27_runtime_poc.sh").read_text(encoding="utf-8")
         self.assertEqual(source.count("python3 - << PY\n"), 1)
         self.program = source.split("python3 - << PY\n", 1)[1].split("\nPY\n", 1)[0]
@@ -57,11 +63,12 @@ class ActualPoCEmitterTests(unittest.TestCase):
         self.assertIs(menu["assertions"]["menu_start"], True)
         self.assertEqual(menu["assertions"]["cases"], ["Alpha", "Beta"])
         output = self.export()
-        self.assertEqual(len(output), 4)
+        self.assertEqual(len(output), 6)
         self.assertEqual({requirement for record in output for requirement in record["requirements"]},
-                         {"V01", "V03", "L02", "L04", "N01", "FN01", "FN02", "FN03"})
-        self.assertTrue(all(record["result"] == "failed" and record["exit_code"] == 1
-                            and record["runtime_pass"] is False for record in output))
+                         {"V01", "V03", "L02", "L04", "N01", "FN01", "FN02", "FN03", "S01", "F01"})
+        self.assertTrue(all(record["result"] == "failed" and record["exit_code"] == 1 for record in output))
+        self.assertTrue(all(record["runtime_pass"] is False for record in output[:4]))
+        self.assertTrue(all(record["assertions"]["exact_output_match"] == "false" for record in output[4:]))
         self.assertTrue(all(isinstance(value, str) for record in output
                             for value in record["assertions"].values()))
         self.assertEqual((self.root / "runtime-diagnostics.json").read_bytes(), raw)

@@ -68,7 +68,7 @@ func literalCollectionProductionTestForTier(id, tier string) string {
 	case "native-roundtrip":
 		return "github.com/electrikmilk/cherri:" + literalCollectionProductionTests[id][2]
 	case "ios-runtime":
-		return "ios27-runtime-poc:unicode"
+		return "ios27-runtime-poc:coverage-s01"
 	}
 	return ""
 }

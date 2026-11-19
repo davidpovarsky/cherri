@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -67,8 +69,8 @@ func TestRuntimePOCFormalExporterUsesActualGoIntake(t *testing.T) {
 		RawRecords         int  `json:"rawDiagnosticRecords"`
 		ClosureClaimed     bool `json:"closureClaimed"`
 	}
-	if err := json.Unmarshal(exportOutput, &summary); err != nil || summary.FormalRecords != 4 ||
-		summary.FormalRequirements != 8 || summary.RawRecords != 17 || summary.ClosureClaimed {
+	if err := json.Unmarshal(exportOutput, &summary); err != nil || summary.FormalRecords != 6 ||
+		summary.FormalRequirements != 10 || summary.RawRecords != 17 || summary.ClosureClaimed {
 		t.Fatalf("exporter scope changed: %+v %v", summary, err)
 	}
 	var rawAfter, afterErr = os.ReadFile(rawPath)
@@ -80,15 +82,30 @@ func TestRuntimePOCFormalExporterUsesActualGoIntake(t *testing.T) {
 		t.Fatal(formalErr)
 	}
 	var records []EvidenceRecord
-	if err := json.Unmarshal(formalBytes, &records); err != nil || len(records) != 4 {
+	if err := json.Unmarshal(formalBytes, &records); err != nil || len(records) != 6 {
 		t.Fatalf("actual exporter output is incompatible with production Go intake: %v", err)
 	}
 	var wanted = map[string]bool{"V01": true, "V03": true, "L02": true, "L04": true,
-		"N01": true, "FN01": true, "FN02": true, "FN03": true}
+		"N01": true, "FN01": true, "FN02": true, "FN03": true, "S01": true, "F01": true}
 	var seen = make(map[string]bool)
 	for _, record := range records {
 		if record.Tier != "ios-runtime" || record.ImplementationSHA != control.Commit || record.Result != "passed" || record.ExitCode != 0 {
 			t.Fatalf("unexpected synthetic transport fixture: %+v", record)
+		}
+		if strings.HasPrefix(record.TestID, "ios27-runtime-poc:coverage-") {
+			for key, name := range map[string]string{
+				"coverage_result_sha256": "coverage-result.json", "context_sha256": "coverage-run-context.json",
+				"reset_proof_sha256": "coverage-reset-proof.json", "expected_contract_sha256": "coverage-expected.json",
+			} {
+				var data, err = os.ReadFile(filepath.Join(control.Root, name))
+				if err != nil {
+					t.Fatal(err)
+				}
+				var digest = sha256.Sum256(data)
+				if record.Assertions[key] != hex.EncodeToString(digest[:]) {
+					t.Fatalf("exporter lost actual coverage receipt binding %s", key)
+				}
+			}
 		}
 		for _, id := range record.Requirements {
 			if !wanted[id] || seen[id] {
@@ -179,6 +196,62 @@ func TestRuntimePOCFormalExporterUsesActualGoIntake(t *testing.T) {
 			}
 		})
 	}
+	for _, fault := range []string{"old_unicode_producer", "old_conditional_producer", "changed_unicode", "changed_trace", "changed_boolean", "borrowed_repair", "wrong_coverage_source", "missing_coverage_receipt", "invented_exact_match"} {
+		t.Run(fault, func(t *testing.T) {
+			var changed EvidenceManifest
+			if err := json.Unmarshal(encoded, &changed); err != nil {
+				t.Fatal(err)
+			}
+			var id = "S01"
+			if fault == "old_conditional_producer" || fault == "changed_trace" || fault == "changed_boolean" {
+				id = "F01"
+			}
+			var index = -1
+			for i, record := range changed.Records {
+				if reflect.DeepEqual(record.Requirements, []string{id}) {
+					index = i
+					break
+				}
+			}
+			if index < 0 {
+				t.Fatal("coverage record absent", id)
+			}
+			var expectedIssue string
+			switch fault {
+			case "old_unicode_producer":
+				changed.Records[index].TestID = "ios27-runtime-poc:unicode"
+				expectedIssue = "not authorized for requirement S01"
+			case "old_conditional_producer":
+				changed.Records[index].TestID = "ios27-runtime-poc:conditionals"
+				expectedIssue = "not authorized for requirement F01"
+			case "changed_unicode":
+				changed.Records[index].Assertions["s01_unicode_output"] += "!"
+				expectedIssue = `assertion "s01_unicode_output" value mismatch`
+			case "changed_trace":
+				changed.Records[index].Assertions["f01_effect_trace"] += "|FORBIDDEN_RHS"
+				expectedIssue = `assertion "f01_effect_trace" value mismatch`
+			case "changed_boolean":
+				changed.Records[index].Assertions["f01_boolean_results"] = "wrong"
+				expectedIssue = `assertion "f01_boolean_results" value mismatch`
+			case "borrowed_repair":
+				changed.Records[index].Requirements = []string{"RP19"}
+				expectedIssue = "not authorized for requirement RP19"
+			case "wrong_coverage_source":
+				changed.Records[index].FixtureSHA256 = strings.Repeat("f", 64)
+				expectedIssue = "coverage runtime record"
+			case "missing_coverage_receipt":
+				delete(changed.Records[index].Assertions, "coverage_result_sha256")
+				expectedIssue = "coverage runtime record"
+			case "invented_exact_match":
+				changed.Records[index].Assertions["exact_output_match"] = "false"
+				expectedIssue = "coverage runtime record"
+			}
+			var rejected, err = ValidateEvidenceManifest(&changed, contracts, "local")
+			if err == nil || rejected.ClosureComplete || !strings.Contains(strings.Join(rejected.ValidationErrors, "\n"), expectedIssue) {
+				t.Fatal("old, altered, or broadened coverage entered formal intake", err)
+			}
+		})
+	}
 	var failed EvidenceManifest
 	if err := json.Unmarshal(encoded, &failed); err != nil {
 		t.Fatal(err)
@@ -192,6 +265,18 @@ func TestRuntimePOCFormalExporterUsesActualGoIntake(t *testing.T) {
 	for _, id := range []string{"V01", "V03"} {
 		if !strings.Contains(strings.Join(failedReport.ValidationErrors, "\n"), "requirement "+id+" has failed evidence record") {
 			t.Fatal("failed runtime record was mistaken for an unexecuted local tier", id)
+		}
+	}
+	for index := range failed.Records {
+		if strings.HasPrefix(failed.Records[index].TestID, "ios27-runtime-poc:coverage-") {
+			failed.Records[index].Result, failed.Records[index].ExitCode = "failed", 1
+			failed.Records[index].Assertions["exact_output_match"] = "false"
+		}
+	}
+	var coverageFailedReport, coverageFailedErr = ValidateEvidenceManifest(&failed, contracts, "local")
+	for _, id := range []string{"S01", "F01"} {
+		if coverageFailedErr == nil || p15VerificationResult(t, coverageFailedReport, id).Status != "FAILED" || coverageFailedReport.ClosureComplete {
+			t.Fatal("failed coverage observation disappeared during actual intake", id)
 		}
 	}
 	t.Log("Synthetic exporter/intake controls passed; no Simulator runtime requirement is credited by this test")

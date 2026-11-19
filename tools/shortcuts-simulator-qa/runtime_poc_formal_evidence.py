@@ -13,6 +13,8 @@ from pathlib import Path
 import subprocess
 import sys
 
+import runtime_poc_coverage as coverage
+
 from runtime_poc_publication import (
     CI_PREFIX, FORMAL_FILES, SOURCE_HASHES, SOURCE_RECEIPT, PublicationBlocked,
     read_contained, read_text_data, require, sha, verify_sources,
@@ -71,6 +73,53 @@ FORMAL_SCENARIOS = {
         "Observed function return and caller continuation, false/zero/empty Text presence defaults, and terminating factorial recursion. Additional recorded values do not establish caller-input, structured-default, or main-return requirements.",
     ),
 }
+
+
+# These rows are exported only from the separately replayed coverage observer.
+# Historical Unicode/conditional diagnostic rows are never promoted to them.
+COVERAGE_SCENARIOS = {
+    "coverage-s01": (
+        "S01", {"s01_unicode_output": "S01_OUTPUT"},
+        "Exact-byte Unicode interpolation after Hebrew, astral/ZWJ and combining prefixes, with repeated/adjacent references and literal U+FFFC.",
+    ),
+    "coverage-f01": (
+        "F01", {"f01_effect_trace": "F01_TRACE", "f01_boolean_results": "F01_RESULTS"},
+        "Exact-byte effect trace and Boolean results for nine short-circuit cases, including nested and mixed AND/OR trees.",
+    ),
+}
+
+
+def _coverage_records(repo, root, commit, run_id, attempt, raw, source_raw, artifacts):
+    observed = coverage.verify_result(repo, root, commit, run_id, attempt)
+    result_raw = read_contained(root, coverage.RESULT)
+    require(observed["source_receipt_sha256"] == sha(source_raw),
+            "POC_COVERAGE_SOURCE_RECEIPT_MISMATCH")
+    common = {
+        "diagnostics_sha256": sha(raw), "source_receipt_sha256": sha(source_raw),
+        "coverage_result_sha256": sha(result_raw),
+        "context_sha256": observed["context_sha256"],
+        "reset_proof_sha256": observed["reset_proof_sha256"],
+        "expected_contract_sha256": observed["expected_contract_sha256"],
+        "observed_clipboard_sha256": observed["observed_clipboard_sha256"],
+        "run_id": run_id, "run_attempt": attempt,
+        "fresh_reset_observed": "true",
+        "exact_output_match": "true" if observed["exact_output_match"] else "false",
+    }
+    records = []
+    for test, (requirement, fields, detail) in COVERAGE_SCENARIOS.items():
+        assertions = dict(common)
+        for key, field in fields.items():
+            assertions[key] = observed["observed_fields"].get(field, "")
+        records.append({
+            "evidence_id": "ev-runtime-" + test, "requirements": [requirement],
+            "tier": "ios-runtime", "implementation_sha": commit,
+            "fixture_sha256": SOURCE_HASHES[coverage.FIXTURE],
+            "test_id": "ios27-runtime-poc:" + test,
+            "result": observed["result"], "exit_code": observed["exit_code"],
+            "assertions": assertions, "artifacts": copy.deepcopy(artifacts),
+            "detail": detail + " Actual observer result is preserved; runtime facet only, with all other immutable tiers still required.",
+        })
+    return records
 
 
 def _clipboard_values(root):
@@ -173,6 +222,8 @@ def export_records(repo, root, diagnostics, commit, run_id, attempt):
         output["assertions"]["run_id"] = run_id
         output["assertions"]["run_attempt"] = attempt
         formal.append(output)
+    formal.extend(_coverage_records(repo, root, commit, run_id, attempt, raw, source_raw,
+                                    by_id["ev-runtime-smoke"]["artifacts"]))
     return formal
 
 
@@ -196,7 +247,7 @@ def main(argv=None):
         # Exclusive creation prevents a previous success from being silently reused.
         with output.open("xb") as stream:
             stream.write((json.dumps(records, indent=2) + "\n").encode("utf-8"))
-        print(json.dumps({"formalRecords": len(records), "formalRequirements": 8,
+        print(json.dumps({"formalRecords": len(records), "formalRequirements": len({item for record in records for item in record["requirements"]}),
                           "rawDiagnosticRecords": len(RAW_IDENTITIES),
                           "closureClaimed": False}))
     except (PublicationBlocked, OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError):

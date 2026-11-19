@@ -11,6 +11,9 @@ import unittest
 
 import runtime_poc_formal_evidence as formal
 from runtime_poc_publication import check_sources
+import runtime_poc_publication as publication
+import runtime_poc_coverage as coverage
+from test_runtime_poc_coverage import write_control_identity, write_control_observations
 
 
 def create_control_fixture(destination, source_repo, include_exporter=True):
@@ -29,6 +32,11 @@ def create_control_fixture(destination, source_repo, include_exporter=True):
         path = repo / "tools/shortcuts-simulator-qa/runtime_poc_formal_evidence.py"
         path.parent.mkdir(parents=True)
         path.write_bytes(Path(formal.__file__).read_bytes())
+    path = repo / coverage.EXPECTED_PATH
+    path.write_bytes((Path(source_repo) / coverage.EXPECTED_PATH).read_bytes())
+    path = repo / "tools/shortcuts-simulator-qa/runtime_poc_coverage.py"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(Path(coverage.__file__).read_bytes())
     hooks = destination / "empty-hooks"
     hooks.mkdir()
     subprocess.run(["git", "init", "-q", str(repo)], check=True, capture_output=True)
@@ -57,6 +65,10 @@ def create_control_fixture(destination, source_repo, include_exporter=True):
         else:
             data = b"Synthetic exporter unit control\n"
         (root / name).write_bytes(data)
+    control = {"repo": str(repo), "root": str(root), "commit": commit,
+               "run_id": run_id, "attempt": attempt, "synthetic_control_only": True}
+    write_control_identity(control)
+    write_control_observations(control)
     artifacts = [{"path": formal.CI_PREFIX + name, "sha256": formal.sha((root / name).read_bytes()),
                   "run_id": run_id} for name in sorted(formal.FORMAL_FILES)]
     records = []
@@ -112,10 +124,19 @@ class FormalEvidenceTests(unittest.TestCase):
         original = self.path.read_bytes()
         records = self.export()
         self.assertEqual(self.path.read_bytes(), original)
-        self.assertEqual(len(records), 4)
+        self.assertEqual(len(records), 6)
         self.assertEqual({identifier for record in records for identifier in record["requirements"]},
-                         {"V01", "V03", "L02", "L04", "N01", "FN01", "FN02", "FN03"})
+                         {"V01", "V03", "L02", "L04", "N01", "FN01", "FN02", "FN03", "S01", "F01"})
         for record in records:
+            if record["test_id"].startswith("ios27-runtime-poc:coverage-"):
+                self.assertEqual(record["result"], "passed")
+                observed = coverage.verify_result(self.control["repo"], self.root,
+                    self.control["commit"], self.control["run_id"], self.control["attempt"])
+                self.assertEqual(record["assertions"]["coverage_result_sha256"],
+                                 formal.sha((self.root / coverage.RESULT).read_bytes()))
+                for key in ("context_sha256", "reset_proof_sha256", "expected_contract_sha256"):
+                    self.assertEqual(record["assertions"][key], observed[key])
+                continue
             raw = next(value for value in self.records() if value["evidence_id"] == record["evidence_id"])
             for key in ("artifacts", "implementation_sha", "test_id", "result", "exit_code",
                         "runtime_pass", "structural_pass"):
@@ -130,7 +151,7 @@ class FormalEvidenceTests(unittest.TestCase):
         self.save(raw)
         output = self.selected(self.export())
         self.assertEqual((output["result"], output["exit_code"], output["runtime_pass"]), ("failed", 7, False))
-        self.assertEqual(len(self.export()), 4)
+        self.assertEqual(len(self.export()), 6)
 
     def test_failed_missing_clipboard_values_stay_failed(self):
         raw = self.records()
@@ -141,7 +162,36 @@ class FormalEvidenceTests(unittest.TestCase):
         (self.root / "clipboard-result.txt").write_bytes(b"BEFORE_RUNTIME_TEST")
         self.refresh_artifact(raw, "clipboard-result.txt")
         self.save(raw)
-        self.assertTrue(all(record["result"] == "failed" for record in self.export()))
+        records = self.export()
+        self.assertTrue(all(record["result"] == "failed" for record in records[:4]))
+        self.assertTrue(all(record["result"] == "passed" for record in records[4:]))
+
+    def test_coverage_failure_is_preserved_without_borrowing_old_diagnostic_success(self):
+        path = self.root / coverage.OBSERVED
+        path.write_bytes(path.read_bytes() + b"\n")
+        observed = coverage.observe(self.control["repo"], self.root, self.control["commit"],
+                                    self.control["run_id"], self.control["attempt"], allow_deleted=True)
+        (self.root / coverage.RESULT).write_bytes(coverage.encoded(observed))
+        raw = self.records()
+        self.refresh_artifact(raw, coverage.OBSERVED)
+        self.save(raw)
+        records = self.export()
+        self.assertTrue(all(row["result"] == "passed" for row in records[:4]))
+        self.assertTrue(all((row["result"], row["exit_code"], row["assertions"]["exact_output_match"])
+                            == ("failed", 1, "false") for row in records[4:]))
+        self.assertEqual({identifier for row in records[4:] for identifier in row["requirements"]}, {"S01", "F01"})
+
+    def test_missing_or_forged_coverage_receipt_blocks_formal_output(self):
+        path = self.root / coverage.RESULT
+        original = path.read_bytes()
+        path.unlink()
+        with self.assertRaises(formal.PublicationBlocked):
+            self.export()
+        value = json.loads(original)
+        value["context_sha256"] = "f" * 64
+        path.write_bytes(coverage.encoded(value))
+        with self.assertRaisesRegex(formal.PublicationBlocked, "COVERAGE_RESULT_REPLAY_MISMATCH"):
+            self.export()
 
     def test_missing_duplicate_and_unknown_raw_identity_fail_closed(self):
         original = self.records()
@@ -247,7 +297,8 @@ class FormalEvidenceTests(unittest.TestCase):
         self.assertEqual(first.returncode, 0, first.stderr)
         output = self.root / "runtime-evidence.json"
         published = output.read_bytes()
-        self.assertEqual(json.loads(first.stdout)["formalRecords"], 4)
+        self.assertEqual(json.loads(first.stdout)["formalRecords"], 6)
+        self.assertEqual(json.loads(first.stdout)["formalRequirements"], 10)
         self.assertEqual(self.path.read_bytes(), original)
         second = subprocess.run(self.command(), capture_output=True, text=True)
         self.assertEqual(second.returncode, 2)
@@ -261,6 +312,31 @@ class FormalEvidenceTests(unittest.TestCase):
         result = subprocess.run(self.command(), capture_output=True, text=True)
         self.assertEqual(result.returncode, 2)
         self.assertFalse((self.root / "runtime-evidence.json").exists())
+
+    def test_actual_exporter_output_publishes_all_bound_bytes_unchanged(self):
+        records = self.export()
+        evidence = (json.dumps(records, indent=2) + "\n").encode("utf-8")
+        (self.root / "runtime-evidence.json").write_bytes(evidence)
+        output = Path(self.temporary.name) / "public"
+        c = self.control
+        report = publication.stage(c["repo"], self.root, output, c["commit"], c["run_id"], c["attempt"])
+        self.assertTrue(report["publicationGatePassed"])
+        self.assertEqual((output / "runtime-evidence.json").read_bytes(), evidence)
+        self.assertEqual({row["path"] for row in report["published"]},
+                         formal.FORMAL_FILES | publication.SUPPORT | {"runtime-evidence.json"})
+        for name in formal.FORMAL_FILES | publication.SUPPORT:
+            self.assertEqual((output / name).read_bytes(), (self.root / name).read_bytes())
+
+    def test_publication_rejects_coverage_receipt_changed_after_export(self):
+        (self.root / "runtime-evidence.json").write_bytes(coverage.encoded(self.export()))
+        path = self.root / coverage.RESULT
+        value = json.loads(path.read_bytes())
+        value["context_sha256"] = "f" * 64
+        path.write_bytes(coverage.encoded(value))
+        c = self.control
+        with self.assertRaisesRegex(formal.PublicationBlocked, "POC_FORMAL_COVERAGE_BINDING_MISMATCH"):
+            publication.stage(c["repo"], self.root, Path(self.temporary.name) / "public",
+                              c["commit"], c["run_id"], c["attempt"])
 
 
 if __name__ == "__main__":

@@ -967,6 +967,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateRuntimePOCCoverageRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateDeclarationTriggerRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}

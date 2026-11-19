@@ -47,7 +47,10 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 		reqAssertions["num_captured"] = "1"
 		reqAssertions["clip_captured"] = "clip_initial"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:variables")
-	case "S01", "RP19", "BRG08":
+	case "S01":
+		reqAssertions["s01_unicode_output"] = runtimePOCS01UnicodeOutput
+		*testIDs = append(*testIDs, "ios27-runtime-poc:coverage-s01")
+	case "RP19", "BRG08":
 		reqAssertions["unicode_output"] = "שָׁלוֹם:🌍:1"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:unicode")
 	case "L02", "L04", "RP21":
@@ -56,7 +59,11 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	case "N01", "RP15", "RP17", "BRG16":
 		reqAssertions["math_trace"] = "2.5:1:11:0:1:0"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:numbers")
-	case "F01", "RP18", "BRG13":
+	case "F01":
+		reqAssertions["f01_effect_trace"] = runtimePOCF01EffectTrace
+		reqAssertions["f01_boolean_results"] = runtimePOCF01BooleanResults
+		*testIDs = append(*testIDs, "ios27-runtime-poc:coverage-f01")
+	case "RP18", "BRG13":
 		reqAssertions["conditional_result"] = "true"
 		reqAssertions["short_circuit_trace"] = "START|RAN_RHS:0:1:1"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:conditionals")
