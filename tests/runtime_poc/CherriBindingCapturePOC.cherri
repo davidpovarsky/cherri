@@ -1,0 +1,10 @@
+// V01 and V03: actual iOS execution must retain the declaration-time values.
+var numCaptureSrc = 1
+let numCaptured = numCaptureSrc
+numCaptureSrc = 2
+setClipboard("clip_initial")
+let clipCaptured = Clipboard
+let clipAlias = clipCaptured
+setClipboard("clip_overwritten")
+let result = f"CHERRI_BINDING_CAPTURE_OK\nNUM_CAPTURED={numCaptured}\nNUM_AGAIN={numCaptured}\nCLIP_CAPTURED={clipCaptured}\nCLIP_AGAIN={clipAlias}"
+setClipboard(result)

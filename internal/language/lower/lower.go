@@ -1817,7 +1817,9 @@ func (l *Lowerer) lowerBinding(b *syntax.BindingStmt) error {
 				OutputName:      effOutName,
 				Aggrandizements: ref.Aggrandizements,
 			}
-		} else if ref, ok := val.(*ir.AttachmentToken); ok && (ref.Type == "Clipboard" || ref.Type == "DeviceDetails" || ref.Type == "CurrentDate" || ref.Type == "ExtensionInput" || ref.Type == "Ask") {
+		} else if ref, ok := val.(*ir.AttachmentToken); ok && ref.Type == "Clipboard" {
+			l.bindings[b.Name] = l.captureClipboardBinding(b.Name, ref)
+		} else if ref, ok := val.(*ir.AttachmentToken); ok && (ref.Type == "DeviceDetails" || ref.Type == "CurrentDate" || ref.Type == "ExtensionInput" || ref.Type == "Ask") {
 			l.bindings[b.Name] = BindingRef{
 				IsVariable:      false,
 				TokenType:       ref.Type,

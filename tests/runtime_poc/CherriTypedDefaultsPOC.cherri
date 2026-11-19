@@ -1,0 +1,11 @@
+// T01: empty containers are explicit arguments, independent of false/zero/text.
+function typedDefaults(flag: Bool = true, num: Number = 9, txt: Text = "def", items: List<Text> = ["default"], object: Map<Text, Text> = {"default": "present"}) -> Text {
+    let itemCount = count(items)
+    let keyCount = count(getKeys(object))
+    return f"{flag}:{num}:{txt}:{itemCount}:{keyCount}"
+}
+let defaultsExplicit = typedDefaults(false, num: 0, txt: "", items: [], object: {})
+let defaultsOmitted = typedDefaults()
+let defaultsMixed = typedDefaults(flag: false, items: [])
+let result = f"CHERRI_TYPED_DEFAULTS_OK\nDEFAULTS_EXPLICIT={defaultsExplicit}\nDEFAULTS_OMITTED={defaultsOmitted}\nDEFAULTS_MIXED={defaultsMixed}"
+setClipboard(result)
