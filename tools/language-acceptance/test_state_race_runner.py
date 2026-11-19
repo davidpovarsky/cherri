@@ -16,11 +16,17 @@ class StateRaceIntakeControls(unittest.TestCase):
             {"race_instrumented": True, "sequential_rounds": 3, "concurrent_workers": 8, "concurrent_rounds": 8, "completed_cases": 64},
             {"race_instrumented": True, "sequential_rounds": 0, "concurrent_workers": 0, "concurrent_rounds": 0, "completed_cases": 0, "emitter_faults": ["emitter_error", "cancellation"]},
         ]
-        for name, observation in zip(runner.TESTS, observations):
+        observations += [
+            {"race_instrumented": True, "concurrent_workers": 4, "concurrent_rounds": 8, "completed_cases": 32, "entry_points": ["canonical", "legacy-in-memory", "hybrid-v2", "canonical-catalog-cold"]},
+            {"race_instrumented": True, "emitted_before_panic": 1, "emitter_calls": 2, "partial_output_rejected": True, "recovery_requests": ["canonical", "mobile-v2"]},
+        ]
+        for name, observation in zip([runner.TESTS[i] for i in (0, 1, 4, 5)], observations):
             text = runner.MARKER + json.dumps(observation) + "\n"
             # Real Go JSON can split a single t.Log message across Output events.
             events += [{"Action": "output", "Test": name, "Output": text[:20]}, {"Action": "output", "Test": name, "Output": text[20:]}]
         events.append({"Action": "pass", "Package": "github.com/electrikmilk/cherri"})
+        for event in events:
+            event["Package"] = "github.com/electrikmilk/cherri"
         return events
 
     def evaluate(self, events, **options):
@@ -60,6 +66,25 @@ class StateRaceIntakeControls(unittest.TestCase):
         events = self.fixture()
         events += [copy.deepcopy(event) for event in events if event.get("Action") == "output" and event.get("Test") == runner.TESTS[0]]
         self.assertEqual(self.evaluate(events)["status"], "FAILED")
+
+    def test_rejects_foreign_or_undiscovered_execution(self):
+        for field, value in (("Package", "example.invalid/other"), ("Test", "TestInventedStateCase")):
+            events = self.fixture()
+            events[0][field] = value
+            self.assertEqual(self.evaluate(events)["status"], "FAILED")
+        events = self.fixture()
+        events[0], events[1] = events[1], events[0]
+        self.assertEqual(self.evaluate(events)["status"], "FAILED")
+
+    def test_rejects_duplicate_json_keys(self):
+        raw = b'\n'.join(json.dumps(event).encode() for event in self.fixture())
+        raw = raw.replace(b'"Action": "run"', b'"Action": "fail", "Action": "run"', 1)
+        self.assertEqual(runner.evaluate(raw, b"", 0, False, {"GOOS": "linux", "CGO_ENABLED": "1"}, True, True)["status"], "FAILED")
+
+    def test_import_and_panic_recovery_cannot_be_omitted(self):
+        for name in runner.TESTS[4:]:
+            events = [event for event in self.fixture() if event.get("Test") != name]
+            self.assertEqual(self.evaluate(events)["status"], "FAILED")
 
 
 if __name__ == "__main__":
