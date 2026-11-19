@@ -111,8 +111,16 @@ func (r *Runner) executeStateRace() *stateRaceExecution {
 		result.Err = err
 		return result
 	}
-	supplied := os.Getenv("CHERRI_STATE_RACE_EVIDENCE_DIR")
-	if supplied == "" && (runtime.GOOS != "linux" || os.Getenv("GITHUB_REPOSITORY") != "davidpovarsky/cherri" || os.Getenv("GITHUB_SHA") != r.implSHA) {
+	// An arbitrary imported directory cannot establish observed execution or
+	// independently authenticated run provenance. Production acquisition is
+	// limited to the actual child process below; historical bundles are intake
+	// controls only and must never be relabeled as this source's execution.
+	if os.Getenv("CHERRI_STATE_RACE_EVIDENCE_DIR") != "" {
+		result.Available = true
+		result.Err = fmt.Errorf("external race directories are not accepted as observed current-source execution")
+		return result
+	}
+	if runtime.GOOS != "linux" || os.Getenv("GITHUB_REPOSITORY") != "davidpovarsky/cherri" || os.Getenv("GITHUB_SHA") != r.implSHA {
 		result.Detail = "No current-source Linux CI race bundle is configured; a non-race run or historical archive cannot supply this scenario"
 		return result
 	}
@@ -122,58 +130,56 @@ func (r *Runner) executeStateRace() *stateRaceExecution {
 		result.Err = fmt.Errorf("state/race producer requires exact clean source: %s clean=%t error=%v", before, clean, err)
 		return result
 	}
-	if supplied == "" {
-		python, pythonErr := acceptancePython3("CHERRI_STATE_PYTHON")
-		if pythonErr != nil {
-			result.Err = pythonErr
+	python, pythonErr := acceptancePython3("CHERRI_STATE_PYTHON")
+	if pythonErr != nil {
+		result.Err = pythonErr
+		return result
+	}
+	temporary, tempErr := os.MkdirTemp("", "cherri-state-production-")
+	if tempErr != nil {
+		result.Err = tempErr
+		return result
+	}
+	defer os.RemoveAll(temporary)
+	supplied := filepath.Join(temporary, "race")
+	ctx, cancel := context.WithTimeout(context.Background(), 11*time.Minute)
+	defer cancel()
+	command := exec.CommandContext(ctx, python, "-I", "-B", filepath.Join(root, "tools", "language-acceptance", "run_state_race.py"), "--output", supplied)
+	command.Dir = root
+	command.WaitDelay = 3 * time.Second
+	var out, errors bytes.Buffer
+	command.Stdout = &out
+	command.Stderr = &errors
+	processErr := command.Run()
+	destination, destErr := stateEvidenceDirectory(r, "state-race-")
+	if destErr != nil {
+		result.Err = destErr
+		return result
+	}
+	// Preserve the original producer bytes, including failure receipts, before
+	// classifying success. The adapter never rewrites run/source identities.
+	for _, name := range stateRaceArtifactNames {
+		data, readErr := os.ReadFile(filepath.Join(supplied, name))
+		if readErr != nil {
+			continue
+		}
+		path := filepath.Join(destination, name)
+		if writeErr := os.WriteFile(path, data, 0600); writeErr != nil {
+			result.Err = writeErr
 			return result
 		}
-		temporary, tempErr := os.MkdirTemp("", "cherri-state-production-")
-		if tempErr != nil {
-			result.Err = tempErr
-			return result
-		}
-		defer os.RemoveAll(temporary)
-		supplied = filepath.Join(temporary, "race")
-		ctx, cancel := context.WithTimeout(context.Background(), 11*time.Minute)
-		defer cancel()
-		command := exec.CommandContext(ctx, python, "-I", "-B", filepath.Join(root, "tools", "language-acceptance", "run_state_race.py"), "--output", supplied)
-		command.Dir = root
-		command.WaitDelay = 3 * time.Second
-		var out, errors bytes.Buffer
-		command.Stdout = &out
-		command.Stderr = &errors
-		processErr := command.Run()
-		destination, destErr := stateEvidenceDirectory(r, "state-race-")
-		if destErr != nil {
-			result.Err = destErr
-			return result
-		}
-		// Preserve the original producer bytes, including failure receipts, before
-		// classifying success. The adapter never rewrites run/source identities.
-		for _, name := range stateRaceArtifactNames {
-			data, readErr := os.ReadFile(filepath.Join(supplied, name))
-			if readErr != nil {
-				continue
-			}
-			path := filepath.Join(destination, name)
-			if writeErr := os.WriteFile(path, data, 0600); writeErr != nil {
-				result.Err = writeErr
-				return result
-			}
-		}
-		if err = os.WriteFile(filepath.Join(destination, "runner.stdout.log"), out.Bytes(), 0600); err != nil {
-			result.Err = err
-			return result
-		}
-		if err = os.WriteFile(filepath.Join(destination, "runner.stderr.log"), errors.Bytes(), 0600); err != nil {
-			result.Err = err
-			return result
-		}
-		supplied = destination
-		if processErr != nil {
-			result.Err = fmt.Errorf("actual state/race runner failed: %v (context %v); original logs retained at %s", processErr, ctx.Err(), destination)
-		}
+	}
+	if err = os.WriteFile(filepath.Join(destination, "runner.stdout.log"), out.Bytes(), 0600); err != nil {
+		result.Err = err
+		return result
+	}
+	if err = os.WriteFile(filepath.Join(destination, "runner.stderr.log"), errors.Bytes(), 0600); err != nil {
+		result.Err = err
+		return result
+	}
+	supplied = destination
+	if processErr != nil {
+		result.Err = fmt.Errorf("actual state/race runner failed: %v (context %v); original logs retained at %s", processErr, ctx.Err(), destination)
 	}
 	for _, name := range stateRaceArtifactNames {
 		path := filepath.Join(supplied, name)
