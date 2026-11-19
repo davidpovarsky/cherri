@@ -1,0 +1,357 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "71225b71f5353a0f661722d154a8b670b52e76f6",
+  "compiler": {
+    "formatVersion": 1,
+    "compilerRepository": "https://github.com/davidpovarsky/cherri.git",
+    "compilerCommit": "71225b71f5353a0f661722d154a8b670b52e76f6",
+    "binarySha256": "3159baacfdb92c67afdeb9ede5a85f1ee6c7d175005647bd729c7a67a8ea1e06",
+    "vcsModified": false
+  },
+  "scope": "CURRENT_SOURCE_GRAPH_AND_PRIOR_NATIVE_FAILURE_DIAGNOSIS",
+  "nativeExecuted": 0,
+  "createdAt": "2026-11-19T01:20:38.071215+00:00",
+  "results": [
+    {
+      "fixtureId": "qa-number-comparison-diag-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-number-comparison-diag-v2.cherri",
+      "sourceSha256": "b3d1bcf9782d8210b3f1756d6e0d104f02bcf2ea46db50593bc6e45b8a2cfe99",
+      "nativeActions": 89,
+      "unsignedSha256": "459e6def388104499adfd4e89b753dbdaf2d0147b53550dadeea42dfacd79ce2",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-candidate-71225b\\compiler-cache\\cherri.exe",
+        "compile",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\boundary-diagnostics-71225b7\\qa-number-comparison-diag-v2.cherri",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\boundary-diagnostics-71225b7\\qa-number-comparison-diag-v2.shortcut",
+        "--skip-sign",
+        "--no-ansi"
+      ],
+      "compileExitCode": 0,
+      "graph": {
+        "nativeActions": 89,
+        "pairedSameProducerComparisons": 3,
+        "positiveOperatorControls": 3,
+        "conditions": [
+          {
+            "flag": "directEq",
+            "WFCondition": 4,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "direct",
+                  "OutputUUID": "1D338FD5-8510-414D-ABDD-44181716F402",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "directNe",
+            "WFCondition": 5,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "direct",
+                  "OutputUUID": "1D338FD5-8510-414D-ABDD-44181716F402",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "requiredEq",
+            "WFCondition": 4,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "required",
+                  "OutputUUID": "D93B585B-436A-4DBA-A8FA-8A71E91C9288",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "requiredNe",
+            "WFCondition": 5,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "required",
+                  "OutputUUID": "D93B585B-436A-4DBA-A8FA-8A71E91C9288",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "boundEq",
+            "WFCondition": 4,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "Type": "Variable",
+                  "VariableName": "bound"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "boundNe",
+            "WFCondition": 5,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "Type": "Variable",
+                  "VariableName": "bound"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "oneNeZero",
+            "WFCondition": 5,
+            "WFNumberValue": 0.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "one",
+                  "OutputUUID": "0479911C-EABF-4E23-9F42-5AF5FD396C58",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "zeroNeOne",
+            "WFCondition": 5,
+            "WFNumberValue": 1.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "direct",
+                  "OutputUUID": "1D338FD5-8510-414D-ABDD-44181716F402",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          },
+          {
+            "flag": "oneEqOne",
+            "WFCondition": 4,
+            "WFNumberValue": 1.0,
+            "WFInput": {
+              "Type": "Variable",
+              "Variable": {
+                "Value": {
+                  "OutputName": "one",
+                  "OutputUUID": "0479911C-EABF-4E23-9F42-5AF5FD396C58",
+                  "Type": "ActionOutput"
+                },
+                "WFSerializationType": "WFTextTokenAttachment"
+              }
+            }
+          }
+        ],
+        "nativeNumericComparisonExecuted": false
+      },
+      "causalFaultsRejected": [
+        "extra-network",
+        "paired-operator",
+        "number-as-string",
+        "required-retarget",
+        "positive-control-value",
+        "bound-retarget"
+      ]
+    },
+    {
+      "fixtureId": "qa-number-coercion-control-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-number-coercion-control-v2.cherri",
+      "sourceSha256": "c33a99da546b5b043c2774a581381285c181e174320ed09d76e8914992820d54",
+      "nativeActions": 89,
+      "unsignedSha256": "2882b9914363224fefd5feb443badf8754af78275d7df6de681ac13dce429b41",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-candidate-71225b\\compiler-cache\\cherri.exe",
+        "compile",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\boundary-diagnostics-71225b7\\qa-number-coercion-control-v2.cherri",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\boundary-diagnostics-71225b7\\qa-number-coercion-control-v2.shortcut",
+        "--skip-sign",
+        "--no-ansi"
+      ],
+      "compileExitCode": 0,
+      "graph": {
+        "pairedSameProducerComparisons": 3,
+        "positiveOperatorControls": 3,
+        "exactNumberCoercions": 4,
+        "conditionCodes": [
+          4,
+          5,
+          4,
+          5
+        ]
+      },
+      "causalFaultsRejected": [
+        "missing-coercion",
+        "wrong-coercion-class",
+        "wrong-numeric-operator"
+      ]
+    },
+    {
+      "fixtureId": "qa-label-file-controls-v2",
+      "path": "tools/shortcuts-simulator-qa/fixtures/qa-label-file-controls-v2.cherri",
+      "sourceSha256": "4b6c321e07fd9d4060aca9168a12c9885cbc99c04aa38ef8244fba678c4375d1",
+      "nativeActions": 70,
+      "unsignedSha256": "a91f195349a578fe21056ba368afedbd767aa999191374e587ca320ec7bc03b5",
+      "command": [
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-candidate-71225b\\compiler-cache\\cherri.exe",
+        "compile",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\boundary-diagnostics-71225b7\\qa-label-file-controls-v2.cherri",
+        "-o",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\boundary-diagnostics-71225b7\\qa-label-file-controls-v2.shortcut",
+        "--skip-sign",
+        "--no-ansi"
+      ],
+      "compileExitCode": 0,
+      "boundaryActions": [
+        {
+          "WFWorkflowActionIdentifier": "is.workflow.actions.base64encode",
+          "WFWorkflowActionParameters": {
+            "CustomOutputName": "original",
+            "UUID": "6D6617D6-6B79-41EB-9B6A-B2C1B4F8B331",
+            "WFEncodeMode": "Decode",
+            "WFInput": {
+              "Value": {
+                "OutputName": "Text",
+                "OutputUUID": "92BF3E83-3222-429C-A114-970BB0C59849",
+                "Type": "ActionOutput"
+              },
+              "WFSerializationType": "WFTextTokenAttachment"
+            }
+          }
+        },
+        {
+          "WFWorkflowActionIdentifier": "is.workflow.actions.getvariable",
+          "WFWorkflowActionParameters": {
+            "CustomOutputName": "transported",
+            "UUID": "E4E14792-3983-40B3-8865-607F3E60152D",
+            "WFVariable": {
+              "Value": {
+                "OutputName": "original",
+                "OutputUUID": "6D6617D6-6B79-41EB-9B6A-B2C1B4F8B331",
+                "Type": "ActionOutput"
+              },
+              "WFSerializationType": "WFTextTokenAttachment"
+            }
+          }
+        },
+        {
+          "WFWorkflowActionIdentifier": "is.workflow.actions.setvalueforkey",
+          "WFWorkflowActionParameters": {
+            "CustomOutputName": "record",
+            "UUID": "07BBDEDD-BF0E-48EC-9467-3D38128B626F",
+            "WFDictionary": {
+              "Value": {
+                "OutputName": "envelope",
+                "OutputUUID": "767EE5B1-5CDC-42E7-9A83-B064B7389A86",
+                "Type": "ActionOutput"
+              },
+              "WFSerializationType": "WFTextTokenAttachment"
+            },
+            "WFDictionaryKey": "payload",
+            "WFDictionaryValue": {
+              "Value": {
+                "attachmentsByRange": {
+                  "{0, 1}": {
+                    "OutputName": "transported",
+                    "OutputUUID": "E4E14792-3983-40B3-8865-607F3E60152D",
+                    "Type": "ActionOutput"
+                  }
+                },
+                "string": "￼"
+              },
+              "WFSerializationType": "WFTextTokenString"
+            }
+          }
+        },
+        {
+          "WFWorkflowActionIdentifier": "is.workflow.actions.getvalueforkey",
+          "WFWorkflowActionParameters": {
+            "CustomOutputName": "restored",
+            "UUID": "CDCB6968-497C-4539-B7C3-83A5529B8727",
+            "WFDictionaryKey": "payload",
+            "WFInput": {
+              "Value": {
+                "OutputName": "record",
+                "OutputUUID": "07BBDEDD-BF0E-48EC-9467-3D38128B626F",
+                "Type": "ActionOutput"
+              },
+              "WFSerializationType": "WFTextTokenAttachment"
+            }
+          }
+        },
+        {
+          "WFWorkflowActionIdentifier": "is.workflow.actions.getitemtype",
+          "WFWorkflowActionParameters": {
+            "CustomOutputName": "restoredType",
+            "UUID": "0354114F-CF53-4347-9A5F-86F195D3359F",
+            "WFInput": {
+              "Value": {
+                "OutputName": "restored",
+                "OutputUUID": "CDCB6968-497C-4539-B7C3-83A5529B8727",
+                "Type": "ActionOutput"
+              },
+              "WFSerializationType": "WFTextTokenAttachment"
+            }
+          }
+        },
+        {
+          "WFWorkflowActionIdentifier": "is.workflow.actions.base64encode",
+          "WFWorkflowActionParameters": {
+            "CustomOutputName": "restoredBytes",
+            "UUID": "E24944C1-A7EA-4785-A704-760018A72D0D",
+            "WFBase64LineBreakMode": "None",
+            "WFEncodeMode": "Encode",
+            "WFInput": {
+              "Value": {
+                "OutputName": "restored",
+                "OutputUUID": "CDCB6968-497C-4539-B7C3-83A5529B8727",
+                "Type": "ActionOutput"
+              },
+              "WFSerializationType": "WFTextTokenAttachment"
+            },
+            "input": "Encode"
+          }
+        }
+      ],
+      "graph": {
+        "carrierValueWire": "WFTextTokenString with exact transported ActionOutput",
+        "originalAndTransportNotMutated": true,
+        "nativeRoundtripSuccess": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "is.workflow.actions.getvariable": {
+    "ActionClass": "WFGetVariableAction",
+    "Output": {
+      "DisclosureLevel": "Public",
+      "Multiple": true,
+      "OutputName": "Variable",
+      "Types": [
+        "WFContentItem"
+      ]
+    },
+    "Parameters": [
+      {
+        "Class": "WFVariablePickerParameter",
+        "DisallowedVariableTypes": [
+          "Clipboard"
+        ],
+        "Key": "WFVariable",
+        "Label": "Variable",
+        "Placeholder": "Variable"
+      }
+    ]
+  },
+  "is.workflow.actions.setvalueforkey": {
+    "ActionClass": "WFSetDictionaryValueAction",
+    "Input": {
+      "Multiple": false,
+      "ParameterKey": "WFDictionary",
+      "Required": true,
+      "Types": [
+        "WFDictionaryContentItem"
+      ]
+    },
+    "Output": {
+      "DisclosureLevel": "Public",
+      "Multiple": false,
+      "OutputName": "Dictionary",
+      "Types": [
+        "WFDictionaryContentItem"
+      ]
+    },
+    "Parameters": [
+      {
+        "AutocapitalizationType": "None",
+        "Class": "WFTextInputParameter",
+        "DisableAutocorrection": true,
+        "Key": "WFDictionaryKey",
+        "Label": "Key",
+        "Placeholder": "Key",
+        "TextAlignment": "Right"
+      },
+      {
+        "AutocapitalizationType": "None",
+        "Class": "WFTextInputParameter",
+        "DisableAutocorrection": true,
+        "Key": "WFDictionaryValue",
+        "Label": "Value",
+        "Placeholder": "Value",
+        "TextAlignment": "Right"
+      },
+      {
+        "Class": "WFVariablePickerParameter",
+        "Key": "WFDictionary",
+        "Label": "Dictionary",
+        "Placeholder": "Dictionary"
+      }
+    ]
+  },
+  "is.workflow.actions.getvalueforkey": {
+    "ActionClass": "WFGetDictionaryValueAction",
+    "Input": {
+      "Multiple": false,
+      "ParameterKey": "WFInput",
+      "Required": true,
+      "Types": [
+        "WFDictionaryContentItem"
+      ]
+    },
+    "Output": {
+      "DisclosureLevel": "Public",
+      "Multiple": true,
+      "OutputName": "Dictionary Value",
+      "Types": [
+        "WFStringContentItem",
+        "WFNumberContentItem",
+        "WFDateContentItem",
+        "WFDictionaryContentItem",
+        "WFBooleanContentItem"
+      ]
+    },
+    "Parameters": [
+      {
+        "Class": "WFEnumerationParameter",
+        "DefaultValue": "Value",
+        "DisallowedVariableTypes": [
+          "Ask",
+          "Variable"
+        ],
+        "Items": [
+          "Value",
+          "All Keys",
+          "All Values"
+        ],
+        "Key": "WFGetDictionaryValueType",
+        "Label": "Get"
+      },
+      {
+        "AutocapitalizationType": "None",
+        "Class": "WFTextInputParameter",
+        "DisableAutocorrection": true,
+        "Key": "WFDictionaryKey",
+        "Label": "Key",
+        "Placeholder": "Key",
+        "RequiredResources": [
+          {
+            "WFParameterKey": "WFGetDictionaryValueType",
+            "WFParameterValue": "Value",
+            "WFResourceClass": "WFParameterRelationResource"
+          }
+        ],
+        "TextAlignment": "Right"
+      },
+      {
+        "Class": "WFVariablePickerParameter",
+        "Key": "WFInput",
+        "Label": "Dictionary",
+        "Placeholder": "Dictionary"
+      }
+    ]
+  },
+  "scope": "Checked-in Apple macOS27 metadata; does not itself prove iPadOS execution."
+}

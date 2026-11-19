@@ -64,3 +64,14 @@ assertion. The producer checks those exact code points and UTF-8 bytes before
 building, records their SHA-256 values, and rejects question-mark substitutions.
 The explicit mutation audit must fail before compilation, followed by restored
 10-probe structural verification. Native execution remains zero.
+
+## Current File-carrier limitation (2026-11-19)
+
+The [S71225 boundary diagnosis](native-followup-20261119/boundary-diagnostics-71225b7/README.md)
+separates the observed native failure: baseline File bytes, Get Variable
+transport/type, label, and original source preservation all passed; restored
+Dictionary payload type and bytes failed. The current graph still uses the same
+native text-valued Dictionary parameter with an exact producer attachment.
+This remains an unsupported universal typed-carrier boundary. It does not
+justify changing the expected File result, claiming the label feature is done,
+or attributing the failure to the unrelated Finder-color `labelFile` callable.
