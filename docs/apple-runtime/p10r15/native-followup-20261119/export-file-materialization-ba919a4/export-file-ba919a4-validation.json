@@ -1,0 +1,62 @@
+{
+  "sourceCommit": "ba919a4a7523da0183a58bcde649a047d0e52234",
+  "cleanBefore": true,
+  "startedAt": "2026-11-19T01:12:10.138722+00:00",
+  "checks": [
+    {
+      "name": "go-focused",
+      "command": [
+        "go",
+        "test",
+        "-p=1",
+        "-count=1",
+        "-timeout=5m",
+        "-run",
+        "^(TestP15DebugExport|TestDebugStdlibSixDisplayModes|TestDebugStdlibMustNotRewriteExistingProducerUUID|TestDebugStdlibLoggingDoesNotBreakLaterConsumer|TestP15DebugMacroPreservesFrontendResultIdentity|TestP15SignedFixtureExactProducerReferences)",
+        "-v",
+        "."
+      ],
+      "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-native-resume-20261119",
+      "exitCode": 0,
+      "elapsedSeconds": 25.875,
+      "logPath": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\export-file-ba919a4-go-focused.log",
+      "logSha256": "3daa1628f0b0a3ec81310efeeb3438b46920e05930c9920cbd7dc14289d60319"
+    },
+    {
+      "name": "native-audit-python",
+      "command": [
+        "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "test_native_continuation_audit",
+        "test_workflow_input_contract"
+      ],
+      "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-native-resume-20261119\\tools\\shortcuts-simulator-qa",
+      "exitCode": 0,
+      "elapsedSeconds": 19.578,
+      "logPath": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\export-file-ba919a4-native-audit-python.log",
+      "logSha256": "aebaccdc8c21a352f865cc89d5a942f915e77b971c7155da515a78ae568f285e"
+    },
+    {
+      "name": "producer",
+      "command": [
+        "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "tools/p10r15/verify_debug_export.py",
+        "--report",
+        "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\export-file-ba919a4-producer.json"
+      ],
+      "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-native-resume-20261119",
+      "exitCode": 0,
+      "elapsedSeconds": 21.86,
+      "logPath": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\export-file-ba919a4-producer.log",
+      "logSha256": "aa756c03f4109412e6164f52ec2878ae8d02eff2ae30711ba5aeab66fefd4bfb"
+    }
+  ],
+  "cleanAfter": true,
+  "finishedAt": "2026-11-19T01:13:17.511765+00:00",
+  "status": "PASS_SOURCE_AND_MODEL_ONLY"
+}

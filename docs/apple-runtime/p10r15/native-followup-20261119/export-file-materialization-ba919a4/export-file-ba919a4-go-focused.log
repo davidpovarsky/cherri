@@ -1,0 +1,164 @@
+=== RUN   TestDebugStdlibSixDisplayModes
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=true/record-only
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=true/record-creation-date
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=true/native-preview
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=true/native-dated-preview
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=true/text-preview
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=true/dated-text-preview
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=false/record-only
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=false/record-creation-date
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=false/native-preview
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=false/native-dated-preview
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=false/text-preview
+=== RUN   TestDebugStdlibSixDisplayModes/legacy=false/dated-text-preview
+--- PASS: TestDebugStdlibSixDisplayModes (0.05s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=true/record-only (0.00s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=true/record-creation-date (0.00s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=true/native-preview (0.00s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=true/native-dated-preview (0.00s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=true/text-preview (0.00s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=true/dated-text-preview (0.00s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=false/record-only (0.01s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=false/record-creation-date (0.01s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=false/native-preview (0.01s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=false/native-dated-preview (0.01s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=false/text-preview (0.01s)
+    --- PASS: TestDebugStdlibSixDisplayModes/legacy=false/dated-text-preview (0.01s)
+=== RUN   TestDebugStdlibMustNotRewriteExistingProducerUUID
+--- PASS: TestDebugStdlibMustNotRewriteExistingProducerUUID (0.00s)
+=== RUN   TestDebugStdlibLoggingDoesNotBreakLaterConsumer
+=== RUN   TestDebugStdlibLoggingDoesNotBreakLaterConsumer/legacy
+=== RUN   TestDebugStdlibLoggingDoesNotBreakLaterConsumer/v2
+--- PASS: TestDebugStdlibLoggingDoesNotBreakLaterConsumer (0.01s)
+    --- PASS: TestDebugStdlibLoggingDoesNotBreakLaterConsumer/legacy (0.00s)
+    --- PASS: TestDebugStdlibLoggingDoesNotBreakLaterConsumer/v2 (0.01s)
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=false
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=true
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=false
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=true
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=false
+
+Warning: Value for action argument 'format' is the same as the default value.
+
+### Export Local Debug File
+
+Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.
+
+```
+debugExport(rawtext ?format = "json", ..., ..., ...): variable
+``` (4:19)
+
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=true
+
+Warning: Value for action argument 'format' is the same as the default value.
+
+### Export Local Debug File
+
+Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.
+
+```
+debugExport(rawtext ?format = "json", ..., ..., ...): variable
+``` (4:19)
+
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=false
+=== RUN   TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=true
+--- PASS: TestP15DebugExportUsesBase64FileMaterialization (0.03s)
+    --- PASS: TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=false (0.01s)
+    --- PASS: TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=true (0.01s)
+    --- PASS: TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=false (0.01s)
+    --- PASS: TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=true (0.01s)
+    --- PASS: TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=false (0.00s)
+    --- PASS: TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=true (0.00s)
+    --- PASS: TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=false (0.00s)
+    --- PASS: TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=true (0.00s)
+=== RUN   TestP15DebugExportCanonicalNativeMetadata
+--- PASS: TestP15DebugExportCanonicalNativeMetadata (0.02s)
+=== RUN   TestP15DebugExportBothFrontendsPrivacyAndIdentity
+=== RUN   TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options=
+=== RUN   TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options="json",_false,_false,_true
+=== RUN   TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options="json",_false,_true,_false
+=== RUN   TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options="text",_false,_true,_false
+=== RUN   TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options=
+=== RUN   TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options="json",_false,_false,_true
+
+Warning: Value for action argument 'format' is the same as the default value.
+
+### Export Local Debug File
+
+Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.
+
+```
+debugExport(rawtext ?format = "json", ..., ..., ...): variable
+``` (4:36)
+
+=== RUN   TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options="json",_false,_true,_false
+
+Warning: Value for action argument 'format' is the same as the default value.
+
+### Export Local Debug File
+
+Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.
+
+```
+debugExport(rawtext ?format = "json", ..., ..., ...): variable
+``` (4:36)
+
+=== RUN   TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options="text",_false,_true,_false
+--- PASS: TestP15DebugExportBothFrontendsPrivacyAndIdentity (0.03s)
+    --- PASS: TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options= (0.01s)
+    --- PASS: TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options="json",_false,_false,_true (0.01s)
+    --- PASS: TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options="json",_false,_true,_false (0.01s)
+    --- PASS: TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options="text",_false,_true,_false (0.01s)
+    --- PASS: TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options= (0.00s)
+    --- PASS: TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options="json",_false,_false,_true (0.00s)
+    --- PASS: TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options="json",_false,_true,_false (0.00s)
+    --- PASS: TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options="text",_false,_true,_false (0.00s)
+=== RUN   TestP15DebugExportLiteralOptionsAndRelease
+
+Warning: Value for action argument 'format' is the same as the default value.
+
+### Export Local Debug File
+
+Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.
+
+```
+debugExport(rawtext ?format = "json", ..., ..., ...): variable
+``` (1:19)
+
+
+Warning: Value for action argument 'format' is the same as the default value.
+
+### Export Local Debug File
+
+Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Per-entry dates and labels are not collected. Options are compile-time literals.
+
+```
+debugExport(rawtext ?format = "json", ..., ..., ...): variable
+``` (1:19)
+
+--- PASS: TestP15DebugExportLiteralOptionsAndRelease (0.07s)
+=== RUN   TestP15DebugExportZeroOneThousandCompileBudget
+--- PASS: TestP15DebugExportZeroOneThousandCompileBudget (0.28s)
+=== RUN   TestP15DebugExportRedactionRejectsNilAndDynamic
+--- PASS: TestP15DebugExportRedactionRejectsNilAndDynamic (0.00s)
+=== RUN   TestP15DebugExportCanonicalTextCodecUTF16Identity
+--- PASS: TestP15DebugExportCanonicalTextCodecUTF16Identity (0.00s)
+=== RUN   TestP15DebugMacroPreservesFrontendResultIdentity
+=== RUN   TestP15DebugMacroPreservesFrontendResultIdentity/debugLog
+=== RUN   TestP15DebugMacroPreservesFrontendResultIdentity/debugTraceEvent
+=== RUN   TestP15DebugMacroPreservesFrontendResultIdentity/debugExportTrace
+--- PASS: TestP15DebugMacroPreservesFrontendResultIdentity (0.00s)
+    --- PASS: TestP15DebugMacroPreservesFrontendResultIdentity/debugLog (0.00s)
+    --- PASS: TestP15DebugMacroPreservesFrontendResultIdentity/debugTraceEvent (0.00s)
+    --- PASS: TestP15DebugMacroPreservesFrontendResultIdentity/debugExportTrace (0.00s)
+=== RUN   TestP15SignedFixtureExactProducerReferences
+=== RUN   TestP15SignedFixtureExactProducerReferences/legacy
+    p15_debug_uuid_identity_test.go:101: verified 16 exact preceding ActionOutput bindings in 34 actions
+=== RUN   TestP15SignedFixtureExactProducerReferences/v2
+    p15_debug_uuid_identity_test.go:101: verified 16 exact preceding ActionOutput bindings in 33 actions
+--- PASS: TestP15SignedFixtureExactProducerReferences (0.03s)
+    --- PASS: TestP15SignedFixtureExactProducerReferences/legacy (0.01s)
+    --- PASS: TestP15SignedFixtureExactProducerReferences/v2 (0.02s)
+PASS
+ok  	github.com/electrikmilk/cherri	0.667s
