@@ -1,0 +1,87 @@
+{
+  "source_sha": "bb2759778ff8f1365e0fcb360e09c541554489d7",
+  "source_clean_before_after": true,
+  "stages": {
+    "python-controls": {
+      "exit_code": 0,
+      "seconds": 18.041,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "b4b9f557d85d8880ac7c521e13410cb683438442e364679f0c5647e55d379fa7"
+    },
+    "go-controls": {
+      "exit_code": 0,
+      "seconds": 28.401,
+      "stdout_sha256": "fd92c736a97ecd1551923f02cbe729d730e643c7d63df43a31e435d20b0f7220",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-init": {
+      "exit_code": 0,
+      "seconds": 0.114,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-origin": {
+      "exit_code": 0,
+      "seconds": 0.075,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-fetch": {
+      "exit_code": 0,
+      "seconds": 8.038,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-checkout": {
+      "exit_code": 0,
+      "seconds": 12.705,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "actual-public-metadata": {
+      "exit_code": 0,
+      "seconds": 2.118,
+      "stdout_sha256": "c773a4aa1ce2cba63213dcf7112331c5280766960c7eea3d171eb2fd0c15e8cd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "go_passes": [
+    "TestDocumentationConsumerCIBundleControls/extra_wrapper_key",
+    "TestDocumentationConsumerCIBundleControls/duplicate_record",
+    "TestDocumentationConsumerCIBundleControls/borrowed_implementation",
+    "TestDocumentationConsumerCIBundleControls/app_record",
+    "TestDocumentationConsumerCIBundleControls/duplicate_json_key",
+    "TestDocumentationConsumerCIBundleControls"
+  ],
+  "go_failures": [],
+  "go_skips": [],
+  "real_public_preparation": {
+    "status": "PASS_PUBLICATION_INPUT_BINDING_ONLY",
+    "implementationSha": "bb2759778ff8f1365e0fcb360e09c541554489d7",
+    "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+    "consumerCompilerPin": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+    "deploymentRunId": "44464276068",
+    "deploymentAttempt": 1,
+    "artifactId": 14500997460,
+    "originalArchiveSha256": "865c395ed86c8bffb366a9e9a5e7f09f0e1df9e97e6089d088f0df0a55ab900b",
+    "originalArchiveBytes": 1535,
+    "members": {
+      "cherri-docs-site-evidence.json": "e3864399bee2e571687366337fef36b34f1f08ff114f68d1aaa8ec6d0a37f827",
+      "cherri-docs-site-controls.json": "1fef99251be178939d4fe5c92c4fac241a83cd14edb44e38f66bb3f90761845a"
+    },
+    "metadata": {
+      "github-deployment-run.json": "1ea5d7c8c74d10058e5f6a092f381c64fe8d4000caa28da1201939961ef42678",
+      "github-deployment-jobs.json": "6f9e6e793a4bf4506bb070c768775e2674db906aab50008c58cc414152b67cf5",
+      "github-deployment-artifacts.json": "b66cf5914f6d13b07f3f161be2c00719aa9d5e2978727b2ba1d35c1030bf023c",
+      "github-deployment-run-confirmed.json": "1ea5d7c8c74d10058e5f6a092f381c64fe8d4000caa28da1201939961ef42678"
+    },
+    "liveCollectorExecuted": false,
+    "appIntegrationExecuted": false,
+    "formalAcceptanceGranted": false
+  },
+  "live_docs_collector_executed": false,
+  "app_integration_executed": false,
+  "formal_acceptance_granted": false,
+  "recorded_receipt_sha256": "904164614712ca7ae8da70c79876c5a6ddd37add317fe9af9da619e67d802e78",
+  "scope": "Clean control replay and actual public input binding only; live installed/public collection and app integration pending."
+}

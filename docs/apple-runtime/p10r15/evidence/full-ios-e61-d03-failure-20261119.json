@@ -1,0 +1,36 @@
+{
+  "source_sha": "e61e0d306bb363c39ade612ef35ccfc8051ddf3c",
+  "run_id": 44622064212,
+  "artifact_id": 14584562226,
+  "zip_sha256": "6dc9974bc6cd5c52ba21d578097f0d0f3e8bad541b2fcba859c13ac2dec02ed9",
+  "zip_bytes": 66591,
+  "files": {
+    "documentation-compatibility-manifest.json": "2cd9d61441bc63fe2b2e151ffd4fe30618647d020330ecfd0c0baf56d7242b26",
+    "documentation-index.json": "bd3c9351723a773ddd502bd3e54b1e7735ec82cc049ec4ae452671d9e8d7bd28",
+    "documentation-receipt.json": "65af53713789d357855220716e66779cfe6272f1f3ee0d25788928dbfce089e6",
+    "ios-test-diagnostics.json": "739c6e6f351046084d69a52771353ffd2f45c677db4969499c103901f4fe0434",
+    "ios-test-evidence.json": "6c1db664439054b14cf5baade95beb5c1b194266ecf60003a2aab24c85fd8359",
+    "xcodetest.log": "189b436357402e0782d2c821bb91925c39399e37c183b5f1c39f19672377355f"
+  },
+  "job_log_sha256": "314a0fd2634e77671cd7ea6d1c2a5c993c4e14888eebc374ece5a66c518465b0",
+  "status": "FAILED_NATIVE_IOS_UI_GATE",
+  "observed_test_count": 53,
+  "passed_observed_tests": 52,
+  "failed_tests": [
+    {
+      "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "observedStatus": "failed"
+    }
+  ],
+  "acceptance_records": 0,
+  "ui_failures": [
+    {
+      "testId": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+      "sourceLine": 271
+    }
+  ],
+  "ios_source_identical_at_r2": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+  "post_toggle_state_observed": false,
+  "production_search_defect_proved": false,
+  "formal_acceptance_granted": false
+}
