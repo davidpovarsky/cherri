@@ -2774,6 +2774,42 @@
       "reason": "Generic JSON decoding converted integers to real values, and rendering integral real values erased their decimal kind.",
       "evidence": "Exact baseline and clean3a5e333 receipts at docs/apple-runtime/p10r15/native-followup-20261119/legacy-native-numbers-3a5e333:34 passing named cases,0 failures/skips. The strict comparator is unchanged; no native execution is claimed.",
       "note": "Immutable integrated implementation ancestor. Scoped evidence does not close unexecuted native, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 fail-closed native List-valued loop results",
+      "locations": [
+        "internal/language/analysis/analyzer.go",
+        "internal/language/analysis/loop_result_shape.go",
+        "p15_collect_list_boundary_test.go",
+        "p15_f04_probe_test.go",
+        "tools/shortcuts-simulator-qa/fixture_compile_contract.py",
+        "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",
+        "scripts/ios27_shortcuts_simulator_qa.sh"
+      ],
+      "firstForkCommit": "b6d47e0b492e6661c7d9fbd2187f400af8a37f2b",
+      "change": "Reject statically List-shaped final values in value-producing native loops with E_TARGET_VALUE_SHAPE; retain terminating paths, records, scalar results and explicit opaque native boundaries. Record actual rejected probe attempts without inventing emitted artifacts or signing success.",
+      "reason": "Source-bound native run 44431486363 observed four items where the original nested-List oracle requires two. Native Repeat Results did not preserve the requested cardinality.",
+      "evidence": "Exact clean 3d08eab passed 93 focused and 52 analysis/lower cases with zero failures/skips, with reproduced original and terminating-path counterexamples. Actual Phase0 attempted 62 fixtures, emitted 60 and rejected exactly two with precise diagnostics/no artifact; 25 related Python cases and damaged-evidence controls passed. The original native FAIL remains retained; this is fail-closed authoring proof, not nested-List runtime support.",
+      "note": "Immutable integrated implementation ancestor; final terminating-path correction is 67b51acc50ca5c7cc41c007988b1340a0c7a8c5d. Unknown/AnyContent result shapes remain unverified. Scoped evidence does not close F04, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 exact native reference transformation extensions",
+      "locations": [
+        "internal/language/backend/contracts.go",
+        "internal/language/lower/lower.go",
+        "language_backend_adapter.go",
+        "language_value_adapter.go",
+        "native_aggrandizement_fields.go",
+        "shared_codec.go",
+        "shortcut.go",
+        "p15_direct_reference_recovery_test.go",
+        "tools/language-acceptance/supplemental_execution.go"
+      ],
+      "firstForkCommit": "bd6bb81bd041549e2d9179f25b3eb4caa0945129",
+      "change": "Preserve the complete explicit native aggrandizement dictionary alongside its typed view across raw-action, typed-reference and inline-reference paths. Execute RP13 and BRG07 through their independent real production scenarios and required evidence tiers.",
+      "reason": "The canonical serializers silently discarded native reference extension fields, including false, zero and empty metadata values, breaking the exact reference roundtrip contract.",
+      "evidence": "Clean dd2b72a passed 76 codec/reference/roundtrip cases and 14 supplemental-producer/manifest-control cases with zero failures/skips. The negative baseline reproduced 11 failure events across all three reference kinds and six typed/inline paths. Raw logs SHA256 e888bc2e351a4af9494d188550b81238e101c614a77180f910180ff72be77996 and c0857eadac12aee4ed802afa4ade5d21bdcfa1ba4992fbc9f6f35070b2b820e4. Strongest-tier evidence deletion remains rejected; the strict comparator and original contract tiers are unchanged.",
+      "note": "Immutable integrated implementation ancestor. Explicit imported dictionaries retain original field presence; compiler-generated transformations keep their existing serializer. Native roundtrip structure is not Apple execution proof, and final combined-source acceptance remains required."
     }
   ]
 }
