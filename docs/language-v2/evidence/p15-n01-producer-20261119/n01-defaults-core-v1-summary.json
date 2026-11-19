@@ -1,0 +1,29 @@
+{
+  "source": "d13ab702b79165215a442ce875fd8fc6aeba95f3",
+  "source_status": "?? p15_numeric_fraction_acceptance_test.go\n",
+  "test_source_sha256": "9bd6cf657f239e086c19781fd2689ab301f71ef631425ef6e579bd2e9566cfb3",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=3m",
+    "-json",
+    ".",
+    "-run",
+    "^(TestP15N01FractionalNativeDataflow|TestP15N01NumericConstraints|TestP15T01FunctionPresenceEnvelope|TestP15T01DefaultsGuardedByPresence)$"
+  ],
+  "actual_exit": 0,
+  "timed_out": false,
+  "elapsed_seconds": 99.99610543251038,
+  "passed_events": 73,
+  "failed": [],
+  "skipped": [],
+  "top_level_passes": [
+    "TestP15T01FunctionPresenceEnvelope",
+    "TestP15T01DefaultsGuardedByPresence",
+    "TestP15N01FractionalNativeDataflow",
+    "TestP15N01NumericConstraints"
+  ],
+  "log_sha256": "9981b3e276cd07bbf0b95c278644804052e88a6fe76399914cb976917d13a3ac",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

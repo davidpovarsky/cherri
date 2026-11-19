@@ -105,3 +105,7 @@ Actual BRG32 execution now covers complete179 mapping,a real fresh clone/CLI bui
 Expanded Linux-race87ca5dfc passed6scenarios and64+32 concurrent cases after two retained failing baselines. Cold catalog,import/prepass and reverse metadata use shared native-state ownership. No blanket thread-safety or formal BRG06/RP51 closure is claimed. See `docs/language-v2/p15-state-import-race-20261119.md`.
 
 Living plan2.6.0 retains actual e61 result84PASS/1FAIL/94pending,Apple timeout/loop-index failure,and remaining native,consumer and release work.
+
+### 2026-11-19 — N01 actual fractional arithmetic producer
+
+Clean implementation `db918ee8493907c90da449e67e1be6df1dc43770` passed 22 named producer/intake controls and independently executed both numeric compiler tests. Only unit/native-structure evidence is produced; the unchanged iOS tier remains pending. Original logs and exact hashes are retained in `docs/language-v2/evidence/p15-n01-producer-20261119/`; see `docs/language-v2/p15-n01-actual-producer-20261119.md`. No compiler semantics or immutable contracts changed.

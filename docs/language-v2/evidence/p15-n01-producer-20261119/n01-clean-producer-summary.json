@@ -1,0 +1,27 @@
+{
+  "source": "db918ee8493907c90da449e67e1be6df1dc43770",
+  "status_before": "",
+  "status_after": "",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-timeout=5m",
+    "-json",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestNumberFunctionProducerInventory|TestNumberFunctionActualProductionEvidence)$"
+  ],
+  "actual_exit": 0,
+  "timed_out": false,
+  "elapsed_seconds": 9.638283491134644,
+  "named_pass_count": 22,
+  "failed": [],
+  "skipped": [],
+  "top_level_passes": [
+    "TestNumberFunctionProducerInventory",
+    "TestNumberFunctionActualProductionEvidence"
+  ],
+  "log_sha256": "4078daa9ae4b764238966ac9642b4ef9ef0a6df20f2cd1f9802d09cec8953dd4",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
