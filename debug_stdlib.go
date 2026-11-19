@@ -957,15 +957,13 @@ func buildDebugStdlibActions(name string, params map[string]any, resultUUID, res
 		return append(body, add("previewdocument", previewParams)), nil
 
 	case "debugClearLogs":
-		id := strings.ToUpper(uuid.NewString())
+		// Empty Text is one native item, so seeding the buffer with it creates a
+		// spurious export entry. Match the independently verified native clear:
+		// Nothing followed by Set Variable with its input explicitly absent.
 		return []ShortcutAction{
-			add("gettext", map[string]any{
-				"WFTextActionText": "",
-				"UUID":             id,
-			}),
+			add("nothing", map[string]any{"UUID": strings.ToUpper(uuid.NewString())}),
 			add("setvariable", map[string]any{
 				"WFVariableName": debugLogVariableName,
-				"WFInput":        debugOutputRefNamed(id, "Text"),
 			}),
 		}, nil
 
@@ -1187,6 +1185,16 @@ func ClassifyShortcutTraceActions(actions []ShortcutAction) []DebugTraceActionMa
 			} else if tok, okTok := params["text"].(WFTextTokenAttachment); okTok {
 				if tok.Value.VariableName == debugLogVariableName || tok.Value.VariableName == debugQATraceVariableName {
 					kind = "COLLECTOR_EVENT"
+					srcIdx = -1
+				}
+			}
+		} else if id == "is.workflow.actions.nothing" {
+			if i+1 < len(actions) && actions[i+1].WFWorkflowActionIdentifier == "is.workflow.actions.setvariable" &&
+				actions[i+1].WFWorkflowActionParameters["WFVariableName"] == debugLogVariableName {
+				_, clearHasInput := actions[i+1].WFWorkflowActionParameters["WFInput"]
+				_, nothingHasInput := params["WFInput"]
+				if !clearHasInput && !nothingHasInput {
+					kind = "INLINE_DEBUG_ACTION"
 					srcIdx = -1
 				}
 			}
