@@ -1,0 +1,502 @@
+{
+  "schemaVersion": 1,
+  "scope": "VERIFIED_LOCAL_DOCS_COMPILER_TUPLE_NOT_DEPLOYMENT_OR_FINAL_ACCEPTANCE",
+  "compilerCommit": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+  "docsCommit": "daa58850140bc1d739806633932d01e084463404",
+  "compilerBinarySHA256": "2ca70002f2cf2d320303cf1f13729e7f34cc2a160d47ed57263a2a456c5b8e84",
+  "compilerSourceClean": true,
+  "completeCanonicalBodyEqual": true,
+  "canonicalBodySHA256": "96aeab4c5fb5ba3be4f7e9a7e7f31335630a169eb2016d5f6d9a9eb4f9032324",
+  "localValidation": {
+    "docs_commit": "daa58850140bc1d739806633932d01e084463404",
+    "compiler_commit": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+    "docs_source_clean_before": true,
+    "docs_source_clean_after": true,
+    "source_cache_clean": true,
+    "snippet_summary": {
+      "passed": true,
+      "executed": 38,
+      "runnable": 35,
+      "diagnostic": 3,
+      "referenceOnly": 524,
+      "binarySha256": "2ca70002f2cf2d320303cf1f13729e7f34cc2a160d47ed57263a2a456c5b8e84"
+    },
+    "cache_controls": {
+      "discovered": 12,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "wrong_real_binary_sha256": "89b7de6d44d852e88d13f6191c0e9403f19b37c3b0e85d1c2b79d93d530498df"
+    },
+    "checks": [
+      {
+        "check": "snippets",
+        "command": [
+          "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+          "scripts/smoke_test_snippets.py",
+          "--evidence-out",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\docs-snippets-daa5885.json"
+        ],
+        "exit_code": 0,
+        "log_sha256": "04dbb51dc3a0a836da517a0ddb36276902b78b762c01b7641389e9c7412ed372"
+      },
+      {
+        "check": "cache-controls",
+        "command": [
+          "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+          "scripts/test_smoke_test_snippets.py"
+        ],
+        "exit_code": 0,
+        "log_sha256": "46d746718b418eadbd6d03ab140c6fe1fb2033f0c24ae88dbd8bd434ba4c6890"
+      }
+    ],
+    "elapsed_seconds": 75.265,
+    "commands": [
+      {
+        "command": [
+          "git",
+          "init"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.079,
+        "available_memory_before": 3301642240,
+        "minimum_available_memory": 3301642240,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "config",
+          "core.autocrlf",
+          "false"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.031,
+        "available_memory_before": 3294662656,
+        "minimum_available_memory": 3294662656,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "remote",
+          "add",
+          "origin",
+          "https://github.com/davidpovarsky/cherri.git"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.032,
+        "available_memory_before": 3297103872,
+        "minimum_available_memory": 3297103872,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "fetch",
+          "--depth",
+          "1",
+          "origin",
+          "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 1.813,
+        "available_memory_before": 3304730624,
+        "minimum_available_memory": 3294027776,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "checkout",
+          "--detach",
+          "FETCH_HEAD"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 2.812,
+        "available_memory_before": 3298783232,
+        "minimum_available_memory": 3183452160,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "go",
+          "build",
+          "-buildvcs=true",
+          "-trimpath",
+          "-o",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\cherri.exe",
+          "."
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 24.203,
+        "available_memory_before": 3174502400,
+        "minimum_available_memory": 2780217344,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 120,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.047,
+        "available_memory_before": 3157884928,
+        "minimum_available_memory": 3157884928,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "status",
+          "--porcelain",
+          "--untracked-files=all",
+          "--ignored=matching"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.063,
+        "available_memory_before": 3159355392,
+        "minimum_available_memory": 3159355392,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "remote",
+          "get-url",
+          "origin"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.031,
+        "available_memory_before": 3162677248,
+        "minimum_available_memory": 3162677248,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "go",
+          "version",
+          "-m",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\cherri.exe"
+        ],
+        "cwd": null,
+        "exit_code": 0,
+        "elapsed_seconds": 0.109,
+        "available_memory_before": 3162988544,
+        "minimum_available_memory": 3162988544,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.031,
+        "available_memory_before": 3151400960,
+        "minimum_available_memory": 3151400960,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "status",
+          "--porcelain",
+          "--untracked-files=all",
+          "--ignored=matching"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.047,
+        "available_memory_before": 3185385472,
+        "minimum_available_memory": 3185385472,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "remote",
+          "get-url",
+          "origin"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.031,
+        "available_memory_before": 3203518464,
+        "minimum_available_memory": 3203518464,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "go",
+          "version",
+          "-m",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache.stage-gmewjaey\\cherri.exe"
+        ],
+        "cwd": null,
+        "exit_code": 0,
+        "elapsed_seconds": 0.094,
+        "available_memory_before": 3187589120,
+        "minimum_available_memory": 3187589120,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.031,
+        "available_memory_before": 3200659456,
+        "minimum_available_memory": 3200659456,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "status",
+          "--porcelain",
+          "--untracked-files=all",
+          "--ignored=matching"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.047,
+        "available_memory_before": 3201138688,
+        "minimum_available_memory": 3201138688,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "git",
+          "remote",
+          "get-url",
+          "origin"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 0.031,
+        "available_memory_before": 3194580992,
+        "minimum_available_memory": 3194580992,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "go",
+          "version",
+          "-m",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache\\cherri.exe"
+        ],
+        "cwd": null,
+        "exit_code": 0,
+        "elapsed_seconds": 0.093,
+        "available_memory_before": 3184496640,
+        "minimum_available_memory": 3184496640,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache\\cherri.exe",
+          "--capabilities-json"
+        ],
+        "cwd": null,
+        "exit_code": 0,
+        "elapsed_seconds": 0.031,
+        "available_memory_before": 3203543040,
+        "minimum_available_memory": 3203543040,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "go",
+          "version",
+          "-m",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache\\cherri.exe"
+        ],
+        "cwd": null,
+        "exit_code": 0,
+        "elapsed_seconds": 0.109,
+        "available_memory_before": 3217670144,
+        "minimum_available_memory": 3217670144,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "go",
+          "run",
+          "./tools/language-docs",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\actions-reference-canonical.md"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\compiler-cache\\src",
+        "exit_code": 0,
+        "elapsed_seconds": 4.719,
+        "available_memory_before": 3210326016,
+        "minimum_available_memory": 3012063232,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 120,
+        "stopped": null
+      },
+      {
+        "command": [
+          "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+          "scripts/smoke_test_snippets.py",
+          "--evidence-out",
+          "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\docs-s2-7b0100a\\docs-snippets-daa5885.json"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherrilang-p10r15-docs-s2-20261119",
+        "exit_code": 0,
+        "elapsed_seconds": 3.89,
+        "available_memory_before": 3245395968,
+        "minimum_available_memory": 3235168256,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      },
+      {
+        "command": [
+          "C:\\ProgramData\\SentinelX\\.venv\\Scripts\\python.exe",
+          "scripts/test_smoke_test_snippets.py"
+        ],
+        "cwd": "C:\\Users\\DAVID\\Code\\cherrilang-p10r15-docs-s2-20261119",
+        "exit_code": 0,
+        "elapsed_seconds": 35.75,
+        "available_memory_before": 3265380352,
+        "minimum_available_memory": 2305150976,
+        "priority": "BELOW_NORMAL_PRIORITY_CLASS",
+        "deadline_seconds": 180,
+        "stopped": null
+      }
+    ]
+  },
+  "docsCI": {
+    "runId": 44453561234,
+    "status": "DISPATCHED_NOT_YET_VERIFIED",
+    "url": "https://github.com/davidpovarsky/cherrilang.org/actions/runs/44453561234"
+  },
+  "archive": {
+    "path": "raw-docs-evidence.zip",
+    "bytes": 88458,
+    "sha256": "ee55327a08f88defe4b466fe3d251afe11c7b8aae3208f62a34327e135290923"
+  },
+  "files": [
+    {
+      "path": "run-docs.py",
+      "bytes": 7276,
+      "sha256": "3dcebe96701b57f8f1f6d7046ad239d470a548ea2ea247a867ff79d858c7b3df"
+    },
+    {
+      "path": "launch.json",
+      "bytes": 228,
+      "sha256": "c7f3e05e0a04c17eb6055a7bb4c6a973183630ea93335d8854d413b0d5bcaad1"
+    },
+    {
+      "path": "job-summary.json",
+      "bytes": 387,
+      "sha256": "f6fdebf9abd4a5115340173809efd422d00362cf57babf65d5df1946e0f54ec7"
+    },
+    {
+      "path": "driver.log",
+      "bytes": 48426,
+      "sha256": "bef858c15f4ad30b9e4c7f90c7f3aa3e758a2e5470c19b6e733cc71e62885f52"
+    },
+    {
+      "path": "compiler-build-info.txt",
+      "bytes": 3514,
+      "sha256": "1ad9c231dbf5072686b7410ee1a36c99f550c0027c60348168cb00c35b849804"
+    },
+    {
+      "path": "compiler-capabilities.json",
+      "bytes": 26805,
+      "sha256": "b037cf50ec014bfb46a5a9277350eb494856fd67169e68fb6fb744941af55f54"
+    },
+    {
+      "path": "canonical-generator.log",
+      "bytes": 138,
+      "sha256": "4f9b1b8f17d06e423f4b1f10c2ba2137752d598cbf87c53b3484dd5856fa9490"
+    },
+    {
+      "path": "preparation-receipt.json",
+      "bytes": 29514,
+      "sha256": "fbe801093af474f481e793edeef502ea6f4b1cbfb5c194e1300108c910b09bf0"
+    },
+    {
+      "path": "docs-snippets-daa5885.json",
+      "bytes": 183427,
+      "sha256": "7ad5eec9f42f0afcf74903a2762aa715ed7c4d839922790a1f5cf65ac6c2859e"
+    },
+    {
+      "path": "snippets-daa5885.log",
+      "bytes": 3279,
+      "sha256": "04dbb51dc3a0a836da517a0ddb36276902b78b762c01b7641389e9c7412ed372"
+    },
+    {
+      "path": "cache-controls-daa5885.log",
+      "bytes": 1960,
+      "sha256": "46d746718b418eadbd6d03ab140c6fe1fb2033f0c24ae88dbd8bd434ba4c6890"
+    },
+    {
+      "path": "local-validation-daa5885.json",
+      "bytes": 13377,
+      "sha256": "84cdafa0ec412238f40de72c4c507ed70c45622202c9aa1bdd3373ac5d4f292d"
+    },
+    {
+      "path": "actions-reference-canonical.md",
+      "bytes": 243047,
+      "sha256": "96aeab4c5fb5ba3be4f7e9a7e7f31335630a169eb2016d5f6d9a9eb4f9032324"
+    }
+  ]
+}
