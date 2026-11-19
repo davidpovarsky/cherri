@@ -28,6 +28,7 @@ MANIFEST = "docs/apple-runtime/p10r15/native-continuation-probe-manifest.json"
 REVIEWED_SELECTORS = {
     "CherriBindingCapturePOC": "qa-binding-capture",
     "CherriTypedDefaultsPOC": "qa-typed-defaults",
+    "qa-native-boundary-diagnostic-v2": "qa-native-boundary-diagnostic",
     "qa-export-unicode-diagnostic-v2": "qa-export-unicode-diagnostic",
     "qa-collect-empty-split-v2": "qa-collect-empty-split",
     "qa-collect-counts-v2": "qa-collect-counts-v2",
