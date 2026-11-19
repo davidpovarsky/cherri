@@ -100,7 +100,7 @@ def verify_adapter_graph(fid, actions):
         {"Type":"WFCoercionVariableAggrandizement","CoercionItemClass":"WFNumberContentItem"}], "cap numeric source")
     edge(p(actions[second]).get("WFInput"), raw)
     _, trace = named("qaTraceEnvelope", "gettext")
-    _, summary = named("qaFinalSummary", "gettext")
+    si, summary = named("qaFinalSummary", "gettext")
     serialized = p(summary).get("WFTextActionText")
     require(isinstance(serialized,dict) and serialized.get("WFSerializationType")=="WFTextTokenString", "dynamic summary serialization")
     text = serialized.get("Value",{})
@@ -111,13 +111,36 @@ def verify_adapter_graph(fid, actions):
             and len(atts)==2, "bounded summary witness")
     trace_att=atts.get("{%d, 1}" % (len(prefix)+2),{})
     require(trace_att.get("Type")=="ActionOutput" and trace_att.get("OutputUUID")==p(trace).get("UUID"), "real trace output")
-    require(kind(actions[-1],"output"), "actual callback output")
-    ov = p(actions[-1]).get("WFOutput",{}).get("Value",{})
+    output_index = si + 2
+    require(output_index < len(actions) and kind(actions[si+1],"comment")
+            and p(actions[si+1]).get("WFCommentActionText")=="ANCHOR_CARD_28_BOTTOM_FOOTER"
+            and kind(actions[output_index],"output"), "actual callback output")
+    serialized_output = p(actions[output_index]).get("WFOutput",{})
+    require(serialized_output.get("WFSerializationType")=="WFTextTokenString", "output serialization")
+    ov = serialized_output.get("Value",{})
     oa = ov.get("attachmentsByRange",{}).get("{0, 1}",{})
-    require(ov.get("string")=="\ufffc" and oa.get("OutputUUID")==p(summary).get("UUID"), "final summary edge")
+    require(ov.get("string")=="\ufffc" and len(ov.get("attachmentsByRange",{}))==1
+            and oa.get("Type")=="ActionOutput" and oa.get("OutputUUID")==p(summary).get("UUID")
+            and not oa.get("Aggrandizements"), "final summary edge")
     if fid=="CherriTypedDefaultsPOC":
+        # A declared function compiles to a dispatcher. Main-body output is
+        # followed by the dispatcher's End If, which is not another result.
+        require(output_index==len(actions)-2 and kind(actions[-1],"conditional")
+                and p(actions[-1]).get("WFControlFlowMode")==2, "single dispatcher closure")
+        group = p(actions[-1]).get("GroupingIdentifier")
+        members = [(i,a) for i,a in enumerate(actions) if p(a).get("GroupingIdentifier")==group]
+        require(bool(group) and len(members)==3 and all(kind(a,"conditional") for _,a in members)
+                and [p(a).get("WFControlFlowMode") for _,a in members]==[0,1,2]
+                and members[1][0] < oi, "balanced main dispatcher branch")
+        dispatch = p(members[0][1])
+        require(dispatch.get("WFCondition")==4 and dispatch.get("WFConditionalActionString")=="1"
+                and token(dispatch.get("WFInput",{}).get("Variable"))=={
+                    "Type":"Variable","VariableName":"_cherri_is_fn"}, "canonical function dispatcher")
         calls=[a for a in actions if kind(a,"runworkflow")]
-        require(len(calls)==3 and all(p(a).get("WFWorkflowName")==fid for a in calls),
+        require(len(calls)==3 and all(p(a).get("WFWorkflowName")==fid
+                and p(a).get("WFWorkflow")=={"isSelf":True,"workflowName":fid} for a in calls),
                 "three exact original-name function self-calls")
+    else:
+        require(output_index==len(actions)-1, "no actions after binding callback")
     return {"status":"PASS_LOCAL_GRAPH_ONLY","actualClipboardObservation":True,
             "maximumEncodedClipboardCharacters":512,"originalShortcutName":fid,"appleRuntime":"NOT_RUN"}

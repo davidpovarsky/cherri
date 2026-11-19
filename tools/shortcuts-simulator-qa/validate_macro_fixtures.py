@@ -118,8 +118,8 @@ for fid in BINDING_CASES:
     actual_graph = verify_adapter_graph(fid, graph)
     assert entry["bindingDefaultsGraph"] == actual_graph
     rejected_graphs = []
-    for mutation in ["wrong-observation", "raised-cap", "hardcoded-summary"] + (
-            ["wrong-self-call-name"] if fid == "CherriTypedDefaultsPOC" else []):
+    for mutation in ["wrong-observation", "raised-cap", "hardcoded-summary", "wrong-output-edge", "unexpected-tail"] + (
+            ["wrong-self-call-name", "wrong-self-call-identity", "wrong-dispatch-closure"] if fid == "CherriTypedDefaultsPOC" else []):
         damaged = copy.deepcopy(graph)
         for action in damaged:
             p = action.get("WFWorkflowActionParameters", {})
@@ -131,6 +131,16 @@ for fid in BINDING_CASES:
                 p["WFTextActionText"] = entry["bindingDefaultsSource"]["expectedSummary"]
             elif mutation == "wrong-self-call-name" and action.get("WFWorkflowActionIdentifier") == "is.workflow.actions.runworkflow":
                 p["WFWorkflowName"] = "WrongShortcutName"
+            elif mutation == "wrong-self-call-identity" and action.get("WFWorkflowActionIdentifier") == "is.workflow.actions.runworkflow":
+                p["WFWorkflow"]["isSelf"] = False
+            elif mutation == "wrong-output-edge" and action.get("WFWorkflowActionIdentifier") == "is.workflow.actions.output":
+                for attachment in p.get("WFOutput",{}).get("Value",{}).get("attachmentsByRange",{}).values():
+                    attachment["OutputUUID"] = "00000000-0000-0000-0000-000000000000"
+        if mutation == "unexpected-tail":
+            damaged.append({"WFWorkflowActionIdentifier":"is.workflow.actions.gettext",
+                            "WFWorkflowActionParameters":{"WFTextActionText":"wrong output"}})
+        if mutation == "wrong-dispatch-closure":
+            damaged[-1]["WFWorkflowActionParameters"]["GroupingIdentifier"] = "00000000-0000-0000-0000-000000000000"
         try:
             verify_adapter_graph(fid, damaged)
         except ValueError as exc:
