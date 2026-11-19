@@ -1,0 +1,2048 @@
+{
+  "schemaVersion": "1.5",
+  "fixtureId": "qa-f04-yield-list-v2",
+  "runId": "qa-f04-yield-list-v2-44431486363-a1a7dc032df75aefaf94731686b91886",
+  "compilerSha": "ff04ee8887c701824e5161f3fff1431ff204bb65",
+  "expectedNativeActionCount": 109,
+  "observedCardCount": 7,
+  "observedCardCountScope": "AX_CONTAINERS",
+  "status": "NEEDS_REVIEW",
+  "issues": [
+    "ACTION_COUNT_MISMATCH",
+    "EDITOR_BOTTOM_UNVERIFIED"
+  ],
+  "proofTier": "AX_NATIVE_COMPARISON",
+  "ocrUsed": false,
+  "actions": [
+    {
+      "sourceIndex": 0,
+      "nativeIdentifier": "is.workflow.actions.comment",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFCommentActionText",
+          "value": "ANCHOR_CARD_01_TOP_HEADER",
+          "nativeType": "string",
+          "status": "AX_UNEXPOSED",
+          "observedTextPresent": true,
+          "evidence": [
+            {
+              "kind": "AX",
+              "page": 1,
+              "nodeId": "p1:n33"
+            }
+          ]
+        }
+      ],
+      "hiddenOrUnobserved": [],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n33"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Comment",
+        "ANCHOR_CARD_01_TOP_HEADER",
+        "Vertical scroll bar, 1 page",
+        "0%",
+        "Horizontal scroll bar, 1 page"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 1,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "546025aa2c802af943446872d7bdb7748b78c52bf1d30a70183cce3a6adec36c",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n65"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Text",
+        "Vertical scroll bar, 1 page",
+        "0%",
+        "Horizontal scroll bar, 1 page"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 2,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFVariableName",
+          "value": "__cherri_debug_log",
+          "nativeType": "string",
+          "status": "HIDDEN",
+          "observedTextPresent": false,
+          "evidence": []
+        }
+      ],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n97"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 3,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "2bfbcde4b0e7dc88dd988e940bcf82ddc947b0c15245eec6705673b855b713db",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFTextActionText",
+          "value": "{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"before\",\"label\":\"f04-yield-list\",\"stepSequence\":3,\"actionIdentifier\":\"is.workflow.actions.setvariable\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"￼\"}",
+          "nativeType": "WFTextTokenString",
+          "status": "HIDDEN",
+          "observedTextPresent": false,
+          "evidence": []
+        }
+      ],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n111"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Text",
+        "Vertical scroll bar, 1 page",
+        "0%",
+        "Horizontal scroll bar, 1 page"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 4,
+      "nativeIdentifier": "is.workflow.actions.appendvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [
+        {
+          "key": "WFVariableName",
+          "value": "__cherri_qa_trace",
+          "nativeType": "string",
+          "status": "HIDDEN",
+          "observedTextPresent": false,
+          "evidence": []
+        }
+      ],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n143"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Add"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 5,
+      "nativeIdentifier": "is.workflow.actions.list",
+      "nativeUUIDDigest": "b3a56ea45791c53d07b285b542b1cdd51581cbc6113859c17adcd1f530044efb",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFItems",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n157"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [
+        "Vertical scroll bar, 1 page",
+        "0%",
+        "Horizontal scroll bar, 1 page",
+        "Add"
+      ],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 6,
+      "nativeIdentifier": "is.workflow.actions.repeat.each",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "6ce82c4bb9c4945b1ab69c77fdafc15cfebdb6be73f8cdf47c5f454f20f704e6",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "AX",
+          "page": 1,
+          "nodeId": "p1:n210"
+        }
+      ],
+      "status": "AX_UNEXPOSED",
+      "observedTexts": [],
+      "nativeIdentityEvidence": "AX_UNEXPOSED"
+    },
+    {
+      "sourceIndex": 7,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 8,
+      "nativeIdentifier": "is.workflow.actions.list",
+      "nativeUUIDDigest": "f4cbefef6172e57d0a8690a294297df4451f9ec366d596ff39915e7e58de82f7",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFItems",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 9,
+      "nativeIdentifier": "is.workflow.actions.repeat.each",
+      "nativeUUIDDigest": "bbac13598bf412bb8227e2c253f6555bd43f530a67df97098e61ac37e6fa349e",
+      "groupingIdentifierDigest": "6ce82c4bb9c4945b1ab69c77fdafc15cfebdb6be73f8cdf47c5f454f20f704e6",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 10,
+      "nativeIdentifier": "is.workflow.actions.repeat.each",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "b5565e007f8b7fd8a940bab286f082a01b597bc25f22977d21be32b15f16a0a3",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 11,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 12,
+      "nativeIdentifier": "is.workflow.actions.getvariable",
+      "nativeUUIDDigest": "815603acc8b66bac544d0acb527e6252d22c86966253d24d9818f8a247f46a8f",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFVariable",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 13,
+      "nativeIdentifier": "is.workflow.actions.repeat.each",
+      "nativeUUIDDigest": "48359f83d390596362a80cc8b8c434103a86b9b642f5297d74fd18fc1166078f",
+      "groupingIdentifierDigest": "b5565e007f8b7fd8a940bab286f082a01b597bc25f22977d21be32b15f16a0a3",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 14,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "180797cf4a99646c2dfbdee5d1e33aae6831d13894ccc8577acae9550f289bc4",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 15,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "77990805b0849e87e631d863bc3142f3ed25cd6be39dbb77ad823cd22ae98bb5",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 16,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "7a1766d04f95e50aaeb5a5c13906b300772cf86e693594a0c597102da83eab55",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 17,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 18,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "b2339e8c9698fd4eda0edf21993cc8a1d2f3a500f62a22d08391287498dcd76c",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 19,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "8cece6a625827e63452e38ccd36a161cbe01576f64b725e77e07237b827fef26",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 20,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "16ca1d5859dedfad84e9b220dc7103c48f2dd718e38aaaeacd7adb309833dfe0",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 21,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "4ebada65b2b9daa4d545df3beb998d2e383d2f5c9f4022c019f1d22ee60a0ed6",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 22,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "3edd87c02084753460ebcf314f086da0ce052059c28b2bdfd0bf31cb231bf106",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 23,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "507bd8312dc1a20101c5b6c12e49aa058b7c3819e320aa46eb3d99febe0b0158",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 24,
+      "nativeIdentifier": "is.workflow.actions.getitemfromlist",
+      "nativeUUIDDigest": "8e52bcbc2dc9cb19c449c57d43c65fa246207a165fa4d64c1acac4c61ef53a25",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFItemIndex",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 25,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "507bd8312dc1a20101c5b6c12e49aa058b7c3819e320aa46eb3d99febe0b0158",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 26,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 27,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "0b0c05033922a33e8b18f5f49c169ca713d3422624affe7cd3685f2238b6056d",
+      "groupingIdentifierDigest": "507bd8312dc1a20101c5b6c12e49aa058b7c3819e320aa46eb3d99febe0b0158",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 28,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "3edd87c02084753460ebcf314f086da0ce052059c28b2bdfd0bf31cb231bf106",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 29,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 30,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "fab8a51667117eaf7d47c6e05055d0cb4f446dcd404fb4c72e3f9bf096dcea7b",
+      "groupingIdentifierDigest": "3edd87c02084753460ebcf314f086da0ce052059c28b2bdfd0bf31cb231bf106",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 31,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "185d0afa7e17bdb82d9e85b044545410f8755aa66afb2899db6fec4b29645c36",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 32,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "1dd8e8fd17c9804833a5d0ea2008fb394eda84a88beea0c80caa3d80a0cd92bb",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 33,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "b2dc28ccf01409e68a838497a0e87a4f051a0c08727321c66385e0fdf6da4e08",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 34,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "dc8c5cea5102ecc0f32f444da5f4d91c149bb8d622773cf6322d04d454860c1b",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 35,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "3685872886e9bca417e37d369a114847cee230f171e2cdbc9ef4a1e4b109859c",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 36,
+      "nativeIdentifier": "is.workflow.actions.getitemfromlist",
+      "nativeUUIDDigest": "2369f6b2d35625e073016ebf3d91ae0361e713efc7b151af683241179c844801",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFItemIndex",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 37,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "3685872886e9bca417e37d369a114847cee230f171e2cdbc9ef4a1e4b109859c",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 38,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 39,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "9fbcd97268182192c29450951f4760a8733d8f8bc8421b70b4865e295dcc71b5",
+      "groupingIdentifierDigest": "3685872886e9bca417e37d369a114847cee230f171e2cdbc9ef4a1e4b109859c",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 40,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "dc8c5cea5102ecc0f32f444da5f4d91c149bb8d622773cf6322d04d454860c1b",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 41,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 42,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "4f8882ce99cd1d05317eed59a238bdb4d03895ba62d88dec1860ff295a3a678f",
+      "groupingIdentifierDigest": "dc8c5cea5102ecc0f32f444da5f4d91c149bb8d622773cf6322d04d454860c1b",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 43,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "987f7a816db6747b2beffef05b4ff08f2762b6a6c1a1f79cbb52955ae2bfb729",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 44,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "bceab985ebb5e90f979fbc55759b23708e576c9a65ccdd76e965d8dc009bb714",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 45,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "267de48583a086bb4842be3b3ff641df803adad44f8fd2881457717fc512c4ff",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 46,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "794901ce114131e48a187b24c03c8a7e5a77b1a08e30cf13a75ce390cd56e526",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 47,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "b44330cbcc81daabf5c8b179699b5f923f7439fc2cebe5bdcc63172c2bb7ec4a",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 48,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "45695e17909d7313ecd355a850c185aa40af802c7af6d230f7a438a46079a1fa",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 49,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "70630637a82fa7e47eb58bddefdbd127142f003f0c648f4a43a44185950c193d",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 50,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "9865a252e8a66b0f36e47f64d0845219c5c1f94d0fc3c3862f0354c1a67709f0",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 51,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "3b77515603bc17c03d268217203dd560571df123a828181abd04d7c7b063674a",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 52,
+      "nativeIdentifier": "is.workflow.actions.getitemfromlist",
+      "nativeUUIDDigest": "6fa428931f587b0aee770241a1fbdcb4f1547e5b31f97087bdab20e3bca06fd4",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFItemIndex",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 53,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "3b77515603bc17c03d268217203dd560571df123a828181abd04d7c7b063674a",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 54,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 55,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "7f165e2c43503aa75edf04ec21afdf180fd41bef956872dd838e7b2463d4782e",
+      "groupingIdentifierDigest": "3b77515603bc17c03d268217203dd560571df123a828181abd04d7c7b063674a",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 56,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "9865a252e8a66b0f36e47f64d0845219c5c1f94d0fc3c3862f0354c1a67709f0",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 57,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 58,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "90dfaeacc45fe146eef9f5663628b20944d0384b2d211db2cbfed7f7c3e546d1",
+      "groupingIdentifierDigest": "9865a252e8a66b0f36e47f64d0845219c5c1f94d0fc3c3862f0354c1a67709f0",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 59,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "e5fa12270008db362f1d5efbfd273a47b048ad5465e7fe943b957b67f3a98870",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 60,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "df85d5fa497deec65448b56486245aa0c832e47b3408b3c4098fdfb755448bdd",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 61,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "ad404299a2261f23eb398cb95f0ef19c9889e06b900da61bd78078effd7226c5",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 62,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "f02ee38c53dc418ab5d3e136fcc5cb00abb77765b1ee8951bdb243e6802154f5",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 63,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "399565ab5a4267fbeb706fe064af5de9e6d1e19a9e66a052192ece44979527bd",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 64,
+      "nativeIdentifier": "is.workflow.actions.getitemfromlist",
+      "nativeUUIDDigest": "f863c7491d8bc587d7a87e98b1a1d98a1e697d4349cf966ba440d85d73e3d3ee",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFItemIndex",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 65,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "399565ab5a4267fbeb706fe064af5de9e6d1e19a9e66a052192ece44979527bd",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 66,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 67,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "d8379e09006e750ecd7ec1d1be04fa98cdc5733e5621ac1b5bc18981c8cd3765",
+      "groupingIdentifierDigest": "399565ab5a4267fbeb706fe064af5de9e6d1e19a9e66a052192ece44979527bd",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 68,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "f02ee38c53dc418ab5d3e136fcc5cb00abb77765b1ee8951bdb243e6802154f5",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 69,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 70,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "d9bd723cd9ffb1ff5633e60bafa3d23c84e428c40b6159009295d7291a491c19",
+      "groupingIdentifierDigest": "f02ee38c53dc418ab5d3e136fcc5cb00abb77765b1ee8951bdb243e6802154f5",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 71,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "c8eb0b652d1e3c043c1ddb6e2f424eeb97e9c3a47f5c2f24e65b221bce1a69ce",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 72,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "1b759abada0f46d3af3a7032ae1beb2482913d6a195cfc81a583651e40023b3f",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 73,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "2adec8bd62dc7f1503e7e4efd658957b2dc4af64c46b2da3f807e05ba4eca084",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 74,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "d6212d0570b5245747f67a9afcb45ccc1c258b28afe993e5c7162a872ea210ad",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 75,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "232135d43737d00e9b0f861608dcf9eb034a12f7993506a92b2e3551742d75ce",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 76,
+      "nativeIdentifier": "is.workflow.actions.getitemfromlist",
+      "nativeUUIDDigest": "6bb9a36ea74ec39b39e435d69d1756fa560a3fdec0320156f9a3c112e622da2f",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFItemIndex",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 77,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "232135d43737d00e9b0f861608dcf9eb034a12f7993506a92b2e3551742d75ce",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 78,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 79,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "fe6c887cbc2642edc33319b18c3f810c65fcb395575ecf066ba261a9d499bdaa",
+      "groupingIdentifierDigest": "232135d43737d00e9b0f861608dcf9eb034a12f7993506a92b2e3551742d75ce",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 80,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "d6212d0570b5245747f67a9afcb45ccc1c258b28afe993e5c7162a872ea210ad",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 81,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 82,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "4dbca78765bd55176fea9dcfbccaab4df1e3b6fac50b72fd796e352d1d8528b9",
+      "groupingIdentifierDigest": "d6212d0570b5245747f67a9afcb45ccc1c258b28afe993e5c7162a872ea210ad",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 83,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "bee423d27f2907a1d52d0cedfc5d2fe2b8e720911d04cc345c72d5c30ea5e551",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 84,
+      "nativeIdentifier": "is.workflow.actions.count",
+      "nativeUUIDDigest": "837497bbfc30ed01fe99db4d98e10ca376df55462ff0cab352af5fc69b6e824c",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "Input",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 85,
+      "nativeIdentifier": "is.workflow.actions.math",
+      "nativeUUIDDigest": "7f9d134c07ee7842674658aad124c7d8bea42ece12ecacd633239ddc0b197f23",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFMathOperand",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 86,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "2063aaeb30f4606f434a65e3ed18ade7c2102c250bb506e3b3b339462952b9f5",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 87,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "a4fddf3f1a2865ea010a6c77a3eedbd8f67887b27f89b0d68528c1e573594479",
+      "controlFlowMode": 0,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFCondition",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFConditionalLegacyComparisonBehavior",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFNumberValue",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 88,
+      "nativeIdentifier": "is.workflow.actions.getitemfromlist",
+      "nativeUUIDDigest": "b315b6134ed7b04329a658e76bbe24e4e4c29d3d698852cf77fcf9e9c42a2fe6",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        },
+        {
+          "key": "WFItemIndex",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 89,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "a4fddf3f1a2865ea010a6c77a3eedbd8f67887b27f89b0d68528c1e573594479",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 90,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 91,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "8dd172ccd62d747332a2a1b4957b3ae73571d625aade61b32f77edc66cc8373e",
+      "groupingIdentifierDigest": "a4fddf3f1a2865ea010a6c77a3eedbd8f67887b27f89b0d68528c1e573594479",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 92,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "2063aaeb30f4606f434a65e3ed18ade7c2102c250bb506e3b3b339462952b9f5",
+      "controlFlowMode": 1,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 93,
+      "nativeIdentifier": "is.workflow.actions.nothing",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 94,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": "74aa6f4e419eca8d73f345b65a70b8eada321e2cddc53697fc7dec0d3ef17280",
+      "groupingIdentifierDigest": "2063aaeb30f4606f434a65e3ed18ade7c2102c250bb506e3b3b339462952b9f5",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 95,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "52675e36522891c6ea75877d1dd671ee7655e0592197cf7f417f30b4b3a2b186",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 96,
+      "nativeIdentifier": "is.workflow.actions.setvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 97,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "794901ce114131e48a187b24c03c8a7e5a77b1a08e30cf13a75ce390cd56e526",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 98,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "267de48583a086bb4842be3b3ff641df803adad44f8fd2881457717fc512c4ff",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 99,
+      "nativeIdentifier": "is.workflow.actions.conditional",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": "b2339e8c9698fd4eda0edf21993cc8a1d2f3a500f62a22d08391287498dcd76c",
+      "controlFlowMode": 2,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 100,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "8a0d6f97fa9de0912abdb462c87eae08a17589f314f00e7e8eadf0a0aac97a1c",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 101,
+      "nativeIdentifier": "is.workflow.actions.comment",
+      "nativeUUIDDigest": "f15873ad503603f1d2ea7082564c9bc2ec9c068fe11a0b068c1cb953cf530528",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 102,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "165cc0c322016a74a2e826a2c07f1eb71a44afb5962aed78008e05a6cdc6104c",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 103,
+      "nativeIdentifier": "is.workflow.actions.appendvariable",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFInput",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 104,
+      "nativeIdentifier": "is.workflow.actions.text.combine",
+      "nativeUUIDDigest": "0b47606be237014add7fad961e31bcde235c1f56cddc57f05602be131e2405ad",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "text",
+          "status": "AX_UNEXPOSED",
+          "reason": "native type/value requires explicit UI evidence"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 105,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "b17562c688c2b3521cdb69215cce2fadade6a78601ec2113a2c0e69122ae2495",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 106,
+      "nativeIdentifier": "is.workflow.actions.gettext",
+      "nativeUUIDDigest": "5e089232c1773416adda42f1e609ad3a30e330636f56aa3e164c3ff5a30cf340",
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFTextActionText",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 107,
+      "nativeIdentifier": "is.workflow.actions.comment",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    },
+    {
+      "sourceIndex": 108,
+      "nativeIdentifier": "is.workflow.actions.output",
+      "nativeUUIDDigest": null,
+      "groupingIdentifierDigest": null,
+      "controlFlowMode": null,
+      "visibleParameters": [],
+      "hiddenOrUnobserved": [
+        {
+          "key": "WFOutput",
+          "status": "HIDDEN",
+          "reason": "token attachment identity is not proven by visible text"
+        }
+      ],
+      "evidence": [],
+      "status": "NOT_FOUND"
+    }
+  ],
+  "summary": {
+    "matched": 0,
+    "unmatchedExpected": 109,
+    "statusCounts": {
+      "AX_UNEXPOSED": 7,
+      "NOT_FOUND": 102
+    },
+    "ambiguousObserved": 7,
+    "falsePassCount": null,
+    "falsePassNote": "Measured only by separate negative-control test execution"
+  }
+}
