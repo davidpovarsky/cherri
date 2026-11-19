@@ -39,7 +39,6 @@ var incompleteLocalAssertions = map[string]string{
 	"E03": "Rename edit count does not inspect exact exclusions or hover/signature/definition behavior.",
 	"E05": "One out-of-order document update does not test cancellation and stale response publication.",
 	"E06": "One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface.",
-	"D03": "File existence does not verify active fork docs, publication, and upstream separation.",
 
 	"CI01":  "Local process fixtures do not execute WorkflowKit; source-bound real macOS correct/corrupt/restored REQUIRED encoding evidence is required.",
 	"CI02":  "Nonempty IR for a runtime fixture is not an iOS runtime execution.",

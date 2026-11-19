@@ -249,6 +249,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if id == "D03" {
+		return []string{documentationConsumerTestID, documentationAppTestID}
+	}
 	if tests, ok := editorProductionTests[id]; ok {
 		ids := make([]string, 0, len(tests))
 		for _, test := range tests {

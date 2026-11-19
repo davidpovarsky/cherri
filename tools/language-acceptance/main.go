@@ -931,6 +931,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				continue
 			}
 
+			if err := validateDocumentationRecord(reqID, rec, manifest); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateEditorPerformanceRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1856,14 +1860,7 @@ func (r *Runner) runDocs() {
 	r.runGeneratedDocumentationRequirement()
 	r.runExecutableDocumentationRequirement()
 
-	// D03: Active fork docs separated from upstream
-	docsRepoGuide := filepath.Join(resolveRepoRoot(), "..", "cherrilang.org", "fork-language", "guide.md")
-	_, errForkDocs := os.Stat(docsRepoGuide)
-	if errForkDocs != nil {
-		_, errForkDocs = os.Stat(resolveRepoPath(filepath.Join("docs", "language-v2", "upstream-boundary.md")))
-	}
-	d03Passed := errForkDocs == nil
-	r.Record("D03", "docs", "Active fork docs separated from upstream reference", "docs+integration", []string{"docs", "integration"}, d03Passed, "PASSED", "Fork documentation present in cherrilang.org fork-language/ guide")
+	r.runDocumentationSeparationRequirement()
 }
 
 // Group 19: Skill
