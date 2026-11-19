@@ -117,17 +117,17 @@ func TestP15RP05LiteralPublicRoutes(t *testing.T) {
 }
 
 type p15StaticVariantCase struct {
-	name, source, identifier string
-	fixed                    map[string]any
+	name, source, include, identifier string
+	fixed                             map[string]any
 }
 
 func p15StaticVariantCases() []p15StaticVariantCase {
 	return []p15StaticVariantCase{
-		{"convertToJPEG", "convertToJPEG(ShortcutInput)", "is.workflow.actions.image.convert", map[string]any{"WFImageFormat": "JPEG"}},
-		{"base64Encode", "base64Encode(ShortcutInput)", "is.workflow.actions.base64encode", map[string]any{"input": "Encode", "WFEncodeMode": "Encode"}},
-		{"base64Decode", "base64Decode(ShortcutInput)", "is.workflow.actions.base64encode", map[string]any{"WFEncodeMode": "Decode"}},
-		{"DNDOn", "DNDOn()", "is.workflow.actions.dnd.set", map[string]any{"Enabled": float64(1)}},
-		{"DNDOff", "DNDOff()", "is.workflow.actions.dnd.set", map[string]any{"Enabled": float64(0)}},
+		{"convertToJPEG", "convertToJPEG(ShortcutInput)", "actions/images", "is.workflow.actions.image.convert", map[string]any{"WFImageFormat": "JPEG"}},
+		{"base64Encode", "base64Encode(ShortcutInput)", "actions/crypto", "is.workflow.actions.base64encode", map[string]any{"input": "Encode", "WFEncodeMode": "Encode"}},
+		{"base64Decode", "base64Decode(ShortcutInput)", "actions/crypto", "is.workflow.actions.base64encode", map[string]any{"WFEncodeMode": "Decode"}},
+		{"DNDOn", "DNDOn()", "actions/settings", "is.workflow.actions.dnd.set", map[string]any{"Enabled": float64(1)}},
+		{"DNDOff", "DNDOff()", "actions/settings", "is.workflow.actions.dnd.set", map[string]any{"Enabled": float64(0)}},
 	}
 }
 
@@ -154,7 +154,7 @@ func TestP15RP09StaticVariantNativeDifferential(t *testing.T) {
 	for _, tc := range p15StaticVariantCases() {
 		t.Run(tc.name, func(t *testing.T) {
 			v2 := compileDebugFixture(t, tc.source, false)
-			legacy := compileDebugFixture(t, tc.source, true)
+			legacy := compileDebugFixture(t, "#include \""+tc.include+"\"\n"+tc.source, true)
 			if err := p15StaticVariantError(v2, tc); err != nil {
 				t.Fatal(err)
 			}
@@ -321,7 +321,22 @@ func TestP15RP32SevenTriggerMigrationAndNativeRoundTrip(t *testing.T) {
 	if err != nil || len(diagnostics) != 0 {
 		t.Fatalf("seven-family migration: %v %+v", err, diagnostics)
 	}
-	legacy, err := compileLegacySourceToRawMapInMemory(p15SevenLegacyTriggers)
+	// The hybrid verifier deliberately omits authored header defaults. Exercise
+	// the public Legacy CLI here so its trigger header is actually serialized.
+	dir := t.TempDir()
+	input, output := filepath.Join(dir, "seven-triggers.cherri"), filepath.Join(dir, "seven-triggers.shortcut")
+	if err := os.WriteFile(input, []byte(p15SevenLegacyTriggers), 0600); err != nil {
+		t.Fatal(err)
+	}
+	stdout, stderr, err := p15RunCLI(t, p15AcceptanceCLI(t), dir, nil, "compile", input, "--mode=legacy", "--skip-sign", "--output="+output)
+	if err != nil {
+		t.Fatalf("canonical Legacy CLI: %v %s %s", err, stdout, stderr)
+	}
+	data, err := os.ReadFile(output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacy, err := decodeShortcutRawMap(data)
 	if err != nil {
 		t.Fatal(err)
 	}
