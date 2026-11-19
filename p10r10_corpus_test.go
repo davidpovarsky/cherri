@@ -10,7 +10,12 @@ import (
 	"time"
 )
 
-const p10r10CorpusDir = `C:\Users\DAVID\Code\cherri-shortcut-audit-20261110\normalized`
+var p10r10CorpusDir = func() string {
+	if path := os.Getenv("CHERRI_P10R10_CORPUS_DIR"); path != "" {
+		return path
+	}
+	return `C:\Users\DAVID\Code\cherri-shortcut-audit-20261110\normalized`
+}()
 
 // TestP10R10CorpusMeasure measures natural coverage and whole-workflow fidelity on the private
 // corpus. It is gated by CHERRI_P10R10_CORPUS=1 and never writes private content into the repo.
@@ -20,7 +25,7 @@ func TestP10R10CorpusMeasure(t *testing.T) {
 	}
 	entries, err := os.ReadDir(p10r10CorpusDir)
 	if err != nil {
-		t.Skipf("corpus not present: %v", err)
+		t.Fatalf("PRIVATE_CORPUS_UNAVAILABLE: CHERRI_P10R10_CORPUS=1 was specified but the corpus is not accessible: %v", err)
 	}
 	var files []string
 	for _, e := range entries {
@@ -29,6 +34,9 @@ func TestP10R10CorpusMeasure(t *testing.T) {
 		}
 	}
 	sort.Strings(files)
+	if len(files) != 38 {
+		t.Fatalf("PRIVATE_CORPUS_INCOMPLETE: expected 38 corpus files, got %d", len(files))
+	}
 	total, natural := 0, 0
 	reasons := map[string]int{}
 	fallbackIDs := map[string]int{}
