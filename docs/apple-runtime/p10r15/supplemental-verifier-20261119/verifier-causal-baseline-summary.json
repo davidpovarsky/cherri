@@ -1,0 +1,44 @@
+{
+  "exit_code": 1,
+  "elapsed_seconds": 4.02,
+  "counts": {
+    "pass": 0,
+    "fail": 20,
+    "skip": 0
+  },
+  "failed": [
+    "TestP15VerificationInvalidRecordsNeverPass/empty_test_id",
+    "TestP15VerificationInvalidRecordsNeverPass/wrong_test_id",
+    "TestP15VerificationInvalidRecordsNeverPass/empty_evidence_id",
+    "TestP15VerificationInvalidRecordsNeverPass/duplicate_evidence_id",
+    "TestP15VerificationInvalidRecordsNeverPass/wrong_source_sha",
+    "TestP15VerificationInvalidRecordsNeverPass/missing_runtime_artifact",
+    "TestP15VerificationInvalidRecordsNeverPass/empty_artifact_path",
+    "TestP15VerificationInvalidRecordsNeverPass/missing_artifact_digest",
+    "TestP15VerificationInvalidRecordsNeverPass/missing_artifact_run",
+    "TestP15VerificationInvalidRecordsNeverPass/missing_artifact_file",
+    "TestP15VerificationInvalidRecordsNeverPass/stale_artifact",
+    "TestP15VerificationInvalidRecordsNeverPass/foreign_runtime_sha",
+    "TestP15VerificationInvalidRecordsNeverPass/failed_runtime_run",
+    "TestP15VerificationInvalidRecordsNeverPass/unknown_requirement",
+    "TestP15VerificationInvalidRecordsNeverPass",
+    "TestP15VerificationMalformedProducerFailsClosed/[",
+    "TestP15VerificationMalformedProducerFailsClosed/[]",
+    "TestP15VerificationMalformedProducerFailsClosed/{}",
+    "TestP15VerificationMalformedProducerFailsClosed/{\"records\":\"not-an-array\"}",
+    "TestP15VerificationMalformedProducerFailsClosed"
+  ],
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=3m",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestP15VerificationInvalidRecordsNeverPass|TestP15VerificationMalformedProducerFailsClosed)$"
+  ],
+  "production_baseline_sha": "7f7a37b1108fc1dcdd1e8ae3c887742de1b1d3a6",
+  "source_tree_clean": false,
+  "new_tests_present": true
+}

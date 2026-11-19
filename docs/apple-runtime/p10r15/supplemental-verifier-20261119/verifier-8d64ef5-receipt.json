@@ -1,0 +1,260 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-RP01-unit",
+      "requirements": [
+        "RP01"
+      ],
+      "tier": "unit",
+      "implementation_sha": "8d64ef5e2b02b7e4f1d96d97295f923030051dbf",
+      "test_id": "github.com/electrikmilk/cherri/tools/language-acceptance:TestMeta_AssertionReturnsFalse",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        "./tools/language-acceptance",
+        "-run",
+        "^(TestMeta_AssertionReturnsFalse|TestMeta_ContradictoryPassedStatus|TestMeta_MissingRequiredID|TestMeta_UnknownIDInjected|TestMeta_DuplicateEvidenceID|TestEndToEndAggregator_All12AdversarialAttacks|TestP15VerificationInvalidRecordsNeverPass|TestP15VerificationMalformedProducerFailsClosed|TestP15VerificationCLIInvalidInputs)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestMeta_AssertionReturnsFalse, TestMeta_ContradictoryPassedStatus, TestMeta_MissingRequiredID, TestMeta_UnknownIDInjected, TestMeta_DuplicateEvidenceID, TestEndToEndAggregator_All12AdversarialAttacks, TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs",
+        "required_production_tests": "TestMeta_AssertionReturnsFalse\nTestMeta_ContradictoryPassedStatus\nTestMeta_MissingRequiredID\nTestMeta_UnknownIDInjected\nTestMeta_DuplicateEvidenceID\nTestEndToEndAggregator_All12AdversarialAttacks\nTestP15VerificationInvalidRecordsNeverPass\nTestP15VerificationMalformedProducerFailsClosed\nTestP15VerificationCLIInvalidInputs"
+      },
+      "detail": "Executed production tests: TestMeta_AssertionReturnsFalse, TestMeta_ContradictoryPassedStatus, TestMeta_MissingRequiredID, TestMeta_UnknownIDInjected, TestMeta_DuplicateEvidenceID, TestEndToEndAggregator_All12AdversarialAttacks, TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs"
+    },
+    {
+      "evidence_id": "ev-local-RP01-integration",
+      "requirements": [
+        "RP01"
+      ],
+      "tier": "integration",
+      "implementation_sha": "8d64ef5e2b02b7e4f1d96d97295f923030051dbf",
+      "test_id": "github.com/electrikmilk/cherri/tools/language-acceptance:TestMeta_AssertionReturnsFalse",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        "./tools/language-acceptance",
+        "-run",
+        "^(TestMeta_AssertionReturnsFalse|TestMeta_ContradictoryPassedStatus|TestMeta_MissingRequiredID|TestMeta_UnknownIDInjected|TestMeta_DuplicateEvidenceID|TestEndToEndAggregator_All12AdversarialAttacks|TestP15VerificationInvalidRecordsNeverPass|TestP15VerificationMalformedProducerFailsClosed|TestP15VerificationCLIInvalidInputs)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestMeta_AssertionReturnsFalse, TestMeta_ContradictoryPassedStatus, TestMeta_MissingRequiredID, TestMeta_UnknownIDInjected, TestMeta_DuplicateEvidenceID, TestEndToEndAggregator_All12AdversarialAttacks, TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs",
+        "required_production_tests": "TestMeta_AssertionReturnsFalse\nTestMeta_ContradictoryPassedStatus\nTestMeta_MissingRequiredID\nTestMeta_UnknownIDInjected\nTestMeta_DuplicateEvidenceID\nTestEndToEndAggregator_All12AdversarialAttacks\nTestP15VerificationInvalidRecordsNeverPass\nTestP15VerificationMalformedProducerFailsClosed\nTestP15VerificationCLIInvalidInputs"
+      },
+      "detail": "Executed production tests: TestMeta_AssertionReturnsFalse, TestMeta_ContradictoryPassedStatus, TestMeta_MissingRequiredID, TestMeta_UnknownIDInjected, TestMeta_DuplicateEvidenceID, TestEndToEndAggregator_All12AdversarialAttacks, TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs"
+    },
+    {
+      "evidence_id": "ev-local-RP02-unit",
+      "requirements": [
+        "RP02"
+      ],
+      "tier": "unit",
+      "implementation_sha": "8d64ef5e2b02b7e4f1d96d97295f923030051dbf",
+      "test_id": "github.com/electrikmilk/cherri/tools/language-acceptance:TestP15RP02ParserOnlyAndForeignSHA",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        "./tools/language-acceptance",
+        "-run",
+        "^(TestP15RP02ParserOnlyAndForeignSHA|TestMeta_UnitAndNativeCannotSatisfyIOSInFinal|TestMeta_FalsePassedClaimWithMissingTiersRejected|TestMeta_WeakTestLevelRejection)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP02ParserOnlyAndForeignSHA, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestMeta_FalsePassedClaimWithMissingTiersRejected, TestMeta_WeakTestLevelRejection",
+        "required_production_tests": "TestP15RP02ParserOnlyAndForeignSHA\nTestMeta_UnitAndNativeCannotSatisfyIOSInFinal\nTestMeta_FalsePassedClaimWithMissingTiersRejected\nTestMeta_WeakTestLevelRejection"
+      },
+      "detail": "Executed production tests: TestP15RP02ParserOnlyAndForeignSHA, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestMeta_FalsePassedClaimWithMissingTiersRejected, TestMeta_WeakTestLevelRejection"
+    },
+    {
+      "evidence_id": "ev-local-RP02-integration",
+      "requirements": [
+        "RP02"
+      ],
+      "tier": "integration",
+      "implementation_sha": "8d64ef5e2b02b7e4f1d96d97295f923030051dbf",
+      "test_id": "github.com/electrikmilk/cherri/tools/language-acceptance:TestP15RP02ParserOnlyAndForeignSHA",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        "./tools/language-acceptance",
+        "-run",
+        "^(TestP15RP02ParserOnlyAndForeignSHA|TestMeta_UnitAndNativeCannotSatisfyIOSInFinal|TestMeta_FalsePassedClaimWithMissingTiersRejected|TestMeta_WeakTestLevelRejection)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP02ParserOnlyAndForeignSHA, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestMeta_FalsePassedClaimWithMissingTiersRejected, TestMeta_WeakTestLevelRejection",
+        "required_production_tests": "TestP15RP02ParserOnlyAndForeignSHA\nTestMeta_UnitAndNativeCannotSatisfyIOSInFinal\nTestMeta_FalsePassedClaimWithMissingTiersRejected\nTestMeta_WeakTestLevelRejection"
+      },
+      "detail": "Executed production tests: TestP15RP02ParserOnlyAndForeignSHA, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestMeta_FalsePassedClaimWithMissingTiersRejected, TestMeta_WeakTestLevelRejection"
+    },
+    {
+      "evidence_id": "ev-local-RP03-integration",
+      "requirements": [
+        "RP03"
+      ],
+      "tier": "integration",
+      "implementation_sha": "8d64ef5e2b02b7e4f1d96d97295f923030051dbf",
+      "test_id": "github.com/electrikmilk/cherri/tools/language-acceptance:TestP15RP03FreshCloneContractIntake",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        "./tools/language-acceptance",
+        "-run",
+        "^(TestP15RP03FreshCloneContractIntake|TestRealContractsLoadAndVerifyDigests|TestMeta_ContractHashMismatch)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP03FreshCloneContractIntake, TestRealContractsLoadAndVerifyDigests, TestMeta_ContractHashMismatch",
+        "required_production_tests": "TestP15RP03FreshCloneContractIntake\nTestRealContractsLoadAndVerifyDigests\nTestMeta_ContractHashMismatch"
+      },
+      "detail": "Executed production tests: TestP15RP03FreshCloneContractIntake, TestRealContractsLoadAndVerifyDigests, TestMeta_ContractHashMismatch"
+    },
+    {
+      "evidence_id": "ev-local-BRG04-unit",
+      "requirements": [
+        "BRG04"
+      ],
+      "tier": "unit",
+      "implementation_sha": "8d64ef5e2b02b7e4f1d96d97295f923030051dbf",
+      "test_id": "github.com/electrikmilk/cherri/tools/language-acceptance:TestP15VerificationInvalidRecordsNeverPass",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        "./tools/language-acceptance",
+        "-run",
+        "^(TestP15VerificationInvalidRecordsNeverPass|TestP15VerificationMalformedProducerFailsClosed|TestP15VerificationCLIInvalidInputs|TestMeta_ContractHashMismatch|TestMeta_AssertionReturnsFalse|TestMeta_WeakTestLevelRejection|TestMeta_UnitAndNativeCannotSatisfyIOSInFinal|TestSupplementalAcceptanceMissingProducerFailsClosed|TestLocalReportIncludesAll179WithoutInheritedClosure|TestEndToEndAggregator_All12AdversarialAttacks)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs, TestMeta_ContractHashMismatch, TestMeta_AssertionReturnsFalse, TestMeta_WeakTestLevelRejection, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestSupplementalAcceptanceMissingProducerFailsClosed, TestLocalReportIncludesAll179WithoutInheritedClosure, TestEndToEndAggregator_All12AdversarialAttacks",
+        "required_production_tests": "TestP15VerificationInvalidRecordsNeverPass\nTestP15VerificationMalformedProducerFailsClosed\nTestP15VerificationCLIInvalidInputs\nTestMeta_ContractHashMismatch\nTestMeta_AssertionReturnsFalse\nTestMeta_WeakTestLevelRejection\nTestMeta_UnitAndNativeCannotSatisfyIOSInFinal\nTestSupplementalAcceptanceMissingProducerFailsClosed\nTestLocalReportIncludesAll179WithoutInheritedClosure\nTestEndToEndAggregator_All12AdversarialAttacks"
+      },
+      "detail": "Executed production tests: TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs, TestMeta_ContractHashMismatch, TestMeta_AssertionReturnsFalse, TestMeta_WeakTestLevelRejection, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestSupplementalAcceptanceMissingProducerFailsClosed, TestLocalReportIncludesAll179WithoutInheritedClosure, TestEndToEndAggregator_All12AdversarialAttacks"
+    },
+    {
+      "evidence_id": "ev-local-BRG04-integration",
+      "requirements": [
+        "BRG04"
+      ],
+      "tier": "integration",
+      "implementation_sha": "8d64ef5e2b02b7e4f1d96d97295f923030051dbf",
+      "test_id": "github.com/electrikmilk/cherri/tools/language-acceptance:TestP15VerificationInvalidRecordsNeverPass",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        "./tools/language-acceptance",
+        "-run",
+        "^(TestP15VerificationInvalidRecordsNeverPass|TestP15VerificationMalformedProducerFailsClosed|TestP15VerificationCLIInvalidInputs|TestMeta_ContractHashMismatch|TestMeta_AssertionReturnsFalse|TestMeta_WeakTestLevelRejection|TestMeta_UnitAndNativeCannotSatisfyIOSInFinal|TestSupplementalAcceptanceMissingProducerFailsClosed|TestLocalReportIncludesAll179WithoutInheritedClosure|TestEndToEndAggregator_All12AdversarialAttacks)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs, TestMeta_ContractHashMismatch, TestMeta_AssertionReturnsFalse, TestMeta_WeakTestLevelRejection, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestSupplementalAcceptanceMissingProducerFailsClosed, TestLocalReportIncludesAll179WithoutInheritedClosure, TestEndToEndAggregator_All12AdversarialAttacks",
+        "required_production_tests": "TestP15VerificationInvalidRecordsNeverPass\nTestP15VerificationMalformedProducerFailsClosed\nTestP15VerificationCLIInvalidInputs\nTestMeta_ContractHashMismatch\nTestMeta_AssertionReturnsFalse\nTestMeta_WeakTestLevelRejection\nTestMeta_UnitAndNativeCannotSatisfyIOSInFinal\nTestSupplementalAcceptanceMissingProducerFailsClosed\nTestLocalReportIncludesAll179WithoutInheritedClosure\nTestEndToEndAggregator_All12AdversarialAttacks"
+      },
+      "detail": "Executed production tests: TestP15VerificationInvalidRecordsNeverPass, TestP15VerificationMalformedProducerFailsClosed, TestP15VerificationCLIInvalidInputs, TestMeta_ContractHashMismatch, TestMeta_AssertionReturnsFalse, TestMeta_WeakTestLevelRejection, TestMeta_UnitAndNativeCannotSatisfyIOSInFinal, TestSupplementalAcceptanceMissingProducerFailsClosed, TestLocalReportIncludesAll179WithoutInheritedClosure, TestEndToEndAggregator_All12AdversarialAttacks"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-19T00:57:01Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 4,
+    "passed_cases": 4,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "BRG04",
+        "group": "gate",
+        "requirement": "Evidence validator derives actual tiers",
+        "test_level": "unit+integration",
+        "executed_levels": [
+          "unit",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP01",
+        "group": "repair",
+        "requirement": "Verification aggregator",
+        "test_level": "unit+integration",
+        "executed_levels": [
+          "unit",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP02",
+        "group": "repair",
+        "requirement": "Required evidence levels",
+        "test_level": "unit+integration",
+        "executed_levels": [
+          "unit",
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "RP03",
+        "group": "repair",
+        "requirement": "Portable contract intake",
+        "test_level": "integration",
+        "executed_levels": [
+          "integration"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "RP01/RP02/RP03/BRG04 real verifier, CLI and fresh-clone contract intake. Synthetic validator fixtures are not native/runtime evidence for other requirements. No release closure.",
+  "source_sha": "8d64ef5e2b02b7e4f1d96d97295f923030051dbf",
+  "source_tree_clean": true
+}
