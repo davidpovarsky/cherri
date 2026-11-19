@@ -146,6 +146,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-http-json-fetch-v2",
         "qa-number-comparison-diag-v2",
         "qa-number-coercion-control-v2",
+        "qa-file-name-extension-v2",
         "qa-collect-counts-v2",
         "qa-collect-counts-legacy",
         "qa-collect-dictionaries-v2",

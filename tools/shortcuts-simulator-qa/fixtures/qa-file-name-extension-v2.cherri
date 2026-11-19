@@ -1,0 +1,32 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent(stage: "before", label: "file-name-extension")
+// The prior binding diagnostic observed Get Name stems with all bytes intact.
+// Check the independent canonical File Extension property before judging the full name.
+let contents = text("{\"ok\":true}")
+let file = base64Decode("eyJvayI6dHJ1ZX0=")
+let expectedType = typeOf(file)
+let named = setName(file, "cherri-export-control.json")
+let actualStem = getName(named)
+let actualExtension = getFileDetail(named, "File Extension")
+let actualFullName = text(f"{actualStem}.{actualExtension}")
+let actualType = typeOf(named)
+let actualBytes = base64Encode(named)
+let actualText = getText(named)
+var fullNameStatus = "bad"
+var extensionStatus = "bad"
+var typeStatus = "bad"
+var bytesStatus = "bad"
+var textStatus = "bad"
+if actualFullName == "cherri-export-control.json" { fullNameStatus = "ok" }
+if actualExtension == "json" { extensionStatus = "ok" }
+if actualType == expectedType { typeStatus = "ok" }
+if actualBytes == "eyJvayI6dHJ1ZX0=" { bytesStatus = "ok" }
+if actualText == contents { textStatus = "ok" }
+let semanticResult = text(f"CHERRI_QA_FILE_NAME_EXTENSION:NAME={fullNameStatus}:EXTENSION={extensionStatus}:TYPE={typeStatus}:BYTES={bytesStatus}:TEXT={textStatus}")
+comment("ANCHOR_CARD_15_MID_CENTER")
+debugTraceEvent(stage: "after", label: "file-name-extension")
+let traceEnvelope = debugExportTrace(runId: "qa-file-name-extension-v2")
+let finalSummary = text(f"{semanticResult}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
