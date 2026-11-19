@@ -1,0 +1,84 @@
+{
+  "status": "INCOMPLETE_ORCHESTRATOR_TIMEOUT",
+  "source_sha": "4ff1d089ec49528bb796fe315a74777d69008d9b",
+  "host_started_utc": "2026-11-19T01:33:25.616748+00:00",
+  "host_finished_utc": "2026-11-19T02:18:25.919511+00:00",
+  "host_timeout_seconds": 2700,
+  "host_exit_code": -1,
+  "summary_recovered_utc": "2026-11-19T02:37:24.549495+00:00",
+  "final_test_summary_was_not_written": true,
+  "source_clean_after": true,
+  "git_status_after": "",
+  "nonshallow": true,
+  "ordinary_git_directory": true,
+  "raw_log_sha256": "fb49be89a289c5ebcb784ed1679115c2ddb498bb49fbdb2b3527bf4e685fa786",
+  "raw_log_bytes": 3354058,
+  "raw_json_records": 14784,
+  "malformed_records": [],
+  "named_event_counts": {
+    "run": 3165,
+    "output": 8378,
+    "pass": 3151,
+    "skip": 5,
+    "fail": 7
+  },
+  "distinct_named_tests_started": 3165,
+  "distinct_named_tests_finished": 3163,
+  "unfinished_named_tests": [
+    "github.com/electrikmilk/cherri/tools/language-acceptance:TestEndToEndAggregator_All12AdversarialAttacks",
+    "github.com/electrikmilk/cherri/tools/language-acceptance:TestEndToEndAggregator_All12AdversarialAttacks/Attack07_UnauthorizedTestIDPrefixAndSubstringSpoofing"
+  ],
+  "package_outcomes": {
+    "github.com/electrikmilk/cherri": "fail",
+    "github.com/electrikmilk/cherri/cmd/cherri-migrate": "skip",
+    "github.com/electrikmilk/cherri/internal/icloudshortcut": "pass",
+    "github.com/electrikmilk/cherri/internal/language/analysis": "pass",
+    "github.com/electrikmilk/cherri/internal/language/backend": "pass",
+    "github.com/electrikmilk/cherri/internal/language/enums": "skip",
+    "github.com/electrikmilk/cherri/internal/language/ir": "pass",
+    "github.com/electrikmilk/cherri/internal/language/lower": "pass",
+    "github.com/electrikmilk/cherri/internal/language/lsp": "pass",
+    "github.com/electrikmilk/cherri/internal/language/migrate": "pass",
+    "github.com/electrikmilk/cherri/internal/language/protocol": "pass",
+    "github.com/electrikmilk/cherri/internal/language/schema": "pass",
+    "github.com/electrikmilk/cherri/internal/language/service": "pass",
+    "github.com/electrikmilk/cherri/internal/language/source": "pass",
+    "github.com/electrikmilk/cherri/internal/language/syntax": "pass",
+    "github.com/electrikmilk/cherri/internal/language/types": "pass",
+    "github.com/electrikmilk/cherri/internal/shortcutcompare": "pass",
+    "github.com/electrikmilk/cherri/tools/ci-test-discovery": "pass",
+    "github.com/electrikmilk/cherri/tools/inventory": "skip",
+    "github.com/electrikmilk/cherri/tools/ios-runtime-verifier": "pass"
+  },
+  "last_flushed_raw_record": {
+    "Time": "2026-11-19T04:00:17.6461977+02:00",
+    "Action": "output",
+    "Package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+    "Test": "TestEndToEndAggregator_All12AdversarialAttacks/Attack07_UnauthorizedTestIDPrefixAndSubstringSpoofing",
+    "Output": "=== RUN   TestEndToEndAggregator_All12AdversarialAttacks/Attack07_UnauthorizedTestIDPrefixAndSubstringSpoofing\n"
+  },
+  "failed_named_tests": [
+    "github.com/electrikmilk/cherri:TestP10_StructuralComparator_NegativeMutations",
+    "github.com/electrikmilk/cherri:TestP10_DeepActionFixtures/filterActions_files_reminders_events",
+    "github.com/electrikmilk/cherri:TestP10_DeepActionFixtures",
+    "github.com/electrikmilk/cherri:TestP15T06ControlResultsRequireAllBranches/missing_branch_yield",
+    "github.com/electrikmilk/cherri:TestP15T06ControlResultsRequireAllBranches/overwritten_yield",
+    "github.com/electrikmilk/cherri:TestP15T06ControlResultsRequireAllBranches/nested_missing_yield",
+    "github.com/electrikmilk/cherri:TestP15T06ControlResultsRequireAllBranches"
+  ],
+  "skipped_named_tests": [
+    "github.com/electrikmilk/cherri:TestCherri",
+    "github.com/electrikmilk/cherri:TestP10R10CorpusMeasure",
+    "github.com/electrikmilk/cherri:TestP11_WIRE_01_Fresh38x2NativeActionWire",
+    "github.com/electrikmilk/cherri:TestP15ParserRecoveryChild",
+    "github.com/electrikmilk/cherri:TestP15K05LiveSigning"
+  ],
+  "full_suite_completed": false,
+  "private_corpus_exercised": false,
+  "explicit_limits": [
+    "Output pipe buffering may leave later test activity absent from this raw log.",
+    "All failed events are two previously diagnosed families: rawAction integer/real preservation and stale T06 oracle; repaired in later S b34ae47.",
+    "Old external docs fixture interval is documented separately; this run is not final docs acceptance.",
+    "No currently live owned Go/test/runner processes observed at 02:36:54 UTC; no manual process termination performed."
+  ]
+}
