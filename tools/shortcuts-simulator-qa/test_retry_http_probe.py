@@ -306,6 +306,98 @@ class RetryHTTPProbeTests(unittest.TestCase):
                 with self.assertRaises(probe.ProbeError):
                     probe.ready_input(server.ready_path, fid, nonce, COMMIT, timeout=0)
 
+
+    def test_all_non_get_methods_are_counted_and_invalidate_real_receipts(self):
+        # Each request is real loopback traffic, followed by the expected two
+        # GETs. A rejected verb must not disappear from an otherwise valid run.
+        for method in ("POST", "HEAD", "PUT", "PATCH", "DELETE", "OPTIONS", "TRACE", "CONNECT", "BREW"):
+            with self.subTest(method=method):
+                root, server, thread, fid, nonce = self.start()
+                status, body, headers = self.request(server, "/SYNTHETIC_PRIVATE_ROUTE", method)
+                self.assertEqual(self.request(server, "/" + nonce + "/control")[:2], (200, probe.BODY))
+                self.assertEqual(self.request(server, "/" + nonce + "/continued")[:2], (200, probe.CONTINUED_BODY))
+                receipt = self.finish(server, thread)
+                accepted = True
+                try:
+                    probe.validate_receipt(receipt, fid, nonce, COMMIT)
+                except probe.ProbeError as error:
+                    accepted = False
+                    self.assertEqual(str(error), "UNREVIEWED_REQUEST_OBSERVED")
+                self.assertFalse(accepted, method + " returned HTTP " + str(status)
+                                 + " but vanished from the real receipt; rejectedRequestCount="
+                                 + str(receipt["rejectedRequestCount"]))
+                self.assertEqual(receipt["rejectedRequestCount"], 1)
+                self.assertEqual(status, 404)
+                self.assertEqual(body, b"")
+                self.assertNotIn("SYNTHETIC_PRIVATE_ROUTE", server.receipt_path.read_text(encoding="utf-8"))
+
+    def test_terminal_service_never_reuses_its_stale_ready_file(self):
+        for mode in ("stopped", "expired"):
+            with self.subTest(mode=mode):
+                root, server, thread, fid, nonce = self.start(lifetime=1 if mode == "expired" else 30)
+                if mode == "stopped":
+                    receipt = self.finish(server, thread)
+                else:
+                    thread.join(timeout=3)
+                    self.assertFalse(thread.is_alive())
+                    receipt = json.loads(server.receipt_path.read_text(encoding="utf-8"))
+                self.assertEqual(receipt["serverState"], "EXPIRED" if mode == "expired" else "STOPPED")
+                self.assertTrue(server.ready_path.exists(), "preserve the historical ready receipt")
+                with socket.socket() as client:
+                    client.settimeout(1)
+                    self.assertNotEqual(client.connect_ex(("127.0.0.1", server.server.server_port)), 0)
+                with self.assertRaisesRegex(probe.ProbeError, "SERVER_NOT_READY"):
+                    probe.ready_input(server.ready_path, fid, nonce, COMMIT, timeout=0)
+
+    def test_actual_input_cli_rejects_stopped_owned_service(self):
+        import subprocess
+        import sys
+        root, server, thread, fid, nonce = self.start()
+        self.finish(server, thread)
+        result = subprocess.run([sys.executable, "-B", str(HERE / "retry_http_probe.py"), "input",
+                                 "--root", str(root), "--fixture", fid, "--nonce", nonce, "--commit", COMMIT],
+                                capture_output=True, text=True, encoding="utf-8", timeout=5)
+        self.assertNotEqual(result.returncode, 0, "CLI returned an input URL for a stopped service")
+        self.assertEqual(result.stderr, "")
+        failure = json.loads(result.stdout)
+        self.assertEqual((failure["status"], failure["errorCategory"], failure["errorCode"]),
+                         ("FAILED", "CONTRACT", "SERVER_NOT_READY"))
+        self.assertNotIn(nonce, result.stdout)
+
+    def test_ready_input_reconciles_live_state_and_receipt_identity(self):
+        root, server, thread, fid, nonce = self.start()
+        originals = {path: path.read_bytes() for path in
+                     (server.ready_path, server.startup_path, server.receipt_path)}
+        cases = [
+            ("ready_not_object", server.ready_path, None, [], "SERVER_BINDING_MISMATCH"),
+            ("startup_wrong_commit", server.startup_path, "compilerSha", "f" * 40, "SERVER_BINDING_MISMATCH"),
+            ("startup_unknown_phase", server.startup_path, "phase", "UNKNOWN", "SERVER_BINDING_MISMATCH"),
+            ("receipt_wrong_nonce", server.receipt_path, "runNonce", "synthetic-other", "SERVER_BINDING_MISMATCH"),
+            ("receipt_wrong_port", server.receipt_path, "port", 0, "SERVER_BINDING_MISMATCH"),
+            ("receipt_not_object", server.receipt_path, None, [], "SERVER_BINDING_MISMATCH"),
+            ("startup_terminal_only", server.startup_path, "phase", "STOPPED", "SERVER_NOT_READY"),
+            ("receipt_terminal_only", server.receipt_path, "serverState", "STOPPED", "SERVER_NOT_READY"),
+            ("receipt_stopped_timestamp", server.receipt_path, "stoppedAt", probe.utc(), "SERVER_NOT_READY"),
+        ]
+        for name, path, key, value, code in cases:
+            with self.subTest(name=name):
+                record = json.loads(originals[path])
+                if key is None:
+                    record = value
+                else:
+                    record[key] = value
+                try:
+                    probe.atomic_json(path, record)
+                    with self.assertRaisesRegex(probe.ProbeError, code):
+                        probe.ready_input(server.ready_path, fid, nonce, COMMIT, timeout=0)
+                finally:
+                    path.write_bytes(originals[path])
+                self.assertEqual(probe.ready_input(server.ready_path, fid, nonce, COMMIT, timeout=0),
+                                 str(server.server.server_port) + "/" + nonce)
+        self.assertEqual(self.request(server, "/" + nonce + "/control")[:2], (200, probe.BODY))
+        self.assertEqual(self.request(server, "/" + nonce + "/continued")[:2], (200, probe.CONTINUED_BODY))
+        probe.validate_receipt(self.finish(server, thread), fid, nonce, COMMIT)
+
     def test_request_bound_is_enforced_and_extra_request_prevents_claim(self):
         root, server, thread, fid, nonce = self.start()
         for _ in range(probe.MAX_REQUESTS):
