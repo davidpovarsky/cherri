@@ -194,6 +194,64 @@ class IOSTestEvidenceTests(unittest.TestCase):
         self.assertEqual(len(diagnostic.get("startupReceipts", [])), 1)
         self.assertEqual(records, [])
 
+    def documentation_ui_state(self, **updates):
+        value = {key: False for key in collector.docs.UI_STATE_BOOLS}
+        value.update(schemaVersion="1.0", testName=collector.docs.UI,
+                     stage="after-toggle", syntheticSourceResetVerified=True,
+                     searchExists=True, queryIsExpected=True, switchExists=True,
+                     switchHittable=True, switchOff=True, noResultsExists=True)
+        value.update(updates)
+        return collector.docs.UI_STATE_PREFIX + json.dumps(value)
+
+    def test_documentation_ui_state_preserves_actual_failed_toggle_without_acceptance(self):
+        method = collector.docs.UI.split("/")[1]
+        body = self.documentation_ui_state()
+        diagnostic, records, outputs = self.collect(self.block(method=method, status="failed", body=body), 65)
+        self.assertEqual(records, [])
+        self.assertEqual(diagnostic["runStatus"], "FAILED")
+        self.assertEqual(len(diagnostic["documentationUIStates"]), 1)
+        state = diagnostic["documentationUIStates"][0]
+        self.assertTrue(state["switchOff"])
+        self.assertFalse(state["switchOn"])
+        self.assertFalse(state["migrationButtonExists"])
+        self.assertEqual(set(state), {"schemaVersion", "testName", "stage", *collector.docs.UI_STATE_BOOLS})
+        self.assertNotIn(collector.docs.CHECKPOINT, outputs["xcodetest.log"])
+        # Successful diagnostic observations cannot substitute for the three
+        # required app tests, original bundle receipt and behavioral checkpoint.
+        diagnostic, records, _ = self.collect(self.block(method=method, body=self.documentation_ui_state(
+            switchOn=True, switchOff=False, migrationButtonExists=True, migrationElementExists=True)))
+        self.assertEqual(records, [])
+
+    def test_documentation_ui_state_rejects_private_unbound_and_malformed_fields(self):
+        method = collector.docs.UI.split("/")[1]
+        cases = ({"stage": "PRIVATE_STAGE"}, {"stage": ["after-toggle"]},
+                 {"query": "PRIVATE_QUERY"}, {"schemaVersion": "2"},
+                 {"testName": "CherriEditorUITests/testOther"},
+                 {"queryIsExpected": "PRIVATE_QUERY"}, {"switchOn": 1},
+                 {"switchOff": None}, {"migrationButtonExists": {}},
+                 {"syntheticSourceResetVerified": False})
+        for changes in cases:
+            with self.subTest(changes=changes):
+                diagnostic, records, outputs = self.collect(self.block(
+                    method=method, status="failed", body=self.documentation_ui_state(**changes)), 65)
+                self.assertEqual(diagnostic["documentationUIStates"], [])
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_", "".join(outputs.values()))
+        duplicate = self.documentation_ui_state().replace('"switchOn": false', '"switchOn": false, "switchOn": true')
+        for body in (duplicate, self.documentation_ui_state(query="x" * 4096)):
+            self.assertEqual(self.collect(self.block(method=method, status="failed", body=body), 65)[0]["documentationUIStates"], [])
+        for raw in (self.documentation_ui_state(), self.block(status="failed", body=self.documentation_ui_state())):
+            self.assertEqual(self.collect(raw, 65)[0]["documentationUIStates"], [])
+
+    def test_documentation_ui_state_has_an_independent_eight_record_bound(self):
+        method = collector.docs.UI.split("/")[1]
+        body = "\n".join(self.documentation_ui_state() for _ in range(20))
+        body += "\n" + self.receipt(testName=collector.docs.UI)
+        diagnostic, records, _ = self.collect(self.block(method=method, status="failed", body=body), 65)
+        self.assertEqual(len(diagnostic["documentationUIStates"]), 8)
+        self.assertEqual(len(diagnostic["uiReceipts"]), 1)
+        self.assertEqual(records, [])
+
     def input_receipt(self, **updates):
         value = {"schemaVersion": "1.0", "testName": "CherriEditorInputTests/testNestedGeneratedClosersAndCompleteRealInput",
                  "isolatedSyntheticEditor": True, "fixtureId": "nested-call", "stage": "before-key",

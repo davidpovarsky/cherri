@@ -212,6 +212,37 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [exactQuery], timeout: 5), .completed)
     }
 
+    /// Only fixed control observations from this isolated D03 test are emitted.
+    /// No query text, result labels, accessibility tree, or screenshot is recorded.
+    private func recordDocumentationMigrationState(stage: String) {
+        guard syntheticSourceResetVerified else { return }
+        let search = app.searchFields.firstMatch
+        let migration = app.switches["docsMigrationToggle"]
+        let resultPredicate = NSPredicate(format: "identifier BEGINSWITH %@",
+                                          "docsResult_fork-language/migration.md:")
+        let switchValue = migration.exists ? migration.value as? String : nil
+        let state: [String: Any] = [
+            "schemaVersion": "1.0",
+            "testName": "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
+            "stage": stage,
+            "syntheticSourceResetVerified": syntheticSourceResetVerified,
+            "searchExists": search.exists,
+            "queryIsExpected": search.exists && (search.value as? String) == "@count",
+            "switchExists": migration.exists,
+            "switchHittable": migration.exists && migration.isHittable,
+            "switchOn": switchValue == "1",
+            "switchOff": switchValue == "0",
+            "keyboardExists": app.keyboards.firstMatch.exists,
+            "noResultsExists": app.descendants(matching: .any)["docsNoResults"].exists,
+            "migrationButtonExists": app.buttons.matching(resultPredicate).firstMatch.exists,
+            "migrationElementExists": app.descendants(matching: .any).matching(resultPredicate).firstMatch.exists,
+        ]
+        if let bytes = try? JSONSerialization.data(withJSONObject: state, options: [.sortedKeys]),
+           let json = String(data: bytes, encoding: .utf8) {
+            print("[CHERRI_DOCS_UI_STATE] \(json)")
+        }
+    }
+
     func testD03CurrentDocumentationSearchUI() throws {
         let editor = ensureEditorReady()
         let source = "show(\"D03_EDITOR_PRESERVED\")"
@@ -264,11 +295,23 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertFalse(app.buttons.matching(
             NSPredicate(format: "identifier BEGINSWITH %@", "docsResult_fork-language/migration.md:")
         ).firstMatch.exists, "Historical examples must be excluded by default")
+        recordDocumentationMigrationState(stage: "before-toggle")
+        XCTAssertEqual(migration.value as? String, "0")
+        XCTAssertTrue(migration.exists && migration.isHittable)
         migration.tap()
+        let migrationEnabled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            migration.exists && (migration.value as? String) == "1"
+                && search.exists && (search.value as? String) == "@count"
+        }, object: migration)
+        let toggleObserved = XCTWaiter.wait(for: [migrationEnabled], timeout: 5) == .completed
+        recordDocumentationMigrationState(stage: "after-toggle")
+        XCTAssertTrue(toggleObserved, "The explicit toggle must turn on while preserving the exact search query")
         let migrationResult = app.buttons.matching(
             NSPredicate(format: "identifier BEGINSWITH %@", "docsResult_fork-language/migration.md:")
         ).firstMatch
-        XCTAssertTrue(migrationResult.waitForExistence(timeout: 5),
+        let migrationResultObserved = migrationResult.waitForExistence(timeout: 5)
+        recordDocumentationMigrationState(stage: "result-wait")
+        XCTAssertTrue(migrationResultObserved,
                       "Migration examples require explicit opt-in")
         XCTAssertEqual(migration.value as? String, "1")
 

@@ -15,6 +15,12 @@ POSITIVE = "DocumentationIndexTests/testD03BundledCurrentDocumentationSearch"
 NEGATIVE = "DocumentationIndexTests/testD03RejectsHistoricalAndDamagedBundleRows"
 UI = "CherriEditorUITests/testD03CurrentDocumentationSearchUI"
 TEST_IDS = (POSITIVE, NEGATIVE, UI)
+UI_STATE_PREFIX = "[CHERRI_DOCS_UI_STATE] "
+UI_STATE_STAGES = frozenset(("before-toggle", "after-toggle", "result-wait"))
+UI_STATE_BOOLS = frozenset(("syntheticSourceResetVerified", "searchExists", "queryIsExpected",
+                            "switchExists", "switchHittable", "switchOn", "switchOff",
+                            "keyboardExists", "noResultsExists", "migrationButtonExists",
+                            "migrationElementExists"))
 SOURCE_PATHS = frozenset("fork-language/" + name + ".md" for name in
                          ("index", "guide", "actions", "migration"))
 PINS = {"docsCommit": 40, "compilerCommit": 40,
@@ -59,6 +65,21 @@ def strict_json(data):
 
 def is_hex(value, size):
     return isinstance(value, str) and re.fullmatch("[0-9a-f]{%d}" % size, value) is not None
+
+
+def parse_ui_state(line, active_test):
+    """Diagnostic state only; this never supplies a pass or behavioral checkpoint."""
+    require(active_test == UI and line.startswith(UI_STATE_PREFIX)
+            and len(line.encode("utf-8")) <= 2048, "INVALID_UI_STATE_CONTEXT")
+    value = strict_json(line[len(UI_STATE_PREFIX):])
+    require(isinstance(value, dict)
+            and set(value) == {"schemaVersion", "testName", "stage", *UI_STATE_BOOLS}
+            and value["schemaVersion"] == "1.0" and value["testName"] == UI
+            and isinstance(value["stage"], str) and value["stage"] in UI_STATE_STAGES
+            and all(type(value[key]) is bool for key in UI_STATE_BOOLS)
+            and value["syntheticSourceResetVerified"] is True,
+            "INVALID_UI_STATE_FIELDS")
+    return value
 
 
 def source_map(paths, hashes):

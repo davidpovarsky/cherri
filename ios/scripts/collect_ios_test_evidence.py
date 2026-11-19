@@ -207,6 +207,7 @@ def bounded_log(raw_text):
     startup_events = 0
     active_test = None
     documentation_events = 0
+    documentation_ui_events = 0
     for raw_line in raw_text.splitlines():
         line = raw_line.strip()
         if case := CASE_LINE.fullmatch(line):
@@ -214,6 +215,14 @@ def bounded_log(raw_text):
             case_events += 1
             if case_events <= 512:
                 lines.append(line)
+        elif line.startswith(docs.UI_STATE_PREFIX):
+            documentation_ui_events += 1
+            if documentation_ui_events <= 8:
+                try:
+                    state = docs.parse_ui_state(line, active_test)
+                    lines.append(docs.UI_STATE_PREFIX + json.dumps(state, sort_keys=True))
+                except docs.EvidenceError:
+                    pass
         elif line.startswith(docs.PREFIX):
             documentation_events += 1
             try:
@@ -444,6 +453,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         "rawLogPresent": raw_present, "sanitizedLogSha256": log_sha,
         "testResults": test_results, "uiReceipts": receipts, "uiFailures": failures,
         "documentationEvidence": documentation,
+        "documentationUIStates": [json.loads(line[len(docs.UI_STATE_PREFIX):]) for line in log_text.splitlines() if line.startswith(docs.UI_STATE_PREFIX)],
         "startupReceipts": [json.loads(line[len(STARTUP_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_PREFIX)],
         "inputReceipts": [json.loads(line[len(INPUT_PREFIX):]) for line in log_text.splitlines() if line.startswith(INPUT_PREFIX)],
         "nativeRuntimeEvents": [json.loads(line[len(RUNTIME_PREFIX):]) for line in log_text.splitlines() if line.startswith(RUNTIME_PREFIX)],
