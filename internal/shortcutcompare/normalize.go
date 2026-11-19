@@ -125,6 +125,13 @@ func NormalizeDocumentForParity(doc map[string]any) map[string]any {
 		producerUUID := extractOutputUUID(params["WFInput"])
 		systemToken := extractSystemToken(params["WFInput"])
 		varRefName, aggrs := extractVariableRefAndAggrandizements(params["WFInput"])
+		// Clipboard is mutable ambient state: preserve the declaration-time read.
+		if systemToken == "Clipboard" {
+			if uuid, ok := normalizeClipboardSnapshot(actMap, params, actionsRaw, i); ok {
+				forwardMap[varName] = ForwardTarget{ProducerUUID: uuid, VariableName: varName}
+			}
+			continue
+		}
 		if producerUUID != "" {
 			forwardMap[varName] = ForwardTarget{
 				ProducerUUID:    producerUUID,
@@ -752,6 +759,13 @@ func forwardSingleWriteVariables(actionsRaw []any) []any {
 		producerUUID := extractOutputUUID(params["WFInput"])
 		systemToken := extractSystemToken(params["WFInput"])
 		varRefName, aggrs := extractVariableRefAndAggrandizements(params["WFInput"])
+		// Clipboard is mutable ambient state: preserve the declaration-time read.
+		if systemToken == "Clipboard" {
+			if uuid, ok := normalizeClipboardSnapshot(actMap, params, actionsRaw, i); ok {
+				forwardMap[varName] = ForwardTarget{ProducerUUID: uuid, VariableName: varName}
+			}
+			continue
+		}
 		if producerUUID != "" {
 			forwardMap[varName] = ForwardTarget{
 				ProducerUUID:    producerUUID,
@@ -1807,6 +1821,7 @@ func normalizeFunctionEnvelope(actions []any) []any {
 		funcs, mainActions = parseFunctionsLegacy(actions)
 	}
 
+	normalizeBuiltinFunctionSymbols(funcs, mainActions)
 	mainActions = forwardIdentityGettext(mainActions)
 	for _, aRaw := range mainActions {
 		act, ok := aRaw.(map[string]any)

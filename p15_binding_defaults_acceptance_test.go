@@ -76,7 +76,16 @@ func p15BindingSnapshotError(actions []map[string]any, kind string) error {
 	for index, action := range actions {
 		var p = p15C01Params(action)
 		var refs = p15BindingDescriptors(p["WFVariable"], kind)
-		if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvariable" && len(refs) == 1 && (kind != "Variable" || refs[0]["VariableName"] == "numCaptureSrc") {
+		var variableCapture = kind == "Variable" && action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvariable" && len(refs) == 1 && refs[0]["VariableName"] == "numCaptureSrc"
+		var clipboardCapture = kind == "Clipboard" && action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getclipboard"
+		if clipboardCapture {
+			for key := range p {
+				if key != "UUID" && key != "CustomOutputName" {
+					return fmt.Errorf("Clipboard capture has unexpected parameter %q", key)
+				}
+			}
+		}
+		if variableCapture || clipboardCapture {
 			captures++
 			captureIndex = index
 			captureID, _ = p["UUID"].(string)
@@ -240,13 +249,13 @@ func TestP15V03ClipboardCapturedOnceProduction(t *testing.T) {
 			if err := p15BindingSnapshotError(actions, "Clipboard"); err != nil {
 				t.Fatal(err)
 			}
-			for _, mutation := range []string{"remove", "duplicate", "after_mutation", "wrong_system", "deferred", "wrong_identity"} {
+			for _, mutation := range []string{"remove", "duplicate", "after_mutation", "wrong_system", "getvariable_system_token", "deferred", "wrong_identity"} {
 				t.Run(mutation, func(t *testing.T) {
 					var broken = p15C01Clone(t, actions)
 					var capture = -1
 					var uuid string
 					for i, action := range broken {
-						if len(p15BindingDescriptors(p15C01Params(action)["WFVariable"], "Clipboard")) == 1 {
+						if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getclipboard" {
 							capture = i
 							uuid, _ = p15C01Params(action)["UUID"].(string)
 						}
@@ -261,7 +270,10 @@ func TestP15V03ClipboardCapturedOnceProduction(t *testing.T) {
 						broken = append(broken[:capture], broken[capture+1:]...)
 						broken = append(broken, saved)
 					case "wrong_system":
-						p15BindingDescriptors(p15C01Params(broken[capture])["WFVariable"], "Clipboard")[0]["Type"] = "CurrentDate"
+						broken[capture]["WFWorkflowActionIdentifier"] = "is.workflow.actions.date"
+					case "getvariable_system_token":
+						broken[capture]["WFWorkflowActionIdentifier"] = "is.workflow.actions.getvariable"
+						p15C01Params(broken[capture])["WFVariable"] = map[string]any{"WFSerializationType": "WFTextTokenAttachment", "Value": map[string]any{"Type": "Clipboard"}}
 					default:
 						for _, action := range broken {
 							for _, ref := range p15BindingDescriptors(p15C01Params(action)["WFTextActionText"], "ActionOutput") {

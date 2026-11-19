@@ -237,9 +237,9 @@ def verify_graph(fid, actions):
 
     result_i, result = named("result", "gettext")
     _, number = named("numCaptured", "getvariable")
-    _, clip = named("clipAlias", "getvariable")
+    _, clip = named("clipAlias", "getclipboard")
     require(att(p(number).get("WFVariable")) == {"Type": "Variable", "VariableName": "numCaptureSrc"}
-            and att(p(clip).get("WFVariable")) == {"Type": "Clipboard"}, "unchanged original captures")
+            and set(p(clip)) == {"UUID", "CustomOutputName"}, "declaration-time original captures")
     string_edges(p(result).get("WFTextActionText"),
                  "CHERRI_BINDING_CAPTURE_OK\nNUM_CAPTURED=\ufffc\nNUM_AGAIN=\ufffc\nCLIP_CAPTURED=\ufffc\nCLIP_AGAIN=\ufffc",
                  [number, number, clip, clip])
