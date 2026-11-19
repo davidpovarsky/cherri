@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "scope": "F05_ACTUAL_UNIT_PRODUCTION_SCENARIOS_AND_STRICT_INTAKE",
+  "summary": {
+    "source": "f9729252b48d5060b011740e55e138ce07c3bb41",
+    "before": {
+      "source": "f9729252b48d5060b011740e55e138ce07c3bb41",
+      "status": ""
+    },
+    "after": {
+      "source": "f9729252b48d5060b011740e55e138ce07c3bb41",
+      "status": ""
+    },
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "./tools/language-acceptance",
+      "-count=1",
+      "-json",
+      "-timeout=150s",
+      "-run",
+      "^(TestLoopControlProductionEvidence|TestLoopControlEvidenceRejectsIncompleteSelection)$"
+    ],
+    "seconds": 35.953,
+    "exit": 0,
+    "timedOut": false,
+    "counts": {
+      "run": 5,
+      "pass": 5,
+      "fail": 0,
+      "skip": 0
+    },
+    "sha256": "88fe4b6093e84ab421b90b760fe247b518d976b98dfaab6863c44bda51ccff1d",
+    "bytes": 7636
+  },
+  "archive": {
+    "path": "raw-evidence.zip",
+    "bytes": 3072,
+    "sha256": "dcdb3148c75fbd4fb647380615aa6355ecbf4065de9c9373825e6248fb0290eb"
+  },
+  "files": [
+    {
+      "path": "runner.py",
+      "bytes": 2175,
+      "sha256": "bbad1bfe9ac3383e38ac54728b2004746063f01c55700981472acdd7b67cddc9"
+    },
+    {
+      "path": "clean.jsonl",
+      "bytes": 7636,
+      "sha256": "88fe4b6093e84ab421b90b760fe247b518d976b98dfaab6863c44bda51ccff1d"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 740,
+      "sha256": "164a848cc494ad6f619120b485ea65b888147bfbd801061b3dbf8c03f617e113"
+    }
+  ]
+}
