@@ -249,6 +249,14 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if tests, ok := editorProductionTests[id]; ok {
+		ids := make([]string, 0, len(tests))
+		for _, test := range tests {
+			ids = append(ids, "github.com/electrikmilk/cherri:"+test)
+		}
+		return ids
+	}
+
 	if id == "F05" {
 		return loopControlScenario.testIDs()
 	}

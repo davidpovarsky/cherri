@@ -1,0 +1,464 @@
+package main
+
+import (
+	"bufio"
+	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"reflect"
+	"sort"
+	"strings"
+	"time"
+)
+
+const editorBenchmarkTest = "TestP15E08EditorPerformanceFixtures"
+const editorBenchmarkMarker = "P15_EDITOR_BENCHMARK="
+
+var editorBenchmarkFixtures = []string{"small_source", "medium_source", "large_source", "inline_text_4mib", "local_text_8mib", "local_binary_8mib"}
+
+var editorProductionTests = map[string][]string{
+	"S03": {
+		"TestP15S03EmbeddedAssetSourceRelative",
+		"TestP15S03EditorAssetDependencyDiagnostics",
+		"TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile",
+		"TestP15S03EditorAssetChangesAndFailureRecovery",
+		"TestP15S03ShadowedNameCannotReadAssets",
+		"TestP15S03ImportedAssetKeepsEntryRootAndModuleSource",
+		"TestP15S03ModuleCallControl",
+		"TestP15S03BuiltinModuleAliasUsesCanonicalAsset",
+		editorBenchmarkTest,
+	},
+	"E08": {editorBenchmarkTest},
+}
+
+var editorProductionPaths = []string{
+	"internal/language/assets/cache.go",
+	"internal/language/workspace/resource.go",
+	"internal/language/analysis/analyzer.go",
+	"internal/language/analysis/registry_lifetime.go",
+	"internal/language/analysis/resolved_actions.go",
+	"internal/language/analysis/module_imports.go",
+	"internal/language/service/service.go",
+	"internal/language/service/asset_analysis.go",
+	"internal/language/lsp/server.go",
+	"internal/language/lower/lower.go",
+	"internal/language/backend/contracts.go",
+	"embedded_assets.go",
+	"action.go",
+	"build_profile.go",
+	"actions_std.go",
+	"language_backend_adapter.go",
+	"language_emit_adapter.go",
+	"p15_asset_dependency_baseline_test.go",
+	"p15_embedded_asset_acceptance_test.go",
+	"p15_editor_performance_test.go",
+	"p15_editor_clock_windows_test.go",
+	"p15_editor_clock_other_test.go",
+}
+
+type editorSourceFile struct {
+	Path   string `json:"path"`
+	SHA256 string `json:"sha256"`
+}
+
+type editorProcessReceipt struct {
+	FormatVersion     int                `json:"format_version"`
+	Requirement       string             `json:"requirement"`
+	SourceCommit      string             `json:"source_commit"`
+	SourceCleanBefore bool               `json:"source_clean_before"`
+	SourceCleanAfter  bool               `json:"source_clean_after"`
+	SourceFiles       []editorSourceFile `json:"source_files"`
+	Command           []string           `json:"command"`
+	RequiredTests     []string           `json:"required_tests"`
+	DiscoveredTests   []string           `json:"discovered_tests"`
+	StartedUTC        string             `json:"started_utc"`
+	FinishedUTC       string             `json:"finished_utc"`
+	ElapsedSeconds    float64            `json:"elapsed_seconds"`
+	ExitCode          *int               `json:"exit_code"`
+	TimedOut          *bool              `json:"timed_out"`
+	RawSHA256         string             `json:"raw_sha256"`
+	RawBytes          int                `json:"raw_bytes"`
+	StderrSHA256      string             `json:"stderr_sha256"`
+	StderrBytes       int                `json:"stderr_bytes"`
+	BenchmarkSHA256   string             `json:"benchmark_sha256"`
+	BenchmarkBytes    int                `json:"benchmark_bytes"`
+}
+
+func decodeEditorJSON(data []byte, target any) error {
+	if _, err := decodeNativeEncodingObject(data); err != nil {
+		return err
+	}
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	return decoder.Decode(target)
+}
+
+func editorSHA(data []byte) string {
+	sum := sha256.Sum256(data)
+	return hex.EncodeToString(sum[:])
+}
+
+func editorSourceState(root string) (string, bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	head := exec.CommandContext(ctx, "git", "rev-parse", "HEAD")
+	head.Dir = root
+	revision, err := head.Output()
+	if err != nil {
+		return "", false, err
+	}
+	status := exec.CommandContext(ctx, "git", "status", "--porcelain", "--untracked-files=all")
+	status.Dir = root
+	raw, err := status.Output()
+	if err != nil {
+		return "", false, err
+	}
+	return strings.TrimSpace(string(revision)), len(bytes.TrimSpace(raw)) == 0, nil
+}
+
+// Parse the actual go test JSON stream. Required named test discovery, the full
+// benchmark payload, package completion and every failure/skip are independent
+// of the final process exit code.
+func parseEditorProductionOutput(raw []byte, required []string) ([]byte, []string, error) {
+	requiredSet := map[string]bool{}
+	for _, name := range required {
+		requiredSet[name] = true
+	}
+	observed := map[string]bool{}
+	for name := range requiredSet {
+		observed[name] = true
+	}
+	for _, fixture := range editorBenchmarkFixtures {
+		observed[editorBenchmarkTest+"/"+fixture] = true
+	}
+	runs, passes := map[string]int{}, map[string]int{}
+	packagePasses := 0
+	var benchmarkOutput strings.Builder
+	scanner := bufio.NewScanner(bytes.NewReader(raw))
+	scanner.Buffer(make([]byte, 4096), 4<<20)
+	for scanner.Scan() {
+		var event struct {
+			Action, Package, Test, Output string
+		}
+		if _, err := decodeNativeEncodingObject(scanner.Bytes()); err != nil {
+			return nil, nil, fmt.Errorf("ambiguous production process JSON: %w", err)
+		}
+		if err := json.Unmarshal(scanner.Bytes(), &event); err != nil {
+			return nil, nil, fmt.Errorf("non-JSON production process output")
+		}
+		if event.Package != "github.com/electrikmilk/cherri" {
+			return nil, nil, fmt.Errorf("foreign production package %q", event.Package)
+		}
+		if event.Action == "fail" || event.Action == "skip" {
+			return nil, nil, fmt.Errorf("production %s for %s", event.Action, event.Test)
+		}
+		if event.Test != "" {
+			top, _, _ := strings.Cut(event.Test, "/")
+			if !requiredSet[top] {
+				return nil, nil, fmt.Errorf("unselected production test %s", top)
+			}
+		}
+		if event.Action == "run" && observed[event.Test] {
+			runs[event.Test]++
+		}
+		if event.Action == "pass" {
+			if event.Test == "" {
+				packagePasses++
+			} else if observed[event.Test] {
+				if runs[event.Test] != 1 {
+					return nil, nil, fmt.Errorf("production pass without prior execution: %s", event.Test)
+				}
+				passes[event.Test]++
+			}
+		}
+		if event.Action == "output" && event.Test == editorBenchmarkTest {
+			benchmarkOutput.WriteString(event.Output)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, nil, err
+	}
+	if packagePasses != 1 {
+		return nil, nil, fmt.Errorf("production package did not complete exactly once")
+	}
+	for _, fixture := range editorBenchmarkFixtures {
+		name := editorBenchmarkTest + "/" + fixture
+		if runs[name] != 1 || passes[name] != 1 {
+			return nil, nil, fmt.Errorf("missing actual benchmark fixture execution: %s", fixture)
+		}
+	}
+	discovered := make([]string, 0, len(required))
+	for _, name := range required {
+		if runs[name] != 1 || passes[name] != 1 {
+			return nil, nil, fmt.Errorf("required production test %s was not run and passed exactly once", name)
+		}
+		discovered = append(discovered, name)
+	}
+	var reports [][]byte
+	for _, line := range strings.Split(benchmarkOutput.String(), "\n") {
+		if _, payload, found := strings.Cut(line, editorBenchmarkMarker); found {
+			reports = append(reports, []byte(strings.TrimSpace(payload)))
+		}
+	}
+	if len(reports) != 1 {
+		return nil, nil, fmt.Errorf("actual benchmark payload count is %d", len(reports))
+	}
+	return reports[0], discovered, nil
+}
+
+func editorArtifactName(id, suffix string) string {
+	return "editor-" + strings.ToLower(id) + suffix
+}
+
+func (r *Runner) executeEditorProduction(id string) ([]EvidenceArtifact, string, error) {
+	tests, ok := editorProductionTests[id]
+	if !ok {
+		return nil, "", fmt.Errorf("unknown editor scenario %s", id)
+	}
+	root, err := filepath.Abs(resolveRepoRoot())
+	if err != nil {
+		return nil, "", err
+	}
+	revision, clean, err := editorSourceState(root)
+	if err != nil || !clean || revision != r.implSHA || len(revision) != 40 {
+		return nil, "", fmt.Errorf("editor producer requires the exact clean source: revision=%s clean=%t error=%v", revision, clean, err)
+	}
+	parent := r.artifactDir
+	if parent != "" {
+		parent, err = filepath.Abs(parent)
+		if err != nil {
+			return nil, "", err
+		}
+		if err := os.MkdirAll(parent, 0755); err != nil {
+			return nil, "", err
+		}
+	}
+	directory, err := os.MkdirTemp(parent, "editor-"+strings.ToLower(id)+"-")
+	if err != nil {
+		return nil, "", err
+	}
+	receipt := editorProcessReceipt{
+		FormatVersion: 1, Requirement: id, SourceCommit: revision,
+		SourceCleanBefore: true, Command: productionTestCommand(tests),
+		RequiredTests: append([]string(nil), tests...),
+	}
+	for _, path := range editorProductionPaths {
+		data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
+		if err != nil {
+			return nil, "", fmt.Errorf("missing production source %s: %w", path, err)
+		}
+		receipt.SourceFiles = append(receipt.SourceFiles, editorSourceFile{path, editorSHA(data)})
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), productionTestTimeout(tests)+time.Minute)
+	defer cancel()
+	command := exec.CommandContext(ctx, receipt.Command[0], receipt.Command[1:]...)
+	command.Dir = root
+	configureEditorProductionProcess(command)
+	started := time.Now()
+	receipt.StartedUTC = started.UTC().Format(time.RFC3339Nano)
+	var stdout, stderr bytes.Buffer
+	command.Stdout, command.Stderr = &stdout, &stderr
+	processErr := command.Run()
+	raw, errorOutput := stdout.Bytes(), stderr.Bytes()
+	receipt.FinishedUTC = time.Now().UTC().Format(time.RFC3339Nano)
+	receipt.ElapsedSeconds = time.Since(started).Seconds()
+	exitCode := -1
+	if command.ProcessState != nil {
+		exitCode = command.ProcessState.ExitCode()
+	}
+	timedOut := ctx.Err() != nil
+	receipt.ExitCode, receipt.TimedOut = &exitCode, &timedOut
+	after, afterClean, stateErr := editorSourceState(root)
+	receipt.SourceCleanAfter = stateErr == nil && afterClean && after == revision
+	receipt.RawSHA256, receipt.RawBytes = editorSHA(raw), len(raw)
+	receipt.StderrSHA256, receipt.StderrBytes = editorSHA(errorOutput), len(errorOutput)
+	benchmark, discovered, parseErr := parseEditorProductionOutput(raw, tests)
+	receipt.DiscoveredTests = discovered
+	var benchmarkErr error
+	if parseErr == nil {
+		var report editorPerformanceReport
+		benchmarkErr = decodeEditorJSON(benchmark, &report)
+		if benchmarkErr == nil {
+			benchmarkErr = validateEditorBenchmark(report, revision)
+		}
+	}
+	var artifacts []EvidenceArtifact
+	write := func(suffix string, data []byte) error {
+		path := filepath.Join(directory, editorArtifactName(id, suffix))
+		if err := os.WriteFile(path, data, 0644); err != nil {
+			return err
+		}
+		artifacts = append(artifacts, EvidenceArtifact{Path: path, SHA256: editorSHA(data)})
+		return nil
+	}
+	if err := write("-go.jsonl", raw); err != nil {
+		return artifacts, "", err
+	}
+	if err := write("-stderr.log", errorOutput); err != nil {
+		return artifacts, "", err
+	}
+	if len(benchmark) > 0 {
+		benchmark = append(benchmark, '\n')
+		receipt.BenchmarkSHA256, receipt.BenchmarkBytes = editorSHA(benchmark), len(benchmark)
+		if err := write("-benchmark.json", benchmark); err != nil {
+			return artifacts, "", err
+		}
+	}
+	processJSON, err := json.MarshalIndent(receipt, "", "  ")
+	if err != nil {
+		return artifacts, "", err
+	}
+	if err := write("-process.json", append(processJSON, '\n')); err != nil {
+		return artifacts, "", err
+	}
+	if processErr != nil || parseErr != nil || benchmarkErr != nil || !receipt.SourceCleanAfter || timedOut {
+		tail := raw
+		if len(tail) > 8192 {
+			tail = tail[len(tail)-8192:]
+		}
+		return artifacts, "", fmt.Errorf("editor production proof failed: process=%v parse=%v benchmark=%v clean_after=%t timeout=%t output_tail=%s stderr=%s", processErr, parseErr, benchmarkErr, receipt.SourceCleanAfter, timedOut, tail, string(errorOutput))
+	}
+	return artifacts, "Executed independent production tests: " + strings.Join(tests, ", ") +
+		"; six real input fixtures, 20 measured phases and 400 raw monotonic samples; no numeric latency budget or native UI execution claimed", nil
+}
+
+func (r *Runner) runEditorPerformanceRequirement(id string) {
+	tests := editorProductionTests[id]
+	group, requirement, level, tiers := "editor", "Performance fixtures small/large and embedded assets", "benchmark", []string{"benchmark"}
+	if id == "S03" {
+		group, requirement, level, tiers = "text", "Large embedded local asset remains cached across unrelated edits", "service+benchmark", []string{"service", "benchmark"}
+	}
+	artifacts, detail, err := r.executeEditorProduction(id)
+	if err != nil {
+		detail = err.Error()
+	}
+	first := len(r.records)
+	r.Record(id, group, requirement, level, tiers, err == nil, "PASSED", detail)
+	for index := first; index < len(r.records); index++ {
+		record := &r.records[index]
+		producer := editorBenchmarkTest
+		if record.Tier == "service" {
+			producer = "TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile"
+		}
+		record.TestID = "github.com/electrikmilk/cherri:" + producer
+		record.Command = productionTestCommand(tests)
+		record.Assertions["required_production_tests"] = strings.Join(tests, "\n")
+		record.Assertions["scope"] = "local Cherri service and canonical embedded asset cache; no native UI latency claim"
+		record.Artifacts = append([]EvidenceArtifact(nil), artifacts...)
+	}
+}
+
+func validateEditorPerformanceRecord(id string, record EvidenceRecord) error {
+	tests, found := editorProductionTests[id]
+	if !found {
+		return nil
+	}
+	fail := func(reason string) error {
+		return fmt.Errorf("editor performance record %s for %s: %s", record.EvidenceID, id, reason)
+	}
+	producer := editorBenchmarkTest
+	if id == "S03" && record.Tier == "service" {
+		producer = "TestP15S03SharedAssetCacheAcrossServiceEditsAndCanonicalCompile"
+	} else if record.Tier != "benchmark" {
+		return fail("unexecuted evidence tier")
+	}
+	if !reflect.DeepEqual(record.Requirements, []string{id}) ||
+		record.TestID != "github.com/electrikmilk/cherri:"+producer ||
+		!reflect.DeepEqual(record.Command, productionTestCommand(tests)) ||
+		record.Assertions["required_production_tests"] != strings.Join(tests, "\n") ||
+		record.Assertions["scope"] != "local Cherri service and canonical embedded asset cache; no native UI latency claim" {
+		return fail("detached or partial production scenario")
+	}
+	if len(record.Artifacts) != 4 {
+		return fail("missing exact stdout, stderr, benchmark and process artifacts")
+	}
+	data := map[string][]byte{}
+	for _, artifact := range record.Artifacts {
+		name := filepath.Base(artifact.Path)
+		if _, duplicate := data[name]; duplicate {
+			return fail("duplicate evidence artifact")
+		}
+		if name != editorArtifactName(id, "-go.jsonl") && name != editorArtifactName(id, "-benchmark.json") && name != editorArtifactName(id, "-process.json") && name != editorArtifactName(id, "-stderr.log") {
+			return fail("foreign evidence artifact")
+		}
+		info, statErr := os.Stat(artifact.Path)
+		if statErr != nil || !info.Mode().IsRegular() || info.Size() > 8<<20 {
+			return fail("missing or oversized evidence file")
+		}
+		raw, err := os.ReadFile(artifact.Path)
+		if err != nil || !editorDigest(artifact.SHA256) || editorSHA(raw) != artifact.SHA256 {
+			return fail("missing or changed artifact bytes")
+		}
+		data[name] = raw
+	}
+	raw := data[editorArtifactName(id, "-go.jsonl")]
+	errorOutput := data[editorArtifactName(id, "-stderr.log")]
+	benchmark := data[editorArtifactName(id, "-benchmark.json")]
+	process := data[editorArtifactName(id, "-process.json")]
+	var receipt editorProcessReceipt
+	if err := decodeEditorJSON(process, &receipt); err != nil {
+		return fail("invalid process receipt")
+	}
+	if receipt.FormatVersion != 1 || receipt.Requirement != id || receipt.SourceCommit != record.ImplementationSHA ||
+		!receipt.SourceCleanBefore || !receipt.SourceCleanAfter ||
+		!reflect.DeepEqual(receipt.Command, record.Command) || !reflect.DeepEqual(receipt.RequiredTests, tests) ||
+		receipt.ExitCode == nil || *receipt.ExitCode != 0 || receipt.TimedOut == nil || *receipt.TimedOut ||
+		receipt.RawSHA256 != editorSHA(raw) || receipt.RawBytes != len(raw) ||
+		receipt.StderrSHA256 != editorSHA(errorOutput) || receipt.StderrBytes != len(errorOutput) ||
+		receipt.BenchmarkSHA256 != editorSHA(benchmark) || receipt.BenchmarkBytes != len(benchmark) ||
+		receipt.ElapsedSeconds <= 0 {
+		return fail("process/source/content binding is incomplete or stale")
+	}
+	started, startErr := time.Parse(time.RFC3339Nano, receipt.StartedUTC)
+	finished, finishErr := time.Parse(time.RFC3339Nano, receipt.FinishedUTC)
+	if startErr != nil || finishErr != nil || !finished.After(started) ||
+		receipt.ElapsedSeconds > (productionTestTimeout(tests)+time.Minute).Seconds() {
+		return fail("invalid actual process timing")
+	}
+	paths := make([]string, 0, len(receipt.SourceFiles))
+	for _, file := range receipt.SourceFiles {
+		if !editorDigest(file.SHA256) {
+			return fail("missing source file digest")
+		}
+		paths = append(paths, file.Path)
+	}
+	if !reflect.DeepEqual(paths, editorProductionPaths) {
+		return fail("missing exact production source paths")
+	}
+	actualBenchmark, discovered, err := parseEditorProductionOutput(raw, tests)
+	if err != nil {
+		return fail(err.Error())
+	}
+	if !reflect.DeepEqual(discovered, receipt.DiscoveredTests) || !bytes.Equal(bytes.TrimSpace(benchmark), actualBenchmark) {
+		return fail("summary is not the actual named-test benchmark payload")
+	}
+	var report editorPerformanceReport
+	if err := decodeEditorJSON(actualBenchmark, &report); err != nil {
+		return fail("invalid actual benchmark JSON")
+	}
+	if err := validateEditorBenchmark(report, record.ImplementationSHA); err != nil {
+		return fail(err.Error())
+	}
+	return nil
+}
+
+func editorSortedArtifactPaths(records []EvidenceRecord) []string {
+	seen := map[string]bool{}
+	for _, record := range records {
+		for _, artifact := range record.Artifacts {
+			seen[artifact.Path] = true
+		}
+	}
+	paths := make([]string, 0, len(seen))
+	for path := range seen {
+		paths = append(paths, path)
+	}
+	sort.Strings(paths)
+	return paths
+}
