@@ -1,0 +1,15 @@
+{
+  "source_sha": "c4f1aad56ba991cc81dfc1fee25d5fc2231a5020",
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=8m",
+    "-run",
+    "^(TestBackendStateProducerInventory|TestBackendStateRaceIntakeActualArchive|TestBackendStateSecurityStreamControls|TestBackendStateActualAvailableProduction|TestSupplementalProductionScenarioInventory|TestSupplementalAcceptanceCannotChangeRequiredTiers)$",
+    "./tools/language-acceptance"
+  ],
+  "source_clean_before": true,
+  "started_utc": "2026-11-19T23:48:13.394229+00:00"
+}

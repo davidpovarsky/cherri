@@ -1,0 +1,20 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^(TestBackendStateProducerInventory|TestBackendStateRaceIntakeActualArchive|TestBackendStateSecurityStreamControls|TestSupplementalProductionScenarioInventory|TestSupplementalAcceptanceCannotChangeRequiredTiers)$",
+    "./tools/language-acceptance"
+  ],
+  "started_utc": "2026-11-19T23:47:16.308892+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 12.125,
+  "named_passes": 81,
+  "failed_tests": [],
+  "skipped_tests": [],
+  "raw_sha256": "e6c4acbaea3842bac48963abd32ce5f4748374ed701ba703ca8f57d95f687279",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
