@@ -45,6 +45,8 @@ var supplementalProductionScenarios = map[string]supplementalProductionScenario{
 		Tiers:           []string{"integration", "negative"},
 		ProductionPaths: []string{"language_cli_adapter.go", "internal/language/migrate/migrate.go", "p15_migration_atomic_contract_test.go"},
 	},
+	"RP28":  standardFunctionRepairScenario,
+	"BRG20": moduleRecoveryScenario,
 	"RP05": {
 		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
 		TestNames:       []string{"TestP15RP05LiteralPublicRoutes"},

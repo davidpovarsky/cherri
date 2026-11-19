@@ -27,6 +27,9 @@ var moduleProductionTests = map[string][]string{
 	"IM03": {
 		"TestP15IM03PreservedStandardFunctionSource",
 		"TestP15IM03DirectServiceWithoutMain",
+		"TestP15RP28StandardLibraryGeneration",
+		"TestP15IM03StandardFunctionNativeBehavior",
+		"TestP15RP28StandardFunctionLegacyDifferential",
 	},
 	"IM05": {
 		"TestP15IM05RemoteImportsNeverFetch",
@@ -53,7 +56,7 @@ var moduleProductionPaths = map[string][]string{
 		"internal/language/modules/stdfunc_source_generated.go",
 		"internal/language/modules/standard_library.go", "internal/language/modules/graph.go",
 		"internal/language/service/p15_stdfunc_direct_test.go",
-		"p15_module_std_source_test.go", "p15_module_acceptance_test.go",
+		"p15_module_std_source_test.go", "p15_module_acceptance_test.go", "p15_stdfunc_native_test.go",
 	},
 	"IM05": {
 		"internal/language/modules/graph.go", "internal/language/workspace/resource.go",
@@ -84,6 +87,8 @@ func moduleProductionTestForTier(id, tier string) string {
 	case "IM03":
 		if tier == "unit" {
 			producer = tests[0]
+		} else if tier == "native-structure" {
+			producer = "TestP15IM03StandardFunctionNativeBehavior"
 		}
 	case "IM05":
 		if tier == "security" {
@@ -107,7 +112,7 @@ func (r *Runner) runModuleRequirement(id string) {
 	case "IM02":
 		title, level, tiers = "Module top-level runtime initialization", "unit+migration", []string{"unit", "migration"}
 	case "IM03":
-		title, level, tiers = "Existing stdfunc behavior migrated from preserved upstream source", "unit+native", []string{"unit"}
+		title, level, tiers = "Existing stdfunc behavior migrated from preserved upstream source", "unit+native", []string{"unit", "native-structure"}
 	case "IM05":
 		title, level, tiers = "Analysis with unresolved/remote package", "security+service", []string{"security", "service"}
 	default:
@@ -115,19 +120,8 @@ func (r *Runner) runModuleRequirement(id string) {
 	}
 	tests := moduleProductionTests[id]
 	passed, detail := executeNamedProductionTests(tests)
-	if id == "IM03" {
-		detail += "; preserved source hash, migrated structure and separate service package without main verified locally; actual native behavior remains pending"
-	}
 	if id == "IM03" && passed {
-		gap := "The preserved-source and separate service-package unit scenarios ran; required native behavior has not executed. The native tier remains required and local."
-		r.observations = append(r.observations, LocalSmokeObservation{
-			ID: id, Passed: true, ClaimedLevels: append([]string{}, tiers...), Detail: detail, CoverageGap: gap,
-		})
-		r.Record(id, "modules", title, level, nil, false, "NOT_RUN", detail+"; "+gap)
-		result := r.results[id]
-		result.ExecutedLevels = append([]string{}, tiers...)
-		r.results[id] = result
-		return
+		detail += "; actual generator, preserved-source hash, separate service package and raw native body/argument/return/coercion contracts verified; no Apple runtime claim"
 	}
 	first := len(r.records)
 	r.Record(id, "modules", title, level, tiers, passed, "PASSED", detail)

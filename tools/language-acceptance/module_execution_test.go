@@ -49,6 +49,8 @@ func TestModuleEvidenceRejectsDetachedAndCrossTierRecords(t *testing.T) {
 			tiers = []string{"unit", "service"}
 		case "IM02":
 			tiers = []string{"unit", "migration"}
+		case "IM03":
+			tiers = []string{"unit", "native-structure"}
 		case "IM05":
 			tiers = []string{"security", "service"}
 		}
@@ -62,14 +64,19 @@ func TestModuleEvidenceRejectsDetachedAndCrossTierRecords(t *testing.T) {
 				if err := validateModuleRecord(id, record); err != nil {
 					t.Fatal(err)
 				}
-				for _, mutation := range []string{"wrong_producer", "unexecuted_native", "truncated_command", "missing_required_test", "cross_tier_producer"} {
+				for _, mutation := range []string{"wrong_producer", "unexecuted_local", "unexecuted_runtime", "truncated_command", "missing_required_test", "cross_tier_producer"} {
 					broken := record
 					broken.Assertions = map[string]string{"required_production_tests": record.Assertions["required_production_tests"]}
 					switch mutation {
 					case "wrong_producer":
 						broken.TestID = "tools/language-acceptance:runModules"
-					case "unexecuted_native":
-						broken.Tier = "native"
+					case "unexecuted_local":
+						broken.Tier = "native-structure"
+						if id == "IM03" {
+							broken.Tier = "generation"
+						}
+					case "unexecuted_runtime":
+						broken.Tier = "ios-runtime"
 					case "truncated_command":
 						broken.Command = productionTestCommand(tests[:1])
 					case "missing_required_test":
@@ -94,7 +101,7 @@ type moduleAuditEnvelope struct {
 	Rows            []ExecutionAuditRow `json:"rows"`
 }
 
-func TestModuleStandardLibraryUnitEvidence(t *testing.T) {
+func TestModuleStandardLibraryNativeEvidence(t *testing.T) {
 	all, err := LoadAllContracts("", "", "")
 	if err != nil {
 		t.Fatal(err)
@@ -114,44 +121,39 @@ func TestModuleStandardLibraryUnitEvidence(t *testing.T) {
 	runner.runModuleRequirement("IM03")
 	contract := selected.Cases[0]
 	result := runner.results["IM03"]
-	if len(runner.results) != 1 || len(runner.records) != 0 || len(runner.observations) != 1 ||
-		result.Passed || result.Status != "NOT_RUN" || result.Requirement != contract.Requirement ||
+	if len(runner.results) != 1 || len(runner.records) != 2 || len(runner.observations) != 0 ||
+		!result.Passed || result.Status != "PASSED" || result.Requirement != contract.Requirement ||
 		result.Group != contract.Group || result.TestLevel != contract.MinimumTestLevel ||
-		!reflect.DeepEqual(result.ExecutedLevels, []string{"unit"}) {
-		t.Fatalf("stdlib producer expanded/lost its observed unit scope: %+v", result)
+		!reflect.DeepEqual(result.ExecutedLevels, []string{"unit", "native-structure"}) {
+		t.Fatalf("stdlib producer expanded/lost its executed unit/native scope: %+v", result)
 	}
-	observation := runner.observations[0]
-	if observation.ID != "IM03" || !observation.Passed || observation.CoverageGap == "" ||
-		!reflect.DeepEqual(observation.ClaimedLevels, []string{"unit"}) {
-		t.Fatalf("detached stdlib unit observation: %+v", observation)
-	}
-	for _, name := range moduleProductionTests["IM03"] {
-		if !strings.Contains(observation.Detail, name) {
-			t.Fatalf("missing actual executed producer %s", name)
+	for _, record := range runner.records {
+		if err := validateModuleRecord("IM03", record); err != nil {
+			t.Fatal(err)
+		}
+		for _, name := range moduleProductionTests["IM03"] {
+			if !strings.Contains(record.Detail, name) {
+				t.Fatalf("missing actual executed producer %s", name)
+			}
 		}
 	}
 	report, err := ValidateAndAggregateWithPhase(selected, runner.results, runner.reg.Fingerprint(), "local")
-	if err != nil || report.PassedCases != 0 || report.FailedCases != 0 || report.SkippedCases != 1 || report.ClosureComplete {
-		t.Fatalf("local stdlib observations closed native behavior: report=%+v error=%v", report, err)
-	}
-	if final, err := ValidateAndAggregateWithPhase(selected, runner.results, runner.reg.Fingerprint(), "final"); err == nil || final != nil && final.ClosureComplete {
-		t.Fatal("local stdlib observations closed final acceptance")
+	if err != nil || report.PassedCases != 1 || report.FailedCases != 0 || report.SkippedCases != 0 || report.ClosureComplete {
+		t.Fatalf("local stdfunc report rejected complete native proof or expanded closure: report=%+v error=%v", report, err)
 	}
 	t.Run("unit_only_pass_claim_rejected", func(t *testing.T) {
 		broken := result
 		broken.Passed, broken.Status = true, "PASSED"
+		broken.ExecutedLevels = []string{"unit"}
 		if invalid, err := ValidateAndAggregateWithPhase(selected, map[string]CaseResult{"IM03": broken}, runner.reg.Fingerprint(), "local"); err == nil || invalid.PassedCases != 0 {
 			t.Fatal("unit-only result claimed native acceptance")
 		}
 	})
 	// A genuine unit row is still insufficient for the immutable unit+native
 	// manifest. Do not weaken that rule or relabel native as external.
-	unit := EvidenceRecord{
-		EvidenceID: "ev-observed-unit-IM03", Requirements: []string{"IM03"}, Tier: "unit",
-		ImplementationSHA: runner.implSHA, Result: "passed", ExitCode: 0,
-		TestID: moduleProductionTestForTier("IM03", "unit"), Command: productionTestCommand(moduleProductionTests["IM03"]),
-		Assertions: map[string]string{"required_production_tests": strings.Join(moduleProductionTests["IM03"], "\n")},
-		Detail:     observation.Detail,
+	unit := runner.records[0]
+	if unit.Tier != "unit" {
+		t.Fatal("missing observed unit producer")
 	}
 	if err := validateModuleRecord("IM03", unit); err != nil {
 		t.Fatal(err)
@@ -164,7 +166,7 @@ func TestModuleStandardLibraryUnitEvidence(t *testing.T) {
 	})
 	t.Run("fake_native_record_rejected", func(t *testing.T) {
 		fake := unit
-		fake.EvidenceID, fake.Tier = "ev-fake-native-IM03", "native"
+		fake.EvidenceID, fake.Tier = "ev-fake-native-IM03", "native-structure"
 		manifest := &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: []EvidenceRecord{unit, fake}}
 		if invalid, err := ValidateEvidenceManifest(manifest, contracts, "local"); err == nil || invalid.PassedCases != 0 || invalid.ClosureComplete {
 			t.Fatal("unit producer minted a native tier")
@@ -195,11 +197,10 @@ func TestModuleStandardLibraryUnitEvidence(t *testing.T) {
 	}
 	for _, row := range audit.Rows {
 		if row.ID == "IM03" {
-			if row.Status != "UNVERIFIED" || row.PositiveAndNegative || row.Blocker == "" ||
+			if row.Status != "PASS" || !row.PositiveAndNegative || row.Blocker != "" ||
 				!reflect.DeepEqual(row.TestNames, moduleProductionTests["IM03"]) ||
-				!reflect.DeepEqual(row.Tier, []string{"unit"}) ||
-				!reflect.DeepEqual(row.Evidence, []string{"acceptance-local-observations.json#IM03"}) {
-				t.Fatalf("lost bounded stdlib observations: %+v", row)
+				!reflect.DeepEqual(row.Tier, []string{"unit", "native-structure"}) || len(row.Evidence) != 2 {
+				t.Fatalf("lost bounded stdfunc native evidence: %+v", row)
 			}
 		} else if row.Status == "PASS" {
 			t.Fatalf("unexecuted requirement inherited stdlib success: %+v", row)
@@ -208,12 +209,12 @@ func TestModuleStandardLibraryUnitEvidence(t *testing.T) {
 	status, statusErr := exec.Command("git", "-C", resolveRepoRoot(), "status", "--porcelain", "--untracked-files=normal").Output()
 	receipt, err := json.Marshal(map[string]any{
 		"source_sha": runner.implSHA, "source_tree_clean": statusErr == nil && len(status) == 0,
-		"scope":        "Actual preserved stdfunc source hash and migrated compile structure, including separate service-package execution without main. Only unit observations; the required local native tier and formal IM03 remain NOT_RUN.",
-		"unit_command": productionTestCommand(moduleProductionTests["IM03"]),
-		"report":       report, "observations": runner.observations, "records": runner.records,
+		"scope":   "Actual preserved-source generator, separate service package, raw native stdfunc semantics and Legacy differential. IM03 unit/native only; no Apple runtime or overall closure.",
+		"command": productionTestCommand(moduleProductionTests["IM03"]),
+		"report":  report, "observations": runner.observations, "records": runner.records,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log("P15_MODULE_STDFUNC_UNIT_RECEIPT:" + string(receipt))
+	t.Log("P15_MODULE_STDFUNC_NATIVE_RECEIPT:" + string(receipt))
 }
