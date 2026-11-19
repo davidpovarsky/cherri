@@ -1,0 +1,370 @@
+{
+  "schema_version": 1,
+  "repair_source_sha": "58dde2dded6b145e201b5229f409d5f540200a43",
+  "baseline_source_sha": "42ffabc2cedf488bf1cbb415efddc5f4c92ec95d",
+  "private_raw_logs_published": false,
+  "closure_claim": false,
+  "private_final_combined_source_gate": "NOT_RUN_AT_THIS_RECEIPT",
+  "baseline_original_corpus_before": {
+    "files": 38,
+    "bytes": 62980131,
+    "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+  },
+  "baseline_original_corpus_after": {
+    "files": 38,
+    "bytes": 62980131,
+    "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+  },
+  "baseline_entire_input_directory": {
+    "files": 76,
+    "bytes": 132843610,
+    "content_set_sha256": "87aecae33a4e295228d400a364418b96f8234cb50e49df3ad5ccbbfe9931446c",
+    "unchanged": true
+  },
+  "baseline_private_execution": [
+    {
+      "test": "TestP10R10CorpusMeasure",
+      "source_sha": "42ffabc2cedf488bf1cbb415efddc5f4c92ec95d",
+      "started_utc": "2026-11-19T01:13:01.906364+00:00",
+      "named_run": 1,
+      "named_pass": 1,
+      "named_fail": 0,
+      "named_skip": 0,
+      "discovered": true,
+      "required_test_passed": true,
+      "failed_top_level": [],
+      "safe_aggregates": [],
+      "not_run_marker_seen": false,
+      "command": [
+        "go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=25m",
+        "-run",
+        "^TestP10R10CorpusMeasure$",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 187.35,
+      "raw_log_sha256": "8148bdd97b08ef8e748f72a471329cb04b28cd4e7a4af125e1b85a23e01c5515",
+      "raw_log_bytes": 947300,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "verified_pass": true
+    },
+    {
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+      "source_sha": "42ffabc2cedf488bf1cbb415efddc5f4c92ec95d",
+      "started_utc": "2026-11-19T01:16:09.261807+00:00",
+      "named_run": 1,
+      "named_pass": 1,
+      "named_fail": 0,
+      "named_skip": 0,
+      "discovered": true,
+      "required_test_passed": true,
+      "failed_top_level": [],
+      "safe_aggregates": [
+        {
+          "kind": "wire",
+          "files": "38",
+          "total_actions": "27652",
+          "natural_verified": "23278"
+        }
+      ],
+      "not_run_marker_seen": false,
+      "command": [
+        "go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=25m",
+        "-run",
+        "^TestP11_WIRE_01_Fresh38x2NativeActionWire$",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 225.87,
+      "raw_log_sha256": "eb58591c20d326707fe87024101b34e3de2015ec82e6dea3ef84cf03f6ef053e",
+      "raw_log_bytes": 1545533,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "verified_pass": true
+    },
+    {
+      "test": "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+      "source_sha": "42ffabc2cedf488bf1cbb415efddc5f4c92ec95d",
+      "started_utc": "2026-11-19T01:19:55.134952+00:00",
+      "named_run": 1,
+      "named_pass": 1,
+      "named_fail": 0,
+      "named_skip": 0,
+      "discovered": true,
+      "required_test_passed": true,
+      "failed_top_level": [],
+      "safe_aggregates": [
+        {
+          "kind": "lifecycle",
+          "files": "38",
+          "fresh_natural": "23278",
+          "sequential_natural": "23278"
+        }
+      ],
+      "not_run_marker_seen": false,
+      "command": [
+        "go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=25m",
+        "-run",
+        "^TestP12_BASE_02_LifecycleStagesAndReconcileCorpus$",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 337.69,
+      "raw_log_sha256": "de80d1fd5f243d908fc38179bc472528b025c61daa916d5c8e044f72fe3cae71",
+      "raw_log_bytes": 2147298,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "verified_pass": true
+    },
+    {
+      "test": "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+      "source_sha": "42ffabc2cedf488bf1cbb415efddc5f4c92ec95d",
+      "started_utc": "2026-11-19T01:25:32.828179+00:00",
+      "named_run": 1,
+      "named_pass": 0,
+      "named_fail": 1,
+      "named_skip": 0,
+      "discovered": true,
+      "required_test_passed": false,
+      "failed_top_level": [
+        "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate"
+      ],
+      "safe_aggregates": [],
+      "not_run_marker_seen": false,
+      "command": [
+        "go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=25m",
+        "-run",
+        "^TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate$",
+        "."
+      ],
+      "exit_code": 1,
+      "seconds": 29.29,
+      "raw_log_sha256": "c34aef2db3542f60bcbd3b568ad31aa4d6c5b05da208aa75156e31b548e545df",
+      "raw_log_bytes": 71426,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "verified_pass": false
+    },
+    {
+      "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+      "source_sha": "42ffabc2cedf488bf1cbb415efddc5f4c92ec95d",
+      "started_utc": "2026-11-19T01:26:02.115504+00:00",
+      "named_run": 1,
+      "named_pass": 0,
+      "named_fail": 1,
+      "named_skip": 0,
+      "discovered": true,
+      "required_test_passed": false,
+      "failed_top_level": [
+        "TestP13_CorpusFidelityAndSourceSizeAudit"
+      ],
+      "safe_aggregates": [
+        {
+          "kind": "fidelity_threshold_failure",
+          "required": "23340",
+          "observed": "23278"
+        }
+      ],
+      "not_run_marker_seen": false,
+      "command": [
+        "go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=25m",
+        "-run",
+        "^TestP13_CorpusFidelityAndSourceSizeAudit$",
+        "."
+      ],
+      "exit_code": 1,
+      "seconds": 178.89,
+      "raw_log_sha256": "296f120ffd8c54f7f14c1491e2fa4866ea85d45d4106f344fdb71cfea037d7ea",
+      "raw_log_bytes": 1025619,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "verified_pass": false
+    }
+  ],
+  "baseline_measurement": {
+    "files": 38,
+    "actions": 27652,
+    "natural_verified": 23278,
+    "natural_pct": 84.18,
+    "historical_natural_verified": 23353,
+    "unchanged_acceptance_minimum": 23340
+  },
+  "diagnosed_causes": {
+    "v2_compile_demoted_units": 29,
+    "v2_compile_demoted_actions": 75,
+    "opaque_ordered_control_markers": 74,
+    "prompt_default_attachment_actions": 1,
+    "empty_list_or_variadic_cause_confirmed": false
+  },
+  "public_causal_baseline": {
+    "production_base_sha": "42ffabc2cedf488bf1cbb415efddc5f4c92ec95d",
+    "fixture_cases": 8,
+    "named_failed_including_parent": 9,
+    "failures_by_compilation_stage": {
+      "LEGACY_COMPILE": 4,
+      "V2_COMPILE": 4
+    },
+    "note": "The earlier focused baseline included only the first two operand forms. A temporary nil observer hook was present in production source and ran only during the separate private diagnostic test; that hook and all temporary diagnostic code are absent from the repair commit.",
+    "filtered_public_log_sha256": "2c1980cec4b40178ba618da15508897c359cf8acd069f875e9917bd36596c05e",
+    "private_mixed_original_log_sha256": "af99bb6d6b740ab3e06e0a2e075de8ad7048bca7dc502c84c0bc0bfc6475b11a"
+  },
+  "clean_source_focus": {
+    "source_sha": "58dde2dded6b145e201b5229f409d5f540200a43",
+    "source_clean_before": true,
+    "source_clean_after": true,
+    "started_utc": "2026-11-19T01:39:36.445847+00:00",
+    "go_version": "go version go1.24.13 linux/arm64",
+    "command": [
+      "go",
+      "test",
+      "-p=1",
+      "-json",
+      "-count=1",
+      "-timeout=5m",
+      "-run",
+      "^TestP15(HybridOpaqueOrderedOperands|HybridNativePromptDefaultReference|NativeReference.*)$",
+      "."
+    ],
+    "environment": {
+      "GOMAXPROCS": "2",
+      "GOFLAGS": "-p=1",
+      "CHERRI_P10R10_CORPUS": "0"
+    },
+    "exit_code": 0,
+    "seconds": 13.94,
+    "named_run": 67,
+    "named_pass": 67,
+    "named_fail": 0,
+    "named_skip": 0,
+    "failed_tests": [],
+    "raw_log_sha256": "a4a3b715ad17c4d4fe151f99513973a821c2aea66b4bfa911a139a9db9a058ad",
+    "raw_log_bytes": 62993,
+    "verified_pass": true,
+    "executed_test_names": [
+      "TestP15HybridOpaqueOrderedOperands",
+      "TestP15HybridOpaqueOrderedOperands/shortcut_input<",
+      "TestP15HybridOpaqueOrderedOperands/opaque_output<",
+      "TestP15HybridOpaqueOrderedOperands/opaque_rhs<",
+      "TestP15HybridOpaqueOrderedOperands/both_opaque<",
+      "TestP15HybridOpaqueOrderedOperands/shortcut_input<=",
+      "TestP15HybridOpaqueOrderedOperands/opaque_output<=",
+      "TestP15HybridOpaqueOrderedOperands/opaque_rhs<=",
+      "TestP15HybridOpaqueOrderedOperands/both_opaque<=",
+      "TestP15HybridOpaqueOrderedOperands/shortcut_input>",
+      "TestP15HybridOpaqueOrderedOperands/opaque_output>",
+      "TestP15HybridOpaqueOrderedOperands/opaque_rhs>",
+      "TestP15HybridOpaqueOrderedOperands/both_opaque>",
+      "TestP15HybridOpaqueOrderedOperands/shortcut_input>=",
+      "TestP15HybridOpaqueOrderedOperands/opaque_output>=",
+      "TestP15HybridOpaqueOrderedOperands/opaque_rhs>=",
+      "TestP15HybridOpaqueOrderedOperands/both_opaque>=",
+      "TestP15HybridNativePromptDefaultReference",
+      "TestP15NativeReferenceOrderedOperandWire",
+      "TestP15NativeReferenceOrderedOperandWire/property_user_info",
+      "TestP15NativeReferenceOrderedOperandWire/property_name",
+      "TestP15NativeReferenceOrderedOperandWire/extra_coercion",
+      "TestP15NativeReferenceOrderedOperandWire/producer",
+      "TestP15NativeReferenceOrderedOperandWire/condition",
+      "TestP15NativeReferenceOrderedOperandWire/rhs_missing",
+      "TestP15NativeReferenceOperandDoesNotProveScalar",
+      "TestP15NativeReferenceOperandDoesNotProveScalar/assignment",
+      "TestP15NativeReferenceOperandDoesNotProveScalar/alias",
+      "TestP15NativeReferenceOperandDoesNotProveScalar/ordinary_unknown",
+      "TestP15NativeReferenceOperandDoesNotProveScalar/ordinary_any",
+      "TestP15NativeReferenceOperandDoesNotProveScalar/raw_plist",
+      "TestP15NativeReferenceOperandDoesNotProveScalar/raw_action",
+      "TestP15NativeReferenceOperandDoesNotProveScalar/function_lookalike",
+      "TestP15NativeReferenceOperandDoesNotProveScalar/custom_action_lookalike",
+      "TestP15NativeReferenceOperandDoesNotProveScalar/namespace_alias",
+      "TestP15NativeReferenceNamespaceIdentity",
+      "TestP15NativeReferenceNamespaceIdentity/top_level",
+      "TestP15NativeReferenceNamespaceIdentity/parameter",
+      "TestP15NativeReferenceNamespaceIdentity/scoped",
+      "TestP15NativeReferenceOperandValidationStillRequired",
+      "TestP15NativeReferenceOperandValidationStillRequired/native.ref(7)",
+      "TestP15NativeReferenceOperandValidationStillRequired/native.ref({\"Type\":\"ActionOutput\"})",
+      "TestP15NativeReferenceOperandValidationStillRequired/native.ref(\"ActionOutput\")",
+      "TestP15NativeReferenceOperandValidationStillRequired/native.ref(\"Variable\")",
+      "TestP15NativeReferenceOperandValidationStillRequired/native.ref(\"UnknownKind\",_uuid:\"8556b10c-8b87-46c6-a95b-dcf849951001\")",
+      "TestP15NativeReferenceOperandValidationStillRequired/native.ref(\"ShortcutInput\",_aggrandizements:7)",
+      "TestP15NativeReferenceOperandValidationStillRequired/native.ref(\"ShortcutInput\",_aggrandizements:[7])",
+      "TestP15NativeReferenceOperandValidationStillRequired/native.ref(native.plist({\"Type\":\"ActionOutput\"}))",
+      "TestP15NativeReferenceStaticShapeControls",
+      "TestP15NativeReferenceStaticShapeControls/if_native.ref(\"ShortcutInput\")_>_7_{_text(\"x\")_}",
+      "TestP15NativeReferenceStaticShapeControls/if_native.ref(\"ShortcutInput\",_aggrandizements:_native.plist(value:_[]))_>_7_{_text(\"x\")_}",
+      "TestP15NativeReferenceStaticShapeControls/if_native.ref(native.ref(\"ShortcutInput\"))_>_7_{_text(\"x\")_}",
+      "TestP15NativeReferenceStaticShapeControls/if_native.ref(kind:_\"Variable\",_name:_\"synthetic_explicit_name\")_>_7_{_text(\"x\")_}",
+      "TestP15NativeReferenceStaticShapeControls/if_native.ref(type:_\"ActionOutput\",_outputUUID:_\"8556b10c-8b87-46c6-a95b-dcf849951001\")_>_7_{_text(\"x\")_}",
+      "TestP15NativeReferenceStaticShapeControls/let_value_=_number(7)_if_native.ref(value)_>_7_{_text(\"x\")_}",
+      "TestP15NativeReferenceStaticShapeControls/if_native.ref(\"ShortcutInput\",_aggrandizements:_native.plist({\"Aggrandizements\":_[{\"Type\":_\"OpaqueNativeType\",_\"Extra\":_{\"Keep\":_[7,_false]}}]}))_>_7_{_text(\"x\")_}",
+      "TestP15NativeReferenceDynamicShapeIsNotExempt",
+      "TestP15NativeReferenceDynamicShapeIsNotExempt/native.ref(kind:_kind)",
+      "TestP15NativeReferenceDynamicShapeIsNotExempt/native.ref(\"ActionOutput\",_uuid:_uuid)",
+      "TestP15NativeReferenceDynamicShapeIsNotExempt/native.ref(\"ShortcutInput\",_aggrandizements:_metadata)",
+      "TestP15NativeReferenceDynamicShapeIsNotExempt/native.ref(\"ShortcutInput\",_property:_text(\"Height\"))",
+      "TestP15NativeReferenceDynamicShapeIsNotExempt/native.ref(\"ShortcutInput\",_unrecognized:_\"ignored_by_raw_lowerer\")",
+      "TestP15NativeReferenceMetadataStaysInline",
+      "TestP15NativeReferenceMetadataStaysInline/300",
+      "TestP15NativeReferenceMetadataStaysInline/314",
+      "TestP15NativeReferenceMetadataStaysInline/320",
+      "TestP15NativeReferenceMalformedMetadataRejects"
+    ]
+  },
+  "limitations": [
+    "Private baseline has three passing tests and two real failures; it is retained as failure evidence.",
+    "Intermediate diagnosis recovered the 74 control-marker demotions and isolated the remaining prompt default attachment before its repair.",
+    "All five private tests must be repeated on the final integrated source, including the independent Legacy rawAction numeric repair.",
+    "These compiler structure and fidelity checks do not establish Apple runtime execution."
+  ]
+}
