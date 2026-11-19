@@ -1,10 +1,15 @@
 import Foundation
+import CryptoKit
 import XCTest
 @testable import Cherri
 
 final class DocumentationIndexTests: XCTestCase {
     func testD03BundledCurrentDocumentationSearch() throws {
         let index = try DocumentationIndex.load()
+        let bundleURL = try XCTUnwrap(Bundle.main.url(forResource: "documentation-index",
+                                                       withExtension: "json", subdirectory: "Documentation"))
+        let bundleBytes = try Data(contentsOf: bundleURL)
+        let bundleSHA256 = SHA256.hash(data: bundleBytes).map { String(format: "%02x", $0) }.joined()
         XCTAssertGreaterThan(index.sections.count, 500)
         XCTAssertEqual(Set(index.sourceFiles.map(\.path)), DocumentationIndex.sourcePaths)
         let exact = index.search("show")
@@ -14,13 +19,19 @@ final class DocumentationIndexTests: XCTestCase {
         XCTAssertFalse(index.search("").contains { $0.migrationOnly })
         XCTAssertFalse(index.search("Migration", includeMigration: true).isEmpty)
         XCTAssertTrue(index.search("ZZZ_MISSING_DOCUMENTATION_937").isEmpty)
-        let record: [String: Any] = ["docsCommit": index.docsCommit,
+        let record: [String: Any] = ["schemaVersion": "1.0",
+                                     "bundleSHA256": bundleSHA256,
+                                     "docsCommit": index.docsCommit,
                                      "compilerCommit": index.compilerCommit,
+                                     "schemaFingerprint": index.schemaFingerprint,
+                                     "macroFingerprint": index.macroFingerprint,
                                      "sourcePaths": index.sourceFiles.map(\.path),
                                      "sourceHashes": index.sourceFiles.map(\.sha256),
                                      "sections": index.sections.count,
                                      "exactActionFirst": exact.first?.title ?? "",
-                                     "defaultMigrationResults": index.search("").filter(\.migrationOnly).count]
+                                     "defaultMigrationResults": index.search("").filter(\.migrationOnly).count,
+                                     "explicitMigrationResults": index.search("", includeMigration: true).filter(\.migrationOnly).count,
+                                     "missingResults": index.search("ZZZ_MISSING_DOCUMENTATION_937").count]
         let data = try JSONSerialization.data(withJSONObject: record, options: [.sortedKeys])
         print("[CHERRI_DOCS_RECEIPT] \(String(decoding: data, as: UTF8.self))")
     }
