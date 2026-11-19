@@ -963,6 +963,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateAIEvaluationHarnessRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateDeclarationTriggerRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1898,7 +1902,7 @@ func (r *Runner) runVerification() {
 // Group 21: Evaluation
 func (r *Runner) runEvaluation() {
 	// AI01: Held-out equal-budget model evaluation harness
-	r.Record("AI01", "evaluation", "Held-out equal-budget old/new model evaluation harness", "evaluation", nil, false, "AI_EVAL_NOT_RUN", "Harness prepared; external model evaluation API endpoint not configured per Section 22.5")
+	r.Record("AI01", "evaluation", "Held-out equal-budget old/new model evaluation harness", "evaluation", nil, false, "AI_EVAL_NOT_RUN", "No authorized held-out model evaluation has executed in this run. Configure the adapter and validator described in tools/language-ai-eval/README.md and explicitly use --execute-external; RP50 harness controls do not measure AI quality")
 }
 
 // Group 22: Delivery
@@ -1926,6 +1930,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if r.runAIEvaluationHarnessRequirement(c.ID, c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if !r.runSupplementalProduction(c.ID, "repair", c.Title, c.RequiredTestLevels) {
 			r.recordUnexecutedRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels)
 		}

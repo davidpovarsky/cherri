@@ -62,7 +62,8 @@ func TestSupplementalProductionScenarioInventory(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, _ = p15SupplementalSelection(t, all)
+	var selected, _ = p15SupplementalSelection(t, all)
+	_ = p15AppendAIEvaluationPartialSelection(t, all, selected)
 }
 
 func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
@@ -72,6 +73,7 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	}
 	var selected, requiredRecords = p15SupplementalSelection(t, all)
 	var requiredCases = selected.Repair.CaseCount + selected.Gates.GateCount
+	requiredRecords += p15AppendAIEvaluationPartialSelection(t, all, selected)
 
 	var runner = NewRunner()
 	runner.runRepairCases(all.Repair)
@@ -86,6 +88,10 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 				!reflect.DeepEqual(result.ExecutedLevels, scenario.Tiers) {
 				t.Fatalf("%s complete supplemental scenario did not pass: %+v", id, result)
 			}
+		} else if id == "RP50" {
+			if result.Passed || result.Status != "PENDING_EXTERNAL" || !reflect.DeepEqual(result.ExecutedLevels, aiEvaluationHarnessScenario.Tiers) {
+				t.Fatalf("partial AI controls lost the unexecuted evaluation tier: %+v", result)
+			}
 		} else if result.Passed || result.Status != "NOT_RUN" || len(result.ExecutedLevels) != 0 {
 			t.Fatalf("unexecuted supplemental scenario inherited a pass: %+v", result)
 		}
@@ -97,6 +103,12 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 		}
 		var id = record.Requirements[0]
 		var scenario = supplementalProductionScenarios[id]
+		if id == "RP50" {
+			scenario = aiEvaluationHarnessScenario
+			if err := validateAIEvaluationHarnessRecord(id, record); err != nil {
+				t.Fatal(err)
+			}
+		}
 		if err := validateSupplementalProductionRecord(id, record); err != nil {
 			t.Fatal(err)
 		}
@@ -109,7 +121,7 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 	var manifest = &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	var report, reportErr = ValidateEvidenceManifest(manifest, selected, "local")
 	if reportErr != nil || report.PassedCases != requiredCases || report.FailedCases != 0 ||
-		report.SkippedCases != 0 || report.ClosureComplete {
+		report.SkippedCases != 1 || report.ClosureComplete {
 		t.Fatalf("supplemental evidence rejected or expanded into release closure: %+v err=%v", report, reportErr)
 	}
 
@@ -198,6 +210,12 @@ func TestSupplementalAcceptanceProductionEvidence(t *testing.T) {
 				!reflect.DeepEqual(row.TestNames, scenario.TestNames) ||
 				!reflect.DeepEqual(row.ProductionPath, scenario.ProductionPaths) {
 				t.Fatalf("audit lost the actual supplemental producer: %+v", row)
+			}
+		} else if row.ID == "RP50" {
+			if row.Status != "BLOCKED_EXTERNAL" || row.PositiveAndNegative ||
+				!reflect.DeepEqual(row.Tier, aiEvaluationHarnessScenario.Tiers) ||
+				!reflect.DeepEqual(row.TestNames, aiEvaluationHarnessScenario.TestNames) {
+				t.Fatalf("audit promoted partial AI controls: %+v", row)
 			}
 		} else if row.Status == "PASS" || row.PositiveAndNegative {
 			t.Fatalf("unexecuted obligation inherited supplemental success: %+v", row)

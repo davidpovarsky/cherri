@@ -157,7 +157,7 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 				row.Blocker = "Required external tier has no validated current-SHA evidence in this local run"
 			case res.Status == "AI_EVAL_NOT_RUN":
 				row.Status = "BLOCKED_EXTERNAL"
-				row.Blocker = "External held-out model evaluation endpoint not configured"
+				row.Blocker = "Actual held-out model evaluation has no validated current-SHA evidence in this run"
 			default:
 				row.Blocker = "Dedicated scenario producer has not executed; linked IDs do not satisfy this obligation"
 			}
@@ -323,6 +323,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.TestNames = append([]string{}, producer.TestNames...)
 			row.ProductionPath = append([]string{}, producer.ProductionPaths...)
 			row.PositiveAndNegative = res.Passed
+		}
+		if row.ID == "RP50" {
+			row.TestNames = append([]string{}, aiEvaluationHarnessScenario.TestNames...)
+			row.ProductionPath = append([]string{}, aiEvaluationHarnessScenario.ProductionPaths...)
+			row.PositiveAndNegative = false
+			row.Scope = "Actual task-runner control flow only; fake adapters do not measure model quality, and the immutable evaluation tier remains required"
 		}
 		if row.ID == "F01" {
 			row.ProductionPath = []string{"internal/language/syntax/parser.go", "internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "internal/language/lower/short_circuit.go", "language_backend_adapter.go"}

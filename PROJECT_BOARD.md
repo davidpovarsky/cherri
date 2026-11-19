@@ -70,3 +70,8 @@ Replaced discovery-only interpreter selection with an actual isolated Python3 pr
 ## P15 real module-resolution producer — 2026-11-19
 
 Registered RP27 as an independently executed scenario with all immutable unit/service/migration tiers. The producer runs fifteen named actual multi-file, alias, cycle, library-init migration, and unresolved dependency tests; six corrupted or incomplete evidence controls reject false completion. Focused inventory and producer replay passed (eight test/subtest events, 40.72 seconds); related IDs and native-device obligations inherit no result. Contracts remain unchanged. The focused log is retained at dist/p15-acceptance-causal/rp27-selected.jsonl; final clean integration evidence remains separate.
+
+
+## P15 AI harness control producer — 2026-11-19
+
+RP50 now executes the real held-out task-runner control suite through exact discovery of fifteen Python tests. It records only harness-unit; the immutable evaluation tier (canonical external-eval) remains missing, RP50 stays PENDING_EXTERNAL, and AI01 stays AI_EVAL_NOT_RUN. Six evidence corruption controls and altered-tier/linked-ID rejection passed, with nine focused Go test/subtest events in 84.86 seconds. Fake subprocess adapters measure no model quality. The initial tier-normalization failure and repaired logs are retained separately under dist/p15-acceptance-causal/rp50-*. No external model was invoked and no whole-project closure is claimed.

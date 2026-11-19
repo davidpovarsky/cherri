@@ -452,6 +452,9 @@ func deriveAcceptanceFixtures(id, group string) []string {
 }
 
 func deriveRepairTestIDs(id, title string) []string {
+	if id == "RP50" {
+		return aiEvaluationHarnessScenario.testIDs()
+	}
 	if producer, ok := supplementalProductionScenarios[id]; ok {
 		return producer.testIDs()
 	}
@@ -495,6 +498,9 @@ func deriveRepairTestIDs(id, title string) []string {
 }
 
 func deriveRepairFixtures(id string) []string {
+	if id == "RP50" {
+		return append([]string{}, aiEvaluationHarnessScenario.ProductionPaths...)
+	}
 	return []string{"tests/language-v2/repair-regression-plan.json#" + id}
 }
 
