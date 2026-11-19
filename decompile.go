@@ -2923,7 +2923,7 @@ func makeRawAction(action *ShortcutAction) string {
 		return fmt.Sprintf("rawAction(\"%s\")", action.WFWorkflowActionIdentifier)
 	}
 
-	var jb, jsonErr = json.MarshalIndent(rawParams, strings.Repeat("\t", tabLevel), "\t")
+	var jb, jsonErr = json.MarshalIndent(rawActionJSONNumbers(rawParams), strings.Repeat("\t", tabLevel), "\t")
 	handle(jsonErr)
 
 	var arguments = strings.Join([]string{fmt.Sprintf("\"%s\"", action.WFWorkflowActionIdentifier), string(jb)}, ", ")

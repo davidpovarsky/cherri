@@ -1,0 +1,27 @@
+// Structural compile/roundtrip fixture; synthetic unknown action, not an Apple runtime claim.
+#define name P15LegacyRawNativeNumbers
+const original = text("numeric reference witness")
+rawAction("org.cherrilang.synthetic.native-number-kinds", {
+    "WFInput": "${original}",
+    "WFInteger": 1,
+    "WFNegativeInteger": -7,
+    "WFZeroInteger": 0,
+    "WFLargeInteger": 9007199254740993,
+    "WFMaxUnsignedInteger": 18446744073709551615,
+    "WFIntegralReal": 1.0,
+    "WFFractionalReal": 1.25,
+    "WFExponentReal": 1e3,
+    "WFNegativeZeroReal": -0.0,
+    "WFBoolean": false,
+    "WFNumericText": "1",
+    "WFContentItemFilter": {
+        "WFSerializationType": "WFContentPredicateTableTemplate",
+        "Value": {
+            "WFActionParameterFilterPrefix": 1,
+            "WFActionParameterFilterTemplates": [{"Operator": 4}],
+            "Numbers": [1, 1.0, -7, -0.0, 9007199254740993, 18446744073709551615],
+            "Control": true
+        }
+    },
+    "WFContentItemLimitNumber": 5
+})

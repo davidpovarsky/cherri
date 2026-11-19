@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -182,4 +184,34 @@ func makeRawActionArrayValue(value []any) WFArrayValue {
 		items = append(items, makeDictionaryItem("", normalizeRawActionParamValue(item)))
 	}
 	return makeArrayValue(items)
+}
+
+// JSON normally prints an integral real as an integer token. Keep its lexical
+// kind so the native-parameter decoder can preserve it without rewriting any
+// symbolic references or converting the whole action to an opaque payload.
+func rawActionJSONNumbers(value any) any {
+	switch number := value.(type) {
+	case float64:
+		var text = strconv.FormatFloat(number, 'g', -1, 64)
+		if !strings.ContainsAny(text, ".eE") {
+			text += ".0"
+		}
+		return json.Number(text)
+	case float32:
+		return rawActionJSONNumbers(float64(number))
+	case map[string]any:
+		var result = make(map[string]any, len(number))
+		for key, child := range number {
+			result[key] = rawActionJSONNumbers(child)
+		}
+		return result
+	case []any:
+		var result = make([]any, len(number))
+		for index, child := range number {
+			result[index] = rawActionJSONNumbers(child)
+		}
+		return result
+	default:
+		return value
+	}
 }
