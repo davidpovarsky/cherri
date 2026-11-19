@@ -1,0 +1,58 @@
+diff --git a/tools/language-acceptance/assertion_scope.go b/tools/language-acceptance/assertion_scope.go
+index 4421dc8..558b207 100644
+--- a/tools/language-acceptance/assertion_scope.go
++++ b/tools/language-acceptance/assertion_scope.go
+@@ -45,7 +45,7 @@ var incompleteLocalAssertions = map[string]string{
+ 	"E03": "Rename edit count does not inspect exact exclusions or hover/signature/definition behavior.",
+ 	"E05": "One out-of-order document update does not test cancellation and stale response publication.",
+ 	"E06": "One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface.",
+-	"D03": "File existence does not verify active fork docs, publication, and upstream separation.",
++	"D03": "Requires actual final-tuple published bytes and installed Skill searches plus source-bound app unit, negative and UI proof.",
+ 
+ 	"CI01":  "Local process fixtures do not execute WorkflowKit; source-bound real macOS correct/corrupt/restored REQUIRED encoding evidence is required.",
+ 	"CI02":  "Nonempty IR for a runtime fixture is not an iOS runtime execution.",
+diff --git a/tools/language-acceptance/evidence_map.go b/tools/language-acceptance/evidence_map.go
+index 4a8c6fc..6f081ed 100644
+--- a/tools/language-acceptance/evidence_map.go
++++ b/tools/language-acceptance/evidence_map.go
+@@ -249,6 +249,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
+ }
+ 
+ func deriveAcceptanceTestIDs(id, group string) []string {
++	if id == "D03" {
++		return []string{documentationConsumerTestID, documentationAppTestID}
++	}
+ 	if tests, ok := editorProductionTests[id]; ok {
+ 		ids := make([]string, 0, len(tests))
+ 		for _, test := range tests {
+diff --git a/tools/language-acceptance/main.go b/tools/language-acceptance/main.go
+index 72a290a..dd5e284 100644
+--- a/tools/language-acceptance/main.go
++++ b/tools/language-acceptance/main.go
+@@ -932,6 +932,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
+ 				continue
+ 			}
+ 
++			if err := validateDocumentationRecord(reqID, rec, manifest); err != nil {
++				validationErrors = append(validationErrors, err.Error())
++			}
++
+ 			if err := validateEditorPerformanceRecord(reqID, rec); err != nil {
+ 				validationErrors = append(validationErrors, err.Error())
+ 			}
+@@ -1879,14 +1883,7 @@ func (r *Runner) runDocs() {
+ 	r.runGeneratedDocumentationRequirement()
+ 	r.runExecutableDocumentationRequirement()
+ 
+-	// D03: Active fork docs separated from upstream
+-	docsRepoGuide := filepath.Join(resolveRepoRoot(), "..", "cherrilang.org", "fork-language", "guide.md")
+-	_, errForkDocs := os.Stat(docsRepoGuide)
+-	if errForkDocs != nil {
+-		_, errForkDocs = os.Stat(resolveRepoPath(filepath.Join("docs", "language-v2", "upstream-boundary.md")))
+-	}
+-	d03Passed := errForkDocs == nil
+-	r.Record("D03", "docs", "Active fork docs separated from upstream reference", "docs+integration", []string{"docs", "integration"}, d03Passed, "PASSED", "Fork documentation present in cherrilang.org fork-language/ guide")
++	r.runDocumentationSeparationRequirement()
+ }
+ 
+ // Group 19: Skill

@@ -1,0 +1,37 @@
+{
+  "sourceSHA": "8dba0b73dc97e0b68a45724d637365e97707ac3b",
+  "sourceClean": false,
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=180s",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestDocumentation(CanonicalContentIntegrity|ActualCollectorAdapterToFormalIntake)$"
+  ],
+  "startUTC": "2026-11-19T05:25:40.387054+00:00",
+  "durationSeconds": 10.60899999999674,
+  "exitCode": 1,
+  "timedOut": false,
+  "availableMemoryBefore": 3173949440,
+  "counts": {
+    "pass": 5,
+    "fail": 5,
+    "skip": 0
+  },
+  "failedTests": [
+    "TestDocumentationActualCollectorAdapterToFormalIntake/indented_receipt",
+    "TestDocumentationActualCollectorAdapterToFormalIntake",
+    "TestDocumentationCanonicalContentIntegrity/changed_current_block",
+    "TestDocumentationCanonicalContentIntegrity/historical_prose_under_current_section",
+    "TestDocumentationCanonicalContentIntegrity",
+    null
+  ],
+  "rawBytes": 12146,
+  "rawSHA256": "2683d8015fb2da0782d1d6f23d46a784124c2f5470358c1392b97c9747d68fed",
+  "statusBefore": " M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/execution_audit.go\n M tools/language-acceptance/main.go\n?? docs/language-v2/p15-documentation-separation-evidence.md\n?? tools/language-acceptance/documentation_consumers_intake.go\n?? tools/language-acceptance/documentation_intake.go\n?? tools/language-acceptance/documentation_intake_test.go\n?? tools/p10r15/test_verify_documentation_consumers.py\n?? tools/p10r15/verify_documentation_consumers.py\n",
+  "statusAfter": " M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/execution_audit.go\n M tools/language-acceptance/main.go\n?? docs/language-v2/p15-documentation-separation-evidence.md\n?? tools/language-acceptance/documentation_consumers_intake.go\n?? tools/language-acceptance/documentation_intake.go\n?? tools/language-acceptance/documentation_intake_test.go\n?? tools/p10r15/test_verify_documentation_consumers.py\n?? tools/p10r15/verify_documentation_consumers.py\n"
+}

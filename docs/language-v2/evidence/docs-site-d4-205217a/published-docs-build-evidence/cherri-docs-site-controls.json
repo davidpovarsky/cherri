@@ -1,0 +1,41 @@
+{
+  "formatVersion": 1,
+  "docsCommit": "205217a256b5f220724363b44b5ae516ffe6a539",
+  "compilerCommit": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+  "passed": 6,
+  "failed": 0,
+  "skipped": 0,
+  "artifactsRestoredExactly": true,
+  "controls": [
+    {
+      "name": "historical-route-in-default-search",
+      "rejected": true,
+      "diagnostic": "Default search includes a historical route: /language/raw-actions"
+    },
+    {
+      "name": "search-result-without-project-base",
+      "rejected": true,
+      "diagnostic": "Search result URL does not match its project-base route"
+    },
+    {
+      "name": "client-search-request-without-project-base",
+      "rejected": true,
+      "diagnostic": "Search client does not load and use the verified project URLs"
+    },
+    {
+      "name": "missing-home-authoring-entry",
+      "rejected": true,
+      "diagnostic": "Home page lacks its unique current-guide entry point"
+    },
+    {
+      "name": "missing-home-image",
+      "rejected": true,
+      "diagnostic": "Built site is missing a unique page: /assets/missing-control.png"
+    },
+    {
+      "name": "damaged-canonical-action-fingerprint",
+      "rejected": true,
+      "diagnostic": "rendered action page lost canonical metadata: fingerprints=['7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b'], signatures=[]"
+    }
+  ]
+}
