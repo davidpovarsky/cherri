@@ -725,6 +725,7 @@ Path("artifacts/menu-alpha-selection-proof.json").write_text(json.dumps(alpha_pr
 
 beta_proof = make_proof("Beta", "menu_select_beta", "artifacts/ui_helper_menu_select_beta.log", "artifacts/menu-beta-clipboard-result.txt", "BEFORE_MENU_BETA", "CHERRI_MENU_BETA", "CHERRI_MENU_ALPHA")
 Path("artifacts/menu-beta-selection-proof.json").write_text(json.dumps(beta_proof, indent=2), encoding="utf-8")
+menu_observed_pass = bool(menu_status == "PASS" and alpha_proof["runtime_pass"] and beta_proof["runtime_pass"])
 
 def file_art(rel_src, rel_ci):
     p = Path(rel_src)
@@ -983,10 +984,10 @@ records = [
         "tier": "ios-runtime",
         "test_id": "ios27-runtime-poc:menu-structural",
         "implementation_sha": head_sha,
-        "result": "passed",
-        "exit_code": 0,
+        "result": "passed" if menu_observed_pass else "failed",
+        "exit_code": 0 if menu_observed_pass else 1,
         "structural_pass": True,
-        "runtime_pass": (menu_status == "PASS"),
+        "runtime_pass": menu_observed_pass,
         "assertions": {"menu_start": True, "cases": ["Alpha", "Beta"]},
         "artifacts": arts,
         "detail": "Choose from Menu structure (mode 0, cases Alpha/Beta mode 1, end mode 2) verified in serialized plist",
@@ -1048,14 +1049,16 @@ records = [
     },
 ]
 
-out_p = Path("artifacts/runtime-evidence.json")
+out_p = Path("artifacts/runtime-diagnostics.json")
 out_p.write_text(json.dumps(records, indent=2), encoding="utf-8")
-print(f"Wrote {len(records)} runtime evidence records to {out_p}")
+print(f"Wrote {len(records)} raw runtime diagnostic records to {out_p}")
 PY
 
 echo ""
+echo "=== Exporting bounded formal runtime evidence ==="
+python3 "$POC_TOOLS/runtime_poc_formal_evidence.py" --repo "$POC_REPO_ROOT" --root artifacts --diagnostics runtime-diagnostics.json
 echo "=== Running Evidence Verifier Gate ==="
-go run ./tools/ios-runtime-verifier --dir artifacts
+go run ./tools/ios-runtime-verifier --dir artifacts --evidence-file runtime-diagnostics.json
 
 echo ""
 echo "=== SUMMARY OF RESULTS ==="

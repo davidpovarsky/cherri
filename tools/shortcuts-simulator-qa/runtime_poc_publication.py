@@ -30,7 +30,7 @@ FORMAL_TEXT = {
 FORMAL_FILES = FORMAL_TEXT | {name + suffix for name in SOURCE_HASHES for suffix in (".cherri", ".shortcut")}
 SOURCE_RECEIPT = "runtime-poc-source-provenance.json"
 SIGNING_RECEIPT = "runtime-poc-signing-provenance.json"
-SUPPORT = {SOURCE_RECEIPT, SIGNING_RECEIPT, DEVICE_RECEIPT}
+SUPPORT = {SOURCE_RECEIPT, SIGNING_RECEIPT, DEVICE_RECEIPT, "runtime-diagnostics.json"}
 MAX_FILE_BYTES = 10 * 1024 * 1024
 
 
@@ -176,9 +176,18 @@ def stage(repo, root, output, commit, run_id, attempt):
     signed_by_name = {r["signedArtifact"]: r for r in signed_rows}
     raw_evidence = read_contained(root, "runtime-evidence.json")
     records = read_text_data(raw_evidence, "runtime-evidence.json")
+    raw_diagnostics = read_contained(root, "runtime-diagnostics.json")
+    read_text_data(raw_diagnostics, "runtime-diagnostics.json")
+    source_receipt_bytes = read_contained(root, SOURCE_RECEIPT)
     require(isinstance(records, list) and records and all(isinstance(r, dict) for r in records), "POC_FORMAL_EVIDENCE_MISSING")
     refs = {}
     for record in records:
+        assertions = record.get("assertions", {})
+        require(isinstance(assertions, dict)
+                and assertions.get("diagnostics_sha256") == sha(raw_diagnostics)
+                and assertions.get("source_receipt_sha256") == sha(source_receipt_bytes)
+                and assertions.get("run_id") == run_id and assertions.get("run_attempt") == attempt,
+                "POC_FORMAL_DIAGNOSTIC_BINDING_MISMATCH")
         require(record.get("implementation_sha") == commit and record.get("tier") == "ios-runtime"
                 and str(record.get("test_id", "")).startswith("ios27-runtime-poc:"),
                 "POC_FORMAL_EVIDENCE_IDENTITY")

@@ -128,7 +128,13 @@ class FormalPublicationTests(unittest.TestCase):
                  "sha256": sha((self.root / name).read_bytes())}
                 for name in sorted(publication.FORMAL_FILES)]
         # Deliberately failed: publication is never native execution credit.
+        diagnostics = b'[{"scope":"SYNTHETIC_POLICY_UNIT_CONTROL_NOT_APPLE_EXECUTION"}]\n'
+        (self.root / "runtime-diagnostics.json").write_bytes(diagnostics)
+        bindings = {"diagnostics_sha256": sha(diagnostics),
+                    "source_receipt_sha256": sha((self.root / publication.SOURCE_RECEIPT).read_bytes()),
+                    "run_id": RUN, "run_attempt": ATTEMPT}
         self.records = [{"implementation_sha": COMMIT, "tier": "ios-runtime",
+                         "assertions": bindings,
                          "test_id": "ios27-runtime-poc:smoke", "result": "failed",
                          "exit_code": 1, "runtime_pass": False, "artifacts": refs,
                          "detail": "SYNTHETIC_POLICY_UNIT_CONTROL_NOT_APPLE_EXECUTION"}]
@@ -219,6 +225,10 @@ class FormalPublicationTests(unittest.TestCase):
         value = json.loads(path.read_bytes())
         value["cleanupStatus"] = "PENDING"
         path.write_text(json.dumps(value), encoding="utf-8")
+        self.assert_blocked()
+
+    def test_formal_observations_cannot_detach_from_raw_diagnostics(self):
+        (self.root / "runtime-diagnostics.json").write_bytes(b'[{"scope":"changed"}]\n')
         self.assert_blocked()
 
     def test_hubsign_receipt_binds_exact_public_input_and_output(self):

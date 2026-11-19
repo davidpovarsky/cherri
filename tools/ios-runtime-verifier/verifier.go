@@ -149,6 +149,12 @@ func VerifyMenuPair(alphaProof *MenuProof, betaProof *MenuProof) (*VerificationR
 
 // VerifyDirectory validates evidence files in an artifacts directory.
 func VerifyDirectory(dir string) (*VerificationReport, error) {
+	return VerifyDirectoryWithEvidence(dir, "runtime-evidence.json")
+}
+
+// VerifyDirectoryWithEvidence keeps the menu diagnostic gate bound to its
+// explicitly selected raw manifest when formal acceptance exports only a subset.
+func VerifyDirectoryWithEvidence(dir, evidenceFile string) (*VerificationReport, error) {
 	report := &VerificationReport{
 		Status: "FAIL",
 	}
@@ -195,26 +201,37 @@ func VerifyDirectory(dir string) (*VerificationReport, error) {
 		return report, fmt.Errorf("branch verification failed: %s", strings.Join(report.Errors, "; "))
 	}
 
-	// Check runtime-evidence.json if present
-	evidencePath := filepath.Join(dir, "runtime-evidence.json")
-	if evBytes, err := os.ReadFile(evidencePath); err == nil {
-		var records []map[string]interface{}
-		if err := json.Unmarshal(evBytes, &records); err == nil {
-			for _, rec := range records {
-				evID, _ := rec["evidence_id"].(string)
-				res, _ := rec["result"].(string)
-				rtPass, _ := rec["runtime_pass"].(bool)
-				if evID == "ev-runtime-menu-alpha" || evID == "ev-runtime-menu-beta" {
-					if res != "passed" || !rtPass {
-						report.Errors = append(report.Errors, fmt.Sprintf("runtime-evidence.json record %s has result=%q, runtime_pass=%v (expected passed, true)", evID, res, rtPass))
-					}
-				}
-			}
-		}
+	// The requested diagnostic file is mandatory. A reduced formal manifest
+	// cannot silently replace the two independent menu observations.
+	if evidenceFile != "runtime-evidence.json" && evidenceFile != "runtime-diagnostics.json" {
+		return report, fmt.Errorf("unsupported diagnostic evidence filename")
 	}
-
+	evBytes, err := os.ReadFile(filepath.Join(dir, evidenceFile))
+	if err != nil {
+		return report, fmt.Errorf("cannot read required %s: %w", evidenceFile, err)
+	}
+	var records []map[string]interface{}
+	if err := json.Unmarshal(evBytes, &records); err != nil {
+		return report, fmt.Errorf("cannot parse required %s: %w", evidenceFile, err)
+	}
+	seen := map[string]bool{}
+	for _, rec := range records {
+		evID, _ := rec["evidence_id"].(string)
+		if evID != "ev-runtime-menu-alpha" && evID != "ev-runtime-menu-beta" {
+			continue
+		}
+		res, _ := rec["result"].(string)
+		rtPass, _ := rec["runtime_pass"].(bool)
+		if seen[evID] || res != "passed" || !rtPass {
+			report.Errors = append(report.Errors, fmt.Sprintf("%s record %s is duplicated or lacks a passed runtime result", evidenceFile, evID))
+		}
+		seen[evID] = true
+	}
+	if len(seen) != 2 {
+		report.Errors = append(report.Errors, "required Alpha/Beta diagnostic records missing")
+	}
 	if len(report.Errors) > 0 {
-		return report, fmt.Errorf("runtime-evidence.json check failed: %s", strings.Join(report.Errors, "; "))
+		return report, fmt.Errorf("%s check failed: %s", evidenceFile, strings.Join(report.Errors, "; "))
 	}
 
 	report.Passed = true
@@ -224,9 +241,10 @@ func VerifyDirectory(dir string) (*VerificationReport, error) {
 
 func main() {
 	dir := flag.String("dir", "artifacts", "Directory containing runtime evidence artifacts")
+	evidenceFile := flag.String("evidence-file", "runtime-evidence.json", "Raw runtime diagnostic manifest filename")
 	flag.Parse()
 
-	report, err := VerifyDirectory(*dir)
+	report, err := VerifyDirectoryWithEvidence(*dir, *evidenceFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "VERIFICATION FAILED: %v\n", err)
 		for _, e := range report.Errors {
