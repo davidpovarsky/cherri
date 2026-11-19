@@ -1,0 +1,36 @@
+{
+  "phase": "asset-functional-candidate",
+  "source": "c53f765dc8f80db433c49cc4d780e0d6d9ad27dd",
+  "status_before": "",
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=480s",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestP15EditorProducerActualContracts|TestEditor)"
+  ],
+  "available_bytes": 3556560896,
+  "started": "2026-11-19T04:52:33.536058+00:00",
+  "test_sources": {
+    "tools/language-acceptance/editor_performance_execution_test.go": "81888634927a336fcd802ee648f063351e1bf6206af9218dc9185b45d7ee178c",
+    "tools/language-acceptance/editor_performance_execution.go": "9cfc1ed95381cda201c0081f8447c7cdb6e1e55191a42f19aa3748f7390df039",
+    "tools/language-acceptance/editor_benchmark_intake.go": "18a3eb862681f8be206548f7bf0ac297e234c633b1d4984ea0ca9328022da58f",
+    "tools/language-acceptance/editor_process_windows.go": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+  },
+  "pid": 25072,
+  "exit_code": 0,
+  "seconds": 62.875,
+  "raw_sha256": "78fcf033e450e22f5e4e8e2dd74873ab3ef62f54d2e14f2c3230ea0927bdb667",
+  "raw_bytes": 91137,
+  "totals": {
+    "pass": 70,
+    "fail": 0,
+    "skip": 0
+  },
+  "failed_tests": [],
+  "status_after": ""
+}

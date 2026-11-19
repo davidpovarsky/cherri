@@ -1,0 +1,302 @@
+diff --git a/action.go b/action.go
+index 7e7899e..af7a076 100644
+--- a/action.go
++++ b/action.go
+@@ -16,6 +16,7 @@ import (
+ 	"strings"
+ 
+ 	"github.com/electrikmilk/args-parser"
++	"github.com/electrikmilk/cherri/internal/language/assets"
+ 	"github.com/electrikmilk/cherri/internal/language/schema"
+ )
+ 
+@@ -29,9 +30,10 @@ var stdActions embed.FS
+ 
+ // actionReference holds the state for a single action being parsed or generated.
+ type actionReference struct {
+-	definition actionDefinition
+-	identifier string
+-	arguments  []actionArgument
++	definition    actionDefinition
++	identifier    string
++	arguments     []actionArgument
++	embeddedAsset *assets.Snapshot
+ }
+ 
+ var currentAction actionReference
+diff --git a/actions_std.go b/actions_std.go
+index e2347b3..c6c963c 100644
+--- a/actions_std.go
++++ b/actions_std.go
+@@ -2349,6 +2349,9 @@ var actions = map[string]*actionDefinition{
+ 			},
+ 		},
+ 		check: func(args []actionArgument, _ *actionDefinition) {
++			if currentAction.embeddedAsset != nil {
++				return
++			}
+ 			var file = getArgValue(args[0])
+ 			if args[0].valueType == Variable && reflect.TypeOf(file).Kind() != reflect.String {
+ 				parserError("File path must be a string literal")
+@@ -2358,6 +2361,9 @@ var actions = map[string]*actionDefinition{
+ 			}
+ 		},
+ 		makeParams: func(args []actionArgument) map[string]any {
++			if currentAction.embeddedAsset != nil {
++				return map[string]any{"WFTextActionText": currentAction.embeddedAsset.Base64}
++			}
+ 			var file = getArgValue(args[0]).(string)
+ 			var bytes, readErr = os.ReadFile(file)
+ 			handle(readErr)
+diff --git a/build_profile.go b/build_profile.go
+index c528113..bb9629a 100644
+--- a/build_profile.go
++++ b/build_profile.go
+@@ -4,6 +4,8 @@ import (
+ 	"encoding/json"
+ 	"fmt"
+ 	"strings"
++
++	"github.com/electrikmilk/cherri/internal/language/assets"
+ )
+ 
+ // BuildProfile controls compiler-owned diagnostics; it never removes assertions.
+@@ -18,6 +20,9 @@ const (
+ type CompileOptions struct {
+ 	BuildProfile   BuildProfile
+ 	VirtualModules map[string]string
++	// AssetCache allows the editor and compiler to share verified local file bytes.
++	// Nil selects the process-wide bounded cache.
++	AssetCache *assets.Cache
+ 	// RequireAuthoredWorkflow rejects native.workflow provenance before any output
+ 	// is finalized. Edit workflows instead supply an original and exact policy.
+ 	RequireAuthoredWorkflow bool
+diff --git a/internal/language/analysis/analyzer.go b/internal/language/analysis/analyzer.go
+index eabbe68..5708670 100644
+--- a/internal/language/analysis/analyzer.go
++++ b/internal/language/analysis/analyzer.go
+@@ -71,6 +71,7 @@ func (s *Scope) LookupLocal(name string) (*Symbol, bool) {
+ 
+ // Analyzer performs semantic analysis on a parsed Program.
+ type Analyzer struct {
++	resolvedActions        map[*syntax.CallExpr]*schema.ActionSchema
+ 	registry               *schema.Registry
+ 	baseRegistry           *schema.Registry
+ 	configuredTarget       analyzerTargetConfig
+@@ -1404,6 +1405,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
+ 	a.rawNativeDataContext = false
+ 	defer func() { a.rawNativeDataContext = previousRawContext }()
+ 	delete(a.nativeReferenceCalls, call)
++	delete(a.resolvedActions, call)
+ 	if call.Block != nil {
+ 		return a.analyzeScopedBlockCall(call, scope)
+ 	}
+@@ -1556,6 +1558,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
+ 		return types.Unknown
+ 	}
+ 
++	a.resolvedActions[call] = actionSchema
+ 	a.checkTargetVersion(actionSchema, callName, call.Span)
+ 	if a.hasExplicitTarget {
+ 		for _, target := range a.targets {
+diff --git a/internal/language/analysis/registry_lifetime.go b/internal/language/analysis/registry_lifetime.go
+index eaf9624..8b6f1e7 100644
+--- a/internal/language/analysis/registry_lifetime.go
++++ b/internal/language/analysis/registry_lifetime.go
+@@ -39,6 +39,7 @@ func (a *Analyzer) beginProgram() {
+ 	a.registry = a.baseRegistry.Clone()
+ 	a.diagnostics = nil
+ 	a.exprTypes = make(map[syntax.Expression]types.Type)
++	a.resolvedActions = make(map[*syntax.CallExpr]*schema.ActionSchema)
+ 	a.currentFn = nil
+ 	a.inValueBlk = false
+ 	a.yieldedTypes = nil
+diff --git a/internal/language/backend/contracts.go b/internal/language/backend/contracts.go
+index 21071bc..de4ac84 100644
+--- a/internal/language/backend/contracts.go
++++ b/internal/language/backend/contracts.go
+@@ -122,6 +122,8 @@ type CallArgument struct {
+ 
+ // ResolvedCall describes a typed, resolved action invocation.
+ type ResolvedCall struct {
++	// SourceDocument is source metadata for local resources, never a native parameter.
++	SourceDocument  string
+ 	DefinitionID    string
+ 	VariantID       string
+ 	AppleIdentifier string
+diff --git a/internal/language/lower/lower.go b/internal/language/lower/lower.go
+index 909a6fe..ddfbeb1 100644
+--- a/internal/language/lower/lower.go
++++ b/internal/language/lower/lower.go
+@@ -5637,6 +5637,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
+ 		}
+ 
+ 		resolvedCall := backend.ResolvedCall{
++			SourceDocument:  string(call.NodeSpan().Document),
+ 			DefinitionID:    actionName,
+ 			AppleIdentifier: actionSchema.AppleIdentifier,
+ 			OutputUUID:      outputUUID,
+diff --git a/internal/language/lsp/server.go b/internal/language/lsp/server.go
+index 4322659..2005b5a 100644
+--- a/internal/language/lsp/server.go
++++ b/internal/language/lsp/server.go
+@@ -168,6 +168,16 @@ func (s *Server) handleMessage(msg *rpcMessage) {
+ 			s.publishDiagnostics(p.TextDocument.URI)
+ 		}
+ 
++	case "workspace/didChangeWatchedFiles":
++		var changes struct {
++			Changes []json.RawMessage `json:"changes"`
++		}
++		if err := json.Unmarshal(msg.Params, &changes); err == nil && len(changes.Changes) > 0 {
++			for _, uri := range s.svc.InvalidateAssets() {
++				s.publishDiagnostics(uri)
++			}
++		}
++
+ 	case "textDocument/didClose":
+ 		var p struct {
+ 			TextDocument struct {
+diff --git a/internal/language/service/service.go b/internal/language/service/service.go
+index b52d11c..4d0b9c1 100644
+--- a/internal/language/service/service.go
++++ b/internal/language/service/service.go
+@@ -8,6 +8,7 @@ import (
+ 	"sync"
+ 
+ 	"github.com/electrikmilk/cherri/internal/language/analysis"
++	"github.com/electrikmilk/cherri/internal/language/assets"
+ 	"github.com/electrikmilk/cherri/internal/language/modules"
+ 	"github.com/electrikmilk/cherri/internal/language/schema"
+ 	"github.com/electrikmilk/cherri/internal/language/source"
+@@ -57,6 +58,8 @@ type TextEdit struct {
+ 
+ // DocumentState holds in-memory parsed and analyzed state for an open file.
+ type DocumentState struct {
++	AssetDiagnostics  []analysis.Diagnostic
++	AssetDependencies []assets.Snapshot
+ 	URI               string
+ 	Version           int
+ 	File              *source.File
+@@ -68,19 +71,29 @@ type DocumentState struct {
+ 
+ // Service is the shared language service implementation for CLI, LSP, and iOS bridge.
+ type Service struct {
+-	mu        sync.RWMutex
+-	registry  *schema.Registry
+-	documents map[string]*DocumentState
++	assetCache *assets.Cache
++	mu         sync.RWMutex
++	registry   *schema.Registry
++	documents  map[string]*DocumentState
+ }
+ 
+ // NewService creates a new language service instance.
+ func NewService(registry *schema.Registry) *Service {
++	return NewServiceWithAssetCache(registry, nil)
++}
++
++// NewServiceWithAssetCache allows a host to share its bounded cache with compilation.
++func NewServiceWithAssetCache(registry *schema.Registry, cache *assets.Cache) *Service {
++	if cache == nil {
++		cache = assets.Shared()
++	}
+ 	if registry == nil {
+ 		registry = schema.DefaultRegistry()
+ 	}
+ 	return &Service{
+-		registry:  registry.Clone(),
+-		documents: make(map[string]*DocumentState),
++		assetCache: cache,
++		registry:   registry.Clone(),
++		documents:  make(map[string]*DocumentState),
+ 	}
+ }
+ 
+@@ -95,6 +108,7 @@ func (s *Service) OpenDocument(uri string, version int, text string) {
+ 	}
+ 
+ 	s.documents[uri] = s.analyzeDocumentLocked(uri, version, text)
++	s.refreshAssetDiagnosticsLocked(s.documents[uri])
+ }
+ 
+ // ChangeDocument updates content of an open document, ignoring stale lower-version updates.
+@@ -122,18 +136,22 @@ func (s *Service) CloseDocument(uri string) {
+ // Analyze returns all parse and semantic diagnostics for a document.
+ func (s *Service) Analyze(uri string) ([]analysis.Diagnostic, string) {
+ 	s.mu.Lock()
++	defer s.mu.Unlock()
+ 	doc, ok := s.documents[uri]
+ 	if ok && modules.HasImports(doc.Program) {
+ 		doc = s.analyzeDocumentLocked(uri, doc.Version, doc.File.Content)
+ 		s.documents[uri] = doc
+ 	}
+-	s.mu.Unlock()
++	if ok {
++		s.refreshAssetDiagnosticsLocked(doc)
++	}
+ 
+ 	if !ok {
+ 		return nil, s.registry.Fingerprint()
+ 	}
+ 
+ 	diags := append([]analysis.Diagnostic(nil), doc.ModuleDiagnostics...)
++	diags = append(diags, doc.AssetDiagnostics...)
+ 
+ 	// 1. Add parse errors
+ 	for _, pe := range doc.ParseErrors {
+diff --git a/language_backend_adapter.go b/language_backend_adapter.go
+index 169d2ec..b0f7faf 100644
+--- a/language_backend_adapter.go
++++ b/language_backend_adapter.go
+@@ -10,6 +10,7 @@ import (
+ 	"fmt"
+ 	"strings"
+ 
++	"github.com/electrikmilk/cherri/internal/language/assets"
+ 	"github.com/electrikmilk/cherri/internal/language/backend"
+ 	"github.com/electrikmilk/cherri/internal/language/ir"
+ 	"github.com/electrikmilk/cherri/internal/language/schema"
+@@ -17,6 +18,9 @@ import (
+ )
+ 
+ type CanonicalBackendSession struct {
++	assetEntryDocument       string
++	assetCache               *assets.Cache
++	assetScope               *assets.Scope
+ 	tx                       *BackendTransaction
+ 	cleanup                  func()
+ 	shortcut                 Shortcut
+@@ -47,6 +51,10 @@ func NewCanonicalBackendSession() *CanonicalBackendSession {
+ }
+ 
+ func (s *CanonicalBackendSession) Close() {
++	if s.assetScope != nil {
++		_ = s.assetScope.Close()
++		s.assetScope = nil
++	}
+ 	if s.cleanup != nil {
+ 		s.cleanup()
+ 		s.cleanup = nil
+@@ -139,6 +147,9 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
+ 		definition: *def,
+ 		arguments:  args,
+ 	}
++	if err := s.prepareEmbeddedAsset(call, &actRef); err != nil {
++		return "", err
++	}
+ 	if ident == "rawAction" && len(args) > 0 {
+ 		if rawIdent, ok := getArgValue(args[0]).(string); ok {
+ 			actRef.definition.overrideIdentifier = rawIdent
+diff --git a/language_emit_adapter.go b/language_emit_adapter.go
+index e8a8de2..94420d3 100644
+--- a/language_emit_adapter.go
++++ b/language_emit_adapter.go
+@@ -363,6 +363,7 @@ func CompileSourceToPlistWithOptions(filePath string, content string, options Co
+ 
+ 	session := NewCanonicalBackendSession()
+ 	session.buildProfile = profile
++	session.configureAssets(filePath, options.AssetCache)
+ 	session.configurePlatformVersions(analyzer.Registry(), analyzer.Targets(), analyzer.MinTargetVersionString(), analyzer.MaxTargetVersionString())
+ 	defer session.Close()
+ 

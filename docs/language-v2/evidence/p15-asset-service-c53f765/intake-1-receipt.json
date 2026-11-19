@@ -1,0 +1,36 @@
+{
+  "phase": "asset-functional-candidate",
+  "source": "dbb63eec60931458fc8a3f9eb2fa05cb9bb9ba51",
+  "status_before": " M action.go\n M actions_std.go\n M build_profile.go\n M internal/language/analysis/analyzer.go\n M internal/language/analysis/registry_lifetime.go\n M internal/language/backend/contracts.go\n M internal/language/lower/lower.go\n M internal/language/lsp/server.go\n M internal/language/service/service.go\n M language_backend_adapter.go\n M language_emit_adapter.go\n M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/execution_audit.go\n M tools/language-acceptance/main.go\n?? embedded_assets.go\n?? internal/language/analysis/resolved_actions.go\n?? internal/language/assets/\n?? internal/language/lsp/asset_watcher_test.go\n?? internal/language/service/asset_analysis.go\n?? p15_asset_dependency_baseline_test.go\n?? p15_editor_clock_other_test.go\n?? p15_editor_clock_windows_test.go\n?? p15_editor_performance_test.go\n?? p15_embedded_asset_acceptance_test.go\n?? tools/language-acceptance/editor_benchmark_intake.go\n?? tools/language-acceptance/editor_performance_execution.go\n?? tools/language-acceptance/editor_performance_execution_test.go\n?? tools/language-acceptance/editor_process_other.go\n?? tools/language-acceptance/editor_process_windows.go\n",
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=120s",
+    "./tools/language-acceptance",
+    "-run",
+    "^TestEditor"
+  ],
+  "available_bytes": 3061161984,
+  "started": "2026-11-19T04:41:01.523609+00:00",
+  "test_sources": {
+    "tools/language-acceptance/editor_performance_execution_test.go": "3a617ea723696d8acc2afe2a9798c67cede96986d5443559b1120d15afbe8419",
+    "tools/language-acceptance/editor_performance_execution.go": "8ccadd053265564c4705dc01cf5088546441d076ffa5eb08d623e6122b620c8c",
+    "tools/language-acceptance/editor_benchmark_intake.go": "af32e464cfe81bc00899017ac57065ed1cdba7b5a0e71a263fb1ce1cd894ae58",
+    "tools/language-acceptance/editor_process_windows.go": "13e5c4c6dfc0a99c8c06f938a424b0c86075888ea50d0c0d72ece64a8aeb1109"
+  },
+  "pid": 7928,
+  "exit_code": 0,
+  "seconds": 9.907,
+  "raw_sha256": "529cabce56290db388a6b07180cac7c0c6625cb0062e8ce6525b0380c9954575",
+  "raw_bytes": 70311,
+  "totals": {
+    "pass": 63,
+    "fail": 0,
+    "skip": 0
+  },
+  "failed_tests": [],
+  "status_after": " M action.go\n M actions_std.go\n M build_profile.go\n M internal/language/analysis/analyzer.go\n M internal/language/analysis/registry_lifetime.go\n M internal/language/backend/contracts.go\n M internal/language/lower/lower.go\n M internal/language/lsp/server.go\n M internal/language/service/service.go\n M language_backend_adapter.go\n M language_emit_adapter.go\n M tools/language-acceptance/assertion_scope.go\n M tools/language-acceptance/evidence_map.go\n M tools/language-acceptance/execution_audit.go\n M tools/language-acceptance/main.go\n?? embedded_assets.go\n?? internal/language/analysis/resolved_actions.go\n?? internal/language/assets/\n?? internal/language/lsp/asset_watcher_test.go\n?? internal/language/service/asset_analysis.go\n?? p15_asset_dependency_baseline_test.go\n?? p15_editor_clock_other_test.go\n?? p15_editor_clock_windows_test.go\n?? p15_editor_performance_test.go\n?? p15_embedded_asset_acceptance_test.go\n?? tools/language-acceptance/editor_benchmark_intake.go\n?? tools/language-acceptance/editor_performance_execution.go\n?? tools/language-acceptance/editor_performance_execution_test.go\n?? tools/language-acceptance/editor_process_other.go\n?? tools/language-acceptance/editor_process_windows.go\n"
+}

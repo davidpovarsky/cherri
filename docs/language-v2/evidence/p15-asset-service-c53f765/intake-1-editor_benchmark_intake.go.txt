@@ -1,0 +1,211 @@
+package main
+
+import (
+	"fmt"
+	"math"
+	"sort"
+	"strings"
+)
+
+type editorPerformanceEnvironment struct {
+	SourceCommit     string `json:"source_commit"`
+	GoVersion        string `json:"go_version"`
+	OS               string `json:"os"`
+	Arch             string `json:"arch"`
+	CPU              string `json:"cpu"`
+	LogicalCPUs      int    `json:"logical_cpus"`
+	GOMAXPROCS       int    `json:"gomaxprocs"`
+	MemoryBytes      uint64 `json:"memory_bytes"`
+	Clock            string `json:"clock"`
+	ClockFrequencyHz int64  `json:"clock_frequency_hz"`
+	CacheColdScope   string `json:"cache_cold_scope"`
+}
+
+type editorPerformanceMeasurement struct {
+	Fixture      string    `json:"fixture"`
+	Phase        string    `json:"phase"`
+	SourceBytes  int       `json:"source_bytes"`
+	SourceSHA256 string    `json:"source_sha256"`
+	AssetBytes   int       `json:"asset_bytes"`
+	AssetKind    string    `json:"asset_kind"`
+	InputBytes   []int     `json:"input_bytes"`
+	InputSHA256  []string  `json:"input_sha256"`
+	AssetSHA256  []string  `json:"asset_sha256"`
+	SamplesUS    []float64 `json:"samples_us"`
+	SamplesTicks []int64   `json:"samples_ticks"`
+	P50US        float64   `json:"p50_us"`
+	P95US        float64   `json:"p95_us"`
+	Reads        uint64    `json:"reads"`
+	ReadBytes    uint64    `json:"read_bytes"`
+	Encodes      uint64    `json:"encodes"`
+	Hits         uint64    `json:"hits"`
+}
+
+type editorPerformanceReport struct {
+	FormatVersion        int                            `json:"format_version"`
+	SamplesPerPhase      int                            `json:"samples_per_phase"`
+	Environment          editorPerformanceEnvironment   `json:"environment"`
+	Measurements         []editorPerformanceMeasurement `json:"measurements"`
+	NumericLatencyBudget string                         `json:"numeric_latency_budget"`
+	NativeUIExecution    bool                           `json:"native_ui_execution"`
+}
+
+func editorDigest(value string) bool {
+	if len(value) != 64 {
+		return false
+	}
+	for _, c := range value {
+		if !(c >= '0' && c <= '9' || c >= 'a' && c <= 'f') {
+			return false
+		}
+	}
+	return true
+}
+
+func validateEditorBenchmark(report editorPerformanceReport, source string) error {
+	fail := func(message string) error { return fmt.Errorf("editor benchmark: %s", message) }
+	environment := report.Environment
+	if report.FormatVersion != 1 || report.SamplesPerPhase != 20 || len(report.Measurements) != 20 {
+		return fail("missing exact benchmark fixture/sample coverage")
+	}
+	if environment.SourceCommit != source || len(source) != 40 || environment.CPU == "" || environment.MemoryBytes == 0 ||
+		environment.LogicalCPUs < 1 || environment.GOMAXPROCS < 1 || environment.GOMAXPROCS > environment.LogicalCPUs ||
+		environment.OS == "" || environment.Arch == "" || !strings.HasPrefix(environment.GoVersion, "go") ||
+		environment.ClockFrequencyHz <= 0 || !strings.Contains(environment.Clock, "monotonic") || !strings.Contains(environment.Clock, "nearest-rank") ||
+		environment.CacheColdScope != "new service and Cherri asset cache; OS filesystem cache is not evicted" {
+		return fail("missing or stale measured hardware/version/cache context")
+	}
+	expectedClock := "Go monotonic time.Since; microseconds; nearest-rank percentiles"
+	if environment.OS == "windows" {
+		expectedClock = "Windows monotonic QueryPerformanceCounter; microseconds; nearest-rank percentiles"
+	} else if environment.ClockFrequencyHz != 1_000_000_000 {
+		return fail("incorrect monotonic nanosecond clock frequency")
+	}
+	if environment.Clock != expectedClock {
+		return fail("unrecognized measurement clock")
+	}
+	if report.NativeUIExecution || report.NumericLatencyBudget != "not specified by the immutable S03/E08 contracts" {
+		return fail("invented native UI execution or numeric acceptance budget")
+	}
+	type fixture struct {
+		minimum, maximum int
+		bytes            int
+		kind             string
+	}
+	fixtures := map[string]fixture{
+		"small_source":      {1024, 8 << 10, 0, ""},
+		"medium_source":     {16 << 10, 128 << 10, 0, ""},
+		"large_source":      {128 << 10, 2 << 20, 0, ""},
+		"inline_text_4mib":  {4 << 20, (4 << 20) + 1024, 0, ""},
+		"local_text_8mib":   {1024, 8 << 10, 8 << 20, "text"},
+		"local_binary_8mib": {1024, 8 << 10, 8 << 20, "binary"},
+	}
+	seen := map[string]bool{}
+	sources := map[string]string{}
+	for _, measurement := range report.Measurements {
+		expected, ok := fixtures[measurement.Fixture]
+		key := measurement.Fixture + "/" + measurement.Phase
+		if !ok || seen[key] {
+			return fail("unknown or duplicate fixture phase")
+		}
+		seen[key] = true
+		if measurement.SourceBytes < expected.minimum || measurement.SourceBytes > expected.maximum ||
+			measurement.AssetBytes != expected.bytes || measurement.AssetKind != expected.kind ||
+			!editorDigest(measurement.SourceSHA256) {
+			return fail("fixture size, type or identity was not measured")
+		}
+		if old := sources[measurement.Fixture]; old != "" && old != measurement.SourceSHA256 {
+			return fail("base fixture changes between phases")
+		}
+		sources[measurement.Fixture] = measurement.SourceSHA256
+		if len(measurement.InputBytes) != 20 || len(measurement.InputSHA256) != 20 || len(measurement.SamplesUS) != 20 || len(measurement.SamplesTicks) != 20 {
+			return fail("missing raw timing/input samples")
+		}
+		var reads, hits uint64
+		switch measurement.Phase {
+		case "cold_service_cache":
+			if expected.bytes > 0 {
+				reads, hits = 20, 20
+			}
+		case "warm_analyze":
+			if expected.bytes > 0 {
+				hits = 20
+			}
+		case "unrelated_edit":
+			if expected.bytes > 0 {
+				hits = 40
+			}
+		case "asset_edit":
+			if expected.bytes == 0 {
+				return fail("asset edit without a file fixture")
+			}
+			reads = 20
+		default:
+			return fail("unknown editor operation")
+		}
+		if measurement.Reads != reads || measurement.Encodes != reads ||
+			measurement.ReadBytes != reads*uint64(expected.bytes) || measurement.Hits != hits {
+			return fail("production cache counters contradict the measured operation")
+		}
+		inputSeen := map[string]bool{}
+		for index, digest := range measurement.InputSHA256 {
+			if !editorDigest(digest) {
+				return fail("missing source input digest")
+			}
+			if measurement.Phase == "unrelated_edit" {
+				if measurement.InputBytes[index] <= measurement.SourceBytes || digest == measurement.SourceSHA256 || inputSeen[digest] {
+					return fail("unrelated-edit phase did not change the source")
+				}
+			} else if measurement.InputBytes[index] != measurement.SourceBytes || digest != measurement.SourceSHA256 {
+				return fail("non-source edit changed the source fixture")
+			}
+			inputSeen[digest] = true
+		}
+		if expected.bytes == 0 {
+			if len(measurement.AssetSHA256) != 0 {
+				return fail("file digests invented for source-only fixture")
+			}
+		} else {
+			if len(measurement.AssetSHA256) != 20 {
+				return fail("missing actual asset version digests")
+			}
+			assetSeen := map[string]bool{}
+			for _, digest := range measurement.AssetSHA256 {
+				if !editorDigest(digest) {
+					return fail("invalid asset version digest")
+				}
+				if measurement.Phase == "asset_edit" {
+					if assetSeen[digest] {
+						return fail("asset edit did not change bytes")
+					}
+				} else if digest != measurement.AssetSHA256[0] {
+					return fail("unrelated operation changed asset bytes")
+				}
+				assetSeen[digest] = true
+			}
+		}
+		samples := append([]float64(nil), measurement.SamplesUS...)
+		for index, sample := range samples {
+			ticks := measurement.SamplesTicks[index]
+			if ticks < 0 || sample < 0 || math.IsNaN(sample) || math.IsInf(sample, 0) || sample != float64(ticks)*1e6/float64(environment.ClockFrequencyHz) {
+				return fail("invalid monotonic time sample")
+			}
+		}
+		sort.Float64s(samples)
+		if measurement.P50US <= 0 || measurement.P50US != samples[9] || measurement.P95US != samples[18] {
+			return fail("percentiles do not reconcile with the actual 20 raw samples")
+		}
+	}
+	for name, fixture := range fixtures {
+		phases := []string{"cold_service_cache", "warm_analyze", "unrelated_edit"}
+		if fixture.bytes > 0 {
+			phases = append(phases, "asset_edit")
+		}
+		for _, phase := range phases {
+			if !seen[name+"/"+phase] {
+				return fail("missing distinct fixture phase")
+			}
+		}
+	}
+	return nil
+}
