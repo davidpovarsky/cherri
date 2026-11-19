@@ -1,0 +1,84 @@
+{
+  "sourceSha": "3ef08319c49a892863a70d2d497b829942e917e6",
+  "steps": [
+    {
+      "name": "fixed-root",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15T08ConditionalCardinalityService|TestP15PromptNumberService|TestP15SignatureHelpBindsAnalyzedCallee)$"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 22.954,
+      "passCount": 7,
+      "failures": [
+        {
+          "Action": "fail",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/distinct_prompt",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "fail",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee",
+          "Elapsed": 0.06
+        }
+      ],
+      "skips": [],
+      "events": [
+        {
+          "Action": "pass",
+          "Test": "TestP15T08ConditionalCardinalityService",
+          "Elapsed": 0.04
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15PromptNumberService",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/multiline_scalar",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/multiline_list",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/nested_inner",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/nested_outer",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/unicode_number",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "fail",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/distinct_prompt",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "fail",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee",
+          "Elapsed": 0.06
+        }
+      ],
+      "logSha256": "aed7cfa07b0f9af27963cb6276849706b5b4d4fe056c876eec2d722f216fe555"
+    }
+  ],
+  "cleanAfter": true
+}

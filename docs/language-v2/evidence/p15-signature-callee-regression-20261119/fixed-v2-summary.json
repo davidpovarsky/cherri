@@ -1,0 +1,376 @@
+{
+  "sourceSha": "30fd0c92531f2ade689c5eea6b8f5453b8227f63",
+  "steps": [
+    {
+      "name": "fixed-v2-root",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        ".",
+        "-run",
+        "^(TestP15T08ConditionalCardinalityService|TestP15PromptNumberService|TestP15SignatureHelpBindsAnalyzedCallee)$"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 24.828,
+      "passCount": 9,
+      "failures": [],
+      "skips": [],
+      "events": [
+        {
+          "Action": "pass",
+          "Test": "TestP15T08ConditionalCardinalityService",
+          "Elapsed": 0.07
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15PromptNumberService",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/multiline_scalar",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/multiline_list",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/nested_inner",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/nested_outer",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/unicode_number",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee/distinct_prompt",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15SignatureHelpBindsAnalyzedCallee",
+          "Elapsed": 0.12
+        }
+      ],
+      "logSha256": "c3b629ab0b5b61d7327815955f715d48be5fa0bda5a3993965551b77d958c974"
+    },
+    {
+      "name": "fixed-v2-service-lsp",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m",
+        "./internal/language/service",
+        "./internal/language/lsp"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 7.032,
+      "passCount": 51,
+      "failures": [],
+      "skips": [],
+      "events": [
+        {
+          "Action": "pass",
+          "Test": "TestLSPAssetWatcherInvalidatesPreservedMetadata",
+          "Elapsed": 0.05
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38UTF16RequestAndResponseRanges",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestCompilerMacrosReachCompletionFromSharedMetadata",
+          "Elapsed": 0.03
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MultipleDiagnosticsUTF16",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ContextualLabelsEnumsAndSignatures/named_labels_and_LSP_kinds",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15E04IncompleteDocumentFormatFailsClosed",
+          "Elapsed": 0.05
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ContextualLabelsEnumsAndSignatures/enum_domain",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ContextualLabelsEnumsAndSignatures/typed_function_and_string_commas",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ContextualLabelsEnumsAndSignatures",
+          "Elapsed": 0.06
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ScopedServiceCompletion/inner",
+          "Elapsed": 0
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ScopedServiceCompletion/outer",
+          "Elapsed": 0
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ScopedServiceCompletion/function",
+          "Elapsed": 0
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ScopedServiceCompletion/after_block_closer",
+          "Elapsed": 0
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ScopedServiceCompletion/after_function_closer",
+          "Elapsed": 0
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ScopedServiceCompletion",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestServiceDocumentRegistryIsolation",
+          "Elapsed": 0.06
+        },
+        {
+          "Action": "pass",
+          "Test": "TestServiceRegistryRevisionAndClose",
+          "Elapsed": 0.06
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38NestedAndMultilineContext",
+          "Elapsed": 0.16
+        },
+        {
+          "Action": "pass",
+          "Test": "TestServiceVisualEditUsesSourceRegistry",
+          "Elapsed": 0.07
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ProtocolIDsAndNotifications",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestServiceAnalyze",
+          "Elapsed": 0.03
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38ProtocolMethodsAndNull",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_-1__",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_abc__",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestServiceComplete",
+          "Elapsed": 0.04
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_999999999999999999999__",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_2_Content-Length:_2__{}",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3__{}",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestServiceHover",
+          "Elapsed": 0.03
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3__",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_3",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MalformedFramingFailsWithoutPanic/Content-Length:_0__",
+          "Elapsed": 0
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38MalformedFramingFailsWithoutPanic",
+          "Elapsed": 0.09
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38WriteFailuresAreObserved/error",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38WriteFailuresAreObserved/short",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15RP38WriteFailuresAreObserved",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestLSPServerInitializeAndDidOpen",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestServiceContextualCallComplete",
+          "Elapsed": 0.06
+        },
+        {
+          "Action": "pass",
+          "Test": "TestE01MultiDiagnosticAnalysis",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestE02CompletionHoverSignatureDefinition",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestE03ScopedRenameIgnoresStringsCommentsAndShadowing",
+          "Elapsed": 0.01
+        },
+        {
+          "Action": "pass",
+          "Test": "TestE04FormatterPreservesCommentsAndSemantics",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestE05OutOfOrderVersionedEdits",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestE06UTF16DiagnosticSpansEmojiAndHebrew",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestE07BoundedVisualSourceEditAndRejection",
+          "Elapsed": 0.02
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15IM03DirectServiceStandardLibrary/preserved_source_without_main",
+          "Elapsed": 0
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15IM03DirectServiceStandardLibrary/stdfunc_alias",
+          "Elapsed": 0.1
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15IM03DirectServiceStandardLibrary/stdlib_alias",
+          "Elapsed": 0.11
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15IM03DirectServiceStandardLibrary/legacy_bare_callable",
+          "Elapsed": 0.12
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15IM03DirectServiceStandardLibrary/unknown_export_rejected",
+          "Elapsed": 0.08
+        },
+        {
+          "Action": "pass",
+          "Test": "TestP15IM03DirectServiceStandardLibrary",
+          "Elapsed": 0.42
+        }
+      ],
+      "logSha256": "127ffdbfa9f15ef6cc7c356e832146efaa352a63e94c20e7f21accf13ffe3cd2"
+    },
+    {
+      "name": "fixed-v2-formal-t08",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "5m",
+        "./tools/language-acceptance",
+        "-run",
+        "^TestTypeCardinalityProductionEvidence$"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 13.359,
+      "passCount": 1,
+      "failures": [],
+      "skips": [],
+      "events": [
+        {
+          "Action": "pass",
+          "Test": "TestTypeCardinalityProductionEvidence",
+          "Elapsed": 5.1
+        }
+      ],
+      "logSha256": "d3f9ff91924c26e7a8de641422358287c33a85ba7d35036e072465db812bf3b5"
+    }
+  ],
+  "cleanAfter": true
+}

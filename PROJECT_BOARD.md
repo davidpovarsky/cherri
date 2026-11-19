@@ -85,3 +85,11 @@ Added only the two source-bound coverage observer records for S01 and F01, bring
 ## P15 RP29 actual authorization and benchmark producer - 2026-11-19
 
 Independently executed all unchanged RP29 security/service/benchmark tiers at clean source 5b9c3dd2: eleven production tests, 34 named pass events, six fixtures and 400 raw monotonic samples; no skips or failures. All nine clean-source corruption controls passed. Missing or skipped symlink children and detached benchmark summaries cannot satisfy intake. Related requirement IDs and native/race/release tiers inherit no result. Exact raw public receipts and provenance are retained in docs/language-v2/p15-rp29-actual-producer-20261119.md. Final integrated179 execution remains separate.
+
+
+### 2026-11-19 — P10R15 continuation R2 integration
+
+- Frozen e61 actual Linux/179 failures retained: 84 PASS, T08 FAILED, 94 pending/not-run. Full original archive and per-ID gap audit are committed in `docs/language-v2/p15-formal-local-e61-audit-20261119.md`.
+- Contextual signature callee identity repaired; clean 30fd0c9 actual service/LSP and T08 evidence passed. Initial incorrect new Text-mode expectation and both unsuccessful attempts remain explicit in `docs/language-v2/p15-signature-callee-regression-20261119.md`.
+- Integrated independently verified RP29 authorization/400-sample benchmark producer, constrained continuation zero-clear oracle repair, native File/N03 diagnostic fixtures, and bounded editor foreground guards. Full iOS has an equivalent standard Intel runner option; no native success is inferred from configuration.
+- Existing immutable contracts remain unchanged. New integrated CI, local179, Apple runtime/import, actual consumers/deployment, real AI endpoint and physical-device gates remain open.

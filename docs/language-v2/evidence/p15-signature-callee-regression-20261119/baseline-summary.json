@@ -1,0 +1,65 @@
+{
+  "sourceSha": "efed962f548a5aac07d0d048a753330aafd1928c",
+  "exitCode": 1,
+  "elapsedSeconds": 150.078,
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout",
+    "3m",
+    ".",
+    "-run",
+    "^(TestP15T08ConditionalCardinalityService|TestP15PromptNumberService|TestP15SignatureHelpBindsAnalyzedCallee)$"
+  ],
+  "events": [
+    {
+      "Action": "fail",
+      "Test": "TestP15T08ConditionalCardinalityService",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15PromptNumberService",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15SignatureHelpBindsAnalyzedCallee/multiline_scalar",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15SignatureHelpBindsAnalyzedCallee/multiline_list",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15SignatureHelpBindsAnalyzedCallee/nested_inner",
+      "Elapsed": 0.02
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15SignatureHelpBindsAnalyzedCallee/nested_outer",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15SignatureHelpBindsAnalyzedCallee/unicode_number",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15SignatureHelpBindsAnalyzedCallee/distinct_prompt",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestP15SignatureHelpBindsAnalyzedCallee",
+      "Elapsed": 0.08
+    }
+  ],
+  "logSha256": "6c8fb14c2802f68b469dcf917a783ce376bcf3f7b759ba5a113bd977559f15f8",
+  "cleanAfter": true
+}
