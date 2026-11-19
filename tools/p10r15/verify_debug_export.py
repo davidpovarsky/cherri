@@ -206,6 +206,10 @@ def main():
          result=run(cmd)
          if result.returncode: raise RuntimeError(ident+" compile: "+(result.stdout+result.stderr)[-1800:])
          actions=plistlib.loads(target.read_bytes())["WFWorkflowActions"]
+         assert actions[0]["WFWorkflowActionIdentifier"] == PREFIX+"nothing", "clear inserted a synthetic log item"
+         assert actions[1]["WFWorkflowActionIdentifier"] == PREFIX+"setvariable"
+         assert actions[1]["WFWorkflowActionParameters"].get("WFVariableName") == "__cherri_debug_log"
+         assert "WFInput" not in actions[0]["WFWorkflowActionParameters"] and "WFInput" not in actions[1]["WFWorkflowActionParameters"], "clear retained native input"
          graph=actions[4:]
          assert all(a["WFWorkflowActionIdentifier"].removeprefix(PREFIX) in ALLOWED for a in graph)
          imported=out/(ident+"-import.cherri");recompiled=out/(ident+"-recompiled.shortcut")

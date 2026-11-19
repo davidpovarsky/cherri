@@ -105,9 +105,8 @@ def verify_graph(fid, actions):
              and p(action).get("WFVariableName") == "__cherri_debug_log"]
     require(len(seeds) == 1 and seeds[0][0] < oi and seeds[0][0] > 0, "one original debug clear")
     si, seed = seeds[0]
-    require(kind(actions[si - 1], "gettext") and p(actions[si - 1]).get("WFTextActionText") == "",
-            "preserved empty Text seed under investigation")
-    edge(p(seed).get("WFInput"), actions[si - 1])
+    require(kind(actions[si - 1], "nothing") and "WFInput" not in p(actions[si - 1])
+            and "WFInput" not in p(seed), "native zero-item debug clear")
     logs = [(i, action) for i, action in enumerate(actions) if kind(action, "appendvariable")
             and p(action).get("WFVariableName") == "__cherri_debug_log"]
     require(len(logs) == 1 and logs[0][0] == oi + 1, "one real logged input")
@@ -340,8 +339,11 @@ def verify_causal_mutations(actions):
         elif mutation == "callback-replaced":
             graph[-1]["WFWorkflowActionParameters"]["WFOutput"] = EXPECTED
         elif mutation == "seed-changed":
-            next(a["WFWorkflowActionParameters"] for a in graph
-                 if a.get("WFWorkflowActionParameters", {}).get("WFTextActionText") == "")["WFTextActionText"] = "changed"
+            clear = next(i for i, a in enumerate(graph)
+                         if a["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable"
+                         and a["WFWorkflowActionParameters"].get("WFVariableName") == "__cherri_debug_log")
+            graph[clear - 1]["WFWorkflowActionIdentifier"] = "is.workflow.actions.gettext"
+            graph[clear - 1]["WFWorkflowActionParameters"]["WFTextActionText"] = ""
         elif mutation == "file-coercion-removed":
             named(graph, "boundaryCoercedType")["WFInput"]["Value"].pop("Aggrandizements")
         elif mutation == "file-coercion-wrong-class":

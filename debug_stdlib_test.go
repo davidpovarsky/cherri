@@ -80,7 +80,7 @@ debugLog()
 debugShowLogs()
 `
 	want := []string{
-		"gettext", "setvariable",
+		"nothing", "setvariable",
 		"gettext", "appendvariable",
 		"gettext", "appendvariable",
 		"previewdocument",
