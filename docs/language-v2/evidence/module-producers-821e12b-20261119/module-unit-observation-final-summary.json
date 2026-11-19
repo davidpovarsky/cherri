@@ -1,0 +1,31 @@
+{
+  "sourceBase": "7476d807cd1178994849488d6a834c267a6f5c07",
+  "sourceState": "working complete module producer and exact IM04 path repair",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^TestModuleStandardLibraryUnitEvidence$",
+    "./tools/language-acceptance"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "seconds": 15.125,
+  "bytes": 8251,
+  "sha256": "c0c7a28b5f4267cd658ea11540650f2c5ea608a3d0229fdb980d817204993ee1",
+  "named": {
+    "run": 5,
+    "pass": 5,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": [
+    "    module_execution_test.go:218: P15_MODULE_STDFUNC_UNIT_RECEIPT:{\"observations\":[{\"id\":\"IM03\",\"passed\":true,\"historically_claimed_levels\":[\"unit\"],\"observed_smoke_detail\":\"Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain; preserved source hash, migrated structure and separate service package without main verified locally; actual native behavior remains pending\",\"coverage_gap\":\"The preserved-source and separate service-package unit scenarios ran; required native behavior has not executed. The native tier remains required and local.\"}],\"records\":[],\"report\":{\"timestamp\":\"2026-11-19T04:58:13Z\",\"phase\":\"local\",\"closure_complete\":false,\"language_version\":\"2.0\",\"schema_fingerprint\":\"7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b\",\"total_cases\":1,\"passed_cases\":0,\"failed_cases\":0,\"skipped_cases\":1,\"results\":[{\"id\":\"IM03\",\"group\":\"modules\",\"requirement\":\"Existing stdfunc behavior migrated from preserved upstream source\",\"test_level\":\"unit+n"
+  ],
+  "missingRequiredTests": []
+}

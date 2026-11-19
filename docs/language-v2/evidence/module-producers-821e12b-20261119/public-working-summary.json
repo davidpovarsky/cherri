@@ -1,0 +1,30 @@
+{
+  "sourceBase": "7476d807cd1178994849488d6a834c267a6f5c07",
+  "sourceState": "working public producer controls; original IM04 metadata",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15IM01CyclePathAndDuplicateAliasDiagnostics|TestP15IM02|TestP15IM03DirectServiceWithoutMain|TestP15IM05UnresolvedLocalDependencyNoInstallation)$",
+    "."
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "seconds": 24.032,
+  "bytes": 7221,
+  "sha256": "587255588bc05c185acc949f0856e6ab74dbf5715fe0aae47ad1581f4b55fe9b",
+  "named": {
+    "run": 7,
+    "pass": 7,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": [
+    "    p15_module_acceptance_test.go:172: Executed separate package without main: go test -p=1 -count=1 -json -timeout=60s ./internal/language/service -run ^TestP15IM03DirectServiceStandardLibrary$\n"
+  ]
+}

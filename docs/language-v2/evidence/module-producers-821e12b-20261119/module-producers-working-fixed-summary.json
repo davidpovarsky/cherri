@@ -1,0 +1,39 @@
+{
+  "sourceBase": "7476d807cd1178994849488d6a834c267a6f5c07",
+  "sourceState": "working complete module producer and exact IM04 path repair",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^(TestModuleProductionEvidence|TestModuleProductionPathsExist|TestModuleEvidenceRejectsDetachedAndCrossTierRecords|TestModuleStandardLibraryUnitEvidence|TestWorkspaceProductionPathsExist|TestWorkspaceResourceProductionEvidence|TestWorkspaceEvidenceRejectsUnrelatedCommands)$",
+    "./tools/language-acceptance"
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "seconds": 38.484,
+  "bytes": 33090,
+  "sha256": "3cf9cd3bdeea98f5cbeebbddf0da17d4e2e3254dfb09d8d85b4410ac79c92436",
+  "named": {
+    "run": 17,
+    "pass": 16,
+    "fail": 1,
+    "skip": 0
+  },
+  "failures": [
+    "TestModuleStandardLibraryUnitEvidence"
+  ],
+  "diagnostics": [
+    "    module_execution_test.go:25: P15_MODULE_PRODUCTION_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-IM01-unit\",\"requirements\":[\"IM01\"],\"tier\":\"unit\",\"implementation_sha\":\"7476d807cd1178994849488d6a834c267a6f5c07\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15IM01ModuleNamespaceDispatch\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15IM01ModuleNamespaceDispatch|TestP15IM01NestedModuleNamespaceIsolation|TestP15IM01CanonicalRelativeModuleIdentity|TestP15IM01ModuleServiceResolvesActualDependencies|TestP15IM01DuplicateImportAndLocalNamesStayDistinct|TestP15IM01ModuleServiceRefreshAndExports|TestP15IM01ModuleAliasCasePreservesNamespace|TestP15IM01UppercaseModuleRejectsUnexportedCallable|TestP15IM01BuiltinModuleAliasesPreserveNativeParity|TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity|TestP15IM01CyclePathAndDuplicateAliasDiagnostics)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15IM01ModuleNamespaceDispatch, TestP15IM01NestedM",
+    "    module_execution_test.go:25: P15_MODULE_PRODUCTION_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-IM02-unit\",\"requirements\":[\"IM02\"],\"tier\":\"unit\",\"implementation_sha\":\"7476d807cd1178994849488d6a834c267a6f5c07\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15IM02RejectsModuleRuntimeInitialization\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15IM02RejectsModuleRuntimeInitialization|TestP15IM02LegacyMigrationDoesNotDropInitialization)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization\",\"required_production_tests\":\"TestP15IM02RejectsModuleRuntimeInitialization\\nTestP15IM02LegacyMigrationDoesNotDropInitialization\"},\"detail\":\"Executed production tests: TestP15IM02RejectsModuleRuntimeInitialization, TestP15IM02LegacyMigrationDoesNotDropInitialization\"},{\"evidence_id\":\"ev-local-IM02-migration\",\"requirements\":[\"IM02\"],\"tier\":\"migration\",\"impleme",
+    "    module_execution_test.go:25: P15_MODULE_PRODUCTION_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-IM05-security\",\"requirements\":[\"IM05\"],\"tier\":\"security\",\"implementation_sha\":\"7476d807cd1178994849488d6a834c267a6f5c07\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15IM05RemoteImportsNeverFetch\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15IM05RemoteImportsNeverFetch|TestP15IM05UnresolvedLocalDependencyNoInstallation)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15IM05RemoteImportsNeverFetch, TestP15IM05UnresolvedLocalDependencyNoInstallation\",\"required_production_tests\":\"TestP15IM05RemoteImportsNeverFetch\\nTestP15IM05UnresolvedLocalDependencyNoInstallation\"},\"detail\":\"Executed production tests: TestP15IM05RemoteImportsNeverFetch, TestP15IM05UnresolvedLocalDependencyNoInstallation\"},{\"evidence_id\":\"ev-local-IM05-service\",\"requirements\":[\"IM05\"],\"tier\":\"service\",\"implementation_sha\":\"7476d807cd1178994849488d6a834c267a6f5c07\"",
+    "    module_execution_test.go:116: stdlib producer expanded/lost its proven unit scope: {ID:IM03 Group:modules Requirement:Existing stdfunc behavior migrated from preserved upstream source TestLevel:unit+native ExecutedLevels:[unit] Passed:true Status:PASSED Detail:Executed production tests: TestP15IM03PreservedStandardFunctionSource, TestP15IM03DirectServiceWithoutMain; preserved source hash, migrated structure and separate service package without main verified locally; actual native behavior remains pending}\n",
+    "    workspace_execution_test.go:6: P15_WORKSPACE_RESOURCE_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-IM04-security\",\"requirements\":[\"IM04\"],\"tier\":\"security\",\"implementation_sha\":\"7476d807cd1178994849488d6a834c267a6f5c07\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15IM04ActualWorkspaceResourceBoundaries\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15IM04ActualWorkspaceResourceBoundaries)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15IM04ActualWorkspaceResourceBoundaries\",\"required_production_tests\":\"TestP15IM04ActualWorkspaceResourceBoundaries\"},\"detail\":\"Executed production tests: TestP15IM04ActualWorkspaceResourceBoundaries\"}],\"report\":{\"timestamp\":\"2026-11-19T04:53:49Z\",\"phase\":\"local\",\"closure_complete\":false,\"language_version\":\"2.0\",\"schema_fingerprint\":\"\",\"total_cases\":1,\"passed_cases\":1,\"failed_cases\":0,\"skipped_cases\":0,\"results\":[{\"id\":\"IM04\",\"group\":\"modules\",\"requirement\":\"Local workspace resource traversal a"
+  ],
+  "missingRequiredTests": [
+    "TestModuleStandardLibraryUnitEvidence"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "sourceBase": "7476d807cd1178994849488d6a834c267a6f5c07",
+  "sourceState": "working public producer controls; original IM04 metadata",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=1m",
+    "-run",
+    "^TestWorkspaceProductionPathsExist$",
+    "./tools/language-acceptance"
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "seconds": 4.64,
+  "bytes": 1917,
+  "sha256": "e4768a2da6005e7278c2f235a7a8e055a846ae1b6a8bc950f3d76a378ec939cc",
+  "named": {
+    "run": 1,
+    "pass": 0,
+    "fail": 1,
+    "skip": 0
+  },
+  "failures": [
+    "TestWorkspaceProductionPathsExist"
+  ],
+  "diagnostics": [
+    "    workspace_paths_test.go:13: workspace producer points to absent/non-file production path internal/language/lower/workspace_module.go: GetFileAttributesEx ..\\..\\internal\\language\\lower\\workspace_module.go: The system cannot find the file specified.\n"
+  ]
+}

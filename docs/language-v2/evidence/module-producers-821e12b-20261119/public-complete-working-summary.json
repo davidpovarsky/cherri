@@ -1,0 +1,31 @@
+{
+  "sourceBase": "7476d807cd1178994849488d6a834c267a6f5c07",
+  "sourceState": "working complete module producer and exact IM04 path repair",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15IM01CyclePathAndDuplicateAliasDiagnostics|TestP15IM02RejectsModuleRuntimeInitialization|TestP15IM02LegacyMigrationDoesNotDropInitialization|TestP15IM03DirectServiceWithoutMain|TestP15IM05UnresolvedLocalDependencyNoInstallation)$",
+    "."
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "seconds": 10.078,
+  "bytes": 15176,
+  "sha256": "00230b76202da0e6be8afc3f5c686ffc92edb6e04c32d9a2e6f90c84dd907260",
+  "named": {
+    "run": 16,
+    "pass": 16,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": [
+    "    p15_module_acceptance_test.go:172: Executed separate package without main: go test -p=1 -count=1 -json -timeout=60s ./internal/language/service -run ^TestP15IM03DirectServiceStandardLibrary$\n"
+  ],
+  "missingRequiredTests": []
+}
