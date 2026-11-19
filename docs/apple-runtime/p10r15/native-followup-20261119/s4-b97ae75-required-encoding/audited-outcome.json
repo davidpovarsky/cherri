@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "source": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+  "runId": 44462962145,
+  "jobId": 135353904577,
+  "actualWorkflowKitStep": "SUCCESS",
+  "wholeBuildWorkflow": "FAILURE_KNOWN_MENUS_ASSET_TESTS",
+  "strictPythonPhaseReconciliation": "PASS",
+  "processReceiptsAndDigests": "PASS",
+  "referencedArtifactDigestsVerified": 26,
+  "sourceInputGitBlobsVerified": [
+    {
+      "path": "tools/shortcut-runtime/jxa/verify_encodings.js",
+      "sha256": "ea16f22360d2af239effee2ced4b80e55b7e42b6e57dce99e7834059ffbde41a"
+    },
+    {
+      "path": "tools/shortcut-runtime/required-encoding-expectations.json",
+      "sha256": "fe521c4c782ccb74a7c3327d28dcc48c358f2943bd5f070a1f2a20bc63e2ce38"
+    },
+    {
+      "path": "tools/shortcut-runtime/required_encoding_gate.py",
+      "sha256": "50a8f32d4e6f2e51d369b093b8cec2dc7b4cb255db7b780370689f53452b45af"
+    },
+    {
+      "path": "docs/apple-runtime/parameter-encodings.json",
+      "sha256": "27c0a367f9856d83445fbad83a333b5aa5e82717846c0c5c34e72d656457b546"
+    },
+    {
+      "path": "docs/apple-runtime/encoding-table.json",
+      "sha256": "b9dd843f63ba90e24739027017178cbf09ef602538b1f9337d92e4407d5138fc"
+    }
+  ],
+  "preludeCommit": "ee52c32937053268e4a035eba4b372fe77ec6411",
+  "preludeHashFromReceipt": "d6fbcaad5104562b04004b39ca098486449399c15c83176c49b2ac28f47a3461",
+  "phases": [
+    {
+      "phase": "positive",
+      "exitCode": 0,
+      "requiredObservations": 23,
+      "passedRequired": 23,
+      "failedRequired": 0,
+      "discovery": {
+        "appIntentStateClasses": 20,
+        "parameterStateClasses": 95,
+        "uniqueStateClasses": 50
+      },
+      "forms": [
+        "string",
+        "number",
+        "bool",
+        "attachment(variable)",
+        "attachment(output)",
+        "tokenString",
+        "wrappedSubject"
+      ],
+      "reportSha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088"
+    },
+    {
+      "phase": "corrupt",
+      "exitCode": 1,
+      "requiredObservations": 23,
+      "passedRequired": 22,
+      "failedRequired": 1,
+      "discovery": {
+        "appIntentStateClasses": 20,
+        "parameterStateClasses": 95,
+        "uniqueStateClasses": 50
+      },
+      "forms": [
+        "string",
+        "number",
+        "bool",
+        "attachment(variable)",
+        "attachment(output)",
+        "tokenString",
+        "wrappedSubject"
+      ],
+      "reportSha256": "e43502de0d8d76cb022df3ca51a011fd25c1fcc5eddd87138c5a98d4c73785a8"
+    },
+    {
+      "phase": "restored",
+      "exitCode": 0,
+      "requiredObservations": 23,
+      "passedRequired": 23,
+      "failedRequired": 0,
+      "discovery": {
+        "appIntentStateClasses": 20,
+        "parameterStateClasses": 95,
+        "uniqueStateClasses": 50
+      },
+      "forms": [
+        "string",
+        "number",
+        "bool",
+        "attachment(variable)",
+        "attachment(output)",
+        "tokenString",
+        "wrappedSubject"
+      ],
+      "reportSha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088"
+    }
+  ],
+  "nativeShortcutExecution": false,
+  "GoFormalIntakeExecution": "NOT_RUN_IN_THIS_AUDIT",
+  "preludeIndependentGitObjectVerified": {
+    "repo": "frontboat/shortcutkit",
+    "commit": "ee52c32937053268e4a035eba4b372fe77ec6411",
+    "path": "tools/jxa-prelude.js",
+    "gitBlobSha": "a05be6207e6edc23bc132946e8f81c7f1423affe",
+    "sha256": "d6fbcaad5104562b04004b39ca098486449399c15c83176c49b2ac28f47a3461",
+    "bytes": 6596
+  },
+  "executedPythonValidatorSha256": "50a8f32d4e6f2e51d369b093b8cec2dc7b4cb255db7b780370689f53452b45af"
+}
