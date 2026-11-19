@@ -1,0 +1,97 @@
+test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) ... 
+  test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='PUT') ... FAIL
+  test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='PATCH') ... FAIL
+  test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='DELETE') ... FAIL
+  test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='OPTIONS') ... FAIL
+  test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='TRACE') ... FAIL
+  test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='CONNECT') ... FAIL
+  test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='BREW') ... FAIL
+test_terminal_service_never_reuses_its_stale_ready_file (test_retry_http_probe.RetryHTTPProbeTests.test_terminal_service_never_reuses_its_stale_ready_file) ... 
+  test_terminal_service_never_reuses_its_stale_ready_file (test_retry_http_probe.RetryHTTPProbeTests.test_terminal_service_never_reuses_its_stale_ready_file) (mode='stopped') ... FAIL
+  test_terminal_service_never_reuses_its_stale_ready_file (test_retry_http_probe.RetryHTTPProbeTests.test_terminal_service_never_reuses_its_stale_ready_file) (mode='expired') ... FAIL
+test_actual_input_cli_rejects_stopped_owned_service (test_retry_http_probe.RetryHTTPProbeTests.test_actual_input_cli_rejects_stopped_owned_service) ... FAIL
+
+======================================================================
+FAIL: test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='PUT')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 326, in test_all_non_get_methods_are_counted_and_invalidate_real_receipts
+    self.assertFalse(accepted, method + " returned HTTP " + str(status)
+AssertionError: True is not false : PUT returned HTTP 501 but vanished from the real receipt; rejectedRequestCount=0
+
+======================================================================
+FAIL: test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='PATCH')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 326, in test_all_non_get_methods_are_counted_and_invalidate_real_receipts
+    self.assertFalse(accepted, method + " returned HTTP " + str(status)
+AssertionError: True is not false : PATCH returned HTTP 501 but vanished from the real receipt; rejectedRequestCount=0
+
+======================================================================
+FAIL: test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='DELETE')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 326, in test_all_non_get_methods_are_counted_and_invalidate_real_receipts
+    self.assertFalse(accepted, method + " returned HTTP " + str(status)
+AssertionError: True is not false : DELETE returned HTTP 501 but vanished from the real receipt; rejectedRequestCount=0
+
+======================================================================
+FAIL: test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='OPTIONS')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 326, in test_all_non_get_methods_are_counted_and_invalidate_real_receipts
+    self.assertFalse(accepted, method + " returned HTTP " + str(status)
+AssertionError: True is not false : OPTIONS returned HTTP 501 but vanished from the real receipt; rejectedRequestCount=0
+
+======================================================================
+FAIL: test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='TRACE')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 326, in test_all_non_get_methods_are_counted_and_invalidate_real_receipts
+    self.assertFalse(accepted, method + " returned HTTP " + str(status)
+AssertionError: True is not false : TRACE returned HTTP 501 but vanished from the real receipt; rejectedRequestCount=0
+
+======================================================================
+FAIL: test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='CONNECT')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 326, in test_all_non_get_methods_are_counted_and_invalidate_real_receipts
+    self.assertFalse(accepted, method + " returned HTTP " + str(status)
+AssertionError: True is not false : CONNECT returned HTTP 501 but vanished from the real receipt; rejectedRequestCount=0
+
+======================================================================
+FAIL: test_all_non_get_methods_are_counted_and_invalidate_real_receipts (test_retry_http_probe.RetryHTTPProbeTests.test_all_non_get_methods_are_counted_and_invalidate_real_receipts) (method='BREW')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 326, in test_all_non_get_methods_are_counted_and_invalidate_real_receipts
+    self.assertFalse(accepted, method + " returned HTTP " + str(status)
+AssertionError: True is not false : BREW returned HTTP 501 but vanished from the real receipt; rejectedRequestCount=0
+
+======================================================================
+FAIL: test_terminal_service_never_reuses_its_stale_ready_file (test_retry_http_probe.RetryHTTPProbeTests.test_terminal_service_never_reuses_its_stale_ready_file) (mode='stopped')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 349, in test_terminal_service_never_reuses_its_stale_ready_file
+    with self.assertRaisesRegex(probe.ProbeError, "SERVER_NOT_READY"):
+AssertionError: ProbeError not raised
+
+======================================================================
+FAIL: test_terminal_service_never_reuses_its_stale_ready_file (test_retry_http_probe.RetryHTTPProbeTests.test_terminal_service_never_reuses_its_stale_ready_file) (mode='expired')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 349, in test_terminal_service_never_reuses_its_stale_ready_file
+    with self.assertRaisesRegex(probe.ProbeError, "SERVER_NOT_READY"):
+AssertionError: ProbeError not raised
+
+======================================================================
+FAIL: test_actual_input_cli_rejects_stopped_owned_service (test_retry_http_probe.RetryHTTPProbeTests.test_actual_input_cli_rejects_stopped_owned_service)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-storage-retry-20261119\tools\shortcuts-simulator-qa\test_retry_http_probe.py", line 360, in test_actual_input_cli_rejects_stopped_owned_service
+    self.assertNotEqual(result.returncode, 0, "CLI returned an input URL for a stopped service")
+AssertionError: 0 == 0 : CLI returned an input URL for a stopped service
+
+----------------------------------------------------------------------
+Ran 3 tests in 4.868s
+
+FAILED (failures=10)

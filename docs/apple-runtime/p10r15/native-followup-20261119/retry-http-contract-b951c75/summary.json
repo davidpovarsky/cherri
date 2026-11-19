@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "baselineSource": "a432646e28c419d91995927a5eb3d34db1337466",
+  "fixedSource": "b951c750931d80e6c30d94d1b7fbfe1ce9e0cccc",
+  "causalBaseline": {
+    "testMethods": 3,
+    "failureEvents": 10,
+    "unrecordedParsedHTTPMethods": [
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+      "TRACE",
+      "CONNECT",
+      "BREW"
+    ],
+    "staleTerminalStates": [
+      "STOPPED",
+      "EXPIRED"
+    ],
+    "actualInputCLIWrongExit": 0
+  },
+  "cleanFixed": {
+    "namedTestsPassed": 42,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "additionalStateIdentityMutations": 9,
+    "cleanBefore": true,
+    "cleanAfter": true
+  },
+  "scope": {
+    "actualLoopbackTraffic": true,
+    "actualInputCLI": true,
+    "appleEngineExecuted": false,
+    "cacheImplemented": false,
+    "retryImplemented": false,
+    "typedStorageAcceptance": false
+  },
+  "limitations": [
+    "Ready records establish recorded service state, not abrupt-kill liveness or a guarantee against shutdown after validation.",
+    "Native HTTP status-as-value/catchability, retry attempts/backoff, cache TTL and typed persistence remain open."
+  ]
+}
