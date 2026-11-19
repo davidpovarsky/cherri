@@ -2685,6 +2685,95 @@
       "reason": "Unknown action sibling metadata was silently lost by lossless import and caused hybrid parity failure in all8format/frontend/fidelity routes.",
       "evidence": "Clean46c609 source60top-level/217pass events and canonical generation checksPASS. Clean afc52fd executes7formal contracts V04/C05/R01-R05 with9tierrecords and23evidencecorruptions rejected; integrated5ebfd2c/0e5d7a0, receiptsc1ce984. Combinedprivate0e5d7a0 PASS all3tests:38originals unchanged,76exacttrees,23353natural,0demotions and100%pre-overlay parity under new9f86a7 schema.",
       "note": "Immutable integrated implementation ancestor. Scoped source evidence does not close unexecuted Apple, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 complete value-branch yield validation",
+      "locations": [
+        "internal/language/analysis/control_results.go",
+        "internal/language/analysis/value_yields.go",
+        "internal/language/lower/lower.go",
+        "p15_value_flow_test.go",
+        "p15_value_flow_native_test.go"
+      ],
+      "firstForkCommit": "03c42946c62564102bd612fbf5f5ec0e2483005a",
+      "change": "Validate every reachable normal value-producing branch, retain concrete branch result types, and reject missing, overwritten or void yields before native emission.",
+      "reason": "A terminated or later-overwritten yield could incorrectly satisfy value-result analysis.",
+      "evidence": "Source-bound F03 positive/negative and native-graph controls are retained in the value-branch acceptance evidence. T06 diagnostic assertions are being aligned to the real two-error rejection. F04 nested List native run44431486363 failed and is not covered by an F03 pass.",
+      "note": "Immutable integrated implementation ancestor. Scoped evidence does not close unexecuted native, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 explicit per-platform action version bounds",
+      "locations": [
+        "action.go",
+        "actions_catalog.go",
+        "language_platform_version_adapter.go",
+        "internal/language/analysis/target_versions.go",
+        "internal/language/schema/platform_versions.go",
+        "p15_platform_version_acceptance_test.go"
+      ],
+      "firstForkCommit": "340a6fd60050610a828622ccb4c90532cd3ccea0",
+      "change": "Carry explicit platform-specific version metadata through canonical definitions, catalog/schema generation, cloning, analysis and the native backend.",
+      "reason": "A single platform-independent version value could overwrite or misrepresent explicitly declared target eligibility.",
+      "evidence": "Synthetic metadata and causal platform-bound checks cover the declared contract. No Apple action availability or physical runtime support is inferred from synthetic versions.",
+      "note": "Immutable integrated implementation ancestor. Scoped evidence does not close unexecuted native, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 required variadic presence and imported typed List values",
+      "locations": [
+        "internal/language/analysis/analyzer.go",
+        "internal/language/migrate/native_lists.go",
+        "internal/language/migrate/variadic.go",
+        "internal/language/schema/variadic.go",
+        "p15_semantic_typed_list_test.go",
+        "p15_variadic_required_test.go"
+      ],
+      "firstForkCommit": "94ae0da91d4fc93d8e27bcc575d0487e29ec4470",
+      "change": "Require an explicitly supplied required variadic parameter while allowing an explicitly empty pack; preserve typed native List producers and reference order during semantic migration.",
+      "reason": "Omitted packs were accepted, and native Number List items were reconstructed through a Text-only authored constructor.",
+      "evidence": "Causal baseline and clean280-case compiler repair receipt are retained under docs/language-v2/evidence/p15-compiler-ci-repairs-20261119. Authored list semantics and strict presence validation remain unchanged.",
+      "note": "Immutable integrated implementation ancestor. Scoped evidence does not close unexecuted native, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 local debug export byte-preserving File materialization",
+      "locations": [
+        "debug_export.go",
+        "p15_debug_export_file_materialization_test.go",
+        "tools/p10r15/verify_debug_export.py",
+        "docs/apple-runtime/p10r15/debug-export-contract.md"
+      ],
+      "firstForkCommit": "a1102e8715efd40b1f52f9cae30ecc79e2b249a7",
+      "change": "Materialize the completed post-redaction JSON/text envelope as a File through unwrapped Base64 encode/decode before assigning its name.",
+      "reason": "Direct Text-to-File coercion did not establish the requested native File identity and bytes.",
+      "evidence": "Eight failing structural baselines, clean focused tests, actual CLI/model/roundtrip producer and native File witness probes are archived under export-file-materialization-ba919a4. Production export native run44435457189 remains an independent pending gate.",
+      "note": "Immutable integrated implementation ancestor. Scoped evidence does not close unexecuted native, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 explicit native operands in hybrid import",
+      "locations": [
+        "semantic_import_planner.go",
+        "semantic_import_native_operands.go",
+        "p15_hybrid_native_operands_test.go"
+      ],
+      "firstForkCommit": "87abb17ab1fafc92fe0b7ded0f4317a5c0924de1",
+      "change": "Preserve validated native.ref boundaries for imported ordered comparison operands and attached prompt defaults in both syntax frontends.",
+      "reason": "Bare opaque references were reinterpreted by authored scalar typing, producing75 real private-corpus demotions.",
+      "evidence": "The exact clean58dde2d source passed67 public causal cases with zero skips; receipts preserve the five-test private failing baseline and input hashes. The definitive combined-source private rerun remains required.",
+      "note": "Immutable integrated implementation ancestor. Scoped evidence does not close unexecuted native, physical, installed-consumer or final release gates."
+    },
+    {
+      "name": "P10R15 rawAction native integer and real lexical preservation",
+      "locations": [
+        "parser.go",
+        "decompile.go",
+        "raw_actions.go",
+        "p15_legacy_raw_native_numbers_test.go",
+        "tests/fixtures/p15-legacy-raw-native-numbers.cherri"
+      ],
+      "firstForkCommit": "8bb223e7bdfbaf087acfd67b3a885d1d81267345",
+      "change": "Preserve native integer versus real lexical kinds in rawAction literal dictionaries and fallback rendering, including nested values and symbolic producer references.",
+      "reason": "Generic JSON decoding converted integers to real values, and rendering integral real values erased their decimal kind.",
+      "evidence": "Exact baseline and clean3a5e333 receipts at docs/apple-runtime/p10r15/native-followup-20261119/legacy-native-numbers-3a5e333:34 passing named cases,0 failures/skips. The strict comparator is unchanged; no native execution is claimed.",
+      "note": "Immutable integrated implementation ancestor. Scoped evidence does not close unexecuted native, physical, installed-consumer or final release gates."
     }
   ]
 }
