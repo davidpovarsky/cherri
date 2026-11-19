@@ -1,0 +1,36 @@
+{
+  "source": "8b3fcf71455ea2c1b4c1cf75f929ccc96f227d46",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "availableMemoryBefore": 2829369344,
+  "GOMAXPROCS": "1",
+  "results": [
+    {
+      "name": "package-discovery",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "list",
+        "./..."
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 6.86
+    },
+    {
+      "name": "archive-package-compile",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-p=1",
+        "-run",
+        "^$",
+        "-count=1",
+        "./docs/language-v2/evidence/required-encoding-7b0100a-44452839062/audit"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 1.422
+    }
+  ],
+  "actualPackageDiscoveryIncludedArchive": true,
+  "actualBuildFailureReproduced": true,
+  "testsExecuted": 0
+}
