@@ -198,6 +198,34 @@ class NativeContinuationAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unreviewed"):
             audit.reviewed_case(COMMIT, "private-unreviewed-fixture")
 
+    def test_reviewed_export_paths_bind_nested_source_and_reject_substitution(self):
+        for name in ("unicode", "empty", "thousand", "redacted", "unsupported-file", "text-file"):
+            fid = "qa-export-" + name + "-v2"
+            with self.subTest(fid=fid):
+                case = audit.reviewed_case(COMMIT, fid)
+                path = "tools/shortcuts-simulator-qa/fixtures/p15-export-probes/" + fid + ".cherri"
+                self.assertEqual(case["path"], path)
+                self.assertEqual(case["sourceSha256"], audit.digest(audit.source_bytes(COMMIT, path)))
+                expected = "CHERRI_QA_EXPORT_PROBE_RESULT:P15_EXPORT_" + name.replace("-", "_").upper() + "_OK"
+                self.assertEqual(case["expectedSummary"], expected)
+        fid = "qa-export-unicode-v2"
+        original = audit.source_bytes
+        shell = original(COMMIT, audit.SHELL).decode("utf-8")
+        changes = {
+            "wrong_selector_path": shell.replace('TARGET_SOURCE_RELATIVE="p15-export-probes/' + fid + '.cherri"',
+                                                   'TARGET_SOURCE_RELATIVE="' + fid + '.cherri"'),
+            "wrong_compiler_path": shell.replace('("' + fid + '", "p15-export-probes/' + fid + '.cherri", "v2")',
+                                                   '("' + fid + '", "' + fid + '.cherri", "v2")'),
+        }
+        for name, changed in changes.items():
+            with self.subTest(fault=name):
+                self.assertNotEqual(changed, shell)
+                def read(commit, path):
+                    return changed.encode("utf-8") if path == audit.SHELL else original(commit, path)
+                with patch.object(audit, "source_bytes", side_effect=read):
+                    with self.assertRaises(ValueError):
+                        audit.reviewed_case(COMMIT, fid)
+
     def test_source_selector_identity_and_literal_faults_are_rejected(self):
         fid = "qa-number-coercion-control-v2"
         original = audit.source_bytes

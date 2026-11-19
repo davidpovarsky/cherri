@@ -203,8 +203,12 @@ func buildDebugExportActions(params map[string]any, resultUUID, resultName strin
 			"\nDates: not collected\nLabels: not collected\nEntry encoding: JSON lines; Text payloads use base64-utf8\n\n", combined)
 	}
 	content := b.produce("gettext", map[string]any{"WFTextActionText": envelope})
-	file := b.produce("gettypeaction", map[string]any{
-		"WFInput": content, "WFFileType": "public.utf8-plain-text",
+	// Get File of Type does not establish a byte-preserving Text conversion.
+	// Encode the completed envelope, then decode those exact bytes into a new
+	// native File before naming it. Payload redaction has already happened.
+	encodedFile := b.base64(content)
+	file := b.produce("base64encode", map[string]any{
+		"WFInput": encodedFile, "WFEncodeMode": "Decode",
 	})
 	if resultUUID == "" {
 		resultUUID = strings.ToUpper(uuid.NewString())

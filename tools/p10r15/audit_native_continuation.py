@@ -34,6 +34,21 @@ REVIEWED_SELECTORS = {
     "qa-f04-yield-list-v2": "qa-f04-yield-list",
     "qa-f04-yield-empty-list-v2": "qa-f04-yield-empty-list",
     "qa-number-coercion-control-v2": "qa-number-coercion-control",
+    "qa-export-unicode-v2": "qa-export-unicode",
+    "qa-export-empty-v2": "qa-export-empty",
+    "qa-export-thousand-v2": "qa-export-thousand",
+    "qa-export-redacted-v2": "qa-export-redacted",
+    "qa-export-unsupported-file-v2": "qa-export-unsupported-file",
+    "qa-export-text-file-v2": "qa-export-text-file",
+}
+# Reviewed export probes are deliberately nested; runtime input cannot choose paths.
+REVIEWED_FILES = {
+    "qa-export-unicode-v2": "p15-export-probes/qa-export-unicode-v2.cherri",
+    "qa-export-empty-v2": "p15-export-probes/qa-export-empty-v2.cherri",
+    "qa-export-thousand-v2": "p15-export-probes/qa-export-thousand-v2.cherri",
+    "qa-export-redacted-v2": "p15-export-probes/qa-export-redacted-v2.cherri",
+    "qa-export-unsupported-file-v2": "p15-export-probes/qa-export-unsupported-file-v2.cherri",
+    "qa-export-text-file-v2": "p15-export-probes/qa-export-text-file-v2.cherri",
 }
 FIXTURES += tuple(REVIEWED_SELECTORS)
 SHELL = "scripts/ios27_shortcuts_simulator_qa.sh"
@@ -84,7 +99,10 @@ def reviewed_case(commit, fid):
     program = shell[start:shell.index("\nPY\n", start)]
     specs = constant(program, "fixture_specs")
     matching = [row for row in specs if row[0] == fid]
-    filename = fid + ".cherri"
+    filename = REVIEWED_FILES.get(fid, fid + ".cherri")
+    if fid in REVIEWED_FILES:
+        require(assignment("TARGET_SOURCE_RELATIVE") == filename,
+                "source selector nested path mismatch")
     require(matching == [(fid, filename, "v2")], "source fixture compilation identity mismatch")
     path = "tools/shortcuts-simulator-qa/fixtures/" + filename
     return {"id": fid, "path": path, "sourceSha256": digest(source_bytes(commit, path)),
