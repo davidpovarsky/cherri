@@ -1,0 +1,81 @@
+{
+  "checkedAt": "2026-11-19T04:07:40.047518+00:00",
+  "sourceCommit": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+  "runId": 44452839062,
+  "runURL": "https://github.com/davidpovarsky/cherri/actions/runs/44452839062",
+  "overallBuildConclusionObserved": "failure",
+  "appleEngine": "WorkflowKit parameter-state API",
+  "actualShortcutRuntime": false,
+  "phaseSummary": [
+    {
+      "name": "positive",
+      "status": "PASS",
+      "requiredObservations": 23,
+      "passedRequired": 23,
+      "failedRequired": [],
+      "requiredPerForm": {
+        "attachment(variable)": 6,
+        "attachment(output)": 1,
+        "wrappedSubject": 3,
+        "string": 6,
+        "tokenString": 3,
+        "bool": 1,
+        "number": 3
+      },
+      "observedStateClasses": 50,
+      "observedStateFormCells": 350,
+      "failures": []
+    },
+    {
+      "name": "corrupt",
+      "status": "FAIL",
+      "requiredObservations": 23,
+      "passedRequired": 22,
+      "failedRequired": [
+        "plainString.WFStringParameterState.string"
+      ],
+      "requiredPerForm": {
+        "attachment(variable)": 6,
+        "attachment(output)": 1,
+        "wrappedSubject": 3,
+        "string": 6,
+        "tokenString": 3,
+        "bool": 1,
+        "number": 3
+      },
+      "observedStateClasses": 50,
+      "observedStateFormCells": 350,
+      "failures": [
+        {
+          "actual": "accept",
+          "code": "E_REQUIRED_ENCODING_EXPECTATION",
+          "expected": "reject",
+          "id": "plainString.WFStringParameterState.string"
+        }
+      ]
+    },
+    {
+      "name": "restored",
+      "status": "PASS",
+      "requiredObservations": 23,
+      "passedRequired": 23,
+      "failedRequired": [],
+      "requiredPerForm": {
+        "attachment(variable)": 6,
+        "attachment(output)": 1,
+        "wrappedSubject": 3,
+        "string": 6,
+        "tokenString": 3,
+        "bool": 1,
+        "number": 3
+      },
+      "observedStateClasses": 50,
+      "observedStateFormCells": 350,
+      "failures": []
+    }
+  ],
+  "restoredReportByteIdenticalToPositive": true,
+  "exactSourceStrictIntake": "PASS",
+  "sourceRelabelMutationRejected": true,
+  "nativeDispatchesAdded": 0
+}
