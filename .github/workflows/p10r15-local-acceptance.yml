@@ -169,8 +169,8 @@ jobs:
           assert receipt['sourceUnchanged'] and receipt['docsUnchanged']
           assert receipt['all179Reported'], 'Runner ended before a complete 179-row report'
           PY
-          # Preserve the real runner result. Missing/failed requirements never
-          # become a green acceptance job merely because a report was written.
+          # Preserve the real local-runner result. Pending local obligations remain
+          # visible in the report and never confer final acceptance closure.
           exit "$runner_status"
 
       - name: Retain actual report and process evidence on success or failure

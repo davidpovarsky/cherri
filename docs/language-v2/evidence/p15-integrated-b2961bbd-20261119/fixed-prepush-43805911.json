@@ -1,0 +1,88 @@
+{
+  "implementationSha": "43805911b3b2f2c4dfc78232cffbf0046171b25d",
+  "startedUTC": "2026-11-19T21:28:36.507895+00:00",
+  "sourceCleanBefore": true,
+  "steps": [
+    {
+      "stage": "build",
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "cherri.exe",
+        "."
+      ],
+      "exitCode": 0,
+      "durationSeconds": 17.109,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "requiredTopLevelTests": [],
+      "passedTopLevelTests": [],
+      "failedTests": [],
+      "skippedTests": []
+    },
+    {
+      "stage": "ci-regressions",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=8m",
+        "-run",
+        "^(TestP15F01DiagnosticFixturesPreserveIsolation|TestP15StorageProbeWireContractsAndCausalMutations|TestP15S01F01NativeCoverageFixture|TestP15S01F01CoverageContractRejectsDrift|TestP15S01F01CoverageGraphRejectsCausalMutations)$",
+        "."
+      ],
+      "exitCode": 0,
+      "durationSeconds": 14.594,
+      "logSha256": "f6fbeb17d8f5e0b1c4d4ff338c16ba6057b52b60e124b4e57d636788446b1a75",
+      "requiredTopLevelTests": [
+        "TestP15F01DiagnosticFixturesPreserveIsolation",
+        "TestP15StorageProbeWireContractsAndCausalMutations",
+        "TestP15S01F01NativeCoverageFixture",
+        "TestP15S01F01CoverageContractRejectsDrift",
+        "TestP15S01F01CoverageGraphRejectsCausalMutations"
+      ],
+      "passedTopLevelTests": [
+        "TestP15F01DiagnosticFixturesPreserveIsolation",
+        "TestP15S01F01NativeCoverageFixture",
+        "TestP15S01F01CoverageContractRejectsDrift",
+        "TestP15S01F01CoverageGraphRejectsCausalMutations",
+        "TestP15StorageProbeWireContractsAndCausalMutations"
+      ],
+      "failedTests": [],
+      "skippedTests": []
+    },
+    {
+      "stage": "acceptance-inventory",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=3m",
+        "-run",
+        "^(TestSupplementalProductionScenarioInventory|TestSupplementalAcceptanceCannotChangeRequiredTiers|TestSupplementalAcceptanceMissingProducerFailsClosed)$",
+        "./tools/language-acceptance"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 12.812,
+      "logSha256": "51b90e0d8cbcbe44f742c18434e811632373bf11f3c9378cdaeaf00a87784feb",
+      "requiredTopLevelTests": [
+        "TestSupplementalProductionScenarioInventory",
+        "TestSupplementalAcceptanceCannotChangeRequiredTiers",
+        "TestSupplementalAcceptanceMissingProducerFailsClosed"
+      ],
+      "passedTopLevelTests": [
+        "TestSupplementalProductionScenarioInventory",
+        "TestSupplementalAcceptanceMissingProducerFailsClosed",
+        "TestSupplementalAcceptanceCannotChangeRequiredTiers"
+      ],
+      "failedTests": [],
+      "skippedTests": []
+    }
+  ],
+  "finishedUTC": "2026-11-19T21:29:21.027519+00:00",
+  "sourceUnchanged": true,
+  "compilerSha256": "815eb584ba6790d5777dca76df78e5244977b5719b75ebf522bfbb8c7ea66683",
+  "scope": "Actual bounded pre-push check at the recorded SHA; later candidates require fresh CI and no 179/native closure is inherited"
+}
