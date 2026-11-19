@@ -39,6 +39,7 @@ func (a *Analyzer) beginProgram() {
 	a.registry = a.baseRegistry.Clone()
 	a.diagnostics = nil
 	a.exprTypes = make(map[syntax.Expression]types.Type)
+	a.resolvedActions = make(map[*syntax.CallExpr]*schema.ActionSchema)
 	a.currentFn = nil
 	a.inValueBlk = false
 	a.yieldedTypes = nil

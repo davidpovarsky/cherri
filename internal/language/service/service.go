@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/assets"
 	"github.com/electrikmilk/cherri/internal/language/modules"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
@@ -57,6 +58,8 @@ type TextEdit struct {
 
 // DocumentState holds in-memory parsed and analyzed state for an open file.
 type DocumentState struct {
+	AssetDiagnostics  []analysis.Diagnostic
+	AssetDependencies []assets.Snapshot
 	URI               string
 	Version           int
 	File              *source.File
@@ -68,19 +71,29 @@ type DocumentState struct {
 
 // Service is the shared language service implementation for CLI, LSP, and iOS bridge.
 type Service struct {
-	mu        sync.RWMutex
-	registry  *schema.Registry
-	documents map[string]*DocumentState
+	assetCache *assets.Cache
+	mu         sync.RWMutex
+	registry   *schema.Registry
+	documents  map[string]*DocumentState
 }
 
 // NewService creates a new language service instance.
 func NewService(registry *schema.Registry) *Service {
+	return NewServiceWithAssetCache(registry, nil)
+}
+
+// NewServiceWithAssetCache allows a host to share its bounded cache with compilation.
+func NewServiceWithAssetCache(registry *schema.Registry, cache *assets.Cache) *Service {
+	if cache == nil {
+		cache = assets.Shared()
+	}
 	if registry == nil {
 		registry = schema.DefaultRegistry()
 	}
 	return &Service{
-		registry:  registry.Clone(),
-		documents: make(map[string]*DocumentState),
+		assetCache: cache,
+		registry:   registry.Clone(),
+		documents:  make(map[string]*DocumentState),
 	}
 }
 
@@ -95,6 +108,7 @@ func (s *Service) OpenDocument(uri string, version int, text string) {
 	}
 
 	s.documents[uri] = s.analyzeDocumentLocked(uri, version, text)
+	s.refreshAssetDiagnosticsLocked(s.documents[uri])
 }
 
 // ChangeDocument updates content of an open document, ignoring stale lower-version updates.
@@ -122,18 +136,22 @@ func (s *Service) CloseDocument(uri string) {
 // Analyze returns all parse and semantic diagnostics for a document.
 func (s *Service) Analyze(uri string) ([]analysis.Diagnostic, string) {
 	s.mu.Lock()
+	defer s.mu.Unlock()
 	doc, ok := s.documents[uri]
 	if ok && modules.HasImports(doc.Program) {
 		doc = s.analyzeDocumentLocked(uri, doc.Version, doc.File.Content)
 		s.documents[uri] = doc
 	}
-	s.mu.Unlock()
+	if ok {
+		s.refreshAssetDiagnosticsLocked(doc)
+	}
 
 	if !ok {
 		return nil, s.registry.Fingerprint()
 	}
 
 	diags := append([]analysis.Diagnostic(nil), doc.ModuleDiagnostics...)
+	diags = append(diags, doc.AssetDiagnostics...)
 
 	// 1. Add parse errors
 	for _, pe := range doc.ParseErrors {

@@ -2349,6 +2349,9 @@ var actions = map[string]*actionDefinition{
 			},
 		},
 		check: func(args []actionArgument, _ *actionDefinition) {
+			if currentAction.embeddedAsset != nil {
+				return
+			}
 			var file = getArgValue(args[0])
 			if args[0].valueType == Variable && reflect.TypeOf(file).Kind() != reflect.String {
 				parserError("File path must be a string literal")
@@ -2358,6 +2361,9 @@ var actions = map[string]*actionDefinition{
 			}
 		},
 		makeParams: func(args []actionArgument) map[string]any {
+			if currentAction.embeddedAsset != nil {
+				return map[string]any{"WFTextActionText": currentAction.embeddedAsset.Base64}
+			}
 			var file = getArgValue(args[0]).(string)
 			var bytes, readErr = os.ReadFile(file)
 			handle(readErr)

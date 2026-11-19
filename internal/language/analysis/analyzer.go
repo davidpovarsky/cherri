@@ -71,6 +71,7 @@ func (s *Scope) LookupLocal(name string) (*Symbol, bool) {
 
 // Analyzer performs semantic analysis on a parsed Program.
 type Analyzer struct {
+	resolvedActions        map[*syntax.CallExpr]*schema.ActionSchema
 	registry               *schema.Registry
 	baseRegistry           *schema.Registry
 	configuredTarget       analyzerTargetConfig
@@ -1404,6 +1405,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 	a.rawNativeDataContext = false
 	defer func() { a.rawNativeDataContext = previousRawContext }()
 	delete(a.nativeReferenceCalls, call)
+	delete(a.resolvedActions, call)
 	if call.Block != nil {
 		return a.analyzeScopedBlockCall(call, scope)
 	}
@@ -1556,6 +1558,7 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 		return types.Unknown
 	}
 
+	a.resolvedActions[call] = actionSchema
 	a.checkTargetVersion(actionSchema, callName, call.Span)
 	if a.hasExplicitTarget {
 		for _, target := range a.targets {

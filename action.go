@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/electrikmilk/args-parser"
+	"github.com/electrikmilk/cherri/internal/language/assets"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
@@ -29,9 +30,10 @@ var stdActions embed.FS
 
 // actionReference holds the state for a single action being parsed or generated.
 type actionReference struct {
-	definition actionDefinition
-	identifier string
-	arguments  []actionArgument
+	definition    actionDefinition
+	identifier    string
+	arguments     []actionArgument
+	embeddedAsset *assets.Snapshot
 }
 
 var currentAction actionReference
