@@ -17,6 +17,30 @@ type supplementalProductionScenario struct {
 // These are independent executions of the complete supplemental scenarios.
 // Related original IDs are navigation only and never supply an inherited pass.
 var supplementalProductionScenarios = map[string]supplementalProductionScenario{
+	"RP06": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15SchemaOptionalDeclarationPropagation"},
+		Tiers:           []string{"generation", "integration"},
+		ProductionPaths: []string{"actions/basic.cherri", "actions/calendar.cherri", "actions/device.cherri", "actions/location.cherri", "actions_catalog.go", "tools/language-schema/main.go", "tools/language-docs/main.go", "internal/language/schema/generated_registry.go", "internal/language/schema/schema.go", "internal/language/backend/parameter_codecs.go", "internal/language/analysis/analyzer.go", "internal/language/service/service.go", "language_emit_adapter.go", "language_backend_adapter.go", "p15_schema_production_test.go", "p15_schema_generation_recovery_test.go", "p15_schema_optional_propagation_test.go", "p15_schema_labels_recovery_test.go"},
+	},
+	"RP07": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15SchemaGenerationFailureControls"},
+		Tiers:           []string{"generation", "negative-integration"},
+		ProductionPaths: []string{"actions/basic.cherri", "actions/calendar.cherri", "actions/device.cherri", "actions/location.cherri", "actions_catalog.go", "tools/language-schema/main.go", "tools/language-docs/main.go", "internal/language/schema/generated_registry.go", "internal/language/schema/schema.go", "internal/language/backend/parameter_codecs.go", "internal/language/analysis/analyzer.go", "internal/language/service/service.go", "language_emit_adapter.go", "language_backend_adapter.go", "p15_schema_production_test.go", "p15_schema_generation_recovery_test.go", "p15_schema_optional_propagation_test.go", "p15_schema_labels_recovery_test.go"},
+	},
+	"BRG22": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15SchemaGenerationFailureControls", "TestP15SchemaCanonicalLabels", "TestP15SchemaCorrectedLabelNativeBindings"},
+		Tiers:           []string{"generation", "integration"},
+		ProductionPaths: []string{"actions/basic.cherri", "actions/calendar.cherri", "actions/device.cherri", "actions/location.cherri", "actions_catalog.go", "tools/language-schema/main.go", "tools/language-docs/main.go", "internal/language/schema/generated_registry.go", "internal/language/schema/schema.go", "internal/language/backend/parameter_codecs.go", "internal/language/analysis/analyzer.go", "internal/language/service/service.go", "language_emit_adapter.go", "language_backend_adapter.go", "p15_schema_production_test.go", "p15_schema_generation_recovery_test.go", "p15_schema_optional_propagation_test.go", "p15_schema_labels_recovery_test.go"},
+	},
+	"BRG23": {
+		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
+		TestNames:       []string{"TestP15SchemaOptionalDeclarationPropagation"},
+		Tiers:           []string{"repository", "integration", "generation"},
+		ProductionPaths: []string{"actions/basic.cherri", "actions/calendar.cherri", "actions/device.cherri", "actions/location.cherri", "actions_catalog.go", "tools/language-schema/main.go", "tools/language-docs/main.go", "internal/language/schema/generated_registry.go", "internal/language/schema/schema.go", "internal/language/backend/parameter_codecs.go", "internal/language/analysis/analyzer.go", "internal/language/service/service.go", "language_emit_adapter.go", "language_backend_adapter.go", "p15_schema_production_test.go", "p15_schema_generation_recovery_test.go", "p15_schema_optional_propagation_test.go", "p15_schema_labels_recovery_test.go"},
+	},
 	"BRG32": {
 		PackagePath: "./tools/language-acceptance",
 		ModulePath:  "github.com/electrikmilk/cherri/tools/language-acceptance",

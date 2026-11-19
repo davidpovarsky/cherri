@@ -36,6 +36,11 @@ var cliProductionTests = map[string][]string{
 func productionTestTimeout(required []string) time.Duration {
 	budget := 3 * time.Minute
 	for _, name := range required {
+		// Canonical schema scenarios build and restore multiple actual consumers
+		// in an isolated Git worktree; preserve a finite whole-pipeline budget.
+		if strings.HasPrefix(name, "TestP15Schema") {
+			return 8 * time.Minute
+		}
 		if strings.HasPrefix(name, "TestP15K05") {
 			return 8 * time.Minute
 		}
