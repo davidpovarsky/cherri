@@ -363,7 +363,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
                     }
                 }
                 let texts = nb.staticTexts
-                for j in 0..<min(texts.count, 4) {
+                guard let textCount = QAEditorForegroundRecovery.inspect(
+                    foreground, state: { self.appLivenessState(shortcuts) },
+                    query: { min(texts.count, 4) }) else { return nil }
+                for j in 0..<textCount {
+                    guard shortcuts.state == .runningForeground else { return nil }
                     let st = texts.element(boundBy: j)
                     if st.exists && !st.label.isEmpty {
                         headers.append(sanitizeUIString(st.label) ?? "REDACTED")
@@ -373,7 +377,11 @@ final class CherriSimulatorQAUITests: XCTestCase {
                     }
                 }
                 let btns = nb.buttons
-                for j in 0..<min(btns.count, 6) {
+                guard let buttonCount = QAEditorForegroundRecovery.inspect(
+                    foreground, state: { self.appLivenessState(shortcuts) },
+                    query: { min(btns.count, 6) }) else { return nil }
+                for j in 0..<buttonCount {
+                    guard shortcuts.state == .runningForeground else { return nil }
                     let b = btns.element(boundBy: j)
                     if b.exists && !b.label.isEmpty {
                         headers.append(sanitizeUIString(b.label) ?? "REDACTED")
@@ -693,6 +701,19 @@ final class CherriSimulatorQAUITests: XCTestCase {
             return
         }
 
+        // Every navigation transition below may lose the process. Stop before
+        // the next AX group; never spend another recovery/import attempt.
+        func keepEditorForeground() -> Bool {
+            let allowed: Bool? = QAEditorForegroundRecovery.inspect(
+                editorForeground, state: { self.appLivenessState(shortcuts) }, query: { true })
+            guard allowed == true else {
+                libraryForegroundTransition = libraryForegroundTransition.stoppingAfterForegroundLoss()
+                stopBeforeUnavailableLibraryQuery()
+                return false
+            }
+            return true
+        }
+
         // Step 3: Open the genuine action editor for expectedShortcutName (or New Shortcut if blocked)
         if shortcutExistsInLibrary {
             let libShot = XCUIScreen.main.screenshot()
@@ -700,6 +721,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
 
             // If not already showing the expected shortcut inside Other["editor"], open it WITHOUT triggering tile execution!
             // On iPadOS grid tiles, tapping the card body runs the Shortcut; use Edit / More (...) button or context menu -> Edit.
+            guard keepEditorForeground() else { return }
             var editorMatchesExpected = shortcuts.otherElements["editor"].exists && (
                 shortcuts.navigationBars[expectedShortcutName].exists ||
                 shortcuts.navigationBars.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", expectedShortcutName)).firstMatch.exists
@@ -719,8 +741,10 @@ final class CherriSimulatorQAUITests: XCTestCase {
                     Thread.sleep(forTimeInterval: 1.5)
                 } else {
                     let cellsQuery = shortcuts.collectionViews.cells
+                    guard keepEditorForeground() else { return }
                     let cellCount = min(cellsQuery.count, 30)
                     for i in 0..<cellCount {
+                        guard keepEditorForeground() else { return }
                         let cell = cellsQuery.element(boundBy: i)
                         if cell.exists && (
                             cell.label == expectedShortcutName ||
@@ -742,11 +766,15 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 }
 
                 // If tapping More or long-pressing opened a context menu with Edit / Edit Shortcut / Details, tap Edit
+                guard keepEditorForeground() else { return }
                 if !shortcuts.otherElements["editor"].exists {
                     let menuEditLabels = ["Edit", "Edit Shortcut"]
                     var tappedMenuEdit = false
                     for lbl in menuEditLabels {
                         for appCandidate in [shortcuts, springboard] {
+                            guard keepEditorForeground() else { return }
+                            let appState = appCandidate.state
+                            guard appState != .notRunning && appState != .unknown else { continue }
                             let mBtn = appCandidate.buttons[lbl].firstMatch
                             if mBtn.exists && mBtn.isHittable {
                                 mBtn.tap()
@@ -770,6 +798,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             }
 
             // On iPadOS 27 split preview, tap the top-right "Edit" button if not already in full action editor mode
+            guard keepEditorForeground() else { return }
             let alreadyFullEditor = shortcuts.buttons["Scripting"].exists ||
                                     shortcuts.buttons["Actions"].exists ||
                                     shortcuts.buttons["Done"].exists ||
@@ -780,7 +809,10 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 let matchingEditBtns = shortcuts.buttons.matching(editPred)
                 var chosenEditBtn: XCUIElement? = nil
                 var bestEditX: CGFloat = 250
-                for idx in 0..<min(matchingEditBtns.count, 8) {
+                guard keepEditorForeground() else { return }
+                let matchingEditCount = min(matchingEditBtns.count, 8)
+                for idx in 0..<matchingEditCount {
+                    guard keepEditorForeground() else { return }
                     let b = matchingEditBtns.element(boundBy: idx)
                     if b.exists && b.isHittable && b.frame.origin.x > bestEditX {
                         bestEditX = b.frame.origin.x
@@ -795,7 +827,10 @@ final class CherriSimulatorQAUITests: XCTestCase {
                     let navButtons = shortcuts.navigationBars.buttons
                     var candidateBtn: XCUIElement? = nil
                     var bestX: CGFloat = 0
-                    for i in 0..<min(navButtons.count, 10) {
+                    guard keepEditorForeground() else { return }
+                    let navigationButtonCount = min(navButtons.count, 10)
+                    for i in 0..<navigationButtonCount {
+                        guard keepEditorForeground() else { return }
                         let b = navButtons.element(boundBy: i)
                         if b.exists && b.isHittable && b.frame.origin.x > 580 && b.frame.origin.y < 110 && b.frame.size.width >= 38 {
                             let lbl = b.label
@@ -815,6 +850,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             }
         } else {
             // Try tapping New Shortcut button by identifier or label so we test opening the genuine editor
+            guard keepEditorForeground() else { return }
             let newShortcutById = shortcuts.buttons["main.button.newshortcut"].firstMatch
             if newShortcutById.exists && newShortcutById.isHittable {
                 newShortcutById.tap()
@@ -822,6 +858,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             } else {
                 let createCandidates = ["New Shortcut", "Create Shortcut", "צור קיצור דרך"]
                 for candidate in createCandidates {
+                    guard keepEditorForeground() else { return }
                     let btn = shortcuts.buttons[candidate].firstMatch
                     if btn.exists && btn.isHittable {
                         btn.tap()
@@ -857,6 +894,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         ]
         var bestScore: CGFloat = -1
         for (typeName, query) in candidates {
+            guard keepEditorForeground() else { return }
             let count = min(query.count, 8)
             for i in 0..<count {
                 let el = query.element(boundBy: i)
@@ -908,6 +946,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             attachment.lifetime = .keepAlways
             add(attachment)
 
+            guard keepEditorForeground() else { return }
             let snap = try shortcuts.snapshot()
             let pageNodes = flattenSnapshot(snap, screenIndex: page, viewport: appFrame)
             allMergedNodes.append(contentsOf: pageNodes)

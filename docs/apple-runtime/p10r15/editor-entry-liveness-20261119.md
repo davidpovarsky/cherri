@@ -25,3 +25,7 @@ The complete Apple Foundation script was also attempted on Windows and stopped a
 ## Remaining gate
 
 Actual Apple XCTest compilation and a source-bound replay of the unchanged binding capture and typed-defaults fixtures remain required. The guard alone is not an import fix, does not prove typed-defaults semantics, and grants no formal acceptance or device credit.
+
+## Review follow-up
+
+A read-only review identified additional AX entry groups after editor-navigation taps/sleeps. The follow-up adds stop-only fresh foreground checks to those groups and inner header counts, without another recovery attempt. The actual Foundation control now executes one ready query, changes the injected state to notRunning, and verifies that all three later query closures remain uncalled. The fresh Swift build/run passed nine scenarios and83 assertions; output SHA256 9b2c8803a3a65dfe271fa0caf6d820197417dcba8c4cdebd5063c2b977735bd0. Apple XCTest compilation and paired runtime replay remain pending.

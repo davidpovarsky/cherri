@@ -64,6 +64,16 @@ enum QAEditorForegroundContracts {
             assertions += 8
         }
         var lostQueries = 0
+        var liveState = QAAppLivenessState.runningForeground
+        let first: Int? = QAEditorForegroundRecovery.inspect(observations[1], state: { liveState }, query: { lostQueries += 1; return 7 })
+        try require(first == 7 && lostQueries == 1, "ready first navigation query executes")
+        liveState = .notRunning
+        for _ in 0..<3 {
+            let later: Int? = QAEditorForegroundRecovery.inspect(observations[1], state: { liveState }, query: { lostQueries += 1; return 7 })
+            try require(later == nil && lostQueries == 1, "every post-transition query remains suppressed")
+        }
+        assertions += 4
+        lostQueries = 0
         let lost: Int? = QAEditorForegroundRecovery.inspect(observations[1], state: { .notRunning }, query: { lostQueries += 1; return 7 })
         try require(lost == nil && lostQueries == 0, "fresh loss suppresses previously ready query")
         var zeroBudgetOperations = 0
