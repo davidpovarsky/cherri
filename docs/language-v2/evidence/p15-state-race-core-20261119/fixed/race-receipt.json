@@ -1,0 +1,65 @@
+{
+  "format_version": 1,
+  "source_commit": "abc83b8626ecd86ceadca878b94799cfd6e70c1d",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "repository": "davidpovarsky/cherri",
+  "run_id": "44629009283",
+  "run_attempt": "1",
+  "command": [
+    "go",
+    "test",
+    "-race",
+    "-count=1",
+    "-json",
+    "-timeout=8m",
+    "-run",
+    "^(TestBackendRecovery06MixedEntryPoints|TestBackendRecovery06EmitterErrorAndCancellation)$",
+    "."
+  ],
+  "started_utc": "2026-11-19T22:29:07.839145+00:00",
+  "finished_utc": "2026-11-19T22:29:58.263646+00:00",
+  "elapsed_seconds": 50.41053971800001,
+  "exit_code": 0,
+  "timed_out": false,
+  "raw_sha256": "c7dac548523cb15168be1f1745ac72a404183c5c9c78acfa7de603a1eec9fa3c",
+  "raw_bytes": 4591,
+  "stderr_sha256": "e12eb994413400ff843be99773c3ed74514d207aba962041f4fa874d57032259",
+  "stderr_bytes": 1630,
+  "environment_sha256": "0e225b5bc168e3e0bce88b85cea88773d76f562ed948f3e18fadcf9a4f1dbc99",
+  "source_files_sha256": "f5ad8ab912255c85a07704c0835b3ede9437a8782a85eaa4fda56b416f060726",
+  "status": "PASSED",
+  "issues": [],
+  "required_tests": [
+    "TestBackendRecovery06MixedEntryPoints",
+    "TestBackendRecovery06EmitterErrorAndCancellation",
+    "TestBackendRecovery06EmitterErrorAndCancellation/emitter_error",
+    "TestBackendRecovery06EmitterErrorAndCancellation/cancellation"
+  ],
+  "observations": {
+    "TestBackendRecovery06MixedEntryPoints": [
+      {
+        "race_instrumented": true,
+        "sequential_rounds": 3,
+        "concurrent_workers": 8,
+        "concurrent_rounds": 8,
+        "completed_cases": 64
+      }
+    ],
+    "TestBackendRecovery06EmitterErrorAndCancellation": [
+      {
+        "race_instrumented": true,
+        "sequential_rounds": 0,
+        "concurrent_workers": 0,
+        "concurrent_rounds": 0,
+        "completed_cases": 0,
+        "emitter_faults": [
+          "emitter_error",
+          "cancellation"
+        ]
+      }
+    ]
+  },
+  "formal_requirements_proved": [],
+  "scope": "Actual bounded race scenarios only. Formal BRG06/RP51 intake and RP51 benchmark evidence remain separate required gates."
+}
