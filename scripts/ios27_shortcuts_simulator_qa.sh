@@ -785,6 +785,14 @@ def classify_actions(actions):
             if cvar in ("__cherri_debug_log", "__cherri_qa_trace"):
                 collector_ids.append({"nativeIndex": idx, "identifier": aid})
                 continue
+        if aid == "is.workflow.actions.nothing" and idx + 1 < len(actions):
+            nxt = actions[idx + 1]
+            next_params = nxt.get("WFWorkflowActionParameters", {})
+            if (nxt.get("WFWorkflowActionIdentifier") == "is.workflow.actions.setvariable"
+                    and next_params.get("WFVariableName") == "__cherri_debug_log"
+                    and "WFInput" not in params and "WFInput" not in next_params):
+                inline_debug_ids.append({"nativeIndex": idx, "identifier": aid, "reason": "ClearLogsNothing"})
+                continue
         if aid == "is.workflow.actions.gettext":
             if is_structural_inline_trace_text(actions, idx):
                 inline_debug_ids.append({"nativeIndex": idx, "identifier": aid, "reason": "TraceEventLine"})

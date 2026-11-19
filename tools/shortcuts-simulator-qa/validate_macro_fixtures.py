@@ -128,7 +128,8 @@ for fid in BINDING_CASES:
         for action in damaged:
             p = action.get("WFWorkflowActionParameters", {})
             if mutation == "wrong-observation" and p.get("CustomOutputName") == "qaObservedClipboard":
-                p["WFVariable"]["Value"]["Type"] = "CurrentDate"
+                action["WFWorkflowActionIdentifier"] = "is.workflow.actions.getvariable"
+                p["WFVariable"] = {"WFSerializationType": "WFTextTokenAttachment", "Value": {"Type": "Clipboard"}}
             elif mutation == "raised-cap" and p.get("WFNumberValue") == 513:
                 p["WFNumberValue"] = 999999
             elif mutation == "hardcoded-summary" and p.get("CustomOutputName") == "qaFinalSummary":

@@ -82,11 +82,22 @@ def validate_fixture_graph(fixture, actions):
     if fixture not in FIXTURES:
         return None
     case = FIXTURES[fixture]
-    allowed = {"comment", "gettext", "setvariable", "appendvariable", "downloadurl", "text.combine", "output"}
+    allowed = {"comment", "nothing", "gettext", "setvariable", "appendvariable", "downloadurl", "text.combine", "output"}
     require(isinstance(actions, list) and actions
             and all(isinstance(a, dict) and a.get("WFWorkflowActionIdentifier") in
                     {"is.workflow.actions." + name for name in allowed} for a in actions),
             "UNEXPECTED_ACTION_OR_RETRY_CONTROL_FLOW")
+    clears = [(i, a.get("WFWorkflowActionParameters", {})) for i, a in enumerate(actions)
+              if a.get("WFWorkflowActionIdentifier") == "is.workflow.actions.setvariable"
+              and a.get("WFWorkflowActionParameters", {}).get("WFVariableName") == "__cherri_debug_log"]
+    require(len(clears) == 1 and clears[0][0] > 0, "DEBUG_CLEAR_COUNT")
+    clear_index, clear = clears[0]
+    before = actions[clear_index - 1]
+    require(before.get("WFWorkflowActionIdentifier") == "is.workflow.actions.nothing"
+            and "WFInput" not in before.get("WFWorkflowActionParameters", {})
+            and "WFInput" not in clear, "DEBUG_CLEAR_MUST_HAVE_ZERO_ITEMS")
+    require(sum(a.get("WFWorkflowActionIdentifier") == "is.workflow.actions.nothing" for a in actions) == 1,
+            "UNEXPECTED_NOTHING_ACTION")
     http = [(i, a.get("WFWorkflowActionParameters", {})) for i, a in enumerate(actions)
             if a.get("WFWorkflowActionIdentifier") == "is.workflow.actions.downloadurl"]
     require(len(http) == 2, "HTTP_OPERATION_OR_OBSERVER_COUNT")

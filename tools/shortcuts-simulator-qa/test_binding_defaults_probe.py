@@ -49,7 +49,7 @@ class BindingDefaultsProbeTests(unittest.TestCase):
                 self.assertEqual(row["expectedClipboard"], expected)
                 self.assertEqual(row["adapterSourceSha256"], hashlib.sha256(actual).hexdigest())
                 for damaged in (actual.replace(original, original+b"comment(\"changed\")\n",1),
-                                actual.replace(b"getVariable(Clipboard)",b"getVariable(result)",1),
+                                actual.replace(b"getClipboard()",b"getVariable(Clipboard)",1),
                                 actual.replace(b"< 513",b"< 999999",1)):
                     with self.assertRaisesRegex(ValueError,"BINDING_DEFAULTS_SOURCE_CONTRACT"):
                         probe.verify_adapter_source(self.root,fid,damaged)
