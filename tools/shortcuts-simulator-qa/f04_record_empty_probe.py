@@ -29,6 +29,14 @@ def verify_graph(fid, actions):
         if not ok: raise ValueError("F04_RECORD_EMPTY_GRAPH_CONTRACT: " + why)
     def p(a): return a.get("WFWorkflowActionParameters", {})
     def kind(a, suffix): return a.get("WFWorkflowActionIdentifier") == "is.workflow.actions." + suffix
+    # A source and reference both missing UUID must never compare equal.
+    # GroupingIdentifier is deliberately separate: control groups repeat it.
+    uuids=[p(a)["UUID"] for a in actions if "UUID" in p(a)]
+    require(all(isinstance(value,str) and bool(value.strip()) for value in uuids),
+            "nonempty producer UUID")
+    require(len(uuids)==len(set(uuids)), "unique producer UUID")
+    require(all(isinstance(p(a).get("UUID"),str) and bool(p(a)["UUID"].strip())
+                for a in actions if p(a).get("CustomOutputName")), "named producer UUID")
     def named(name, suffix):
         found = [(i,a) for i,a in enumerate(actions) if p(a).get("CustomOutputName")==name]
         require(len(found)==1 and kind(found[0][1],suffix), "named producer " + name)
@@ -38,7 +46,9 @@ def verify_graph(fid, actions):
         return value.get("Value",{})
     def edge(value, source):
         t=att(value)
-        require(t.get("Type")=="ActionOutput" and t.get("OutputUUID")==p(source).get("UUID")
+        producer_uuid=p(source).get("UUID")
+        require(isinstance(producer_uuid,str) and bool(producer_uuid.strip()), "edge producer UUID")
+        require(t.get("Type")=="ActionOutput" and t.get("OutputUUID")==producer_uuid
                 and not t.get("Aggrandizements"), "producer edge")
     def dictionary(a, tag):
         require(kind(a,"dictionary"), "Dictionary carrier")
@@ -136,10 +146,19 @@ def verify_graph(fid, actions):
 def verify_causal_mutations(actions):
     mutations=("list-carrier","missing-items-key","wrong-item-type","nonempty-inner","wrong-iteration-tag",
                "wrong-outer-count","wrong-last-record","wrong-items-read","wrong-keys-mode","wrong-empty-control",
-               "wrong-type-witness","unconditional-type-pass","hardcoded-summary","wrong-output-edge")
+               "wrong-type-witness","unconditional-type-pass","hardcoded-summary","wrong-output-edge",
+               "missing-producer-uuid","empty-producer-uuid","duplicate-producer-uuid")
     rejected=[]
     def named(graph,name):
         return next(a["WFWorkflowActionParameters"] for a in graph if a.get("WFWorkflowActionParameters",{}).get("CustomOutputName")==name)
+    def change_references(value, old, new):
+        if isinstance(value,dict):
+            if value.get("OutputUUID")==old:
+                if new is None: value.pop("OutputUUID")
+                else: value["OutputUUID"]=new
+            for item in list(value.values()): change_references(item,old,new)
+        elif isinstance(value,list):
+            for item in value: change_references(item,old,new)
     for mutation in mutations:
         damaged=copy.deepcopy(actions)
         dictionary=next(a for a in damaged if a["WFWorkflowActionIdentifier"]=="is.workflow.actions.dictionary")
@@ -163,6 +182,14 @@ def verify_causal_mutations(actions):
                 if p.get("WFTextActionText")=="N":p["WFTextActionText"]="Y"
         elif mutation=="hardcoded-summary":named(damaged,"semanticResult")["WFTextActionText"]=EXPECTED
         elif mutation=="wrong-output-edge":damaged[-1]["WFWorkflowActionParameters"]["WFOutput"]["Value"]["attachmentsByRange"]["{0, 1}"]["OutputUUID"]="wrong"
+        elif mutation in ("missing-producer-uuid","empty-producer-uuid","duplicate-producer-uuid"):
+            source=named(damaged,"boxes");old=source["UUID"]
+            new=None if mutation=="missing-producer-uuid" else ("" if mutation=="empty-producer-uuid" else named(damaged,"scalars")["UUID"])
+            if new is None: source.pop("UUID")
+            else: source["UUID"]=new
+            # Mutate both ends, so the control tests identity integrity rather
+            # than merely detecting a dangling edge to an unchanged producer.
+            change_references(damaged,old,new)
         try:verify_graph(FIXTURE_ID,damaged)
         except ValueError as exc:
             if "F04_RECORD_EMPTY_GRAPH_CONTRACT" not in str(exc):raise
