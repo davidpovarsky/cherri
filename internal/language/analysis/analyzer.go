@@ -406,6 +406,9 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate enum declaration %q", d.Name))
 			}
 		case *syntax.ActionDecl:
+			if !a.validateActionDeclaration(d) {
+				continue
+			}
 			var actParams []schema.ParameterSchema
 			for _, p := range d.Parameters {
 				var pType types.Type = types.Unknown
