@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS_LOCAL_COMPILATION_AND_GATES_ONLY",
+  "sourceCommit": "9db698cdeca7dfcafc63f22420031c1a3f03e730",
+  "sourceCleanBeforeAndAfter": true,
+  "freshControlledBuild": true,
+  "compilerBinarySha256": "5970916346230894e97dcd6295d70bfc0e17c2ff6c8662ffe78804a0fe1d39b9",
+  "productionPhaseZero": {
+    "actualCLIFixturesAttempted": 69,
+    "actualCLIFixturesCompiled": 67,
+    "actualCLIExpectedDiagnosticRejections": 2
+  },
+  "selectedDiagnostics": {
+    "qa-file-materialization-diagnostic-v2": {
+      "fixtureId": "qa-file-materialization-diagnostic-v2",
+      "fileName": "qa-file-materialization-diagnostic-v2.cherri",
+      "sourceSha256": "f008fe73c47c9d90695b965e585b748a62698f6e4bb8cad97b21ddf158717863",
+      "unsignedPlistSha256": "b6d80ca271216f13f7400aee20a6a7955344d75ad4dbac744034832eb4cfb3f9",
+      "nativeActionCount": 170,
+      "fileMaterializationSource": {
+        "sourceSha256": "f008fe73c47c9d90695b965e585b748a62698f6e4bb8cad97b21ddf158717863",
+        "syntheticOnly": true,
+        "originalAcceptanceChanged": false,
+        "appleRuntime": "NOT_RUN"
+      },
+      "fileMaterializationGraph": {
+        "status": "PASS_LOCAL_CAUSAL_GRAPH_ONLY",
+        "actualTypeNames": 6,
+        "independentCounts": 5,
+        "boundedByteWitnesses": 7,
+        "maximumCharactersPerWitness": 512,
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      }
+    },
+    "qa-n03-text-equality-diagnostic-v2": {
+      "fixtureId": "qa-n03-text-equality-diagnostic-v2",
+      "fileName": "qa-n03-text-equality-diagnostic-v2.cherri",
+      "sourceSha256": "e4acefccc8a81c77a8336fa7a5f07eacaf84fc25a6dc251eb8150c607fac80ab",
+      "unsignedPlistSha256": "b232412da5b26e628b1b973b4dc992a9a9fcadc8b21f47c4429ee0b45064c765",
+      "nativeActionCount": 121,
+      "n03TextEqualitySource": {
+        "status": "PASS_REVIEWED_PUBLIC_SOURCE_ONLY",
+        "sourceSha256": "e4acefccc8a81c77a8336fa7a5f07eacaf84fc25a6dc251eb8150c607fac80ab",
+        "expectedContractSha256": "007b9eb4edaf6822e587cb72c753aa2b7a1b112810834ea6593df54a82dbb98c",
+        "observedFields": 18,
+        "appleRuntime": "NOT_RUN",
+        "formalAcceptanceGranted": false
+      }
+    }
+  },
+  "fileMaterializationCausalMutations": {
+    "status": "PASS_LOCAL_NEGATIVE_CONTROLS",
+    "rejected": [
+      "redirect-decodeType64Type",
+      "redirect-namedType64Type",
+      "redirect-emptyCount",
+      "redirect-oneCount",
+      "redirect-jsonDecoded",
+      "redirect-restoredFile",
+      "decode-mode",
+      "name-extension",
+      "independent-binary-lost",
+      "count-unit",
+      "wrong-entry-key",
+      "constant-summary",
+      "constant-output",
+      "clear-seed-text",
+      "clear-explicit-input",
+      "external-action"
+    ],
+    "appleRuntime": "NOT_RUN"
+  },
+  "precommitControls": {
+    "workingTreeHasUncommittedWiring": true,
+    "callbackMethodsPassed": 7,
+    "n03NamedTestsPassed": 27,
+    "namedTestsFailed": 0,
+    "namedTestsSkipped": 0,
+    "results": [
+      {
+        "stage": "callback-selection",
+        "exit": 0,
+        "seconds": 56.391,
+        "sha256": "df2a8a52352ade2587a3b19afe7915d2bf56d946a523378aad81ad3b906e1cf2"
+      },
+      {
+        "stage": "n03-graph",
+        "exit": 0,
+        "seconds": 29.906,
+        "sha256": "07f318eb70b3d9905c1e68c500f706d8799021f75970c344e9bfd6226002e2fd"
+      }
+    ]
+  },
+  "rawReceipts": {
+    "cleanRunReceiptSha256": "db66fa6db6dc7dfdd2a28c801f85160419f9a28d8f347673f6f665cf1acd2093",
+    "cleanPhaseZeroReportSha256": "2abc7b01cc51493aac97754759a5e70582c9435761683d2fc937d5e7e6c1ca7a",
+    "cleanProducerLogSha256": "99f916e1eb90baa4e7733acc873080fe473fc32a7e448dbc3185c40e6e4efa19",
+    "precommitControlsReceiptSha256": "b649f7186c16a2faea03ac8c6033535ecd3ec9e8a4e2e3fc498ad758ca051340"
+  },
+  "nativeExecuted": 0,
+  "appleRuntime": "NOT_RUN",
+  "formalAcceptanceGranted": false,
+  "limitations": [
+    "The seven callback/selection controls and 27 named N03 graph controls ran against uncommitted wiring later committed unchanged; they are not represented as a clean-source run.",
+    "The fresh production phase-zero replay ran on clean committed 9db698cdeca7dfcafc63f22420031c1a3f03e730.",
+    "Expected File labels and exact-equality outputs remain diagnostic targets, not observed Apple values.",
+    "Original export-empty/export-Unicode and binding/defaults acceptance oracles are unchanged.",
+    "No N03, debugExport, iOS import, runtime, physical-device or 179-requirement completion is granted."
+  ]
+}
