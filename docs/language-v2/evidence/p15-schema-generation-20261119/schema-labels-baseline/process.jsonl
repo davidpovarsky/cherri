@@ -1,0 +1,24 @@
+{"Time":"2026-11-20T01:17:18.1732715+02:00","Action":"start","Package":"github.com/electrikmilk/cherri"}
+{"Time":"2026-11-20T01:17:18.5195705+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCanonicalLabels"}
+{"Time":"2026-11-20T01:17:18.5195705+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCanonicalLabels","Output":"=== RUN   TestP15SchemaCanonicalLabels\n"}
+{"Time":"2026-11-20T01:17:27.0460816+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCanonicalLabels","Output":"    p15_schema_labels_recovery_test.go:23: canonical action getDeviceUsage has empty/duplicate label \"startTime\"\n"}
+{"Time":"2026-11-20T01:17:27.0460816+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCanonicalLabels","Output":"    p15_schema_labels_recovery_test.go:23: canonical action streetAddress has empty/duplicate label \"addressLine2\"\n"}
+{"Time":"2026-11-20T01:17:27.0471269+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCanonicalLabels","Output":"--- FAIL: TestP15SchemaCanonicalLabels (8.53s)\n"}
+{"Time":"2026-11-20T01:17:27.0471269+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCanonicalLabels","Elapsed":8.53}
+{"Time":"2026-11-20T01:17:27.0471269+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings"}
+{"Time":"2026-11-20T01:17:27.0471269+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings","Output":"=== RUN   TestP15SchemaCorrectedLabelNativeBindings\n"}
+{"Time":"2026-11-20T01:17:27.0471269+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/streetAddress"}
+{"Time":"2026-11-20T01:17:27.0476868+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/streetAddress","Output":"=== RUN   TestP15SchemaCorrectedLabelNativeBindings/streetAddress\n"}
+{"Time":"2026-11-20T01:17:27.0971663+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/streetAddress","Output":"    p15_schema_labels_recovery_test.go:59: label addressLine1 did not resolve to WFAddressLine1\n"}
+{"Time":"2026-11-20T01:17:27.0971663+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/streetAddress","Output":"--- FAIL: TestP15SchemaCorrectedLabelNativeBindings/streetAddress (0.05s)\n"}
+{"Time":"2026-11-20T01:17:27.0971663+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/streetAddress","Elapsed":0.05}
+{"Time":"2026-11-20T01:17:27.0971663+02:00","Action":"run","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/getDeviceUsage"}
+{"Time":"2026-11-20T01:17:27.0971663+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/getDeviceUsage","Output":"=== RUN   TestP15SchemaCorrectedLabelNativeBindings/getDeviceUsage\n"}
+{"Time":"2026-11-20T01:17:27.0971663+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/getDeviceUsage","Output":"    p15_schema_labels_recovery_test.go:59: label endTime did not resolve to endTime\n"}
+{"Time":"2026-11-20T01:17:27.0986835+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/getDeviceUsage","Output":"--- FAIL: TestP15SchemaCorrectedLabelNativeBindings/getDeviceUsage (0.00s)\n"}
+{"Time":"2026-11-20T01:17:27.0986835+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings/getDeviceUsage","Elapsed":0}
+{"Time":"2026-11-20T01:17:27.099224+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings","Output":"--- FAIL: TestP15SchemaCorrectedLabelNativeBindings (0.05s)\n"}
+{"Time":"2026-11-20T01:17:27.099224+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Test":"TestP15SchemaCorrectedLabelNativeBindings","Elapsed":0.05}
+{"Time":"2026-11-20T01:17:27.099224+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Output":"FAIL\n"}
+{"Time":"2026-11-20T01:17:27.1041169+02:00","Action":"output","Package":"github.com/electrikmilk/cherri","Output":"FAIL\tgithub.com/electrikmilk/cherri\t8.928s\n"}
+{"Time":"2026-11-20T01:17:27.1041169+02:00","Action":"fail","Package":"github.com/electrikmilk/cherri","Elapsed":8.932}

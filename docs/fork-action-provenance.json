@@ -1430,6 +1430,52 @@
       "notes": [],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "getDeviceUsage",
+      "identifier": "com.apple.intelligenceplatform.IntelligencePlatform.IntelligencePlatformDataActionsAppIntentsExtension.CalculateAppUsageIntent",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-corrected",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/device.cherri",
+      "forkLocations": [
+        "actions/device.cherri",
+        "internal/language/schema/generated_registry.go",
+        "p15_schema_labels_recovery_test.go"
+      ],
+      "firstForkCommit": "dc86a87de5cd6b2f2e795236ac1fa25e28853ade",
+      "change": "Rename the duplicate second startTime label to endTime while preserving its existing endTime wire key and parameter order.",
+      "reason": "An inherited duplicate label made distinct native fields ambiguous for named arguments. Actual original catalog/native binding tests failed before the correction.",
+      "evidence": "docs/language-v2/p15-schema-generation-20261119.md; original failed7aed17dc and clean61ac9542 receipts; both actual named native field bindings pass.",
+      "notes": [
+        "Original component receipts retain their own source SHA; the implementation pointer names the integrated R3 ancestor.",
+        "Wire keys, native identifier, parameter order and immutable Legacy fixtures remain unchanged."
+      ],
+      "supersededByUpstream": null,
+      "history": []
+    },
+    {
+      "name": "streetAddress",
+      "identifier": "is.workflow.actions.address",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-corrected",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/location.cherri",
+      "forkLocations": [
+        "actions/location.cherri",
+        "internal/language/schema/generated_registry.go",
+        "p15_schema_labels_recovery_test.go"
+      ],
+      "firstForkCommit": "dc86a87de5cd6b2f2e795236ac1fa25e28853ade",
+      "change": "Rename the duplicate first addressLine2 label to addressLine1 while preserving WFAddressLine1 and parameter order.",
+      "reason": "An inherited duplicate label made distinct native fields ambiguous for named arguments. Actual original catalog/native binding tests failed before the correction.",
+      "evidence": "docs/language-v2/p15-schema-generation-20261119.md; original failed7aed17dc and clean61ac9542 receipts; both actual named native field bindings pass.",
+      "notes": [
+        "Original component receipts retain their own source SHA; the implementation pointer names the integrated R3 ancestor.",
+        "Wire keys, native identifier, parameter order and immutable Legacy fixtures remain unchanged."
+      ],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
@@ -3044,6 +3090,20 @@
       "reason": "Native e61 run44622055945 observed one-based indices in the unchanged modern nested-loop fixture; previous Legacy parity remediation had applied native indexing to both accepted source spellings.",
       "evidence": "docs/language-v2/p15-loop-index-f02-20261119.md; clean b5a51fe6:73 package and22 production/import named passes, no failures/skips, fresh compiler47/47 preserved fixtures and17/17 action mappings; retained tests-only failed baselines.",
       "note": "Raw RepeatIndex globals, Legacy fixtures and the original runtime golden remain unchanged. Local graph/parity proof grants no fixed Apple runtime or formal F02/RP22/BRG12 acceptance."
+    },
+    {
+      "name": "P10R15 fail-closed live catalog generation",
+      "locations": [
+        "tools/language-schema/main.go",
+        "p15_schema_generation_recovery_test.go",
+        "p15_schema_optional_propagation_test.go",
+        "tools/language-acceptance/schema_supplemental_execution_test.go"
+      ],
+      "firstForkCommit": "6fb997a6f2da2ad75597a15be91740b7d0604b3d",
+      "change": "Validate actual duplicate action/parameter/enum identities and registered effective codec bindings before generating output, reusing the emission codec resolver.",
+      "reason": "Real generator accepted malformed live-catalog facts and a deliberately unregistered codec binding.",
+      "evidence": "docs/language-v2/p15-schema-generation-20261119.md; ten clean generation events and four complete actual supplemental producer scenarios with28 receipt corruptions.",
+      "note": "No baseline fallback, handwritten replacement catalog, fixture mutation or native/runtime closure."
     }
   ]
 }

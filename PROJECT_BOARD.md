@@ -123,3 +123,7 @@ Clean3b3711f968464a3f42ee3bc8ebdfde73bc299a14 passed118 producer/intake events; 
 ## P15 R3 assembly and original R2 OpenMinis evidence — 2026-11-19
 
 R2 remains frozen at 4e56dbcf. R3 assembles the locally verified loop-index repair, N01/FN producer proofs, the complete R2 179 audit and actual Linux race evidence. F02 implementation provenance now points to the integrated 6d9a6f3b commit; original component receipts retain b5a51fe6. R2 OpenMinis run 44634814424 succeeded with all original artifact digests verified; the pinned package compiler remains b97ae752, native macro execution and live promotion remain open. See docs/language-v2/p15-openminis-r2-20261119.md.
+
+## P15 schema producer and full-suite session repair — 2026-11-19
+
+Four actual schema scenarios RP06/RP07/BRG22/BRG23 passed at clean a278d9f3 with32 named events and28 rejected receipt mutations; original179 accounting and immutable contracts remain unchanged. Canonical label fixes and fail-closed generator validation are integrated with correct implementation ancestry. R2 Linux full suite exposed nested V2/Legacy test-session ownership; the unchanged regex oracle passes after explicit V2 close at9ee950b1. R2 full CI is still failed; the focused replay does not rewrite it. See docs/language-v2/p15-schema-generation-20261119.md and p15-r2-session-deadlock-20261119.md.
