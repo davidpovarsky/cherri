@@ -2012,7 +2012,14 @@ func collectDictionary() (dictionary interface{}) {
 		fmt.Println(rawJSON)
 		fmt.Print("\n")
 	}
-	if err := json.Unmarshal([]byte(rawJSON), &dictionary); err != nil {
+	var err error
+	if currentAction.identifier == "rawAction" {
+		// Native parameters retain integer/real lexical kinds and 64-bit precision.
+		dictionary, err = decodeShortcutRawMap([]byte(rawJSON))
+	} else {
+		err = json.Unmarshal([]byte(rawJSON), &dictionary)
+	}
+	if err != nil {
 		parserError(fmt.Sprintf("JSON error: %s", err))
 	}
 	return
