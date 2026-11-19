@@ -1,6 +1,9 @@
 package schema
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 func TestRP08SemanticConstantIdentityEncoding(t *testing.T) {
 	var original, ok = DefaultRegistry().LookupAction("openURL")
@@ -64,4 +67,32 @@ func TestRP08UnencodableConstantIdentityFailsClosed(t *testing.T) {
 		}
 	}()
 	NewRegistry([]*ActionSchema{&action}, nil)
+}
+
+func TestRP08CustomRegistrationRejectsUnencodableMetadata(t *testing.T) {
+	var original, ok = DefaultRegistry().LookupAction("openURL")
+	if !ok {
+		t.Fatal("canonical action fixture missing")
+	}
+	var registry = NewRegistry([]*ActionSchema{original}, nil)
+	var before = registry.Fingerprint()
+	var action = *original
+	action.StaticParameters = map[string]any{"invalid": func() {}}
+	var failure any
+	func() {
+		defer func() { failure = recover() }()
+		registry.RegisterCustomAction(&action)
+	}()
+	if failure == nil {
+		t.Error("unencodable custom metadata was accepted")
+	}
+	if after, found := registry.LookupAction(original.CallableName); !found || after != original {
+		t.Error("failed custom registration published the invalid action")
+	}
+	if registry.Fingerprint() != before {
+		t.Error("failed custom registration replaced the valid semantic identity")
+	}
+	if _, err := json.Marshal(registry.AllActions()); err != nil {
+		t.Errorf("failed registration left unencodable consumer metadata: %v", err)
+	}
 }
