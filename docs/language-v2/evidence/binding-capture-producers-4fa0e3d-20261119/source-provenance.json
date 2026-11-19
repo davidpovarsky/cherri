@@ -1,0 +1,63 @@
+{
+  "formatVersion": 1,
+  "sourceSHA": "4fa0e3d07fbe18a1b910979b390765f840f6d152",
+  "parentSHA": "33f0699c2f7ec58b96a3da75ecd3d2c05027e0f2",
+  "canonicalOrigin": "https://github.com/davidpovarsky/cherri.git",
+  "sourceTreeCleanAtReplay": true,
+  "sourceFiles": [
+    {
+      "path": "p15_binding_capture_terminal_test.go",
+      "bytes": 6180,
+      "sha256": "8f9a5a8e73390d22e34fce0402c97f65222976ad8346e7d0556dfe75f9d25488"
+    },
+    {
+      "path": "p15_binding_defaults_acceptance_test.go",
+      "bytes": 22550,
+      "sha256": "f64066dfcc4d365cf1eb2cc08562d573b83e1ddf852e3c69bd9baac153836355"
+    },
+    {
+      "path": "tests/language-v2/requirements-evidence-map.json",
+      "bytes": 344327,
+      "sha256": "221ac566918872c988de0c51844c15ebb6b205485b7dca69bb83f02a01204b9b"
+    },
+    {
+      "path": "tools/language-acceptance/assertion_scope.go",
+      "bytes": 4480,
+      "sha256": "e827a28dc499b5f83c6dfdbbeee9fe511a04b666fe91c3197f052205161e1d71"
+    },
+    {
+      "path": "tools/language-acceptance/binding_capture_execution.go",
+      "bytes": 3002,
+      "sha256": "fc0b44a8110d30b927a8f377e9b875d0be576c36984f111d350ff398e25a222c"
+    },
+    {
+      "path": "tools/language-acceptance/binding_capture_execution_test.go",
+      "bytes": 7570,
+      "sha256": "93468916cc1199332669e4ded798b58dec15f2612ea005efbdc2c211cdb946bf"
+    },
+    {
+      "path": "tools/language-acceptance/execution_audit.go",
+      "bytes": 15519,
+      "sha256": "833a77b7b53569e6c9075847fb01cee6b4410e3e57bf849fcd76de3a9e9f5d7a"
+    },
+    {
+      "path": "tools/language-acceptance/main.go",
+      "bytes": 75881,
+      "sha256": "89365275872f1cad3251b20e8117649125f77d2894cfd0071116cba098af4948"
+    }
+  ],
+  "protectedContractsAndFixture": {
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+    "tests/runtime_poc/CherriBindingCapturePOC.cherri": "4c649f8d53ed164b73a0324b7941999e5c9e849d28670655fafc13c87cee5558"
+  },
+  "baseline": {
+    "sourceBase": "33f0699c2f7ec58b96a3da75ecd3d2c05027e0f2",
+    "testSourceSha256": "16eef385f49e8c38eec12604e93e1bbfc3ded86643f704b8728f06560ff48394",
+    "testSourcePreservedAs": "terminal-baseline-test.go.txt",
+    "reconstruction": "Exact original baseline test bytes recovered from the unchanged prefix of the final test file and independently matched the SHA256 recorded by the executed baseline driver.",
+    "scope": "Existing capture oracle plus new causal graph mutations; no compiler production edit."
+  },
+  "scope": "Test oracle and acceptance execution only. Both V01/V03 remain PENDING_EXTERNAL until their exact required iOS tier is independently proven. No default/transport/Unicode-export/native-runtime closure."
+}

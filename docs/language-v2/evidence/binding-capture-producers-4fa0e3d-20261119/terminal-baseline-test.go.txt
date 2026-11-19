@@ -1,0 +1,78 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+	"testing"
+)
+
+func p15BindingResultTemplate() string {
+	return "CHERRI_BINDING_CAPTURE_OK\nNUM_CAPTURED=\ufffc\nNUM_AGAIN=\ufffc\nCLIP_CAPTURED=\ufffc\nCLIP_AGAIN=\ufffc"
+}
+
+func p15BindingResultRanges() []string {
+	var ranges []string
+	for offset, char := range []rune(p15BindingResultTemplate()) {
+		if char == '\ufffc' {
+			ranges = append(ranges, fmt.Sprintf("{%d, 1}", offset))
+		}
+	}
+	return ranges
+}
+
+func TestP15BindingCaptureTerminalCausality(t *testing.T) {
+	actions := p15CompiledActions(t, p15BindingFixture(t, "CherriBindingCapturePOC"))
+	for _, kind := range []string{"Variable", "Clipboard"} {
+		t.Run(kind, func(t *testing.T) {
+			t.Run("unchanged_control", func(t *testing.T) {
+				if err := p15BindingSnapshotError(actions, kind); err != nil {
+					t.Fatal(err)
+				}
+			})
+			for _, mutation := range []string{"missing_terminal", "wrong_terminal_producer", "changed_result_label", "swapped_capture_fields", "transformed_capture", "extra_attachment"} {
+				t.Run(mutation, func(t *testing.T) {
+					broken := p15C01Clone(t, actions)
+					resultIndex := -1
+					var references map[string]any
+					for index, action := range broken {
+						text, refs, ok := p15BindingTokenText(p15C01Params(action)["WFTextActionText"])
+						if ok && strings.HasPrefix(text, "CHERRI_BINDING_CAPTURE_OK\n") {
+							resultIndex, references = index, refs
+						}
+					}
+					if resultIndex < 0 || len(references) != 4 || broken[len(broken)-1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.setclipboard" {
+						t.Fatal("actual capture fixture has no exact observed terminal graph")
+					}
+					ranges := p15BindingResultRanges()
+					switch mutation {
+					case "missing_terminal":
+						broken = broken[:len(broken)-1]
+					case "wrong_terminal_producer":
+						terminal := p15BindingDescriptors(p15C01Params(broken[len(broken)-1])["WFInput"], "ActionOutput")
+						if len(terminal) != 1 {
+							t.Fatal("missing actual final clipboard input")
+						}
+						terminal[0]["OutputUUID"] = p15C01Params(broken[0])["UUID"]
+					case "changed_result_label":
+						body := p15C01Params(broken[resultIndex])["WFTextActionText"].(map[string]any)["Value"].(map[string]any)
+						body["string"] = strings.Replace(body["string"].(string), "NUM_CAPTURED=", "NUM_WRONG___=", 1)
+					case "swapped_capture_fields":
+						references[ranges[0]], references[ranges[2]] = references[ranges[2]], references[ranges[0]]
+					case "transformed_capture":
+						target := 0
+						if kind == "Clipboard" {
+							target = 2
+						}
+						ref := references[ranges[target]].(map[string]any)
+						ref["Aggrandizements"] = []any{map[string]any{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFURLContentItem"}}
+					case "extra_attachment":
+						references["{999, 1}"] = map[string]any{"Type": "Variable", "VariableName": "unrelated"}
+					}
+					if err := p15BindingSnapshotError(broken, kind); err == nil {
+						t.Fatalf("actual native graph mutation escaped the capture oracle: %s", mutation)
+					}
+				})
+			}
+		})
+	}
+}

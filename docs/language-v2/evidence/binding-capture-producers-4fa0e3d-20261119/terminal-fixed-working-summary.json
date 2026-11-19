@@ -1,0 +1,29 @@
+{
+  "sourceBase": "33f0699c2f7ec58b96a3da75ecd3d2c05027e0f2",
+  "sourceState": "working strengthened capture oracle; original runtime fixture unchanged",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=2m",
+    "-run",
+    "^(TestP15BindingCaptureTerminalCausality|TestP15V01DeclarationSnapshotProduction|TestP15V03ClipboardCapturedOnceProduction|TestP15BindingDefaultsPublicRoutes)$",
+    "."
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "seconds": 27.203,
+  "bytes": 46791,
+  "sha256": "14409cf74eefcd8e507a5cd75dc5278cfe18354dfc611a2ca80ac285ea88d95a",
+  "testSha256": "8f9a5a8e73390d22e34fce0402c97f65222976ad8346e7d0556dfe75f9d25488",
+  "named": {
+    "run": 52,
+    "pass": 52,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": []
+}

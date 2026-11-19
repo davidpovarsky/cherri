@@ -1,0 +1,31 @@
+{
+  "sourceBase": "33f0699c2f7ec58b96a3da75ecd3d2c05027e0f2",
+  "sourceState": "working strengthened capture oracle; original runtime fixture unchanged",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^(TestBindingCaptureProductionEvidence|TestBindingCaptureRecordRejectsDetachedCommandsAndTiers)$",
+    "./tools/language-acceptance"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "seconds": 18.563,
+  "bytes": 24534,
+  "sha256": "5b4eb8933393526c2f19d1c35f9e129d3e23e94cbed386bceb9c53f24a2009f6",
+  "testSha256": "8f9a5a8e73390d22e34fce0402c97f65222976ad8346e7d0556dfe75f9d25488",
+  "named": {
+    "run": 16,
+    "pass": 16,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": [
+    "    binding_capture_execution_test.go:143: P15_BINDING_CAPTURE_PRODUCTION_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-V01-unit\",\"requirements\":[\"V01\"],\"tier\":\"unit\",\"implementation_sha\":\"33f0699c2f7ec58b96a3da75ecd3d2c05027e0f2\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15V01DeclarationSnapshotProduction\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15V01DeclarationSnapshotProduction|TestP15BindingCaptureTerminalCausality|TestP15BindingDefaultsPublicRoutes)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Local assertions verified; pending external tier: [ios-runtime] (Executed production tests: TestP15V01DeclarationSnapshotProduction, TestP15BindingCaptureTerminalCausality, TestP15BindingDefaultsPublicRoutes; exact serialized capture/order/consumer graph and CLI/mobile routes verified; actual iOS values remain required)\",\"required_production_tests\":\"TestP15V01DeclarationSnapshotProduction\\nTestP15BindingCaptureTerminalCausality\\nTestP15BindingDefaultsPubli"
+  ]
+}
