@@ -109,3 +109,8 @@ Living plan2.6.0 retains actual e61 result84PASS/1FAIL/94pending,Apple timeout/l
 ### 2026-11-19 — N01 actual fractional arithmetic producer
 
 Clean implementation `db918ee8493907c90da449e67e1be6df1dc43770` passed 22 named producer/intake controls and independently executed both numeric compiler tests. Only unit/native-structure evidence is produced; the unchanged iOS tier remains pending. Original logs and exact hashes are retained in `docs/language-v2/evidence/p15-n01-producer-20261119/`; see `docs/language-v2/p15-n01-actual-producer-20261119.md`. No compiler semantics or immutable contracts changed.
+
+
+### 2026-11-19 — R2 complete local179 audit
+
+Actual Linux run44634809329 at clean4e56dbcfe895baa8f944b83715ecff0d07bfd24e produced all179:87PASS,0FAIL,82NOT_RUN,9PENDING_EXTERNAL,1AI_EVAL_NOT_RUN; closure remains false. The original ZIP/report/process/audit and all hashes are retained in `docs/language-v2/evidence/p15-formal-local-r2-20261119/`. See `docs/language-v2/p15-formal-local-r2-audit-20261119.md`; no runtime or consumer completion is inferred.
