@@ -2219,12 +2219,18 @@ func (ctx *semanticImportContext) reverseAskDefaultParam(rec NativeActionRecord,
 		case map[string]any:
 			if ser, _ := v["WFSerializationType"].(string); ser == "WFTextTokenAttachment" {
 				ep, ok := ctx.renderSerializedAttachmentPair(v, false)
+				if ok {
+					ep = ctx.preserveNativeOperandReference(v, ep)
+				}
 				return ep, true, ok
 			}
 		}
 		return semanticExprPair{}, true, false
 	}
 	ep, ok := ctx.renderAnyTextPair(rawVal, true)
+	if ok {
+		ep = ctx.preserveNativeOperandReference(rawVal, ep)
+	}
 	return ep, true, ok
 }
 
@@ -2901,6 +2907,9 @@ func (ctx *semanticImportContext) renderConditionClausePair(params map[string]an
 	if !okE {
 		return semanticExprPair{}, false
 	}
+	if condCode >= 0 && condCode <= 3 {
+		inExpr = ctx.preserveNativeOperandReference(inVarRaw, inExpr)
+	}
 
 	switch condCode {
 	case 100:
@@ -3044,6 +3053,9 @@ func (ctx *semanticImportContext) renderConditionClausePair(params map[string]an
 		rp, ok := ctx.renderConditionNumberRHS(numCmp)
 		if !ok {
 			return semanticExprPair{}, false
+		}
+		if condCode >= 0 && condCode <= 3 {
+			rp = ctx.preserveNativeOperandReference(numCmp, rp)
 		}
 		rhsPair = rp
 	}
