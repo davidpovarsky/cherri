@@ -19,6 +19,7 @@ from native_boundary_diagnostic import FIXTURE_ID as BOUNDARY_ID, verify_source 
 from binding_defaults_probe import CASES as BINDING_CASES, verify_adapter_source, verify_adapter_graph
 from export_unicode_diagnostic import FIXTURE_ID as UNICODE_ID, validate_export_unicode_graph
 from file_materialization_diagnostic import FIXTURE_ID as FILE_MATERIALIZATION_ID, verify_source as verify_file_source, verify_graph as verify_file_graph, verify_causal_mutations as verify_file_mutations
+from n03_text_equality_diagnostic import FIXTURE_ID as N03_ID, verify_source as verify_n03_source
 from f04_record_empty_probe import FIXTURE_ID as RECORD_EMPTY_ID, verify_source as verify_record_empty_source, verify_graph as verify_record_empty_graph, verify_causal_mutations as verify_record_empty_mutations
 
 repo = Path(sys.argv[1]).resolve()
@@ -66,6 +67,7 @@ for fid, entry in rejected.items():
     assert entry["sourceSha256"] == hashlib.sha256(source.read_bytes()).hexdigest(), fid
 new_probes = {
     FILE_MATERIALIZATION_ID: '',
+    N03_ID: '',
     'qa-f04-record-empty-v2': '',
     "CherriBindingCapturePOC": "p15-binding-defaults",
     "CherriTypedDefaultsPOC": "p15-binding-defaults",
@@ -180,6 +182,11 @@ file_graph = plistlib.loads((directory / "builds" / (FILE_MATERIALIZATION_ID + "
 file_result = verify_file_graph(FILE_MATERIALIZATION_ID, file_graph)
 assert file_entry["fileMaterializationGraph"] == file_result
 file_mutations = verify_file_mutations(file_graph)
+
+n03_entry = selected[N03_ID]
+n03_bytes = (repo / "tools/shortcuts-simulator-qa/fixtures" / n03_entry["fileName"]).read_bytes()
+n03_source = verify_n03_source(repo, N03_ID, n03_bytes)
+assert n03_entry["n03TextEqualitySource"] == n03_source
 
 # Mutate the actual emitted diagnostic graph. This does not simulate Apple:
 # it establishes that a wrong source edge, forged flag or missing output cap
@@ -357,6 +364,7 @@ report = {
     'bindingDefaultsProbes': binding_checks,
     'nativeBoundaryGraph': boundary_result, 'nativeBoundaryCausalMutations': boundary_mutations,
     'fileMaterializationGraph': file_result, 'fileMaterializationCausalMutations': file_mutations,
+    'n03TextEqualitySource': n03_source,
     'recordEmptyFeasibility': record_empty_result, 'recordEmptyCausalMutations': record_empty_mutations,
     'unicodeDiagnosticGraph': unicode_result, 'causalUnicodeGraphMutations': unicode_mutations,
     'causalCompileMutations': negatives, 'causalPublicationMutations': publication_negatives,

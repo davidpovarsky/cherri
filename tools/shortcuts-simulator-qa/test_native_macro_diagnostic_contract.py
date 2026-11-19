@@ -13,10 +13,13 @@ from test_workflow_input_contract import bash_path
 import test_runtime_callback_contract as callback_contract
 from fixture_compile_contract import EXPECTED_REJECTIONS
 import file_materialization_diagnostic as file_probe
+import n03_text_equality_diagnostic as n03_probe
+import tempfile
 
 
 CASES = {
     file_probe.FIXTURE_ID: file_probe.EXPECTED_OUTPUT,
+    n03_probe.FIXTURE_ID: n03_probe.EXPECTED_OUTPUT,
     "qa-export-unicode-diagnostic-v2": "CHERRI_QA_EXPORT_UNICODE_DIAG:TYPE=Y:NAME=Y:COUNT=Y:STATUS=Y:PAYLOAD=Y:RESTORED_EQ=Y:RESTORED_NE=N:LITERAL_EQ=Y:LITERAL_NE=N:UNCHANGED=Y:ORIGINAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:PAYLOAD_TEXT64=Y1hWdmRHVWdJaUJpWVdOcmMyeGhjMmdnWENCdVpYZHNhVzVsQ2tobFluSmxkeURYcWRhNDE0SFhuTmVWMXJuWG5TQmphR1Z5Y25rZzhKK05raUIwYjJ0bGJpQlRXVTVVU0VWVVNVTmZVMFZEVWtWVQ==:DECODED_FILE64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:RESTORED64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:LITERAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:AFTER64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:NAME64=Y2hlcnJpLWRlYnVnLmpzb24=:STATUS64=VEVYVF9QQVlMT0FEX0VOQ09ERUQ=",
     "qa-number-coercion-control-v2": "CHERRI_QA_NUMBER_COERCION_RESULT:DEQ=Y:DNE=N:REQ=Y:RNE=N:BEQ=Y:BNE=N:ONE_NE_ZERO=Y:ZERO_NE_ONE=Y:ONE_EQ_ONE=Y",
     "qa-nil-clear-v2": "CHERRI_QA_NIL_CLEAR:binding=0:assignment=0:control=0:present=1",
@@ -122,6 +125,34 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
                     wrong = expected.replace(":" + label + "=" + correct, ":" + label + "=" + altered)
                     self.assertNotEqual(wrong, expected)
                     self.assertEqual(self.oracle.verify([{**event, "resultSummary": wrong}], fid, expected)["runGate"], "FAIL_RUNTIME")
+
+    def test_n03_public_source_target_and_operand_witnesses_remain_independent(self):
+        fid, expected = n03_probe.FIXTURE_ID, n03_probe.EXPECTED_OUTPUT
+        source = (self.root / n03_probe.SOURCE_PATH).read_bytes()
+        receipt = n03_probe.verify_source(self.root, fid, source)
+        self.assertFalse(receipt["formalAcceptanceGranted"])
+        self.assertEqual(receipt["appleRuntime"], "NOT_RUN")
+        with self.assertRaises(ValueError):
+            n03_probe.verify_source(self.root, fid, source.replace(b'text("ABC")', b'text("abc")'))
+        with tempfile.TemporaryDirectory() as temporary:
+            copied = Path(temporary) / n03_probe.SOURCE_PATH
+            copied.parent.mkdir(parents=True)
+            copied.write_bytes(source)
+            contract = json.loads((self.root / n03_probe.SOURCE_PATH).with_suffix(".expected.json").read_bytes())
+            contract["expected_fields_for_exact_equality"]["DYN_CASE_EQ"] = "Y"
+            copied.with_suffix(".expected.json").write_text(json.dumps(contract), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                n03_probe.verify_source(temporary, fid, source)
+        event = self.oracle.event()
+        event.update(fixtureId=fid, expectedShortcutName=fid, resultSummary=expected)
+        event["tracePayload"] = event["tracePayload"].replace("qa-unit", fid)
+        self.assertEqual(self.oracle.verify([event], fid, expected)["runGate"], "PASS")
+        for field, correct in n03_probe.EXPECTED_FIELDS[:3]:
+            for altered in ("WRONG", "AQ==", ""):
+                wrong = expected.replace(":" + field + "=" + correct, ":" + field + "=" + altered)
+                self.assertNotEqual(wrong, expected)
+                result = self.oracle.verify([{**event, "resultSummary": wrong}], fid, expected)
+                self.assertEqual(result["runGate"], "FAIL_RUNTIME")
 
     def test_unicode_byte_witnesses_are_independent_and_required(self):
         fid = "qa-export-unicode-diagnostic-v2"
