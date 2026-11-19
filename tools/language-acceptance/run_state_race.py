@@ -19,14 +19,18 @@ TESTS = [
     "TestBackendRecovery06EmitterErrorAndCancellation",
     "TestBackendRecovery06EmitterErrorAndCancellation/emitter_error",
     "TestBackendRecovery06EmitterErrorAndCancellation/cancellation",
+    "TestBackendRecovery06ImportEntryPoints",
+    "TestBackendRecovery06MobilePanicRecovery",
 ]
 MARKER = "P15_STATE_EXERCISE="
-COMMAND = ["go", "test", "-race", "-count=1", "-json", "-timeout=8m", "-run", "^(TestBackendRecovery06MixedEntryPoints|TestBackendRecovery06EmitterErrorAndCancellation)$", "."]
+COMMAND = ["go", "test", "-race", "-count=1", "-json", "-timeout=8m", "-run", "^(TestBackendRecovery06MixedEntryPoints|TestBackendRecovery06EmitterErrorAndCancellation|TestBackendRecovery06ImportEntryPoints|TestBackendRecovery06MobilePanicRecovery)$", "."]
 SOURCE_PATHS = [
     "compiler_state.go", "language_backend_session.go", "language_backend_adapter.go",
     "language_emit_adapter.go", "language_registry_adapter.go", "mobile_compiler.go", "ios_bridge.go",
     "internal/language/service/service.go", "internal/language/service/registry_lifetime.go",
     "internal/language/schema/registry_clone.go", "internal/language/assets/cache.go",
+    "hybrid_import.go", "semantic_import_planner.go", "reverse_action_registry.go",
+    "p15_backend_import_state_test.go", "p15_backend_state_panic_test.go",
     "p15_backend_state_concurrency_test.go", "p15_state_race_enabled_test.go", "p15_state_race_disabled_test.go",
     "tools/language-acceptance/run_state_race.py", ".github/workflows/p10r15-state-race.yml",
 ]
@@ -59,15 +63,33 @@ def exact_value(actual: object, expected: object) -> bool:
     return actual == expected
 
 
+def unique_object(pairs: list[tuple[str, object]]) -> dict:
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("duplicate JSON key")
+        value[key] = item
+    return value
+
+
 def evaluate(raw: bytes, stderr: bytes, code: int | None, timed_out: bool, environment: dict, clean_before: bool, clean_after: bool) -> dict:
     issues: list[str] = []
     events: list[dict] = []
     outputs: dict[str, str] = {}
+    runs: dict[str, int] = {}
     try:
         for line in raw.decode("utf-8").splitlines():
-            event = json.loads(line)
+            event = json.loads(line, object_pairs_hook=unique_object)
             if not isinstance(event, dict):
                 raise ValueError("event is not an object")
+            if event.get("Package") != "github.com/electrikmilk/cherri":
+                issues.append("foreign production package")
+            if event.get("Test") and event["Test"] not in TESTS:
+                issues.append("unselected production test")
+            if event.get("Action") == "run" and event.get("Test") in TESTS:
+                runs[event["Test"]] = runs.get(event["Test"], 0) + 1
+            if event.get("Action") == "pass" and event.get("Test") in TESTS and runs.get(event["Test"]) != 1:
+                issues.append("test passed without prior exact execution")
             events.append(event)
             if event.get("Action") == "output" and isinstance(event.get("Test"), str):
                 outputs[event["Test"]] = outputs.get(event["Test"], "") + event.get("Output", "")
@@ -95,6 +117,8 @@ def evaluate(raw: bytes, stderr: bytes, code: int | None, timed_out: bool, envir
     expected = {
         TESTS[0]: {"race_instrumented": True, "sequential_rounds": 3, "concurrent_workers": 8, "concurrent_rounds": 8, "completed_cases": 64},
         TESTS[1]: {"race_instrumented": True, "sequential_rounds": 0, "concurrent_workers": 0, "concurrent_rounds": 0, "completed_cases": 0, "emitter_faults": ["emitter_error", "cancellation"]},
+        TESTS[4]: {"race_instrumented": True, "concurrent_workers": 4, "concurrent_rounds": 8, "completed_cases": 32, "entry_points": ["canonical", "legacy-in-memory", "hybrid-v2", "canonical-catalog-cold"]},
+        TESTS[5]: {"race_instrumented": True, "emitted_before_panic": 1, "emitter_calls": 2, "partial_output_rejected": True, "recovery_requests": ["canonical", "mobile-v2"]},
     }
     for name, want in expected.items():
         found = []
@@ -102,7 +126,7 @@ def evaluate(raw: bytes, stderr: bytes, code: int | None, timed_out: bool, envir
             if MARKER not in line:
                 continue
             try:
-                found.append(json.loads(line.split(MARKER, 1)[1]))
+                found.append(json.loads(line.split(MARKER, 1)[1], object_pairs_hook=unique_object))
             except ValueError:
                 issues.append("malformed completion witness for " + name)
         if len(found) != 1 or not exact_value(found[0], want):
