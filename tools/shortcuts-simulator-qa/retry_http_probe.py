@@ -223,11 +223,16 @@ class ProbeServer:
                 self.send_header("Connection", "close")
                 self.end_headers()
 
-            def do_POST(self):
-                self.reject()
-
-            def do_HEAD(self):
-                self.reject()
+            def parse_request(self):
+                if not super().parse_request():
+                    return False
+                # BaseHTTPRequestHandler's default 501 path otherwise bypasses
+                # our receipt. Every parsed non-GET request invalidates the run,
+                # including methods for which no do_* handler exists.
+                if self.command != "GET":
+                    self.reject()
+                    return False
+                return True
 
             def do_GET(self):
                 routes = {"/" + nonce + "/" + FIXTURES[fixture]: "primary",
@@ -318,12 +323,29 @@ def ready_input(path, fixture, nonce, commit, timeout=10):
     deadline = time.monotonic() + timeout
     while True:
         try:
-            ready = json.loads(Path(path).read_text(encoding="utf-8"))
-            require(ready.get("fixtureId") == fixture and ready.get("runNonce") == nonce
-                    and ready.get("compilerSha") == commit and ready.get("host") == "127.0.0.1",
-                    "SERVER_BINDING_MISMATCH")
+            ready_path = Path(path)
+            ready = json.loads(ready_path.read_text(encoding="utf-8"))
+            require(isinstance(ready, dict) and ready.get("fixtureId") == fixture
+                    and ready.get("runNonce") == nonce and ready.get("compilerSha") == commit
+                    and ready.get("host") == "127.0.0.1", "SERVER_BINDING_MISMATCH")
             port = ready.get("port")
             require(type(port) is int and 1 <= port <= 65535, "INVALID_LOOPBACK_PORT")
+            # Keep the historical ready file, but do not treat it as current
+            # service state after a recorded shutdown or expiry. These state
+            # files are published before readiness by the serving loop itself.
+            state = json.loads((ready_path.parent / "http-probe-startup-state.json").read_text(encoding="utf-8"))
+            receipt = json.loads((ready_path.parent / "http-probe-receipt.json").read_text(encoding="utf-8"))
+            for record in (state, receipt):
+                require(isinstance(record, dict) and record.get("schemaVersion") == "1.0"
+                        and record.get("fixtureId") == fixture and record.get("runNonce") == nonce
+                        and record.get("compilerSha") == commit, "SERVER_BINDING_MISMATCH")
+            require(state.get("phase") in STARTUP_PHASES
+                    and receipt.get("case") == FIXTURES[fixture]
+                    and receipt.get("boundHost") == "127.0.0.1"
+                    and type(receipt.get("port")) is int and receipt["port"] == port,
+                    "SERVER_BINDING_MISMATCH")
+            require(state["phase"] == "SERVING" and receipt.get("serverState") == "SERVING"
+                    and receipt.get("stoppedAt") is None, "SERVER_NOT_READY")
             return str(port) + "/" + nonce
         except FileNotFoundError:
             if time.monotonic() >= deadline:
