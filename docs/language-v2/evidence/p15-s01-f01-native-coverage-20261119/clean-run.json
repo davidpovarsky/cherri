@@ -1,0 +1,26 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-count=1",
+    "-json",
+    "-timeout=8m",
+    "-run",
+    "^TestP15S01F01(NativeCoverageFixture|CoverageContractRejectsDrift|CoverageGraphRejectsCausalMutations)$",
+    "."
+  ],
+  "exit": 0,
+  "elapsed_seconds": 24.219,
+  "source_sha": "c4151d3ade25ff1260395f4e65c84aa7b80eceba",
+  "source_tree_clean_before": true,
+  "end_source_sha": "c4151d3ade25ff1260395f4e65c84aa7b80eceba",
+  "source_tree_clean_after": true,
+  "passed_named": 26,
+  "passed_top_level": 3,
+  "failed_named": [],
+  "skipped_named": [],
+  "log_sha256": "f6a377113acb65bf53b2fff7f804a8b977016f418ff6722fd7a780b7a6e6934b",
+  "runtime_status": "NOT_RUN",
+  "source_fixture_sha256": "4a13f90af2bdc326e24f9dbf785f76a1ae41043e176b5a3188ab794694a19aa3",
+  "expected_contract_sha256": "8baa3279a770ca20e3daa6036f416360a308d6f40eb1dd0874a38afeb7d0b10c"
+}
