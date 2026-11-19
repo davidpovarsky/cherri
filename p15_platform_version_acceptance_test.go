@@ -6,7 +6,7 @@ import (
 	"fmt"
 	goast "go/ast"
 	goparser "go/parser"
-	"go/token"
+	gotoken "go/token"
 	"maps"
 	"os"
 	"path/filepath"
@@ -379,14 +379,14 @@ func TestP15T07CanonicalCatalogPropagation(t *testing.T) {
 
 func p15T07GeneratedBounds(t *testing.T, raw []byte, name string) map[string]schema.PlatformVersionBounds {
 	t.Helper()
-	file, err := goparser.ParseFile(token.NewFileSet(), "generated.go", raw, 0)
+	file, err := goparser.ParseFile(gotoken.NewFileSet(), "generated.go", raw, 0)
 	if err != nil {
 		t.Fatalf("production generator emitted invalid Go syntax: %v", err)
 	}
 	stringValue := func(expression goast.Expr) string {
 		t.Helper()
 		literal, ok := expression.(*goast.BasicLit)
-		if !ok || literal.Kind != token.STRING {
+		if !ok || literal.Kind != gotoken.STRING {
 			t.Fatal("generated version component or platform is not an exact string literal")
 		}
 		value, err := strconv.Unquote(literal.Value)
