@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "status": "CANCELLED_JOB_TIME_LIMIT_NO_FORMAL_ARTIFACT",
+  "implementationSha": "e61e0d306bb363c39ade612ef35ccfc8051ddf3c",
+  "runId": "44622055945",
+  "runAttempt": "1",
+  "jobId": "135906016379",
+  "startedAt": "2026-11-19T21:59:58Z",
+  "completedAt": "2026-11-19T22:46:11Z",
+  "maximumExecutionSeconds": 2700,
+  "failureAnnotation": "The job has exceeded the maximum execution time of 45m0s",
+  "jobLogSha256": "a428b4be0d3876d62a8ce4e24f5f183914672e3d3280d6f08bc93a9721f820a5",
+  "jobLogBytes": 1095638,
+  "runMetadataSha256": "77abd0013151b03303f1ce1b7772a1325fd8b690004e4883ea580834d3a317c3",
+  "jobsSha256": "abe3723ac64429d29b2558c5bf1a087ff01b1f40440e61e06c30afa7e33a227f",
+  "annotationsSha256": "2659e0d610bcc9284f56921a372cd1199f5f50bc9edf4c2464edb0478692faa0",
+  "publishedArtifacts": [],
+  "formalEvidenceAvailable": false,
+  "finalOwnedCleanupReceiptAvailable": false,
+  "phases": [
+    {
+      "stage": "ENVIRONMENT",
+      "startedAt": "2026-11-19T22:01:43.2591090Z",
+      "rawLogLine": 1260,
+      "observedSecondsUntilNextStage": 3.162
+    },
+    {
+      "stage": "BOOT SIMULATOR",
+      "startedAt": "2026-11-19T22:01:46.4213990Z",
+      "rawLogLine": 1294,
+      "observedSecondsUntilNextStage": 329.398
+    },
+    {
+      "stage": "VERIFY SHORTCUTS APP",
+      "startedAt": "2026-11-19T22:07:15.8198150Z",
+      "rawLogLine": 1302,
+      "observedSecondsUntilNextStage": 252.997
+    },
+    {
+      "stage": "BUILD CHERRI",
+      "startedAt": "2026-11-19T22:11:28.8170050Z",
+      "rawLogLine": 1631,
+      "observedSecondsUntilNextStage": 176.664
+    },
+    {
+      "stage": "FIXTURE 1: CherriRuntimePOC",
+      "startedAt": "2026-11-19T22:14:25.4806340Z",
+      "rawLogLine": 2045,
+      "observedSecondsUntilNextStage": 829.719
+    },
+    {
+      "stage": "FIXTURE 2: CherriDictionaryRuntimePOC",
+      "startedAt": "2026-11-19T22:28:15.1998690Z",
+      "rawLogLine": 5260,
+      "observedSecondsUntilNextStage": 294.744
+    },
+    {
+      "stage": "FIXTURE 3: CherriMenuRuntimePOC",
+      "startedAt": "2026-11-19T22:33:09.9441410Z",
+      "rawLogLine": 7086,
+      "observedSecondsUntilNextStage": 364.442
+    },
+    {
+      "stage": "FIXTURE 4: CherriLegacyIfPOC",
+      "startedAt": "2026-11-19T22:39:14.3863200Z",
+      "rawLogLine": 9560,
+      "observedSecondsUntilNextStage": 171.612
+    },
+    {
+      "stage": "FIXTURE 5: CherriS01F01CoveragePOC",
+      "startedAt": "2026-11-19T22:42:05.9979030Z",
+      "rawLogLine": 10429
+    }
+  ],
+  "firstObservedRuntimePoll": [
+    {
+      "rawLogLine": 3491,
+      "text": "Poll 4/60: 'CHERRI_IOS27_RUNTIME_OK"
+    },
+    {
+      "rawLogLine": 3492,
+      "text": "VAR=updated"
+    },
+    {
+      "rawLogLine": 3493,
+      "text": "CAPTURED_BEFORE=initial"
+    },
+    {
+      "rawLogLine": 3494,
+      "text": "NUM_CAPTURED=1"
+    },
+    {
+      "rawLogLine": 3495,
+      "text": "CLIP_CAPTURED=clip_initial"
+    },
+    {
+      "rawLogLine": 3496,
+      "text": "UNICODE=שָׁלוֹם:🌍:1"
+    },
+    {
+      "rawLogLine": 3497,
+      "text": "IDX=alpha:gamma:::::beta"
+    },
+    {
+      "rawLogLine": 3498,
+      "text": "MATH=2.5:1:11:0:1:0"
+    },
+    {
+      "rawLogLine": 3499,
+      "text": "IF=true"
+    },
+    {
+      "rawLogLine": 3500,
+      "text": "SC=START|RAN_RHS:0:1:1"
+    },
+    {
+      "rawLogLine": 3501,
+      "text": "LOOPS=1:A:1:1|1:A:2:2|2:B:1:1|2:B:2:2|"
+    },
+    {
+      "rawLogLine": 3502,
+      "text": "VAL_BLOCKS=then_val:<X><Y>"
+    },
+    {
+      "rawLogLine": 3503,
+      "text": "FUNCTION=21"
+    },
+    {
+      "rawLogLine": 3504,
+      "text": "FN_CONT=22"
+    },
+    {
+      "rawLogLine": 3505,
+      "text": "DEFAULTS_EXPLICIT=0:0::"
+    },
+    {
+      "rawLogLine": 3506,
+      "text": "DEFAULTS_OMITTED=1:9:def:"
+    },
+    {
+      "rawLogLine": 3507,
+      "text": "FACT=6"
+    },
+    {
+      "rawLogLine": 3508,
+      "text": "VOID_OUT="
+    },
+    {
+      "rawLogLine": 3509,
+      "text": "ENV_SAFE=multiply"
+    },
+    {
+      "rawLogLine": 3510,
+      "text": "BASE64=Q0hFUlJJ'"
+    }
+  ],
+  "lastObservedRuntimePoll": [
+    {
+      "rawLogLine": 4862,
+      "text": "Poll 60/60: 'CHERRI_IOS27_RUNTIME_OK"
+    },
+    {
+      "rawLogLine": 4863,
+      "text": "VAR=updated"
+    },
+    {
+      "rawLogLine": 4864,
+      "text": "CAPTURED_BEFORE=initial"
+    },
+    {
+      "rawLogLine": 4865,
+      "text": "NUM_CAPTURED=1"
+    },
+    {
+      "rawLogLine": 4866,
+      "text": "CLIP_CAPTURED=clip_initial"
+    },
+    {
+      "rawLogLine": 4867,
+      "text": "UNICODE=שָׁלוֹם:🌍:1"
+    },
+    {
+      "rawLogLine": 4868,
+      "text": "IDX=alpha:gamma:::::beta"
+    },
+    {
+      "rawLogLine": 4869,
+      "text": "MATH=2.5:1:11:0:1:0"
+    },
+    {
+      "rawLogLine": 4870,
+      "text": "IF=true"
+    },
+    {
+      "rawLogLine": 4871,
+      "text": "SC=START|RAN_RHS:0:1:1"
+    },
+    {
+      "rawLogLine": 4872,
+      "text": "LOOPS=1:A:1:1|1:A:2:2|2:B:1:1|2:B:2:2|"
+    },
+    {
+      "rawLogLine": 4873,
+      "text": "VAL_BLOCKS=then_val:<X><Y>"
+    },
+    {
+      "rawLogLine": 4874,
+      "text": "FUNCTION=21"
+    },
+    {
+      "rawLogLine": 4875,
+      "text": "FN_CONT=22"
+    },
+    {
+      "rawLogLine": 4876,
+      "text": "DEFAULTS_EXPLICIT=0:0::"
+    },
+    {
+      "rawLogLine": 4877,
+      "text": "DEFAULTS_OMITTED=1:9:def:"
+    },
+    {
+      "rawLogLine": 4878,
+      "text": "FACT=6"
+    },
+    {
+      "rawLogLine": 4879,
+      "text": "VOID_OUT="
+    },
+    {
+      "rawLogLine": 4880,
+      "text": "ENV_SAFE=multiply"
+    },
+    {
+      "rawLogLine": 4881,
+      "text": "BASE64=Q0hFUlJJ'"
+    }
+  ],
+  "loopMismatch": {
+    "sourcePath": "tests/runtime_poc/CherriRuntimePOC.cherri",
+    "oraclePath": "scripts/ios27_runtime_poc.sh",
+    "expected": "LOOPS=0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|",
+    "actual": "LOOPS=1:A:1:1|1:A:2:2|2:B:1:1|2:B:2:2|",
+    "classification": "ACTUAL_NATIVE_DIAGNOSTIC_REQUIRES_COMPILER_REPAIR_GOLDEN_UNCHANGED"
+  },
+  "loggedOriginalSuccessAssertions": [
+    {
+      "rawLogLine": 6693,
+      "text": "2026-11-19T22:31:53.1878340Z ASSERTION PASSED on poll 4: All 4 dictionary approaches verified in runtime!"
+    },
+    {
+      "rawLogLine": 8542,
+      "text": "2026-11-19T22:35:41.7271930Z ASSERTION PASSED: Exact menu tap for Alpha verified in XCTest log!"
+    },
+    {
+      "rawLogLine": 8844,
+      "text": "2026-11-19T22:36:46.4206220Z ASSERTION PASSED: Selected Alpha branch executed correctly!"
+    },
+    {
+      "rawLogLine": 9159,
+      "text": "2026-11-19T22:37:46.0637410Z ASSERTION PASSED: Exact menu tap for Beta verified in XCTest log!"
+    },
+    {
+      "rawLogLine": 9161,
+      "text": "2026-11-19T22:37:50.4804390Z ASSERTION PASSED: Selected Beta branch executed correctly!"
+    },
+    {
+      "rawLogLine": 10427,
+      "text": "2026-11-19T22:42:05.9477710Z ASSERTION PASSED: Legacy If condition executed correctly in Apple runtime!"
+    }
+  ],
+  "coverageLastObservedStage": "run_permission_coverage started 22:45:05.860366Z; runtime step cancelled 22:45:15.501655Z",
+  "formalAcceptanceGranted": false,
+  "limitations": [
+    "Observations are from the original source-bound job log; they are not a completed formal artifact manifest.",
+    "The fifth fixture import-helper XCTest completed successfully, but the byte-exact coverage observation and final receipt were not completed.",
+    "Signing headers and partial runtime output do not replace signed-artifact provenance, nonce/reset, final device-cleanup, publication or immutable requirement-tier gates."
+  ]
+}
