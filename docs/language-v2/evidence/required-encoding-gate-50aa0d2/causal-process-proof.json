@@ -1,0 +1,26 @@
+{
+  "baselineCommit": "ddc6c020806e8e2edad727d07d7d78ea13d7bfe7",
+  "scope": "Actual child-process causal control with synthetic engine fixture; no Apple execution",
+  "records": [
+    {
+      "name": "original-warning-only",
+      "scope": "MOCK_PROCESS_PLUMBING_ONLY_NOT_APPLE",
+      "sourceSha256": "26121e641b8f48904fea1cddf2efc79b37e5298bf54e0547640774c135f67e85",
+      "exitCode": 0,
+      "actualRequiredObservation": "rejected",
+      "warningObserved": true,
+      "requiredDiagnosticObserved": false,
+      "reportSha256": "a54706a57271768d61f945de441921934be79235dd5f9a8a7019b96fbf6029d5"
+    },
+    {
+      "name": "fixed-required-nonzero",
+      "scope": "MOCK_PROCESS_PLUMBING_ONLY_NOT_APPLE",
+      "sourceSha256": "ea16f22360d2af239effee2ced4b80e55b7e42b6e57dce99e7834059ffbde41a",
+      "exitCode": 1,
+      "actualRequiredObservation": "rejected",
+      "warningObserved": false,
+      "requiredDiagnosticObserved": true,
+      "reportSha256": "412b41c8746b2ac1d6492fe6d442cc59026e3cb82d07ce353c154243fcc4f9a6"
+    }
+  ]
+}

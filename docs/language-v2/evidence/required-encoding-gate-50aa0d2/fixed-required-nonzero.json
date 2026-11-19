@@ -1,0 +1,951 @@
+{
+  "schemaVersion": 2,
+  "status": "FAIL",
+  "engine": "WorkflowKit parameter-state API",
+  "engineLoaded": true,
+  "forms": [
+    "string",
+    "number",
+    "bool",
+    "attachment(variable)",
+    "attachment(output)",
+    "tokenString",
+    "wrappedSubject"
+  ],
+  "expectations": {
+    "picker": {
+      "states": [
+        "WFVariableParameterState"
+      ],
+      "forms": [
+        "attachment(variable)",
+        "attachment(output)"
+      ]
+    },
+    "subject": {
+      "states": [
+        "WFVariableConditionalSubjectState",
+        "WFConditionalSubjectParameterState"
+      ],
+      "forms": [
+        "wrappedSubject"
+      ]
+    },
+    "text": {
+      "states": [
+        "WFVariableStringParameterState",
+        "WFURLStringParameterState",
+        "WFDateFieldParameterState"
+      ],
+      "forms": [
+        "string",
+        "tokenString"
+      ]
+    },
+    "string": {
+      "states": [
+        "WFStringSubstitutableState",
+        "WFLinkEnumerationSubstitutableState"
+      ],
+      "forms": [
+        "string",
+        "attachment(variable)"
+      ]
+    },
+    "bool": {
+      "states": [
+        "WFBooleanSubstitutableState"
+      ],
+      "forms": [
+        "bool",
+        "attachment(variable)"
+      ]
+    },
+    "number": {
+      "states": [
+        "WFNumberSubstitutableState",
+        "WFNumberStringSubstitutableState"
+      ],
+      "forms": [
+        "number",
+        "attachment(variable)"
+      ]
+    },
+    "plainString": {
+      "states": [
+        "WFStringParameterState"
+      ],
+      "forms": [
+        "string"
+      ]
+    },
+    "plainNumber": {
+      "states": [
+        "WFNumberParameterState"
+      ],
+      "forms": [
+        "number"
+      ]
+    }
+  },
+  "requiredExpectations": [
+    {
+      "id": "picker.WFVariableParameterState.attachment(variable)",
+      "kind": "picker",
+      "stateClass": "WFVariableParameterState",
+      "form": "attachment(variable)",
+      "expect": "accept"
+    },
+    {
+      "id": "picker.WFVariableParameterState.attachment(output)",
+      "kind": "picker",
+      "stateClass": "WFVariableParameterState",
+      "form": "attachment(output)",
+      "expect": "accept"
+    },
+    {
+      "id": "subject.WFVariableConditionalSubjectState.wrappedSubject",
+      "kind": "subject",
+      "stateClass": "WFVariableConditionalSubjectState",
+      "form": "wrappedSubject",
+      "expect": "accept"
+    },
+    {
+      "id": "subject.WFConditionalSubjectParameterState.wrappedSubject",
+      "kind": "subject",
+      "stateClass": "WFConditionalSubjectParameterState",
+      "form": "wrappedSubject",
+      "expect": "accept"
+    },
+    {
+      "id": "text.WFVariableStringParameterState.string",
+      "kind": "text",
+      "stateClass": "WFVariableStringParameterState",
+      "form": "string",
+      "expect": "accept"
+    },
+    {
+      "id": "text.WFVariableStringParameterState.tokenString",
+      "kind": "text",
+      "stateClass": "WFVariableStringParameterState",
+      "form": "tokenString",
+      "expect": "accept"
+    },
+    {
+      "id": "text.WFURLStringParameterState.string",
+      "kind": "text",
+      "stateClass": "WFURLStringParameterState",
+      "form": "string",
+      "expect": "accept"
+    },
+    {
+      "id": "text.WFURLStringParameterState.tokenString",
+      "kind": "text",
+      "stateClass": "WFURLStringParameterState",
+      "form": "tokenString",
+      "expect": "accept"
+    },
+    {
+      "id": "text.WFDateFieldParameterState.string",
+      "kind": "text",
+      "stateClass": "WFDateFieldParameterState",
+      "form": "string",
+      "expect": "accept"
+    },
+    {
+      "id": "text.WFDateFieldParameterState.tokenString",
+      "kind": "text",
+      "stateClass": "WFDateFieldParameterState",
+      "form": "tokenString",
+      "expect": "accept"
+    },
+    {
+      "id": "string.WFStringSubstitutableState.string",
+      "kind": "string",
+      "stateClass": "WFStringSubstitutableState",
+      "form": "string",
+      "expect": "accept"
+    },
+    {
+      "id": "string.WFStringSubstitutableState.attachment(variable)",
+      "kind": "string",
+      "stateClass": "WFStringSubstitutableState",
+      "form": "attachment(variable)",
+      "expect": "accept"
+    },
+    {
+      "id": "string.WFLinkEnumerationSubstitutableState.string",
+      "kind": "string",
+      "stateClass": "WFLinkEnumerationSubstitutableState",
+      "form": "string",
+      "expect": "accept"
+    },
+    {
+      "id": "string.WFLinkEnumerationSubstitutableState.attachment(variable)",
+      "kind": "string",
+      "stateClass": "WFLinkEnumerationSubstitutableState",
+      "form": "attachment(variable)",
+      "expect": "accept"
+    },
+    {
+      "id": "bool.WFBooleanSubstitutableState.bool",
+      "kind": "bool",
+      "stateClass": "WFBooleanSubstitutableState",
+      "form": "bool",
+      "expect": "accept"
+    },
+    {
+      "id": "bool.WFBooleanSubstitutableState.attachment(variable)",
+      "kind": "bool",
+      "stateClass": "WFBooleanSubstitutableState",
+      "form": "attachment(variable)",
+      "expect": "accept"
+    },
+    {
+      "id": "number.WFNumberSubstitutableState.number",
+      "kind": "number",
+      "stateClass": "WFNumberSubstitutableState",
+      "form": "number",
+      "expect": "accept"
+    },
+    {
+      "id": "number.WFNumberSubstitutableState.attachment(variable)",
+      "kind": "number",
+      "stateClass": "WFNumberSubstitutableState",
+      "form": "attachment(variable)",
+      "expect": "accept"
+    },
+    {
+      "id": "number.WFNumberStringSubstitutableState.number",
+      "kind": "number",
+      "stateClass": "WFNumberStringSubstitutableState",
+      "form": "number",
+      "expect": "accept"
+    },
+    {
+      "id": "number.WFNumberStringSubstitutableState.attachment(variable)",
+      "kind": "number",
+      "stateClass": "WFNumberStringSubstitutableState",
+      "form": "attachment(variable)",
+      "expect": "accept"
+    },
+    {
+      "id": "plainString.WFStringParameterState.string",
+      "kind": "plainString",
+      "stateClass": "WFStringParameterState",
+      "form": "string",
+      "expect": "accept"
+    },
+    {
+      "id": "plainNumber.WFNumberParameterState.number",
+      "kind": "plainNumber",
+      "stateClass": "WFNumberParameterState",
+      "form": "number",
+      "expect": "accept"
+    },
+    {
+      "id": "picker.WFVariableParameterState.wrappedSubject",
+      "kind": "picker",
+      "stateClass": "WFVariableParameterState",
+      "form": "wrappedSubject",
+      "expect": "reject"
+    }
+  ],
+  "requiredResults": [
+    {
+      "id": "picker.WFVariableParameterState.attachment(variable)",
+      "kind": "picker",
+      "stateClass": "WFVariableParameterState",
+      "form": "attachment(variable)",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "picker.WFVariableParameterState.attachment(output)",
+      "kind": "picker",
+      "stateClass": "WFVariableParameterState",
+      "form": "attachment(output)",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "subject.WFVariableConditionalSubjectState.wrappedSubject",
+      "kind": "subject",
+      "stateClass": "WFVariableConditionalSubjectState",
+      "form": "wrappedSubject",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "subject.WFConditionalSubjectParameterState.wrappedSubject",
+      "kind": "subject",
+      "stateClass": "WFConditionalSubjectParameterState",
+      "form": "wrappedSubject",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "text.WFVariableStringParameterState.string",
+      "kind": "text",
+      "stateClass": "WFVariableStringParameterState",
+      "form": "string",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "text.WFVariableStringParameterState.tokenString",
+      "kind": "text",
+      "stateClass": "WFVariableStringParameterState",
+      "form": "tokenString",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "text.WFURLStringParameterState.string",
+      "kind": "text",
+      "stateClass": "WFURLStringParameterState",
+      "form": "string",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "text.WFURLStringParameterState.tokenString",
+      "kind": "text",
+      "stateClass": "WFURLStringParameterState",
+      "form": "tokenString",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "text.WFDateFieldParameterState.string",
+      "kind": "text",
+      "stateClass": "WFDateFieldParameterState",
+      "form": "string",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "text.WFDateFieldParameterState.tokenString",
+      "kind": "text",
+      "stateClass": "WFDateFieldParameterState",
+      "form": "tokenString",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "string.WFStringSubstitutableState.string",
+      "kind": "string",
+      "stateClass": "WFStringSubstitutableState",
+      "form": "string",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "string.WFStringSubstitutableState.attachment(variable)",
+      "kind": "string",
+      "stateClass": "WFStringSubstitutableState",
+      "form": "attachment(variable)",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "string.WFLinkEnumerationSubstitutableState.string",
+      "kind": "string",
+      "stateClass": "WFLinkEnumerationSubstitutableState",
+      "form": "string",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "string.WFLinkEnumerationSubstitutableState.attachment(variable)",
+      "kind": "string",
+      "stateClass": "WFLinkEnumerationSubstitutableState",
+      "form": "attachment(variable)",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "bool.WFBooleanSubstitutableState.bool",
+      "kind": "bool",
+      "stateClass": "WFBooleanSubstitutableState",
+      "form": "bool",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "bool.WFBooleanSubstitutableState.attachment(variable)",
+      "kind": "bool",
+      "stateClass": "WFBooleanSubstitutableState",
+      "form": "attachment(variable)",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "number.WFNumberSubstitutableState.number",
+      "kind": "number",
+      "stateClass": "WFNumberSubstitutableState",
+      "form": "number",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "number.WFNumberSubstitutableState.attachment(variable)",
+      "kind": "number",
+      "stateClass": "WFNumberSubstitutableState",
+      "form": "attachment(variable)",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "number.WFNumberStringSubstitutableState.number",
+      "kind": "number",
+      "stateClass": "WFNumberStringSubstitutableState",
+      "form": "number",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "number.WFNumberStringSubstitutableState.attachment(variable)",
+      "kind": "number",
+      "stateClass": "WFNumberStringSubstitutableState",
+      "form": "attachment(variable)",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "plainString.WFStringParameterState.string",
+      "kind": "plainString",
+      "stateClass": "WFStringParameterState",
+      "form": "string",
+      "expected": "accept",
+      "actual": "reject",
+      "observation": "rejected",
+      "passed": false
+    },
+    {
+      "id": "plainNumber.WFNumberParameterState.number",
+      "kind": "plainNumber",
+      "stateClass": "WFNumberParameterState",
+      "form": "number",
+      "expected": "accept",
+      "actual": "accept",
+      "observation": "roundtrip",
+      "passed": true
+    },
+    {
+      "id": "picker.WFVariableParameterState.wrappedSubject",
+      "kind": "picker",
+      "stateClass": "WFVariableParameterState",
+      "form": "wrappedSubject",
+      "expected": "reject",
+      "actual": "reject",
+      "observation": "rejected",
+      "passed": true
+    }
+  ],
+  "results": {
+    "WFAppDescriptorParameterState": {
+      "string": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFArchiveFormatSubstitutableState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFBooleanSubstitutableState": {
+      "string": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "number": "roundtrip",
+      "bool": "roundtrip",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFCalendarSubstitutableState": {
+      "string": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFCodableAttributeBackedSubstitutableState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFColorParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFConditionalSubjectParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "rejected",
+      "wrappedSubject": "roundtrip"
+    },
+    "WFContactFieldEntry": {
+      "string": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFDateFieldParameterState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "roundtrip",
+      "wrappedSubject": "rejected"
+    },
+    "WFDictionaryParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFDisplayParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFFileParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFFontParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFHFTriggerActionSetsBuilderParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "attachment(output)": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFHMCharacteristicSubstitutableState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFHMHomeAreaSubstitutableState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFHMServiceParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFINObjectSubstitutableState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFINPaymentMethodParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFINRideOptionParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFIntentDescriptorParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFLinkDynamicOptionSubstitutableState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFLinkEnumerationSubstitutableState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFLocationParameterState": {
+      "string": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "rejected"
+    },
+    "WFMediaItemState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFMediaRouteState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFNSUnitSubstitutableState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFNumberParameterState": {
+      "string": "rejected",
+      "number": "roundtrip",
+      "bool": "roundtrip",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFNumberStringSubstitutableState": {
+      "string": "roundtrip",
+      "number": "roundtrip",
+      "bool": "roundtrip",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFNumberSubstitutableState": {
+      "string": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "number": "roundtrip",
+      "bool": "roundtrip",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFPHAssetCollectionState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFPlaylistSubstitutableState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFPodcastSubstitutableState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFPosterParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFQuantityParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "attachment(output)": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "rejected"
+    },
+    "WFSSHKeyParameterState": {
+      "string": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "number": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "bool": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "attachment(variable)": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "attachment(output)": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFStringParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFStringSubstitutableState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFTimeZonePickerParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFTrelloBoardSubstitutableState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFTrelloListSubstitutableState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFTumblrBlogSubstitutableState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFUIRecordingEventState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "attachment(output)": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFURLStringParameterState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "roundtrip",
+      "wrappedSubject": "rejected"
+    },
+    "WFVPNParameterState": {
+      "string": "threw: native parameter-state exception",
+      "number": "threw: native parameter-state exception",
+      "bool": "threw: native parameter-state exception",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "threw: native parameter-state exception",
+      "wrappedSubject": "threw: native parameter-state exception"
+    },
+    "WFVariableConditionalSubjectState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "rejected",
+      "wrappedSubject": "roundtrip"
+    },
+    "WFVariableParameterState": {
+      "string": "rejected",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    },
+    "WFVariableStringParameterState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "rejected",
+      "attachment(output)": "rejected",
+      "tokenString": "roundtrip",
+      "wrappedSubject": "rejected"
+    },
+    "WFWorkflowParameterState": {
+      "string": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "accepted, reserialized as {\"normalizedSyntheticValue\":true}",
+      "wrappedSubject": "accepted, reserialized as {\"normalizedSyntheticValue\":true}"
+    },
+    "WFiTunesStoreCountrySubstitutableState": {
+      "string": "roundtrip",
+      "number": "rejected",
+      "bool": "rejected",
+      "attachment(variable)": "roundtrip",
+      "attachment(output)": "roundtrip",
+      "tokenString": "rejected",
+      "wrappedSubject": "rejected"
+    }
+  },
+  "failures": [
+    {
+      "code": "E_REQUIRED_ENCODING_EXPECTATION",
+      "id": "plainString.WFStringParameterState.string",
+      "expected": "accept",
+      "actual": "reject"
+    }
+  ],
+  "discovery": {
+    "parameterStateClasses": 95,
+    "appIntentStateClasses": 20,
+    "uniqueStateClasses": 50
+  }
+}
