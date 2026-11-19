@@ -1,0 +1,51 @@
+{
+  "sourceCommit": "3a5e333199c2c89d7f5400b002d69f071c1ce915",
+  "baselineProductionCommit": "d6872ba6f17f3cc592a587430541b803078a212e",
+  "baselineTestCommit": "3a5e333199c2c89d7f5400b002d69f071c1ce915",
+  "command": [
+    "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+    "test",
+    "-json",
+    "-count=1",
+    "-p=1",
+    "-timeout=180s",
+    "-run",
+    "^(TestP15LegacyRawAction(Literal|Decompile)NumberKinds|TestP10_StructuralComparator_NegativeMutations|TestP10_DeepActionFixtures)$",
+    "."
+  ],
+  "goVersion": "go version go1.24.13 linux/arm64",
+  "sourceCleanBefore": true,
+  "runs": [
+    {
+      "label": "baseline",
+      "startedAt": "2026-11-19T01:42:24.473391+00:00",
+      "finishedAt": "2026-11-19T01:42:41.015152+00:00",
+      "exitCode": 1,
+      "logSHA256": "1aeef6d33228b2da35f64f694b31ffe4ce7b2fa03c2a52b50aa688caf8a105de",
+      "pass": 11,
+      "fail": 7,
+      "skip": 0,
+      "failures": [
+        "TestP10_StructuralComparator_NegativeMutations",
+        "TestP10_DeepActionFixtures/filterActions_files_reminders_events",
+        "TestP10_DeepActionFixtures",
+        "TestP15LegacyRawActionLiteralNumberKinds",
+        "TestP15LegacyRawActionDecompileNumberKinds/xml",
+        "TestP15LegacyRawActionDecompileNumberKinds/binary",
+        "TestP15LegacyRawActionDecompileNumberKinds"
+      ]
+    },
+    {
+      "label": "fixed",
+      "startedAt": "2026-11-19T01:42:41.028138+00:00",
+      "finishedAt": "2026-11-19T01:42:53.150734+00:00",
+      "exitCode": 0,
+      "logSHA256": "8d20b443b39b4ba41b91aa911e9096d382403cee3d869a81db43a2ca257ebd3e",
+      "pass": 34,
+      "fail": 0,
+      "skip": 0,
+      "failures": []
+    }
+  ],
+  "sourceCleanAfter": true
+}
