@@ -2826,6 +2826,78 @@
       "reason": "The actual public checker reported valid and the compiler emitted 2173-byte shortcuts for an unknown codec and undeclared binding parameter. Nine invalid declaration cases reproduced acceptance through actual CLI, embedded/mobile and service paths, including the controlled signing side-effect detector.",
       "evidence": "Exact clean source 4065c3549b5fdde2e0a1aa94f2bcae2f7f4b1a05 passed 82 root tests and 80 affected-package tests, with zero failures/skips. Original baseline, candidate and clean replay receipts are archived at docs/language-v2/evidence/p15-action-declarations-4065c35; baseline SHA256 c79863072e21ecb76ab9c18aa67c2f1a7efd6c14071b8ae7ca6696c90050ca2d.",
       "note": "Immutable integrated implementation ancestor. This validates declaration rejection and existing healthy codec controls; it does not establish arbitrary third-party action execution on Apple or complete the full acceptance matrix."
+    },
+    {
+      "name": "P10R15 imported native output-name field preservation",
+      "locations": [
+        "internal/language/backend/contracts.go",
+        "internal/language/lower/lower.go",
+        "shared_codec.go",
+        "p15_native_output_name_test.go",
+        "p15_hybrid_output_name_presence_test.go"
+      ],
+      "firstForkCommit": "20ac6a00715311508ef778efb7ba2f00f31fb445",
+      "change": "Preserve native reference OutputName omission across the backend adapter without changing ordinary generated producer-name fallback.",
+      "reason": "The adapter filled an intentionally absent native OutputName from its UUID, breaking exact native roundtrip.",
+      "evidence": "Clean06da801:128 named PASS,0 failures/skips; native-loop-results-06da801-20261119. Imported field-presence follow-up1315db3:4 PASS; absent and named remain natural, explicit empty retains exact fallback with one Stage-3 demotion.",
+      "note": "Immutable integrated implementation ancestor; actual final combined-source acceptance and consumer gates remain required. No unobserved Apple runtime success is claimed. Explicit empty-name support is exact fallback preservation, not natural representation."
+    },
+    {
+      "name": "P10R15 existing native Repeat Results import",
+      "locations": [
+        "semantic_import_native_loop_results.go",
+        "semantic_import_planner.go",
+        "p12_control_regions_test.go",
+        "p15_hybrid_native_loop_result_test.go"
+      ],
+      "firstForkCommit": "71ee77c8dd28800bccf2350acf6b56b9e835918f",
+      "change": "Import existing native Repeat/RepeatEach as statements and bind consumed native results through native.ref without emitting extra actions.",
+      "reason": "Reconstructing authored value-producing nested loops imposed a stronger List cardinality promise than the native action graph can establish.",
+      "evidence": "Clean06da801:128 named PASS. Two unchanged affected private inputs passed with natural actions2293→2297, four recovered actions and zero demotions; sanitized receipt only. Full five private gates remain required on combined source.",
+      "note": "Immutable integrated implementation ancestor; actual final combined-source acceptance and consumer gates remain required. No unobserved Apple runtime success is claimed. The authored F04 guard and actual native cardinality failures are retained."
+    },
+    {
+      "name": "P10R15 formatting literal and comment preservation",
+      "locations": [
+        "internal/language/syntax/format.go",
+        "internal/language/syntax/format_literals.go",
+        "internal/language/service/service.go",
+        "p15_formatter_acceptance_test.go",
+        "tools/language-acceptance/formatting_execution.go"
+      ],
+      "firstForkCommit": "e6444616388cfdfa733ef37dbcb1b17aa17ac7d0",
+      "change": "Preserve decoded literal bytes and comment text, emit Cherri-supported escapes, refuse invalid service formatting, and execute strict CLI/service/native graph acceptance.",
+      "reason": "Raw backslashes, raw multiline literals, control characters and comments changed during formatting; the service returned replacement text from invalid partial syntax.",
+      "evidence": "Public baseline and candidate receipts plus clean c621786 formal producer replay are in docs/language-v2/evidence/p15-format-workspace-clean-20261119. Candidate35package+24production PASS; clean2formal producer PASS.",
+      "note": "Immutable integrated implementation ancestor; actual final combined-source acceptance and consumer gates remain required. No unobserved Apple runtime success is claimed."
+    },
+    {
+      "name": "P10R15 rooted workspace module reads",
+      "locations": [
+        "internal/language/analysis/analyzer.go",
+        "internal/language/lower/lower.go",
+        "internal/language/lower/workspace_module.go",
+        "p15_workspace_module_test.go",
+        "tools/language-acceptance/workspace_execution.go"
+      ],
+      "firstForkCommit": "0ce8bd3bb4162e682b6b5ee3e0f427627fef0dde",
+      "change": "Use local path validation and a held rooted directory handle for module lookup/open/read, including extension fallback and regular-file checks.",
+      "reason": "A real Windows junction escaped the allowed importing directory while a legitimate two-dot name was incorrectly rejected.",
+      "evidence": "Actual baseline outside reads, candidate27module PASS and exact clean8418ac2 formal producer2PASS are archived in docs/language-v2/evidence/p15-format-workspace-clean-20261119.",
+      "note": "Immutable integrated implementation ancestor; actual final combined-source acceptance and consumer gates remain required. No unobserved Apple runtime success is claimed. Only IM04 resource boundaries are claimed."
+    },
+    {
+      "name": "P10R15 shared scalar token materialization for action arguments",
+      "locations": [
+        "internal/language/lower/lower.go",
+        "internal/language/lower/parameter_codecs.go",
+        "p15_custom_codec_acceptance_test.go"
+      ],
+      "firstForkCommit": "4034cc4c41c0f41875699db7feed2f439ad14569",
+      "change": "Share canonical primary/named and public custom token scalar materialization through existing native producers and shared reference encoding, preserving existing references and evaluation order.",
+      "reason": "Canonical named WFInput and public custom token bindings emitted bare scalars where equivalent canonical positional calls materialized an action result attachment.",
+      "evidence": "Clean7305fbf passed131relatedroot+28lower/backend cases,0 failures/skips; causal baseline11failure events/4healthy controls; exact archive docs/language-v2/evidence/p15-custom-token-codec-7305fbf.",
+      "note": "Immutable integrated implementation ancestor; actual final combined-source acceptance and consumer gates remain required. No unobserved Apple runtime success is claimed. Full AC02 eight-codec/schema registry acceptance remains separate."
     }
   ]
 }

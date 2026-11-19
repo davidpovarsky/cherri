@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "scope": "PUBLIC_CAUSAL_AND_CLEAN_FORMATTING_WORKSPACE_PRODUCTION_GATES",
+  "baseline": "31bd7aa2bc4d1582adf37b22a526b690d10d8b5b",
+  "cleanSources": {
+    "E04": "c621786317cef4479ea34dde4f391441b5efbd34",
+    "IM04": "8418ac2483ab0985cc9f9d8511f3fbe1098fac6f"
+  },
+  "integratedSources": {
+    "E04": "e6444616388cfdfa733ef37dbcb1b17aa17ac7d0",
+    "IM04": "0ce8bd3bb4162e682b6b5ee3e0f427627fef0dde"
+  },
+  "cleanSummary": [
+    {
+      "name": "formatter",
+      "source": "c621786317cef4479ea34dde4f391441b5efbd34",
+      "started": "2026-11-19T03:18:34.199892+00:00",
+      "seconds": 16.578,
+      "exit": 0,
+      "timedOut": false,
+      "before": {
+        "head": "c621786317cef4479ea34dde4f391441b5efbd34",
+        "status": ""
+      },
+      "after": {
+        "head": "c621786317cef4479ea34dde4f391441b5efbd34",
+        "status": ""
+      },
+      "unchanged": true,
+      "availableRAMBefore": 3523403776,
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "./tools/language-acceptance",
+        "-count=1",
+        "-json",
+        "-timeout=180s",
+        "-run",
+        "^(TestFormatterProductionEvidence|TestFormatterEvidenceRejectsCrossTierAndTruncatedScenario)$"
+      ],
+      "counts": {
+        "run": 2,
+        "pass": 2,
+        "fail": 0,
+        "skip": 0
+      },
+      "sha256": "9d92aa31d0decd433f5c3bb981adf02f40f68475d647f229c30c647de7751d7e",
+      "bytes": 6145
+    },
+    {
+      "name": "workspace",
+      "source": "8418ac2483ab0985cc9f9d8511f3fbe1098fac6f",
+      "started": "2026-11-19T03:18:50.901442+00:00",
+      "seconds": 8.203,
+      "exit": 0,
+      "timedOut": false,
+      "before": {
+        "head": "8418ac2483ab0985cc9f9d8511f3fbe1098fac6f",
+        "status": ""
+      },
+      "after": {
+        "head": "8418ac2483ab0985cc9f9d8511f3fbe1098fac6f",
+        "status": ""
+      },
+      "unchanged": true,
+      "availableRAMBefore": 3413819392,
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "./tools/language-acceptance",
+        "-count=1",
+        "-json",
+        "-timeout=180s",
+        "-run",
+        "^(TestWorkspaceResourceProductionEvidence|TestWorkspaceEvidenceRejectsUnrelatedCommands)$"
+      ],
+      "counts": {
+        "run": 2,
+        "pass": 2,
+        "fail": 0,
+        "skip": 0
+      },
+      "sha256": "03868f82f8ec79c7156e995bc6b1964233b5ef4e82d53f8496802153dbd3ab5a",
+      "bytes": 4518
+    }
+  ],
+  "archive": {
+    "file": "raw-evidence.zip",
+    "bytes": 28954,
+    "sha256": "5d9a5b5c3d9e434f251ca5fdb72f23d05c4a83d270bccacac7546df0d1b955cc"
+  },
+  "files": [
+    {
+      "path": "formatter/baseline-production-runner.py",
+      "bytes": 2073,
+      "sha256": "6e442057694b1f5bae4470c555669a219a1ca530df839a646861f738e7bda2ba"
+    },
+    {
+      "path": "formatter/baseline-production-summary.json",
+      "bytes": 1179,
+      "sha256": "60a6222f3e9a5a1dca10707417c05207a2a7cfd3ab8324d96878aa6fcf57ad07"
+    },
+    {
+      "path": "formatter/baseline-production.jsonl",
+      "bytes": 50918,
+      "sha256": "c154ad2aa59c387c8a696db5935ba72d065aa1b07e9dbf6adb600cc6701ca8b9"
+    },
+    {
+      "path": "formatter/baseline-syntax-summary.json",
+      "bytes": 8517,
+      "sha256": "902729d6f6377283c7e47f7cccc34c4825907190ff3ab01595f0f9db1826f3fd"
+    },
+    {
+      "path": "formatter/baseline-syntax-test.go.txt",
+      "bytes": 3045,
+      "sha256": "aa1c6305aee606de036e0057dfbff4b2ae4c953da4bb88a54861e429fe3b0fb5"
+    },
+    {
+      "path": "formatter/baseline-syntax.jsonl",
+      "bytes": 19857,
+      "sha256": "e2bd1f5efa06a247dd52a6cfbf7f81ba059df67cfd86af915dda78b5976e22cc"
+    },
+    {
+      "path": "formatter/candidate-formal-launch.json",
+      "bytes": 293,
+      "sha256": "19d6639b22ebbe1d2fe7f20c392de9474edcbfb73304a87981d91093226b3306"
+    },
+    {
+      "path": "formatter/candidate-formal-summary.json",
+      "bytes": 750,
+      "sha256": "3360e9ae6a67327426d5dbb066cc7f86304887721143cbeff898a8a3029322aa"
+    },
+    {
+      "path": "formatter/candidate-formal.jsonl",
+      "bytes": 6144,
+      "sha256": "6219091a70269241b2a8fa1c61ddeedc4eeec987b748739647016550acd620c1"
+    },
+    {
+      "path": "formatter/candidate-packages-launch.json",
+      "bytes": 189,
+      "sha256": "1c35b2c8b64e64a85821691403265276922312b49791e372ae5557e5072da551"
+    },
+    {
+      "path": "formatter/candidate-packages-summary.json",
+      "bytes": 1774,
+      "sha256": "c996f207085c765223c3b6e16aceaa6c8a1b9679c075339c661c84006414008c"
+    },
+    {
+      "path": "formatter/candidate-packages.jsonl",
+      "bytes": 31193,
+      "sha256": "ee50a2f12f686954a37aee94f4004bdd13985fc1c38ae38786763e1368110463"
+    },
+    {
+      "path": "formatter/candidate-production-launch.json",
+      "bytes": 167,
+      "sha256": "3ec4be1cc9d56a5e11fc3d67226fc91d45cb5fec4476594edc692f80be9be863"
+    },
+    {
+      "path": "formatter/candidate-production-summary.json",
+      "bytes": 998,
+      "sha256": "e5f61234ff55df913d196ff310cde50f758810eda805140f963c2383f23782e2"
+    },
+    {
+      "path": "formatter/candidate-production.jsonl",
+      "bytes": 19573,
+      "sha256": "103fcbbd3d780145d195b46b9d83a6c35e212e05c1c6b8a687bd5ea1a129a4d0"
+    },
+    {
+      "path": "workspace/baseline-workspace-launch.json",
+      "bytes": 191,
+      "sha256": "cb0a6c3763b90d65e627a20e205cd8a71e19b93b6bfc8969f518b89ba0b45b42"
+    },
+    {
+      "path": "workspace/baseline-workspace-summary.json",
+      "bytes": 936,
+      "sha256": "7d1bd719eace92c6f981f4d8a64b9a997c86a389c9dd14a691142f8b9e03a33b"
+    },
+    {
+      "path": "workspace/baseline-workspace-test.go.txt",
+      "bytes": 4028,
+      "sha256": "9e49888161f711a433f2283337d2ba74a511d485f8ea60fb4034b730d8b129f3"
+    },
+    {
+      "path": "workspace/baseline-workspace.jsonl",
+      "bytes": 9164,
+      "sha256": "10cf41c61c4cf0787483a4a50a36da68d6805ee43a476a8bf4cfaa2e81a85176"
+    },
+    {
+      "path": "workspace/candidate-workspace-launch.json",
+      "bytes": 236,
+      "sha256": "5fccb008aac2dabe0d4d80450ddf3543d7c43d63e43fbb89d035190f77d550a3"
+    },
+    {
+      "path": "workspace/candidate-workspace-summary.json",
+      "bytes": 1330,
+      "sha256": "ed6ac558473093faf2848641b9e14a9d59871313712c179e66aa1b9788034bde"
+    },
+    {
+      "path": "workspace/candidate-workspace.jsonl",
+      "bytes": 22902,
+      "sha256": "3b1b4bf0711c0d3d7f2132b74cf0b8bdc31b840bef1d9959c306c4bd44fc4337"
+    },
+    {
+      "path": "clean/formatter.jsonl",
+      "bytes": 6145,
+      "sha256": "9d92aa31d0decd433f5c3bb981adf02f40f68475d647f229c30c647de7751d7e"
+    },
+    {
+      "path": "clean/progress.json",
+      "bytes": 136,
+      "sha256": "29ffe55be5c3741ca38a3f844e38288d73f9bdde7b8cfaa27c741eb1a27fb485"
+    },
+    {
+      "path": "clean/runner.py",
+      "bytes": 3267,
+      "sha256": "b4acab0cac996e5580375117209e86602f25ca31ae33a193448561434ce80b17"
+    },
+    {
+      "path": "clean/summary.json",
+      "bytes": 1885,
+      "sha256": "554281ada9c2b37d543c771fdf445c9f573acea72998608a2ae72d91df35aa30"
+    },
+    {
+      "path": "clean/workspace.jsonl",
+      "bytes": 4518,
+      "sha256": "03868f82f8ec79c7156e995bc6b1964233b5ef4e82d53f8496802153dbd3ab5a"
+    }
+  ],
+  "limitations": [
+    "No Apple or iOS UI runtime execution is claimed.",
+    "The full final combined-source 179-case acceptance run remains required.",
+    "IM04 is limited to actual rooted local module resource boundaries; it does not close IM01, IM02, IM03 or IM05.",
+    "Pre-commit candidate receipts are retained as candidates and are not labelled clean-source evidence."
+  ]
+}
