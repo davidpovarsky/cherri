@@ -179,6 +179,39 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(matches, "Editor UTF-16 source must exactly match the typed synthetic fixture")
     }
 
+    private func replaceDocumentationSearchQuery(_ query: String) {
+        let search = app.searchFields.firstMatch
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            search.exists && search.isHittable
+        }, object: search)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+        search.tap()
+
+        func isEmpty() -> Bool {
+            let value = search.value as? String ?? ""
+            return value.isEmpty || value == search.placeholderValue
+        }
+        if !isEmpty() {
+            let clear = search.buttons.firstMatch
+            let clearReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                clear.exists && clear.isHittable
+            }, object: clear)
+            XCTAssertEqual(XCTWaiter.wait(for: [clearReady], timeout: 5), .completed)
+            clear.tap()
+            let cleared = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                search.exists && isEmpty()
+            }, object: search)
+            XCTAssertEqual(XCTWaiter.wait(for: [cleared], timeout: 5), .completed)
+        }
+
+        search.tap()
+        search.typeText(query)
+        let exactQuery = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            search.exists && (search.value as? String) == query
+        }, object: search)
+        XCTAssertEqual(XCTWaiter.wait(for: [exactQuery], timeout: 5), .completed)
+    }
+
     func testD03CurrentDocumentationSearchUI() throws {
         let editor = ensureEditorReady()
         let source = "show(\"D03_EDITOR_PRESERVED\")"
@@ -198,8 +231,7 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(migration.waitForExistence(timeout: 5))
         XCTAssertEqual(migration.value as? String, "0")
 
-        search.tap()
-        search.typeText("show")
+        replaceDocumentationSearchQuery("show")
         let firstResult = app.buttons.matching(
             NSPredicate(format: "identifier BEGINSWITH %@", "docsResult_")
         ).firstMatch
@@ -221,18 +253,13 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(back.exists && back.isHittable)
         back.tap()
         XCTAssertTrue(search.waitForExistence(timeout: 5))
-        let clearSearch = search.buttons.firstMatch
-        XCTAssertTrue(clearSearch.waitForExistence(timeout: 5) && clearSearch.isHittable)
-        clearSearch.tap()
         let missing = "ZZZ_MISSING_DOCUMENTATION_937"
-        search.typeText(missing)
+        replaceDocumentationSearchQuery(missing)
         let noResults = app.descendants(matching: .any)["docsNoResults"]
         XCTAssertTrue(noResults.waitForExistence(timeout: 5),
                       "An unknown term must show the empty search state")
 
-        XCTAssertTrue(clearSearch.exists && clearSearch.isHittable)
-        clearSearch.tap()
-        search.typeText("@count")
+        replaceDocumentationSearchQuery("@count")
         XCTAssertTrue(noResults.waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons.matching(
             NSPredicate(format: "identifier BEGINSWITH %@", "docsResult_fork-language/migration.md:")
