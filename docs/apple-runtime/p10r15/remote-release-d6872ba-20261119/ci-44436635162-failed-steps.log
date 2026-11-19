@@ -1,0 +1,22 @@
+build-test-package	Package immutable source and pinned runtime	﻿2026-11-19T01:29:16.9793129Z ##[group]Run PIN=$(python3 -c 'import json; print(json.load(open("skills/cherri-shortcuts/compatibility-manifest.json"))["compilerCommit"])')
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9794239Z ^[[36;1mPIN=$(python3 -c 'import json; print(json.load(open("skills/cherri-shortcuts/compatibility-manifest.json"))["compilerCommit"])')^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9794881Z ^[[36;1mgit fetch --no-tags origin "$PIN"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9795275Z ^[[36;1mPINNED_SOURCE="$RUNNER_TEMP/cherri-skill-pinned-source"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9795851Z ^[[36;1mgit -c core.autocrlf=false clone --quiet --shared --no-checkout "$PWD" "$PINNED_SOURCE"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9796386Z ^[[36;1mgit -C "$PINNED_SOURCE" config core.autocrlf false^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9796791Z ^[[36;1mgit -C "$PINNED_SOURCE" checkout --quiet --detach "$PIN"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9797228Z ^[[36;1mtest "$(git -C "$PINNED_SOURCE" rev-parse HEAD)" = "$PIN"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9797643Z ^[[36;1mtest -z "$(git -C "$PINNED_SOURCE" status --porcelain)"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9798369Z ^[[36;1mCGO_ENABLED=0 GOOS=linux GOARCH=arm64 go -C "$PINNED_SOURCE" build -buildvcs=true -trimpath -ldflags='-s -w' -o "$PWD/dist/cherri-pinned-linux-arm64" .^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9799123Z ^[[36;1mtest -z "$(git -C "$PINNED_SOURCE" status --porcelain)"^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9800302Z ^[[36;1mpython3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind source --archive dist/cherri-shortcuts-skill-source.zip --report dist/skill-source-integrity.json^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9802767Z ^[[36;1mpython3 tools/p10r15/package_skill.py create --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --report dist/skill-runtime-integrity.json^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9805795Z ^[[36;1mpython3 tools/p10r15/package_skill.py verify --repo . --skill-commit "$GITHUB_SHA" --kind runtime --compiler dist/cherri-pinned-linux-arm64 --archive dist/cherri-shortcuts-openminis-arm64.zip --unpack dist/unpacked-arm64 --report dist/skill-unpacked-integrity.json^[[0m
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9842364Z shell: /usr/bin/bash -e {0}
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9842642Z env:
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9842848Z   GOTOOLCHAIN: local
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:16.9843075Z ##[endgroup]
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:18.6083973Z From https://github.com/davidpovarsky/cherri
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:18.6085057Z  * branch            71225b71f5353a0f661722d154a8b670b52e76f6 -> FETCH_HEAD
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:18.9065483Z fatal: unable to read tree (71225b71f5353a0f661722d154a8b670b52e76f6)
+build-test-package	Package immutable source and pinned runtime	2026-11-19T01:29:18.9082872Z ##[error]Process completed with exit code 128.

@@ -1,0 +1,39 @@
+build-test-package	Validate native storage probe contracts	ï»¿2026-11-19T01:21:02.3753858Z ##[group]Run python3 tools/p10r15/verify_storage_probes.py dist/cherri-linux-amd64 --output dist/storage-probe-validation.json
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:02.3754376Z ^[[36;1mpython3 tools/p10r15/verify_storage_probes.py dist/cherri-linux-amd64 --output dist/storage-probe-validation.json^[[0m
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:02.3781063Z shell: /usr/bin/bash -e {0}
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:02.3781236Z env:
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:02.3781353Z   GOTOOLCHAIN: local
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:02.3781481Z ##[endgroup]
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6553602Z Traceback (most recent call last):
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6555351Z   File "/home/runner/work/cherri/cherri/tools/p10r15/verify_storage_probes.py", line 193, in <module>
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6555860Z     main()
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6556006Z     ~~~~^^
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6556248Z   File "/home/runner/work/cherri/cherri/tools/p10r15/verify_storage_probes.py", line 127, in main
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6556625Z     phase0 = checked([sys.executable, "-X", "utf8", QA / "validate_macro_fixtures.py",
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6557077Z                       ROOT, compiler], "actual Phase 0 CLI and publication gates", 180)
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6557477Z   File "/home/runner/work/cherri/cherri/tools/p10r15/verify_storage_probes.py", line 33, in checked
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6557802Z     raise RuntimeError(label + " exited " + str(result.returncode) +
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6558194Z                        ": " + (result.stdout + result.stderr)[-1800:])
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6558428Z RuntimeError: actual Phase 0 CLI and publication gates exited 1: 
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6558634Z Traceback (most recent call last):
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6558799Z   File "<string>", line 111, in <module>
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6559047Z     proc = subprocess.run(cmd, cwd=builds_dir, capture_output=True, text=True)
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6559310Z   File "/usr/lib/python3.14/subprocess.py", line 555, in run
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6559530Z     with Popen(*popenargs, **kwargs) as process:
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6559726Z          ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6559933Z   File "/usr/lib/python3.14/subprocess.py", line 1039, in __init__
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6560196Z     self._execute_child(args, executable, preexec_fn, close_fds,
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6560427Z     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6560676Z                         pass_fds, cwd, env,
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6561278Z                         ^^^^^^^^^^^^^^^^^^^
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6561431Z     ...<5 lines>...
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6561647Z                         gid, gids, uid, umask,
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6561881Z                         ^^^^^^^^^^^^^^^^^^^^^^
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6562161Z                         start_new_session, process_group)
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6562439Z                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6562666Z   File "/usr/lib/python3.14/subprocess.py", line 1990, in _execute_child
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6562929Z     raise child_exception_type(errno_num, err_msg, err_filename)
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6563311Z PermissionError: [Errno 13] Permission denied: '/home/runner/work/cherri/cherri/artifacts/p15-macro-harness-validation/positive/builds/cherri'
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6563594Z 
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6563598Z 
+build-test-package	Validate native storage probe contracts	2026-11-19T01:21:20.6682650Z ##[error]Process completed with exit code 1.

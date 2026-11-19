@@ -1,0 +1,24 @@
+{
+  "scope": "ACTUAL_POSIX_EXECUTABLE_COPY_CAUSAL_CHECK",
+  "observedCiFailureRun": 44435923463,
+  "compilerFixtureSource": "8f1a4580db20e699aa7fc1b5542811cb16a50742",
+  "compilerSha256": "e4c40bbaa2de53a9d8ae9404ec0fbb4c443a65a2d03e00aa9e4c5ca44fe6d780",
+  "sourceUnchanged": true,
+  "currentReleasePhase0Execution": false,
+  "results": [
+    {
+      "case": "baseline_copyfile",
+      "mode": "0o600",
+      "byteIdentityPreserved": true,
+      "result": "PERMISSION_ERROR",
+      "validCapabilities": false
+    },
+    {
+      "case": "fixed_copy2",
+      "mode": "0o700",
+      "byteIdentityPreserved": true,
+      "result": "EXECUTED",
+      "validCapabilities": true
+    }
+  ]
+}

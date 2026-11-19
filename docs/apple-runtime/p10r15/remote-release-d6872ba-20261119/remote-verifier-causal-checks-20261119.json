@@ -1,0 +1,83 @@
+{
+  "scope": "VERIFIER_ORACLE_AND_OWNED_PROCESS_CAUSAL_CHECKS",
+  "compilerFixtureSource": "8f1a4580db20e699aa7fc1b5542811cb16a50742",
+  "helperSha256": "02be4aa0bf193b294fe3fe1a39ca9b4b69da5978e0f6e26a4fd5b9b6168ac594",
+  "currentReleaseExecution": false,
+  "results": [
+    {
+      "case": "v2_actual_plist_control",
+      "verdict": "PASS"
+    },
+    {
+      "case": "v2_wrong_literal",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "v2_wrong_producer_uuid",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "v2_missing_producer_uuid",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "v2_missing_producer",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "v2_extra_action",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "v2_lost_token",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "legacy_actual_plist_control",
+      "verdict": "PASS"
+    },
+    {
+      "case": "legacy_wrong_literal",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "legacy_wrong_producer_uuid",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "legacy_missing_producer_uuid",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "legacy_missing_producer",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "legacy_extra_action",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "legacy_lost_token",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "legacy_wrong_assignment",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "legacy_wrong_assignment_uuid",
+      "verdict": "REJECTED"
+    },
+    {
+      "case": "old_direct_timeout",
+      "verdict": "BASELINE_LEAK_CONFIRMED",
+      "timeoutIsFailure": true
+    },
+    {
+      "case": "owned_group_timeout",
+      "verdict": "PASS_NO_LATE_WRITE",
+      "timeoutIsFailure": true
+    }
+  ],
+  "checks": 18
+}
