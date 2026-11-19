@@ -12,6 +12,8 @@ import json
 from pathlib import Path
 import re
 
+import documentation_evidence as docs
+
 # UI automation tests map to (requirements, assertions, required_checkpoint_marker)
 ui_test_map = {
     "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI": (
@@ -66,7 +68,7 @@ service_test_map = {
 }
 
 
-CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests)|CherriUITests\.CherriEditorUITests) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
+CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|DocumentationIndexTests)|CherriUITests\.CherriEditorUITests) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
 FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriEditorInputTests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
 TEST_NAME = re.compile(r"^CherriEditorUITests/(test[A-Za-z0-9_]+)$")
 PRIVATE_TEXT = re.compile(r"(?i)(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._-]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|/Users/[^/\s]+|[A-Z]:\\Users\\[^\\\s]+)")
@@ -204,6 +206,7 @@ def bounded_log(raw_text):
     runtime_events = 0
     startup_events = 0
     active_test = None
+    documentation_events = 0
     for raw_line in raw_text.splitlines():
         line = raw_line.strip()
         if case := CASE_LINE.fullmatch(line):
@@ -211,6 +214,29 @@ def bounded_log(raw_text):
             case_events += 1
             if case_events <= 512:
                 lines.append(line)
+        elif line.startswith(docs.PREFIX):
+            documentation_events += 1
+            try:
+                docs.require(active_test == docs.POSITIVE, "RECEIPT_OUTSIDE_POSITIVE_TEST")
+                docs.require(documentation_events <= 4, "RECEIPT_LIMIT")
+                docs.parse_receipt(line)
+                # Preserve the accepted raw JSON line; do not reconstruct a
+                # success-shaped receipt or publish rejected arbitrary fields.
+                lines.append(raw_line)
+            except docs.EvidenceError:
+                if documentation_events <= 5:
+                    lines.append(docs.REJECTED_PREFIX + "INVALID_RECEIPT")
+        elif line.startswith(docs.CHECKPOINT):
+            if line == docs.CHECKPOINT and active_test == docs.UI:
+                lines.append(line)
+            else:
+                lines.append(docs.REJECTED_PREFIX + "INVALID_CHECKPOINT")
+        elif line.startswith(docs.REJECTED_PREFIX):
+            lines.append(docs.REJECTED_PREFIX + "UNTRUSTED_MARKER")
+        elif line.startswith("Test Case '"):
+            if active_test in docs.TEST_IDS:
+                lines.append(docs.REJECTED_PREFIX + "UNSUPPORTED_TEST_BOUNDARY")
+            active_test = None
         elif line.startswith(STARTUP_PREFIX) and startup_events < 64:
             receipt = safe_startup_receipt(line, active_test)
             if receipt:
@@ -245,7 +271,8 @@ def bounded_log(raw_text):
     return text, receipts, failures
 
 
-def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path):
+def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
+            documentation_index=None, documentation_manifest=None, documentation_receipt=None):
     if output_dir.exists() and any(output_dir.iterdir()):
         raise ValueError("evidence output already contains files; refusing to overwrite a prior run")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -365,12 +392,58 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path):
                 })
 
 
+    documentation = {"status": "NOT_REQUESTED", "errorCodes": []}
+    documentation_files = {}
+    documentation_record = None
+    documentation_requested = (any(test in test_blocks for test in docs.TEST_IDS)
+                               or docs.PREFIX in log_text or docs.REJECTED_PREFIX in log_text
+                               or any(path is not None for path in (
+                                   documentation_index, documentation_manifest, documentation_receipt)))
+    if documentation_requested:
+        documentation["status"] = "NOT_VERIFIED"
+        try:
+            index, documentation_files = docs.load_artifacts(
+                documentation_index, documentation_manifest, documentation_receipt)
+            # Inputs come only from explicit build paths, never from log values.
+            for name, payload in documentation_files.items():
+                (output_dir / name).write_bytes(payload)
+            docs.require(documentation_receipt is not None, "MISSING_GENERATION_RECEIPT")
+            docs.require(eligible_run and run_id != "UNKNOWN", "RUN_NOT_ELIGIBLE")
+            documentation_value = docs.receipt_from_log(log_text)
+            docs.bind_receipt(documentation_value, index,
+                              documentation_files["documentation-index.json"])
+            documentation.update(status="VERIFIED_APP_TESTS", testIds=list(docs.TEST_IDS),
+                                 bundleSHA256=documentation_value["bundleSHA256"])
+            artifact_base = "artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/"
+            documentation_record = {
+                "evidence_id": "ev-ios-integration-D03",
+                "requirements": ["D03"], "tier": "integration",
+                "implementation_sha": impl_sha,
+                "test_id": "CherriUITests/testD03CurrentDocumentationSearchUI",
+                "command": ["xcodebuild", "test", "-scheme", "Cherri"],
+                "exit_code": 0, "result": "passed",
+                "assertions": {"current_docs_bundle": "true",
+                               "historical_docs_rejected": "true",
+                               "current_docs_ui_search": "true"},
+                "artifacts": [{"path": artifact_base + "xcodetest.log",
+                               "sha256": log_sha, "run_id": run_id}] + [
+                    {"path": artifact_base + name,
+                     "sha256": hashlib.sha256(payload).hexdigest(), "run_id": run_id}
+                    for name, payload in sorted(documentation_files.items())],
+                "detail": "Three unique passed documentation app tests and their raw receipt "
+                          "match the exact bundled index and supplied compatibility manifest; "
+                          "website and installed Skill evidence remain separate",
+            }
+        except docs.EvidenceError as error:
+            documentation["errorCodes"].append(str(error))
+
     run_status = "PASSED" if eligible_run else ("FAILED" if xcode_exit not in (None, 0) else "NOT_RUN_OR_INCOMPLETE")
     diagnostic = {
         "schemaVersion": "1.0", "implementationSha": impl_sha, "runId": run_id,
         "xcodebuildExitCode": xcode_exit, "runStatus": run_status,
         "rawLogPresent": raw_present, "sanitizedLogSha256": log_sha,
         "testResults": test_results, "uiReceipts": receipts, "uiFailures": failures,
+        "documentationEvidence": documentation,
         "startupReceipts": [json.loads(line[len(STARTUP_PREFIX):]) for line in log_text.splitlines() if line.startswith(STARTUP_PREFIX)],
         "inputReceipts": [json.loads(line[len(INPUT_PREFIX):]) for line in log_text.splitlines() if line.startswith(INPUT_PREFIX)],
         "nativeRuntimeEvents": [json.loads(line[len(RUNTIME_PREFIX):]) for line in log_text.splitlines() if line.startswith(RUNTIME_PREFIX)],
@@ -378,6 +451,12 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path):
                     "sourceRequiresVerifiedEmptyReset": True, "startupReceiptsContainOnlyKnownControlState": True},
     }
     (output_dir / "ios-test-diagnostics.json").write_text(json.dumps(diagnostic, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if documentation_record is not None:
+        diagnostic_bytes = (output_dir / "ios-test-diagnostics.json").read_bytes()
+        documentation_record["artifacts"].append({
+            "path": "artifacts/backend-recovery/ci-artifacts/ios-build/ios-build-evidence/ios-test-diagnostics.json",
+            "sha256": hashlib.sha256(diagnostic_bytes).hexdigest(), "run_id": run_id})
+        records.append(documentation_record)
     (output_dir / "ios-test-evidence.json").write_text(json.dumps({"records": records}, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"runStatus": run_status, "xcodebuildExitCode": xcode_exit,
                       "observedTestCount": len(test_results), "acceptanceRecordCount": len(records),
@@ -392,5 +471,9 @@ if __name__ == "__main__":
     parser.add_argument("implementation_sha")
     parser.add_argument("run_id")
     parser.add_argument("exit_code_path", type=Path)
+    parser.add_argument("--documentation-index", type=Path)
+    parser.add_argument("--documentation-manifest", type=Path)
+    parser.add_argument("--documentation-receipt", type=Path)
     args = parser.parse_args()
-    collect(args.log_path, args.output_dir, args.implementation_sha, args.run_id, args.exit_code_path)
+    collect(args.log_path, args.output_dir, args.implementation_sha, args.run_id, args.exit_code_path,
+            args.documentation_index, args.documentation_manifest, args.documentation_receipt)
