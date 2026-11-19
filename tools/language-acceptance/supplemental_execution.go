@@ -17,6 +17,30 @@ type supplementalProductionScenario struct {
 // These are independent executions of the complete supplemental scenarios.
 // Related original IDs are navigation only and never supply an inherited pass.
 var supplementalProductionScenarios = map[string]supplementalProductionScenario{
+	"BRG32": {
+		PackagePath: "./tools/language-acceptance",
+		ModulePath:  "github.com/electrikmilk/cherri/tools/language-acceptance",
+		TestNames: []string{
+			"TestRealContractsLoadAndVerifyDigests",
+			"TestLocalReportIncludesAll179WithoutInheritedClosure",
+			"TestP15RP03FreshCloneContractIntake",
+			"TestP15BRG32RequirementMapMatchesAllContracts",
+			"TestP15BRG32InstalledAIHarness",
+			"TestAIEvaluationHarnessCannotChangeRequiredTiers",
+		},
+		Tiers: []string{"unit", "integration", "repository"},
+		ProductionPaths: []string{
+			"tests/language-v2/acceptance-contract.json", "tests/language-v2/repair-regression-plan.json",
+			"tests/language-v2/backend-recovery-gates.json", "tools/language-acceptance/main.go",
+			"tools/language-acceptance/aggregate_contracts.go", "tools/language-acceptance/evidence_map.go",
+			"tools/language-acceptance/supplemental_execution.go", "tools/language-acceptance/execution_truth_test.go",
+			"tools/language-acceptance/verification_contract_test.go", "tools/language-acceptance/main_test.go",
+			"tools/language-acceptance/obligation_harness_execution_test.go",
+			"tools/language-acceptance/ai_evaluation_execution.go", "tools/language-acceptance/ai_evaluation_execution_test.go",
+			"tools/language-ai-eval/runner.py", "tools/language-ai-eval/tasks.json",
+			"tools/language-ai-eval/test_runner.py", "tools/language-ai-eval/README.md",
+		},
+	},
 	"RP27": {
 		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
 		TestNames: []string{
@@ -334,6 +358,11 @@ func (r *Runner) runSupplementalProduction(id, group, title string, levels []str
 		r.records[index].TestID = scenario.testIDs()[0]
 		r.records[index].Command = productionTestCommandInPackage(scenario.PackagePath, scenario.TestNames)
 		r.records[index].Assertions["required_production_tests"] = strings.Join(scenario.TestNames, "\n")
+		if id == "BRG32" {
+			r.records[index].Assertions["required_python_tests"] = strings.Join(aiEvaluationPythonTests, "\n")
+			r.records[index].Assertions["harness_scope"] = "installed-control-flow-only"
+			r.records[index].Assertions["ai_quality_measured"] = "false"
+		}
 	}
 	return true
 }
@@ -356,6 +385,12 @@ func validateSupplementalProductionRecord(id string, record EvidenceRecord) erro
 		!reflect.DeepEqual(record.Command, productionTestCommandInPackage(scenario.PackagePath, scenario.TestNames)) ||
 		record.Assertions["required_production_tests"] != strings.Join(scenario.TestNames, "\n") {
 		return fmt.Errorf("record %s is detached from the complete supplemental production scenario for %s", record.EvidenceID, id)
+	}
+	if id == "BRG32" && (!reflect.DeepEqual(record.Requirements, []string{"BRG32"}) ||
+		record.Assertions["required_python_tests"] != strings.Join(aiEvaluationPythonTests, "\n") ||
+		record.Assertions["harness_scope"] != "installed-control-flow-only" ||
+		record.Assertions["ai_quality_measured"] != "false") {
+		return fmt.Errorf("record %s is detached from installed BRG32 controls or claims AI quality", record.EvidenceID)
 	}
 	return nil
 }

@@ -14,6 +14,15 @@ import (
 )
 
 func TestP15RP50AIHarnessControlFlow(t *testing.T) {
+	root, err := filepath.Abs(resolveRepoRoot())
+	if err != nil {
+		t.Fatal(err)
+	}
+	p15RunAIHarnessControlSuite(t, filepath.Join(root, "tools", "language-ai-eval"))
+}
+
+func p15RunAIHarnessControlSuite(t *testing.T, installedRoot string) {
+	t.Helper()
 	var python, pythonErr = acceptancePython3("CHERRI_ACCEPTANCE_PYTHON")
 	if pythonErr != nil {
 		t.Fatal(pythonErr)
@@ -50,14 +59,10 @@ receipt = {"selection_complete": True, "found": found, "passed": sorted(result.p
 print(json.dumps(receipt))
 raise SystemExit(0 if result.wasSuccessful() else 1)
 `
-	var root, rootErr = filepath.Abs(resolveRepoRoot())
-	if rootErr != nil {
-		t.Fatal(rootErr)
-	}
 	var ctx, cancel = context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 	var command = exec.CommandContext(ctx, python, "-I", "-B", "-c", bridge,
-		filepath.Join(root, "tools", "language-ai-eval"), string(expected))
+		installedRoot, string(expected))
 	command.Env = append(os.Environ(), "PYTHONDONTWRITEBYTECODE=1")
 	var stderr strings.Builder
 	command.Stderr = &stderr
