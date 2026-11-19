@@ -1,0 +1,31 @@
+{
+  "mode": "fixed",
+  "head": "4ff1d089ec49528bb796fe315a74777d69008d9b",
+  "status_before": "M tools/language-acceptance/main.go\n M tools/language-acceptance/output_isolation_test.go",
+  "diff_sha256": "fad23a8f84ec2f29ab0ee276560a8a0aa9b67702297d3486963111c09bbf96e5",
+  "started_utc": "2026-11-19T01:51:27.074814+00:00",
+  "command": [
+    "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+    "test",
+    "-json",
+    "-count=1",
+    "-p=1",
+    "-timeout=3m",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestAcceptanceCLIOutputIsolationAndWriteFailure|TestAcceptanceCLIOutputNameCannotBypassFinalValidation|TestAcceptanceCLILocalRunnerOutputsFollowDestination)$"
+  ],
+  "main_sha256": "777722c1645d347af18a3fc6d7566b340a39cf791b1fab70ac00b664094d979b",
+  "test_sha256": "23e183c8ac3c385e2bb25fad4b520f60c46362fba696db2872a4ad76c36e7c8c",
+  "exit_code": 0,
+  "elapsed_seconds": 5.713,
+  "counts": {
+    "run": 19,
+    "pass": 19
+  },
+  "discovered_unique_tests": 19,
+  "failures_or_skips": {},
+  "raw_jsonl_sha256": "0c27eb5a38ba46b25b522dff875d0620c84717367322384d5cfde82bdfad48ec",
+  "raw_jsonl_bytes": 21386,
+  "status_after": "M tools/language-acceptance/main.go\n M tools/language-acceptance/output_isolation_test.go"
+}
