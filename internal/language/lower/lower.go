@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -15,9 +14,8 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
-	"github.com/electrikmilk/cherri/internal/language/migrate"
+	"github.com/electrikmilk/cherri/internal/language/modules"
 	"github.com/electrikmilk/cherri/internal/language/schema"
-	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"github.com/electrikmilk/cherri/internal/language/types"
 	"howett.net/plist"
@@ -77,6 +75,11 @@ type Lowerer struct {
 	virtualModules          map[string]string
 	baseFilePath            string
 	importedFunctions       []*syntax.FunctionDecl
+	moduleGraph             *modules.Graph
+	moduleRegistries        map[*modules.Module]*schema.Registry
+	moduleScopes            map[*modules.Module]*moduleScope
+	functionModules         map[*syntax.FunctionDecl]*modules.Module
+	functionDispatchNames   map[*syntax.FunctionDecl]string
 	WorkflowName            string
 	uuidCounter             int
 	autoNumberProducerCount int
@@ -401,11 +404,16 @@ func (l *Lowerer) emitMenuEnd(groupUUID string, outputUUID string) *ir.NativeAct
 
 // LowerProgramToSession compiles an AST Program into the configured backend.Session.
 func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
+	if err := l.ensureModuleGraph(prog); err != nil {
+		return err
+	}
 	// 0. Ensure semantic analysis is run to capture expression types and target platform constraints if not already provided
 	if l.exprTypes == nil || l.enumValues == nil {
 		analyzer := analysis.NewAnalyzer(l.registry)
+		analyzer.SetModuleGraph(l.moduleGraph)
 		analyzer.Analyze(prog)
 		l.registry = analyzer.Registry()
+		l.SetModuleRegistries(analyzer.ModuleRegistries())
 		for _, diagnostic := range analyzer.Diagnostics() {
 			if diagnostic.Code == analysis.CodeSetupBinding && diagnostic.Severity == analysis.SeverityError {
 				return fmt.Errorf("%s: %s", diagnostic.Code, diagnostic.Message)
@@ -421,6 +429,8 @@ func (l *Lowerer) LowerProgramToSession(prog *syntax.Program) error {
 			l.isMac = analyzer.IsMacTarget()
 		}
 	}
+
+	l.prepareModuleScopes()
 
 	// 1. Process declarations (metadata, shortcut header, functions, setup, custom actions, enums, types)
 	for _, decl := range prog.Declarations {
@@ -722,138 +732,6 @@ func (l *Lowerer) lowerTrigger(trig *syntax.TriggerDecl) error {
 	if l.session != nil {
 		l.session.SetMetadata("trigger", triggerData)
 	}
-	return nil
-}
-
-func (l *Lowerer) lowerImport(d *syntax.ImportDecl) error {
-	if strings.HasPrefix(d.Path, "http://") || strings.HasPrefix(d.Path, "https://") {
-		return fmt.Errorf("remote package imports not permitted: %q", d.Path)
-	}
-	cleanPath := filepath.Clean(d.Path)
-	if !filepath.IsLocal(d.Path) {
-		return fmt.Errorf("path traversal outside workspace not permitted: %q", d.Path)
-	}
-
-	for _, p := range l.importStack {
-		if p == d.Path || p == cleanPath {
-			return fmt.Errorf("import cycle detected: %s -> %s", strings.Join(l.importStack, " -> "), d.Path)
-		}
-	}
-
-	// 1. Check if built-in module from registry
-	isBuiltin := false
-	if l.registry != nil {
-		for _, act := range l.registry.AllActions() {
-			if act.Module != "" && (act.Module == d.Path || act.Module == cleanPath) {
-				isBuiltin = true
-				break
-			}
-		}
-	}
-	if isBuiltin {
-		if l.modules == nil {
-			l.modules = make(map[string]string)
-		}
-		l.modules[d.Alias] = d.Path
-		return nil
-	}
-
-	// 2. Resolve local module content
-	var content string
-	var resolvedPath string
-	if d.Path == "stdfunc" || d.Path == "stdlib" || cleanPath == "stdfunc" || cleanPath == "stdlib" {
-		content = `function runJS(script: Text) {
-    let ios17bug = replaceText("#", "\u0023", script)
-    let uri = url(f"data:text/html;charset=utf-8,<body/><script>{ios17bug}</script>")
-    let richURI = uri.richtext
-    let decoded = urlDecode(richURI)
-
-    output(f"{decoded}")
-}
-
-function chooseFromVCard(items: List, prompt: Text) {
-    let menuItems = f"{items}"
-    let vcf = setName(menuItems, "cherri_chooseFromVCard.vcf")
-    let contact = vcf.contact
-    let chosenItem = chooseFromList(contact, prompt)
-
-    output(f"{chosenItem}")
-}`
-		resolvedPath = "stdfunc.cherri"
-	} else if vmContent, ok := l.virtualModules[d.Path]; ok {
-		content = vmContent
-	} else if vmContent, ok := l.virtualModules[cleanPath]; ok {
-		content = vmContent
-	} else {
-		var err error
-		content, resolvedPath, err = l.readWorkspaceModule(cleanPath)
-		if err != nil {
-			return err
-		}
-	}
-
-	// 3. Parse module
-	srcFile := source.NewFile(source.DocumentID(d.Path), d.Path, 1, content)
-	parser := syntax.NewParser(srcFile)
-	modProg := parser.ParseProgram()
-	if len(parser.Errors()) > 0 {
-		migrated := migrate.MigrateSource(content)
-		srcFile = source.NewFile(source.DocumentID(d.Path), d.Path, 1, migrated)
-		parser = syntax.NewParser(srcFile)
-		modProg = parser.ParseProgram()
-		if len(parser.Errors()) > 0 {
-			return fmt.Errorf("syntax error in imported module %q: %v", d.Path, parser.Errors()[0])
-		}
-	}
-
-	// 4. Check top-level statements (IM02)
-	if len(modProg.Statements) > 0 {
-		return fmt.Errorf("module top-level runtime initialization rejected: imported module %q contains top-level executable statements", d.Path)
-	}
-
-	// 5. Register declarations
-	l.importStack = append(l.importStack, d.Path)
-	oldBase := l.baseFilePath
-	if resolvedPath != "" {
-		l.baseFilePath = resolvedPath
-	}
-	defer func() {
-		l.baseFilePath = oldBase
-		if len(l.importStack) > 0 {
-			l.importStack = l.importStack[:len(l.importStack)-1]
-		}
-	}()
-
-	for _, decl := range modProg.Declarations {
-		switch m := decl.(type) {
-		case *syntax.FunctionDecl:
-			if d.Alias != "" {
-				l.functions[d.Alias+"."+m.Name] = m
-			}
-			l.functions[m.Name] = m
-			l.importedFunctions = append(l.importedFunctions, m)
-		case *syntax.EnumDecl:
-			if d.Alias != "" {
-				l.enums[d.Alias+"."+m.Name] = m
-			}
-			l.enums[m.Name] = m
-		case *syntax.TypeDecl:
-			if d.Alias != "" {
-				l.types[d.Alias+"."+m.Name] = m
-			}
-			l.types[m.Name] = m
-		case *syntax.ActionDecl:
-			if d.Alias != "" {
-				l.actions[d.Alias+"."+m.Name] = m
-			}
-			l.actions[m.Name] = m
-		case *syntax.ImportDecl:
-			if err := l.lowerImport(m); err != nil {
-				return err
-			}
-		}
-	}
-
 	return nil
 }
 
@@ -1323,25 +1201,27 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 	})
 
 	allFuncs := make([]*syntax.FunctionDecl, 0, len(l.functions))
-	seenFuncs := make(map[string]bool)
+	seenFuncs := make(map[*syntax.FunctionDecl]bool)
 	for _, decl := range prog.Declarations {
 		if fn, ok := decl.(*syntax.FunctionDecl); ok {
-			if !seenFuncs[fn.Name] {
+			if !seenFuncs[fn] {
 				allFuncs = append(allFuncs, fn)
-				seenFuncs[fn.Name] = true
+				seenFuncs[fn] = true
 			}
 		}
 	}
 	for _, fn := range l.importedFunctions {
-		if !seenFuncs[fn.Name] {
+		if !seenFuncs[fn] {
 			allFuncs = append(allFuncs, fn)
-			seenFuncs[fn.Name] = true
+			seenFuncs[fn] = true
 		}
 	}
 
+	defer l.useModuleScope(l.moduleGraph.Root)
 	for _, fn := range allFuncs {
+		l.useModuleScope(l.functionModules[fn])
 		fnGroupUUID := l.GenerateUUID()
-		l.emitIfStart(fnGroupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnNameUUID}, 4, fn.Name, true)
+		l.emitIfStart(fnGroupUUID, &ir.AttachmentToken{Type: "ActionOutput", OutputUUID: fnNameUUID}, 4, l.functionDispatchName(fn), true)
 
 		savedBindings := make(map[string]BindingRef)
 		for k, v := range l.bindings {
@@ -1473,6 +1353,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 
 		l.emitIfEnd(fnGroupUUID, "", "")
 	}
+	l.useModuleScope(l.moduleGraph.Root)
 
 	// Exit the child execution immediately so it never falls through
 	l.emitAction(&ir.NativeActionNode{
@@ -4825,8 +4706,8 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 			fullName := targetIdent.Name + "." + c.Property
 			if _, ok := l.functions[fullName]; ok {
 				actionName = fullName
-			} else if _, ok := l.functions[c.Property]; ok {
-				actionName = c.Property
+			} else if _, ok := l.modules[targetIdent.Name]; ok {
+				actionName = fullName
 			} else {
 				actionName = c.Property
 			}
@@ -5473,7 +5354,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		dispatchDict := map[string]interface{}{
 			"_cherri_magic":        "__cherri_fn_envelope_v2__",
 			"cherri_functions":     "1",
-			"function":             fn.Name,
+			"function":             l.functionDispatchName(fn),
 			"_cherri_caller_input": &ir.AttachmentToken{Type: "Variable", OutputName: "_cherri_caller_input"},
 		}
 		unnamedArgIdx := 0
