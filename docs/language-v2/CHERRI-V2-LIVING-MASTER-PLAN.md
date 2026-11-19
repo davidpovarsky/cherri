@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.6.0 | **Current audit:** 2026-11-19 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **84/179 PASS, 1 FAILED, 94 pending or unexecuted** at immutable e61e0d306bb363c39ade612ef35ccfc8051ddf3c; **closure_complete=false**. Later component repairs do not rewrite that result. Chapter19 is the latest ledger. Earlier completion labels/corpus counts describe their exact historical runs.
+> **Plan version:** 2.7.0 | **Current audit:** 2026-11-19 | **Status:** P10R15 IN_PROGRESS. Latest complete formal local report: **87/179 PASS, 0 FAILED, 92 pending or unexecuted** at immutable R2 4e56dbcfe895baa8f944b83715ecff0d07bfd24e; **closure_complete=false**. Chapter 20 is the latest ledger. R3 component repairs and older completion labels describe their own exact sources and do not replace this snapshot.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -1019,3 +1019,38 @@ All three original contract hashes remain unchanged. Raw source-bound evidence, 
 - Re-run private corpus and release gates on the final compiler. Physical iPad and a configured eligible AI endpoint remain unavailable.
 
 Freeze and publish R2 after focused regression checks; execute Build & Test,complete local179,OpenMinis,Linux-race and nativeQA. Include the causal loop fix before full formal native replay. Preserve outcomes and existing contracts,goldens and privacy gates. No staging promotion or completion is justified by component passes alone. Update Asana after every verified stage.
+
+## 20. P10R15 verified R2 snapshot and R3 development — 2026-11-19
+
+### Current source, acceptance matrix and milestone board
+
+R2 is frozen and published at `4e56dbcfe895baa8f944b83715ecff0d07bfd24e`, branch `agent/cherri-p10r15-completion-r2-20261119`. The exact complete local run is [44634809329](https://github.com/davidpovarsky/cherri/actions/runs/44634809329). Its independently audited result is **87 PASSED, 0 FAILED, 82 NOT_RUN, 9 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN**: 179 unique original IDs, 159 source-bound records, actual exit 0, **closure_complete=false**. The 92 remaining obligations must not be collapsed into an external-blocker claim.
+
+The complete original ZIP, report, execution audit, process receipts, GitHub metadata and per-ID gaps are retained in [the R2 audit](p15-formal-local-r2-audit-20261119.md). ZIP SHA-256: `a733d4619a4f3163f9a9250a4d1e4521dd0507163505502514432d9a41f453e6`. Report SHA-256: `4c7c4e5102d18143c96633d071489537bde822a4c2561410921558ad2ce85153`. All 24 artifact references and their 12 unique files were checked, including the exact immutable source blobs.
+
+Only four formal row statuses changed from e61: T08 FAILED → PASSED; RP29 and BRG32 NOT_RUN → PASSED; N01 NOT_RUN → PENDING_EXTERNAL. The 82 NOT_RUN rows comprise 24 insufficient smoke scenarios, 57 unexecuted dedicated original/repair/recovery scenarios, and the external-consumer-only D03 scenario. The original three contract hashes remain unchanged.
+
+R3 is being assembled on `agent/cherri-p10r15-completion-r3-20261119`; its boundary immediately before this ledger update is `675db443e28b853a59b3c4a8383b5262c9c6dea4`. Staging remains exactly `d7052f4568db26dba169bdefc72623e48c04968a`. Neither a development commit nor a passing workflow is a release declaration.
+
+| Stage | Actual result and evidence |
+|---|---|
+| R2 OpenMinis | [44634814424](https://github.com/davidpovarsky/cherri/actions/runs/44634814424) SUCCESS. Eight original artifact ZIP digests verified; actual Linux wrappers, pinned install/rollback, unpacked ARM64 Alpine execution, macro and signing-failure controls passed. [Proof](p15-openminis-r2-20261119.md). |
+| R2 Linux race | [44634819471](https://github.com/davidpovarsky/cherri/actions/runs/44634819471) SUCCESS. Six named tests, 64+32 concurrent cases, no race/failure/skip, 71.003 seconds; exact source and all 21 Git blob hashes verified. [Proof](p15-state-race-r2-20261119.md). Formal BRG06/RP51 producer work remains separate. |
+| F02 component | Tests-only red baselines retained. Implementation b5a51fe6 passed 95 named tests, 47/47 original Legacy fixtures and 17/17 mappings. Integrated implementation is 6d9a6f3b; historical receipts retain their original source. [Proof](p15-loop-index-f02-20261119.md). Fresh native replay remains required. |
+| N01 / FN01–FN03 | N01 now has actual fractional-value production evidence. FN component 3b3711f9 passed 118 clean producer/intake controls after separate actual graph/typing scenarios and causal mutations. Integrated as c7a4a7a3. Only unit/native-structure tiers are produced; iOS remains required. [Numeric proof](p15-n01-actual-producer-20261119.md), [function proof](p15-function-actual-producers-20261119.md). |
+| Schema defects and propagation | Separate source 61ac9542 fixes two ambiguous canonical labels. 8820d549 rejects duplicate labels/actions/enums, conflicting enum definitions and unknown codec bindings before writing output; ten named control events passed. e9e4f7d6 passed actual optional-declaration propagation through exporter, generator, analyzer, completion, documentation and CLI native value, then live restoration. Formal producer intake is still running; no extra formal rows are counted here. |
+| Installed documentation gate | Source bb275977 adds a manual POSIX workflow using the original public Pages receipt ZIP and current GitHub metadata, actual installed Skill searches/public bytes, then unchanged production Go intake in the same workspace. Seven Python and six Go controls passed; actual metadata preparation passed. Integrated as 8eb91726. Live collector execution and app integration remain open. [Proof](../apple-runtime/p10r15/d03-installed-consumer-ci-20261119.md). |
+| e61 full iOS | [44622064212](https://github.com/davidpovarsky/cherri/actions/runs/44622064212) acquired a runner and built compiler/XCFramework/app, then failed D03 search UI. 53 observed tests, 52 passed, one failed; zero formal acceptance records. [Failure proof](../apple-runtime/p10r15/full-ios-e61-d03-failure-20261119.md). |
+| R2 Apple and general CI | Full Build & Test and native runs remain under active observation. Original capture run has started; Intel full iOS, typed-default, File and N03 diagnostics do not gain credit while queued or incomplete. |
+
+### Decisions, open defects and remaining execution
+
+The F02 repair preserves the two accepted source spellings: modern named indices are zero-based, while Legacy-compatible repeat spelling and raw native RepeatIndex globals retain their original semantics. The original runtime fixture/golden is unchanged. Full formal native replay needs the repaired candidate and a complete signed artifact/cleanup chain.
+
+The schema changes operate on real declarations and live generation. Negative controls demonstrated that ambiguous labels and invalid codec bindings were previously accepted. The optional-parameter rehearsal edits only a detached worktree and checks original-root identity before and after. Typed default presence and semantic fingerprint distinctions are under separate causal investigation.
+
+The D03 UI failure is not waived by successful compiler, XCFramework or app builds. Existing bundled documentation and actual Swift search behavior are checked before changing production search logic; the missing observed toggle transition is being diagnosed with bounded fixed state receipts.
+
+The pinned Skill tuple remains compiler b97ae752, docs 205217a, and R2 Skill source for the audited package. Current R3 schema changes require a coherent later compiler/docs/Skill tuple, actual consumer tests and a verified publication. torah-social was offline at the last authorized host check; no service installation or promotion occurred. Physical-device proof and an eligible real AI evaluation endpoint remain unavailable.
+
+Continue the complete schema/function/state producers, missing semantic implementations and macros, exact-source Apple runtime/UI, final private-corpus replay, coherent consumer pinning, documentation publication, live RemoteBuilder installation/rollback and release gates. Preserve failure receipts and all original contracts/goldens. Update Asana at each verified stage; do not mark a task complete until its own required observations exist.
