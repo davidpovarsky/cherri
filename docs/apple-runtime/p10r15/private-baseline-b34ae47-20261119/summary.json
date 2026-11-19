@@ -1,0 +1,186 @@
+{
+  "formatVersion": 1,
+  "sourceCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "scope": "Actual five serialized opt-in private corpus regressions; raw inputs, identities and logs remain only on authorized Linux host.",
+  "tests": [
+    {
+      "source_sha": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+      "index": 1,
+      "test": "TestP10R10CorpusMeasure",
+      "seconds": 174.41,
+      "exit_code": 0,
+      "timed_out": false,
+      "discovered": true,
+      "named_run": 1,
+      "named_pass": 1,
+      "named_fail": 0,
+      "named_skip": 0,
+      "not_run_marker_seen": false,
+      "required_test_passed": true,
+      "verified_pass": true,
+      "failed_top_level": [],
+      "raw_log_bytes": 945993,
+      "raw_log_sha256": "d729089579917c8f38cd03a624c67cdc38aef9c20a9076822b50b7c7525aec79",
+      "source_clean_before": true,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "input_identities_unchanged": true
+    },
+    {
+      "source_sha": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+      "index": 2,
+      "test": "TestP11_WIRE_01_Fresh38x2NativeActionWire",
+      "seconds": 217.67,
+      "exit_code": 0,
+      "timed_out": false,
+      "discovered": true,
+      "named_run": 1,
+      "named_pass": 1,
+      "named_fail": 0,
+      "named_skip": 0,
+      "not_run_marker_seen": false,
+      "required_test_passed": true,
+      "verified_pass": true,
+      "failed_top_level": [],
+      "raw_log_bytes": 1542722,
+      "raw_log_sha256": "ab4bdc6cd033eff706c9848bfe4bdd8e45b3afe132bf95a2c6d71e7a8efe334d",
+      "source_clean_before": true,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "input_identities_unchanged": true
+    },
+    {
+      "source_sha": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+      "index": 3,
+      "test": "TestP12_BASE_02_LifecycleStagesAndReconcileCorpus",
+      "seconds": 320.4,
+      "exit_code": 0,
+      "timed_out": false,
+      "discovered": true,
+      "named_run": 1,
+      "named_pass": 1,
+      "named_fail": 0,
+      "named_skip": 0,
+      "not_run_marker_seen": false,
+      "required_test_passed": true,
+      "verified_pass": true,
+      "failed_top_level": [],
+      "raw_log_bytes": 2144604,
+      "raw_log_sha256": "ab8a9dfc631b4b8de7ecf3d519c717223ec0eddc94464616a30bd49c48617061",
+      "source_clean_before": true,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "input_identities_unchanged": true
+    },
+    {
+      "source_sha": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+      "index": 4,
+      "test": "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+      "seconds": 28.99,
+      "exit_code": 1,
+      "timed_out": false,
+      "discovered": true,
+      "named_run": 1,
+      "named_pass": 0,
+      "named_fail": 1,
+      "named_skip": 0,
+      "not_run_marker_seen": false,
+      "required_test_passed": false,
+      "verified_pass": false,
+      "failed_top_level": [
+        "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate"
+      ],
+      "raw_log_bytes": 71451,
+      "raw_log_sha256": "80a71dfee7ec7004f4a14bcece3174668e3c77ee84f9ebf4d9781ab6bb46e5a9",
+      "source_clean_before": true,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "input_identities_unchanged": true
+    },
+    {
+      "source_sha": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+      "index": 5,
+      "test": "TestP13_CorpusFidelityAndSourceSizeAudit",
+      "seconds": 163.14,
+      "exit_code": 1,
+      "timed_out": false,
+      "discovered": true,
+      "named_run": 1,
+      "named_pass": 0,
+      "named_fail": 1,
+      "named_skip": 0,
+      "not_run_marker_seen": false,
+      "required_test_passed": false,
+      "verified_pass": false,
+      "failed_top_level": [
+        "TestP13_CorpusFidelityAndSourceSizeAudit"
+      ],
+      "raw_log_bytes": 1024365,
+      "raw_log_sha256": "67d2ce44df2e50bede1e7c1d54343ff2a2ca58ddb6717e104c63ac51cbd5c558",
+      "source_clean_before": true,
+      "source_clean_after": true,
+      "corpus_after": {
+        "files": 38,
+        "bytes": 62980131,
+        "content_set_sha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+      },
+      "entire_input_directory_unchanged": true,
+      "input_identities_unchanged": true
+    }
+  ],
+  "verifiedPasses": 3,
+  "failedTests": [
+    "TestP12_PAR_12_CorpusComplexParamsAndZeroStage3Gate",
+    "TestP13_CorpusFidelityAndSourceSizeAudit"
+  ],
+  "naturalVerified": 23349,
+  "totalActions": 27652,
+  "naturalAcceptanceFloorUnchanged": 23340,
+  "stage3DemotedActions": 4,
+  "originalPlists": {
+    "files": 38,
+    "bytes": 62980131,
+    "contentSetSha256": "d1aaa34a0f89ec250dd223320382f2c5e2d34a00267a394b32853f46b0e49e33"
+  },
+  "allInputFiles": {
+    "files": 76,
+    "bytes": 132843610,
+    "contentSetSha256": "87aecae33a4e295228d400a364418b96f8234cb50e49df3ad5ccbbfe9931446c"
+  },
+  "inputsUnchanged": true,
+  "allFiveDiscovered": true,
+  "skipped": 0,
+  "completionStatus": "FAIL",
+  "publicCause": {
+    "code": "E_TARGET_VALUE_SHAPE",
+    "events": 2,
+    "nativeActionIdentifier": "is.workflow.actions.repeat.each",
+    "stage3Actions": 4
+  },
+  "privateObserver": {
+    "seconds": 117.2,
+    "rawLogSha256": "46c40b2c0e41f57884e043148404bcb411fec8085c385d2720d1f52afa9b3e41",
+    "rawLogBytes": 489196,
+    "purpose": "Identify existing native loop outputs misrepresented as authored nested List results; this observer is not an acceptance pass."
+  }
+}
