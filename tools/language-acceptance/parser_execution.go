@@ -38,9 +38,13 @@ func (r *Runner) runParser() {
 
 // Both execution and the receipt use the same argument vector.
 func productionTestCommand(required []string) []string {
+	return productionTestCommandInPackage(".", required)
+}
+
+func productionTestCommandInPackage(packagePath string, required []string) []string {
 	var alternatives []string
 	for _, name := range required {
 		alternatives = append(alternatives, regexp.QuoteMeta(name))
 	}
-	return []string{"go", "test", "-count=1", "-json", "-timeout", productionTestTimeout(required).String(), ".", "-run", "^(" + strings.Join(alternatives, "|") + ")$"}
+	return []string{"go", "test", "-count=1", "-json", "-timeout", productionTestTimeout(required).String(), packagePath, "-run", "^(" + strings.Join(alternatives, "|") + ")$"}
 }

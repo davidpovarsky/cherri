@@ -909,6 +909,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				continue
 			}
 
+			if err := validateSupplementalProductionRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if partialTypeProducer(reqID, rec.TestID) {
 				validationErrors = append(validationErrors, fmt.Sprintf("test_id %q is a partial producer and cannot satisfy the full %s contract", rec.TestID, reqID))
 			}
@@ -1983,7 +1987,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
-		r.recordUnexecutedRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels)
+		if !r.runSupplementalProduction(c.ID, "repair", c.Title, c.RequiredTestLevels) {
+			r.recordUnexecutedRequirement(c.ID, "repair", c.Title, c.RequiredTestLevels)
+		}
 	}
 }
 
@@ -1992,7 +1998,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
-		r.recordUnexecutedRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers)
+		if !r.runSupplementalProduction(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
+			r.recordUnexecutedRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers)
+		}
 	}
 }
 

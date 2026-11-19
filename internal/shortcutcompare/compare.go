@@ -39,6 +39,7 @@ var volatileTopLevelKeys = map[string]bool{
 func CompareDocumentsStrict(docA, docB map[string]any) *ComparisonResult {
 	res := &ComparisonResult{Equal: true}
 	scope := BuildDocumentScope(docA, docB)
+	scope.strictNativeScalars = true
 
 	compareDict(docA, docB, "", scope, nil, res)
 
@@ -49,12 +50,13 @@ func CompareDocumentsStrict(docA, docB map[string]any) *ComparisonResult {
 }
 
 type Scope struct {
-	producersA   map[string]int // UUID -> action index in A
-	producersB   map[string]int // UUID -> action index in B
-	producerAtoB map[string]string
-	producerBtoA map[string]string
-	groupAtoB    map[string]string
-	groupBtoA    map[string]string
+	strictNativeScalars bool
+	producersA          map[string]int // UUID -> action index in A
+	producersB          map[string]int // UUID -> action index in B
+	producerAtoB        map[string]string
+	producerBtoA        map[string]string
+	groupAtoB           map[string]string
+	groupBtoA           map[string]string
 }
 
 func NewScope() *Scope {
@@ -369,6 +371,16 @@ func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
 		return
 	}
 
+	// Native plist data is a scalar. Converting it to an array erases its type.
+	if scope.strictNativeScalars {
+		_, dataA := a.([]byte)
+		_, dataB := b.([]byte)
+		if dataA || dataB {
+			compareStrictNativeScalars(a, b, path, res)
+			return
+		}
+	}
+
 	// Map (must recurse via compareDict so bijective UUID/GroupingIdentifier/OutputUUID scope is enforced even when raw strings happen to match)
 	mapA, okMapA := a.(map[string]any)
 	mapB, okMapB := b.(map[string]any)
@@ -399,6 +411,11 @@ func compareValues(a, b any, path string, scope *Scope, res *ComparisonResult) {
 	}
 	if okSliceA != okSliceB {
 		addDiff(res, path, "type", describe(a), describe(b))
+		return
+	}
+
+	if scope.strictNativeScalars {
+		compareStrictNativeScalars(a, b, path, res)
 		return
 	}
 

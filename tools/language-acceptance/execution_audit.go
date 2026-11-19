@@ -52,12 +52,16 @@ func productionTestTimeout(required []string) time.Duration {
 // Execute named production tests with explicit discovery checks. Exit status
 // alone cannot prove that any required scenario was selected.
 func executeNamedProductionTests(required []string) (bool, string) {
+	return executeNamedProductionTestsInPackage(".", required)
+}
+
+func executeNamedProductionTestsInPackage(packagePath string, required []string) (bool, string) {
 	var ctx, cancel = context.WithTimeout(context.Background(), productionTestTimeout(required)+time.Minute)
 	defer cancel()
 	if len(required) == 0 {
 		return false, "No production tests were selected"
 	}
-	command := productionTestCommand(required)
+	command := productionTestCommandInPackage(packagePath, required)
 	var cmd = exec.CommandContext(ctx, command[0], command[1:]...)
 	cmd.Dir = resolveRepoRoot()
 	var output, err = cmd.CombinedOutput()
@@ -267,6 +271,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 		if row.ID == "R07" {
 			row.TestNames = append([]string{}, r07ProductionTests...)
 			row.ProductionPath = []string{"semantic_import_planner.go", "hybrid_import.go", "import_provenance.go"}
+			row.PositiveAndNegative = res.Passed
+		}
+		if producer, ok := supplementalProductionScenarios[row.ID]; ok {
+			row.TestNames = append([]string{}, producer.TestNames...)
+			row.ProductionPath = append([]string{}, producer.ProductionPaths...)
 			row.PositiveAndNegative = res.Passed
 		}
 		if row.ID == "F01" {
