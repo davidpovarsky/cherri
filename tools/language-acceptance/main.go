@@ -1531,7 +1531,7 @@ func (r *Runner) runBinding() {
 	r.runBindingScopeRequirement()
 
 	// V03: System clipboard read captured once
-	srcV03 := "let clip = clipboard\nshow(clip)"
+	srcV03 := "let clip = Clipboard\nshow(clip)"
 	wfV03, errV03 := lowerSrc(r.reg, srcV03)
 	v03Passed := errV03 == nil && len(wfV03.Actions) > 0
 	r.Record("V03", "binding", "System clipboard read captured once", "unit+native+iOS", []string{"unit", "native"}, v03Passed, "PASSED", "Clipboard reference materialized cleanly into AttachmentToken")
