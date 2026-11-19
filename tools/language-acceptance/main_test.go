@@ -27,7 +27,7 @@ func sampleContractsSet() *ContractsSet {
 		Repair: &RepairContractFile{
 			CaseCount: 1,
 			Cases: []RepairCaseSpec{
-				{ID: "RP01", Title: "Repair 1", RequiredTestLevels: []string{"unit"}},
+				{ID: "RP00", Title: "Repair 1", RequiredTestLevels: []string{"unit"}},
 			},
 		},
 		Gates: &GatesContractFile{
@@ -669,7 +669,7 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 		Repair: &RepairContractFile{
 			CaseCount: 1,
 			Cases: []RepairCaseSpec{
-				{ID: "RP01", Title: "Repair 1", RequiredTestLevels: []string{"unit"}},
+				{ID: "RP00", Title: "Repair 1", RequiredTestLevels: []string{"unit"}},
 			},
 		},
 		Gates: &GatesContractFile{
@@ -758,14 +758,14 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 				},
 			},
 			{
-				EvidenceID:        "ev-rp01-unit",
-				Requirements:      []string{"RP01"},
+				EvidenceID:        "ev-rp00-unit",
+				Requirements:      []string{"RP00"},
 				Tier:              "unit",
-				TestID:            "github.com/electrikmilk/cherri/tools/language-acceptance:TestMeta_ContradictoryPassedStatus",
+				TestID:            "tools/language-acceptance:runRepair",
 				ImplementationSHA: "commit123456789012345678901234567890123",
 				ExitCode:          0,
 				Result:            "passed",
-				Assertions:        map[string]string{"assertion": "rp01 ok"},
+				Assertions:        map[string]string{"assertion": "synthetic repair fixture ok"},
 			},
 			{
 				EvidenceID:        "ev-brg01-repo",

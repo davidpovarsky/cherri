@@ -17,19 +17,107 @@ type supplementalProductionScenario struct {
 // These are independent executions of the complete supplemental scenarios.
 // Related original IDs are navigation only and never supply an inherited pass.
 var supplementalProductionScenarios = map[string]supplementalProductionScenario{
+	"RP01": {
+		PackagePath: "./tools/language-acceptance",
+		ModulePath:  "github.com/electrikmilk/cherri/tools/language-acceptance",
+		TestNames: []string{
+			"TestMeta_AssertionReturnsFalse",
+			"TestMeta_ContradictoryPassedStatus",
+			"TestMeta_MissingRequiredID",
+			"TestMeta_UnknownIDInjected",
+			"TestMeta_DuplicateEvidenceID",
+			"TestEndToEndAggregator_All12AdversarialAttacks",
+			"TestP15VerificationInvalidRecordsNeverPass",
+			"TestP15VerificationMalformedProducerFailsClosed",
+			"TestP15VerificationCLIInvalidInputs",
+		},
+		Tiers: []string{"unit", "integration"},
+		ProductionPaths: []string{
+			"tools/language-acceptance/main.go",
+			"tools/language-acceptance/manifest_generator.go",
+			"tools/language-acceptance/main_test.go",
+			"tools/language-acceptance/verification_contract_test.go",
+		},
+	},
+	"RP02": {
+		PackagePath: "./tools/language-acceptance",
+		ModulePath:  "github.com/electrikmilk/cherri/tools/language-acceptance",
+		TestNames: []string{
+			"TestP15RP02ParserOnlyAndForeignSHA",
+			"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal",
+			"TestMeta_FalsePassedClaimWithMissingTiersRejected",
+			"TestMeta_WeakTestLevelRejection",
+		},
+		Tiers: []string{"unit", "integration"},
+		ProductionPaths: []string{
+			"tools/language-acceptance/main.go",
+			"tools/language-acceptance/main_test.go",
+			"tools/language-acceptance/verification_contract_test.go",
+		},
+	},
+	"RP03": {
+		PackagePath: "./tools/language-acceptance",
+		ModulePath:  "github.com/electrikmilk/cherri/tools/language-acceptance",
+		TestNames: []string{
+			"TestP15RP03FreshCloneContractIntake",
+			"TestRealContractsLoadAndVerifyDigests",
+			"TestMeta_ContractHashMismatch",
+		},
+		Tiers: []string{"integration"},
+		ProductionPaths: []string{
+			"tools/language-acceptance/main.go",
+			"tools/language-acceptance/evidence_map.go",
+			"tools/language-acceptance/verification_contract_test.go",
+		},
+	},
+	"BRG04": {
+		PackagePath: "./tools/language-acceptance",
+		ModulePath:  "github.com/electrikmilk/cherri/tools/language-acceptance",
+		TestNames: []string{
+			"TestP15VerificationInvalidRecordsNeverPass",
+			"TestP15VerificationMalformedProducerFailsClosed",
+			"TestP15VerificationCLIInvalidInputs",
+			"TestMeta_ContractHashMismatch",
+			"TestMeta_AssertionReturnsFalse",
+			"TestMeta_WeakTestLevelRejection",
+			"TestMeta_UnitAndNativeCannotSatisfyIOSInFinal",
+			"TestSupplementalAcceptanceMissingProducerFailsClosed",
+			"TestLocalReportIncludesAll179WithoutInheritedClosure",
+			"TestEndToEndAggregator_All12AdversarialAttacks",
+		},
+		Tiers: []string{"unit", "integration"},
+		ProductionPaths: []string{
+			"tools/language-acceptance/main.go",
+			"tools/language-acceptance/manifest_generator.go",
+			"tools/language-acceptance/execution_audit.go",
+			"tools/language-acceptance/verification_contract_test.go",
+			"tools/language-acceptance/supplemental_execution_test.go",
+		},
+	},
 	"BRG02": {
-		PackagePath:     "./internal/shortcutcompare",
-		ModulePath:      "github.com/electrikmilk/cherri/internal/shortcutcompare",
-		TestNames:       []string{"TestP15BRG02ReferenceTopologyProduction"},
-		Tiers:           []string{"unit", "native-structure"},
-		ProductionPaths: []string{"internal/shortcutcompare/compare.go", "internal/shortcutcompare/p15_recovery_contract_test.go"},
+		PackagePath: "./internal/shortcutcompare",
+		ModulePath:  "github.com/electrikmilk/cherri/internal/shortcutcompare",
+		TestNames: []string{
+			"TestP15BRG02ReferenceTopologyProduction",
+		},
+		Tiers: []string{"unit", "native-structure"},
+		ProductionPaths: []string{
+			"internal/shortcutcompare/compare.go",
+			"internal/shortcutcompare/p15_recovery_contract_test.go",
+		},
 	},
 	"BRG03": {
-		PackagePath:     "./internal/shortcutcompare",
-		ModulePath:      "github.com/electrikmilk/cherri/internal/shortcutcompare",
-		TestNames:       []string{"TestP15BRG03TypedTreeProduction"},
-		Tiers:           []string{"unit", "native-structure"},
-		ProductionPaths: []string{"internal/shortcutcompare/compare.go", "internal/shortcutcompare/strict_scalars.go", "internal/shortcutcompare/p15_recovery_contract_test.go"},
+		PackagePath: "./internal/shortcutcompare",
+		ModulePath:  "github.com/electrikmilk/cherri/internal/shortcutcompare",
+		TestNames: []string{
+			"TestP15BRG03TypedTreeProduction",
+		},
+		Tiers: []string{"unit", "native-structure"},
+		ProductionPaths: []string{
+			"internal/shortcutcompare/compare.go",
+			"internal/shortcutcompare/strict_scalars.go",
+			"internal/shortcutcompare/p15_recovery_contract_test.go",
+		},
 	},
 	"RP35": {
 		PackagePath: ".",
@@ -70,8 +158,14 @@ var supplementalProductionScenarios = map[string]supplementalProductionScenario{
 			"TestHYB20_TrailingGarbageAfterJSONRootRejected",
 			"TestHYB21_MalformedActionEntriesRejectedWithExactIndex",
 		},
-		Tiers:           []string{"integration"},
-		ProductionPaths: []string{"import_fidelity.go", "hybrid_import.go", "mobile_compiler.go", "p15_intake_acceptance_test.go", "p10r9_hybrid_test.go"},
+		Tiers: []string{"integration"},
+		ProductionPaths: []string{
+			"import_fidelity.go",
+			"hybrid_import.go",
+			"mobile_compiler.go",
+			"p15_intake_acceptance_test.go",
+			"p10r9_hybrid_test.go",
+		},
 	},
 }
 

@@ -654,9 +654,10 @@ func ValidateAndAggregateWithPhase(contract *ContractFile, results map[string]Ca
 			} else {
 				validationErrors = append(validationErrors, fmt.Sprintf("case %s failed assertion", c.ID))
 			}
-		} else if phase == "local" && isExplicitSkipped && len(res.ExecutedLevels) == 0 {
-			// Preserve an honest unexecuted obligation without calling it an
-			// assertion failure or claiming that any local assertion passed.
+		} else if phase == "local" && isExplicitSkipped && !res.Passed && (len(res.ExecutedLevels) == 0 || res.Status == "NOT_RUN") {
+			// Preserve explicitly unexecuted or partial local obligations and
+			// their actual levels. A false PASSED claim is rejected above, and
+			// every missing tier still rejects final closure.
 			skipped++
 			res.Passed = false
 		} else if len(missingTiers) > 0 {
@@ -735,6 +736,8 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 	}
 
 	var validationErrors []string
+	invalidEvidenceIDs := make(map[string]bool)
+	invalidRunIDs := make(map[string]bool)
 	seenEvidenceIDs := make(map[string]bool)
 
 	if manifest.ImplementationSHA == "" {
@@ -748,7 +751,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 	}
 
 	for _, rec := range manifest.Records {
+		var errorsBefore = len(validationErrors)
 		if rec.EvidenceID == "" {
+			invalidEvidenceIDs[""] = true
 			validationErrors = append(validationErrors, "evidence record missing evidence_id")
 			continue
 		}
@@ -776,13 +781,17 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 		if (rec.Result == "passed" || rec.Result == "PASS") && len(rec.Assertions) == 0 {
 			validationErrors = append(validationErrors, fmt.Sprintf("evidence record %s passed without any recorded assertions", rec.EvidenceID))
 		}
-		if phase == "final" && (rec.Tier == "ios-runtime" || rec.Tier == "ios-ui" || rec.Tier == "ios-build") && len(rec.Artifacts) == 0 {
+		if (rec.Tier == "ios-runtime" || rec.Tier == "ios-ui" || rec.Tier == "ios-build") && len(rec.Artifacts) == 0 {
 			validationErrors = append(validationErrors, fmt.Sprintf("evidence record %s on tier %s missing required CI artifacts", rec.EvidenceID, rec.Tier))
 		}
 
 		for _, art := range rec.Artifacts {
 			if art.Path == "" {
+				validationErrors = append(validationErrors, fmt.Sprintf("record %s declares an artifact with no path", rec.EvidenceID))
 				continue
+			}
+			if (rec.Tier == "ios-runtime" || rec.Tier == "ios-ui" || rec.Tier == "ios-build") && (art.SHA256 == "" || art.RunID == "") {
+				validationErrors = append(validationErrors, fmt.Sprintf("record %s has an unbound CI artifact %s: digest and run_id are required", rec.EvidenceID, art.Path))
 			}
 			content, err := os.ReadFile(art.Path)
 			if err != nil {
@@ -809,9 +818,13 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				}
 			}
 		}
+		if len(validationErrors) != errorsBefore {
+			invalidEvidenceIDs[rec.EvidenceID] = true
+		}
 	}
 
 	for _, run := range manifest.Runs {
+		var errorsBefore = len(validationErrors)
 		if run.RunID == "" || run.RunID == "0" {
 			validationErrors = append(validationErrors, fmt.Sprintf("invalid CI run_id: %q", run.RunID))
 		}
@@ -826,6 +839,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 		}
 		if run.Conclusion != "success" && run.Conclusion != "SUCCESS" {
 			validationErrors = append(validationErrors, fmt.Sprintf("CI run %s failed with conclusion %s", run.RunID, run.Conclusion))
+		}
+		if len(validationErrors) != errorsBefore {
+			invalidRunIDs[run.RunID] = true
 		}
 	}
 
@@ -903,6 +919,12 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 	}
 
 	for _, rec := range manifest.Records {
+		var errorsBefore = len(validationErrors)
+		for _, artifact := range rec.Artifacts {
+			if invalidRunIDs[artifact.RunID] {
+				validationErrors = append(validationErrors, fmt.Sprintf("record %s artifact references invalid CI run %s", rec.EvidenceID, artifact.RunID))
+			}
+		}
 		for _, reqID := range rec.Requirements {
 			if !knownRequirements[reqID] {
 				validationErrors = append(validationErrors, fmt.Sprintf("unknown requirement ID %q in evidence record %s", reqID, rec.EvidenceID))
@@ -981,6 +1003,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				}
 			}
 		}
+		if len(validationErrors) != errorsBefore {
+			invalidEvidenceIDs[rec.EvidenceID] = true
+		}
 	}
 
 	passed := 0
@@ -1011,6 +1036,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				continue
 			}
 
+			if invalidEvidenceIDs[rec.EvidenceID] {
+				hasFailedRecord = true
+				continue
+			}
 			if rec.Result == "failed" || rec.Result == "FAILED" || rec.ExitCode != 0 {
 				hasFailedRecord = true
 			} else if rec.Result == "passed" || rec.Result == "PASS" {
