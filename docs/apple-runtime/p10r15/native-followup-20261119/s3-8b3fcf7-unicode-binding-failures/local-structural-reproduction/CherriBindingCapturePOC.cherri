@@ -1,0 +1,26 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+debugClearLogs()
+debugTraceEvent("before", "binding-defaults")
+// BEGIN unchanged tests/runtime_poc/CherriBindingCapturePOC.cherri
+// V01 and V03: actual iOS execution must retain the declaration-time values.
+var numCaptureSrc = 1
+let numCaptured = numCaptureSrc
+numCaptureSrc = 2
+setClipboard("clip_initial")
+let clipCaptured = Clipboard
+let clipAlias = clipCaptured
+setClipboard("clip_overwritten")
+let result = f"CHERRI_BINDING_CAPTURE_OK\nNUM_CAPTURED={numCaptured}\nNUM_AGAIN={numCaptured}\nCLIP_CAPTURED={clipCaptured}\nCLIP_AGAIN={clipAlias}"
+setClipboard(result)
+// END unchanged runtime body
+comment("ANCHOR_CARD_15_MID_CENTER")
+let qaObservedClipboard = getVariable(Clipboard)
+let qaClipboard64Raw = base64Encode(qaObservedClipboard, lineBreakMode: "None")
+let qaClipboard64Length = count(qaClipboard64Raw, "Characters")
+var qaClipboard64 = "OVERSIZE"
+if qaClipboard64Length.number < 513 { qaClipboard64 = qaClipboard64Raw }
+debugTraceEvent("after", "binding-defaults")
+let qaTraceEnvelope = debugExportTrace(runId: "CherriBindingCapturePOC")
+let qaFinalSummary = text(f"CHERRI_QA_BINDING_CAPTURE_RESULT:{qaClipboard64}\n{qaTraceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(qaFinalSummary)
