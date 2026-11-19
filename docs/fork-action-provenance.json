@@ -2973,6 +2973,22 @@
       "reason": "Qualified builtin calls were replacing the schema ID with the source alias and failing strict canonical dispatch.",
       "evidence": "docs/language-v2/evidence/module-canonical-alias-ffe67e1-20261119: actual causal baseline3PASS/8FAIL; exact clean ffe67e1cc7c2363c813d9a32a1865b655597708f regression343PASS/0FAIL/0SKIP in41.750s, raw SHA2569d110ee223757d6f1828979308cbbc061d0e9d1e04e5c01fac4c46110c63bf6d.",
       "note": "No canonical-lookup fallback or inferred VariantID. Original immutable acceptance criteria are unchanged; combined-source and native gates remain separate."
+    },
+    {
+      "name": "P10R15 source-relative embedded asset cache and service diagnostics",
+      "locations": [
+        "embedded_assets.go",
+        "internal/language/assets",
+        "internal/language/service/asset_analysis.go",
+        "internal/language/lsp/server.go",
+        "language_backend_adapter.go",
+        "actions_std.go"
+      ],
+      "firstForkCommit": "2d3d9c6a8312ac1b8095624bdf00970ee426c8ff",
+      "change": "Share bounded authorized embedFile snapshots across semantic analysis and canonical compilation, with entry/import-relative paths, invalidation and dependency diagnostics.",
+      "reason": "Relative embedded files were read from the process directory and editor analysis could miss missing or escaping assets or reread and re-encode large unchanged data.",
+      "evidence": "Exact clean c53f765dc8f80db433c49cc4d780e0d6d9ad27dd:70 outer/control cases PASS,0 failures/skips in62.875s; independently executed S03 and E08 producers retain400 raw samples each. Raw gate SHA25678fcf033e450e22f5e4e8e2dd74873ab3ef62f54d2e14f2c3230ea0927bdb667. Working96 focused plus95 affected-package cases passed before the clean replay.",
+      "note": "The opened file handle is reauthorized even for cache hits. Limits are64MiB/file,128MiB encoded resident cache and64entries. Same-size/timestamp notifications invalidate the cache. Windows QPC observations do not prove iOS UI latency or race-free concurrency."
     }
   ]
 }
