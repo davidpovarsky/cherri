@@ -80,12 +80,39 @@ def text_parts(action):
     return value["Value"]["string"], refs(value)
 
 
+def verify_debug_clear(actions):
+    # These four reviewed sources each begin with one debugClearLogs call after
+    # the public anchor. Nothing is permitted only as this exact zero-output
+    # producer; it is not a general effect allowlist entry.
+    require(len(actions) >= 3 and suffix(actions[0]) == "comment"
+            and params(actions[0]).get("WFCommentActionText") == "ANCHOR_CARD_01_TOP_HEADER",
+            "reviewed debug-clear anchor changed")
+    clear, target = actions[1], actions[2]
+    uid = params(clear).get("UUID")
+    require(suffix(clear) == "nothing" and set(params(clear)) == {"UUID"}
+            and isinstance(uid, str)
+            and re.fullmatch(r"[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}", uid),
+            "debug clear requires one parameterless Nothing producer")
+    require(suffix(target) == "setvariable"
+            and params(target) == {"WFVariableName": "__cherri_debug_log"},
+            "debug clear target must consume implicit zero output")
+    require(sum(suffix(a) == "nothing" for a in actions) == 1,
+            "extra Nothing action is unreviewed")
+    require(all(uid not in refs(params(a)) for a in actions),
+            "zero-output clear cannot be referenced as a value")
+    require([i for i, a in enumerate(actions) if suffix(a) == "setvariable"
+             and params(a).get("WFVariableName") == "__cherri_debug_log"] == [2],
+            "unreviewed additional debug-log assignment")
+
+
 def common_graph(actions, allowed):
     require(isinstance(actions, list) and bool(actions), "empty action graph")
+    verify_debug_clear(actions)
     producers, frames, contexts, groups = {}, [], {}, {}
     for index, action in enumerate(actions):
-        require(action.get("WFWorkflowActionIdentifier", "").startswith(PREFIX) and suffix(action) in allowed,
-                "unreviewed native effect")
+        reviewed_clear = index == 1 and suffix(action) == "nothing"
+        require(action.get("WFWorkflowActionIdentifier", "").startswith(PREFIX)
+                and (suffix(action) in allowed or reviewed_clear), "unreviewed native effect")
         p = params(action)
         for ref in refs(p):
             require(ref in producers, "missing or nonpreceding native producer")
@@ -306,6 +333,24 @@ def causal_faults(fid, actions):
             raise RuntimeError("causal graph fault accepted: " + fid + "/" + name)
     def first(items, native):
         return next(a for a in items if suffix(a) == native)
+    mutate("clear-empty-text", lambda a: a[1].update(
+        WFWorkflowActionIdentifier=PREFIX+"gettext",
+        WFWorkflowActionParameters={"UUID": params(a[1])["UUID"], "WFTextActionText": ""}))
+    mutate("clear-extra-parameter", lambda a: params(a[1]).update(WFInput="unexpected"))
+    mutate("clear-explicit-input", lambda a: params(a[2]).update(WFInput={
+        "WFSerializationType": "WFTextTokenAttachment",
+        "Value": {"Type": "ActionOutput", "OutputUUID": params(a[1])["UUID"]}}))
+    mutate("clear-missing-uuid", lambda a: params(a[1]).pop("UUID"))
+    mutate("clear-foreign-variable", lambda a: params(a[2]).update(WFVariableName="foreign"))
+    mutate("clear-reordered", lambda a: a.__setitem__(slice(1, 3), list(reversed(a[1:3]))))
+    mutate("clear-duplicate-pair", lambda a: a.extend(copy.deepcopy(a[1:3])))
+    mutate("extra-nothing", lambda a: a.append({"WFWorkflowActionIdentifier": PREFIX+"nothing",
+        "WFWorkflowActionParameters": {"UUID": "00000000-0000-0000-0000-000000000000"}}))
+    mutate("clear-late-write", lambda a: a.append({"WFWorkflowActionIdentifier": PREFIX+"setvariable",
+        "WFWorkflowActionParameters": {"WFVariableName": "__cherri_debug_log"}}))
+    mutate("clear-value-consumed", lambda a: a.append({"WFWorkflowActionIdentifier": PREFIX+"gettext",
+        "WFWorkflowActionParameters": {"WFTextActionText": {"WFSerializationType": "WFTextTokenAttachment",
+        "Value": {"Type": "ActionOutput", "OutputUUID": params(a[1])["UUID"]}}}}))
     mutate("extra-network", lambda a: a.append({"WFWorkflowActionIdentifier": PREFIX + "downloadurl",
           "WFWorkflowActionParameters": {"WFURL": "https://unreviewed.invalid/", "WFHTTPMethod": "GET"}}))
     if "storage" in fid:
