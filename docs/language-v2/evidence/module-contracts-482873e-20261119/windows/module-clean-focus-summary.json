@@ -1,0 +1,27 @@
+{
+  "sourceBase": "6439bd425a43ad8cb4ce97b95564f99ecd7fb62e",
+  "sourceState": "exact clean committed module repair",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^(TestP15IM0[1345]|TestMODULES_|TestP15C01|TestP15F0[134]|TestP15T06|TestRootedExactResourceReads)",
+    "."
+  ],
+  "seconds": 25.104,
+  "exitCode": 0,
+  "namedPass": 256,
+  "namedFail": 0,
+  "namedSkip": 0,
+  "failures": [],
+  "bytes": 224033,
+  "sha256": "63d9e79b7c3d7d9840ac95eb4ef2ed67b79061ce0a5130b36bb392d1cd13384e",
+  "diagnosticTail": [
+    "=== RUN   TestP15F03YieldDiagnosticsProduction/opaque_cannot_claim_text\n",
+    "--- PASS: TestP15F03YieldDiagnosticsProduction/opaque_cannot_claim_text (0.02s)\n"
+  ]
+}

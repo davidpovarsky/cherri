@@ -1,0 +1,138 @@
+{
+  "productionBase": "6439bd425a43ad8cb4ce97b95564f99ecd7fb62e",
+  "sourceState": "working shared-source follow-up",
+  "records": [
+    {
+      "name": "source-generation",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "generate",
+        "."
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "seconds": 1.019,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-generation-check",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "run",
+        "./tools/language-stdlib",
+        "-check"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "seconds": 0.215,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-generation-stale-rejected",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "run",
+        "./tools/language-stdlib",
+        "-source",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/stdfunc-generation-control/source.cherri",
+        "-output",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/stdfunc-generation-control/snapshot.go",
+        "-check"
+      ],
+      "exitCode": 1,
+      "expectedExitCode": 1,
+      "seconds": 0.114,
+      "bytes": 75,
+      "sha256": "f00bf5c3f01308cf3d257c025a71cfdae3739a17a70f1dd8e1748983e553d84c"
+    },
+    {
+      "name": "source-generation-regenerate-control",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "run",
+        "./tools/language-stdlib",
+        "-source",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/stdfunc-generation-control/source.cherri",
+        "-output",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/stdfunc-generation-control/snapshot.go"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "seconds": 0.115,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-generation-control-check",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "run",
+        "./tools/language-stdlib",
+        "-source",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/stdfunc-generation-control/source.cherri",
+        "-output",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/stdfunc-generation-control/snapshot.go",
+        "-check"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "seconds": 0.115,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "direct-service-working",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=2m",
+        "-run",
+        "^TestP15IM03DirectServiceStandardLibrary$",
+        "./internal/language/service"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "seconds": 2.021,
+      "bytes": 6366,
+      "sha256": "78a70f07cbdf3e74b7d80fb5940027cf9e87ad9f89c39c6fd6a5f31f81099191",
+      "named": {
+        "run": 6,
+        "pass": 6,
+        "fail": 0,
+        "skip": 0
+      },
+      "failures": []
+    },
+    {
+      "name": "main-standard-library-working",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=3m",
+        "-run",
+        "^(TestP15IM03|TestMODULES_)",
+        "."
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "seconds": 21.066,
+      "bytes": 15899,
+      "sha256": "a879697a22885db9ed47ac2fef7ec81c4420da5796d758920fde3d6649dfbe7f",
+      "named": {
+        "run": 20,
+        "pass": 20,
+        "fail": 0,
+        "skip": 0
+      },
+      "failures": []
+    }
+  ]
+}

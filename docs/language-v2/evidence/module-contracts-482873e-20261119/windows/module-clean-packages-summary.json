@@ -1,0 +1,25 @@
+{
+  "sourceBase": "6439bd425a43ad8cb4ce97b95564f99ecd7fb62e",
+  "sourceState": "exact clean committed module repair",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "./internal/language/analysis",
+    "./internal/language/lower",
+    "./internal/language/service",
+    "./internal/language/workspace"
+  ],
+  "seconds": 9.575,
+  "exitCode": 0,
+  "namedPass": 80,
+  "namedFail": 0,
+  "namedSkip": 0,
+  "failures": [],
+  "bytes": 70747,
+  "sha256": "f70f0e55c45028efa6d22d5a43321692d743d346c050a6028ee9e23600117b92",
+  "diagnosticTail": []
+}

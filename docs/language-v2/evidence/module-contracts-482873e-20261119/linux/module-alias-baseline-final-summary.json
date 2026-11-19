@@ -1,0 +1,38 @@
+{
+  "name": "module-alias-baseline-final",
+  "moduleProductionBase": "6439bd425a43ad8cb4ce97b95564f99ecd7fb62e",
+  "sourceState": "shared-source working followup with final alias test",
+  "testSha256": "d8f14423a52aec7d1e82ec165d92354a16b66d4eec74de251e1ab43ccd4ae94a",
+  "command": [
+    "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15IM01ModuleAliasCasePreservesNamespace|TestP15IM01UppercaseModuleRejectsUnexportedCallable)$",
+    "."
+  ],
+  "exitCode": 1,
+  "seconds": 18.567,
+  "bytes": 5700,
+  "sha256": "3011f9632b3efd0a256d406ebe09fe538c28311c9d66b7b8b044f7618ea672e5",
+  "named": {
+    "run": 5,
+    "pass": 1,
+    "fail": 4,
+    "skip": 0
+  },
+  "failures": [
+    "TestP15IM01ModuleAliasCasePreservesNamespace/uppercase_modules",
+    "TestP15IM01ModuleAliasCasePreservesNamespace/mixed_modules",
+    "TestP15IM01ModuleAliasCasePreservesNamespace",
+    "TestP15IM01UppercaseModuleRejectsUnexportedCallable"
+  ],
+  "diagnostics": [
+    "    p15_module_alias_case_test.go:27: [ERROR] E_RETURN_TYPE: return value of type Unknown does not match expected return type Text (a.cherri:2:28-2:48)\n",
+    "    p15_module_alias_case_test.go:27: [ERROR] E_RETURN_TYPE: return value of type Unknown does not match expected return type Text (a.cherri:2:28-2:48)\n",
+    "    p15_module_alias_case_test.go:58: service did not reject the actual missing module export: []\n"
+  ]
+}

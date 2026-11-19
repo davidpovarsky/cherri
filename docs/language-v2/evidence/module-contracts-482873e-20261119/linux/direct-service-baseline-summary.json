@@ -1,0 +1,41 @@
+{
+  "sourceProduction": "6439bd425a43ad8cb4ce97b95564f99ecd7fb62e",
+  "onlyChange": "one new external service test; no compiler-main import",
+  "testSha256": "2e4866d71eed05754b0bda9c3913df9d8f6cf30d1068c0060283bec5eb4ff921",
+  "command": [
+    "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=2m",
+    "-run",
+    "^TestP15IM03DirectServiceStandardLibrary$",
+    "./internal/language/service"
+  ],
+  "exitCode": 1,
+  "seconds": 5.58,
+  "bytes": 8863,
+  "sha256": "a2e8d494a2eda3457b19fe8544160eadc6ad3d6c27a76c19bf5d4e716f6c6f3c",
+  "named": {
+    "run": 6,
+    "pass": 0,
+    "fail": 6,
+    "skip": 0
+  },
+  "failures": [
+    "TestP15IM03DirectServiceStandardLibrary/preserved_source_without_main",
+    "TestP15IM03DirectServiceStandardLibrary/stdfunc_alias",
+    "TestP15IM03DirectServiceStandardLibrary/stdlib_alias",
+    "TestP15IM03DirectServiceStandardLibrary/legacy_bare_callable",
+    "TestP15IM03DirectServiceStandardLibrary/unknown_export_rejected",
+    "TestP15IM03DirectServiceStandardLibrary"
+  ],
+  "diagnostics": [
+    "    p15_stdfunc_direct_test.go:23: direct service package has no byte-identical preserved standard library source\n",
+    "    p15_stdfunc_direct_test.go:65: direct service could not use preserved stdfunc without compiler-main initialization: [[ERROR] E_MODULE_DEPENDENCY: cannot resolve module \"stdfunc\": preserved standard library source is unavailable (file:///tmp/TestP15IM03DirectServiceStandardLibrarystdfunc_alias1428091882/001/main.cherri:1:1-1:22)]\n",
+    "    p15_stdfunc_direct_test.go:65: direct service could not use preserved stdfunc without compiler-main initialization: [[ERROR] E_MODULE_DEPENDENCY: cannot resolve module \"stdfunc\": preserved standard library source is unavailable (file:///tmp/TestP15IM03DirectServiceStandardLibrarystdlib_alias1718637349/001/main.cherri:1:1-1:21)]\n",
+    "    p15_stdfunc_direct_test.go:65: direct service could not use preserved stdfunc without compiler-main initialization: [[ERROR] E_MODULE_DEPENDENCY: cannot resolve module \"stdfunc\": preserved standard library source is unavailable (file:///tmp/TestP15IM03DirectServiceStandardLibrarylegacy_bare_callable677378864/001/main.cherri:1:1-1:22)]\n",
+    "    p15_stdfunc_direct_test.go:62: missing actual module-export diagnostic: [[ERROR] E_MODULE_DEPENDENCY: cannot resolve module \"stdfunc\": preserved standard library source is unavailable (file:///tmp/TestP15IM03DirectServiceStandardLibraryunknown_export_rejected727983718/001/main.cherri:1:1-1:22)]\n"
+  ]
+}

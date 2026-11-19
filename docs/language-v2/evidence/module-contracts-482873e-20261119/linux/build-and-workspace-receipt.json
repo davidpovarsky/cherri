@@ -1,0 +1,86 @@
+{
+  "source": "6439bd425a43ad8cb4ce97b95564f99ecd7fb62e",
+  "sourceClean": true,
+  "origin": "https://github.com/davidpovarsky/cherri.git",
+  "ordinaryClone": true,
+  "noAlternates": true,
+  "records": [
+    {
+      "name": "clone",
+      "command": [
+        "git",
+        "clone",
+        "--depth=1",
+        "--branch",
+        "staging/cherri-p10r15-module-contracts-20261119",
+        "https://github.com/davidpovarsky/cherri.git",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-module-validation-20261119"
+      ],
+      "exitCode": 0,
+      "seconds": 2.175,
+      "bytes": 90,
+      "sha256": "a2e61c9be6630fe66d344bc3d5e8257fb351606cb12afe0c271dfb44a0de6715"
+    },
+    {
+      "name": "workspace-tests",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=2m",
+        "./internal/language/workspace"
+      ],
+      "exitCode": 0,
+      "seconds": 0.367,
+      "bytes": 12582,
+      "sha256": "c3a49552c131bd8e415afd8f718a566e2dbdf03158d9a43d0d7d41c70a1d19e4",
+      "named": {
+        "run": 13,
+        "pass": 13,
+        "fail": 0,
+        "skip": 0
+      },
+      "tests": [
+        "TestRootedExactResourceReads/allowed_._asset.txt",
+        "TestRootedExactResourceReads/allowed_.._asset.txt",
+        "TestRootedExactResourceReads/allowed_._..safe_asset.txt",
+        "TestRootedExactResourceReads/denied_asset.txt",
+        "TestRootedExactResourceReads/denied_asset.txt#01",
+        "TestRootedExactResourceReads/denied_asset.txt#02",
+        "TestRootedExactResourceReads/denied_asset.txt#03",
+        "TestRootedExactResourceReads/denied_asset.txt#04",
+        "TestRootedExactResourceReads/exact_path_has_no_extension_fallback",
+        "TestRootedExactResourceReads/regular_file_required",
+        "TestRootedExactResourceReads/file_uri_and_resource_ownership",
+        "TestRootedExactResourceReads",
+        "TestRootedRelativeSymlinkWithinWorkspace"
+      ]
+    },
+    {
+      "name": "build",
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "build",
+        "-p=1",
+        "-trimpath",
+        "-buildvcs=true",
+        "-o",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/cherri-6439bd4-linux-arm64",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 12.546,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "binary": {
+    "path": "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/cherri-6439bd4-linux-arm64",
+    "bytes": 23351374,
+    "sha256": "df1151eb7658fdf0707c2e1b32a62af8e9970721efede85c2574b33d4bf76625",
+    "buildInfoSha256": "0b50b25696ff61deed0491d8492252285177f9a3ade4753442c6197e84c93ff0"
+  },
+  "freeBytes": 1262751744
+}

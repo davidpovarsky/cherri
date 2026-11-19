@@ -1,0 +1,28 @@
+{
+  "moduleProductionBase": "6439bd425a43ad8cb4ce97b95564f99ecd7fb62e",
+  "sourceState": "working shared-source+semantic-alias repair with actual dispatcher detection",
+  "testSha256": "d8f14423a52aec7d1e82ec165d92354a16b66d4eec74de251e1ab43ccd4ae94a",
+  "command": [
+    "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^(TestP15IM01ModuleAliasCasePreservesNamespace|TestP15IM01UppercaseModuleRejectsUnexportedCallable|TestP15C04|TestP15Enum)",
+    "."
+  ],
+  "exitCode": 0,
+  "seconds": 30.448,
+  "bytes": 62565,
+  "sha256": "9a26882958cdc1f5f6fd2f0dd6c4a1a97364b60355382fed02ae6e9fc342eb99",
+  "named": {
+    "run": 76,
+    "pass": 76,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "diagnostics": []
+}

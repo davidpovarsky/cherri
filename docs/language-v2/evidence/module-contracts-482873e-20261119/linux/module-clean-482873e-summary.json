@@ -1,0 +1,123 @@
+{
+  "source": "482873e3b3776be7178c32977f6038559ce03d8d",
+  "sourceClean": true,
+  "sourceTree": "72714ea2697689d749782b8dd1420ebab0e44f41",
+  "origin": "https://github.com/davidpovarsky/cherri.git",
+  "records": [
+    {
+      "name": "clean-generation-482873e",
+      "source": "482873e3b3776be7178c32977f6038559ce03d8d",
+      "sourceCleanBefore": true,
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "generate",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 0.214,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceCleanAfter": true
+    },
+    {
+      "name": "clean-generation-check-482873e",
+      "source": "482873e3b3776be7178c32977f6038559ce03d8d",
+      "sourceCleanBefore": true,
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "run",
+        "./tools/language-stdlib",
+        "-check"
+      ],
+      "exitCode": 0,
+      "seconds": 0.114,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceCleanAfter": true
+    },
+    {
+      "name": "clean-focus-482873e",
+      "source": "482873e3b3776be7178c32977f6038559ce03d8d",
+      "sourceCleanBefore": true,
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=3m",
+        "-run",
+        "^(TestP15IM0[1345]|TestMODULES_|TestP15C01|TestP15C04|TestP15Enum|TestP15F0[134]|TestP15T06)",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 23.476,
+      "bytes": 282971,
+      "sha256": "825ef4990a30661f1516bb151c3fff69b431aaeb8013552f2a92ae5244205ddc",
+      "sourceCleanAfter": true,
+      "named": {
+        "run": 332,
+        "pass": 332,
+        "fail": 0,
+        "skip": 0
+      },
+      "failures": []
+    },
+    {
+      "name": "clean-packages-482873e",
+      "source": "482873e3b3776be7178c32977f6038559ce03d8d",
+      "sourceCleanBefore": true,
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "test",
+        "-p=1",
+        "-json",
+        "-count=1",
+        "-timeout=3m",
+        "./internal/language/analysis",
+        "./internal/language/lower",
+        "./internal/language/service",
+        "./internal/language/workspace"
+      ],
+      "exitCode": 0,
+      "seconds": 4.626,
+      "bytes": 76300,
+      "sha256": "06bf3e2bd40bfd07cf1245fc9e3eb1fffc9cce44aacd845a80f6994cc1a3472e",
+      "sourceCleanAfter": true,
+      "named": {
+        "run": 87,
+        "pass": 87,
+        "fail": 0,
+        "skip": 0
+      },
+      "failures": []
+    },
+    {
+      "name": "clean-build-482873e",
+      "source": "482873e3b3776be7178c32977f6038559ce03d8d",
+      "sourceCleanBefore": true,
+      "command": [
+        "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+        "build",
+        "-p=1",
+        "-trimpath",
+        "-buildvcs=true",
+        "-o",
+        "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/cherri-482873e-linux-arm64",
+        "."
+      ],
+      "exitCode": 0,
+      "seconds": 8.937,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceCleanAfter": true
+    }
+  ],
+  "binary": {
+    "path": "/home/chatgpt-agent/workspaces/cherri-p10r15-evidence-20261119/module-6439bd4/cherri-482873e-linux-arm64",
+    "bytes": 23347987,
+    "sha256": "da57d10e9e8de7799eda8dd6c12e24c7b04bea3a7920d7767a2523f261ecfd82",
+    "buildInfoSha256": "655e82385e3634a9f804561223c5b32fd5635d81d056940784f672554507dfdf"
+  },
+  "freeBytes": 1002856448
+}
