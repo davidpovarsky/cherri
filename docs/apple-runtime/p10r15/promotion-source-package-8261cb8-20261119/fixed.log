@@ -1,0 +1,22 @@
+{"route": "v2", "operation": "status", "exitCode": 1, "verdict": "FAIL"}
+test_real_source_archive_reaches_required_runtime_boundary (test_remote_package_preflight.SourcePackagePreflight.test_real_source_archive_reaches_required_runtime_boundary) ... ok
+test_actual_manifest_files_missing_stale_duplicate_or_wrong_stage_rejected (test_remote_promotion.EvidenceGates.test_actual_manifest_files_missing_stale_duplicate_or_wrong_stage_rejected) ... ok
+test_complete_unit_model_and_causal_corruptions (test_remote_promotion.EvidenceGates.test_complete_unit_model_and_causal_corruptions) ... ok
+test_duplicate_json_keys_rejected (test_remote_promotion.EvidenceGates.test_duplicate_json_keys_rejected) ... ok
+test_incomplete_actual_historical_report_rejected (test_remote_promotion.EvidenceGates.test_incomplete_actual_historical_report_rejected) ... ok
+test_early_failure_does_not_claim_signing_and_retains_missing_file_error (test_remote_promotion.SmokeFailureEvidence.test_early_failure_does_not_claim_signing_and_retains_missing_file_error) ... ok
+test_actual_files_cycle_rollback_reapply_and_manual_rollback (test_remote_promotion.TransactionBoundaries.test_actual_files_cycle_rollback_reapply_and_manual_rollback) ... ok
+test_canonical_clone_survives_source_removal_without_alternates (test_remote_promotion.TransactionBoundaries.test_canonical_clone_survives_source_removal_without_alternates) ... ok
+test_event_write_failure_after_switch_still_restores_files (test_remote_promotion.TransactionBoundaries.test_event_write_failure_after_switch_still_restores_files) ... ok
+test_every_observed_write_boundary_restores_on_error_and_sigterm (test_remote_promotion.TransactionBoundaries.test_every_observed_write_boundary_restores_on_error_and_sigterm) ... ok
+test_exclusive_lock_and_modified_journal_rejected (test_remote_promotion.TransactionBoundaries.test_exclusive_lock_and_modified_journal_rejected) ... ok
+test_hard_interruption_journal_recovers_each_replaced_file (test_remote_promotion.TransactionBoundaries.test_hard_interruption_journal_recovers_each_replaced_file) ... ok
+test_manual_cli_reapply_logging_failure_restores_and_returns_nonzero (test_remote_promotion.TransactionBoundaries.test_manual_cli_reapply_logging_failure_restores_and_returns_nonzero) ... ok
+test_mixed_file_states_never_validate_the_wrong_tuple (test_remote_promotion.TransactionBoundaries.test_mixed_file_states_never_validate_the_wrong_tuple) ... ok
+test_no_replace_directory_keeps_concurrent_destination (test_remote_promotion.TransactionBoundaries.test_no_replace_directory_keeps_concurrent_destination) ... ok
+test_stale_concurrent_file_is_not_overwritten (test_remote_promotion.TransactionBoundaries.test_stale_concurrent_file_is_not_overwritten) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 35.874s
+
+OK
