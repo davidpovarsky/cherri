@@ -127,6 +127,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
         "qa-label-file-carrier-v2",
         "qa-label-raw-empty-v2",
         "qa-label-raw-grouping-v2",
+        "qa-export-unicode-diagnostic-v2",
         "qa-export-unicode-v2",
         "qa-export-empty-v2",
         "qa-export-thousand-v2",

@@ -4,7 +4,9 @@ This validator never invokes signing or a simulator. Negative cases alter an
 in-memory copy of the production phase and write only ignored artifacts.
 """
 from pathlib import Path
+import copy
 import hashlib
+import plistlib
 import json
 import shutil
 import subprocess
@@ -13,6 +15,7 @@ import tempfile
 
 from prepare_public_artifacts import PublicationBlocked, stage, trusted_fixture_sources
 from fixture_compile_contract import EXPECTED_REJECTIONS
+from export_unicode_diagnostic import FIXTURE_ID as UNICODE_ID, validate_export_unicode_graph
 
 repo = Path(sys.argv[1]).resolve()
 binary = Path(sys.argv[2]).resolve()
@@ -58,6 +61,7 @@ for fid, entry in rejected.items():
     source = repo / "tools/shortcuts-simulator-qa/fixtures" / entry["fileName"]
     assert entry["sourceSha256"] == hashlib.sha256(source.read_bytes()).hexdigest(), fid
 new_probes = {
+    'qa-export-unicode-diagnostic-v2': '',
     'qa-nil-clear-v2': '',
     'qa-label-file-carrier-v2': 'p15-label-probes',
     'qa-label-raw-empty-v2': 'p15-label-probes',
@@ -102,6 +106,79 @@ for fid, folder in new_probes.items():
     assert entry['unsignedPlistSha256'] == hashlib.sha256(compiled.read_bytes()).hexdigest(), fid
     assert entry['nativeActionCount'] > 0, fid
 
+# Mutate the actual emitted diagnostic graph. This does not simulate Apple:
+# it establishes that a wrong source edge, forged flag or missing output cap
+# cannot be signed as this reviewed diagnostic.
+unicode_entry = selected[UNICODE_ID]
+unicode_graph = plistlib.loads((directory / "builds" / (UNICODE_ID + ".shortcut")).read_bytes())["WFWorkflowActions"]
+unicode_result = validate_export_unicode_graph(UNICODE_ID, unicode_graph)
+assert unicode_entry["exportUnicodeDiagnosticGraph"] == unicode_result
+unicode_mutations = {}
+
+def graph_params(actions, name):
+    matches = [a["WFWorkflowActionParameters"] for a in actions
+               if a.get("WFWorkflowActionParameters", {}).get("CustomOutputName") == name]
+    assert len(matches) == 1, name
+    return matches[0]
+
+def graph_write_indexes(actions, variable):
+    return [i for i, a in enumerate(actions) if a.get("WFWorkflowActionIdentifier") == "is.workflow.actions.setvariable"
+            and a.get("WFWorkflowActionParameters", {}).get("WFVariableName") == variable]
+
+for name in ("changed-unicode-literal", "wrong-log-producer", "bypassed-file-materialization",
+             "wrong-payload-key", "restored-decode-bypasses-payload", "literal-control-uses-payload",
+             "byte-witness-aliases-original", "byte-witness-line-breaks", "witness-cap-raised",
+             "witness-cap-wrong-operator", "witness-overwritten-after-cap", "inequality-became-equality",
+             "flag-forged-positive", "summary-bypasses-bounded-variable", "output-replaced-with-positive"):
+    damaged = copy.deepcopy(unicode_graph)
+    def p(value): return graph_params(damaged, value)
+    def output_ref(value):
+        return {"WFSerializationType": "WFTextTokenAttachment",
+                "Value": {"Type": "ActionOutput", "OutputUUID": p(value)["UUID"], "OutputName": value}}
+    if name == "changed-unicode-literal":
+        p("original")["WFTextActionText"] += "wrong"
+    elif name == "wrong-log-producer":
+        oi = next(i for i, a in enumerate(damaged) if a.get("WFWorkflowActionParameters", {}).get("CustomOutputName") == "original")
+        damaged[oi + 1]["WFWorkflowActionParameters"]["WFInput"] = output_ref("literalText")
+    elif name == "bypassed-file-materialization":
+        p("artifact")["WFInput"] = output_ref("original")
+    elif name == "wrong-payload-key":
+        p("payloadValue")["WFDictionaryKey"] = "status"
+    elif name == "restored-decode-bypasses-payload":
+        p("restoredFile")["WFInput"] = output_ref("original")
+    elif name == "literal-control-uses-payload":
+        p("literalFile")["WFInput"] = output_ref("payloadValue")
+    elif name == "byte-witness-aliases-original":
+        p("restored64Raw")["WFInput"] = output_ref("original")
+    elif name == "byte-witness-line-breaks":
+        p("original64Raw")["WFBase64LineBreakMode"] = "Every 64 Characters"
+    elif name in ("witness-cap-raised", "witness-cap-wrong-operator"):
+        first = graph_write_indexes(damaged, "original64")[0]
+        cp = damaged[first + 1]["WFWorkflowActionParameters"]
+        cp["WFNumberValue" if name == "witness-cap-raised" else "WFCondition"] = 999999 if name == "witness-cap-raised" else 4
+    elif name == "witness-overwritten-after-cap":
+        second = graph_write_indexes(damaged, "original64")[1]
+        damaged.insert(second + 2, copy.deepcopy(damaged[second]))
+    elif name == "inequality-became-equality":
+        first = graph_write_indexes(damaged, "restoredNe")[0]
+        damaged[first + 1]["WFWorkflowActionParameters"]["WFCondition"] = 4
+    elif name == "flag-forged-positive":
+        first, second = graph_write_indexes(damaged, "restoredEq")
+        damaged[first]["WFWorkflowActionParameters"]["WFInput"] = copy.deepcopy(damaged[second]["WFWorkflowActionParameters"]["WFInput"])
+    elif name == "summary-bypasses-bounded-variable":
+        atts = p("finalSummary")["WFTextActionText"]["Value"]["attachmentsByRange"]
+        k = next(k for k, v in atts.items() if v.get("VariableName") == "original64")
+        atts[k] = output_ref("original64Raw")["Value"]
+    else:
+        damaged[-1]["WFWorkflowActionParameters"]["WFOutput"] = "CHERRI_QA_EXPORT_UNICODE_DIAG:TYPE=Y"
+    try:
+        validate_export_unicode_graph(UNICODE_ID, damaged)
+    except ValueError as exc:
+        assert str(exc).startswith("EXPORT_UNICODE_DIAGNOSTIC_GRAPH_MISMATCH:"), str(exc)
+        unicode_mutations[name] = {"expectedRejectionVerified": True, "diagnostic": str(exc)}
+    else:
+        raise AssertionError(name + ": damaged diagnostic graph incorrectly accepted")
+
 release_only = program.replace('for fid, fname, dialect in fixture_specs:',
                                'for fid, fname, dialect in [spec for spec in fixture_specs if spec[0] == "qa-measure-release-v2"]:')
 ignored_profile = release_only.replace(', f"--build-profile={profile}"', '')
@@ -145,7 +222,7 @@ target_start = script.index("<<'PY'\n", script.index(target_marker)) + len("<<'P
 target_end = script.index("\nPY\n", target_start)
 target_gate = script[target_start:target_end]
 target_results = {}
-for fid, expected_code in [(fid, 3) for fid in EXPECTED_REJECTIONS] + [("qa-export-unicode-v2", 0), ("qa-storage-text-cross-run-v2", 0)]:
+for fid, expected_code in [(fid, 3) for fid in EXPECTED_REJECTIONS] + [(UNICODE_ID, 0), ("qa-export-unicode-v2", 0), ("qa-storage-text-cross-run-v2", 0)]:
     result = subprocess.run([sys.executable, "-c", target_gate, str(directory / "compiler-manifest.json"), fid],
                             capture_output=True, text=True, timeout=10)
     assert result.returncode == expected_code, (fid, result.stderr)
@@ -202,6 +279,7 @@ report = {
     'actualCLIFixturesCompiled': len(manifest['fixtures']),
     'actualCLIExpectedDiagnosticRejections': len(rejected),
     'selectedFixtures': selected, 'newExplicitSignedQASelections': len(new_probes),
+    'unicodeDiagnosticGraph': unicode_result, 'causalUnicodeGraphMutations': unicode_mutations,
     'causalCompileMutations': negatives, 'causalPublicationMutations': publication_negatives,
     'preservedUnsupportedFixtures': rejected, 'causalRejectionMutations': rejection_negatives,
     'selectedTargetCompileGates': target_results,
@@ -212,4 +290,4 @@ report = {
 }
 (output / 'validation.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
 print(json.dumps({k: report[k] for k in ('status', 'actualCLIFixturesAttempted', 'actualCLIFixturesCompiled', 'actualCLIExpectedDiagnosticRejections', 'newExplicitSignedQASelections',
-    'causalCompileMutations', 'causalPublicationMutations', 'causalRejectionMutations', 'selectedTargetCompileGates', 'publication', 'appleRuntime', 'signing')}, indent=2))
+    'unicodeDiagnosticGraph', 'causalUnicodeGraphMutations', 'causalCompileMutations', 'causalPublicationMutations', 'causalRejectionMutations', 'selectedTargetCompileGates', 'publication', 'appleRuntime', 'signing')}, indent=2))
