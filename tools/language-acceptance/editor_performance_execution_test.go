@@ -131,6 +131,15 @@ func editorModelStream(t *testing.T, id string, report editorPerformanceReport) 
 
 func editorModelRecord(t *testing.T, id string, report editorPerformanceReport) EvidenceRecord {
 	t.Helper()
+	revision, _, sourceErr := editorSourceState(resolveRepoRoot())
+	if sourceErr != nil {
+		t.Fatal(sourceErr)
+	}
+	report.Environment.SourceCommit = revision
+	sources, sourceErr := editorGitSourceFiles(resolveRepoRoot(), revision, editorProductionPathsForID(id))
+	if sourceErr != nil {
+		t.Fatal(sourceErr)
+	}
 	directory := t.TempDir()
 	tests := editorProductionTests[id]
 	raw := editorModelStream(t, id, report)
@@ -150,9 +159,7 @@ func editorModelRecord(t *testing.T, id string, report editorPerformanceReport) 
 		BenchmarkSHA256: editorSHA(payload), BenchmarkBytes: len(payload),
 		StderrSHA256: editorSHA(errorOutput), StderrBytes: len(errorOutput),
 	}
-	for _, path := range editorProductionPathsForID(id) {
-		receipt.SourceFiles = append(receipt.SourceFiles, editorSourceFile{path, editorSHA([]byte("intake-model:" + path))})
-	}
+	receipt.SourceFiles = sources
 	process, err := json.Marshal(receipt)
 	if err != nil {
 		t.Fatal(err)

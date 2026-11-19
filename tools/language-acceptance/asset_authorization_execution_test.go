@@ -197,6 +197,9 @@ func TestP15RP29AssetAuthorizationProductionEvidence(t *testing.T) {
 		if err := validateEditorPerformanceRecord("RP29", record); err != nil {
 			t.Fatal(err)
 		}
+		if record.Tier == "benchmark" {
+			editorAssertActualSourceDigestMutations(t, "RP29", record)
+		}
 	}
 	var manifest = &EvidenceManifest{SchemaVersion: "1", ImplementationSHA: runner.implSHA, Records: runner.records}
 	var report, validationErr = ValidateEvidenceManifest(manifest, selected, "local")

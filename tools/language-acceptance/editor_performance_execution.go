@@ -269,12 +269,9 @@ func (r *Runner) executeEditorProduction(id string) ([]EvidenceArtifact, string,
 		SourceCleanBefore: true, Command: productionTestCommand(tests),
 		RequiredTests: append([]string(nil), tests...),
 	}
-	for _, path := range editorProductionPathsForID(id) {
-		data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
-		if err != nil {
-			return nil, "", fmt.Errorf("missing production source %s: %w", path, err)
-		}
-		receipt.SourceFiles = append(receipt.SourceFiles, editorSourceFile{path, editorSHA(data)})
+	receipt.SourceFiles, err = editorGitSourceFiles(root, revision, editorProductionPathsForID(id))
+	if err != nil {
+		return nil, "", err
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), productionTestTimeout(tests)+time.Minute)
 	defer cancel()
@@ -455,6 +452,15 @@ func validateEditorPerformanceRecord(id string, record EvidenceRecord) error {
 	}
 	if !reflect.DeepEqual(paths, editorProductionPathsForID(id)) {
 		return fail("missing exact production source paths")
+	}
+	sources, sourceErr := editorGitSourceFiles(resolveRepoRoot(), record.ImplementationSHA, paths)
+	if sourceErr != nil {
+		return fail(sourceErr.Error())
+	}
+	for index, source := range sources {
+		if receipt.SourceFiles[index].SHA256 != source.SHA256 {
+			return fail("source file digest disagrees with immutable Git blob: " + source.Path)
+		}
 	}
 	actualBenchmark, discovered, err := parseEditorProductionOutput(raw, tests)
 	if err != nil {
