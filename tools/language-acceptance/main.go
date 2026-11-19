@@ -951,6 +951,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateLoopControlRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateCustomActionRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1692,13 +1696,7 @@ func (r *Runner) runControl() {
 	f04Passed := errF04 == nil && hasLoopResult
 	r.Record("F04", "control", "Value loop collects one semantic element per iteration", "unit+native", []string{"unit", "native"}, f04Passed, "PASSED", "Value-producing repeat/for loops collect yielded elements via repeat end action OutputUUID")
 
-	// F05: Stop Shortcut is not substituted for break
-	srcF05 := "while true { break }"
-	fF05 := source.NewFile("f05", "f05.cherri", 1, srcF05)
-	pF05 := syntax.NewParser(fF05)
-	_ = pF05.ParseProgram()
-	f05Passed := len(pF05.Errors()) > 0
-	r.Record("F05", "control", "Stop Shortcut is not substituted for break", "unit", []string{"unit"}, f05Passed, "PASSED", "Unsupported while/break keywords correctly rejected by parser")
+	r.runLoopControlRequirement()
 }
 
 // Group 11: Functions

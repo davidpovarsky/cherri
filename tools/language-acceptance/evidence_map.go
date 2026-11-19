@@ -249,6 +249,9 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 }
 
 func deriveAcceptanceTestIDs(id, group string) []string {
+	if id == "F05" {
+		return loopControlScenario.testIDs()
+	}
 	if scenario, ok := declarationTriggerScenarios[id]; ok {
 		return scenario.testIDs()
 	}

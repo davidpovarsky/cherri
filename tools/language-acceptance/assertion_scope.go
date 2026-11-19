@@ -30,7 +30,6 @@ var incompleteLocalAssertions = map[string]string{
 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
 	"F02":  "Seven actions do not prove group identities, scopes, or zero-based indices.",
 	"F04":  "A repeat-end UUID does not prove one semantic collected element per iteration.",
-	"F05":  "A parser error for while/break does not separately prove break behavior inside a supported loop.",
 	"FN01": "Action count does not prove returned value and caller continuation.",
 	"FN02": "Action count does not inspect presence tags and explicit false/zero/empty defaults.",
 	"FN03": "Nonempty recursive lowering and any capture diagnostic do not prove recursive results and capture boundaries.",

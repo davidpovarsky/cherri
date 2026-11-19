@@ -260,6 +260,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.ProductionPath = []string{"actions/web.cherri", "actions/calendar.cherri", "tools/language-schema/main.go", "upstream_rehearsal_test.go", "p15_schema_production_test.go", "internal/language/schema/generated_registry.go", "internal/language/analysis/analyzer.go", "internal/language/service/service.go"}
 			row.PositiveAndNegative = res.Passed
 		}
+		if row.ID == "F05" {
+			row.TestNames = append([]string{}, loopControlScenario.TestNames...)
+			row.ProductionPath = append([]string{}, loopControlScenario.ProductionPaths...)
+			row.PositiveAndNegative = res.Passed
+		}
 		if row.ID == "AC02" {
 			row.TestNames = append([]string{}, customActionScenario.TestNames...)
 			row.ProductionPath = append([]string{}, customActionScenario.ProductionPaths...)
