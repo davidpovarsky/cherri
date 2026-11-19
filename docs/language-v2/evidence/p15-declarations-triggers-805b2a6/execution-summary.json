@@ -1,0 +1,28 @@
+{
+  "source_sha": "805b2a69d9a4d0c651c15c5fc37ebf082741a342",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "command": [
+    "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=8m",
+    "-run",
+    "^TestDeclarationTriggerProductionEvidence$",
+    "./tools/language-acceptance"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "seconds": 43.854,
+  "named_tests": {
+    "pass": 13
+  },
+  "failed": [],
+  "skipped": [],
+  "log_bytes": 18089,
+  "log_sha256": "e87643ea680b1351ff2254015617416f2337f8fb435b0a3a15eee97e48856c8f",
+  "invalid_json": [],
+  "free_bytes_after": 165773312
+}

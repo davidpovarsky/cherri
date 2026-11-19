@@ -1,0 +1,126 @@
+{
+  "records": [
+    {
+      "evidence_id": "ev-local-AC03-generation",
+      "requirements": [
+        "AC03"
+      ],
+      "tier": "generation",
+      "implementation_sha": "805b2a69d9a4d0c651c15c5fc37ebf082741a342",
+      "test_id": "github.com/electrikmilk/cherri:TestP15ActionDeclarationPublicValidation",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15ActionDeclarationPublicValidation|TestP15ActionDeclarationHealthyControl|TestP15C04EnumResolutionProduction|TestP15C02ArgumentDiagnosticsProduction|TestUpstreamPropagationRehearsal)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15ActionDeclarationPublicValidation, TestP15ActionDeclarationHealthyControl, TestP15C04EnumResolutionProduction, TestP15C02ArgumentDiagnosticsProduction, TestUpstreamPropagationRehearsal",
+        "required_production_tests": "TestP15ActionDeclarationPublicValidation\nTestP15ActionDeclarationHealthyControl\nTestP15C04EnumResolutionProduction\nTestP15C02ArgumentDiagnosticsProduction\nTestUpstreamPropagationRehearsal"
+      },
+      "detail": "Executed production tests: TestP15ActionDeclarationPublicValidation, TestP15ActionDeclarationHealthyControl, TestP15C04EnumResolutionProduction, TestP15C02ArgumentDiagnosticsProduction, TestUpstreamPropagationRehearsal"
+    },
+    {
+      "evidence_id": "ev-local-M05-unit",
+      "requirements": [
+        "M05"
+      ],
+      "tier": "unit",
+      "implementation_sha": "805b2a69d9a4d0c651c15c5fc37ebf082741a342",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP32SevenTriggerMigrationAndNativeRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+        "required_production_tests": "TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
+      },
+      "detail": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
+    },
+    {
+      "evidence_id": "ev-local-M05-native",
+      "requirements": [
+        "M05"
+      ],
+      "tier": "native",
+      "implementation_sha": "805b2a69d9a4d0c651c15c5fc37ebf082741a342",
+      "test_id": "github.com/electrikmilk/cherri:TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-json",
+        "-timeout",
+        "3m0s",
+        ".",
+        "-run",
+        "^(TestP15RP32SevenTriggerMigrationAndNativeRoundTrip)$"
+      ],
+      "exit_code": 0,
+      "result": "passed",
+      "assertions": {
+        "assertion": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip",
+        "required_production_tests": "TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
+      },
+      "detail": "Executed production tests: TestP15RP32SevenTriggerMigrationAndNativeRoundTrip"
+    }
+  ],
+  "report": {
+    "timestamp": "2026-11-19T03:10:27Z",
+    "phase": "local",
+    "closure_complete": false,
+    "language_version": "2.0",
+    "schema_fingerprint": "",
+    "total_cases": 2,
+    "passed_cases": 2,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "results": [
+      {
+        "id": "AC03",
+        "group": "schema",
+        "requirement": "Unregistered codec, duplicate enum/label or stale facet",
+        "test_level": "generation",
+        "executed_levels": [
+          "generation"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      },
+      {
+        "id": "M05",
+        "group": "metadata",
+        "requirement": "Seven existing trigger families migrate without install claims",
+        "test_level": "unit+native-structure",
+        "executed_levels": [
+          "unit",
+          "native-structure"
+        ],
+        "passed": true,
+        "status": "PASSED",
+        "detail": "All required tiers satisfied by verified evidence"
+      }
+    ]
+  },
+  "scope": "Only AC03 hard rejection/generation and M05 actual seven-trigger serialized native data. No automation installation, Apple execution, AC02 success, or release closure.",
+  "source_sha": "805b2a69d9a4d0c651c15c5fc37ebf082741a342",
+  "source_tree_clean": true
+}
