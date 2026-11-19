@@ -1,0 +1,55 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+// Public N03 characterization. Completion of this diagnostic is not acceptance.
+// All operands are synthetic; Base64 observes the same producers as the comparisons.
+debugClearLogs()
+debugTraceEvent("before", "n03-text-equality")
+let n03Left = text("abc")
+let n03Same = text("abc")
+let n03Case = text("ABC")
+let n03Left64 = base64Encode(n03Left, lineBreakMode: "None")
+let n03Same64 = base64Encode(n03Same, lineBreakMode: "None")
+let n03Case64 = base64Encode(n03Case, lineBreakMode: "None")
+let n03FoldSameEqValue = "abc" == "abc"
+var n03FoldSameEqFlag = "N"
+if n03FoldSameEqValue { n03FoldSameEqFlag = "Y" }
+let n03FoldSameNeValue = "abc" != "abc"
+var n03FoldSameNeFlag = "N"
+if n03FoldSameNeValue { n03FoldSameNeFlag = "Y" }
+let n03FoldCaseEqValue = "abc" == "ABC"
+var n03FoldCaseEqFlag = "N"
+if n03FoldCaseEqValue { n03FoldCaseEqFlag = "Y" }
+let n03FoldCaseNeValue = "abc" != "ABC"
+var n03FoldCaseNeFlag = "N"
+if n03FoldCaseNeValue { n03FoldCaseNeFlag = "Y" }
+let n03DynSameEqValue = n03Left == n03Same
+var n03DynSameEqFlag = "N"
+if n03DynSameEqValue { n03DynSameEqFlag = "Y" }
+let n03DynSameNeValue = n03Left != n03Same
+var n03DynSameNeFlag = "N"
+if n03DynSameNeValue { n03DynSameNeFlag = "Y" }
+let n03DynCaseEqValue = n03Left == n03Case
+var n03DynCaseEqFlag = "N"
+if n03DynCaseEqValue { n03DynCaseEqFlag = "Y" }
+let n03DynCaseNeValue = n03Left != n03Case
+var n03DynCaseNeFlag = "N"
+if n03DynCaseNeValue { n03DynCaseNeFlag = "Y" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+var n03IfSameEqFlag = "N"
+if n03Left == "abc" { n03IfSameEqFlag = "Y" }
+var n03IfSameNeFlag = "N"
+if n03Left != "abc" { n03IfSameNeFlag = "Y" }
+var n03IfCaseEqFlag = "N"
+if n03Left == "ABC" { n03IfCaseEqFlag = "Y" }
+var n03IfCaseNeFlag = "N"
+if n03Left != "ABC" { n03IfCaseNeFlag = "Y" }
+let n03MatchSameCs = matchText("^abc$", n03Same, caseSensitive: true)
+let n03CountSameCs = count(n03MatchSameCs)
+let n03MatchCaseCs = matchText("^abc$", n03Case, caseSensitive: true)
+let n03CountCaseCs = count(n03MatchCaseCs)
+let n03MatchCaseCi = matchText("^abc$", n03Case, caseSensitive: false)
+let n03CountCaseCi = count(n03MatchCaseCi)
+debugTraceEvent("after", "n03-text-equality")
+let n03Trace = debugExportTrace(runId: "qa-n03-text-equality-diagnostic-v2")
+let n03Summary = text(f"CHERRI_QA_N03_TEXT_EQ_DIAG:LEFT64={n03Left64}:SAME64={n03Same64}:CASE64={n03Case64}:FOLD_SAME_EQ={n03FoldSameEqFlag}:FOLD_SAME_NE={n03FoldSameNeFlag}:FOLD_CASE_EQ={n03FoldCaseEqFlag}:FOLD_CASE_NE={n03FoldCaseNeFlag}:DYN_SAME_EQ={n03DynSameEqFlag}:DYN_SAME_NE={n03DynSameNeFlag}:DYN_CASE_EQ={n03DynCaseEqFlag}:DYN_CASE_NE={n03DynCaseNeFlag}:IF_SAME_EQ={n03IfSameEqFlag}:IF_SAME_NE={n03IfSameNeFlag}:IF_CASE_EQ={n03IfCaseEqFlag}:IF_CASE_NE={n03IfCaseNeFlag}:MATCH_SAME_CS={n03CountSameCs}:MATCH_CASE_CS={n03CountCaseCs}:MATCH_CASE_CI={n03CountCaseCi}\n{n03Trace}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(n03Summary)

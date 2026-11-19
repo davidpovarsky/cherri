@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "fixture_id": "qa-n03-text-equality-diagnostic-v2",
+  "source_path": "tools/shortcuts-simulator-qa/fixtures/qa-n03-text-equality-diagnostic-v2.cherri",
+  "source_sha256": "e4acefccc8a81c77a8336fa7a5f07eacaf84fc25a6dc251eb8150c607fac80ab",
+  "diagnostic_prefix": "CHERRI_QA_N03_TEXT_EQ_DIAG:",
+  "field_order": [
+    "LEFT64",
+    "SAME64",
+    "CASE64",
+    "FOLD_SAME_EQ",
+    "FOLD_SAME_NE",
+    "FOLD_CASE_EQ",
+    "FOLD_CASE_NE",
+    "DYN_SAME_EQ",
+    "DYN_SAME_NE",
+    "DYN_CASE_EQ",
+    "DYN_CASE_NE",
+    "IF_SAME_EQ",
+    "IF_SAME_NE",
+    "IF_CASE_EQ",
+    "IF_CASE_NE",
+    "MATCH_SAME_CS",
+    "MATCH_CASE_CS",
+    "MATCH_CASE_CI"
+  ],
+  "expected_fields_for_exact_equality": {
+    "LEFT64": "YWJj",
+    "SAME64": "YWJj",
+    "CASE64": "QUJD",
+    "FOLD_SAME_EQ": "Y",
+    "FOLD_SAME_NE": "N",
+    "FOLD_CASE_EQ": "N",
+    "FOLD_CASE_NE": "Y",
+    "DYN_SAME_EQ": "Y",
+    "DYN_SAME_NE": "N",
+    "DYN_CASE_EQ": "N",
+    "DYN_CASE_NE": "Y",
+    "IF_SAME_EQ": "Y",
+    "IF_SAME_NE": "N",
+    "IF_CASE_EQ": "N",
+    "IF_CASE_NE": "Y",
+    "MATCH_SAME_CS": "1",
+    "MATCH_CASE_CS": "0",
+    "MATCH_CASE_CI": "1"
+  },
+  "requirement_candidates": [
+    "N03"
+  ],
+  "formal_requirements_proved": [],
+  "runtime_status": "NOT_RUN",
+  "scope": "Public causal characterization of folded and dynamic equality. Actual runtime fields must be retained even when they contradict this exact-equality expectation. This fixture does not establish legacy migration behavior or close N03."
+}
