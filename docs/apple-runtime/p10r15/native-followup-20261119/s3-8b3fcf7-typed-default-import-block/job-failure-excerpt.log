@@ -1,0 +1,22 @@
+2026-11-19T05:22:38.7702940Z xcodebuild build-for-testing exit code: 0
+2026-11-19T05:23:36.0293080Z xcodebuild test part1 exit code: 0
+2026-11-19T05:23:39.0981500Z === Phase 3b: Pre-XCTest outside-runner signed .shortcut import openurl ===
+2026-11-19T05:24:27.7031370Z Phase 3b pre-import (file_primary) rc=0 durationSec=37s out=
+2026-11-19T05:25:58.3465700Z xcodebuild test exit code: 65
+2026-11-19T05:25:58.4035070Z     t =    31.67s Checking existence of `"OK" Button`
+2026-11-19T05:25:58.4050480Z     t =    31.96s Checking existence of `"Continue" Button`
+2026-11-19T05:25:58.4059370Z     t =    32.08s Checking existence of `"Get Started" Button`
+2026-11-19T05:25:58.4069590Z     t =    32.23s Checking existence of `"Not Now" Button`
+2026-11-19T05:25:58.4072020Z     t =    32.34s Checking existence of `"Dismiss" Button`
+2026-11-19T05:25:58.4131250Z     t =    32.46s Checking existence of `"המשך" Button`
+2026-11-19T05:25:58.4132210Z     t =    32.67s Checking existence of `"אישור" Button`
+2026-11-19T05:25:58.4135410Z     t =    32.75s Get number of matches for: Descendants matching type Cell
+2026-11-19T05:25:58.4137040Z     t =    33.76s Get number of matches for: <XCUIElementQuery: 0x1062d5540> (retry 1)
+2026-11-19T05:25:58.4143930Z     t =    34.80s Get number of matches for: <XCUIElementQuery: 0x1062d5540> (retry 2)
+2026-11-19T05:25:58.4162340Z /Users/<redacted>/work/cherri/cherri/tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift:561: error: -[CherriSimulatorQAUITests.CherriSimulatorQAUITests test02_ShortcutsImportLibraryAndActionEditorCoverage] : Failed to get matching snapshots: Application com.apple.shortcuts is not running
+2026-11-19T05:25:58.4182750Z     t =    35.62s Tear Down
+2026-11-19T05:25:58.4185890Z Test Case '-[CherriSimulatorQAUITests.CherriSimulatorQAUITests test02_ShortcutsImportLibraryAndActionEditorCoverage]' failed (35.772 seconds).
+2026-11-19T05:25:58.4193520Z Test Suite 'CherriSimulatorQAUITests' failed at 2026-11-19 05:25:23.580.
+2026-11-19T05:25:58.4265350Z 	 Executed 1 test, with 1 failure (0 unexpected) in 35.772 (35.778) seconds
+2026-11-19T05:25:58.4268170Z Test Suite 'CherriSimulatorQAUITests.xctest' failed at 2026-11-19 05:25:23.586.
+2026-11-19T05:25:58.4270630Z 	 Executed 1 test, with 1 failure (0 unexpected) in 35.772 (35.784) seconds
