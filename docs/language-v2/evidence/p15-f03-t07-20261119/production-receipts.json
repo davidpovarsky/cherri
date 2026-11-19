@@ -1,0 +1,145 @@
+{
+  "TestTypePlatformVersionProductionEvidence": {
+    "records": [
+      {
+        "evidence_id": "ev-local-T07-unit",
+        "requirements": [
+          "T07"
+        ],
+        "tier": "unit",
+        "implementation_sha": "27547c55b330dac9085d710597ce9420aab5ab8c",
+        "test_id": "github.com/electrikmilk/cherri:TestP15T07PerPlatformVersionProduction",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15T07PerPlatformVersionProduction|TestP15T07MissingPlatformIsUnverified|TestP15T07MalformedPlatformMetadataFailsClosed|TestP15T07PlatformVersionService|TestP15T07PlatformVersionSchemaIdentity|TestP15T07CanonicalCatalogPropagation)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation"
+        },
+        "detail": "Executed production tests: TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation"
+      }
+    ],
+    "report": {
+      "timestamp": "2026-11-19T00:30:12Z",
+      "phase": "local",
+      "closure_complete": false,
+      "language_version": "2.0",
+      "schema_fingerprint": "",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "results": [
+        {
+          "id": "T07",
+          "group": "types",
+          "requirement": "Per-platform versions compare components rather than floats",
+          "test_level": "unit",
+          "executed_levels": [
+            "unit"
+          ],
+          "passed": true,
+          "status": "PASSED",
+          "detail": "All required tiers satisfied by verified evidence"
+        }
+      ]
+    },
+    "scope": "Only T07 production unit contract: independent synthetic per-platform component bounds, original canonical emission, malformed metadata rejection, missing facts kept unverified, service isolation and exact schema fingerprint/clone behavior. No inferred Apple availability facts or runtime/release guarantee.",
+    "source_sha": "27547c55b330dac9085d710597ce9420aab5ab8c",
+    "source_tree_clean": true
+  },
+  "TestValueBranchProductionEvidence": {
+    "records": [
+      {
+        "evidence_id": "ev-local-F03-unit",
+        "requirements": [
+          "F03"
+        ],
+        "tier": "unit",
+        "implementation_sha": "27547c55b330dac9085d710597ce9420aab5ab8c",
+        "test_id": "github.com/electrikmilk/cherri:TestP15F03YieldTypesAndNormalPaths",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15F03YieldTypesAndNormalPaths|TestP15F03TerminatedPathsDoNotBecomeValues|TestP15F03YieldDiagnosticsProduction|TestP15F03ImplicitResultBoundary|TestP15F03NativeBranchResults|TestP15F03WireOracleMutations|TestP15F03CLIAndService|TestP15F03NoneYieldClearsPrecedingOutput|TestP15F03LiteralYieldNativeFields)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15F03YieldTypesAndNormalPaths, TestP15F03TerminatedPathsDoNotBecomeValues, TestP15F03YieldDiagnosticsProduction, TestP15F03ImplicitResultBoundary, TestP15F03NativeBranchResults, TestP15F03WireOracleMutations, TestP15F03CLIAndService, TestP15F03NoneYieldClearsPrecedingOutput, TestP15F03LiteralYieldNativeFields"
+        },
+        "detail": "Executed production tests: TestP15F03YieldTypesAndNormalPaths, TestP15F03TerminatedPathsDoNotBecomeValues, TestP15F03YieldDiagnosticsProduction, TestP15F03ImplicitResultBoundary, TestP15F03NativeBranchResults, TestP15F03WireOracleMutations, TestP15F03CLIAndService, TestP15F03NoneYieldClearsPrecedingOutput, TestP15F03LiteralYieldNativeFields"
+      },
+      {
+        "evidence_id": "ev-local-F03-native-structure",
+        "requirements": [
+          "F03"
+        ],
+        "tier": "native-structure",
+        "implementation_sha": "27547c55b330dac9085d710597ce9420aab5ab8c",
+        "test_id": "github.com/electrikmilk/cherri:TestP15F03NativeBranchResults",
+        "command": [
+          "go",
+          "test",
+          "-count=1",
+          "-json",
+          "-timeout",
+          "3m0s",
+          ".",
+          "-run",
+          "^(TestP15F03YieldTypesAndNormalPaths|TestP15F03TerminatedPathsDoNotBecomeValues|TestP15F03YieldDiagnosticsProduction|TestP15F03ImplicitResultBoundary|TestP15F03NativeBranchResults|TestP15F03WireOracleMutations|TestP15F03CLIAndService|TestP15F03NoneYieldClearsPrecedingOutput|TestP15F03LiteralYieldNativeFields)$"
+        ],
+        "exit_code": 0,
+        "result": "passed",
+        "assertions": {
+          "assertion": "Executed production tests: TestP15F03YieldTypesAndNormalPaths, TestP15F03TerminatedPathsDoNotBecomeValues, TestP15F03YieldDiagnosticsProduction, TestP15F03ImplicitResultBoundary, TestP15F03NativeBranchResults, TestP15F03WireOracleMutations, TestP15F03CLIAndService, TestP15F03NoneYieldClearsPrecedingOutput, TestP15F03LiteralYieldNativeFields"
+        },
+        "detail": "Executed production tests: TestP15F03YieldTypesAndNormalPaths, TestP15F03TerminatedPathsDoNotBecomeValues, TestP15F03YieldDiagnosticsProduction, TestP15F03ImplicitResultBoundary, TestP15F03NativeBranchResults, TestP15F03WireOracleMutations, TestP15F03CLIAndService, TestP15F03NoneYieldClearsPrecedingOutput, TestP15F03LiteralYieldNativeFields"
+      }
+    ],
+    "report": {
+      "timestamp": "2026-11-19T00:30:23Z",
+      "phase": "local",
+      "closure_complete": false,
+      "language_version": "2.0",
+      "schema_fingerprint": "",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "skipped_cases": 0,
+      "results": [
+        {
+          "id": "F03",
+          "group": "control",
+          "requirement": "Value if/menu yield typing and normal-path coverage",
+          "test_level": "unit+native-structure",
+          "executed_levels": [
+            "unit",
+            "native-structure"
+          ],
+          "passed": true,
+          "status": "PASSED",
+          "detail": "All required tiers satisfied by verified evidence"
+        }
+      ]
+    },
+    "scope": "Only F03 unit and serialized-native structure: complete normal paths, typed final results, terminating paths, exact result UUIDs, None output isolation, typed literals, source-bound CLI/service diagnostics and causal corruptions. No Apple execution, F04 collection cardinality, or release closure.",
+    "source_sha": "27547c55b330dac9085d710597ce9420aab5ab8c",
+    "source_tree_clean": true
+  }
+}

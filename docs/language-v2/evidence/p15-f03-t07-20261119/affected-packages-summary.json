@@ -1,0 +1,24 @@
+{
+  "name": "affected-packages",
+  "source_sha": "7bb99c41eeb20efeccfecdfd198d847eeeb444a7",
+  "source_tree_clean_before": true,
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=4m",
+    "./internal/language/analysis",
+    "./internal/language/lower",
+    "./internal/language/schema",
+    "./internal/language/service"
+  ],
+  "returncode": 0,
+  "seconds": 34.44,
+  "named_passes": 75,
+  "named_fails": 0,
+  "failed": [],
+  "raw_sha256": "d5657089fc5ba739a739bc146b9042a320ed38f0ceb8d2454a78e4d19f60737f",
+  "receipts": []
+}

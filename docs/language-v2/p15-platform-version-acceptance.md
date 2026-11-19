@@ -19,3 +19,7 @@ Production source `69c8dcd2f866f2b57ad49128a2c563c482f765ea` with the new five i
 The T07 producer executes named production tests covering independent synthetic bounds, exact source diagnostic spans, canonical emitted fields, malformed metadata, missing-fact warnings, service document isolation, semantic identity and deep clone behavior. A sixth test follows synthetic facts from the original action definition through the actual catalog and schema-generator executable, checks the resulting action's parsed Go syntax, and verifies malformed upstream facts produce no output file.
 
 The bounds in these tests are explicitly synthetic; they do not certify any Apple action's real availability. T07's formal contract requires a unit tier. Native runtime availability, release readiness, and all other acceptance requirements are separate obligations. Final verification receipts are recorded against the committed source rather than inferred from this document.
+
+## Clean committed verification
+
+Source `27547c55b330dac9085d710597ce9420aab5ab8c` passed the combined F03/T07 formal producer gate and F04 non-promotion test (three passing gate tests, zero failures). All underlying named production tests and causal manifest controls executed. The tree was clean before and after the run. Raw log SHA-256: `443af74fbf9a1c5794adb654597c917cb667198687275e34aeabcb321aa42d72`. Complete source-bound receipts and causal baseline artifacts are in [the evidence directory](evidence/p15-f03-t07-20261119/README.md).

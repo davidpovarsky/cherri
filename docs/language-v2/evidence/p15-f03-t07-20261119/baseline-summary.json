@@ -1,0 +1,29 @@
+{
+  "base_sha": "d2f38aea45792e23670a772b640f040d035b27a8",
+  "command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^TestP15F03(YieldDiagnosticsProduction|TerminatedPathsDoNotBecomeValues|NoneYieldClearsPrecedingOutput)$",
+    "."
+  ],
+  "exit": 1,
+  "duration": 126.84,
+  "pass": 5,
+  "fail": [
+    "TestP15F03TerminatedPathsDoNotBecomeValues",
+    "TestP15F03YieldDiagnosticsProduction/missing_normal_branch",
+    "TestP15F03YieldDiagnosticsProduction/missing_nested_branch",
+    "TestP15F03YieldDiagnosticsProduction/overwritten_yield",
+    "TestP15F03YieldDiagnosticsProduction/void_if_yield",
+    "TestP15F03YieldDiagnosticsProduction/void_menu_yield",
+    "TestP15F03YieldDiagnosticsProduction",
+    "TestP15F03NoneYieldClearsPrecedingOutput"
+  ],
+  "sha256": "033faba5be12696fe422669821c555c5c7b6d94af7960b9bc7efdf8ad8f7b117",
+  "test_sha256": "dfd205428430d2fc0e19a8e17e2617ec039e9f218a983f4ff85188f27cb1fbc5"
+}

@@ -19,3 +19,7 @@ The reviewed source working copy passed all 51 named F03/F04 test events, exit 0
 The registered F03 producer establishes its unit and serialized native structure tiers only. It does not establish Apple execution or final release acceptance.
 
 F04 remains UNVERIFIED. The two synthetic `qa-f04-yield-*-v2.cherri` probes inspect List-valued and empty-List-valued Repeat Results with scalar controls. Compilation, loop-end UUIDs and count consumers do not prove one semantic item per iteration or absence of native flattening. Their exact signed native results are required before promoting F04.
+
+## Clean committed verification
+
+Source `27547c55b330dac9085d710597ce9420aab5ab8c` passed the combined F03/T07 formal producer gate and F04 non-promotion test (three passing gate tests, zero failures). All underlying named production tests and causal manifest controls executed. The tree was clean before and after the run. Raw log SHA-256: `443af74fbf9a1c5794adb654597c917cb667198687275e34aeabcb321aa42d72`. Complete source-bound receipts and causal baseline artifacts are in [the evidence directory](evidence/p15-f03-t07-20261119/README.md).

@@ -1,0 +1,27 @@
+{
+  "name": "formal-producers",
+  "source_sha": "7bb99c41eeb20efeccfecdfd198d847eeeb444a7",
+  "source_tree_clean_before": true,
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestValueBranchProductionEvidence|TestValueLoopScopeRemainsUnverified|TestTypePlatformVersionProductionEvidence)$"
+  ],
+  "returncode": 1,
+  "seconds": 9.66,
+  "named_passes": 1,
+  "named_fails": 2,
+  "failed": [
+    "TestTypePlatformVersionProductionEvidence",
+    "TestValueBranchProductionEvidence",
+    "github.com/electrikmilk/cherri/tools/language-acceptance"
+  ],
+  "raw_sha256": "786247db1c9acbdfe2162e941cdcc2b0ae77934f13a5841e12e88b031ca995ae",
+  "receipts": []
+}

@@ -1,0 +1,26 @@
+{
+  "name": "formal-producers",
+  "source_sha": "27547c55b330dac9085d710597ce9420aab5ab8c",
+  "source_tree_clean_before": true,
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestValueBranchProductionEvidence|TestValueLoopScopeRemainsUnverified|TestTypePlatformVersionProductionEvidence)$"
+  ],
+  "returncode": 0,
+  "seconds": 35.95,
+  "named_passes": 3,
+  "named_fails": 0,
+  "failed": [],
+  "raw_sha256": "443af74fbf9a1c5794adb654597c917cb667198687275e34aeabcb321aa42d72",
+  "receipts": [
+    "types_execution_test.go:44: P15_TYPE_PLATFORM_VERSION_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-T07-unit\",\"requirements\":[\"T07\"],\"tier\":\"unit\",\"implementation_sha\":\"27547c55b330dac9085d710597ce9420aab5ab8c\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15T07PerPlatformVersionProduction\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15T07PerPlatformVersionProduction|TestP15T07MissingPlatformIsUnverified|TestP15T07MalformedPlatformMetadataFailsClosed|TestP15T07PlatformVersionService|TestP15T07PlatformVersionSchemaIdentity|TestP15T07CanonicalCatalogPropagation)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15T07PerPlatformVersionProduction, TestP15T07MissingPlatformIsUnverified, TestP15T07MalformedPlatformMetadataFailsClosed, TestP15T07PlatformVersionService, TestP15T07PlatformVersionSchemaIdentity, TestP15T07CanonicalCatalogPropagation\"},\"detail\":\"Executed production tests: TestP15T07PerPlatformVersionProduction, TestP15T07",
+    "value_flow_execution_test.go:6: P15_VALUE_BRANCH_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-F03-unit\",\"requirements\":[\"F03\"],\"tier\":\"unit\",\"implementation_sha\":\"27547c55b330dac9085d710597ce9420aab5ab8c\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15F03YieldTypesAndNormalPaths\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15F03YieldTypesAndNormalPaths|TestP15F03TerminatedPathsDoNotBecomeValues|TestP15F03YieldDiagnosticsProduction|TestP15F03ImplicitResultBoundary|TestP15F03NativeBranchResults|TestP15F03WireOracleMutations|TestP15F03CLIAndService|TestP15F03NoneYieldClearsPrecedingOutput|TestP15F03LiteralYieldNativeFields)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15F03YieldTypesAndNormalPaths, TestP15F03TerminatedPathsDoNotBecomeValues, TestP15F03YieldDiagnosticsProduction, TestP15F03ImplicitResultBoundary, TestP15F03NativeBranchResults, TestP15F03WireOracleMutations, TestP15F03CLIAndService, TestP15F03NoneYieldClearsP"
+  ]
+}
