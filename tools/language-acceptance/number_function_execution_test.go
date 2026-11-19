@@ -37,11 +37,11 @@ func TestNumberFunctionProducerInventory(t *testing.T) {
 			}
 		}
 	}
-	if len(seen) != len(numberFunctionScenarios) || !seen["N01"] {
+	if len(seen) != len(numberFunctionScenarios) || !seen["N01"] || !seen["FN01"] || !seen["FN02"] || !seen["FN03"] {
 		t.Fatal("missing numeric/function production scenario")
 	}
 	var runner = NewRunner()
-	for _, id := range []string{"RP15", "RP17", "RP24", "RP25", "RP26", "BRG11", "BRG15", "BRG16", "FN05", "T01"} {
+	for _, id := range []string{"RP15", "RP17", "RP24", "RP25", "RP26", "BRG11", "BRG15", "BRG16", "FN04", "FN05", "T01"} {
 		runner.runNumberFunctionRequirement(id)
 	}
 	if len(runner.records) != 0 || len(runner.results) != 0 || len(runner.observations) != 0 {

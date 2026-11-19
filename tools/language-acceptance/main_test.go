@@ -779,6 +779,16 @@ func baseValidManifestAndContracts(t *testing.T) (*EvidenceManifest, *ContractsS
 			},
 		},
 	}
+	// Synthetic intake model only: use the registered local protocol fields.
+	// This fixture does not execute or claim function/Apple production proof.
+	var functionScenario = numberFunctionScenarios["FN01"]
+	for index := 0; index < 2; index++ {
+		var record = &manifest.Records[index]
+		record.TestID = functionScenario.producer(record.Tier)
+		record.Command = productionTestCommand(functionScenario.tests())
+		record.Assertions = map[string]string{"assertion": "synthetic local intake model", "required_production_tests": strings.Join(functionScenario.tests(), "\n"), "scope": functionScenario.Scope}
+	}
+
 	return manifest, contracts
 }
 
