@@ -1,0 +1,26 @@
+{
+  "source_sha": "ac255f91dd4ce478217790b6ab8d4771cc15950b",
+  "source_tree_clean_before": true,
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=4m",
+    "-run",
+    "^(TestP10_ParameterContractMatrix_AllCatalogActions|TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2|TestP15V02BindingFlowProduction|TestP15V02BindingServiceAndCLI|TestP15V02NullGuardDiagnosticOracleRejectsCorruption|TestP15RequiredVariadicPresence|TestP15C03.*)$",
+    "."
+  ],
+  "exit_code": 1,
+  "seconds": 26.53,
+  "named_passes": 277,
+  "named_fails": 2,
+  "failed": [
+    "TestP15V02BindingFlowProduction/guard_json_null",
+    "TestP15V02BindingFlowProduction",
+    "github.com/electrikmilk/cherri"
+  ],
+  "raw_sha256": "89e66dea34a7c05271ab05df181c82bfa0d1cb944fe2ca13e5115c032cba2197",
+  "source_tree_clean_after": true
+}

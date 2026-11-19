@@ -1,0 +1,26 @@
+{
+  "source_sha": "1ca19227f5fc04cbe8289ad81f16a7d9db9bea34",
+  "source_tree_clean": true,
+  "exit_code": 1,
+  "seconds": 235.29,
+  "named_passes": 68,
+  "named_fails": 7,
+  "raw_sha256": "ce06959bcb18d5b78d4148dbc655baedf7fbbcec46ed85431f42ba1b61ac8ee2",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=4m",
+    "-run",
+    "^(TestP10_ParameterContractMatrix_AllCatalogActions|TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2|TestP15V02BindingFlowProduction|TestP15V02BindingServiceAndCLI)$",
+    "."
+  ],
+  "raw_evidence_location": "owner Windows project evidence: cherri-p10r15-evidence-20261119/ci-repairs/baseline.jsonl",
+  "failure_obligations": [
+    "missing required variadic arguments accepted for five canonical actions",
+    "statistic semantic List roundtrip incorrectly supplies Number outputs to text-only list action",
+    "guard_json_null oracle fails on the two valid independent diagnostics"
+  ]
+}

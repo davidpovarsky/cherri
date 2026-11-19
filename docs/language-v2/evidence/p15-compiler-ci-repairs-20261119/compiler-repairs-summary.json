@@ -1,0 +1,22 @@
+{
+  "source_sha": "ba61a8df7f9fe040ab17689083101871f425b102",
+  "source_tree_clean_before": true,
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-json",
+    "-count=1",
+    "-timeout=4m",
+    "-run",
+    "^(TestP10_ParameterContractMatrix_AllCatalogActions|TestP10_Serialization_StatisticAction_AllOperations_LegacyAndV2|TestP15V02BindingFlowProduction|TestP15V02BindingServiceAndCLI|TestP15V02NullGuardDiagnosticOracleRejectsCorruption|TestP15RequiredVariadicPresence|TestP15SemanticUnconsumedListRetainsTypedGraph|TestP15C03.*)$",
+    "."
+  ],
+  "exit_code": 0,
+  "seconds": 21.39,
+  "named_passes": 280,
+  "named_fails": 0,
+  "failed": [],
+  "raw_sha256": "04a190ba03305c593ef763653b71a6599182bd57fb91318e09cdbe809fd7c9e8",
+  "source_tree_clean_after": true
+}
