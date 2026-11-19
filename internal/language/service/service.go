@@ -261,10 +261,7 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 				if fn, ok := decl.(*syntax.FunctionDecl); ok && fn.Name == callIdent {
 					for _, p := range fn.Parameters {
 						if p.Name != "" && !usedLabels[p.Name] {
-							typeStr := "parameter"
-							if nt, ok := p.TypeExpr.(*syntax.NamedTypeAnnotation); ok {
-								typeStr = nt.Name
-							}
+							typeStr := annotationText(doc.File, p.TypeExpr, "AnyContent")
 							items = append(items, CompletionItem{
 								Label:      p.Name,
 								Kind:       CompletionKindParameter,

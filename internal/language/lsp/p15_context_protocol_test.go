@@ -339,7 +339,20 @@ func TestP15RP38NestedAndMultilineContext(t *testing.T) {
 	}
 	for _, partial := range []string{"take([1, 2", "take((", "take({ key: 1, other: 2"} {
 		source := "function take(items: List<Number>, label: Text) -> Text { return label }\n" + partial
-		messages := p15Exchange(t, source, p15Request("signature", "textDocument/signatureHelp", p15PositionParams(1, len(partial))))
+		messages := p15Exchange(t, source, p15Request("signature", "textDocument/signatureHelp", p15PositionParams(1, len(partial))), p15Request("complete", "textDocument/completion", p15PositionParams(1, len(partial))))
+		foundTypedList := false
+		for _, value := range p15Array(t, p15Result(t, messages, "complete")) {
+			item := p15Object(t, value)
+			if item["kind"] == float64(5) && item["label"] == "items" {
+				if item["detail"] != "items: List<Number> (parameter)" {
+					t.Fatalf("generic parameter type lost: %#v", item)
+				}
+				foundTypedList = true
+			}
+		}
+		if !foundTypedList {
+			t.Fatal("typed List parameter completion missing")
+		}
 		signature := p15Object(t, p15Result(t, messages, "signature"))
 		label := fmt.Sprint(p15Object(t, p15Array(t, signature["signatures"])[0])["label"])
 		if !strings.HasPrefix(label, "function take(") || signature["activeParameter"] != float64(0) {
