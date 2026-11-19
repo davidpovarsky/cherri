@@ -155,3 +155,5 @@ Keep general compiler changes minimal and independently useful. Prefer:
 - no committed generated Xcode project or XCFramework.
 
 When `electrikmilk/cherri` changes action support, parsing or plist generation, the iOS app should receive those changes through a normal upstream merge rather than a separate port.
+
+Open **Options → Documentation** in the editor to search the bundled current guide and action reference. The migration reference appears only after enabling **Include migration reference**. Searching and reading documentation preserve the editor source.

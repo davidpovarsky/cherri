@@ -292,7 +292,10 @@ jobs:
         run: |
           python3 scripts/collect_ios_test_evidence.py \
             xcodetest.log .build/test-evidence \
-            "$IOS_EVIDENCE_SHA" "$IOS_EVIDENCE_RUN_ID" xcodetest.exitcode
+            "$IOS_EVIDENCE_SHA" "$IOS_EVIDENCE_RUN_ID" xcodetest.exitcode \
+            --documentation-index CherriApp/Resources/Documentation/documentation-index.json \
+            --documentation-manifest ../skills/cherri-shortcuts/compatibility-manifest.json \
+            --documentation-receipt .build/documentation-receipt.json
 
       - name: Upload iOS test evidence
         if: always() && steps.ios_evidence.outcome == 'success'
@@ -303,6 +306,9 @@ jobs:
             ios/.build/test-evidence/xcodetest.log
             ios/.build/test-evidence/ios-test-evidence.json
             ios/.build/test-evidence/ios-test-diagnostics.json
+            ios/.build/test-evidence/documentation-index.json
+            ios/.build/test-evidence/documentation-compatibility-manifest.json
+            ios/.build/test-evidence/documentation-receipt.json
           if-no-files-found: error
           retention-days: 14
 

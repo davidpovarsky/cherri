@@ -39,6 +39,7 @@ struct WorkspaceView: View {
     @State private var signedURL: URL?
     @State private var showSigningConfirmation = false
     @State private var showShortcutImporter = false
+    @State private var showDocumentation = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -96,6 +97,13 @@ struct WorkspaceView: View {
 
                 Menu {
                     Button {
+                        showDocumentation = true
+                    } label: {
+                        Label("Documentation", systemImage: "doc.text.magnifyingglass")
+                    }
+                    .accessibilityIdentifier("documentationButton")
+
+                    Button {
                         showShortcutImporter = true
                     } label: {
                         Label("Import Shortcut Plist", systemImage: "square.and.arrow.down")
@@ -114,6 +122,7 @@ struct WorkspaceView: View {
                 } label: {
                     Label("Options", systemImage: "ellipsis.circle")
                 }
+                .accessibilityIdentifier("workspaceOptionsButton")
             }
         }
         .alert("Sign Shortcut with HubSign?", isPresented: $showSigningConfirmation) {
@@ -123,6 +132,9 @@ struct WorkspaceView: View {
             }
         } message: {
             Text("Signing sends the generated Shortcut plist to Cherri's existing HubSign service. Editing, Build, and live Preview stay on this device.")
+        }
+        .sheet(isPresented: $showDocumentation) {
+            DocumentationSearchView()
         }
         .fileImporter(
             isPresented: $showShortcutImporter,
