@@ -568,6 +568,10 @@ func hasFunctionCalls(prog *syntax.Program, fns map[string]*syntax.FunctionDecl)
 						return true
 					}
 				}
+			} else if member, ok := ex.Callee.(*syntax.EnumMemberExpr); ok {
+				if _, exists := fns[member.TypeName+"."+member.Member]; exists {
+					return true
+				}
 			}
 			if checkExpr(ex.Callee) {
 				return true
@@ -4716,6 +4720,11 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		} else {
 			actionName = c.Property
 		}
+	case *syntax.EnumMemberExpr:
+		if _, imported := l.modules[c.TypeName]; !imported {
+			return nil, fmt.Errorf("enum member is not a module callable")
+		}
+		actionName = c.TypeName + "." + c.Member
 	default:
 		return nil, fmt.Errorf("complex callee not supported in lowering")
 	}

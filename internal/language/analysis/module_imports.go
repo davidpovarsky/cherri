@@ -131,23 +131,34 @@ func (a *Analyzer) defineModuleImport(scope *Scope, declaration *syntax.ImportDe
 	}
 }
 
-func (a *Analyzer) moduleCallName(member *syntax.MemberExpr, scope *Scope) (string, bool) {
-	target, ok := member.Target.(*syntax.IdentExpr)
-	if !ok {
+func (a *Analyzer) moduleCallName(callee syntax.Expression, scope *Scope) (string, bool) {
+	var target, property string
+	switch member := callee.(type) {
+	case *syntax.MemberExpr:
+		identifier, ok := member.Target.(*syntax.IdentExpr)
+		if !ok {
+			return "", false
+		}
+		target, property = identifier.Name, member.Property
+	case *syntax.EnumMemberExpr:
+		// Capitalization is only a parser hint. The bound import symbol decides
+		// whether this qualified call belongs to a module or to an enum.
+		target, property = member.TypeName, member.Member
+	default:
 		return "", false
 	}
-	symbol, ok := scope.Lookup(target.Name)
+	symbol, ok := scope.Lookup(target)
 	if !ok || symbol.Module == nil {
 		return "", false
 	}
-	name := target.Name + "." + member.Property
+	name := target + "." + property
 	if function, ok := scope.Lookup(name); ok && function.Function != nil {
 		return name, true
 	}
 	if _, ok := a.registry.LookupAction(name); ok {
 		return name, true
 	}
-	a.error(CodeUnknownAction, member.Span, fmt.Sprintf("module %q does not export callable %q", target.Name, member.Property))
+	a.error(CodeUnknownAction, callee.NodeSpan(), fmt.Sprintf("module %q does not export callable %q", target, property))
 	return "", true
 }
 

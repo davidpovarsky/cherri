@@ -1434,6 +1434,16 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 			a.analyzeExpression(call.Callee, scope)
 			return types.Unknown
 		}
+	case *syntax.EnumMemberExpr:
+		if name, handled := a.moduleCallName(c, scope); handled {
+			if name == "" {
+				return types.Unknown
+			}
+			callName = name
+		} else {
+			a.analyzeExpression(call.Callee, scope)
+			return types.Unknown
+		}
 	default:
 		// e.g. callee is a complex expression
 		a.analyzeExpression(call.Callee, scope)
