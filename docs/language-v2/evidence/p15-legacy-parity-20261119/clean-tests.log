@@ -1,0 +1,202 @@
+=== RUN   TestMapIndexDynamicKeyLowering
+--- PASS: TestMapIndexDynamicKeyLowering (0.02s)
+=== RUN   TestListIndexDynamicLowering
+--- PASS: TestListIndexDynamicLowering (0.03s)
+=== RUN   TestMapIndexEmptyKeyLoweringError
+--- PASS: TestMapIndexEmptyKeyLoweringError (0.02s)
+=== RUN   TestMapIndexUnicodeKeyLowering
+--- PASS: TestMapIndexUnicodeKeyLowering (0.02s)
+=== RUN   TestMapIndexLetVarLowering
+--- PASS: TestMapIndexLetVarLowering (0.01s)
+=== RUN   TestMapIndexNestedMapLowering
+--- PASS: TestMapIndexNestedMapLowering (0.02s)
+=== RUN   TestMapIndexDirectGetValueCall
+--- PASS: TestMapIndexDirectGetValueCall (0.01s)
+=== RUN   TestLowerBasicWorkflow
+--- PASS: TestLowerBasicWorkflow (0.01s)
+=== RUN   TestLowerConditionalWorkflow
+--- PASS: TestLowerConditionalWorkflow (0.01s)
+=== RUN   TestLowerFunctionEnvelopeDefaultsAndVoidReturn
+--- PASS: TestLowerFunctionEnvelopeDefaultsAndVoidReturn (0.01s)
+=== RUN   TestLowerShortCircuitAndExpressionsAndSafeIndexing
+--- PASS: TestLowerShortCircuitAndExpressionsAndSafeIndexing (0.01s)
+=== RUN   TestLowerTriggersWithParameters
+--- PASS: TestLowerTriggersWithParameters (0.01s)
+=== RUN   TestLowerUnusedFunctionDispatcherOmitted
+--- PASS: TestLowerUnusedFunctionDispatcherOmitted (0.02s)
+=== RUN   TestLowerListAppendVariable
+--- PASS: TestLowerListAppendVariable (0.03s)
+=== RUN   TestScopedBlockRenamingPreservesSourceAndLiteralValues
+--- PASS: TestScopedBlockRenamingPreservesSourceAndLiteralValues (0.01s)
+PASS
+ok  	github.com/electrikmilk/cherri/internal/language/lower	1.956s
+=== RUN   TestAlphaRenamingPasses
+--- PASS: TestAlphaRenamingPasses (0.00s)
+=== RUN   TestMutation01_SwapProducerUUID
+--- PASS: TestMutation01_SwapProducerUUID (0.00s)
+=== RUN   TestMutation02_NonexistentProducer
+--- PASS: TestMutation02_NonexistentProducer (0.00s)
+=== RUN   TestMutation03_ChangeVariableName
+--- PASS: TestMutation03_ChangeVariableName (0.00s)
+=== RUN   TestMutation04_ReplaceTokenWithString
+--- PASS: TestMutation04_ReplaceTokenWithString (0.00s)
+=== RUN   TestMutation05_Transformations
+--- PASS: TestMutation05_Transformations (0.00s)
+=== RUN   TestMutation06_ShiftAttachmentRange
+--- PASS: TestMutation06_ShiftAttachmentRange (0.00s)
+=== RUN   TestMutation07_NestedKeyAsymmetry
+--- PASS: TestMutation07_NestedKeyAsymmetry (0.00s)
+=== RUN   TestMutation08_ScalarTypesAndOmission
+--- PASS: TestMutation08_ScalarTypesAndOmission (0.00s)
+=== RUN   TestMutation09_ReorderActionsAndGroupMarkers
+--- PASS: TestMutation09_ReorderActionsAndGroupMarkers (0.00s)
+=== RUN   TestMutation10_RebindLoopReference
+--- PASS: TestMutation10_RebindLoopReference (0.00s)
+=== RUN   TestMutation11_StaticVariantOrAppIntent
+--- PASS: TestMutation11_StaticVariantOrAppIntent (0.00s)
+=== RUN   TestMutation12_RetargetImportQuestion
+--- PASS: TestMutation12_RetargetImportQuestion (0.00s)
+=== RUN   TestMutation13_ChangeOrdinaryUUIDLiteral
+--- PASS: TestMutation13_ChangeOrdinaryUUIDLiteral (0.00s)
+=== RUN   TestEditExactComparisonRejectsParityRelaxations
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/opaque_group
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/opaque_uuid
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/string_number
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/large_integer
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/hash_escape
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/data_array
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/negative_zero
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/producer_and_reference_alpha_rename
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/metadata_loss
+=== RUN   TestEditExactComparisonRejectsParityRelaxations/false_zero
+--- PASS: TestEditExactComparisonRejectsParityRelaxations (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/opaque_group (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/opaque_uuid (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/string_number (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/large_integer (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/hash_escape (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/data_array (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/negative_zero (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/producer_and_reference_alpha_rename (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/metadata_loss (0.00s)
+    --- PASS: TestEditExactComparisonRejectsParityRelaxations/false_zero (0.00s)
+=== RUN   TestEditPolicyBoundedReplacement
+=== RUN   TestEditPolicyBoundedReplacement/metadata_loss
+=== RUN   TestEditPolicyBoundedReplacement/retargeted_reference
+=== RUN   TestEditPolicyBoundedReplacement/opaque_type
+=== RUN   TestEditPolicyBoundedReplacement/changed_unlisted_uuid
+--- PASS: TestEditPolicyBoundedReplacement (0.10s)
+    --- PASS: TestEditPolicyBoundedReplacement/metadata_loss (0.00s)
+    --- PASS: TestEditPolicyBoundedReplacement/retargeted_reference (0.02s)
+    --- PASS: TestEditPolicyBoundedReplacement/opaque_type (0.02s)
+    --- PASS: TestEditPolicyBoundedReplacement/changed_unlisted_uuid (0.01s)
+=== RUN   TestEditPolicyRejectsAmbiguousAuthorizations
+--- PASS: TestEditPolicyRejectsAmbiguousAuthorizations (0.00s)
+=== RUN   TestFunctionBodyMutation_DetectedByNormalizedComparator
+    functions_regression_test.go:67: Legacy function names: [processDict processFloat greetDefault formatPair processArray fibonacci processBool processVariable greet double]
+    functions_regression_test.go:76: Legacy total actions: 188, V2 total actions: 147
+=== RUN   TestFunctionBodyMutation_DetectedByNormalizedComparator/greetDefault_default_value
+=== RUN   TestFunctionBodyMutation_DetectedByNormalizedComparator/double_body_math_operator
+=== RUN   TestFunctionBodyMutation_DetectedByNormalizedComparator/fibonacci_body_condition_threshold
+--- PASS: TestFunctionBodyMutation_DetectedByNormalizedComparator (7.79s)
+    --- PASS: TestFunctionBodyMutation_DetectedByNormalizedComparator/greetDefault_default_value (0.10s)
+    --- PASS: TestFunctionBodyMutation_DetectedByNormalizedComparator/double_body_math_operator (0.11s)
+    --- PASS: TestFunctionBodyMutation_DetectedByNormalizedComparator/fibonacci_body_condition_threshold (0.13s)
+=== RUN   TestP15BRG02ReferenceTopologyProduction
+=== RUN   TestP15BRG02ReferenceTopologyProduction/bijective_renaming
+=== RUN   TestP15BRG02ReferenceTopologyProduction/swapped_producer
+=== RUN   TestP15BRG02ReferenceTopologyProduction/dangling_reference
+=== RUN   TestP15BRG02ReferenceTopologyProduction/scoped_variable
+--- PASS: TestP15BRG02ReferenceTopologyProduction (0.00s)
+    --- PASS: TestP15BRG02ReferenceTopologyProduction/bijective_renaming (0.00s)
+    --- PASS: TestP15BRG02ReferenceTopologyProduction/swapped_producer (0.00s)
+    --- PASS: TestP15BRG02ReferenceTopologyProduction/dangling_reference (0.00s)
+    --- PASS: TestP15BRG02ReferenceTopologyProduction/scoped_variable (0.00s)
+=== RUN   TestP15BRG03TypedTreeProduction
+=== RUN   TestP15BRG03TypedTreeProduction/nested_key_set
+=== RUN   TestP15BRG03TypedTreeProduction/native_number_to_text
+=== RUN   TestP15BRG03TypedTreeProduction/native_integer_to_real
+=== RUN   TestP15BRG03TypedTreeProduction/large_integer_precision
+=== RUN   TestP15BRG03TypedTreeProduction/native_data_to_array
+=== RUN   TestP15BRG03TypedTreeProduction/false_omission
+=== RUN   TestP15BRG03TypedTreeProduction/empty_text_omission
+=== RUN   TestP15BRG03TypedTreeProduction/token_kind
+=== RUN   TestP15BRG03TypedTreeProduction/literal_text
+=== RUN   TestP15BRG03TypedTreeProduction/escaped_looking_literal
+=== RUN   TestP15BRG03TypedTreeProduction/uuid_shaped_literal
+=== RUN   TestP15BRG03TypedTreeProduction/transform_order
+=== RUN   TestP15BRG03TypedTreeProduction/utf16_attachment_range
+--- PASS: TestP15BRG03TypedTreeProduction (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/nested_key_set (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/native_number_to_text (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/native_integer_to_real (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/large_integer_precision (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/native_data_to_array (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/false_omission (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/empty_text_omission (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/token_kind (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/literal_text (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/escaped_looking_literal (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/uuid_shaped_literal (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/transform_order (0.00s)
+    --- PASS: TestP15BRG03TypedTreeProduction/utf16_attachment_range (0.00s)
+=== RUN   TestP15StrictComparisonKeepsExplicitParityBehavior
+--- PASS: TestP15StrictComparisonKeepsExplicitParityBehavior (0.00s)
+=== RUN   TestP15StrictComparisonNativeIntegerWidths
+--- PASS: TestP15StrictComparisonNativeIntegerWidths (0.00s)
+=== RUN   TestClipboardSnapshotNormalizationPreservesEvaluation
+=== RUN   TestClipboardSnapshotNormalizationPreservesEvaluation/late_read
+=== RUN   TestClipboardSnapshotNormalizationPreservesEvaluation/deferred_read
+=== RUN   TestClipboardSnapshotNormalizationPreservesEvaluation/wrong_reference
+=== RUN   TestClipboardSnapshotNormalizationPreservesEvaluation/getvariable_system_token
+=== RUN   TestClipboardSnapshotNormalizationPreservesEvaluation/missing_read
+=== RUN   TestClipboardSnapshotNormalizationPreservesEvaluation/transformed_capture
+=== RUN   TestClipboardSnapshotNormalizationPreservesEvaluation/unknown_capture_parameter
+=== RUN   TestClipboardSnapshotNormalizationPreservesEvaluation/multiple_writes
+--- PASS: TestClipboardSnapshotNormalizationPreservesEvaluation (0.00s)
+    --- PASS: TestClipboardSnapshotNormalizationPreservesEvaluation/late_read (0.00s)
+    --- PASS: TestClipboardSnapshotNormalizationPreservesEvaluation/deferred_read (0.00s)
+    --- PASS: TestClipboardSnapshotNormalizationPreservesEvaluation/wrong_reference (0.00s)
+    --- PASS: TestClipboardSnapshotNormalizationPreservesEvaluation/getvariable_system_token (0.00s)
+    --- PASS: TestClipboardSnapshotNormalizationPreservesEvaluation/missing_read (0.00s)
+    --- PASS: TestClipboardSnapshotNormalizationPreservesEvaluation/transformed_capture (0.00s)
+    --- PASS: TestClipboardSnapshotNormalizationPreservesEvaluation/unknown_capture_parameter (0.00s)
+    --- PASS: TestClipboardSnapshotNormalizationPreservesEvaluation/multiple_writes (0.00s)
+=== RUN   TestBuiltinFunctionSymbolsRemainScoped
+--- PASS: TestBuiltinFunctionSymbolsRemainScoped (0.00s)
+PASS
+ok  	github.com/electrikmilk/cherri/internal/shortcutcompare	9.252s
+=== RUN   TestGate_MenusAssetWorkspace
+=== RUN   TestGate_MenusAssetWorkspace/entry_asset_wins_over_decoy_cwd
+=== RUN   TestGate_MenusAssetWorkspace/missing_entry_asset_fails_closed
+=== RUN   TestGate_MenusAssetWorkspace/restored_exact_asset_recovers
+--- PASS: TestGate_MenusAssetWorkspace (1.21s)
+    --- PASS: TestGate_MenusAssetWorkspace/entry_asset_wins_over_decoy_cwd (0.05s)
+    --- PASS: TestGate_MenusAssetWorkspace/missing_entry_asset_fails_closed (0.04s)
+    --- PASS: TestGate_MenusAssetWorkspace/restored_exact_asset_recovers (0.12s)
+=== RUN   TestGate_MenusMissingCanonicalAssetFailsClosed
+--- PASS: TestGate_MenusMissingCanonicalAssetFailsClosed (0.00s)
+=== RUN   TestGate_PositiveEndToEnd
+--- PASS: TestGate_PositiveEndToEnd (0.18s)
+=== RUN   TestGate_Negative_MissingRequiredParameterFailsGate
+--- PASS: TestGate_Negative_MissingRequiredParameterFailsGate (0.06s)
+=== RUN   TestGate_Negative_IntentionalDifferenceDetected
+--- PASS: TestGate_Negative_IntentionalDifferenceDetected (0.02s)
+=== RUN   TestGate_Negative_MissingActionParameterDetected
+--- PASS: TestGate_Negative_MissingActionParameterDetected (0.02s)
+=== RUN   TestGate_PublicGlobalsAndStandard
+=== RUN   TestGate_PublicGlobalsAndStandard/globals.cherri
+=== RUN   TestGate_PublicGlobalsAndStandard/standard.cherri
+=== RUN   TestGate_PublicGlobalsAndStandard/standard.cherri/body_value
+=== RUN   TestGate_PublicGlobalsAndStandard/standard.cherri/wrong_module_call
+=== RUN   TestGate_PublicGlobalsAndStandard/standard.cherri/unknown_function_call
+=== RUN   TestGate_PublicGlobalsAndStandard/standard.cherri/parameter_edge
+--- PASS: TestGate_PublicGlobalsAndStandard (0.29s)
+    --- PASS: TestGate_PublicGlobalsAndStandard/globals.cherri (0.12s)
+    --- PASS: TestGate_PublicGlobalsAndStandard/standard.cherri (0.17s)
+        --- PASS: TestGate_PublicGlobalsAndStandard/standard.cherri/body_value (0.00s)
+        --- PASS: TestGate_PublicGlobalsAndStandard/standard.cherri/wrong_module_call (0.00s)
+        --- PASS: TestGate_PublicGlobalsAndStandard/standard.cherri/unknown_function_call (0.00s)
+        --- PASS: TestGate_PublicGlobalsAndStandard/standard.cherri/parameter_edge (0.00s)
+PASS
+ok  	github.com/electrikmilk/cherri/tools/legacy-parity	3.196s

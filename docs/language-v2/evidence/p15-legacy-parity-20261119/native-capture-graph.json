@@ -1,0 +1,56 @@
+{
+  "source": {
+    "fixtureSha256": "30f7ea3431a917b4b8f73b200ef113fd833cd0e522f9932b1a714e53bfd4e8dd",
+    "originalFixturesUnchanged": true,
+    "bindingBodyByteIdentical": true,
+    "formalAcceptance": false,
+    "appleRuntime": "NOT_RUN"
+  },
+  "graph": {
+    "status": "PASS_LOCAL_CAUSAL_GRAPH_ONLY",
+    "nativeActions": 181,
+    "independentClipboardRoutes": 4,
+    "boundedPublicExportByteWitnesses": 2,
+    "clipboardContentPublished": false,
+    "independentTypeWitnesses": 3,
+    "supportedFileCoercionObservedSeparately": true,
+    "formalAcceptance": false,
+    "appleRuntime": "NOT_RUN"
+  },
+  "mutations": [
+    "wrong-entry-count",
+    "first-as-last",
+    "wrong-payload-key",
+    "wrong-dictionary-control",
+    "wrong-binary-control",
+    "type-witness-alias",
+    "getvariable-not-clipboard",
+    "token-route-collapsed",
+    "canonical-action-collapsed",
+    "direct-result-replaced",
+    "hardcoded-result",
+    "flag-always-yes",
+    "cap-bypassed",
+    "missing-uuid",
+    "duplicate-uuid",
+    "callback-replaced",
+    "seed-changed",
+    "unlogged-public-value",
+    "file-coercion-removed",
+    "file-coercion-wrong-class",
+    "file-byte-route-collapsed",
+    "file-name-hardcoded"
+  ],
+  "captureNegatives": [
+    {
+      "mutation": "getvariable-clipboard",
+      "rejected": true,
+      "reason": "NATIVE_BOUNDARY_GRAPH_CONTRACT: named producer clipAlias"
+    },
+    {
+      "mutation": "unexpected-parameter",
+      "rejected": true,
+      "reason": "NATIVE_BOUNDARY_GRAPH_CONTRACT: declaration-time original captures"
+    }
+  ]
+}

@@ -2989,6 +2989,21 @@
       "reason": "Relative embedded files were read from the process directory and editor analysis could miss missing or escaping assets or reread and re-encode large unchanged data.",
       "evidence": "Exact clean c53f765dc8f80db433c49cc4d780e0d6d9ad27dd:70 outer/control cases PASS,0 failures/skips in62.875s; independently executed S03 and E08 producers retain400 raw samples each. Raw gate SHA25678fcf033e450e22f5e4e8e2dd74873ab3ef62f54d2e14f2c3230ea0927bdb667. Working96 focused plus95 affected-package cases passed before the clean replay.",
       "note": "The opened file handle is reauthorized even for cache hits. Limits are64MiB/file,128MiB encoded resident cache and64entries. Same-size/timestamp notifications invalidate the cache. Windows QPC observations do not prove iOS UI latency or race-free concurrency."
+    },
+    {
+      "name": "P10R15 native Clipboard snapshot and scoped Legacy parity repair",
+      "locations": [
+        "internal/language/lower/binding_capture.go",
+        "internal/shortcutcompare/p15_snapshot_symbols.go",
+        "internal/shortcutcompare/normalize.go",
+        "p15_binding_defaults_acceptance_test.go",
+        "tools/shortcuts-simulator-qa/native_boundary_diagnostic.py"
+      ],
+      "firstForkCommit": "d0f19a62f80a65a507fdd45ff3e2fc48343ebaf9",
+      "change": "Emit the existing parameterless Get Clipboard action for immutable Clipboard bindings. Preserve declaration-time reads and consumer edges when comparing legacy single-write Clipboard assignments. Alpha-normalize only witnessed builtin stdfunc declaration, dispatcher call and parameter identities without merging unrelated module symbols.",
+      "reason": "Native diagnostic run 44466065158 showed Get Variable with a Clipboard token returned empty and immutable captures missed the initial value. The old parity forwarder erased legacy Clipboard evaluation; standard.cherri differences were confined to builtin module symbol qualification.",
+      "evidence": "docs/language-v2/p15-legacy-parity-repair-20261119.md; clean implementation d0f19a62:47/47 public fixtures (9 strict,38 normalized),17/17 action mappings, zero failures; snapshot mutation controls, real standard fixture mutation controls and native graph checks. Public native diagnostic source f7f1447263ff99deb891e6044b62b270b6e8797c, artifact14502699926.",
+      "note": "Supersedes the observed native limitation of the earlier Get Variable capture implementation without rewriting its historical provenance entry. Reuses canonical Get Clipboard; no second action catalog. Local graph/parity checks do not grant Apple runtime or formal V01/V03 acceptance. Combined integration replay remains required."
     }
   ]
 }

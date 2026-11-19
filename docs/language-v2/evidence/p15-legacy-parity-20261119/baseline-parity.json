@@ -1,0 +1,693 @@
+{
+  "timestamp": "2026-11-19T19:50:34Z",
+  "total_fixtures": 47,
+  "verified_parity": 9,
+  "proven_equivalent": 35,
+  "upstream_baseline_fails": 0,
+  "migration_fails": 0,
+  "v2_compile_fails": 1,
+  "parity_differences": 2,
+  "total_actions_tested": 17,
+  "actions_passed_both": 17,
+  "fixtures": [
+    {
+      "name": "a11y.cherri",
+      "path": "$WORKTREE\\tests\\a11y.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "ai.cherri",
+      "path": "$WORKTREE\\tests\\ai.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "arrays.cherri",
+      "path": "$WORKTREE\\tests\\arrays.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "automations.cherri",
+      "path": "$WORKTREE\\tests\\automations.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "calendar.cherri",
+      "path": "$WORKTREE\\tests\\calendar.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "conditionals.cherri",
+      "path": "$WORKTREE\\tests\\conditionals.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "control-flow-output.cherri",
+      "path": "$WORKTREE\\tests\\control-flow-output.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "copy-paste.cherri",
+      "path": "$WORKTREE\\tests\\copy-paste.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "corpus-batch001.cherri",
+      "path": "$WORKTREE\\tests\\corpus-batch001.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "crypto.cherri",
+      "path": "$WORKTREE\\tests\\crypto.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "date-comparisons.cherri",
+      "path": "$WORKTREE\\tests\\date-comparisons.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "decomp-expected.cherri",
+      "path": "$WORKTREE\\tests\\decomp-expected.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "definitions.cherri",
+      "path": "$WORKTREE\\tests\\definitions.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "dictionary.cherri",
+      "path": "$WORKTREE\\tests\\dictionary.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "empty-types.cherri",
+      "path": "$WORKTREE\\tests\\empty-types.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "enum.cherri",
+      "path": "$WORKTREE\\tests\\enum.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "functions.cherri",
+      "path": "$WORKTREE\\tests\\functions.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "getas-typecast.cherri",
+      "path": "$WORKTREE\\tests\\getas-typecast.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "globals.cherri",
+      "path": "$WORKTREE\\tests\\globals.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions.length",
+          "kind": "length",
+          "a": 8,
+          "b": 9
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.gettext",
+          "b": "is.workflow.actions.getvariable"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-b",
+          "a": "object{Value,WFSerializationType}",
+          "b": null
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFVariable",
+          "kind": "missing-in-a",
+          "a": null,
+          "b": "object{Value,WFSerializationType}"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionIdentifier",
+          "kind": "value",
+          "a": "is.workflow.actions.showresult",
+          "b": "is.workflow.actions.gettext"
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.Text",
+          "kind": "missing-in-b",
+          "a": "✅ All tests passed",
+          "b": null
+        },
+        {
+          "path": "WFWorkflowActions[7].WFWorkflowActionParameters.WFTextActionText",
+          "kind": "missing-in-a",
+          "a": null,
+          "b": "object{Value,WFSerializationType}"
+        }
+      ]
+    },
+    {
+      "name": "hello-world.cherri",
+      "path": "$WORKTREE\\tests\\hello-world.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "images.cherri",
+      "path": "$WORKTREE\\tests\\images.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "import-questions.cherri",
+      "path": "$WORKTREE\\tests\\import-questions.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "include-actions.cherri",
+      "path": "$WORKTREE\\tests\\include-actions.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "include.cherri",
+      "path": "$WORKTREE\\tests\\include.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "includes.cherri",
+      "path": "$WORKTREE\\tests\\includes.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "math.cherri",
+      "path": "$WORKTREE\\tests\\math.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "measurements.cherri",
+      "path": "$WORKTREE\\tests\\measurements.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "menus.cherri",
+      "path": "$WORKTREE\\tests\\menus.cherri",
+      "status": "V2_COMPILE_FAIL",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": false,
+      "equal": false,
+      "detail": "Compilation error: lowering error: [E_WORKSPACE_ACCESS] embedded local asset: file does not exist"
+    },
+    {
+      "name": "nil.cherri",
+      "path": "$WORKTREE\\tests\\nil.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "numbers.cherri",
+      "path": "$WORKTREE\\tests\\numbers.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "qty-color.cherri",
+      "path": "$WORKTREE\\tests\\qty-color.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "raw-action-output-capture.cherri",
+      "path": "$WORKTREE\\tests\\raw-action-output-capture.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "raw-action-variable-values.cherri",
+      "path": "$WORKTREE\\tests\\raw-action-variable-values.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "raw-action.cherri",
+      "path": "$WORKTREE\\tests\\raw-action.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "repeats.cherri",
+      "path": "$WORKTREE\\tests\\repeats.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "shortcuts.cherri",
+      "path": "$WORKTREE\\tests\\shortcuts.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "smol.cherri",
+      "path": "$WORKTREE\\tests\\smol.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "split-screen.cherri",
+      "path": "$WORKTREE\\tests\\split-screen.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "standard.cherri",
+      "path": "$WORKTREE\\tests\\standard.cherri",
+      "status": "PARITY_DIFFERENCE",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": false,
+      "differences": [
+        {
+          "path": "WFWorkflowActions[0].WFWorkflowActionParameters.FunctionName",
+          "kind": "value",
+          "a": "chooseFromVCard",
+          "b": "module:builtin:stdfunc::chooseFromVCard"
+        },
+        {
+          "path": "WFWorkflowActions[10].WFWorkflowActionParameters.FunctionName",
+          "kind": "value",
+          "a": "runJS",
+          "b": "module:builtin:stdfunc::runJS"
+        },
+        {
+          "path": "WFWorkflowActions[13].WFWorkflowActionParameters.WFItems.Value.WFDictionaryFieldValueItems[0].WFValue.Value.string",
+          "kind": "value",
+          "a": "runJS",
+          "b": "module:builtin:stdfunc::runJS"
+        },
+        {
+          "path": "WFWorkflowActions[1].WFWorkflowActionParameters.WFInput.Value.OutputUUID",
+          "kind": "output-uuid-mismatch",
+          "a": "PARAM-chooseFromVCard-items",
+          "b": "PARAM-module:builtin:stdfunc::chooseFromVCard-items"
+        },
+        {
+          "path": "WFWorkflowActions[23].WFWorkflowActionParameters.WFItems.Value.WFDictionaryFieldValueItems[0].WFValue.Value.string",
+          "kind": "value",
+          "a": "chooseFromVCard",
+          "b": "module:builtin:stdfunc::chooseFromVCard"
+        },
+        {
+          "path": "WFWorkflowActions[2].WFWorkflowActionParameters.WFChooseFromListActionPrompt.Value.attachmentsByRange.{0, 1}.OutputUUID",
+          "kind": "output-uuid-mismatch",
+          "a": "PARAM-chooseFromVCard-prompt",
+          "b": "PARAM-module:builtin:stdfunc::chooseFromVCard-prompt"
+        },
+        {
+          "path": "WFWorkflowActions[4].WFWorkflowActionParameters.FunctionName",
+          "kind": "value",
+          "a": "chooseFromVCard",
+          "b": "module:builtin:stdfunc::chooseFromVCard"
+        },
+        {
+          "path": "WFWorkflowActions[5].WFWorkflowActionParameters.FunctionName",
+          "kind": "value",
+          "a": "runJS",
+          "b": "module:builtin:stdfunc::runJS"
+        },
+        {
+          "path": "WFWorkflowActions[6].WFWorkflowActionParameters.WFInput.Value.attachmentsByRange.{0, 1}.OutputUUID",
+          "kind": "output-uuid-mismatch",
+          "a": "PARAM-runJS-script",
+          "b": "PARAM-module:builtin:stdfunc::runJS-script"
+        }
+      ]
+    },
+    {
+      "name": "storage.cherri",
+      "path": "$WORKTREE\\tests\\storage.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "text.cherri",
+      "path": "$WORKTREE\\tests\\text.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "toggle-set.cherri",
+      "path": "$WORKTREE\\tests\\toggle-set.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "types.cherri",
+      "path": "$WORKTREE\\tests\\types.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "variable-interpolation-utf16.cherri",
+      "path": "$WORKTREE\\tests\\variable-interpolation-utf16.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "variables.cherri",
+      "path": "$WORKTREE\\tests\\variables.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "web.cherri",
+      "path": "$WORKTREE\\tests\\web.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "zz-action-identifiers.cherri",
+      "path": "$WORKTREE\\tests\\zz-action-identifiers.cherri",
+      "status": "VERIFIED_PARITY",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    }
+  ],
+  "actions": [
+    {
+      "callable_name": "getParkedCarLocation",
+      "category": "location",
+      "apple_id": "is.workflow.actions.getparkedcarlocation",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "scanBarcode",
+      "category": "images",
+      "apple_id": "is.workflow.actions.scanbarcode",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "filterPhotos",
+      "category": "photos",
+      "apple_id": "is.workflow.actions.filter.photos",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "searchiTunes",
+      "category": "music",
+      "apple_id": "is.workflow.actions.searchitunes",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "intercom",
+      "category": "device",
+      "apple_id": "is.workflow.actions.intercom",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getCurrentApp",
+      "category": "mac",
+      "apple_id": "is.workflow.actions.getcurrentapp",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getSelectedText",
+      "category": "mac",
+      "apple_id": "is.workflow.actions.getselectedtext",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getUpcomingEvents",
+      "category": "calendar",
+      "apple_id": "is.workflow.actions.getupcomingevents",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "addCalendar",
+      "category": "calendar",
+      "apple_id": "is.workflow.actions.addnewcalendar",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getType",
+      "category": "basic",
+      "apple_id": "is.workflow.actions.gettypeaction",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getTravelTime",
+      "category": "location",
+      "apple_id": "is.workflow.actions.gettraveltime",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "storeValue",
+      "category": "storage",
+      "apple_id": "is.workflow.actions.setstoredcontent",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "getStoredValue",
+      "category": "storage",
+      "apple_id": "is.workflow.actions.getstoredcontent",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "deleteStoredValue",
+      "category": "storage",
+      "apple_id": "is.workflow.actions.deletestoredcontent",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "askModel",
+      "category": "intelligence",
+      "apple_id": "is.workflow.actions.askllm",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "askProModel",
+      "category": "intelligence",
+      "apple_id": "is.workflow.actions.askllm",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    },
+    {
+      "callable_name": "askDeviceModel",
+      "category": "intelligence",
+      "apple_id": "is.workflow.actions.askllm",
+      "legacy_passed": true,
+      "v2_passed": true,
+      "equal": true,
+      "status": "VERIFIED"
+    }
+  ]
+}

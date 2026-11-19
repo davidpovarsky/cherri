@@ -1,0 +1,87 @@
+{
+  "source": "d0f19a62f80a65a507fdd45ff3e2fc48343ebaf9",
+  "sourceCleanBefore": true,
+  "binarySha256": "899b0c8aa6a28b9990f12f97176cf59d87b7b90be386cec3016a855ebc05495e",
+  "runs": [
+    {
+      "name": "clean-build",
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "$EVIDENCE\\cherri-d0f19a62.exe",
+        "."
+      ],
+      "exit": 0,
+      "elapsed": 6.781
+    },
+    {
+      "name": "affected-package-tests",
+      "command": [
+        "go",
+        "test",
+        "-count=1",
+        "-v",
+        "./internal/language/lower",
+        "./internal/shortcutcompare",
+        "./tools/legacy-parity"
+      ],
+      "exit": 0,
+      "elapsed": 13.906
+    },
+    {
+      "name": "full-parity",
+      "command": [
+        "go",
+        "run",
+        "./tools/legacy-parity",
+        "-output",
+        "$EVIDENCE\\full-parity.json"
+      ],
+      "exit": 0,
+      "elapsed": 10.297
+    }
+  ],
+  "statusAfter": "",
+  "summary": {
+    "timestamp": "2026-11-19T20:03:51Z",
+    "total_fixtures": 47,
+    "verified_parity": 9,
+    "proven_equivalent": 38,
+    "upstream_baseline_fails": 0,
+    "migration_fails": 0,
+    "v2_compile_fails": 0,
+    "parity_differences": 0,
+    "total_actions_tested": 17,
+    "actions_passed_both": 17
+  },
+  "focusFixtures": [
+    {
+      "name": "globals.cherri",
+      "path": "$WORKTREE\\tests\\globals.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "menus.cherri",
+      "path": "$WORKTREE\\tests\\menus.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    },
+    {
+      "name": "standard.cherri",
+      "path": "$WORKTREE\\tests\\standard.cherri",
+      "status": "PROVEN_EQUIVALENT",
+      "legacy_ok": true,
+      "migrated_ok": true,
+      "v2_compile_ok": true,
+      "equal": true
+    }
+  ]
+}
