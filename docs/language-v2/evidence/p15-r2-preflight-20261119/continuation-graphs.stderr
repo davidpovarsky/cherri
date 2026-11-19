@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "C:\Users\DAVID\Code\cherri-p10r15-assets-20261119\tools\p10r15\verify_native_continuation_probes.py", line 466, in <module>
+    main()
+  File "C:\Users\DAVID\Code\cherri-p10r15-assets-20261119\tools\p10r15\verify_native_continuation_probes.py", line 408, in main
+    identity = verify_build_identity(checked(["go", "version", "-m", compiler]).stdout,
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DAVID\Code\cherri-p10r15-assets-20261119\tools\p10r15\verify_storage_probes.py", line 46, in verify_build_identity
+    raise RuntimeError("compiler VCS identity missing; a Git worktree requires explicit --build")
+RuntimeError: compiler VCS identity missing; a Git worktree requires explicit --build
