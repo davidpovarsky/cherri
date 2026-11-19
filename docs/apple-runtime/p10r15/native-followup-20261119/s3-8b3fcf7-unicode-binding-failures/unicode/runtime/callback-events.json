@@ -1,0 +1,39 @@
+[
+  {
+    "eventSource" : "receiver-self-test",
+    "host" : "success",
+    "receiverSelfTest" : true,
+    "resultShape" : {
+      "collectorMarkerCount" : 0,
+      "inlineMarkerCount" : 0,
+      "nonemptyLineCount" : 1,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 21
+    },
+    "resultSummary" : "CHERRI_QA_RECEIVER_OK",
+    "runId" : "receiver-self-test",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-19T04:54:11.559Z"
+  },
+  {
+    "eventSource" : "shortcuts-x-callback",
+    "expectedShortcutName" : "qa-export-unicode-diagnostic-v2",
+    "fixtureId" : "qa-export-unicode-diagnostic-v2",
+    "host" : "success",
+    "receiverSelfTest" : false,
+    "resultShape" : {
+      "collectorMarkerCount" : 2,
+      "inlineMarkerCount" : 2,
+      "nonemptyLineCount" : 5,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 1647
+    },
+    "resultSummary" : "CHERRI_QA_EXPORT_UNICODE_DIAG:TYPE=N:NAME=Y:COUNT=N:STATUS=Y:PAYLOAD=N:RESTORED_EQ=N:RESTORED_NE=Y:LITERAL_EQ=Y:LITERAL_NE=N:UNCHANGED=Y:ORIGINAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:PAYLOAD_TEXT64=:DECODED_FILE64=:RESTORED64=QUMxQjIzMkEtNTkxOS00ODU2LTgyNUQtRTNFM0YyMDhDMUMz:LITERAL64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:AFTER64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:NAME64=Y2hlcnJpLWRlYnVnLmpzb24=:STATUS64=VEVYVF9QQVlMT0FEX0VOQ09ERUQ=",
+    "runId" : "qa-export-unicode-diagnostic-v2-44459407425-faf1385ce399ea508429e0d5cc400da0",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-19T05:08:26.797Z",
+    "tracePayload" : "{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_begin\",\"runId\":\"qa-export-unicode-diagnostic-v2\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"before\",\"label\":\"unicode-diagnostic\",\"stepSequence\":3,\"actionIdentifier\":\"is.workflow.actions.setvariable\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"19 Nov 2026 at 5:06 AM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"after\",\"label\":\"unicode-diagnostic\",\"stepSequence\":163,\"actionIdentifier\":\"is.workflow.actions.conditional\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"19 Nov 2026 at 5:07 AM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_end\",\"runId\":\"qa-export-unicode-diagnostic-v2\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}"
+  }
+]

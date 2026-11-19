@@ -1,0 +1,39 @@
+[
+  {
+    "eventSource" : "receiver-self-test",
+    "host" : "success",
+    "receiverSelfTest" : true,
+    "resultShape" : {
+      "collectorMarkerCount" : 0,
+      "inlineMarkerCount" : 0,
+      "nonemptyLineCount" : 1,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 21
+    },
+    "resultSummary" : "CHERRI_QA_RECEIVER_OK",
+    "runId" : "receiver-self-test",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-19T05:00:05.686Z"
+  },
+  {
+    "eventSource" : "shortcuts-x-callback",
+    "expectedShortcutName" : "CherriBindingCapturePOC",
+    "fixtureId" : "CherriBindingCapturePOC",
+    "host" : "success",
+    "receiverSelfTest" : false,
+    "resultShape" : {
+      "collectorMarkerCount" : 2,
+      "inlineMarkerCount" : 2,
+      "nonemptyLineCount" : 5,
+      "sentinelLineCount" : 0,
+      "utf8ByteCount" : 993
+    },
+    "resultSummary" : "CHERRI_QA_BINDING_CAPTURE_RESULT:",
+    "runId" : "CherriBindingCapturePOC-44459414583-ae1e5fb94adf271f4ed003f73b80ec73",
+    "schemaVersion" : "1.4",
+    "status" : "SUCCESS",
+    "timestampISO8601" : "2026-11-19T05:07:58.735Z",
+    "tracePayload" : "{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_begin\",\"runId\":\"CherriBindingCapturePOC\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"before\",\"label\":\"binding-defaults\",\"stepSequence\":3,\"actionIdentifier\":\"is.workflow.actions.setvariable\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"19 Nov 2026 at 5:07 AM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"INLINE_DEBUG_ACTION\",\"stage\":\"after\",\"label\":\"binding-defaults\",\"stepSequence\":26,\"actionIdentifier\":\"is.workflow.actions.conditional\",\"timestampPrecision\":\"apple-currentdate\",\"valueType\":\"UNKNOWN_AT_TRACE_EVENT\",\"timestamp\":\"19 Nov 2026 at 5:07 AM\"}\n{\"schemaVersion\":\"1.4\",\"kind\":\"COLLECTOR_EVENT\",\"stage\":\"collector_end\",\"runId\":\"CherriBindingCapturePOC\",\"traceTransport\":\"ndjson-stream\",\"collectorSentinel\":\"===CHERRI_QA_TRACE_NDJSON_V14===\"}"
+  }
+]

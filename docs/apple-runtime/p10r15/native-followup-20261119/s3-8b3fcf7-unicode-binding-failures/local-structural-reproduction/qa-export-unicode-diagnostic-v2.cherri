@@ -1,0 +1,85 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+// Public causal diagnostic only. The original Unicode acceptance probe is unchanged.
+debugClearLogs()
+debugTraceEvent("before", "unicode-diagnostic")
+var originalVerdict = "P15_EXPORT_UNICODE_OK"
+let original = text("quote \" backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET")
+debugLog()
+let artifact = debugExport("json", false, false, false)
+let artifactStem = getName(artifact)
+let artifactExtension = getFileDetail(artifact, "File Extension")
+let artifactName = text(f"{artifactStem}.{artifactExtension}")
+let fileWitness = base64Decode("AQ==")
+let expectedFileType = typeOf(fileWitness)
+let artifactType = typeOf(artifact)
+let artifactText = getText(artifact)
+let parsed = getDictionary(artifactText)
+let entries = getValue(parsed, "entries")
+let entryCount = count(entries)
+let firstEntry = getFirstItem(entries)
+let status = getValue(firstEntry, "status")
+let payload = getValue(firstEntry, "payload")
+let payloadValue = getValue(payload, "value")
+let restoredFile = base64Decode(payloadValue)
+let restoredText = getText(restoredFile)
+let originalAfter = getVariable(original)
+let literalFile = base64Decode("cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU")
+let literalText = getText(literalFile)
+comment("ANCHOR_CARD_15_MID_CENTER")
+var typeFlag = "N"
+if artifactType == expectedFileType { typeFlag = "Y" }
+var nameFlag = "N"
+if artifactName == "cherri-debug.json" { nameFlag = "Y" }
+var countFlag = "N"
+if entryCount.number == 1 { countFlag = "Y" }
+var statusFlag = "N"
+if status == "TEXT_PAYLOAD_ENCODED" { statusFlag = "Y" }
+var payloadFlag = "N"
+if payloadValue == "cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU" { payloadFlag = "Y" }
+var restoredEq = "N"
+if restoredText == original { restoredEq = "Y" }
+var restoredNe = "N"
+if restoredText != original { restoredNe = "Y" }
+var literalEq = "N"
+if literalText == original { literalEq = "Y" }
+var literalNe = "N"
+if literalText != original { literalNe = "Y" }
+var unchangedFlag = "N"
+if originalAfter == original { unchangedFlag = "Y" }
+let original64Raw = base64Encode(original, lineBreakMode: "None")
+let original64Length = count(original64Raw, "Characters")
+var original64 = "OVERSIZE"
+if original64Length.number < 513 { original64 = original64Raw }
+let payloadText64Raw = base64Encode(payloadValue, lineBreakMode: "None")
+let payloadText64Length = count(payloadText64Raw, "Characters")
+var payloadText64 = "OVERSIZE"
+if payloadText64Length.number < 513 { payloadText64 = payloadText64Raw }
+let decodedFile64Raw = base64Encode(restoredFile, lineBreakMode: "None")
+let decodedFile64Length = count(decodedFile64Raw, "Characters")
+var decodedFile64 = "OVERSIZE"
+if decodedFile64Length.number < 513 { decodedFile64 = decodedFile64Raw }
+let restored64Raw = base64Encode(restoredText, lineBreakMode: "None")
+let restored64Length = count(restored64Raw, "Characters")
+var restored64 = "OVERSIZE"
+if restored64Length.number < 513 { restored64 = restored64Raw }
+let literal64Raw = base64Encode(literalText, lineBreakMode: "None")
+let literal64Length = count(literal64Raw, "Characters")
+var literal64 = "OVERSIZE"
+if literal64Length.number < 513 { literal64 = literal64Raw }
+let after64Raw = base64Encode(originalAfter, lineBreakMode: "None")
+let after64Length = count(after64Raw, "Characters")
+var after64 = "OVERSIZE"
+if after64Length.number < 513 { after64 = after64Raw }
+let name64Raw = base64Encode(artifactName, lineBreakMode: "None")
+let name64Length = count(name64Raw, "Characters")
+var name64 = "OVERSIZE"
+if name64Length.number < 513 { name64 = name64Raw }
+let status64Raw = base64Encode(status, lineBreakMode: "None")
+let status64Length = count(status64Raw, "Characters")
+var status64 = "OVERSIZE"
+if status64Length.number < 513 { status64 = status64Raw }
+debugTraceEvent("after", "unicode-diagnostic")
+let traceEnvelope = debugExportTrace(runId: "qa-export-unicode-diagnostic-v2")
+let finalSummary = text(f"CHERRI_QA_EXPORT_UNICODE_DIAG:TYPE={typeFlag}:NAME={nameFlag}:COUNT={countFlag}:STATUS={statusFlag}:PAYLOAD={payloadFlag}:RESTORED_EQ={restoredEq}:RESTORED_NE={restoredNe}:LITERAL_EQ={literalEq}:LITERAL_NE={literalNe}:UNCHANGED={unchangedFlag}:ORIGINAL64={original64}:PAYLOAD_TEXT64={payloadText64}:DECODED_FILE64={decodedFile64}:RESTORED64={restored64}:LITERAL64={literal64}:AFTER64={after64}:NAME64={name64}:STATUS64={status64}\n{traceEnvelope}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(finalSummary)
