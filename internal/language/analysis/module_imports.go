@@ -91,7 +91,8 @@ func (a *Analyzer) defineModuleImport(scope *Scope, declaration *syntax.ImportDe
 	}
 	registerAction := func(name string, original *schema.ActionSchema) {
 		action := *original
-		action.ID, action.CallableName = name, name
+		// An import adds a source spelling; canonical definition identity stays stable.
+		action.CallableName = name
 		a.registry.RegisterCustomAction(&action)
 	}
 	if module.Builtin != "" {
