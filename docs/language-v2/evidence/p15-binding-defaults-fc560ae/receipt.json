@@ -1,0 +1,154 @@
+{
+  "format_version": 1,
+  "source_sha": "fc560ae30cdcccd8089b1e742fba6f77a8a05720",
+  "baseline_sha": "7a43cb10099d4120c7abf04c630aa13e7407d272",
+  "requirements": [
+    "V01",
+    "V03",
+    "T01"
+  ],
+  "formal_pass_claimed": false,
+  "ios_runtime_proven": false,
+  "closure_complete": false,
+  "clean_gate": {
+    "head": "fc560ae30cdcccd8089b1e742fba6f77a8a05720",
+    "source_before": "",
+    "source_after": "",
+    "command": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-p=1",
+      "-count=1",
+      "-json",
+      "-timeout=180s",
+      "-run",
+      "^(TestP15V01DeclarationSnapshotProduction|TestP15V03ClipboardCapturedOnceProduction|TestP15T01FunctionPresenceEnvelope|TestP15T01DefaultsGuardedByPresence|TestP15BRG07DirectReferenceKindsRoundTrip|TestP15NativeReferenceOrderedOperandWire|TestP15T04OpaqueTypeProduction|TestP15RequireMutableAndSystemValuesCapturedOnce|TestP15C01DefaultGuardStructure|TestP15C01DefaultEffectsOnce|TestP15C01ArgumentValueSnapshot|TestP15BindingDefaultsPublicRoutes)$",
+      "."
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "elapsed_seconds": 8.165,
+    "available_memory_before": 3282051072,
+    "named_outcomes": {
+      "pass": 163,
+      "fail": 0,
+      "skip": 0
+    },
+    "failures": [],
+    "raw_bytes": 151670,
+    "raw_sha256": "71e3495ee7a10b6fe2553428fc896a88d06aeff4b397812c92787fb8e7446d1c",
+    "log": "C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\binding-defaults-7a43cb1\\clean-fc560ae-go.jsonl"
+  },
+  "artifacts": [
+    {
+      "path": "baseline-driver.py",
+      "bytes": 3045,
+      "sha256": "3727f1de37f1346c3278cafaf8e214d3a1dcc073f4121c18a2f23d32b2636063"
+    },
+    {
+      "path": "baseline-go.jsonl",
+      "bytes": 13460,
+      "sha256": "d70e4a1d2b75eefad08cfa6208950a30ace306a22c8475f01f347d51f0317f44"
+    },
+    {
+      "path": "baseline-summary.json",
+      "bytes": 1555,
+      "sha256": "0fd8b06f614ae64555a83ae412bb63d1358d3e2bb776f7330862217dabb4e09f"
+    },
+    {
+      "path": "candidate-driver.py",
+      "bytes": 3336,
+      "sha256": "7733fc8f1815df6164c0844ec50f7cbadd561a0c5e9b6ef40a180d088aaaa102"
+    },
+    {
+      "path": "candidate-go.jsonl",
+      "bytes": 1185,
+      "sha256": "cd8869c0c007e9944cb40532615ed334f5d1036aee1d4f9c140267e7dae926dc"
+    },
+    {
+      "path": "candidate-summary.json",
+      "bytes": 1507,
+      "sha256": "92e434d9ef67bd1c763f15495037248b8fe4a989aee9e910111e5b40a63373ae"
+    },
+    {
+      "path": "candidate2-driver.py",
+      "bytes": 3338,
+      "sha256": "325ad0a31b68d42ac2d211c1103f4858761bb3ad627bff0e0b873bbf6bdb231f"
+    },
+    {
+      "path": "candidate2-go.jsonl",
+      "bytes": 151728,
+      "sha256": "72e7e709965dc82bada2485b705e996fdc29248c096e003fcdb0a4e7f89159a1"
+    },
+    {
+      "path": "candidate2-summary.json",
+      "bytes": 1513,
+      "sha256": "b58a9399246f6d51e4b98ccb2ba18045420c6ca484c3525597246666665247c7"
+    },
+    {
+      "path": "clean-fc560ae-driver.py",
+      "bytes": 3570,
+      "sha256": "c756fe99208700f36c75dda786cdf2fb1725362cc638e74bd7cf5868507a252e"
+    },
+    {
+      "path": "clean-fc560ae-go.jsonl",
+      "bytes": 151670,
+      "sha256": "71e3495ee7a10b6fe2553428fc896a88d06aeff4b397812c92787fb8e7446d1c"
+    },
+    {
+      "path": "clean-fc560ae-summary.json",
+      "bytes": 1167,
+      "sha256": "050def33b3fb3a860e3f5a08ade5c996eabde60a4f2babceb7ac78de982bea31"
+    },
+    {
+      "path": "corrected-baseline-go.jsonl",
+      "bytes": 25584,
+      "sha256": "fb2f30159c7c4daa3d927321175b0771a8c7ad67457426fd8198feef837fbba9"
+    },
+    {
+      "path": "corrected-baseline-source/p15_binding_defaults_acceptance_test.go",
+      "bytes": 13540,
+      "sha256": "3ceba1e5367bdffe5745b63b03ef093941c6f27f6e66ebed87434ab7928aae39"
+    },
+    {
+      "path": "corrected-baseline-source/tests/runtime_poc/CherriBindingCapturePOC.cherri",
+      "bytes": 440,
+      "sha256": "4c649f8d53ed164b73a0324b7941999e5c9e849d28670655fafc13c87cee5558"
+    },
+    {
+      "path": "corrected-baseline-source/tests/runtime_poc/CherriTypedDefaultsPOC.cherri",
+      "bytes": 733,
+      "sha256": "94165361845193c63fda7740a6cac826b68dea2d829b870c7e87f2f37f8f8063"
+    },
+    {
+      "path": "corrected-baseline-summary.json",
+      "bytes": 1518,
+      "sha256": "17de39b15eca1dadcec81b1f68ebb51a94004c3749a56b72e3a8c8d690b7403b"
+    },
+    {
+      "path": "initial-source/baseline-driver.py",
+      "bytes": 3045,
+      "sha256": "3727f1de37f1346c3278cafaf8e214d3a1dcc073f4121c18a2f23d32b2636063"
+    },
+    {
+      "path": "initial-source/corrected-baseline-driver.py",
+      "bytes": 3075,
+      "sha256": "68944fdf1a982aceae60723cfc094c59608b2b540a38f129bbc05d3f8d440e7e"
+    },
+    {
+      "path": "initial-source/p15_binding_defaults_acceptance_test.go",
+      "bytes": 14752,
+      "sha256": "c85d9541ab18d6348836f89c468d2516d2f603b104c107716f6992edc99faf82"
+    },
+    {
+      "path": "initial-source/tests/runtime_poc/CherriBindingCapturePOC.cherri",
+      "bytes": 440,
+      "sha256": "cabaaa0f0afde9104ce85975d13597308484591e199fe60f7abaeace585b4ba1"
+    },
+    {
+      "path": "initial-source/tests/runtime_poc/CherriTypedDefaultsPOC.cherri",
+      "bytes": 733,
+      "sha256": "94165361845193c63fda7740a6cac826b68dea2d829b870c7e87f2f37f8f8063"
+    }
+  ]
+}
