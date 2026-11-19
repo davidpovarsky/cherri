@@ -1,0 +1,45 @@
+{
+  "head": "dd2b72a5f4184861e421a205bcb3d7f395ea77e1",
+  "mode": "clean",
+  "status_before": "",
+  "command": [
+    "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+    "test",
+    "-count=1",
+    "-json",
+    "-p=1",
+    "-timeout=5m",
+    ".",
+    "-run",
+    "^(TestP15BRG07DirectReferenceKindsRoundTrip|TestP15BRG07ReferenceMutationControls|TestP15BRG07SharedReferencePaths|TestCODEC006_NestedOrderedDictListWithRefsAndPrimitives|TestCODEC008_ApproachD_DictionaryCoercion|TestCODEC010_CoercionAndTransformationsMatrix|TestP15R03OrderedAggrandizementsRoundTrip)$"
+  ],
+  "started_utc": "2026-11-19T02:13:21.621930+00:00",
+  "source_files_sha256": {
+    "internal/language/backend/contracts.go": "ec7b8c70a8ff22c1aedb62461c6409436a25aa4a774756818317564992277d6f",
+    "internal/language/lower/lower.go": "6985453732cd76c1055a30b96245270e9593a36ef2e9186d9fcb3e21f66218c4",
+    "language_backend_adapter.go": "f9870b34d6f3e97962765ded925d3b1fef1f113673be46fd63aa3253fd5533c9",
+    "language_value_adapter.go": "648f6e5bb2078cb204b4a706830c0927022add3415f175e4fe5d547cde5f4f72",
+    "shared_codec.go": "8b12b424d727cec986d38415fd4e5fdcd57c032300afca01ee7d96368cd0ba41",
+    "shortcut.go": "c21ff3a195441b1c402ad16ff1009f7eb7a6fc0bd7b29fd382c63d7dd94dd28d",
+    "native_aggrandizement_fields.go": "ae4504f79a1585d3b6cf10ec4056be77e4b1e611be847f30083e4c7ec3ecda47",
+    "p15_direct_reference_recovery_test.go": "c1e70070085fe5cf0a6d6150a09ce6fdd296eaba6f042d5c14ac38273ca5f8b7",
+    "tests/language-v2/v2-direct-reference-chains.cherri": "a3ffe48ee49e698057f7ae7d97cf18a1f69e1249b216a4bbda89169d36c0063b",
+    "tools/language-acceptance/supplemental_execution.go": "eabf37e4ac7a0728b5066ba6e9efa1d621b3b721621985d8a34961c1d7388550",
+    "tools/language-acceptance/supplemental_execution_test.go": "1bddce8d1f4e2525106f6c6b82e13abcd9e1ff55883f43a056c9510e571d8a29"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 3.036,
+  "discovered_unique_tests": 76,
+  "counts": {
+    "pass": 76,
+    "fail": 0,
+    "skip": 0
+  },
+  "missing_required_tests": [],
+  "unfinished_tests": [],
+  "failures_or_skips": {},
+  "non_json_output": [],
+  "raw_jsonl_sha256": "e888bc2e351a4af9494d188550b81238e101c614a77180f910180ff72be77996",
+  "raw_jsonl_bytes": 91742,
+  "status_after": ""
+}

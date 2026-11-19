@@ -1,0 +1,54 @@
+{
+  "head": "194f7ae440922fd1b32105b590f073f4dfd0f0d8",
+  "mode": "clean",
+  "status_before": "",
+  "command": [
+    "/home/chatgpt-agent/workspaces/cherri-remote/tools/go/bin/go",
+    "test",
+    "-count=1",
+    "-json",
+    "-p=1",
+    "-timeout=5m",
+    "./tools/language-acceptance",
+    "-run",
+    "^(TestSupplementalReferenceAndVariadicProductionEvidence|TestSupplementalAcceptanceCannotChangeRequiredTiers)$"
+  ],
+  "started_utc": "2026-11-19T02:11:50.104153+00:00",
+  "source_files_sha256": {
+    "internal/language/backend/contracts.go": "ec7b8c70a8ff22c1aedb62461c6409436a25aa4a774756818317564992277d6f",
+    "internal/language/lower/lower.go": "6985453732cd76c1055a30b96245270e9593a36ef2e9186d9fcb3e21f66218c4",
+    "language_backend_adapter.go": "f9870b34d6f3e97962765ded925d3b1fef1f113673be46fd63aa3253fd5533c9",
+    "language_value_adapter.go": "648f6e5bb2078cb204b4a706830c0927022add3415f175e4fe5d547cde5f4f72",
+    "shared_codec.go": "8b12b424d727cec986d38415fd4e5fdcd57c032300afca01ee7d96368cd0ba41",
+    "shortcut.go": "c21ff3a195441b1c402ad16ff1009f7eb7a6fc0bd7b29fd382c63d7dd94dd28d",
+    "native_aggrandizement_fields.go": "ae4504f79a1585d3b6cf10ec4056be77e4b1e611be847f30083e4c7ec3ecda47",
+    "p15_direct_reference_recovery_test.go": "c1e70070085fe5cf0a6d6150a09ce6fdd296eaba6f042d5c14ac38273ca5f8b7",
+    "tests/language-v2/v2-direct-reference-chains.cherri": "a3ffe48ee49e698057f7ae7d97cf18a1f69e1249b216a4bbda89169d36c0063b",
+    "tools/language-acceptance/supplemental_execution.go": "eabf37e4ac7a0728b5066ba6e9efa1d621b3b721621985d8a34961c1d7388550",
+    "tools/language-acceptance/supplemental_execution_test.go": "a4cd4ecef8303b70553f79781733916fae84ba666939cb8ab3c826731ec093a7"
+  },
+  "exit_code": 1,
+  "elapsed_seconds": 6.697,
+  "discovered_unique_tests": 14,
+  "counts": {
+    "pass": 12,
+    "fail": 2,
+    "skip": 0
+  },
+  "missing_required_tests": [],
+  "unfinished_tests": [],
+  "failures_or_skips": {
+    "TestSupplementalReferenceAndVariadicProductionEvidence/BRG07/missing_native_tier": {
+      "status": "fail",
+      "detail": "=== RUN   TestSupplementalReferenceAndVariadicProductionEvidence/BRG07/missing_native_tier\n    supplemental_execution_test.go:430: incomplete or detached native producer was accepted\n--- FAIL: TestSupplementalReferenceAndVariadicProductionEvidence/BRG07/missing_native_tier (0.00s)\n"
+    },
+    "TestSupplementalReferenceAndVariadicProductionEvidence": {
+      "status": "fail",
+      "detail": "=== RUN   TestSupplementalReferenceAndVariadicProductionEvidence\n    supplemental_execution_test.go:476: P15_REFERENCE_VARIADIC_RECEIPT:{\"records\":[{\"evidence_id\":\"ev-local-RP13-unit\",\"requirements\":[\"RP13\"],\"tier\":\"unit\",\"implementation_sha\":\"194f7ae440922fd1b32105b590f073f4dfd0f0d8\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15C03NamedListNativeStructure\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15C03NamedListNativeStructure|TestP15C03LegacyWireControl|TestP15C03LiteralOracleMutations|TestP15C03ElementOrderAndReferences|TestP15C03PackBoundaries|TestP15C03SingletonReferencesAndTemplates|TestP15C03NestedMigrationAndSourceIdentity|TestP15C03EmptyIsNotAnEmptyItem)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03SingletonReferencesAndTemplates, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem\",\"required_production_tests\":\"TestP15C03NamedListNativeStructure\\nTestP15C03LegacyWireControl\\nTestP15C03LiteralOracleMutations\\nTestP15C03ElementOrderAndReferences\\nTestP15C03PackBoundaries\\nTestP15C03SingletonReferencesAndTemplates\\nTestP15C03NestedMigrationAndSourceIdentity\\nTestP15C03EmptyIsNotAnEmptyItem\"},\"detail\":\"Executed production tests: TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03SingletonReferencesAndTemplates, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem\"},{\"evidence_id\":\"ev-local-RP13-native-structure\",\"requirements\":[\"RP13\"],\"tier\":\"native-structure\",\"implementation_sha\":\"194f7ae440922fd1b32105b590f073f4dfd0f0d8\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15C03NamedListNativeStructure\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15C03NamedListNativeStructure|TestP15C03LegacyWireControl|TestP15C03LiteralOracleMutations|TestP15C03ElementOrderAndReferences|TestP15C03PackBoundaries|TestP15C03SingletonReferencesAndTemplates|TestP15C03NestedMigrationAndSourceIdentity|TestP15C03EmptyIsNotAnEmptyItem)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03SingletonReferencesAndTemplates, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem\",\"required_production_tests\":\"TestP15C03NamedListNativeStructure\\nTestP15C03LegacyWireControl\\nTestP15C03LiteralOracleMutations\\nTestP15C03ElementOrderAndReferences\\nTestP15C03PackBoundaries\\nTestP15C03SingletonReferencesAndTemplates\\nTestP15C03NestedMigrationAndSourceIdentity\\nTestP15C03EmptyIsNotAnEmptyItem\"},\"detail\":\"Executed production tests: TestP15C03NamedListNativeStructure, TestP15C03LegacyWireControl, TestP15C03LiteralOracleMutations, TestP15C03ElementOrderAndReferences, TestP15C03PackBoundaries, TestP15C03SingletonReferencesAndTemplates, TestP15C03NestedMigrationAndSourceIdentity, TestP15C03EmptyIsNotAnEmptyItem\"},{\"evidence_id\":\"ev-local-BRG07-native-structure\",\"requirements\":[\"BRG07\"],\"tier\":\"native-structure\",\"implementation_sha\":\"194f7ae440922fd1b32105b590f073f4dfd0f0d8\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15BRG07DirectReferenceKindsRoundTrip\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15BRG07DirectReferenceKindsRoundTrip|TestP15BRG07ReferenceMutationControls|TestP15BRG07SharedReferencePaths)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15BRG07DirectReferenceKindsRoundTrip, TestP15BRG07ReferenceMutationControls, TestP15BRG07SharedReferencePaths\",\"required_production_tests\":\"TestP15BRG07DirectReferenceKindsRoundTrip\\nTestP15BRG07ReferenceMutationControls\\nTestP15BRG07SharedReferencePaths\"},\"detail\":\"Executed production tests: TestP15BRG07DirectReferenceKindsRoundTrip, TestP15BRG07ReferenceMutationControls, TestP15BRG07SharedReferencePaths\"},{\"evidence_id\":\"ev-local-BRG07-native-roundtrip\",\"requirements\":[\"BRG07\"],\"tier\":\"native-roundtrip\",\"implementation_sha\":\"194f7ae440922fd1b32105b590f073f4dfd0f0d8\",\"test_id\":\"github.com/electrikmilk/cherri:TestP15BRG07DirectReferenceKindsRoundTrip\",\"command\":[\"go\",\"test\",\"-count=1\",\"-json\",\"-timeout\",\"3m0s\",\".\",\"-run\",\"^(TestP15BRG07DirectReferenceKindsRoundTrip|TestP15BRG07ReferenceMutationControls|TestP15BRG07SharedReferencePaths)$\"],\"exit_code\":0,\"result\":\"passed\",\"assertions\":{\"assertion\":\"Executed production tests: TestP15BRG07DirectReferenceKindsRoundTrip, TestP15BRG07ReferenceMutationControls, TestP15BRG07SharedReferencePaths\",\"required_production_tests\":\"TestP15BRG07DirectReferenceKindsRoundTrip\\nTestP15BRG07ReferenceMutationControls\\nTestP15BRG07SharedReferencePaths\"},\"detail\":\"Executed production tests: TestP15BRG07DirectReferenceKindsRoundTrip, TestP15BRG07ReferenceMutationControls, TestP15BRG07SharedReferencePaths\"}],\"report\":{\"timestamp\":\"2026-11-19T02:11:56Z\",\"phase\":\"local\",\"closure_complete\":false,\"language_version\":\"2.0\",\"schema_fingerprint\":\"\",\"total_cases\":2,\"passed_cases\":2,\"failed_cases\":0,\"skipped_cases\":0,\"results\":[{\"id\":\"BRG07\",\"group\":\"gate\",\"requirement\":\"Direct reference transformations survive\",\"test_level\":\"native-structure+native-roundtrip\",\"executed_levels\":[\"native-structure\",\"native-roundtrip\"],\"passed\":true,\"status\":\"PASSED\",\"detail\":\"All required tiers satisfied by verified evidence\"},{\"id\":\"RP13\",\"group\":\"repair\",\"requirement\":\"Variadic list API\",\"test_level\":\"unit+native-structure\",\"executed_levels\":[\"unit\",\"native-structure\"],\"passed\":true,\"status\":\"PASSED\",\"detail\":\"All required tiers satisfied by verified evidence\"}]},\"scope\":\"RP13 independent zero/one/several/nested named-list scenarios with strict wire and negative controls; BRG07 actual codec and XML/binary import/recompile for action/system/variable references and native extensions. No Apple runtime or release closure.\",\"source_sha\":\"194f7ae440922fd1b32105b590f073f4dfd0f0d8\",\"source_tree_clean\":true}\n--- FAIL: TestSupplementalReferenceAndVariadicProductionEvidence (5.31s)\n"
+    }
+  },
+  "non_json_output": [],
+  "raw_jsonl_sha256": "a87091a6aff05dd40f98edf787b008462542d3cb60132c78fe58695146910f78",
+  "raw_jsonl_bytes": 23766,
+  "status_after": ""
+}
