@@ -98,6 +98,10 @@ func firstExistingFile(paths ...string) string {
 func defaultEvidencePaths() []string {
 	var files []string
 
+	if p := firstExistingFile("artifacts/backend-recovery/ci-artifacts/required-encoding-gate/required-encoding-evidence.json"); p != "" {
+		files = append(files, p)
+	}
+
 	if p := firstExistingFile(
 		"artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/ios27-shortcuts-runtime-poc-artifacts/runtime-evidence.json",
 		"artifacts/runtime-evidence.json",
