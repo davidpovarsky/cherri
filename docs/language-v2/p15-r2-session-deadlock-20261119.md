@@ -9,3 +9,9 @@ Implementation **9ee950b137071df84a9261b28fb2197fa43ddf54** closes the V2 sessio
 The clean exact-source replay ran TestP10_RegexQuantifiersPreserved and TestForkActionProvenanceRegistry with a two-minute test timeout. Both passed, no failures/skips, exit 0, clean worktree after; total process 46.938 seconds. The formerly blocked regex test itself completed in 0.03 seconds. Original Go JSON SHA-256: b0fd1e1be896cfe6d6a553dd32cf34761b6fac2633e7dfee60998b67b3b083ad.
 
 This focused result also validates the integrated F02 provenance pointer's ancestry. It does not turn the failed R2 full suite into a pass. Other session call sites are being audited, and a complete combined CI run is still required. Original log whitespace is preserved; it is validated by digest, while authored files receive normal whitespace checks.
+
+## Session-helper audit follow-up
+
+A read-only audit of the direct session constructors and compile helpers found no further actual nested in-process compiler call before Close. Four negative compileV2Helper call sites discard the returned session because they expect rejection; if a future regression unexpectedly succeeds, their Fatal path must still release it. Implementation 9cdc4b9926fad5a08172919eae8da1069f4a0fcc registers the existing idempotent Close with t.Cleanup at construction. Existing explicit closes remain.
+
+The clean selected replay executed all five required parent tests (regex, array rejection, conditional rejection, JSON/native/local HTTP contract, provenance integrity), with ten named passes, no failures/skips/missing selections, exit0 and clean worktree after. Actual process51.219seconds; rawSHA-256 ffe6d20f8627f7a6b8e911019998fa39899508147bc8b216683404d4735e7852. This validates the existing positive/negative contracts and new integrated label/guard provenance. The original failed R2 CI remains historical failure; full combined CI is still required.
