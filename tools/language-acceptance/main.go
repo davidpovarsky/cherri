@@ -1506,9 +1506,7 @@ func (r *Runner) runTypes() {
 	// T06: An annotation must not manufacture proof about external values.
 	r.runTypeRecordRequirement()
 
-	// T07: Per-platform versions
-	t07Passed := compareSemVer("16.0", "15.4") > 0 && compareSemVer("16.1", "16.10") < 0 && compareSemVer("17.0.1", "17.0.1") == 0
-	r.Record("T07", "types", "Per-platform versions compare components rather than floats", "unit", []string{"unit"}, t07Passed, "PASSED", "Semantic versioning compares major.minor components deterministically")
+	r.runTypePlatformVersionRequirement()
 
 	// T08: Actual literal-mode cardinality and contextual language service.
 	r.runTypeCardinalityRequirement()

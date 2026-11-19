@@ -3,6 +3,7 @@ package main
 import "strings"
 
 var typeProductionTests = map[string][]string{
+	"T07": {"TestP15T07PerPlatformVersionProduction", "TestP15T07MissingPlatformIsUnverified", "TestP15T07MalformedPlatformMetadataFailsClosed", "TestP15T07PlatformVersionService", "TestP15T07PlatformVersionSchemaIdentity", "TestP15T07CanonicalCatalogPropagation"},
 	"T05": {"TestP15T05PresenceBinding", "TestP15T05PresenceNativeWire", "TestP15T05AuthoredNullRejected"},
 	"T09": {"TestP15T09ContentConversionEvidence", "TestP15T09ContentConversionNativeWire"},
 	"T04": {"TestP15T04OpaqueTypeProduction", "TestP15T04OpaqueTypeService"},
@@ -12,6 +13,7 @@ var typeProductionTests = map[string][]string{
 	"T08": {"TestP15T08ConditionalCardinalityProduction", "TestP15T08ConditionalCardinalityService"},
 }
 var typeProductionTiers = map[string][]string{
+	"T07": {"unit"},
 	"T05": {"unit", "native"},
 	"T09": {"unit", "native"},
 	"T04": {"unit", "service"},
@@ -21,6 +23,7 @@ var typeProductionTiers = map[string][]string{
 	"T08": {"unit", "service"},
 }
 var typeProductionPaths = map[string][]string{
+	"T07": {"action.go", "actions_catalog.go", "tools/language-schema/main.go", "p15_schema_production_test.go", "internal/language/schema/platform_versions.go", "internal/language/schema/schema.go", "internal/language/schema/registry_clone.go", "internal/language/analysis/target_versions.go", "internal/language/analysis/platform_versions.go", "language_platform_version_adapter.go", "language_backend_adapter.go", "language_emit_adapter.go", "p15_platform_version_acceptance_test.go"},
 	"T05": {"internal/language/analysis/analyzer.go", "internal/language/syntax/parser.go", "internal/language/lower/lower.go", "language_backend_adapter.go", "language_typed_literal_adapter.go", "p15_optional_presence_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
 	"T09": {"internal/language/types/record_evidence.go", "internal/language/analysis/assignment_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/lower/lower.go", "language_backend_adapter.go", "p15_content_conversion_acceptance_test.go", "docs/apple-runtime/macos-27/builtin-actions.json"},
 	"T04": {"internal/language/types/types.go", "internal/language/types/record_evidence.go", "internal/language/analysis/assignment_evidence.go", "internal/language/analysis/analyzer.go", "internal/language/analysis/function_arguments.go", "internal/language/service/service.go", "p15_opaque_type_acceptance_test.go", "p15_record_acceptance_test.go"},
@@ -56,6 +59,9 @@ func (r *Runner) runTypeRecordRequirement() {
 }
 func (r *Runner) runTypeCardinalityRequirement() {
 	r.runTypeProduction("T08", "Variant-dependent output type inferred from literal mode")
+}
+func (r *Runner) runTypePlatformVersionRequirement() {
+	r.runTypeProduction("T07", "Per-platform versions compare components rather than floats")
 }
 func (r *Runner) runTypeProduction(id, requirement string) {
 	tests := typeProductionTests[id]

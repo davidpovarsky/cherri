@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
 // LegacyCatalog matches the structure of baseline-catalog.json or live --actions-json output
@@ -19,25 +21,26 @@ type LegacyCatalog struct {
 }
 
 type LegacyAction struct {
-	Name               string            `json:"name"`
-	ShortcutIdentifier string            `json:"shortcutIdentifier"`
-	Title              string            `json:"title"`
-	Description        string            `json:"description"`
-	Category           string            `json:"category"`
-	Subcategory        string            `json:"subcategory"`
-	Parameters         []LegacyParameter `json:"parameters"`
-	EmittedKeys        []string          `json:"emittedKeys,omitempty"`
-	OutputType         string            `json:"outputType"`
-	CompilerConstruct  bool              `json:"compilerConstruct"`
-	Builtin            bool              `json:"builtin"`
-	Custom             bool              `json:"custom"`
-	InsertionSnippet   string            `json:"insertionSnippet"`
-	AppIntent          *LegacyAppIntent  `json:"appIntent"`
-	StaticParameters   map[string]any    `json:"staticParameters,omitempty"`
-	MacOnly            bool              `json:"macOnly,omitempty"`
-	NonMacOnly         bool              `json:"nonMacOnly,omitempty"`
-	MinVersion         float64           `json:"minVersion,omitempty"`
-	MaxVersion         float64           `json:"maxVersion,omitempty"`
+	Name               string                                  `json:"name"`
+	ShortcutIdentifier string                                  `json:"shortcutIdentifier"`
+	Title              string                                  `json:"title"`
+	Description        string                                  `json:"description"`
+	Category           string                                  `json:"category"`
+	Subcategory        string                                  `json:"subcategory"`
+	Parameters         []LegacyParameter                       `json:"parameters"`
+	EmittedKeys        []string                                `json:"emittedKeys,omitempty"`
+	OutputType         string                                  `json:"outputType"`
+	CompilerConstruct  bool                                    `json:"compilerConstruct"`
+	Builtin            bool                                    `json:"builtin"`
+	Custom             bool                                    `json:"custom"`
+	InsertionSnippet   string                                  `json:"insertionSnippet"`
+	AppIntent          *LegacyAppIntent                        `json:"appIntent"`
+	StaticParameters   map[string]any                          `json:"staticParameters,omitempty"`
+	MacOnly            bool                                    `json:"macOnly,omitempty"`
+	NonMacOnly         bool                                    `json:"nonMacOnly,omitempty"`
+	MinVersion         float64                                 `json:"minVersion,omitempty"`
+	MaxVersion         float64                                 `json:"maxVersion,omitempty"`
+	PlatformVersions   map[string]schema.PlatformVersionBounds `json:"platformVersions,omitempty"`
 }
 
 type LegacyParameter struct {
@@ -239,6 +242,11 @@ var facets = map[string]ActionFacet{
 }
 
 func validateFacets(catalog *LegacyCatalog) error {
+	for _, action := range catalog.Actions {
+		if err := schema.ValidatePlatformVersionMetadata(action.PlatformVersions); err != nil {
+			return fmt.Errorf("action %q: %w", action.Name, err)
+		}
+	}
 	actionsByName := make(map[string]*LegacyAction)
 	for i := range catalog.Actions {
 		actionsByName[catalog.Actions[i].Name] = &catalog.Actions[i]
@@ -677,6 +685,19 @@ func initDefaultRegistry() *Registry {
 		}
 		if a.MaxVersion > 0 {
 			fmt.Fprintf(&b, "\t\t\tMaxVersion: %v,\n", a.MaxVersion)
+		}
+		if len(a.PlatformVersions) > 0 {
+			platforms := make([]string, 0, len(a.PlatformVersions))
+			for platform := range a.PlatformVersions {
+				platforms = append(platforms, platform)
+			}
+			sort.Strings(platforms)
+			b.WriteString("\t\t\tPlatformVersions: map[string]PlatformVersionBounds{\n")
+			for _, platform := range platforms {
+				bounds := a.PlatformVersions[platform]
+				fmt.Fprintf(&b, "\t\t\t\t%q: {MinVersion: %q, MaxVersion: %q},\n", platform, bounds.MinVersion, bounds.MaxVersion)
+			}
+			b.WriteString("\t\t\t},\n")
 		}
 		b.WriteString("\t\t\tDocs: ActionDocs{\n")
 		fmt.Fprintf(&b, "\t\t\t\tTitle: %q,\n", a.Title)

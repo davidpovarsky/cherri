@@ -147,6 +147,7 @@ type actionDefinition struct {
 	minVersionString   string
 	maxVersion         float64
 	maxVersionString   string
+	platformVersions   map[string]schema.PlatformVersionBounds
 	builtin            bool   // builtin is based on if the action was in the actions map when it was first initialized.
 	includeCategory    string // Standard action include category ('actions/<cat>') that declared this definition; "" for builtin/Go-defined actions and basic actions that never require an include.
 }

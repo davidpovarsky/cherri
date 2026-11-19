@@ -3,7 +3,6 @@ package analysis
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
@@ -23,23 +22,7 @@ func targetVersionLiteral(expr syntax.Expression) (string, bool) {
 	default:
 		return "", false
 	}
-	value := literal.Value
-	for _, component := range strings.Split(value, ".") {
-		if component == "" {
-			return "", false
-		}
-		for _, digit := range component {
-			if digit < '0' || digit > '9' {
-				return "", false
-			}
-		}
-		// CompareVersions uses int components. Reject overflow at the source
-		// boundary instead of allowing a wrapped comparison to pass a gate.
-		if _, err := strconv.Atoi(component); err != nil {
-			return "", false
-		}
-	}
-	return value, true
+	return literal.Value, schema.ValidVersionComponents(literal.Value)
 }
 
 func legacyTargetVersionText(version float64) string {
@@ -77,6 +60,9 @@ func (a *Analyzer) analyzeTargetVersion(field string, expr syntax.Expression, ma
 }
 
 func (a *Analyzer) checkTargetVersion(action *schema.ActionSchema, name string, span source.Span) {
+	if a.checkPlatformVersions(action, name, span) {
+		return
+	}
 	minimum := legacyTargetVersionText(action.MinVersion)
 	if a.minTargetVersionSource != "" && minimum != "" && schema.CompareVersions(minimum, a.minTargetVersionSource) > 0 {
 		a.error(CodeUnsupportedTarget, span, fmt.Sprintf("action %q requires minimum version %s, but shortcut target version is %s", name, minimum, a.minTargetVersionSource))

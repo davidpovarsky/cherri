@@ -77,29 +77,30 @@ type ActionDocs struct {
 
 // ActionSchema is the authoritative definition of an Apple Shortcut action.
 type ActionSchema struct {
-	ID                 string               `json:"id"`              // Unique stable ID
-	CallableName       string               `json:"callableName"`    // Cherri v2 function/action name
-	Module             string               `json:"module"`          // Category or module
-	AppleIdentifier    string               `json:"appleIdentifier"` // is.workflow.actions.*
-	Variant            string               `json:"variant,omitempty"`
-	PrimaryParameterID string               `json:"primaryParameterId,omitempty"`
-	Parameters         []ParameterSchema    `json:"parameters"`
-	EmittedKeys        []string             `json:"emittedKeys,omitempty"`
-	OutputType         types.Type           `json:"-"`
-	OutputTypeName     string               `json:"outputType,omitempty"`
-	RawOutputType      string               `json:"rawOutputType,omitempty"`
-	AppIntent          *AppIntentDescriptor `json:"appIntent,omitempty"`
-	Docs               ActionDocs           `json:"docs"`
-	Builtin            bool                 `json:"builtin,omitempty"`
-	Custom             bool                 `json:"custom,omitempty"`
-	CompilerConstruct  bool                 `json:"compilerConstruct,omitempty"`
-	ScopedBlock        bool                 `json:"scopedBlock,omitempty"`
-	EvidenceStatus     EvidenceStatus       `json:"evidenceStatus,omitempty"`
-	StaticParameters   map[string]any       `json:"staticParameters,omitempty"`
-	MacOnly            bool                 `json:"macOnly,omitempty"`
-	NonMacOnly         bool                 `json:"nonMacOnly,omitempty"`
-	MinVersion         float64              `json:"minVersion,omitempty"`
-	MaxVersion         float64              `json:"maxVersion,omitempty"`
+	ID                 string                           `json:"id"`              // Unique stable ID
+	CallableName       string                           `json:"callableName"`    // Cherri v2 function/action name
+	Module             string                           `json:"module"`          // Category or module
+	AppleIdentifier    string                           `json:"appleIdentifier"` // is.workflow.actions.*
+	Variant            string                           `json:"variant,omitempty"`
+	PrimaryParameterID string                           `json:"primaryParameterId,omitempty"`
+	Parameters         []ParameterSchema                `json:"parameters"`
+	EmittedKeys        []string                         `json:"emittedKeys,omitempty"`
+	OutputType         types.Type                       `json:"-"`
+	OutputTypeName     string                           `json:"outputType,omitempty"`
+	RawOutputType      string                           `json:"rawOutputType,omitempty"`
+	AppIntent          *AppIntentDescriptor             `json:"appIntent,omitempty"`
+	Docs               ActionDocs                       `json:"docs"`
+	Builtin            bool                             `json:"builtin,omitempty"`
+	Custom             bool                             `json:"custom,omitempty"`
+	CompilerConstruct  bool                             `json:"compilerConstruct,omitempty"`
+	ScopedBlock        bool                             `json:"scopedBlock,omitempty"`
+	EvidenceStatus     EvidenceStatus                   `json:"evidenceStatus,omitempty"`
+	StaticParameters   map[string]any                   `json:"staticParameters,omitempty"`
+	MacOnly            bool                             `json:"macOnly,omitempty"`
+	NonMacOnly         bool                             `json:"nonMacOnly,omitempty"`
+	MinVersion         float64                          `json:"minVersion,omitempty"`
+	MaxVersion         float64                          `json:"maxVersion,omitempty"`
+	PlatformVersions   map[string]PlatformVersionBounds `json:"platformVersions,omitempty"`
 }
 
 // ParameterByLabel returns the parameter schema matching the given label.
@@ -272,6 +273,17 @@ func (r *Registry) computeFingerprint(actions []*ActionSchema) string {
 		fmt.Fprintf(h, "ACT:%s:%s:%s:%s:%s:%t:%t:%t:%.2f:%.2f:%s\n",
 			a.CallableName, a.AppleIdentifier, a.Variant, a.OutputTypeName, a.PrimaryParameterID,
 			a.CompilerConstruct, a.MacOnly, a.NonMacOnly, a.MinVersion, a.MaxVersion, a.EvidenceStatus)
+		if len(a.PlatformVersions) > 0 {
+			platforms := make([]string, 0, len(a.PlatformVersions))
+			for platform := range a.PlatformVersions {
+				platforms = append(platforms, platform)
+			}
+			sort.Strings(platforms)
+			for _, platform := range platforms {
+				bounds := a.PlatformVersions[platform]
+				fmt.Fprintf(h, "  PLATFORM:%q:%q:%q\n", platform, bounds.MinVersion, bounds.MaxVersion)
+			}
+		}
 		if a.AppIntent != nil {
 			fmt.Fprintf(h, "  INTENT:%s:%s:%s:%s\n", a.AppIntent.Name, a.AppIntent.BundleIdentifier, a.AppIntent.AppIntentIdentifier, a.AppIntent.TeamIdentifier)
 		}

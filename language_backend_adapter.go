@@ -29,6 +29,7 @@ type CanonicalBackendSession struct {
 	exactNativeParameterMaps map[uintptr]bool
 	importQuestionBindings   []importQuestionBinding
 	resolvedQuestionNodes    map[string]map[string]any
+	platformVersions         *canonicalPlatformVersionContext
 }
 
 func NewCanonicalBackendSession() *CanonicalBackendSession {
@@ -145,6 +146,10 @@ func (s *CanonicalBackendSession) EmitResolvedCall(call backend.ResolvedCall) (s
 	}
 	s.tx.PushAction(actRef)
 	defer s.tx.PopAction()
+
+	if err := s.applyPlatformVersionPolicy(call, ident); err != nil {
+		return "", err
+	}
 
 	// Run canonical checkAction
 	checkAction()

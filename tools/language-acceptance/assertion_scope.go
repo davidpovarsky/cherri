@@ -24,7 +24,6 @@ var incompleteLocalAssertions = map[string]string{
 	"V03":  "Nonempty lowering does not prove that the clipboard is captured exactly once.",
 	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
 	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
-	"T07":  "A helper implemented only in this runner does not exercise production platform-version comparison.",
 	"S03":  "Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits.",
 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
 	"N01":  "A modulus action and action count do not establish fractional division and numeric constraints.",

@@ -33,6 +33,12 @@ func cloneActionSchema(action *ActionSchema) *ActionSchema {
 	copy.EmittedKeys = append([]string(nil), action.EmittedKeys...)
 	copy.Docs.Keywords = append([]string(nil), action.Docs.Keywords...)
 	copy.OutputType = cloneRegistryType(action.OutputType)
+	if action.PlatformVersions != nil {
+		copy.PlatformVersions = make(map[string]PlatformVersionBounds, len(action.PlatformVersions))
+		for platform, bounds := range action.PlatformVersions {
+			copy.PlatformVersions[platform] = bounds
+		}
+	}
 	if action.AppIntent != nil {
 		intent := *action.AppIntent
 		if intent.RequiresAppInstallation != nil {
