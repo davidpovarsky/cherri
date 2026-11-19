@@ -170,8 +170,11 @@ func TestP15AC02AllCodecFamiliesNativeShape(t *testing.T) {
 func TestP15AC02DeclaredSchemaRegistryAndRejections(t *testing.T) {
 	analyzer, base := p15AnalyzeCodecFamilies(t, p15AllCodecFamilies)
 	custom, ok := analyzer.Registry().LookupAction("p15CodecFamilies")
-	if !ok || !custom.Custom || custom.AppleIdentifier != "com.example.p15.codec-families" || len(custom.Parameters) != 8 {
+	if !ok || custom.Builtin || custom.PrimaryParameterID != "pText" || custom.AppleIdentifier != "com.example.p15.codec-families" || len(custom.Parameters) != 8 {
 		t.Fatalf("public declaration did not feed common ActionSchema: %+v", custom)
+	}
+	if len(analyzer.Registry().LookupByIdentifier("com.example.p15.codec-families")) != 1 {
+		t.Fatal("custom action absent or duplicated in the common native identity index")
 	}
 	seen := map[string]bool{}
 	for _, want := range p15CodecFamilyFields {

@@ -951,6 +951,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateCustomActionRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if partialTypeProducer(reqID, rec.TestID) {
 				validationErrors = append(validationErrors, fmt.Sprintf("test_id %q is a partial producer and cannot satisfy the full %s contract", rec.TestID, reqID))
 			}
@@ -1781,16 +1785,7 @@ func (r *Runner) runModules() {
 func (r *Runner) runSchema() {
 	r.runCatalogAccountingRequirement()
 
-	// AC02: Public custom action declaration
-	customAct := schema.ActionSchema{
-		ID:              "customTestAct",
-		CallableName:    "customTestAct",
-		AppleIdentifier: "com.test.custom",
-	}
-	regAC02 := schema.NewRegistry(append(r.reg.AllActions(), &customAct), r.reg.AllEnums())
-	wfAC02, errAC02 := lowerSrc(regAC02, "customTestAct()")
-	ac02Passed := errAC02 == nil && len(wfAC02.Actions) > 0
-	r.Record("AC02", "schema", "Public custom action declaration feeds same schema/codecs", "unit+native", []string{"unit", "native"}, ac02Passed, "PASSED", "ActionSchema model shared across CLI, LSP, analysis, and lowering")
+	r.runCustomActionRequirement()
 
 	r.runDeclarationTriggerRequirement("AC03")
 }
