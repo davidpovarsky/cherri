@@ -16,7 +16,7 @@ import (
 func p15SupplementalSelection(t *testing.T, all *ContractsSet) (*ContractsSet, int) {
 	t.Helper()
 	var expectedIDs = strings.Fields(`
-RP01 RP02 RP03 RP04 RP05 RP09 RP10 RP13 RP30 RP31 RP32 RP34 RP35 RP36 RP37
+RP01 RP02 RP03 RP04 RP05 RP09 RP10 RP13 RP30 RP31 RP32 RP34 RP35 RP36 RP37 RP38
 BRG02 BRG03 BRG04 BRG05 BRG07 BRG17
 `)
 	if len(supplementalProductionScenarios) != len(expectedIDs) {

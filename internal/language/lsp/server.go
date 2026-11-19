@@ -2,6 +2,7 @@ package lsp
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,14 +13,18 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/service"
+	"github.com/electrikmilk/cherri/internal/language/source"
 )
 
 // Server is a standard JSON-RPC Language Server for Cherri v2.0.
 type Server struct {
-	svc    *service.Service
-	reader *bufio.Reader
-	writer io.Writer
-	mu     sync.Mutex
+	svc      *service.Service
+	reader   *bufio.Reader
+	writer   io.Writer
+	mu       sync.Mutex
+	writeErr error
+	stopped  bool
+	shutdown bool
 }
 
 // NewServer creates a new LSP server instance.
@@ -51,77 +56,153 @@ func (s *Server) Run() error {
 			return err
 		}
 		s.handleMessage(msg)
+		if s.writeErr != nil {
+			return s.writeErr
+		}
+		if s.stopped {
+			return nil
+		}
 	}
 }
 
 func (s *Server) readMessage() (*rpcMessage, error) {
-	// Read headers
-	contentLength := 0
+	// Bound framing before allocation. ReadSlice also caps each header line at
+	// the reader's buffer size; a clean EOF is valid only between messages.
+	const maxMessageBytes = 32 << 20
+	contentLength, headerBytes := 0, 0
+	seenLength := false
 	for {
-		line, err := s.reader.ReadString('\n')
+		lineBytes, err := s.reader.ReadSlice('\n')
 		if err != nil {
-			return nil, err
+			if err == io.EOF && headerBytes == 0 && len(lineBytes) == 0 {
+				return nil, io.EOF
+			}
+			return nil, fmt.Errorf("incomplete LSP header: %w", err)
 		}
-		line = strings.TrimSpace(line)
+		headerBytes += len(lineBytes)
+		if headerBytes > 16<<10 {
+			return nil, fmt.Errorf("LSP headers exceed limit")
+		}
+		line := strings.TrimSpace(string(lineBytes))
 		if line == "" {
-			break // Blank line indicates end of headers
+			break
 		}
-		if strings.HasPrefix(strings.ToLower(line), "content-length:") {
-			val := strings.TrimSpace(line[15:])
-			contentLength, _ = strconv.Atoi(val)
+		name, value, ok := strings.Cut(line, ":")
+		if !ok {
+			return nil, fmt.Errorf("malformed LSP header")
+		}
+		if strings.EqualFold(strings.TrimSpace(name), "Content-Length") {
+			if seenLength {
+				return nil, fmt.Errorf("duplicate Content-Length header")
+			}
+			seenLength = true
+			contentLength, err = strconv.Atoi(strings.TrimSpace(value))
+			if err != nil || contentLength <= 0 || contentLength > maxMessageBytes {
+				return nil, fmt.Errorf("invalid or oversized Content-Length")
+			}
 		}
 	}
-
-	if contentLength == 0 {
-		return nil, fmt.Errorf("missing or zero Content-Length header")
+	if !seenLength {
+		return nil, fmt.Errorf("missing Content-Length header")
 	}
-
 	body := make([]byte, contentLength)
 	if _, err := io.ReadFull(s.reader, body); err != nil {
+		return nil, fmt.Errorf("incomplete LSP body: %w", err)
+	}
+	var msg rpcMessage
+	decoder := json.NewDecoder(bytes.NewReader(body))
+	decoder.UseNumber() // Request IDs must survive without float64 rounding.
+	if err := decoder.Decode(&msg); err != nil {
 		return nil, err
 	}
-
-	var msg rpcMessage
-	if err := json.Unmarshal(body, &msg); err != nil {
-		return nil, err
+	if err := decoder.Decode(new(any)); err != io.EOF {
+		return nil, fmt.Errorf("multiple or malformed JSON values in LSP frame")
 	}
 	return &msg, nil
 }
 
 func (s *Server) sendResponse(id interface{}, result interface{}) {
-	resp := rpcMessage{
-		JSONRPC: "2.0",
-		ID:      id,
-		Result:  result,
+	if id == nil {
+		return
 	}
-	s.sendMessage(resp)
+	// Success with no value still requires the result field to be present.
+	s.sendMessage(map[string]any{"jsonrpc": "2.0", "id": id, "result": result})
+}
+
+func (s *Server) sendError(id any, code int, message string) {
+	if id == nil {
+		return
+	}
+	s.sendMessage(map[string]any{"jsonrpc": "2.0", "id": id, "error": map[string]any{"code": code, "message": message}})
+}
+
+func (s *Server) decodeParams(msg *rpcMessage, target any) bool {
+	trimmed := bytes.TrimSpace(msg.Params)
+	if len(trimmed) == 0 || trimmed[0] != '{' || json.Unmarshal(trimmed, target) != nil {
+		s.sendError(msg.ID, -32602, "Invalid params")
+		return false
+	}
+	return true
+}
+
+func (s *Server) position(msg *rpcMessage, uri string, line, character int) (source.Position, bool) {
+	position, ok := s.svc.PositionFromLSP(uri, line, character)
+	if !ok {
+		s.sendError(msg.ID, -32602, "Invalid document or position")
+	}
+	return position, ok
 }
 
 func (s *Server) sendNotification(method string, params interface{}) {
-	paramBytes, _ := json.Marshal(params)
-	msg := rpcMessage{
-		JSONRPC: "2.0",
-		Method:  method,
-		Params:  paramBytes,
-	}
-	s.sendMessage(msg)
+	s.sendMessage(map[string]any{"jsonrpc": "2.0", "method": method, "params": params})
 }
 
-func (s *Server) sendMessage(msg rpcMessage) {
+func (s *Server) sendMessage(msg any) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-
-	body, _ := json.Marshal(msg)
+	if s.writeErr != nil {
+		return
+	}
+	body, err := json.Marshal(msg)
+	if err != nil {
+		s.writeErr = err
+		return
+	}
 	header := fmt.Sprintf("Content-Length: %d\r\n\r\n", len(body))
-	_, _ = s.writer.Write([]byte(header))
-	_, _ = s.writer.Write(body)
+	for _, part := range [][]byte{[]byte(header), body} {
+		n, err := s.writer.Write(part)
+		if err != nil {
+			s.writeErr = err
+			return
+		}
+		if n != len(part) {
+			s.writeErr = io.ErrShortWrite
+			return
+		}
+	}
 }
 
 func (s *Server) handleMessage(msg *rpcMessage) {
+	if msg.JSONRPC != "2.0" || msg.Method == "" {
+		s.sendError(msg.ID, -32600, "Invalid Request")
+		return
+	}
+	if s.shutdown && msg.Method != "exit" {
+		s.sendError(msg.ID, -32600, "Server has shut down")
+		return
+	}
 	switch msg.Method {
+	case "initialized":
+		return
+	case "shutdown":
+		s.shutdown = true
+		s.sendResponse(msg.ID, nil)
+	case "exit":
+		s.stopped = true
 	case "initialize":
 		s.sendResponse(msg.ID, map[string]interface{}{
 			"capabilities": map[string]interface{}{
+				"positionEncoding": "utf-16",
 				"textDocumentSync": 1, // Full
 				"completionProvider": map[string]interface{}{
 					"triggerCharacters": []string{".", ":", "\""},
@@ -148,7 +229,7 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 				Text    string `json:"text"`
 			} `json:"textDocument"`
 		}
-		if err := json.Unmarshal(msg.Params, &p); err == nil {
+		if s.decodeParams(msg, &p) {
 			s.svc.OpenDocument(p.TextDocument.URI, p.TextDocument.Version, p.TextDocument.Text)
 			s.publishDiagnostics(p.TextDocument.URI)
 		}
@@ -163,7 +244,7 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 				Text string `json:"text"`
 			} `json:"contentChanges"`
 		}
-		if err := json.Unmarshal(msg.Params, &p); err == nil && len(p.ContentChanges) > 0 {
+		if s.decodeParams(msg, &p) && len(p.ContentChanges) > 0 {
 			s.svc.ChangeDocument(p.TextDocument.URI, p.TextDocument.Version, p.ContentChanges[0].Text)
 			s.publishDiagnostics(p.TextDocument.URI)
 		}
@@ -184,7 +265,7 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 				URI string `json:"uri"`
 			} `json:"textDocument"`
 		}
-		if err := json.Unmarshal(msg.Params, &p); err == nil {
+		if s.decodeParams(msg, &p) {
 			s.svc.CloseDocument(p.TextDocument.URI)
 		}
 
@@ -194,7 +275,7 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 				URI string `json:"uri"`
 			} `json:"textDocument"`
 		}
-		if err := json.Unmarshal(msg.Params, &p); err == nil {
+		if s.decodeParams(msg, &p) {
 			formatted, err := s.svc.Format(p.TextDocument.URI)
 			if err != nil {
 				s.sendResponse(msg.ID, []interface{}{})
@@ -222,9 +303,13 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 				Character int `json:"character"`
 			} `json:"position"`
 		}
-		if err := json.Unmarshal(msg.Params, &p); err == nil {
-			items := s.svc.Complete(p.TextDocument.URI, p.Position.Line+1, p.Position.Character+1)
-			s.sendResponse(msg.ID, items)
+		if s.decodeParams(msg, &p) {
+			position, ok := s.position(msg, p.TextDocument.URI, p.Position.Line, p.Position.Character)
+			if !ok {
+				return
+			}
+			items := s.svc.Complete(p.TextDocument.URI, position.Line, position.Column)
+			s.sendResponse(msg.ID, completionWireItems(items))
 		}
 
 	case "textDocument/hover":
@@ -237,12 +322,17 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 				Character int `json:"character"`
 			} `json:"position"`
 		}
-		if err := json.Unmarshal(msg.Params, &p); err == nil {
-			hover := s.svc.Hover(p.TextDocument.URI, p.Position.Line+1, p.Position.Character+1)
+		if s.decodeParams(msg, &p) {
+			position, ok := s.position(msg, p.TextDocument.URI, p.Position.Line, p.Position.Character)
+			if !ok {
+				return
+			}
+			hover := s.svc.Hover(p.TextDocument.URI, position.Line, position.Column)
 			if hover == nil {
 				s.sendResponse(msg.ID, nil)
 			} else {
 				s.sendResponse(msg.ID, map[string]interface{}{
+					"range": wireRange(hover.Span),
 					"contents": map[string]string{
 						"kind":  "markdown",
 						"value": hover.Contents,
@@ -261,8 +351,12 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 				Character int `json:"character"`
 			} `json:"position"`
 		}
-		if err := json.Unmarshal(msg.Params, &p); err == nil {
-			span := s.svc.Definition(p.TextDocument.URI, p.Position.Line+1, p.Position.Character+1)
+		if s.decodeParams(msg, &p) {
+			position, ok := s.position(msg, p.TextDocument.URI, p.Position.Line, p.Position.Character)
+			if !ok {
+				return
+			}
+			span := s.svc.Definition(p.TextDocument.URI, position.Line, position.Column)
 			if span == nil {
 				s.sendResponse(msg.ID, nil)
 			} else {
@@ -292,8 +386,12 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 				Character int `json:"character"`
 			} `json:"position"`
 		}
-		if err := json.Unmarshal(msg.Params, &p); err == nil {
-			sig := s.svc.SignatureHelp(p.TextDocument.URI, p.Position.Line+1, p.Position.Character+1)
+		if s.decodeParams(msg, &p) {
+			position, ok := s.position(msg, p.TextDocument.URI, p.Position.Line, p.Position.Character)
+			if !ok {
+				return
+			}
+			sig := s.svc.SignatureHelp(p.TextDocument.URI, position.Line, position.Column)
 			if sig == nil {
 				s.sendResponse(msg.ID, nil)
 			} else {
@@ -326,8 +424,12 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 			} `json:"position"`
 			NewName string `json:"newName"`
 		}
-		if err := json.Unmarshal(msg.Params, &p); err == nil {
-			_, edits, err := s.svc.Rename(p.TextDocument.URI, p.Position.Line+1, p.Position.Character+1, p.NewName)
+		if s.decodeParams(msg, &p) {
+			position, ok := s.position(msg, p.TextDocument.URI, p.Position.Line, p.Position.Character)
+			if !ok {
+				return
+			}
+			_, edits, err := s.svc.Rename(p.TextDocument.URI, position.Line, position.Column, p.NewName)
 			if err != nil {
 				s.sendResponse(msg.ID, nil)
 			} else {
@@ -357,14 +459,14 @@ func (s *Server) handleMessage(msg *rpcMessage) {
 
 	default:
 		if msg.ID != nil {
-			s.sendResponse(msg.ID, nil)
+			s.sendError(msg.ID, -32601, "Method not found")
 		}
 	}
 }
 
 func (s *Server) publishDiagnostics(uri string) {
 	diags, _ := s.svc.Analyze(uri)
-	var wireDiags []map[string]interface{}
+	wireDiags := make([]map[string]interface{}, 0, len(diags))
 	for _, d := range diags {
 		sev := 1 // Error
 		if d.Severity == analysis.SeverityWarning {

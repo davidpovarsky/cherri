@@ -17,6 +17,22 @@ type supplementalProductionScenario struct {
 // These are independent executions of the complete supplemental scenarios.
 // Related original IDs are navigation only and never supply an inherited pass.
 var supplementalProductionScenarios = map[string]supplementalProductionScenario{
+	"RP38": {
+		PackagePath: "./internal/language/lsp", ModulePath: "github.com/electrikmilk/cherri/internal/language/lsp",
+		TestNames: []string{
+			"TestP15RP38UTF16RequestAndResponseRanges",
+			"TestP15RP38MultipleDiagnosticsUTF16",
+			"TestP15RP38ContextualLabelsEnumsAndSignatures",
+			"TestP15RP38ScopedServiceCompletion",
+			"TestP15RP38NestedAndMultilineContext",
+			"TestP15RP38ProtocolIDsAndNotifications",
+			"TestP15RP38ProtocolMethodsAndNull",
+			"TestP15RP38MalformedFramingFailsWithoutPanic",
+			"TestP15RP38WriteFailuresAreObserved",
+		},
+		Tiers:           []string{"service", "protocol"},
+		ProductionPaths: []string{"internal/language/lsp/server.go", "internal/language/lsp/position_wire.go", "internal/language/service/service.go", "internal/language/service/context_position.go", "internal/language/service/enum_completion.go", "internal/language/source/span.go", "internal/language/lsp/p15_context_protocol_test.go"},
+	},
 	"RP04": {
 		PackagePath: ".", ModulePath: "github.com/electrikmilk/cherri",
 		TestNames:       []string{"TestP15RP04CheckedCompileRejectsSemanticErrors"},

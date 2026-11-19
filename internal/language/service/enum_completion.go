@@ -39,8 +39,15 @@ func enumCompletionTokens(file *source.File, offset int) ([]syntax.Token, enumCa
 	if len(stack) == 0 {
 		return tokens, enumCallContext{}
 	}
-	open := stack[len(stack)-1]
-	if tokens[open].Type != syntax.TokenLParen || open == 0 || tokens[open-1].Type != syntax.TokenIdent {
+	open := -1
+	for index := len(stack) - 1; index >= 0; index-- {
+		candidate := stack[index]
+		if tokens[candidate].Type == syntax.TokenLParen && candidate > 0 && tokens[candidate-1].Type == syntax.TokenIdent {
+			open = candidate
+			break
+		}
+	}
+	if open < 0 {
 		return tokens, enumCallContext{}
 	}
 	context := enumCallContext{name: tokens[open-1].Text}
@@ -117,6 +124,17 @@ func enumCallDomain(registry *schema.Registry, catalog enums.Catalog, program *s
 			}
 		}
 	}
+	index, value := activeCallParameter(parameters, primary, context)
+	if index >= 0 && enumValuePrefix(value) {
+		return parameters[index].domain
+	}
+	return ""
+}
+
+// activeCallParameter is shared by enum completion and signature help. Tokens
+// come from the production lexer, so commas/colons in strings or nested values
+// cannot change the active argument or named parameter selection.
+func activeCallParameter(parameters []enumCompletionParameter, primary int, context enumCallContext) (int, []syntax.Token) {
 	bound := make(map[int]bool)
 	for argumentIndex, argument := range context.arguments {
 		label, value := enumArgumentLabel(argument)
@@ -143,16 +161,13 @@ func enumCallDomain(registry *schema.Registry, catalog enums.Catalog, program *s
 			}
 		}
 		if argumentIndex == len(context.arguments)-1 {
-			if index >= 0 && enumValuePrefix(value) {
-				return parameters[index].domain
-			}
-			return ""
+			return index, value
 		}
 		if index >= 0 {
 			bound[index] = true
 		}
 	}
-	return ""
+	return -1, nil
 }
 
 func (s *Service) enumCompletions(doc *DocumentState, line, col int) []CompletionItem {

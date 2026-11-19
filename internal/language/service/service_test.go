@@ -29,7 +29,12 @@ func TestServiceComplete(t *testing.T) {
 	code := `let myVar = 10
 `
 	svc.OpenDocument(uri, 1, code)
-	items := svc.Complete(uri, 1, 1)
+	for _, item := range svc.Complete(uri, 1, 1) {
+		if item.Label == "myVar" && item.Kind == CompletionKindVariable {
+			t.Fatal("a binding must not be offered before its declaration")
+		}
+	}
+	items := svc.Complete(uri, 2, 1) // The binding is visible after its initializer.
 
 	foundMyVar := false
 	foundResize := false

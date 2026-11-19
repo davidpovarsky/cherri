@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -196,8 +195,6 @@ func (s *Service) Format(uri string) (string, error) {
 	return syntax.Format(doc.Program), nil
 }
 
-var labelRegex = regexp.MustCompile(`\b([a-zA-Z_][a-zA-Z0-9_]*)\s*:`)
-
 func completionKindPriority(kind CompletionItemKind) int {
 	switch kind {
 	case CompletionKindParameter:
@@ -234,52 +231,12 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 		return items
 	}
 
-	lines := strings.Split(doc.File.Content, "\n")
-	var linePrefix string
-	if line-1 >= 0 && line-1 < len(lines) {
-		linePrefix = sliceLineRunesUpToCol(lines[line-1], col)
-	}
-
-	// Determine if inside an open call
-	prefixRunes := []rune(linePrefix)
-	openParen := -1
-	parenDepth := 0
-	for i := len(prefixRunes) - 1; i >= 0; i-- {
-		ch := prefixRunes[i]
-		if ch == ')' {
-			parenDepth++
-		} else if ch == '(' {
-			if parenDepth > 0 {
-				parenDepth--
-			} else {
-				openParen = i
-				break
-			}
-		}
-	}
-
-	var callIdent string
+	_, context := enumCompletionTokens(doc.File, byteOffsetAtLineCol(doc.File, line, col))
+	callIdent := context.name
 	usedLabels := make(map[string]bool)
-
-	if openParen >= 0 {
-		// Find call identifier right before '('
-		identEnd := openParen
-		for identEnd > 0 && (prefixRunes[identEnd-1] == ' ' || prefixRunes[identEnd-1] == '\t') {
-			identEnd--
-		}
-		identStart := identEnd
-		for identStart > 0 && isIdentChar(prefixRunes[identStart-1]) {
-			identStart--
-		}
-		callIdent = string(prefixRunes[identStart:identEnd])
-
-		// Extract used labels inside args so far
-		argsText := string(prefixRunes[openParen+1:])
-		matches := labelRegex.FindAllStringSubmatch(argsText, -1)
-		for _, m := range matches {
-			if len(m) > 1 {
-				usedLabels[m[1]] = true
-			}
+	for _, argument := range context.arguments {
+		if label, _ := enumArgumentLabel(argument); label != "" {
+			usedLabels[label] = true
 		}
 	}
 
@@ -324,25 +281,27 @@ func (s *Service) Complete(uri string, line, col int) []CompletionItem {
 	// 2. Members of only the active enum domain.
 	items = append(items, s.enumCompletions(doc, line, col)...)
 
-	// 3. Local variable & function completions
+	// 3. Use the same lexical resolution as definition and rename. A binding
+	// becomes visible after its initializer and never leaks beyond its block.
 	if doc.Program != nil {
-		for _, decl := range doc.Program.Declarations {
-			if fn, ok := decl.(*syntax.FunctionDecl); ok {
-				items = append(items, CompletionItem{
-					Label:  fn.Name,
-					Kind:   CompletionKindFunction,
-					Detail: fmt.Sprintf("function %s(...)", fn.Name),
-				})
+		declarations, _ := collectScopesAndRefs(doc.File, doc.Program)
+		offset := byteOffsetAtLineCol(doc.File, line, col)
+		seen := make(map[string]bool)
+		for _, candidate := range declarations {
+			if seen[candidate.name] {
+				continue
 			}
-		}
-		for _, stmt := range doc.Program.Statements {
-			if b, ok := stmt.(*syntax.BindingStmt); ok {
-				items = append(items, CompletionItem{
-					Label:  b.Name,
-					Kind:   CompletionKindVariable,
-					Detail: "variable",
-				})
+			declaration := resolveDeclForRef(declarations, candidate.name, offset)
+			if declaration == nil {
+				continue
 			}
+			seen[candidate.name] = true
+			item := CompletionItem{Label: declaration.name, Kind: CompletionKindVariable, Detail: "variable"}
+			if declaration.isFunc {
+				item.Kind = CompletionKindFunction
+				item.Detail = fmt.Sprintf("function %s(...)", declaration.name)
+			}
+			items = append(items, item)
 		}
 	}
 
@@ -468,11 +427,7 @@ func (s *Service) Hover(uri string, line, col int) *HoverResult {
 			fmt.Fprintf(&md, "\n**Returns:** `%s`\n", output)
 		}
 
-		span := source.Span{
-			Document: source.DocumentID(uri),
-			Start:    source.Position{Line: line, Column: start + 1, UTF16Column: start + 1},
-			End:      source.Position{Line: line, Column: end + 1, UTF16Column: end + 1},
-		}
+		span := doc.File.SpanForOffsets(byteOffsetAtLineCol(doc.File, line, start+1), byteOffsetAtLineCol(doc.File, line, end+1))
 
 		return &HoverResult{
 			Contents: md.String(),
@@ -487,30 +442,19 @@ func (s *Service) Hover(uri string, line, col int) *HoverResult {
 				for _, p := range fn.Parameters {
 					params = append(params, p.Name)
 				}
-				span := source.Span{
-					Document: source.DocumentID(uri),
-					Start:    source.Position{Line: line, Column: start + 1, UTF16Column: start + 1},
-					End:      source.Position{Line: line, Column: end + 1, UTF16Column: end + 1},
-				}
+				span := doc.File.SpanForOffsets(byteOffsetAtLineCol(doc.File, line, start+1), byteOffsetAtLineCol(doc.File, line, end+1))
 				return &HoverResult{
 					Contents: fmt.Sprintf("```cherri\nfunction %s(%s)\n```", fn.Name, strings.Join(params, ", ")),
 					Span:     span,
 				}
 			}
 		}
-		for _, stmt := range doc.Program.Statements {
-			if b, ok := stmt.(*syntax.BindingStmt); ok && b.Name == word {
-				span := source.Span{
-					Document: source.DocumentID(uri),
-					Start:    source.Position{Line: line, Column: start + 1, UTF16Column: start + 1},
-					End:      source.Position{Line: line, Column: end + 1, UTF16Column: end + 1},
-				}
-				return &HoverResult{
-					Contents: fmt.Sprintf("```cherri\n(variable) %s\n```", b.Name),
-					Span:     span,
-				}
-			}
+		declarations, _ := collectScopesAndRefs(doc.File, doc.Program)
+		if declaration := resolveDeclForRef(declarations, word, byteOffsetAtLineCol(doc.File, line, col)); declaration != nil && !declaration.isFunc {
+			span := doc.File.SpanForOffsets(byteOffsetAtLineCol(doc.File, line, start+1), byteOffsetAtLineCol(doc.File, line, end+1))
+			return &HoverResult{Contents: fmt.Sprintf("```cherri\n(variable) %s\n```", word), Span: span}
 		}
+
 	}
 
 	return nil
@@ -526,56 +470,30 @@ func (s *Service) SignatureHelp(uri string, line, col int) *SignatureHelpResult 
 		return nil
 	}
 
-	lines := strings.Split(doc.File.Content, "\n")
-	if line-1 < 0 || line-1 >= len(lines) {
-		return nil
-	}
-	linePrefix := sliceLineRunesUpToCol(lines[line-1], col)
-	prefixRunes := []rune(linePrefix)
-
-	openParen := -1
-	parenDepth := 0
-	for i := len(prefixRunes) - 1; i >= 0; i-- {
-		ch := prefixRunes[i]
-		if ch == ')' {
-			parenDepth++
-		} else if ch == '(' {
-			if parenDepth > 0 {
-				parenDepth--
-			} else {
-				openParen = i
-				break
-			}
-		}
-	}
-	if openParen < 0 {
-		return nil
-	}
-
-	identEnd := openParen
-	for identEnd > 0 && (prefixRunes[identEnd-1] == ' ' || prefixRunes[identEnd-1] == '\t') {
-		identEnd--
-	}
-	identStart := identEnd
-	for identStart > 0 && isIdentChar(prefixRunes[identStart-1]) {
-		identStart--
-	}
-	callIdent := string(prefixRunes[identStart:identEnd])
+	_, context := enumCompletionTokens(doc.File, byteOffsetAtLineCol(doc.File, line, col))
+	callIdent := context.name
 	if callIdent == "" {
 		return nil
 	}
-
-	argsText := string(prefixRunes[openParen+1:])
-	activeParam := strings.Count(argsText, ",")
+	activeParam := len(context.arguments) - 1
 
 	if act, found := s.documentRegistry(doc).LookupAction(callIdent); found {
 		params := make([]string, len(act.Parameters))
+		parameters := make([]enumCompletionParameter, len(act.Parameters))
+		primary := -1
 		for i, p := range act.Parameters {
+			parameters[i] = enumCompletionParameter{name: p.ID, label: p.Label}
+			if selected, ok := act.PrimaryParameter(); ok && selected == &act.Parameters[i] {
+				primary = i
+			}
 			opt := ""
 			if p.Optional {
 				opt = "?"
 			}
 			params[i] = fmt.Sprintf("%s%s: %s", p.Label, opt, p.TypeName)
+		}
+		if index, _ := activeCallParameter(parameters, primary, context); index >= 0 {
+			activeParam = index
 		}
 		if activeParam >= len(params) && len(params) > 0 {
 			activeParam = len(params) - 1
@@ -584,7 +502,7 @@ func (s *Service) SignatureHelp(uri string, line, col int) *SignatureHelpResult 
 		if act.OutputTypeName != "" {
 			ret = act.OutputTypeName
 		}
-		if inferred, contextual := inferredCallResultAt(doc, callIdent, line, identStart+1); contextual {
+		if inferred, contextual := inferredCallResultAt(doc, callIdent, line, col); contextual {
 			ret = inferred.Name()
 		}
 		return &SignatureHelpResult{
@@ -599,14 +517,19 @@ func (s *Service) SignatureHelp(uri string, line, col int) *SignatureHelpResult 
 		for _, decl := range doc.Program.Declarations {
 			if fn, ok := decl.(*syntax.FunctionDecl); ok && fn.Name == callIdent {
 				params := make([]string, len(fn.Parameters))
+				parameters := make([]enumCompletionParameter, len(fn.Parameters))
 				for i, p := range fn.Parameters {
-					params[i] = p.Name
+					params[i] = parameterSignature(doc.File, p)
+					parameters[i] = enumCompletionParameter{name: p.Name, label: strings.TrimPrefix(p.Name, "_")}
+				}
+				if index, _ := activeCallParameter(parameters, 0, context); index >= 0 {
+					activeParam = index
 				}
 				if activeParam >= len(params) && len(params) > 0 {
 					activeParam = len(params) - 1
 				}
 				return &SignatureHelpResult{
-					Label:           fmt.Sprintf("function %s(%s)", fn.Name, strings.Join(params, ", ")),
+					Label:           fmt.Sprintf("function %s(%s) -> %s", fn.Name, strings.Join(params, ", "), annotationText(doc.File, fn.ReturnType, "Void")),
 					Parameters:      params,
 					ActiveParameter: activeParam,
 				}
@@ -618,10 +541,11 @@ func (s *Service) SignatureHelp(uri string, line, col int) *SignatureHelpResult 
 }
 
 type scopedDeclaration struct {
-	name      string
-	declSpan  source.Span // exact span of the identifier at declaration site
-	scopeSpan source.Span // enclosing lexical scope span
-	isFunc    bool
+	name              string
+	declSpan          source.Span // exact span of the identifier at declaration site
+	scopeSpan         source.Span // enclosing lexical scope span
+	isFunc            bool
+	scopeEndExclusive bool
 }
 
 type identRef struct {
@@ -734,9 +658,10 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 			walkExpr(s.Value)
 			declSpan := findIdentSpanAfter(s.Span.Start.ByteOffset, s.Name)
 			decls = append(decls, scopedDeclaration{
-				name:      s.Name,
-				declSpan:  declSpan,
-				scopeSpan: file.SpanForOffsets(s.Span.End.ByteOffset, currentScope.End.ByteOffset),
+				name:              s.Name,
+				declSpan:          declSpan,
+				scopeSpan:         file.SpanForOffsets(s.Span.End.ByteOffset, currentScope.End.ByteOffset),
+				scopeEndExclusive: currentScope.Start.ByteOffset != progScope.Start.ByteOffset || currentScope.End.ByteOffset != progScope.End.ByteOffset,
 			})
 			refs = append(refs, identRef{name: s.Name, span: declSpan})
 		case *syntax.AssignStmt:
@@ -767,18 +692,20 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 				if s.IndexVar != "" {
 					idxSpan := findIdentSpanAfter(s.Span.Start.ByteOffset, s.IndexVar)
 					decls = append(decls, scopedDeclaration{
-						name:      s.IndexVar,
-						declSpan:  idxSpan,
-						scopeSpan: s.BodyBlock.Span,
+						name:              s.IndexVar,
+						declSpan:          idxSpan,
+						scopeSpan:         s.BodyBlock.Span,
+						scopeEndExclusive: true,
 					})
 					refs = append(refs, identRef{name: s.IndexVar, span: idxSpan})
 				}
 				if s.ItemVar != "" {
 					itSpan := findIdentSpanAfter(s.Span.Start.ByteOffset, s.ItemVar)
 					decls = append(decls, scopedDeclaration{
-						name:      s.ItemVar,
-						declSpan:  itSpan,
-						scopeSpan: s.BodyBlock.Span,
+						name:              s.ItemVar,
+						declSpan:          itSpan,
+						scopeSpan:         s.BodyBlock.Span,
+						scopeEndExclusive: true,
 					})
 					refs = append(refs, identRef{name: s.ItemVar, span: itSpan})
 				}
@@ -790,9 +717,10 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 				if s.IndexVar != "" {
 					idxSpan := findIdentSpanAfter(s.Span.Start.ByteOffset, s.IndexVar)
 					decls = append(decls, scopedDeclaration{
-						name:      s.IndexVar,
-						declSpan:  idxSpan,
-						scopeSpan: s.BodyBlock.Span,
+						name:              s.IndexVar,
+						declSpan:          idxSpan,
+						scopeSpan:         s.BodyBlock.Span,
+						scopeEndExclusive: true,
 					})
 					refs = append(refs, identRef{name: s.IndexVar, span: idxSpan})
 				}
@@ -832,9 +760,10 @@ func collectScopesAndRefs(file *source.File, prog *syntax.Program) ([]scopedDecl
 					visibleAfter = p.DefaultExpr.NodeSpan().End.ByteOffset
 				}
 				decls = append(decls, scopedDeclaration{
-					name:      p.Name,
-					declSpan:  p.Span,
-					scopeSpan: file.SpanForOffsets(visibleAfter, bodyScope.End.ByteOffset),
+					name:              p.Name,
+					declSpan:          p.Span,
+					scopeSpan:         file.SpanForOffsets(visibleAfter, bodyScope.End.ByteOffset),
+					scopeEndExclusive: d.Body != nil,
 				})
 				refs = append(refs, identRef{name: p.Name, span: p.Span})
 				if p.DefaultExpr != nil {
@@ -875,7 +804,8 @@ func resolveDeclForRef(decls []scopedDeclaration, name string, offset int) *scop
 		if offset >= d.declSpan.Start.ByteOffset && offset < d.declSpan.End.ByteOffset {
 			return d
 		}
-		if offset >= d.scopeSpan.Start.ByteOffset && offset <= d.scopeSpan.End.ByteOffset {
+		beforeEnd := offset < d.scopeSpan.End.ByteOffset || !d.scopeEndExclusive && offset == d.scopeSpan.End.ByteOffset
+		if offset >= d.scopeSpan.Start.ByteOffset && beforeEnd {
 			scopeLen := d.scopeSpan.End.ByteOffset - d.scopeSpan.Start.ByteOffset
 			if scopeLen <= bestScopeLen {
 				best = d
