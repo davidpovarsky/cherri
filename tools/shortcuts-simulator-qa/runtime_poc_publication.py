@@ -15,6 +15,7 @@ from prepare_public_artifacts import (CANARY, MAGIC, PublicationBlocked, public_
 from runtime_poc_device import RECEIPT as DEVICE_RECEIPT, identity
 
 SOURCE_HASHES = {
+    "CherriS01F01CoveragePOC": "4a13f90af2bdc326e24f9dbf785f76a1ae41043e176b5a3188ab794694a19aa3",
     "CherriRuntimePOC": "cf5cb580a75833ffd022f4c4b4e8fa0e0e52f101c7f584d2726833000adf050b",
     "CherriDictionaryRuntimePOC": "fc7ce1f3daa3fffa33ab1b1af5e8c86c68fee1719f2f6121dbce6a6611be741c",
     "CherriMenuRuntimePOC": "a021541d5d6a9b87a3c885f419d1e2f286ab3eb7b300e985372095c95ad646c0",
@@ -22,6 +23,7 @@ SOURCE_HASHES = {
 }
 CI_PREFIX = "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/"
 FORMAL_TEXT = {
+    "coverage-clipboard-result.txt",
     "clipboard-result.txt", "dict-clipboard-result.txt", "legacy-if-clipboard-result.txt",
     "menu-alpha-clipboard-result.txt", "menu-beta-clipboard-result.txt",
     "menu-alpha-selection-proof.json", "menu-beta-selection-proof.json",
@@ -30,7 +32,11 @@ FORMAL_TEXT = {
 FORMAL_FILES = FORMAL_TEXT | {name + suffix for name in SOURCE_HASHES for suffix in (".cherri", ".shortcut")}
 SOURCE_RECEIPT = "runtime-poc-source-provenance.json"
 SIGNING_RECEIPT = "runtime-poc-signing-provenance.json"
-SUPPORT = {SOURCE_RECEIPT, SIGNING_RECEIPT, DEVICE_RECEIPT, "runtime-diagnostics.json"}
+COVERAGE_SUPPORT = {
+    "coverage-run-context.json", "coverage-reset-request.txt", "coverage-reset-observed.txt",
+    "coverage-reset-proof.json", "coverage-result.json", "coverage-expected.json",
+}
+SUPPORT = {SOURCE_RECEIPT, SIGNING_RECEIPT, DEVICE_RECEIPT, "runtime-diagnostics.json"} | COVERAGE_SUPPORT
 MAX_FILE_BYTES = 10 * 1024 * 1024
 
 
@@ -188,6 +194,9 @@ def stage(repo, root, output, commit, run_id, attempt):
                 and assertions.get("source_receipt_sha256") == sha(source_receipt_bytes)
                 and assertions.get("run_id") == run_id and assertions.get("run_attempt") == attempt,
                 "POC_FORMAL_DIAGNOSTIC_BINDING_MISMATCH")
+        if record.get("test_id") in ("ios27-runtime-poc:coverage-s01", "ios27-runtime-poc:coverage-f01"):
+            require(assertions.get("coverage_result_sha256") == sha(read_contained(root, "coverage-result.json")),
+                    "POC_FORMAL_COVERAGE_BINDING_MISMATCH")
         require(record.get("implementation_sha") == commit and record.get("tier") == "ios-runtime"
                 and str(record.get("test_id", "")).startswith("ios27-runtime-poc:"),
                 "POC_FORMAL_EVIDENCE_IDENTITY")

@@ -670,10 +670,45 @@ done
 echo "$CLIP_LEGACY" > artifacts/legacy-if-clipboard-result.txt
 
 # ==============================================================================
-# [9] COLLECT ARTIFACTS & GENERATE EVIDENCE JSON
+# [9] FIXTURE 5: precise Unicode attachments and mixed Boolean effects
 # ==============================================================================
 echo ""
-echo "=== [9] COLLECT ARTIFACTS & GENERATE EVIDENCE JSON ==="
+echo "=== [9] FIXTURE 5: CherriS01F01CoveragePOC ==="
+reset_shortcuts_app
+cp tests/runtime_poc/CherriS01F01CoveragePOC.cherri artifacts/CherriS01F01CoveragePOC.cherri
+# A failing compiler must stop before any old unsigned bytes could be signed.
+./cherri tests/runtime_poc/CherriS01F01CoveragePOC.cherri --skip-sign -d > artifacts/compile_coverage.log 2>&1
+cp tests/runtime_poc/CherriS01F01CoveragePOC_unsigned.shortcut artifacts/CherriS01F01CoveragePOC_unsigned.shortcut
+sign_and_verify "artifacts/CherriS01F01CoveragePOC_unsigned.shortcut" "artifacts/CherriS01F01CoveragePOC.shortcut" "tests/runtime_poc/CherriS01F01CoveragePOC.cherri"
+import_and_confirm "$(pwd)/artifacts/CherriS01F01CoveragePOC.shortcut" "coverage"
+
+# Preserve actual pbpaste bytes. Command substitution and echo would hide a
+# terminal newline difference. A fresh reset is observed before opening the run.
+python3 "$POC_TOOLS/runtime_poc_coverage.py" prepare --repo "$POC_REPO_ROOT" --root artifacts
+xcrun simctl pbcopy "$SIM_UDID" < artifacts/coverage-reset-request.txt
+xcrun simctl pbpaste "$SIM_UDID" > artifacts/coverage-reset-observed.txt
+python3 "$POC_TOOLS/runtime_poc_coverage.py" record-reset --repo "$POC_REPO_ROOT" --root artifacts
+xcrun simctl openurl "$SIM_UDID" "shortcuts://run-shortcut?name=CherriS01F01CoveragePOC" > artifacts/run_coverage.log 2>&1
+for i in $(seq 1 30); do
+    xcrun simctl pbpaste "$SIM_UDID" > artifacts/coverage-clipboard-result.txt 2>/dev/null || true
+    if python3 "$POC_TOOLS/runtime_poc_coverage.py" matches --repo "$POC_REPO_ROOT" --root artifacts; then
+        break
+    fi
+    if [ "$i" -eq 3 ] || [ "$i" -eq 10 ]; then
+        run_ui_helper "run_permission_coverage"
+    fi
+    sleep 1
+done
+COVERAGE_PASSED=false
+if python3 "$POC_TOOLS/runtime_poc_coverage.py" record-result --repo "$POC_REPO_ROOT" --root artifacts; then
+    COVERAGE_PASSED=true
+fi
+
+# ==============================================================================
+# [10] COLLECT ARTIFACTS & GENERATE EVIDENCE JSON
+# ==============================================================================
+echo ""
+echo "=== [10] COLLECT ARTIFACTS & GENERATE EVIDENCE JSON ==="
 cleanup
 
 HEAD_SHA=$(git rev-parse HEAD 2>/dev/null || echo "")
@@ -740,6 +775,9 @@ def file_art(rel_src, rel_ci):
     return art
 
 arts = [a for a in [
+    file_art("artifacts/CherriS01F01CoveragePOC.cherri", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/CherriS01F01CoveragePOC.cherri"),
+    file_art("artifacts/CherriS01F01CoveragePOC.shortcut", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/CherriS01F01CoveragePOC.shortcut"),
+    file_art("artifacts/coverage-clipboard-result.txt", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/coverage-clipboard-result.txt"),
     file_art("artifacts/clipboard-result.txt", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/clipboard-result.txt"),
     file_art("artifacts/CherriRuntimePOC.shortcut", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/CherriRuntimePOC.shortcut"),
     file_art("artifacts/CherriRuntimePOC.cherri", "artifacts/backend-recovery/ci-artifacts/ios27-runtime-poc/CherriRuntimePOC.cherri"),
@@ -1068,6 +1106,12 @@ echo "Fixture 1 (CherriRuntimePOC):       PASSED=$POC_PASSED"
 echo "Fixture 2 (Dictionary Approaches):  PASSED=$DICT_PASSED"
 echo "Fixture 3 (Choose from Menu UI):    STATUS=$MENU_RUNTIME_STATUS (Alpha=$MENU_ALPHA_PASSED [tapped=$MENU_ALPHA_TAPPED], Beta=$MENU_BETA_PASSED [tapped=$MENU_BETA_TAPPED])"
 echo "Fixture 4 (Legacy If Condition):    PASSED=$LEGACY_IF_PASSED"
+echo "Fixture 5 (S01/F01 Coverage):       PASSED=$COVERAGE_PASSED"
+
+if [ "$COVERAGE_PASSED" != "true" ]; then
+    echo "FATAL: Exact S01/F01 coverage output failed."
+    exit 1
+fi
 
 if [ "$POC_PASSED" != "true" ]; then
     echo "FATAL: Primary CherriRuntimePOC failed."
@@ -1090,6 +1134,6 @@ if [ "$MENU_RUNTIME_STATUS" != "PASS" ] || [ "$MENU_ALPHA_PASSED" != "true" ] ||
 fi
 
 echo "=================================================="
-echo "IOS27_SHORTCUTS_RUNTIME_POC=PASS (All 4 fixtures verified pass)"
+echo "IOS27_SHORTCUTS_RUNTIME_POC=PASS (All 5 fixtures verified pass)"
 echo "=================================================="
 exit 0

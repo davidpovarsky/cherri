@@ -110,6 +110,9 @@ class FormalPublicationTests(unittest.TestCase):
         (self.root / publication.SIGNING_RECEIPT).write_text(json.dumps({
             "implementationSha": COMMIT, "runId": RUN, "runAttempt": ATTEMPT, "fixtures": rows,
         }), encoding="utf-8")
+        for name in publication.COVERAGE_SUPPORT:
+            data = b'{"scope":"SYNTHETIC_POLICY_UNIT_CONTROL"}\n' if name.endswith(".json") else b"SYNTHETIC_POLICY_UNIT_CONTROL\n"
+            (self.root / name).write_bytes(data)
         self.write_evidence()
 
     def tearDown(self):
@@ -230,6 +233,15 @@ class FormalPublicationTests(unittest.TestCase):
     def test_formal_observations_cannot_detach_from_raw_diagnostics(self):
         (self.root / "runtime-diagnostics.json").write_bytes(b'[{"scope":"changed"}]\n')
         self.assert_blocked()
+
+    def test_coverage_formal_result_binding_survives_publication(self):
+        self.records[0]["test_id"] = "ios27-runtime-poc:coverage-s01"
+        self.records[0]["assertions"]["coverage_result_sha256"] = sha((self.root / "coverage-result.json").read_bytes())
+        (self.root / "runtime-evidence.json").write_text(json.dumps(self.records), encoding="utf-8")
+        publication.stage(self.repo, self.root, self.base / "first-public", COMMIT, RUN, ATTEMPT)
+        (self.root / "coverage-result.json").write_bytes(b'{"scope":"detached"}\n')
+        with self.assertRaisesRegex(PublicationBlocked, "POC_FORMAL_COVERAGE_BINDING_MISMATCH"):
+            publication.stage(self.repo, self.root, self.base / "public", COMMIT, RUN, ATTEMPT)
 
     def test_hubsign_receipt_binds_exact_public_input_and_output(self):
         name = "CherriRuntimePOC"
