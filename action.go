@@ -19,6 +19,8 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/schema"
 )
 
+//go:generate go run ./tools/language-stdlib
+
 //go:embed stdfunc.cherri
 var stdFuncs embed.FS
 
