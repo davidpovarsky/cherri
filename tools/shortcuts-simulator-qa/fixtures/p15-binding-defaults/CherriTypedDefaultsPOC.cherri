@@ -15,7 +15,7 @@ let result = f"CHERRI_TYPED_DEFAULTS_OK\nDEFAULTS_EXPLICIT={defaultsExplicit}\nD
 setClipboard(result)
 // END unchanged runtime body
 comment("ANCHOR_CARD_15_MID_CENTER")
-let qaObservedClipboard = getVariable(Clipboard)
+let qaObservedClipboard = getClipboard()
 let qaClipboard64Raw = base64Encode(qaObservedClipboard, lineBreakMode: "None")
 let qaClipboard64Length = count(qaClipboard64Raw, "Characters")
 var qaClipboard64 = "OVERSIZE"

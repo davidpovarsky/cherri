@@ -31,7 +31,7 @@ def render_adapter(fid, original):
               '// BEGIN unchanged tests/runtime_poc/' + fid + '.cherri\n')
     suffix = ('// END unchanged runtime body\n'
               'comment("ANCHOR_CARD_15_MID_CENTER")\n'
-              'let qaObservedClipboard = getVariable(Clipboard)\n'
+              'let qaObservedClipboard = getClipboard()\n'
               'let qaClipboard64Raw = base64Encode(qaObservedClipboard, lineBreakMode: "None")\n'
               'let qaClipboard64Length = count(qaClipboard64Raw, "Characters")\n'
               'var qaClipboard64 = "OVERSIZE"\n'
@@ -75,8 +75,10 @@ def verify_adapter_graph(fid, actions):
         t = token(v)
         require(t.get("Type") == "ActionOutput" and t.get("OutputUUID") == p(source).get("UUID")
                 and not t.get("Aggrandizements"), "exact producer edge")
-    oi, observed = named("qaObservedClipboard", "getvariable")
-    require(token(p(observed).get("WFVariable")).get("Type") == "Clipboard", "actual clipboard observation")
+    # Native run 44466065158 independently observed Get Variable(Clipboard)
+    # as empty while canonical Get Clipboard returned the actual public value.
+    oi, observed = named("qaObservedClipboard", "getclipboard")
+    require(set(p(observed)) <= {"UUID", "CustomOutputName"}, "canonical clipboard observation")
     setters = [i for i,a in enumerate(actions) if kind(a,"setclipboard")]
     require(bool(setters) and max(setters) < oi, "observe only after original final Set Clipboard")
     ri, raw = named("qaClipboard64Raw", "base64encode")
