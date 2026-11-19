@@ -1,0 +1,33 @@
+{
+  "implementationSha": "8d99dc4261e367017087ef591d4bd5c81f2e3837",
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-count=1",
+    "-timeout=3m",
+    "-run",
+    "^TestP15RP29",
+    "."
+  ],
+  "startedUTC": "2026-11-19T21:40:36.240099+00:00",
+  "finishedUTC": "2026-11-19T21:40:41.684643+00:00",
+  "sourceCleanBefore": true,
+  "sourceUnchanged": true,
+  "exitCode": 0,
+  "durationSeconds": 5.687,
+  "pass": [
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_text",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/allowed_binary",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/missing",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/existing_parent_escape",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/file_symlink_escape",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile/directory_symlink_escape",
+    "TestP15RP29AssetAuthorizationAcrossServiceAndCompile",
+    "TestP15RP29CachedResourceIsReauthorizedAfterSymlinkReplacement"
+  ],
+  "fail": [],
+  "skip": [],
+  "logSha256": "d2aa6d2c63c114dff79384710f797b42f3c8af73e7f9d4aeba2400e75c537938",
+  "scope": "Actual service/compiler resource authorization only; complete RP29 also requires independently validated asset benchmark evidence"
+}
