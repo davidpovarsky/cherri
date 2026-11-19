@@ -174,6 +174,7 @@ type Runner struct {
 	results      map[string]CaseResult
 	records      []EvidenceRecord
 	observations []LocalSmokeObservation
+	stateRace    *stateRaceExecution
 }
 
 func resolveRepoRoot() string {
@@ -936,6 +937,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			}
 
 			if err := validateEditorPerformanceRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+			if err := validateBackendStateRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
 
@@ -1910,6 +1914,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		return
 	}
 	for _, c := range repair.Cases {
+		if r.runBackendStateRequirement(c.ID, c.Title, c.RequiredTestLevels) {
+			continue
+		}
 		if r.runAssetAuthorizationRequirement(c.ID, c.Title, c.RequiredTestLevels) {
 			continue
 		}
@@ -1927,6 +1934,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 		return
 	}
 	for _, g := range gates.Gates {
+		if r.runBackendStateRequirement(g.ID, g.Title, g.MinimumEvidenceTiers) {
+			continue
+		}
 		if !r.runSupplementalProduction(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers) {
 			r.recordUnexecutedRequirement(g.ID, "recovery_gate", g.Title, g.MinimumEvidenceTiers)
 		}

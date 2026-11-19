@@ -47,7 +47,8 @@ var editorProductionTests = map[string][]string{
 		"TestP15S03BuiltinModuleAliasUsesCanonicalAsset",
 		editorBenchmarkTest,
 	},
-	"E08": {editorBenchmarkTest},
+	"E08":  {editorBenchmarkTest},
+	"RP51": {editorBenchmarkTest},
 }
 
 var editorProductionPaths = []string{
@@ -376,6 +377,9 @@ func (r *Runner) runEditorPerformanceRequirement(id string) {
 }
 
 func validateEditorPerformanceRecord(id string, record EvidenceRecord) error {
+	if id == "RP51" && record.Tier != "benchmark" {
+		return nil
+	} // The separate state/race intake owns every other tier.
 	tests, found := editorProductionTests[id]
 	if !found {
 		return nil

@@ -189,6 +189,20 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 				row.Scope = editorProductionScope(row.ID)
 			}
 		}
+		if _, ok := stateAcceptanceScenarios[row.ID]; ok {
+			row.TestNames = stateAcceptanceTests(row.ID)
+			row.ProductionPath = stateAcceptanceSourcePaths(row.ID)
+			row.PositiveAndNegative = res.Passed
+			row.Scope = stateRaceScope
+			if row.ID == "BRG06" {
+				row.Scope += "; " + stateSecurityScope
+			} else {
+				row.Scope += "; independently executed strict cold/warm small/medium/large/asset benchmark"
+			}
+			if res.Status == "NOT_RUN" {
+				row.Blocker = res.Detail
+			}
+		}
 		if tests, ok := moduleProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = append([]string{}, moduleProductionPaths[row.ID]...)
