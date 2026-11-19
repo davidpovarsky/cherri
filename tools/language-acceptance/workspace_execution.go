@@ -10,7 +10,8 @@ var workspaceProductionTests = map[string][]string{
 }
 var workspaceProductionPaths = []string{
 	"internal/language/analysis/analyzer.go", "internal/language/lower/lower.go",
-	"internal/language/lower/workspace_module.go", "language_emit_adapter.go", "p15_workspace_module_test.go",
+	"internal/language/modules/graph.go", "internal/language/workspace/resource.go",
+	"internal/language/service/module_analysis.go", "language_emit_adapter.go", "p15_workspace_module_test.go",
 }
 
 func (r *Runner) runWorkspaceResourceRequirement() {

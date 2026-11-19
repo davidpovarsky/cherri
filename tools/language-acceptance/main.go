@@ -21,7 +21,6 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/lower"
-	"github.com/electrikmilk/cherri/internal/language/migrate"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/service"
 	"github.com/electrikmilk/cherri/internal/language/source"
@@ -944,6 +943,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				validationErrors = append(validationErrors, err.Error())
 			}
 
+			if err := validateModuleRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateWorkspaceRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1751,32 +1754,11 @@ func (r *Runner) runMetadata() {
 
 // Group 13: Modules
 func (r *Runner) runModules() {
-	// IM01: Relative aliases, duplicate imports, cycle
-	srcIM01 := "import web as w\nimport web as w"
-	diagsIM01 := analyzeSrc(r.reg, srcIM01)
-	svcIM01 := service.NewService(r.reg)
-	svcIM01.OpenDocument("file:///im01.cherri", 1, srcIM01)
-	im01Passed := len(diagsIM01) > 0
-	r.Record("IM01", "modules", "Relative aliases, duplicate imports and import cycle", "unit+service", []string{"unit", "service"}, im01Passed, "PASSED", "Module import resolver enforces alias uniqueness and reports diagnostic")
-
-	// IM02: Module top-level runtime initialization
-	migratedIM02 := migrate.MigrateSource("#include 'actions/web'\nshow(\"test\")")
-	im02Passed := !strings.Contains(migratedIM02, "#include") && strings.Contains(migratedIM02, "show")
-	r.Record("IM02", "modules", "Module top-level runtime initialization", "unit+migration", []string{"unit", "migration"}, im02Passed, "PASSED", "Module definitions hoisted in deterministic dependency order during migration")
-
-	// IM03: Existing stdfunc behavior migrated
-	srcIM03 := "let enc = base64Encode(\"data\")\nshow(enc)"
-	wfIM03, errIM03 := lowerSrc(r.reg, srcIM03)
-	im03Passed := errIM03 == nil && len(wfIM03.Actions) > 0
-	r.Record("IM03", "modules", "Existing stdfunc behavior migrated from preserved upstream source", "unit+native", []string{"unit", "native"}, im03Passed, "PASSED", "Built-in standard functions accessible globally and lower directly")
-
+	for _, id := range []string{"IM01", "IM02", "IM03"} {
+		r.runModuleRequirement(id)
+	}
 	r.runWorkspaceResourceRequirement()
-
-	// IM05: Analysis with unresolved remote package
-	srcIM05 := "import \"https://malicious.example.com/package.cherri\" as pkg"
-	diagsIM05 := analyzeSrc(r.reg, srcIM05)
-	im05Passed := len(diagsIM05) > 0
-	r.Record("IM05", "modules", "Analysis with unresolved/remote package", "security+service", []string{"security", "service"}, im05Passed, "PASSED", "Unresolved package imports reported as diagnostic without network fetch")
+	r.runModuleRequirement("IM05")
 }
 
 // Group 14: Schema
