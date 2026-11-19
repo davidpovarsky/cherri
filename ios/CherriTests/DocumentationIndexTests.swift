@@ -18,6 +18,14 @@ final class DocumentationIndexTests: XCTestCase {
         XCTAssertTrue(exact.first?.blocks.contains { $0.kind == "code" && $0.text.contains("show(") } ?? false)
         XCTAssertFalse(index.search("").contains { $0.migrationOnly })
         XCTAssertFalse(index.search("Migration", includeMigration: true).isEmpty)
+        XCTAssertTrue(index.search("@count").isEmpty)
+        let legacyMatches = index.search("@count", includeMigration: true)
+        XCTAssertEqual(legacyMatches.count, 1)
+        XCTAssertEqual(legacyMatches.first?.sourcePath, "fork-language/migration.md")
+        XCTAssertTrue(legacyMatches.first?.migrationOnly == true)
+        XCTAssertTrue(legacyMatches.first?.blocks.contains {
+            $0.language == "cherri-legacy" && $0.text.contains("@count")
+        } ?? false)
         XCTAssertTrue(index.search("ZZZ_MISSING_DOCUMENTATION_937").isEmpty)
         let record: [String: Any] = ["schemaVersion": "1.0",
                                      "bundleSHA256": bundleSHA256,
