@@ -23,3 +23,15 @@ F04 remains UNVERIFIED. The two synthetic `qa-f04-yield-*-v2.cherri` probes insp
 ## Clean committed verification
 
 Source `27547c55b330dac9085d710597ce9420aab5ab8c` passed the combined F03/T07 formal producer gate and F04 non-promotion test (three passing gate tests, zero failures). All underlying named production tests and causal manifest controls executed. The tree was clean before and after the run. Raw log SHA-256: `443af74fbf9a1c5794adb654597c917cb667198687275e34aeabcb321aa42d72`. Complete source-bound receipts and causal baseline artifacts are in [the evidence directory](evidence/p15-f03-t07-20261119/README.md).
+
+## F04 native failure and current compiler boundary
+
+The original List-yield probe on source `ff04ee8887c701824e5161f3fff1431ff204bb65` reached a correlated target SUCCESS callback in [run 44431486363](https://github.com/davidpovarsky/cherri/actions/runs/44431486363). Its semantic result was `pairs=4:scalars=2:shape=COUNT_MISMATCH`, where two nested List values were required. The exact oracle remains failed; the archive under `docs/apple-runtime/p10r15/native-followup-20261119/f04-list-ff04ee8-44431486363` preserves the original callback, source/signing identities, publication manifest and independent replay. This is not F04 completion.
+
+The current compiler rejects a statically known List-valued final result of a value-producing `for` or `repeat` with `E_TARGET_VALUE_SHAPE` before native emission. The check includes aliased Lists, optional/union List branches, nested value loops and empty Lists. Scalar and record results, statement loops, and List-valued `if`/menu expressions outside that loop boundary retain their existing behavior. None materialization and the proven omitted-input variable-clearing encoding are unchanged.
+
+Unknown or AnyContent results and the existing untyped native-last-action fallback remain unverified native semantics; this guard does not promise one preserved semantic item per iteration for those paths. No Dictionary wrapper is substituted under a List<List> type.
+
+Phase 0 still executes compilation and structured CLI analysis for both preserved F04 sources, requires the exact diagnostic and absence of native artifacts, and records them as BLOCKED_PLATFORM / NOT_RUN. They are not counted as compiled fixtures or Apple passes. Selecting either unsupported probe stops before signing/Simulator use. Historical runs stay bound to their original source; storage, export, scalar collection and other supported fixtures continue through normal compilation.
+
+Canonical native metadata exposes Repeat inputs but no established nested-value preservation option. Apple's [Repeat data-flow guide](https://support.apple.com/en-ie/guide/shortcuts/apdc11deb2c1/ios) describes gathered loop outputs; it does not establish a lossless nested List representation. A future lowering requires independent signed native proof of nested and empty cardinality before this diagnostic can be relaxed.

@@ -8,6 +8,7 @@ import unittest
 
 from test_workflow_input_contract import bash_path
 import test_runtime_callback_contract as callback_contract
+from fixture_compile_contract import EXPECTED_REJECTIONS
 
 
 CASES = {
@@ -116,11 +117,14 @@ class NativeMacroDiagnosticContracts(unittest.TestCase):
                     result = self.oracle.verify([{**event, "resultSummary": summary}], fid, CASES[fid])
                     self.assertEqual(result["runGate"], "FAIL_RUNTIME")
 
-    def test_phase_zero_compiles_all_new_sources_at_the_existing_debug_boundary(self):
+    def test_phase_zero_records_explicit_outcomes_for_reviewed_sources(self):
         start = self.script.index("fixture_specs = [")
         stop = self.script.index("\n]\n", start) + 2
         assignment = ast.parse(self.script[start:stop]).body[0]
         specs = ast.literal_eval(assignment.value)
+        self.assertEqual(set(EXPECTED_REJECTIONS), {"qa-f04-yield-list-v2", "qa-f04-yield-empty-list-v2"})
+        self.assertIn("verify_expected_rejection(fid,", self.script)
+        self.assertIn('"fixtureRejections": fixture_rejections', self.script)
         for fid in CASES:
             matches = [row for row in specs if row[0] == fid]
             self.assertEqual(matches, [(fid, fid + ".cherri", "v2")])
