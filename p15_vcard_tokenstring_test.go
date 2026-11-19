@@ -210,6 +210,7 @@ func TestP15MenusMigrationCLIParity(t *testing.T) {
 		t.Fatalf("migration lost explicit runtime templates:\n%s", migrated)
 	}
 	tmp := t.TempDir()
+	p15StageMenusAsset(t, tmp)
 	v2Source := filepath.Join(tmp, "menus_v2.cherri")
 	if err := os.WriteFile(v2Source, []byte(migrated), 0600); err != nil {
 		t.Fatal(err)

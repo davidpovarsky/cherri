@@ -533,6 +533,9 @@ func TestP15C03OriginalCLIParity(t *testing.T) {
 				t.Fatalf("actual source did not migrate list constructor: %s", migrated)
 			}
 			tmp := t.TempDir()
+			if name == "menus" {
+				p15StageMenusAsset(t, tmp)
+			}
 			source := filepath.Join(tmp, name+"_v2.cherri")
 			if err = os.WriteFile(source, migrated, 0600); err != nil {
 				t.Fatal(err)
