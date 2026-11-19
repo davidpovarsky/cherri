@@ -1,0 +1,97 @@
+comment("ANCHOR_CARD_01_TOP_HEADER")
+// Public causal characterization; original fixtures and acceptance oracles stay unchanged.
+debugClearLogs()
+debugTraceEvent("before", "native-boundary")
+let boundaryOriginal = text("quote \" backslash \\ newline\nHebrew שָׁלוֹם cherry 🍒 token SYNTHETIC_SECRET")
+debugLog()
+let boundaryArtifact = debugExport("json", false, false, false)
+let boundaryArtifactText = getText(boundaryArtifact)
+let boundaryParsed = getDictionary(boundaryArtifactText)
+let boundaryEntries = getValue(boundaryParsed, "entries")
+let boundaryEntryCount = count(boundaryEntries)
+let boundaryFirst = getFirstItem(boundaryEntries)
+let boundaryLast = getLastItem(boundaryEntries)
+let boundaryFirstPayload = getValue(boundaryFirst, "payload")
+let boundaryLastPayload = getValue(boundaryLast, "payload")
+let boundaryFirstValue = getValue(boundaryFirstPayload, "value")
+let boundaryLastValue = getValue(boundaryLastPayload, "value")
+let boundaryBinary = base64Decode("AQ==")
+let boundaryText = text("NATIVE_BOUNDARY_TEXT_WITNESS")
+let boundaryDictionary = {"probe": "NATIVE_BOUNDARY_DICTIONARY_WITNESS"}
+let boundaryArtifactType = typeOf(boundaryArtifact)
+let boundaryBinaryType = typeOf(boundaryBinary)
+let boundaryTextType = typeOf(boundaryText)
+let boundaryDictionaryType = typeOf(boundaryDictionary)
+var boundaryArtifactIsFile = "N"
+if boundaryArtifactType == boundaryBinaryType { boundaryArtifactIsFile = "Y" }
+var boundaryArtifactIsText = "N"
+if boundaryArtifactType == boundaryTextType { boundaryArtifactIsText = "Y" }
+var boundaryArtifactIsDictionary = "N"
+if boundaryArtifactType == boundaryDictionaryType { boundaryArtifactIsDictionary = "Y" }
+var boundaryFileIsText = "N"
+if boundaryBinaryType == boundaryTextType { boundaryFileIsText = "Y" }
+var boundaryFileIsDictionary = "N"
+if boundaryBinaryType == boundaryDictionaryType { boundaryFileIsDictionary = "Y" }
+let boundaryFirst64Raw = base64Encode(boundaryFirstValue, lineBreakMode: "None")
+let boundaryFirst64Length = count(boundaryFirst64Raw, "Characters")
+var boundaryFirst64 = "OVERSIZE"
+if boundaryFirst64Length.number < 513 { boundaryFirst64 = boundaryFirst64Raw }
+let boundaryLast64Raw = base64Encode(boundaryLastValue, lineBreakMode: "None")
+let boundaryLast64Length = count(boundaryLast64Raw, "Characters")
+var boundaryLast64 = "OVERSIZE"
+if boundaryLast64Length.number < 513 { boundaryLast64 = boundaryLast64Raw }
+// Supported File coercion is an independent characterization control.
+let boundaryCoercedType = typeOf(boundaryArtifact.file)
+let boundaryOriginalFile64 = base64Encode(boundaryArtifact, lineBreakMode: "None")
+let boundaryCoercedFile64 = base64Encode(boundaryArtifact.file, lineBreakMode: "None")
+let boundaryCoercedStem = getName(boundaryArtifact.file)
+let boundaryCoercedExtension = getFileDetail(boundaryArtifact.file, "File Extension")
+let boundaryCoercedName = text(f"{boundaryCoercedStem}.{boundaryCoercedExtension}")
+var boundaryCoercedIsFile = "N"
+if boundaryCoercedType == boundaryBinaryType { boundaryCoercedIsFile = "Y" }
+var boundaryCoercedBytesEqual = "N"
+if boundaryCoercedFile64 == boundaryOriginalFile64 { boundaryCoercedBytesEqual = "Y" }
+var boundaryCoercedNameCorrect = "N"
+if boundaryCoercedName == "cherri-debug.json" { boundaryCoercedNameCorrect = "Y" }
+comment("ANCHOR_CARD_15_MID_CENTER")
+// BEGIN unchanged tests/runtime_poc/CherriBindingCapturePOC.cherri
+// V01 and V03: actual iOS execution must retain the declaration-time values.
+var numCaptureSrc = 1
+let numCaptured = numCaptureSrc
+numCaptureSrc = 2
+setClipboard("clip_initial")
+let clipCaptured = Clipboard
+let clipAlias = clipCaptured
+setClipboard("clip_overwritten")
+let result = f"CHERRI_BINDING_CAPTURE_OK\nNUM_CAPTURED={numCaptured}\nNUM_AGAIN={numCaptured}\nCLIP_CAPTURED={clipCaptured}\nCLIP_AGAIN={clipAlias}"
+setClipboard(result)
+// END unchanged runtime body
+let boundaryDirect64 = base64Encode(result, lineBreakMode: "None")
+let boundaryGetVariable = getVariable(Clipboard)
+let boundaryGetVar64 = base64Encode(boundaryGetVariable, lineBreakMode: "None")
+let boundaryToken64 = base64Encode(Clipboard, lineBreakMode: "None")
+let boundaryClipboardAction = getClipboard()
+let boundaryAction64 = base64Encode(boundaryClipboardAction, lineBreakMode: "None")
+var boundaryNumIsOne = "N"
+if numCaptured.number == 1 { boundaryNumIsOne = "Y" }
+var boundaryClipInitial = "N"
+if clipCaptured == "clip_initial" { boundaryClipInitial = "Y" }
+var boundaryAliasInitial = "N"
+if clipAlias == "clip_initial" { boundaryAliasInitial = "Y" }
+let boundaryDirectLength = count(boundaryDirect64, "Characters")
+var boundaryDirectMatches = "N"
+if boundaryDirect64 == "Q0hFUlJJX0JJTkRJTkdfQ0FQVFVSRV9PSwpOVU1fQ0FQVFVSRUQ9MQpOVU1fQUdBSU49MQpDTElQX0NBUFRVUkVEPWNsaXBfaW5pdGlhbApDTElQX0FHQUlOPWNsaXBfaW5pdGlhbA==" { boundaryDirectMatches = "Y" }
+let boundaryGetVarLength = count(boundaryGetVar64, "Characters")
+var boundaryGetVarMatches = "N"
+if boundaryGetVar64 == "Q0hFUlJJX0JJTkRJTkdfQ0FQVFVSRV9PSwpOVU1fQ0FQVFVSRUQ9MQpOVU1fQUdBSU49MQpDTElQX0NBUFRVUkVEPWNsaXBfaW5pdGlhbApDTElQX0FHQUlOPWNsaXBfaW5pdGlhbA==" { boundaryGetVarMatches = "Y" }
+let boundaryTokenLength = count(boundaryToken64, "Characters")
+var boundaryTokenMatches = "N"
+if boundaryToken64 == "Q0hFUlJJX0JJTkRJTkdfQ0FQVFVSRV9PSwpOVU1fQ0FQVFVSRUQ9MQpOVU1fQUdBSU49MQpDTElQX0NBUFRVUkVEPWNsaXBfaW5pdGlhbApDTElQX0FHQUlOPWNsaXBfaW5pdGlhbA==" { boundaryTokenMatches = "Y" }
+let boundaryActionLength = count(boundaryAction64, "Characters")
+var boundaryActionMatches = "N"
+if boundaryAction64 == "Q0hFUlJJX0JJTkRJTkdfQ0FQVFVSRV9PSwpOVU1fQ0FQVFVSRUQ9MQpOVU1fQUdBSU49MQpDTElQX0NBUFRVUkVEPWNsaXBfaW5pdGlhbApDTElQX0FHQUlOPWNsaXBfaW5pdGlhbA==" { boundaryActionMatches = "Y" }
+debugTraceEvent("after", "native-boundary")
+let boundaryTrace = debugExportTrace(runId: "qa-native-boundary-diagnostic-v2")
+let boundarySummary = text(f"CHERRI_QA_NATIVE_BOUNDARY_DIAG:ENTRIES={boundaryEntryCount}:FIRST64={boundaryFirst64}:LAST64={boundaryLast64}:TYPE_FILE={boundaryArtifactIsFile}:TYPE_TEXT={boundaryArtifactIsText}:TYPE_DICT={boundaryArtifactIsDictionary}:FILE_TEXT={boundaryFileIsText}:FILE_DICT={boundaryFileIsDictionary}:COERCED_FILE={boundaryCoercedIsFile}:COERCED_BYTES={boundaryCoercedBytesEqual}:COERCED_NAME={boundaryCoercedNameCorrect}:NUM_ONE={boundaryNumIsOne}:CLIP_INITIAL={boundaryClipInitial}:ALIAS_INITIAL={boundaryAliasInitial}:DIRECT_LEN={boundaryDirectLength}:DIRECT_EQ={boundaryDirectMatches}:GETVAR_LEN={boundaryGetVarLength}:GETVAR_EQ={boundaryGetVarMatches}:TOKEN_LEN={boundaryTokenLength}:TOKEN_EQ={boundaryTokenMatches}:ACTION_LEN={boundaryActionLength}:ACTION_EQ={boundaryActionMatches}\n{boundaryTrace}")
+comment("ANCHOR_CARD_28_BOTTOM_FOOTER")
+output(boundarySummary)
