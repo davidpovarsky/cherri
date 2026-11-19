@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_at": "2026-11-19T03:23:59Z",
+  "generated_at": "2026-11-19T04:58:16Z",
   "authority": "CHERRI-CANONICAL-BACKEND-RECOVERY.md Appendix A \u0026 Section 4.4",
   "total_requirements": 179,
   "acceptance_count": 94,
@@ -42,7 +42,19 @@
         "native-structure"
       ],
       "test_ids": [
-        "tools/language-acceptance:runSchema"
+        "github.com/electrikmilk/cherri:TestP15AC02AllCodecFamiliesNativeShape",
+        "github.com/electrikmilk/cherri:TestP15AC02DeclaredSchemaRegistryAndRejections",
+        "github.com/electrikmilk/cherri:TestP15CustomTokenCodecCanonicalParity",
+        "github.com/electrikmilk/cherri:TestP15CustomTokenCodecSecondaryAndImplicitBindings",
+        "github.com/electrikmilk/cherri:TestP15CustomCodecSharedReferenceCausality",
+        "github.com/electrikmilk/cherri:TestP15CustomTokenCodecPublicRoutes",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationPublicValidation",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationHealthyControl",
+        "github.com/electrikmilk/cherri:TestP15RegistryRepeatedCompileIsolation",
+        "github.com/electrikmilk/cherri:TestP15RegistryCustomOutputReferenceIsolation",
+        "github.com/electrikmilk/cherri:TestP15C02ArgumentDiagnosticsProduction",
+        "github.com/electrikmilk/cherri:TestP15C02AcceptedBindingsProduction",
+        "github.com/electrikmilk/cherri:TestP15C04EnumResolutionProduction"
       ],
       "fixture_identities": [
         "actions/*.cherri",
@@ -1755,7 +1767,8 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runControl"
+        "github.com/electrikmilk/cherri:TestP15F05UnsupportedLoopControlProduction",
+        "github.com/electrikmilk/cherri:TestP15F05SupportedLoopsAndKeywordText"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#F05"
@@ -1930,7 +1943,17 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM01ModuleNamespaceDispatch",
+        "github.com/electrikmilk/cherri:TestP15IM01NestedModuleNamespaceIsolation",
+        "github.com/electrikmilk/cherri:TestP15IM01CanonicalRelativeModuleIdentity",
+        "github.com/electrikmilk/cherri:TestP15IM01ModuleServiceResolvesActualDependencies",
+        "github.com/electrikmilk/cherri:TestP15IM01DuplicateImportAndLocalNamesStayDistinct",
+        "github.com/electrikmilk/cherri:TestP15IM01ModuleServiceRefreshAndExports",
+        "github.com/electrikmilk/cherri:TestP15IM01ModuleAliasCasePreservesNamespace",
+        "github.com/electrikmilk/cherri:TestP15IM01UppercaseModuleRejectsUnexportedCallable",
+        "github.com/electrikmilk/cherri:TestP15IM01BuiltinModuleAliasesPreserveNativeParity",
+        "github.com/electrikmilk/cherri:TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity",
+        "github.com/electrikmilk/cherri:TestP15IM01CyclePathAndDuplicateAliasDiagnostics"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM01"
@@ -1952,7 +1975,8 @@
         "migration"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM02RejectsModuleRuntimeInitialization",
+        "github.com/electrikmilk/cherri:TestP15IM02LegacyMigrationDoesNotDropInitialization"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM02"
@@ -1974,7 +1998,8 @@
         "native-structure"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM03PreservedStandardFunctionSource",
+        "github.com/electrikmilk/cherri:TestP15IM03DirectServiceWithoutMain"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM03"
@@ -2017,7 +2042,8 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM05RemoteImportsNeverFetch",
+        "github.com/electrikmilk/cherri:TestP15IM05UnresolvedLocalDependencyNoInstallation"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM05"
@@ -5646,7 +5672,8 @@
         "unit"
       ],
       "test_ids": [
-        "tools/language-acceptance:runControl"
+        "github.com/electrikmilk/cherri:TestP15F05UnsupportedLoopControlProduction",
+        "github.com/electrikmilk/cherri:TestP15F05SupportedLoopsAndKeywordText"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#F05"
@@ -5948,7 +5975,17 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM01ModuleNamespaceDispatch",
+        "github.com/electrikmilk/cherri:TestP15IM01NestedModuleNamespaceIsolation",
+        "github.com/electrikmilk/cherri:TestP15IM01CanonicalRelativeModuleIdentity",
+        "github.com/electrikmilk/cherri:TestP15IM01ModuleServiceResolvesActualDependencies",
+        "github.com/electrikmilk/cherri:TestP15IM01DuplicateImportAndLocalNamesStayDistinct",
+        "github.com/electrikmilk/cherri:TestP15IM01ModuleServiceRefreshAndExports",
+        "github.com/electrikmilk/cherri:TestP15IM01ModuleAliasCasePreservesNamespace",
+        "github.com/electrikmilk/cherri:TestP15IM01UppercaseModuleRejectsUnexportedCallable",
+        "github.com/electrikmilk/cherri:TestP15IM01BuiltinModuleAliasesPreserveNativeParity",
+        "github.com/electrikmilk/cherri:TestP15IM01BuiltinModuleAliasesRetainSchemaIdentity",
+        "github.com/electrikmilk/cherri:TestP15IM01CyclePathAndDuplicateAliasDiagnostics"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM01"
@@ -5970,7 +6007,8 @@
         "migration"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM02RejectsModuleRuntimeInitialization",
+        "github.com/electrikmilk/cherri:TestP15IM02LegacyMigrationDoesNotDropInitialization"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM02"
@@ -5992,7 +6030,8 @@
         "native-structure"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM03PreservedStandardFunctionSource",
+        "github.com/electrikmilk/cherri:TestP15IM03DirectServiceWithoutMain"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM03"
@@ -6035,7 +6074,8 @@
         "service"
       ],
       "test_ids": [
-        "tools/language-acceptance:runModules"
+        "github.com/electrikmilk/cherri:TestP15IM05RemoteImportsNeverFetch",
+        "github.com/electrikmilk/cherri:TestP15IM05UnresolvedLocalDependencyNoInstallation"
       ],
       "fixture_identities": [
         "tests/language-v2/acceptance-contract.json#IM05"
@@ -6083,7 +6123,19 @@
         "native-structure"
       ],
       "test_ids": [
-        "tools/language-acceptance:runSchema"
+        "github.com/electrikmilk/cherri:TestP15AC02AllCodecFamiliesNativeShape",
+        "github.com/electrikmilk/cherri:TestP15AC02DeclaredSchemaRegistryAndRejections",
+        "github.com/electrikmilk/cherri:TestP15CustomTokenCodecCanonicalParity",
+        "github.com/electrikmilk/cherri:TestP15CustomTokenCodecSecondaryAndImplicitBindings",
+        "github.com/electrikmilk/cherri:TestP15CustomCodecSharedReferenceCausality",
+        "github.com/electrikmilk/cherri:TestP15CustomTokenCodecPublicRoutes",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationPublicValidation",
+        "github.com/electrikmilk/cherri:TestP15ActionDeclarationHealthyControl",
+        "github.com/electrikmilk/cherri:TestP15RegistryRepeatedCompileIsolation",
+        "github.com/electrikmilk/cherri:TestP15RegistryCustomOutputReferenceIsolation",
+        "github.com/electrikmilk/cherri:TestP15C02ArgumentDiagnosticsProduction",
+        "github.com/electrikmilk/cherri:TestP15C02AcceptedBindingsProduction",
+        "github.com/electrikmilk/cherri:TestP15C04EnumResolutionProduction"
       ],
       "fixture_identities": [
         "actions/*.cherri",

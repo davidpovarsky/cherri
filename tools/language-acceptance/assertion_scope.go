@@ -36,10 +36,6 @@ var incompleteLocalAssertions = map[string]string{
 	"FN04": "Action count does not inspect dispatcher envelope validation.",
 	"FN05": "Text/number lowering does not exercise structured argument/result transport.",
 	"M02":  "IR HasExplicitReturn flags do not establish emitted native output/fallthrough behavior.",
-	"IM01": "Duplicate-alias diagnostics do not exercise relative imports and cycles.",
-	"IM02": "Removing an include token does not execute module initialization or prove dependency order.",
-	"IM03": "Global base64 lowering does not prove preserved upstream stdfunc migration.",
-	"IM05": "An unresolved import diagnostic does not observe or prohibit network access.",
 
 	"E01": "A small completion set does not cover contextual labels, enums, compatible variables, or UI.",
 	"E02": "Diagnostic count does not inspect complete ranges and incomplete-code UI behavior.",

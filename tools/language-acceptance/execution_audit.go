@@ -175,6 +175,16 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
 			row.Scope = "Observed smoke only; no formal acceptance tier proven"
 		}
+		if tests, ok := moduleProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = append([]string{}, moduleProductionPaths[row.ID]...)
+			row.PositiveAndNegative = res.Passed
+			if row.ID == "IM03" && res.Status == "NOT_RUN" {
+				row.Scope = "Executed preserved-source and separate service unit observations; required native behavior remains unproved"
+				row.Blocker = "Required native tier has not executed; unit observations do not satisfy the complete immutable contract"
+				row.Evidence = []string{"acceptance-local-observations.json#IM03"}
+			}
+		}
 		if tests, ok := formattingProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = append([]string{}, formattingProductionPaths...)
