@@ -499,7 +499,7 @@ func (s *Service) SignatureHelp(uri string, line, col int) *SignatureHelpResult 
 		if act.OutputTypeName != "" {
 			ret = act.OutputTypeName
 		}
-		if inferred, contextual := inferredCallResultAt(doc, callIdent, line, col); contextual {
+		if inferred, contextual := inferredCallResultAt(doc, callIdent, context.calleeSpan.Start.Line, context.calleeSpan.Start.Column); contextual {
 			ret = inferred.Name()
 		}
 		return &SignatureHelpResult{

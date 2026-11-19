@@ -13,8 +13,9 @@ import (
 // enumCompletionContext tokenizes up to the cursor, so nested calls, comments,
 // quoted commas and multiline arguments cannot select an unrelated parameter.
 type enumCallContext struct {
-	name      string
-	arguments [][]syntax.Token
+	name       string
+	calleeSpan source.Span
+	arguments  [][]syntax.Token
 }
 
 func enumCompletionTokens(file *source.File, offset int) ([]syntax.Token, enumCallContext) {
@@ -50,7 +51,7 @@ func enumCompletionTokens(file *source.File, offset int) ([]syntax.Token, enumCa
 	if open < 0 {
 		return tokens, enumCallContext{}
 	}
-	context := enumCallContext{name: tokens[open-1].Text}
+	context := enumCallContext{name: tokens[open-1].Text, calleeSpan: tokens[open-1].Span}
 	start, depth := open+1, 0
 	for index := start; index < len(tokens); index++ {
 		switch tokens[index].Type {
