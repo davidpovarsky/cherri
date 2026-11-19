@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-11-19T02:30:39.162609+00:00",
+  "sourceCommit": "763aa4ac57fce8f904c0bb06e55d0ecd11ee27b6",
+  "compilerSourceCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+  "sourceCleanBeforeAndAfter": true,
+  "nativeFailure": {
+    "runId": "44435927169",
+    "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44435927169",
+    "sourceCommit": "4ff1d089ec49528bb796fe315a74777d69008d9b",
+    "conclusion": "failure",
+    "xcodebuildExitCode": 65,
+    "observedTests": {
+      "passed": 49,
+      "failed": 1
+    },
+    "formalAcceptanceRecords": 0,
+    "failedTest": "CherriEditorUITests/testE02DiagnosticsRenderingAndNavigationUI",
+    "failureSourceLine": 108,
+    "stage": "editor did not appear before synthetic reset",
+    "originalCause": "NOT_ESTABLISHED",
+    "rawFailedStepLogSha256": "02f082fe9219686bedaef1a0e3ef3f75c193ee3a4d014799780d70794d186d01"
+  },
+  "causalCollectorBaseline": {
+    "sourceCommit": "b34ae47ba79d15c08e8a8bdec9a761a7a4b722bb",
+    "newTests": 4,
+    "failureEvents": 6,
+    "exitCode": 1,
+    "purpose": "new startup receipts were discarded before the collector extension; this does not establish the native startup failure cause",
+    "sha256": "febdd2e25df8de8498d5b55d31334a7d7cc41fdb047344642673e33864214794"
+  },
+  "localChecks": [
+    {
+      "pattern": "test_collect_ios_test_evidence.py",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ios/scripts",
+        "-p",
+        "test_collect_ios_test_evidence.py",
+        "-v"
+      ],
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "log": "ios-startup-763aa4a-test_collect_ios_test_evidence.log",
+      "sha256": "0aae244318216e2993c31b27b6f48794c64dcd3c5f1ec4d9c2db1ada4da8a927"
+    },
+    {
+      "pattern": "test_prepare_editor_dependency.py",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ios/scripts",
+        "-p",
+        "test_prepare_editor_dependency.py",
+        "-v"
+      ],
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "log": "ios-startup-763aa4a-test_prepare_editor_dependency.log",
+      "sha256": "ba95459c2e1dae288fe4d64facfd5ad2b901dea46447b4c8238f0864ae9695b7"
+    }
+  ],
+  "swiftCompilation": "NOT_RUN_REQUIRES_MACOS",
+  "freshNativeRuntime": "NOT_RUN_PARENT_WILL_DISPATCH_FINAL_K",
+  "preservedBehavior": [
+    "real DocumentGroup and single Create Document tap",
+    "10-second final editor existence assertion",
+    "test checkpoint and source reset requirements",
+    "failed process yields no formal acceptance records"
+  ],
+  "receiptPrivacy": {
+    "startupSourceOrLabelsOrTreesAllowed": false,
+    "startupRequiresActiveTest": true,
+    "startupReceiptLimit": 64,
+    "existingSourceReceiptLimitUnchanged": 64,
+    "artifactSourceReceiptsVerifiedSynthetic": true
+  }
+}
