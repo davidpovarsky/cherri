@@ -56,7 +56,11 @@ var (
 // from EnsureCanonicalStandardActions().
 func DefaultReverseActionRegistry() *ReverseActionRegistry {
 	defaultReverseRegistryOnce.Do(func() {
-		defaultReverseRegistry = BuildReverseActionRegistryFromMap(EnsureCanonicalStandardActions())
+		// Canonical map values share legacy definition metadata. Snapshot the
+		// reverse registry while legacy markBuiltins cannot change that metadata.
+		compilerSessionMutex.Lock()
+		defer compilerSessionMutex.Unlock()
+		defaultReverseRegistry = BuildReverseActionRegistryFromMap(ensureCanonicalStandardActionsLocked())
 	})
 	return defaultReverseRegistry
 }
