@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "scope": "CLEAN_COMBINED_PRODUCER_INTEGRATION_NOT_FULL_179",
+  "summary": {
+    "source": "b22994c88141f8a49e02ba687ef3e3615a58d28c",
+    "before": {
+      "source": "b22994c88141f8a49e02ba687ef3e3615a58d28c",
+      "status": ""
+    },
+    "after": {
+      "source": "b22994c88141f8a49e02ba687ef3e3615a58d28c",
+      "status": ""
+    },
+    "seconds": 204.453,
+    "exit": 0,
+    "timedOut": false,
+    "counts": {
+      "run": 145,
+      "pass": 145,
+      "fail": 0,
+      "skip": 0
+    },
+    "allRequiredPassed": true,
+    "requiredTests": [
+      "TestFormatterProductionEvidence",
+      "TestFormatterEvidenceRejectsCrossTierAndTruncatedScenario",
+      "TestWorkspaceResourceProductionEvidence",
+      "TestWorkspaceEvidenceRejectsUnrelatedCommands",
+      "TestDeclarationTriggerProductionEvidence",
+      "TestSupplementalLocalContractsProductionEvidence",
+      "TestRequiredEncodingLocalScopeRemainsUnverified",
+      "TestRequiredEncodingMappingHasDedicatedProducerAndAssertions",
+      "TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence",
+      "TestRequiredEncodingPhaseArtifactReconciliation",
+      "TestRequiredEncodingStrictJSONRejectsAmbiguity",
+      "TestRequiredEncodingRecomputesDiagnosticFromActualStderr"
+    ],
+    "sha256": "fa1688d6587df3572856c95ad1e83c7955ae828270a661ab1ffc3f531bfa16d5",
+    "bytes": 194703
+  },
+  "archive": {
+    "path": "raw-evidence.zip",
+    "bytes": 13967,
+    "sha256": "2980d57ecb2caab4899eb44560c34fd4ec6109915134cd2d4288452b6575f7f4"
+  },
+  "files": [
+    {
+      "path": "runner.py",
+      "bytes": 3218,
+      "sha256": "9a167b73a78ea184cfeea269a4c690d913cda73c9e8c5938b3f06658cba21bfb"
+    },
+    {
+      "path": "launch.json",
+      "bytes": 846,
+      "sha256": "c5f13c47c572b1a7f2b26e7d182139c581ac208011874b915cf09013581d427f"
+    },
+    {
+      "path": "clean-production-gates.jsonl",
+      "bytes": 194703,
+      "sha256": "fa1688d6587df3572856c95ad1e83c7955ae828270a661ab1ffc3f531bfa16d5"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 1208,
+      "sha256": "83e8aa1b78d8203c257b18cae48216b535d034468feecf9b3f05472517a5b3e7"
+    }
+  ]
+}
