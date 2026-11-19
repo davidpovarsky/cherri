@@ -175,6 +175,12 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
 			row.Scope = "Observed smoke only; no formal acceptance tier proven"
 		}
+		if tests, ok := editorProductionTests[row.ID]; ok {
+			row.TestNames = append([]string{}, tests...)
+			row.ProductionPath = append([]string{}, editorProductionPaths...)
+			row.PositiveAndNegative = res.Passed
+			row.Scope = "Executed local Cherri service/cache and desktop service benchmark only; no iOS UI latency or race tier inferred"
+		}
 		if tests, ok := formattingProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = append([]string{}, formattingProductionPaths...)

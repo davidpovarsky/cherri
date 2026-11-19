@@ -24,7 +24,6 @@ var incompleteLocalAssertions = map[string]string{
 	"V03":  "Nonempty lowering does not prove that the clipboard is captured exactly once.",
 	"T01":  "base64Encode lowering does not test false, zero, empty text/list/map, and omission independently.",
 	"T05":  "Actual presence/false/zero/empty native-field controls and authored-null rejection pass locally; supported lossless native JSON null and all optional-container semantics remain unproved.",
-	"S03":  "Timing repeated source text does not measure embedded-asset cache reuse across unrelated edits.",
 	"L01":  "Nonempty lowering does not assert nested shape, cardinality, or order.",
 	"N01":  "A modulus action and action count do not establish fractional division and numeric constraints.",
 	"N03":  "Nonempty IR does not prove case-sensitive equality or comparison migration.",
@@ -46,7 +45,6 @@ var incompleteLocalAssertions = map[string]string{
 	"E03": "Rename edit count does not inspect exact exclusions or hover/signature/definition behavior.",
 	"E05": "One out-of-order document update does not test cancellation and stale response publication.",
 	"E06": "One exact UTF-16 offset does not test protocol negotiation and the complete Cocoa span surface.",
-	"E08": "Fifty tiny edits do not cover small/large documents and embedded assets.",
 	"D03": "File existence does not verify active fork docs, publication, and upstream separation.",
 
 	"CI01":  "Local process fixtures do not execute WorkflowKit; source-bound real macOS correct/corrupt/restored REQUIRED encoding evidence is required.",

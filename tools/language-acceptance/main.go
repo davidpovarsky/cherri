@@ -169,6 +169,7 @@ type AcceptanceReport struct {
 }
 
 type Runner struct {
+	artifactDir  string
 	reg          *schema.Registry
 	implSHA      string
 	results      map[string]CaseResult
@@ -931,6 +932,10 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 				continue
 			}
 
+			if err := validateEditorPerformanceRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
+
 			if err := validateNativeEncodingRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1336,6 +1341,11 @@ func main() {
 	} else {
 		fmt.Printf("Executing Acceptance Contract runner (phase: %s)...\n\n", phase)
 		runner := NewRunner()
+		if explicitOut == "" {
+			runner.artifactDir = filepath.Join("artifacts", "backend-recovery", "evidence")
+		} else {
+			runner.artifactDir = filepath.Dir(outPath)
+		}
 		localRunner = runner
 
 		// Run all test groups
@@ -1594,17 +1604,7 @@ func (r *Runner) runText() {
 
 	r.runLiteralCollectionRequirement("S02")
 
-	// S03: Large embedded local asset
-	svcS03 := service.NewService(r.reg)
-	largeDoc := strings.Repeat("let x = 1\n", 500)
-	uriS03 := "file:///s03.cherri"
-	t0 := time.Now()
-	svcS03.OpenDocument(uriS03, 1, largeDoc)
-	svcS03.ChangeDocument(uriS03, 2, largeDoc+"let y = 2\n")
-	_, _ = svcS03.Analyze(uriS03)
-	elapsedS03 := time.Since(t0)
-	s03Passed := elapsedS03 < 500*time.Millisecond
-	r.Record("S03", "text", "Large embedded local asset remains cached across unrelated edits", "service+benchmark", []string{"service", "benchmark"}, s03Passed, "PASSED", fmt.Sprintf("Document analysis completes in %v (< 500ms)", elapsedS03))
+	r.runEditorPerformanceRequirement("S03")
 }
 
 // Group 8: Collections
@@ -1856,15 +1856,7 @@ func (r *Runner) runEditor() {
 	e07Passed := errVisOk == nil && errVisBad != nil && updatedE07 == "// Keep this comment\nshow(\"New Title\")\n"
 	r.Record("E07", "editor", "Visual source edit changes intended node only", "integration+UI", []string{"integration"}, e07Passed, "PASSED", "ApplyVisualSourceEdit mutates only bounded target span and rejects invalid action index")
 
-	// E08: Performance fixtures
-	t0 := time.Now()
-	for i := 0; i < 50; i++ {
-		svc.ChangeDocument(docURI, i+10, fmt.Sprintf("let v%d = %d", i, i))
-		_, _ = svc.Analyze(docURI)
-	}
-	elapsedE08 := time.Since(t0)
-	e08Passed := elapsedE08 < 2*time.Second
-	r.Record("E08", "editor", "Performance fixtures small/large and embedded assets", "benchmark", []string{"benchmark"}, e08Passed, "PASSED", fmt.Sprintf("50 document analysis passes completed in %v", elapsedE08))
+	r.runEditorPerformanceRequirement("E08")
 }
 
 // Group 17: CLI
