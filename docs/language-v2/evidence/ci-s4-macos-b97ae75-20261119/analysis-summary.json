@@ -1,0 +1,172 @@
+{
+  "sourceSha": "b97ae752205f1e747b6c98ff7511f3484dd53bc2",
+  "jobConclusion": "failure",
+  "packageResults": [
+    {
+      "status": "FAIL",
+      "package": "github.com/electrikmilk/cherri",
+      "detail": "546.023s"
+    },
+    {
+      "status": "?",
+      "package": "github.com/electrikmilk/cherri/cmd/cherri-migrate",
+      "detail": "[no test files]"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/icloudshortcut",
+      "detail": "0.035s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/analysis",
+      "detail": "0.826s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/assets",
+      "detail": "0.126s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/backend",
+      "detail": "0.017s"
+    },
+    {
+      "status": "?",
+      "package": "github.com/electrikmilk/cherri/internal/language/enums",
+      "detail": "[no test files]"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/ir",
+      "detail": "0.013s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/lower",
+      "detail": "0.136s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/lsp",
+      "detail": "0.060s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/migrate",
+      "detail": "0.017s"
+    },
+    {
+      "status": "?",
+      "package": "github.com/electrikmilk/cherri/internal/language/modules",
+      "detail": "[no test files]"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/protocol",
+      "detail": "0.018s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/schema",
+      "detail": "0.016s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/service",
+      "detail": "0.979s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/source",
+      "detail": "0.009s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/syntax",
+      "detail": "0.018s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/types",
+      "detail": "0.013s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/language/workspace",
+      "detail": "0.035s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/internal/shortcutcompare",
+      "detail": "2.571s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/tools/ci-test-discovery",
+      "detail": "0.555s"
+    },
+    {
+      "status": "?",
+      "package": "github.com/electrikmilk/cherri/tools/inventory",
+      "detail": "[no test files]"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/tools/ios-runtime-verifier",
+      "detail": "0.016s"
+    },
+    {
+      "status": "FAIL",
+      "package": "github.com/electrikmilk/cherri/tools/language-acceptance",
+      "detail": "834.967s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/tools/language-docs",
+      "detail": "1.021s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/tools/language-migrate",
+      "detail": "0.015s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/tools/language-schema",
+      "detail": "0.517s"
+    },
+    {
+      "status": "?",
+      "package": "github.com/electrikmilk/cherri/tools/language-stdlib",
+      "detail": "[no test files]"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/tools/legacy-parity",
+      "detail": "0.188s"
+    },
+    {
+      "status": "ok",
+      "package": "github.com/electrikmilk/cherri/tools/shortcut-corpus",
+      "detail": "0.048s"
+    }
+  ],
+  "packageCounts": {
+    "ok": 23,
+    "FAIL": 2,
+    "?": 5
+  },
+  "failedNamedEvents": [
+    "TestP15C03OriginalCLIParity",
+    "TestP15C03OriginalCLIParity/menus",
+    "TestP15MenusMigrationCLIParity",
+    "TestVariadicMigrationProductionEvidence"
+  ],
+  "diagnostic": "E_WORKSPACE_ACCESS: embedded local asset: file does not exist",
+  "cause": "Original menus CLI tests moved the migrated entry into a temporary workspace but omitted its public assets/cherri_icon.png dependency.",
+  "repairSource": "fd790278f40c2b1352eba2821863b33ddea29c06",
+  "integratedSource": "e6c1a43c46c6f73bd87f0bf622899def56a419b6",
+  "scope": "Historical S4 macOS full-Go failure, same causal fixture defect as Linux; no new candidate CI success claimed."
+}

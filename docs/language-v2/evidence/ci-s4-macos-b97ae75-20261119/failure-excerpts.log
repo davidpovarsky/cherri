@@ -1,0 +1,24 @@
+2026-11-19T05:35:16.6885490Z === RUN   TestP15C03OriginalCLIParity/functions
+2026-11-19T05:35:16.6885900Z === RUN   TestP15C03OriginalCLIParity/math
+2026-11-19T05:35:16.6886070Z === RUN   TestP15C03OriginalCLIParity/menus
+2026-11-19T05:35:16.6887980Z     p15_variadic_migration_test.go:547: actual compiler: exit status 1  Compilation error: lowering error: [E_WORKSPACE_ACCESS] embedded local asset: file does not exist
+2026-11-19T05:35:16.6889470Z === RUN   TestP15C03OriginalCLIParity/repeats
+2026-11-19T05:35:16.6889650Z --- FAIL: TestP15C03OriginalCLIParity (0.48s)
+2026-11-19T05:35:16.6889890Z     --- PASS: TestP15C03OriginalCLIParity/arrays (0.09s)
+2026-11-19T05:35:16.6890160Z     --- PASS: TestP15C03OriginalCLIParity/functions (0.11s)
+2026-11-19T05:35:16.6890390Z     --- PASS: TestP15C03OriginalCLIParity/math (0.09s)
+2026-11-19T05:35:16.6890630Z     --- FAIL: TestP15C03OriginalCLIParity/menus (0.08s)
+2026-11-19T05:35:16.6890870Z     --- PASS: TestP15C03OriginalCLIParity/repeats (0.11s)
+2026-11-19T05:35:16.6979400Z     --- PASS: TestP15VCardLiteralBoundary/runtime_concatenation (0.01s)
+2026-11-19T05:35:16.6979780Z     --- PASS: TestP15VCardLiteralBoundary/confirmed_literal_enum (0.01s)
+2026-11-19T05:35:16.6981060Z === RUN   TestP15MenusMigrationCLIParity
+2026-11-19T05:35:16.6982240Z     p15_vcard_tokenstring_test.go:226: actual CLI failed: exit status 1
+2026-11-19T05:35:16.6983440Z         stdout=
+2026-11-19T05:35:16.6989410Z         stderr=Compilation error: lowering error: [E_WORKSPACE_ACCESS] embedded local asset: file does not exist
+2026-11-19T05:35:16.6989780Z --- FAIL: TestP15MenusMigrationCLIParity (0.06s)
+2026-11-19T05:35:16.6998950Z === RUN   TestP15TargetVersionComponentsProduction
+2026-11-19T05:40:17.9388670Z         {"Time":"2026-11-19T05:26:47.619402Z","Action":"output","Package":"github.com/electrikmilk/cherri","Output":"FAIL\tgithub.com/electrikmilk/cherri\t3.495s\n"}
+2026-11-19T05:40:17.9391610Z         {"Time":"2026-11-19T05:26:47.61941Z","Action":"fail","Package":"github.com/electrikmilk/cherri","Elapsed":3.496}
+2026-11-19T05:40:17.9392960Z         }
+2026-11-19T05:40:17.9394120Z --- FAIL: TestVariadicMigrationProductionEvidence (4.60s)
+2026-11-19T05:40:17.9395380Z === RUN   TestCatalogBaselineProductionEvidence
