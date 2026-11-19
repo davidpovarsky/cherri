@@ -5637,7 +5637,7 @@ func (l *Lowerer) lowerCall(call *syntax.CallExpr) (interface{}, error) {
 		}
 
 		resolvedCall := backend.ResolvedCall{
-			DefinitionID:    actionName,
+			DefinitionID:    actionSchema.ID,
 			AppleIdentifier: actionSchema.AppleIdentifier,
 			OutputUUID:      outputUUID,
 			OutputName:      outputName,
