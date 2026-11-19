@@ -1,0 +1,58 @@
+{
+  "sourceBase": "33f0699c2f7ec58b96a3da75ecd3d2c05027e0f2",
+  "sourceState": "unchanged capture oracle plus new causal mutation controls",
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=2m",
+    "-run",
+    "^TestP15BindingCaptureTerminalCausality$",
+    "."
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "seconds": 26.953,
+  "bytes": 19772,
+  "sha256": "6d7901551a774835fe344b46dfae92d4fbfbba1e5380e0dc00e3ffe9a6e6ef15",
+  "testSha256": "16eef385f49e8c38eec12604e93e1bbfc3ded86643f704b8728f06560ff48394",
+  "named": {
+    "run": 17,
+    "pass": 2,
+    "fail": 15,
+    "skip": 0
+  },
+  "failures": [
+    "TestP15BindingCaptureTerminalCausality/Variable/missing_terminal",
+    "TestP15BindingCaptureTerminalCausality/Variable/wrong_terminal_producer",
+    "TestP15BindingCaptureTerminalCausality/Variable/changed_result_label",
+    "TestP15BindingCaptureTerminalCausality/Variable/swapped_capture_fields",
+    "TestP15BindingCaptureTerminalCausality/Variable/transformed_capture",
+    "TestP15BindingCaptureTerminalCausality/Variable/extra_attachment",
+    "TestP15BindingCaptureTerminalCausality/Variable",
+    "TestP15BindingCaptureTerminalCausality/Clipboard/missing_terminal",
+    "TestP15BindingCaptureTerminalCausality/Clipboard/wrong_terminal_producer",
+    "TestP15BindingCaptureTerminalCausality/Clipboard/changed_result_label",
+    "TestP15BindingCaptureTerminalCausality/Clipboard/swapped_capture_fields",
+    "TestP15BindingCaptureTerminalCausality/Clipboard/transformed_capture",
+    "TestP15BindingCaptureTerminalCausality/Clipboard/extra_attachment",
+    "TestP15BindingCaptureTerminalCausality/Clipboard",
+    "TestP15BindingCaptureTerminalCausality"
+  ],
+  "diagnostics": [
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: missing_terminal\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: wrong_terminal_producer\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: changed_result_label\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: swapped_capture_fields\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: transformed_capture\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: extra_attachment\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: missing_terminal\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: wrong_terminal_producer\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: changed_result_label\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: swapped_capture_fields\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: transformed_capture\n",
+    "    p15_binding_capture_terminal_test.go:72: actual native graph mutation escaped the capture oracle: extra_attachment\n"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "sourceSHA": "4fa0e3d07fbe18a1b910979b390765f840f6d152",
+  "sourceSHAAfter": "4fa0e3d07fbe18a1b910979b390765f840f6d152",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "protectedBefore": {
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+    "tests/runtime_poc/CherriBindingCapturePOC.cherri": "4c649f8d53ed164b73a0324b7941999e5c9e849d28670655fafc13c87cee5558"
+  },
+  "protectedAfter": {
+    "tests/language-v2/acceptance-contract.json": "9fdfa8910b09824dc61395d8ddf4aa8fe8914619af0fdde59c63b67ab10b895e",
+    "tests/language-v2/repair-regression-plan.json": "eba070df0e1ff229a94e52d977a09c2a0c125a31b1a69caf32787d41600074f5",
+    "tests/language-v2/backend-recovery-gates.json": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c",
+    "tests/runtime_poc/CherriBindingCapturePOC.cherri": "4c649f8d53ed164b73a0324b7941999e5c9e849d28670655fafc13c87cee5558"
+  },
+  "command": [
+    "go",
+    "test",
+    "-p=1",
+    "-count=1",
+    "-json",
+    "-timeout=5m",
+    "-run",
+    "^(TestBindingCaptureProductionEvidence|TestBindingCaptureRecordRejectsDetachedCommandsAndTiers)$",
+    "./tools/language-acceptance"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "seconds": 16.422,
+  "bytes": 24538,
+  "sha256": "9fdff5897309812dbfd94d1d6d68d9fcb49a460f7ba381b389041830d623b885",
+  "named": {
+    "run": 16,
+    "pass": 16,
+    "fail": 0,
+    "skip": 0
+  },
+  "requiredMissing": [],
+  "failures": [],
+  "receiptObserved": true,
+  "receiptSourceClean": true,
+  "receiptRecords": 4
+}
