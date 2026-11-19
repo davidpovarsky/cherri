@@ -126,5 +126,5 @@ func validateNativeEncodingRecord(id string, record EvidenceRecord) error {
 			return fail("actual phase process receipt is missing")
 		}
 	}
-	return nil
+	return reconcileNativeEncodingArtifacts(record, artifacts, data)
 }

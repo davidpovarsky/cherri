@@ -14,36 +14,106 @@ import (
 func nativeEncodingIntakeFixture(t *testing.T, id, sourceSHA string) (EvidenceRecord, map[string]any) {
 	t.Helper()
 	dir := t.TempDir()
+	canonicalBytes, err := os.ReadFile(resolveRepoPath("tools/shortcut-runtime/required-encoding-expectations.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var canonical struct {
+		Required []map[string]any `json:"REQUIRED"`
+	}
+	if err := json.Unmarshal(canonicalBytes, &canonical); err != nil {
+		t.Fatal(err)
+	}
+	fixtureSum := sha256.Sum256(canonicalBytes)
 	record := EvidenceRecord{
 		EvidenceID: "synthetic-required-" + id, Requirements: []string{id},
 		Tier: "negative-ci", TestID: nativeEncodingTestID(id), ImplementationSHA: sourceSHA,
 		ExitCode: 0, Result: "passed", Assertions: map[string]string{},
+		FixtureSHA256: hex.EncodeToString(fixtureSum[:]),
 	}
 	for _, key := range nativeEncodingAssertionKeys {
 		record.Assertions[key] = "true"
 	}
 	write := func(name string, data []byte) string {
 		t.Helper()
-		path := filepath.Join(dir, name)
-		if err := os.WriteFile(path, data, 0600); err != nil {
+		artifactPath := filepath.Join(dir, name)
+		if err := os.WriteFile(artifactPath, data, 0600); err != nil {
 			t.Fatal(err)
 		}
 		sum := sha256.Sum256(data)
 		hash := hex.EncodeToString(sum[:])
-		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: path, SHA256: hash, RunID: "101"})
+		record.Artifacts = append(record.Artifacts, EvidenceArtifact{Path: artifactPath, SHA256: hash, RunID: "101"})
 		return hash
+	}
+	forms := []string{"string", "number", "bool", "attachment(variable)", "attachment(output)", "tokenString", "wrappedSubject"}
+	matrix := map[string]map[string]string{}
+	for _, row := range canonical.Required {
+		state := row["stateClass"].(string)
+		if matrix[state] == nil {
+			matrix[state] = map[string]string{}
+			for _, form := range forms {
+				matrix[state][form] = "rejected"
+			}
+		}
+		if row["expect"] == "accept" {
+			matrix[state][row["form"].(string)] = "roundtrip"
+		}
 	}
 	phases := []map[string]any{}
 	for i, name := range []string{"positive", "corrupt", "restored"} {
-		code := 0
+		code, status := 0, "PASS"
+		expected := make([]map[string]any, len(canonical.Required))
+		observations, failures := []map[string]any{}, []map[string]any{}
+		for k, original := range canonical.Required {
+			row := map[string]any{}
+			for key, value := range original {
+				row[key] = value
+			}
+			if i == 1 && row["id"] == "plainString.WFStringParameterState.string" {
+				row["expect"] = "reject"
+			}
+			expected[k] = row
+			outcome := matrix[row["stateClass"].(string)][row["form"].(string)]
+			actual := "reject"
+			if outcome == "roundtrip" {
+				actual = "accept"
+			}
+			passed := actual == row["expect"]
+			observations = append(observations, map[string]any{
+				"id": row["id"], "kind": row["kind"], "stateClass": row["stateClass"], "form": row["form"],
+				"expected": row["expect"], "actual": actual, "observation": outcome, "passed": passed,
+			})
+			if !passed {
+				failures = append(failures, map[string]any{"code": "E_REQUIRED_ENCODING_EXPECTATION", "id": row["id"], "expected": row["expect"], "actual": actual})
+			}
+		}
+		stderr := []byte{}
 		if i == 1 {
-			code = 1
+			code, status = 1, "FAIL"
+			stderr = []byte("E_REQUIRED_ENCODING_EXPECTATION: plainString.WFStringParameterState.string\n")
+		}
+		report := map[string]any{
+			"schemaVersion": 2, "status": status, "engine": "WorkflowKit parameter-state API", "engineLoaded": true,
+			"forms": forms, "requiredExpectations": expected, "requiredResults": observations, "results": matrix,
+			"failures": failures, "discovery": map[string]any{
+				"parameterStateClasses": len(matrix), "appIntentStateClasses": 1, "uniqueStateClasses": len(matrix),
+			},
+		}
+		reportBytes, err := json.Marshal(report)
+		if err != nil {
+			t.Fatal(err)
+		}
+		command := []string{"/usr/bin/osascript", "-l", "JavaScript", "/synthetic/gate/verify.js",
+			"/synthetic/repo/docs/apple-runtime/parameter-encodings.json", "/synthetic/repo/docs/apple-runtime/encoding-table.json",
+			"/synthetic/gate/" + name + ".json", "/synthetic/repo/tools/shortcut-runtime/required-encoding-expectations.json"}
+		if i == 1 {
+			command = append(command, "/synthetic/gate/isolated-corrupt-expectations.json")
 		}
 		phase := map[string]any{
-			"phase": name, "exitCode": code, "negativeDiagnosticObserved": i == 1,
-			"reportSha256": write(name+".json", []byte("{\"syntheticIntakeControl\": true}\n")),
+			"phase": name, "exitCode": code, "command": command, "negativeDiagnosticObserved": i == 1,
+			"reportSha256": write(name+".json", reportBytes),
 			"stdoutSha256": write(name+".stdout.log", []byte("synthetic fixture only\n")),
-			"stderrSha256": write(name+".stderr.log", []byte("synthetic fixture only\n")),
+			"stderrSha256": write(name+".stderr.log", stderr),
 		}
 		data, err := json.Marshal(phase)
 		if err != nil {
@@ -182,5 +252,177 @@ func TestRequiredEncodingIntakeRejectsIncompleteOrGenericEvidence(t *testing.T) 
 				}
 			})
 		}
+	}
+}
+
+func rewriteNativeEncodingArtifact(t *testing.T, record *EvidenceRecord, summary map[string]any, phaseName, suffix string, change func(map[string]any), changeSummary bool) {
+	t.Helper()
+	index := -1
+	for i := range record.Artifacts {
+		if filepath.Base(record.Artifacts[i].Path) == phaseName+suffix {
+			index = i
+			break
+		}
+	}
+	if index < 0 {
+		t.Fatal("artifact absent from synthetic fixture")
+	}
+	var value map[string]any
+	data, err := os.ReadFile(record.Artifacts[index].Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(data, &value); err != nil {
+		t.Fatal(err)
+	}
+	change(value)
+	write := func(i int, value map[string]any) string {
+		data, err := json.Marshal(value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(record.Artifacts[i].Path, data, 0600); err != nil {
+			t.Fatal(err)
+		}
+		sum := sha256.Sum256(data)
+		record.Artifacts[i].SHA256 = hex.EncodeToString(sum[:])
+		return record.Artifacts[i].SHA256
+	}
+	hash := write(index, value)
+	for _, phase := range summary["phases"].([]map[string]any) {
+		if phase["phase"] != phaseName {
+			continue
+		}
+		if suffix == ".json" {
+			phase["reportSha256"] = hash
+			for i := range record.Artifacts {
+				if filepath.Base(record.Artifacts[i].Path) != phaseName+".process.json" {
+					continue
+				}
+				var process map[string]any
+				data, err := os.ReadFile(record.Artifacts[i].Path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err := json.Unmarshal(data, &process); err != nil {
+					t.Fatal(err)
+				}
+				process["reportSha256"] = hash
+				write(i, process)
+			}
+		} else if changeSummary {
+			for key, item := range value {
+				phase[key] = item
+			}
+		}
+	}
+	rewriteNativeEncodingSummary(t, record, summary)
+}
+
+func TestRequiredEncodingPhaseArtifactReconciliation(t *testing.T) {
+	mutations := []struct {
+		name, phase, suffix string
+		change              func(map[string]any)
+		changeSummary       bool
+	}{
+		{"changed_required_verdict", "positive", ".json", func(v map[string]any) { v["requiredResults"].([]any)[0].(map[string]any)["passed"] = false }, false},
+		{"changed_actual_matrix", "positive", ".json", func(v map[string]any) {
+			row := v["requiredResults"].([]any)[0].(map[string]any)
+			v["results"].(map[string]any)[row["stateClass"].(string)].(map[string]any)[row["form"].(string)] = "rejected"
+		}, false},
+		{"missing_required_result", "restored", ".json", func(v map[string]any) { v["requiredResults"] = v["requiredResults"].([]any)[1:] }, false},
+		{"wrong_applied_expectation", "positive", ".json", func(v map[string]any) { v["requiredExpectations"].([]any)[0].(map[string]any)["expect"] = "reject" }, false},
+		{"negative_report_claims_pass", "corrupt", ".json", func(v map[string]any) { v["status"] = "PASS" }, false},
+		{"missing_actual_forms", "restored", ".json", func(v map[string]any) { v["forms"] = []any{} }, false},
+		{"process_exit_disagrees", "corrupt", ".process.json", func(v map[string]any) { v["exitCode"] = 0 }, false},
+		{"process_command_disagrees", "positive", ".process.json", func(v map[string]any) { v["command"].([]any)[0] = "/usr/bin/true" }, false},
+		{"wrong_engine_even_when_summary_agrees", "positive", ".process.json", func(v map[string]any) { v["command"].([]any)[0] = "/usr/bin/true" }, true},
+	}
+	for _, id := range []string{"CI01", "RP47"} {
+		for _, mutation := range mutations {
+			t.Run(id+"/"+mutation.name, func(t *testing.T) {
+				manifest, contracts := baseValidManifestAndContracts(t)
+				record, summary := nativeEncodingIntakeFixture(t, id, manifest.ImplementationSHA)
+				contracts.Acceptance.Cases = append(contracts.Acceptance.Cases, CaseSpec{ID: "CI01", Group: "verification", MinimumTestLevel: "negative-CI"})
+				contracts.Acceptance.CaseCount++
+				contracts.Repair.Cases = append(contracts.Repair.Cases, RepairCaseSpec{ID: "RP47", Title: "Required encoding gate", RequiredTestLevels: []string{"negative-CI"}})
+				contracts.Repair.CaseCount++
+				otherID := "RP47"
+				if id == "RP47" {
+					otherID = "CI01"
+				}
+				other, _ := nativeEncodingIntakeFixture(t, otherID, manifest.ImplementationSHA)
+				manifest.Records = append(manifest.Records, other, record)
+				if report, err := ValidateEvidenceManifest(manifest, contracts, "final"); err != nil || !p15VerificationResult(t, report, id).Passed {
+					t.Fatalf("complete synthetic intake control failed: %v", err)
+				}
+				rewriteNativeEncodingArtifact(t, &record, summary, mutation.phase, mutation.suffix, mutation.change, mutation.changeSummary)
+				manifest.Records[len(manifest.Records)-1] = record
+				report, err := ValidateEvidenceManifest(manifest, contracts, "final")
+				result := p15VerificationResult(t, report, id)
+				if err == nil || result.Passed || report.ClosureComplete {
+					t.Fatalf("content mutation with recomputed digests still accepted: err=%v result=%+v", err, result)
+				}
+			})
+		}
+	}
+}
+
+func TestRequiredEncodingStrictJSONRejectsAmbiguity(t *testing.T) {
+	if _, err := decodeNativeEncodingObject([]byte(`{"schemaVersion":2,"engineLoaded":true,"requiredResults":[]}`)); err != nil {
+		t.Fatalf("valid JSON control: %v", err)
+	}
+	for _, text := range []string{
+		`{"engineLoaded":false,"engineLoaded":true}`,
+		`{"requiredResults":[{"passed":false,"passed":true}]}`,
+		`{"exitCode":1} {"exitCode":0}`,
+		`{"results":`,
+		`[]`,
+	} {
+		t.Run(text, func(t *testing.T) {
+			if _, err := decodeNativeEncodingObject([]byte(text)); err == nil {
+				t.Fatal("ambiguous, malformed, or non-object receipt accepted")
+			}
+		})
+	}
+}
+
+func TestRequiredEncodingRecomputesDiagnosticFromActualStderr(t *testing.T) {
+	record, summary := nativeEncodingIntakeFixture(t, "CI01", "synthetic-source")
+	if err := validateNativeEncodingRecord("CI01", record); err != nil {
+		t.Fatal(err)
+	}
+	phase := summary["phases"].([]map[string]any)[1]
+	changed := []byte("generic infrastructure failure; required diagnostic absent\n")
+	for i := range record.Artifacts {
+		artifact := &record.Artifacts[i]
+		if filepath.Base(artifact.Path) != "corrupt.stderr.log" {
+			continue
+		}
+		if err := os.WriteFile(artifact.Path, changed, 0600); err != nil {
+			t.Fatal(err)
+		}
+		sum := sha256.Sum256(changed)
+		artifact.SHA256 = hex.EncodeToString(sum[:])
+		phase["stderrSha256"] = artifact.SHA256
+	}
+	for i := range record.Artifacts {
+		artifact := &record.Artifacts[i]
+		if filepath.Base(artifact.Path) != "corrupt.process.json" {
+			continue
+		}
+		data, err := json.Marshal(phase)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(artifact.Path, data, 0600); err != nil {
+			t.Fatal(err)
+		}
+		sum := sha256.Sum256(data)
+		artifact.SHA256 = hex.EncodeToString(sum[:])
+	}
+	rewriteNativeEncodingSummary(t, &record, summary)
+	if err := validateNativeEncodingRecord("CI01", record); err == nil {
+		t.Fatal("a true diagnostic flag hid the actual generic failure despite recomputed digests")
 	}
 }
