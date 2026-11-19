@@ -2,7 +2,7 @@
 
 **Language Version:** 2.0  
 **Catalog Schema:** 3.0  
-**Schema Fingerprint:** `9f86a7ea68cbad58b6d262e458759d54f1f1089876fede3dcdc9b8ee4f2087b2`  
+**Schema Fingerprint:** `7bfff2b8c3fddf3892e943ef45b79bbbc4cc984ad051a15099a5da0fc6fccc0b`  
 **Total Actions:** 505  
 
 This documentation is generated automatically from the canonical Cherri v2 ActionSchema registry.
@@ -2989,11 +2989,12 @@ getDirections(destination?: AnyContent, app?: Text, mode?: Text, startLocation?:
 
 **Title:** Get Distance  
 **Apple Identifier:** `is.workflow.actions.getdistance`  
+**Returns:** `Number`  
 
 Get distance to a destination.
 
 ```cherri
-getDistance(destination?: AnyContent, mode?: Text, unit?: Text, avoidHighways?: Bool = false, avoidTolls?: Bool = false, startLocation?: AnyContent, accuracy?: Text)
+getDistance(destination?: AnyContent, mode?: Text, unit?: Text, avoidHighways?: Bool = false, avoidTolls?: Bool = false, startLocation?: AnyContent, accuracy?: Text) -> Number
 ```
 
 | Parameter | Type | Required | Default | Wire Key | Choices |
