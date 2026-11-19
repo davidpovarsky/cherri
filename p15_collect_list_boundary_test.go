@@ -41,11 +41,11 @@ func TestP15F04SupportedLoopResultsRemainAvailable(t *testing.T) {
 		{"false", "let values=repeat 2 { yield false }"},
 		{"empty_text", "let values=repeat 2 { yield \"\" }"},
 		{"record", "let values=for item in [1,2] { yield {\"value\":item} }"},
-		{"statement_loop", "for item in [1,2] { list([\"one\",\"two\"]) }"},
+		{"statement_loop", "for item in [1,2] { list(\"one\",\"two\") }"},
 		{"if_list_outside_loop", "let values=if true { yield [\"one\"] } else { yield [\"two\"] }"},
 		{"overwritten_list", "let values=for item in [1,2] { yield [\"discarded\"]; yield item }"},
 		{"unknown_explicit_boundary", "let values=for item in [1,2] { yield ShortcutInput }"},
-		{"untyped_native_last_action", "let values=repeat 2 { list([\"one\",\"two\"]) }"},
+		{"untyped_native_last_action", "let values=repeat 2 { list(\"one\",\"two\") }"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			for _, diagnostic := range p15TypeDiagnostics(t, tc.source) {
