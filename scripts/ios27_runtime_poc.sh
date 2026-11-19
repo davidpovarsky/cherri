@@ -26,9 +26,9 @@ cleanup() {
             if [ "$original_status" -eq 0 ]; then original_status=2; fi
         fi
     fi
-    exit "$original_status"
+    return "$original_status"
 }
-trap cleanup EXIT
+trap 'cleanup; exit $?' EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
@@ -149,8 +149,10 @@ sign_and_verify() {
     local unsigned_file="$1"
     local signed_file="$2"
     local source_cherri="$3"
-    local compile_flag="${4:-}"
     local sign_method="native"
+    local cli_manifest=""
+    local source_sha=""
+    rm -f "$signed_file"
 
     echo "Attempting native macOS shortcuts sign: $unsigned_file -> $signed_file..."
     set +e
@@ -162,14 +164,19 @@ sign_and_verify() {
     if [ $sign_exit -ne 0 ] || [ ! -f "$signed_file" ]; then
         if [ "${CHERRI_ALLOW_EXTERNAL_SIGNING:-0}" = "1" ]; then
             sign_method="hubsign"
-            echo "Native shortcuts sign failed or output missing. CHERRI_ALLOW_EXTERNAL_SIGNING=1 set; attempting Cherri HubSign fallback..."
-            if [ "$compile_flag" = "--legacy" ]; then
-                ./cherri "$source_cherri" --legacy -s=anyone -d 2>&1 | tee -a artifacts/sign.log
-            else
-                ./cherri "$source_cherri" -s=anyone -d 2>&1 | tee -a artifacts/sign.log
+            # This opt-in is scoped to this dispatch and the fixed public fixture hashes.
+            # Recheck immediately before sending the exact compiled bytes to the existing signer.
+            python3 "$POC_TOOLS/runtime_poc_publication.py" check-sources --repo "$POC_REPO_ROOT" --root artifacts
+            source_sha=$(git rev-parse HEAD)
+            cli_manifest="artifacts/signing-$(basename "$source_cherri" .cherri).json"
+            rm -f "$signed_file" "$cli_manifest"
+            echo "Native signing unavailable; signing the exact reviewed public fixture via explicit HubSign opt-in..."
+            if ! ./cherri sign "$unsigned_file" --output="$signed_file" --hubsign \
+                --source-file="$source_cherri" --compiler-sha="$source_sha" \
+                --manifest-out="$cli_manifest" --no-ansi >> artifacts/sign.log 2>&1; then
+                echo "IOS27_SHORTCUTS_RUNTIME_POC=FAIL BLOCKER=EXACT_FILE_SIGNING_FAILED"
+                exit 1
             fi
-            local shortcut_name="$(basename "$source_cherri" .cherri).shortcut"
-            cp -f "tests/runtime_poc/$shortcut_name" "$signed_file" 2>/dev/null || true
         else
             echo "Native shortcuts sign failed (exit=$sign_exit) and external HubSign is disabled by default (set CHERRI_ALLOW_EXTERNAL_SIGNING=1 only with explicit owner approval)."
             take_failure_screenshot
@@ -186,16 +193,19 @@ sign_and_verify() {
     fi
 
     local header=$(head -c 4 "$signed_file" 2>/dev/null || true)
-    if [ "$header" != "AEA1" ]; then
+    local signed_size=$(wc -c < "$signed_file" | tr -d '[:space:]')
+    if [ "$header" != "AEA1" ] || [ "$signed_size" -lt 16 ]; then
         echo "FATAL: $signed_file lacks AEA1 magic header (got '$header'). Unsigned shortcut rejected."
         take_failure_screenshot
         echo "IOS27_SHORTCUTS_RUNTIME_POC=FAIL BLOCKER=SIGNING_FAILED Payload lacks AEA1 magic ($signed_file)"
         exit 1
     fi
     echo "Signed payload verified: valid AEA1 header present in $signed_file."
+    local receipt_args=()
+    if [ -n "$cli_manifest" ]; then receipt_args=(--cli-manifest "$cli_manifest"); fi
     python3 "$POC_TOOLS/runtime_poc_publication.py" record-signing \
         --repo "$POC_REPO_ROOT" --root artifacts --source "$source_cherri" \
-        --unsigned "$unsigned_file" --signed "$signed_file" --method "$sign_method"
+        --unsigned "$unsigned_file" --signed "$signed_file" --method "$sign_method" "${receipt_args[@]}"
 }
 
 import_and_confirm() {

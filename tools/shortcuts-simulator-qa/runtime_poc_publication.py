@@ -102,7 +102,7 @@ def check_sources(repo, root, commit, run_id, attempt):
     return receipt
 
 
-def record_signing(repo, root, commit, run_id, attempt, source, unsigned, signed, method):
+def record_signing(repo, root, commit, run_id, attempt, source, unsigned, signed, method, cli_manifest=None):
     verify_sources(repo, root, commit, run_id, attempt)
     root = Path(root)
     name = Path(source).stem
@@ -117,7 +117,25 @@ def record_signing(repo, root, commit, run_id, attempt, source, unsigned, signed
             raise PublicationBlocked("POC_SIGNING_PATH_OUTSIDE_RAW") from exc
         return read_contained(root, relative)
     unsigned_bytes, signed_bytes = artifact_bytes(unsigned), artifact_bytes(signed)
-    require(signed_bytes.startswith(b"AEA1"), "POC_SIGNED_MAGIC_INVALID")
+    require(signed_bytes.startswith(b"AEA1") and len(signed_bytes) >= 16, "POC_SIGNED_MAGIC_INVALID")
+    cli_provenance = {}
+    if method == "hubsign":
+        require(cli_manifest is not None, "POC_EXACT_FILE_SIGNING_RECEIPT_MISSING")
+        cli_bytes = artifact_bytes(cli_manifest)
+        cli = read_text_data(cli_bytes, "signing-provenance.json")
+        require(isinstance(cli, dict)
+                and cli.get("compilerCommitSha") == commit
+                and cli.get("sourceSha256") == SOURCE_HASHES[name]
+                and cli.get("unsignedPlistSha256") == sha(unsigned_bytes)
+                and cli.get("signedArtifactSha256") == sha(signed_bytes)
+                and cli.get("unsignedByteSize") == len(unsigned_bytes)
+                and cli.get("signedByteSize") == len(signed_bytes)
+                and cli.get("headerMagic") == "AEA1"
+                and cli.get("verificationTier") == "AEA1_HEADER_PASS",
+                "POC_EXACT_FILE_SIGNING_RECEIPT_MISMATCH")
+        cli_provenance = {"exactFileSigningReceiptSha256": sha(cli_bytes),
+                          "signingVerificationTier": cli["verificationTier"]}
+
     path = root / SIGNING_RECEIPT
     require(not path.is_symlink(), "POC_SIGNING_RECEIPT_SYMLINK")
     base = {"schemaVersion": "1", "implementationSha": commit, "runId": run_id,
@@ -131,7 +149,7 @@ def record_signing(repo, root, commit, run_id, attempt, source, unsigned, signed
     base["fixtures"].append({"fixtureId": name, "sourceSha256": SOURCE_HASHES[name],
                              "unsignedSha256": sha(unsigned_bytes), "signedSha256": sha(signed_bytes),
                              "signedArtifact": name + ".shortcut", "signingMethod": method,
-                             "signedMagicVerified": True})
+                             "signedMagicVerified": True, **cli_provenance})
     path.write_bytes((json.dumps(base, indent=2) + "\n").encode("utf-8"))
 
 
@@ -182,7 +200,12 @@ def stage(repo, root, output, commit, run_id, attempt):
                         and row.get("sourceSha256") == SOURCE_HASHES[Path(name).stem]
                         and row.get("signedSha256") == sha(data) and row.get("signedMagicVerified") is True
                         and re.fullmatch(r"[0-9a-f]{64}", row.get("unsignedSha256", "")) is not None
-                        and data.startswith(b"AEA1"), "POC_SIGNED_PROVENANCE_MISMATCH")
+                        and data.startswith(b"AEA1") and len(data) >= 16
+                        and row.get("signingMethod") in ("native", "hubsign"), "POC_SIGNED_PROVENANCE_MISMATCH")
+                if row["signingMethod"] == "hubsign":
+                    require(re.fullmatch(r"[0-9a-f]{64}", row.get("exactFileSigningReceiptSha256", "")) is not None
+                            and row.get("signingVerificationTier") == "AEA1_HEADER_PASS",
+                            "POC_EXACT_FILE_SIGNING_RECEIPT_MISSING")
             else:
                 read_text_data(data, name)
             require(name not in refs or refs[name] == data, "POC_CONFLICTING_FORMAL_REF")
@@ -234,13 +257,14 @@ def main():
     parser.add_argument("--unsigned")
     parser.add_argument("--signed")
     parser.add_argument("--method", choices=("native", "hubsign"))
+    parser.add_argument("--cli-manifest")
     args = parser.parse_args()
     try:
         common = (args.repo, args.root, args.commit, args.run_id, args.attempt)
         if args.command == "check-sources":
             check_sources(*common)
         elif args.command == "record-signing":
-            record_signing(*common, args.source, args.unsigned, args.signed, args.method)
+            record_signing(*common, args.source, args.unsigned, args.signed, args.method, args.cli_manifest)
         else:
             require(args.output is not None, "POC_PUBLIC_OUTPUT_REQUIRED")
             report = stage(args.repo, args.root, args.output, args.commit, args.run_id, args.attempt)

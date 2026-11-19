@@ -221,6 +221,49 @@ class FormalPublicationTests(unittest.TestCase):
         path.write_text(json.dumps(value), encoding="utf-8")
         self.assert_blocked()
 
+    def test_hubsign_receipt_binds_exact_public_input_and_output(self):
+        name = "CherriRuntimePOC"
+        unsigned = self.root / (name + "_unsigned.shortcut")
+        signed = self.root / (name + ".shortcut")
+        unsigned.write_bytes(b"SYNTHETIC_UNSIGNED_POLICY_CONTROL")
+        cli_path = self.root / "signing-CherriRuntimePOC.json"
+        valid = {"compilerCommitSha": COMMIT,
+                 "sourceSha256": publication.SOURCE_HASHES[name],
+                 "unsignedPlistSha256": sha(unsigned.read_bytes()),
+                 "signedArtifactSha256": sha(signed.read_bytes()),
+                 "unsignedByteSize": unsigned.stat().st_size,
+                 "signedByteSize": signed.stat().st_size,
+                 "headerMagic": "AEA1", "verificationTier": "AEA1_HEADER_PASS"}
+        (self.root / publication.SIGNING_RECEIPT).unlink()
+        args = (self.repo, self.root, COMMIT, RUN, ATTEMPT,
+                "tests/runtime_poc/" + name + ".cherri", unsigned, signed, "hubsign")
+        with self.assertRaises(publication.PublicationBlocked):
+            publication.record_signing(*args)
+        for key, wrong in (("compilerCommitSha", "b" * 40),
+                           ("sourceSha256", "c" * 64),
+                           ("unsignedPlistSha256", "d" * 64),
+                           ("signedArtifactSha256", "e" * 64),
+                           ("unsignedByteSize", 0), ("signedByteSize", 4),
+                           ("headerMagic", "xml?"),
+                           ("verificationTier", "SHORTCUT_EXECUTED")):
+            with self.subTest(field=key):
+                cli_path.write_bytes(json.dumps({**valid, key: wrong}).encode("utf-8"))
+                with self.assertRaises(publication.PublicationBlocked):
+                    publication.record_signing(*args, cli_path)
+                self.assertFalse((self.root / publication.SIGNING_RECEIPT).exists())
+        cli_path.write_bytes(json.dumps(valid).encode("utf-8"))
+        publication.record_signing(*args, cli_path)
+        receipt = json.loads((self.root / publication.SIGNING_RECEIPT).read_bytes())
+        self.assertEqual(receipt["fixtures"][0]["exactFileSigningReceiptSha256"], sha(cli_path.read_bytes()))
+        self.assertEqual(receipt["fixtures"][0]["signingVerificationTier"], "AEA1_HEADER_PASS")
+
+    def test_remote_signing_without_exact_cli_receipt_blocks_publication(self):
+        path = self.root / publication.SIGNING_RECEIPT
+        value = json.loads(path.read_bytes())
+        value["fixtures"][0]["signingMethod"] = "hubsign"
+        path.write_bytes(json.dumps(value).encode("utf-8"))
+        self.assert_blocked()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -5,6 +5,12 @@ on:
     branches:
       - agent/ios27-shortcuts-runtime-poc
   workflow_dispatch:
+    inputs:
+      allow_public_fixture_hubsign:
+        description: "Allow the existing HubSign service for only the hash-reviewed public PoC fixtures in this run"
+        type: boolean
+        required: true
+        default: false
 
 concurrency:
   group: ios27-poc-${{ github.ref }}
@@ -53,7 +59,7 @@ jobs:
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
       - name: Verify formal PoC privacy controls
-        run: python3 -m unittest discover -s tools/shortcuts-simulator-qa -p test_runtime_poc_privacy.py -v
+        run: python3 -m unittest discover -s tools/shortcuts-simulator-qa -p 'test_runtime_poc_*.py' -v
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -87,6 +93,8 @@ jobs:
           token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
           github_token: ${{ github.token }}
       - name: Run iOS 27 Shortcuts Runtime PoC
+        env:
+          CHERRI_ALLOW_EXTERNAL_SIGNING: ${{ inputs.allow_public_fixture_hubsign == true && '1' || '0' }}
         run: bash scripts/ios27_runtime_poc.sh
 
       - name: Live Activity · refresh
