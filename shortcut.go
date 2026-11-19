@@ -57,6 +57,7 @@ type Value struct {
 }
 
 type Aggrandizement struct {
+	rawNativeFields      map[string]any
 	Type                 string `plist:",omitempty"`
 	CoercionItemClass    string `plist:",omitempty"`
 	DictionaryKey        string `plist:",omitempty"`

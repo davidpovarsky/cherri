@@ -427,6 +427,7 @@ func sanitizeRawParamValueContext(v any, inAttachmentsByRange bool) any {
 					isoIncTime = &bVal
 				}
 				desc.Aggrandizements[i] = Aggrandizement{
+					rawNativeFields:      deepClonePlistMap(a),
 					Type:                 tStr,
 					PropertyName:         pName,
 					CoercionItemClass:    cItem,

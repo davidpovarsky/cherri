@@ -4747,7 +4747,8 @@ func (l *Lowerer) toSemanticValue(val interface{}) backend.SemanticValue {
 		if len(v.Aggrandizements) > 0 {
 			for _, m := range v.Aggrandizements {
 				t := backend.Transformation{
-					Type: fmt.Sprintf("%v", m["Type"]),
+					RawNativeFields: cloneLowerPlistValue(m).(map[string]any),
+					Type:            fmt.Sprintf("%v", m["Type"]),
 				}
 				if prop, ok := m["PropertyName"].(string); ok {
 					t.PropertyName = prop
