@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "implementationSha": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+  "runId": "44452839062",
+  "appleEngineExecuted": true,
+  "shortcutRuntimeExecuted": false,
+  "mockEngineAllowed": false,
+  "phases": [
+    {
+      "phase": "positive",
+      "command": [
+        "/usr/bin/osascript",
+        "-l",
+        "JavaScript",
+        "/Users/runner/work/_temp/required-encoding-gate/verify.js",
+        "/Users/runner/work/cherri/cherri/docs/apple-runtime/parameter-encodings.json",
+        "/Users/runner/work/cherri/cherri/docs/apple-runtime/encoding-table.json",
+        "/Users/runner/work/_temp/required-encoding-gate/positive.json",
+        "/Users/runner/work/cherri/cherri/tools/shortcut-runtime/required-encoding-expectations.json"
+      ],
+      "exitCode": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "ff98afd4e099d94fd6aa8476bfe090a0134f9219ea06c4a967c1d0282e15ea03",
+      "negativeDiagnosticObserved": false,
+      "reportSha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088"
+    },
+    {
+      "phase": "corrupt",
+      "command": [
+        "/usr/bin/osascript",
+        "-l",
+        "JavaScript",
+        "/Users/runner/work/_temp/required-encoding-gate/verify.js",
+        "/Users/runner/work/cherri/cherri/docs/apple-runtime/parameter-encodings.json",
+        "/Users/runner/work/cherri/cherri/docs/apple-runtime/encoding-table.json",
+        "/Users/runner/work/_temp/required-encoding-gate/corrupt.json",
+        "/Users/runner/work/cherri/cherri/tools/shortcut-runtime/required-encoding-expectations.json",
+        "/Users/runner/work/_temp/required-encoding-gate/isolated-corrupt-expectations.json"
+      ],
+      "exitCode": 1,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "a72f4408ed43e86edf26d12618f82a1d6e35740932379c5447fe062409b6bdd4",
+      "negativeDiagnosticObserved": true,
+      "reportSha256": "e43502de0d8d76cb022df3ca51a011fd25c1fcc5eddd87138c5a98d4c73785a8"
+    },
+    {
+      "phase": "restored",
+      "command": [
+        "/usr/bin/osascript",
+        "-l",
+        "JavaScript",
+        "/Users/runner/work/_temp/required-encoding-gate/verify.js",
+        "/Users/runner/work/cherri/cherri/docs/apple-runtime/parameter-encodings.json",
+        "/Users/runner/work/cherri/cherri/docs/apple-runtime/encoding-table.json",
+        "/Users/runner/work/_temp/required-encoding-gate/restored.json",
+        "/Users/runner/work/cherri/cherri/tools/shortcut-runtime/required-encoding-expectations.json"
+      ],
+      "exitCode": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "ff98afd4e099d94fd6aa8476bfe090a0134f9219ea06c4a967c1d0282e15ea03",
+      "negativeDiagnosticObserved": false,
+      "reportSha256": "1d8b0e812e9a1b4e3c95ca355f688ef2f59218e0fd6d8371e6020967f83d4088"
+    }
+  ],
+  "failures": [],
+  "records": [],
+  "inputs": {
+    "/Users/runner/work/cherri/cherri/tools/shortcut-runtime/jxa/verify_encodings.js": "ea16f22360d2af239effee2ced4b80e55b7e42b6e57dce99e7834059ffbde41a",
+    "/Users/runner/work/cherri/cherri/tools/shortcut-runtime/required-encoding-expectations.json": "fe521c4c782ccb74a7c3327d28dcc48c358f2943bd5f070a1f2a20bc63e2ce38",
+    "/Users/runner/work/cherri/cherri/tools/shortcut-runtime/required_encoding_gate.py": "50a8f32d4e6f2e51d369b093b8cec2dc7b4cb255db7b780370689f53452b45af",
+    "/Users/runner/work/_temp/required-encoding-shortcutkit/tools/jxa-prelude.js": "d6fbcaad5104562b04004b39ca098486449399c15c83176c49b2ac28f47a3461",
+    "/Users/runner/work/cherri/cherri/docs/apple-runtime/parameter-encodings.json": "27c0a367f9856d83445fbad83a333b5aa5e82717846c0c5c34e72d656457b546",
+    "/Users/runner/work/cherri/cherri/docs/apple-runtime/encoding-table.json": "b9dd843f63ba90e24739027017178cbf09ef602538b1f9337d92e4407d5138fc"
+  },
+  "preludeCommit": "ee52c32937053268e4a035eba4b372fe77ec6411",
+  "host": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "macOSVersion": "26.7.2"
+  },
+  "isolatedMutation": {
+    "id": "plainString.WFStringParameterState.string",
+    "field": "expect",
+    "before": "accept",
+    "after": "reject"
+  },
+  "requiredCases": 23,
+  "expectedRejections": 1,
+  "inputBytesUnchanged": true,
+  "negativeControlExit": 1
+}

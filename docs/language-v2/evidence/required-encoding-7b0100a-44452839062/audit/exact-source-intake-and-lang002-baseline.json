@@ -1,0 +1,68 @@
+{
+  "sourceCommit": "7b0100a2a9ce5991ca8ffe82c805278e5aa7754e",
+  "workingTreeDirtyBefore": false,
+  "workingTreeDirtyAfter": false,
+  "availableMemoryBeforeBytes": 3067609088,
+  "completedAt": "2026-11-19T04:02:44.682071+00:00",
+  "commands": [
+    {
+      "name": "actual-intake",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-p=1",
+        "-overlay=C:\\Users\\DAVID\\Code\\cherri-p10r15-evidence-20261119\\native-triage\\44452839062-required-encoding\\observation-overlay.json",
+        "./tools/language-acceptance",
+        "-run",
+        "^TestActualWorkflowKitS2EvidenceIntake$",
+        "-count=1",
+        "-json",
+        "-timeout=75s"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "expectedOutcome": true,
+      "durationSeconds": 14.234,
+      "pass": [
+        "TestActualWorkflowKitS2EvidenceIntake/CI01",
+        "TestActualWorkflowKitS2EvidenceIntake/RP47",
+        "TestActualWorkflowKitS2EvidenceIntake"
+      ],
+      "fail": [],
+      "skip": [],
+      "diagnostics": [
+        "native_encoding_ci_observation_test.go:39: actual positive/corrupt/restored reports and process receipts accepted at exact S2",
+        "native_encoding_ci_observation_test.go:39: actual positive/corrupt/restored reports and process receipts accepted at exact S2"
+      ]
+    },
+    {
+      "name": "lang002-baseline",
+      "command": [
+        "C:\\Program Files\\Go\\bin\\go.exe",
+        "test",
+        "-p=1",
+        ".",
+        "-run",
+        "^TestLANG002_EnumAndTypeAliases$",
+        "-count=1",
+        "-json",
+        "-timeout=75s"
+      ],
+      "exitCode": 1,
+      "expectedExitCode": 1,
+      "expectedOutcome": true,
+      "durationSeconds": 37.766,
+      "pass": [
+        "TestLANG002_EnumAndTypeAliases/InvalidEnum"
+      ],
+      "fail": [
+        "TestLANG002_EnumAndTypeAliases/ValidEnum",
+        "TestLANG002_EnumAndTypeAliases"
+      ],
+      "skip": [],
+      "diagnostics": [
+        "metadata_matrix_test.go:273: expected quicklook input to be 'PRODUCTION', got {{ActionOutput  8009D718-2461-4234-B966-9ED4EEBBE715 Text <nil> <nil> [] map[]  [] } WFTextTokenAttachment}"
+      ]
+    }
+  ]
+}
