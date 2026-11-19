@@ -9,6 +9,7 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/enums"
 	"github.com/electrikmilk/cherri/internal/language/ir"
+	"github.com/electrikmilk/cherri/internal/language/modules"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
@@ -24,6 +25,7 @@ type Symbol struct {
 	Initialized           bool
 	Span                  source.Span
 	Function              *syntax.FunctionDecl
+	Module                *modules.Module
 	Setup                 *syntax.SetupDecl
 	EnumDeclaration       bool
 	EnumType              string
@@ -79,6 +81,10 @@ type Analyzer struct {
 	topLevelVars           map[string]source.Span
 	yieldedTypes           []types.Type
 	importStack            []string
+	moduleGraph            *modules.Graph
+	moduleNode             *modules.Module
+	moduleAnalyses         map[*modules.Module]*Analyzer
+	moduleScope            *Scope
 	isMacTarget            *bool
 	exprTypes              map[syntax.Expression]types.Type
 	targets                []string
@@ -336,6 +342,7 @@ func (a *Analyzer) expandCopyPaste(prog *syntax.Program) {
 func (a *Analyzer) Analyze(prog *syntax.Program) {
 	a.beginProgram()
 	defer func() { a.analyzing = false }()
+	a.analyzeModuleDependencies()
 	a.expandCopyPaste(prog)
 	a.setupUses = make(map[*syntax.SetupDecl]int)
 	a.nativeReferenceCalls = make(map[syntax.Expression]bool)
@@ -452,7 +459,7 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 				a.error(CodeWorkspaceAccess, d.Span, fmt.Sprintf("remote package imports not permitted: %q", d.Path))
 			}
 			cleanPath := filepath.Clean(d.Path)
-			if !filepath.IsLocal(d.Path) {
+			if a.moduleNode == nil && !filepath.IsLocal(d.Path) {
 				a.error(CodeWorkspaceAccess, d.Span, fmt.Sprintf("path traversal outside workspace not permitted: %q", d.Path))
 			}
 			for _, p := range a.importStack {
@@ -464,7 +471,8 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 			if !scope.Define(&Symbol{Name: d.Alias, Type: types.Unknown, Initialized: true, Span: d.Span}) {
 				a.error(CodeDuplicateName, d.Span, fmt.Sprintf("duplicate import alias %q", d.Alias))
 			}
-			if d.Path == "stdfunc" || d.Alias == "stdfunc" {
+			a.defineModuleImport(scope, d)
+			if a.moduleNode == nil && (d.Path == "stdfunc" || d.Alias == "stdfunc") {
 				scope.Define(&Symbol{Name: "runJS", Type: types.Unknown, Initialized: true, Span: d.Span})
 				scope.Define(&Symbol{Name: "chooseFromVCard", Type: types.Unknown, Initialized: true, Span: d.Span})
 			}
@@ -494,6 +502,8 @@ func (a *Analyzer) Analyze(prog *syntax.Program) {
 	for _, stmt := range prog.Statements {
 		a.analyzeStatement(stmt, scope)
 	}
+	a.moduleScope = scope
+	a.mergeModuleExpressionResults()
 	for declaration, uses := range a.setupUses {
 		if uses == 0 {
 			a.warn(CodeUnusedSetup, declaration.Span, fmt.Sprintf("setup %q is unused and emits no import question", declaration.Name))
@@ -1415,6 +1425,11 @@ func (a *Analyzer) analyzeCall(call *syntax.CallExpr, scope *Scope) types.Type {
 				return types.Unknown
 			}
 			callName = "native." + c.Property
+		} else if name, handled := a.moduleCallName(c, scope); handled {
+			if name == "" {
+				return types.Unknown
+			}
+			callName = name
 		} else {
 			a.analyzeExpression(call.Callee, scope)
 			return types.Unknown

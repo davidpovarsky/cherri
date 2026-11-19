@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/electrikmilk/cherri/internal/language/analysis"
+	"github.com/electrikmilk/cherri/internal/language/modules"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
@@ -56,12 +57,13 @@ type TextEdit struct {
 
 // DocumentState holds in-memory parsed and analyzed state for an open file.
 type DocumentState struct {
-	URI         string
-	Version     int
-	File        *source.File
-	Program     *syntax.Program
-	ParseErrors []syntax.ParseError
-	Analyzer    *analysis.Analyzer
+	URI               string
+	Version           int
+	File              *source.File
+	Program           *syntax.Program
+	ParseErrors       []syntax.ParseError
+	Analyzer          *analysis.Analyzer
+	ModuleDiagnostics []analysis.Diagnostic
 }
 
 // Service is the shared language service implementation for CLI, LSP, and iOS bridge.
@@ -92,20 +94,7 @@ func (s *Service) OpenDocument(uri string, version int, text string) {
 		return
 	}
 
-	file := source.NewFile(source.DocumentID(uri), uri, version, text)
-	parser := syntax.NewParser(file)
-	prog := parser.ParseProgram()
-	analyzer := analysis.NewAnalyzer(s.registry)
-	analyzer.Analyze(prog)
-
-	s.documents[uri] = &DocumentState{
-		URI:         uri,
-		Version:     version,
-		File:        file,
-		Program:     prog,
-		ParseErrors: parser.Errors(),
-		Analyzer:    analyzer,
-	}
+	s.documents[uri] = s.analyzeDocumentLocked(uri, version, text)
 }
 
 // ChangeDocument updates content of an open document, ignoring stale lower-version updates.
@@ -132,15 +121,19 @@ func (s *Service) CloseDocument(uri string) {
 
 // Analyze returns all parse and semantic diagnostics for a document.
 func (s *Service) Analyze(uri string) ([]analysis.Diagnostic, string) {
-	s.mu.RLock()
+	s.mu.Lock()
 	doc, ok := s.documents[uri]
-	s.mu.RUnlock()
+	if ok && modules.HasImports(doc.Program) {
+		doc = s.analyzeDocumentLocked(uri, doc.Version, doc.File.Content)
+		s.documents[uri] = doc
+	}
+	s.mu.Unlock()
 
 	if !ok {
 		return nil, s.registry.Fingerprint()
 	}
 
-	var diags []analysis.Diagnostic
+	diags := append([]analysis.Diagnostic(nil), doc.ModuleDiagnostics...)
 
 	// 1. Add parse errors
 	for _, pe := range doc.ParseErrors {

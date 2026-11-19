@@ -14,6 +14,8 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/analysis"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/lower"
+	"github.com/electrikmilk/cherri/internal/language/migrate"
+	"github.com/electrikmilk/cherri/internal/language/modules"
 	"github.com/electrikmilk/cherri/internal/language/schema"
 	"github.com/electrikmilk/cherri/internal/language/source"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
@@ -305,7 +307,12 @@ func collectV2CompileErrorLines(filePath string, content string) ([]int, error) 
 		return linesOut, fmt.Errorf("syntax error: %s", errs[0])
 	}
 	reg := schema.DefaultRegistry()
+	graph, issue := modules.Resolve(prog, filePath, nil, reg, migrate.MigrateSource)
+	if issue != nil {
+		return []int{issue.Span.Start.Line}, issue
+	}
 	analyzer := analysis.NewAnalyzer(reg)
+	analyzer.SetModuleGraph(graph)
 	analyzer.Analyze(prog)
 	var linesOut []int
 	var firstErr error
@@ -341,7 +348,12 @@ func CompileSourceToPlistWithOptions(filePath string, content string, options Co
 	}
 
 	reg := schema.DefaultRegistry()
+	graph, issue := modules.Resolve(prog, filePath, options.VirtualModules, reg, migrate.MigrateSource)
+	if issue != nil {
+		return nil, issue
+	}
 	analyzer := analysis.NewAnalyzer(reg)
+	analyzer.SetModuleGraph(graph)
 	analyzer.Analyze(prog)
 	for _, diag := range analyzer.Diagnostics() {
 		if diag.Severity == analysis.SeverityError {
@@ -357,6 +369,8 @@ func CompileSourceToPlistWithOptions(filePath string, content string, options Co
 	lowerer := lower.NewLowererWithSession(analyzer.Registry(), session)
 	lowerer.WorkflowName = strings.TrimSuffix(filepath.Base(filePath), ".cherri")
 	lowerer.SetBaseFilePath(filePath)
+	lowerer.SetModuleGraph(graph)
+	lowerer.SetModuleRegistries(analyzer.ModuleRegistries())
 	if options.VirtualModules != nil {
 		lowerer.SetVirtualModules(options.VirtualModules)
 	}
