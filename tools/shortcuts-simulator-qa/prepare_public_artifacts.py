@@ -22,6 +22,7 @@ ALLOWED = {
     "runtime/http-probe-diagnostic.json",
     "runtime/storage-cross-run-diagnostic.json", "runtime/storage-writer-trace.jsonl",
     "tests/xcresult-summary.json", "editor/editor-action-coverage.json",
+    "editor/editor-foreground-recovery.json",
     "editor/screenshots-manifest.json", "editor/editor-actions.json",
     "editor/editor-comparison.json", "editor/editor-tree.json", "editor/editor-report.md",
     "editor/plist-vs-editor-comparison.json", "editor/handshake-status.json", "editor/ax-persistence-diagnostics.json", "docs/report.md",

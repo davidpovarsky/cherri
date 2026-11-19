@@ -15,3 +15,10 @@ swiftc -parse-as-library \
   "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_import_foreground.swift" \
   -o "$QA_TEST_DIR/qa-import-foreground-contracts"
 "$QA_TEST_DIR/qa-import-foreground-contracts"
+
+
+swiftc -parse-as-library \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/Shared/EditorForegroundRecovery.swift" \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_editor_foreground.swift" \
+  -o "$QA_TEST_DIR/qa-editor-foreground-contracts"
+"$QA_TEST_DIR/qa-editor-foreground-contracts"

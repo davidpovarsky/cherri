@@ -319,15 +319,41 @@ final class CherriSimulatorQAUITests: XCTestCase {
         return digest.map { String(format: "%02x", $0) }.joined()
     }
 
+    private func appLivenessState(_ app: XCUIApplication) -> QAAppLivenessState {
+        switch app.state {
+        case .unknown: return .unknown
+        case .notRunning: return .notRunning
+        case .runningBackgroundSuspended: return .runningBackgroundSuspended
+        case .runningBackground: return .runningBackground
+        case .runningForeground: return .runningForeground
+        @unknown default: return .unknown
+        }
+    }
+
+    private func activateOrLaunchShortcuts(
+        _ shortcuts: XCUIApplication, budget: TimeInterval, activationWait: TimeInterval
+    ) -> QAEditorForegroundObservation {
+        QAEditorForegroundRecovery.acquire(
+            budgetSeconds: budget, activationWaitSeconds: activationWait,
+            state: { self.appLivenessState(shortcuts) },
+            activate: { shortcuts.activate() }, launch: { shortcuts.launch() },
+            waitForForeground: { shortcuts.wait(for: .runningForeground, timeout: $0) })
+    }
+
     /// Distinguishes the genuine Shortcut action editor from the main All Shortcuts library screen.
     private func evaluateEditorState(
         in shortcuts: XCUIApplication,
-        expectedShortcutName: String
-    ) -> (editorOpened: Bool, identityVerified: Bool, headerLabels: [String]) {
+        expectedShortcutName: String,
+        foreground: QAEditorForegroundObservation
+    ) -> (editorOpened: Bool, identityVerified: Bool, headerLabels: [String])? {
         var headers: [String] = []
         var sawExpectedInHeader = false
         let navBars = shortcuts.navigationBars
-        for i in 0..<min(navBars.count, 5) {
+        guard let count = QAEditorForegroundRecovery.inspect(
+            foreground, state: { self.appLivenessState(shortcuts) },
+            query: { min(navBars.count, 5) }) else { return nil }
+        for i in 0..<count {
+            guard shortcuts.state == .runningForeground else { return nil }
             let nb = navBars.element(boundBy: i)
             if nb.exists {
                 if !nb.identifier.isEmpty {
@@ -359,6 +385,7 @@ final class CherriSimulatorQAUITests: XCTestCase {
             }
         }
 
+        guard shortcuts.state == .runningForeground else { return nil }
         let namePred = NSPredicate(format: "label == %@ OR label BEGINSWITH %@ OR label CONTAINS[c] %@", expectedShortcutName, expectedShortcutName + ",", expectedShortcutName)
         let hasEditorPane = shortcuts.otherElements["editor"].exists ||
                             shortcuts.navigationBars["New Shortcut"].exists ||
@@ -441,18 +468,18 @@ final class CherriSimulatorQAUITests: XCTestCase {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
 
         // Ensure Shortcuts is foregrounded and check whether pre-XCTest outside-runner import already presented the sheet
-        shortcuts.activate()
-        var launched = shortcuts.wait(for: .runningForeground, timeout: 10)
-        if !launched {
-            shortcuts.launch()
-            launched = shortcuts.wait(for: .runningForeground, timeout: 15)
-        }
+        // Reuse the existing 10 + 15 second startup allowance; a running
+        // background import is activated, never terminated and relaunched.
+        let startupForeground = activateOrLaunchShortcuts(shortcuts, budget: 25, activationWait: 10)
+        let launched = startupForeground.canInspect
 
         let sheetPredicate = NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Set Up Shortcut' OR label == 'Replace' OR label == 'Keep Both' OR label == 'הוסף קיצור דרך' OR label CONTAINS[c] 'Add Shortcut' OR label CONTAINS[c] 'Set Up Shortcut' OR label CONTAINS[c] 'Keep Both'")
         func pollImportSheetButton(timeout: TimeInterval) -> XCUIElement? {
             let end = Date().addingTimeInterval(timeout)
             while Date() < end {
                 for targetApp in [shortcuts, springboard] {
+                    let state = targetApp.state
+                    guard state != .notRunning && state != .unknown else { continue }
                     let predBtn = targetApp.buttons.matching(sheetPredicate).firstMatch
                     if predBtn.exists && predBtn.isHittable {
                         return predBtn
@@ -639,6 +666,33 @@ final class CherriSimulatorQAUITests: XCTestCase {
             Thread.sleep(forTimeInterval: 0.5)
         }
 
+        // Recover once at editor entry, within the existing host XCTest
+        // timeout. Never re-enter the signed-import handshake or rewrite any
+        // already-issued request when recovering the UI process.
+        let importRequest = outDir.appendingPathComponent("request-signed-import.txt")
+        let retryRequest = outDir.appendingPathComponent("request-signed-import-retry.txt")
+        let importIssuedBefore = FileManager.default.fileExists(atPath: importRequest.path)
+        let retryIssuedBefore = FileManager.default.fileExists(atPath: retryRequest.path)
+        let editorForeground = activateOrLaunchShortcuts(shortcuts, budget: 10, activationWait: 5)
+        let editorReceipt = QAEditorForegroundReceipt(
+            schemaVersion: "1.0", stage: "editor-entry", transition: editorForeground,
+            importRequestIssuedBefore: importIssuedBefore,
+            importRequestIssuedAfter: FileManager.default.fileExists(atPath: importRequest.path),
+            retryRequestIssuedBefore: retryIssuedBefore,
+            retryRequestIssuedAfter: FileManager.default.fileExists(atPath: retryRequest.path))
+        let livenessEncoder = JSONEncoder()
+        livenessEncoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        if let data = try? livenessEncoder.encode(editorReceipt) {
+            try? data.write(to: outDir.appendingPathComponent("editor-foreground-recovery.json"), options: .atomic)
+            print("CHERRI_QA_EDITOR_FOREGROUND_RECOVERY " + String(decoding: data, as: UTF8.self))
+        }
+        guard editorReceipt.importRequestStatePreserved, editorForeground.canInspect,
+              shortcuts.state == .runningForeground else {
+            libraryForegroundTransition = libraryForegroundTransition.stoppingAfterForegroundLoss()
+            stopBeforeUnavailableLibraryQuery()
+            return
+        }
+
         // Step 3: Open the genuine action editor for expectedShortcutName (or New Shortcut if blocked)
         if shortcutExistsInLibrary {
             let libShot = XCUIScreen.main.screenshot()
@@ -778,10 +832,13 @@ final class CherriSimulatorQAUITests: XCTestCase {
             }
         }
 
-        let (editorOpened, editorIdentityVerified, headerLabels) = evaluateEditorState(
-            in: shortcuts,
-            expectedShortcutName: expectedShortcutName
-        )
+        guard let (editorOpened, editorIdentityVerified, headerLabels) = evaluateEditorState(
+            in: shortcuts, expectedShortcutName: expectedShortcutName, foreground: editorForeground
+        ), shortcuts.state == .runningForeground else {
+            libraryForegroundTransition = libraryForegroundTransition.stoppingAfterForegroundLoss()
+            stopBeforeUnavailableLibraryQuery()
+            return
+        }
 
         // Step 4: Locate scrollable canvas inside Other["editor"] (avoiding all_shortcuts_library and action picker drawer)
         var scrollElement: XCUIElement = shortcuts
