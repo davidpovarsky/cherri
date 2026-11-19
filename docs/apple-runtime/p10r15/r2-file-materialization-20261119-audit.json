@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "status": "FAIL_RUNTIME_PRESERVED",
+  "sourceCommit": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+  "runId": 44634901025,
+  "runUrl": "https://github.com/davidpovarsky/cherri/actions/runs/44634901025",
+  "workflowConclusion": "failure",
+  "fixtureId": "qa-file-materialization-diagnostic-v2",
+  "sourceSha256": "f008fe73c47c9d90695b965e585b748a62698f6e4bb8cad97b21ddf158717863",
+  "unsignedPlistSha256": "1827edd5720b96af241219230efbae9df967ba70ff002ac57cd6e1cecf6e03c4",
+  "signedArtifactSha256": "a54139a46ee2436d4e1fdc1c01826c863b2b74de3c6aec62819a7059a05877bb",
+  "nativeActionCount": 170,
+  "observedCallback": {
+    "matchingCallbacks": 1,
+    "identityVerified": true,
+    "status": "SUCCESS",
+    "runId": "qa-file-materialization-diagnostic-v2-44634901025-a44399927f906887cbc403062a5a10ea",
+    "timestampISO8601": "2026-11-19T23:42:38.676Z",
+    "resultSummary": "CHERRI_QA_FILE_MATERIALIZATION_DIAG:JSON_TYPE64=VGV4dA==:DECODE_TYPE64=RGljdGlvbmFyeQ==:NAMED_TYPE64=RGljdGlvbmFyeQ==:EMPTY_TYPE64=RGljdGlvbmFyeQ==:ONE_TYPE64=RGljdGlvbmFyeQ==:BINARY_TYPE64=RmlsZQ==:JSON_COUNT=1:DECODE_COUNT=1:NAMED_COUNT=1:EMPTY_ENTRIES=0:ONE_ENTRIES=1:JSON_BYTES64=eyJib3VuZGFyeSI6IlBVQkxJQ19KU09OX1dJVE5FU1MiLCJlbnRyaWVzIjpbXX0=:DECODE_BYTES64=eyJib3VuZGFyeSI6IlBVQkxJQ19KU09OX1dJVE5FU1MiLCJlbnRyaWVzIjpbXX0=:NAMED_BYTES64=eyJib3VuZGFyeSI6IlBVQkxJQ19KU09OX1dJVE5FU1MiLCJlbnRyaWVzIjpbXX0=:PAYLOAD_TEXT64=Y1hWdmRHVWdJaUJpWVdOcmMyeGhjMmdnWENCdVpYZHNhVzVsQ2tobFluSmxkeURYcWRhNDE0SFhuTmVWMXJuWG5TQmphR1Z5Y25rZzhKK05raUIwYjJ0bGJpQlRXVTVVU0VWVVNVTmZVMFZEVWtWVQ==:RESTORED64=cXVvdGUgIiBiYWNrc2xhc2ggXCBuZXdsaW5lCkhlYnJldyDXqda414HXnNeV1rnXnSBjaGVycnkg8J+NkiB0b2tlbiBTWU5USEVUSUNfU0VDUkVU:NAME64=Ym91bmRhcnkuanNvbg==:STATUS64=VEVYVF9QQVlMT0FEX0VOQ09ERUQ=",
+    "resultSummarySha256": "e81690df1ac214d9e87583a11c6ddbc1a15317a15d36741d29a224042cb06987"
+  },
+  "canonicalOracleReplay": {
+    "runGate": "FAIL_RUNTIME",
+    "traceGate": "FAIL_RUNTIME",
+    "reason": "callback result does not exactly match expected output",
+    "targetFixtureId": "qa-file-materialization-diagnostic-v2",
+    "compilerCommitSha": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+    "buildProfile": "debug",
+    "traceExpectation": "REQUIRED_NDJSON",
+    "releaseBuildVerified": false,
+    "sourceSha256": "f008fe73c47c9d90695b965e585b748a62698f6e4bb8cad97b21ddf158717863",
+    "unsignedPlistSha256": "1827edd5720b96af241219230efbae9df967ba70ff002ac57cd6e1cecf6e03c4"
+  },
+  "runtimeContractVerified": false,
+  "oracleSourceSha256": "5d3f86d88f7c84653ff4e411e87d2f5c940c10eb73aab2cc529c1d43eb89cbee",
+  "publicationPolicySourceSha256": "2377540df7c8864fd0b6afdaf6ba861139b83aec8bda952818dab17c2f78c692",
+  "publicationManifestSha256": "4c6b77eb052cdf18dccf80ec9f40f07434a03dcc960723a54e5212665401fdfe",
+  "publishedHashesVerified": 21,
+  "files": [
+    {
+      "path": "compiler-manifest.json",
+      "sha256": "4f88d0a474c67580f08e363157f51bd03f19c489ccdf053073debc54da86c325",
+      "bytes": 276500
+    },
+    {
+      "path": "docs/report.md",
+      "sha256": "e2d1759505e7c32845fb08d23a262b85ce383c03c5122734b2e8e17d826b4774",
+      "bytes": 849
+    },
+    {
+      "path": "editor/ax-persistence-diagnostics.json",
+      "sha256": "d08420ebe6912d95a4ff4724879bfe1e73c50cef67b464f8d285a199d8e0966e",
+      "bytes": 228
+    },
+    {
+      "path": "editor/editor-action-coverage.json",
+      "sha256": "95b7fc78b3b8a4a7bc67052d136f07d3d58c26c8623b27ff8b09d220808a27c9",
+      "bytes": 2575
+    },
+    {
+      "path": "editor/editor-actions.json",
+      "sha256": "a7b3c192e461b191a99047757319b0bf4d1ecaf8ecad6e9210c7aa7483c33857",
+      "bytes": 131810
+    },
+    {
+      "path": "editor/editor-comparison.json",
+      "sha256": "aaf65bfc8ce2d6a4c03964591d7a568ea14365bc7cd755d0514ebe4f380eec0f",
+      "bytes": 163143
+    },
+    {
+      "path": "editor/editor-foreground-recovery.json",
+      "sha256": "52cdb796b3850ab4ae54cd72b715089e484f29fd508d6b776ddd8001ed92b05c",
+      "bytes": 547
+    },
+    {
+      "path": "editor/editor-report.md",
+      "sha256": "6d06efc00492f18cdc923c7873344d6268d2cb91377ff2ca47518cbdf3fb018e",
+      "bytes": 9928
+    },
+    {
+      "path": "editor/editor-tree.json",
+      "sha256": "036d5208a106efb60264805868b3c771b3590cbb20991978262546f99a34abe6",
+      "bytes": 3892023
+    },
+    {
+      "path": "editor/handshake-status.json",
+      "sha256": "d0e4ff1134f17a98ac60bb8652cec0df7cf4ce9ec1455ef99d106ed2dec57c15",
+      "bytes": 292
+    },
+    {
+      "path": "editor/plist-vs-editor-comparison.json",
+      "sha256": "aaf65bfc8ce2d6a4c03964591d7a568ea14365bc7cd755d0514ebe4f380eec0f",
+      "bytes": 163143
+    },
+    {
+      "path": "editor/screenshots-manifest.json",
+      "sha256": "2131c9d7b1ab883687510382ae037bc1b1bae45a2fcfe3d915dd49d751fa404a",
+      "bytes": 10026
+    },
+    {
+      "path": "environment.json",
+      "sha256": "a82df8488628073a1d0c8e800a860f29303598d17f424d52519f990a1c60ce80",
+      "bytes": 786
+    },
+    {
+      "path": "import-attempts.json",
+      "sha256": "fb82e721c91af3d99b2969b2d925fa1b8381285ccca0ace0c4f546cf7050ac84",
+      "bytes": 1670
+    },
+    {
+      "path": "runtime/callback-events.json",
+      "sha256": "bf9d327ec23d2a9a40a16a19f84b77e4c7e9813926b30865ae16455e0770a46d",
+      "bytes": 3144
+    },
+    {
+      "path": "runtime/instrumentation-vs-original.json",
+      "sha256": "95259cce678b165cb938e404bec4366aa357a7273089a939c19d5414fce5880d",
+      "bytes": 7442
+    },
+    {
+      "path": "runtime/output-assertions.json",
+      "sha256": "de0acdb74ad3f57875bcfe5a12bbad4d0cded56e215843bc3e755f4fb74f292a",
+      "bytes": 2290
+    },
+    {
+      "path": "runtime/runtime-trace.jsonl",
+      "sha256": "e8015c490860455a22c78c768ed3d1684a4ccd6aeaa1d441111a71f7a64bce7f",
+      "bytes": 229
+    },
+    {
+      "path": "runtime/signing-provenance.json",
+      "sha256": "101189adf42915cf0581439e2a217140de6a446b53ebc6097278ff1e760dba85",
+      "bytes": 2117
+    },
+    {
+      "path": "summary.json",
+      "sha256": "a0ba4044e4d491ab7f1f3c64c37f5920892f6e5fb7b2de03e40389e982f60268",
+      "bytes": 1140
+    },
+    {
+      "path": "tests/xcresult-summary.json",
+      "sha256": "547034c3f0148cca4a54650631dda6ba81fcbbcc644a80a21dbe9c980d213f62",
+      "bytes": 984
+    }
+  ],
+  "causalOracleControls": {
+    "status": "NOT_RUN_BASELINE_NOT_PASS",
+    "rejected": []
+  },
+  "editorStatus": "NEEDS_REVIEW",
+  "environment": {
+    "schemaVersion": "1.4",
+    "compilerCommitSha": "4e56dbcfe895baa8f944b83715ecff0d07bfd24e",
+    "uname": "Darwin sat12-bq158-aac3e2d5-c255-44ef-ac2f-5732f9ccb014-F2B6E4FF5A79.local 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:00:07 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_VMAPPLE arm64",
+    "swVers": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434",
+    "xcodeSelectPath": "/Applications/Xcode_27.1.app/Contents/Developer",
+    "xcodebuildVersion": "Xcode 27.1\nBuild version 27A9275",
+    "simulator": {
+      "maskedUdid": "8721CBAE-REDACTED",
+      "deviceName": "iPad mini (A17 Pro)",
+      "runtimeName": "iOS 27.0",
+      "runtimeVersion": "27.0",
+      "isIPad": true,
+      "shortcutsAppInstalled": true,
+      "shortcutsBundleId": "com.apple.shortcuts"
+    }
+  },
+  "scope": "This exact source, fixture, synthetic inputs and recorded Simulator run only.",
+  "notProven": [
+    "Physical device",
+    "General typed cache/TTL",
+    "Native failure cause",
+    "Complete per-action typed coverage",
+    "Complete Inspector identity mapping",
+    "HTTP status/error catching or redirect policy",
+    "Original require fixture repair"
+  ],
+  "privacy": {
+    "syntheticOnly": true,
+    "rawOrRasterPublication": false,
+    "privateCorpusUsed": false
+  }
+}
