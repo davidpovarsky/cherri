@@ -175,6 +175,11 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.Evidence = []string{"acceptance-local-observations.json#" + row.ID}
 			row.Scope = "Observed smoke only; no formal acceptance tier proven"
 		}
+		if row.ID == "D03" {
+			row.TestNames = []string{documentationConsumerTestID, documentationAppTestID}
+			row.ProductionPath = []string{"tools/p10r15/verify_documentation_consumers.py", "skills/cherri-shortcuts/scripts/search-docs.sh", "ios/scripts/collect_ios_test_evidence.py", "ios/scripts/build_documentation_index.py", "tools/language-acceptance/documentation_generation.go", "tools/language-acceptance/documentation_intake.go", "tools/language-acceptance/documentation_consumers_intake.go", "ios/CherriApp/Documentation/DocumentationIndex.swift", "ios/CherriApp/Documentation/DocumentationSearchView.swift"}
+			row.Scope = "External published/installed/app consumers only; local model tests and file existence do not prove either required tier"
+		}
 		if tests, ok := editorProductionTests[row.ID]; ok {
 			row.TestNames = append([]string{}, tests...)
 			row.ProductionPath = append([]string{}, editorProductionPaths...)
